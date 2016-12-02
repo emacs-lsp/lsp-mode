@@ -21,7 +21,7 @@
   (when params
     (unless (hash-table-p params)
       (signal 'wrong-type-argument (list 'hash-table-p params))))
-  (let ((body (make-hash-table)))
+  (let ((body (make-hash-table :test 'equal)))
     (puthash "jsonrpc" "2.0" body)
     (puthash "method" method body)
     (when params
@@ -60,7 +60,7 @@ interface TextDocumentItem {
     version: number;
     text: string;
 }"
-  (let ((params (make-hash-table)))
+  (let ((params (make-hash-table :test 'equal)))
     (puthash "uri" buffer-file-name params)
     (puthash "languageId" lsp--language-id params)
     (puthash "version" (incf lsp--file-version-number) params)
@@ -69,7 +69,7 @@ interface TextDocumentItem {
 
 (defun lsp--text-document-did-open ()
   "Executed when a new file is opened, added to `find-file-hook'."
-  (let ((params (make-hash-table)))
+  (let ((params (make-hash-table :test 'equal)))
     (puthash "textDocument" (lsp--get-text-document-item) params)
     (lsp--send-notification
      (lsp--make-notification "textDocument/didOpen" params))))
@@ -80,7 +80,7 @@ interface TextDocumentItem {
 interface TextDocumentIdentifier {
     uri: string;
 }"
-  (let ((params (make-hash-table)))
+  (let ((params (make-hash-table :test 'equal)))
     (puthash "uri" buffer-file-name params)
     params))
 
@@ -94,6 +94,29 @@ interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
     (puthash "version" lsp--file-version-number params)
     params))
 
+(defun lsp--position (line char)
+  "Make a Position object for the given LINE and CHAR.
+interface Position {
+    line: number;
+    character: number;
+}"
+  (let ((params (make-hash-table :test 'equal)))
+    (puthash "line" line params)
+    (puthash "character" char params)
+    params))
+
+(defun lsp--cur-position ()
+  "Make a Position object for the current point."
+  (lsp--position (line-number-at-pos)
+		 (lsp--current-char-offset)))
+
+(defun lsp--position-to-point (params)
+  "Convert Position object in PARAMS to a point."
+  (save-excursion
+      (goto-char (point-min))
+      (forward-line (1- (gethash "line" params)))
+      (+ (point) (gethash "character" params))))
+
 (defun lsp--range (start end)
   "Make Range body from START and END.
 
@@ -101,14 +124,24 @@ interface Range {
      start: Position;
      end: Position;
  }"
-  (let ((params (make-hash-table)))
+  (let ((params (make-hash-table :test 'equal)))
     (puthash "start" start params)
     (puthash "end" end params)
     params))
 
+(defun lsp--apply-text-edit (text-edit)
+  "Apply the edits described in the TextEdit object in TEXT-EDIT."
+  (let* ((range (gethash "range" text-edit))
+	 (start-point (lsp--position-to-point (gethash "start" range)))
+	 (end-point (lsp--position-to-point (gethash "end" range))))
+    (save-excursion
+      (goto-char start-point)
+      (delete-region start-point end-point)
+      (insert (gethash "newText" text-edit)))))
+
 (defun lsp--text-document-content-change-event (start end length)
   "Make a TextDocumentContentChangeEvent body for START to END, of length LENGTH."
-  (let ((params (make-hash-table)))
+  (let ((params (make-hash-table :test 'equal)))
     ;; The range of the document that changed.
     (puthash "range" (lsp--range start end) params)
     ;; The length of the range that got replaced.
@@ -120,7 +153,7 @@ interface Range {
 (defun lsp--text-document-did-change (start end length)
   "Executed when a file is changed.
 Added to `after-change-functionsafter-change-functions'"
-  (let ((params (make-hash-table)))
+  (let ((params (make-hash-table :test 'equal)))
     (puthash "textDocument" (lsp--text-document-identifier) params)
     (puthash "contentChanges" (lsp--text-ducment-content-change-event
 			       start end length)
@@ -130,35 +163,24 @@ Added to `after-change-functionsafter-change-functions'"
 
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
-  (let ((params (make-hash-table)))
+  (let ((params (make-hash-table :test 'equal)))
     (puthash "textDocument" (lsp--versioned-text-document-identifier) params)
     (lsp--send-notification
      (lsp--make-notification "textDocument/didClose" params))))
 
 (defun lsp--text-document-did-save ()
   "Executed when the file is closed, added to `after-save-hook''."
-  (let ((params (make-hash-table)))
+  (let ((params (make-hash-table :test 'equal)))
     (puthash "textDocument" (lsp--versioned-text-document-identifier) params)
     (lsp--send-notification
      (lsp--make-notification "textDocument/didSave" params))))
-
-(defun lsp--position (line char)
-  "Make a Position object for the given LINE and CHAR.
-interface Position {
-    line: number;
-    character: number;
-}"
-  (let ((params (make-hash-table)))
-    (puthash "line" line params)
-    (puthash "character" char params)
-    params))
 
 (defsubst lsp--current-char-offset ()
   (- (point) (save-excursion (beginning-of-line) (point))))
 
 (defun lsp--text-document-position-params ()
   "Make TextDocumentPositionParams for the current point in the current document."
-  (let ((params (make-hash-table)))
+  (let ((params (make-hash-table :test 'equal)))
     (puthash "textDocument" (lsp--text-document-identifier) params)
     (puthash "position" (lsp--position (line-number-at-pos)
 				       (lsp--current-char-offset))
@@ -230,7 +252,7 @@ Returns xref-item(s)."
 (defun lsp--make-reference-params ()
   "Make a ReferenceParam object."
   (let ((params (lsp--text-document-position-params))
-	(reference-context (make-hash-table))
+	(reference-context (make-hash-table :test 'equal))
 	(json-false :json-false))
     (puthash "includeDeclaration" json-false reference-context)
     (puthash "context" reference-context params)
