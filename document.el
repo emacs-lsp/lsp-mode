@@ -153,11 +153,16 @@ interface Position {
     (puthash "character" char params)
     params))
 
+(defsubst lsp--current-char-offset ()
+  (- (point) (save-excursion (beginning-of-line) (point))))
+
 (defun lsp--text-document-position-params ()
   "Make TextDocumentPositionParams for the current point in the current document."
   (let ((params (make-hash-table)))
     (puthash "textDocument" (lsp--text-document-identifier) params)
-    (puthash "position" (lsp--position (line-number-at-pos) (point)) params)
+    (puthash "position" (lsp--position (line-number-at-pos)
+				       (lsp--current-char-offset))
+	     params)
     params))
 
 (defun lsp--make-completion-item (item)
