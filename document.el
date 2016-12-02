@@ -175,6 +175,14 @@ interface Position {
 (defsubst lsp--annotate (item)
   (gethash "detail" item nil))
 
+(defun lsp--make-completion-items (response)
+  "If RESPONSE is a CompletionItem[], return RESPONSE as is.
+Otherwise return the items field from response, since it would be a
+CompletionList object."
+  (if (consp response)
+      response
+    (gethash "items" response)))
+
 (defun lsp--get-completions ()
   (let ((response (lsp--send-request (lsp--make-request
 				      "textDocument/completion"
@@ -184,7 +192,7 @@ interface Position {
 	(token (current-word t))
 	(el)
 	(completions))
-    (dolist (el response)
+    (dolist (el (lsp--make-completion-items response))
       (append completions (lsp--make-completion-item el)))
     (when (or token completing-field)
       (list
