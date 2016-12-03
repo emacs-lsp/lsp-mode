@@ -52,6 +52,8 @@
   "Send BODY as a request to the language server, get the response."
   (setq lsp--waiting-for-response t)
   ;; lsp-send-sync should loop until lsp--from-server returns nil
+  ;; in the case of Rust Language Server, this can be done with
+  ;; 'accept-process-output`.'
   (funcall lsp--send-sync (lsp--make-message body))
   lsp--response-result)
 
