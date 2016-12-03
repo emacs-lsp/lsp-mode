@@ -46,24 +46,40 @@ Else returns nil, and should be called again with the remaining output."
 	'notification
       (error "Couldn't guess message type from params"))))
 
-(setq-local request-callbacks (make-hash-table :test 'equal))
+(defvar-local lsp--waiting-for-response nil)
+(defvar-local lsp--response-result nil)
+(setq-local queued-notifications nil)
 
-(defsubst lsp--callback-table-is-empty ()
-  (= (hash-table-count request-callbacks) 0))
+(defsubst lsp--flush-notifications ()
+  (unless lsp--response-result
+    (let ((el))
+      (dolist (el queued-notifications)
+	(lsp--on-notification el t))
+      (setq queued-notifications nil))))
 
-(defun lsp--call-response-callback (params)
-  "Read response id from PARAMS, and call the callback for that."
-  (let ((id (string-to-number (gethash "id" params)))
-	(result (gethash "result" params))
-	(callback (gethash id request-callbacks nil)))
-    (if result
-	(funcall callback result)
-      (funcall callback))
-    (remhash id params)))
 
-(defun lsp--on-notification (params)
+;; How requests might work:
+;; 1 call wrapper around lsp--send-message-sync.
+;; 2. the implemented lsp--send-message-sync waits for next message,
+;; calls lsp--from-server.
+;; 3. lsp--from-server verifies this is the correct response, set the variable
+;; lsp--response-result to the `result` field in the response.
+;; 4. the wrapper around lsp--send-message-sync returns the value of lsp--response-result.
+
+(defun lsp--on-notification (notification &optional dont-queue)
   ;;todo
+  (if (and (not dont-queue) lsp--response-result)
+      (setq queued-notifications (append queued-notifications notification))
+    ;; else, call the appropriate handler
+    )
 )
+
+(defun lsp--set-response (response)
+  "Set lsp--response-result as per RESPONSE.
+Set lsp--waiting-for-message to nil."
+  (setq lsp--response-result (gethash "result" parsed nil))
+  ;; no longer waiting for a response.
+  (setq lsp--waiting-for-response nil))
 
 (defun lsp--from-server (message)
   "Callback for when Emacs recives MESSAGE from client.
@@ -72,10 +88,10 @@ read the next message from the language server, else asynchronously."
   (let ((parsed (lsp--parse-message message)))
     (when parsed
       (pcase (lsp--get-message-type parsed)
-	('response (lsp--call-response-callback parsed))
+	('response (lsp--set-response parsed))
 	('response-error (error "Received an error from the language server")) ;;TODO
 	('notification (lsp-on-notification parsed))))
-    (lsp--callback-table-is-empty)))
+    lsp--waiting-for-response))
 
 (provide 'lsp-callback)
 ;;; lsp-callback.el ends here

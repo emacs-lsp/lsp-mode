@@ -1,12 +1,14 @@
 (require 'cl)
 (require 'json)
 (require 'xref)
+(require 'lsp-callback)
 
 (defvar-local lsp--last-id -1)
 (defvar-local lsp--file-version-number -1)
 (defvar-local lsp--language-id "")
-(defvar-local lsp--send-response nil) ;; must return
-(defvar-local lsp--send-no-response nil) ;;must not return
+;; lsp-send-sync should loop until lsp--from-server returns nil
+(defvar-local lsp--send-sync nil)
+(defvar-local lsp--send-async nil)
 
 (defun lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
@@ -44,11 +46,14 @@
 
 (defun lsp--send-notification (body)
   "Send BODY as a notification to the language server."
-  (funcall lsp--send-no-response (lsp--make-message body)))
+  (funcall lsp--send-async (lsp--make-message body)))
 
 (defun lsp--send-request (body)
   "Send BODY as a request to the language server, get the response."
-  (funcall lsp--send-response (lsp--make-message body)))
+  (setq lsp--waiting-for-response t)
+  ;; lsp-send-sync should loop until lsp--from-server returns nil
+  (funcall lsp--send-sync (lsp--make-message body))
+  lsp--response-result)
 
 (defun lsp--make-text-document-item ()
   "Make TextDocumentItem for the currently opened file.
