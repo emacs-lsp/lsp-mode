@@ -1,37 +1,37 @@
-(setq-local reading-body nil)
-(setq-local json-body nil)
-(setq-local content-length nil)
-(setq-local content-type nil)
+(defvar-local lsp--reading-body nil)
+(defvar-local lsp--json-body nil)
+(defvar-local lsp--content-length nil)
+(defvar-local lsp--content-type nil)
 
 (defun lsp--parser-reset-state ()
   "Reset the internal state of the parser."
-  (setq reading-body nil
-	content-length nil
-	content-type nil
-	json-body nil))
+  (setq lsp--reading-body nil
+	lsp--content-length nil
+	lsp--content-type nil
+	lsp--json-body nil))
 
 (defun lsp--parse-message (body)
   "Read BODY.
 Returns the json string in BODY if it is complete.
 Else returns nil, and should be called again with the remaining output."
   (let ((completed-read nil))
-    (when (and (not reading-body) (not content-length))
+    (when (and (not lsp--reading-body) (not lsp--content-length))
       (if (string-match "Content\-Length: \\([0-9]+\\)" body)
-	  (setq content-length (string-to-number (match-string 1 body)))
-	(error "Received body without Content-Length")))
-    (when (and (not reading-body) (not content-type))
+	  (setq lsp--content-length (string-to-number (match-string 1 body)))
+	(error "Received body without Lsp--Content-Length")))
+    (when (and (not lsp--reading-body) (not lsp--content-type))
       (when (string-match "Content\-Type: \\(.+\\)\r" body)
-	(setq content-type (match-string 1 body)
-	      reading-body t
-	      json-body "")))
+	(setq lsp--content-type (match-string 1 body)
+	      lsp--reading-body t
+	      lsp--json-body "")))
     (if (string-match "\r\n\r\n\\(.+\\)" body)
-	(setq json-body (setq body (match-string 1 body)))
-      (if (not (setq completed-read (= (length json-body) content-length)))
-	  (setq json-body (concat json-body body))
+	(setq lsp--json-body (setq body (match-string 1 body)))
+      (if (not (setq completed-read (= (length lsp--json-body) lsp--content-length)))
+	  (setq lsp--json-body (concat lsp--json-body body))
 	;;read a complete message, reset state
 	(lsp--parser-reset-state)))
-    (if (or completed-read (= (length json-body) content-length))
-	(prog1 json-body (lsp--parser-reset-state))
+    (if (or completed-read (= (length lsp--json-body) lsp--content-length))
+	(prog1 lsp--json-body (lsp--parser-reset-state))
       nil)))
 
 (defun lsp--get-message-type (params)
@@ -48,14 +48,15 @@ Else returns nil, and should be called again with the remaining output."
 
 (defvar-local lsp--waiting-for-response nil)
 (defvar-local lsp--response-result nil)
-(setq-local queued-notifications nil)
+(defvar-local lsp--queued-notifications nil)
 
 (defsubst lsp--flush-notifications ()
+  "Flush any notifications that were queued while processing the last response."
   (unless lsp--response-result
     (let ((el))
-      (dolist (el queued-notifications)
+      (dolist (el lsp--queued-notifications)
 	(lsp--on-notification el t))
-      (setq queued-notifications nil))))
+      (setq lsp--queued-notifications nil))))
 
 
 ;; How requests might work:
@@ -69,7 +70,7 @@ Else returns nil, and should be called again with the remaining output."
 (defun lsp--on-notification (notification &optional dont-queue)
   ;;todo
   (if (and (not dont-queue) lsp--response-result)
-      (setq queued-notifications (append queued-notifications notification))
+      (setq lsp--queued-notifications (append lsp--queued-notifications notification))
     ;; else, call the appropriate handler
     )
 )
@@ -77,7 +78,7 @@ Else returns nil, and should be called again with the remaining output."
 (defun lsp--set-response (response)
   "Set lsp--response-result as per RESPONSE.
 Set lsp--waiting-for-message to nil."
-  (setq lsp--response-result (gethash "result" parsed nil))
+  (setq lsp--response-result (gethash "result" response nil))
   ;; no longer waiting for a response.
   (setq lsp--waiting-for-response nil))
 
