@@ -5,8 +5,8 @@
 (defvar-local lsp--last-id -1)
 (defvar-local lsp--file-version-number -1)
 (defvar-local lsp--language-id "")
-(defvar-local lsp--send-request nil) ;; must return
-(defvar-local lsp--send-notification nil) ;;must not return
+(defvar-local lsp--send-response nil) ;; must return
+(defvar-local lsp--send-no-response nil) ;;must not return
 
 (defun lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
@@ -39,19 +39,18 @@
   (let ((json-str (json-encode params)))
     (format
      "Content-Length: %d\r
-Content-Type: application/vscode-jsonrpc; charset=utf8\r
 %s"
      (length json-str) json-str)))
 
-(defun lsp--send--notification (body)
+(defun lsp--send-notification (body)
   "Send BODY as a notification to the language server."
-  (apply lsp--send-notification (lsp--make-message body)))
+  (funcall lsp--send-no-response (lsp--make-message body)))
 
 (defun lsp--send-request (body)
   "Send BODY as a request to the language server, get the response."
-  (apply lsp--send-request (lsp--make-message body)))
+  (funcall lsp--send-response (lsp--make-message body)))
 
-(defun lsp--text-document-item ()
+(defun lsp--make-text-document-item ()
   "Make TextDocumentItem for the currently opened file.
 
 interface TextDocumentItem {
@@ -70,7 +69,7 @@ interface TextDocumentItem {
 (defun lsp--text-document-did-open ()
   "Executed when a new file is opened, added to `find-file-hook'."
   (let ((params (make-hash-table :test 'equal)))
-    (puthash "textDocument" (lsp--get-text-document-item) params)
+    (puthash "textDocument" (lsp--make-text-document-item) params)
     (lsp--send-notification
      (lsp--make-notification "textDocument/didOpen" params))))
 
@@ -104,6 +103,9 @@ interface Position {
     (puthash "line" line params)
     (puthash "character" char params)
     params))
+
+(defsubst lsp--current-char-offset ()
+  (- (point) (save-excursion (beginning-of-line) (point))))
 
 (defun lsp--cur-position ()
   "Make a Position object for the current point."
@@ -155,7 +157,7 @@ interface Range {
 Added to `after-change-functionsafter-change-functions'"
   (let ((params (make-hash-table :test 'equal)))
     (puthash "textDocument" (lsp--text-document-identifier) params)
-    (puthash "contentChanges" (lsp--text-ducment-content-change-event
+    (puthash "contentChanges" (lsp--text-document-content-change-event
 			       start end length)
 	     params)
     (lsp--send-notification
@@ -174,9 +176,6 @@ Added to `after-change-functionsafter-change-functions'"
     (puthash "textDocument" (lsp--versioned-text-document-identifier) params)
     (lsp--send-notification
      (lsp--make-notification "textDocument/didSave" params))))
-
-(defsubst lsp--current-char-offset ()
-  (- (point) (save-excursion (beginning-of-line) (point))))
 
 (defun lsp--text-document-position-params ()
   "Make TextDocumentPositionParams for the current point in the current document."
@@ -266,7 +265,25 @@ Returns xref-item(s)."
 				       (lsp--make-reference-params)))))
     (if (consp location)
 	(mapcar 'lsp--location-to-xref location)
-      (lisp--location-to-xref location))))
+      (lsp--location-to-xref location))))
 
+(defun lsp--text-document-hover-string ()
+  "interface Hover {
+    contents: MarkedString | MarkedString[];
+    range?: Range;
+}
+
+type MarkedString = string | { language: string; value: string };"
+  (let* ((hover (lsp--send-request (lsp--make-request
+			"textDocument/hover"
+			(lsp--text-document-position-params))))
+	 (contents (gethash "contents" hover)))
+    (if (hash-table-p contents)
+	(gethash "value" contents)
+      contents)))
+
+(defun lsp--text-document-signature-help ()
+  ""
+  )
 (provide 'lsp-document)
 ;;; document.el ends here
