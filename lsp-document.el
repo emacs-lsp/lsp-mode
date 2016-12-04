@@ -3,17 +3,21 @@
 (require 'xref)
 (require 'lsp-callback)
 
-(defvar-local lsp--last-id -1)
-(defvar-local lsp--file-version-number -1)
-(defvar-local lsp--language-id "")
-;; lsp-send-sync should loop until lsp--from-server returns nil
-(defvar-local lsp--send-sync nil)
-(defvar-local lsp--send-async nil)
+(cl-defstruct workspace
+  (language-id :read-only t)
+  (last-id 0)
+  (file-version-number 0)
+  (root :ready-only t)
+  (send-sync :read-only t) ;; send-sync should loop until lsp--from-server returns nil
+  (send-async :read-only t))
+
+(defvar-local cur-workspace nil)
+(defvar workspaces (make-hash-table :test 'equal))
 
 (defun lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
   (let ((request-body (lsp--make-notification method params)))
-    (puthash "id" (incf lsp--last-id) request-body)
+    (puthash "id" (incf (workspace-last-id cur-workspace)) request-body)
     request-body))
 
 (defun lsp--make-notification (method &optional params)
@@ -40,7 +44,7 @@
 
 (defun lsp--send-notification (body)
   "Send BODY as a notification to the language server."
-  (funcall lsp--send-async (lsp--make-message body)))
+  (funcall (workspace-send-async cur-workspace) (lsp--make-message body)))
 
 (defun lsp--send-request (body)
   "Send BODY as a request to the language server, get the response."
@@ -48,7 +52,7 @@
   ;; lsp-send-sync should loop until lsp--from-server returns nil
   ;; in the case of Rust Language Server, this can be done with
   ;; 'accept-process-output`.'
-  (funcall lsp--send-sync (lsp--make-message body))
+  (funcall (workspace-send-sync cur-workspace) (lsp--make-message body))
   lsp--response-result)
 
 (defun lsp--make-text-document-item ()
@@ -62,25 +66,39 @@ interface TextDocumentItem {
 }"
   (let ((params (make-hash-table :test 'equal)))
     (puthash "uri" buffer-file-name params)
-    (puthash "languageId" lsp--language-id params)
-    (puthash "version" (incf lsp--file-version-number) params)
+    (puthash "languageId" (workspace-language-id cur-workspace) params)
+    (puthash "version" (incf (workspace-file-version-number cur-workspace)) params)
     (puthash "text" (buffer-substring-no-properties (point-min) (point-max)) params)
     params))
 
-(defun lsp--initialize (path)
+(defun lsp--initialize (language-id send-sync send-async)
   (let ((params (make-hash-table :test 'equal))
-	(response))
+	(cur-dir (expand-file-name default-directory)))
+    (if (gethash cur-dir workspaces)
+	(error "This workspace has already been initialized")
+      (setq cur-workspace (make-workspace :language-id language-id
+					  :last-id 0
+					  :root cur-dir
+					  :send-sync send-sync
+					  :send-async send-async)))
     (puthash "processId" (emacs-pid) params)
-    (puthash "rootPath" path params)
+    (puthash "rootPath" (expand-file-name cur-dir) params)
     (puthash "capabilities" json-null params)
     (lsp--send-request (lsp--make-request "initialize" params))))
 
 (defun lsp--text-document-did-open ()
   "Executed when a new file is opened, added to `find-file-hook'."
-  (let ((params (make-hash-table :test 'equal)))
-    (puthash "textDocument" (lsp--make-text-document-item) params)
-    (lsp--send-notification
-     (lsp--make-notification "textDocument/didOpen" params))))
+  (let ((params (make-hash-table :test 'equal))
+	(cur-dir (expand-file-name default-directory))
+	(key))
+    (when (catch 'break
+	      (dolist (key (hash-table-keys workspaces)
+			   (when (string-prefix-p key cur-dir)
+			     (setq cur-workspace (gethash key workspaces))
+			     (throw 'break key)))))
+      (puthash "textDocument" (lsp--make-text-document-item) params)
+      (lsp--send-notification
+       (lsp--make-notification "textDocument/didOpen" params)))))
 
 (defun lsp--text-document-identifier ()
   "Make TextDocumentIdentifier.
@@ -99,7 +117,7 @@ interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
     version: number;
 }"
   (let ((params (lsp--text-document-identifier)))
-    (puthash "version" lsp--file-version-number params)
+    (puthash "version" (workspace-file-version-number cur-workspace) params)
     params))
 
 (defun lsp--position (line char)
