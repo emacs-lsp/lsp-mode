@@ -30,12 +30,6 @@
       (puthash "params" params body))
     body))
 
-(defun lsp--json-read-from-string (str)
-  "Like json-read-from-string(STR), but arrays are lists, and objects are hash tables."
-  (let ((json-array-type 'list)
-	(json-object-type 'hash-table))
-    (json-read-from-string str)))
-
 (defun lsp--make-message (params)
   "Create a LSP message from PARAMS."
   (let ((json-str (json-encode params)))
@@ -72,6 +66,14 @@ interface TextDocumentItem {
     (puthash "version" (incf lsp--file-version-number) params)
     (puthash "text" (buffer-substring-no-properties (point-min) (point-max)) params)
     params))
+
+(defun lsp--initialize (path)
+  (let ((params (make-hash-table :test 'equal))
+	(response))
+    (puthash "processId" (emacs-pid) params)
+    (puthash "rootPath" path params)
+    (puthash "capabilities" json-null params)
+    (lsp--send-request (lsp--make-request "initialize" params))))
 
 (defun lsp--text-document-did-open ()
   "Executed when a new file is opened, added to `find-file-hook'."
@@ -289,8 +291,26 @@ type MarkedString = string | { language: string; value: string };"
 	(gethash "value" contents)
       contents)))
 
-(defun lsp--text-document-signature-help ()
-  ""
-  )
+(defun lsp--make-document-formatting-options ()
+  (let ((params (make-hash-table :test 'equal)))
+    (puthash "tabSize" tab-width params)
+    (puthash "insertSpaces" (if indent-tabs-mode json-false t) params)
+    params))
+
+(defun lsp--make-document-formatting-params ()
+  (let ((params (make-hash-table :test 'equal)))
+    (puthash "textDocument" (lsp--text-document-identifier) params)
+    (puthash "options" (lsp--make-document-formatting-options) params)
+    params))
+
+(defun lsp--text-document-format ()
+  "Ask the server to format this document."
+  (let ((edits (lsp--send-request (lsp--make-request
+				   "textDocument/formatting"
+				   (lsp--make-document-formatting-params))))
+	(edit))
+    (dolist (edit edits)
+      (lsp--apply-text-edit edit))))
+
 (provide 'lsp-document)
 ;;; document.el ends here
