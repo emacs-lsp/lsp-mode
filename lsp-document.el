@@ -6,10 +6,11 @@
 (cl-defstruct workspace
   (language-id :read-only t)
   (last-id 0)
-  (file-version-number 0)
+  (file-versions)
   (root :ready-only t)
   (send-sync :read-only t) ;; send-sync should loop until lsp--from-server returns nil
-  (send-async :read-only t))
+  (send-async :read-only t)
+  (data :read-only t))
 
 (defvar-local cur-workspace nil)
 (defvar workspaces (make-hash-table :test 'equal))
@@ -44,7 +45,8 @@
 
 (defun lsp--send-notification (body)
   "Send BODY as a notification to the language server."
-  (funcall (workspace-send-async cur-workspace) (lsp--make-message body)))
+  (funcall (workspace-send-async cur-workspace) (lsp--make-message body)
+	   (workspace-data cur-workspace)))
 
 (defun lsp--send-request (body)
   "Send BODY as a request to the language server, get the response."
@@ -52,8 +54,18 @@
   ;; lsp-send-sync should loop until lsp--from-server returns nil
   ;; in the case of Rust Language Server, this can be done with
   ;; 'accept-process-output`.'
-  (funcall (workspace-send-sync cur-workspace) (lsp--make-message body))
+  (funcall (workspace-send-sync cur-workspace) (lsp--make-message body)
+	   (workspace-data cur-workspace))
   lsp--response-result)
+
+(defun lsp--cur-file-version (&optional inc)
+  "Return the file version number.  If INC, increment it before."
+  (let* ((file-versions (workspace-file-versions cur-workspace))
+	 (rev (gethash buffer-file-name file-versions)))
+    (when inc
+      (incf rev)
+      (puthash buffer-file-name rev file-versions))
+    rev))
 
 (defun lsp--make-text-document-item ()
   "Make TextDocumentItem for the currently opened file.
@@ -67,11 +79,11 @@ interface TextDocumentItem {
   (let ((params (make-hash-table :test 'equal)))
     (puthash "uri" buffer-file-name params)
     (puthash "languageId" (workspace-language-id cur-workspace) params)
-    (puthash "version" (incf (workspace-file-version-number cur-workspace)) params)
+    (puthash "version" (lsp--cur-file-version) params)
     (puthash "text" (buffer-substring-no-properties (point-min) (point-max)) params)
     params))
 
-(defun lsp--initialize (language-id send-sync send-async)
+(defun lsp--initialize (language-id send-sync send-async &optional data)
   (let ((params (make-hash-table :test 'equal))
 	(cur-dir (expand-file-name default-directory)))
     (if (gethash cur-dir workspaces)
@@ -80,7 +92,8 @@ interface TextDocumentItem {
 					  :last-id 0
 					  :root cur-dir
 					  :send-sync send-sync
-					  :send-async send-async)))
+					  :send-async send-async
+					  :data data)))
     (puthash "processId" (emacs-pid) params)
     (puthash "rootPath" (expand-file-name cur-dir) params)
     (puthash "capabilities" json-null params)
@@ -96,6 +109,7 @@ interface TextDocumentItem {
 			   (when (string-prefix-p key cur-dir)
 			     (setq cur-workspace (gethash key workspaces))
 			     (throw 'break key)))))
+      (puthash buffer-file-name (workspace-file-versions cur-workspace) 0)
       (puthash "textDocument" (lsp--make-text-document-item) params)
       (lsp--send-notification
        (lsp--make-notification "textDocument/didOpen" params)))))
@@ -117,7 +131,7 @@ interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
     version: number;
 }"
   (let ((params (lsp--text-document-identifier)))
-    (puthash "version" (workspace-file-version-number cur-workspace) params)
+    (puthash "version" (lsp--cur-file-version) params)
     params))
 
 (defun lsp--position (line char)
@@ -183,6 +197,7 @@ interface Range {
   "Executed when a file is changed.
 Added to `after-change-functionsafter-change-functions'"
   (let ((params (make-hash-table :test 'equal)))
+    (lsp--cur-file-version t) ;; incrememnt file version
     (puthash "textDocument" (lsp--text-document-identifier) params)
     (puthash "contentChanges" (lsp--text-document-content-change-event
 			       start end length)
@@ -193,6 +208,7 @@ Added to `after-change-functionsafter-change-functions'"
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
   (let ((params (make-hash-table :test 'equal)))
+    (remhash buffer-file-name (workspace-file-versions cur-workspace))
     (puthash "textDocument" (lsp--versioned-text-document-identifier) params)
     (lsp--send-notification
      (lsp--make-notification "textDocument/didClose" params))))
