@@ -1,38 +1,27 @@
-(defvar-local lsp--reading-body nil)
-(defvar-local lsp--json-body nil)
-(defvar-local lsp--content-length nil)
-(defvar-local lsp--content-type nil)
-
-(defun lsp--parser-reset-state ()
-  "Reset the internal state of the parser."
-  (setq lsp--reading-body nil
-	lsp--content-length nil
-	lsp--content-type nil
-	lsp--json-body nil))
+(defun lsp--json-read-from-string (str)
+  "Like json-read-from-string(STR), but arrays are lists, and objects are hash tables."
+  (let ((json-array-type 'list)
+	(json-object-type 'hash-table))
+    (json-read-from-string str)))
 
 (defun lsp--parse-message (body)
   "Read BODY.
 Returns the json string in BODY if it is complete.
 Else returns nil, and should be called again with the remaining output."
-  (let ((completed-read nil))
-    (when (and (not lsp--reading-body) (not lsp--content-length))
-      (if (string-match "Content\-Length: \\([0-9]+\\)" body)
-	  (setq lsp--content-length (string-to-number (match-string 1 body)))
-	(error "Received body without Lsp--Content-Length")))
-    (when (and (not lsp--reading-body) (not lsp--content-type))
-      (when (string-match "Content\-Type: \\(.+\\)\r" body)
-	(setq lsp--content-type (match-string 1 body)
-	      lsp--reading-body t
-	      lsp--json-body "")))
-    (if (string-match "\r\n\r\n\\(.+\\)" body)
-	(setq lsp--json-body (setq body (match-string 1 body)))
-      (if (not (setq completed-read (= (length lsp--json-body) lsp--content-length)))
-	  (setq lsp--json-body (concat lsp--json-body body))
-	;;read a complete message, reset state
-	(lsp--parser-reset-state)))
-    (if (or completed-read (= (length lsp--json-body) lsp--content-length))
-	(prog1 lsp--json-body (lsp--parser-reset-state))
-      nil)))
+  (let ((completed-read nil)
+	(json-body nil)
+	(content-length nil)
+	(content-type nil))
+    (if (string-match "Content\-Length: \\([0-9]+\\)" body)
+	(setq content-length (string-to-number (match-string 1 body)))
+      (error "Received body without Content-Length"))
+    (when (string-match "Content\-Type: \\(.+\\)\r" body)
+      (setq content-type (match-string 1 body)))
+    (when (string-match "\r\n\r\n\\(.+\\)" body)
+	(setq json-body (setq body (match-string 1 body))))
+    (when (not (= (length json-body) content-length))
+	(error "Body's length != Content-Length"))
+    (lsp--json-read-from-string json-body)))
 
 (defun lsp--get-message-type (params)
   "Get the message type from PARAMS."
@@ -68,30 +57,33 @@ Else returns nil, and should be called again with the remaining output."
 ;; 4. the wrapper around lsp--send-message-sync returns the value of lsp--response-result.
 
 (defun lsp--on-notification (notification &optional dont-queue)
-  ;;todo
+  "If response queue is empty, call the appropriate handler for NOTIFICATION.
+Else it is queued (unless DONT-QUEUE is non-nil)"
   (if (and (not dont-queue) lsp--response-result)
-      (setq lsp--queued-notifications (append lsp--queued-notifications notification))
+      (setq lsp--queued-notifications
+	    (if lsp--queued-notifications
+		(append lsp--queued-notifications notification)
+	      (list notification)))
     ;; else, call the appropriate handler
-    )
-)
+    ))
 
 (defun lsp--set-response (response)
   "Set lsp--response-result as per RESPONSE.
 Set lsp--waiting-for-message to nil."
-  (setq lsp--response-result (gethash "result" response nil))
-  ;; no longer waiting for a response.
-  (setq lsp--waiting-for-response nil))
+  (setq lsp--response-result (gethash "result" response nil)
+	;; no longer waiting for a response.
+	lsp--waiting-for-response nil))
 
-(defun lsp--from-server (message)
-  "Callback for when Emacs recives MESSAGE from client.
+(defun lsp--from-server (data)
+  "Callback for when Emacs recives DATA from client.
 If lsp--from-server returns non-nil, the client library must SYNCHRONOUSLY
 read the next message from the language server, else asynchronously."
-  (let ((parsed (lsp--parse-message message)))
+  (let ((parsed (lsp--parse-message data)))
     (when parsed
       (pcase (lsp--get-message-type parsed)
 	('response (lsp--set-response parsed))
 	('response-error (error "Received an error from the language server")) ;;TODO
-	('notification (lsp-on-notification parsed))))
+	('notification (lsp--on-notification parsed))))
     lsp--waiting-for-response))
 
 (provide 'lsp-callback)
