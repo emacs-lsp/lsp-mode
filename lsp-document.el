@@ -17,23 +17,14 @@
 
 (defun lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
-  (let ((request-body (lsp--make-notification method params)))
-    (puthash "id" (incf (workspace-last-id cur-workspace)) request-body)
-    request-body))
+  (plist-put (lsp--make-notification method params)
+	     :id (incf (workspace-last-id cur-workspace))))
 
 (defun lsp--make-notification (method &optional params)
   "Create notification body for method METHOD and parameters PARAMS."
   (unless (stringp method)
     (signal 'wrong-type-argument (list 'stringp method)))
-  (when params
-    (unless (hash-table-p params)
-      (signal 'wrong-type-argument (list 'hash-table-p params))))
-  (let ((body (make-hash-table :test 'equal)))
-    (puthash "jsonrpc" "2.0" body)
-    (puthash "method" method body)
-    (when params
-      (puthash "params" params body))
-    body))
+  `(:jsonrpc "2.0" :method ,method :params ,params))
 
 (defun lsp--make-message (params)
   "Create a LSP message from PARAMS."
@@ -76,43 +67,42 @@ interface TextDocumentItem {
     version: number;
     text: string;
 }"
-  (let ((params (make-hash-table :test 'equal)))
-    (puthash "uri" buffer-file-name params)
-    (puthash "languageId" (workspace-language-id cur-workspace) params)
-    (puthash "version" (lsp--cur-file-version) params)
-    (puthash "text" (buffer-substring-no-properties (point-min) (point-max)) params)
-    params))
+  (list :uri buffer-file-name
+	:languageId (workspace-language-id cur-workspace)
+	:version (lsp--cur-file-version)
+	:text (buffer-substring-no-properties (point-min) (point-max))))
 
 (defun lsp--initialize (language-id send-sync send-async &optional data)
-  (let ((params (make-hash-table :test 'equal))
-	(cur-dir (expand-file-name default-directory)))
+  (let ((cur-dir (expand-file-name default-directory)))
     (if (gethash cur-dir workspaces)
 	(error "This workspace has already been initialized")
       (setq cur-workspace (make-workspace :language-id language-id
+					  :file-versions (make-hash-table :test 'equal)
 					  :last-id 0
 					  :root cur-dir
 					  :send-sync send-sync
 					  :send-async send-async
-					  :data data)))
-    (puthash "processId" (emacs-pid) params)
-    (puthash "rootPath" (expand-file-name cur-dir) params)
-    (puthash "capabilities" json-null params)
-    (lsp--send-request (lsp--make-request "initialize" params))))
+					  :data data))
+      (puthash cur-dir cur-workspace workspaces))
+    (lsp--send-request
+     (lsp--make-request
+      "initialize"
+      `(:processId ,(emacs-pid) :rootPath ,(expand-file-name cur-dir)
+		   :capabilities ,nil)))))
 
 (defun lsp--text-document-did-open ()
   "Executed when a new file is opened, added to `find-file-hook'."
-  (let ((params (make-hash-table :test 'equal))
-	(cur-dir (expand-file-name default-directory))
+  (let ((cur-dir (expand-file-name default-directory))
 	(key))
     (when (catch 'break
-	      (dolist (key (hash-table-keys workspaces)
-			   (when (string-prefix-p key cur-dir)
-			     (setq cur-workspace (gethash key workspaces))
-			     (throw 'break key)))))
-      (puthash buffer-file-name (workspace-file-versions cur-workspace) 0)
-      (puthash "textDocument" (lsp--make-text-document-item) params)
+	    (dolist (key (hash-table-keys workspaces))
+	      (when (string-prefix-p key cur-dir)
+		(setq cur-workspace (gethash key workspaces))
+		(throw 'break key))))
+      (puthash buffer-file-name 0 (workspace-file-versions cur-workspace))
       (lsp--send-notification
-       (lsp--make-notification "textDocument/didOpen" params)))))
+       (lsp--make-notification
+	"textDocument/didOpen" `(:textDocument ,(lsp--make-text-document-item)))))))
 
 (defun lsp--text-document-identifier ()
   "Make TextDocumentIdentifier.
@@ -120,9 +110,7 @@ interface TextDocumentItem {
 interface TextDocumentIdentifier {
     uri: string;
 }"
-  (let ((params (make-hash-table :test 'equal)))
-    (puthash "uri" buffer-file-name params)
-    params))
+  `(:uri ,buffer-file-name))
 
 (defun lsp--versioned-text-document-identifier ()
   "Make VersionedTextDocumentIdentifier.
@@ -130,9 +118,7 @@ interface TextDocumentIdentifier {
 interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
     version: number;
 }"
-  (let ((params (lsp--text-document-identifier)))
-    (puthash "version" (lsp--cur-file-version) params)
-    params))
+  (plist-put (lsp--text-document-identifier) :version (lsp--cur-file-version)))
 
 (defun lsp--position (line char)
   "Make a Position object for the given LINE and CHAR.
@@ -140,10 +126,7 @@ interface Position {
     line: number;
     character: number;
 }"
-  (let ((params (make-hash-table :test 'equal)))
-    (puthash "line" line params)
-    (puthash "character" char params)
-    params))
+  `(:line ,line :character ,char))
 
 (defsubst lsp--current-char-offset ()
   (- (point) (save-excursion (beginning-of-line) (point))))
@@ -167,10 +150,7 @@ interface Range {
      start: Position;
      end: Position;
  }"
-  (let ((params (make-hash-table :test 'equal)))
-    (puthash "start" start params)
-    (puthash "end" end params)
-    params))
+  (list :start start :end end))
 
 (defun lsp--apply-text-edit (text-edit)
   "Apply the edits described in the TextEdit object in TEXT-EDIT."
@@ -184,50 +164,39 @@ interface Range {
 
 (defun lsp--text-document-content-change-event (start end length)
   "Make a TextDocumentContentChangeEvent body for START to END, of length LENGTH."
-  (let ((params (make-hash-table :test 'equal)))
-    ;; The range of the document that changed.
-    (puthash "range" (lsp--range start end) params)
-    ;; The length of the range that got replaced.
-    (puthash "rangeLength" length params)
-    ;; The new text of the document.
-    (puthash "text" (buffer-substring-no-properties (point-min) (point-max)) params)
-    params))
+  `(:range ,(lsp--range start end) :rangeLength ,length
+	   :text ,(buffer-substring-no-properties (point-min) (point-max))))
 
 (defun lsp--text-document-did-change (start end length)
   "Executed when a file is changed.
 Added to `after-change-functionsafter-change-functions'"
-  (let ((params (make-hash-table :test 'equal)))
-    (lsp--cur-file-version t) ;; incrememnt file version
-    (puthash "textDocument" (lsp--text-document-identifier) params)
-    (puthash "contentChanges" (lsp--text-document-content-change-event
-			       start end length)
-	     params)
-    (lsp--send-notification
-     (lsp--make-notification "textDocument/didChange" params))))
+  (lsp--cur-file-version t)
+  (lsp--send-notification
+   (lsp--make-notification
+    "textDocument/didChange"
+    `(:textDocument ,(lsp--text-document-identifier) :contentChanges
+		    (,(lsp--text-document-content-change-event start end length))))))
 
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
-  (let ((params (make-hash-table :test 'equal)))
-    (remhash buffer-file-name (workspace-file-versions cur-workspace))
-    (puthash "textDocument" (lsp--versioned-text-document-identifier) params)
-    (lsp--send-notification
-     (lsp--make-notification "textDocument/didClose" params))))
+  (remhash buffer-file-name (workspace-file-versions cur-workspace))
+  (lsp--send-notification
+   (lsp--make-notification
+    "textDocument/didClose"
+    `(:textDocument ,(lsp--versioned-text-document-identifier)))))
 
 (defun lsp--text-document-did-save ()
   "Executed when the file is closed, added to `after-save-hook''."
-  (let ((params (make-hash-table :test 'equal)))
-    (puthash "textDocument" (lsp--versioned-text-document-identifier) params)
-    (lsp--send-notification
-     (lsp--make-notification "textDocument/didSave" params))))
+  (lsp--send-notification
+   (lsp--make-notification
+    "textDocument/didSave"
+    `(:textDocument ,(lsp--versioned-text-document-identifier)))))
 
 (defun lsp--text-document-position-params ()
   "Make TextDocumentPositionParams for the current point in the current document."
-  (let ((params (make-hash-table :test 'equal)))
-    (puthash "textDocument" (lsp--text-document-identifier) params)
-    (puthash "position" (lsp--position (line-number-at-pos)
-				       (lsp--current-char-offset))
-	     params)
-    params))
+  `(:textDocument ,(lsp--text-document-identifier)
+		  :position ,(lsp--position (line-number-at-pos)
+					    (lsp--current-char-offset))))
 
 (defun lsp--make-completion-item (item)
   (list
@@ -293,12 +262,9 @@ Returns xref-item(s)."
 
 (defun lsp--make-reference-params ()
   "Make a ReferenceParam object."
-  (let ((params (lsp--text-document-position-params))
-	(reference-context (make-hash-table :test 'equal))
-	(json-false :json-false))
-    (puthash "includeDeclaration" json-false reference-context)
-    (puthash "context" reference-context params)
-    params))
+  (let ((json-false :json-false))
+    (plist-put (lsp--text-document-position-params)
+	       :context `(:includeDeclaration ,json-false))))
 
 (defun lsp--get-references ()
   "Get all references for the symbol under point.
@@ -326,16 +292,13 @@ type MarkedString = string | { language: string; value: string };"
       contents)))
 
 (defun lsp--make-document-formatting-options ()
-  (let ((params (make-hash-table :test 'equal)))
-    (puthash "tabSize" tab-width params)
-    (puthash "insertSpaces" (if indent-tabs-mode json-false t) params)
-    params))
+  (let ((json-false :json-false))
+    `(:tabSize ,tab-width :insertSpaces
+	       ,(if indent-tabs-mode json-false t))))
 
 (defun lsp--make-document-formatting-params ()
-  (let ((params (make-hash-table :test 'equal)))
-    (puthash "textDocument" (lsp--text-document-identifier) params)
-    (puthash "options" (lsp--make-document-formatting-options) params)
-    params))
+  `(:textDocument ,(lsp--text-document-identifier)
+		  :options ,(lsp--make-document-formatting-options)))
 
 (defun lsp--text-document-format ()
   "Ask the server to format this document."
