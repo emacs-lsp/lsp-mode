@@ -106,13 +106,13 @@ read the next message from the language server, else asynchronously."
 (defconst lsp--r-content-length-body-next (concat "\\("
 					   lsp--r-content-length
 					   "\r\n{.*}\\)\\(.+\\)$")
-  "Matches content length, header end, body, and parts from the next body.
+  "Matches content length, header end, body, and parts from the next message.
 \(3 \r\n's\)")
 (defconst lsp--r-content-length-type-body-next (concat "\\("
 						lsp--r-content-length
 						lsp--r-content-type
 						"\r\n{.*}\\)\\(.+$\\)$")
-  "Matches content length, type, header end, body and parts from next body.")
+  "Matches content length, type, header end, body and parts from next message.")
 
 ;; FIXME: This is highly inefficient. The same output is being matched *twice*
 ;; (once here, and in lsp--parse-message the second time.)
