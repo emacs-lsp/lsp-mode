@@ -2,5 +2,7 @@
   "Library for implementing Language Server Protocol clients."
   '((cl-lib "0.5")
     (json "1.3")
-    (emacs "25.1"))
+    (emacs "25.1")
+    (ht "20161015.1945")
+    (s "20160928.636"))
   :url "https://github.com/vibhavp/emacs-lsp")
