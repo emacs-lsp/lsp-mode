@@ -114,8 +114,8 @@ read the next message from the language server, else asynchronously."
 						"\r\n{.*}\\)\\(.+$\\)$")
   "Matches content length, type, header end, body and content-length from next body.")
 
-;; : This is highyl inefficient. The same output is being matched *twice*
-;; (once here, and in lsp--parse-message) the second time.
+;; : This is highly inefficient. The same output is being matched *twice*
+;; (once here, and in lsp--parse-message the second time.)
 (defun lsp--process-filter (proc output)
   "Process filter for language servers that use stdout/stdin as transport.
 PROC is the process.
