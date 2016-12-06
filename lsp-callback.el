@@ -127,7 +127,6 @@ OUTPUT is the output received from the process"
     (ht-set lsp--process-pending-output proc (setq output (concat pending output)))
     (case (s-count-matches "\r\n" output)
       ;; will never be zero
-      (1 nil)
       (2 (setq complete t
 	       rem-pending t)
 	 (string-match lsp--r-content-length-body output))
