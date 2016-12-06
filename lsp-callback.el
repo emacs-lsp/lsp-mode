@@ -112,7 +112,7 @@ read the next message from the language server, else asynchronously."
 						lsp--r-content-length
 						lsp--r-content-type
 						"\r\n{.*}\\)\\(.+$\\)$")
-  "Matches content length, type, header end, body and content-length from next body.")
+  "Matches content length, type, header end, body and parts from next body.")
 
 ;; : This is highly inefficient. The same output is being matched *twice*
 ;; (once here, and in lsp--parse-message the second time.)
