@@ -1,3 +1,7 @@
+(require 'json)
+(require 's)
+(require 'ht)
+
 (defun lsp--json-read-from-string (str)
   "Like json-read-from-string(STR), but arrays are lists, and objects are hash tables."
   (let ((json-array-type 'list)
@@ -41,11 +45,10 @@ Else returns nil, and should be called again with the remaining output."
 
 (defsubst lsp--flush-notifications ()
   "Flush any notifications that were queued while processing the last response."
-  (unless lsp--response-result
-    (let ((el))
-      (dolist (el lsp--queued-notifications)
-	(lsp--on-notification el t))
-      (setq lsp--queued-notifications nil))))
+  (let ((el))
+    (dolist (el lsp--queued-notifications)
+      (lsp--on-notification el t))
+    (setq lsp--queued-notifications nil)))
 
 
 ;; How requests might work:
@@ -72,7 +75,8 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 Set lsp--waiting-for-message to nil."
   (setq lsp--response-result (gethash "result" response nil)
 	;; no longer waiting for a response.
-	lsp--waiting-for-response nil))
+	lsp--waiting-for-response nil)
+  (lsp--flush-notifications))
 
 (defun lsp--from-server (data)
   "Callback for when Emacs recives DATA from client.
@@ -85,6 +89,71 @@ read the next message from the language server, else asynchronously."
 	('response-error (error "Received an error from the language server")) ;;TODO
 	('notification (lsp--on-notification parsed))))
     lsp--waiting-for-response))
+
+(defvar lsp--process-pending-output (make-hash-table :test 'equal))
+(defconst lsp--r-content-length "^Content-Length: .+\r\n"
+  "Matches content-length ONLY.")
+(defconst lsp--r-content-type "Content-Type: .+\r\n"
+  "Matches content-type, DON'T use this as is.")
+
+(defconst lsp--r-content-length-body (concat lsp--r-content-length "\r\n{.*}$")
+  "Matches content-length, header end and json body (2 \r\n's).")
+
+(defconst lsp--r-content-length-type-body (concat
+					   lsp--r-content-length lsp--r-content-type
+					   "\r\n{.*}$")
+  "Matches content length, type, header end, and body (3 \r\n's).")
+(defconst lsp--r-content-length-body-next (concat "\\("
+					   lsp--r-content-length
+					   "\r\n{.*}\\)\\(.+\\)$")
+  "Matches content length, header end, body, and parts from the next body.
+\(3 \r\n's\)")
+(defconst lsp--r-content-length-type-body-next (concat "\\("
+						lsp--r-content-length
+						lsp--r-content-type
+						"\r\n{.*}\\)\\(.+$\\)$")
+  "Matches content length, type, header end, body and content-length from next body.")
+
+;; : This is highyl inefficient. The same output is being matched *twice*
+;; (once here, and in lsp--parse-message) the second time.
+(defun lsp--process-filter (proc output)
+  "Process filter for language servers that use stdout/stdin as transport.
+PROC is the process.
+OUTPUT is the output received from the process"
+  (let ((pending (ht-get lsp--process-pending-output proc nil))
+	(complete)
+	(rem-pending)
+	(next))
+    (ht-set lsp--process-pending-output proc (setq output (concat pending output)))
+    (case (s-count-matches "\r\n" output)
+      ;; will never be zero
+      (1 nil)
+      (2 (setq complete t
+	       rem-pending t)
+	 (string-match lsp--r-content-length-body output))
+      (3 (if (string-match lsp--r-content-length-type-body output)
+	     (setq complete t
+		   rem-pending t)
+	   (when (string-match lsp--r-content-length-body-next output)
+	     (ht-set lsp--process-pending-output proc (match-string 2 output))
+	     (setq output (match-string 1 output)
+		   complete t
+		   next t))))
+      ;; > 4
+      (t (when (string-match lsp--r-content-length-type-body-next output)
+	   (ht-set lsp--process-pending-output proc (match-string 2 output))
+	   (setq output (match-string 1 output))
+	   (setq complete t
+		 next t))))
+    (when rem-pending
+      (ht-remove lsp--process-pending-output proc))
+    (while (and complete (lsp-from-server output))
+      (accept-process-output proc))
+    (when next
+      ;; stuff from the next response/notification was in this outupt.
+      ;; try parsing it to see if it was a complete message.
+      ;; unlikely, but might be possible
+      (lsp--process-filter proc ""))))
 
 (provide 'lsp-callback)
 ;;; lsp-callback.el ends here
