@@ -17,7 +17,7 @@ Else returns nil, and should be called again with the remaining output."
 	(json-body nil)
 	(content-length nil)
 	(content-type nil))
-    (if (string-match "Content\-Length: \\([0-9]+\\)" body)
+    (if (string-match "^Content\-Length: \\([0-9]+\\)" body)
 	(setq content-length (string-to-number (match-string 1 body)))
       (error "Received body without Content-Length"))
     (when (string-match "Content\-Type: \\(.+\\)\r" body)
@@ -102,8 +102,8 @@ read the next message from the language server, else asynchronously."
     (when parsed
       (pcase (lsp--get-message-type parsed)
 	('response (lsp--set-response parsed))
-	('response-error (user-error (lsp--error-string
-				      (gethash "error" parsed)))) ;;TODO
+	('response-error (error (lsp--error-string
+				 (gethash "error" parsed)))) ;;TODO
 	('notification (lsp--on-notification parsed))))
     lsp--waiting-for-response))
 
@@ -134,7 +134,7 @@ read the next message from the language server, else asynchronously."
 ;; FIXME: This is highly inefficient. The same output is being matched *twice*
 ;; (once here, and in lsp--parse-message the second time.)
 (defun lsp--process-filter (proc output)
-  "Process filter for language servers that use stdout/stdin as transport.
+  "Process filter for language servers.
 PROC is the process.
 OUTPUT is the output received from the process"
   (let ((pending (ht-get lsp--process-pending-output proc nil))
@@ -171,5 +171,5 @@ OUTPUT is the output received from the process"
       ;; unlikely, but might be possible
       (lsp--process-filter proc ""))))
 
-(provide 'lsp-callback)
+(provide 'lsp-receive)
 ;;; lsp-callback.el ends here
