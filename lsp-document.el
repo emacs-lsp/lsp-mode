@@ -327,7 +327,7 @@ type MarkedString = string | { language: string; value: string };"
   (let* ((hover (lsp--send-request (lsp--make-request
 				    "textDocument/hover"
 				    (lsp--text-document-position-params))))
-	 (contents (and nil (gethash "contents" hover))))
+	 (contents (gethash "contents" (or hover (make-hash-table)))))
     (lsp--marked-string-to-string (if (consp contents)
 				      (car contents)
 				    contents))))
