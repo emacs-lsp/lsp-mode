@@ -115,20 +115,19 @@ read the next message from the language server, else asynchronously."
 
 (defconst lsp--r-content-length-body (concat lsp--r-content-length "\r\n{.*}$")
   "Matches content-length, header end and json body (2 \r\n's).")
-
 (defconst lsp--r-content-length-type-body (concat
 					   lsp--r-content-length lsp--r-content-type
 					   "\r\n{.*}$")
   "Matches content length, type, header end, and body (3 \r\n's).")
 (defconst lsp--r-content-length-body-next (concat "\\("
 					   lsp--r-content-length
-					   "\r\n{.*}\\)\\(.+\\)$")
+					   "\r\n{.*}\\)\\(Content.+\\)")
   "Matches content length, header end, body, and parts from the next message.
 \(3 \r\n's\)")
 (defconst lsp--r-content-length-type-body-next (concat "\\("
 						lsp--r-content-length
-						lsp--r-content-type
-						"\r\n{.*}\\)\\(.+\\)$")
+						"\\(?:" lsp--r-content-type "\\)*"
+						"\r\n{.*}\\)\\(Content.+\\)")
   "Matches content length, type, header end, body and parts from next message.")
 
 ;; FIXME: This is highly inefficient. The same output is being matched *twice*
@@ -137,6 +136,7 @@ read the next message from the language server, else asynchronously."
   "Process filter for language servers.
 PROC is the process.
 OUTPUT is the output received from the process"
+  ;; (message (format "[%s]" output))
   (let ((pending (ht-get lsp--process-pending-output proc nil))
 	(complete)
 	(rem-pending)
@@ -144,20 +144,24 @@ OUTPUT is the output received from the process"
     (ht-set lsp--process-pending-output proc (setq output (concat pending output)))
     (case (s-count-matches "\r\n" output)
       ;; will never be zero
-      (2 (setq complete t
-	       rem-pending t)
-	 (string-match lsp--r-content-length-body output))
+      (2 (when (string-match lsp--r-content-length-body output)
+	   (setq complete t
+	       rem-pending t)))
       (3 (if (string-match lsp--r-content-length-type-body output)
 	     (setq complete t
 		   rem-pending t)
 	   (when (string-match lsp--r-content-length-body-next output)
-	     (ht-set lsp--process-pending-output proc (match-string 2 output))
+	     (ht-set lsp--process-pending-output proc (substring output
+								 (match-beginning 2)
+								 (length output)))
 	     (setq output (match-string 1 output)
 		   complete t
 		   next t))))
-      ;; > 4
+      ;; >= 4
       (t (when (string-match lsp--r-content-length-type-body-next output)
-	   (ht-set lsp--process-pending-output proc (match-string 2 output))
+	   (ht-set lsp--process-pending-output proc (substring output
+							       (match-beginning 2)
+							       (length output)))
 	   (setq output (match-string 1 output))
 	   (setq complete t
 		 next t))))
@@ -168,8 +172,9 @@ OUTPUT is the output received from the process"
     (when next
       ;; stuff from the next response/notification was in this outupt.
       ;; try parsing it to see if it was a complete message.
-      ;; unlikely, but might be possible
-      (lsp--process-filter proc ""))))
+      (lsp--process-filter proc ""))
+    ;; (message (format "complete %s rem-pending %s next %s" complete rem-pending next))
+    ))
 
 (provide 'lsp-receive)
 ;;; lsp-callback.el ends here
