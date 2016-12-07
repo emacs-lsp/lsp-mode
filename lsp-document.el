@@ -188,7 +188,7 @@ interface Range {
 	 (end-point (lsp--position-to-point (gethash "end" range))))
     (save-excursion
       (goto-char start-point)
-      (delete-region start-point end-point)
+      (delete-region start-point (1+ end-point))
       (insert (gethash "newText" text-edit)))))
 
 (defun lsp--text-document-content-change-event (start end length)
