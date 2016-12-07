@@ -47,7 +47,7 @@ Else returns nil, and should be called again with the remaining output."
 (defsubst lsp--flush-notifications ()
   "Flush any notifications that were queued while processing the last response."
   (let ((el))
-    (dolist (el lsp--queued-notifications)
+    (dolist (el (reverse lsp--queued-notifications))
       (lsp--on-notification el t))
     (setq lsp--queued-notifications nil)))
 
@@ -63,10 +63,7 @@ Else returns nil, and should be called again with the remaining output."
   "If response queue is empty, call the appropriate handler for NOTIFICATION.
 Else it is queued (unless DONT-QUEUE is non-nil)"
   (if (and (not dont-queue) lsp--response-result)
-      (setq lsp--queued-notifications
-	    (if lsp--queued-notifications
-		(append lsp--queued-notifications notification)
-	      (list notification)))
+      (push lsp--queued-notifications notification)
     ;; else, call the appropriate handler
     ))
 
@@ -169,7 +166,8 @@ OUTPUT is the output received from the process"
     (when rem-pending
       (ht-remove lsp--process-pending-output proc))
     (while (and complete (lsp--from-server output))
-      (accept-process-output proc))
+      (with-local-quit
+	(accept-process-output proc)))
     (when next
       ;; stuff from the next response/notification was in this outupt.
       ;; try parsing it to see if it was a complete message.
