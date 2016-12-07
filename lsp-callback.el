@@ -5,7 +5,8 @@
 (defun lsp--json-read-from-string (str)
   "Like json-read-from-string(STR), but arrays are lists, and objects are hash tables."
   (let ((json-array-type 'list)
-	(json-object-type 'hash-table))
+	(json-object-type 'hash-table)
+	(json-false nil))
     (json-read-from-string str)))
 
 (defun lsp--parse-message (body)
@@ -50,7 +51,6 @@ Else returns nil, and should be called again with the remaining output."
       (lsp--on-notification el t))
     (setq lsp--queued-notifications nil)))
 
-
 ;; How requests might work:
 ;; 1 call wrapper around lsp--send-message-sync.
 ;; 2. the implemented lsp--send-message-sync waits for next message,
@@ -78,6 +78,22 @@ Set lsp--waiting-for-message to nil."
 	lsp--waiting-for-response nil)
   (lsp--flush-notifications))
 
+(defconst lsp--errors
+  '((-32700 "Parse Error")
+    (-32600 "Invalid Request")
+    (-32601 "Method not Found")
+    (-32602 "Invalid Parameters")
+    (-32603 "Internal Error")
+    (-32099 "Server Start Error")
+    (-32000 "Server End Error")))
+
+(defun lsp--error-string (err)
+  "Format ERR as a user friendly string."
+  (let ((code (gethash "code" err))
+	(message (gethash "message" err)))
+    (format "Error from the Language Server: (%s) %s"
+	    (car (alist-get code lsp--errors)) message)))
+
 (defun lsp--from-server (data)
   "Callback for when Emacs recives DATA from client.
 If lsp--from-server returns non-nil, the client library must SYNCHRONOUSLY
@@ -86,7 +102,8 @@ read the next message from the language server, else asynchronously."
     (when parsed
       (pcase (lsp--get-message-type parsed)
 	('response (lsp--set-response parsed))
-	('response-error (error "Received an error from the language server")) ;;TODO
+	('response-error (user-error (lsp--error-string
+				      (gethash "error" parsed)))) ;;TODO
 	('notification (lsp--on-notification parsed))))
     lsp--waiting-for-response))
 
@@ -146,7 +163,7 @@ OUTPUT is the output received from the process"
 		 next t))))
     (when rem-pending
       (ht-remove lsp--process-pending-output proc))
-    (while (and complete (lsp-from-server output))
+    (while (and complete (lsp--from-server output))
       (accept-process-output proc))
     (when next
       ;; stuff from the next response/notification was in this outupt.
