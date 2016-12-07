@@ -73,7 +73,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 (defun lsp--set-response (response)
   "Set lsp--response-result as per RESPONSE.
 Set lsp--waiting-for-message to nil."
-  (setq lsp--response-result (gethash "result" response nil)
+  (setq lsp--response-result (and response (gethash "result" response nil))
 	;; no longer waiting for a response.
 	lsp--waiting-for-response nil)
   (lsp--flush-notifications))
@@ -100,9 +100,10 @@ If lsp--from-server returns non-nil, the client library must SYNCHRONOUSLY
 read the next message from the language server, else asynchronously."
   (let ((parsed (lsp--parse-message data)))
     (when parsed
-      (pcase (lsp--get-message-type parsed)
+      (case (lsp--get-message-type parsed)
 	('response (lsp--set-response parsed))
-	('response-error (error (lsp--error-string
+	('response-error (lsp--set-response nil)
+			 (error (lsp--error-string
 				 (gethash "error" parsed)))) ;;TODO
 	('notification (lsp--on-notification parsed))))
     lsp--waiting-for-response))
