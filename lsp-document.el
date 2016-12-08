@@ -29,8 +29,7 @@
   "Create a LSP message from PARAMS."
   (let ((json-str (json-encode params)))
     (format
-     "Content-Length: %d\r
-%s"
+     "Content-Length: %d\r\n\r\n%s"
      (length json-str) json-str)))
 
 (defun lsp--send-notification (body)
@@ -205,9 +204,9 @@ Added to `after-change-functions'"
      (lsp--make-notification
       "textDocument/didChange"
       `(:textDocument
-	,(lsp--text-document-identifier)
+	,(lsp--versioned-text-document-identifier)
 	:contentChanges
-	(,(lsp--text-document-content-change-event start end length)))))))
+	[,(lsp--text-document-content-change-event start end length)])))))
 
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
