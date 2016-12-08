@@ -2,6 +2,9 @@
 (require 's)
 (require 'ht)
 
+(defconst lsp-debug nil
+  "When non-nil, print all non LSP messages from servers to a buffer.")
+
 (defun lsp--json-read-from-string (str)
   "Like json-read-from-string(STR), but arrays are lists, and objects are hash tables."
   (let ((json-array-type 'list)
@@ -106,6 +109,7 @@ read the next message from the language server, else asynchronously."
     lsp--waiting-for-response))
 
 (defvar lsp--process-pending-output (make-hash-table :test 'equal))
+(defvar lsp--process-pending-output nil)
 (defconst lsp--r-content-length "^Content-Length: .+\r\n"
   "Matches content-length ONLY.")
 (defconst lsp--r-content-type "Content-Type: .+\r\n"
@@ -173,7 +177,11 @@ OUTPUT is the output received from the process"
       ;; try parsing it to see if it was a complete message.
       (lsp--process-filter proc ""))
     ;; (message (format "complete %s rem-pending %s next %s" complete rem-pending next))
-    ))
+    (when (and (not (or rem-pending complete next)) lsp-debug)
+      (with-current-buffer (get-buffer-create (format "%s output"
+						      (process-name proc)))
+	(insert output)
+	(goto-char (point-max))))))
 
 (provide 'lsp-receive)
 ;;; lsp-callback.el ends here
