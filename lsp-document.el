@@ -166,6 +166,10 @@ interface Position {
       (forward-line (1- (gethash "line" params)))
       (+ (point) (gethash "character" params))))
 
+(defun lsp--position-p (p)
+  (and (numberp (plist-get p :line))
+       (numberp (plist-get p :character))))
+
 (defun lsp--range (start end)
   "Make Range body from START and END.
 
@@ -173,6 +177,12 @@ interface Range {
      start: Position;
      end: Position;
  }"
+  ;; make sure start and end are Position objects
+  (unless (lsp--position-p start)
+    (signal 'wrong-type-argument `(lsp--position-p ,start)))
+  (unless (lsp--position-p end)
+    (signal 'wrong-type-argument `(lsp--position-p ,end)))
+
   `(:start ,start :end ,end))
 
 (defsubst lsp--cur-region-to-range ()
@@ -192,7 +202,9 @@ interface Range {
 
 (defun lsp--text-document-content-change-event (start end length)
   "Make a TextDocumentContentChangeEvent body for START to END, of length LENGTH."
-  `(:range ,(lsp--range start end) :rangeLength ,length
+  `(:range ,(lsp--range (lsp--point-to-position start)
+			(lsp--point-to-position end))
+	   :rangeLength ,length
 	   :text ,(buffer-substring-no-properties (point-min) (point-max))))
 
 (defun lsp--text-document-did-change (start end length)
@@ -355,7 +367,7 @@ interface DocumentRangeFormattingParams {
     textDocument: TextDocumentIdentifier;
     range: Range;
     options: FormattingOptions;
-}" 
+}"
   (plist-put (lsp--make-document-formatting-params)
 	     :range (lsp--cur-region-to-range)))
 
