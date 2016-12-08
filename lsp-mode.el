@@ -31,8 +31,8 @@
   (lambda ()
     (make-process
      :name name
-     :connection-type 'pty
-     :command (list command)
+     :connection-type 'pipe
+     :command (if (consp command) command (list command))
      :filter #'lsp--process-filter)))
 
 (defun lsp--rust-get-root ()
@@ -53,7 +53,10 @@
   (add-hook 'find-file-hook #'lsp-on-open)
   (add-hook 'after-save-hook #'lsp-on-save)
   (add-hook 'after-change-functions #'lsp-on-change)
-  (lsp-define-client 'rust-mode 'stdout "rust" :command "rls" :name "rls"
-		     :get-root #'lsp--rust-get-root))
+  (lsp-define-client 'rust-mode 'stdout "rust" :command "rls" :name "Rust Language Server"
+		     :get-root #'lsp--rust-get-root)
+  (lsp-define-client 'go-mode 'stdout "go" :command '("langserver-go" "-mode=stdio")
+		     :name "Go Language Server"
+		     :get-root #'projectile-project-root))
 
 (provide 'lsp-mode)
