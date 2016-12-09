@@ -1,6 +1,7 @@
 (require 'cl-lib)
 (require 'json)
 (require 'xref)
+(require 'subr-x)
 (require 'lsp-receive)
 
 (cl-defstruct workspace
@@ -400,7 +401,7 @@ interface DocumentRangeFormattingParams {
 (cl-defmethod xref-backend-references ((_backend (eql lsp)) identifier)
   (let* ((properties (text-properties-at 0 identifier))
 	 (params (plist-get properties 'ref-params))
-	 (ref (lsp--send-request (lsp-make-request
+	 (ref (lsp--send-request (lsp--make-request
 				  "textDocument/references"
 				  params))))
     (if (consp ref)
