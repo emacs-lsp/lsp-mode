@@ -12,12 +12,12 @@ the protocol does not mention a transport.
 ## Installation
 
 Clone this repository to a suitable path, and add
-```
+```emacs-lisp
 (add-to-list 'load-path "<path to emacs-lsp>")
 (require 'lsp-mode)
 (global-lsp-mode t)
 ```
-
+to your .emacs.
 ## Clients
 
 The library currently defines clients for [Rust Language Server](https://github.com/jonathandturner/rls) and [Sourcegraph's Go Language Server](https://github.com/sourcegraph/go-langserver). You can define clients for language servers which communicate on stdio, check `lsp-mode.el` for examples.
