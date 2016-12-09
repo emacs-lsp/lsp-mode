@@ -1,6 +1,8 @@
 (require 'json)
 (require 's)
 (require 'ht)
+(require 'cl-lib)
+(require 'lsp-common)
 
 (defconst lsp-debug nil
   "When non-nil, print all non LSP messages from servers to a buffer.")
@@ -91,8 +93,10 @@ Set lsp--waiting-for-message to nil."
   "Format ERR as a user friendly string."
   (let ((code (gethash "code" err))
 	(message (gethash "message" err)))
-    (format "Error from the Language Server: (%s) %s"
-	    (car (alist-get code lsp--errors)) message)))
+    (lsp--propertize (format "Error from the Language Server: (%s) %s"
+			     (car (alist-get code lsp--errors)) message)
+		1 ;;error
+		)))
 
 (defun lsp--from-server (data)
   "Callback for when Emacs recives DATA from client.
@@ -100,11 +104,11 @@ If lsp--from-server returns non-nil, the client library must SYNCHRONOUSLY
 read the next message from the language server, else asynchronously."
   (let ((parsed (lsp--parse-message data)))
     (when parsed
-      (case (lsp--get-message-type parsed)
+      (cl-case (lsp--get-message-type parsed)
 	('response (lsp--set-response parsed))
 	('response-error (lsp--set-response nil)
-			 (error (lsp--error-string
-				 (gethash "error" parsed)))) ;;TODO
+			 (message (lsp--error-string
+				   (gethash "error" parsed)))) ;;TODO
 	('notification (lsp--on-notification parsed))))
     lsp--waiting-for-response))
 
@@ -144,7 +148,7 @@ OUTPUT is the output received from the process"
 	(rem-pending)
 	(next))
     (ht-set lsp--process-pending-output proc (setq output (concat pending output)))
-    (case (s-count-matches "\r\n" output)
+    (cl-case (s-count-matches "\r\n" output)
       ;; will never be zero
       (2 (when (string-match lsp--r-content-length-body output)
 	   (setq complete t
