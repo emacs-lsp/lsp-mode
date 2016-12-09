@@ -10,6 +10,7 @@
   (language-id :read-only t)
   (last-id 0)
   (file-versions)
+  (server-capabilities)
   (root :ready-only t)
   (client :read-only t)
   (data :read-only t))
@@ -77,9 +78,10 @@ interface TextDocumentItem {
 
 (defun lsp--initialize (language-id client &optional data)
   (let ((root)
-	(cur-dir (expand-file-name default-directory)))
+	(cur-dir (expand-file-name default-directory))
+	(response))
     (if (gethash cur-dir lsp--workspaces)
-	(error "This workspace has already been initialized")
+	(user-error "This workspace has already been initialized")
       (setq lsp--cur-workspace (make-workspace
 				:language-id language-id
 				:file-versions (make-hash-table :test 'equal)
@@ -89,11 +91,13 @@ interface TextDocumentItem {
 				:client client
 				:data data))
       (puthash cur-dir lsp--cur-workspace lsp--workspaces))
-    (lsp--send-request
-     (lsp--make-request
-      "initialize"
-      `(:processId ,(emacs-pid) :rootPath ,root
-		   :capabilities ,(make-hash-table))))))
+    (setq response (lsp--send-request
+		    (lsp--make-request
+		     "initialize"
+		     `(:processId ,(emacs-pid) :rootPath ,root
+				  :capabilities ,(make-hash-table)))))
+    (setf (workspace-server-capabilities lsp--cur-workspace)
+		(gethash "capabilities" response))))
 
 (defun lsp--text-document-did-open ()
   "Executed when a new file is opened, added to `find-file-hook'."
@@ -197,40 +201,38 @@ interface Range {
       (delete-region start-point (1+ end-point))
       (insert (gethash "newText" text-edit)))))
 
+(defsubst lsp--server-capabilities ()
+  "Return the capabilities of the language server associated with the buffer."
+  (workspace-server-capabilities lsp--cur-workspace))
+
+(defun lsp--content-changes (start end)
+  (case (gethash "textDocumentSync" (lsp--server-capabilities))
+    (1 ;; Documents are synced by always sending the full content of the document.
+     (buffer-substring-no-properties (point-min) (point-max)))
+    (2 ;; Documents are synced by sending the full content on open.
+     ;; After that only incremental updates to the document are sent.
+     (buffer-substring-no-properties start end))))
+
 (defun lsp--text-document-content-change-event (start end length)
   "Make a TextDocumentContentChangeEvent body for START to END, of length LENGTH."
   `(:range ,(lsp--range (lsp--point-to-position start)
 			(lsp--point-to-position end))
-	   :rangeLength ,length
-	   :text ,(buffer-substring-no-properties (point-min) (point-max))))
-
-(defvar lsp-idle-change-delay 0.5
-  "How many seconds to wait before indicating a change to the language server.")
-(defvar lsp--idle-change-timer nil)
-
-(defsubst lsp--cancel-idle-change-timer ()
-  (when lsp--idle-change-timer
-    (cancel-timer lsp--idle-change-timer)
-    (setq lsp--idle-change-timer nil)))
-
-(defun lsp-on-change (s e l)
-  (when lsp--cur-workspace
-    (lsp--cancel-idle-change-timer)
-    (setq lsp--idle-change-timer
-	  (run-at-time lsp-idle-change-delay nil
-		       #'(lambda () (lsp--text-document-did-change s e l))))))
+	   :rangeLength ,(abs (- start end))
+	   :text ,(lsp--content-changes start end)))
 
 (defun lsp--text-document-did-change (start end length)
   "Executed when a file is changed.
 Added to `after-change-functions'"
-  (lsp--cur-file-version t)
-  (lsp--send-notification
-   (lsp--make-notification
-    "textDocument/didChange"
-    `(:textDocument
-      ,(lsp--versioned-text-document-identifier)
-      :contentChanges
-      [,(lsp--text-document-content-change-event start end length)]))))
+  (when lsp--cur-workspace
+    (unless (= (gethash "textDocumentSync" (lsp--server-capabilities)) 0)
+      (lsp--cur-file-version t)
+      (lsp--send-notification
+       (lsp--make-notification
+	"textDocument/didChange"
+	`(:textDocument
+	  ,(lsp--versioned-text-document-identifier)
+	  :contentChanges
+	  [,(lsp--text-document-content-change-event start end length)]))))))
 
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
@@ -418,10 +420,11 @@ interface DocumentRangeFormattingParams {
 	(mapcar 'lsp--location-to-xref ref)
       (and ref `(,(lsp--location-to-xref ref))))))
 
-(defalias 'lsp-on-open 'lsp--text-document-did-open)
-(defalias 'lsp-on-save 'lsp--text-document-did-save)
-(defalias 'lsp-eldoc 'lsp--text-document-hover-string)
-(defalias 'lsp-completion-at-point 'lsp--get-completions)
+(defalias 'lsp-on-open #'lsp--text-document-did-open)
+(defalias 'lsp-on-save #'lsp--text-document-did-save)
+(defalias 'lsp-on-change #'lsp--text-document-did-change)
+(defalias 'lsp-eldoc #'lsp--text-document-hover-string)
+(defalias 'lsp-completion-at-point #'lsp--get-completions)
 
 (defun lsp--set-variables ()
   (setq-local eldoc-documentation-function #'lsp-eldoc)
