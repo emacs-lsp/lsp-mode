@@ -3,6 +3,7 @@
 (require 'ht)
 (require 'cl-lib)
 (require 'lsp-common)
+(require 'lsp-notifications)
 
 (defconst lsp-debug nil
   "When non-nil, print all non LSP messages from servers to a buffer.")
@@ -67,10 +68,14 @@ Else returns nil, and should be called again with the remaining output."
 (defun lsp--on-notification (notification &optional dont-queue)
   "If response queue is empty, call the appropriate handler for NOTIFICATION.
 Else it is queued (unless DONT-QUEUE is non-nil)"
-  (if (and (not dont-queue) lsp--response-result)
-      (push lsp--queued-notifications notification)
-    ;; else, call the appropriate handler
-    ))
+  (let ((params (gethash "params" notification)))
+    (if (and (not dont-queue) lsp--response-result)
+	(push lsp--queued-notifications notification)
+      ;; else, call the appropriate handler
+      (pcase (gethash "method" notification)
+	("window/showMessage" (lsp--window-show-message params))
+	("textDocument/publishDiagnostics" (lsp--on-diagnostics params))
+	(unknown (message "Unknown notification %s" unknown))))))
 
 (defun lsp--set-response (response)
   "Set lsp--response-result as per RESPONSE.
