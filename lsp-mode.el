@@ -29,7 +29,8 @@ LANGUAGE-ID is the language id to be used when communication with the Language S
 					      (plist-get args :name)
 					      (plist-get args :command))
 			     :get-root (or (plist-get args :get-root)
-					   #'projectile-project-root)))))
+					   #'projectile-project-root))))
+      (t (error "lsp-define-client: Invalid TYPE.")))
     (puthash major-mode client lsp--defined-clients)))
 
 (defun lsp--make-stdio-connection (name command)
