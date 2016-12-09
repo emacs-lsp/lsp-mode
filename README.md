@@ -16,7 +16,7 @@ Clone this repository to a suitable path, and add
 (add-to-list 'load-path "<path to emacs-lsp>")
 (require 'lsp-mode)
 (global-lsp-mode t)
-`
+```
 
 ## Clients
 
