@@ -8,4 +8,11 @@
   "Propertize STR as per TYPE."
   (propertize str 'face (alist-get type lsp--message-type-face)))
 
+(defun lsp--position-to-point (params)
+  "Convert Position object in PARAMS to a point."
+  (save-excursion
+      (goto-char (point-min))
+      (forward-line (1- (gethash "line" params)))
+      (+ (point) (gethash "character" params))))
+
 (provide 'lsp-common)
