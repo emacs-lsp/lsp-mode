@@ -1,8 +1,10 @@
+;;; -*- lexical-binding: t -*-
 (require 'cl-lib)
 (require 'json)
 (require 'xref)
 (require 'subr-x)
 (require 'lsp-receive)
+(require 'lsp-common)
 
 (cl-defstruct workspace
   (language-id :read-only t)
@@ -161,13 +163,6 @@ interface Position {
     (goto-char point)
     (lsp--cur-position)))
 
-(defun lsp--position-to-point (params)
-  "Convert Position object in PARAMS to a point."
-  (save-excursion
-      (goto-char (point-min))
-      (forward-line (1- (gethash "line" params)))
-      (+ (point) (gethash "character" params))))
-
 (defun lsp--position-p (p)
   (and (numberp (plist-get p :line))
        (numberp (plist-get p :character))))
@@ -209,18 +204,33 @@ interface Range {
 	   :rangeLength ,length
 	   :text ,(buffer-substring-no-properties (point-min) (point-max))))
 
+(defvar lsp-idle-change-delay 0.5
+  "How many seconds to wait before indicating a change to the language server.")
+(defvar lsp--idle-change-timer nil)
+
+(defsubst lsp--cancel-idle-change-timer ()
+  (when lsp--idle-change-timer
+    (cancel-timer lsp--idle-change-timer)
+    (setq lsp--idle-change-timer nil)))
+
+(defun lsp-on-change (s e l)
+  (when lsp--cur-workspace
+    (lsp--cancel-idle-change-timer)
+    (setq lsp--idle-change-timer
+	  (run-at-time lsp-idle-change-delay nil
+		       #'(lambda () (lsp--text-document-did-change s e l))))))
+
 (defun lsp--text-document-did-change (start end length)
   "Executed when a file is changed.
 Added to `after-change-functions'"
-  (when lsp--cur-workspace
-    (lsp--cur-file-version t)
-    (lsp--send-notification
-     (lsp--make-notification
-      "textDocument/didChange"
-      `(:textDocument
-	,(lsp--versioned-text-document-identifier)
-	:contentChanges
-	[,(lsp--text-document-content-change-event start end length)])))))
+  (lsp--cur-file-version t)
+  (lsp--send-notification
+   (lsp--make-notification
+    "textDocument/didChange"
+    `(:textDocument
+      ,(lsp--versioned-text-document-identifier)
+      :contentChanges
+      [,(lsp--text-document-content-change-event start end length)]))))
 
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
@@ -410,7 +420,6 @@ interface DocumentRangeFormattingParams {
 
 (defalias 'lsp-on-open 'lsp--text-document-did-open)
 (defalias 'lsp-on-save 'lsp--text-document-did-save)
-(defalias 'lsp-on-change 'lsp--text-document-did-change)
 (defalias 'lsp-eldoc 'lsp--text-document-hover-string)
 (defalias 'lsp-completion-at-point 'lsp--get-completions)
 
