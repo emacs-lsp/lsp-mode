@@ -17,6 +17,7 @@
 
 (defvar-local lsp--cur-workspace nil)
 (defvar lsp--workspaces (make-hash-table :test 'equal))
+(defvar lsp-complete-document-on-change t)
 
 (defun lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
@@ -215,10 +216,12 @@ interface Range {
 
 (defun lsp--text-document-content-change-event (start end length)
   "Make a TextDocumentContentChangeEvent body for START to END, of length LENGTH."
-  `(:range ,(lsp--range (lsp--point-to-position start)
-			(lsp--point-to-position end))
-	   :rangeLength ,(abs (- start end))
-	   :text ,(lsp--content-changes start end)))
+  (if lsp-complete-document-on-change
+      `(:text ,(buffer-substring-no-properties (point-min) (point-max)))
+    `(:range ,(lsp--range (lsp--point-to-position start)
+			  (lsp--point-to-position end))
+	     :rangeLength ,(abs (- start end))
+	     :text ,(lsp--content-changes start end))))
 
 (defun lsp--text-document-did-change (start end length)
   "Executed when a file is changed.
