@@ -73,7 +73,8 @@ interface TextDocumentItem {
 	 :text ,(buffer-substring-no-properties (point-min) (point-max))))
 
 (defun lsp--initialize (language-id client &optional data)
-  (let ((root))
+  (let ((root)
+	(cur-dir (expand-file-name default-directory)))
     (if (gethash cur-dir lsp--workspaces)
 	(error "This workspace has already been initialized")
       (setq lsp--cur-workspace (make-workspace
