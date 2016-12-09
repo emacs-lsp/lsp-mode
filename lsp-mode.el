@@ -9,25 +9,30 @@
   (language-id :read-only t)
   (send-sync :read-only t)
   (send-async :read-only t)
+  (type :read-only t)
   (new-connection :read-only t)
   (get-root :read-only t))
 (defvar lsp--defined-clients (make-hash-table))
 
-(defun lsp-define-client (major-mode type language-id &rest args)
+(defun lsp-define-client (major-mode language-id type &rest args)
+  "Define a LSP client.
+MAJOR-MODE is the major-mode for which this client will be invoked.
+LANGUAGE-ID is the language id to be used when communication with the Language Server."
   (let ((client))
     (case type
-      ('stdout (setq client (make-lsp--client
+      ('stdio (setq client (make-lsp--client
 			     :language-id language-id
-			     :send-sync 'lsp--stdin-send-sync
-			     :send-async 'lsp--stdin-send-async
-			     :new-connection (lsp--make-stdout-connection
+			     :send-sync 'lsp--stdio-send-sync
+			     :send-async 'lsp--stdio-send-async
+			     :type type
+			     :new-connection (lsp--make-stdio-connection
 					      (plist-get args :name)
 					      (plist-get args :command))
 			     :get-root (or (plist-get args :get-root)
 					   #'projectile-project-root)))))
     (puthash major-mode client lsp--defined-clients)))
 
-(defun lsp--make-stdout-connection (name command)
+(defun lsp--make-stdio-connection (name command)
   (lambda ()
     (make-process
      :name name
@@ -53,9 +58,14 @@
   (add-hook 'find-file-hook #'lsp-on-open)
   (add-hook 'after-save-hook #'lsp-on-save)
   (add-hook 'after-change-functions #'lsp-on-change)
-  (lsp-define-client 'rust-mode 'stdout "rust" :command "rls" :name "Rust Language Server"
+  (lsp-define-client 'rust-mode "rust"
+		     'stdio
+		     :command "rls"
+		     :name "Rust Language Server"
 		     :get-root #'lsp--rust-get-root)
-  (lsp-define-client 'go-mode 'stdout "go" :command '("langserver-go" "-mode=stdio")
+
+  (lsp-define-client 'go-mode "go" 'stdio
+		     :command '("langserver-go" "-mode=stdio")
 		     :name "Go Language Server"
 		     :get-root #'projectile-project-root))
 
