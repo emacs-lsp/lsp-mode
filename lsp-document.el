@@ -22,7 +22,7 @@
 (defun lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
   (plist-put (lsp--make-notification method params)
-	     :id (incf (workspace-last-id lsp--cur-workspace))))
+	     :id (cl-incf (workspace-last-id lsp--cur-workspace))))
 
 (defun lsp--make-notification (method &optional params)
   "Create notification body for method METHOD and parameters PARAMS."
@@ -59,7 +59,7 @@
   (let* ((file-versions (workspace-file-versions lsp--cur-workspace))
 	 (rev (gethash buffer-file-name file-versions)))
     (when inc
-      (incf rev)
+      (cl-incf rev)
       (puthash buffer-file-name rev file-versions))
     rev))
 
@@ -207,7 +207,7 @@ interface Range {
   (workspace-server-capabilities lsp--cur-workspace))
 
 (defun lsp--content-changes (start end)
-  (case (gethash "textDocumentSync" (lsp--server-capabilities))
+  (cl-case (gethash "textDocumentSync" (lsp--server-capabilities))
     (1 ;; Documents are synced by always sending the full content of the document.
      (buffer-substring-no-properties (point-min) (point-max)))
     (2 ;; Documents are synced by sending the full content on open.

@@ -19,7 +19,7 @@
 MAJOR-MODE is the major-mode for which this client will be invoked.
 LANGUAGE-ID is the language id to be used when communication with the Language Server."
   (let ((client))
-    (case type
+    (cl-case type
       ('stdio (setq client (make-lsp--client
 			     :language-id language-id
 			     :send-sync 'lsp--stdio-send-sync
