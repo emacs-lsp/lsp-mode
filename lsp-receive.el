@@ -186,11 +186,13 @@ OUTPUT is the output received from the process"
       ;; try parsing it to see if it was a complete message.
       (lsp--process-filter proc ""))
     ;; (message (format "complete %s rem-pending %s next %s" complete rem-pending next))
-    (when (and (not (or rem-pending complete next)) lsp-debug)
+    (when (and (not (or rem-pending complete next))) ;; got non LSP output
       (with-current-buffer (get-buffer-create (format "%s output"
 						      (process-name proc)))
 	(insert output)
-	(goto-char (point-max))))))
+	(goto-char (point-max))))
+    (when lsp--waiting-for-response
+      (accept-process-output proc))))
 
 (provide 'lsp-receive)
 ;;; lsp-callback.el ends here
