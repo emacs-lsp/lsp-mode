@@ -192,7 +192,7 @@ OUTPUT is the output received from the process"
 	(insert output)
 	(goto-char (point-max))))
     (when lsp--waiting-for-response
-      (accept-process-output proc))))
+      (with-local-quit (accept-process-output proc)))))
 
 (provide 'lsp-receive)
 ;;; lsp-callback.el ends here
