@@ -206,6 +206,10 @@ interface Range {
   "Return the capabilities of the language server associated with the buffer."
   (workspace-server-capabilities lsp--cur-workspace))
 
+(defsubst lsp--capability (cap &optional capabilities)
+  "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
+  (gethash cap (or capabilities (lsp--server-capabilities))))
+
 (defun lsp--content-changes (start end)
   (cl-case (gethash "textDocumentSync" (lsp--server-capabilities))
     (1 ;; Documents are synced by always sending the full content of the document.
@@ -433,8 +437,9 @@ interface DocumentRangeFormattingParams {
   (setq-local eldoc-documentation-function #'lsp-eldoc)
   (setq-local indent-region-function #'lsp-format-region)
   (setq-local xref-backend-functions #'lsp--xref-backend)
-  (setq-local completion-at-point-functions nil)
-  (add-hook 'completion-at-point-functions #'lsp-completion-at-point))
+  (when (gethash "completionProvider" (lsp--server-capabilities))
+    (setq-local completion-at-point-functions nil)
+    (add-hook 'completion-at-point-functions #'lsp-completion-at-point)))
 
 (provide 'lsp-document)
 ;;; document.el ends here
