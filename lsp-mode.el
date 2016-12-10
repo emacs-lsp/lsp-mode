@@ -21,15 +21,15 @@ LANGUAGE-ID is the language id to be used when communication with the Language S
   (let ((client))
     (cl-case type
       ('stdio (setq client (make-lsp--client
-			     :language-id language-id
-			     :send-sync 'lsp--stdio-send-sync
-			     :send-async 'lsp--stdio-send-async
-			     :type type
-			     :new-connection (lsp--make-stdio-connection
-					      (plist-get args :name)
-					      (plist-get args :command))
-			     :get-root (or (plist-get args :get-root)
-					   #'projectile-project-root))))
+			    :language-id language-id
+			    :send-sync 'lsp--stdio-send-sync
+			    :send-async 'lsp--stdio-send-async
+			    :type type
+			    :new-connection (lsp--make-stdio-connection
+					     (plist-get args :name)
+					     (plist-get args :command))
+			    :get-root (or (plist-get args :get-root)
+					  #'projectile-project-root))))
       (t (error "lsp-define-client: Invalid TYPE.")))
     (puthash major-mode client lsp--defined-clients)))
 
@@ -44,8 +44,8 @@ LANGUAGE-ID is the language id to be used when communication with the Language S
 (defun lsp--rust-get-root ()
   (let ((dir default-directory))
     (while (not (or (file-exists-p (concat (file-name-as-directory dir)
-					    "Cargo.toml"))
-		     (string= dir "/")))
+					   "Cargo.toml"))
+		    (string= dir "/")))
       (setq dir (file-name-directory (directory-file-name dir))))
     (if (string= dir "/")
 	(user-error "Couldn't find Rust project")
@@ -69,5 +69,47 @@ LANGUAGE-ID is the language id to be used when communication with the Language S
 		     :command '("langserver-go" "-mode=stdio")
 		     :name "Go Language Server"
 		     :get-root #'projectile-project-root))
+
+(defconst lsp--sync-type
+  `((0 . "None")
+    (1 . "Full Document")
+    (2 . "Incremental Changes")))
+
+(defsubst lsp--bool-to-str (b)
+  (if b
+      "Yes"
+    "No"))
+
+(defun lsp-show-capabilities ()
+  "View all capabilities for the language server associated with this buffer."
+  (interactive)
+  (unless lsp--cur-workspace
+    (user-error "No language server is associated with this buffer"))
+  (let ((capabilities (lsp--server-capabilities)))
+    (with-current-buffer (get-buffer-create
+			  "lsp-capabilities")
+      (read-only-mode -1)
+      (erase-buffer)
+      (insert (format "Document sync method: %s\n" (alist-get
+						    (lsp--capability
+						     "textDocumentSync"
+						     capabilities)
+						    lsp--sync-type)))
+      (insert (format "Help on hover support: %s\n" (lsp--bool-to-str
+						     (lsp--capability
+						      "hoverProvider"
+						      capabilities))))
+      (insert (format "Goto-definition support: %s\n" (lsp--bool-to-str
+						       (lsp--capability
+							"definitionProvider"
+							capabilities))))
+      (insert (format "Support for finding references: %s\n" (lsp--bool-to-str
+							      (lsp--capability
+							       "referencesProvider"
+							       capabilities))))
+      (read-only-mode t))
+    (split-window-right)
+    (switch-to-buffer "lsp-capabilities")))
+
 
 (provide 'lsp-mode)
