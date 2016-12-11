@@ -164,6 +164,12 @@ interface Position {
 }"
   `(:line ,line :character ,char))
 
+(defsubst lsp--cur-line ()
+  (1- (line-number-at-pos)))
+
+(defsubst lsp--cur-column ()
+  (- (point) (line-beginning-position)))
+
 (defun lsp--cur-position ()
   "Make a Position object for the current point."
   (lsp--position (lsp--cur-line) (lsp--cur-column)))
@@ -173,12 +179,6 @@ interface Position {
   (save-excursion
     (goto-char point)
     (lsp--cur-position)))
-
-(defsubst lsp--cur-line ()
-  (1- (line-number-at-pos)))
-
-(defsubst lsp--cur-column ()
-  (- (point) (line-beginning-position)))
 
 (defun lsp--position-p (p)
   (and (numberp (plist-get p :line))
@@ -327,7 +327,7 @@ interface Location {
 	(ref-pos (gethash "start" (gethash "range" location))))
     (xref-make uri
 	       (xref-make-file-location uri
-					(gethash "line" ref-pos)
+					(1+ (gethash "line" ref-pos))
 					(gethash "character" ref-pos)))))
 (defun lsp--get-defitions ()
   "Get definition of the current symbol under point.
@@ -404,6 +404,39 @@ interface DocumentRangeFormattingParams {
   (plist-put (lsp--make-document-formatting-params)
 	     :range (lsp--cur-region-to-range)))
 
+(defun lsp--workspace-symbols (query)
+  ""
+  (let ((symbols (lsp--send-request (lsp--make-request
+				     "workspace/symbol"
+				     `(:query ,query)))))
+    ))
+
+(defconst lsp--symbol-kind
+  '((1 . "File")
+    (2 . "Module")
+    (3 . "Namespace")
+    (4 . "Package")
+    (5 . "Class")
+    (6 . "Method")
+    (7 . "Property")
+    (8 . "Field")
+    (9 . "Constructor"),
+    (10 . "Enum")
+    (11 . "Interface")
+    (12 . "Function")
+    (13 . "Variable")
+    (14 . "Constant")
+    (15 . "String")
+    (16 . "Number")
+    (17 . "Boolean")
+    (18 . "Array")))
+
+(defun lsp--symbol-information-to-xref (symbol)
+  (xref-make (format "%s %s"
+		     (alist-get (gethash "kind" symbol) lsp--symbol-kind)
+		     (gethash "name" symbol))
+	     (lsp--location-to-xref (gethash "location" symbol))))
+
 (defun lsp-format-region (_s _e)
   (let ((edits (lsp--send-request (lsp--make-request
 				   "textDocument/rangeFormatting"
@@ -438,6 +471,12 @@ interface DocumentRangeFormattingParams {
     (if (consp ref)
 	(mapcar 'lsp--location-to-xref ref)
       (and ref `(,(lsp--location-to-xref ref))))))
+
+(cl-defmethod xref-backend-apropos ((_backend (eql lsp)) pattern)
+  (let ((symbols (lsp--send-request (lsp--make-request
+				     "workspace/symbol"
+				     `(:query ,pattern)))))
+    (mapcar 'lsp--symbol-information-to-xref symbols)))
 
 (defalias 'lsp-on-open #'lsp--text-document-did-open)
 (defalias 'lsp-on-save #'lsp--text-document-did-save)
