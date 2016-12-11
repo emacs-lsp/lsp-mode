@@ -11,29 +11,38 @@
   (send-async :read-only t)
   (type :read-only t)
   (new-connection :read-only t)
-  (get-root :read-only t))
+  (get-root :read-only t)
+  (on-initialize :read-only))
 (defvar lsp--defined-clients (make-hash-table))
 
-(defun lsp-define-client (major-mode language-id type &rest args)
+(defun lsp-define-client (major-mode language-id type get-root &rest args)
   "Define a LSP client.
 MAJOR-MODE is the major-mode for which this client will be invoked.
-LANGUAGE-ID is the language id to be used when communication with the Language Server."
+LANGUAGE-ID is the language id to be used when communication with the Language Server.
+Optional arguments:
+`:name' is the process name for the language server.
+`:command' is the command to run if `TYPE' is 'stdio.
+`:on-initialize' is the function to call when a new project/workspace is initialized."
   (let ((client))
-    (cl-case type
-      ('stdio (setq client (make-lsp--client
-			    :language-id language-id
-			    :send-sync 'lsp--stdio-send-sync
-			    :send-async 'lsp--stdio-send-async
-			    :type type
-			    :new-connection (lsp--make-stdio-connection
-					     (plist-get args :name)
-					     (plist-get args :command))
-			    :get-root (or (plist-get args :get-root)
-					  #'projectile-project-root))))
-      (t (error "lsp-define-client: Invalid TYPE.")))
+    (setq client
+	  (cl-case type
+	    ('stdio (make-lsp--client
+		     :language-id language-id
+		     :send-sync 'lsp--stdio-send-sync
+		     :send-async 'lsp--stdio-send-async
+		     :type type
+		     :new-connection (lsp--make-stdio-connection
+				      (plist-get args (or :name
+							  (format
+							   "%s language server"
+							   major-mode)))
+				      (plist-get args :command))
+		     :get-root get-root
+		     :on-initialize (plist-get args :on-initialize)))
+	    (t (error "Invalid TYPE for LSP client"))))
     (puthash major-mode client lsp--defined-clients)))
 
-(defun lsp--make-stdio-connection (name command)
+(defsubst lsp--make-stdio-connection (name command)
   (lambda ()
     (make-process
      :name name
@@ -59,16 +68,13 @@ LANGUAGE-ID is the language id to be used when communication with the Language S
   (add-hook 'find-file-hook #'lsp-on-open)
   (add-hook 'after-save-hook #'lsp-on-save)
   (add-hook 'after-change-functions #'lsp-on-change)
-  (lsp-define-client 'rust-mode "rust"
-		     'stdio
+  (lsp-define-client 'rust-mode "rust" 'stdio #'lsp--rust-get-root
 		     :command "rls"
-		     :name "Rust Language Server"
-		     :get-root #'lsp--rust-get-root)
+		     :name "Rust Language Server")
 
-  (lsp-define-client 'go-mode "go" 'stdio
+  (lsp-define-client 'go-mode "go" 'stdio #'projectile-project-root
 		     :command '("langserver-go" "-mode=stdio")
-		     :name "Go Language Server"
-		     :get-root #'projectile-project-root))
+		     :name "Go Language Server"))
 
 (defconst lsp--sync-type
   `((0 . "None")
