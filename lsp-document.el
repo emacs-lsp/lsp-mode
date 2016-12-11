@@ -27,7 +27,7 @@
 
 (defvar-local lsp--cur-workspace nil)
 (defvar lsp--workspaces (make-hash-table :test 'equal))
-(defvar lsp-complete-document-on-change t)
+(defvar lsp-complete-document-on-change nil)
 
 (defun lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
