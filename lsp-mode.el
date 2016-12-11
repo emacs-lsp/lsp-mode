@@ -1,19 +1,9 @@
 ;;; -*- lexical-binding: t -*-
 (require 'lsp-document)
 (require 'lsp-receive)
-(require 'projectile)
 (require 'lsp-send)
 (require 'cl-lib)
-
-(cl-defstruct lsp--client
-  (language-id :read-only t)
-  (send-sync :read-only t)
-  (send-async :read-only t)
-  (type :read-only t)
-  (new-connection :read-only t)
-  (get-root :read-only t)
-  (on-initialize :read-only))
-(defvar lsp--defined-clients (make-hash-table))
+(require 'projectile)
 
 (defun lsp-define-client (major-mode language-id type get-root &rest args)
   "Define a LSP client.

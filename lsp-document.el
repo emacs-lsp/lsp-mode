@@ -6,6 +6,16 @@
 (require 'lsp-receive)
 (require 'lsp-common)
 
+(cl-defstruct lsp--client
+  (language-id :read-only t)
+  (send-sync :read-only t)
+  (send-async :read-only t)
+  (type :read-only t)
+  (new-connection :read-only t)
+  (get-root :read-only t)
+  (on-initialize :read-only))
+(defvar lsp--defined-clients (make-hash-table))
+
 (cl-defstruct workspace
   (language-id :read-only t)
   (last-id 0)
@@ -154,19 +164,21 @@ interface Position {
 }"
   `(:line ,line :character ,char))
 
-(defsubst lsp--current-char-offset ()
-  (- (point) (save-excursion (beginning-of-line) (point))))
-
 (defun lsp--cur-position ()
   "Make a Position object for the current point."
-  (lsp--position (line-number-at-pos)
-		 (lsp--current-char-offset)))
+  (lsp--position (lsp--cur-line) (lsp--cur-column)))
 
 (defun lsp--point-to-position (point)
   "Convert POINT to Position."
   (save-excursion
     (goto-char point)
     (lsp--cur-position)))
+
+(defsubst lsp--cur-line ()
+  (1- (line-number-at-pos)))
+
+(defsubst lsp--cur-column ()
+  (current-column))
 
 (defun lsp--position-p (p)
   (and (numberp (plist-get p :line))
@@ -261,8 +273,8 @@ Added to `after-change-functions'"
 (defun lsp--text-document-position-params ()
   "Make TextDocumentPositionParams for the current point in the current document."
   `(:textDocument ,(lsp--text-document-identifier)
-		  :position ,(lsp--position (line-number-at-pos)
-					    (lsp--current-char-offset))))
+		  :position ,(lsp--position (lsp--cur-line)
+					    (lsp--cur-column))))
 
 (defun lsp--make-completion-item (item)
   (list
@@ -293,7 +305,7 @@ CompletionList object."
 	(el)
 	(completions))
     (dolist (el (lsp--make-completion-items response))
-      (append completions (lsp--make-completion-item el)))
+      (push (lsp--make-completion-item el) completions))
     (when (or token completing-field)
       (list
        (if completing-field
