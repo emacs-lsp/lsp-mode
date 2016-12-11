@@ -75,6 +75,8 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
       (pcase (gethash "method" notification)
 	("window/showMessage" (lsp--window-show-message params))
 	("textDocument/publishDiagnostics" (lsp--on-diagnostics params))
+	("rustDocument/diagnosticsEnd")
+	("rustDocument/diagnosticsBegin")
 	(unknown (message "Unknown notification %s" unknown))))))
 
 (defun lsp--set-response (response)
