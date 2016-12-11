@@ -102,8 +102,7 @@ Set lsp--waiting-for-message to nil."
 	(message (gethash "message" err)))
     (lsp--propertize (format "Error from the Language Server: (%s) %s"
 			     (car (alist-get code lsp--errors)) message)
-		1 ;;error
-		)))
+		1)))
 
 (defun lsp--from-server (data)
   "Callback for when Emacs recives DATA from client.
@@ -114,8 +113,8 @@ read the next message from the language server, else asynchronously."
       (cl-case (lsp--get-message-type parsed)
 	('response (lsp--set-response parsed))
 	('response-error (lsp--set-response nil)
-			 (message (lsp--error-string
-				   (gethash "error" parsed)))) ;;TODO
+			 (message "%s" (lsp--error-string
+					(gethash "error" parsed)))) ;;TODO
 	('notification (lsp--on-notification parsed))))
     lsp--waiting-for-response))
 
