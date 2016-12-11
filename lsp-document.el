@@ -178,7 +178,7 @@ interface Position {
   (1- (line-number-at-pos)))
 
 (defsubst lsp--cur-column ()
-  (current-column))
+  (- (point) (line-beginning-position)))
 
 (defun lsp--position-p (p)
   (and (numberp (plist-get p :line))
