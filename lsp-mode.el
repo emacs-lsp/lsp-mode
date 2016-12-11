@@ -91,6 +91,9 @@ Optional arguments:
 						     "textDocumentSync"
 						     capabilities)
 						    lsp--sync-type)))
+      (insert (format "Completion support: %s\n" (lsp--capability
+						  "completionProvider"
+						  capabilities)))
       (insert (format "Help on hover support: %s\n" (lsp--bool-to-str
 						     (lsp--capability
 						      "hoverProvider"
