@@ -14,6 +14,4 @@ install:
   # Install your dependencies
   - cask install
 script:
-  - curl -fsSL https://raw.githubusercontent.com/cask/cask/master/go | python
-  - export PATH="/home/travis/.cask/bin:$PATH"
   - cask build
