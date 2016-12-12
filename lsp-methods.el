@@ -362,10 +362,11 @@ Returns xref-item(s)."
 	(mapcar 'lsp--location-to-xref location)
       (lsp--location-to-xref location))))
 
-(defun lsp--make-reference-params ()
-  "Make a ReferenceParam object."
+(defun lsp--make-reference-params (&optional td-position)
+  "Make a ReferenceParam object.
+If TD-POSITION is non-nil, use it as TextDocumentPositionParams object instead."
   (let ((json-false :json-false))
-    (plist-put (lsp--text-document-position-params)
+    (plist-put (or td-position (lsp--text-document-position-params))
 	       :context `(:includeDeclaration ,json-false))))
 
 (defun lsp--get-references ()
@@ -461,12 +462,29 @@ interface DocumentRangeFormattingParams {
     (dolist (edit edits)
       (lsp--apply-text-edit edit))))
 
+(defun lsp--location-to-td-position (location)
+  "Convert LOCATION to a TextDocumentPositionParams object."
+  `(:textDocument (:uri ,(gethash "uri" location))
+		  :position ,(gethash "start" (gethash "range" location))))
+
+(defun lsp--symbol-info-to-identifier (symbol)
+  (propertize (gethash "name" symbol)
+	      'ref-params (lsp--make-reference-params
+			   (lsp--location-to-td-position (gethash "location" symbol)))))
+
 (defun lsp--xref-backend () 'xref-lsp)
 
 (cl-defmethod xref-backend-identifier-at-point ((_backend (eql xref-lsp)))
   (propertize (symbol-name (symbol-at-point))
 	      'def-params (lsp--text-document-position-params)
 	      'ref-params (lsp--make-reference-params)))
+
+;; (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
+;;   (let ((json-false :json-false)
+;; 	(symbols (lsp--send-request (lsp--make-request
+;; 				     "textDocument/documentSymbol"
+;; 				     `(:textDocument ,(lsp--text-document-identifier))))))
+;;     (mapcar #'lsp--symbol-info-to-identifier symbols)))
 
 (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
   nil)
