@@ -427,13 +427,6 @@ interface DocumentRangeFormattingParams {
   (plist-put (lsp--make-document-formatting-params)
 	     :range (lsp--region-to-range start end)))
 
-(defun lsp--workspace-symbols (query)
-  ""
-  (let ((symbols (lsp--send-request (lsp--make-request
-				     "workspace/symbol"
-				     `(:query ,query)))))
-    ))
-
 (defconst lsp--symbol-kind
   '((1 . "File")
     (2 . "Module")
@@ -468,14 +461,17 @@ interface DocumentRangeFormattingParams {
     (dolist (edit edits)
       (lsp--apply-text-edit edit))))
 
-(defun lsp--xref-backend () 'lsp)
+(defun lsp--xref-backend () 'xref-lsp)
 
-(cl-defmethod xref-backend-identifier-at-point ((_backend (eql lsp)))
+(cl-defmethod xref-backend-identifier-at-point ((_backend (eql xref-lsp)))
   (propertize (symbol-name (symbol-at-point))
 	      'def-params (lsp--text-document-position-params)
 	      'ref-params (lsp--make-reference-params)))
 
-(cl-defmethod xref-backend-definitions ((_backend (eql lsp)) identifier)
+(cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
+  nil)
+
+(cl-defmethod xref-backend-definitions ((_backend (eql xref-lsp)) identifier)
   (let* ((properties (text-properties-at 0 identifier))
 	 (params (plist-get properties 'def-params))
 	 (def (lsp--send-request (lsp--make-request
@@ -485,7 +481,7 @@ interface DocumentRangeFormattingParams {
 	(mapcar 'lsp--location-to-xref def)
       (and def `(,(lsp--location-to-xref def))))))
 
-(cl-defmethod xref-backend-references ((_backend (eql lsp)) identifier)
+(cl-defmethod xref-backend-references ((_backend (eql xref-lsp)) identifier)
   (let* ((properties (text-properties-at 0 identifier))
 	 (params (plist-get properties 'ref-params))
 	 (ref (lsp--send-request (lsp--make-request
@@ -495,7 +491,7 @@ interface DocumentRangeFormattingParams {
 	(mapcar 'lsp--location-to-xref ref)
       (and ref `(,(lsp--location-to-xref ref))))))
 
-(cl-defmethod xref-backend-apropos ((_backend (eql lsp)) pattern)
+(cl-defmethod xref-backend-apropos ((_backend (eql xref-lsp)) pattern)
   (let ((symbols (lsp--send-request (lsp--make-request
 				     "workspace/symbol"
 				     `(:query ,pattern)))))
