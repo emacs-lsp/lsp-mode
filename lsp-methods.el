@@ -511,5 +511,5 @@ interface DocumentRangeFormattingParams {
     (setq-local completion-at-point-functions nil)
     (add-hook 'completion-at-point-functions #'lsp-completion-at-point)))
 
-(provide 'lsp-document)
+(provide 'lsp-methods)
 ;;; document.el ends here

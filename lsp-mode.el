@@ -1,5 +1,5 @@
 ;;; -*- lexical-binding: t -*-
-(require 'lsp-document)
+(require 'lsp-methods)
 (require 'lsp-receive)
 (require 'lsp-send)
 (require 'cl-lib)
