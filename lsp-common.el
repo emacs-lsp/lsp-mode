@@ -13,6 +13,6 @@
   (save-excursion
       (goto-char (point-min))
       (forward-line (1+ (gethash "line" params)))
-      (+ (point) (gethash "character" params))))
+      (+ (line-beginning-position) (gethash "character" params))))
 
 (provide 'lsp-common)
