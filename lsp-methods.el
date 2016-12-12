@@ -111,7 +111,7 @@ interface TextDocumentItem {
 	(capabilities))
     (if (gethash cur-dir lsp--workspaces)
 	(user-error "This workspace has already been initialized")
-      (setq lsp--cur-workspace (make-workspace
+      (setq lsp--cur-workspace (make-lsp--workspace
 				:language-id language-id
 				:file-versions (make-hash-table :test 'equal)
 				:last-id 0
