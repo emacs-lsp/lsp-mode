@@ -27,7 +27,24 @@
 
 (defvar-local lsp--cur-workspace nil)
 (defvar lsp--workspaces (make-hash-table :test 'equal))
-(defvar lsp-complete-document-on-change nil)
+
+(defvar lsp--sync-methods
+  '((0 . none)
+    (1 . full)
+    (2 . incremental)))
+(defvar-local lsp--server-sync-method nil
+  "Sync method recommended by the server.")
+
+(defgroup lsp-mode nil
+  "Customization group for lsp-mode.")
+
+(defcustom lsp-document-sync-method nil
+  "How to sync the document with the language server."
+  :type '(choice (const :tag "Documents should not be synced at all." 'none)
+		 (const :tag "Documents are synced by always sending the full content of the document." 'full)
+		 (const :tag "Documents are synced by always sending incremental changes to the document." 'incremental)
+		 (const :tag "Use the method recommended by the language server." nil))
+  :group 'lsp-mode)
 
 (defun lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
@@ -90,7 +107,8 @@ interface TextDocumentItem {
 (defun lsp--initialize (language-id client &optional data)
   (let ((root)
 	(cur-dir (expand-file-name default-directory))
-	(response))
+	(response)
+	(capabilities))
     (if (gethash cur-dir lsp--workspaces)
 	(user-error "This workspace has already been initialized")
       (setq lsp--cur-workspace (make-workspace
@@ -108,7 +126,11 @@ interface TextDocumentItem {
 		     `(:processId ,(emacs-pid) :rootPath ,root
 				  :capabilities ,(make-hash-table)))))
     (setf (workspace-server-capabilities lsp--cur-workspace)
-		(gethash "capabilities" response))))
+	  (setq capabilities (gethash "capabilities" response)))
+    (setq lsp--server-sync-method (or lsp-document-sync-method
+			    (alist-get
+			     (gethash "textDocumentSync" capabilities)
+			     lsp--sync-methods)))))
 
 (defsubst lsp--should-initialize ()
   "Ask user if a new Language Server for the current file should be started."
@@ -227,28 +249,24 @@ interface Range {
   "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
   (gethash cap (or capabilities (lsp--server-capabilities))))
 
-(defun lsp--content-changes (start end)
-  (cl-case (gethash "textDocumentSync" (lsp--server-capabilities))
-    (1 ;; Documents are synced by always sending the full content of the document.
-     (buffer-substring-no-properties (point-min) (point-max)))
-    (2 ;; Documents are synced by sending the full content on open.
-     ;; After that only incremental updates to the document are sent.
-     (buffer-substring-no-properties start end))))
-
 (defun lsp--text-document-content-change-event (start end length)
   "Make a TextDocumentContentChangeEvent body for START to END, of length LENGTH."
-  (if lsp-complete-document-on-change
-      `(:text ,(buffer-substring-no-properties (point-min) (point-max)))
-    `(:range ,(lsp--range (lsp--point-to-position start)
-			  (lsp--point-to-position end))
-	     :rangeLength ,(abs (- start end))
-	     :text ,(lsp--content-changes start end))))
+  (cl-case lsp--server-sync-method
+    ('full `(:text ,(buffer-substring-no-properties (point-min)
+						    (point-max))))
+
+    ('incremental `(:range ,(lsp--range (lsp--point-to-position start)
+					(lsp--point-to-position end))
+			   :rangeLength ,(abs (- start end))
+			   :text ,(buffer-substring-no-properties start end)))
+    (t (error "Invalid sync method"))))
 
 (defun lsp--text-document-did-change (start end length)
   "Executed when a file is changed.
 Added to `after-change-functions'"
   (when lsp--cur-workspace
-    (unless (= (gethash "textDocumentSync" (lsp--server-capabilities)) 0)
+    (unless (or (eq lsp--server-sync-method 'none)
+		(eq lsp--server-sync-method nil))
       (lsp--cur-file-version t)
       (lsp--send-notification
        (lsp--make-notification
