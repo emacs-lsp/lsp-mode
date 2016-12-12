@@ -49,6 +49,18 @@ Optional arguments:
 	(user-error "Couldn't find Rust project")
       dir)))
 
+(defun lsp--rust-rls-command ()
+  (let ((rls-root (getenv "RLS_ROOT")))
+    (if rls-root
+	`("cargo" "run" "--quiet" ,(concat
+				    "--manifest-path="
+				    (concat
+				     (file-name-as-directory
+				      (expand-file-name rls-root))
+				     "Cargo.toml"))
+	  "--release")
+      "rls")))
+
 ;;;###autoload
 (define-minor-mode global-lsp-mode ""
   nil nil nil
@@ -58,7 +70,7 @@ Optional arguments:
   (add-hook 'after-save-hook #'lsp-on-save)
   (add-hook 'after-change-functions #'lsp-on-change)
   (lsp-define-client 'rust-mode "rust" 'stdio #'lsp--rust-get-root
-		     :command "rls"
+		     :command (lsp--rust-rls-command)
 		     :name "Rust Language Server")
 
   (lsp-define-client 'go-mode "go" 'stdio #'(lambda () default-directory)
