@@ -157,7 +157,7 @@ interface TextDocumentItem {
 	    `(:textDocument ,(lsp--make-text-document-item)))))
 
       (setq client (gethash major-mode lsp--defined-clients))
-      (when (and (lsp--should-initialize) client)
+      (when (and client (lsp--should-initialize))
 	(setq data (funcall (lsp--client-new-connection client)))
 	(setq set-vars t)
 	(lsp--initialize (lsp--client-language-id client)
