@@ -87,7 +87,7 @@ Optional arguments:
 		     :name "Go Language Server")
 
   (lsp-define-client 'haskell-mode "haskell" 'stdio #'lsp--haskell-get-root
-                   :command '("./hie.sh")
+                   :command '("hie-lsp.sh")
                    :name "Haskell Language Server"))
 
 (defconst lsp--sync-type

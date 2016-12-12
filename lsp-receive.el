@@ -150,7 +150,7 @@ read the next message from the language server, else asynchronously."
   "Process filter for language servers.
 PROC is the process.
 OUTPUT is the output received from the process"
-  ;; (message (format "[%s]" output))
+  (message (format "[%s]" output))
   (let ((pending (ht-get lsp--process-pending-output proc nil))
 	(complete)
 	(rem-pending)
