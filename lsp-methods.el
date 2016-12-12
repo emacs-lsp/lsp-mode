@@ -16,7 +16,7 @@
   (on-initialize :read-only))
 (defvar lsp--defined-clients (make-hash-table))
 
-(cl-defstruct workspace
+(cl-defstruct lsp--workspace
   (language-id :read-only t)
   (last-id 0)
   (file-versions)
@@ -49,7 +49,7 @@
 (defun lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
   (plist-put (lsp--make-notification method params)
-	     :id (cl-incf (workspace-last-id lsp--cur-workspace))))
+	     :id (cl-incf (lsp--workspace-last-id lsp--cur-workspace))))
 
 (defun lsp--make-notification (method &optional params)
   "Create notification body for method METHOD and parameters PARAMS."
@@ -66,9 +66,9 @@
 
 (defun lsp--send-notification (body)
   "Send BODY as a notification to the language server."
-  (funcall (lsp--client-send-async (workspace-client lsp--cur-workspace))
+  (funcall (lsp--client-send-async (lsp--workspace-client lsp--cur-workspace))
 	   (lsp--make-message body)
-	   (workspace-data lsp--cur-workspace)))
+	   (lsp--workspace-data lsp--cur-workspace)))
 
 (defun lsp--send-request (body)
   "Send BODY as a request to the language server, get the response."
@@ -76,14 +76,14 @@
   ;; lsp-send-sync should loop until lsp--from-server returns nil
   ;; in the case of Rust Language Server, this can be done with
   ;; 'accept-process-output`.'
-  (funcall (lsp--client-send-sync (workspace-client lsp--cur-workspace))
+  (funcall (lsp--client-send-sync (lsp--workspace-client lsp--cur-workspace))
 	   (lsp--make-message body)
-	   (workspace-data lsp--cur-workspace))
+	   (lsp--workspace-data lsp--cur-workspace))
   (prog1 lsp--response-result (setq lsp--response-result nil)))
 
 (defun lsp--cur-file-version (&optional inc)
   "Return the file version number.  If INC, increment it before."
-  (let* ((file-versions (workspace-file-versions lsp--cur-workspace))
+  (let* ((file-versions (lsp--workspace-file-versions lsp--cur-workspace))
 	 (rev (gethash buffer-file-name file-versions)))
     (when inc
       (cl-incf rev)
@@ -100,7 +100,7 @@ interface TextDocumentItem {
     text: string;
 }"
   `(:uri ,(concat "file://" buffer-file-name)
-	 :languageId ,(workspace-language-id lsp--cur-workspace)
+	 :languageId ,(lsp--workspace-language-id lsp--cur-workspace)
 	 :version ,(lsp--cur-file-version)
 	 :text ,(buffer-substring-no-properties (point-min) (point-max))))
 
@@ -125,7 +125,7 @@ interface TextDocumentItem {
 		     "initialize"
 		     `(:processId ,(emacs-pid) :rootPath ,root
 				  :capabilities ,(make-hash-table)))))
-    (setf (workspace-server-capabilities lsp--cur-workspace)
+    (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
 	  (setq capabilities (gethash "capabilities" response)))
     (setq lsp--server-sync-method (or lsp-document-sync-method
 			    (alist-get
@@ -150,7 +150,7 @@ interface TextDocumentItem {
 		(throw 'break key))))
 	(progn
 	  (setq set-vars t)
-	  (puthash buffer-file-name 0 (workspace-file-versions lsp--cur-workspace))
+	  (puthash buffer-file-name 0 (lsp--workspace-file-versions lsp--cur-workspace))
 	  (lsp--send-notification
 	   (lsp--make-notification
 	    "textDocument/didOpen"
@@ -243,7 +243,7 @@ interface Range {
 
 (defsubst lsp--server-capabilities ()
   "Return the capabilities of the language server associated with the buffer."
-  (workspace-server-capabilities lsp--cur-workspace))
+  (lsp--workspace-server-capabilities lsp--cur-workspace))
 
 (defsubst lsp--capability (cap &optional capabilities)
   "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
@@ -279,7 +279,7 @@ Added to `after-change-functions'"
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
   (when lsp--cur-workspace
-    (remhash buffer-file-name (workspace-file-versions lsp--cur-workspace))
+    (remhash buffer-file-name (lsp--workspace-file-versions lsp--cur-workspace))
     (lsp--send-notification
      (lsp--make-notification
       "textDocument/didClose"
