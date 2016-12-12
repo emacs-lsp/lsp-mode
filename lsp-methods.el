@@ -167,7 +167,7 @@ interface TextDocumentItem {
 
     (when set-vars (lsp--set-variables))))
 
-(defun lsp--text-document-identifier ()
+(defsubst lsp--text-document-identifier ()
   "Make TextDocumentIdentifier.
 
 interface TextDocumentIdentifier {
@@ -175,7 +175,7 @@ interface TextDocumentIdentifier {
 }"
   `(:uri ,(concat "file://" buffer-file-name)))
 
-(defun lsp--versioned-text-document-identifier ()
+(defsubst lsp--versioned-text-document-identifier ()
   "Make VersionedTextDocumentIdentifier.
 
 interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
@@ -183,7 +183,7 @@ interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
 }"
   (plist-put (lsp--text-document-identifier) :version (lsp--cur-file-version)))
 
-(defun lsp--position (line char)
+(defsubst lsp--position (line char)
   "Make a Position object for the given LINE and CHAR.
 interface Position {
     line: number;
@@ -197,17 +197,17 @@ interface Position {
 (defsubst lsp--cur-column ()
   (- (point) (line-beginning-position)))
 
-(defun lsp--cur-position ()
+(defsubst lsp--cur-position ()
   "Make a Position object for the current point."
   (lsp--position (lsp--cur-line) (lsp--cur-column)))
 
-(defun lsp--point-to-position (point)
+(defsubst lsp--point-to-position (point)
   "Convert POINT to Position."
   (save-excursion
     (goto-char point)
     (lsp--cur-position)))
 
-(defun lsp--position-p (p)
+(defsubst lsp--position-p (p)
   (and (numberp (plist-get p :line))
        (numberp (plist-get p :character))))
 
@@ -400,7 +400,7 @@ type MarkedString = string | { language: string; value: string };"
 				      (car contents)
 				    contents))))
 
-(defun lsp--make-document-formatting-options ()
+(defsubst lsp--make-document-formatting-options ()
   (let ((json-false :json-false))
     `(:tabSize ,tab-width :insertSpaces
 	       ,(if indent-tabs-mode json-false t))))
@@ -418,7 +418,7 @@ type MarkedString = string | { language: string; value: string };"
     (dolist (edit edits)
       (lsp--apply-text-edit edit))))
 
-(defun lsp--make-document-range-formatting-params (start end)
+(defsubst lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region.
 interface DocumentRangeFormattingParams {
     textDocument: TextDocumentIdentifier;
