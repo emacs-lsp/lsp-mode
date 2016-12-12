@@ -1,6 +1,8 @@
 emacs-lsp
 =========
 
+[![Build Status](https://travis-ci.org/vibhavp/emacs-lsp.svg?branch=master)](https://travis-ci.org/vibhavp/emacs-lsp)
+
 A Emacs Lisp library for implementing clients for servers using Microsoft's
 [Language Server Protocol](https://github.com/Microsoft/language-server-protocol/).
 
