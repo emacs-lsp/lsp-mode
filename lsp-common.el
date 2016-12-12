@@ -12,7 +12,7 @@
   "Convert Position object in PARAMS to a point."
   (save-excursion
       (goto-char (point-min))
-      (forward-line (1+ (gethash "line" params)))
+      (forward-line (gethash "line" params))
       (+ (line-beginning-position) (gethash "character" params))))
 
 (provide 'lsp-common)
