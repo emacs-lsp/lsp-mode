@@ -110,6 +110,10 @@ interface TextDocumentItem {
     (setf (workspace-server-capabilities lsp--cur-workspace)
 		(gethash "capabilities" response))))
 
+(defsubst lsp--should-initialize ()
+  "Ask user if a new Language Server for the current file should be started."
+  (y-or-n-p "Start a new Language Server for this project? "))
+
 (defun lsp--text-document-did-open ()
   "Executed when a new file is opened, added to `find-file-hook'."
   (let ((cur-dir (expand-file-name default-directory))
@@ -130,7 +134,8 @@ interface TextDocumentItem {
 	    "textDocument/didOpen"
 	    `(:textDocument ,(lsp--make-text-document-item)))))
 
-      (when (setq client (gethash major-mode lsp--defined-clients))
+      (setq client (gethash major-mode lsp--defined-clients))
+      (when (and (lsp--should-initialize) client)
 	(setq data (funcall (lsp--client-new-connection client)))
 	(setq set-vars t)
 	(lsp--initialize (lsp--client-language-id client)
@@ -199,10 +204,10 @@ interface Range {
 
   `(:start ,start :end ,end))
 
-(defsubst lsp--cur-region-to-range ()
+(defsubst lsp--region-to-range (start end)
   "Make Range object for the current region."
-  (lsp--range (lsp--point-to-position (region-beginning))
-	      (lsp--point-to-position (region-end))))
+  (lsp--range (lsp--point-to-position start)
+	      (lsp--point-to-position end)))
 
 (defun lsp--apply-text-edit (text-edit)
   "Apply the edits described in the TextEdit object in TEXT-EDIT."
@@ -394,7 +399,7 @@ type MarkedString = string | { language: string; value: string };"
     (dolist (edit edits)
       (lsp--apply-text-edit edit))))
 
-(defun lsp--make-document-range-formatting-params ()
+(defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region.
 interface DocumentRangeFormattingParams {
     textDocument: TextDocumentIdentifier;
@@ -402,7 +407,7 @@ interface DocumentRangeFormattingParams {
     options: FormattingOptions;
 }"
   (plist-put (lsp--make-document-formatting-params)
-	     :range (lsp--cur-region-to-range)))
+	     :range (lsp--region-to-range start end)))
 
 (defun lsp--workspace-symbols (query)
   ""
@@ -437,10 +442,10 @@ interface DocumentRangeFormattingParams {
 		     (gethash "name" symbol))
 	     (lsp--location-to-xref (gethash "location" symbol))))
 
-(defun lsp-format-region (_s _e)
+(defun lsp-format-region (s e)
   (let ((edits (lsp--send-request (lsp--make-request
 				   "textDocument/rangeFormatting"
-				   (lsp--make-document-range-formatting-params))))
+				   (lsp--make-document-range-formatting-params s e))))
 	(edit))
     (dolist (edit edits)
       (lsp--apply-text-edit edit))))
