@@ -4,4 +4,6 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq emacs
 
-script: emacs -batch -f batch-byte-compile *.el
+script:
+  - curl -fsSL https://raw.githubusercontent.com/cask/cask/master/go | python
+  - cask build
