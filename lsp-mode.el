@@ -3,7 +3,6 @@
 (require 'lsp-receive)
 (require 'lsp-send)
 (require 'cl-lib)
-(require 'projectile)
 
 (defun lsp-define-client (major-mode language-id type get-root &rest args)
   "Define a LSP client.
@@ -62,7 +61,7 @@ Optional arguments:
 		     :command "rls"
 		     :name "Rust Language Server")
 
-  (lsp-define-client 'go-mode "go" 'stdio #'projectile-project-root
+  (lsp-define-client 'go-mode "go" 'stdio #'default-directory
 		     :command '("langserver-go" "-mode=stdio")
 		     :name "Go Language Server"))
 

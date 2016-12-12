@@ -4,6 +4,5 @@
     (json "1.3")
     (emacs "25.1")
     (ht "20161015.1945")
-    (s "20160928.636")
-    (projectile "20161122.728"))
+    (s "20160928.636"))
   :url "https://github.com/vibhavp/emacs-lsp")
