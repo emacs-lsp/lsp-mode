@@ -1,9 +1,27 @@
 language: emacs-lisp
-
+sudo: false
+# Allow Emacs snapshot builds to fail and don’t wait for these as they can take
+# a looooong time
+matrix:
+  fast_finish: true
+  allow_failures:
+    - env: EMACS_VERSION=snapshot
+env:
+  - EMACS_VERSION=24.3
+  - EMACS_VERSION=24.5
+  - EMACS_VERSION=25.1-rc2
+  - EMACS_VERSION=snapshot
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq emacs
-
+  # Configure $PATH: Executables are installed to $HOME/bin
+  - export PATH="$HOME/bin:$PATH"
+  # Download the makefile to emacs-travis.mk
+  - wget 'https://raw.githubusercontent.com/flycheck/emacs-travis/master/emacs-travis.mk'
+  # Install Emacs (according to $EMACS_VERSION) and Cask
+  - make -f emacs-travis.mk install_emacs
+  - make -f emacs-travis.mk install_cask
+install:
+  # Install your dependencies
+  - cask install
 script:
   - curl -fsSL https://raw.githubusercontent.com/cask/cask/master/go | python
   - export PATH="/home/travis/.cask/bin:$PATH"
