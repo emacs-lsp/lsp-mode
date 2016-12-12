@@ -61,7 +61,7 @@ Optional arguments:
 		     :command "rls"
 		     :name "Rust Language Server")
 
-  (lsp-define-client 'go-mode "go" 'stdio #'default-directory
+  (lsp-define-client 'go-mode "go" 'stdio #'(lambda () default-directory)
 		     :command '("langserver-go" "-mode=stdio")
 		     :name "Go Language Server"))
 
