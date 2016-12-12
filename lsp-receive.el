@@ -74,6 +74,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
       ;; else, call the appropriate handler
       (pcase (gethash "method" notification)
 	("window/showMessage" (lsp--window-show-message params))
+	("window/logMessage" (lsp--window-show-message params)) ;; Treat as showMessage for now
 	("textDocument/publishDiagnostics" (lsp--on-diagnostics params))
 	("rustDocument/diagnosticsEnd")
 	("rustDocument/diagnosticsBegin")
@@ -150,7 +151,7 @@ read the next message from the language server, else asynchronously."
   "Process filter for language servers.
 PROC is the process.
 OUTPUT is the output received from the process"
-  (message (format "[%s]" output))
+  ;; (message (format "[%s]" output))
   (let ((pending (ht-get lsp--process-pending-output proc nil))
 	(complete)
 	(rem-pending)
