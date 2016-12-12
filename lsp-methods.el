@@ -523,7 +523,7 @@ interface DocumentRangeFormattingParams {
 
 (defun lsp--set-variables ()
   (setq-local eldoc-documentation-function #'lsp-eldoc)
-  (setq-local indent-region-function #'lsp-format-region)
+  ;; (setq-local indent-region-function #'lsp-format-region)
   (setq-local xref-backend-functions #'lsp--xref-backend)
   (when (gethash "completionProvider" (lsp--server-capabilities))
     (setq-local completion-at-point-functions nil)
