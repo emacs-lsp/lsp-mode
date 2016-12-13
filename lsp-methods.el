@@ -46,6 +46,21 @@
 		 (const :tag "Use the method recommended by the language server." nil))
   :group 'lsp-mode)
 
+(defcustom lsp-enable-eldoc t
+  "Enable `eldoc-mode' integration."
+  :type 'boolean
+  :group 'lsp-mode)
+
+(defcustom lsp-enable-completion-at-point t
+  "Enable `completion-at-point' integration."
+  :type 'boolean
+  :group 'lsp-mode)
+
+(defcustom lsp-enable-xref t
+  "Enable xref integration."
+  :type 'boolean
+  :group 'lsp-mode)
+
 (defun lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
   (plist-put (lsp--make-notification method params)
@@ -108,7 +123,8 @@ interface TextDocumentItem {
   (let ((root)
 	(cur-dir (expand-file-name default-directory))
 	(response)
-	(capabilities))
+	(capabilities)
+	(on-init (lsp--client-on-initialize client)))
     (if (gethash cur-dir lsp--workspaces)
 	(user-error "This workspace has already been initialized")
       (setq lsp--cur-workspace (make-lsp--workspace
@@ -131,7 +147,7 @@ interface TextDocumentItem {
 			    (alist-get
 			     (gethash "textDocumentSync" capabilities)
 			     lsp--sync-methods)))
-    (funcall (lsp--client-on-initialize client))))
+    (when on-init (funcall on-init))))
 
 (defsubst lsp--should-initialize ()
   "Ask user if a new Language Server for the current file should be started."
@@ -393,13 +409,14 @@ Returns xref-item(s)."
 }
 
 type MarkedString = string | { language: string; value: string };"
-  (let* ((hover (lsp--send-request (lsp--make-request
-				    "textDocument/hover"
-				    (lsp--text-document-position-params))))
-	 (contents (gethash "contents" (or hover (make-hash-table)))))
-    (lsp--marked-string-to-string (if (consp contents)
-				      (car contents)
-				    contents))))
+  (when lsp-enable-eldoc
+    (let* ((hover (lsp--send-request (lsp--make-request
+				      "textDocument/hover"
+				      (lsp--text-document-position-params))))
+	   (contents (gethash "contents" (or hover (make-hash-table)))))
+      (lsp--marked-string-to-string (if (consp contents)
+					(car contents)
+				      contents)))))
 
 (defsubst lsp--make-document-formatting-options ()
   (let ((json-false :json-false))
@@ -523,10 +540,13 @@ interface DocumentRangeFormattingParams {
 (defalias 'lsp-completion-at-point #'lsp--get-completions)
 
 (defun lsp--set-variables ()
-  (setq-local eldoc-documentation-function #'lsp-eldoc)
+  (when lsp-enable-eldoc
+    (setq-local eldoc-documentation-function #'lsp-eldoc))
   ;; (setq-local indent-region-function #'lsp-format-region)
-  (setq-local xref-backend-functions #'lsp--xref-backend)
-  (when (gethash "completionProvider" (lsp--server-capabilities))
+  (when lsp-enable-xref
+    (setq-local xref-backend-functions #'lsp--xref-backend))
+  (when (and (gethash "completionProvider" (lsp--server-capabilities))
+	     lsp-enable-completion-at-point)
     (setq-local completion-at-point-functions nil)
     (add-hook 'completion-at-point-functions #'lsp-completion-at-point)))
 
