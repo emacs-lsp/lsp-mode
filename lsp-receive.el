@@ -77,6 +77,8 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 	("textDocument/publishDiagnostics" (lsp--on-diagnostics params))
 	("rustDocument/diagnosticsEnd")
 	("rustDocument/diagnosticsBegin")
+	("textDocument/diagnosticsEnd")
+	("textDocument/diagnosticsBegin")
 	(unknown (message "Unknown notification %s" unknown))))))
 
 (defun lsp--set-response (response)
