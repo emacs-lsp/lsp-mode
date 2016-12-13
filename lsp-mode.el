@@ -4,6 +4,7 @@
 (require 'lsp-send)
 (require 'cl-lib)
 
+
 (defun lsp-define-client (major-mode language-id type get-root &rest args)
   "Define a LSP client.
 MAJOR-MODE is the major-mode for which this client will be invoked.
@@ -37,7 +38,7 @@ Optional arguments:
      :name name
      :connection-type 'pipe
      :command (if (consp command) command (list command))
-     :filter #'lsp--process-filter)))
+   2  :filter #'lsp--process-filter)))
 
 (defun lsp--rust-get-root ()
   (let ((dir default-directory))
@@ -87,39 +88,46 @@ Optional arguments:
       "Yes"
     "No"))
 
-(defun lsp-show-capabilities ()
+(defconst lsp--capabilities 
+  `(("textDocumentSync" . ("Document sync method" .
+			   ((1 , "None")
+			    (2 , "Send full contents")
+			    (3 , "Send incremental changes."))))
+    ("hoverProvider" . ("The server provides hover support" . boolean))
+    ("completionProvider" . ("The server provides completion support" . boolean))
+    ("definitionProvider" . ("The server provides goto definition support" . boolean))
+    ("referencesProvider" . ("The server provides references support" . boolean))
+    ("documentSymbolProvider" . ("The server provides file symbol support" . boolean))
+    ("workspaceSymbolProvider" . ("The server provides project symbol support" . boolean))
+    ("codeActionProvider" . ("The server provides code actions" . boolean))
+    ("codeLensProvider" . ("The server provides code lens" . boolean))
+    ("documentFormattingProvider" . ("The server provides file formatting" . boolean))
+    (("documentRangeFormattingProvider" . ("The server provides region formatting" . boolean)))
+    (("renameProvider" . ("The server provides rename support" . boolean)))))
+
+(defun lsp--cap-str (cap)
+  (let* ((elem (assoc cap lsp--capabilities))
+	 (desc (cadr elem))
+	 (type (cddr elem))
+	 (value (gethash cap (lsp--server-capabilities))))
+    (when (and elem desc type value)
+      (concat desc ": " (cond
+			 ((eq type 'boolean) (if value "Yes" "No"))
+			 ((listp type) (cadr (assoc value type)))) "\n"))))
+
+(defun lsp-capabilities ()
   "View all capabilities for the language server associated with this buffer."
   (interactive)
   (unless lsp--cur-workspace
     (user-error "No language server is associated with this buffer"))
-  (let ((capabilities (lsp--server-capabilities)))
+  (let ((str (mapconcat #'lsp--cap-str (hash-table-keys
+					(lsp--server-capabilities)) "")))
     (with-current-buffer (get-buffer-create
 			  "lsp-capabilities")
-      (read-only-mode -1)
+      (view-mode -1)
       (erase-buffer)
-      (insert (format "Document sync method: %s\n" (alist-get
-						    (lsp--capability
-						     "textDocumentSync"
-						     capabilities)
-						    lsp--sync-type)))
-      (insert (format "Completion support: %s\n" (lsp--capability
-						  "completionProvider"
-						  capabilities)))
-      (insert (format "Help on hover support: %s\n" (lsp--bool-to-str
-						     (lsp--capability
-						      "hoverProvider"
-						      capabilities))))
-      (insert (format "Goto-definition support: %s\n" (lsp--bool-to-str
-						       (lsp--capability
-							"definitionProvider"
-							capabilities))))
-      (insert (format "Support for finding references: %s\n" (lsp--bool-to-str
-							      (lsp--capability
-							       "referencesProvider"
-							       capabilities))))
-      (read-only-mode t))
-    (split-window-right)
+      (insert str)
+      (view-mode 1))
     (switch-to-buffer "lsp-capabilities")))
-
 
 (provide 'lsp-mode)
