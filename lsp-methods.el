@@ -38,7 +38,7 @@
 (defgroup lsp-mode nil
   "Customization group for lsp-mode.")
 
-(defcustom lsp-document-sync-method nil
+(defcustom lsp-document-sync-method 'full
   "How to sync the document with the language server."
   :type '(choice (const :tag "Documents should not be synced at all." 'none)
 		 (const :tag "Documents are synced by always sending the full content of the document." 'full)
@@ -130,7 +130,6 @@ interface TextDocumentItem {
     (setq lsp--server-sync-method (or lsp-document-sync-method
 			    (alist-get
 			     (gethash "textDocumentSync" capabilities)
-			     lsp--sync-methods)))))
 			     lsp--sync-methods)))
     (funcall (lsp--client-on-initialize client))))
 
