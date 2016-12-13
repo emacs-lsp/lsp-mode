@@ -131,6 +131,8 @@ interface TextDocumentItem {
 			    (alist-get
 			     (gethash "textDocumentSync" capabilities)
 			     lsp--sync-methods)))))
+			     lsp--sync-methods)))
+    (funcall (lsp--client-on-initialize client))))
 
 (defsubst lsp--should-initialize ()
   "Ask user if a new Language Server for the current file should be started."
