@@ -23,3 +23,16 @@ The library currently defines clients for [Rust Language Server](https://github.
 and [Sourcegraph's Go Language Server](https://github.com/sourcegraph/go-langserver). 
 For now, the only supported transport is stdio (see `lsp-mode.el` on how to add your 
 own clients), support for TCP and sockets is planned.
+
+## Examples
+
+### `eldoc`
+
+![eldoc](./examples/eldoc.png)
+
+### Goto definition
+
+![gotodef](./examples/goto-def.gif)
+
+### Symbol references
+![ref](./examples/references.png)
