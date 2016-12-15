@@ -462,14 +462,15 @@ Returns xref-item(s)."
 }
 
 type MarkedString = string | { language: string; value: string };"
-  (when lsp-enable-eldoc
-    (let* ((hover (lsp--send-request (lsp--make-request
-				      "textDocument/hover"
-				      (lsp--text-document-position-params))))
-	   (contents (gethash "contents" (or hover (make-hash-table)))))
-      (lsp--marked-string-to-string (if (consp contents)
-					(car contents)
-				      contents)))))
+  (if (symbol-at-point)
+      (let* ((hover (lsp--send-request (lsp--make-request
+					"textDocument/hover"
+					(lsp--text-document-position-params))))
+	     (contents (gethash "contents" (or hover (make-hash-table)))))
+	(lsp--marked-string-to-string (if (consp contents)
+					  (car contents)
+					contents)))
+    nil))
 
 (defsubst lsp--make-document-formatting-options ()
   (let ((json-false :json-false))
