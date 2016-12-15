@@ -1,4 +1,3 @@
-;;; -*- lexical-binding: t -*-
 (require 'cl-lib)
 (require 'json)
 (require 'xref)
@@ -36,7 +35,8 @@
   "Sync method recommended by the server.")
 
 (defgroup lsp-mode nil
-  "Customization group for lsp-mode.")
+  "Customization group for lsp-mode."
+  :group 'tools)
 
 (defcustom lsp-document-sync-method 'full
   "How to sync the document with the language server."

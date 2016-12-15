@@ -4,10 +4,20 @@
 (require 'lsp-send)
 (require 'cl-lib)
 
+(defconst lsp-version "2.0"
+  "Version of the Language Server Procotol implemented by this package.")
 
-(defun lsp-define-client (major-mode language-id type get-root &rest args)
+(defsubst lsp--make-stdio-connection (name command)
+  (lambda ()
+    (make-process
+     :name name
+     :connection-type 'pipe
+     :command (if (consp command) command (list command))
+     :filter #'lsp--process-filter)))
+
+(defun lsp-define-client (mode language-id type get-root &rest args)
   "Define a LSP client.
-MAJOR-MODE is the major-mode for which this client will be invoked.
+MODE is the major mode for which this client will be invoked.
 LANGUAGE-ID is the language id to be used when communication with the Language Server.
 Optional arguments:
 `:name' is the process name for the language server.
@@ -25,20 +35,12 @@ Optional arguments:
 				      (plist-get args (or :name
 							  (format
 							   "%s language server"
-							   major-mode)))
+							   mode)))
 				      (plist-get args :command))
 		     :get-root get-root
 		     :on-initialize (plist-get args :on-initialize)))
 	    (t (error "Invalid TYPE for LSP client"))))
-    (puthash major-mode client lsp--defined-clients)))
-
-(defsubst lsp--make-stdio-connection (name command)
-  (lambda ()
-    (make-process
-     :name name
-     :connection-type 'pipe
-     :command (if (consp command) command (list command))
-     :filter #'lsp--process-filter)))
+    (puthash mode client lsp--defined-clients)))
 
 (defun lsp--rust-get-root ()
   (let ((dir default-directory))
