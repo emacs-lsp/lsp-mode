@@ -1,4 +1,5 @@
 (defun lsp--stdio-send-sync (message proc)
+  ;;(message "sending %s" message)
   (process-send-string proc
 		       message)
   (with-local-quit
