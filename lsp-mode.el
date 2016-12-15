@@ -64,6 +64,12 @@ Optional arguments:
 	  "--release")
       "rls")))
 
+(defun lsp--haskell-get-root ()
+  (let ((dir default-directory))
+    (if (string= dir "/")
+        (user-error "Couldn't find Haskell XXX")
+      dir)))
+
 ;;;###autoload
 (define-minor-mode global-lsp-mode ""
   nil nil nil
@@ -78,7 +84,11 @@ Optional arguments:
 
   (lsp-define-client 'go-mode "go" 'stdio #'(lambda () default-directory)
 		     :command '("langserver-go" "-mode=stdio")
-		     :name "Go Language Server"))
+		     :name "Go Language Server")
+
+  (lsp-define-client 'haskell-mode "haskell" 'stdio #'lsp--haskell-get-root
+                   :command '("hie-lsp.sh")
+                   :name "Haskell Language Server"))
 
 (defconst lsp--sync-type
   `((0 . "None")
