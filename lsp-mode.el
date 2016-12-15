@@ -38,7 +38,7 @@ Optional arguments:
      :name name
      :connection-type 'pipe
      :command (if (consp command) command (list command))
-   2  :filter #'lsp--process-filter)))
+     :filter #'lsp--process-filter)))
 
 (defun lsp--rust-get-root ()
   (let ((dir default-directory))
@@ -69,7 +69,7 @@ Optional arguments:
 
   (add-hook 'find-file-hook #'lsp-on-open)
   (add-hook 'after-save-hook #'lsp-on-save)
-  (add-hook 'after-change-functions #'lsp-on-change)
+  (add-hook 'kill-buffer-hook #'lsp-on-close)
   (lsp-define-client 'rust-mode "rust" 'stdio #'lsp--rust-get-root
 		     :command (lsp--rust-rls-command)
 		     :name "Rust Language Server")
