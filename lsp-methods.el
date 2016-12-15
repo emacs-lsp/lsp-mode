@@ -38,7 +38,7 @@
 (defgroup lsp-mode nil
   "Customization group for lsp-mode.")
 
-(defcustom lsp-document-sync-method 'full
+(defcustom lsp-document-sync-method nil
   "How to sync the document with the language server."
   :type '(choice (const :tag "Documents should not be synced at all." 'none)
 		 (const :tag "Documents are synced by always sending the full content of the document." 'full)
@@ -85,16 +85,22 @@
 	   (lsp--make-message body)
 	   (lsp--workspace-data lsp--cur-workspace)))
 
-(defun lsp--send-request (body)
-  "Send BODY as a request to the language server, get the response."
-  (setq lsp--waiting-for-response t)
+(defun lsp--send-request (body &optional no-wait)
+  "Send BODY as a request to the language server, get the response.
+If wait-for-response is non-nil, don't synchronously wait for a response."
+  (setq lsp--waiting-for-response (not no-wait))
   ;; lsp-send-sync should loop until lsp--from-server returns nil
   ;; in the case of Rust Language Server, this can be done with
   ;; 'accept-process-output`.'
-  (funcall (lsp--client-send-sync (lsp--workspace-client lsp--cur-workspace))
-	   (lsp--make-message body)
-	   (lsp--workspace-data lsp--cur-workspace))
-  (prog1 lsp--response-result (setq lsp--response-result nil)))
+  (let* ((client (lsp--workspace-client lsp--cur-workspace))
+	(send-func (if no-wait
+		       (lsp--client-send-async client)
+		     (lsp--client-send-sync client))))
+    (funcall send-func
+	     (lsp--make-message body)
+	     (lsp--workspace-data lsp--cur-workspace))
+    (when (not no-wait)
+      (prog1 lsp--response-result (setq lsp--response-result nil)))))
 
 (defun lsp--cur-file-version (&optional inc)
   "Return the file version number.  If INC, increment it before."
@@ -278,29 +284,75 @@ interface Range {
 			   :text ,(buffer-substring-no-properties start end)))
     (t (error "Invalid sync method"))))
 
-(defun lsp--text-document-did-change (start end length)
-  "Executed when a file is changed.
-Added to `after-change-functions'"
+(defvar lsp--change-idle-timer nil)
+(defcustom lsp-change-idle-delay 0.5
+  "Number of seconds of idle timer to wait before sending file changes to the server."
+  :group 'lsp-mode
+  :type 'number)
+
+(defvar-local lsp--changes [])
+
+(defun lsp--rem-idle-timer ()
+  (when lsp--change-idle-timer
+    (cancel-timer lsp--change-idle-timer)
+    (setq lsp--change-idle-timer nil)))
+
+(defun lsp--set-idle-timer ()
+   (setq lsp--change-idle-timer (run-at-time lsp-change-idle-delay nil
+					    #'lsp--send-changes)))
+(defun lsp--send-changes ()
+  (lsp--rem-idle-timer)
+  (unless (or (eq lsp--server-sync-method 'none)
+	      (eq lsp--server-sync-method nil))
+    (lsp--cur-file-version t)
+    (lsp--send-notification
+     (lsp--make-notification
+      "textDocument/didChange"
+      `(:textDocument
+	,(lsp--versioned-text-document-identifier)
+	:contentChanges
+	,lsp--changes)))
+    (setq lsp--changes [])))
+
+(defun lsp--push-change (change-event)
+  "Push CHANGE-EVENT to the buffer change vector."
+  (setq lsp--changes (vconcat lsp--changes `(,change-event))))
+
+(defun lsp-on-change (start end length)
   (when lsp--cur-workspace
-    (unless (or (eq lsp--server-sync-method 'none)
-		(eq lsp--server-sync-method nil))
-      (lsp--cur-file-version t)
-      (lsp--send-notification
-       (lsp--make-notification
-	"textDocument/didChange"
-	`(:textDocument
-	  ,(lsp--versioned-text-document-identifier)
-	  :contentChanges
-	  [,(lsp--text-document-content-change-event start end length)]))))))
+    (lsp--rem-idle-timer)
+    (lsp--push-change (lsp--text-document-content-change-event start end length))
+    (lsp--set-idle-timer)))
+
+;; (defun lsp--text-document-did-change (start end length)
+;;   "Executed when a file is changed.
+;; Added to `after-change-functions'"
+;;   (when lsp--cur-workspace
+;;     (unless (or (eq lsp--server-sync-method 'none)
+;; 		(eq lsp--server-sync-method nil))
+;;       (lsp--cur-file-version t)
+;;       (lsp--send-notification
+;;        (lsp--make-notification
+;; 	"textDocument/didChange"
+;; 	`(:textDocument
+;; 	  ,(lsp--versioned-text-document-identifier)
+;; 	  :contentChanges
+;; 	  [,(lsp--text-document-content-change-event start end length)]))))))
+
+(defsubst lsp--shut-down-p ()
+  (y-or-n-p "Close the language server for this workspace? "))
 
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
   (when lsp--cur-workspace
-    (remhash buffer-file-name (lsp--workspace-file-versions lsp--cur-workspace))
-    (lsp--send-notification
-     (lsp--make-notification
-      "textDocument/didClose"
-      `(:textDocument ,(lsp--versioned-text-document-identifier))))))
+    (let ((file-versions (lsp--workspace-file-versions lsp--cur-workspace)))
+      (remhash buffer-file-name file-versions)
+      (when (and (= 0 (hash-table-count file-versions)) (lsp--shut-down-p))
+	(lsp--send-request (lsp--make-request "shutdown" (make-hash-table)) t))
+      (lsp--send-notification
+       (lsp--make-notification
+	"textDocument/didClose"
+	`(:textDocument ,(lsp--versioned-text-document-identifier)))))))
 
 (defun lsp--text-document-did-save ()
   "Executed when the file is closed, added to `after-save-hook''."
@@ -535,20 +587,23 @@ interface DocumentRangeFormattingParams {
 
 (defalias 'lsp-on-open #'lsp--text-document-did-open)
 (defalias 'lsp-on-save #'lsp--text-document-did-save)
-(defalias 'lsp-on-change #'lsp--text-document-did-change)
+;; (defalias 'lsp-on-change #'lsp--text-document-did-change)
+(defalias 'lsp-on-close #'lsp--text-document-did-close)
 (defalias 'lsp-eldoc #'lsp--text-document-hover-string)
 (defalias 'lsp-completion-at-point #'lsp--get-completions)
 
 (defun lsp--set-variables ()
   (when lsp-enable-eldoc
-    (setq-local eldoc-documentation-function #'lsp-eldoc))
+    (setq-local eldoc-documentation-function #'lsp-eldoc)
+    (eldoc-mode))
   ;; (setq-local indent-region-function #'lsp-format-region)
   (when lsp-enable-xref
     (setq-local xref-backend-functions #'lsp--xref-backend))
   (when (and (gethash "completionProvider" (lsp--server-capabilities))
 	     lsp-enable-completion-at-point)
     (setq-local completion-at-point-functions nil)
-    (add-hook 'completion-at-point-functions #'lsp-completion-at-point)))
+    (add-hook 'completion-at-point-functions #'lsp-completion-at-point))
+  (add-hook 'after-change-functions #'lsp-on-change))
 
 (provide 'lsp-methods)
 ;;; document.el ends here
