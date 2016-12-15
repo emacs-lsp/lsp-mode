@@ -26,13 +26,25 @@ own clients), support for TCP and sockets is planned.
 
 ## Examples
 
-### `eldoc`
+### completion
+Completion is provided with the native `completion-at-point` (<kbd>C</kbd>-<kbd>M</kbd>-<kbd>i</kbd>),
+ and should therefore work with any other completion backend.
+
+![completion](./examples/completion.png)
+
+### `eldoc` (Help on hover)
+Hover support is provided with `eldoc`, which should be enabled automatically.
 
 ![eldoc](./examples/eldoc.png)
 
 ### Goto definition
+Use <kbd>M</kbd> - <kbd>.</kbd> (`xref-find-definition`)
+to find the definition for the symbol under point.
 
 ![gotodef](./examples/goto-def.gif)
 
 ### Symbol references
+Use <kbd>M</kbd> - <kbd>?</kbd> (`xref-find-references`)
+to find the references to the symbol under point.
+
 ![ref](./examples/references.png)
