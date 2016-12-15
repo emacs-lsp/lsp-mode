@@ -274,15 +274,13 @@ interface Range {
 
 (defun lsp--text-document-content-change-event (start end length)
   "Make a TextDocumentContentChangeEvent body for START to END, of length LENGTH."
-  (cl-case lsp--server-sync-method
-    ('full `(:text ,(buffer-substring-no-properties (point-min)
-						    (point-max))))
+  `(:range ,(lsp--range (lsp--point-to-position start)
+			  (lsp--point-to-position end))
+	     :rangeLength ,(abs (- start end))
+	     :text ,(buffer-substring-no-properties start end)))
 
-    ('incremental `(:range ,(lsp--range (lsp--point-to-position start)
-					(lsp--point-to-position end))
-			   :rangeLength ,(abs (- start end))
-			   :text ,(buffer-substring-no-properties start end)))
-    (t (error "Invalid sync method"))))
+(defsubst lsp--full-change-event ()
+  `(:text ,(buffer-substring-no-properties (point-min) (point-max))))
 
 (defvar lsp--change-idle-timer nil)
 (defcustom lsp-change-idle-delay 0.5
@@ -302,26 +300,29 @@ interface Range {
 					    #'lsp--send-changes)))
 (defun lsp--send-changes ()
   (lsp--rem-idle-timer)
-  (unless (or (eq lsp--server-sync-method 'none)
-	      (eq lsp--server-sync-method nil))
-    (lsp--cur-file-version t)
-    (lsp--send-notification
-     (lsp--make-notification
-      "textDocument/didChange"
-      `(:textDocument
-	,(lsp--versioned-text-document-identifier)
-	:contentChanges
-	,lsp--changes)))
-    (setq lsp--changes [])))
+  (lsp--cur-file-version t)
+  (lsp--send-notification
+   (lsp--make-notification
+    "textDocument/didChange"
+    `(:textDocument
+      ,(lsp--versioned-text-document-identifier)
+      :contentChanges
+      ,(cl-case lsp--server-sync-method
+	 ('incremental lsp--changes)
+	 ('full `[,(lsp--full-change-event)])))))
+  (setq lsp--changes []))
 
 (defun lsp--push-change (change-event)
   "Push CHANGE-EVENT to the buffer change vector."
   (setq lsp--changes (vconcat lsp--changes `(,change-event))))
 
 (defun lsp-on-change (start end length)
-  (when lsp--cur-workspace
+  (when (and lsp--cur-workspace
+	     (not (or (eq lsp--server-sync-method 'none)
+		      (eq lsp--server-sync-method nil))))
     (lsp--rem-idle-timer)
-    (lsp--push-change (lsp--text-document-content-change-event start end length))
+    (when (eq lsp--server-sync-method 'incremental)
+      (lsp--push-change (lsp--text-document-content-change-event start end length)))
     (lsp--set-idle-timer)))
 
 ;; (defun lsp--text-document-did-change (start end length)
