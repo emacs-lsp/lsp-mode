@@ -9,11 +9,14 @@
 
 (defsubst lsp--make-stdio-connection (name command)
   (lambda ()
-    (make-process
-     :name name
-     :connection-type 'pipe
-     :command (if (consp command) command (list command))
-     :filter #'lsp--process-filter)))
+    (let ((final-command (if (consp command) command (list command))))
+      (unless (executable-find (nth 0 final-command))
+	(error (format "Couldn't find executable %s" (nth 0 final-command))))
+      (make-process
+       :name name
+       :connection-type 'pipe
+       :command final-command
+       :filter #'lsp--process-filter))))
 
 (defun lsp-define-client (mode language-id type get-root &rest args)
   "Define a LSP client.
@@ -87,7 +90,7 @@ Optional arguments:
 		     :name "Go Language Server")
 
   (lsp-define-client 'haskell-mode "haskell" 'stdio #'lsp--haskell-get-root
-                   :command '("hie-lsp.sh")
+                   :command '("hie" "--lsp" "-d" "-l" (make-temp-file "hie" nil ".log"))
                    :name "Haskell Language Server"))
 
 (defconst lsp--sync-type
