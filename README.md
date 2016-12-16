@@ -9,7 +9,7 @@ A Emacs Lisp library for implementing clients for servers using Microsoft's
 The library is designed to integrate with existing Emacs IDE frameworks
 (completion-at-point, xref (beginning with Emacs 25.1), flycheck, etc).
 
-This package is still under development, and is not recommended for daily use.
+*This package is still under development, and is not recommended for daily use.*
 ## Installation
 
 Clone this repository to a suitable path, and add
