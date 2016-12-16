@@ -370,14 +370,14 @@ interface Range {
 					    (lsp--cur-column))))
 
 (defun lsp--make-completion-item (item)
-  (list
-   (gethash "insertText" item (gethash "label" item))
-   (progn (remhash "insertText" item)
-	  (remhash "label" item)
-	  item)))
+  (propertize (gethash "insertText" item (gethash "label" item))
+	      'table (progn (remhash "insertText" item)
+			    (remhash "label" item)
+			    item)))
 
 (defsubst lsp--annotate (item)
-  (gethash "detail" item nil))
+  (let ((table (plist-get (text-properties-at 0 item) 'table)))
+    (concat " - " (gethash "detail" table nil))))
 
 (defun lsp--make-completion-items (response)
   "If RESPONSE is a CompletionItem[], return RESPONSE as is.
@@ -406,7 +406,7 @@ CompletionList object."
 	 (save-excursion (left-word) (point)))
        (point)
        completions
-       '(:annotation-function lsp--anotate)))))
+       :annotation-function #'lsp--annotate))))
 
 ;;; TODO: implement completionItem/resolve
 
