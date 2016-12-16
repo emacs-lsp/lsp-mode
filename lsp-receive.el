@@ -1,6 +1,4 @@
 (require 'json)
-(require 's)
-(require 'ht)
 (require 'cl-lib)
 (require 'lsp-common)
 (require 'lsp-notifications)
@@ -145,6 +143,14 @@ read the next message from the language server, else asynchronously."
 						"\r\n{.*}\\)\\(Content.+\\)")
   "Matches content length, type, header end, body and parts from next message.")
 
+;; Taken from s.el
+(defun lsp--count-matches (regexp str)
+  (save-match-data
+    (with-temp-buffer
+      (insert str)
+      (goto-char (point-min))
+      (count-matches regexp 1 (point-max)))))
+
 ;; FIXME: This is highly inefficient. The same output is being matched *twice*
 ;; (once here, and in lsp--parse-message the second time.)
 (defun lsp--process-filter (proc output)
@@ -152,12 +158,12 @@ read the next message from the language server, else asynchronously."
 PROC is the process.
 OUTPUT is the output received from the process"
   ;; (message (format "[%s]" output))
-  (let ((pending (ht-get lsp--process-pending-output proc nil))
+  (let ((pending (gethash proc lsp--process-pending-output nil))
 	(complete)
 	(rem-pending)
 	(next))
-    (ht-set lsp--process-pending-output proc (setq output (concat pending output)))
-    (cl-case (s-count-matches "\r\n" output)
+    (puthash proc (setq output (concat pending output)) lsp--process-pending-output)
+    (cl-case (lsp--count-matches "\r\n" output)
       ;; will never be zero
       (2 (when (string-match lsp--r-content-length-body output)
 	   (setq complete t
@@ -166,22 +172,24 @@ OUTPUT is the output received from the process"
 	     (setq complete t
 		   rem-pending t)
 	   (when (string-match lsp--r-content-length-body-next output)
-	     (ht-set lsp--process-pending-output proc (substring output
-								 (match-beginning 2)
-								 (length output)))
+	     (puthash proc (substring output
+				      (match-beginning 2)
+				      (length output))
+		      lsp--process-pending-output)
 	     (setq output (match-string 1 output)
 		   complete t
 		   next t))))
       ;; >= 4
       (t (when (string-match lsp--r-content-length-type-body-next output)
-	   (ht-set lsp--process-pending-output proc (substring output
-							       (match-beginning 2)
-							       (length output)))
+	   (puthash proc (substring output
+				    (match-beginning 2)
+				    (length output))
+		    lsp--process-pending-output)
 	   (setq output (match-string 1 output))
 	   (setq complete t
 		 next t))))
     (when rem-pending
-      (ht-remove lsp--process-pending-output proc))
+      (remhash proc lsp--process-pending-output))
     (while (and complete (lsp--from-server output))
       (with-local-quit
 	(accept-process-output proc)))
