@@ -259,6 +259,29 @@ interface Range {
   (lsp--range (lsp--point-to-position start)
 	      (lsp--point-to-position end)))
 
+(defun lsp--apply-workspace-edits (workspace-edits)
+  ;; (message ":workspace-edit: %s" workspace-edits)
+  (maphash (lambda (k v)
+             (maphash (lambda (key value) (lsp--apply-workspace-edit key value)) v))
+           edits)
+  )
+
+(defun lsp--apply-workspace-edit (uri edits)
+  ;; (message "apply-workspace-edit: %s" uri )
+
+  (let ((filename (string-remove-prefix "file://" uri)))
+    (message "apply-workspace-edit:filename= %s" filename )
+    (find-file filename)
+    (lsp--apply-text-edits edits)
+    )
+  )
+
+(defun lsp--apply-text-edits (edits)
+  "Apply the edits described in the TextEdit[] object in EDIT."
+(let ((edit))
+  (dolist (edit edits)
+    (lsp--apply-text-edit edit))))
+
 (defun lsp--apply-text-edit (text-edit)
   "Apply the edits described in the TextEdit object in TEXT-EDIT."
   (let* ((range (gethash "range" text-edit))
@@ -594,6 +617,38 @@ interface DocumentRangeFormattingParams {
 				     "workspace/symbol"
 				     `(:query ,pattern)))))
     (mapcar 'lsp--symbol-information-to-xref symbols)))
+
+(defun lsp--text-document-rename (newname)
+  "Ask the server to rename something in this document."
+  (let ((edits (lsp--send-request (lsp--make-request
+                                   "textDocument/rename"
+                                   (lsp--make-document-rename-params newname))))
+    (edit))
+      (lsp--apply-workspace-edits edits)))
+
+(defsubst lsp--make-document-rename-params (newname)
+  "Make DocumentRangeFormattingParams for selected region.
+interface RenameParams {
+    /**
+     * The document to format.
+     */
+    textDocument: TextDocumentIdentifier;
+
+    /**
+     * The position at which this request was sent.
+     */
+    position: Position;
+
+    /**
+     * The new name of the symbol. If the given name is not valid the
+     * request must return a [ResponseError](#ResponseError) with an
+     * appropriate message set.
+     */
+    newName: string;
+}"
+  `(:position ,(lsp--cur-position)
+    :textDocument ,(lsp--text-document-identifier)
+    :newName ,newname))
 
 (defalias 'lsp-on-open #'lsp--text-document-did-open)
 (defalias 'lsp-on-save #'lsp--text-document-did-save)

@@ -10,9 +10,14 @@
 
 (defun lsp--position-to-point (params)
   "Convert Position object in PARAMS to a point."
+  (pos-at-line-col (gethash "line" params) (gethash "character" params)))
+
+;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
+(defun pos-at-line-col (l c)
   (save-excursion
-      (goto-char (point-min))
-      (forward-line (gethash "line" params))
-      (+ (line-beginning-position) (gethash "character" params))))
+    (goto-char (point-min))
+    (forward-line l)
+    (move-to-column c)
+    (point)))
 
 (provide 'lsp-common)

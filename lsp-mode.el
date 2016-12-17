@@ -104,7 +104,7 @@ Optional arguments:
       "Yes"
     "No"))
 
-(defconst lsp--capabilities 
+(defconst lsp--capabilities
   `(("textDocumentSync" . ("Document sync method" .
 			   ((1 , "None")
 			    (2 , "Send full contents")
@@ -144,5 +144,13 @@ Optional arguments:
       (insert str)
       (view-mode 1))
     (switch-to-buffer "lsp-capabilities")))
+
+(defun lsp-rename (newname)
+  "Rename an identifier via the Haskell Refactorer"
+  (interactive "sNew name:")
+  (unless lsp--cur-workspace
+    (user-error "No language server is associated with this buffer"))
+  (lsp--text-document-rename newname)
+  )
 
 (provide 'lsp-mode)
