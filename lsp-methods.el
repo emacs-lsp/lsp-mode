@@ -260,10 +260,7 @@ interface Range {
 	      (lsp--point-to-position end)))
 
 (defun lsp--apply-workspace-edits (workspace-edits)
-  ;; (message ":workspace-edit: %s" workspace-edits)
-  (maphash (lambda (k v)
-             (maphash (lambda (key value) (lsp--apply-workspace-edit key value)) v))
-           edits)
+  (maphash (lambda (key value) (lsp--apply-workspace-edit key value)) (gethash "changes" edits))
   )
 
 (defun lsp--apply-workspace-edit (uri edits)
