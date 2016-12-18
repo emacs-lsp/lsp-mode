@@ -90,7 +90,8 @@ Optional arguments:
 		     :name "Go Language Server")
 
   (lsp-define-client 'haskell-mode "haskell" 'stdio #'lsp--haskell-get-root
-                   :command '("hie" "--lsp" "-d" "-l" (make-temp-file "hie" nil ".log"))
+                   ;; :command '("hie" "--lsp" "-d" "-l" (make-temp-file "hie" nil ".log"))
+                   :command '("hie" "--lsp" "-d" "-l" "/tmp/hie.log")
                    :name "Haskell Language Server"))
 
 (defconst lsp--sync-type
@@ -103,7 +104,7 @@ Optional arguments:
       "Yes"
     "No"))
 
-(defconst lsp--capabilities 
+(defconst lsp--capabilities
   `(("textDocumentSync" . ("Document sync method" .
 			   ((1 , "None")
 			    (2 , "Send full contents")
