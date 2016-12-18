@@ -126,9 +126,8 @@ Optional arguments:
 	 (type (cddr elem))
 	 (value (gethash cap (lsp--server-capabilities))))
     (when (and elem desc type value)
-      (concat desc ": " (cond
-			 ((eq type 'boolean) (if value "Yes" "No"))
-			 ((listp type) (cadr (assoc value type)))) "\n"))))
+      (concat desc (cond
+		    ((listp type) (concat ": " (cadr (assoc value type))))) "\n"))))
 
 (defun lsp-capabilities ()
   "View all capabilities for the language server associated with this buffer."
