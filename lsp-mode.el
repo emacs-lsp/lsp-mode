@@ -145,12 +145,4 @@ Optional arguments:
       (view-mode 1))
     (switch-to-buffer "lsp-capabilities")))
 
-(defun lsp-rename (newname)
-  "Rename an identifier via the Haskell Refactorer"
-  (interactive "sNew name:")
-  (unless lsp--cur-workspace
-    (user-error "No language server is associated with this buffer"))
-  (lsp--text-document-rename newname)
-  )
-
 (provide 'lsp-mode)

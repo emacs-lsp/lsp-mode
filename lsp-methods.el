@@ -259,9 +259,10 @@ interface Range {
   (lsp--range (lsp--point-to-position start)
 	      (lsp--point-to-position end)))
 
-(defun lsp--apply-workspace-edits (workspace-edits)
-  (maphash (lambda (key value) (lsp--apply-workspace-edit key value)) (gethash "changes" edits))
-  )
+(defun lsp--apply-workspace-edits (edits)
+  (maphash (lambda (key value)
+	     (lsp--apply-workspace-edit key value))
+	   (gethash "changes" edits)))
 
 (defun lsp--apply-workspace-edit (uri edits)
   ;; (message "apply-workspace-edit: %s" uri )
@@ -269,12 +270,10 @@ interface Range {
   (let ((filename (string-remove-prefix "file://" uri)))
     (message "apply-workspace-edit:filename= %s" filename )
     (find-file filename)
-    (lsp--apply-text-edits edits)
-    )
-  )
+    (lsp--apply-text-edits edits)))
 
 (defun lsp--apply-text-edits (edits)
-  "Apply the edits described in the TextEdit[] object in EDIT."
+  "Apply the edits described in the TextEdit[] object in EDITS."
 (let ((edit))
   (dolist (edit edits)
     (lsp--apply-text-edit edit))))
@@ -557,10 +556,8 @@ interface DocumentRangeFormattingParams {
 (defun lsp-format-region (s e)
   (let ((edits (lsp--send-request (lsp--make-request
 				   "textDocument/rangeFormatting"
-				   (lsp--make-document-range-formatting-params s e))))
-	(edit))
-    (dolist (edit edits)
-      (lsp--apply-text-edit edit))))
+				   (lsp--make-document-range-formatting-params s e)))))
+    (lsp--apply-text-edits edits)))
 
 (defun lsp--location-to-td-position (location)
   "Convert LOCATION to a TextDocumentPositionParams object."
@@ -615,37 +612,26 @@ interface DocumentRangeFormattingParams {
 				     `(:query ,pattern)))))
     (mapcar 'lsp--symbol-information-to-xref symbols)))
 
-(defun lsp--text-document-rename (newname)
-  "Ask the server to rename something in this document."
-  (let ((edits (lsp--send-request (lsp--make-request
-                                   "textDocument/rename"
-                                   (lsp--make-document-rename-params newname))))
-    (edit))
-      (lsp--apply-workspace-edits edits)))
-
 (defsubst lsp--make-document-rename-params (newname)
   "Make DocumentRangeFormattingParams for selected region.
 interface RenameParams {
-    /**
-     * The document to format.
-     */
     textDocument: TextDocumentIdentifier;
-
-    /**
-     * The position at which this request was sent.
-     */
     position: Position;
-
-    /**
-     * The new name of the symbol. If the given name is not valid the
-     * request must return a [ResponseError](#ResponseError) with an
-     * appropriate message set.
-     */
     newName: string;
 }"
   `(:position ,(lsp--cur-position)
     :textDocument ,(lsp--text-document-identifier)
     :newName ,newname))
+
+(defun lsp--text-document-rename (newname)
+  "Rename the symbol (and all references to it) under point to NEWNAME."
+  (interactive "sRename to: ")
+  (unless lsp--cur-workspace
+    (user-error "No language server is associated with this buffer"))
+  (let ((edits (lsp--send-request (lsp--make-request
+                                   "textDocument/rename"
+                                   (lsp--make-document-rename-params newname)))))
+      (lsp--apply-workspace-edits edits)))
 
 (defalias 'lsp-on-open #'lsp--text-document-did-open)
 (defalias 'lsp-on-save #'lsp--text-document-did-save)
@@ -653,6 +639,7 @@ interface RenameParams {
 (defalias 'lsp-on-close #'lsp--text-document-did-close)
 (defalias 'lsp-eldoc #'lsp--text-document-hover-string)
 (defalias 'lsp-completion-at-point #'lsp--get-completions)
+(defalias 'lsp-rename #'lsp--text-document-rename)
 
 (defun lsp--set-variables ()
   (when lsp-enable-eldoc
