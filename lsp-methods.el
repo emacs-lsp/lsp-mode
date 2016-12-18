@@ -389,11 +389,12 @@ CompletionList object."
       (gethash "items" response))))
 
 (defun lsp--get-completions ()
-  (let ((response (lsp--send-request (lsp--make-request
+  (let* ((access (buffer-substring-no-properties (- (point) 1) (point)))
+	(response (lsp--send-request (lsp--make-request
 				      "textDocument/completion"
 				      (lsp--text-document-position-params))))
-	(completing-field (string= "." (buffer-substring-no-properties
-					(- (point) 1) (point))))
+	(completing-field (or (string= "." access)
+			      (string= ":" access)))
 	(token (current-word t))
 	(el)
 	(completions))
