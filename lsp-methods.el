@@ -34,10 +34,12 @@
 (defvar-local lsp--server-sync-method nil
   "Sync method recommended by the server.")
 
+;;;###autoload
 (defgroup lsp-mode nil
   "Customization group for lsp-mode."
   :group 'tools)
 
+;;;###autoload
 (defcustom lsp-document-sync-method 'full
   "How to sync the document with the language server."
   :type '(choice (const :tag "Documents should not be synced at all." 'none)
@@ -46,16 +48,19 @@
 		 (const :tag "Use the method recommended by the language server." nil))
   :group 'lsp-mode)
 
+;;;###autoload
 (defcustom lsp-enable-eldoc t
   "Enable `eldoc-mode' integration."
   :type 'boolean
   :group 'lsp-mode)
 
+;;;###autoload
 (defcustom lsp-enable-completion-at-point t
   "Enable `completion-at-point' integration."
   :type 'boolean
   :group 'lsp-mode)
 
+;;;###autoload
 (defcustom lsp-enable-xref t
   "Enable xref integration."
   :type 'boolean
@@ -283,6 +288,8 @@ interface Range {
   `(:text ,(buffer-substring-no-properties (point-min) (point-max))))
 
 (defvar lsp--change-idle-timer nil)
+
+;;;###autoload
 (defcustom lsp-change-idle-delay 0.5
   "Number of seconds of idle timer to wait before sending file changes to the server."
   :group 'lsp-mode
