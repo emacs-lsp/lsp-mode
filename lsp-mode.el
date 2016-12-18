@@ -134,8 +134,8 @@ Optional arguments:
   (interactive)
   (unless lsp--cur-workspace
     (user-error "No language server is associated with this buffer"))
-  (let ((str (mapconcat #'lsp--cap-str (hash-table-keys
-					(lsp--server-capabilities)) "")))
+  (let ((str (mapconcat #'lsp--cap-str (reverse (hash-table-keys
+						 (lsp--server-capabilities))) "")))
     (with-current-buffer (get-buffer-create
 			  "lsp-capabilities")
       (view-mode -1)
