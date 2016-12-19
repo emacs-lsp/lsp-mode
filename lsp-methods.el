@@ -154,11 +154,14 @@ interface TextDocumentItem {
 				  :capabilities ,(make-hash-table)))))
     (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
 	  (setq capabilities (gethash "capabilities" response)))
-    (setq lsp--server-sync-method (or lsp-document-sync-method
-			    (alist-get
-			     (gethash "textDocumentSync" capabilities)
-			     lsp--sync-methods)))
     (when on-init (funcall on-init))))
+
+(defsubst lsp--set-sync-method ()
+  (setq lsp--server-sync-method (or lsp-document-sync-method
+				    (alist-get
+				     (gethash "textDocumentSync"
+					      (lsp--server-capabilities))
+				     lsp--sync-methods))))
 
 (defsubst lsp--should-initialize ()
   "Ask user if a new Language Server for the current file should be started."
@@ -193,7 +196,9 @@ interface TextDocumentItem {
 			 data)
 	(lsp--text-document-did-open)))
 
-    (when set-vars (lsp--set-variables))))
+    (when set-vars
+      (lsp--set-variables)
+      (lsp--set-sync-method))))
 
 (defsubst lsp--text-document-identifier ()
   "Make TextDocumentIdentifier.
