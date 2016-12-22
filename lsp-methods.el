@@ -48,6 +48,11 @@
 		 (const :tag "Use the method recommended by the language server." nil))
   :group 'lsp-mode)
 
+(defcustom lsp-ask-initialize t
+  "Always ask before initializing a new project."
+  :type 'boolean
+  :group 'lsp-mode)
+
 ;;;###autoload
 (defcustom lsp-enable-eldoc t
   "Enable `eldoc-mode' integration."
@@ -164,8 +169,11 @@ interface TextDocumentItem {
 				     lsp--sync-methods))))
 
 (defsubst lsp--should-initialize ()
-  "Ask user if a new Language Server for the current file should be started."
-  (y-or-n-p "Start a new Language Server for this project? "))
+  "Ask user if a new Language Server for the current file should be started.
+If `lsp--dont-ask-init' is bound, return non-nil."
+  (if lsp-ask-initialize
+      (y-or-n-p "Start a new Language Server for this project? ")
+    t))
 
 (defun lsp--text-document-did-open ()
   "Executed when a new file is opened, added to `find-file-hook'."
