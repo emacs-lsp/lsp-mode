@@ -48,6 +48,7 @@
 		 (const :tag "Use the method recommended by the language server." nil))
   :group 'lsp-mode)
 
+;;;###autoload
 (defcustom lsp-ask-initialize t
   "Always ask before initializing a new project."
   :type 'boolean
@@ -273,9 +274,10 @@ interface Range {
 	      (lsp--point-to-position end)))
 
 (defun lsp--apply-workspace-edits (edits)
-  (maphash (lambda (key value)
-	     (lsp--apply-workspace-edit key value))
-	   (gethash "changes" edits)))
+  (let ((lsp-ask-initialize nil))
+    (maphash (lambda (key value)
+	       (lsp--apply-workspace-edit key value))
+	     (gethash "changes" edits))))
 
 (defun lsp--apply-workspace-edit (uri edits)
   ;; (message "apply-workspace-edit: %s" uri )
@@ -283,6 +285,7 @@ interface Range {
   (let ((filename (string-remove-prefix "file://" uri)))
     (message "apply-workspace-edit:filename= %s" filename )
     (find-file filename)
+    (lsp--text-document-did-open)
     (lsp--apply-text-edits edits)))
 
 (defun lsp--apply-text-edits (edits)
