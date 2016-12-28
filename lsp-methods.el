@@ -49,7 +49,7 @@
   :group 'lsp-mode)
 
 ;;;###autoload
-(defcustom lsp-ask-initialize t
+(defcustom lsp-ask-before-initializing t
   "Always ask before initializing a new project."
   :type 'boolean
   :group 'lsp-mode)
@@ -176,7 +176,7 @@ interface TextDocumentItem {
 (defsubst lsp--should-initialize ()
   "Ask user if a new Language Server for the current file should be started.
 If `lsp--dont-ask-init' is bound, return non-nil."
-  (if lsp-ask-initialize
+  (if lsp-ask-before-initializing
       (y-or-n-p "Start a new Language Server for this project? ")
     t))
 
