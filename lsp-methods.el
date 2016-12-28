@@ -122,7 +122,7 @@ If wait-for-response is non-nil, don't synchronously wait for a response."
       (puthash buffer-file-name rev file-versions))
     rev))
 
-(defun lsp--make-text-document-item ()
+(defsubst lsp--make-text-document-item ()
   "Make TextDocumentItem for the currently opened file.
 
 interface TextDocumentItem {
@@ -161,6 +161,10 @@ interface TextDocumentItem {
     (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
 	  (setq capabilities (gethash "capabilities" response)))
     (when on-init (funcall on-init))))
+
+(defsubst lsp--server-capabilities ()
+  "Return the capabilities of the language server associated with the buffer."
+  (lsp--workspace-server-capabilities lsp--cur-workspace))
 
 (defsubst lsp--set-sync-method ()
   (setq lsp--server-sync-method (or lsp-document-sync-method
@@ -304,15 +308,11 @@ interface Range {
       (delete-region start-point end-point)
       (insert (gethash "newText" text-edit)))))
 
-(defsubst lsp--server-capabilities ()
-  "Return the capabilities of the language server associated with the buffer."
-  (lsp--workspace-server-capabilities lsp--cur-workspace))
-
 (defsubst lsp--capability (cap &optional capabilities)
   "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
   (gethash cap (or capabilities (lsp--server-capabilities))))
 
-(defun lsp--text-document-content-change-event (start end length)
+(defsubst lsp--text-document-content-change-event (start end length)
   "Make a TextDocumentContentChangeEvent body for START to END, of length LENGTH."
   `(:range ,(lsp--range (lsp--point-to-position start)
 			  (lsp--point-to-position end))
@@ -332,12 +332,12 @@ interface Range {
 
 (defvar-local lsp--changes [])
 
-(defun lsp--rem-idle-timer ()
+(defsubst lsp--rem-idle-timer ()
   (when lsp--change-idle-timer
     (cancel-timer lsp--change-idle-timer)
     (setq lsp--change-idle-timer nil)))
 
-(defun lsp--set-idle-timer ()
+(defsubst lsp--set-idle-timer ()
    (setq lsp--change-idle-timer (run-at-time lsp-change-idle-delay nil
 					    #'lsp--send-changes)))
 (defun lsp--send-changes ()
@@ -354,7 +354,7 @@ interface Range {
 	 ('full `[,(lsp--full-change-event)])))))
   (setq lsp--changes []))
 
-(defun lsp--push-change (change-event)
+(defsubst lsp--push-change (change-event)
   "Push CHANGE-EVENT to the buffer change vector."
   (setq lsp--changes (vconcat lsp--changes `(,change-event))))
 
@@ -405,7 +405,7 @@ interface Range {
       "textDocument/didSave"
       `(:textDocument ,(lsp--versioned-text-document-identifier))))))
 
-(defun lsp--text-document-position-params ()
+(defsubst lsp--text-document-position-params ()
   "Make TextDocumentPositionParams for the current point in the current document."
   `(:textDocument ,(lsp--text-document-identifier)
 		  :position ,(lsp--position (lsp--cur-line)
