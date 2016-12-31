@@ -32,4 +32,9 @@
     (move-to-column (gethash "character" params))
     (point)))
 
+(defsubst lsp--assert-type (obj pred)
+  (if (funcall pred obj)
+      obj
+    (signal 'wrong-type-argument `(,pred ,obj))))
+
 (provide 'lsp-common)
