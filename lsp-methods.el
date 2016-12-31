@@ -41,7 +41,7 @@
   (data :read-only t))
 
 (defvar-local lsp--cur-workspace nil)
-(defvar lsp--workspaces (make-hash-table :test 'equal))
+(defvar lsp--workspaces (make-hash-table :test #'equal))
 
 (defvar lsp--sync-methods
   '((0 . none)
@@ -162,7 +162,7 @@ interface TextDocumentItem {
 	(user-error "This workspace has already been initialized")
       (setq lsp--cur-workspace (make-lsp--workspace
 				:language-id language-id
-				:file-versions (make-hash-table :test 'equal)
+				:file-versions (make-hash-table :test #'equal)
 				:last-id 0
 				:root (setq root
 					    (funcall (lsp--client-get-root client)))
