@@ -46,17 +46,17 @@ Optional arguments:
     (setq client
 	  (cl-case type
 	    ('stdio (make-lsp--client
-		     :language-id language-id
+		     :language-id (lsp--assert-type language-id #'stringp)
 		     :send-sync 'lsp--stdio-send-sync
 		     :send-async 'lsp--stdio-send-async
-		     :type type
+		     :type (lsp--assert-type type #'integerp)
 		     :new-connection (lsp--make-stdio-connection
 				      (plist-get args (or :name
 							  (format
 							   "%s language server"
 							   mode)))
 				      (plist-get args :command))
-		     :get-root get-root
+		     :get-root (lsp--assert-type get-root #'functionp)
 		     :on-initialize (plist-get args :on-initialize)))
 	    (t (error "Invalid TYPE for LSP client"))))
     (puthash mode client lsp--defined-clients)))
