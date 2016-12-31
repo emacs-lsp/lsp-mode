@@ -1,3 +1,18 @@
+;; Copyright (C) 2016  Vibhav Pant <vibhavp@gmail.com>
+
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 (require 'cl-lib)
 (require 'json)
 (require 'xref)
@@ -22,6 +37,7 @@
   (server-capabilities)
   (root :ready-only t)
   (client :read-only t)
+  (change-timer-disabled nil)
   (data :read-only t))
 
 (defvar-local lsp--cur-workspace nil)
@@ -278,7 +294,8 @@ interface Range {
 	      (lsp--point-to-position end)))
 
 (defun lsp--apply-workspace-edits (edits)
-  (let ((lsp-ask-initialize nil))
+  (cl-letf ((lsp-ask-before-initializing nil)
+	    ((lsp--workspace-change-timer-disabled lsp--cur-workspace) t))
     (maphash (lambda (key value)
 	       (lsp--apply-workspace-edit key value))
 	     (gethash "changes" edits))))
@@ -365,7 +382,9 @@ interface Range {
     (lsp--rem-idle-timer)
     (when (eq lsp--server-sync-method 'incremental)
       (lsp--push-change (lsp--text-document-content-change-event start end length)))
-    (lsp--set-idle-timer)))
+    (if (lsp--workspace-change-timer-disabled lsp--cur-workspace)
+	(lsp--send-changes)
+      (lsp--set-idle-timer))))
 
 ;; (defun lsp--text-document-did-change (start end length)
 ;;   "Executed when a file is changed.
