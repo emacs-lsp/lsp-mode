@@ -14,6 +14,6 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-package "lsp" "0.0.1"
-  "Library for implementing Language Server Protocol clients."
+  "Emacs client for Language Server Protocol."
   '((emacs "25.1"))
   :url "https://github.com/vibhavp/emacs-lsp")
