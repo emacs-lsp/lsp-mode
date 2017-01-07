@@ -157,3 +157,18 @@ Optional arguments:
     (switch-to-buffer "lsp-capabilities")))
 
 (provide 'lsp-mode)
+
+;; Clean up the entire state of lsp mode when Emacs is killed, to get rid of any
+;; pending language servers.
+(add-hook 'kill-emacs-hook #'lsp--global-teardown)
+
+(defun lsp--global-teardown ()
+  (maphash (lambda (key value) (lsp--teardown-client value)) lsp--workspaces)
+  )
+
+(defun lsp--teardown-client (client)
+  (setq lsp--cur-workspace client)
+  ;; TODO: This should send a "shutdown" request and wait for a response first
+  (lsp--send-notification
+   (lsp--make-notification "exit"))
+  )
