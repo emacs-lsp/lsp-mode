@@ -49,7 +49,7 @@ Optional arguments:
 		     :language-id (lsp--assert-type language-id #'stringp)
 		     :send-sync 'lsp--stdio-send-sync
 		     :send-async 'lsp--stdio-send-async
-		     :type (lsp--assert-type type #'integerp)
+		     :type (lsp--assert-type type #'symbolp)
 		     :new-connection (lsp--make-stdio-connection
 				      (plist-get args (or :name
 							  (format
