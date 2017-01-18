@@ -407,14 +407,15 @@ interface Range {
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
   (when lsp--cur-workspace
-    (let ((file-versions (lsp--workspace-file-versions lsp--cur-workspace)))
-      (remhash buffer-file-name file-versions)
-      (when (and (= 0 (hash-table-count file-versions)) (lsp--shut-down-p))
-	(lsp--send-request (lsp--make-request "shutdown" (make-hash-table)) t))
-      (lsp--send-notification
-       (lsp--make-notification
-	"textDocument/didClose"
-	`(:textDocument ,(lsp--versioned-text-document-identifier)))))))
+    (ignore-errors
+      (let ((file-versions (lsp--workspace-file-versions lsp--cur-workspace)))
+	(remhash buffer-file-name file-versions)
+	(when (and (= 0 (hash-table-count file-versions)) (lsp--shut-down-p))
+	  (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)) t))
+	(lsp--send-notification
+	 (lsp--make-notification
+	  "textDocument/didClose"
+	  `(:textDocument ,(lsp--versioned-text-document-identifier))))))))
 
 (defun lsp--text-document-did-save ()
   "Executed when the file is closed, added to `after-save-hook''."
