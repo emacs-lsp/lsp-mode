@@ -25,11 +25,11 @@
   "Hash table storing the diagnostics per file.")
 
 (cl-defstruct lsp-diagnostic
-  (range :read-only t) ;; of the form (number . number), both are points
-  (severity :read-only t) ;; 1 - error, 2 - warning, 3 - information, 4 - hint
-  (code :read-only t) ;; the diagnostic's code
-  (source :read-only t) ;;
-  (message :read-only t) ;; diagnostic's message
+  (range nil :read-only t) ;; of the form (number . number), both are points
+  (severity nil :read-only t) ;; 1 - error, 2 - warning, 3 - information, 4 - hint
+  (code nil :read-only t) ;; the diagnostic's code
+  (source nil :read-only t) ;;
+  (message nil :read-only t) ;; diagnostic's message
   )
 
 (defun lsp--make-diag (diag)
