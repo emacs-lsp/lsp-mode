@@ -74,7 +74,7 @@ Optional arguments:
 (defun lsp--rust-rls-command ()
   (let ((rls-root (getenv "RLS_ROOT")))
     (if rls-root
-	`("cargo" "run" "--quiet" ,(concat
+	`("cargo" "+nightly" "run" "--quiet" ,(concat
 				    "--manifest-path="
 				    (concat
 				     (file-name-as-directory

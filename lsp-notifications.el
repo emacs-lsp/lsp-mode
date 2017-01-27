@@ -21,11 +21,18 @@
   (message "%s" (lsp--propertize (gethash "message" params)
 				 (gethash "type" params))))
 
+(defcustom lsp-after-diagnostics-hook nil
+  "Hooks to run after diagnostics are received from the language
+server and put in `lsp--diagnostics'."
+  :type 'hook)
+
 (defvar lsp--diagnostics (make-hash-table :test 'equal)
   "Hash table storing the diagnostics per file.")
 
 (cl-defstruct lsp-diagnostic
   (range nil :read-only t) ;; of the form (number . number), both are points
+  (line nil :read-only t)
+  (column nil :read-only t)
   (severity nil :read-only t) ;; 1 - error, 2 - warning, 3 - information, 4 - hint
   (code nil :read-only t) ;; the diagnostic's code
   (source nil :read-only t) ;;
@@ -34,13 +41,17 @@
 
 (defun lsp--make-diag (diag)
   "Make a `lsp-diagnostic' from DIAG."
-  (let ((range (gethash "range" diag)))
-    (make-lsp-diagnostic :range `(,(lsp--position-to-point (gethash "start" range))
-				  ,(lsp--position-to-point (gethash "end" range)))
-			 :severity (gethash "severity" diag)
-			 :code (gethash "code" diag)
-			 :source (gethash "source" diag)
-			 :message (gethash "message" diag))))
+  (let* ((range (gethash "range" diag))
+         (start (gethash "start" range)))
+    (make-lsp-diagnostic
+     :range `(,(lsp--position-to-point start)
+              ,(lsp--position-to-point (gethash "end" range)))
+     :line (gethash "line" start)
+     :column (gethash "character" start)
+     :severity (gethash "severity" diag)
+     :code (gethash "code" diag)
+     :source (gethash "source" diag)
+     :message (gethash "message" diag))))
 
 
 (defun lsp--on-diagnostics (params)
@@ -50,7 +61,8 @@ interface PublishDiagnosticsParams {
     diagnostics: Diagnostic[];
 }"
   (let ((file (string-remove-prefix "file://" (gethash "uri" params)))
-	(diagnostics (gethash "diagnostics" params)))
-    (puthash file (mapcar #'lsp--make-diag diagnostics) lsp--diagnostics)))
+        (diagnostics (gethash "diagnostics" params)))
+    (puthash file (mapcar #'lsp--make-diag diagnostics) lsp--diagnostics)
+    (run-hooks 'lsp-after-diagnostics-hook)))
 
 (provide 'lsp-notifications)
