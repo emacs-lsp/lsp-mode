@@ -2,6 +2,7 @@ emacs-lsp
 =========
 
 [![Build Status](https://travis-ci.org/vibhavp/emacs-lsp.svg?branch=master)](https://travis-ci.org/vibhavp/emacs-lsp)
+[![MELPA](http://melpa.org/packages/lsp-mode-badge.svg)](http://melpa.org/#/lsp-mode)
 
 A Emacs Lisp library for implementing clients for servers using Microsoft's
 [Language Server Protocol](https://github.com/Microsoft/language-server-protocol/).
