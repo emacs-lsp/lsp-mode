@@ -535,6 +535,11 @@ type MarkedString = string | { language: string; value: string };"
 					contents)))
     nil))
 
+(defun lsp-info-under-point ()
+  "Show relevant documentation for the thing under point."
+  (interactive)
+  (lsp--text-document-hover-string))
+
 (defsubst lsp--make-document-formatting-options ()
   (let ((json-false :json-false))
     `(:tabSize ,tab-width :insertSpaces
