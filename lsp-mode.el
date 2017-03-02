@@ -139,7 +139,7 @@ Optional arguments:
 	 (value (gethash cap (lsp--server-capabilities))))
     (when (and elem desc type value)
       (concat desc (cond
-		    ((listp type) (concat ": " (cadr (assoc value type))))) "\n"))))
+		    ((listp type) (concat ": " (cdr (assoc value type))))) "\n"))))
 
 (defun lsp-capabilities ()
   "View all capabilities for the language server associated with this buffer."
