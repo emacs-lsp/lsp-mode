@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t -*-
+;;; lsp-mode.el --- Minor mode for interacting with Language Servers -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2016  Vibhav Pant <vibhavp@gmail.com>
 
@@ -14,6 +14,10 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;;; Code:
 
 (require 'lsp-methods)
 (require 'lsp-receive)
@@ -151,3 +155,4 @@ Optional arguments:
     (switch-to-buffer "lsp-capabilities")))
 
 (provide 'lsp-mode)
+;;; lsp-mode.el ends here
