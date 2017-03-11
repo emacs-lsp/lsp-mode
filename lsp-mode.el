@@ -46,23 +46,22 @@ Optional arguments:
 `:name' is the process name for the language server.
 `:command' is the command to run if `TYPE' is 'stdio.
 `:on-initialize' is the function to call when a new project/workspace is initialized."
-  (let ((client))
-    (setq client
-	  (cl-case type
-	    ('stdio (make-lsp--client
-		     :language-id (lsp--assert-type language-id #'stringp)
-		     :send-sync 'lsp--stdio-send-sync
-		     :send-async 'lsp--stdio-send-async
-		     :type (lsp--assert-type type #'symbolp)
-		     :new-connection (lsp--make-stdio-connection
-				      (plist-get args (or :name
-							  (format
-							   "%s language server"
-							   mode)))
-				      (plist-get args :command))
-		     :get-root (lsp--assert-type get-root #'functionp)
-		     :on-initialize (plist-get args :on-initialize)))
-	    (t (error "Invalid TYPE for LSP client"))))
+  (let ((client
+         (cl-case type
+           ('stdio (make-lsp--client
+                    :language-id (lsp--assert-type language-id #'stringp)
+                    :send-sync 'lsp--stdio-send-sync
+                    :send-async 'lsp--stdio-send-async
+                    :type (lsp--assert-type type #'symbolp)
+                    :new-connection (lsp--make-stdio-connection
+                                     (plist-get args (or :name
+                                                         (format
+                                                          "%s language server"
+                                                          mode)))
+                                     (plist-get args :command))
+                    :get-root (lsp--assert-type get-root #'functionp)
+                    :on-initialize (plist-get args :on-initialize)))
+           (t (error "Invalid TYPE for LSP client")))))
     (puthash mode client lsp--defined-clients)))
 
 (defun lsp--rust-get-root ()
