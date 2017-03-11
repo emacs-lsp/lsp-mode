@@ -62,14 +62,8 @@ Optional arguments:
     (puthash mode client lsp--defined-clients)))
 
 (defun lsp--rust-get-root ()
-  (let ((dir default-directory))
-    (while (not (or (file-exists-p (concat (file-name-as-directory dir)
-					   "Cargo.toml"))
-		    (string= dir "/")))
-      (setq dir (file-name-directory (directory-file-name dir))))
-    (if (string= dir "/")
-	(user-error "Couldn't find Rust project")
-      dir)))
+  (or (locate-dominating-file default-directory "Cargo.toml")
+      (user-error "Couldn't find Rust project")))
 
 (defun lsp--rust-rls-command ()
   (let ((rls-root (getenv "RLS_ROOT")))
