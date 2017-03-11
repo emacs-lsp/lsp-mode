@@ -15,6 +15,11 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Author: Vibhav Pant <vibhavp@gmail.com>
+;; URL: https://github.com/vibhavp/emacs-lsp
+;; Package-Requires: ((emacs "25.1") (flycheck "30"))
+;; Version: 2.0
+
 ;;; Commentary:
 
 ;;; Code:
@@ -23,9 +28,6 @@
 (require 'lsp-receive)
 (require 'lsp-send)
 (require 'cl-lib)
-
-(defconst lsp-version "2.0"
-  "Version of the Language Server Procotol implemented by this package.")
 
 (defsubst lsp--make-stdio-connection (name command)
   (lambda ()
