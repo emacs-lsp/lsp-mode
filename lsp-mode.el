@@ -86,26 +86,26 @@ Optional arguments:
         (user-error "Couldn't find Haskell XXX")
       dir)))
 
+(lsp-define-client 'rust-mode "rust" 'stdio #'lsp--rust-get-root
+                   :command (lsp--rust-rls-command)
+                   :name "Rust Language Server")
+
+(lsp-define-client 'go-mode "go" 'stdio #'(lambda () default-directory)
+                   :command '("langserver-go" "-mode=stdio")
+                   :name "Go Language Server")
+
+(lsp-define-client 'haskell-mode "haskell" 'stdio #'lsp--haskell-get-root
+                   ;; :command '("hie" "--lsp" "-d" "-l" (make-temp-file "hie" nil ".log"))
+                   :command '("hie" "--lsp" "-d" "-l" "/tmp/hie.log")
+                   :name "Haskell Language Server")
+
 ;;;###autoload
 (define-minor-mode global-lsp-mode ""
   nil nil nil
   :global t
-
   (add-hook 'find-file-hook #'lsp-on-open)
   (add-hook 'after-save-hook #'lsp-on-save)
-  (add-hook 'kill-buffer-hook #'lsp-on-close)
-  (lsp-define-client 'rust-mode "rust" 'stdio #'lsp--rust-get-root
-		     :command (lsp--rust-rls-command)
-		     :name "Rust Language Server")
-
-  (lsp-define-client 'go-mode "go" 'stdio #'(lambda () default-directory)
-		     :command '("langserver-go" "-mode=stdio")
-		     :name "Go Language Server")
-
-  (lsp-define-client 'haskell-mode "haskell" 'stdio #'lsp--haskell-get-root
-                   ;; :command '("hie" "--lsp" "-d" "-l" (make-temp-file "hie" nil ".log"))
-                   :command '("hie" "--lsp" "-d" "-l" "/tmp/hie.log")
-                   :name "Haskell Language Server"))
+  (add-hook 'kill-buffer-hook #'lsp-on-close))
 
 (defconst lsp--sync-type
   `((0 . "None")
