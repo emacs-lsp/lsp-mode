@@ -24,7 +24,8 @@
 (defcustom lsp-after-diagnostics-hook nil
   "Hooks to run after diagnostics are received from the language
 server and put in `lsp--diagnostics'."
-  :type 'hook)
+  :type 'hook
+  :group 'lsp-mode)
 
 (defvar lsp--diagnostics (make-hash-table :test 'equal)
   "Hash table storing the diagnostics per file.")

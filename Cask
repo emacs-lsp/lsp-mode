@@ -1,3 +1,5 @@
-(package "lsp" "0.0.0" "An implementation of Language Server Protocol for Emacs.")
+(source gnu)
+(source melpa)
 
+(package-file "lsp-mode.el")
 (files "*.el")

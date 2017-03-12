@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t -*-
+;;; lsp-mode.el --- Minor mode for interacting with Language Servers -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2016  Vibhav Pant <vibhavp@gmail.com>
 
@@ -15,13 +15,19 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Author: Vibhav Pant <vibhavp@gmail.com>
+;; URL: https://github.com/vibhavp/emacs-lsp
+;; Package-Requires: ((emacs "25.1") (flycheck "30"))
+;; Version: 2.0
+
+;;; Commentary:
+
+;;; Code:
+
 (require 'lsp-methods)
 (require 'lsp-receive)
 (require 'lsp-send)
 (require 'cl-lib)
-
-(defconst lsp-version "2.0"
-  "Version of the Language Server Procotol implemented by this package.")
 
 (defsubst lsp--make-stdio-connection (name command)
   (lambda ()
@@ -42,34 +48,27 @@ Optional arguments:
 `:name' is the process name for the language server.
 `:command' is the command to run if `TYPE' is 'stdio.
 `:on-initialize' is the function to call when a new project/workspace is initialized."
-  (let ((client))
-    (setq client
-	  (cl-case type
-	    ('stdio (make-lsp--client
-		     :language-id (lsp--assert-type language-id #'stringp)
-		     :send-sync 'lsp--stdio-send-sync
-		     :send-async 'lsp--stdio-send-async
-		     :type (lsp--assert-type type #'symbolp)
-		     :new-connection (lsp--make-stdio-connection
-				      (plist-get args (or :name
-							  (format
-							   "%s language server"
-							   mode)))
-				      (plist-get args :command))
-		     :get-root (lsp--assert-type get-root #'functionp)
-		     :on-initialize (plist-get args :on-initialize)))
-	    (t (error "Invalid TYPE for LSP client"))))
+  (let ((client
+         (cl-case type
+           ('stdio (make-lsp--client
+                    :language-id (lsp--assert-type language-id #'stringp)
+                    :send-sync 'lsp--stdio-send-sync
+                    :send-async 'lsp--stdio-send-async
+                    :type (lsp--assert-type type #'symbolp)
+                    :new-connection (lsp--make-stdio-connection
+                                     (plist-get args (or :name
+                                                         (format
+                                                          "%s language server"
+                                                          mode)))
+                                     (plist-get args :command))
+                    :get-root (lsp--assert-type get-root #'functionp)
+                    :on-initialize (plist-get args :on-initialize)))
+           (t (error "Invalid TYPE for LSP client")))))
     (puthash mode client lsp--defined-clients)))
 
 (defun lsp--rust-get-root ()
-  (let ((dir default-directory))
-    (while (not (or (file-exists-p (concat (file-name-as-directory dir)
-					   "Cargo.toml"))
-		    (string= dir "/")))
-      (setq dir (file-name-directory (directory-file-name dir))))
-    (if (string= dir "/")
-	(user-error "Couldn't find Rust project")
-      dir)))
+  (or (locate-dominating-file default-directory "Cargo.toml")
+      (user-error "Couldn't find Rust project")))
 
 (defun lsp--rust-rls-command ()
   (let ((rls-root (getenv "RLS_ROOT")))
@@ -89,26 +88,26 @@ Optional arguments:
         (user-error "Couldn't find Haskell XXX")
       dir)))
 
+(lsp-define-client 'rust-mode "rust" 'stdio #'lsp--rust-get-root
+                   :command (lsp--rust-rls-command)
+                   :name "Rust Language Server")
+
+(lsp-define-client 'go-mode "go" 'stdio #'(lambda () default-directory)
+                   :command '("langserver-go" "-mode=stdio")
+                   :name "Go Language Server")
+
+(lsp-define-client 'haskell-mode "haskell" 'stdio #'lsp--haskell-get-root
+                   ;; :command '("hie" "--lsp" "-d" "-l" (make-temp-file "hie" nil ".log"))
+                   :command '("hie" "--lsp" "-d" "-l" "/tmp/hie.log")
+                   :name "Haskell Language Server")
+
 ;;;###autoload
 (define-minor-mode global-lsp-mode ""
   nil nil nil
   :global t
-
   (add-hook 'find-file-hook #'lsp-on-open)
   (add-hook 'after-save-hook #'lsp-on-save)
-  (add-hook 'kill-buffer-hook #'lsp-on-close)
-  (lsp-define-client 'rust-mode "rust" 'stdio #'lsp--rust-get-root
-		     :command (lsp--rust-rls-command)
-		     :name "Rust Language Server")
-
-  (lsp-define-client 'go-mode "go" 'stdio #'(lambda () default-directory)
-		     :command '("langserver-go" "-mode=stdio")
-		     :name "Go Language Server")
-
-  (lsp-define-client 'haskell-mode "haskell" 'stdio #'lsp--haskell-get-root
-                   ;; :command '("hie" "--lsp" "-d" "-l" (make-temp-file "hie" nil ".log"))
-                   :command '("hie" "--lsp" "-d" "-l" "/tmp/hie.log")
-                   :name "Haskell Language Server"))
+  (add-hook 'kill-buffer-hook #'lsp-on-close))
 
 (defconst lsp--sync-type
   `((0 . "None")
@@ -157,3 +156,4 @@ Optional arguments:
     (switch-to-buffer "lsp-capabilities")))
 
 (provide 'lsp-mode)
+;;; lsp-mode.el ends here
