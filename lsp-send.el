@@ -13,15 +13,19 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+(require 'lsp-common)
+
 (defun lsp--stdio-send-sync (message proc)
-  ;; (message "lsp--stdio-send-sync: %s" message)
+  (when lsp-print-io
+    (message "lsp--stdio-send-sync: %s" message))
   (process-send-string proc
 		       message)
   (with-local-quit
     (accept-process-output proc)))
 
 (defun lsp--stdio-send-async (message proc)
-  ;; (message "lsp--stdio-send-async: %s" message)
+  (when lsp-print-io
+    (message "lsp--stdio-send-async: %s" message))
   (process-send-string proc
 		       message))
 

@@ -19,6 +19,11 @@
     (3 . 'compilation-message)
     (4 . 'compilation-info-face)))
 
+(defcustom lsp-print-io nil
+  "If non-nil, print all messages to and from the language server to *Messages*."
+  :group 'lsp-mode
+  :type 'boolean)
+
 (defsubst lsp--propertize (str type)
   "Propertize STR as per TYPE."
   (propertize str 'face (alist-get type lsp--message-type-face)))

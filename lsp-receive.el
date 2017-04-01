@@ -172,7 +172,8 @@ read the next message from the language server, else asynchronously."
   "Process filter for language servers.
 PROC is the process.
 OUTPUT is the output received from the process"
-  ;; (message (format "[%s]" output))
+  (when lsp-print-io
+    (message (format "Output from language server: %s" output)))
   (let ((pending (gethash proc lsp--process-pending-output nil))
 	(complete)
 	(rem-pending)
