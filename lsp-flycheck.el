@@ -58,8 +58,8 @@ CALLBACK is the status callback passed by Flycheck."
   "Setup Flycheck for use with lsp-mode."
   ;; Disable automatic syntax checks, since lsp-mode will call `flycheck-buffer'
   ;; directly.
-  (setq flycheck-check-syntax-automatically nil
-        flycheck-checker 'rust-lsp)
+  (setq-local flycheck-check-syntax-automatically nil)
+  (setq-local flycheck-checker 'rust-lsp)
   (add-to-list 'flycheck-checkers 'rust-lsp)
   (flycheck-mode)
   (add-hook 'lsp-after-diagnostics-hook #'flycheck-buffer))
