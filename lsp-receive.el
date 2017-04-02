@@ -1,4 +1,4 @@
-;; Copyright (C) 2016  Vibhav Pant <vibhavp@gmail.com>
+;; Copyright (C) 2016  Vibhav Pant <vibhavp@gmail.com> -*- lexical-binding: t -*-
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -71,20 +71,6 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 			     (car (alist-get code lsp--errors)) message)
 		1)))
 
-(defun lsp--from-server (data)
-  "Callback for when Emacs recives DATA from client.
-If lsp--from-server returns non-nil, the client library must SYNCHRONOUSLY
-read the next message from the language server, else asynchronously."
-  (let ((parsed (lsp--parse-message data)))
-    (when parsed
-      (cl-case (lsp--get-message-type parsed)
-	('response (lsp--set-response parsed))
-	('response-error (lsp--set-response nil)
-			 (message "%s" (lsp--error-string
-					(gethash "error" parsed)))) ;;TODO
-	('notification (lsp--on-notification parsed))))
-    lsp--waiting-for-response))
-
 (cl-defstruct lsp--parser
   (waiting-for-response nil)
   (response-result nil)
@@ -150,7 +136,7 @@ read the next message from the language server, else asynchronously."
 		       (and json-data (gethash "result" json-data nil))
 		       (lsp--parser-waiting-for-response p) nil))
       ('response-error (setf (lsp--parser-response-result p) nil))
-      ('notification (lsp--on-notification json-data))))
+      ('notification (lsp--on-notification p json-data))))
   (lsp--parser-reset p))
 
 (defun lsp--parser-read (p output)
@@ -170,7 +156,7 @@ read the next message from the language server, else asynchronously."
 				 (lsp--cur-body-length p))
 			  (when lsp-print-io
 			    (message "Output from language server: %s"
-				     (lsp--parser-raw p)))
+				     (lsp--parser-body p)))
 			  (lsp--parser-on-message p)))
 	       (setf (lsp--parser-cur-token p)
 		     (concat (lsp--parser-cur-token p) (list c)))))

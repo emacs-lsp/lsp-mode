@@ -1,4 +1,4 @@
-;; Copyright (C) 2016  Vibhav Pant <vibhavp@gmail.com>
+;; Copyright (C) 2016  Vibhav Pant <vibhavp@gmail.com>  -*- lexical-binding: t -*-
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
   (new-connection nil :read-only t)
   (get-root nil :read-only t)
   (on-initialize nil :read-only t))
+
 (defvar lsp--defined-clients (make-hash-table))
 
 (cl-defstruct lsp--workspace
