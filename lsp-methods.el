@@ -31,10 +31,11 @@
 (defvar lsp--defined-clients (make-hash-table))
 
 (cl-defstruct lsp--workspace
+  (parser nil :read-only t)
   (language-id nil :read-only t)
   (last-id 0)
-  (file-versions)
-  (server-capabilities)
+  (file-versions nil)
+  (server-capabilities nil)
   (root nil :ready-only t)
   (client nil :read-only t)
   (change-timer-disabled nil)
@@ -112,6 +113,9 @@
 	   (lsp--make-message body)
 	   (lsp--workspace-data lsp--cur-workspace)))
 
+(defun lsp--cur-parser ()
+  (lsp--workspace-parser lsp--cur-workspace))
+
 (defun lsp--send-request (body &optional no-wait)
   "Send BODY as a request to the language server, get the response.
 If wait-for-response is non-nil, don't synchronously wait for a response."
@@ -120,14 +124,17 @@ If wait-for-response is non-nil, don't synchronously wait for a response."
   ;; in the case of Rust Language Server, this can be done with
   ;; 'accept-process-output`.'
   (let* ((client (lsp--workspace-client lsp--cur-workspace))
-	(send-func (if no-wait
+	 (parser (lsp--cur-parser))
+	 (send-func (if no-wait
 		       (lsp--client-send-async client)
 		     (lsp--client-send-sync client))))
+    (setf (lsp--parser-waiting-for-response parser) (not no-wait))
     (funcall send-func
 	     (lsp--make-message body)
 	     (lsp--workspace-data lsp--cur-workspace))
     (when (not no-wait)
-      (prog1 lsp--response-result (setq lsp--response-result nil)))))
+      (prog1 (lsp--parser-response-result parser)
+	(setf (lsp--parser-response-result parser) nil)))))
 
 (defun lsp--cur-file-version (&optional inc)
   "Return the file version number.  If INC, increment it before."
@@ -152,7 +159,7 @@ interface TextDocumentItem {
 	 :version ,(lsp--cur-file-version)
 	 :text ,(buffer-substring-no-properties (point-min) (point-max))))
 
-(defun lsp--initialize (language-id client &optional data)
+(defun lsp--initialize (language-id client parser &optional data)
   (let ((root)
 	(cur-dir (expand-file-name default-directory))
 	(response)
@@ -161,6 +168,7 @@ interface TextDocumentItem {
     (if (gethash cur-dir lsp--workspaces)
 	(user-error "This workspace has already been initialized")
       (setq lsp--cur-workspace (make-lsp--workspace
+				:parser parser
 				:language-id language-id
 				:file-versions (make-hash-table :test #'equal)
 				:last-id 0
@@ -199,10 +207,7 @@ If `lsp--dont-ask-init' is bound, return non-nil."
 (defun lsp--text-document-did-open ()
   "Executed when a new file is opened, added to `find-file-hook'."
   (let ((cur-dir (expand-file-name default-directory))
-	(key)
-	(client)
-	(data)
-	(set-vars))
+	key client data set-vars parser)
     (if (catch 'break
 	    (dolist (key (hash-table-keys lsp--workspaces))
 	      (when (string-prefix-p key cur-dir)
@@ -218,11 +223,12 @@ If `lsp--dont-ask-init' is bound, return non-nil."
 
       (setq client (gethash major-mode lsp--defined-clients))
       (when (and client (lsp--should-initialize))
-	(setq data (funcall (lsp--client-new-connection client)))
+	(setq parser (make-lsp--parser)
+	 data (funcall (lsp--client-new-connection client)
+		       (lsp--parser-make-filter parser)))
 	(setq set-vars t)
 	(lsp--initialize (lsp--client-language-id client)
-			 client
-			 data)
+			 client parser data)
 	(lsp--text-document-did-open)))
 
     (when set-vars

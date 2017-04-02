@@ -18,35 +18,6 @@
 (require 'lsp-common)
 (require 'lsp-notifications)
 
-(defconst lsp-debug nil
-  "When non-nil, print all non LSP messages from servers to a buffer.")
-
-(defun lsp--json-read-from-string (str)
-  "Like json-read-from-string(STR), but arrays are lists, and objects are hash tables."
-  (let ((json-array-type 'list)
-	(json-object-type 'hash-table)
-	(json-false nil))
-    (json-read-from-string str)))
-
-(defun lsp--parse-message (body)
-  "Read BODY.
-Returns the json string in BODY if it is complete.
-Else returns nil, and should be called again with the remaining output."
-  (let ((completed-read nil)
-	(json-body nil)
-	(content-length nil)
-	(content-type nil))
-    (if (string-match "^Content\-Length: \\([0-9]+\\)" body)
-	(setq content-length (string-to-number (match-string 1 body)))
-      (error "Received body without Content-Length"))
-    (when (string-match "Content\-Type: \\(.+\\)\r" body)
-      (setq content-type (match-string 1 body)))
-    (when (string-match "\r\n\r\n\\(.+\\)" body)
-	(setq json-body (setq body (match-string 1 body))))
-    (when (not (= (length json-body) content-length))
-	(error "Body's length != Content-Length"))
-    (lsp--json-read-from-string json-body)))
-
 (defun lsp--get-message-type (params)
   "Get the message type from PARAMS."
   (when (not (string= (gethash "jsonrpc" params "") "2.0"))
@@ -59,31 +30,19 @@ Else returns nil, and should be called again with the remaining output."
 	'notification
       (error "Couldn't guess message type from params"))))
 
-(defvar-local lsp--waiting-for-response nil)
-(defvar-local lsp--response-result nil)
-(defvar-local lsp--queued-notifications nil)
-
-(defsubst lsp--flush-notifications ()
+(defun lsp--flush-notifications (p)
   "Flush any notifications that were queued while processing the last response."
   (let ((el))
-    (dolist (el (reverse lsp--queued-notifications))
-      (lsp--on-notification el t))
-    (setq lsp--queued-notifications nil)))
+    (dolist (el (nreverse (lsp--parser-queued-notifications p)))
+      (lsp--on-notification p el t))
+    (setf (lsp--parser-queued-notifications p) nil)))
 
-;; How requests might work:
-;; 1 call wrapper around lsp--send-message-sync.
-;; 2. the implemented lsp--send-message-sync waits for next message,
-;; calls lsp--from-server.
-;; 3. lsp--from-server verifies this is the correct response, set the variable
-;; lsp--response-result to the `result` field in the response.
-;; 4. the wrapper around lsp--send-message-sync returns the value of lsp--response-result.
-
-(defun lsp--on-notification (notification &optional dont-queue)
+(defun lsp--on-notification (p notification &optional dont-queue)
   "If response queue is empty, call the appropriate handler for NOTIFICATION.
 Else it is queued (unless DONT-QUEUE is non-nil)"
   (let ((params (gethash "params" notification)))
-    (if (and (not dont-queue) lsp--response-result)
-	(push lsp--queued-notifications notification)
+    (if (and (not dont-queue) (lsp--parser-response-result p))
+	(push (lsp--parser-queued-notifications p) notification)
       ;; else, call the appropriate handler
       (pcase (gethash "method" notification)
 	("window/showMessage" (lsp--window-show-message params))
@@ -94,14 +53,6 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 	("textDocument/diagnosticsEnd")
 	("textDocument/diagnosticsBegin")
 	(unknown (message "Unknown notification %s" unknown))))))
-
-(defun lsp--set-response (response)
-  "Set lsp--response-result as per RESPONSE.
-Set lsp--waiting-for-message to nil."
-  (setq lsp--response-result (and response (gethash "result" response nil))
-	;; no longer waiting for a response.
-	lsp--waiting-for-response nil)
-  (lsp--flush-notifications))
 
 (defconst lsp--errors
   '((-32700 "Parse Error")
@@ -134,93 +85,104 @@ read the next message from the language server, else asynchronously."
 	('notification (lsp--on-notification parsed))))
     lsp--waiting-for-response))
 
-(defvar lsp--process-pending-output (make-hash-table :test 'equal))
-(defvar lsp--process-pending-output nil)
-(defconst lsp--r-content-length "^Content-Length: .+\r\n"
-  "Matches content-length ONLY.")
-(defconst lsp--r-content-type "Content-Type: .+\r\n"
-  "Matches content-type, DON'T use this as is.")
+(cl-defstruct lsp--parser
+  (waiting-for-response nil)
+  (response-result nil)
+  (queued-notifications nil)
+  (cur-token nil) ;; the current token being parsed
+  (raw "") ;; raw data received from the server, for debugging purposes
+  (headers '()) ;; alist of headers
+  (body nil) ;; message body
+  (reading-body nil) ;; If non-nil, reading body
+  (last-terminate nil) ;; If non-nil, last token was '\r\n'
+  (prev-char nil))
 
-(defconst lsp--r-content-length-body (concat lsp--r-content-length "\r\n{.*}$")
-  "Matches content-length, header end and json body (2 \r\n's).")
-(defconst lsp--r-content-length-type-body (concat
-					   lsp--r-content-length lsp--r-content-type
-					   "\r\n{.*}$")
-  "Matches content length, type, header end, and body (3 \r\n's).")
-(defconst lsp--r-content-length-body-next (concat "\\("
-					   lsp--r-content-length
-					   "\r\n{.*}\\)\\(Content.+\\)")
-  "Matches content length, header end, body, and parts from the next message.
-\(3 \r\n's\)")
-(defconst lsp--r-content-length-type-body-next (concat "\\("
-						lsp--r-content-length
-						"\\(?:" lsp--r-content-type "\\)*"
-						"\r\n{.*}\\)\\(Content.+\\)")
-  "Matches content length, type, header end, body and parts from next message.")
+(defun lsp--parser-length-header (p)
+  (string-to-number (cdr (assoc "Content-Length" (lsp--parser-headers p)))))
 
-;; Taken from s.el
-(defun lsp--count-matches (regexp str)
-  (save-match-data
-    (with-temp-buffer
-      (insert str)
-      (goto-char (point-min))
-      (count-matches regexp 1 (point-max)))))
+(defun lsp--parse-header (s)
+  "Parse string S as a LSP (KEY . VAL) header."
+  (let ((pos (string-match "\:" s))
+	key val)
+    (unless pos
+      (error "Invalid header string"))
+    (setq key (substring s 0 pos)
+	  val (substring s (+ 2 pos)))
+    (when (equal key "Content-Length")
+      (cl-assert (cl-loop for c being the elements of val
+			  when (or (> c ?9) (< c ?1)) return nil
+			  finally return t)
+		 nil "Invalid Content-Length value"))
+    (cons key val)))
 
-;; FIXME: This is highly inefficient. The same output is being matched *twice*
-;; (once here, and in lsp--parse-message the second time.)
-(defun lsp--process-filter (proc output)
-  "Process filter for language servers.
-PROC is the process.
-OUTPUT is the output received from the process"
-  (when lsp-print-io
-    (message (format "Output from language server: %s" output)))
-  (let ((pending (gethash proc lsp--process-pending-output nil))
-	(complete)
-	(rem-pending)
-	(next))
-    (puthash proc (setq output (concat pending output)) lsp--process-pending-output)
-    (cl-case (lsp--count-matches "\r\n" output)
-      ;; will never be zero
-      (2 (when (string-match lsp--r-content-length-body output)
-	   (setq complete t
-	       rem-pending t)))
-      (3 (if (string-match lsp--r-content-length-type-body output)
-	     (setq complete t
-		   rem-pending t)
-	   (when (string-match lsp--r-content-length-body-next output)
-	     (puthash proc (substring output
-				      (match-beginning 2)
-				      (length output))
-		      lsp--process-pending-output)
-	     (setq output (match-string 1 output)
-		   complete t
-		   next t))))
-      ;; >= 4
-      (t (when (string-match lsp--r-content-length-type-body-next output)
-	   (puthash proc (substring output
-				    (match-beginning 2)
-				    (length output))
-		    lsp--process-pending-output)
-	   (setq output (match-string 1 output))
-	   (setq complete t
-		 next t))))
-    (when rem-pending
-      (remhash proc lsp--process-pending-output))
-    (while (and complete (lsp--from-server output))
-      (with-local-quit
-	(accept-process-output proc)))
-    (when next
-      ;; stuff from the next response/notification was in this outupt.
-      ;; try parsing it to see if it was a complete message.
-      (lsp--process-filter proc ""))
-    ;; (message (format "complete %s rem-pending %s next %s" complete rem-pending next))
-    (when (and (not (or rem-pending complete next))) ;; got non LSP output
-      (with-current-buffer (get-buffer-create (format "%s output"
-						      (process-name proc)))
-	(insert output)
-	(goto-char (point-max))))
-    (when lsp--waiting-for-response
-      (with-local-quit (accept-process-output proc)))))
+(defun lsp--flush-header (p)
+  (push (lsp--parse-header (substring (lsp--parser-cur-token p) 0
+				      (1- (length (lsp--parser-cur-token p)))))
+	(lsp--parser-headers p))
+  (setf (lsp--parser-cur-token p) nil))
+
+(defun lsp--cur-body-length (p)
+  (length (lsp--parser-body p)))
+
+(defun lsp--parser-reset (p)
+  (setf (lsp--parser-cur-token p) nil
+	(lsp--parser-raw p) ""
+	(lsp--parser-headers p) '()
+	(lsp--parser-body p) nil
+	(lsp--parser-reading-body p) nil
+	(lsp--parser-last-terminate p) nil
+	(lsp--parser-prev-char p) nil))
+
+(defun lsp--parser-set-response (p r)
+  (setf (lsp--parser-response-result p)
+	(and r (gethash "result" response nil))
+	(lsp--parser-waiting-for-response p) nil)
+  (lsp--flush-notifications p))
+
+(defun lsp--parser-on-message (p)
+  "Called when the parser reads a complete message from the server."
+  (let* ((json-array-type 'list)
+	 (json-object-type 'hash-table)
+	 (json-false nil)
+	 (json-data (json-read-from-string (lsp--parser-body p))))
+    (pcase (lsp--get-message-type json-data)
+      ('response (setf (lsp--parser-response-result p)
+		       (and json-data (gethash "result" json-data nil))
+		       (lsp--parser-waiting-for-response p) nil))
+      ('response-error (setf (lsp--parser-response-result p) nil))
+      ('notification (lsp--on-notification json-data))))
+  (lsp--parser-reset p))
+
+(defun lsp--parser-read (p output)
+  (cl-loop for c being the elements of output do
+	   (if (eq c ?\n)
+	       (when (eq ?\r (lsp--parser-prev-char p))
+		 (unless (setf (lsp--parser-reading-body p)
+			       (lsp--parser-last-terminate p))
+		   (lsp--flush-header p))
+		 (setf (lsp--parser-last-terminate p) t))
+	     (unless (eq c ?\r)
+	       (setf (lsp--parser-last-terminate p) nil))
+	     (if (lsp--parser-reading-body p)
+		 (progn (setf (lsp--parser-body p)
+			      (concat (lsp--parser-body p) (list c)))
+			(when (= (lsp--parser-length-header p)
+				 (lsp--cur-body-length p))
+			  (when lsp-print-io
+			    (message "Output from language server: %s"
+				     (lsp--parser-raw p)))
+			  (lsp--parser-on-message p)))
+	       (setf (lsp--parser-cur-token p)
+		     (concat (lsp--parser-cur-token p) (list c)))))
+	   (setf (lsp--parser-raw p)
+		 (concat (lsp--parser-raw p) (list c))
+		 (lsp--parser-prev-char p) c)))
+
+(defun lsp--parser-make-filter (p)
+  #'(lambda (proc output)
+      (lsp--parser-read p output)
+      (when (lsp--parser-waiting-for-response p)
+	(with-local-quit (accept-process-output proc)))))
 
 (provide 'lsp-receive)
 ;;; lsp-callback.el ends here

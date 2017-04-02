@@ -27,11 +27,10 @@
 (require 'lsp-methods)
 (require 'lsp-receive)
 (require 'lsp-send)
-(require 'lsp-flycheck)
 (require 'cl-lib)
 
 (defsubst lsp--make-stdio-connection (name command)
-  (lambda ()
+  (lambda (filter)
     (let ((final-command (if (consp command) command (list command))))
       (unless (executable-find (nth 0 final-command))
 	(error (format "Couldn't find executable %s" (nth 0 final-command))))
@@ -39,7 +38,7 @@
        :name name
        :connection-type 'pipe
        :command final-command
-       :filter #'lsp--process-filter))))
+       :filter filter))))
 
 (defun lsp-define-client (mode language-id type get-root &rest args)
   "Define a LSP client.
@@ -65,8 +64,7 @@ Optional arguments:
                     :get-root (lsp--assert-type get-root #'functionp)
                     :on-initialize (plist-get args :on-initialize)))
            (t (error "Invalid TYPE for LSP client")))))
-    (puthash mode client lsp--defined-clients)
-    (lsp-flycheck-add-mode mode)))
+    (puthash mode client lsp--defined-clients)))
 
 (defun lsp--rust-get-root ()
   (or (locate-dominating-file default-directory "Cargo.toml")
