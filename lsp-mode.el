@@ -27,6 +27,7 @@
 (require 'lsp-methods)
 (require 'lsp-receive)
 (require 'lsp-send)
+(require 'lsp-flycheck)
 (require 'cl-lib)
 
 (defsubst lsp--make-stdio-connection (name command)
@@ -64,7 +65,8 @@ Optional arguments:
                     :get-root (lsp--assert-type get-root #'functionp)
                     :on-initialize (plist-get args :on-initialize)))
            (t (error "Invalid TYPE for LSP client")))))
-    (puthash mode client lsp--defined-clients)))
+    (puthash mode client lsp--defined-clients)
+    (lsp-flycheck-add-mode mode)))
 
 (defun lsp--rust-get-root ()
   (or (locate-dominating-file default-directory "Cargo.toml")

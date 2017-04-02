@@ -25,7 +25,6 @@
 
 ;;; Code:
 
-(require 'lsp-mode)
 (require 'lsp-notifications)
 (require 'flycheck)
 
@@ -58,20 +57,25 @@ CALLBACK is the status callback passed by Flycheck."
   "Setup Flycheck for use with lsp-mode."
   ;; Disable automatic syntax checks, since lsp-mode will call `flycheck-buffer'
   ;; directly.
-  (setq flycheck-check-syntax-automatically nil
-        flycheck-checker 'rust-lsp)
-  (add-to-list 'flycheck-checkers 'rust-lsp)
+  (setq-local flycheck-check-syntax-automatically nil)
+  (setq-local flycheck-checker 'lsp)
+  (add-to-list 'flycheck-checkers 'lsp)
   (flycheck-mode)
   (add-hook 'lsp-after-diagnostics-hook #'flycheck-buffer))
 
-(flycheck-define-generic-checker 'rust-lsp
-  "A Rust syntax checker using the Rust Language Server (RLS) and
-lsp-mode.
+(flycheck-define-generic-checker 'lsp
+  "A syntax checker using the Language Server Protocol (RLS)
+provided by lsp-mode.
 
-See https://github.com/rust-lang-nursery/rls."
+See https://github.com/vibhavp/emacs-lsp."
   :start #'lsp--flycheck-start
-  :modes 'rust-mode
-  :predicate (lambda () (global-lsp-mode)))
+  :modes 'rust-mode                     ; Need a default mode
+  :predicate (lambda () (not (null global-lsp-mode))))
+
+(defun lsp-flycheck-add-mode (mode)
+  "Add MODE as a valid major-mode for the lsp checker."
+  (unless (flycheck-checker-supports-major-mode-p 'lsp mode)
+    (flycheck-add-mode 'lsp mode)))
 
 (provide 'lsp-flycheck)
 
