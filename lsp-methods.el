@@ -121,7 +121,6 @@
 (defun lsp--send-request (body &optional no-wait)
   "Send BODY as a request to the language server, get the response.
 If wait-for-response is non-nil, don't synchronously wait for a response."
-  (setq lsp--waiting-for-response (not no-wait))
   ;; lsp-send-sync should loop until lsp--from-server returns nil
   ;; in the case of Rust Language Server, this can be done with
   ;; 'accept-process-output`.'
@@ -162,11 +161,9 @@ interface TextDocumentItem {
 	 :text ,(buffer-substring-no-properties (point-min) (point-max))))
 
 (defun lsp--initialize (language-id client parser &optional data)
-  (let ((root)
-	(cur-dir (expand-file-name default-directory))
-	(response)
-	(capabilities)
-	(on-init (lsp--client-on-initialize client)))
+  (let ((cur-dir (expand-file-name default-directory))
+	(on-init (lsp--client-on-initialize client))
+	root response)
     (if (gethash cur-dir lsp--workspaces)
 	(user-error "This workspace has already been initialized")
       (setq lsp--cur-workspace (make-lsp--workspace
@@ -185,7 +182,7 @@ interface TextDocumentItem {
 		     `(:processId ,(emacs-pid) :rootPath ,root
 				  :capabilities ,(make-hash-table)))))
     (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
-	  (setq capabilities (gethash "capabilities" response)))
+	  (gethash "capabilities" response))
     (when on-init (funcall on-init))))
 
 (defun lsp--server-capabilities ()
@@ -209,7 +206,7 @@ If `lsp--dont-ask-init' is bound, return non-nil."
 (defun lsp--text-document-did-open ()
   "Executed when a new file is opened, added to `find-file-hook'."
   (let ((cur-dir (expand-file-name default-directory))
-	key client data set-vars parser)
+	client data set-vars parser)
     (if (catch 'break
 	    (dolist (key (hash-table-keys lsp--workspaces))
 	      (when (string-prefix-p key cur-dir)
@@ -321,9 +318,8 @@ interface Range {
 
 (defun lsp--apply-text-edits (edits)
   "Apply the edits described in the TextEdit[] object in EDITS."
-(let ((edit))
   (dolist (edit edits)
-    (lsp--apply-text-edit edit))))
+    (lsp--apply-text-edit edit)))
 
 (defun lsp--apply-text-edit (text-edit)
   "Apply the edits described in the TextEdit object in TEXT-EDIT."
@@ -339,7 +335,7 @@ interface Range {
   "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
   (gethash cap (or capabilities (lsp--server-capabilities))))
 
-(defun lsp--text-document-content-change-event (start end length)
+(defun lsp--text-document-content-change-event (start end _length)
   "Make a TextDocumentContentChangeEvent body for START to END, of length LENGTH."
   `(:range ,(lsp--range (lsp--point-to-position start)
 			  (lsp--point-to-position end))
@@ -468,8 +464,7 @@ CompletionList object."
 	(completing-field (or (string= "." access)
 			      (string= ":" access)))
 	(token (current-word t))
-	(el)
-	(completions))
+	completions)
     (dolist (el (lsp--make-completion-items response))
       (push (lsp--make-completion-item el) completions))
     (when (or token completing-field)
@@ -563,8 +558,7 @@ type MarkedString = string | { language: string; value: string };"
   "Ask the server to format this document."
   (let ((edits (lsp--send-request (lsp--make-request
 				   "textDocument/formatting"
-				   (lsp--make-document-formatting-params))))
-	(edit))
+				   (lsp--make-document-formatting-params)))))
     (dolist (edit edits)
       (lsp--apply-text-edit edit))))
 
