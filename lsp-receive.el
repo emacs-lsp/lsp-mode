@@ -96,7 +96,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 	  val (substring s (+ 2 pos)))
     (when (equal key "Content-Length")
       (cl-assert (cl-loop for c being the elements of val
-			  when (or (> c ?9) (< c ?1)) return nil
+			  when (or (> c ?9) (< c ?0)) return nil
 			  finally return t)
 		 nil "Invalid Content-Length value"))
     (cons key val)))
