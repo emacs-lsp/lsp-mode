@@ -135,7 +135,9 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
       ('response (setf (lsp--parser-response-result p)
 		       (and json-data (gethash "result" json-data nil))
 		       (lsp--parser-waiting-for-response p) nil))
-      ('response-error (setf (lsp--parser-response-result p) nil))
+      ('response-error (setf (lsp--parser-response-result p) nil)
+		       (when json-data
+			 (message (lsp--error-string json-data))))
       ('notification (lsp--on-notification p json-data))))
   (lsp--parser-reset p))
 
