@@ -108,7 +108,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
   (setf (lsp--parser-cur-token p) nil))
 
 (defun lsp--cur-body-length (p)
-  (length (lsp--parser-body p)))
+  (string-bytes (lsp--parser-body p)))
 
 (defun lsp--parser-reset (p)
   (setf (lsp--parser-cur-token p) nil
