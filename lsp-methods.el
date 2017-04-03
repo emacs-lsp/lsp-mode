@@ -146,7 +146,7 @@ If wait-for-response is non-nil, don't synchronously wait for a response."
       (puthash buffer-file-name rev file-versions))
     rev))
 
-(defsubst lsp--make-text-document-item ()
+(defun lsp--make-text-document-item ()
   "Make TextDocumentItem for the currently opened file.
 
 interface TextDocumentItem {
@@ -187,18 +187,18 @@ interface TextDocumentItem {
 	  (setq capabilities (gethash "capabilities" response)))
     (when on-init (funcall on-init))))
 
-(defsubst lsp--server-capabilities ()
+(defun lsp--server-capabilities ()
   "Return the capabilities of the language server associated with the buffer."
   (lsp--workspace-server-capabilities lsp--cur-workspace))
 
-(defsubst lsp--set-sync-method ()
+(defun lsp--set-sync-method ()
   (setq lsp--server-sync-method (or lsp-document-sync-method
 				    (alist-get
 				     (gethash "textDocumentSync"
 					      (lsp--server-capabilities))
 				     lsp--sync-methods))))
 
-(defsubst lsp--should-initialize ()
+(defun lsp--should-initialize ()
   "Ask user if a new Language Server for the current file should be started.
 If `lsp--dont-ask-init' is bound, return non-nil."
   (if lsp-ask-before-initializing
@@ -236,7 +236,7 @@ If `lsp--dont-ask-init' is bound, return non-nil."
       (lsp--set-variables)
       (lsp--set-sync-method))))
 
-(defsubst lsp--text-document-identifier ()
+(defun lsp--text-document-identifier ()
   "Make TextDocumentIdentifier.
 
 interface TextDocumentIdentifier {
@@ -244,7 +244,7 @@ interface TextDocumentIdentifier {
 }"
   `(:uri ,(concat "file://" buffer-file-name)))
 
-(defsubst lsp--versioned-text-document-identifier ()
+(defun lsp--versioned-text-document-identifier ()
   "Make VersionedTextDocumentIdentifier.
 
 interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
@@ -252,7 +252,7 @@ interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
 }"
   (plist-put (lsp--text-document-identifier) :version (lsp--cur-file-version)))
 
-(defsubst lsp--position (line char)
+(defun lsp--position (line char)
   "Make a Position object for the given LINE and CHAR.
 interface Position {
     line: number;
@@ -260,23 +260,23 @@ interface Position {
 }"
   `(:line ,line :character ,char))
 
-(defsubst lsp--cur-line ()
+(defun lsp--cur-line ()
   (1- (line-number-at-pos)))
 
-(defsubst lsp--cur-column ()
+(defun lsp--cur-column ()
   (- (point) (line-beginning-position)))
 
-(defsubst lsp--cur-position ()
+(defun lsp--cur-position ()
   "Make a Position object for the current point."
   (lsp--position (lsp--cur-line) (lsp--cur-column)))
 
-(defsubst lsp--point-to-position (point)
+(defun lsp--point-to-position (point)
   "Convert POINT to Position."
   (save-excursion
     (goto-char point)
     (lsp--cur-position)))
 
-(defsubst lsp--position-p (p)
+(defun lsp--position-p (p)
   (and (numberp (plist-get p :line))
        (numberp (plist-get p :character))))
 
@@ -295,7 +295,7 @@ interface Range {
 
   `(:start ,start :end ,end))
 
-(defsubst lsp--region-to-range (start end)
+(defun lsp--region-to-range (start end)
   "Make Range object for the current region."
   (lsp--range (lsp--point-to-position start)
 	      (lsp--point-to-position end)))
@@ -332,18 +332,18 @@ interface Range {
       (delete-region start-point end-point)
       (insert (gethash "newText" text-edit)))))
 
-(defsubst lsp--capability (cap &optional capabilities)
+(defun lsp--capability (cap &optional capabilities)
   "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
   (gethash cap (or capabilities (lsp--server-capabilities))))
 
-(defsubst lsp--text-document-content-change-event (start end length)
+(defun lsp--text-document-content-change-event (start end length)
   "Make a TextDocumentContentChangeEvent body for START to END, of length LENGTH."
   `(:range ,(lsp--range (lsp--point-to-position start)
 			  (lsp--point-to-position end))
 	     :rangeLength ,(abs (- start end))
 	     :text ,(buffer-substring-no-properties start end)))
 
-(defsubst lsp--full-change-event ()
+(defun lsp--full-change-event ()
   `(:text ,(buffer-substring-no-properties (point-min) (point-max))))
 
 (defvar lsp--change-idle-timer nil)
@@ -356,12 +356,12 @@ interface Range {
 
 (defvar-local lsp--changes [])
 
-(defsubst lsp--rem-idle-timer ()
+(defun lsp--rem-idle-timer ()
   (when lsp--change-idle-timer
     (cancel-timer lsp--change-idle-timer)
     (setq lsp--change-idle-timer nil)))
 
-(defsubst lsp--set-idle-timer ()
+(defun lsp--set-idle-timer ()
    (setq lsp--change-idle-timer (run-at-time lsp-change-idle-delay nil
 					    #'lsp--send-changes)))
 (defun lsp--send-changes ()
@@ -378,7 +378,7 @@ interface Range {
 	 ('full `[,(lsp--full-change-event)])))))
   (setq lsp--changes []))
 
-(defsubst lsp--push-change (change-event)
+(defun lsp--push-change (change-event)
   "Push CHANGE-EVENT to the buffer change vector."
   (setq lsp--changes (vconcat lsp--changes `(,change-event))))
 
@@ -408,7 +408,7 @@ interface Range {
 ;; 	  :contentChanges
 ;; 	  [,(lsp--text-document-content-change-event start end length)]))))))
 
-(defsubst lsp--shut-down-p ()
+(defun lsp--shut-down-p ()
   (y-or-n-p "Close the language server for this workspace? "))
 
 (defun lsp--text-document-did-close ()
@@ -432,7 +432,7 @@ interface Range {
       "textDocument/didSave"
       `(:textDocument ,(lsp--versioned-text-document-identifier))))))
 
-(defsubst lsp--text-document-position-params ()
+(defun lsp--text-document-position-params ()
   "Make TextDocumentPositionParams for the current point in the current document."
   `(:textDocument ,(lsp--text-document-identifier)
 		  :position ,(lsp--position (lsp--cur-line)
@@ -444,7 +444,7 @@ interface Range {
 			    (remhash "label" item)
 			    item)))
 
-(defsubst lsp--annotate (item)
+(defun lsp--annotate (item)
   (let ((table (plist-get (text-properties-at 0 item) 'table)))
     (concat " - " (gethash "detail" table nil))))
 
@@ -547,7 +547,7 @@ type MarkedString = string | { language: string; value: string };"
   (interactive)
   (lsp--text-document-hover-string))
 
-(defsubst lsp--make-document-formatting-options ()
+(defun lsp--make-document-formatting-options ()
   (let ((json-false :json-false))
     `(:tabSize ,tab-width :insertSpaces
 	       ,(if indent-tabs-mode json-false t))))
@@ -565,7 +565,7 @@ type MarkedString = string | { language: string; value: string };"
     (dolist (edit edits)
       (lsp--apply-text-edit edit))))
 
-(defsubst lsp--make-document-range-formatting-params (start end)
+(defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region.
 interface DocumentRangeFormattingParams {
     textDocument: TextDocumentIdentifier;
@@ -660,7 +660,7 @@ interface DocumentRangeFormattingParams {
 				     `(:query ,pattern)))))
     (mapcar 'lsp--symbol-information-to-xref symbols)))
 
-(defsubst lsp--make-document-rename-params (newname)
+(defun lsp--make-document-rename-params (newname)
   "Make DocumentRangeFormattingParams for selected region.
 interface RenameParams {
     textDocument: TextDocumentIdentifier;
