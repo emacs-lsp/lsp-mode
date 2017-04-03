@@ -32,10 +32,9 @@
 
 (defun lsp--flush-notifications (p)
   "Flush any notifications that were queued while processing the last response."
-  (let ((el))
-    (dolist (el (nreverse (lsp--parser-queued-notifications p)))
-      (lsp--on-notification p el t))
-    (setf (lsp--parser-queued-notifications p) nil)))
+  (dolist (el (nreverse (lsp--parser-queued-notifications p)))
+    (lsp--on-notification p el t))
+  (setf (lsp--parser-queued-notifications p) nil))
 
 (defun lsp--on-notification (p notification &optional dont-queue)
   "If response queue is empty, call the appropriate handler for NOTIFICATION.
@@ -67,9 +66,9 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
   "Format ERR as a user friendly string."
   (let ((code (gethash "code" err))
 	(message (gethash "message" err)))
-    (lsp--propertize (format "Error from the Language Server: (%s) %s"
-			     (car (alist-get code lsp--errors)) message)
-		1)))
+    (format "Error from the Language Server: (%s) %s"
+	    (or (car (alist-get code lsp--errors)) "Unknown error")
+	    message)))
 
 (cl-defstruct lsp--parser
   (waiting-for-response nil)
@@ -119,12 +118,6 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 	(lsp--parser-last-terminate p) nil
 	(lsp--parser-prev-char p) nil))
 
-(defun lsp--parser-set-response (p r)
-  (setf (lsp--parser-response-result p)
-	(and r (gethash "result" response nil))
-	(lsp--parser-waiting-for-response p) nil)
-  (lsp--flush-notifications p))
-
 (defun lsp--parser-on-message (p)
   "Called when the parser reads a complete message from the server."
   (let* ((json-array-type 'list)
@@ -137,7 +130,9 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 		       (lsp--parser-waiting-for-response p) nil))
       ('response-error (setf (lsp--parser-response-result p) nil)
 		       (when json-data
-			 (message (lsp--error-string json-data))))
+			 (message (lsp--error-string (gethash "error" json-data nil))))
+		       (setf (lsp--parser-response-result p) nil
+			    (lsp--parser-waiting-for-response p) nil))
       ('notification (lsp--on-notification p json-data))))
   (lsp--parser-reset p))
 
