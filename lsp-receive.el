@@ -98,7 +98,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
       (cl-assert (cl-loop for c being the elements of val
 			  when (or (> c ?9) (< c ?0)) return nil
 			  finally return t)
-		 nil "Invalid Content-Length value"))
+		 nil (format "Invalid Content-Length value: %s" val)))
     (cons key val)))
 
 (defun lsp--flush-header (p)
