@@ -27,7 +27,8 @@
   (type nil :read-only t)
   (new-connection nil :read-only t)
   (get-root nil :read-only t)
-  (on-initialize nil :read-only t))
+  (on-initialize nil :read-only t)
+  (ignore-regexps nil :read-only t))
 
 (defvar lsp--defined-clients (make-hash-table))
 
@@ -226,7 +227,9 @@ If `lsp--dont-ask-init' is bound, return non-nil."
       (when (and client (lsp--should-initialize))
 	(setq parser (make-lsp--parser)
 	 data (funcall (lsp--client-new-connection client)
-		       (lsp--parser-make-filter parser)))
+		       (lsp--parser-make-filter
+			parser
+			(lsp--client-ignore-regexps client))))
 	(setq set-vars t)
 	(lsp--initialize (lsp--client-language-id client)
 			 client parser data)

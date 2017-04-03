@@ -40,6 +40,16 @@
        :command final-command
        :filter filter))))
 
+(defun lsp--verify-regexp-list (l)
+  (cl-assert (cl-typep l 'list) nil
+	     "lsp-define-client: :ignore-regexps is not a list")
+  (dolist (e l l)
+    (cl-assert (cl-typep e 'string)
+	       nil
+	       (format
+		"lsp-define-client: :ignore-regexps element %s is not a string"
+		e))))
+
 (defun lsp-define-client (mode language-id type get-root &rest args)
   "Define a LSP client.
 MODE is the major mode for which this client will be invoked.
@@ -47,23 +57,27 @@ LANGUAGE-ID is the language id to be used when communication with the Language S
 Optional arguments:
 `:name' is the process name for the language server.
 `:command' is the command to run if `TYPE' is 'stdio.
-`:on-initialize' is the function to call when a new project/workspace is initialized."
-  (let ((client
-         (cl-case type
-           ('stdio (make-lsp--client
-                    :language-id (lsp--assert-type language-id #'stringp)
-                    :send-sync 'lsp--stdio-send-sync
-                    :send-async 'lsp--stdio-send-async
-                    :type (lsp--assert-type type #'symbolp)
-                    :new-connection (lsp--make-stdio-connection
-                                     (plist-get args (or :name
-                                                         (format
-                                                          "%s language server"
-                                                          mode)))
-                                     (plist-get args :command))
-                    :get-root (lsp--assert-type get-root #'functionp)
-                    :on-initialize (plist-get args :on-initialize)))
-           (t (error "Invalid TYPE for LSP client")))))
+`:on-initialize' is the function to call when a new project/workspace is initialized.
+`:ignore-regexps' is a list of regexps which when matched will be ignored by the output parser."
+  (let* ((client
+	  (cl-case type
+	    ('stdio (make-lsp--client
+		     :language-id (lsp--assert-type language-id #'stringp)
+		     :send-sync 'lsp--stdio-send-sync
+		     :send-async 'lsp--stdio-send-async
+		     :type (lsp--assert-type type #'symbolp)
+		     :new-connection (lsp--make-stdio-connection
+				      (plist-get args (or :name
+							  (format
+							   "%s language server"
+							   mode)))
+				      (plist-get args :command))
+		     :get-root (lsp--assert-type get-root #'functionp)
+		     :on-initialize (plist-get args :on-initialize)
+		     :ignore-regexps (lsp--verify-regexp-list (plist-get
+							       args
+							       :ignore-regexps))))
+	    (t (error "Invalid TYPE for LSP client")))))
     (puthash mode client lsp--defined-clients)))
 
 (defun lsp--rust-get-root ()
@@ -93,8 +107,9 @@ Optional arguments:
                    :name "Rust Language Server")
 
 (lsp-define-client 'go-mode "go" 'stdio #'(lambda () default-directory)
-                   :command '("langserver-go" "-mode=stdio")
-                   :name "Go Language Server")
+                   :command '("go-langserver" "-mode=stdio")
+                   :name "Go Language Server"
+		   :ignore-regexps '("^langserver-go: reading on stdin, writing on stdout$"))
 
 (lsp-define-client 'haskell-mode "haskell" 'stdio #'lsp--haskell-get-root
                    ;; :command '("hie" "--lsp" "-d" "-l" (make-temp-file "hie" nil ".log"))

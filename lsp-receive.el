@@ -164,9 +164,14 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 		 (concat (lsp--parser-raw p) (list c))
 		 (lsp--parser-prev-char p) c)))
 
-(defun lsp--parser-make-filter (p)
+(defun lsp--parser-make-filter (p ignore-regexps)
   #'(lambda (proc output)
-      (lsp--parser-read p output)
+      (when (cl-loop for r in ignore-regexps
+		     ;; check if the output is to be ignored or not
+		     ;; TODO: Would this ever result in false positives?
+		     when (string-match r output) return nil
+		     finally return t)
+	(lsp--parser-read p output))
       (when (lsp--parser-waiting-for-response p)
 	(with-local-quit (accept-process-output proc)))))
 
