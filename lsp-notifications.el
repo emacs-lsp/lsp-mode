@@ -17,7 +17,7 @@
 
 (require 'cl-lib)
 
-(defsubst lsp--window-show-message (params)
+(defun lsp--window-show-message (params)
   (message "%s" (lsp--propertize (gethash "message" params)
 				 (gethash "type" params))))
 

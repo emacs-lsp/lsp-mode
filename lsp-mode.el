@@ -29,7 +29,7 @@
 (require 'lsp-send)
 (require 'cl-lib)
 
-(defsubst lsp--make-stdio-connection (name command)
+(defun lsp--make-stdio-connection (name command)
   (lambda (filter)
     (let ((final-command (if (consp command) command (list command))))
       (unless (executable-find (nth 0 final-command))

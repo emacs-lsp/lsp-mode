@@ -40,7 +40,7 @@
   (root nil :ready-only t)
   (client nil :read-only t)
   (change-timer-disabled nil)
-  (data nil :read-only t))
+  (proc nil :read-only t))
 
 (defvar-local lsp--cur-workspace nil)
 (defvar lsp--workspaces (make-hash-table :test #'equal))
@@ -112,7 +112,7 @@
   "Send BODY as a notification to the language server."
   (funcall (lsp--client-send-async (lsp--workspace-client lsp--cur-workspace))
 	   (lsp--make-message body)
-	   (lsp--workspace-data lsp--cur-workspace)))
+	   (lsp--workspace-proc lsp--cur-workspace)))
 
 (defun lsp--cur-parser ()
   (lsp--workspace-parser lsp--cur-workspace))
@@ -132,7 +132,7 @@ If wait-for-response is non-nil, don't synchronously wait for a response."
     (setf (lsp--parser-waiting-for-response parser) (not no-wait))
     (funcall send-func
 	     (lsp--make-message body)
-	     (lsp--workspace-data lsp--cur-workspace))
+	     (lsp--workspace-proc lsp--cur-workspace))
     (when (not no-wait)
       (prog1 (lsp--parser-response-result parser)
 	(setf (lsp--parser-response-result parser) nil)))))
@@ -176,7 +176,7 @@ interface TextDocumentItem {
 				:root (setq root
 					    (funcall (lsp--client-get-root client)))
 				:client client
-				:data data))
+				:proc data))
       (puthash cur-dir lsp--cur-workspace lsp--workspaces))
     (setq response (lsp--send-request
 		    (lsp--make-request

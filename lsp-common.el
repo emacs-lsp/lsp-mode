@@ -24,7 +24,7 @@
   :group 'lsp-mode
   :type 'boolean)
 
-(defsubst lsp--propertize (str type)
+(defun lsp--propertize (str type)
   "Propertize STR as per TYPE."
   (propertize str 'face (alist-get type lsp--message-type-face)))
 
@@ -37,7 +37,7 @@
     (move-to-column (gethash "character" params))
     (point)))
 
-(defsubst lsp--assert-type (obj pred)
+(defun lsp--assert-type (obj pred)
   (if (funcall pred obj)
       obj
     (signal 'wrong-type-argument `(,pred ,obj))))
