@@ -171,7 +171,13 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 		     ;; TODO: Would this ever result in false positives?
 		     when (string-match r output) return nil
 		     finally return t)
-	(lsp--parser-read p output))
+	(condition-case err
+	    (lsp--parser-read p output)
+	  (error
+	   (progn (lsp--parser-reset p)
+		  (setf (lsp--parser-response-result p) nil
+			(lsp--parser-waiting-for-response p) nil)
+		  (error "Error parsing language server output: %s" err)))))
       (when (lsp--parser-waiting-for-response p)
 	(with-local-quit (accept-process-output proc)))))
 
