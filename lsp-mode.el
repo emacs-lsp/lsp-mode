@@ -59,6 +59,7 @@ Optional arguments:
 `:command' is the command to run if `TYPE' is 'stdio.
 `:on-initialize' is the function to call when a new project/workspace is initialized.
 `:ignore-regexps' is a list of regexps which when matched will be ignored by the output parser."
+  (lsp--assert-type mode #'symbolp)
   (let* ((client
 	  (cl-case type
 	    ('stdio (make-lsp--client

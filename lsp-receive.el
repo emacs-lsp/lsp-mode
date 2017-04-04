@@ -18,6 +18,22 @@
 (require 'lsp-common)
 (require 'lsp-notifications)
 
+(cl-defstruct lsp--parser
+  (waiting-for-response nil)
+  (response-result nil)
+  (cur-token nil) ;; the current token being parsed
+  (raw "") ;; raw data received from the server, for debugging purposes
+  (headers '()) ;; alist of headers
+  (body nil) ;; message body
+  (reading-body nil) ;; If non-nil, reading body
+  (last-terminate nil) ;; If non-nil, last token was '\r\n'
+  (prev-char nil)
+
+  (queued-notifications nil)
+
+  (workspace nil) ;; the workspace
+  (method-handlers nil :read-only t))
+
 (defun lsp--get-message-type (params)
   "Get the message type from PARAMS."
   (when (not (string= (gethash "jsonrpc" params "") "2.0"))
@@ -39,7 +55,8 @@
 (defun lsp--on-notification (p notification &optional dont-queue)
   "If response queue is empty, call the appropriate handler for NOTIFICATION.
 Else it is queued (unless DONT-QUEUE is non-nil)"
-  (let ((params (gethash "params" notification)))
+  (let ((params (gethash "params" notification))
+	handler)
     (if (and (not dont-queue) (lsp--parser-response-result p))
 	(push (lsp--parser-queued-notifications p) notification)
       ;; else, call the appropriate handler
@@ -47,11 +64,13 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 	("window/showMessage" (lsp--window-show-message params))
 	("window/logMessage" (lsp--window-show-message params)) ;; Treat as showMessage for now
 	("textDocument/publishDiagnostics" (lsp--on-diagnostics params))
-	("rustDocument/diagnosticsEnd")
-	("rustDocument/diagnosticsBegin")
 	("textDocument/diagnosticsEnd")
 	("textDocument/diagnosticsBegin")
-	(unknown (message "Unknown notification %s" unknown))))))
+	(other
+	 (setq handler (gethash other (lsp--parser-method-handlers p) nil))
+	 (if (not handler)
+	     (message "Unkown method: %s" other)
+	   (funcall handler (lsp--parser-workspace p) params)))))))
 
 (defconst lsp--errors
   '((-32700 "Parse Error")
@@ -69,18 +88,6 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
     (format "Error from the Language Server: (%s) %s"
 	    (or (car (alist-get code lsp--errors)) "Unknown error")
 	    message)))
-
-(cl-defstruct lsp--parser
-  (waiting-for-response nil)
-  (response-result nil)
-  (queued-notifications nil)
-  (cur-token nil) ;; the current token being parsed
-  (raw "") ;; raw data received from the server, for debugging purposes
-  (headers '()) ;; alist of headers
-  (body nil) ;; message body
-  (reading-body nil) ;; If non-nil, reading body
-  (last-terminate nil) ;; If non-nil, last token was '\r\n'
-  (prev-char nil))
 
 (defun lsp--parser-length-header (p)
   (string-to-number (cdr (assoc "Content-Length" (lsp--parser-headers p)))))
@@ -162,6 +169,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 		 (lsp--parser-prev-char p) c)))
 
 (defun lsp--parser-make-filter (p ignore-regexps)
+  (cl-assert (lsp--parser-workspace p) nil "Parser workspace cannot be nil.")
   #'(lambda (proc output)
       (when (cl-loop for r in ignore-regexps
 		     ;; check if the output is to be ignored or not

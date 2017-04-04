@@ -28,7 +28,8 @@
   (new-connection nil :read-only t)
   (get-root nil :read-only t)
   (on-initialize nil :read-only t)
-  (ignore-regexps nil :read-only t))
+  (ignore-regexps nil :read-only t)
+  (method-handlers (make-hash-table :test 'equal)))
 
 (defvar lsp--defined-clients (make-hash-table))
 
@@ -90,6 +91,12 @@
   "Enable xref integration."
   :type 'boolean
   :group 'lsp-mode)
+
+(defun lsp-client-on-notification (mode method callback)
+  (lsp--assert-type callback #'functionp)
+  (let ((client (gethash mode lsp--defined-clients nil)))
+    (cl-assert client nil (format "%s doesn't have a defined client" mode))
+    (puthash method callback (lsp--client-method-handlers client))))
 
 (defun lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
@@ -176,6 +183,7 @@ interface TextDocumentItem {
 				:client client
 				:proc data))
       (puthash cur-dir lsp--cur-workspace lsp--workspaces))
+    (setf (lsp--parser-workspace parser) lsp--cur-workspace)
     (setq response (lsp--send-request
 		    (lsp--make-request
 		     "initialize"
@@ -222,7 +230,8 @@ If `lsp--dont-ask-init' is bound, return non-nil."
 
       (setq client (gethash major-mode lsp--defined-clients))
       (when (and client (lsp--should-initialize))
-	(setq parser (make-lsp--parser)
+	(setq parser (make-lsp--parser :method-handlers
+				       (lsp--client-method-handlers client))
 	 data (funcall (lsp--client-new-connection client)
 		       (lsp--parser-make-filter
 			parser
