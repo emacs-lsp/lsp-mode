@@ -81,10 +81,6 @@ Optional arguments:
 	    (t (error "Invalid TYPE for LSP client")))))
     (puthash mode client lsp--defined-clients)))
 
-(defun lsp--rust-get-root ()
-  (or (locate-dominating-file default-directory "Cargo.toml")
-      (user-error "Couldn't find Rust project")))
-
 (defun lsp--rust-rls-command ()
   (let ((rls-root (getenv "RLS_ROOT")))
     (if rls-root
@@ -110,7 +106,7 @@ Optional arguments:
 		   :command '("pyls")
 		   :name "Python Language Server")
 
-(lsp-define-client 'haskell-mode "haskell" 'stdio #'lsp--haskell-get-root
+(lsp-define-client 'haskell-mode "haskell" 'stdio #'(lambda () default-directory)
                    ;; :command '("hie" "--lsp" "-d" "-l" (make-temp-file "hie" nil ".log"))
                    :command '("hie" "--lsp" "-d" "-l" "/tmp/hie.log")
                    :name "Haskell Language Server")
