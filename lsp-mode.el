@@ -97,13 +97,7 @@ Optional arguments:
 	  "--release")
       "rls")))
 
-(defun lsp--haskell-get-root ()
-  (let ((dir default-directory))
-    (if (string= dir "/")
-        (user-error "Couldn't find Haskell XXX")
-      dir)))
-
-(lsp-define-client 'rust-mode "rust" 'stdio #'lsp--rust-get-root
+(lsp-define-client 'rust-mode "rust" 'stdio #'(lambda () default-directory)
                    :command (lsp--rust-rls-command)
                    :name "Rust Language Server")
 
