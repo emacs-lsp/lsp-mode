@@ -144,6 +144,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
   (lsp--parser-reset p))
 
 (defun lsp--parser-read (p output)
+(cl-assert (lsp--parser-workspace p) nil "Parser workspace cannot be nil.")
   (cl-loop for c being the elements of output do
 	   (if (eq c ?\n)
 	       (when (eq ?\r (lsp--parser-prev-char p))
@@ -169,7 +170,6 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 		 (lsp--parser-prev-char p) c)))
 
 (defun lsp--parser-make-filter (p ignore-regexps)
-  (cl-assert (lsp--parser-workspace p) nil "Parser workspace cannot be nil.")
   #'(lambda (proc output)
       (when (cl-loop for r in ignore-regexps
 		     ;; check if the output is to be ignored or not
