@@ -85,9 +85,9 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
   "Format ERR as a user friendly string."
   (let ((code (gethash "code" err))
 	(message (gethash "message" err)))
-    (format "Error from the Language Server: (%s) %s"
-	    (or (car (alist-get code lsp--errors)) "Unknown error")
-	    message)))
+    (format "Error from the Language Server: %s (%s)"
+	    message
+	    (or (car (alist-get code lsp--errors)) "Unknown error"))))
 
 (defun lsp--parser-length-header (p)
   (string-to-number (cdr (assoc "Content-Length" (lsp--parser-headers p)))))
@@ -139,12 +139,12 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 		       (when json-data
 			 (message (lsp--error-string (gethash "error" json-data nil))))
 		       (setf (lsp--parser-response-result p) nil
-			    (lsp--parser-waiting-for-response p) nil))
+			     (lsp--parser-waiting-for-response p) nil))
       ('notification (lsp--on-notification p json-data))))
   (lsp--parser-reset p))
 
 (defun lsp--parser-read (p output)
-(cl-assert (lsp--parser-workspace p) nil "Parser workspace cannot be nil.")
+  (cl-assert (lsp--parser-workspace p) nil "Parser workspace cannot be nil.")
   (cl-loop for c being the elements of output do
 	   (if (eq c ?\n)
 	       (when (eq ?\r (lsp--parser-prev-char p))
