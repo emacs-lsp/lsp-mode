@@ -156,12 +156,17 @@
 (defun lsp--cur-parser ()
   (lsp--workspace-parser lsp--cur-workspace))
 
-(defun lsp--send-request (body &optional no-wait)
+(defun lsp--send-request (body &optional no-wait no-flush-changes)
   "Send BODY as a request to the language server, get the response.
-If wait-for-response is non-nil, don't synchronously wait for a response."
+If no-wait is non-nil, don't synchronously wait for a response.
+If no-flush-changes is non-nil, don't flush document changes before sending
+the request."
   ;; lsp-send-sync should loop until lsp--from-server returns nil
   ;; in the case of Rust Language Server, this can be done with
   ;; 'accept-process-output`.'
+  (unless no-flush-changes
+    (lsp--rem-idle-timer)
+    (lsp--send-changes))
   (let* ((client (lsp--workspace-client lsp--cur-workspace))
 	 (parser (lsp--cur-parser))
 	 (send-func (if no-wait
@@ -219,7 +224,8 @@ interface TextDocumentItem {
 		    (lsp--make-request
 		     "initialize"
 		     `(:processId ,(emacs-pid) :rootPath ,root
-				  :capabilities ,(make-hash-table)))))
+				  :capabilities ,(make-hash-table)))
+		    nil t))
     (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
 	  (gethash "capabilities" response))
     (when on-init (funcall on-init))))
@@ -695,8 +701,8 @@ interface DocumentRangeFormattingParams {
 				     `(:textDocument ,(lsp--text-document-identifier))))))
     (mapcar #'lsp--symbol-info-to-identifier symbols)))
 
-(cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
-  nil)
+;; (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
+;;   nil)
 
 (cl-defmethod xref-backend-definitions ((_backend (eql xref-lsp)) identifier)
   (let* ((properties (text-properties-at 0 identifier))
