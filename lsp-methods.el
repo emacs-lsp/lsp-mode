@@ -42,7 +42,9 @@
   (root nil :ready-only t)
   (client nil :read-only t)
   (change-timer-disabled nil)
-  (proc nil :read-only t))
+  (proc nil :read-only t)
+  (overlays nil) ;; a list of '(START . END) cons pairs with overlays on them
+  )
 
 (defvar-local lsp--cur-workspace nil)
 (defvar lsp--workspaces (make-hash-table :test #'equal))
@@ -58,6 +60,11 @@
 (defgroup lsp-mode nil
   "Customization group for lsp-mode."
   :group 'tools)
+
+;;;###autoload
+(defgroup lsp-faces nil
+  "Faces for lsp-mode."
+  :group 'lsp-mode)
 
 ;;;###autoload
 (defcustom lsp-document-sync-method nil
@@ -91,6 +98,30 @@
   "Enable xref integration."
   :type 'boolean
   :group 'lsp-mode)
+
+;;;###autoload
+(defcustom lsp-enable-flycheck t
+  "Enable flycheck integration."
+  :type 'boolean
+  :group 'lsp-mode)
+
+;;;###autoload
+(defface lsp-face-highlight-textual
+  '((t :background "yellow"))
+  "Face used for textual occurances of symbols."
+  :group 'lsp-faces)
+
+;;;###autoload
+(defface lsp-face-hightlight-read
+  '((t :background "red"))
+  "Face used for highlighting symbols being read."
+  :group 'lsp-faces)
+
+;;;###autoload
+(defface lsp-face-hightlight-write
+  '((t :background "green"))
+  "Face used for highlighting symbols being written to."
+  :group 'lsp-faces)
 
 (defun lsp-client-on-notification (mode method callback)
   (lsp--assert-type callback #'functionp)
@@ -581,6 +612,33 @@ interface DocumentRangeFormattingParams {
   (plist-put (lsp--make-document-formatting-params)
 	     :range (lsp--region-to-range start end)))
 
+(defconst lsp--highlight-kind-face
+  '((1 . lsp-face-highlight-textual)
+    (2 . lsp-face-hightlight-read)
+    (3 . lsp-face-hightlight-write)))
+
+(defun lsp--remove-cur-overlays ()
+  (dolist (pair (lsp--workspace-overlays lsp--cur-workspace))
+    (remove-overlays (car pair) (cdr pair))))
+
+(defun lsp-symbol-highlight ()
+  "Highlight all relevant references to the symbol under point."
+  (interactive)
+  (lsp--remove-cur-overlays)
+  (let ((highlights (lsp--send-request (lsp--make-request
+					"textDocument/documentHighlight"
+					(lsp--make-document-formatting-params))))
+	start-point end-point range)
+    (dolist (highlight highlights)
+      (setq range (gethash "range" highlight nil)
+	    kind (gethash "kind" highlight 1)
+	    start-point (lsp--position-to-point (gethash "start" range))
+	    end-point (lsp--position-to-point (gethash "end" range)))
+      (overlay-put (make-overlay start-point end-point) 'face
+		   (cdr (assq kind lsp--highlight-kind-face)))
+      (push (lsp--workspace-overlays lsp--cur-workspace)
+	    (cons start-point end-point)))))
+
 (defconst lsp--symbol-kind
   '((1 . "File")
     (2 . "Module")
@@ -630,12 +688,12 @@ interface DocumentRangeFormattingParams {
 	      'def-params (lsp--text-document-position-params)
 	      'ref-params (lsp--make-reference-params)))
 
-;; (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
-;;   (let ((json-false :json-false)
-;; 	(symbols (lsp--send-request (lsp--make-request
-;; 				     "textDocument/documentSymbol"
-;; 				     `(:textDocument ,(lsp--text-document-identifier))))))
-;;     (mapcar #'lsp--symbol-info-to-identifier symbols)))
+(cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
+  (let ((json-false :json-false)
+	(symbols (lsp--send-request (lsp--make-request
+				     "textDocument/documentSymbol"
+				     `(:textDocument ,(lsp--text-document-identifier))))))
+    (mapcar #'lsp--symbol-info-to-identifier symbols)))
 
 (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
   nil)
@@ -698,7 +756,16 @@ interface RenameParams {
 (defun lsp--set-variables ()
   (when lsp-enable-eldoc
     (setq-local eldoc-documentation-function #'lsp-eldoc)
-    (eldoc-mode))
+    (eldoc-mode 1))
+  (when lsp-enable-flycheck
+    (setq-local flycheck-check-syntax-automatically nil)
+    (setq-local flycheck-checker 'lsp)
+    (unless (memq 'lsp flycheck-checkers)
+      (add-to-list 'flycheck-checkers 'lsp))
+    (unless (memq 'flycheck-buffer lsp-after-diagnostics-hook)
+      (add-hook 'lsp-after-diagnostics-hook #'(lambda ()
+						(when flycheck-mode
+						  (flycheck-buffer))))))
   ;; (setq-local indent-region-function #'lsp-format-region)
   (when lsp-enable-xref
     (setq-local xref-backend-functions #'lsp--xref-backend))

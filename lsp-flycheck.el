@@ -26,6 +26,7 @@
 ;;; Code:
 
 (require 'lsp-notifications)
+(require 'lsp-mode)
 (require 'flycheck)
 
 (defun lsp--flycheck-start (checker callback)
@@ -53,23 +54,13 @@ CALLBACK is the status callback passed by Flycheck."
              lsp--diagnostics)
     (funcall callback 'finished errors)))
 
-(defun lsp-flycheck-setup ()
-  "Setup Flycheck for use with lsp-mode."
-  ;; Disable automatic syntax checks, since lsp-mode will call `flycheck-buffer'
-  ;; directly.
-  (setq-local flycheck-check-syntax-automatically nil)
-  (setq-local flycheck-checker 'lsp)
-  (add-to-list 'flycheck-checkers 'lsp)
-  (flycheck-mode)
-  (add-hook 'lsp-after-diagnostics-hook #'flycheck-buffer))
-
 (flycheck-define-generic-checker 'lsp
   "A syntax checker using the Language Server Protocol (RLS)
 provided by lsp-mode.
 
 See https://github.com/vibhavp/emacs-lsp."
   :start #'lsp--flycheck-start
-  :modes 'rust-mode                     ; Need a default mode
+  :modes '(rust-mode go-mode python-mode haskell-mode) ; Need a default mode
   :predicate (lambda () (not (null global-lsp-mode))))
 
 (defun lsp-flycheck-add-mode (mode)
