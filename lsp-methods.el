@@ -420,7 +420,8 @@ interface Range {
       :contentChanges
       ,(cl-case lsp--server-sync-method
 	 ('incremental lsp--changes)
-	 ('full `[,(lsp--full-change-event)])))))
+	 ('full `[,(lsp--full-change-event)])
+	 ('none `[])))))
   (setq lsp--changes []))
 
 (defun lsp--push-change (change-event)
