@@ -38,7 +38,8 @@
        :name name
        :connection-type 'pipe
        :command final-command
-       :filter filter))))
+       :filter filter
+       :stderr (generate-new-buffer-name (concat name " stderr"))))))
 
 (defun lsp--verify-regexp-list (l)
   (cl-assert (cl-typep l 'list) nil
