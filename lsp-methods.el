@@ -504,22 +504,22 @@ CompletionList object."
 
 (defun lsp--get-completions ()
   (let* ((access (buffer-substring-no-properties (- (point) 1) (point)))
-	(response (lsp--send-request (lsp--make-request
-				      "textDocument/completion"
-				      (lsp--text-document-position-params))))
-	(completing-field (or (string= "." access)
-			      (string= ":" access)))
-	(token (current-word t))
-	completions)
-    (dolist (el (lsp--make-completion-items response))
-      (push (lsp--make-completion-item el) completions))
+	 (completing-field (or (string= "." access)
+			       (string= ":" access)))
+	 (token (current-word t)))
     (when (or token completing-field)
       (list
        (if completing-field
 	   (point)
 	 (save-excursion (left-word) (point)))
        (point)
-       completions
+       (completion-table-dynamic
+	#'(lambda (_)
+	    (let ((resp (lsp--send-request (lsp--make-request
+					    "textDocument/completion"
+					    (lsp--text-document-position-params)))))
+	      (mapcar #'lsp--make-completion-item
+		      (lsp--make-completion-items resp)))))
        :annotation-function #'lsp--annotate))))
 
 ;;; TODO: implement completionItem/resolve
@@ -634,7 +634,7 @@ interface DocumentRangeFormattingParams {
   (let ((highlights (lsp--send-request (lsp--make-request
 					"textDocument/documentHighlight"
 					(lsp--make-document-formatting-params))))
-	start-point end-point range)
+	kind start-point end-point range)
     (dolist (highlight highlights)
       (setq range (gethash "range" highlight nil)
 	    kind (gethash "kind" highlight 1)
