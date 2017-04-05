@@ -134,12 +134,13 @@ Optional arguments:
     ("completionProvider" . ("The server provides completion support" . boolean))
     ("definitionProvider" . ("The server provides goto definition support" . boolean))
     ("referencesProvider" . ("The server provides references support" . boolean))
+    (("documentHighlightProvider" . ("The server provides document highlight support." . boolean)))
     ("documentSymbolProvider" . ("The server provides file symbol support" . boolean))
     ("workspaceSymbolProvider" . ("The server provides project symbol support" . boolean))
     ("codeActionProvider" . ("The server provides code actions" . boolean))
     ("codeLensProvider" . ("The server provides code lens" . boolean))
     ("documentFormattingProvider" . ("The server provides file formatting" . boolean))
-    (("documentRangeFormattingProvider" . ("The server provides region formatting" . boolean)))
+    (("documentRangeFormattingProvider" . ("The server provides region formatting" . boolean)))    
     (("renameProvider" . ("The server provides rename support" . boolean)))))
 
 (defun lsp--cap-str (cap)
@@ -158,8 +159,7 @@ Optional arguments:
     (user-error "No language server is associated with this buffer"))
   (let ((str (mapconcat #'lsp--cap-str (reverse (hash-table-keys
 						 (lsp--server-capabilities))) "")))
-    (with-current-buffer (get-buffer-create
-			  "lsp-capabilities")
+    (with-current-buffer (generate-new-buffer-name "lsp-capabilities")
       (view-mode -1)
       (erase-buffer)
       (insert str)
