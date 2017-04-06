@@ -158,13 +158,16 @@ Optional arguments:
   (unless lsp--cur-workspace
     (user-error "No language server is associated with this buffer"))
   (let ((str (mapconcat #'lsp--cap-str (reverse (hash-table-keys
-						 (lsp--server-capabilities))) "")))
-    (with-current-buffer (generate-new-buffer-name "lsp-capabilities")
+                                                 (lsp--server-capabilities))) ""))
+        (buffer-name (generate-new-buffer-name "lsp-capabilities"))
+        )
+    (get-buffer-create buffer-name)
+    (with-current-buffer buffer-name
       (view-mode -1)
       (erase-buffer)
       (insert str)
       (view-mode 1))
-    (switch-to-buffer "lsp-capabilities")))
+    (switch-to-buffer buffer-name)))
 
 (provide 'lsp-mode)
 ;;; lsp-mode.el ends here
