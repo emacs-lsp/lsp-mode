@@ -28,6 +28,7 @@
 (require 'lsp-receive)
 (require 'lsp-send)
 (require 'cl-lib)
+(require 'lsp-jls)
 
 (defun lsp--make-stdio-connection (name command)
   (lambda (filter)
@@ -111,6 +112,11 @@ Optional arguments:
                    ;; :command '("hie" "--lsp" "-d" "-l" (make-temp-file "hie" nil ".log"))
                    :command '("hie" "--lsp" "-d" "-l" "/tmp/hie.log")
                    :name "Haskell Language Server")
+
+(lsp-define-client 'java-mode "java" 'stdio #'lsp--java-get-root
+                   :command (lsp--java-ls-command)
+                   :name "Java Language Server")
+
 
 ;;;###autoload
 (define-minor-mode global-lsp-mode ""
