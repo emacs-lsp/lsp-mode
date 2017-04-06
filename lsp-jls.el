@@ -11,8 +11,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(defconst jls-version "0.1.0-201702132114")
-(defconst jls-jar-version "1.4.0.v20161219-1356")
+(defconst lsp-jls-jar-version "1.4.0.v20161219-1356")
 
 ;;;###autoload
 (defcustom lsp-jls-server-install-dir (locate-user-emacs-file "eclipse.jdt.ls/server/")
@@ -22,19 +21,13 @@ The slash is expected at the end."
   :risky t
   :type 'directory )
 
-(defun jls--locate-server-jar ()
+(defun lsp--jls-locate-server-jar ()
   "returns the jar file location of the ls"
   (expand-file-name
-   (format "server/plugins/org.eclipse.equinox.launcher_%s.jar" jls-jar-version)
-   jls-server-install-dir))
+   (format "plugins/org.eclipse.equinox.launcher_%s.jar" lsp-jls-jar-version)
+   lsp-jls-server-install-dir))
 
-(defun jls--locate-server-binary ()
-  "returns the zip file location of the ls"
-  (expand-file-name
-   (format "jdt-language-server-%s.tar.gz" jls-version)
-   jls-server-install-dir))
-
-(defun jls--locate-server-config ()
+(defun lsp--jls-locate-server-config ()
   "returns the server config based on OS"
   (let ( (config (cond
                   ((string-equal system-type "windows-nt") ; Microsoft Windows
@@ -44,30 +37,11 @@ The slash is expected at the end."
                   ((string-equal system-type "gnu/linux") ; linux
                    "config_linux"))))
     (message (format "using config for %s" config))
-    (expand-file-name config jls-server-install-dir)))
-
-(defun jls--download-server ()
-  "Download server and installs it"
-  (interactive)
-  (let ((dest jls-server-install-dir)
-        (dest-file (jls--locate-server-binary))
-        (url (format "http://download.eclipse.org/jdtls/snapshots/jdt-language-server-%s.tar.gz" jls-version)))
-    (unless (file-exists-p dest)
-      (progn
-        (message (format "Creating destination directory %s" dest))
-        (make-directory dest t)))
-    (message (format "Downloading server module from %s. Please wait." url))
-    (url-handler-mode t)
-    (if (file-exists-p url)
-        (progn
-          (url-copy-file url dest-file)
-          (message (format "Downloaded server module from %s to %s." url dest-file))
-          (shell-command-to-string (format "tar -xvzf %s -C %s" (jls--locate-server-binary) jls-server-install-dir)))
-      (error "Not found %s" url))))
+    (expand-file-name config lsp-jls-server-install-dir)))
 
 (defun lsp--java-ls-command ()
-  (let ((server-jar (jls--locate-server-jar))
-        (server-config (jls--locate-server-config))
+  (let ((server-jar (lsp--jls-locate-server-jar))
+        (server-config (lsp--jls-locate-server-config))
         (root-dir (lsp--java-get-root)))
     `( "java"
        "-Declipse.application=org.eclipse.jdt.ls.core.id1"
