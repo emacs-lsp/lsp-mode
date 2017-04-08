@@ -1,17 +1,17 @@
 language: emacs-lisp
 sudo: false
+cache:
+  - directories:
+      - "$HOME/emacs/"
 env:
   - EMACS_VERSION=25.1
 before_install:
-  # Configure $PATH: Executables are installed to $HOME/bin
   - export PATH="$HOME/bin:$PATH"
-  # Download the makefile to emacs-travis.mk
   - wget 'https://raw.githubusercontent.com/flycheck/emacs-travis/master/emacs-travis.mk'
-  # Install Emacs (according to $EMACS_VERSION) and Cask
+  - mkdir -p "$HOME/emacs/$EMACS_VERSION"
   - make -f emacs-travis.mk install_emacs
   - make -f emacs-travis.mk install_cask
 install:
-  # Install your dependencies
   - cask install
 script:
   - cask build
