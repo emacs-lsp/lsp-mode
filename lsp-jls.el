@@ -31,7 +31,7 @@ The slash is expected at the end."
   "returns the server config based on OS"
   (let ( (config (cond
                   ((string-equal system-type "windows-nt") ; Microsoft Windows
-                   "config_wini")
+                   "config_win")
                   ((string-equal system-type "darwin") ; Mac OS X
                    "config_mac")
                   ((string-equal system-type "gnu/linux") ; linux
