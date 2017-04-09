@@ -22,14 +22,16 @@
 
 (cl-defstruct lsp--client
   (language-id nil :read-only t)
+  ;; function to send a message and waits for the next message from the server
   (send-sync nil :read-only t)
+  ;; function to send a message and not wait for the next response
   (send-async nil :read-only t)
   (type nil :read-only t)
   (new-connection nil :read-only t)
   (get-root nil :read-only t)
   (on-initialize nil :read-only t)
   (ignore-regexps nil :read-only t)
-  (method-handlers (make-hash-table :test 'equal)))
+  (method-handlers (make-hash-table :test 'equal) :read-only t))
 
 (defvar lsp--defined-clients (make-hash-table))
 
@@ -43,6 +45,7 @@
   (client nil :read-only t)
   (change-timer-disabled nil)
   (proc nil :read-only t)
+  (buffers nil) ;; a list of buffers associated with this workspace
   (overlays nil) ;; a list of '(START . END) cons pairs with overlays on them
   )
 
@@ -165,8 +168,7 @@ the request."
   ;; in the case of Rust Language Server, this can be done with
   ;; 'accept-process-output`.'
   (unless no-flush-changes
-    (lsp--rem-idle-timer)
-    (lsp--send-changes))
+    (lsp--send-changes lsp--cur-workspace))
   (let* ((client (lsp--workspace-client lsp--cur-workspace))
 	 (parser (lsp--cur-parser))
 	 (send-func (if no-wait
@@ -180,14 +182,13 @@ the request."
       (prog1 (lsp--parser-response-result parser)
 	(setf (lsp--parser-response-result parser) nil)))))
 
-(defun lsp--cur-file-version (&optional inc)
+(defun lsp--inc-cur-file-version ()
+  (puthash buffer-file-name (1+ (lsp--cur-file-version))
+    (lsp--workspace-file-versions lsp--cur-workspace)))
+
+(defun lsp--cur-file-version ()
   "Return the file version number.  If INC, increment it before."
-  (let* ((file-versions (lsp--workspace-file-versions lsp--cur-workspace))
-	 (rev (gethash buffer-file-name file-versions)))
-    (when inc
-      (cl-incf rev)
-      (puthash buffer-file-name rev file-versions))
-    rev))
+  (gethash buffer-file-name (lsp--workspace-file-versions lsp--cur-workspace)))
 
 (defun lsp--make-text-document-item ()
   "Make TextDocumentItem for the currently opened file.
@@ -251,32 +252,33 @@ If `lsp--dont-ask-init' is bound, return non-nil."
 (defun lsp--text-document-did-open ()
   "Executed when a new file is opened, added to `find-file-hook'."
   (let ((cur-dir (expand-file-name default-directory))
-	client data set-vars parser)
+         client data set-vars parser)
     (if (catch 'break
-	    (dolist (key (hash-table-keys lsp--workspaces))
-	      (when (string-prefix-p key cur-dir)
-		(setq lsp--cur-workspace (gethash key lsp--workspaces))
-		(throw 'break key))))
-	(progn
-	  (setq set-vars t)
-	  (puthash buffer-file-name 0 (lsp--workspace-file-versions lsp--cur-workspace))
-	  (lsp--send-notification
-	   (lsp--make-notification
-	    "textDocument/didOpen"
-	    `(:textDocument ,(lsp--make-text-document-item)))))
+          (dolist (key (hash-table-keys lsp--workspaces))
+            (when (string-prefix-p key cur-dir)
+              (setq lsp--cur-workspace (gethash key lsp--workspaces))
+              (throw 'break key))))
+      (progn
+        (setq set-vars t)
+        (puthash buffer-file-name 0 (lsp--workspace-file-versions lsp--cur-workspace))
+        (lsp--send-notification
+          (lsp--make-notification
+            "textDocument/didOpen"
+            `(:textDocument ,(lsp--make-text-document-item))))
+        (push (current-buffer) (lsp--workspace-buffers lsp--cur-workspace)))
 
       (setq client (gethash major-mode lsp--defined-clients))
       (when (and client (lsp--should-initialize))
-	(setq parser (make-lsp--parser :method-handlers
-				       (lsp--client-method-handlers client))
-	 data (funcall (lsp--client-new-connection client)
-		       (lsp--parser-make-filter
-			parser
-			(lsp--client-ignore-regexps client))))
-	(setq set-vars t)
-	(lsp--initialize (lsp--client-language-id client)
-			 client parser data)
-	(lsp--text-document-did-open)))
+        (setq parser (make-lsp--parser :method-handlers
+                       (lsp--client-method-handlers client))
+          data (funcall (lsp--client-new-connection client)
+                 (lsp--parser-make-filter
+                   parser
+                   (lsp--client-ignore-regexps client))))
+        (setq set-vars t)
+        (lsp--initialize (lsp--client-language-id client)
+          client parser data)
+        (lsp--text-document-did-open)))
 
     (when set-vars
       (lsp--set-variables)
@@ -391,52 +393,75 @@ interface Range {
 (defun lsp--full-change-event ()
   `(:text ,(buffer-substring-no-properties (point-min) (point-max))))
 
-(defvar lsp--change-idle-timer nil)
-
 ;;;###autoload
 (defcustom lsp-change-idle-delay 0.5
   "Number of seconds of idle timer to wait before sending file changes to the server."
   :group 'lsp-mode
   :type 'number)
 
+(defvar lsp--change-idle-timer nil
+  "Idle timer which sends changes to the language server.")
+(defvar lsp--last-workspace-timer nil
+  "The last workspace for which the onChange idle timer was set.")
+
 (defvar-local lsp--changes [])
 
 (defun lsp--rem-idle-timer ()
   (when lsp--change-idle-timer
     (cancel-timer lsp--change-idle-timer)
-    (setq lsp--change-idle-timer nil)))
+    (setq
+      lsp--change-idle-timer nil
+      lsp--last-workspace-timer nil)))
 
 (defun lsp--set-idle-timer ()
-   (setq lsp--change-idle-timer (run-at-time lsp-change-idle-delay nil
-					    #'lsp--send-changes)))
-(defun lsp--send-changes ()
+  (setq lsp--change-idle-timer (run-at-time lsp-change-idle-delay nil
+                                  #'(lambda ()
+                                      (lsp--send-changes lsp--cur-workspace)))
+    lsp--last-workspace-timer lsp--cur-workspace))
+
+(defun lsp--flush-other-workspace-changes ()
+  "Flush changes for any other workspace."
+  (when (and lsp--last-workspace-timer
+          (not (eq lsp--last-workspace-timer lsp--cur-workspace)))
+    ;; A timer for a different workspace was set, flush those
+    ;; changes first.
+    (lsp--send-changes lsp--last-workspace-timer)))
+
+(defun lsp--send-changes (workspace)
+  ;; lsp--send-changes can be called for functions other than `lsp-on-change'
+  ;; so we call `lsp--flush-other-workspace-changes' and `lsp--rem-idle-timer'
+  ;; here too
+  (lsp--flush-other-workspace-changes)
   (lsp--rem-idle-timer)
-  (lsp--cur-file-version t)
-  (lsp--send-notification
-   (lsp--make-notification
-    "textDocument/didChange"
-    `(:textDocument
-      ,(lsp--versioned-text-document-identifier)
-      :contentChanges
-      ,(cl-case lsp--server-sync-method
-	 ('incremental lsp--changes)
-	 ('full `[,(lsp--full-change-event)])
-	 ('none `[])))))
-  (setq lsp--changes []))
+  (dolist (buffer (lsp--workspace-buffers workspace))
+    (with-current-buffer buffer
+      (lsp--inc-cur-file-version)
+      (lsp--send-notification
+        (lsp--make-notification
+          "textDocument/didChange"
+          `(:textDocument
+             ,(lsp--versioned-text-document-identifier)
+             :contentChanges
+             ,(cl-case lsp--server-sync-method
+                ('incremental lsp--changes)
+                ('full `[,(lsp--full-change-event)])
+                ('none `[])))))
+      (setq lsp--changes []))))
 
 (defun lsp--push-change (change-event)
   "Push CHANGE-EVENT to the buffer change vector."
   (setq lsp--changes (vconcat lsp--changes `(,change-event))))
 
 (defun lsp-on-change (start end length)
+  (lsp--flush-other-workspace-changes)
   (when (and lsp--cur-workspace
-	     (not (or (eq lsp--server-sync-method 'none)
-		      (eq lsp--server-sync-method nil))))
+          (not (or (eq lsp--server-sync-method 'none)
+                 (eq lsp--server-sync-method nil))))
     (lsp--rem-idle-timer)
     (when (eq lsp--server-sync-method 'incremental)
       (lsp--push-change (lsp--text-document-content-change-event start end length)))
     (if (lsp--workspace-change-timer-disabled lsp--cur-workspace)
-	(lsp--send-changes)
+      (lsp--send-changes lsp--cur-workspace)
       (lsp--set-idle-timer))))
 
 ;; (defun lsp--text-document-did-change (start end length)
@@ -461,14 +486,22 @@ interface Range {
   "Executed when the file is closed, added to `kill-buffer-hook'."
   (when lsp--cur-workspace
     (ignore-errors
-      (let ((file-versions (lsp--workspace-file-versions lsp--cur-workspace)))
-	(remhash buffer-file-name file-versions)
-	(when (and (= 0 (hash-table-count file-versions)) (lsp--shut-down-p))
-	  (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)) t))
-	(lsp--send-notification
-	 (lsp--make-notification
-	  "textDocument/didClose"
-	  `(:textDocument ,(lsp--versioned-text-document-identifier))))))))
+      (let ((file-versions (lsp--workspace-file-versions lsp--cur-workspace))
+             (old-buffers (lsp--workspace-buffers lsp--cur-workspace)))
+        ;; remove buffer from the current workspace's list of buffers
+        ;; do a sanity check first
+        (cl-assert (memq (current-buffer) old-buffers) t
+          "Current buffer isn't in the workspace's list of buffers.")
+        (setf (lsp--workspace-buffers lsp--cur-workspace)
+          (delq (current-buffer) old-buffers))
+
+        (remhash buffer-file-name file-versions)
+        (when (and (= 0 (hash-table-count file-versions)) (lsp--shut-down-p))
+          (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)) t))
+        (lsp--send-notification
+          (lsp--make-notification
+            "textDocument/didClose"
+            `(:textDocument ,(lsp--versioned-text-document-identifier))))))))
 
 (defun lsp--text-document-did-save ()
   "Executed when the file is closed, added to `after-save-hook''."
