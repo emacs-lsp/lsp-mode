@@ -43,7 +43,9 @@ server and put in `lsp--diagnostics'."
 (defun lsp--make-diag (diag)
   "Make a `lsp-diagnostic' from DIAG."
   (let* ((range (gethash "range" diag))
-         (start (gethash "start" range)))
+          (start (gethash "start" range))
+          (message (gethash "message" diag))
+          (source (gethash "source" diag)))
     (make-lsp-diagnostic
      :range `(,(lsp--position-to-point start)
               ,(lsp--position-to-point (gethash "end" range)))
@@ -52,8 +54,7 @@ server and put in `lsp--diagnostics'."
      :severity (gethash "severity" diag)
      :code (gethash "code" diag)
      :source (gethash "source" diag)
-     :message (gethash "message" diag))))
-
+     :message (if source (format "%s: %s" source message) message))))
 
 (defun lsp--on-diagnostics (params)
   "Callback for textDocument/publishDiagnostics.
