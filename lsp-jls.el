@@ -62,7 +62,6 @@ The slash is expected at the end."
 (defun lsp--java-get-root ()
   "TODO: use projectile directory"
   (let ((dir default-directory))
-    (message "getting java root")
     (if (string= dir "/")
         (user-error (concat "Couldn't find java root, using:" dir))
       dir)))
