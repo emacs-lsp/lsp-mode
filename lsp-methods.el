@@ -246,7 +246,8 @@ If `lsp--dont-ask-init' is bound, return non-nil."
 
 (defun lsp--text-document-did-open ()
   "Executed when a new file is opened, added to `find-file-hook'."
-  (lsp--send-changes lsp--cur-workspace)
+  (when lsp--cur-workspace
+    (lsp--send-changes lsp--cur-workspace))
   (let ((cur-dir (expand-file-name default-directory))
          client data set-vars parser)
     (if (catch 'break
