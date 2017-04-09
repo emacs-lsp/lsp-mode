@@ -420,16 +420,14 @@ interface Range {
           (not (eq lsp--last-workspace-timer lsp--cur-workspace)))
     ;; A timer for a different workspace was set, flush those
     ;; changes first.
-    (lsp--send-changes lsp--last-workspace-timer)))
+    (lsp--send-changes lsp--last-workspace-timer t)))
 
-(defun lsp--send-changes (workspace)
-  "Sends any queued changes for this workspace.
+(defun lsp--send-changes (workspace &optional no-flush-other)
+  "Sends any queued changes for this WORKSPACE.
 Called before any function that performs any query to the languge server related
 to a text document."
-  ;; lsp--send-changes can be called for functions other than `lsp-on-change'
-  ;; so we call `lsp--flush-other-workspace-changes' and `lsp--rem-idle-timer'
-  ;; here too
-  (lsp--flush-other-workspace-changes)
+  (unless no-flush-other
+    (lsp--flush-other-workspace-changes))
   (lsp--rem-idle-timer)
   (dolist (buffer (lsp--workspace-buffers workspace))
     (with-current-buffer buffer
