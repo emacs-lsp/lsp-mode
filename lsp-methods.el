@@ -159,7 +159,7 @@
 (defun lsp--cur-parser ()
   (lsp--workspace-parser lsp--cur-workspace))
 
-(defun lsp--send-request (body &optional no-wait no-flush-changes)
+(defun lsp--send-request (body &optional no-wait)
   "Send BODY as a request to the language server, get the response.
 If no-wait is non-nil, don't synchronously wait for a response.
 If no-flush-changes is non-nil, don't flush document changes before sending
@@ -167,8 +167,6 @@ the request."
   ;; lsp-send-sync should loop until lsp--from-server returns nil
   ;; in the case of Rust Language Server, this can be done with
   ;; 'accept-process-output`.'
-  (unless no-flush-changes
-    (lsp--send-changes lsp--cur-workspace))
   (let* ((client (lsp--workspace-client lsp--cur-workspace))
 	 (parser (lsp--cur-parser))
 	 (send-func (if no-wait
@@ -221,12 +219,9 @@ interface TextDocumentItem {
 				:proc data))
       (puthash cur-dir lsp--cur-workspace lsp--workspaces))
     (setf (lsp--parser-workspace parser) lsp--cur-workspace)
-    (setq response (lsp--send-request
-		    (lsp--make-request
-		     "initialize"
-		     `(:processId ,(emacs-pid) :rootPath ,root
-				  :capabilities ,(make-hash-table)))
-		    nil t))
+    (setq response (lsp--send-request (lsp--make-request "initialize"
+                                        `(:processId ,(emacs-pid) :rootPath ,root
+                                           :capabilities ,(make-hash-table)))))
     (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
 	  (gethash "capabilities" response))
     (when on-init (funcall on-init))))
@@ -251,6 +246,7 @@ If `lsp--dont-ask-init' is bound, return non-nil."
 
 (defun lsp--text-document-did-open ()
   "Executed when a new file is opened, added to `find-file-hook'."
+  (lsp--send-changes lsp--cur-workspace)
   (let ((cur-dir (expand-file-name default-directory))
          client data set-vars parser)
     (if (catch 'break
@@ -357,7 +353,6 @@ interface Range {
 
 (defun lsp--apply-workspace-edit (uri edits)
   ;; (message "apply-workspace-edit: %s" uri )
-
   (let ((filename (string-remove-prefix "file://" uri)))
     (message "apply-workspace-edit:filename= %s" filename )
     (find-file filename)
@@ -428,6 +423,9 @@ interface Range {
     (lsp--send-changes lsp--last-workspace-timer)))
 
 (defun lsp--send-changes (workspace)
+  "Sends any queued changes for this workspace.
+Called before any function that performs any query to the languge server related
+to a text document."
   ;; lsp--send-changes can be called for functions other than `lsp-on-change'
   ;; so we call `lsp--flush-other-workspace-changes' and `lsp--rem-idle-timer'
   ;; here too
@@ -485,6 +483,7 @@ interface Range {
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
   (when lsp--cur-workspace
+    (lsp--send-changes lsp--cur-workspace)
     (ignore-errors
       (let ((file-versions (lsp--workspace-file-versions lsp--cur-workspace))
              (old-buffers (lsp--workspace-buffers lsp--cur-workspace)))
@@ -506,6 +505,7 @@ interface Range {
 (defun lsp--text-document-did-save ()
   "Executed when the file is closed, added to `after-save-hook''."
   (when lsp--cur-workspace
+    (lsp--send-changes lsp--cur-workspace)
     (lsp--send-notification
      (lsp--make-notification
       "textDocument/didSave"
@@ -537,6 +537,7 @@ CompletionList object."
       (gethash "items" response))))
 
 (defun lsp--get-completions ()
+  (lsp--send-changes lsp--cur-workspace)
   (let* ((access (buffer-substring-no-properties (- (point) 1) (point)))
 	 (completing-field (or (string= "." access)
 			       (string= ":" access)))
@@ -564,15 +565,18 @@ interface Location {
     uri: string;
     range: Range;
 }"
+  (lsp--send-changes lsp--cur-workspace)
   (let ((uri (string-remove-prefix "file://" (gethash "uri" location)))
 	(ref-pos (gethash "start" (gethash "range" location))))
     (xref-make uri
 	       (xref-make-file-location uri
 					(1+ (gethash "line" ref-pos))
 					(gethash "character" ref-pos)))))
+
 (defun lsp--get-defitions ()
   "Get definition of the current symbol under point.
 Returns xref-item(s)."
+  (lsp--send-changes lsp--cur-workspace)
   (let ((location (lsp--send-request (lsp--make-request
 				      "textDocument/definition"
 				      (lsp--text-document-position-params)))))
@@ -590,6 +594,7 @@ If TD-POSITION is non-nil, use it as TextDocumentPositionParams object instead."
 (defun lsp--get-references ()
   "Get all references for the symbol under point.
 Returns xref-item(s)."
+  (lsp--send-changes lsp--cur-workspace)
   (let ((location  (lsp--send-request (lsp--make-request
 				       "textDocument/references"
 				       (lsp--make-reference-params)))))
@@ -610,6 +615,7 @@ Returns xref-item(s)."
 }
 
 type MarkedString = string | { language: string; value: string };"
+  (lsp--send-changes lsp--cur-workspace)
   (if (symbol-at-point)
       (let* ((hover (lsp--send-request (lsp--make-request
 					"textDocument/hover"
@@ -636,6 +642,7 @@ type MarkedString = string | { language: string; value: string };"
 
 (defun lsp--text-document-format ()
   "Ask the server to format this document."
+  (lsp--send-changes lsp--cur-workspace)
   (let ((edits (lsp--send-request (lsp--make-request
 				   "textDocument/formatting"
 				   (lsp--make-document-formatting-params)))))
@@ -664,6 +671,7 @@ interface DocumentRangeFormattingParams {
 (defun lsp-symbol-highlight ()
   "Highlight all relevant references to the symbol under point."
   (interactive)
+  (lsp--send-changes lsp--cur-workspace)
   (lsp--remove-cur-overlays)
   (let ((highlights (lsp--send-request (lsp--make-request
 					"textDocument/documentHighlight"
@@ -706,6 +714,7 @@ interface DocumentRangeFormattingParams {
 	     (lsp--location-to-xref (gethash "location" symbol))))
 
 (defun lsp-format-region (s e)
+  (lsp--send-changes lsp--cur-workspace)
   (let ((edits (lsp--send-request (lsp--make-request
 				   "textDocument/rangeFormatting"
 				   (lsp--make-document-range-formatting-params s e)))))
@@ -775,11 +784,12 @@ interface RenameParams {
     :textDocument ,(lsp--text-document-identifier)
     :newName ,newname))
 
-(defun lsp--text-document-rename (newname)
+(defun lsp-rename (newname)
   "Rename the symbol (and all references to it) under point to NEWNAME."
   (interactive "sRename to: ")
   (unless lsp--cur-workspace
     (user-error "No language server is associated with this buffer"))
+  (lsp--send-changes lsp--cur-workspace)
   (let ((edits (lsp--send-request (lsp--make-request
                                    "textDocument/rename"
                                    (lsp--make-document-rename-params newname)))))
@@ -791,7 +801,6 @@ interface RenameParams {
 (defalias 'lsp-on-close #'lsp--text-document-did-close)
 (defalias 'lsp-eldoc #'lsp--text-document-hover-string)
 (defalias 'lsp-completion-at-point #'lsp--get-completions)
-(defalias 'lsp-rename #'lsp--text-document-rename)
 
 (defun lsp--set-variables ()
   (when lsp-enable-eldoc
