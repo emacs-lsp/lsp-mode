@@ -614,6 +614,8 @@ Returns xref-item(s)."
 }
 
 type MarkedString = string | { language: string; value: string };"
+  (unless lsp--cur-workspace
+    (user-error "No language server is associated with this buffer"))
   (lsp--send-changes lsp--cur-workspace)
   (if (symbol-at-point)
       (let* ((hover (lsp--send-request (lsp--make-request
