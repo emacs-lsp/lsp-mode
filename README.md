@@ -56,4 +56,4 @@ to find the references to the symbol under point.
 ![ref](./examples/references.png)
 
 ### Flycheck
-![flycheck](./examples/flycheck.png)
+![flycheck](./examples/flycheck.gif)
