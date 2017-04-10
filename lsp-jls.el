@@ -23,11 +23,12 @@ The slash is expected at the end."
   "Return the jar file location of the language server.
 
 The entry point of the language server is in `lsp-jls-server-install-dir'/plugins/org.eclipse.equinox.launcher_`version'.jar."
-  (let* ((plugindir (expand-file-name "plugins" lsp-jls-server-install-dir))
-         (server-jar-filenames (directory-files plugindir t "org.eclipse.equinox.launcher_.*")))
-    (if (not (= (length server-jar-filenames) 1))
+  (ignore-errors
+    (let* ((plugindir (expand-file-name "plugins" lsp-jls-server-install-dir))
+            (server-jar-filenames (directory-files plugindir t "org.eclipse.equinox.launcher_.*")))
+      (if (not (= (length server-jar-filenames) 1))
         (message (format "Found more than one java language server entry points: %s" server-jar-filenames))
-      (car server-jar-filenames))))
+        (car server-jar-filenames)))))
 
 (defun lsp--jls-locate-server-config ()
   "returns the server config based on OS"
