@@ -11,8 +11,6 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(defconst lsp-jls-jar-version "1.4.0.v20161219-1356")
-
 ;;;###autoload
 (defcustom lsp-jls-server-install-dir (locate-user-emacs-file "eclipse.jdt.ls/server/")
   "Install directory for eclipse.jdt.ls-server.
@@ -22,10 +20,14 @@ The slash is expected at the end."
   :type 'directory )
 
 (defun lsp--jls-locate-server-jar ()
-  "returns the jar file location of the ls"
-  (expand-file-name
-   (format "plugins/org.eclipse.equinox.launcher_%s.jar" lsp-jls-jar-version)
-   lsp-jls-server-install-dir))
+  "Return the jar file location of the language server.
+
+The entry point of the language server is in `lsp-jls-server-install-dir'/plugins/org.eclipse.equinox.launcher_`version'.jar."
+  (let* ((plugindir (expand-file-name "plugins" lsp-jls-server-install-dir))
+         (server-jar-filenames (directory-files plugindir t "org.eclipse.equinox.launcher_.*")))
+    (if (not (= (length server-jar-filenames) 1))
+        (message (format "Found more than one java language server entry points: %s" server-jar-filenames))
+      (car server-jar-filenames))))
 
 (defun lsp--jls-locate-server-config ()
   "returns the server config based on OS"
