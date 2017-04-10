@@ -19,8 +19,7 @@ Clone this repository to a suitable path, and add
 (require 'lsp-mode)
 (global-lsp-mode t)
 (with-eval-after-load 'lsp-mode
-    (require 'lsp-flycheck)
-    (lsp-flycheck-setup))
+    (require 'lsp-flycheck))
 ```
 to your .emacs.
 ## Clients
