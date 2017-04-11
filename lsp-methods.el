@@ -807,7 +807,7 @@ interface RenameParams {
   (when lsp-enable-eldoc
     (setq-local eldoc-documentation-function #'lsp-eldoc)
     (eldoc-mode 1))
-  (when lsp-enable-flycheck
+  (when (and lsp-enable-flycheck (fboundp 'flycheck-mode))
     (setq-local flycheck-check-syntax-automatically nil)
     (setq-local flycheck-checker 'lsp)
     (unless (memq 'lsp flycheck-checkers)
