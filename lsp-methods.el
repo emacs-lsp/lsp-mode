@@ -271,7 +271,17 @@ If `lsp--dont-ask-init' is bound, return non-nil."
           data (funcall (lsp--client-new-connection client)
                  (lsp--parser-make-filter
                    parser
-                   (lsp--client-ignore-regexps client))))
+                   (lsp--client-ignore-regexps client))
+                 #'(lambda (_p exit-str)
+                     (dolist (buffer (lsp--workspace-buffers lsp--cur-workspace))
+                       (message "%s: %s has exited (%s)"
+                         (lsp--workspace-root lsp--cur-workspace)
+                         (process-name (lsp--workspace-proc lsp--cur-workspace))
+                         exit-str)
+                       (with-current-buffer buffer
+                         (setq lsp--cur-workspace nil)
+                         (lsp--unset-variables))
+                       (setq lsp--cur-workspace nil)))))
         (setq set-vars t)
         (lsp--initialize (lsp--client-language-id client)
           client parser data)
@@ -802,6 +812,15 @@ interface RenameParams {
 (defalias 'lsp-on-close #'lsp--text-document-did-close)
 (defalias 'lsp-eldoc #'lsp--text-document-hover-string)
 (defalias 'lsp-completion-at-point #'lsp--get-completions)
+
+(defun lsp--unset-variables ()
+  (when lsp-enable-eldoc
+    (setq-local eldoc-documentation-function 'ignore))
+  (when lsp-enable-xref
+    (setq-local xref-backend-functions nil))
+  (when lsp-enable-completion-at-point
+    (remove-hook 'completion-at-point-functions #'lsp-completion-at-point))
+  (remove-hook 'after-change-functions #'lsp-on-change))
 
 (defun lsp--set-variables ()
   (when lsp-enable-eldoc

@@ -31,7 +31,7 @@
 (require 'lsp-jls)
 
 (defun lsp--make-stdio-connection (name command)
-  (lambda (filter)
+  (lambda (filter sentinel)
     (let ((final-command (if (consp command) command (list command))))
       (unless (executable-find (nth 0 final-command))
         (error (format "Couldn't find executable %s" (nth 0 final-command))))
@@ -40,6 +40,7 @@
         :connection-type 'pipe
         :command final-command
         :filter filter
+        :sentinel sentinel
         :stderr (generate-new-buffer-name (concat name " stderr"))))))
 
 (defun lsp--verify-regexp-list (l)
