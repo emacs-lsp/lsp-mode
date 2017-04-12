@@ -1,4 +1,4 @@
-;; Copyright (C) 2016  Vibhav Pant <vibhavp@gmail.com>
+;; Copyright (C) 2016  Vibhav Pant <vibhavp@gmail.com> -*- lexical-binding: t -*-
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -18,16 +18,22 @@
 (defun lsp--stdio-send-sync (message proc)
   (when lsp-print-io
     (message "lsp--stdio-send-sync: %s" message))
+  (when (memq (process-status proc) '(stop exit closed failed nil))
+    (error "%s: Cannot communicate with the process (%s)" (process-name proc)
+      (process-status proc)))
   (process-send-string proc
-		       message)
+    message)
   (with-local-quit
     (accept-process-output proc)))
 
 (defun lsp--stdio-send-async (message proc)
   (when lsp-print-io
     (message "lsp--stdio-send-async: %s" message))
+  (when (memq (process-status proc) '(stop exit closed failed nil))
+    (error "%s: Cannot communicate with the process (%s)" (process-name proc)
+      (process-status proc)))
   (process-send-string proc
-		       message))
+    message))
 
 (provide 'lsp-send)
 ;;; lsp-send.el ends here
