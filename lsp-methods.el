@@ -845,4 +845,4 @@ interface RenameParams {
   (add-hook 'after-change-functions #'lsp-on-change))
 
 (provide 'lsp-methods)
-;;; document.el ends here
+;;; lsp-methods.el ends here

@@ -30,3 +30,4 @@
 		       message))
 
 (provide 'lsp-send)
+;;; lsp-send.el ends here

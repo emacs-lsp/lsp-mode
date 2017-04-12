@@ -68,3 +68,4 @@ interface PublishDiagnosticsParams {
     (run-hooks 'lsp-after-diagnostics-hook)))
 
 (provide 'lsp-notifications)
+;;; lsp-notifications.el ends here

@@ -70,5 +70,4 @@ The entry point of the language server is in `lsp-jls-server-install-dir'/plugin
       dir)))
 
 (provide 'lsp-jls)
-
-
+;;; lsp-jls.el ends here

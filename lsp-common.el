@@ -43,3 +43,4 @@
     (signal 'wrong-type-argument `(,pred ,obj))))
 
 (provide 'lsp-common)
+;;; lsp-common.el ends here

@@ -187,4 +187,4 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 	(with-local-quit (accept-process-output proc)))))
 
 (provide 'lsp-receive)
-;;; lsp-callback.el ends here
+;;; lsp-receive.el ends here
