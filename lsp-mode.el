@@ -34,23 +34,23 @@
   (lambda (filter)
     (let ((final-command (if (consp command) command (list command))))
       (unless (executable-find (nth 0 final-command))
-	(error (format "Couldn't find executable %s" (nth 0 final-command))))
+        (error (format "Couldn't find executable %s" (nth 0 final-command))))
       (make-process
-       :name name
-       :connection-type 'pipe
-       :command final-command
-       :filter filter
-       :stderr (generate-new-buffer-name (concat name " stderr"))))))
+        :name name
+        :connection-type 'pipe
+        :command final-command
+        :filter filter
+        :stderr (generate-new-buffer-name (concat name " stderr"))))))
 
 (defun lsp--verify-regexp-list (l)
   (cl-assert (cl-typep l 'list) nil
-	     "lsp-define-client: :ignore-regexps is not a list")
+    "lsp-define-client: :ignore-regexps is not a list")
   (dolist (e l l)
     (cl-assert (cl-typep e 'string)
-	       nil
-	       (format
-		"lsp-define-client: :ignore-regexps element %s is not a string"
-		e))))
+      nil
+      (format
+        "lsp-define-client: :ignore-regexps element %s is not a string"
+        e))))
 
 (defun lsp-define-client (mode language-id type get-root &rest args)
   "Define a LSP client.
@@ -63,59 +63,59 @@ Optional arguments:
 `:ignore-regexps' is a list of regexps which when matched will be ignored by the output parser."
   (lsp--assert-type mode #'symbolp)
   (let* ((client
-	  (cl-case type
-	    ('stdio (make-lsp--client
-		     :language-id (lsp--assert-type language-id #'stringp)
-		     :send-sync 'lsp--stdio-send-sync
-		     :send-async 'lsp--stdio-send-async
-		     :type (lsp--assert-type type #'symbolp)
-		     :new-connection (lsp--make-stdio-connection
-				      (plist-get args (or :name
-							  (format
-							   "%s language server"
-							   mode)))
-				      (plist-get args :command))
-		     :get-root (lsp--assert-type get-root #'functionp)
-		     :on-initialize (plist-get args :on-initialize)
-		     :ignore-regexps (lsp--verify-regexp-list (plist-get
-							       args
-							       :ignore-regexps))))
-	    (t (error "Invalid TYPE for LSP client")))))
+           (cl-case type
+             ('stdio (make-lsp--client
+                       :language-id (lsp--assert-type language-id #'stringp)
+                       :send-sync 'lsp--stdio-send-sync
+                       :send-async 'lsp--stdio-send-async
+                       :type (lsp--assert-type type #'symbolp)
+                       :new-connection (lsp--make-stdio-connection
+                                         (plist-get args (or :name
+                                                           (format
+                                                             "%s language server"
+                                                             mode)))
+                                         (plist-get args :command))
+                       :get-root (lsp--assert-type get-root #'functionp)
+                       :on-initialize (plist-get args :on-initialize)
+                       :ignore-regexps (lsp--verify-regexp-list (plist-get
+                                                                  args
+                                                                  :ignore-regexps))))
+             (t (error "Invalid TYPE for LSP client")))))
     (puthash mode client lsp--defined-clients)))
 
 (defun lsp--rust-rls-command ()
   (let ((rls-root (getenv "RLS_ROOT")))
     (if rls-root
-	`("cargo" "+nightly" "run" "--quiet" ,(concat
-				    "--manifest-path="
-				    (concat
-				     (file-name-as-directory
-				      (expand-file-name rls-root))
-				     "Cargo.toml"))
-	  "--release")
+      `("cargo" "+nightly" "run" "--quiet" ,(concat
+                                              "--manifest-path="
+                                              (concat
+                                                (file-name-as-directory
+                                                  (expand-file-name rls-root))
+                                                "Cargo.toml"))
+         "--release")
       "rls")))
 
 (lsp-define-client 'rust-mode "rust" 'stdio #'(lambda () default-directory)
-                   :command (lsp--rust-rls-command)
-                   :name "Rust Language Server")
+  :command (lsp--rust-rls-command)
+  :name "Rust Language Server")
 
 (lsp-define-client 'go-mode "go" 'stdio #'(lambda () default-directory)
-                   :command '("go-langserver" "-mode=stdio")
-                   :name "Go Language Server"
-		   :ignore-regexps '("^langserver-go: reading on stdin, writing on stdout$"))
+  :command '("go-langserver" "-mode=stdio")
+  :name "Go Language Server"
+  :ignore-regexps '("^langserver-go: reading on stdin, writing on stdout$"))
 
 (lsp-define-client 'python-mode "python" 'stdio #'(lambda () default-directory)
-		   :command '("pyls")
-		   :name "Python Language Server")
+  :command '("pyls")
+  :name "Python Language Server")
 
 (lsp-define-client 'haskell-mode "haskell" 'stdio #'(lambda () default-directory)
-                   ;; :command '("hie" "--lsp" "-d" "-l" (make-temp-file "hie" nil ".log"))
-                   :command '("hie" "--lsp" "-d" "-l" "/tmp/hie.log")
-                   :name "Haskell Language Server")
+  ;; :command '("hie" "--lsp" "-d" "-l" (make-temp-file "hie" nil ".log"))
+  :command '("hie" "--lsp" "-d" "-l" "/tmp/hie.log")
+  :name "Haskell Language Server")
 
 (lsp-define-client 'java-mode "java" 'stdio #'lsp--java-get-root
-                   :command (lsp--java-ls-command)
-                   :name "Java Language Server")
+  :command (lsp--java-ls-command)
+  :name "Java Language Server")
 
 
 ;;;###autoload
@@ -128,35 +128,35 @@ Optional arguments:
 
 (defconst lsp--sync-type
   `((0 . "None")
-    (1 . "Full Document")
-    (2 . "Incremental Changes")))
+     (1 . "Full Document")
+     (2 . "Incremental Changes")))
 
 (defconst lsp--capabilities
   `(("textDocumentSync" . ("Document sync method" .
-			   ((1 . "None")
-			    (2 . "Send full contents")
-			    (3 . "Send incremental changes."))))
-    ("hoverProvider" . ("The server provides hover support" . boolean))
-    ("completionProvider" . ("The server provides completion support" . boolean))
-    ("definitionProvider" . ("The server provides goto definition support" . boolean))
-    ("referencesProvider" . ("The server provides references support" . boolean))
-    (("documentHighlightProvider" . ("The server provides document highlight support." . boolean)))
-    ("documentSymbolProvider" . ("The server provides file symbol support" . boolean))
-    ("workspaceSymbolProvider" . ("The server provides project symbol support" . boolean))
-    ("codeActionProvider" . ("The server provides code actions" . boolean))
-    ("codeLensProvider" . ("The server provides code lens" . boolean))
-    ("documentFormattingProvider" . ("The server provides file formatting" . boolean))
-    (("documentRangeFormattingProvider" . ("The server provides region formatting" . boolean)))    
-    (("renameProvider" . ("The server provides rename support" . boolean)))))
+                            ((1 . "None")
+                              (2 . "Send full contents")
+                              (3 . "Send incremental changes."))))
+     ("hoverProvider" . ("The server provides hover support" . boolean))
+     ("completionProvider" . ("The server provides completion support" . boolean))
+     ("definitionProvider" . ("The server provides goto definition support" . boolean))
+     ("referencesProvider" . ("The server provides references support" . boolean))
+     (("documentHighlightProvider" . ("The server provides document highlight support." . boolean)))
+     ("documentSymbolProvider" . ("The server provides file symbol support" . boolean))
+     ("workspaceSymbolProvider" . ("The server provides project symbol support" . boolean))
+     ("codeActionProvider" . ("The server provides code actions" . boolean))
+     ("codeLensProvider" . ("The server provides code lens" . boolean))
+     ("documentFormattingProvider" . ("The server provides file formatting" . boolean))
+     (("documentRangeFormattingProvider" . ("The server provides region formatting" . boolean)))    
+     (("renameProvider" . ("The server provides rename support" . boolean)))))
 
 (defun lsp--cap-str (cap)
   (let* ((elem (assoc cap lsp--capabilities))
-	 (desc (cadr elem))
-	 (type (cddr elem))
-	 (value (gethash cap (lsp--server-capabilities))))
+          (desc (cadr elem))
+          (type (cddr elem))
+          (value (gethash cap (lsp--server-capabilities))))
     (when (and elem desc type value)
       (concat desc (cond
-		    ((listp type) (concat ": " (cdr (assoc value type))))) "\n"))))
+                     ((listp type) (concat ": " (cdr (assoc value type))))) "\n"))))
 
 (defun lsp-capabilities ()
   "View all capabilities for the language server associated with this buffer."
@@ -164,9 +164,9 @@ Optional arguments:
   (unless lsp--cur-workspace
     (user-error "No language server is associated with this buffer"))
   (let ((str (mapconcat #'lsp--cap-str (reverse (hash-table-keys
-                                                 (lsp--server-capabilities))) ""))
-        (buffer-name (generate-new-buffer-name "lsp-capabilities"))
-        )
+                                                  (lsp--server-capabilities))) ""))
+         (buffer-name (generate-new-buffer-name "lsp-capabilities"))
+         )
     (get-buffer-create buffer-name)
     (with-current-buffer buffer-name
       (view-mode -1)
