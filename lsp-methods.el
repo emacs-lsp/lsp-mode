@@ -126,6 +126,8 @@
   "Face used for highlighting symbols being written to."
   :group 'lsp-faces)
 
+(defconst lsp--content-type "application/vscode-jsonrpc; charset=utf-8")
+
 (defun lsp-client-on-notification (mode method callback)
   (lsp--assert-type callback #'functionp)
   (let ((client (gethash mode lsp--defined-clients nil)))
@@ -147,8 +149,8 @@
   "Create a LSP message from PARAMS."
   (let ((json-str (json-encode params)))
     (format
-      "Content-Length: %d\r\n\r\n%s"
-      (length json-str) json-str)))
+      "Content-Length: %d\r\nContent-Type: %s\r\n\r\n%s"
+      (length json-str) lsp--content-type json-str)))
 
 (defun lsp--send-notification (body)
   "Send BODY as a notification to the language server."
