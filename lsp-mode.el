@@ -41,7 +41,7 @@
         :command final-command
         :filter filter
         :sentinel sentinel
-        :stderr (generate-new-buffer-name (concat name " stderr"))))))
+        :stderr (generate-new-buffer-name (concat "*" name " stderr"))))))
 
 (defun lsp--verify-regexp-list (l)
   (cl-assert (cl-typep l 'list) nil
