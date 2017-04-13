@@ -84,22 +84,6 @@ Optional arguments:
              (t (error "Invalid TYPE for LSP client")))))
     (puthash mode client lsp--defined-clients)))
 
-(defun lsp--rust-rls-command ()
-  (let ((rls-root (getenv "RLS_ROOT")))
-    (if rls-root
-      `("cargo" "+nightly" "run" "--quiet" ,(concat
-                                              "--manifest-path="
-                                              (concat
-                                                (file-name-as-directory
-                                                  (expand-file-name rls-root))
-                                                "Cargo.toml"))
-         "--release")
-      "rls")))
-
-(lsp-define-client 'rust-mode "rust" 'stdio #'(lambda () default-directory)
-  :command (lsp--rust-rls-command)
-  :name "Rust Language Server")
-
 (lsp-define-client 'go-mode "go" 'stdio #'(lambda () default-directory)
   :command '("go-langserver" "-mode=stdio")
   :name "Go Language Server"
@@ -118,6 +102,7 @@ Optional arguments:
   :command (lsp--java-ls-command)
   :name "Java Language Server")
 
+(require 'lsp-rust)
 
 ;;;###autoload
 (define-minor-mode global-lsp-mode ""
