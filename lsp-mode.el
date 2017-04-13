@@ -109,7 +109,7 @@ Optional arguments:
      ("codeActionProvider" . ("The server provides code actions" . boolean))
      ("codeLensProvider" . ("The server provides code lens" . boolean))
      ("documentFormattingProvider" . ("The server provides file formatting" . boolean))
-     (("documentRangeFormattingProvider" . ("The server provides region formatting" . boolean)))    
+     (("documentRangeFormattingProvider" . ("The server provides region formatting" . boolean)))
      (("renameProvider" . ("The server provides rename support" . boolean)))))
 
 (defun lsp--cap-str (cap)

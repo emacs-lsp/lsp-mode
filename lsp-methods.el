@@ -100,6 +100,12 @@ for a new workspace."
   :group 'lsp-mode)
 
 ;;;###autoload
+(defcustom lsp-enable-codeaction t
+  "Enable code action processing."
+  :type 'boolean
+  :group 'lsp-mode)
+
+;;;###autoload
 (defcustom lsp-enable-completion-at-point t
   "Enable `completion-at-point' integration."
   :type 'boolean
@@ -234,7 +240,7 @@ interface TextDocumentItem {
     (setf (lsp--parser-workspace parser) lsp--cur-workspace)
     (setq response (lsp--send-request (lsp--make-request "initialize"
                                         `(:processId ,(emacs-pid) :rootPath ,root
-                                           :capabilities ,(make-hash-table)))))
+                                           :capabilities ,(lsp--client-capabilities)))))
     (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
       (gethash "capabilities" response))
     (run-hooks lsp-after-initialize-hook)))
@@ -404,6 +410,12 @@ interface Range {
   "Make Range object for the current region."
   (lsp--range (lsp--point-to-position start)
     (lsp--point-to-position end)))
+
+(defun lsp--current-region-or-pos ()
+  "If the region is active return that, else get the point"
+  (if mark-active
+      (lsp--region-to-range (region-beginning) (region-end))
+    (lsp--region-to-range (point) (point)))) 
 
 (defun lsp--apply-workspace-edits (edits)
   (cl-letf ((lsp-ask-before-initializing nil)
@@ -582,6 +594,17 @@ to a text document."
      :position ,(lsp--position (lsp--cur-line)
                   (lsp--cur-column))))
 
+(defun lsp--text-document-code-action-params ()
+  "Make CodeActionParams for the current region in the current document."
+  `(:textDocument ,(lsp--text-document-identifier)
+                  :range ,(lsp--current-region-or-pos)
+                  :context (:diagnostics ,(lsp--code-action-context))
+                  ))
+
+(defun lsp--code-action-context ()
+  ;; TODO: find any diagnostics intersecting the current region
+  nil)
+
 (defconst lsp--completion-item-kind
   `(
      (1 . "Text")
@@ -698,6 +721,13 @@ Returns xref-item(s)."
     (gethash "value" contents)
     contents))
 
+(defun lsp-eldoc ()
+  (let ((throwaway (when (and (gethash "codeActionProvider" (lsp--server-capabilities))
+                              lsp-enable-codeaction)
+                     (lsp--text-document-code-action))))
+        nil)
+  (lsp--text-document-hover-string))
+
 (defun lsp--text-document-hover-string ()
   "interface Hover {
     contents: MarkedString | MarkedString[];
@@ -721,6 +751,21 @@ type MarkedString = string | { language: string; value: string };"
   "Show relevant documentation for the thing under point."
   (interactive)
   (lsp--text-document-hover-string))
+
+(defun lsp--text-document-code-action ()
+  "Request code action to automatically fix issues reported by
+the diagnostics"
+  (unless lsp--cur-workspace
+    (user-error "No language server is associated with this buffer"))
+  ;; (message "lsp--text-document-code-action")
+  (let* ((actions (lsp--send-request (lsp--make-request
+                                    "textDocument/codeAction"
+                                    (lsp--text-document-code-action-params))
+                                     ))
+         ;; (contents (gethash "contents" (or actions (make-hash-table))))
+         nil)
+    )
+  nil)
 
 (defun lsp--make-document-formatting-options ()
   (let ((json-false :json-false))
@@ -889,7 +934,7 @@ interface RenameParams {
 (defalias 'lsp-on-save #'lsp--text-document-did-save)
 ;; (defalias 'lsp-on-change #'lsp--text-document-did-change)
 (defalias 'lsp-on-close #'lsp--text-document-did-close)
-(defalias 'lsp-eldoc #'lsp--text-document-hover-string)
+;; (defalias 'lsp-eldoc #'lsp--text-document-hover-string)
 (defalias 'lsp-completion-at-point #'lsp--get-completions)
 
 (defun lsp--unset-variables ()
@@ -902,13 +947,10 @@ interface RenameParams {
   (remove-hook 'after-change-functions #'lsp-on-change))
 
 (defun lsp--set-variables ()
-  (when lsp-enable-eldoc
+  (when (or lsp-enable-eldoc lsp-enable-codeaction)
     (setq-local eldoc-documentation-function #'lsp-eldoc)
     (eldoc-mode 1))
   (when (and lsp-enable-flycheck (featurep 'flycheck))
-  ;; (when lsp-enable-flycheck
-  ;;   (with-eval-after-load 'lsp-mode
-  ;;     (require 'lsp-flycheck))
     (setq-local flycheck-check-syntax-automatically nil)
     (setq-local flycheck-checker 'lsp)
     (unless (memq 'lsp flycheck-checkers)
