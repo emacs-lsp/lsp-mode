@@ -420,10 +420,11 @@ interface Range {
       lsp--change-idle-timer nil
       lsp--last-workspace-timer nil)))
 
-(defun lsp--set-idle-timer ()
+(defun lsp--set-idle-timer (workspace)
   (setq lsp--change-idle-timer (run-at-time lsp-change-idle-delay nil
                                  #'(lambda ()
-                                     (lsp--send-changes lsp--cur-workspace)))
+                                     (cl-assert workspace)
+                                     (lsp--send-changes workspace)))
     lsp--last-workspace-timer lsp--cur-workspace))
 
 (defun lsp--flush-other-workspace-changes ()
@@ -470,7 +471,7 @@ to a text document."
       (lsp--push-change (lsp--text-document-content-change-event start end length)))
     (if (lsp--workspace-change-timer-disabled lsp--cur-workspace)
       (lsp--send-changes lsp--cur-workspace)
-      (lsp--set-idle-timer))))
+      (lsp--set-idle-timer lsp--cur-workspace))))
 
 ;; (defun lsp--text-document-did-change (start end length)
 ;;   "Executed when a file is changed.
