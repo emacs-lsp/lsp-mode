@@ -1,4 +1,4 @@
-;; Copyright (C) 2016  Vibhav Pant <vibhavp@gmail.com>
+;; Copyright (C) 2016  Vibhav Pant <vibhavp@gmail.com>  -*- lexical-binding: t -*-
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 
 (defun lsp--window-show-message (params)
   (message "%s" (lsp--propertize (gethash "message" params)
-				 (gethash "type" params))))
+                  (gethash "type" params))))
 
 (defcustom lsp-after-diagnostics-hook nil
   "Hooks to run after diagnostics are received from the language
@@ -47,25 +47,34 @@ server and put in `lsp--diagnostics'."
           (message (gethash "message" diag))
           (source (gethash "source" diag)))
     (make-lsp-diagnostic
-     :range `(,(lsp--position-to-point start)
-              ,(lsp--position-to-point (gethash "end" range)))
-     :line (gethash "line" start)
-     :column (gethash "character" start)
-     :severity (gethash "severity" diag)
-     :code (gethash "code" diag)
-     :source (gethash "source" diag)
-     :message (if source (format "%s: %s" source message) message))))
+      :range `(,(lsp--position-to-point start)
+                ,(lsp--position-to-point (gethash "end" range)))
+      :line (gethash "line" start)
+      :column (gethash "character" start)
+      :severity (gethash "severity" diag)
+      :code (gethash "code" diag)
+      :source (gethash "source" diag)
+      :message (if source (format "%s: %s" source message) message))))
 
-(defun lsp--on-diagnostics (params)
+(defun lsp--equal-files (f1 f2)
+  (string-equal (expand-file-name f1) (expand-file-name f2)))
+
+(defun lsp--on-diagnostics (params workspace)
   "Callback for textDocument/publishDiagnostics.
 interface PublishDiagnosticsParams {
     uri: string;
     diagnostics: Diagnostic[];
 }"
   (let ((file (string-remove-prefix "file://" (gethash "uri" params)))
-        (diagnostics (gethash "diagnostics" params)))
+         (diagnostics (gethash "diagnostics" params)) buffer)
     (puthash file (mapcar #'lsp--make-diag diagnostics) lsp--diagnostics)
-    (run-hooks 'lsp-after-diagnostics-hook)))
+    (setq buffer (cl-loop for buffer in (lsp--workspace-buffers workspace)
+                   when (lsp--equal-files (buffer-file-name buffer) file)
+                   return buffer
+                   finally return nil))
+    (when buffer
+      (with-current-buffer buffer
+        (run-hooks 'lsp-after-diagnostics-hook)))))
 
 (provide 'lsp-notifications)
 ;;; lsp-notifications.el ends here

@@ -63,7 +63,8 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
       (pcase (gethash "method" notification)
         ("window/showMessage" (lsp--window-show-message params))
         ("window/logMessage" (lsp--window-show-message params)) ;; Treat as showMessage for now
-        ("textDocument/publishDiagnostics" (lsp--on-diagnostics params))
+        ("textDocument/publishDiagnostics" (lsp--on-diagnostics params
+                                             (lsp--parser-workspace p)))
         ("textDocument/diagnosticsEnd")
         ("textDocument/diagnosticsBegin")
         (other
