@@ -23,11 +23,13 @@ Clone this repository to a suitable path, and add
 ```
 to your .emacs.
 ## Clients
+`lsp-mode` supports the following languages:
 
-The library currently defines clients for [Rust Language Server](https://github.com/jonathandturner/rls)
-and [Sourcegraph's Go Language Server](https://github.com/sourcegraph/go-langserver). 
-For now, the only supported transport is stdio (see `lsp-mode.el` on how to add your 
-own clients), support for TCP and sockets is planned.
+* Go
+* Rust
+* Python
+* Haskell
+* Java
 
 ## Examples
 
