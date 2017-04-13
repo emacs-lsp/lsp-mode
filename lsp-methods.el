@@ -532,45 +532,56 @@ to a text document."
      :position ,(lsp--position (lsp--cur-line)
                   (lsp--cur-column))))
 
+(defconst lsp--completion-item-kind
+  `(
+     (1 . "Text")
+     (2 . "Method")
+     (3 . "Function")
+     (4 . "Constructor")
+     (5 . "Field")
+     (6 . "Variable")
+     (7 . "Class")
+     (8 . "Interface")
+     (9 . "Module")
+     (10 . "Property")
+     (11 . "Unit")
+     (12 . "Value")
+     (13 . "Enum")
+     (14 . "Keyword")
+     (15 . "Snippet")
+     (16 . "Color")
+     (17 . "File")
+     (18 . "Reference")))
+
 (defun lsp--make-completion-item (item)
   (propertize (gethash "insertText" item (gethash "label" item))
-    'table (progn (remhash "insertText" item)
-             (remhash "label" item)
-             item)))
+    'lsp-completion-item
+    item))
 
 (defun lsp--annotate (item)
-  (let ((table (plist-get (text-properties-at 0 item) 'table)))
-    (concat " - " (gethash "detail" table nil))))
-
-(defun lsp--make-completion-items (response)
-  "If RESPONSE is a CompletionItem[], return RESPONSE as is.
-Otherwise return the items field from response, since it would be a
-CompletionList object."
-  (when response
-    (if (consp response)
-      response
-      (gethash "items" response))))
+  (let* ((table (plist-get (text-properties-at 0 item) 'lsp-completion-item))
+          (detail (gethash "detail" table nil))
+          (kind (alist-get (gethash "kind" table nil) lsp--completion-item-kind)))
+    (concat
+      detail
+      (when kind " ")
+      (when kind (format "(%s)" kind)))))
 
 (defun lsp--get-completions ()
   (lsp--send-changes lsp--cur-workspace)
-  (let* ((access (buffer-substring-no-properties (- (point) 1) (point)))
-          (completing-field (or (string= "." access)
-                              (string= ":" access)))
-          (token (current-word t)))
-    (when (or token completing-field)
-      (list
-        (if completing-field
-          (point)
-          (save-excursion (left-word) (point)))
-        (point)
-        (completion-table-dynamic
-          #'(lambda (_)
-              (let ((resp (lsp--send-request (lsp--make-request
-                                               "textDocument/completion"
-                                               (lsp--text-document-position-params)))))
-                (mapcar #'lsp--make-completion-item
-                  (lsp--make-completion-items resp)))))
-        :annotation-function #'lsp--annotate))))
+  (let ((bounds (bounds-of-thing-at-point 'word)))
+    (list
+      (if bounds (car bounds) (point))
+      (if bounds (cdr bounds) (point))
+      (completion-table-dynamic
+        #'(lambda (_)
+            (let* ((resp (lsp--send-request (lsp--make-request
+                                             "textDocument/completion"
+                                              (lsp--text-document-position-params))))
+                    (items (gethash "items" resp nil)))
+              (mapcar #'lsp--make-completion-item
+                (if (listp items) items (list items))))))
+      :annotation-function #'lsp--annotate)))
 
 ;;; TODO: implement completionItem/resolve
 
