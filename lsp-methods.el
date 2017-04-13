@@ -586,6 +586,8 @@ to a text document."
       (if bounds (cdr bounds) (point))
       (completion-table-dynamic
         #'(lambda (_)
+            ;; *we* don't need to know the string being completed
+            ;; the language server does all the work by itself
             (let* ((resp (lsp--send-request (lsp--make-request
                                              "textDocument/completion"
                                               (lsp--text-document-position-params))))
