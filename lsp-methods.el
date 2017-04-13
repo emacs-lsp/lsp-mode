@@ -29,7 +29,6 @@
   (type nil :read-only t)
   (new-connection nil :read-only t)
   (get-root nil :read-only t)
-  (on-initialize nil :read-only t)
   (ignore-regexps nil :read-only t)
   (method-handlers (make-hash-table :test 'equal) :read-only t))
 
@@ -51,6 +50,12 @@
 
 (defvar-local lsp--cur-workspace nil)
 (defvar lsp--workspaces (make-hash-table :test #'equal))
+
+(defcustom lsp-after-initialize-hook nil
+  "List of functions to be called after a Language Server has been initialized
+for a new workspace."
+  :type 'hook
+  :group 'lsp-mode)
 
 (defvar lsp--sync-methods
   '((0 . none)
@@ -205,7 +210,6 @@ interface TextDocumentItem {
 
 (defun lsp--initialize (language-id client parser &optional data)
   (let ((cur-dir (expand-file-name default-directory))
-         (on-init (lsp--client-on-initialize client))
          root response)
     (if (gethash cur-dir lsp--workspaces)
       (user-error "This workspace has already been initialized")
@@ -225,7 +229,7 @@ interface TextDocumentItem {
                                            :capabilities ,(make-hash-table)))))
     (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
       (gethash "capabilities" response))
-    (when on-init (funcall on-init))))
+    (run-hooks lsp-after-initialize-hook)))
 
 (defun lsp--server-capabilities ()
   "Return the capabilities of the language server associated with the buffer."

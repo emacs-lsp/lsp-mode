@@ -60,7 +60,6 @@ LANGUAGE-ID is the language id to be used when communication with the Language S
 Optional arguments:
 `:name' is the process name for the language server.
 `:command' is the command to run if `TYPE' is 'stdio.
-`:on-initialize' is the function to call when a new project/workspace is initialized.
 `:ignore-regexps' is a list of regexps which when matched will be ignored by the output parser."
   (lsp--assert-type mode #'symbolp)
   (let* ((client
@@ -77,7 +76,6 @@ Optional arguments:
                                                              mode)))
                                          (plist-get args :command))
                        :get-root (lsp--assert-type get-root #'functionp)
-                       :on-initialize (plist-get args :on-initialize)
                        :ignore-regexps (lsp--verify-regexp-list (plist-get
                                                                   args
                                                                   :ignore-regexps))))
