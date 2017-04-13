@@ -22,6 +22,7 @@ Clone this repository to a suitable path, and add
     (require 'lsp-flycheck))
 ```
 to your .emacs.
+
 ## Clients
 `lsp-mode` supports the following languages:
 
@@ -30,6 +31,9 @@ to your .emacs.
 * Python
 * Haskell
 * Java
+
+## Adding support for languages
+See ![API docs][./doc/API.org]
 
 ## Examples
 
