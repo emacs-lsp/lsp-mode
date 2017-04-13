@@ -33,7 +33,7 @@ to your .emacs.
 * Java
 
 ## Adding support for languages
-See ![API docs][./doc/API.org]
+See [API docs](./doc/API.org)
 
 ## Examples
 
