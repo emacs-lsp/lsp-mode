@@ -563,9 +563,20 @@ to a text document."
           (detail (gethash "detail" table nil))
           (kind (alist-get (gethash "kind" table nil) lsp--completion-item-kind)))
     (concat
+      " "
       detail
       (when kind " ")
       (when kind (format "(%s)" kind)))))
+
+(defun lsp--sort-string (c)
+  (gethash "sortText" c (gethash "label" c "")))
+
+(defun lsp--sort-completions (completions)
+  (sort completions #'(lambda (c1 c2)
+                        (when (string-lessp
+                                (lsp--sort-string c1)
+                                (lsp--sort-string c2))
+                          t))))
 
 (defun lsp--get-completions ()
   (lsp--send-changes lsp--cur-workspace)
@@ -581,7 +592,8 @@ to a text document."
                     (items (gethash "items" resp nil)))
               (mapcar #'lsp--make-completion-item
                 (if (listp items) items (list items))))))
-      :annotation-function #'lsp--annotate)))
+      :annotation-function #'lsp--annotate
+      :display-sort-function #'lsp--sort-completions)))
 
 ;;; TODO: implement completionItem/resolve
 
