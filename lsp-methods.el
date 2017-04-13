@@ -127,7 +127,8 @@
   :group 'lsp-faces)
 
 (defun lsp-client-on-notification (mode method callback)
-  (lsp--assert-type callback #'functionp)
+  (cl-assert (cl-typep callback 'function) nil
+    "lsp-client-on-notification: CALLBACK is not a function.")
   (let ((client (gethash mode lsp--defined-clients nil)))
     (cl-assert client nil (format "%s doesn't have a defined client" mode))
     (puthash method callback (lsp--client-method-handlers client))))
