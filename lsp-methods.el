@@ -181,9 +181,7 @@ for a new workspace."
 
 (defun lsp--send-request (body &optional no-wait)
   "Send BODY as a request to the language server, get the response.
-If no-wait is non-nil, don't synchronously wait for a response.
-If no-flush-changes is non-nil, don't flush document changes before sending
-the request."
+If no-wait is non-nil, don't synchronously wait for a response."
   ;; lsp-send-sync should loop until lsp--from-server returns nil
   ;; in the case of Rust Language Server, this can be done with
   ;; 'accept-process-output`.'
