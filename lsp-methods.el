@@ -720,10 +720,10 @@ Returns xref-item(s)."
     contents))
 
 (defun lsp-eldoc ()
-  (let ((throwaway (when (and (gethash "codeActionProvider" (lsp--server-capabilities))
-                              lsp-enable-codeaction)
-                     (lsp--text-document-code-action))))
-        nil)
+  (when (and (gethash "codeActionProvider" (lsp--server-capabilities))
+             lsp-enable-codeaction)
+    (lsp--text-document-code-action))
+  (message "lsp-eldoc:after codeAction")
   (lsp--text-document-hover-string))
 
 (defun lsp--text-document-hover-string ()
@@ -755,15 +755,13 @@ type MarkedString = string | { language: string; value: string };"
 the diagnostics"
   (unless lsp--cur-workspace
     (user-error "No language server is associated with this buffer"))
-  ;; (message "lsp--text-document-code-action")
   (let* ((actions (lsp--send-request (lsp--make-request
                                     "textDocument/codeAction"
                                     (lsp--text-document-code-action-params))
-                                     ))
-         ;; (contents (gethash "contents" (or actions (make-hash-table))))
-         nil)
-    )
-  nil)
+                                     )))
+    (when lsp-print-io
+      (message "lsp--text-document-code-action:actions= %s" actions))
+    nil))
 
 (defun lsp--make-document-formatting-options ()
   (let ((json-false :json-false))
