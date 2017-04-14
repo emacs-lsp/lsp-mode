@@ -38,6 +38,7 @@
   (parser nil :read-only t)
   (language-id nil :read-only t)
   (last-id 0)
+  ;; file-versions is a hashtable of files "owned" by the workspace
   (file-versions nil)
   (server-capabilities nil)
   (root nil :ready-only t)
@@ -49,7 +50,8 @@
   )
 
 (defvar-local lsp--cur-workspace nil)
-(defvar lsp--workspaces (make-hash-table :test #'equal))
+(defvar lsp--workspaces (make-hash-table :test #'equal)
+  "Table of known workspaces, indexed by the project root directory.")
 
 (defcustom lsp-after-initialize-hook nil
   "List of functions to be called after a Language Server has been initialized
@@ -213,16 +215,16 @@ interface TextDocumentItem {
          root response)
     (if (gethash cur-dir lsp--workspaces)
       (user-error "This workspace has already been initialized")
+      (setq root (funcall (lsp--client-get-root client)))
       (setq lsp--cur-workspace (make-lsp--workspace
                                  :parser parser
                                  :language-id language-id
                                  :file-versions (make-hash-table :test #'equal)
                                  :last-id 0
-                                 :root (setq root
-                                         (funcall (lsp--client-get-root client)))
+                                 :root root
                                  :client client
                                  :proc data))
-      (puthash cur-dir lsp--cur-workspace lsp--workspaces))
+      (puthash root lsp--cur-workspace lsp--workspaces))
     (setf (lsp--parser-workspace parser) lsp--cur-workspace)
     (setq response (lsp--send-request (lsp--make-request "initialize"
                                         `(:processId ,(emacs-pid) :rootPath ,root
@@ -230,6 +232,38 @@ interface TextDocumentItem {
     (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
       (gethash "capabilities" response))
     (run-hooks lsp-after-initialize-hook)))
+
+(defun lsp--shutdown-cur-workspace ()
+  "Shut down the language server process for lsp--cur-workspace"
+  (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)))
+  (lsp--send-notification (lsp--make-notification "exit" nil))
+  (lsp--uninitialize-workspace))
+
+(defun lsp--uninitialize-workspace ()
+  "When a workspace is shut down, by request or from just
+disappearing, unset all the variables related to it."
+  (remhash (lsp--workspace-root lsp--cur-workspace) lsp--workspaces)
+  (let ((old-root (lsp--workspace-root lsp--cur-workspace)))
+    (with-current-buffer buffer
+      (setq lsp--cur-workspace nil)
+      (lsp--unset-variables)
+      (kill-local-variable 'lsp--cur-workspace))
+    (message "workspace uninitialized: %s" old-root)))
+
+;; NOTE: Possibly make this function subject to a setting, if older LSP servers
+;; are unhappy
+(defun lsp--client-capabilities ()
+  "Return the client capabilites"
+  `(:workspace    ,(lsp--client-workspace-capabilities)
+    :textDocument ,(lsp--client-textdocument-capabilities)))
+
+(defun lsp--client-workspace-capabilities ()
+  "Client Workspace capabilities according to LSP"
+  `(:executeCommand (:dynamicRegistration t)))
+
+(defun lsp--client-textdocument-capabilities ()
+  "Client Text document capabilities according to LSP"
+  (make-hash-table))
 
 (defun lsp--server-capabilities ()
   "Return the capabilities of the language server associated with the buffer."
@@ -278,15 +312,13 @@ If `lsp--dont-ask-init' is bound, return non-nil."
                    parser
                    (lsp--client-ignore-regexps client))
                  #'(lambda (_p exit-str)
-                     (dolist (buffer (lsp--workspace-buffers lsp--cur-workspace))
-                       (message "%s: %s has exited (%s)"
-                         (lsp--workspace-root lsp--cur-workspace)
-                         (process-name (lsp--workspace-proc lsp--cur-workspace))
-                         exit-str)
-                       (with-current-buffer buffer
-                         (setq lsp--cur-workspace nil)
-                         (lsp--unset-variables))
-                       (setq lsp--cur-workspace nil)))))
+                     (when lsp--cur-workspace
+                       (dolist (buffer (lsp--workspace-buffers lsp--cur-workspace))
+                         (message "%s: %s has exited (%s)"
+                                  (lsp--workspace-root lsp--cur-workspace)
+                                  (process-name (lsp--workspace-proc lsp--cur-workspace))
+                                  exit-str)
+                         (lsp--uninitialize-workspace))))))
         (setq set-vars t)
         (lsp--initialize (lsp--client-language-id client)
           client parser data)
@@ -515,9 +547,7 @@ to a text document."
             "textDocument/didClose"
             `(:textDocument ,(lsp--versioned-text-document-identifier))))
         (when (and (= 0 (hash-table-count file-versions)) (lsp--shut-down-p))
-          (progn
-            (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)))
-            (lsp--send-notification (lsp--make-notification "exit" nil))))))))
+          (lsp--shutdown-cur-workspace))))))
 
 (defun lsp--text-document-did-save ()
   "Executed when the file is closed, added to `after-save-hook''."
