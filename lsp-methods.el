@@ -510,12 +510,14 @@ to a text document."
           (delq (current-buffer) old-buffers))
 
         (remhash buffer-file-name file-versions)
-        (when (and (= 0 (hash-table-count file-versions)) (lsp--shut-down-p))
-          (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)) t))
         (lsp--send-notification
           (lsp--make-notification
             "textDocument/didClose"
-            `(:textDocument ,(lsp--versioned-text-document-identifier))))))))
+            `(:textDocument ,(lsp--versioned-text-document-identifier))))
+        (when (and (= 0 (hash-table-count file-versions)) (lsp--shut-down-p))
+          (progn
+            (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)))
+            (lsp--send-notification (lsp--make-notification "exit" nil))))))))
 
 (defun lsp--text-document-did-save ()
   "Executed when the file is closed, added to `after-save-hook''."
