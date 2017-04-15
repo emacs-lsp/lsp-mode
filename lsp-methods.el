@@ -415,6 +415,14 @@ interface Range {
       (lsp--region-to-range (region-beginning) (region-end))
     (lsp--region-to-range (point) (point)))) 
 
+(defun lsp--range-start-line (range)
+  "Return the start line for a given LSP range, in LSP coordinates"
+  (plist-get (plist-get range :start) :line))
+
+(defun lsp--range-end-line (range)
+  "Return the end line for a given LSP range, in LSP coordinates"
+  (plist-get (plist-get range :end) :line))
+
 (defun lsp--apply-workspace-edits (edits)
   (cl-letf ((lsp-ask-before-initializing nil)
              ((lsp--workspace-change-timer-disabled lsp--cur-workspace) t))
@@ -601,7 +609,18 @@ to a text document."
 
 (defun lsp--code-action-context ()
   ;; TODO: find any diagnostics intersecting the current region
-  nil)
+  (let* ((diags (gethash buffer-file-name lsp--diagnostics nil ) )
+         (range (lsp--current-region-or-pos))
+         (start-line (1+ (lsp--range-start-line range)))
+         (end-line (1+ (lsp--range-end-line range)))
+         (diags-in-range (cl-remove-if-not
+                          (lambda (diag)
+                            (let ((line (lsp-diagnostic-line diag)))
+                              (message "lambda:diag=%s" diag)
+                              (message "lambda:line=%s" line)
+                              (and (>= line start-line) (<= line end-line))))
+                          diags)))
+    (mapcar #'lsp-diagnostic-original diags-in-range)))
 
 (defconst lsp--completion-item-kind
   `(
