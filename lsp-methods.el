@@ -17,6 +17,7 @@
 (require 'json)
 (require 'xref)
 (require 'subr-x)
+(require 'widget)
 (require 'lsp-receive)
 (require 'lsp-common)
 
@@ -616,8 +617,6 @@ to a text document."
          (diags-in-range (cl-remove-if-not
                           (lambda (diag)
                             (let ((line (lsp-diagnostic-line diag)))
-                              (message "lambda:diag=%s" diag)
-                              (message "lambda:line=%s" line)
                               (and (>= line start-line) (<= line end-line))))
                           diags)))
     (mapcar #'lsp-diagnostic-original diags-in-range)))
@@ -778,8 +777,9 @@ the diagnostics"
                                     "textDocument/codeAction"
                                     (lsp--text-document-code-action-params))
                                      )))
-    (when lsp-print-io
-      (message "lsp--text-document-code-action:actions= %s" actions))
+    (message "lsp--text-document-code-action:actions= %s" actions)
+    ;; AZ:TODO need to merge rather than append, below
+    (setq lsp-code-actions (append actions lsp-code-actions))
     nil))
 
 (defun lsp--make-document-formatting-options ()
@@ -945,6 +945,35 @@ interface RenameParams {
                                     (lsp--make-document-rename-params newname)))))
     (lsp--apply-workspace-edits edits)))
 
+;;----------------------------------------------------------------------
+;; AZ:Temporary while experimenting with solutions
+(defun lsp-demote ()
+  "Demote a function to the level it is used"
+  (interactive)
+  (unless lsp--cur-workspace
+    (user-error "No language server is associated with this buffer"))
+  (lsp--send-changes lsp--cur-workspace)
+  (let ((edits
+         (lsp--send-request (lsp--make-request
+                             "textDocument/executeCommand"
+                             (lsp--make-execute-command-params "hare:demote" (lsp--point-to-position (point)))))))
+    (lsp--apply-workspace-edits edits)))
+
+(defun lsp--make-execute-command-params (cmd &optional args)
+  (if args
+      (list :command cmd :arguments args)
+    (list :command cmd)))
+
+(defun lsp-lift-to-top ()
+  "Lift a function to the top level"
+  (interactive)
+  (unless lsp--cur-workspace
+    (user-error "No language server is associated with this buffer"))
+  (user-error "Not implemented")
+  )
+
+;;----------------------------------------------------------------------
+
 (defalias 'lsp-on-open #'lsp--text-document-did-open)
 (defalias 'lsp-on-save #'lsp--text-document-did-save)
 ;; (defalias 'lsp-on-change #'lsp--text-document-did-change)
@@ -982,6 +1011,156 @@ interface RenameParams {
     (setq-local completion-at-point-functions nil)
     (add-hook 'completion-at-point-functions #'lsp-completion-at-point))
   (add-hook 'after-change-functions #'lsp-on-change))
+
+;;----------------------------------------------------------------------
+;; AZ: Not sure where this section should go, putting it here for now
+
+;; AZ: This section based on/inspired by the intero 'intero-apply-suggestions' code, at
+;; https://github.com/commercialhaskell/intero/blob/master/elisp/intero.el
+
+(defvar-local lsp-code-actions nil
+  "Code actions for the buffer.")
+
+(defun lsp-apply-commands ()
+  "Prompt and apply any codeAction commands."
+  (interactive)
+  (message "lsp-apply-commands:actions=%s" lsp-code-actions)
+  (if (null lsp-code-actions)
+      (message "No actions to apply")
+    (let ((to-apply
+           (intero-multiswitch
+            (format "There are %d suggestions to apply:" (length lsp-code-actions))
+            (cl-remove-if-not
+             #'identity
+             (mapcar
+              (lambda (suggestion)
+                ;; (cl-case (plist-get suggestion :type)
+                ;;   (add-extension
+                ;;    (list :key suggestion
+                ;;          :title (concat "Add {-# LANGUAGE "
+                ;;                         (plist-get suggestion :extension)
+                ;;                         " #-}")
+                ;;          :default t))
+                ;;   (redundant-constraint
+                ;;    (list :key suggestion
+                ;;          :title (concat
+                ;;                  "Remove redundant constraints: "
+                ;;                  (string-join (plist-get suggestion :redundancies)
+                ;;                               ", ")
+                ;;                  "\n    from the "
+                ;;                  (plist-get suggestion :signature))
+                ;;          :default nil)))
+                (list :key   (gethash "title" suggestion)
+                      :title (gethash "title" suggestion)
+                      :default t)
+                )
+              lsp-code-actions)))))
+      (if (null to-apply)
+          (message "No changes selected to apply.")
+        (let ((sorted (sort to-apply
+                            (lambda (lt gt)
+                              (let ((lt-line   (or (plist-get lt :line)   0))
+                                    (lt-column (or (plist-get lt :column) 0))
+                                    (gt-line   (or (plist-get gt :line)   0))
+                                    (gt-column (or (plist-get gt :column) 0)))
+                                (or (> lt-line gt-line)
+                                    (and (= lt-line gt-line)
+                                         (> lt-column gt-column))))))))
+          (message "lsp-apply-commands: sorted=%s" sorted)
+          ;; # Changes unrelated to the buffer
+          (cl-loop
+           for suggestion in sorted
+           do (cl-case (plist-get suggestion :type)
+                (add-package
+                 (intero-add-package (plist-get suggestion :package)))))
+          ;; # Changes that do not increase/decrease line numbers
+          ;;
+          ;; Update in-place suggestions
+
+          ;; # Changes that do increase/decrease line numbers
+          ;;
+
+          ;; Add extensions to the top of the file
+          )))))
+
+;; The following is copied directly from intero. I suspect it would be better to
+;; have it in a dependency somewhere
+
+(defun intero-multiswitch (title options)
+  "Displaying TITLE, read multiple flags from a list of OPTIONS.
+Each option is a plist of (:key :default :title) wherein:
+
+  :key should be something comparable with EQUAL
+  :title should be a string
+  :default (boolean) specifies the default checkedness"
+  (let ((available-width (window-total-width)))
+    (save-window-excursion
+      (intero-with-temp-buffer
+        (rename-buffer (generate-new-buffer-name "multiswitch"))
+        (widget-insert (concat title "\n\n"))
+        (widget-insert (propertize "Hit " 'face 'font-lock-comment-face))
+        (widget-create 'push-button :notify
+                       (lambda (&rest ignore)
+                         (exit-recursive-edit))
+                       "C-c C-c")
+        (widget-insert (propertize " to apply these choices.\n\n" 'face 'font-lock-comment-face))
+        (let* ((me (current-buffer))
+               (choices (mapcar (lambda (option)
+                                  (append option (list :value (plist-get option :default))))
+                                options)))
+          (cl-loop for option in choices
+                   do (widget-create
+                       'toggle
+                       :notify (lambda (widget &rest ignore)
+                                 (setq choices
+                                       (mapcar (lambda (choice)
+                                                 (if (equal (plist-get choice :key)
+                                                            (plist-get (cdr widget) :key))
+                                                     (plist-put choice :value (plist-get (cdr widget) :value))
+                                                   choice))
+                                               choices)))
+                       :on (concat "[x] " (plist-get option :title))
+                       :off (concat "[ ] " (plist-get option :title))
+                       :value (plist-get option :default)
+                       :key (plist-get option :key)))
+          (let ((lines (line-number-at-pos)))
+            (select-window (split-window-below))
+            (switch-to-buffer me)
+            (goto-char (point-min)))
+          (use-local-map
+           (let ((map (copy-keymap widget-keymap)))
+             (define-key map (kbd "C-c C-c") 'exit-recursive-edit)
+             (define-key map (kbd "C-g") 'abort-recursive-edit)
+             map))
+          (widget-setup)
+          (recursive-edit)
+          (kill-buffer me)
+          (mapcar (lambda (choice)
+                    (plist-get choice :key))
+                  (cl-remove-if-not (lambda (choice)
+                                      (plist-get choice :value))
+                                    choices)))))))
+
+;; The following is copied directly from intero. I suspect it would be better to
+;; have it in a dependency somewhere
+(defmacro intero-with-temp-buffer (&rest body)
+  "Run BODY in `with-temp-buffer', but inherit certain local variables from the current buffer first."
+  (declare (indent 0) (debug t))
+  `(let ((initial-buffer (current-buffer)))
+     (with-temp-buffer
+       (intero-inherit-local-variables initial-buffer)
+       ,@body)))
+
+;; The following is copied directly from intero. I suspect it would be better to
+;; have it in a dependency somewhere
+(defun intero-inherit-local-variables (buffer)
+  "Make the current buffer inherit values of certain local variables from BUFFER."
+  (let ((variables '(
+                     ;; TODO: shouldn’t more of the above be here?
+                     )))
+    (cl-loop for v in variables do
+             (set (make-local-variable v) (buffer-local-value v buffer)))))
+
 
 (provide 'lsp-methods)
 ;;; lsp-methods.el ends here
