@@ -164,6 +164,10 @@ for a new workspace."
     (lsp--make-message body)
     (lsp--workspace-proc lsp--cur-workspace)))
 
+(defun lsp--cur-workspace-check ()
+  (unless lsp--cur-workspace
+    (user-error "No language server is associated with this buffer")))
+
 (defun lsp--cur-parser ()
   (lsp--workspace-parser lsp--cur-workspace))
 
@@ -244,7 +248,7 @@ interface TextDocumentItem {
 disappearing, unset all the variables related to it."
   (remhash (lsp--workspace-root lsp--cur-workspace) lsp--workspaces)
   (let ((old-root (lsp--workspace-root lsp--cur-workspace)))
-    (with-current-buffer buffer
+    (with-current-buffer (current-buffer)
       (setq lsp--cur-workspace nil)
       (lsp--unset-variables)
       (kill-local-variable 'lsp--cur-workspace))
@@ -687,8 +691,7 @@ Returns xref-item(s)."
 }
 
 type MarkedString = string | { language: string; value: string };"
-  (unless lsp--cur-workspace
-    (user-error "No language server is associated with this buffer"))
+  (lsp--cur-workspace-check)
   (lsp--send-changes lsp--cur-workspace)
   (if (symbol-at-point)
     (let* ((hover (lsp--send-request (lsp--make-request
@@ -861,8 +864,7 @@ interface RenameParams {
 (defun lsp-rename (newname)
   "Rename the symbol (and all references to it) under point to NEWNAME."
   (interactive "sRename to: ")
-  (unless lsp--cur-workspace
-    (user-error "No language server is associated with this buffer"))
+  (lsp--cur-workspace-check)
   (lsp--send-changes lsp--cur-workspace)
   (let ((edits (lsp--send-request (lsp--make-request
                                     "textDocument/rename"
