@@ -28,7 +28,7 @@
 (require 'lsp-receive)
 (require 'lsp-send)
 (require 'cl-lib)
-(require 'lsp-hie)
+(and (featurep 'haskell) (require 'lsp-hie))
 (require 'lsp-jls)
 
 (defun lsp--make-stdio-connection (name command)
@@ -91,11 +91,6 @@ Optional arguments:
 (lsp-define-client 'python-mode "python" 'stdio #'(lambda () default-directory)
   :command '("pyls")
   :name "Python Language Server")
-
-(lsp-define-client 'haskell-mode "haskell" 'stdio #'lsp--haskell-get-root
-  ;; :command '("hie" "--lsp" "-d" "-l" (make-temp-file "hie" nil ".log"))
-  :command '("hie" "--lsp" "-d" "-l" "/tmp/hie.log")
-  :name "Haskell Language Server")
 
 (lsp-define-client 'java-mode "java" 'stdio #'lsp--java-get-root
   :command (lsp--java-ls-command)

@@ -31,5 +31,9 @@
       (message "cabal-dir: %s" cabal-dir)
       cabal-dir)))
 
-(provide 'lsp-hie)
+(lsp-define-client 'haskell-mode "haskell" 'stdio #'lsp--haskell-get-root
+  ;; :command '("hie" "--lsp" "-d" "-l" (make-temp-file "hie" nil ".log"))
+  :command '("hie" "--lsp" "-d" "-l" "/tmp/hie.log")
+  :name "Haskell Language Server")
 
+(provide 'lsp-hie)
