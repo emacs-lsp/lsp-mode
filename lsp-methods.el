@@ -953,10 +953,14 @@ interface RenameParams {
   (unless lsp--cur-workspace
     (user-error "No language server is associated with this buffer"))
   (lsp--send-changes lsp--cur-workspace)
-  (let ((edits
+  (let* ((edits
          (lsp--send-request (lsp--make-request
                              "textDocument/executeCommand"
-                             (lsp--make-execute-command-params "hare:demote" (lsp--point-to-position (point)))))))
+                             (lsp--make-execute-command-params
+                              "hare:demote"
+                              (vector `(:textDocument ,(lsp--text-document-identifier))
+                                       `(:position    ,(lsp--point-to-position (point)))
+                                       `(:range-pos   ,(lsp--current-region-or-pos))  ))))))
     (lsp--apply-workspace-edits edits)))
 
 (defun lsp--make-execute-command-params (cmd &optional args)
