@@ -958,9 +958,8 @@ interface RenameParams {
                              "textDocument/executeCommand"
                              (lsp--make-execute-command-params
                               "hare:demote"
-                              (vector `(:textDocument ,(lsp--text-document-identifier))
-                                       `(:position    ,(lsp--point-to-position (point)))
-                                       `(:range-pos   ,(lsp--current-region-or-pos))  ))))))
+                              (vector `(:file (:textDocument ,(lsp--text-document-identifier)))
+                                      `(:start_pos (:position     ,(lsp--point-to-position (point))))))))))
     (lsp--apply-workspace-edits edits)))
 
 (defun lsp--make-execute-command-params (cmd &optional args)
