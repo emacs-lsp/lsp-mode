@@ -24,13 +24,13 @@ Clone this repository to a suitable path, and add
 to your .emacs.
 
 ## Clients
-`lsp-mode` supports the following languages:
+Support for programming languages is provided by the following packages:
 
-* Go
-* Rust
-* Python
-* Haskell
-* Java
+- [lsp-rust](https://github.com/emacs-lsp/lsp-rust)
+- [lsp-go](https://github.com/emacs-lsp/lsp-go)
+- [lsp-python](https://github.com/emacs-lsp/lsp-python)
+- [lsp-haskell](https://github.com/emacs-lsp/lsp-haskell)
+- [lsp-java](https://github.com/emacs-lsp/lsp-java)
 
 ## Adding support for languages
 See [API docs](./doc/API.org)
