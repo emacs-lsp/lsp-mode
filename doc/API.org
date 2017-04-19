@@ -31,6 +31,17 @@ An example of a client for the Go Language Server:
   :ignore-regexps '("^langserver-go: reading on stdin, writing on stdout$"))
 #+END_SRC
 
+** lsp-client-on-notification /mode method callback/
+   Add a method handler when Emacs get a notification from the language server
+   for major-mode MODE.
+
+~mode~ should be a symbol of the major-mode name for the programming language.
+
+~method~ should be a string with the method name.
+
+~callback~ should be a lisp function taking a single argument, the parameters
+passed with the notification as a hash table.
+
 * Hooks
 ** lsp-after-initialize-hook
    A list of functions to be called after a Language Server has been initialized for a new workspace.
