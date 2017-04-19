@@ -22,7 +22,7 @@ script:
 notifications:
   webhooks:
     urls:
-      - https://webhooks.gitter.im/e/1a9c7ddf8c4fc31d9f38
+      - https://webhooks.gitter.im/e/3c80316cc2101deff8ce
     on_success: change
     on_failure: always
     on_start: never
