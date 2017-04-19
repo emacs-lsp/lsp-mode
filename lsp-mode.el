@@ -28,8 +28,6 @@
 (require 'lsp-receive)
 (require 'lsp-send)
 (require 'cl-lib)
-(and (featurep 'haskell) (require 'lsp-hie))
-(require 'lsp-jls)
 
 (defun lsp--make-stdio-connection (name command)
   (lambda (filter sentinel)
@@ -82,21 +80,6 @@ Optional arguments:
                                                                   :ignore-regexps))))
              (t (error "Invalid TYPE for LSP client")))))
     (puthash mode client lsp--defined-clients)))
-
-(lsp-define-client 'go-mode "go" 'stdio #'(lambda () default-directory)
-  :command '("go-langserver" "-mode=stdio")
-  :name "Go Language Server"
-  :ignore-regexps '("^langserver-go: reading on stdin, writing on stdout$"))
-
-(lsp-define-client 'python-mode "python" 'stdio #'(lambda () default-directory)
-  :command '("pyls")
-  :name "Python Language Server")
-
-(lsp-define-client 'java-mode "java" 'stdio #'lsp--java-get-root
-  :command (lsp--java-ls-command)
-  :name "Java Language Server")
-
-(require 'lsp-rust)
 
 ;;;###autoload
 (define-minor-mode global-lsp-mode ""
