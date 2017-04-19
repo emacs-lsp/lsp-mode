@@ -18,3 +18,11 @@ install:
   - cask install
 script:
   - cask build
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/1a9c7ddf8c4fc31d9f38
+    on_success: change
+    on_failure: always
+    on_start: never
