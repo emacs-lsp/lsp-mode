@@ -58,8 +58,8 @@ CALLBACK is the status callback passed by Flycheck."
   "A syntax checker using the Language Server Protocol (RLS)
 provided by lsp-mode.
 
-See https://github.com/vibhavp/emacs-lsp."
-  :start #'lsp--flycheck-start
+See https://github.com/emacs-lsp/lsp-mode.
+  :start" #'lsp--flycheck-start
   :modes '(rust-mode go-mode python-mode haskell-mode) ; Need a default mode
   :predicate (lambda () (not (null global-lsp-mode))))
 

@@ -16,7 +16,7 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;; Author: Vibhav Pant <vibhavp@gmail.com>
-;; URL: https://github.com/vibhavp/emacs-lsp
+;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; Package-Requires: ((emacs "25.1") (flycheck "30"))
 ;; Version: 2.0
 
