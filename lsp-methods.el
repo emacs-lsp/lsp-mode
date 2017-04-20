@@ -319,14 +319,20 @@ If `lsp--dont-ask-init' is bound, return non-nil."
                      (when lsp--cur-workspace
                        (dolist (buffer (lsp--workspace-buffers lsp--cur-workspace))
                          (message "%s: %s has exited (%s)"
-                                  (lsp--workspace-root lsp--cur-workspace)
-                                  (process-name (lsp--workspace-proc lsp--cur-workspace))
-                                  exit-str)
+                           (lsp--workspace-root lsp--cur-workspace)
+                           (process-name (lsp--workspace-proc lsp--cur-workspace))
+                           exit-str)
                          (lsp--uninitialize-workspace))))))
         (setq set-vars t)
         (lsp--initialize (lsp--client-language-id client)
           client parser data)
-        (lsp--text-document-did-open)))
+        (setq set-vars t)
+        (puthash buffer-file-name 0 (lsp--workspace-file-versions lsp--cur-workspace))
+        (lsp--send-notification
+          (lsp--make-notification
+            "textDocument/didOpen"
+            `(:textDocument ,(lsp--make-text-document-item))))
+        (push (current-buffer) (lsp--workspace-buffers lsp--cur-workspace))))
 
     (when set-vars
       (lsp--set-variables)
