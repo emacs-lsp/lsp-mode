@@ -960,35 +960,25 @@ interface RenameParams {
                                     (lsp--make-document-rename-params newname)))))
     (lsp--apply-workspace-edits edits)))
 
-;;----------------------------------------------------------------------
-;; AZ:Temporary while experimenting with solutions
-(defun lsp-demote ()
-  "Demote a function to the level it is used"
-  (interactive)
+(defun lsp--send-execute-command (command &optional args)
+  "Create and send a 'textDocument/executeCommand' message having
+command COMMAND and optionsl ARGS"
   (lsp--cur-workspace-check)
   (lsp--send-changes lsp--cur-workspace)
   (lsp--send-request
    (lsp--make-request
     "textDocument/executeCommand"
-    (lsp--make-execute-command-params
-     "hare:demote"
-     (vector `(:file (:textDocument ,(lsp--text-document-identifier)))
-             `(:start_pos (:position     ,(lsp--point-to-position (point)))))))))
+    (lsp--make-execute-command-params command args))))
 
 (defun lsp--make-execute-command-params (cmd &optional args)
   (if args
       (list :command cmd :arguments args)
     (list :command cmd)))
 
-(defun lsp-lift-to-top ()
-  "Lift a function to the top level"
-  (interactive)
-  (lsp--cur-workspace-check)
-  (user-error "Not implemented")
-  )
 
-;;----------------------------------------------------------------------
-
+(defalias 'lsp-point-to-position #'lsp--point-to-position)
+(defalias 'lsp-text-document-identifier #'lsp--text-document-identifier)
+(defalias 'lsp-send-execute-command #'lsp--send-execute-command)
 (defalias 'lsp-on-open #'lsp--text-document-did-open)
 (defalias 'lsp-on-save #'lsp--text-document-did-save)
 ;; (defalias 'lsp-on-change #'lsp--text-document-did-change)
