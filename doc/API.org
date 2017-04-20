@@ -23,6 +23,7 @@ Other keyword arguments include:
 **** ~:ignore-regexps~
      (Optional) A list of regexp strings. If any output from the server matches any of the regexps, the output will be ignored.
 
+
 An example of a client for the Go Language Server:
 #+BEGIN_SRC emacs-lisp
 (lsp-define-client 'go-mode "go" 'stdio #'(lambda () default-directory)
@@ -42,6 +43,21 @@ An example of a client for the Go Language Server:
 ~callback~ should be a lisp function taking a single argument, the parameters
 passed with the notification as a hash table.
 
+** lsp-make-traverser /name/
+   Return a closure that walks up the current directory until NAME is found.
+
+NAME can either be a string or a predicate used for ~locate-dominating-file~.
+The value returned by the function will be the directory name for NAME.
+
+If no such directory could be found, log a warning and return ~default-directory~ instead.
+Example for `lsp-python`:
+#+BEGIN_SRC emacs-lisp
+(lsp-make-traverser #'(lambda (dir)
+			(directory-files
+			 dir
+			 nil
+			 "\\(__init__\\|setup\\)\\.py")))
+#+END_SRC
 * Hooks
 ** lsp-after-initialize-hook
    A list of functions to be called after a Language Server has been initialized for a new workspace.
