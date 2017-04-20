@@ -7,8 +7,8 @@ non-standard notifications from the server.
    Define a LSP client for minor mode ~mode~ and language ~language-id~.
 
 ~get-root~ is  the function that is called to retrieve the workspace directory
-for the current file. In most cases, it should simply return the current
-directory (~default-directory~). It should not take any arguments.
+for the current file. It should not take any arguments. [[https://github.com/autozimu/LanguageClient-neovim/blob/fd082232de8b8fbf13d4c4c64c0b43595e9ae7f8/rplugin/python3/LanguageClient/util.py#L15][LanguageClient-neovim]]
+provides examples of how this should be done for various languages.
 
 ~type~ defines how the Emacs will talk to the language server. Currently, the
 only supported mode is '~stdio~.
