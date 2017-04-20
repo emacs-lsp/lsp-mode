@@ -20,6 +20,8 @@
 (require 'lsp-receive)
 (require 'lsp-common)
 
+;;; Code:
+
 (cl-defstruct lsp--client
   (language-id nil :read-only t)
   ;; function to send a message and waits for the next message from the server
