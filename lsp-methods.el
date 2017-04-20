@@ -287,6 +287,21 @@ disappearing, unset all the variables related to it."
                                       (lsp--server-capabilities))
                                     lsp--sync-methods))))
 
+(defun lsp--client-request-handlers ()
+  "Handlers for requests originating from the server"
+  (let* ((table (make-hash-table :test 'equal)))
+    ;; ("client/registerCapability"   (error "client/registerCapability not implemented"))
+    ;; ("client/unregisterCapability" (error "client/unregisterCapability not implemented"))
+    ;; ("workspace/applyEdit"         (error "workspace/applyEdit not implemented"))
+    ;; ;; need to call lsp--apply-workspace-edits
+    (puthash "workspace/applyEdit" #'lsp--workspace-apply-edit-handler table)
+    table))
+
+(defun lsp--workspace-apply-edit-handler (workspace params)
+  (lsp--apply-workspace-edits (gethash "edit" params))
+  ;; TODO: send reply
+  )
+
 (defun lsp--should-initialize ()
   "Ask user if a new Language Server for the current file should be started.
 If `lsp--dont-ask-init' is bound, return non-nil."
@@ -316,8 +331,9 @@ If `lsp--dont-ask-init' is bound, return non-nil."
 
       (setq client (gethash major-mode lsp--defined-clients))
       (when (and client (lsp--should-initialize))
-        (setq parser (make-lsp--parser :method-handlers
-                       (lsp--client-method-handlers client))
+        (setq parser (make-lsp--parser
+                      :method-handlers (lsp--client-method-handlers client)
+                      :request-handlers (lsp--client-request-handlers))
           data (funcall (lsp--client-new-connection client)
                  (lsp--parser-make-filter
                    parser
@@ -434,7 +450,7 @@ interface Range {
 (defun lsp--apply-workspace-edit (uri edits)
   ;; (message "apply-workspace-edit: %s" uri )
   (let ((filename (string-remove-prefix "file://" uri)))
-    (message "apply-workspace-edit:filename= %s" filename )
+    ;; (message "apply-workspace-edit:filename= %s" filename )
     (find-file filename)
     (lsp--text-document-did-open)
     (lsp--apply-text-edits edits)))
@@ -741,7 +757,6 @@ Returns xref-item(s)."
   (when (and (gethash "codeActionProvider" (lsp--server-capabilities))
              lsp-enable-codeaction)
     (lsp--text-document-code-action))
-  (message "lsp-eldoc:after codeAction")
   (lsp--text-document-hover-string))
 
 (defun lsp--text-document-hover-string ()
@@ -952,14 +967,13 @@ interface RenameParams {
   (interactive)
   (lsp--cur-workspace-check)
   (lsp--send-changes lsp--cur-workspace)
-  (let* ((edits
-         (lsp--send-request (lsp--make-request
-                             "textDocument/executeCommand"
-                             (lsp--make-execute-command-params
-                              "hare:demote"
-                              (vector `(:file (:textDocument ,(lsp--text-document-identifier)))
-                                      `(:start_pos (:position     ,(lsp--point-to-position (point))))))))))
-    (lsp--apply-workspace-edits edits)))
+  (lsp--send-request
+   (lsp--make-request
+    "textDocument/executeCommand"
+    (lsp--make-execute-command-params
+     "hare:demote"
+     (vector `(:file (:textDocument ,(lsp--text-document-identifier)))
+             `(:start_pos (:position     ,(lsp--point-to-position (point)))))))))
 
 (defun lsp--make-execute-command-params (cmd &optional args)
   (if args

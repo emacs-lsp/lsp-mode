@@ -35,7 +35,8 @@
   (queued-requests nil)
 
   (workspace nil) ;; the workspace
-  (method-handlers nil :read-only t))
+  (method-handlers nil :read-only t)
+  (request-handlers nil))
 
 
 ;;  id  method
@@ -87,7 +88,6 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 (defun lsp--on-request (p request &optional dont-queue)
   "If response queue is empty, call the appropriate handler for REQUEST.
 Else it is queued (unless DONT-QUEUE is non-nil)"
-  (message "lsp--on-request entered")
   (let ((params (gethash "params" request))
          handler)
     ;; (if (and (not dont-queue) (lsp--parser-response-result p))
@@ -95,14 +95,10 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
       (push (lsp--parser-queued-requests p) request)
       ;; else, call the appropriate handler
       (pcase (gethash "method" request)
-        ("client/registerCapability"   (error "client/registerCapability not implemented"))
-        ("client/unregisterCapability" (error "client/unregisterCapability not implemented"))
-        ("workspace/applyEdit" (error "workspace/applyEdit not implemented"))
-                                ;; need to call lsp--apply-workspace-edits
         (other
-          (setq handler (gethash other (lsp--parser-method-handlers p) nil))
+          (setq handler (gethash other (lsp--parser-request-handlers p) nil))
           (if (not handler)
-            (message "Unkown method: %s" other)
+            (message "Unkown request method: %s" other)
             (funcall handler (lsp--parser-workspace p) params)))))))
 
 (defconst lsp--errors
