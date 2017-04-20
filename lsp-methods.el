@@ -318,11 +318,12 @@ If `lsp--dont-ask-init' is bound, return non-nil."
                  #'(lambda (_p exit-str)
                      (when lsp--cur-workspace
                        (dolist (buffer (lsp--workspace-buffers lsp--cur-workspace))
-                         (message "%s: %s has exited (%s)"
-                           (lsp--workspace-root lsp--cur-workspace)
-                           (process-name (lsp--workspace-proc lsp--cur-workspace))
-                           exit-str)
-                         (lsp--uninitialize-workspace))))))
+                         (with-current-buffer buffer
+                           (message "%s: %s has exited (%s)"
+                             (lsp--workspace-root lsp--cur-workspace)
+                             (process-name (lsp--workspace-proc lsp--cur-workspace))
+                             exit-str)
+                           (lsp--uninitialize-workspace)))))))
         (setq set-vars t)
         (lsp--initialize (lsp--client-language-id client)
           client parser data)
@@ -458,6 +459,8 @@ interface Range {
   "The last workspace for which the onChange idle timer was set.")
 
 (defvar-local lsp--changes [])
+(defvar-local lsp--has-changes []
+  "non-nil if the current buffer has any changes yet to be sent.")
 
 (defun lsp--rem-idle-timer ()
   (when lsp--change-idle-timer
@@ -490,18 +493,20 @@ to a text document."
   (lsp--rem-idle-timer)
   (dolist (buffer (lsp--workspace-buffers workspace))
     (with-current-buffer buffer
-      (lsp--inc-cur-file-version)
-      (lsp--send-notification
-        (lsp--make-notification
-          "textDocument/didChange"
-          `(:textDocument
-             ,(lsp--versioned-text-document-identifier)
-             :contentChanges
-             ,(cl-case lsp--server-sync-method
-                ('incremental lsp--changes)
-                ('full `[,(lsp--full-change-event)])
-                ('none `[])))))
-      (setq lsp--changes []))))
+      (when lsp--has-changes
+        (lsp--inc-cur-file-version)
+        (lsp--send-notification
+          (lsp--make-notification
+            "textDocument/didChange"
+            `(:textDocument
+               ,(lsp--versioned-text-document-identifier)
+               :contentChanges
+               ,(cl-case lsp--server-sync-method
+                  ('incremental lsp--changes)
+                  ('full `[,(lsp--full-change-event)])
+                  ('none `[])))))
+        (setq lsp--changes []
+          lsp--has-changes nil)))))
 
 (defun lsp--push-change (change-event)
   "Push CHANGE-EVENT to the buffer change vector."
@@ -509,6 +514,7 @@ to a text document."
 
 (defun lsp-on-change (start end length)
   (lsp--flush-other-workspace-changes)
+  (setq lsp--has-changes t)
   (when (and lsp--cur-workspace
           (not (or (eq lsp--server-sync-method 'none)
                  (eq lsp--server-sync-method nil))))
