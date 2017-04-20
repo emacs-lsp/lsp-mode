@@ -950,8 +950,7 @@ interface RenameParams {
 (defun lsp-demote ()
   "Demote a function to the level it is used"
   (interactive)
-  (unless lsp--cur-workspace
-    (user-error "No language server is associated with this buffer"))
+  (lsp--cur-workspace-check)
   (lsp--send-changes lsp--cur-workspace)
   (let* ((edits
          (lsp--send-request (lsp--make-request
@@ -970,8 +969,7 @@ interface RenameParams {
 (defun lsp-lift-to-top ()
   "Lift a function to the top level"
   (interactive)
-  (unless lsp--cur-workspace
-    (user-error "No language server is associated with this buffer"))
+  (lsp--cur-workspace-check)
   (user-error "Not implemented")
   )
 
