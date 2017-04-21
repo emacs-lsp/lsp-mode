@@ -47,7 +47,8 @@
   (root nil :ready-only t)
   (client nil :read-only t)
   (change-timer-disabled nil)
-  (proc nil :read-only t)
+  (proc nil :read-only t) ;; the process we communicate with
+  (cmd-proc nil :read-only t) ;; the process we launch initially
   (buffers nil) ;; a list of buffers associated with this workspace
   (overlays nil) ;; a list of '(START . END) cons pairs with overlays on them
   )
@@ -222,8 +223,10 @@ interface TextDocumentItem {
      :text ,(buffer-substring-no-properties (point-min) (point-max))))
 
 (defun lsp--initialize (language-id client parser &optional data)
-  (let ((cur-dir (expand-file-name default-directory))
-         root response)
+  (let* ((cur-dir (expand-file-name default-directory))
+          (cmd-proc (if (consp data) (car data) data))
+          (proc (if (consp data) (cdr data) data))
+          root response)
     (if (gethash cur-dir lsp--workspaces)
       (user-error "This workspace has already been initialized")
       (setq root (funcall (lsp--client-get-root client)))
@@ -234,7 +237,8 @@ interface TextDocumentItem {
                                  :last-id 0
                                  :root root
                                  :client client
-                                 :proc data))
+                                 :proc proc
+                                 :cmd-proc cmd-proc))
       (puthash root lsp--cur-workspace lsp--workspaces))
     (setf (lsp--parser-workspace parser) lsp--cur-workspace)
     (setq response (lsp--send-request (lsp--make-request "initialize"
@@ -256,6 +260,7 @@ disappearing, unset all the variables related to it."
   (remhash (lsp--workspace-root lsp--cur-workspace) lsp--workspaces)
   (let ((old-root (lsp--workspace-root lsp--cur-workspace)))
     (with-current-buffer (current-buffer)
+      (kill-process (lsp--workspace-proc lsp--cur-workspace))
       (setq lsp--cur-workspace nil)
       (lsp--unset-variables)
       (kill-local-variable 'lsp--cur-workspace))

@@ -28,6 +28,7 @@
 (require 'lsp-receive)
 (require 'lsp-send)
 (require 'cl-lib)
+(require 'network-stream)
 
 (defun lsp--make-stdio-connection (name command)
   (lambda (filter sentinel)
@@ -42,6 +43,23 @@
         :sentinel sentinel
         :stderr (generate-new-buffer-name (concat "*" name " stderr"))))))
 
+(defun lsp--make-tcp-connection (name command host port)
+  (lambda (filter sentinel)
+    (let ((final-command (if (consp command) command (list command)))
+           proc tcp-proc)
+      (unless (executable-find (nth 0 final-command))
+        (error (format "Couldn't find executable %s" (nth 0 final-command))))
+      (setq proc (make-process
+                   :name name
+                   :command final-command
+                   :sentinel sentinel
+                   :stderr (generate-new-buffer-name (concat "*" name " stderr*")))
+        tcp-proc (open-network-stream (concat name " TCP connection")
+                   nil host port
+                   :type 'plain))
+      (set-process-filter tcp-proc filter)
+      (cons proc tcp-proc))))
+
 (defun lsp--verify-regexp-list (l)
   (cl-assert (cl-typep l 'list) nil
     "lsp-define-client: :ignore-regexps is not a list")
@@ -52,33 +70,53 @@
         "lsp-define-client: :ignore-regexps element %s is not a string"
         e))))
 
-(defun lsp-define-client (mode language-id type get-root &rest args)
-  "Define a LSP client.
+(defun lsp-define-stdio-client (mode language-id type get-root name command &rest args)
+  "Define a LSP client using stdio.
 MODE is the major mode for which this client will be invoked.
 LANGUAGE-ID is the language id to be used when communication with the Language Server.
+NAME is the process name for the language server.
+COMMAND is the command to run.
 Optional arguments:
-`:name' is the process name for the language server.
-`:command' is the command to run if `TYPE' is 'stdio.
 `:ignore-regexps' is a list of regexps which when matched will be ignored by the output parser."
   (lsp--assert-type mode #'symbolp)
-  (let* ((client
-           (cl-case type
-             ('stdio (make-lsp--client
-                       :language-id (lsp--assert-type language-id #'stringp)
-                       :send-sync 'lsp--stdio-send-sync
-                       :send-async 'lsp--stdio-send-async
-                       :type (lsp--assert-type type #'symbolp)
-                       :new-connection (lsp--make-stdio-connection
-                                         (plist-get args (or :name
-                                                           (format
-                                                             "%s language server"
-                                                             mode)))
-                                         (plist-get args :command))
-                       :get-root (lsp--assert-type get-root #'functionp)
-                       :ignore-regexps (lsp--verify-regexp-list (plist-get
-                                                                  args
-                                                                  :ignore-regexps))))
-             (t (error "Invalid TYPE for LSP client")))))
+  (let* (client)
+    (setq client
+      (make-lsp--client
+        :language-id (lsp--assert-type language-id #'stringp)
+        :send-sync 'lsp--stdio-send-sync
+        :send-async 'lsp--stdio-send-async
+        :type (lsp--assert-type type #'symbolp)
+        :new-connection (lsp--make-stdio-connection
+                          name command)
+        :get-root (lsp--assert-type get-root #'functionp)
+        :ignore-regexps (lsp--verify-regexp-list (plist-get
+                                                   args
+                                                   :ignore-regexps))))
+    (puthash mode client lsp--defined-clients)))
+
+(defun lsp-define-tcp-client (mode language-id type get-root name command host port &rest args)
+  "Define a LSP client using TCP.
+MODE is the major mode for which this client will be invoked.
+LANGUAGE-ID is the language id to be used when communication with the Language Server.
+NAME is the process name for the language server.
+COMMAND is the command to run.
+HOST is the host address.
+PORT is the port number.
+Optional arguments:
+`:ignore-regexps' is a list of regexps which when matched will be ignored by the output parser."
+  (lsp--assert-type mode #'symbolp)
+  (let* (client)
+    (setq client
+      (make-lsp--client
+        :language-id (lsp--assert-type language-id #'stringp)
+        :send-sync 'lsp--stdio-send-sync
+        :send-async 'lsp--stdio-send-async
+        :type (lsp--assert-type type #'symbolp)
+        :new-connection (lsp--make-tcp-connection name command host port)
+        :get-root (lsp--assert-type get-root #'functionp)
+        :ignore-regexps (lsp--verify-regexp-list (plist-get
+                                                   args
+                                                   :ignore-regexps))))
     (puthash mode client lsp--defined-clients)))
 
 ;;;###autoload
