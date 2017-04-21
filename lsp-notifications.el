@@ -39,6 +39,9 @@ server and put in `lsp--diagnostics'."
   (code nil :read-only t) ;; the diagnostic's code
   (source nil :read-only t) ;;
   (message nil :read-only t) ;; diagnostic's message
+  (original nil :read-only t) ;; original diagnostic from LSP, kept for when it
+                              ;; needs to be sent back in e.g. codeAction
+                              ;; context.
   )
 
 (defun lsp--make-diag (diag)
@@ -55,7 +58,8 @@ server and put in `lsp--diagnostics'."
       :severity (gethash "severity" diag)
       :code (gethash "code" diag)
       :source (gethash "source" diag)
-      :message (if source (format "%s: %s" source message) message))))
+      :message (if source (format "%s: %s" source message) message)
+      :original diag)))
 
 (defun lsp--equal-files (f1 f2)
   (string-equal (expand-file-name f1) (expand-file-name f2)))

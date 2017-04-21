@@ -32,21 +32,31 @@
   (prev-char nil)
 
   (queued-notifications nil)
+  (queued-requests nil)
 
   (workspace nil) ;; the workspace
-  (method-handlers nil :read-only t))
+  (method-handlers nil :read-only t)
+  (request-handlers nil))
 
-(defun lsp--get-message-type (params)
-  "Get the message type from PARAMS."
-  (when (not (string= (gethash "jsonrpc" params "") "2.0"))
+
+;;  id  method
+;;   x    x     request
+;;   x    .     response
+;;   .    x     notification
+
+(defun lsp--get-message-type (json-data)
+  "Get the message type from JSON-DATA."
+  (when (not (string= (gethash "jsonrpc" json-data "") "2.0"))
     (error "JSON-RPC version is not 2.0"))
-  (if (gethash "id" params nil)
-    (if (gethash "error" params nil)
+  (if (gethash "id" json-data nil)
+    (if (gethash "error" json-data nil)
       'response-error
-      'response)
-    (if (gethash "method" params nil)
+      (if (gethash "method" json-data nil)
+          'request
+        'response))
+    (if (gethash "method" json-data nil)
       'notification
-      (error "Couldn't guess message type from params"))))
+      (error "Couldn't guess message type from json-data"))))
 
 (defun lsp--flush-notifications (p)
   "Flush any notifications that were queued while processing the last response."
@@ -73,6 +83,22 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
           (setq handler (gethash other (lsp--parser-method-handlers p) nil))
           (if (not handler)
             (message "Unkown method: %s" other)
+            (funcall handler (lsp--parser-workspace p) params)))))))
+
+(defun lsp--on-request (p request &optional dont-queue)
+  "If response queue is empty, call the appropriate handler for REQUEST.
+Else it is queued (unless DONT-QUEUE is non-nil)"
+  (let ((params (gethash "params" request))
+         handler)
+    ;; (if (and (not dont-queue) (lsp--parser-response-result p))
+    (if nil
+      (push (lsp--parser-queued-requests p) request)
+      ;; else, call the appropriate handler
+      (pcase (gethash "method" request)
+        (other
+          (setq handler (gethash other (lsp--parser-request-handlers p) nil))
+          (if (not handler)
+            (message "Unkown request method: %s" other)
             (funcall handler (lsp--parser-workspace p) params)))))))
 
 (defconst lsp--errors
@@ -143,7 +169,8 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
           (message (lsp--error-string (gethash "error" json-data nil))))
         (setf (lsp--parser-response-result p) nil
           (lsp--parser-waiting-for-response p) nil))
-      ('notification (lsp--on-notification p json-data))))
+      ('notification (lsp--on-notification p json-data))
+      ('request      (lsp--on-request p json-data))))
   (lsp--parser-reset p))
 
 (defun lsp--parser-read (p output)

@@ -17,6 +17,7 @@
 (require 'json)
 (require 'xref)
 (require 'subr-x)
+(require 'widget)
 (require 'lsp-receive)
 (require 'lsp-common)
 
@@ -100,6 +101,12 @@ for a new workspace."
   :group 'lsp-mode)
 
 ;;;###autoload
+(defcustom lsp-enable-codeaction t
+  "Enable code action processing."
+  :type 'boolean
+  :group 'lsp-mode)
+
+;;;###autoload
 (defcustom lsp-enable-completion-at-point t
   "Enable `completion-at-point' integration."
   :type 'boolean
@@ -175,9 +182,7 @@ for a new workspace."
 
 (defun lsp--send-request (body &optional no-wait)
   "Send BODY as a request to the language server, get the response.
-If no-wait is non-nil, don't synchronously wait for a response.
-If no-flush-changes is non-nil, don't flush document changes before sending
-the request."
+If no-wait is non-nil, don't synchronously wait for a response."
   ;; lsp-send-sync should loop until lsp--from-server returns nil
   ;; in the case of Rust Language Server, this can be done with
   ;; 'accept-process-output`.'
@@ -234,7 +239,7 @@ interface TextDocumentItem {
     (setf (lsp--parser-workspace parser) lsp--cur-workspace)
     (setq response (lsp--send-request (lsp--make-request "initialize"
                                         `(:processId ,(emacs-pid) :rootPath ,root
-                                           :capabilities ,(make-hash-table)))))
+                                           :capabilities ,(lsp--client-capabilities)))))
     (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
       (gethash "capabilities" response))
     (run-hooks lsp-after-initialize-hook)))
@@ -282,6 +287,21 @@ disappearing, unset all the variables related to it."
                                       (lsp--server-capabilities))
                                     lsp--sync-methods))))
 
+(defun lsp--client-request-handlers ()
+  "Handlers for requests originating from the server"
+  (let* ((table (make-hash-table :test 'equal)))
+    ;; ("client/registerCapability"   (error "client/registerCapability not implemented"))
+    ;; ("client/unregisterCapability" (error "client/unregisterCapability not implemented"))
+    ;; ("workspace/applyEdit"         (error "workspace/applyEdit not implemented"))
+    ;; ;; need to call lsp--apply-workspace-edits
+    (puthash "workspace/applyEdit" #'lsp--workspace-apply-edit-handler table)
+    table))
+
+(defun lsp--workspace-apply-edit-handler (workspace params)
+  (lsp--apply-workspace-edits (gethash "edit" params))
+  ;; TODO: send reply
+  )
+
 (defun lsp--should-initialize ()
   "Ask user if a new Language Server for the current file should be started.
 If `lsp--dont-ask-init' is bound, return non-nil."
@@ -311,8 +331,9 @@ If `lsp--dont-ask-init' is bound, return non-nil."
 
       (setq client (gethash major-mode lsp--defined-clients))
       (when (and client (lsp--should-initialize))
-        (setq parser (make-lsp--parser :method-handlers
-                       (lsp--client-method-handlers client))
+        (setq parser (make-lsp--parser
+                      :method-handlers (lsp--client-method-handlers client)
+                      :request-handlers (lsp--client-request-handlers))
           data (funcall (lsp--client-new-connection client)
                  (lsp--parser-make-filter
                    parser
@@ -405,6 +426,20 @@ interface Range {
   (lsp--range (lsp--point-to-position start)
     (lsp--point-to-position end)))
 
+(defun lsp--current-region-or-pos ()
+  "If the region is active return that, else get the point"
+  (if mark-active
+      (lsp--region-to-range (region-beginning) (region-end))
+    (lsp--region-to-range (point) (point)))) 
+
+(defun lsp--range-start-line (range)
+  "Return the start line for a given LSP range, in LSP coordinates"
+  (plist-get (plist-get range :start) :line))
+
+(defun lsp--range-end-line (range)
+  "Return the end line for a given LSP range, in LSP coordinates"
+  (plist-get (plist-get range :end) :line))
+
 (defun lsp--apply-workspace-edits (edits)
   (cl-letf ((lsp-ask-before-initializing nil)
              ((lsp--workspace-change-timer-disabled lsp--cur-workspace) t))
@@ -415,7 +450,7 @@ interface Range {
 (defun lsp--apply-workspace-edit (uri edits)
   ;; (message "apply-workspace-edit: %s" uri )
   (let ((filename (string-remove-prefix "file://" uri)))
-    (message "apply-workspace-edit:filename= %s" filename )
+    ;; (message "apply-workspace-edit:filename= %s" filename )
     (find-file filename)
     (lsp--text-document-did-open)
     (lsp--apply-text-edits edits)))
@@ -582,6 +617,26 @@ to a text document."
      :position ,(lsp--position (lsp--cur-line)
                   (lsp--cur-column))))
 
+(defun lsp--text-document-code-action-params ()
+  "Make CodeActionParams for the current region in the current document."
+  `(:textDocument ,(lsp--text-document-identifier)
+                  :range ,(lsp--current-region-or-pos)
+                  :context (:diagnostics ,(lsp--code-action-context))
+                  ))
+
+(defun lsp--code-action-context ()
+  "Return any diagnostics tha apply to the current line"
+  (let* ((diags (gethash buffer-file-name lsp--diagnostics nil ) )
+         (range (lsp--current-region-or-pos))
+         (start-line (1+ (lsp--range-start-line range)))
+         (end-line (1+ (lsp--range-end-line range)))
+         (diags-in-range (cl-remove-if-not
+                          (lambda (diag)
+                            (let ((line (lsp-diagnostic-line diag)))
+                              (and (>= line start-line) (<= line end-line))))
+                          diags)))
+    (mapcar #'lsp-diagnostic-original diags-in-range)))
+
 (defconst lsp--completion-item-kind
   `(
      (1 . "Text")
@@ -698,6 +753,12 @@ Returns xref-item(s)."
     (gethash "value" contents)
     contents))
 
+(defun lsp-eldoc ()
+  (when (and (gethash "codeActionProvider" (lsp--server-capabilities))
+             lsp-enable-codeaction)
+    (lsp--text-document-code-action))
+  (lsp--text-document-hover-string))
+
 (defun lsp--text-document-hover-string ()
   "interface Hover {
     contents: MarkedString | MarkedString[];
@@ -721,6 +782,20 @@ type MarkedString = string | { language: string; value: string };"
   "Show relevant documentation for the thing under point."
   (interactive)
   (lsp--text-document-hover-string))
+
+(defun lsp--text-document-code-action ()
+  "Request code action to automatically fix issues reported by
+the diagnostics"
+  (unless lsp--cur-workspace
+    (user-error "No language server is associated with this buffer"))
+  (let* ((actions (lsp--send-request (lsp--make-request
+                                    "textDocument/codeAction"
+                                    (lsp--text-document-code-action-params))
+                                     )))
+    (message "lsp--text-document-code-action:actions= %s" actions)
+    ;; AZ:TODO need to merge rather than append, below
+    (setq lsp-code-actions (append actions lsp-code-actions))
+    nil))
 
 (defun lsp--make-document-formatting-options ()
   (let ((json-false :json-false))
@@ -885,11 +960,30 @@ interface RenameParams {
                                     (lsp--make-document-rename-params newname)))))
     (lsp--apply-workspace-edits edits)))
 
+(defun lsp--send-execute-command (command &optional args)
+  "Create and send a 'workspace/executeCommand' message having
+command COMMAND and optionsl ARGS"
+  (lsp--cur-workspace-check)
+  (lsp--send-changes lsp--cur-workspace)
+  (lsp--send-request
+   (lsp--make-request
+    "workspace/executeCommand"
+    (lsp--make-execute-command-params command args))))
+
+(defun lsp--make-execute-command-params (cmd &optional args)
+  (if args
+      (list :command cmd :arguments args)
+    (list :command cmd)))
+
+
+(defalias 'lsp-point-to-position #'lsp--point-to-position)
+(defalias 'lsp-text-document-identifier #'lsp--text-document-identifier)
+(defalias 'lsp-send-execute-command #'lsp--send-execute-command)
 (defalias 'lsp-on-open #'lsp--text-document-did-open)
 (defalias 'lsp-on-save #'lsp--text-document-did-save)
 ;; (defalias 'lsp-on-change #'lsp--text-document-did-change)
 (defalias 'lsp-on-close #'lsp--text-document-did-close)
-(defalias 'lsp-eldoc #'lsp--text-document-hover-string)
+;; (defalias 'lsp-eldoc #'lsp--text-document-hover-string)
 (defalias 'lsp-completion-at-point #'lsp--get-completions)
 
 (defun lsp--unset-variables ()
@@ -902,13 +996,10 @@ interface RenameParams {
   (remove-hook 'after-change-functions #'lsp-on-change))
 
 (defun lsp--set-variables ()
-  (when lsp-enable-eldoc
+  (when (or lsp-enable-eldoc lsp-enable-codeaction)
     (setq-local eldoc-documentation-function #'lsp-eldoc)
     (eldoc-mode 1))
   (when (and lsp-enable-flycheck (featurep 'flycheck))
-  ;; (when lsp-enable-flycheck
-  ;;   (with-eval-after-load 'lsp-mode
-  ;;     (require 'lsp-flycheck))
     (setq-local flycheck-check-syntax-automatically nil)
     (setq-local flycheck-checker 'lsp)
     (unless (memq 'lsp flycheck-checkers)
@@ -925,6 +1016,156 @@ interface RenameParams {
     (setq-local completion-at-point-functions nil)
     (add-hook 'completion-at-point-functions #'lsp-completion-at-point))
   (add-hook 'after-change-functions #'lsp-on-change))
+
+;;----------------------------------------------------------------------
+;; AZ: Not sure where this section should go, putting it here for now
+
+;; AZ: This section based on/inspired by the intero 'intero-apply-suggestions' code, at
+;; https://github.com/commercialhaskell/intero/blob/master/elisp/intero.el
+
+(defvar-local lsp-code-actions nil
+  "Code actions for the buffer.")
+
+(defun lsp-apply-commands ()
+  "Prompt and apply any codeAction commands."
+  (interactive)
+  (message "lsp-apply-commands:actions=%s" lsp-code-actions)
+  (if (null lsp-code-actions)
+      (message "No actions to apply")
+    (let ((to-apply
+           (intero-multiswitch
+            (format "There are %d suggestions to apply:" (length lsp-code-actions))
+            (cl-remove-if-not
+             #'identity
+             (mapcar
+              (lambda (suggestion)
+                ;; (cl-case (plist-get suggestion :type)
+                ;;   (add-extension
+                ;;    (list :key suggestion
+                ;;          :title (concat "Add {-# LANGUAGE "
+                ;;                         (plist-get suggestion :extension)
+                ;;                         " #-}")
+                ;;          :default t))
+                ;;   (redundant-constraint
+                ;;    (list :key suggestion
+                ;;          :title (concat
+                ;;                  "Remove redundant constraints: "
+                ;;                  (string-join (plist-get suggestion :redundancies)
+                ;;                               ", ")
+                ;;                  "\n    from the "
+                ;;                  (plist-get suggestion :signature))
+                ;;          :default nil)))
+                (list :key   (gethash "title" suggestion)
+                      :title (gethash "title" suggestion)
+                      :default t)
+                )
+              lsp-code-actions)))))
+      (if (null to-apply)
+          (message "No changes selected to apply.")
+        (let ((sorted (sort to-apply
+                            (lambda (lt gt)
+                              (let ((lt-line   (or (plist-get lt :line)   0))
+                                    (lt-column (or (plist-get lt :column) 0))
+                                    (gt-line   (or (plist-get gt :line)   0))
+                                    (gt-column (or (plist-get gt :column) 0)))
+                                (or (> lt-line gt-line)
+                                    (and (= lt-line gt-line)
+                                         (> lt-column gt-column))))))))
+          (message "lsp-apply-commands: sorted=%s" sorted)
+          ;; # Changes unrelated to the buffer
+          (cl-loop
+           for suggestion in sorted
+           do (cl-case (plist-get suggestion :type)
+                (add-package
+                 (intero-add-package (plist-get suggestion :package)))))
+          ;; # Changes that do not increase/decrease line numbers
+          ;;
+          ;; Update in-place suggestions
+
+          ;; # Changes that do increase/decrease line numbers
+          ;;
+
+          ;; Add extensions to the top of the file
+          )))))
+
+;; The following is copied directly from intero. I suspect it would be better to
+;; have it in a dependency somewhere
+
+(defun intero-multiswitch (title options)
+  "Displaying TITLE, read multiple flags from a list of OPTIONS.
+Each option is a plist of (:key :default :title) wherein:
+
+  :key should be something comparable with EQUAL
+  :title should be a string
+  :default (boolean) specifies the default checkedness"
+  (let ((available-width (window-total-width)))
+    (save-window-excursion
+      (intero-with-temp-buffer
+        (rename-buffer (generate-new-buffer-name "multiswitch"))
+        (widget-insert (concat title "\n\n"))
+        (widget-insert (propertize "Hit " 'face 'font-lock-comment-face))
+        (widget-create 'push-button :notify
+                       (lambda (&rest ignore)
+                         (exit-recursive-edit))
+                       "C-c C-c")
+        (widget-insert (propertize " to apply these choices.\n\n" 'face 'font-lock-comment-face))
+        (let* ((me (current-buffer))
+               (choices (mapcar (lambda (option)
+                                  (append option (list :value (plist-get option :default))))
+                                options)))
+          (cl-loop for option in choices
+                   do (widget-create
+                       'toggle
+                       :notify (lambda (widget &rest ignore)
+                                 (setq choices
+                                       (mapcar (lambda (choice)
+                                                 (if (equal (plist-get choice :key)
+                                                            (plist-get (cdr widget) :key))
+                                                     (plist-put choice :value (plist-get (cdr widget) :value))
+                                                   choice))
+                                               choices)))
+                       :on (concat "[x] " (plist-get option :title))
+                       :off (concat "[ ] " (plist-get option :title))
+                       :value (plist-get option :default)
+                       :key (plist-get option :key)))
+          (let ((lines (line-number-at-pos)))
+            (select-window (split-window-below))
+            (switch-to-buffer me)
+            (goto-char (point-min)))
+          (use-local-map
+           (let ((map (copy-keymap widget-keymap)))
+             (define-key map (kbd "C-c C-c") 'exit-recursive-edit)
+             (define-key map (kbd "C-g") 'abort-recursive-edit)
+             map))
+          (widget-setup)
+          (recursive-edit)
+          (kill-buffer me)
+          (mapcar (lambda (choice)
+                    (plist-get choice :key))
+                  (cl-remove-if-not (lambda (choice)
+                                      (plist-get choice :value))
+                                    choices)))))))
+
+;; The following is copied directly from intero. I suspect it would be better to
+;; have it in a dependency somewhere
+(defmacro intero-with-temp-buffer (&rest body)
+  "Run BODY in `with-temp-buffer', but inherit certain local variables from the current buffer first."
+  (declare (indent 0) (debug t))
+  `(let ((initial-buffer (current-buffer)))
+     (with-temp-buffer
+       (intero-inherit-local-variables initial-buffer)
+       ,@body)))
+
+;; The following is copied directly from intero. I suspect it would be better to
+;; have it in a dependency somewhere
+(defun intero-inherit-local-variables (buffer)
+  "Make the current buffer inherit values of certain local variables from BUFFER."
+  (let ((variables '(
+                     ;; TODO: shouldn’t more of the above be here?
+                     )))
+    (cl-loop for v in variables do
+             (set (make-local-variable v) (buffer-local-value v buffer)))))
+
 
 (provide 'lsp-methods)
 ;;; lsp-methods.el ends here
