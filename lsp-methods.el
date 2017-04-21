@@ -961,13 +961,13 @@ interface RenameParams {
     (lsp--apply-workspace-edits edits)))
 
 (defun lsp--send-execute-command (command &optional args)
-  "Create and send a 'textDocument/executeCommand' message having
+  "Create and send a 'workspace/executeCommand' message having
 command COMMAND and optionsl ARGS"
   (lsp--cur-workspace-check)
   (lsp--send-changes lsp--cur-workspace)
   (lsp--send-request
    (lsp--make-request
-    "textDocument/executeCommand"
+    "workspace/executeCommand"
     (lsp--make-execute-command-params command args))))
 
 (defun lsp--make-execute-command-params (cmd &optional args)
