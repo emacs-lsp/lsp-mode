@@ -625,13 +625,12 @@ to a text document."
 (defun lsp--text-document-code-action-params ()
   "Make CodeActionParams for the current region in the current document."
   `(:textDocument ,(lsp--text-document-identifier)
-                  :range ,(lsp--current-region-or-pos)
-                  :context (:diagnostics ,(lsp--code-action-context))
-                  ))
+     :range ,(lsp--current-region-or-pos)
+     :context (:diagnostics ,(lsp--cur-line-diagnotics))))
 
-(defun lsp--code-action-context ()
-  "Return any diagnostics tha apply to the current line"
-  (let* ((diags (gethash buffer-file-name lsp--diagnostics nil ) )
+(defun lsp--cur-line-diagnotics ()
+  "Return any diagnostics that apply to the current line."
+  (let* ((diags (gethash buffer-file-name lsp--diagnostics nil))
          (range (lsp--current-region-or-pos))
          (start-line (1+ (lsp--range-start-line range)))
          (end-line (1+ (lsp--range-end-line range)))
@@ -640,7 +639,8 @@ to a text document."
                             (let ((line (lsp-diagnostic-line diag)))
                               (and (>= line start-line) (<= line end-line))))
                           diags)))
-    (mapcar #'lsp-diagnostic-original diags-in-range)))
+    (cl-coerce (mapcar #'lsp-diagnostic-original diags-in-range) 'vector)))
+
 
 (defconst lsp--completion-item-kind
   `(
