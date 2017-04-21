@@ -625,7 +625,7 @@ to a text document."
                   ))
 
 (defun lsp--code-action-context ()
-  ;; TODO: find any diagnostics intersecting the current region
+  "Return any diagnostics tha apply to the current line"
   (let* ((diags (gethash buffer-file-name lsp--diagnostics nil ) )
          (range (lsp--current-region-or-pos))
          (start-line (1+ (lsp--range-start-line range)))
