@@ -52,7 +52,7 @@ The value returned by the function will be the directory name for NAME.
 If no such directory could be found, log a warning and return `default-directory'"
   #'(lambda ()
       (let ((dir (locate-dominating-file "." name)))
-        (directory-file-name
+        (expand-file-name
           (if dir
             dir
             (message
