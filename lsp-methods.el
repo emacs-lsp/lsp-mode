@@ -297,8 +297,6 @@ disappearing, unset all the variables related to it."
   (let* ((table (make-hash-table :test 'equal)))
     ;; ("client/registerCapability"   (error "client/registerCapability not implemented"))
     ;; ("client/unregisterCapability" (error "client/unregisterCapability not implemented"))
-    ;; ("workspace/applyEdit"         (error "workspace/applyEdit not implemented"))
-    ;; ;; need to call lsp--apply-workspace-edits
     (puthash "workspace/applyEdit" #'lsp--workspace-apply-edit-handler table)
     table))
 
@@ -477,12 +475,38 @@ interface Range {
   "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
   (gethash cap (or capabilities (lsp--server-capabilities))))
 
-(defun lsp--text-document-content-change-event (start end _length)
+(defun lsp--text-document-content-change-event (start end length)
   "Make a TextDocumentContentChangeEvent body for START to END, of length LENGTH."
-  `(:range ,(lsp--range (lsp--point-to-position start)
-              (lsp--point-to-position end))
-     :rangeLength ,(abs (- start end))
-     :text ,(buffer-substring-no-properties start end)))
+  ;; So (47 54 0) means add    7 chars starting at pos 47
+  ;; must become
+  ;;   {"range":{"start":{"line":5,"character":6}
+  ;;             ,"end" :{"line":5,"character":6}}
+  ;;             ,"rangeLength":0
+  ;;             ,"text":"\nbb = 5"}
+  ;;
+  ;; And (47 47 7) means delete 7 chars starting at pos 47
+  ;; must become
+  ;;   {"range":{"start":{"line":6,"character":0}
+  ;;            ,"end"  :{"line":7,"character":0}}
+  ;;            ,"rangeLength":7
+  ;;            ,"text":""}
+  (if (eq length 0)
+      ;; Adding something, work from start only
+      `(:range ,(lsp--range (lsp--point-to-position start)
+                            (lsp--point-to-position start))
+               :rangeLength 0
+               :text ,(buffer-substring-no-properties start end))
+
+    ;; Deleting something
+    `(:range ,(lsp--range (lsp--point-to-position start)
+                          (lsp--point-to-position (+ end length)))
+             :rangeLength ,length
+             :text "")))
+
+  ;; `(:range ,(lsp--range (lsp--point-to-position start)
+  ;;             (lsp--point-to-position end))
+  ;;    :rangeLength ,(abs (- start end))
+  ;;    :text ,(buffer-substring-no-properties start end)))
 
 (defun lsp--full-change-event ()
   `(:text ,(buffer-substring-no-properties (point-min) (point-max))))
@@ -533,7 +557,8 @@ to a text document."
   (lsp--rem-idle-timer)
   (dolist (buffer (lsp--workspace-buffers workspace))
     (with-current-buffer buffer
-      (when lsp--has-changes
+      (when (and lsp--has-changes
+                 (not (eq lsp--server-sync-method 'none)))
         (lsp--inc-cur-file-version)
         (lsp--send-notification
           (lsp--make-notification
@@ -553,11 +578,28 @@ to a text document."
   (setq lsp--changes (vconcat lsp--changes `(,change-event))))
 
 (defun lsp-on-change (start end length)
+    "Executed when a file is changed.
+  Added to `after-change-functions'"
+    ;; Note:
+    ;;
+    ;; Each function receives three arguments: the beginning and end of the region
+    ;; just changed, and the length of the text that existed before the change.
+    ;; All three arguments are integers. The buffer that has been changed is
+    ;; always the current buffer when the function is called.
+    ;;
+    ;; The length of the old text is the difference between the buffer positions
+    ;; before and after that text as it was before the change. As for the
+    ;; changed text, its length is simply the difference between the first two
+    ;; arguments.
+    ;;
+    ;; So (47 54 0) means add    7 chars starting at pos 47
+    ;; So (47 47 7) means delete 7 chars starting at pos 47
+  ;; (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length)
   (lsp--flush-other-workspace-changes)
-  (setq lsp--has-changes t)
   (when (and lsp--cur-workspace
           (not (or (eq lsp--server-sync-method 'none)
                  (eq lsp--server-sync-method nil))))
+    (setq lsp--has-changes t)
     (lsp--rem-idle-timer)
     (when (eq lsp--server-sync-method 'incremental)
       (lsp--push-change (lsp--text-document-content-change-event start end length)))
@@ -1024,7 +1066,8 @@ command COMMAND and optionsl ARGS"
           lsp-enable-completion-at-point)
     (setq-local completion-at-point-functions nil)
     (add-hook 'completion-at-point-functions #'lsp-completion-at-point))
-  (add-hook 'after-change-functions #'lsp-on-change))
+  ;; Make sure the hook is local (last param) otherwise we see all changes for all buffers
+  (add-hook 'after-change-functions #'lsp-on-change nil t))
 
 
 (defun lsp--error-explainer (fc-error)
