@@ -452,8 +452,11 @@ interface Range {
 
 (defun lsp--apply-workspace-edit (uri edits)
   (let ((filename (string-remove-prefix "file://" uri)))
-    (find-file filename)
-    (lsp--text-document-did-open)
+    ;; TODO: What if the buffer has been modified?
+    ;;       Although, for incremental sync that should be fine
+    (when (not (find-buffer-visiting filename))
+      (progn (find-file filename)
+             (lsp--text-document-did-open)))
     (lsp--apply-text-edits edits)))
 
 (defun lsp--apply-text-edits (edits)
@@ -503,10 +506,17 @@ interface Range {
              :rangeLength ,length
              :text "")))
 
-  ;; `(:range ,(lsp--range (lsp--point-to-position start)
-  ;;             (lsp--point-to-position end))
-  ;;    :rangeLength ,(abs (- start end))
-  ;;    :text ,(buffer-substring-no-properties start end)))
+;; Observed from vscode for applying a diff replacing one line with
+;; another. Emacs on-change shows this as a delete followed by an
+;; add.
+
+;; 2017-04-22 17:43:59 [ThreadId 11] DEBUG haskell-lsp - ---> {"jsonrpc":"2.0","method":"textDocument/didChange","params":
+;; {"textDocument":{"uri":"file:///home/alanz/tmp/haskell-hie-test-project/src/Foo.hs","version":2}
+;; ,"contentChanges":[{"range":{"start":{"line":7,"character":0}
+;;                             ,"end":  {"line":7,"character":8}}
+;;                     ,"rangeLength":8
+;;                     ,"text":"baz ="}]}}
+
 
 (defun lsp--full-change-event ()
   `(:text ,(buffer-substring-no-properties (point-min) (point-max))))
