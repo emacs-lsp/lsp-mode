@@ -632,8 +632,8 @@ to a text document."
   "Return any diagnostics that apply to the current line."
   (let* ((diags (gethash buffer-file-name lsp--diagnostics nil))
          (range (lsp--current-region-or-pos))
-         (start-line (1+ (lsp--range-start-line range)))
-         (end-line (1+ (lsp--range-end-line range)))
+         (start-line (lsp--range-start-line range))
+         (end-line (lsp--range-end-line range))
          (diags-in-range (cl-remove-if-not
                           (lambda (diag)
                             (let ((line (lsp-diagnostic-line diag)))
@@ -791,8 +791,7 @@ type MarkedString = string | { language: string; value: string };"
 (defun lsp--text-document-code-action ()
   "Request code action to automatically fix issues reported by
 the diagnostics"
-  (unless lsp--cur-workspace
-    (user-error "No language server is associated with this buffer"))
+  (lsp--cur-workspace-check)
   (let* ((actions (lsp--send-request (lsp--make-request
                                     "textDocument/codeAction"
                                     (lsp--text-document-code-action-params))
