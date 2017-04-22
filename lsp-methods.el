@@ -166,7 +166,7 @@ for a new workspace."
   (let ((json-str (json-encode params)))
     (format
       "Content-Length: %d\r\n\r\n%s"
-      (length json-str) json-str)))
+      (string-bytes json-str) json-str)))
 
 (defun lsp--send-notification (body)
   "Send BODY as a notification to the language server."
