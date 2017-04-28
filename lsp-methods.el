@@ -246,7 +246,10 @@ interface TextDocumentItem {
                                            :capabilities ,(lsp--client-capabilities)))))
     (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
       (gethash "capabilities" response))
-    (run-hooks lsp-after-initialize-hook)))
+    (run-hooks lsp-after-initialize-hook)
+    ;; Version 3.0 now sends an "initialized" notification to allow registration
+    ;; of server capabilities
+    (lsp--send-notification (lsp--make-notification "initialized" nil))))
 
 (defun lsp--shutdown-cur-workspace ()
   "Shut down the language server process for lsp--cur-workspace"
