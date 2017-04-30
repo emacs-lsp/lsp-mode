@@ -243,6 +243,7 @@ interface TextDocumentItem {
           root response)
     (if (gethash cur-dir lsp--workspaces)
       (user-error "This workspace has already been initialized")
+
       (setq root (funcall (lsp--client-get-root client)))
       (setq lsp--cur-workspace (make-lsp--workspace
                                  :parser parser
@@ -258,6 +259,8 @@ interface TextDocumentItem {
     (setq response (lsp--send-request (lsp--make-request "initialize"
                                         `(:processId ,(emacs-pid) :rootPath ,root
                                            :capabilities ,(lsp--client-capabilities)))))
+    (unless response
+      (signal 'lsp-empty-response-error nil))
     (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
       (gethash "capabilities" response))
     (run-hooks lsp-after-initialize-hook)
