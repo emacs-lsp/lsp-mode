@@ -201,6 +201,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 
 (defun lsp--parser-make-filter (p ignore-regexps)
   #'(lambda (proc output)
+      (setq lsp--no-response nil)
       (when (cl-loop for r in ignore-regexps
               ;; check if the output is to be ignored or not
               ;; TODO: Would this ever result in false positives?

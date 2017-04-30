@@ -17,6 +17,12 @@
 
 (require 'lsp-common)
 
+;; vibhavp: Should we use a lower value (5)?
+(defcustom lsp-response-timeout 10
+  "Number of seconds to wait for a response from the language server before timing out."
+  :type 'number
+  :group 'lsp-mode)
+
 (defun lsp--stdio-send-sync (message proc)
   (when lsp-print-io
     (message "lsp--stdio-send-sync: %s" message))
@@ -25,8 +31,12 @@
       (process-status proc)))
   (process-send-string proc
     message)
+
+  (setq lsp--no-response t)
   (with-local-quit
-    (accept-process-output proc)))
+    (accept-process-output proc lsp-response-timeout))
+  (when lsp--no-response
+    (signal 'lsp-timed-out-error nil)))
 
 (defun lsp--stdio-send-async (message proc)
   (when lsp-print-io
