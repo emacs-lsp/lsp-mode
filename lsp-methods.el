@@ -507,9 +507,23 @@ interface Range {
 
 (defun lsp--current-region-or-pos ()
   "If the region is active return that, else get the point"
-  (if mark-active
+  (if (use-region-p)
       (lsp--region-to-range (region-beginning) (region-end))
     (lsp--region-to-range (point) (point))))
+
+(defun lsp--get-start-position ()
+  "Get the start of the region if active, else current POINT"
+  (let ((pos (if (use-region-p)
+                 (region-beginning)
+               (point))))
+    (lsp-point-to-position pos)))
+
+(defun lsp--get-end-position ()
+  "Get the end of the region if active, else current POINT"
+  (let ((pos (if (use-region-p)
+                 (region-end)
+               (point))))
+    (lsp-point-to-position pos)))
 
 (defun lsp--range-start-line (range)
   "Return the start line for a given LSP range, in LSP coordinates"
@@ -1115,6 +1129,8 @@ command COMMAND and optionsl ARGS"
     (list :command cmd)))
 
 (defalias 'lsp-point-to-position #'lsp--point-to-position)
+(defalias 'lsp-get-start-position #'lsp--get-start-position)
+(defalias 'lsp-get-end-position #'lsp--get-end-position)
 (defalias 'lsp-text-document-identifier #'lsp--text-document-identifier)
 (defalias 'lsp-send-execute-command #'lsp--send-execute-command)
 (defalias 'lsp-on-open #'lsp--text-document-did-open)
