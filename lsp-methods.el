@@ -701,9 +701,11 @@ to a text document."
             (let* ((resp (lsp--send-request (lsp--make-request
                                              "textDocument/completion"
                                               (lsp--text-document-position-params))))
-                    (items (gethash "items" resp nil)))
-              (mapcar #'lsp--make-completion-item
-                (if (listp items) items (list items))))))
+                    (items (cond
+                             ((null resp) nil)
+                             ((hash-table-p resp) (gethash "items" resp nil))
+                             ((sequencep resp) resp))))
+              (mapcar #'lsp--make-completion-item items))))
       :annotation-function #'lsp--annotate
       :display-sort-function #'lsp--sort-completions)))
 
