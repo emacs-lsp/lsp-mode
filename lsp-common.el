@@ -26,9 +26,17 @@
   :group 'lsp-mode
   :type 'boolean)
 
+(define-error 'lsp-error "Unknown lsp-mode error")
+(define-error 'lsp-empty-response-error
+  "Empty response from the language server" 'lsp-error)
+(define-error 'lsp-timed-out-error
+  "Timed out while waiting for a response from the language server" 'lsp-error)
+
 (defun lsp--propertize (str type)
   "Propertize STR as per TYPE."
   (propertize str 'face (alist-get type lsp--message-type-face)))
+
+(defvar lsp--no-response)
 
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--position-to-point (params)
