@@ -297,8 +297,6 @@ disappearing, unset all the variables related to it."
   (let* ((table (make-hash-table :test 'equal)))
     ;; ("client/registerCapability"   (error "client/registerCapability not implemented"))
     ;; ("client/unregisterCapability" (error "client/unregisterCapability not implemented"))
-    ;; ("workspace/applyEdit"         (error "workspace/applyEdit not implemented"))
-    ;; ;; need to call lsp--apply-workspace-edits
     (puthash "workspace/applyEdit" #'lsp--workspace-apply-edit-handler table)
     table))
 
@@ -453,11 +451,12 @@ interface Range {
       (gethash "changes" edits))))
 
 (defun lsp--apply-workspace-edit (uri edits)
-  ;; (message "apply-workspace-edit: %s" uri )
   (let ((filename (string-remove-prefix "file://" uri)))
-    ;; (message "apply-workspace-edit:filename= %s" filename )
-    (find-file filename)
-    (lsp--text-document-did-open)
+    ;; TODO: What if the buffer has been modified?
+    ;;       Although, for incremental sync that should be fine
+    (when (not (find-buffer-visiting filename))
+      (progn (find-file filename)
+             (lsp--text-document-did-open)))
     (lsp--apply-text-edits edits)))
 
 (defun lsp--apply-text-edits (edits)
@@ -479,12 +478,45 @@ interface Range {
   "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
   (gethash cap (or capabilities (lsp--server-capabilities))))
 
-(defun lsp--text-document-content-change-event (start end _length)
+(defun lsp--text-document-content-change-event (start end length)
   "Make a TextDocumentContentChangeEvent body for START to END, of length LENGTH."
-  `(:range ,(lsp--range (lsp--point-to-position start)
-              (lsp--point-to-position end))
-     :rangeLength ,(abs (- start end))
-     :text ,(buffer-substring-no-properties start end)))
+  ;; So (47 54 0) means add    7 chars starting at pos 47
+  ;; must become
+  ;;   {"range":{"start":{"line":5,"character":6}
+  ;;             ,"end" :{"line":5,"character":6}}
+  ;;             ,"rangeLength":0
+  ;;             ,"text":"\nbb = 5"}
+  ;;
+  ;; And (47 47 7) means delete 7 chars starting at pos 47
+  ;; must become
+  ;;   {"range":{"start":{"line":6,"character":0}
+  ;;            ,"end"  :{"line":7,"character":0}}
+  ;;            ,"rangeLength":7
+  ;;            ,"text":""}
+  (if (eq length 0)
+      ;; Adding something, work from start only
+      `(:range ,(lsp--range (lsp--point-to-position start)
+                            (lsp--point-to-position start))
+               :rangeLength 0
+               :text ,(buffer-substring-no-properties start end))
+
+    ;; Deleting something
+    `(:range ,(lsp--range (lsp--point-to-position start)
+                          (lsp--point-to-position (+ end length)))
+             :rangeLength ,length
+             :text "")))
+
+;; Observed from vscode for applying a diff replacing one line with
+;; another. Emacs on-change shows this as a delete followed by an
+;; add.
+
+;; 2017-04-22 17:43:59 [ThreadId 11] DEBUG haskell-lsp - ---> {"jsonrpc":"2.0","method":"textDocument/didChange","params":
+;; {"textDocument":{"uri":"file:///home/alanz/tmp/haskell-hie-test-project/src/Foo.hs","version":2}
+;; ,"contentChanges":[{"range":{"start":{"line":7,"character":0}
+;;                             ,"end":  {"line":7,"character":8}}
+;;                     ,"rangeLength":8
+;;                     ,"text":"baz ="}]}}
+
 
 (defun lsp--full-change-event ()
   `(:text ,(buffer-substring-no-properties (point-min) (point-max))))
@@ -535,7 +567,8 @@ to a text document."
   (lsp--rem-idle-timer)
   (dolist (buffer (lsp--workspace-buffers workspace))
     (with-current-buffer buffer
-      (when lsp--has-changes
+      (when (and lsp--has-changes
+                 (not (eq lsp--server-sync-method 'none)))
         (lsp--inc-cur-file-version)
         (lsp--send-notification
           (lsp--make-notification
@@ -555,11 +588,28 @@ to a text document."
   (setq lsp--changes (vconcat lsp--changes `(,change-event))))
 
 (defun lsp-on-change (start end length)
+    "Executed when a file is changed.
+  Added to `after-change-functions'"
+    ;; Note:
+    ;;
+    ;; Each function receives three arguments: the beginning and end of the region
+    ;; just changed, and the length of the text that existed before the change.
+    ;; All three arguments are integers. The buffer that has been changed is
+    ;; always the current buffer when the function is called.
+    ;;
+    ;; The length of the old text is the difference between the buffer positions
+    ;; before and after that text as it was before the change. As for the
+    ;; changed text, its length is simply the difference between the first two
+    ;; arguments.
+    ;;
+    ;; So (47 54 0) means add    7 chars starting at pos 47
+    ;; So (47 47 7) means delete 7 chars starting at pos 47
+  ;; (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length)
   (lsp--flush-other-workspace-changes)
-  (setq lsp--has-changes t)
   (when (and lsp--cur-workspace
           (not (or (eq lsp--server-sync-method 'none)
                  (eq lsp--server-sync-method nil))))
+    (setq lsp--has-changes t)
     (lsp--rem-idle-timer)
     (when (eq lsp--server-sync-method 'incremental)
       (lsp--push-change (lsp--text-document-content-change-event start end length)))
@@ -632,8 +682,8 @@ to a text document."
   "Return any diagnostics that apply to the current line."
   (let* ((diags (gethash buffer-file-name lsp--diagnostics nil))
          (range (lsp--current-region-or-pos))
-         (start-line (1+ (lsp--range-start-line range)))
-         (end-line (1+ (lsp--range-end-line range)))
+         (start-line (lsp--range-start-line range))
+         (end-line (lsp--range-end-line range))
          (diags-in-range (cl-remove-if-not
                           (lambda (diag)
                             (let ((line (lsp-diagnostic-line diag)))
@@ -793,15 +843,12 @@ type MarkedString = string | { language: string; value: string };"
 (defun lsp--text-document-code-action ()
   "Request code action to automatically fix issues reported by
 the diagnostics"
-  (unless lsp--cur-workspace
-    (user-error "No language server is associated with this buffer"))
+  (lsp--cur-workspace-check)
   (let* ((actions (lsp--send-request (lsp--make-request
                                     "textDocument/codeAction"
                                     (lsp--text-document-code-action-params))
                                      )))
-    (message "lsp--text-document-code-action:actions= %s" actions)
-    ;; AZ:TODO need to merge rather than append, below
-    (setq lsp-code-actions (append actions lsp-code-actions))
+    (setq lsp-code-actions (cl-union actions lsp-code-actions))
     nil))
 
 (defun lsp--make-document-formatting-options ()
@@ -967,6 +1014,14 @@ interface RenameParams {
                                     (lsp--make-document-rename-params newname)))))
     (lsp--apply-workspace-edits edits)))
 
+(defun lsp--execute-lsp-server-command (command)
+  "Given a COMMAND returned from the server via e.g.
+'textDocument/codeAction' ceate and send a
+'workspace/executeCommand' message"
+
+  (lsp--send-execute-command (gethash "command" command) (gethash "arguments" command nil))
+  )
+
 (defun lsp--send-execute-command (command &optional args)
   "Create and send a 'workspace/executeCommand' message having
 command COMMAND and optionsl ARGS"
@@ -992,6 +1047,7 @@ command COMMAND and optionsl ARGS"
 (defalias 'lsp-on-close #'lsp--text-document-did-close)
 ;; (defalias 'lsp-eldoc #'lsp--text-document-hover-string)
 (defalias 'lsp-completion-at-point #'lsp--get-completions)
+(defalias 'lsp-error-explainer #'lsp--error-explainer)
 
 (defun lsp--unset-variables ()
   (when lsp-enable-eldoc
@@ -1022,7 +1078,16 @@ command COMMAND and optionsl ARGS"
           lsp-enable-completion-at-point)
     (setq-local completion-at-point-functions nil)
     (add-hook 'completion-at-point-functions #'lsp-completion-at-point))
-  (add-hook 'after-change-functions #'lsp-on-change))
+  ;; Make sure the hook is local (last param) otherwise we see all changes for all buffers
+  (add-hook 'after-change-functions #'lsp-on-change nil t))
+
+
+(defun lsp--error-explainer (fc-error)
+    "Proof of concept to use this flycheck function to apply a
+    codeAction. This should eventually make use of the completion of
+    https://github.com/flycheck/flycheck/pull/1022 and
+    https://github.com/flycheck/flycheck/issues/530#issuecomment-235224763"
+  (message "lsp--error-explainer: got %s" fc-error))
 
 ;;----------------------------------------------------------------------
 ;; AZ: Not sure where this section should go, putting it here for now
@@ -1036,11 +1101,10 @@ command COMMAND and optionsl ARGS"
 (defun lsp-apply-commands ()
   "Prompt and apply any codeAction commands."
   (interactive)
-  (message "lsp-apply-commands:actions=%s" lsp-code-actions)
   (if (null lsp-code-actions)
       (message "No actions to apply")
     (let ((to-apply
-           (intero-multiswitch
+           (lsp--intero-multiswitch
             (format "There are %d suggestions to apply:" (length lsp-code-actions))
             (cl-remove-if-not
              #'identity
@@ -1062,9 +1126,13 @@ command COMMAND and optionsl ARGS"
                 ;;                  "\n    from the "
                 ;;                  (plist-get suggestion :signature))
                 ;;          :default nil)))
+                ;; (message "lsp-apply-command:suggestion command=%s"    (gethash "command" suggestion))
+                ;; (message "lsp-apply-command:suggestion ommand=args%s" (gethash "arguments" suggestion))
                 (list :key   (gethash "title" suggestion)
                       :title (gethash "title" suggestion)
-                      :default t)
+                      :type  "codeAction"
+                      :default t
+                      :command suggestion)
                 )
               lsp-code-actions)))))
       (if (null to-apply)
@@ -1078,13 +1146,13 @@ command COMMAND and optionsl ARGS"
                                 (or (> lt-line gt-line)
                                     (and (= lt-line gt-line)
                                          (> lt-column gt-column))))))))
-          (message "lsp-apply-commands: sorted=%s" sorted)
           ;; # Changes unrelated to the buffer
           (cl-loop
            for suggestion in sorted
-           do (cl-case (plist-get suggestion :type)
-                (add-package
-                 (intero-add-package (plist-get suggestion :package)))))
+           do ;; (message "lsp-apply-commands:suggestion=%s" suggestion)
+              (cl-case (plist-get suggestion :type)
+                (otherwise
+                 (lsp--execute-lsp-server-command suggestion))))
           ;; # Changes that do not increase/decrease line numbers
           ;;
           ;; Update in-place suggestions
@@ -1098,7 +1166,7 @@ command COMMAND and optionsl ARGS"
 ;; The following is copied directly from intero. I suspect it would be better to
 ;; have it in a dependency somewhere
 
-(defun intero-multiswitch (title options)
+(defun lsp--intero-multiswitch (title options)
   "Displaying TITLE, read multiple flags from a list of OPTIONS.
 Each option is a plist of (:key :default :title) wherein:
 
@@ -1107,7 +1175,7 @@ Each option is a plist of (:key :default :title) wherein:
   :default (boolean) specifies the default checkedness"
   (let ((available-width (window-total-width)))
     (save-window-excursion
-      (intero-with-temp-buffer
+      (lsp--intero-with-temp-buffer
         (rename-buffer (generate-new-buffer-name "multiswitch"))
         (widget-insert (concat title "\n\n"))
         (widget-insert (propertize "Hit " 'face 'font-lock-comment-face))
@@ -1134,7 +1202,8 @@ Each option is a plist of (:key :default :title) wherein:
                        :on (concat "[x] " (plist-get option :title))
                        :off (concat "[ ] " (plist-get option :title))
                        :value (plist-get option :default)
-                       :key (plist-get option :key)))
+                       :key (plist-get option :key)
+                       :command (plist-get option :command)))
           (let ((lines (line-number-at-pos)))
             (select-window (split-window-below))
             (switch-to-buffer me)
@@ -1148,24 +1217,24 @@ Each option is a plist of (:key :default :title) wherein:
           (recursive-edit)
           (kill-buffer me)
           (mapcar (lambda (choice)
-                    (plist-get choice :key))
+                    (plist-get choice :command))
                   (cl-remove-if-not (lambda (choice)
                                       (plist-get choice :value))
                                     choices)))))))
 
 ;; The following is copied directly from intero. I suspect it would be better to
 ;; have it in a dependency somewhere
-(defmacro intero-with-temp-buffer (&rest body)
+(defmacro lsp--intero-with-temp-buffer (&rest body)
   "Run BODY in `with-temp-buffer', but inherit certain local variables from the current buffer first."
   (declare (indent 0) (debug t))
   `(let ((initial-buffer (current-buffer)))
      (with-temp-buffer
-       (intero-inherit-local-variables initial-buffer)
+       (lsp--intero-inherit-local-variables initial-buffer)
        ,@body)))
 
 ;; The following is copied directly from intero. I suspect it would be better to
 ;; have it in a dependency somewhere
-(defun intero-inherit-local-variables (buffer)
+(defun lsp--intero-inherit-local-variables (buffer)
   "Make the current buffer inherit values of certain local variables from BUFFER."
   (let ((variables '(
                      ;; TODO: shouldn’t more of the above be here?
