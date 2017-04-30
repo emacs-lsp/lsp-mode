@@ -57,6 +57,13 @@
 (defvar lsp--workspaces (make-hash-table :test #'equal)
   "Table of known workspaces, indexed by the project root directory.")
 
+(defvar lsp--ignored-workspace-roots (make-hash-table :test #'equal)
+  "Table of project roots which should not have a workspace,
+  indexed by the project root directory.
+
+  This is populated when the user declines to open a workspace
+  for a file in the workspace")
+
 (defcustom lsp-after-initialize-hook nil
   "List of functions to be called after a Language Server has been initialized
 for a new workspace."
@@ -94,6 +101,13 @@ for a new workspace."
   "Always ask before initializing a new project."
   :type 'boolean
   :group 'lsp-mode)
+
+;;;###autoload
+(defcustom lsp-ask-before-initializing-once-only t
+  "Only ask once per project root directory whether to initialize."
+  :type 'boolean
+  :group 'lsp-mode)
+
 
 ;;;###autoload
 (defcustom lsp-enable-eldoc t
@@ -246,7 +260,10 @@ interface TextDocumentItem {
                                            :capabilities ,(lsp--client-capabilities)))))
     (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
       (gethash "capabilities" response))
-    (run-hooks lsp-after-initialize-hook)))
+    (run-hooks lsp-after-initialize-hook)
+    ;; Version 3.0 now sends an "initialized" notification to allow registration
+    ;; of server capabilities
+    (lsp--send-notification (lsp--make-notification "initialized" nil))))
 
 (defun lsp--shutdown-cur-workspace ()
   "Shut down the language server process for lsp--cur-workspace"
@@ -308,9 +325,15 @@ disappearing, unset all the variables related to it."
 (defun lsp--should-initialize ()
   "Ask user if a new Language Server for the current file should be started.
 If `lsp--dont-ask-init' is bound, return non-nil."
-  (if lsp-ask-before-initializing
-    (y-or-n-p "Start a new Language Server for this project? ")
-    t))
+  (let* ((client (gethash major-mode lsp--defined-clients)) ;; should succeed, given call chain
+         (root (funcall (lsp--client-get-root client))))
+    (if (gethash root lsp--ignored-workspace-roots nil)
+        nil
+      (if lsp-ask-before-initializing
+          (let ((ans (y-or-n-p "Start a new Language Server for this project? ")))
+            (when (not ans) (puthash root t lsp--ignored-workspace-roots))
+            ans)
+           t))))
 
 (defun lsp--text-document-did-open ()
   "Executed when a new file is opened, added to `find-file-hook'."
