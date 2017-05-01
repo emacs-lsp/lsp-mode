@@ -921,7 +921,7 @@ interface DocumentRangeFormattingParams {
   (lsp--remove-cur-overlays)
   (let ((highlights (lsp--send-request (lsp--make-request
                                          "textDocument/documentHighlight"
-                                         (lsp--make-document-formatting-params))))
+                                         (lsp--text-document-position-params))))
          kind start-point end-point range)
     (dolist (highlight highlights)
       (setq range (gethash "range" highlight nil)
