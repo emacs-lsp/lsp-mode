@@ -19,6 +19,7 @@
 (require 'cl-lib)
 (require 'lsp-common)
 (require 'lsp-notifications)
+(require 'pcase)
 
 (cl-defstruct lsp--parser
   (waiting-for-response nil)

@@ -28,6 +28,7 @@
 (require 'lsp-notifications)
 (require 'lsp-mode)
 (require 'flycheck)
+(require 'pcase)
 
 (defun lsp--flycheck-start (checker callback)
   "Start an LSP syntax check with CHECKER.

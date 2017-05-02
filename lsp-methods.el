@@ -20,6 +20,7 @@
 (require 'widget)
 (require 'lsp-receive)
 (require 'lsp-common)
+(require 'pcase)
 
 ;;; Code:
 
@@ -650,7 +651,7 @@ to a text document."
             `(:textDocument
                ,(lsp--versioned-text-document-identifier)
                :contentChanges
-               ,(cl-case lsp--server-sync-method
+               ,(pcase lsp--server-sync-method
                   ('incremental lsp--changes)
                   ('full `[,(lsp--full-change-event)])
                   ('none `[])))))
@@ -1157,7 +1158,7 @@ command COMMAND and optionsl ARGS"
              #'identity
              (mapcar
               (lambda (suggestion)
-                ;; (cl-case (plist-get suggestion :type)
+                ;; (pcase (plist-get suggestion :type)
                 ;;   (add-extension
                 ;;    (list :key suggestion
                 ;;          :title (concat "Add {-# LANGUAGE "
@@ -1197,7 +1198,7 @@ command COMMAND and optionsl ARGS"
           (cl-loop
            for suggestion in sorted
            do ;; (message "lsp-apply-commands:suggestion=%s" suggestion)
-              (cl-case (plist-get suggestion :type)
+              (pcase (plist-get suggestion :type)
                 (otherwise
                  (lsp--execute-lsp-server-command suggestion))))
           ;; # Changes that do not increase/decrease line numbers
