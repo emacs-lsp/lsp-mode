@@ -47,8 +47,8 @@
   (root nil :ready-only t)
   (client nil :read-only t)
   (change-timer-disabled nil)
-  (proc nil :read-only t) ;; the process we communicate with
-  (cmd-proc nil :read-only t) ;; the process we launch initially
+  (proc nil) ;; the process we communicate with
+  (cmd-proc nil) ;; the process we launch initially
   (buffers nil) ;; a list of buffers associated with this workspace
   (overlays nil) ;; a list of '(START . END) cons pairs with overlays on them
   )
@@ -136,6 +136,12 @@ for a new workspace."
 ;;;###autoload
 (defcustom lsp-enable-flycheck t
   "Enable flycheck integration."
+  :type 'boolean
+  :group 'lsp-mode)
+
+;;;###autoload
+(defcustom lsp-enable-indentation t
+  "Indent regions using the file formatting functionality provided by the language server."
   :type 'boolean
   :group 'lsp-mode)
 
@@ -325,71 +331,113 @@ disappearing, unset all the variables related to it."
   ;; TODO: send reply
   )
 
-(defun lsp--should-initialize ()
-  "Ask user if a new Language Server for the current file should be started.
-If `lsp--dont-ask-init' is bound, return non-nil."
-  (let* ((client (gethash major-mode lsp--defined-clients)) ;; should succeed, given call chain
-         (root (funcall (lsp--client-get-root client))))
-    (if (gethash root lsp--ignored-workspace-roots nil)
-        nil
-      (if lsp-ask-before-initializing
-          (let ((ans (y-or-n-p "Start a new Language Server for this project? ")))
-            (when (not ans) (puthash root t lsp--ignored-workspace-roots))
-            ans)
-           t))))
+(defun lsp--get-client (error)
+  "Return the client for the current `major-mode'."
+  (let ((client (gethash major-mode lsp--defined-clients)))
+    (if client
+      client
+      (when error
+        (error "No client is defined for %s" major-mode)))))
+
+(defun lsp--make-sentinel (buffer)
+  (lambda (_p exit-str)
+    (when (buffer-live-p buffer)
+      (with-current-buffer buffer
+        (dolist (buf (lsp--workspace-buffers lsp--cur-workspace))
+          (with-current-buffer buf
+            (message "%s: %s has exited (%s)"
+              (lsp--workspace-root lsp--cur-workspace)
+              (process-name (lsp--workspace-proc lsp--cur-workspace))
+              exit-str)
+            (lsp--uninitialize-workspace)))))))
+
+(defun lsp--start ()
+  (when lsp--cur-workspace
+    (user-error "LSP mode is already enabled for this buffer"))
+  (let* ((client (lsp--get-client t))
+          (root (funcall (lsp--client-get-root client)))
+          (workspace (gethash root lsp--workspaces))
+          conn response init-params)
+    (if workspace
+      (setq lsp--cur-workspace workspace)
+
+      (setf
+        parser (make-lsp--parser
+                 :method-handlers (lsp--client-method-handlers client)
+                 :request-handlers (lsp--client-request-handlers))
+        lsp--cur-workspace (make-lsp--workspace
+                             :parser parser
+                             :language-id (lsp--client-language-id client)
+                             :file-versions (make-hash-table :test 'equal)
+                             :last-id 0
+                             :root root
+                             :client client)
+        (lsp--parser-workspace parser) lsp--cur-workspace
+        new-conn (funcall
+                   (lsp--client-new-connection client)
+                   (lsp--parser-make-filter parser (lsp--client-ignore-regexps client))
+                   (lsp--make-sentinel (current-buffer)))
+        ;; the command line process invoked
+        cmd-proc (if (consp new-conn) (car new-conn) new-conn)
+        ;; the process we actually communicate with
+        proc (if (consp new-conn) (cdr new-conn) new-conn)
+
+        (lsp--workspace-proc lsp--cur-workspace) proc
+        (lsp--workspace-cmd-proc lsp--cur-workspace) cmd-proc
+
+        init-params `(:processId ,(emacs-pid) :rootPath ,root
+                       :capabilities ,(lsp--client-capabilities)))
+      (puthash root lsp--cur-workspace lsp--workspaces)
+      (setf response (lsp--send-request (lsp--make-request "initialize"
+                                          init-params)))
+      (unless response
+        (signal 'lsp-empty-response-error "initialize"))
+      (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
+        (gethash "capabilities" response))
+      ;; Version 3.0 now sends an "initialized" notification to allow registration
+      ;; of server capabilities
+      (lsp--send-notification (lsp--make-notification "initialized" nil))
+      (run-hooks lsp-after-initialize-hook))
+    (lsp--text-document-did-open)))
 
 (defun lsp--text-document-did-open ()
-  "Executed when a new file is opened, added to `find-file-hook'."
-  (when lsp--cur-workspace
-    (lsp--send-changes lsp--cur-workspace))
-  (let ((cur-dir (expand-file-name default-directory))
-         client data set-vars parser)
-    (if (catch 'break
-          (dolist (key (hash-table-keys lsp--workspaces))
-            (when (string-prefix-p key cur-dir)
-              (setq lsp--cur-workspace (gethash key lsp--workspaces))
-              (throw 'break key))))
-      (progn
-        (setq set-vars t)
-        (puthash buffer-file-name 0 (lsp--workspace-file-versions lsp--cur-workspace))
-        (lsp--send-notification
-          (lsp--make-notification
-            "textDocument/didOpen"
-            `(:textDocument ,(lsp--make-text-document-item))))
-        (push (current-buffer) (lsp--workspace-buffers lsp--cur-workspace)))
+  (puthash buffer-file-name 0 (lsp--workspace-file-versions lsp--cur-workspace))
+  (push (current-buffer) (lsp--workspace-buffers lsp--cur-workspace))
+  (lsp--send-notification (lsp--make-notification
+                            "textDocument/didOpen"
+                            `(:textDocument ,(lsp--make-text-document-item))))
 
-      (setq client (gethash major-mode lsp--defined-clients))
-      (when (and client (lsp--should-initialize))
-        (setq parser (make-lsp--parser
-                      :method-handlers (lsp--client-method-handlers client)
-                      :request-handlers (lsp--client-request-handlers))
-          data (funcall (lsp--client-new-connection client)
-                 (lsp--parser-make-filter
-                   parser
-                   (lsp--client-ignore-regexps client))
-                 #'(lambda (_p exit-str)
-                     (when lsp--cur-workspace
-                       (dolist (buffer (lsp--workspace-buffers lsp--cur-workspace))
-                         (with-current-buffer buffer
-                           (message "%s: %s has exited (%s)"
-                             (lsp--workspace-root lsp--cur-workspace)
-                             (process-name (lsp--workspace-proc lsp--cur-workspace))
-                             exit-str)
-                           (lsp--uninitialize-workspace)))))))
-        (setq set-vars t)
-        (lsp--initialize (lsp--client-language-id client)
-          client parser data)
-        (setq set-vars t)
-        (puthash buffer-file-name 0 (lsp--workspace-file-versions lsp--cur-workspace))
-        (lsp--send-notification
-          (lsp--make-notification
-            "textDocument/didOpen"
-            `(:textDocument ,(lsp--make-text-document-item))))
-        (push (current-buffer) (lsp--workspace-buffers lsp--cur-workspace))))
+  (add-hook 'after-save-hook #'lsp-on-save nil t)
+  (add-hook 'kill-buffer-hook #'lsp--text-document-did-close nil t)
 
-    (when set-vars
-      (lsp--set-variables)
-      (lsp--set-sync-method))))
+  (when (or lsp-enable-eldoc lsp-enable-codeaction)
+    (setq-local eldoc-documentation-function #'lsp-eldoc)
+    (eldoc-mode 1))
+
+  (when (and lsp-enable-flycheck (featurep 'flycheck))
+    (setq-local flycheck-check-syntax-automatically nil)
+    (setq-local flycheck-checker 'lsp)
+    (unless (memq 'lsp flycheck-checkers)
+      (add-to-list 'flycheck-checkers 'lsp))
+    (unless (memq 'flycheck-buffer lsp-after-diagnostics-hook)
+      (add-hook 'lsp-after-diagnostics-hook (lambda ()
+                                              (when flycheck-mode
+                                                (flycheck-buffer))))))
+
+  (when (and lsp-enable-indentation
+          (lsp--capability "documentRangeFormattingProvider"))
+    (setq-local indent-region-function #'lsp-format-region))
+
+  (when lsp-enable-xref
+    (setq-local xref-backend-functions #'lsp--xref-backend))
+
+  (when (and lsp-enable-completion-at-point (lsp--capability "completionProvider"))
+    (setq-local completion-at-point-functions nil)
+    (add-hook 'completion-at-point-functions #'lsp-completion-at-point))
+
+  ;; Make sure the hook is local (last param) otherwise we see all changes for all buffers
+  (add-hook 'after-change-functions #'lsp-on-change nil t)
+  (lsp--set-sync-method))
 
 (defun lsp--text-document-identifier ()
   "Make TextDocumentIdentifier.
@@ -459,7 +507,7 @@ interface Range {
   "If the region is active return that, else get the point"
   (if mark-active
       (lsp--region-to-range (region-beginning) (region-end))
-    (lsp--region-to-range (point) (point)))) 
+    (lsp--region-to-range (point) (point))))
 
 (defun lsp--range-start-line (range)
   "Return the start line for a given LSP range, in LSP coordinates"
@@ -663,25 +711,23 @@ to a text document."
 
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
-  (when lsp--cur-workspace
-    (lsp--send-changes lsp--cur-workspace)
-    (ignore-errors
-      (let ((file-versions (lsp--workspace-file-versions lsp--cur-workspace))
-             (old-buffers (lsp--workspace-buffers lsp--cur-workspace)))
-        ;; remove buffer from the current workspace's list of buffers
-        ;; do a sanity check first
-        (cl-assert (memq (current-buffer) old-buffers) t
-          "Current buffer isn't in the workspace's list of buffers.")
-        (setf (lsp--workspace-buffers lsp--cur-workspace)
-          (delq (current-buffer) old-buffers))
+  (lsp--send-changes lsp--cur-workspace)
+  (let ((file-versions (lsp--workspace-file-versions lsp--cur-workspace))
+           (old-buffers (lsp--workspace-buffers lsp--cur-workspace)))
+      ;; remove buffer from the current workspace's list of buffers
+      ;; do a sanity check first
+      (cl-assert (memq (current-buffer) old-buffers) t
+        "Current buffer isn't in the workspace's list of buffers.")
+      (setf (lsp--workspace-buffers lsp--cur-workspace)
+        (delq (current-buffer) old-buffers))
 
-        (remhash buffer-file-name file-versions)
-        (lsp--send-notification
-          (lsp--make-notification
-            "textDocument/didClose"
-            `(:textDocument ,(lsp--versioned-text-document-identifier))))
-        (when (and (= 0 (hash-table-count file-versions)) (lsp--shut-down-p))
-          (lsp--shutdown-cur-workspace))))))
+      (remhash buffer-file-name file-versions)
+      (lsp--send-notification
+        (lsp--make-notification
+          "textDocument/didClose"
+          `(:textDocument ,(lsp--versioned-text-document-identifier))))
+      (when (and (= 0 (hash-table-count file-versions)) (lsp--shut-down-p))
+        (lsp--shutdown-cur-workspace))))
 
 (defun lsp--text-document-did-save ()
   "Executed when the file is closed, added to `after-save-hook''."
@@ -1063,14 +1109,12 @@ command COMMAND and optionsl ARGS"
       (list :command cmd :arguments args)
     (list :command cmd)))
 
-
 (defalias 'lsp-point-to-position #'lsp--point-to-position)
 (defalias 'lsp-text-document-identifier #'lsp--text-document-identifier)
 (defalias 'lsp-send-execute-command #'lsp--send-execute-command)
 (defalias 'lsp-on-open #'lsp--text-document-did-open)
 (defalias 'lsp-on-save #'lsp--text-document-did-save)
 ;; (defalias 'lsp-on-change #'lsp--text-document-did-change)
-(defalias 'lsp-on-close #'lsp--text-document-did-close)
 ;; (defalias 'lsp-eldoc #'lsp--text-document-hover-string)
 (defalias 'lsp-completion-at-point #'lsp--get-completions)
 (defalias 'lsp-error-explainer #'lsp--error-explainer)
@@ -1083,29 +1127,6 @@ command COMMAND and optionsl ARGS"
   (when lsp-enable-completion-at-point
     (remove-hook 'completion-at-point-functions #'lsp-completion-at-point))
   (remove-hook 'after-change-functions #'lsp-on-change))
-
-(defun lsp--set-variables ()
-  (when (or lsp-enable-eldoc lsp-enable-codeaction)
-    (setq-local eldoc-documentation-function #'lsp-eldoc)
-    (eldoc-mode 1))
-  (when (and lsp-enable-flycheck (featurep 'flycheck))
-    (setq-local flycheck-check-syntax-automatically nil)
-    (setq-local flycheck-checker 'lsp)
-    (unless (memq 'lsp flycheck-checkers)
-      (add-to-list 'flycheck-checkers 'lsp))
-    (unless (memq 'flycheck-buffer lsp-after-diagnostics-hook)
-      (add-hook 'lsp-after-diagnostics-hook #'(lambda ()
-                                                (when flycheck-mode
-                                                  (flycheck-buffer))))))
-  ;; (setq-local indent-region-function #'lsp-format-region)
-  (when lsp-enable-xref
-    (setq-local xref-backend-functions #'lsp--xref-backend))
-  (when (and (gethash "completionProvider" (lsp--server-capabilities))
-          lsp-enable-completion-at-point)
-    (setq-local completion-at-point-functions nil)
-    (add-hook 'completion-at-point-functions #'lsp-completion-at-point))
-  ;; Make sure the hook is local (last param) otherwise we see all changes for all buffers
-  (add-hook 'after-change-functions #'lsp-on-change nil t))
 
 
 (defun lsp--error-explainer (fc-error)
