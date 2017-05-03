@@ -63,5 +63,8 @@ to find the references to the symbol under point.
 
 ![ref](./examples/references.png)
 
+### Symbol Highlighting
+![sym_highlight](./examples/sym_highlight.gif)
+
 ### Flycheck
 ![flycheck](./examples/flycheck.gif)
