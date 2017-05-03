@@ -18,12 +18,13 @@ The library is designed to integrate with existing Emacs IDE frameworks
 Clone this repository to a suitable path, and add
 ```emacs-lisp
 (add-to-list 'load-path "<path to emacs-lsp>")
-(require 'lsp-mode)
-(global-lsp-mode t)
 (with-eval-after-load 'lsp-mode
     (require 'lsp-flycheck))
+(require 'lsp-mode)
+(add-hook 'prog-major-mode #'lsp-mode)
 ```
-to your .emacs.
+to your .emacs, where `prog-major-mode` is the hook variable for a supported
+programming language major mode.
 
 ## Clients
 Support for programming languages is provided by the following packages:
