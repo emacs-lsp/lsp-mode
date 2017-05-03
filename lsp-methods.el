@@ -110,6 +110,12 @@ for a new workspace."
   :group 'lsp-mode)
 
 ;;;###autoload
+(defcustom lsp-highlight-symbol-at-point t
+  "Highlight the symbol under the point."
+  :type 'boolean
+  :group 'lsp-mode)
+
+;;;###autoload
 (defcustom lsp-enable-codeaction t
   "Enable code action processing."
   :type 'boolean
@@ -406,8 +412,8 @@ disappearing, unset all the variables related to it."
   (add-hook 'after-save-hook #'lsp-on-save nil t)
   (add-hook 'kill-buffer-hook #'lsp--text-document-did-close nil t)
 
-  (when (or lsp-enable-eldoc lsp-enable-codeaction)
-    (setq-local eldoc-documentation-function #'lsp-eldoc)
+  (setq-local eldoc-documentation-function #'lsp--on-hover)
+  (when lsp-enable-eldoc
     (eldoc-mode 1))
 
   (when (and lsp-enable-flycheck (featurep 'flycheck))
@@ -877,11 +883,13 @@ Returns xref-item(s)."
     (gethash "value" contents)
     contents))
 
-(defun lsp-eldoc ()
-  (when (and (gethash "codeActionProvider" (lsp--server-capabilities))
-             lsp-enable-codeaction)
+(defun lsp--on-hover ()
+  (when lsp-highlight-symbol-at-point
+    (lsp-symbol-highlight))
+  (when (and (lsp--capability "codeActionProvider") lsp-enable-codeaction)
     (lsp--text-document-code-action))
-  (lsp--text-document-hover-string))
+  (when lsp-enable-eldoc
+    (lsp--text-document-hover-string)))
 
 (defun lsp--text-document-hover-string ()
   "interface Hover {
@@ -971,8 +979,7 @@ interface DocumentRangeFormattingParams {
         end-point (lsp--position-to-point (gethash "end" range)))
       (overlay-put (make-overlay start-point end-point) 'face
         (cdr (assq kind lsp--highlight-kind-face)))
-      (push (lsp--workspace-overlays lsp--cur-workspace)
-        (cons start-point end-point)))))
+      (push (cons start-point end-point) (lsp--workspace-overlays lsp--cur-workspace)))))
 
 (defconst lsp--symbol-kind
   '((1 . "File")
@@ -1110,7 +1117,6 @@ command COMMAND and optionsl ARGS"
 (defalias 'lsp-on-open #'lsp--text-document-did-open)
 (defalias 'lsp-on-save #'lsp--text-document-did-save)
 ;; (defalias 'lsp-on-change #'lsp--text-document-did-change)
-;; (defalias 'lsp-eldoc #'lsp--text-document-hover-string)
 (defalias 'lsp-completion-at-point #'lsp--get-completions)
 (defalias 'lsp-error-explainer #'lsp--error-explainer)
 
