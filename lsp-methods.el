@@ -1083,6 +1083,8 @@ interface RenameParams {
   (interactive "sRename to: ")
   (lsp--cur-workspace-check)
   (lsp--send-changes lsp--cur-workspace)
+  (unless (lsp--capability "renameProvider")
+    (user-error "This language server doesn't support renaming symbols"))
   (let ((edits (lsp--send-request (lsp--make-request
                                     "textDocument/rename"
                                     (lsp--make-document-rename-params newname)))))
