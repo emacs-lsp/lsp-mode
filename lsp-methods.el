@@ -98,17 +98,10 @@ for a new workspace."
   :group 'lsp-mode)
 
 ;;;###autoload
-(defcustom lsp-ask-before-initializing t
-  "Always ask before initializing a new project."
-  :type 'boolean
+(defcustom lsp-project-blacklist nil
+  "A list of project directories for which LSP shouldn't be initialized."
+  :type '(repeat directory)
   :group 'lsp-mode)
-
-;;;###autoload
-(defcustom lsp-ask-before-initializing-once-only t
-  "Only ask once per project root directory whether to initialize."
-  :type 'boolean
-  :group 'lsp-mode)
-
 
 ;;;###autoload
 (defcustom lsp-enable-eldoc t
@@ -358,48 +351,50 @@ disappearing, unset all the variables related to it."
   (let* ((client (lsp--get-client t))
           (root (funcall (lsp--client-get-root client)))
           (workspace (gethash root lsp--workspaces))
+          (should-not-init (member root lsp-project-blacklist))
           conn response init-params)
-    (if workspace
-      (setq lsp--cur-workspace workspace)
+    (if should-not-init
+      (message "Not initializing project %s" root)
+      (if workspace
+        (setq lsp--cur-workspace workspace)
 
-      (setf
-        parser (make-lsp--parser
-                 :method-handlers (lsp--client-method-handlers client)
-                 :request-handlers (lsp--client-request-handlers))
-        lsp--cur-workspace (make-lsp--workspace
-                             :parser parser
-                             :language-id (lsp--client-language-id client)
-                             :file-versions (make-hash-table :test 'equal)
-                             :last-id 0
-                             :root root
-                             :client client)
-        (lsp--parser-workspace parser) lsp--cur-workspace
-        new-conn (funcall
-                   (lsp--client-new-connection client)
-                   (lsp--parser-make-filter parser (lsp--client-ignore-regexps client))
-                   (lsp--make-sentinel (current-buffer)))
-        ;; the command line process invoked
-        cmd-proc (if (consp new-conn) (car new-conn) new-conn)
-        ;; the process we actually communicate with
-        proc (if (consp new-conn) (cdr new-conn) new-conn)
+        (setf
+          parser (make-lsp--parser
+                   :method-handlers (lsp--client-method-handlers client)
+                   :request-handlers (lsp--client-request-handlers))
+          lsp--cur-workspace (make-lsp--workspace
+                               :parser parser
+                               :language-id (lsp--client-language-id client)
+                               :file-versions (make-hash-table :test 'equal)
+                               :last-id 0
+                               :root root
+                               :client client)
+          (lsp--parser-workspace parser) lsp--cur-workspace
+          new-conn (funcall
+                     (lsp--client-new-connection client)
+                     (lsp--parser-make-filter parser (lsp--client-ignore-regexps client))
+                     (lsp--make-sentinel (current-buffer)))
+          ;; the command line process invoked
+          cmd-proc (if (consp new-conn) (car new-conn) new-conn)
+          ;; the process we actually communicate with
+          proc (if (consp new-conn) (cdr new-conn) new-conn)
 
-        (lsp--workspace-proc lsp--cur-workspace) proc
-        (lsp--workspace-cmd-proc lsp--cur-workspace) cmd-proc
+          (lsp--workspace-proc lsp--cur-workspace) proc
+          (lsp--workspace-cmd-proc lsp--cur-workspace) cmd-proc
 
-        init-params `(:processId ,(emacs-pid) :rootPath ,root
-                       :capabilities ,(lsp--client-capabilities)))
-      (puthash root lsp--cur-workspace lsp--workspaces)
-      (setf response (lsp--send-request (lsp--make-request "initialize"
-                                          init-params)))
-      (unless response
-        (signal 'lsp-empty-response-error "initialize"))
-      (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
-        (gethash "capabilities" response))
-      ;; Version 3.0 now sends an "initialized" notification to allow registration
-      ;; of server capabilities
-      (lsp--send-notification (lsp--make-notification "initialized" nil))
-      (run-hooks lsp-after-initialize-hook))
-    (lsp--text-document-did-open)))
+          init-params `(:processId ,(emacs-pid) :rootPath ,root
+                         :capabilities ,(lsp--client-capabilities)))
+        (puthash root lsp--cur-workspace lsp--workspaces)
+        (setf response (lsp--send-request (lsp--make-request "initialize" init-params)))
+        (unless response
+          (signal 'lsp-empty-response-error "initialize"))
+        (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
+          (gethash "capabilities" response))
+        ;; Version 3.0 now sends an "initialized" notification to allow registration
+        ;; of server capabilities
+        (lsp--send-notification (lsp--make-notification "initialized" nil))
+        (run-hooks lsp-after-initialize-hook))
+      (lsp--text-document-did-open))))
 
 (defun lsp--text-document-did-open ()
   (puthash buffer-file-name 0 (lsp--workspace-file-versions lsp--cur-workspace))
@@ -519,8 +514,7 @@ interface Range {
   (plist-get (plist-get range :end) :line))
 
 (defun lsp--apply-workspace-edits (edits)
-  (cl-letf ((lsp-ask-before-initializing nil)
-             ((lsp--workspace-change-timer-disabled lsp--cur-workspace) t))
+  (cl-letf (((lsp--workspace-change-timer-disabled lsp--cur-workspace) t))
     (maphash (lambda (key value)
                (lsp--apply-workspace-edit key value))
       (gethash "changes" edits))))
