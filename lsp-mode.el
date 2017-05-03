@@ -120,12 +120,11 @@ Optional arguments:
     (puthash mode client lsp--defined-clients)))
 
 ;;;###autoload
-(define-minor-mode global-lsp-mode ""
+(define-minor-mode lsp-mode ""
   nil nil nil
-  :global t
-  (add-hook 'find-file-hook #'lsp-on-open)
-  (add-hook 'after-save-hook #'lsp-on-save)
-  (add-hook 'kill-buffer-hook #'lsp-on-close))
+  :lighter " LSP"
+  :group 'lsp-mode
+  (lsp--start))
 
 (defconst lsp--sync-type
   `((0 . "None")
