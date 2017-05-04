@@ -62,7 +62,7 @@ provided by lsp-mode.
 See https://github.com/emacs-lsp/lsp-mode."
   :start #'lsp--flycheck-start
   :modes '(rust-mode go-mode python-mode haskell-mode) ; Need a default mode
-  :predicate (lambda () (not (null global-lsp-mode)))
+  :predicate (lambda () lsp-mode)
   :error-explainer #'lsp-error-explainer)
 
 (defun lsp-flycheck-add-mode (mode)
