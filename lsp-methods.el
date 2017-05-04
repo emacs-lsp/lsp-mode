@@ -280,6 +280,23 @@ interface TextDocumentItem {
   (lsp--send-notification (lsp--make-notification "exit" nil))
   (lsp--uninitialize-workspace))
 
+
+;; Clean up the entire state of lsp mode when Emacs is killed, to get rid of any
+;; pending language servers.
+(add-hook 'kill-emacs-hook #'lsp--global-teardown)
+
+(defun lsp--global-teardown ()
+  (maphash (lambda (key value) (lsp--teardown-client value)) lsp--workspaces)
+  )
+
+(defun lsp--teardown-client (client)
+  (setq lsp--cur-workspace client)
+  (lsp--shutdown-cur-workspace)
+  )
+
+
+
+
 (defun lsp--uninitialize-workspace ()
   "When a workspace is shut down, by request or from just
 disappearing, unset all the variables related to it."
