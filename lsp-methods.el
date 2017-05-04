@@ -884,7 +884,8 @@ Returns xref-item(s)."
     contents))
 
 (defun lsp--on-hover ()
-  (when lsp-highlight-symbol-at-point
+  (when (and (lsp--capability "documentHighlightProvider")
+          lsp-highlight-symbol-at-point)
     (lsp-symbol-highlight))
   (when (and (lsp--capability "codeActionProvider") lsp-enable-codeaction)
     (lsp--text-document-code-action))
