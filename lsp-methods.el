@@ -280,6 +280,23 @@ interface TextDocumentItem {
   (lsp--send-notification (lsp--make-notification "exit" nil))
   (lsp--uninitialize-workspace))
 
+
+;; Clean up the entire state of lsp mode when Emacs is killed, to get rid of any
+;; pending language servers.
+(add-hook 'kill-emacs-hook #'lsp--global-teardown)
+
+(defun lsp--global-teardown ()
+  (maphash (lambda (key value) (lsp--teardown-client value)) lsp--workspaces)
+  )
+
+(defun lsp--teardown-client (client)
+  (setq lsp--cur-workspace client)
+  (lsp--shutdown-cur-workspace)
+  )
+
+
+
+
 (defun lsp--uninitialize-workspace ()
   "When a workspace is shut down, by request or from just
 disappearing, unset all the variables related to it."
@@ -507,9 +524,23 @@ interface Range {
 
 (defun lsp--current-region-or-pos ()
   "If the region is active return that, else get the point"
-  (if mark-active
+  (if (use-region-p)
       (lsp--region-to-range (region-beginning) (region-end))
     (lsp--region-to-range (point) (point))))
+
+(defun lsp--get-start-position ()
+  "Get the start of the region if active, else current POINT"
+  (let ((pos (if (use-region-p)
+                 (region-beginning)
+               (point))))
+    (lsp-point-to-position pos)))
+
+(defun lsp--get-end-position ()
+  "Get the end of the region if active, else current POINT"
+  (let ((pos (if (use-region-p)
+                 (region-end)
+               (point))))
+    (lsp-point-to-position pos)))
 
 (defun lsp--range-start-line (range)
   "Return the start line for a given LSP range, in LSP coordinates"
@@ -1115,6 +1146,8 @@ command COMMAND and optionsl ARGS"
     (list :command cmd)))
 
 (defalias 'lsp-point-to-position #'lsp--point-to-position)
+(defalias 'lsp-get-start-position #'lsp--get-start-position)
+(defalias 'lsp-get-end-position #'lsp--get-end-position)
 (defalias 'lsp-text-document-identifier #'lsp--text-document-identifier)
 (defalias 'lsp-send-execute-command #'lsp--send-execute-command)
 (defalias 'lsp-on-open #'lsp--text-document-did-open)
