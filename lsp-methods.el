@@ -389,7 +389,6 @@ disappearing, unset all the variables related to it."
   (let* ((client (lsp--get-client t))
           (root (funcall (lsp--client-get-root client)))
           (workspace (gethash root lsp--workspaces))
-          ;; (should-not-init (member root lsp-project-blacklist))
           (should-not-init (not (lsp--should-start-p root)))
           conn response init-params)
     (if should-not-init
