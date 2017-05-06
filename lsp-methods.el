@@ -103,6 +103,13 @@ for a new workspace."
   :type '(repeat directory)
   :group 'lsp-mode)
 
+(defcustom lsp-project-whitelist nil
+  "A list of project directories for which LSP shouldn be
+initialized. When set this turns off use of
+`lsp-project-blacklist'"
+  :type '(repeat directory)
+  :group 'lsp-mode)
+
 ;;;###autoload
 (defcustom lsp-enable-eldoc t
   "Enable `eldoc-mode' integration."
@@ -368,13 +375,22 @@ disappearing, unset all the variables related to it."
               exit-str)
             (lsp--uninitialize-workspace)))))))
 
+(defun lsp--should-start-p (root)
+  "Consult `lsp-project-blacklist' and `lsp-project-whitelist' to
+  determine if a server should be started for the given ROOT
+  directory"
+  (if lsp-project-whitelist
+      (member root lsp-project-whitelist)
+    (not (member root lsp-project-blacklist))))
+
 (defun lsp--start ()
   (when lsp--cur-workspace
     (user-error "LSP mode is already enabled for this buffer"))
   (let* ((client (lsp--get-client t))
           (root (funcall (lsp--client-get-root client)))
           (workspace (gethash root lsp--workspaces))
-          (should-not-init (member root lsp-project-blacklist))
+          ;; (should-not-init (member root lsp-project-blacklist))
+          (should-not-init (not (lsp--should-start-p root)))
           conn response init-params)
     (if should-not-init
       (message "Not initializing project %s" root)
@@ -691,6 +707,7 @@ to a text document."
 
 (defun lsp--push-change (change-event)
   "Push CHANGE-EVENT to the buffer change vector."
+  (message "lsp--push-change entered")
   (setq lsp--changes (vconcat lsp--changes `(,change-event))))
 
 (defun lsp-on-change (start end length)
