@@ -303,14 +303,13 @@ interface TextDocumentItem {
   )
 
 
-
-
 (defun lsp--uninitialize-workspace ()
   "When a workspace is shut down, by request or from just
 disappearing, unset all the variables related to it."
   (remhash (lsp--workspace-root lsp--cur-workspace) lsp--workspaces)
   (let ((old-root (lsp--workspace-root lsp--cur-workspace)))
     (with-current-buffer (current-buffer)
+      (lsp--turn-off-flycheck)
       (lsp--rem-idle-timer)
       (setq lsp--cur-workspace nil)
       (lsp--unset-variables)
@@ -465,6 +464,32 @@ FORCE is t then do not cunsult the lists."
         (run-hooks lsp-after-initialize-hook))
       (lsp--text-document-did-open))))
 
+(defun lsp--after-diagnostics-flycheck-hook ()
+  "Explicit function for `lsp-after-diagnostics-hook' so it can
+be removed again."
+  (when flycheck-mode
+    (flycheck-buffer)))
+
+(defun lsp--turn-off-flycheck ()
+  "When shutting down LSP mode for a buffer, turn off flycheck via LSP"
+  (when (and lsp-enable-flycheck (featurep 'flycheck))
+    (kill-local-variable 'flycheck-check-syntax-automatically)
+    (kill-local-variable 'flycheck-checker)
+    ;; (remove 'lsp 'flycheck-checkers ) ;; Might be in use for another buffer.
+    (when (memq 'flycheck-buffer lsp-after-diagnostics-hook)
+      (remove-hook 'lsp-after-diagnostics-hook 'lsp--after-diagnostics-flycheck-hook)))
+  )
+
+(defun lsp--turn-on-flycheck ()
+  (when (and lsp-enable-flycheck (featurep 'lsp-flycheck))
+    (setq-local flycheck-check-syntax-automatically nil)
+    (setq-local flycheck-checker 'lsp)
+    (lsp-flycheck-add-mode major-mode)
+    (add-to-list 'flycheck-checkers 'lsp)
+    (unless (memq 'flycheck-buffer lsp-after-diagnostics-hook)
+      (add-hook 'lsp-after-diagnostics-hook 'lsp--after-diagnostics-flycheck-hook))))
+
+
 (defun lsp--text-document-did-open ()
   (puthash buffer-file-name 0 (lsp--workspace-file-versions lsp--cur-workspace))
   (push (current-buffer) (lsp--workspace-buffers lsp--cur-workspace))
@@ -479,14 +504,7 @@ FORCE is t then do not cunsult the lists."
   (when lsp-enable-eldoc
     (eldoc-mode 1))
 
-  (when (and lsp-enable-flycheck (featurep 'lsp-flycheck))
-    (setq-local flycheck-check-syntax-automatically nil)
-    (setq-local flycheck-checker 'lsp)
-    (lsp-flycheck-add-mode major-mode)
-    (add-to-list 'flycheck-checkers 'lsp)
-    (add-hook 'lsp-after-diagnostics-hook (lambda ()
-					    (when flycheck-mode
-					      (flycheck-buffer)))))
+  (lsp--turn-on-flycheck)
 
   (when (and lsp-enable-indentation
           (lsp--capability "documentRangeFormattingProvider"))
