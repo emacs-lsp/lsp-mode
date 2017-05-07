@@ -286,7 +286,7 @@ interface TextDocumentItem {
   "Shut down the language server process for lsp--cur-workspace"
   (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)))
   (lsp--send-notification (lsp--make-notification "exit" nil))
-  (lsp--uninitialize-workspace))
+  (kill-process (lsp--workspace-proc lsp--cur-workspace)))
 
 
 ;; Clean up the entire state of lsp mode when Emacs is killed, to get rid of any
@@ -312,9 +312,7 @@ disappearing, unset all the variables related to it."
   (let ((old-root (lsp--workspace-root lsp--cur-workspace)))
     (with-current-buffer (current-buffer)
       (lsp--rem-idle-timer)
-      (kill-process (lsp--workspace-proc lsp--cur-workspace))
       (setq lsp--cur-workspace nil)
-      (message "set lsp--cur-workspace to nil") ;; AZ-DEBUG
       (lsp--unset-variables)
       (kill-local-variable 'lsp--cur-workspace))
     (message "workspace uninitialized: %s" old-root)))
@@ -390,13 +388,19 @@ on and the current workspace root is not in
         (message "Shutting down workspace for %s"
                  (lsp--workspace-root lsp--cur-workspace))
         (lsp--shutdown-cur-workspace))
-    (let* ((root (funcall (lsp--client-get-root client))))
+    (let* ((client (lsp--get-client t))
+           (root (funcall (lsp--client-get-root client))))
       (if (lsp--should-start-p root)
-          (lsp--start)
-        ((when
-            (y-or-n-p (format-message "Add %s to lsp-project-whitelist?" root))
-           (customize-set-variable lsp-project-whitelist (add-to-list lsp-project-whitelist root)))
-         (lsp--start t))))))
+          (progn
+            (message "Starting workspace for %s" root)
+            (lsp--start))
+        (let ((question (format-message "Add %s to lsp-project-whitelist? " root)))
+          (message "question: %s" question)
+          (if (y-or-n-p question) ;; cannot use when , side effects problem
+              (progn (message "About to customize lsp-project-whitelist")
+                     (customize-save-variable 'lsp-project-whitelist (add-to-list 'lsp-project-whitelist root)))
+            t)
+          (lsp--start t))))))
 
 (defun lsp--should-start-p (root)
   "Consult `lsp-project-blacklist' and `lsp-project-whitelist' to
@@ -699,7 +703,6 @@ interface Range {
 
 (defun lsp--flush-other-workspace-changes ()
   "Flush changes for any other workspace."
-  (message "lsp--flush-other-workspace-changes entered") ;; AZ-DEBUG
   (when (and lsp--last-workspace-timer
           (not (eq lsp--last-workspace-timer lsp--cur-workspace)))
     ;; A timer for a different workspace was set, flush those
@@ -753,7 +756,7 @@ to a text document."
     ;;
     ;; So (47 54 0) means add    7 chars starting at pos 47
     ;; So (47 47 7) means delete 7 chars starting at pos 47
-  (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length) ;; AZ-DEBUG
+  ;; (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length) ;; AZ-DEBUG
   (lsp--flush-other-workspace-changes)
   (when (and lsp--cur-workspace
           (not (or (eq lsp--server-sync-method 'none)
@@ -786,7 +789,6 @@ to a text document."
 
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
-  (message "lsp--text-document-did-close entered") ;; AZ-DEBUG
   (lsp--send-changes lsp--cur-workspace)
   (let ((file-versions (lsp--workspace-file-versions lsp--cur-workspace))
          (old-buffers (lsp--workspace-buffers lsp--cur-workspace)))
@@ -827,7 +829,6 @@ to a text document."
 
 (defun lsp--cur-line-diagnotics ()
   "Return any diagnostics that apply to the current line."
-  (message "lsp--cur-line-diagnotics entered") ;; AZ-DEBUG
   (let* ((diags (gethash buffer-file-name lsp--diagnostics nil))
          (range (lsp--current-region-or-pos))
          (start-line (lsp--range-start-line range))
@@ -887,7 +888,6 @@ to a text document."
                           t))))
 
 (defun lsp--get-completions ()
-  (message "lsp--get-completions entered") ;; AZ-DEBUG
   (lsp--send-changes lsp--cur-workspace)
   (let ((bounds (bounds-of-thing-at-point 'word)))
     (list
@@ -916,7 +916,6 @@ interface Location {
     uri: string;
     range: Range;
 }"
-  (message "lsp--location-to-xref entered") ;; AZ-DEBUG
   (lsp--send-changes lsp--cur-workspace)
   (let ((uri (string-remove-prefix "file://" (gethash "uri" location)))
          (ref-pos (gethash "start" (gethash "range" location))))
@@ -929,7 +928,6 @@ interface Location {
 (defun lsp--get-defitions ()
   "Get definition of the current symbol under point.
 Returns xref-item(s)."
-  (message "lsp--get-defitions entered") ;; AZ-DEBUG
   (lsp--send-changes lsp--cur-workspace)
   (let ((location (lsp--send-request (lsp--make-request
                                        "textDocument/definition"
@@ -948,7 +946,6 @@ If TD-POSITION is non-nil, use it as TextDocumentPositionParams object instead."
 (defun lsp--get-references ()
   "Get all references for the symbol under point.
 Returns xref-item(s)."
-  (message "lsp--get-references entered") ;; AZ-DEBUG
   (lsp--send-changes lsp--cur-workspace)
   (let ((location  (lsp--send-request (lsp--make-request
                                         "textDocument/references"
@@ -964,7 +961,6 @@ Returns xref-item(s)."
     contents))
 
 (defun lsp--on-hover ()
-  (message "lsp--on-hover entered") ;; AZ-DEBUG
   (when (and (lsp--capability "documentHighlightProvider")
           lsp-highlight-symbol-at-point)
     (lsp-symbol-highlight))
@@ -980,7 +976,6 @@ Returns xref-item(s)."
 }
 
 type MarkedString = string | { language: string; value: string };"
-  (message "lsp--text-document-hover-string entered") ;; AZ-DEBUG
   (lsp--cur-workspace-check)
   (lsp--send-changes lsp--cur-workspace)
   (if (symbol-at-point)
@@ -1020,7 +1015,6 @@ the diagnostics"
 
 (defun lsp--text-document-format ()
   "Ask the server to format this document."
-  (message "lsp--text-document-format entered") ;; AZ-DEBUG
   (lsp--send-changes lsp--cur-workspace)
   (let ((edits (lsp--send-request (lsp--make-request
                                     "textDocument/formatting"
@@ -1044,7 +1038,6 @@ interface DocumentRangeFormattingParams {
      (3 . lsp-face-hightlight-write)))
 
 (defun lsp--remove-cur-overlays ()
-  (message "lsp--remove-cur-overlays entered") ;; AZ-DEBUG
   (dolist (pair (lsp--workspace-overlays lsp--cur-workspace))
     (remove-overlays (car pair) (cdr pair))))
 
