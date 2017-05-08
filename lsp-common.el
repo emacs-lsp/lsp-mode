@@ -15,11 +15,13 @@
 
 ;;; Code:
 
+(require 'compile)
+
 (defconst lsp--message-type-face
-  '((1 . 'compilation-error)
-    (2 . 'compilation-warning)
-    (3 . 'compilation-message)
-    (4 . 'compilation-info-face)))
+  `((1 . ,compilation-error-face)
+    (2 . ,compilation-warning-face)
+    (3 . ,compilation-message-face)
+    (4 . ,compilation-info-face)))
 
 (defcustom lsp-print-io nil
   "If non-nil, print all messages to and from the language server to *Messages*."
