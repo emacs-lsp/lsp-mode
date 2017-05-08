@@ -377,34 +377,61 @@ disappearing, unset all the variables related to it."
               (message "LSP process has exited (%s)" exit-str))
             (lsp--uninitialize-workspace)))))))
 
-(defun lsp--toggle ()
-  "Toggle the LSP mode for the current workspace. If turning it
-on and the current workspace root is not in
-`lsp-project-whitelist', then prompt to add it there."
-  (interactive)
+;; lsp--toggle is called to start/stop LSP minor mode, which is added to the
+;; major mode hook.
+;;
+;; There are some complications, due to lsp-project-blacklist
+;; and lsp-project-whitelist, which means that the mode should not be
+;; unconditionally started. This logic is captured in lsp--should-start-p
+;;
+;; So if lsp--toggle is called interactively, the mode is started, and added to
+;; the whitelist if the user so wishes. If it is called non-interactively, the
+;; mode is only started if lsp--should-start returns t.
+(defun lsp--toggle (&optional ask)
+  "Toggle the LSP mode for the current workspace.
+If turning it on and the current workspace root is not in
+`lsp-project-whitelist', then prompt to add it there if ASK is
+not nil."
   (if lsp--cur-workspace
       (progn
         (message "Shutting down workspace for %s"
                  (lsp--workspace-root lsp--cur-workspace))
         (lsp--shutdown-cur-workspace))
-    (let* ((client (lsp--get-client t))
+    (progn
+     (let* ((client (lsp--get-client t))
            (root (funcall (lsp--client-get-root client))))
       (if (lsp--should-start-p root)
           (progn
             (message "Starting workspace for %s" root)
             (lsp--start))
-        (let ((question (format-message "Add %s to lsp-project-whitelist? " root)))
-          (message "question: %s" question)
-          (if (y-or-n-p question) ;; cannot use when , side effects problem
-              (progn (message "About to customize lsp-project-whitelist")
-                     (customize-save-variable 'lsp-project-whitelist (add-to-list 'lsp-project-whitelist root)))
-            t)
-          (lsp--start t))))))
+        ;; only manually start the mode if it is called interactively
+        (progn
+          (if ask
+              (let ((question (format-message "Add %s to lsp-project-whitelist? " root)))
+                (if (y-or-n-p question) ;; cannot use when , side effects problem
+                    (progn (message "About to customize lsp-project-whitelist")
+                           (customize-save-variable 'lsp-project-whitelist (add-to-list 'lsp-project-whitelist root)))
+                  t)
+                (lsp--start t))
+            (progn (message "not called interactively, not starting")
+                   nil)))))
+     nil))
+  )
+
+(defun lsp--mode-hook-if-enabled ()
+  "Called from the major mode hook, enables `lsp-mode' if it is
+configured to do so via `lsp--should-start-p'."
+  (let* ((client (lsp--get-client t))
+         (root (funcall (lsp--client-get-root client))))
+    (if (lsp--should-start-p root)
+        (lsp-mode)
+      nil)))
 
 (defun lsp--should-start-p (root)
-  "Consult `lsp-project-blacklist' and `lsp-project-whitelist' to
-  determine if a server should be started for the given ROOT
-  directory"
+  "Check if a LSP process should be started for ROOT.
+Consult `lsp-project-blacklist' and `lsp-project-whitelist' to
+determine if a server should be started for the given ROOT
+directory"
   (if lsp-project-whitelist
       (member root lsp-project-whitelist)
     (not (member root lsp-project-blacklist))))
@@ -1219,7 +1246,8 @@ command COMMAND and optionsl ARGS"
 ;; (defalias 'lsp-on-change #'lsp--text-document-did-change)
 (defalias 'lsp-completion-at-point #'lsp--get-completions)
 (defalias 'lsp-error-explainer #'lsp--error-explainer)
-(defalias 'lsp-toggle #'lsp--toggle)
+;; (defalias 'lsp-toggle #'lsp--toggle)
+(defalias 'lsp-mode-hook-if-enabled #'lsp--mode-hook-if-enabled)
 
 (defun lsp--unset-variables ()
   (when lsp-enable-eldoc

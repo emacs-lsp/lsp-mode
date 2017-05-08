@@ -124,7 +124,12 @@ Optional arguments:
   nil nil nil
   :lighter " LSP"
   :group 'lsp-mode
-  (lsp--start))
+  (lsp--toggle (called-interactively-p)))
+
+(defun lsp-mode-hook ()
+  "If the LSP minor mode is allowed to be enabled for this mode do so"
+  (lsp-mode-hook-if-enabled)
+  )
 
 (defconst lsp--sync-type
   `((0 . "None")

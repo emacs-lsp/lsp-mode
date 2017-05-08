@@ -21,7 +21,7 @@ Clone this repository to a suitable path, and add
 (with-eval-after-load 'lsp-mode
     (require 'lsp-flycheck))
 (require 'lsp-mode)
-(add-hook 'prog-major-mode #'lsp-mode)
+(add-hook 'prog-major-mode #'lsp-mode-hook)
 ```
 to your .emacs, where `prog-major-mode` is the hook variable for a supported
 programming language major mode.
