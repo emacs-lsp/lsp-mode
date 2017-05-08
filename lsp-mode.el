@@ -124,10 +124,10 @@ Optional arguments:
   nil nil nil
   :lighter " LSP"
   :group 'lsp-mode
-  (lsp--toggle (called-interactively-p)))
+  (lsp--toggle (called-interactively-p 'interactive)))
 
 (defun lsp-mode-hook ()
-  "If the LSP minor mode is allowed to be enabled for this mode do so"
+  "If the LSP minor mode is allowed to be enabled for this mode do so."
   (lsp-mode-hook-if-enabled)
   )
 
