@@ -451,6 +451,7 @@ disappearing, unset all the variables related to it."
   (when (and lsp-enable-flycheck (featurep 'flycheck))
     (setq-local flycheck-check-syntax-automatically nil)
     (setq-local flycheck-checker 'lsp)
+    (lsp-flycheck-add-mode major-mode)
     (unless (memq 'lsp flycheck-checkers)
       (add-to-list 'flycheck-checkers 'lsp))
     (unless (memq 'flycheck-buffer lsp-after-diagnostics-hook)
