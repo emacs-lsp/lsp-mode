@@ -448,7 +448,7 @@ disappearing, unset all the variables related to it."
   (when lsp-enable-eldoc
     (eldoc-mode 1))
 
-  (when (and lsp-enable-flycheck (featurep 'flycheck))
+  (when (and lsp-enable-flycheck (featurep 'lsp-flycheck))
     (setq-local flycheck-check-syntax-automatically nil)
     (setq-local flycheck-checker 'lsp)
     (lsp-flycheck-add-mode major-mode)
