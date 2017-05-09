@@ -452,12 +452,10 @@ disappearing, unset all the variables related to it."
     (setq-local flycheck-check-syntax-automatically nil)
     (setq-local flycheck-checker 'lsp)
     (lsp-flycheck-add-mode major-mode)
-    (unless (memq 'lsp flycheck-checkers)
-      (add-to-list 'flycheck-checkers 'lsp))
-    (unless (memq 'flycheck-buffer lsp-after-diagnostics-hook)
-      (add-hook 'lsp-after-diagnostics-hook (lambda ()
-                                              (when flycheck-mode
-                                                (flycheck-buffer))))))
+    (add-to-list 'flycheck-checkers 'lsp)
+    (add-hook 'lsp-after-diagnostics-hook (lambda ()
+					    (when flycheck-mode
+					      (flycheck-buffer)))))
 
   (when (and lsp-enable-indentation
           (lsp--capability "documentRangeFormattingProvider"))
