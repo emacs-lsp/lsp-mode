@@ -271,7 +271,7 @@ interface TextDocumentItem {
     (setf (lsp--parser-workspace parser) lsp--cur-workspace)
     (setq response (lsp--send-request (lsp--make-request "initialize"
                                         `(:processId ,(emacs-pid) :rootPath ,root
-                                           :rootUri ,root
+                                           :rootUri ,(concat "file://" root)
                                            :capabilities ,(lsp--client-capabilities)))))
     (unless response
       (signal 'lsp-empty-response-error nil))
@@ -422,6 +422,7 @@ disappearing, unset all the variables related to it."
           (lsp--workspace-cmd-proc lsp--cur-workspace) cmd-proc
 
           init-params `(:processId ,(emacs-pid) :rootPath ,root
+                         :rootUri ,(concat "file://" root)
                          :capabilities ,(lsp--client-capabilities)))
         (puthash root lsp--cur-workspace lsp--workspaces)
         (setf response (lsp--send-request (lsp--make-request "initialize" init-params)))
