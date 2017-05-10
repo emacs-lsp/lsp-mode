@@ -20,8 +20,7 @@
 ;; Put this in your config file:
 ;;
 ;; (with-eval-after-load 'lsp-mode
-;;   (require 'lsp-flycheck)
-;;   (lsp-flycheck-setup))
+;;   (require 'lsp-flycheck))
 
 ;;; Code:
 
