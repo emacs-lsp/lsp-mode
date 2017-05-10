@@ -707,7 +707,7 @@ to a text document."
 
 (defun lsp--push-change (change-event)
   "Push CHANGE-EVENT to the buffer change vector."
-  (message "lsp--push-change entered")
+  ;; (message "lsp--push-change entered")
   (setq lsp--changes (vconcat lsp--changes `(,change-event))))
 
 (defun lsp-on-change (start end length)
