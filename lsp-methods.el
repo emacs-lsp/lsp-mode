@@ -330,7 +330,7 @@ disappearing, unset all the variables related to it."
 
 (defun lsp--client-textdocument-capabilities ()
   "Client Text document capabilities according to LSP"
-  (make-hash-table))
+  `(:synchronization (:didSave t)))
 
 (defun lsp--server-capabilities ()
   "Return the capabilities of the language server associated with the buffer."
