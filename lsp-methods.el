@@ -271,6 +271,7 @@ interface TextDocumentItem {
     (setf (lsp--parser-workspace parser) lsp--cur-workspace)
     (setq response (lsp--send-request (lsp--make-request "initialize"
                                         `(:processId ,(emacs-pid) :rootPath ,root
+                                           :rootUri ,root
                                            :capabilities ,(lsp--client-capabilities)))))
     (unless response
       (signal 'lsp-empty-response-error nil))
