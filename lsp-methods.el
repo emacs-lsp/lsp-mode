@@ -761,11 +761,10 @@ to a text document."
   "Executed when the file is closed, added to `kill-buffer-hook'."
   (lsp--send-changes lsp--cur-workspace)
   (let ((file-versions (lsp--workspace-file-versions lsp--cur-workspace))
-           (old-buffers (lsp--workspace-buffers lsp--cur-workspace)))
-      ;; remove buffer from the current workspace's list of buffers
-      ;; do a sanity check first
-      (cl-assert (memq (current-buffer) old-buffers) t
-        "Current buffer isn't in the workspace's list of buffers.")
+         (old-buffers (lsp--workspace-buffers lsp--cur-workspace)))
+    ;; remove buffer from the current workspace's list of buffers
+    ;; do a sanity check first
+    (when (memq (current-buffer) old-buffers)
       (setf (lsp--workspace-buffers lsp--cur-workspace)
         (delq (current-buffer) old-buffers))
 
@@ -775,7 +774,7 @@ to a text document."
           "textDocument/didClose"
           `(:textDocument ,(lsp--versioned-text-document-identifier))))
       (when (and (= 0 (hash-table-count file-versions)) (lsp--shut-down-p))
-        (lsp--shutdown-cur-workspace))))
+        (lsp--shutdown-cur-workspace)))))
 
 (defun lsp--text-document-did-save ()
   "Executed when the file is closed, added to `after-save-hook''."
