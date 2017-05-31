@@ -159,13 +159,13 @@ initialized. When set this turns off use of
   :group 'lsp-faces)
 
 ;;;###autoload
-(defface lsp-face-hightlight-read
+(defface lsp-face-highlight-read
   '((t :background "red"))
   "Face used for highlighting symbols being read."
   :group 'lsp-faces)
 
 ;;;###autoload
-(defface lsp-face-hightlight-write
+(defface lsp-face-highlight-write
   '((t :background "green"))
   "Face used for highlighting symbols being written to."
   :group 'lsp-faces)
@@ -1004,8 +1004,8 @@ interface DocumentRangeFormattingParams {
 
 (defconst lsp--highlight-kind-face
   '((1 . lsp-face-highlight-textual)
-     (2 . lsp-face-hightlight-read)
-     (3 . lsp-face-hightlight-write)))
+     (2 . lsp-face-highlight-read)
+     (3 . lsp-face-highlight-write)))
 
 (defun lsp--remove-cur-overlays ()
   (dolist (pair (lsp--workspace-overlays lsp--cur-workspace))
