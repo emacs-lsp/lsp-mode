@@ -83,7 +83,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
         (other
           (setq handler (gethash other (lsp--parser-method-handlers p) nil))
           (if (not handler)
-            (message "Unkown method: %s" other)
+            (message "Unknown method: %s" other)
             (funcall handler (lsp--parser-workspace p) params)))))))
 
 (defun lsp--on-request (p request &optional dont-queue)
@@ -99,7 +99,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
         (other
           (setq handler (gethash other (lsp--parser-request-handlers p) nil))
           (if (not handler)
-            (message "Unkown request method: %s" other)
+            (message "Unknown request method: %s" other)
             (funcall handler (lsp--parser-workspace p) params)))))))
 
 (defconst lsp--errors
