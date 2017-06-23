@@ -879,7 +879,19 @@ to a text document."
       :annotation-function #'lsp--annotate
       :display-sort-function #'lsp--sort-completions)))
 
-;;; TODO: implement completionItem/resolve
+(defun lsp--resolve-completion (comp)
+  (lsp--cur-workspace-check)
+  (lsp--send-changes lsp--cur-workspace)
+  (unless (gethash "resolveProvider" (lsp--capability "completionProvider"))
+    (user-error "This language server doesn't support resolving completion items"))
+  (when (null comp)
+    (user-error "Completion item must not be nil"))
+  (let* ((item (cond
+		((hash-table-p comp) comp)
+		((stringp comp) (plist-get (text-properties-at 0 comp) 'lsp-completion-item)))))
+    (cl-reduce #'list (lsp--send-request (lsp--make-request
+					  "completionItem/resolve"
+					  item)))))
 
 (defun lsp--location-to-xref (location)
   "Convert Location object LOCATION to an xref-item.
