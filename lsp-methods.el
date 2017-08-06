@@ -391,7 +391,8 @@ disappearing, unset all the variables related to it."
           (root (funcall (lsp--client-get-root client)))
           (workspace (gethash root lsp--workspaces))
           (should-not-init (not (lsp--should-start-p root)))
-          conn response init-params)
+          new-conn response init-params
+          parser proc cmd-proc)
     (if should-not-init
       (message "Not initializing project %s" root)
       (if workspace
