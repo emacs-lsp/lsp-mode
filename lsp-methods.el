@@ -337,18 +337,13 @@ disappearing, unset all the variables related to it."
   (lsp--workspace-server-capabilities lsp--cur-workspace))
 
 (defun lsp--set-sync-method ()
-  ;; (message "lsp--set-sync-method called") ;; AZ-DEBUG
   (let* ((sync (gethash "textDocumentSync" (lsp--server-capabilities)))
          (kind (gethash "change" sync))
          (method (alist-get kind lsp--sync-methods))
          )
-    ;; (message "lsp--set-sync-method: %s %s" kind method) ;; AZ-DEBUG
     (setq lsp--server-sync-method (or lsp-document-sync-method
                                       method
-                                      (alist-get
-                                       (gethash "textDocumentSync"
-                                                (lsp--server-capabilities))
-                                       lsp--sync-methods)))))
+                                      (alist-get sync lsp--sync-methods)))))
 
 (defun lsp--client-request-handlers ()
   "Handlers for requests originating from the server"
