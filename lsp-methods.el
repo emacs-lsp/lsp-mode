@@ -897,7 +897,7 @@ interface Location {
         (1+ (gethash "line" ref-pos))
         (gethash "character" ref-pos)))))
 
-(defun lsp--get-defitions ()
+(defun lsp--get-definition ()
   "Get definition of the current symbol under point.
 Returns xref-item(s)."
   (lsp--send-changes lsp--cur-workspace)
@@ -1092,13 +1092,11 @@ interface DocumentRangeFormattingParams {
 ;;   nil)
 
 (cl-defmethod xref-backend-definitions ((_backend (eql xref-lsp)) identifier)
-  (let* ((properties (text-properties-at 0 identifier))
-          (params (plist-get properties 'def-params))
-          (def (lsp--send-request (lsp--make-request
-                                    "textDocument/definition"
-                                    params))))
+  (let ((def (lsp--send-request (lsp--make-request
+                                 "textDocument/definition"
+                                 (lsp--text-document-position-params)))))
     (if (consp def)
-      (mapcar 'lsp--location-to-xref def)
+        (mapcar 'lsp--location-to-xref def)
       (and def `(,(lsp--location-to-xref def))))))
 
 (cl-defmethod xref-backend-references ((_backend (eql xref-lsp)) identifier)
