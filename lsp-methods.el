@@ -337,11 +337,13 @@ disappearing, unset all the variables related to it."
   (lsp--workspace-server-capabilities lsp--cur-workspace))
 
 (defun lsp--set-sync-method ()
-  (setq lsp--server-sync-method (or lsp-document-sync-method
-                                  (alist-get
-                                    (gethash "textDocumentSync"
-                                      (lsp--server-capabilities))
-                                    lsp--sync-methods))))
+  (let* ((sync (gethash "textDocumentSync" (lsp--server-capabilities)))
+         (kind (gethash "change" sync))
+         (method (alist-get kind lsp--sync-methods))
+         )
+    (setq lsp--server-sync-method (or lsp-document-sync-method
+                                      method
+                                      (alist-get sync lsp--sync-methods)))))
 
 (defun lsp--client-request-handlers ()
   "Handlers for requests originating from the server"
