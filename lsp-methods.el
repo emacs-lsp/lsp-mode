@@ -1097,7 +1097,7 @@ interface DocumentRangeFormattingParams {
          ;; called directly without applying the properties expected here. So we
          ;; must test if the properties are present, and if not use the current
          ;; point location.
-         (params (if (symbolp maybeparams) ;; if it is a symbol it is not an assoc
+         (params (if (null maybeparams)
                      (lsp--text-document-position-params)
                    maybeparams))
          (def (lsp--send-request (lsp--make-request
