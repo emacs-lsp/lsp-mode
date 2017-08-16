@@ -1092,11 +1092,17 @@ interface DocumentRangeFormattingParams {
 ;;   nil)
 
 (cl-defmethod xref-backend-definitions ((_backend (eql xref-lsp)) identifier)
-  (let* ((properties (text-properties-at 0 identifier))
-          (params (plist-get properties 'def-params))
-          (def (lsp--send-request (lsp--make-request
-                                    "textDocument/definition"
-                                    params))))
+  (let* ((maybeparams (get-text-property 0 'def-params identifier))
+         ;; In some modes (such as haskell-mode), xref-find-definitions gets
+         ;; called directly without applying the properties expected here. So we
+         ;; must test if the properties are present, and if not use the current
+         ;; point location.
+         (params (if (null maybeparams)
+                     (lsp--text-document-position-params)
+                   maybeparams))
+         (def (lsp--send-request (lsp--make-request
+                                  "textDocument/definition"
+                                  params))))
     (if (consp def)
       (mapcar 'lsp--location-to-xref def)
       (and def `(,(lsp--location-to-xref def))))))
