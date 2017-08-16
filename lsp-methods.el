@@ -338,12 +338,11 @@ disappearing, unset all the variables related to it."
 
 (defun lsp--set-sync-method ()
   (let* ((sync (gethash "textDocumentSync" (lsp--server-capabilities)))
-         (kind (gethash "change" sync))
+         (kind (if (hash-table-p sync) (gethash "change" sync) sync))
          (method (alist-get kind lsp--sync-methods))
          )
     (setq lsp--server-sync-method (or lsp-document-sync-method
-                                      method
-                                      (alist-get sync lsp--sync-methods)))))
+                                      method))))
 
 (defun lsp--client-request-handlers ()
   "Handlers for requests originating from the server"
