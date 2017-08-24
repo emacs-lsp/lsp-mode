@@ -277,7 +277,7 @@ interface TextDocumentItem {
       (signal 'lsp-empty-response-error nil))
     (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
       (gethash "capabilities" response))
-    (run-hooks lsp-after-initialize-hook)
+    (run-hooks 'lsp-after-initialize-hook)
     ;; Version 3.0 now sends an "initialized" notification to allow registration
     ;; of server capabilities
     (lsp--send-notification (lsp--make-notification "initialized" nil))))
@@ -434,7 +434,7 @@ disappearing, unset all the variables related to it."
         ;; Version 3.0 now sends an "initialized" notification to allow registration
         ;; of server capabilities
         (lsp--send-notification (lsp--make-notification "initialized" nil))
-        (run-hooks lsp-after-initialize-hook))
+        (run-hooks 'lsp-after-initialize-hook))
       (lsp--text-document-did-open))))
 
 (defun lsp--text-document-did-open ()
