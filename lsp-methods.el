@@ -284,38 +284,35 @@ interface TextDocumentItem {
 
 (defun lsp--shutdown-cur-workspace ()
   "Shut down the language server process for lsp--cur-workspace"
-  (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)))
-  (lsp--send-notification (lsp--make-notification "exit" nil))
+  (ignore-errors
+    (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)))
+    (lsp--send-notification (lsp--make-notification "exit" nil)))
   (lsp--uninitialize-workspace))
-
 
 ;; Clean up the entire state of lsp mode when Emacs is killed, to get rid of any
 ;; pending language servers.
 (add-hook 'kill-emacs-hook #'lsp--global-teardown)
 
 (defun lsp--global-teardown ()
-  (maphash (lambda (key value) (lsp--teardown-client value)) lsp--workspaces)
-  )
+  (maphash (lambda (key value) (lsp--teardown-client value)) lsp--workspaces))
 
 (defun lsp--teardown-client (client)
   (setq lsp--cur-workspace client)
-  (lsp--shutdown-cur-workspace)
-  )
-
-
-
+  (lsp--shutdown-cur-workspace))
 
 (defun lsp--uninitialize-workspace ()
   "When a workspace is shut down, by request or from just
 disappearing, unset all the variables related to it."
   (remhash (lsp--workspace-root lsp--cur-workspace) lsp--workspaces)
-  (let ((old-root (lsp--workspace-root lsp--cur-workspace)))
+  (let ((old-root (lsp--workspace-root lsp--cur-workspace))
+         proc)
     (with-current-buffer (current-buffer)
-      (kill-process (lsp--workspace-proc lsp--cur-workspace))
+      (setq proc (lsp--workspace-proc lsp--cur-workspace))
+      (unless (eq (process-status proc) 'exit)
+        (kill-process (lsp--workspace-proc lsp--cur-workspace)))
       (setq lsp--cur-workspace nil)
       (lsp--unset-variables)
-      (kill-local-variable 'lsp--cur-workspace))
-    (message "workspace uninitialized: %s" old-root)))
+      (kill-local-variable 'lsp--cur-workspace))))
 
 ;; NOTE: Possibly make this function subject to a setting, if older LSP servers
 ;; are unhappy
