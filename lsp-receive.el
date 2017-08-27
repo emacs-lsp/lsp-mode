@@ -24,13 +24,10 @@
 (cl-defstruct lsp--parser
   (waiting-for-response nil)
   (response-result nil)
-  (cur-token nil) ;; the current token being parsed
-  (raw "") ;; raw data received from the server, for debugging purposes
   (headers '()) ;; alist of headers
   (body nil) ;; message body
   (reading-body nil) ;; If non-nil, reading body
-  (last-terminate nil) ;; If non-nil, last token was '\r\n'
-  (prev-char nil)
+  (leftovers "") ;; Leftover data from previous chunk; to be processed
 
   (queued-notifications nil)
   (queued-requests nil)
@@ -137,23 +134,11 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
         nil (format "Invalid Content-Length value: %s" val)))
     (cons key val)))
 
-(defun lsp--flush-header (p)
-  (push (lsp--parse-header (substring (lsp--parser-cur-token p) 0
-                             (1- (length (lsp--parser-cur-token p)))))
-    (lsp--parser-headers p))
-  (setf (lsp--parser-cur-token p) nil))
-
-(defun lsp--cur-body-length (p)
-  (string-bytes (lsp--parser-body p)))
-
 (defun lsp--parser-reset (p)
-  (setf (lsp--parser-cur-token p) nil
-    (lsp--parser-raw p) ""
+  (setf (lsp--parser-leftovers p) ""
     (lsp--parser-headers p) '()
     (lsp--parser-body p) nil
-    (lsp--parser-reading-body p) nil
-    (lsp--parser-last-terminate p) nil
-    (lsp--parser-prev-char p) nil))
+    (lsp--parser-reading-body p) nil))
 
 (defun lsp--parser-on-message (p)
   "Called when the parser reads a complete message from the server."
@@ -174,31 +159,50 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
       ('request      (lsp--on-request p json-data))))
   (lsp--parser-reset p))
 
-(defun lsp--parser-read (p output)
+(defun lsp--parser-read (p chunk-)
   (cl-assert (lsp--parser-workspace p) nil "Parser workspace cannot be nil.")
-  (cl-loop for c being the elements of output do
-    (if (eq c ?\n)
-      (when (eq ?\r (lsp--parser-prev-char p))
-        (unless (setf (lsp--parser-reading-body p)
-                  (lsp--parser-last-terminate p))
-          (lsp--flush-header p))
-        (setf (lsp--parser-last-terminate p) t))
-      (unless (eq c ?\r)
-        (setf (lsp--parser-last-terminate p) nil))
-      (if (lsp--parser-reading-body p)
-        (progn (setf (lsp--parser-body p)
-                 (concat (lsp--parser-body p) (list c)))
-          (when (= (lsp--parser-length-header p)
-                  (lsp--cur-body-length p))
+  (let* ((leftovers (lsp--parser-leftovers p))
+          (chunk (if (> (length leftovers) 0)
+                   (concat leftovers chunk-)
+                   chunk-)))
+
+    ;; Read headers
+    (when (not (lsp--parser-reading-body p))
+      (let ((body-sep-pos (string-match-p "\r\n\r\n" chunk)))
+        (if body-sep-pos
+          ;; We've got all the headers, handle them all at once:
+          (let* ((header-raw (substring chunk 0 body-sep-pos))
+                  (content (substring chunk (+ body-sep-pos 4)))
+                  (headers
+                    (mapcar 'lsp--parse-header
+                      (split-string header-raw "\r\n"))))
+            (setf (lsp--parser-headers p) headers)
+            (setf (lsp--parser-reading-body p) t)
+            (setq chunk content))
+
+          ;; Haven't found the end of the headers yet, save everything
+          ;; for later:
+          (setf (lsp--parser-leftovers p) chunk))))
+
+    ;; Read body
+    (when (lsp--parser-reading-body p)
+      (let ((body-length (lsp--parser-length-header p)))
+        (if (>= (length chunk) body-length)
+          ;; Have a full body (and maybe a bit of the next one)
+          (let ((full-body (substring chunk 0 body-length))
+                 (bit-of-next-message (substring chunk body-length)))
+            (setf (lsp--parser-body p) full-body)
             (when lsp-print-io
-              (message "Output from language server: %s"
-                (lsp--parser-body p)))
-            (lsp--parser-on-message p)))
-        (setf (lsp--parser-cur-token p)
-          (concat (lsp--parser-cur-token p) (list c)))))
-    (setf (lsp--parser-raw p)
-      (concat (lsp--parser-raw p) (list c))
-      (lsp--parser-prev-char p) c)))
+              (message "Output from language server: %s" full-body))
+            (lsp--parser-on-message p)
+
+            (unless (string-empty-p bit-of-next-message)
+              ;; We've got a bit of the next message. Hopefully we
+              ;; don't do this _too_ much
+              (lsp--parser-read p bit-of-next-message)))
+
+          ;; else, still waiting for the rest of the current body
+          (setf (lsp--parser-leftovers p) chunk))))))
 
 (defun lsp--parser-make-filter (p ignore-regexps)
   #'(lambda (proc output)
