@@ -286,7 +286,7 @@ interface TextDocumentItem {
   "Shut down the language server process for lsp--cur-workspace"
   (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)))
   (lsp--send-notification (lsp--make-notification "exit" nil))
-  (lsp--uninitialize-workspace))
+  (kill-process (lsp--workspace-proc lsp--cur-workspace)))
 
 
 ;; Clean up the entire state of lsp mode when Emacs is killed, to get rid of any
@@ -303,15 +303,14 @@ interface TextDocumentItem {
   )
 
 
-
-
 (defun lsp--uninitialize-workspace ()
   "When a workspace is shut down, by request or from just
 disappearing, unset all the variables related to it."
   (remhash (lsp--workspace-root lsp--cur-workspace) lsp--workspaces)
   (let ((old-root (lsp--workspace-root lsp--cur-workspace)))
     (with-current-buffer (current-buffer)
-      (kill-process (lsp--workspace-proc lsp--cur-workspace))
+      (lsp--turn-off-flycheck)
+      (lsp--rem-idle-timer)
       (setq lsp--cur-workspace nil)
       (lsp--unset-variables)
       (kill-local-variable 'lsp--cur-workspace))
@@ -371,27 +370,83 @@ disappearing, unset all the variables related to it."
       (with-current-buffer buffer
         (dolist (buf (lsp--workspace-buffers lsp--cur-workspace))
           (with-current-buffer buf
-            (message "%s: %s has exited (%s)"
-              (lsp--workspace-root lsp--cur-workspace)
-              (process-name (lsp--workspace-proc lsp--cur-workspace))
-              exit-str)
+            (if lsp--cur-workspace
+                (message "%s: %s has exited (%s)"
+                         (lsp--workspace-root lsp--cur-workspace)
+                         (process-name (lsp--workspace-proc lsp--cur-workspace))
+                         exit-str)
+              (message "LSP process has exited (%s)" exit-str))
             (lsp--uninitialize-workspace)))))))
 
+;; lsp--toggle is called to start/stop LSP minor mode, which is added to the
+;; major mode hook.
+;;
+;; There are some complications, due to lsp-project-blacklist
+;; and lsp-project-whitelist, which means that the mode should not be
+;; unconditionally started. This logic is captured in lsp--should-start-p
+;;
+;; So if lsp--toggle is called interactively, the mode is started, and added to
+;; the whitelist if the user so wishes. If it is called non-interactively, the
+;; mode is only started if lsp--should-start returns t.
+(defun lsp--toggle (&optional ask)
+  "Toggle the LSP mode for the current workspace.
+If turning it on and the current workspace root is not in
+`lsp-project-whitelist', then prompt to add it there if ASK is
+not nil."
+  (if lsp--cur-workspace
+      (progn
+        (message "Shutting down workspace for %s"
+                 (lsp--workspace-root lsp--cur-workspace))
+        (lsp--shutdown-cur-workspace))
+    (progn
+     (let* ((client (lsp--get-client t))
+           (root (funcall (lsp--client-get-root client))))
+      (if (lsp--should-start-p root)
+          (progn
+            (message "Starting workspace for %s" root)
+            (lsp--start))
+        ;; only manually start the mode if it is called interactively
+        (progn
+          (if ask
+              (let ((question (format-message "Add %s to lsp-project-whitelist? " root)))
+                (if (y-or-n-p question) ;; cannot use when , side effects problem
+                    (progn (message "About to customize lsp-project-whitelist")
+                           (customize-save-variable 'lsp-project-whitelist (add-to-list 'lsp-project-whitelist root)))
+                  t)
+                (lsp--start t))
+            (progn (message "not called interactively, not starting")
+                   nil)))))
+     nil))
+  )
+
+(defun lsp--mode-hook-if-enabled ()
+  "Called from the major mode hook, enables `lsp-mode' if it is
+configured to do so via `lsp--should-start-p'."
+  (let* ((client (lsp--get-client t))
+         (root (funcall (lsp--client-get-root client))))
+    (if (lsp--should-start-p root)
+        (lsp-mode)
+      nil)))
+
 (defun lsp--should-start-p (root)
-  "Consult `lsp-project-blacklist' and `lsp-project-whitelist' to
-  determine if a server should be started for the given ROOT
-  directory"
+  "Check if a LSP process should be started for ROOT.
+Consult `lsp-project-blacklist' and `lsp-project-whitelist' to
+determine if a server should be started for the given ROOT
+directory"
   (if lsp-project-whitelist
       (member root lsp-project-whitelist)
     (not (member root lsp-project-blacklist))))
 
-(defun lsp--start ()
+(defun lsp--start (&optional force)
+  "Start an `lsp-mode' session, if allowed by the current
+`lsp-project-blacklist' ans `lsp-project-whitelist' settings. If
+FORCE is t then do not cunsult the lists."
   (when lsp--cur-workspace
     (user-error "LSP mode is already enabled for this buffer"))
   (let* ((client (lsp--get-client t))
           (root (funcall (lsp--client-get-root client)))
           (workspace (gethash root lsp--workspaces))
-          (should-not-init (not (lsp--should-start-p root)))
+          (should-not-init (not (or force (lsp--should-start-p root))))
           conn response init-params)
     (if should-not-init
       (message "Not initializing project %s" root)
@@ -437,6 +492,32 @@ disappearing, unset all the variables related to it."
         (run-hooks 'lsp-after-initialize-hook))
       (lsp--text-document-did-open))))
 
+(defun lsp--after-diagnostics-flycheck-hook ()
+  "Explicit function for `lsp-after-diagnostics-hook' so it can
+be removed again."
+  (when flycheck-mode
+    (flycheck-buffer)))
+
+(defun lsp--turn-off-flycheck ()
+  "When shutting down LSP mode for a buffer, turn off flycheck via LSP"
+  (when (and lsp-enable-flycheck (featurep 'flycheck))
+    (kill-local-variable 'flycheck-check-syntax-automatically)
+    (kill-local-variable 'flycheck-checker)
+    ;; (remove 'lsp 'flycheck-checkers ) ;; Might be in use for another buffer.
+    (when (memq 'flycheck-buffer lsp-after-diagnostics-hook)
+      (remove-hook 'lsp-after-diagnostics-hook 'lsp--after-diagnostics-flycheck-hook)))
+  )
+
+(defun lsp--turn-on-flycheck ()
+  (when (and lsp-enable-flycheck (featurep 'lsp-flycheck))
+    (setq-local flycheck-check-syntax-automatically nil)
+    (setq-local flycheck-checker 'lsp)
+    (lsp-flycheck-add-mode major-mode)
+    (add-to-list 'flycheck-checkers 'lsp)
+    (unless (memq 'flycheck-buffer lsp-after-diagnostics-hook)
+      (add-hook 'lsp-after-diagnostics-hook 'lsp--after-diagnostics-flycheck-hook))))
+
+
 (defun lsp--text-document-did-open ()
   (puthash buffer-file-name 0 (lsp--workspace-file-versions lsp--cur-workspace))
   (push (current-buffer) (lsp--workspace-buffers lsp--cur-workspace))
@@ -451,14 +532,7 @@ disappearing, unset all the variables related to it."
   (when lsp-enable-eldoc
     (eldoc-mode 1))
 
-  (when (and lsp-enable-flycheck (featurep 'lsp-flycheck))
-    (setq-local flycheck-check-syntax-automatically nil)
-    (setq-local flycheck-checker 'lsp)
-    (lsp-flycheck-add-mode major-mode)
-    (add-to-list 'flycheck-checkers 'lsp)
-    (add-hook 'lsp-after-diagnostics-hook (lambda ()
-					    (when flycheck-mode
-					      (flycheck-buffer)))))
+  (lsp--turn-on-flycheck)
 
   (when (and lsp-enable-indentation
           (lsp--capability "documentRangeFormattingProvider"))
@@ -728,7 +802,7 @@ to a text document."
     ;;
     ;; So (47 54 0) means add    7 chars starting at pos 47
     ;; So (47 47 7) means delete 7 chars starting at pos 47
-  ;; (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length)
+  ;; (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length) ;; AZ-DEBUG
   (lsp--flush-other-workspace-changes)
   (when (and lsp--cur-workspace
           (not (or (eq lsp--server-sync-method 'none)
@@ -896,6 +970,7 @@ interface Location {
         (1+ (gethash "line" ref-pos))
         (gethash "character" ref-pos)))))
 
+;; TODO: Fix typo in function defintion
 (defun lsp--get-defitions ()
   "Get definition of the current symbol under point.
 Returns xref-item(s)."
@@ -1178,6 +1253,8 @@ command COMMAND and optionsl ARGS"
 ;; (defalias 'lsp-on-change #'lsp--text-document-did-change)
 (defalias 'lsp-completion-at-point #'lsp--get-completions)
 (defalias 'lsp-error-explainer #'lsp--error-explainer)
+;; (defalias 'lsp-toggle #'lsp--toggle)
+(defalias 'lsp-mode-hook-if-enabled #'lsp--mode-hook-if-enabled)
 
 (defun lsp--unset-variables ()
   (when lsp-enable-eldoc
