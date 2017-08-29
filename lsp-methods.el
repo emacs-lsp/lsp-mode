@@ -1346,6 +1346,9 @@ Each option is a plist of (:key :default :title) wherein:
     (cl-loop for v in variables do
              (set (make-local-variable v) (buffer-local-value v buffer)))))
 
+(defun lsp--set-configuration (settings)
+  "Set the configuration for the lsp server."
+  (lsp--send-notification (lsp--make-notification "workspace/didChangeConfiguration" `(:settings , settings))))
 
 (provide 'lsp-methods)
 ;;; lsp-methods.el ends here
