@@ -32,7 +32,7 @@
 
 (defun lsp--make-stdio-connection (name command command-fn)
   (lambda (filter sentinel)
-    (let ((command (if command-fn (funcall command-fn) (command))))
+    (let ((command (if command-fn (funcall command-fn) command)))
       (let ((final-command (if (consp command) command (list command))))
       (unless (executable-find (nth 0 final-command))
         (error (format "Couldn't find executable %s" (nth 0 final-command))))
