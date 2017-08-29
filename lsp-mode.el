@@ -46,7 +46,7 @@
 
 (defun lsp--make-tcp-connection (name command command-fn host port)
   (lambda (filter sentinel)
-    (let ((command (if command-fn (funcall command-fn) (command))))
+    (let ((command (if command-fn (funcall command-fn) command)))
     (let ((final-command (if (consp command) command (list command)))
            proc tcp-proc)
       (unless (executable-find (nth 0 final-command))
