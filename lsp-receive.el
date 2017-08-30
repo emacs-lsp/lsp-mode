@@ -212,6 +212,9 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
           (setf (lsp--parser-body-received p) (+ (lsp--parser-body-received p)
 																								 (string-bytes this-body)))
           (when (>= chunk-length left-to-receive)
+						;; TODO: keep track of the Content-Type header, if
+						;; present, and use its value instead of just defaulting
+						;; to utf-8
             (push (decode-coding-string (lsp--parser-body p) 'utf-8) messages)
             (lsp--parser-reset p))
 
