@@ -119,7 +119,13 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 	    (or (car (alist-get code lsp--errors)) "Unknown error"))))
 
 (defun lsp--get-body-length (headers)
-  (string-to-number (cdr (assoc "Content-Length" headers))))
+	(let ((content-length (cdr (assoc "Content-Length" headers))))
+		(if content-length
+				(string-to-number content-length)
+
+			;; This usually means either the server our our parser is
+			;; screwed up with a previous Content-Length
+			(error "No Content-Length header"))))
 
 (defun lsp--parse-header (s)
   "Parse string S as a LSP (KEY . VAL) header."
