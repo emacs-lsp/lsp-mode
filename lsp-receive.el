@@ -196,14 +196,14 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
       ;; Read body
       (let* ((total-body-length (lsp--parser-body-length p))
              (received-body-length (lsp--parser-body-received p))
-             (chunk-length (length chunk))
+             (chunk-length (string-bytes chunk))
              (left-to-receive (- total-body-length received-body-length))
              (this-body (substring chunk 0 (min left-to-receive chunk-length)))
-             (leftovers (substring chunk (length this-body))))
+             (leftovers (substring chunk (string-bytes this-body))))
 
         (store-substring (lsp--parser-body p) received-body-length this-body)
         (setf (lsp--parser-body-received p) (+ (lsp--parser-body-received p)
-                                               (length this-body)))
+                                               (string-bytes this-body)))
 
         (when (>= chunk-length left-to-receive)
           (when lsp-print-io
