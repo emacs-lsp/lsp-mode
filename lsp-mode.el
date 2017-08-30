@@ -39,6 +39,7 @@
       (make-process
         :name name
         :connection-type 'pipe
+        :coding 'no-conversion
         :command final-command
         :filter filter
         :sentinel sentinel
@@ -53,6 +54,7 @@
         (error (format "Couldn't find executable %s" (nth 0 final-command))))
       (setq proc (make-process
                    :name name
+                   :coding 'no-conversion
                    :command final-command
                    :sentinel sentinel
                    :stderr (generate-new-buffer-name (concat "*" name " stderr*")))
