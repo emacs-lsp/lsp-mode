@@ -733,7 +733,14 @@ to a text document."
     (setq lsp--has-changes t)
     (lsp--rem-idle-timer)
     (when (eq lsp--server-sync-method 'incremental)
-      (lsp--push-change (lsp--text-document-content-change-event start end length)))
+      ;; (lsp--push-change (lsp--text-document-content-change-event start end length)))
+
+      ;; Each change needs to be wrt to the current doc, so send immediately.
+      ;; Otherwise we need to adjust the coordinates of the new change according
+      ;; to the cumulative changes already queued.
+      (progn
+        (lsp--push-change (lsp--text-document-content-change-event start end length))
+        (lsp--send-changes lsp--cur-workspace)))
     (if (lsp--workspace-change-timer-disabled lsp--cur-workspace)
       (lsp--send-changes lsp--cur-workspace)
       (lsp--set-idle-timer lsp--cur-workspace))))
