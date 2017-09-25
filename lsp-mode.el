@@ -111,7 +111,7 @@ Optional arguments:
 `:ignore-regexps' is a list of regexps which when matched will be ignored by the output parser.
 `:command-fn' will be called when the client is created and `command' will be ignored."
   (lsp--assert-type mode #'symbolp)
-  (let* ((command-fn-arg (plist-get args :command-fn)) (command-fn (if command-fn-arg (lsp--assert-type command-fn-arg #'functionp) (nil))))
+  (let* ((command-fn-arg (plist-get args :command-fn)) (command-fn (if command-fn-arg (lsp--assert-type command-fn-arg #'functionp) nil)))
     (let* (client)
       (setq client
         (make-lsp--client
