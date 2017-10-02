@@ -599,6 +599,73 @@ interface Range {
   "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
   (gethash cap (or capabilities (lsp--server-capabilities))))
 
+(defun lsp--get-text-deleted-in-most-recent-change ()
+  "If the most recent change in buffer-undo-list includes a text
+deletion, return the text corresponding to the first
+deletion. Returns nil if the latest change in buffer-undo-list
+does not contain a deletion."
+  (if undo-tree-mode
+      (user-error "lsp-mode is not compatible with undo-tree mode!")
+    (let ((l buffer-undo-list)
+          (result))
+      (while (car l)
+        (if (and (seqp (car l)) (stringp (caar l)))
+            (progn (setq result (substring-no-properties (caar l))) (setq l nil))
+          (setq l (cdr l))))
+      result)))
+
+
+(defun lsp--substitution-change (start end length)
+  (if-let ((last-deletion-change (lsp--get-text-deleted-in-most-recent-change)))
+      (let* ((d (split-string last-deletion-change "\n"))
+             (start-p (lsp-point-to-position start))
+             (end-p '(:line 0 :character 0)))
+        (plist-put end-p :line (+ (plist-get start-p :line) (length d) -1))
+        (plist-put end-p :character (if (> (length d) 1)
+                                        (length (car (last d)))
+                                      (+ (length (car (last d))) (plist-get start-p :character))))
+        `(:range (:start ,start-p :end ,end-p)
+                 :rangeLength ,length
+                 :text ,(buffer-substring-no-properties start end)))
+    (log DEBUG "Ignoring text change, because it seems like nothing actually changed: [start=%s; end=%s; length=%s]" start end length)))
+
+(defun lsp--delete-change (start end length)
+  (if-let* ((last-deletion-change (lsp--get-text-deleted-in-most-recent-change))
+            (d (split-string  last-deletion-change "\n"))
+            (start-p (lsp-point-to-position start))
+            (end-p '(:line 0 :character 0)))
+      (progn
+        (plist-put end-p :line (+ (plist-get start-p :line) (length d) -1))
+        (plist-put end-p :character (if (> (length d) 1)
+                                        (length (car (last d)))
+                                      (+ (length (car (last d))) (plist-get start-p :character))))
+        `(:range (:start ,start-p
+                         :end ,end-p)
+                 :rangeLength ,length
+                 :text ""))
+    (error "Can't send a change event to the server because we couldn't recover the deleted text. This is likely a bug in lsp-mode")))
+
+(defun lsp--substitution-or-deletion-change (start end length)
+  (if-let* ((last-deletion-change (lsp--get-text-deleted-in-most-recent-change))
+            (d (split-string  last-deletion-change "\n"))
+            (start-p (lsp-point-to-position start))
+            (end-p '(:line 0 :character 0)))
+      (progn
+        (plist-put end-p :line (+ (plist-get start-p :line) (length d) -1))
+        (plist-put end-p :character (if (> (length d) 1)
+                                        (length (car (last d)))
+                                      (+ (length (car (last d))) (plist-get start-p :character))))
+        `(:range (:start ,start-p :end ,end-p)
+                 :rangeLength ,length
+                 :text ,(buffer-substring-no-properties start end)))
+    (if (eq start end)
+      ;; deletion
+      (error "Can't send a change event to the server because we couldn't recover the deleted text. This is likely a bug in lsp-mode")
+      ;; substitution
+      (log DEBUG "Ignoring text change, because it seems like nothing actually changed: [start=%s; end=%s; length=%s]" start end length))))
+
+
+
 (defun lsp--text-document-content-change-event (start end length)
   "Make a TextDocumentContentChangeEvent body for START to END, of length LENGTH."
   ;; So (47 54 0) means add    7 chars starting at pos 47
@@ -614,18 +681,17 @@ interface Range {
   ;;            ,"end"  :{"line":7,"character":0}}
   ;;            ,"rangeLength":7
   ;;            ,"text":""}
+  (message "In change hook: start=%s; end=%s; length=%s\nBuffer contents:\n%s\nbuffer-undo-list: %s" start end length
+           (buffer-substring-no-properties (point-min) (point-max))
+           (prin1-to-string buffer-undo-list))
   (if (eq length 0)
       ;; Adding something, work from start only
       `(:range ,(lsp--range (lsp--point-to-position start)
                             (lsp--point-to-position start))
                :rangeLength 0
                :text ,(buffer-substring-no-properties start end))
-
-    ;; Deleting something
-    `(:range ,(lsp--range (lsp--point-to-position start)
-                          (lsp--point-to-position (+ end length)))
-             :rangeLength ,length
-             :text "")))
+      ;; Deleting or substituting something
+      (lsp--substitution-or-deletion-change start end length)))
 
 ;; Observed from vscode for applying a diff replacing one line with
 ;; another. Emacs on-change shows this as a delete followed by an
@@ -656,6 +722,15 @@ interface Range {
 (defvar-local lsp--changes [])
 (defvar-local lsp--has-changes []
   "non-nil if the current buffer has any changes yet to be sent.")
+
+(defconst DEBUG 0)
+(defconst INFO 1)
+
+(defvar-local lsp--log-level DEBUG)
+
+(defmacro log (lvl fmt &rest args)
+  `(when (>= ,lvl lsp--log-level)
+     (message ,(format "[%s]: %s" lvl fmt) ,@args)))
 
 (defun lsp--rem-idle-timer ()
   (when lsp--change-idle-timer
@@ -739,9 +814,10 @@ to a text document."
       ;; Each change needs to be wrt to the current doc, so send immediately.
       ;; Otherwise we need to adjust the coordinates of the new change according
       ;; to the cumulative changes already queued.
-      (progn
-        (lsp--push-change (lsp--text-document-content-change-event start end length))
-        (lsp--send-changes lsp--cur-workspace)))
+      (if-let ((change-event (lsp--text-document-content-change-event start end length)))
+          (progn
+            (lsp--push-change change-event)
+            (lsp--send-changes lsp--cur-workspace))))
     (if (lsp--workspace-change-timer-disabled lsp--cur-workspace)
       (lsp--send-changes lsp--cur-workspace)
       (lsp--set-idle-timer lsp--cur-workspace))))
