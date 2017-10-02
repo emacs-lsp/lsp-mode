@@ -89,7 +89,7 @@ for a new workspace."
   :group 'lsp-mode)
 
 ;;;###autoload
-(defcustom lsp-document-sync-method nil
+(defcustom lsp-document-sync-method 'full
   "How to sync the document with the language server."
   :type '(choice (const :tag "Documents should not be synced at all." 'none)
            (const :tag "Documents are synced by always sending the full content of the document." 'full)
