@@ -249,39 +249,6 @@ interface TextDocumentItem {
      :version ,(lsp--cur-file-version)
      :text ,(buffer-substring-no-properties (point-min) (point-max))))
 
-(defun lsp--initialize (language-id client parser &optional data)
-  (let* ((cur-dir (expand-file-name default-directory))
-          (cmd-proc (if (consp data) (car data) data))
-          (proc (if (consp data) (cdr data) data))
-          root response)
-    (if (gethash cur-dir lsp--workspaces)
-      (user-error "This workspace has already been initialized")
-
-      (setq root (funcall (lsp--client-get-root client)))
-      (setq lsp--cur-workspace (make-lsp--workspace
-                                 :parser parser
-                                 :language-id language-id
-                                 :file-versions (make-hash-table :test #'equal)
-                                 :last-id 0
-                                 :root root
-                                 :client client
-                                 :proc proc
-                                 :cmd-proc cmd-proc))
-      (puthash root lsp--cur-workspace lsp--workspaces))
-    (setf (lsp--parser-workspace parser) lsp--cur-workspace)
-    (setq response (lsp--send-request (lsp--make-request "initialize"
-                                        `(:processId ,(emacs-pid) :rootPath ,root
-                                           :rootUri ,(concat "file://" root)
-                                           :capabilities ,(lsp--client-capabilities)))))
-    (unless response
-      (signal 'lsp-empty-response-error nil))
-    (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
-      (gethash "capabilities" response))
-    (run-hooks 'lsp-after-initialize-hook)
-    ;; Version 3.0 now sends an "initialized" notification to allow registration
-    ;; of server capabilities
-    (lsp--send-notification (lsp--make-notification "initialized" nil))))
-
 (defun lsp--shutdown-cur-workspace ()
   "Shut down the language server process for lsp--cur-workspace"
   (ignore-errors
