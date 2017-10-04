@@ -89,7 +89,7 @@ for a new workspace."
   :group 'lsp-mode)
 
 ;;;###autoload
-(defcustom lsp-document-sync-method 'full
+(defcustom lsp-document-sync-method nil
   "How to sync the document with the language server."
   :type '(choice (const :tag "Documents should not be synced at all." 'none)
            (const :tag "Documents are synced by always sending the full content of the document." 'full)
@@ -437,6 +437,7 @@ disappearing, unset all the variables related to it."
     (add-hook 'completion-at-point-functions #'lsp-completion-at-point))
 
   ;; Make sure the hook is local (last param) otherwise we see all changes for all buffers
+  (add-hook 'before-change-functions #'lsp-before-change nil t)
   (add-hook 'after-change-functions #'lsp-on-change nil t)
   (lsp--set-sync-method))
 
@@ -581,6 +582,15 @@ interface Range {
   ;;            ,"end"  :{"line":7,"character":0}}
   ;;            ,"rangeLength":7
   ;;            ,"text":""}
+  ;;
+  ;; Adding text:
+  ;;   lsp-before-change:(start,end)=(33,33)
+  ;;   lsp-on-change:(start,end,length)=(33,34,0)
+  ;;
+  ;; Deleting text:
+  ;;   lsp-before-change:(start,end)=(19,27)
+  ;;   lsp-on-change:(start,end,length)=(19,19,8)
+
   (if (eq length 0)
       ;; Adding something, work from start only
       `(:range ,(lsp--range (lsp--point-to-position start)
@@ -676,6 +686,37 @@ to a text document."
   ;; (message "lsp--push-change entered")
   (setq lsp--changes (vconcat lsp--changes `(,change-event))))
 
+(defvar-local lsp--before-change-vals nil
+  "Store the positions from the `lsp-before-change' function
+  call, for validation and use in the `lsp-on-change' function.")
+(defun lsp-before-change (start end)
+  "Executed before a file is changed.
+  Added to `before-change-functions'"
+  ;; Note:
+  ;;
+  ;; This variable holds a list of functions to call when Emacs is about to
+  ;; modify a buffer. Each function gets two arguments, the beginning and end of
+  ;; the region that is about to change, represented as integers. The buffer
+  ;; that is about to change is always the current buffer when the function is
+  ;; called.
+  ;;
+  ;; WARNING:
+  ;;
+  ;; Do not expect the before-change hooks and the after-change hooks be called
+  ;; in balanced pairs around each buffer change. Also don't expect the
+  ;; before-change hooks to be called for every chunk of text Emacs is about to
+  ;; delete. These hooks are provided on the assumption that Lisp programs will
+  ;; use either before- or the after-change hooks, but not both, and the
+  ;; boundaries of the region where the changes happen might include more than
+  ;; just the actual changed text, or even lump together several changes done
+  ;; piecemeal.
+  (message "lsp-before-change:(start,end)=(%s,%s)" start end)
+  (setq lsp--before-change-vals
+        `(:start start
+                 :end end
+                 :start-pos ,(lsp--point-to-position start)
+                 :end-pos   ,(lsp--point-to-position end))))
+
 (defun lsp-on-change (start end length)
     "Executed when a file is changed.
   Added to `after-change-functions'"
@@ -693,7 +734,7 @@ to a text document."
     ;;
     ;; So (47 54 0) means add    7 chars starting at pos 47
     ;; So (47 47 7) means delete 7 chars starting at pos 47
-  ;; (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length)
+  (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length)
   (lsp--flush-other-workspace-changes)
   (when (and lsp--cur-workspace
           (not (or (eq lsp--server-sync-method 'none)
