@@ -89,7 +89,7 @@ for a new workspace."
   :group 'lsp-mode)
 
 ;;;###autoload
-(defcustom lsp-document-sync-method 'full
+(defcustom lsp-document-sync-method nil
   "How to sync the document with the language server."
   :type '(choice (const :tag "Documents should not be synced at all." 'none)
            (const :tag "Documents are synced by always sending the full content of the document." 'full)
@@ -437,6 +437,7 @@ disappearing, unset all the variables related to it."
     (add-hook 'completion-at-point-functions #'lsp-completion-at-point))
 
   ;; Make sure the hook is local (last param) otherwise we see all changes for all buffers
+  (add-hook 'before-change-functions #'lsp-before-change nil t)
   (add-hook 'after-change-functions #'lsp-on-change nil t)
   (lsp--set-sync-method))
 
@@ -581,18 +582,68 @@ interface Range {
   ;;            ,"end"  :{"line":7,"character":0}}
   ;;            ,"rangeLength":7
   ;;            ,"text":""}
+  ;;
+  ;; (208 221 3) means delete 3 chars starting at pos 208, and replace them with
+  ;; 13 chars. So it must become
+  ;;   {"range":{"start":{"line":5,"character":8}
+  ;;             ,"end" :{"line":5,"character":11}}
+  ;;             ,"rangeLength":3
+  ;;             ,"text":"new-chars-xxx"}
+  ;;
+
+  ;; Adding text:
+  ;;   lsp-before-change:(start,end)=(33,33)
+  ;;   lsp-on-change:(start,end,length)=(33,34,0)
+  ;;
+  ;; Changing text:
+  ;;   lsp-before-change:(start,end)=(208,211)
+  ;;   lsp-on-change:(start,end,length)=(208,221,3)
+  ;;
+  ;; Deleting text:
+  ;;   lsp-before-change:(start,end)=(19,27)
+  ;;   lsp-on-change:(start,end,length)=(19,19,8)
+
   (if (eq length 0)
-      ;; Adding something, work from start only
+      ;; Adding something only, work from start only
       `(:range ,(lsp--range (lsp--point-to-position start)
                             (lsp--point-to-position start))
                :rangeLength 0
                :text ,(buffer-substring-no-properties start end))
 
-    ;; Deleting something
-    `(:range ,(lsp--range (lsp--point-to-position start)
-                          (lsp--point-to-position (+ end length)))
-             :rangeLength ,length
-             :text "")))
+    (if (eq start end)
+        ;; Deleting something only
+        (if (lsp--probably-bracketed-change-p start end length)
+        ;; (if (and (eq start (plist-get lsp--before-change-vals :start) )
+        ;;          (eq length (- (plist-get lsp--before-change-vals :end)
+        ;;                        (plist-get lsp--before-change-vals :start))))
+            ;; The before-change value is valid, use it
+            `(:range ,(lsp--range (lsp--point-to-position start)
+                                  (plist-get lsp--before-change-vals :end-pos))
+                     :rangeLength ,length
+                     :text "")
+          (progn
+            (message "lsp--text-document-content-change-event: mismatch (%s /= %s)"
+                     (start end length) lsp--before-change-vals)
+            (lsp--full-change-event)))
+      ;; Deleting some things, adding others
+      (if (lsp--probably-bracketed-change-p start end length)
+          ;; The before-change value is valid, use it
+          `(:range ,(lsp--range (lsp--point-to-position start)
+                                (plist-get lsp--before-change-vals :end-pos))
+                   :rangeLength ,length
+                   :text ,(buffer-substring-no-properties start end))
+        (progn
+          (message "lsp--text-document-content-change-event: mismatch (%s /= %s)"
+                   (start end length) lsp--before-change-vals)
+          (lsp--full-change-event)))
+       )))
+
+(defun lsp--probably-bracketed-change-p (start end length)
+  "If the before and after positions are the same, and the length
+is the size of the start range, we are probably good."
+  (and (eq start (plist-get lsp--before-change-vals :start) )
+       (eq length (- (plist-get lsp--before-change-vals :end)
+                     (plist-get lsp--before-change-vals :start)))))
 
 ;; Observed from vscode for applying a diff replacing one line with
 ;; another. Emacs on-change shows this as a delete followed by an
@@ -676,6 +727,37 @@ to a text document."
   ;; (message "lsp--push-change entered")
   (setq lsp--changes (vconcat lsp--changes `(,change-event))))
 
+(defvar-local lsp--before-change-vals nil
+  "Store the positions from the `lsp-before-change' function
+  call, for validation and use in the `lsp-on-change' function.")
+(defun lsp-before-change (start end)
+  "Executed before a file is changed.
+  Added to `before-change-functions'"
+  ;; Note:
+  ;;
+  ;; This variable holds a list of functions to call when Emacs is about to
+  ;; modify a buffer. Each function gets two arguments, the beginning and end of
+  ;; the region that is about to change, represented as integers. The buffer
+  ;; that is about to change is always the current buffer when the function is
+  ;; called.
+  ;;
+  ;; WARNING:
+  ;;
+  ;; Do not expect the before-change hooks and the after-change hooks be called
+  ;; in balanced pairs around each buffer change. Also don't expect the
+  ;; before-change hooks to be called for every chunk of text Emacs is about to
+  ;; delete. These hooks are provided on the assumption that Lisp programs will
+  ;; use either before- or the after-change hooks, but not both, and the
+  ;; boundaries of the region where the changes happen might include more than
+  ;; just the actual changed text, or even lump together several changes done
+  ;; piecemeal.
+  ;; (message "lsp-before-change:(start,end)=(%s,%s)" start end)
+  (setq lsp--before-change-vals
+        `(:start ,start
+                 :end ,end
+                 :start-pos ,(lsp--point-to-position start)
+                 :end-pos   ,(lsp--point-to-position end))))
+
 (defun lsp-on-change (start end length)
     "Executed when a file is changed.
   Added to `after-change-functions'"
@@ -694,6 +776,7 @@ to a text document."
     ;; So (47 54 0) means add    7 chars starting at pos 47
     ;; So (47 47 7) means delete 7 chars starting at pos 47
   ;; (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length)
+  ;; (message "lsp-on-change:(lsp--before-change-vals)=%s" lsp--before-change-vals)
   (lsp--flush-other-workspace-changes)
   (when (and lsp--cur-workspace
           (not (or (eq lsp--server-sync-method 'none)
