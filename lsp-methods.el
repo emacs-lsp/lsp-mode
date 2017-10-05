@@ -833,7 +833,7 @@ to a text document."
 
 (defun lsp--get-completions ()
   (lsp--send-changes lsp--cur-workspace)
-  (let ((bounds (bounds-of-thing-at-point 'word)))
+  (let ((bounds (bounds-of-thing-at-point 'symbol)))
     (list
       (if bounds (car bounds) (point))
       (if bounds (cdr bounds) (point))
