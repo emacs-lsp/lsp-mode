@@ -831,9 +831,19 @@ to a text document."
                                 (lsp--sort-string c2))
                           t))))
 
+(defun lsp--get-trigger-character-at-point ()
+  (when-let (completionProvider (lsp--capability "completionProvider"))
+    (seq-find (lambda (trigger-character)
+                (let ((len (length trigger-character)))
+                  (when (> (point) len)
+                    (string-equal (buffer-substring-no-properties (- (point) len) (point))
+                      trigger-character))))
+      (gethash "triggerCharacters" completionProvider))))
+
 (defun lsp--get-completions ()
   (lsp--send-changes lsp--cur-workspace)
-  (let ((bounds (bounds-of-thing-at-point 'word)))
+  (let ((completion-trigger-character (lsp--get-trigger-character-at-point))
+        (bounds (bounds-of-thing-at-point 'symbol)))
     (list
       (if bounds (car bounds) (point))
       (if bounds (cdr bounds) (point))
@@ -850,7 +860,8 @@ to a text document."
                              ((sequencep resp) resp))))
               (mapcar #'lsp--make-completion-item items))))
       :annotation-function #'lsp--annotate
-      :display-sort-function #'lsp--sort-completions)))
+      :display-sort-function #'lsp--sort-completions
+      :company-prefix-length (when completion-trigger-character t))))
 
 ;;; TODO: implement completionItem/resolve
 
