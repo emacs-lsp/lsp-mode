@@ -69,5 +69,14 @@ If no such directory could be found, log a warning and return `default-directory
               "Couldn't find project root, using the current directory as the root.")
             default-directory)))))
 
+(defconst DEBUG 0)
+(defconst INFO 1)
+
+(defvar lsp--log-level INFO)
+
+(defmacro lsp--log (lvl fmt &rest args)
+  `(when (>= ,lvl lsp--log-level)
+     (message ,(format "[%s]: %s" lvl fmt) ,@args)))
+
 (provide 'lsp-common)
 ;;; lsp-common.el ends here

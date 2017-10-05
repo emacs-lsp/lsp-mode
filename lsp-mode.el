@@ -133,6 +133,19 @@ Optional arguments:
   :group 'lsp-mode
   (lsp--start))
 
+(defun lsp--warn-if-undo-tree-mode-enabled ()
+  (warn "LSP is incompatible with undo-tree-mode. Please disable undo-tree-mode or your changes will not be synced correctly."))
+
+(add-hook 'lsp-mode-hook (lambda ()
+                           (when (and lsp-mode
+                                      (boundp 'undo-tree-mode)
+                                      undo-tree-mode)
+                             (lsp--warn-if-undo-tree-mode-enabled))))
+
+(add-hook 'undo-tree-mode-hook (lambda ()
+                                 (when (and undo-tree-mode lsp-mode)
+                                   (lsp--warn-if-undo-tree-mode-enabled))))
+
 (defconst lsp--sync-type
   `((0 . "None")
      (1 . "Full Document")

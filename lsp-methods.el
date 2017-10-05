@@ -566,6 +566,47 @@ interface Range {
   "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
   (gethash cap (or capabilities (lsp--server-capabilities))))
 
+(defun lsp--get-text-deleted-in-most-recent-change ()
+  "Search until the first undo boundary and return the text
+corresponding to the first deletion in buffer-undo-list, if
+present. Else return nil. "
+  (if undo-tree-mode
+      (user-error "lsp-mode is not compatible with undo-tree mode!")
+    (let ((l buffer-undo-list)
+          (result))
+      (while (car l)
+        (if (and (seqp (car l)) (stringp (caar l)))
+            (progn (setq result (substring-no-properties (caar l))) (setq l nil))
+          (setq l (cdr l))))
+      result)))
+
+(defun lsp--substitution-or-deletion-change (start end length)
+  "Return a change corresponding to a text substitution or
+deletion by recovering the affected text from the undo
+history. This logic doesn't play well with the redo functionality
+provided by undo-tree mode."
+  (if-let* ((last-deletion-change (lsp--get-text-deleted-in-most-recent-change))
+            (deleted-lines (split-string last-deletion-change "\n"))
+            (start-p (lsp-point-to-position start))
+            (end-p '(:line 0 :character 0)))
+      (progn
+        (plist-put end-p :line (+ (plist-get start-p :line) (length deleted-lines) -1))
+        (plist-put end-p :character (if (> (length deleted-lines) 1)
+                                        (length (car (last deleted-lines)))
+                                      (+ (length (car (last deleted-lines))) (plist-get start-p :character))))
+        `(:range (:start ,start-p :end ,end-p)
+                 :rangeLength ,length
+                 :text ,(buffer-substring-no-properties start end)))
+    ;; else, we couldn't find a deletion in the undo history
+    (if (eq start end)
+      ;; deletion
+      (error "Can't send a change event to the server because we couldn't recover the deleted text. This is likely a bug in lsp-mode")
+      ;; substitution - I've observed the undo of a substitution
+      ;; trigger 3 changes, the first of which seems to overwrite part
+      ;; of the affected region with the same text that's already
+      ;; present
+      (lsp--log DEBUG "Ignoring text change, because it seems like nothing actually changed: [start=%s; end=%s; length=%s]" start end length))))
+
 (defun lsp--text-document-content-change-event (start end length)
   "Make a TextDocumentContentChangeEvent body for START to END, of length LENGTH."
   ;; So (47 54 0) means add    7 chars starting at pos 47
@@ -581,18 +622,24 @@ interface Range {
   ;;            ,"end"  :{"line":7,"character":0}}
   ;;            ,"rangeLength":7
   ;;            ,"text":""}
+  (lsp--log DEBUG
+            "In change hook: [start=%s; end=%s; length=%s]
+Buffer contents:
+---------------------------------
+%s
+---------------------------------
+buffer-undo-list: %s"
+            start end length
+            (buffer-substring-no-properties (point-min) (point-max))
+            (prin1-to-string buffer-undo-list))
   (if (eq length 0)
       ;; Adding something, work from start only
       `(:range ,(lsp--range (lsp--point-to-position start)
                             (lsp--point-to-position start))
                :rangeLength 0
                :text ,(buffer-substring-no-properties start end))
-
-    ;; Deleting something
-    `(:range ,(lsp--range (lsp--point-to-position start)
-                          (lsp--point-to-position (+ end length)))
-             :rangeLength ,length
-             :text "")))
+    ;; Deleting or substituting something
+    (lsp--substitution-or-deletion-change start end length)))
 
 ;; Observed from vscode for applying a diff replacing one line with
 ;; another. Emacs on-change shows this as a delete followed by an
@@ -706,9 +753,10 @@ to a text document."
       ;; Each change needs to be wrt to the current doc, so send immediately.
       ;; Otherwise we need to adjust the coordinates of the new change according
       ;; to the cumulative changes already queued.
-      (progn
-        (lsp--push-change (lsp--text-document-content-change-event start end length))
-        (lsp--send-changes lsp--cur-workspace)))
+      (if-let ((change-event (lsp--text-document-content-change-event start end length)))
+          (progn
+            (lsp--push-change change-event)
+            (lsp--send-changes lsp--cur-workspace))))
     (if (lsp--workspace-change-timer-disabled lsp--cur-workspace)
       (lsp--send-changes lsp--cur-workspace)
       (lsp--set-idle-timer lsp--cur-workspace))))
