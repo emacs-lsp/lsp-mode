@@ -599,10 +599,18 @@ interface Range {
                :text ,(buffer-substring-no-properties start end))
 
     ;; Deleting something
-    `(:range ,(lsp--range (lsp--point-to-position start)
-                          (lsp--point-to-position (+ end length)))
-             :rangeLength ,length
-             :text "")))
+    (if (and (eq start (plist-get lsp--before-change-vals :start) )
+             (eq length (- (plist-get lsp--before-change-vals :end)
+                           (plist-get lsp--before-change-vals :start))))
+         ;; The before-change value is valid, use it
+         `(:range ,(lsp--range (lsp--point-to-position start)
+                               (plist-get lsp--before-change-vals :end-pos))
+                  :rangeLength ,length
+                  :text "")
+      (progn
+        (message "lsp--text-document-content-change-event: mismatch (%s /= %s)"
+                 (start end length) lsp--before-change-vals)
+        (lsp--full-change-event)))))
 
 ;; Observed from vscode for applying a diff replacing one line with
 ;; another. Emacs on-change shows this as a delete followed by an
@@ -710,10 +718,10 @@ to a text document."
   ;; boundaries of the region where the changes happen might include more than
   ;; just the actual changed text, or even lump together several changes done
   ;; piecemeal.
-  (message "lsp-before-change:(start,end)=(%s,%s)" start end)
+  ;; (message "lsp-before-change:(start,end)=(%s,%s)" start end)
   (setq lsp--before-change-vals
-        `(:start start
-                 :end end
+        `(:start ,start
+                 :end ,end
                  :start-pos ,(lsp--point-to-position start)
                  :end-pos   ,(lsp--point-to-position end))))
 
@@ -734,7 +742,7 @@ to a text document."
     ;;
     ;; So (47 54 0) means add    7 chars starting at pos 47
     ;; So (47 47 7) means delete 7 chars starting at pos 47
-  (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length)
+  ;; (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length)
   (lsp--flush-other-workspace-changes)
   (when (and lsp--cur-workspace
           (not (or (eq lsp--server-sync-method 'none)
