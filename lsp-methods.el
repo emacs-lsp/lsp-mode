@@ -612,7 +612,7 @@ interface Range {
 
     (if (eq start end)
         ;; Deleting something only
-        (if (lsp--probably-bracketed-change-p start end length)
+        (if (lsp--bracketed-change-p start end length)
         ;; (if (and (eq start (plist-get lsp--before-change-vals :start) )
         ;;          (eq length (- (plist-get lsp--before-change-vals :end)
         ;;                        (plist-get lsp--before-change-vals :start))))
@@ -626,7 +626,7 @@ interface Range {
                      (start end length) lsp--before-change-vals)
             (lsp--full-change-event)))
       ;; Deleting some things, adding others
-      (if (lsp--probably-bracketed-change-p start end length)
+      (if (lsp--bracketed-change-p start end length)
           ;; The before-change value is valid, use it
           `(:range ,(lsp--range (lsp--point-to-position start)
                                 (plist-get lsp--before-change-vals :end-pos))
@@ -638,7 +638,8 @@ interface Range {
           (lsp--full-change-event)))
        )))
 
-(defun lsp--probably-bracketed-change-p (start end length)
+;; TODO: Add tests for this function.
+(defun lsp--bracketed-change-p (start end length)
   "If the before and after positions are the same, and the length
 is the size of the start range, we are probably good."
   (and (eq start (plist-get lsp--before-change-vals :start) )
