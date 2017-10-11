@@ -621,10 +621,7 @@ interface Range {
                                   (plist-get lsp--before-change-vals :end-pos))
                      :rangeLength ,length
                      :text "")
-          (progn
-            (message "lsp--text-document-content-change-event: mismatch (%s /= %s)"
-                     (start end length) lsp--before-change-vals)
-            (lsp--full-change-event)))
+          (lsp--change-for-mismatch start end length))
       ;; Deleting some things, adding others
       (if (lsp--bracketed-change-p start end length)
           ;; The before-change value is valid, use it
@@ -632,11 +629,16 @@ interface Range {
                                 (plist-get lsp--before-change-vals :end-pos))
                    :rangeLength ,length
                    :text ,(buffer-substring-no-properties start end))
-        (progn
-          (message "lsp--text-document-content-change-event: mismatch (%s /= %s)"
-                   (start end length) lsp--before-change-vals)
-          (lsp--full-change-event)))
-       )))
+        (lsp--change-for-mismatch start end length)))))
+
+
+(defun lsp--change-for-mismatch (start end length)
+  "If the current change is not fully bracketed, report it and
+return the full contents of the buffer as the change."
+  (message "lsp--text-document-content-change-event: mismatch (%s /= %s)"
+           (list start end length) lsp--before-change-vals)
+  (lsp--full-change-event))
+
 
 ;; TODO: Add tests for this function.
 (defun lsp--bracketed-change-p (start end length)
