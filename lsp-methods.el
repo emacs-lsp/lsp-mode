@@ -811,9 +811,8 @@ to a text document."
 unless KEY not found or its value is falsy, when it returns DFLT.
 DFLT defaults to nil.
 
-Needed to implement completion request fallback behavior for the
-fields 'sortText', 'filterText', and 'insertText' as described
-here:
+Needed for completion request fallback behavior for the fields
+'sortText', 'filterText', and 'insertText' as described here:
 
 https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#completion-request"
 
