@@ -479,7 +479,9 @@ interface Position {
   "Convert POINT to Position."
   (save-excursion
     (goto-char point)
-    (lsp--cur-position)))
+    (save-restriction
+      (widen) ;; May be in a narrowed region
+      (lsp--cur-position))))
 
 (defun lsp--position-p (p)
   (and (numberp (plist-get p :line))
