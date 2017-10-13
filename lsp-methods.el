@@ -659,7 +659,9 @@ is the size of the start range, we are probably good."
 
 
 (defun lsp--full-change-event ()
-  `(:text ,(buffer-substring-no-properties (point-min) (point-max))))
+  (save-restriction
+    (widen)
+    `(:text ,(buffer-substring-no-properties (point-min) (point-max)))))
 
 ;;;###autoload
 (defcustom lsp-change-idle-delay 0.5
