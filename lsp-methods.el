@@ -479,7 +479,9 @@ interface Position {
   "Convert POINT to Position."
   (save-excursion
     (goto-char point)
-    (lsp--cur-position)))
+    (save-restriction
+      (widen) ;; May be in a narrowed region
+      (lsp--cur-position))))
 
 (defun lsp--position-p (p)
   (and (numberp (plist-get p :line))
@@ -659,7 +661,9 @@ is the size of the start range, we are probably good."
 
 
 (defun lsp--full-change-event ()
-  `(:text ,(buffer-substring-no-properties (point-min) (point-max))))
+  (save-restriction
+    (widen)
+    `(:text ,(buffer-substring-no-properties (point-min) (point-max)))))
 
 ;;;###autoload
 (defcustom lsp-change-idle-delay 0.5
