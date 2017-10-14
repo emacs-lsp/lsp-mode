@@ -894,8 +894,23 @@ to a text document."
      (17 . "File")
      (18 . "Reference")))
 
+(defun lsp--gethash (key table &optional dflt)
+  "Look up KEY in TABLE and return its associated value,
+unless KEY not found or its value is falsy, when it returns DFLT.
+DFLT defaults to nil.
+
+Needed for completion request fallback behavior for the fields
+'sortText', 'filterText', and 'insertText' as described here:
+
+https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#completion-request"
+
+  (let ((result (gethash key table dflt)))
+    (when (member result '(nil "" 0 :json-false))
+        (setq result dflt))
+    result))
+
 (defun lsp--make-completion-item (item)
-  (propertize (gethash "insertText" item (gethash "label" item))
+  (propertize (lsp--gethash "insertText" item (gethash "label" item ""))
     'lsp-completion-item
     item))
 
@@ -910,7 +925,7 @@ to a text document."
       (when kind (format "(%s)" kind)))))
 
 (defun lsp--sort-string (c)
-  (gethash "sortText" c (gethash "label" c "")))
+  (lsp--gethash "sortText" c (gethash "label" c "")))
 
 (defun lsp--sort-completions (completions)
   (sort completions #'(lambda (c1 c2)
