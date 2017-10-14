@@ -635,8 +635,6 @@ interface Range {
 (defun lsp--change-for-mismatch (start end length)
   "If the current change is not fully bracketed, report it and
 return the full contents of the buffer as the change."
-  (message "lsp--text-document-content-change-event: mismatch (%s /= %s)"
-           (list start end length) lsp--before-change-vals)
   (lsp--full-change-event))
 
 
