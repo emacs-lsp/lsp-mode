@@ -36,8 +36,6 @@
   (ignore-regexps nil :read-only t)
   (method-handlers (make-hash-table :test 'equal) :read-only t))
 
-(defvar lsp--defined-clients (make-hash-table))
-
 (cl-defstruct lsp--workspace
   (parser nil :read-only t)
   (language-id nil :read-only t)
@@ -170,12 +168,17 @@ initialized. When set this turns off use of
   "Face used for highlighting symbols being written to."
   :group 'lsp-faces)
 
-(defun lsp-client-on-notification (mode method callback)
-  (cl-assert (cl-typep callback 'function) nil
-    "lsp-client-on-notification: CALLBACK is not a function.")
-  (let ((client (gethash mode lsp--defined-clients nil)))
-    (cl-assert client nil (format "%s doesn't have a defined client" mode))
-    (puthash method callback (lsp--client-method-handlers client))))
+(defun lsp-client-on-notification (client method callback)
+  (cl-check-type client lsp--client)
+  (cl-check-type method string)
+  (cl-check-type callback function)
+  (puthash method callback (lsp--client-method-handlers client)))
+
+(defun lsp-client-on-request (client method callback)
+  (cl-check-type client lsp--client)
+  (cl-check-type method string)
+  (cl-check-type callback function)
+  (puthash method callback (lsp--client-request-handlers client)))
 
 (defun lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
@@ -252,7 +255,7 @@ interface TextDocumentItem {
 (defun lsp--shutdown-cur-workspace ()
   "Shut down the language server process for lsp--cur-workspace"
   (ignore-errors
-    (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)))
+    (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)) t)
     (lsp--send-notification (lsp--make-notification "exit" nil)))
   (lsp--uninitialize-workspace))
 
@@ -308,26 +311,10 @@ disappearing, unset all the variables related to it."
     (setq lsp--server-sync-method (or lsp-document-sync-method
                                       method))))
 
-(defun lsp--client-request-handlers ()
-  "Handlers for requests originating from the server"
-  (let* ((table (make-hash-table :test 'equal)))
-    ;; ("client/registerCapability"   (error "client/registerCapability not implemented"))
-    ;; ("client/unregisterCapability" (error "client/unregisterCapability not implemented"))
-    (puthash "workspace/applyEdit" #'lsp--workspace-apply-edit-handler table)
-    table))
-
 (defun lsp--workspace-apply-edit-handler (workspace params)
   (lsp--apply-workspace-edits (gethash "edit" params))
   ;; TODO: send reply
   )
-
-(defun lsp--get-client (error)
-  "Return the client for the current `major-mode'."
-  (let ((client (gethash major-mode lsp--defined-clients)))
-    (if client
-      client
-      (when error
-        (error "No client is defined for %s" major-mode)))))
 
 (defun lsp--make-sentinel (buffer)
   (lambda (_p exit-str)
@@ -349,11 +336,10 @@ disappearing, unset all the variables related to it."
       (member root lsp-project-whitelist)
     (not (member root lsp-project-blacklist))))
 
-(defun lsp--start ()
+(defun lsp--start (client)
   (when lsp--cur-workspace
     (user-error "LSP mode is already enabled for this buffer"))
-  (let* ((client (lsp--get-client t))
-          (root (funcall (lsp--client-get-root client)))
+  (let* ((root (funcall (lsp--client-get-root client)))
           (workspace (gethash root lsp--workspaces))
           (should-not-init (not (lsp--should-start-p root)))
           new-conn response init-params
@@ -365,8 +351,7 @@ disappearing, unset all the variables related to it."
 
         (setf
           parser (make-lsp--parser
-                   :method-handlers (lsp--client-method-handlers client)
-                   :request-handlers (lsp--client-request-handlers))
+                   :method-handlers (lsp--client-method-handlers client))
           lsp--cur-workspace (make-lsp--workspace
                                :parser parser
                                :language-id (lsp--client-language-id client)
