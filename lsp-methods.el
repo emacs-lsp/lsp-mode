@@ -419,7 +419,7 @@ disappearing, unset all the variables related to it."
 
   (when (and lsp-enable-completion-at-point (lsp--capability "completionProvider"))
     (setq-local completion-at-point-functions nil)
-    (add-hook 'completion-at-point-functions #'lsp-completion-at-point))
+    (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t))
 
   ;; Make sure the hook is local (last param) otherwise we see all changes for all buffers
   (add-hook 'before-change-functions #'lsp-before-change nil t)
@@ -1251,9 +1251,9 @@ command COMMAND and optionsl ARGS"
   (when lsp-enable-xref
     (setq-local xref-backend-functions nil))
   (when lsp-enable-completion-at-point
-    (remove-hook 'completion-at-point-functions #'lsp-completion-at-point))
-  (remove-hook 'after-change-functions #'lsp-on-change))
-
+    (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t))
+  (remove-hook 'after-change-functions #'lsp-on-change t)
+  (remove-hook 'before-change-functions #'lsp-before-change t))
 
 (defun lsp--error-explainer (fc-error)
     "Proof of concept to use this flycheck function to apply a
@@ -1262,10 +1262,11 @@ command COMMAND and optionsl ARGS"
     https://github.com/flycheck/flycheck/issues/530#issuecomment-235224763"
   (message "lsp--error-explainer: got %s" fc-error))
 
-
 (defun lsp--set-configuration (settings)
   "Set the configuration for the lsp server."
-  (lsp--send-notification (lsp--make-notification "workspace/didChangeConfiguration" `(:settings , settings))))
+  (lsp--send-notification (lsp--make-notification
+                            "workspace/didChangeConfiguration"
+                            `(:settings , settings))))
 
 (provide 'lsp-methods)
 ;;; lsp-methods.el ends here
