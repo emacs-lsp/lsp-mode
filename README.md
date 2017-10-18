@@ -29,11 +29,12 @@ programming language major mode.
 ## Clients
 Support for programming languages is provided by the following packages:
 
-- [lsp-rust](https://github.com/emacs-lsp/lsp-rust)
 - [lsp-go](https://github.com/emacs-lsp/lsp-go)
-- [lsp-python](https://github.com/emacs-lsp/lsp-python)
 - [lsp-haskell](https://github.com/emacs-lsp/lsp-haskell)
 - [lsp-java](https://github.com/emacs-lsp/lsp-java)
+- [lsp-ocaml](https://github.com/emacs-lsp/lsp-ocaml)
+- [lsp-python](https://github.com/emacs-lsp/lsp-python)
+- [lsp-rust](https://github.com/emacs-lsp/lsp-rust)
 
 ## Adding support for languages
 See [API docs](./doc/API.org)
