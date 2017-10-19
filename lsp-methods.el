@@ -786,21 +786,6 @@ to a text document."
       (lsp--send-changes lsp--cur-workspace)
       (lsp--set-idle-timer lsp--cur-workspace))))
 
-;; (defun lsp--text-document-did-change (start end length)
-;;   "Executed when a file is changed.
-;; Added to `after-change-functions'"
-;;   (when lsp--cur-workspace
-;;     (unless (or (eq lsp--server-sync-method 'none)
-;; 		(eq lsp--server-sync-method nil))
-;;       (lsp--cur-file-version t)
-;;       (lsp--send-notification
-;;        (lsp--make-notification
-;; 	"textDocument/didChange"
-;; 	`(:textDocument
-;; 	  ,(lsp--versioned-text-document-identifier)
-;; 	  :contentChanges
-;; 	  [,(lsp--text-document-content-change-event start end length)]))))))
-
 (defun lsp--shut-down-p ()
   (y-or-n-p "Close the language server for this workspace? "))
 
