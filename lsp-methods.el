@@ -51,7 +51,7 @@
   (proc nil) ;; the process we communicate with
   (cmd-proc nil) ;; the process we launch initially
   (buffers nil) ;; a list of buffers associated with this workspace
-  (overlays nil) ;; a list of '(START . END) cons pairs with overlays on them
+  (highlight-overlays nil) ;; a list of overlays used for highlighting the symbol under point
   )
 
 (defvar-local lsp--cur-workspace nil)
@@ -1090,8 +1090,8 @@ interface DocumentRangeFormattingParams {
      (3 . lsp-face-highlight-write)))
 
 (defun lsp--remove-cur-overlays ()
-  (dolist (pair (lsp--workspace-overlays lsp--cur-workspace))
-    (remove-overlays (car pair) (cdr pair))))
+  (dolist (overlay (lsp--workspace-highlight-overlays lsp--cur-workspace))
+    (delete-overlay overlay)))
 
 (defun lsp-symbol-highlight ()
   "Highlight all relevant references to the symbol under point."
@@ -1103,13 +1103,14 @@ interface DocumentRangeFormattingParams {
                                          (lsp--text-document-position-params))))
          kind start-point end-point range)
     (dolist (highlight highlights)
-      (setq range (gethash "range" highlight nil)
-        kind (gethash "kind" highlight 1)
-        start-point (lsp--position-to-point (gethash "start" range))
-        end-point (lsp--position-to-point (gethash "end" range)))
-      (overlay-put (make-overlay start-point end-point) 'face
-        (cdr (assq kind lsp--highlight-kind-face)))
-      (push (cons start-point end-point) (lsp--workspace-overlays lsp--cur-workspace)))))
+      (let* ((range (gethash "range" highlight nil))
+             (kind (gethash "kind" highlight 1))
+             (start-point (lsp--position-to-point (gethash "start" range)))
+             (end-point (lsp--position-to-point (gethash "end" range)))
+             (overlay (make-overlay start-point end-point)))
+        (overlay-put overlay 'face
+                     (cdr (assq kind lsp--highlight-kind-face)))
+        (push overlay (lsp--workspace-highlight-overlays lsp--cur-workspace))))))
 
 (defconst lsp--symbol-kind
   '((1 . "File")
