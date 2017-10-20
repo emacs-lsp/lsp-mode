@@ -167,8 +167,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
         (setf (lsp--parser-response-result p) nil
           (lsp--parser-waiting-for-response p) nil))
       ('notification (lsp--on-notification p json-data))
-      ('request      (lsp--on-request p json-data))))
-  (lsp--parser-reset p))
+      ('request      (lsp--on-request p json-data)))))
 
 (defun lsp--parser-read (p chunk)
   (cl-assert (lsp--parser-workspace p) nil "Parser workspace cannot be nil.")
