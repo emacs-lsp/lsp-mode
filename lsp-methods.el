@@ -34,9 +34,8 @@
   (new-connection nil :read-only t)
   (get-root nil :read-only t)
   (ignore-regexps nil :read-only t)
-  (method-handlers (make-hash-table :test 'equal) :read-only t))
-
-(defvar lsp--defined-clients (make-hash-table))
+  (notification-handlers (make-hash-table :test 'equal) :read-only t)
+  (request-handlers (make-hash-table :test 'equal) :read-only t))
 
 (cl-defstruct lsp--workspace
   (parser nil :read-only t)
@@ -170,12 +169,17 @@ initialized. When set this turns off use of
   "Face used for highlighting symbols being written to."
   :group 'lsp-faces)
 
-(defun lsp-client-on-notification (mode method callback)
-  (cl-assert (cl-typep callback 'function) nil
-    "lsp-client-on-notification: CALLBACK is not a function.")
-  (let ((client (gethash mode lsp--defined-clients nil)))
-    (cl-assert client nil (format "%s doesn't have a defined client" mode))
-    (puthash method callback (lsp--client-method-handlers client))))
+(defun lsp-client-on-notification (client method callback)
+  (cl-check-type client lsp--client)
+  (cl-check-type method string)
+  (cl-check-type callback function)
+  (puthash method callback (lsp--client-notification-handlers client)))
+
+(defun lsp-client-on-request (client method callback)
+  (cl-check-type client lsp--client)
+  (cl-check-type method string)
+  (cl-check-type callback function)
+  (puthash method callback (lsp--client-request-handlers client)))
 
 (defun lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
@@ -252,7 +256,7 @@ interface TextDocumentItem {
 (defun lsp--shutdown-cur-workspace ()
   "Shut down the language server process for lsp--cur-workspace"
   (ignore-errors
-    (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)))
+    (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)) t)
     (lsp--send-notification (lsp--make-notification "exit" nil)))
   (lsp--uninitialize-workspace))
 
@@ -261,7 +265,7 @@ interface TextDocumentItem {
 (add-hook 'kill-emacs-hook #'lsp--global-teardown)
 
 (defun lsp--global-teardown ()
-  (maphash (lambda (key value) (lsp--teardown-client value)) lsp--workspaces))
+  (maphash (lambda (_k value) (lsp--teardown-client value)) lsp--workspaces))
 
 (defun lsp--teardown-client (client)
   (setq lsp--cur-workspace client)
@@ -271,8 +275,7 @@ interface TextDocumentItem {
   "When a workspace is shut down, by request or from just
 disappearing, unset all the variables related to it."
   (remhash (lsp--workspace-root lsp--cur-workspace) lsp--workspaces)
-  (let ((old-root (lsp--workspace-root lsp--cur-workspace))
-         proc)
+  (let (proc)
     (with-current-buffer (current-buffer)
       (setq proc (lsp--workspace-proc lsp--cur-workspace))
       (unless (eq (process-status proc) 'exit)
@@ -308,26 +311,10 @@ disappearing, unset all the variables related to it."
     (setq lsp--server-sync-method (or lsp-document-sync-method
                                       method))))
 
-(defun lsp--client-request-handlers ()
-  "Handlers for requests originating from the server"
-  (let* ((table (make-hash-table :test 'equal)))
-    ;; ("client/registerCapability"   (error "client/registerCapability not implemented"))
-    ;; ("client/unregisterCapability" (error "client/unregisterCapability not implemented"))
-    (puthash "workspace/applyEdit" #'lsp--workspace-apply-edit-handler table)
-    table))
-
-(defun lsp--workspace-apply-edit-handler (workspace params)
+(defun lsp--workspace-apply-edit-handler (_workspace params)
   (lsp--apply-workspace-edits (gethash "edit" params))
   ;; TODO: send reply
   )
-
-(defun lsp--get-client (error)
-  "Return the client for the current `major-mode'."
-  (let ((client (gethash major-mode lsp--defined-clients)))
-    (if client
-      client
-      (when error
-        (error "No client is defined for %s" major-mode)))))
 
 (defun lsp--make-sentinel (buffer)
   (lambda (_p exit-str)
@@ -349,58 +336,52 @@ disappearing, unset all the variables related to it."
       (member root lsp-project-whitelist)
     (not (member root lsp-project-blacklist))))
 
-(defun lsp--start ()
+(defun lsp--start (client)
   (when lsp--cur-workspace
     (user-error "LSP mode is already enabled for this buffer"))
-  (let* ((client (lsp--get-client t))
-          (root (funcall (lsp--client-get-root client)))
+  (let* ((root (funcall (lsp--client-get-root client)))
           (workspace (gethash root lsp--workspaces))
-          (should-not-init (not (lsp--should-start-p root)))
           new-conn response init-params
           parser proc cmd-proc)
-    (if should-not-init
-      (message "Not initializing project %s" root)
-      (if workspace
-        (setq lsp--cur-workspace workspace)
+    (if workspace
+      (setq lsp--cur-workspace workspace)
 
-        (setf
-          parser (make-lsp--parser
-                   :method-handlers (lsp--client-method-handlers client)
-                   :request-handlers (lsp--client-request-handlers))
-          lsp--cur-workspace (make-lsp--workspace
-                               :parser parser
-                               :language-id (lsp--client-language-id client)
-                               :file-versions (make-hash-table :test 'equal)
-                               :last-id 0
-                               :root root
-                               :client client)
-          (lsp--parser-workspace parser) lsp--cur-workspace
-          new-conn (funcall
-                     (lsp--client-new-connection client)
-                     (lsp--parser-make-filter parser (lsp--client-ignore-regexps client))
-                     (lsp--make-sentinel (current-buffer)))
-          ;; the command line process invoked
-          cmd-proc (if (consp new-conn) (car new-conn) new-conn)
-          ;; the process we actually communicate with
-          proc (if (consp new-conn) (cdr new-conn) new-conn)
+      (setf
+        parser (make-lsp--parser)
+        lsp--cur-workspace (make-lsp--workspace
+                             :parser parser
+                             :language-id (lsp--client-language-id client)
+                             :file-versions (make-hash-table :test 'equal)
+                             :last-id 0
+                             :root root
+                             :client client)
+        (lsp--parser-workspace parser) lsp--cur-workspace
+        new-conn (funcall
+                   (lsp--client-new-connection client)
+                   (lsp--parser-make-filter parser (lsp--client-ignore-regexps client))
+                   (lsp--make-sentinel (current-buffer)))
+        ;; the command line process invoked
+        cmd-proc (if (consp new-conn) (car new-conn) new-conn)
+        ;; the process we actually communicate with
+        proc (if (consp new-conn) (cdr new-conn) new-conn)
 
-          (lsp--workspace-proc lsp--cur-workspace) proc
-          (lsp--workspace-cmd-proc lsp--cur-workspace) cmd-proc
+        (lsp--workspace-proc lsp--cur-workspace) proc
+        (lsp--workspace-cmd-proc lsp--cur-workspace) cmd-proc
 
-          init-params `(:processId ,(emacs-pid) :rootPath ,root
-                         :rootUri ,(concat "file://" root)
-                         :capabilities ,(lsp--client-capabilities)))
-        (puthash root lsp--cur-workspace lsp--workspaces)
-        (setf response (lsp--send-request (lsp--make-request "initialize" init-params)))
-        (unless response
-          (signal 'lsp-empty-response-error "initialize"))
-        (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
-          (gethash "capabilities" response))
-        ;; Version 3.0 now sends an "initialized" notification to allow registration
-        ;; of server capabilities
-        (lsp--send-notification (lsp--make-notification "initialized" nil))
-        (run-hooks 'lsp-after-initialize-hook))
-      (lsp--text-document-did-open))))
+        init-params `(:processId ,(emacs-pid) :rootPath ,root
+                       :rootUri ,(concat "file://" root)
+                       :capabilities ,(lsp--client-capabilities)))
+      (puthash root lsp--cur-workspace lsp--workspaces)
+      (setf response (lsp--send-request (lsp--make-request "initialize" init-params)))
+      (unless response
+        (signal 'lsp-empty-response-error "initialize"))
+      (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
+        (gethash "capabilities" response))
+      ;; Version 3.0 now sends an "initialized" notification to allow registration
+      ;; of server capabilities
+      (lsp--send-notification (lsp--make-notification "initialized" nil))
+      (run-hooks 'lsp-after-initialize-hook))
+    (lsp--text-document-did-open)))
 
 (defun lsp--text-document-did-open ()
   (puthash buffer-file-name 0 (lsp--workspace-file-versions lsp--cur-workspace))
@@ -434,7 +415,7 @@ disappearing, unset all the variables related to it."
 
   (when (and lsp-enable-completion-at-point (lsp--capability "completionProvider"))
     (setq-local completion-at-point-functions nil)
-    (add-hook 'completion-at-point-functions #'lsp-completion-at-point))
+    (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t))
 
   ;; Make sure the hook is local (last param) otherwise we see all changes for all buffers
   (add-hook 'before-change-functions #'lsp-before-change nil t)
@@ -634,14 +615,14 @@ interface Range {
         (lsp--change-for-mismatch start end length)))))
 
 
-(defun lsp--change-for-mismatch (start end length)
+(defun lsp--change-for-mismatch (_start _end _length)
   "If the current change is not fully bracketed, report it and
 return the full contents of the buffer as the change."
   (lsp--full-change-event))
 
 
 ;; TODO: Add tests for this function.
-(defun lsp--bracketed-change-p (start end length)
+(defun lsp--bracketed-change-p (start _end length)
   "If the before and after positions are the same, and the length
 is the size of the start range, we are probably good."
   (and (eq start (plist-get lsp--before-change-vals :start) )
@@ -800,21 +781,6 @@ to a text document."
     (if (lsp--workspace-change-timer-disabled lsp--cur-workspace)
       (lsp--send-changes lsp--cur-workspace)
       (lsp--set-idle-timer lsp--cur-workspace))))
-
-;; (defun lsp--text-document-did-change (start end length)
-;;   "Executed when a file is changed.
-;; Added to `after-change-functions'"
-;;   (when lsp--cur-workspace
-;;     (unless (or (eq lsp--server-sync-method 'none)
-;; 		(eq lsp--server-sync-method nil))
-;;       (lsp--cur-file-version t)
-;;       (lsp--send-notification
-;;        (lsp--make-notification
-;; 	"textDocument/didChange"
-;; 	`(:textDocument
-;; 	  ,(lsp--versioned-text-document-identifier)
-;; 	  :contentChanges
-;; 	  [,(lsp--text-document-content-change-event start end length)]))))))
 
 (defun lsp--shut-down-p ()
   (y-or-n-p "Close the language server for this workspace? "))
@@ -1267,9 +1233,9 @@ command COMMAND and optionsl ARGS"
   (when lsp-enable-xref
     (setq-local xref-backend-functions nil))
   (when lsp-enable-completion-at-point
-    (remove-hook 'completion-at-point-functions #'lsp-completion-at-point))
-  (remove-hook 'after-change-functions #'lsp-on-change))
-
+    (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t))
+  (remove-hook 'after-change-functions #'lsp-on-change t)
+  (remove-hook 'before-change-functions #'lsp-before-change t))
 
 (defun lsp--error-explainer (fc-error)
     "Proof of concept to use this flycheck function to apply a
@@ -1278,10 +1244,11 @@ command COMMAND and optionsl ARGS"
     https://github.com/flycheck/flycheck/issues/530#issuecomment-235224763"
   (message "lsp--error-explainer: got %s" fc-error))
 
-
 (defun lsp--set-configuration (settings)
   "Set the configuration for the lsp server."
-  (lsp--send-notification (lsp--make-notification "workspace/didChangeConfiguration" `(:settings , settings))))
+  (lsp--send-notification (lsp--make-notification
+                            "workspace/didChangeConfiguration"
+                            `(:settings , settings))))
 
 (provide 'lsp-methods)
 ;;; lsp-methods.el ends here

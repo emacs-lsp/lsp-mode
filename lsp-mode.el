@@ -18,7 +18,7 @@
 ;; Author: Vibhav Pant <vibhavp@gmail.com>
 ;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; Package-Requires: ((emacs "25.1") (flycheck "30"))
-;; Version: 2.0
+;; Version: 3.0
 
 ;;; Commentary:
 
@@ -32,8 +32,8 @@
 
 (defun lsp--make-stdio-connection (name command command-fn)
   (lambda (filter sentinel)
-    (let ((command (if command-fn (funcall command-fn) command)))
-      (let ((final-command (if (consp command) command (list command))))
+    (let* ((command (if command-fn (funcall command-fn) command))
+            (final-command (if (consp command) command (list command))))
       (unless (executable-find (nth 0 final-command))
         (error (format "Couldn't find executable %s" (nth 0 final-command))))
       (make-process
@@ -43,13 +43,13 @@
         :command final-command
         :filter filter
         :sentinel sentinel
-        :stderr (generate-new-buffer-name (concat "*" name " stderr")))))))
+        :stderr (generate-new-buffer-name (concat "*" name " stderr*"))))))
 
 (defun lsp--make-tcp-connection (name command command-fn host port)
   (lambda (filter sentinel)
-    (let ((command (if command-fn (funcall command-fn) command)))
-    (let ((final-command (if (consp command) command (list command)))
-           proc tcp-proc)
+    (let* ((command (if command-fn (funcall command-fn) command))
+            (final-command (if (consp command) command (list command)))
+            proc tcp-proc)
       (unless (executable-find (nth 0 final-command))
         (error (format "Couldn't find executable %s" (nth 0 final-command))))
       (setq proc (make-process
@@ -62,7 +62,7 @@
                    nil host port
                    :type 'plain))
       (set-process-filter tcp-proc filter)
-      (cons proc tcp-proc)))))
+      (cons proc tcp-proc))))
 
 (defun lsp--verify-regexp-list (l)
   (cl-assert (cl-typep l 'list) nil
@@ -74,64 +74,77 @@
         "lsp-define-client: :ignore-regexps element %s is not a string"
         e))))
 
-(defun lsp-define-stdio-client (mode language-id type get-root name command &rest args)
-  "Define a LSP client using stdio.
+(defmacro lsp-define-stdio-client (name language-id get-root command &rest args)
+   "Define a LSP client using stdio.
+NAME is the symbol to use for the name of the client.
 MODE is the major mode for which this client will be invoked.
 LANGUAGE-ID is the language id to be used when communication with the Language Server.
-NAME is the process name for the language server.
 COMMAND is the command to run.
 Optional arguments:
 `:ignore-regexps' is a list of regexps which when matched will be ignored by the output parser.
-`:command-fn' will be called when the client is created and `command' will be ignored."
-  (lsp--assert-type mode #'symbolp)
-  (let* ((command-fn-arg (plist-get args :command-fn)) (command-fn (if command-fn-arg (lsp--assert-type command-fn-arg #'functionp) nil)))
-    (let* (client)
-      (setq client
-        (make-lsp--client
-          :language-id (lsp--assert-type language-id #'stringp)
-          :send-sync 'lsp--stdio-send-sync
-          :send-async 'lsp--stdio-send-async
-          :type (lsp--assert-type type #'symbolp)
-          :new-connection (lsp--make-stdio-connection name command command-fn)
-          :get-root (lsp--assert-type get-root #'functionp)
-          :ignore-regexps (lsp--verify-regexp-list (plist-get
-                                                     args
-                                                     :ignore-regexps))))
-      (puthash mode client lsp--defined-clients))))
+`:command-fn' is a function that returns the command string/list to be used to launch the language server. If non-nil, COMMAND is ignored.
+`:initialize' is a function called when the client is intiailized. It takes a single argument, the newly created client.
+"
+  (let ((enable (intern (format "%s-enable" name)))
+         (disable (intern (format "%s-disable" name))))
+    `(defun ,enable ()
+       ,(plist-get args :docstring)
+       (interactive)
+       (let ((client (make-lsp--client
+                       :language-id ,(lsp--assert-type language-id #'stringp)
+                       :send-sync #'lsp--stdio-send-sync
+                       :send-async #'lsp--stdio-send-async
+                       :new-connection (lsp--make-stdio-connection ,(symbol-name name) ,command
+                                         ,(plist-get args :command-fn))
+                       :get-root ,get-root
+                       :ignore-regexps ,(plist-get args :ignore-regexps))))
+         (unless lsp-mode
+           ,(when (plist-get args :initialize)
+              `(funcall ,(plist-get args :initialize) client))
+           (if (lsp--should-start-p (funcall (lsp--client-get-root client)))
+             (progn
+               (lsp-mode 1)
+               (lsp--start client))
+             (message "Not initializing project %s" root)))))))
 
-(defun lsp-define-tcp-client (mode language-id type get-root name command host port &rest args)
+(defmacro lsp-define-tcp-client (mode language-id get-root command host port &rest args)
   "Define a LSP client using TCP.
+NAME is the symbol to use for the name of the client.
 MODE is the major mode for which this client will be invoked.
 LANGUAGE-ID is the language id to be used when communication with the Language Server.
-NAME is the process name for the language server.
 COMMAND is the command to run.
 HOST is the host address.
 PORT is the port number.
 Optional arguments:
 `:ignore-regexps' is a list of regexps which when matched will be ignored by the output parser.
-`:command-fn' will be called when the client is created and `command' will be ignored."
-  (lsp--assert-type mode #'symbolp)
-  (let* ((command-fn-arg (plist-get args :command-fn)) (command-fn (if command-fn-arg (lsp--assert-type command-fn-arg #'functionp) nil)))
-    (let* (client)
-      (setq client
-        (make-lsp--client
-          :language-id (lsp--assert-type language-id #'stringp)
-          :send-sync 'lsp--stdio-send-sync
-          :send-async 'lsp--stdio-send-async
-          :type (lsp--assert-type type #'symbolp)
-          :new-connection (lsp--make-tcp-connection name command command-fn host port)
-          :get-root (lsp--assert-type get-root #'functionp)
-          :ignore-regexps (lsp--verify-regexp-list (plist-get
-                                                     args
-                                                     :ignore-regexps))))
-      (puthash mode client lsp--defined-clients))))
+`:command-fn' is a function that returns the command string/list to be used to launch the language server. If non-nil, COMMAND is ignored.
+`:initialize' is a function called when the client is intiailized. It takes a single argument, the newly created client."
+  (let ((enable (intern (format "%s-enable" name)))
+         (disable (intern (format "%s-disable" name))))
+    `(defun ,enable ()
+       ,(plist-get args :docstring)
+       (interactive)
+       (let ((client (make-lsp--client
+                       :language-id ,(lsp--assert-type language-id #'stringp)
+                       :send-sync #'lsp--stdio-send-sync
+                       :send-async #'lsp--stdio-send-async
+                       :new-connection (lsp--make-tcp-connection ,(symbol-name name) ,command ,(plist-get args :command-fn) ,host ,port)
+                       :get-root ,get-root
+                       :ignore-regexps ,(plist-get args :ignore-regexps))))
+         (unless lsp-mode
+           ,(when (plist-get args :initialize)
+              `(funcall ,(plist-get args :initialize) client))
+           (if (lsp--should-start-p (funcall (lsp--client-get-root client)))
+             (progn
+               (lsp-mode 1)
+               (lsp--start client))
+             (message "Not initializing project %s" root)))))))
 
 ;;;###autoload
 (define-minor-mode lsp-mode ""
   nil nil nil
   :lighter " LSP"
-  :group 'lsp-mode
-  (lsp--start))
+  :group 'lsp-mode)
 
 (defconst lsp--sync-type
   `((0 . "None")
