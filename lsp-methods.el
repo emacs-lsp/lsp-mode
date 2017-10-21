@@ -275,8 +275,7 @@ interface TextDocumentItem {
   "When a workspace is shut down, by request or from just
 disappearing, unset all the variables related to it."
   (remhash (lsp--workspace-root lsp--cur-workspace) lsp--workspaces)
-  (let ((old-root (lsp--workspace-root lsp--cur-workspace))
-         proc)
+  (let (proc)
     (with-current-buffer (current-buffer)
       (setq proc (lsp--workspace-proc lsp--cur-workspace))
       (unless (eq (process-status proc) 'exit)
@@ -312,7 +311,7 @@ disappearing, unset all the variables related to it."
     (setq lsp--server-sync-method (or lsp-document-sync-method
                                       method))))
 
-(defun lsp--workspace-apply-edit-handler (workspace params)
+(defun lsp--workspace-apply-edit-handler (_workspace params)
   (lsp--apply-workspace-edits (gethash "edit" params))
   ;; TODO: send reply
   )
@@ -616,14 +615,14 @@ interface Range {
         (lsp--change-for-mismatch start end length)))))
 
 
-(defun lsp--change-for-mismatch (start end length)
+(defun lsp--change-for-mismatch (_start _end _length)
   "If the current change is not fully bracketed, report it and
 return the full contents of the buffer as the change."
   (lsp--full-change-event))
 
 
 ;; TODO: Add tests for this function.
-(defun lsp--bracketed-change-p (start end length)
+(defun lsp--bracketed-change-p (start _end length)
   "If the before and after positions are the same, and the length
 is the size of the start range, we are probably good."
   (and (eq start (plist-get lsp--before-change-vals :start) )
