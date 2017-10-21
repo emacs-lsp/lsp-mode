@@ -4,7 +4,7 @@ non-standard notifications from the server.
 
 * Functions
 ** lsp-define-stdio-client /mode language-id type get-root name command &rest args/
-   Define a LSP client for minor mode ~mode~ and language ~language-id~.
+   Define a LSP client for major mode ~mode~ and language ~language-id~.
 
 ~type~ defines how the Emacs will talk to the language server. Currently, the
 only supported mode is '~stdio~.
