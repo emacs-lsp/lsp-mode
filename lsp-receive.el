@@ -35,9 +35,7 @@
   (queued-requests nil)
 
   (workspace nil) ;; the workspace
-  (method-handlers nil :read-only t)
-  (request-handlers nil))
-
+  )
 
 ;;  id  method
 ;;   x    x     request
@@ -68,6 +66,7 @@
   "If response queue is empty, call the appropriate handler for NOTIFICATION.
 Else it is queued (unless DONT-QUEUE is non-nil)"
   (let ((params (gethash "params" notification))
+         (client (lsp--workspace-client (lsp--parser-workspace p)))
          handler)
     ;; If we've been explicitly told to queue
     (if (and (not dont-queue) (lsp--parser-response-result p))
@@ -81,7 +80,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
         ("textDocument/diagnosticsEnd")
         ("textDocument/diagnosticsBegin")
         (other
-          (setq handler (gethash other (lsp--parser-method-handlers p) nil))
+          (setq handler (gethash other (lsp--client-notification-handlers client) nil))
           (if (not handler)
             (message "Unknown method: %s" other)
             (funcall handler (lsp--parser-workspace p) params)))))))
@@ -89,6 +88,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 (defun lsp--on-request (p request)
   "Call the appropriate handler for REQUEST."
   (let ((params (gethash "params" request))
+         (client (lsp--workspace-client (lsp--parser-workspace p)))
          handler)
     (pcase (gethash "method" request)
       ("client/registerCapability")
@@ -96,7 +96,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
       ("workspace/applyEdit" (lsp--workspace-apply-edit-handler
                                (lsp--parser-workspace p) params))
       (other
-        (setq handler (gethash other (lsp--parser-request-handlers p) nil))
+        (setq handler (gethash other (lsp--client-request-handlers client) nil))
         (if (not handler)
           (message "Unknown request method: %s" other)
           (funcall handler (lsp--parser-workspace p) params))))))

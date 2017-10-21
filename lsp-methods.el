@@ -34,7 +34,8 @@
   (new-connection nil :read-only t)
   (get-root nil :read-only t)
   (ignore-regexps nil :read-only t)
-  (method-handlers (make-hash-table :test 'equal) :read-only t))
+  (notification-handlers (make-hash-table :test 'equal) :read-only t)
+  (request-handlers (make-hash-table :test 'equal) :read-only t))
 
 (cl-defstruct lsp--workspace
   (parser nil :read-only t)
@@ -172,7 +173,7 @@ initialized. When set this turns off use of
   (cl-check-type client lsp--client)
   (cl-check-type method string)
   (cl-check-type callback function)
-  (puthash method callback (lsp--client-method-handlers client)))
+  (puthash method callback (lsp--client-notification-handlers client)))
 
 (defun lsp-client-on-request (client method callback)
   (cl-check-type client lsp--client)
@@ -350,8 +351,7 @@ disappearing, unset all the variables related to it."
         (setq lsp--cur-workspace workspace)
 
         (setf
-          parser (make-lsp--parser
-                   :method-handlers (lsp--client-method-handlers client))
+          parser (make-lsp--parser)
           lsp--cur-workspace (make-lsp--workspace
                                :parser parser
                                :language-id (lsp--client-language-id client)
