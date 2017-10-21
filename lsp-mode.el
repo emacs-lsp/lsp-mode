@@ -101,10 +101,13 @@ Optional arguments:
          (unless lsp-mode
            ,(when (plist-get args :initialize)
               `(funcall ,(plist-get args :initialize) client))
-           (lsp-mode 1)
-           (lsp--start client))))))
+           (if (lsp--should-start-p (funcall (lsp--client-get-root client)))
+             (progn
+               (lsp-mode 1)
+               (lsp--start client))
+             (message "Not initializing project %s" root)))))))
 
-(defun lsp-define-tcp-client (mode language-id get-root command host port &rest args)
+(defmacro lsp-define-tcp-client (mode language-id get-root command host port &rest args)
   "Define a LSP client using TCP.
 NAME is the symbol to use for the name of the client.
 MODE is the major mode for which this client will be invoked.
@@ -131,8 +134,11 @@ Optional arguments:
          (unless lsp-mode
            ,(when (plist-get args :initialize)
               `(funcall ,(plist-get args :initialize) client))
-           (lsp-mode 1)
-           (lsp--start client))))))
+           (if (lsp--should-start-p (funcall (lsp--client-get-root client)))
+             (progn
+               (lsp-mode 1)
+               (lsp--start client))
+             (message "Not initializing project %s" root)))))))
 
 ;;;###autoload
 (define-minor-mode lsp-mode ""

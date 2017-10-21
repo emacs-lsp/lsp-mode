@@ -265,7 +265,7 @@ interface TextDocumentItem {
 (add-hook 'kill-emacs-hook #'lsp--global-teardown)
 
 (defun lsp--global-teardown ()
-  (maphash (lambda (key value) (lsp--teardown-client value)) lsp--workspaces))
+  (maphash (lambda (_k value) (lsp--teardown-client value)) lsp--workspaces))
 
 (defun lsp--teardown-client (client)
   (setq lsp--cur-workspace client)
@@ -342,50 +342,47 @@ disappearing, unset all the variables related to it."
     (user-error "LSP mode is already enabled for this buffer"))
   (let* ((root (funcall (lsp--client-get-root client)))
           (workspace (gethash root lsp--workspaces))
-          (should-not-init (not (lsp--should-start-p root)))
           new-conn response init-params
           parser proc cmd-proc)
-    (if should-not-init
-      (message "Not initializing project %s" root)
-      (if workspace
-        (setq lsp--cur-workspace workspace)
+    (if workspace
+      (setq lsp--cur-workspace workspace)
 
-        (setf
-          parser (make-lsp--parser)
-          lsp--cur-workspace (make-lsp--workspace
-                               :parser parser
-                               :language-id (lsp--client-language-id client)
-                               :file-versions (make-hash-table :test 'equal)
-                               :last-id 0
-                               :root root
-                               :client client)
-          (lsp--parser-workspace parser) lsp--cur-workspace
-          new-conn (funcall
-                     (lsp--client-new-connection client)
-                     (lsp--parser-make-filter parser (lsp--client-ignore-regexps client))
-                     (lsp--make-sentinel (current-buffer)))
-          ;; the command line process invoked
-          cmd-proc (if (consp new-conn) (car new-conn) new-conn)
-          ;; the process we actually communicate with
-          proc (if (consp new-conn) (cdr new-conn) new-conn)
+      (setf
+        parser (make-lsp--parser)
+        lsp--cur-workspace (make-lsp--workspace
+                             :parser parser
+                             :language-id (lsp--client-language-id client)
+                             :file-versions (make-hash-table :test 'equal)
+                             :last-id 0
+                             :root root
+                             :client client)
+        (lsp--parser-workspace parser) lsp--cur-workspace
+        new-conn (funcall
+                   (lsp--client-new-connection client)
+                   (lsp--parser-make-filter parser (lsp--client-ignore-regexps client))
+                   (lsp--make-sentinel (current-buffer)))
+        ;; the command line process invoked
+        cmd-proc (if (consp new-conn) (car new-conn) new-conn)
+        ;; the process we actually communicate with
+        proc (if (consp new-conn) (cdr new-conn) new-conn)
 
-          (lsp--workspace-proc lsp--cur-workspace) proc
-          (lsp--workspace-cmd-proc lsp--cur-workspace) cmd-proc
+        (lsp--workspace-proc lsp--cur-workspace) proc
+        (lsp--workspace-cmd-proc lsp--cur-workspace) cmd-proc
 
-          init-params `(:processId ,(emacs-pid) :rootPath ,root
-                         :rootUri ,(concat "file://" root)
-                         :capabilities ,(lsp--client-capabilities)))
-        (puthash root lsp--cur-workspace lsp--workspaces)
-        (setf response (lsp--send-request (lsp--make-request "initialize" init-params)))
-        (unless response
-          (signal 'lsp-empty-response-error "initialize"))
-        (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
-          (gethash "capabilities" response))
-        ;; Version 3.0 now sends an "initialized" notification to allow registration
-        ;; of server capabilities
-        (lsp--send-notification (lsp--make-notification "initialized" nil))
-        (run-hooks 'lsp-after-initialize-hook))
-      (lsp--text-document-did-open))))
+        init-params `(:processId ,(emacs-pid) :rootPath ,root
+                       :rootUri ,(concat "file://" root)
+                       :capabilities ,(lsp--client-capabilities)))
+      (puthash root lsp--cur-workspace lsp--workspaces)
+      (setf response (lsp--send-request (lsp--make-request "initialize" init-params)))
+      (unless response
+        (signal 'lsp-empty-response-error "initialize"))
+      (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
+        (gethash "capabilities" response))
+      ;; Version 3.0 now sends an "initialized" notification to allow registration
+      ;; of server capabilities
+      (lsp--send-notification (lsp--make-notification "initialized" nil))
+      (run-hooks 'lsp-after-initialize-hook))
+    (lsp--text-document-did-open)))
 
 (defun lsp--text-document-did-open ()
   (puthash buffer-file-name 0 (lsp--workspace-file-versions lsp--cur-workspace))
