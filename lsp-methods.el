@@ -49,6 +49,7 @@
   (change-timer-disabled nil)
   (proc nil) ;; the process we communicate with
   (cmd-proc nil) ;; the process we launch initially
+  (message-callbacks (make-hash-table :test 'equal)) ;; callback handlers for asynq responses to request messages
   (buffers nil) ;; a list of buffers associated with this workspace
   (highlight-overlays nil) ;; a list of overlays used for highlighting the symbol under point
   )
@@ -219,17 +220,36 @@ If no-wait is non-nil, don't synchronously wait for a response."
   ;; in the case of Rust Language Server, this can be done with
   ;; 'accept-process-output`.'
   (let* ((client (lsp--workspace-client lsp--cur-workspace))
-          (parser (lsp--cur-parser))
-          (send-func (if no-wait
-                       (lsp--client-send-async client)
-                       (lsp--client-send-sync client))))
+         (parser (lsp--cur-parser))
+         (send-func (if no-wait
+                        (lsp--client-send-async client)
+                      (lsp--client-send-sync client))))
     (setf (lsp--parser-waiting-for-response parser) (not no-wait))
     (funcall send-func
-      (lsp--make-message body)
-      (lsp--workspace-proc lsp--cur-workspace))
+             (lsp--make-message body)
+             (lsp--workspace-proc lsp--cur-workspace))
     (when (not no-wait)
       (prog1 (lsp--parser-response-result parser)
         (setf (lsp--parser-response-result parser) nil)))))
+
+;; AZ experimenting. Will eventually replace the current lsp--send-request
+(defun lsp--send-request-async (body response-handler)
+  "Send BODY as a request to the language server, get the response.
+Use RESPONSE-HANDLER to process the reply message, when it arrives."
+  ;; lsp-send-sync should loop until lsp--from-server returns nil
+  ;; in the case of Rust Language Server, this can be done with
+  ;; 'accept-process-output`.'
+  (let* ((client (lsp--workspace-client lsp--cur-workspace))
+          (parser (lsp--cur-parser))
+          (send-func (lsp--client-send-async client))
+          (msg-id (plist-get body :id)))
+    (setf (lsp--parser-waiting-for-response parser) nil)
+    (puthash msg-id response-handler
+             (lsp--workspace-message-callbacks lsp--cur-workspace))
+    (funcall send-func
+      (lsp--make-message body)
+      (lsp--workspace-proc lsp--cur-workspace))
+    ))
 
 (defun lsp--inc-cur-file-version ()
   (puthash buffer-file-name (1+ (lsp--cur-file-version))
@@ -358,7 +378,8 @@ disappearing, unset all the variables related to it."
         (lsp--parser-workspace parser) lsp--cur-workspace
         new-conn (funcall
                    (lsp--client-new-connection client)
-                   (lsp--parser-make-filter parser (lsp--client-ignore-regexps client))
+                   (lsp--parser-make-filter parser (lsp--client-ignore-regexps client)
+                                            lsp--cur-workspace)
                    (lsp--make-sentinel (current-buffer)))
         ;; the command line process invoked
         cmd-proc (if (consp new-conn) (car new-conn) new-conn)
@@ -1015,12 +1036,14 @@ type MarkedString = string | { language: string; value: string };"
   "Request code action to automatically fix issues reported by
 the diagnostics"
   (lsp--cur-workspace-check)
-  (let* ((actions (lsp--send-request (lsp--make-request
-                                    "textDocument/codeAction"
-                                    (lsp--text-document-code-action-params))
-                                     )))
-    (setq lsp-code-actions (cl-union actions lsp-code-actions))
-    nil))
+  (lsp--send-request-async (lsp--make-request
+                            "textDocument/codeAction"
+                            (lsp--text-document-code-action-params))
+                           #'lsp--text-document-code-action-callback))
+
+(defun lsp--text-document-code-action-callback (actions)
+  "Callback to process the reply to a 'textDocument/codeAction' request."
+  (setq lsp-code-actions (cl-union actions lsp-code-actions)))
 
 (defun lsp--make-document-formatting-options ()
   (let ((json-false :json-false))
@@ -1063,11 +1086,16 @@ interface DocumentRangeFormattingParams {
   "Highlight all relevant references to the symbol under point."
   (interactive)
   (lsp--send-changes lsp--cur-workspace)
+  (lsp--send-request-async (lsp--make-request
+                            "textDocument/documentHighlight"
+                            (lsp--text-document-position-params))
+                           #'lsp--symbol-highlight-callback))
+
+(defun lsp--symbol-highlight-callback (highlights)
+  "Callback function to process the reply of a
+ 'textDocument/documentHightlight' message."
   (lsp--remove-cur-overlays)
-  (let ((highlights (lsp--send-request (lsp--make-request
-                                         "textDocument/documentHighlight"
-                                         (lsp--text-document-position-params))))
-         kind start-point end-point range)
+  (let (kind start-point end-point range)
     (dolist (highlight highlights)
       (let* ((range (gethash "range" highlight nil))
              (kind (gethash "kind" highlight 1))
