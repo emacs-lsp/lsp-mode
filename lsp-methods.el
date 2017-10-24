@@ -1036,12 +1036,14 @@ type MarkedString = string | { language: string; value: string };"
   "Request code action to automatically fix issues reported by
 the diagnostics"
   (lsp--cur-workspace-check)
-  (let* ((actions (lsp--send-request (lsp--make-request
-                                    "textDocument/codeAction"
-                                    (lsp--text-document-code-action-params))
-                                     )))
-    (setq lsp-code-actions (cl-union actions lsp-code-actions))
-    nil))
+  (lsp--send-request-async (lsp--make-request
+                            "textDocument/codeAction"
+                            (lsp--text-document-code-action-params))
+                           #'lsp--text-document-code-action-callback))
+
+(defun lsp--text-document-code-action-callback (actions)
+  "Callback to process the reply to a 'textDocument/codeAction' request."
+  (setq lsp-code-actions (cl-union actions lsp-code-actions)))
 
 (defun lsp--make-document-formatting-options ()
   (let ((json-false :json-false))
