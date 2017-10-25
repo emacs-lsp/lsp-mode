@@ -346,12 +346,18 @@ disappearing, unset all the variables related to it."
                      exit-str)
             (lsp--uninitialize-workspace)))))))
 
+(defvar lsp--project-whitelist-temp nil
+  "If a project is started manually and not added to the
+  whitelist, the root is stored here so other files belonging to
+  it will also be added to the session.")
+
 (defun lsp--should-start-p (root)
   "Consult `lsp-project-blacklist' and `lsp-project-whitelist' to
   determine if a server should be started for the given ROOT
   directory"
   (if lsp-project-whitelist
-      (member root lsp-project-whitelist)
+      (or (member root lsp-project-whitelist)
+          (member root lsp--project-whitelist-temp))
     (not (member root lsp-project-blacklist))))
 
 (defun lsp--start (client)
