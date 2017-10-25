@@ -74,7 +74,32 @@
         "lsp-define-client: :ignore-regexps element %s is not a string"
         e))))
 
-(defmacro lsp-define-stdio-client (name language-id get-root command &rest args)
+;; --------------------------------------------------------
+
+(defun lsp-define-stdio-client (name language-id get-root command &rest args)
+  "Define a LSP client using stdio.
+NAME is the symbol to use for the name of the client.
+MODE is the major mode for which this client will be invoked.
+LANGUAGE-ID is the language id to be used when communication with the Language Server.
+COMMAND is the command to run.
+Optional arguments:
+`:ignore-regexps' is a list of regexps which when matched will be ignored by the output parser.
+`:command-fn' is a function that returns the command string/list to be used to launch the language server. If non-nil, COMMAND is ignored.
+`:initialize' is a function called when the client is intiailized. It takes a single argument, the newly created client.
+"
+  (lsp-define-interactive-client name)
+  (apply #'lsp-define-stdio-client-noninteractive name language-id get-root command args)
+  )
+
+(defmacro lsp-define-interactive-client (name)
+  (let ((enable-noninteractive (intern (format "%s-enable-hook" name)))
+        (enable-interactive    (intern (format "%s-enable" name)))
+        )
+    `(defun ,enable-interactive (&optional ask)
+       (interactive)
+       (,enable-noninteractive t))))
+
+(defmacro lsp-define-stdio-client-noninteractive (name language-id get-root command &rest args)
    "Define a LSP client using stdio.
 NAME is the symbol to use for the name of the client.
 MODE is the major mode for which this client will be invoked.
@@ -85,29 +110,42 @@ Optional arguments:
 `:command-fn' is a function that returns the command string/list to be used to launch the language server. If non-nil, COMMAND is ignored.
 `:initialize' is a function called when the client is intiailized. It takes a single argument, the newly created client.
 "
-  (let ((enable (intern (format "%s-enable" name)))
-         (disable (intern (format "%s-disable" name))))
-    `(defun ,enable ()
+  (let ((enable-noninteractive (intern (format "%s-enable-hook" name)))
+        (enable-interactive    (intern (format "%s-enable" name)))
+        (disable (intern (format "%s-disable" name)))
+        )
+    `(defun ,enable-noninteractive (&optional ask)
        ,(plist-get args :docstring)
        (interactive)
        (let ((client (make-lsp--client
-                       :language-id ,(lsp--assert-type language-id #'stringp)
-                       :send-sync #'lsp--stdio-send-sync
-                       :send-async #'lsp--stdio-send-async
-                       :new-connection (lsp--make-stdio-connection ,(symbol-name name) ,command
-                                         ,(plist-get args :command-fn))
-                       :get-root ,get-root
-                       :ignore-regexps ,(plist-get args :ignore-regexps))))
+                      :language-id ,(lsp--assert-type language-id #'stringp)
+                      :send-sync #'lsp--stdio-send-sync
+                      :send-async #'lsp--stdio-send-async
+                      :new-connection (lsp--make-stdio-connection ,(symbol-name name) ,command
+                                                                  ,(plist-get args :command-fn))
+                      :get-root ,get-root
+                      :ignore-regexps ,(plist-get args :ignore-regexps))))
          (unless lsp-mode
            ,(when (plist-get args :initialize)
               `(funcall ,(plist-get args :initialize) client))
-           (if (lsp--should-start-p (funcall (lsp--client-get-root client)))
-             (progn
-               (lsp-mode 1)
-               (lsp--start client))
-             (message "Not initializing project %s" root)))))))
+           (let ((root (funcall (lsp--client-get-root client))))
+             (if (lsp--should-start-p root)
+                 (progn
+                   (lsp-mode 1)
+                   (lsp--start client))
+               (if ask
+                   (let ((question (format-message "Add %s to lsp-project-whitelist? " root)))
+                     (if (y-or-n-p question) ;; cannot use when , side effects problem
+                         (progn (message "About to customize lsp-project-whitelist")
+                                (customize-save-variable 'lsp-project-whitelist (add-to-list 'lsp-project-whitelist root)))
+                       t)
+                     ;; start regardless, this is called interactively
+                     (lsp-mode 1)
+                     (lsp--start client))
+                 (message "Not initializing project %s" root))))))))
+  )
 
-(defmacro lsp-define-tcp-client (mode language-id get-root command host port &rest args)
+(defmacro lsp-define-tcp-client (name language-id get-root command host port &rest args)
   "Define a LSP client using TCP.
 NAME is the symbol to use for the name of the client.
 MODE is the major mode for which this client will be invoked.

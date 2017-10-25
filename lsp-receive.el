@@ -151,16 +151,28 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
    (lsp--parser-body p) nil
    (lsp--parser-reading-body p) nil))
 
-(defun lsp--parser-on-message (p msg)
+(defun lsp--parser-on-message (p msg workspace)
   "Called when the parser reads a complete message from the server."
   (let* ((json-array-type 'list)
           (json-object-type 'hash-table)
           (json-false nil)
           (json-data (json-read-from-string msg)))
     (pcase (lsp--get-message-type json-data)
-      ('response (setf (lsp--parser-response-result p)
-                   (and json-data (gethash "result" json-data nil))
-                   (lsp--parser-waiting-for-response p) nil))
+      ;; ('response (setf (lsp--parser-response-result p)
+      ;;                  (and json-data (gethash "result" json-data nil))
+      ;;                  (lsp--parser-waiting-for-response p) nil))
+      ('response (let ((callback (gethash
+                                  (gethash "id" json-data nil)
+                                  (lsp--workspace-message-callbacks workspace) nil))
+                       (result (and json-data (gethash "result" json-data nil))))
+                   (if callback
+                       (progn
+                         (remhash (gethash "id" json-data nil)
+                                  (lsp--workspace-message-callbacks workspace))
+                         (funcall callback result))
+                     (setf (lsp--parser-response-result p)
+                           result
+                           (lsp--parser-waiting-for-response p) nil))))
       ('response-error (setf (lsp--parser-response-result p) nil)
         (when json-data
           (message (lsp--error-string (gethash "error" json-data nil))))
@@ -221,7 +233,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 
     (reverse messages)))
 
-(defun lsp--parser-make-filter (p ignore-regexps)
+(defun lsp--parser-make-filter (p ignore-regexps workspace)
   #'(lambda (proc output)
       (setq lsp--no-response nil)
       (when (cl-loop for r in ignore-regexps
@@ -241,7 +253,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 
           (dolist (m messages)
             (when lsp-print-io (message "Output from language server: %s" m))
-            (lsp--parser-on-message p m))))
+            (lsp--parser-on-message p m workspace))))
       (when (lsp--parser-waiting-for-response p)
         (with-local-quit (accept-process-output proc)))))
 
