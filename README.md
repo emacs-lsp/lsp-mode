@@ -92,3 +92,20 @@ to find the references to the symbol under point.
 
 ### Flycheck
 ![flycheck](./examples/flycheck.gif)
+
+## Finer Control of Starting lsp-mode
+
+In order to more finely control the `lsp-mode` startup, there are a number of
+customizable variables.
+
+`lsp-project-whitelist` : Defaults to `nil`. If set, `lsp-mode` will only be
+started if the given project root appears in the whitelist.
+
+`lsp-project-blacklist` : Defaults to `nil`. If set, all projects will be
+started except those in this list. It is ignored if `lsp-project-whitelist` is
+set.
+
+There are also the functions `lsp-MAJOR-MODE-whitelist-add` and
+`lsp-MAJOR-MODE-whitelist-remove` to adjust the current buffer project root
+entry on the whitelist.
+

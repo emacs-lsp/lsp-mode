@@ -79,6 +79,35 @@
                 "lsp-define-client: :ignore-regexps element %s is not a string"
                 e))))
 
+(cl-defmacro lsp-define-whitelist-enable (name get-root
+                                               &key docstring)
+  "Define a function to add the project root for the current buffer to the whitleist.
+NAME is the base name for the command.
+GET-ROOT is the language-specific function to determint the project root for the current buffer."
+  (let ((whitelist-add      (intern (format "%s-whitelist-add" name)))
+        (enable-interactive (intern (format "%s-enable" name))))
+    `(defun ,whitelist-add ()
+       ,docstring
+       (interactive)
+       (let ((root (funcall ,get-root)))
+         (customize-save-variable 'lsp-project-whitelist
+                                  (add-to-list 'lsp-project-whitelist root))
+         (,enable-interactive)
+         ))))
+
+(cl-defmacro lsp-define-whitelist-disable (name get-root
+                                               &key docstring)
+  "Define a function to remove the project root for the current buffer from the whitleist.
+NAME is the base name for the command.
+GET-ROOT is the language-specific function to determint the project root for the current buffer."
+  (let ((whitelist-remove (intern (format "%s-whitelist-remove" name))))
+    `(defun ,whitelist-remove ()
+       ,docstring
+       (interactive)
+       (let ((root (funcall ,get-root)))
+         (customize-save-variable 'lsp-project-whitelist
+                                  (remove root 'lsp-project-whitelist ))))))
+
 (cl-defmacro lsp-define-stdio-client (name language-id get-root command
                                        &key docstring
                                        language-id-fn
@@ -111,14 +140,18 @@ Optional arguments:
 `:initialize' is a function called when the client is intiailized. It takes a
  single argument, the newly created client."
   (let ((enable (intern (format "%s-enable" name))))
-    `(defun ,enable ()
-       ,docstring
-       (interactive)
-       (let ((client (make-lsp--client
-                       :language-id (if ,language-id-fn ,language-id-fn #'(lambda (_) ,language-id))
-                       :send-sync #'lsp--stdio-send-sync
-                       :send-async #'lsp--stdio-send-async
-                       :new-connection (lsp--make-stdio-connection
+    `(progn
+       (lsp-define-whitelist-enable ,name ,get-root)
+       (lsp-define-whitelist-disable ,name ,get-root)
+
+       (defun ,enable ()
+         ,docstring
+         (interactive)
+         (let ((client (make-lsp--client
+                        :language-id (if ,language-id-fn ,language-id-fn #'(lambda (_) ,language-id))
+                        :send-sync #'lsp--stdio-send-sync
+                        :send-async #'lsp--stdio-send-async
+                        :new-connection (lsp--make-stdio-connection
                                          ,(symbol-name name)
                                          ,command
                                          ,command-fn)
@@ -132,7 +165,7 @@ Optional arguments:
                (progn
                  (lsp-mode 1)
                  (lsp--start client ,extra-init-params))
-               (message "Not initializing project %s" root))))))))
+               (message "Not initializing project %s" root)))))))))
 
 (cl-defmacro lsp-define-tcp-client (name language-id get-root command host port
                                      &key docstring
@@ -164,14 +197,18 @@ Optional arguments:
 `:initialize' is a function called when the client is initialized. It takes a
   single argument, the newly created client."
   (let ((enable (intern (format "%s-enable" name))))
-    `(defun ,enable ()
-       ,docstring
-       (interactive)
-       (let ((client (make-lsp--client
-                       :language-id (if ,language-id-fn ,language-id-fn #'(lambda (_) ,language-id))
-                       :send-sync #'lsp--stdio-send-sync
-                       :send-async #'lsp--stdio-send-async
-                       :new-connection (lsp--make-tcp-connection
+    `(progn
+       (lsp-define-whitelist-enable ,name ,get-root)
+       (lsp-define-whitelist-disable ,name ,get-root)
+
+       (defun ,enable ()
+         ,docstring
+         (interactive)
+         (let ((client (make-lsp--client
+                        :language-id (if ,language-id-fn ,language-id-fn #'(lambda (_) ,language-id))
+                        :send-sync #'lsp--stdio-send-sync
+                        :send-async #'lsp--stdio-send-async
+                        :new-connection (lsp--make-tcp-connection
                                          ,(symbol-name name)
                                          ,command
                                          ,command-fn
@@ -186,7 +223,7 @@ Optional arguments:
                (progn
                  (lsp-mode 1)
                  (lsp--start client ,extra-init-params))
-               (message "Not initializing project %s" root))))))))
+               (message "Not initializing project %s" root)))))))))
 
 (defvar-local lsp-status nil
   "The current status of the LSP server.")
