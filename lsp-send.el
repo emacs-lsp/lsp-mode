@@ -23,6 +23,8 @@
   :type 'number
   :group 'lsp-mode)
 
+(defvar lsp--no-response)  ; shared with lsp-receive.el
+
 (defun lsp--stdio-send-sync (message proc)
   (when lsp-print-io
     (message "lsp--stdio-send-sync: %s" message))

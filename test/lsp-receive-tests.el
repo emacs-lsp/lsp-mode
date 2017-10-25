@@ -19,7 +19,7 @@
 (require 'lsp-methods)
 (require 'lsp-receive)
 
-(setq lsp--test-workspace
+(defvar lsp--test-workspace
   (make-lsp--workspace))
 
 (ert-deftest lsp--parser-read--multiple-messages ()

@@ -383,6 +383,12 @@ disappearing, unset all the variables related to it."
       (run-hooks 'lsp-after-initialize-hook))
     (lsp--text-document-did-open)))
 
+;; Forward-declare variables defined in flycheck.el.
+(defvar flycheck-mode)
+(defvar flycheck-checkers)
+(defvar flycheck-checker)
+(defvar flycheck-check-syntax-automatically)
+
 (defun lsp--text-document-did-open ()
   (puthash buffer-file-name 0 (lsp--workspace-file-versions lsp--cur-workspace))
   (push (current-buffer) (lsp--workspace-buffers lsp--cur-workspace))
@@ -550,6 +556,10 @@ interface Range {
   "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
   (gethash cap (or capabilities (lsp--server-capabilities))))
 
+(defvar-local lsp--before-change-vals nil
+  "Store the positions from the `lsp-before-change' function
+  call, for validation and use in the `lsp-on-change' function.")
+
 (defun lsp--text-document-content-change-event (start end length)
   "Make a TextDocumentContentChangeEvent body for START to END, of length LENGTH."
   ;; So (47 54 0) means add    7 chars starting at pos 47
@@ -713,9 +723,6 @@ to a text document."
   ;; (message "lsp--push-change entered")
   (setq lsp--changes (vconcat lsp--changes `(,change-event))))
 
-(defvar-local lsp--before-change-vals nil
-  "Store the positions from the `lsp-before-change' function
-  call, for validation and use in the `lsp-on-change' function.")
 (defun lsp-before-change (start end)
   "Executed before a file is changed.
   Added to `before-change-functions'"
@@ -1066,8 +1073,7 @@ interface DocumentRangeFormattingParams {
   (lsp--remove-cur-overlays)
   (let ((highlights (lsp--send-request (lsp--make-request
                                          "textDocument/documentHighlight"
-                                         (lsp--text-document-position-params))))
-         kind start-point end-point range)
+                                         (lsp--text-document-position-params)))))
     (dolist (highlight highlights)
       (let* ((range (gethash "range" highlight nil))
              (kind (gethash "kind" highlight 1))
@@ -1249,6 +1255,9 @@ command COMMAND and optionsl ARGS"
   (lsp--send-notification (lsp--make-notification
                             "workspace/didChangeConfiguration"
                             `(:settings , settings))))
+
+(declare-function lsp-flycheck-add-mode "lsp-flycheck" (mode))
+(declare-function flycheck-buffer "flycheck" ())
 
 (provide 'lsp-methods)
 ;;; lsp-methods.el ends here
