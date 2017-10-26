@@ -17,6 +17,7 @@
 
 (require 'lsp-common)
 (require 'cl-lib)
+(require 'subr-x)
 
 (defun lsp--window-show-message (params)
   (message "%s" (lsp--propertize (gethash "message" params)
@@ -80,6 +81,8 @@ interface PublishDiagnosticsParams {
     (when buffer
       (with-current-buffer buffer
         (run-hooks 'lsp-after-diagnostics-hook)))))
+
+(declare-function lsp--workspace-buffers "lsp-methods" (workspace))
 
 (provide 'lsp-notifications)
 ;;; lsp-notifications.el ends here

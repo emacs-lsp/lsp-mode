@@ -20,6 +20,7 @@
 (require 'lsp-common)
 (require 'lsp-notifications)
 (require 'pcase)
+(require 'subr-x)
 
 (cl-defstruct lsp--parser
   (waiting-for-response nil)
@@ -221,6 +222,8 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 
     (reverse messages)))
 
+(defvar lsp--no-response)  ; shared with lsp-send.el
+
 (defun lsp--parser-make-filter (p ignore-regexps)
   #'(lambda (proc output)
       (setq lsp--no-response nil)
@@ -244,6 +247,11 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
             (lsp--parser-on-message p m))))
       (when (lsp--parser-waiting-for-response p)
         (with-local-quit (accept-process-output proc)))))
+
+(declare-function lsp--client-notification-handlers "lsp-methods" (client))
+(declare-function lsp--client-request-handlers "lsp-methods" (client))
+(declare-function lsp--workspace-client "lsp-methods" (workspace))
+(declare-function lsp--workspace-apply-edit-handler "lsp-methods" (workspace params))
 
 (provide 'lsp-receive)
 ;;; lsp-receive.el ends here
