@@ -1050,8 +1050,9 @@ the diagnostics"
   `(:textDocument ,(lsp--text-document-identifier)
      :options ,(lsp--make-document-formatting-options)))
 
-(defun lsp--text-document-format ()
+(defun lsp-format-buffer ()
   "Ask the server to format this document."
+  (interactive)
   (lsp--send-changes lsp--cur-workspace)
   (let ((edits (lsp--send-request (lsp--make-request
                                     "textDocument/formatting"
