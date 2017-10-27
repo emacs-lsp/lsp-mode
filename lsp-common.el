@@ -63,11 +63,11 @@ If no such directory could be found, log a warning and return `default-directory
   #'(lambda ()
       (let ((dir (locate-dominating-file "." name)))
         (expand-file-name
-          (if dir
-            dir
-            (message
-              "Couldn't find project root, using the current directory as the root.")
-            default-directory)))))
+         (if dir
+             dir
+           (message
+            "Couldn't find project root, using the current directory as the root.")
+           default-directory)))))
 
 (provide 'lsp-common)
 ;;; lsp-common.el ends here

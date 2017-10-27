@@ -30,9 +30,9 @@
     (message "lsp--stdio-send-sync: %s" message))
   (when (memq (process-status proc) '(stop exit closed failed nil))
     (error "%s: Cannot communicate with the process (%s)" (process-name proc)
-      (process-status proc)))
+           (process-status proc)))
   (process-send-string proc
-    message)
+                       message)
 
   (setq lsp--no-response t)
   (with-local-quit
@@ -45,9 +45,9 @@
     (message "lsp--stdio-send-async: %s" message))
   (when (memq (process-status proc) '(stop exit closed failed nil))
     (error "%s: Cannot communicate with the process (%s)" (process-name proc)
-      (process-status proc)))
+           (process-status proc)))
   (process-send-string proc
-    message))
+                       message))
 
 (provide 'lsp-send)
 ;;; lsp-send.el ends here
