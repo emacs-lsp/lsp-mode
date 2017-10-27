@@ -943,14 +943,12 @@ https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#co
 (defun lsp--resolve-completion (comp)
   (lsp--cur-workspace-check)
   (lsp--send-changes lsp--cur-workspace)
-  (if (gethash "resolveProvider" (lsp--capability "completionProvider"))
-    (progn
-      (when (null comp)
-	(error "Completion item must not be nil"))
-      (lsp--send-request (lsp--make-request
-			  "completionItem/resolve"
-			  comp)))
-    comp))
+  (unless (gethash "resolveProvider" (lsp--capability "completionProvider"))
+    (error "ResolveProvider not found"))
+  (when comp
+    (lsp--send-request (lsp--make-request
+			"completionItem/resolve"
+			comp))))
 
 (defun lsp--location-to-xref (location)
   "Convert Location object LOCATION to an xref-item.
