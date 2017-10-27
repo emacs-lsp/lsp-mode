@@ -238,7 +238,6 @@ the response recevied from the server asynchronously."
   (let ((client (lsp--workspace-client lsp--cur-workspace))
          (id (plist-get body :id)))
     (cl-assert id nil "body missing id field")
-    (message "async id is %d" id)
     (puthash id callback (lsp--client-response-handlers client))
     (funcall (lsp--client-send-async client) (lsp--make-message body)
       (lsp--workspace-proc lsp--cur-workspace))))
