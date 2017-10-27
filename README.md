@@ -65,7 +65,8 @@ See [API docs](./doc/API.org)
 
 ### completion
 Completion is provided with the native `completion-at-point` (<kbd>C</kbd>-<kbd>M</kbd>-<kbd>i</kbd>),
- and should therefore work with any other completion backend.
+ and should therefore work with any other completion backend. Async completion is provided by
+ [company-lsp](https://github.com/tigersoldier/company-lsp).
 
 ![completion](./examples/completion.png)
 
