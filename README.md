@@ -27,7 +27,7 @@ Clone this repository to a suitable path, and add
  ;; prefix for a dynamically generated function "-enable"; in this
  ;; case: lsp-prog-major-mode-enable
  lsp-prog-major-mode
- "LSP Server For <major language mode>"
+ "language-id"
  ;; This will be used to report a project's root directory to the LSP
  ;; server.
  #'default-directory
