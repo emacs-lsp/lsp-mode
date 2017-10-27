@@ -45,14 +45,13 @@ The value returned by the function will be the directory name for NAME.
 If no such directory could be found, log a warning and return ~default-directory~ instead.
 Example for `lsp-python`:
 #+BEGIN_SRC emacs-lisp
-(lsp-define-client 'python-mode "python" 'stdio
-		   (lsp-make-traverser #'(lambda (dir)
-					   (directory-files
-					    dir
-					    nil
-					    "\\(__init__\\|setup\\)\\.py")))
-  :command '("pyls")
-  :name "Python Language Server")
+(lsp-define-stdio-client lsp-python "python"
+			 (lsp-make-traverser #'(lambda (dir)
+						 (directory-files
+						  dir
+						  nil
+						  "\\(__init__\\|setup\\)\\.py")))
+			 '("pyls"))
 #+END_SRC
 * Hooks
 ** lsp-after-initialize-hook
