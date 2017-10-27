@@ -30,6 +30,9 @@
 (require 'cl-lib)
 (require 'network-stream)
 
+(defvar lsp-version-support "3.0"
+  "This is the version of the Language Server Protocol currently supported by lsp-mode")
+
 (defun lsp--make-stdio-connection (name command command-fn)
   (lambda (filter sentinel)
     (let* ((command (if command-fn (funcall command-fn) command))

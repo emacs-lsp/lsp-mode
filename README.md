@@ -7,7 +7,7 @@ emacs-lsp
 [![MELPA](http://melpa.org/packages/lsp-mode-badge.svg)](http://melpa.org/#/lsp-mode)
 
 A Emacs Lisp library for implementing clients for servers using Microsoft's
-[Language Server Protocol](https://github.com/Microsoft/language-server-protocol/).
+[Language Server Protocol](https://github.com/Microsoft/language-server-protocol/) (v3.0).
 
 The library is designed to integrate with existing Emacs IDE frameworks
 (completion-at-point, xref (beginning with Emacs 25.1), flycheck, etc).
