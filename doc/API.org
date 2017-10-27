@@ -3,36 +3,27 @@ language clients. It also allows the user to add custom handlers for
 non-standard notifications from the server.
 
 * Functions
-** lsp-define-stdio-client /mode language-id type get-root name command &rest args/
-   Define a LSP client for minor mode ~mode~ and language ~language-id~.
+** lsp-define-stdio-client /name language-id get-root command &rest args/
+   Define a LSP client that uses stdio to communicate with the language server.
 
-~type~ defines how the Emacs will talk to the language server. Currently, the
-only supported mode is '~stdio~.
+~name~ is the symbol to use for the name of the client.
 
-~get-root~ is  the function that is called to retrieve the workspace directory
-for the current file. It should not take any arguments. [[https://github.com/autozimu/LanguageClient-neovim/blob/fd082232de8b8fbf13d4c4c64c0b43595e9ae7f8/rplugin/python3/LanguageClient/util.py#L15][LanguageClient-neovim]]
-provides examples of how this should be done for various languages.
+~language-id~ is the language id to be used when communication with the Language Server.
 
-~name~ is a string that will be used for the name of Language Server process
-invoked by Emacs.
+~command~ is the command to run.  It may either be a string containing the path of
+the command, or a list wherein the ~car~ is a string containing the path of the
+command, and the ~cdr~ are arguments to that command.
 
-~command~ is a list starting with the server program name, followed by any
-arguments to the server.
+Optional arguments:
 
-Other keyword arguments include:
+~:ignore-regexps~ is a list of regexps which when matched will be ignored by
+ the output parser.
 
-**** ~:ignore-regexps~
-     (Optional) A list of regexp strings. If any output from the server matches any of the regexps, the output will be ignored.
+~:command-fn~ is a function that returns the command string/list to be used to
+launch the language server. If non-nil, ~command~ is ignored.
 
-
-An example of a client for the Go Language Server:
-#+BEGIN_SRC emacs-lisp
-(lsp-define-stdio-client 'go-mode "go" 'stdio
-	 #'(lambda () default-directory)
-	 "Go Language Server"
-	 '("go-langserver" "-mode=stdio")
-	 :ignore-regexps '("^langserver-go: reading on stdin, writing on stdout$"))
-#+END_SRC
+~:initialize~ is a function called when the client is intiailized. It takes a 
+single argument, the newly created client.
 
 ** lsp-client-on-notification /mode method callback/
    Add a method handler when Emacs get a notification from the language server
