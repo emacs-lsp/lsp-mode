@@ -157,11 +157,20 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
   (let* ((json-array-type 'list)
           (json-object-type 'hash-table)
           (json-false nil)
-          (json-data (json-read-from-string msg)))
+          (json-data (json-read-from-string msg))
+          (id (gethash "id" json-data nil))
+          (client (lsp--workspace-client (lsp--parser-workspace p)))
+          callback)
     (pcase (lsp--get-message-type json-data)
-      ('response (setf (lsp--parser-response-result p)
+      ('response
+        (cl-assert id)
+        (setq callback (gethash id (lsp--client-response-handlers client) nil))
+        (if callback
+          (progn (funcall callback (gethash "result" json-data nil))
+            (remhash id (lsp--client-response-handlers client)))
+          (setf (lsp--parser-response-result p)
                    (and json-data (gethash "result" json-data nil))
-                   (lsp--parser-waiting-for-response p) nil))
+                   (lsp--parser-waiting-for-response p) nil)))
       ('response-error (setf (lsp--parser-response-result p) nil)
         (when json-data
           (message (lsp--error-string (gethash "error" json-data nil))))

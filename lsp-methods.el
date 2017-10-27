@@ -35,7 +35,8 @@
   (get-root nil :read-only t)
   (ignore-regexps nil :read-only t)
   (notification-handlers (make-hash-table :test 'equal) :read-only t)
-  (request-handlers (make-hash-table :test 'equal) :read-only t))
+  (request-handlers (make-hash-table :test 'equal) :read-only t)
+  (response-handlers (make-hash-table :test 'eq) :read-only t))
 
 (cl-defstruct lsp--workspace
   (parser nil :read-only t)
@@ -230,6 +231,17 @@ If no-wait is non-nil, don't synchronously wait for a response."
     (when (not no-wait)
       (prog1 (lsp--parser-response-result parser)
         (setf (lsp--parser-response-result parser) nil)))))
+
+(defun lsp--send-request-async (body callback)
+  "Send BODY as a request to the language server, and call CALLBACK with
+the response recevied from the server asynchronously."
+  (let ((client (lsp--workspace-client lsp--cur-workspace))
+         (id (plist-get body :id)))
+    (cl-assert id nil "body missing id field")
+    (message "async id is %d" id)
+    (puthash id callback (lsp--client-response-handlers client))
+    (funcall (lsp--client-send-async client) (lsp--make-message body)
+      (lsp--workspace-proc lsp--cur-workspace))))
 
 (defun lsp--inc-cur-file-version ()
   (puthash buffer-file-name (1+ (lsp--cur-file-version))
