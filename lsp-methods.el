@@ -943,8 +943,7 @@ https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#co
 (defun lsp--resolve-completion (item)
   (lsp--cur-workspace-check)
   (lsp--send-changes lsp--cur-workspace)
-  (unless item
-    (error "Competion item must not be nil"))
+  (cl-assert item nil "Completion item must not be nil")
   (if (gethash "resolveProvider" (lsp--capability "completionProvider"))
       (lsp--send-request (lsp--make-request
 			  "completionItem/resolve"
