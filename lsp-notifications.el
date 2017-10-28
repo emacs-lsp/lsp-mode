@@ -21,7 +21,7 @@
 
 (defun lsp--window-show-message (params)
   (message "%s" (lsp--propertize (gethash "message" params)
-                  (gethash "type" params))))
+                                 (gethash "type" params))))
 
 (defcustom lsp-after-diagnostics-hook nil
   "Hooks to run after diagnostics are received from the language
@@ -41,26 +41,26 @@ server and put in `lsp--diagnostics'."
   (source nil :read-only t) ;;
   (message nil :read-only t) ;; diagnostic's message
   (original nil :read-only t) ;; original diagnostic from LSP, kept for when it
-                              ;; needs to be sent back in e.g. codeAction
-                              ;; context.
+  ;; needs to be sent back in e.g. codeAction
+  ;; context.
   )
 
 (defun lsp--make-diag (diag)
   "Make a `lsp-diagnostic' from DIAG."
   (let* ((range (gethash "range" diag))
-          (start (gethash "start" range))
-          (message (gethash "message" diag))
-          (source (gethash "source" diag)))
+         (start (gethash "start" range))
+         (message (gethash "message" diag))
+         (source (gethash "source" diag)))
     (make-lsp-diagnostic
-      :range `(,(lsp--position-to-point start)
-                ,(lsp--position-to-point (gethash "end" range)))
-      :line (gethash "line" start)
-      :column (gethash "character" start)
-      :severity (gethash "severity" diag)
-      :code (gethash "code" diag)
-      :source (gethash "source" diag)
-      :message (if source (format "%s: %s" source message) message)
-      :original diag)))
+     :range `(,(lsp--position-to-point start)
+              ,(lsp--position-to-point (gethash "end" range)))
+     :line (gethash "line" start)
+     :column (gethash "character" start)
+     :severity (gethash "severity" diag)
+     :code (gethash "code" diag)
+     :source (gethash "source" diag)
+     :message (if source (format "%s: %s" source message) message)
+     :original diag)))
 
 (defun lsp--equal-files (f1 f2)
   (string-equal (expand-file-name f1) (expand-file-name f2)))
@@ -72,12 +72,12 @@ interface PublishDiagnosticsParams {
     diagnostics: Diagnostic[];
 }"
   (let ((file (string-remove-prefix "file://" (gethash "uri" params)))
-         (diagnostics (gethash "diagnostics" params)) buffer)
+        (diagnostics (gethash "diagnostics" params)) buffer)
     (puthash file (mapcar #'lsp--make-diag diagnostics) lsp--diagnostics)
     (setq buffer (cl-loop for buffer in (lsp--workspace-buffers workspace)
-                   when (lsp--equal-files (buffer-file-name buffer) file)
-                   return buffer
-                   finally return nil))
+                          when (lsp--equal-files (buffer-file-name buffer) file)
+                          return buffer
+                          finally return nil))
     (when buffer
       (with-current-buffer buffer
         (run-hooks 'lsp-after-diagnostics-hook)))))
