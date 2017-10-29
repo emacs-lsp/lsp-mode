@@ -87,20 +87,28 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
            (funcall handler (lsp--parser-workspace p) params)))))))
 
 (defun lsp--on-request (p request)
-  "Call the appropriate handler for REQUEST."
+  "Call the appropriate handler for REQUEST, and send the return value to the server."
   (let ((params (gethash "params" request))
-        (client (lsp--workspace-client (lsp--parser-workspace p)))
-        handler)
-    (pcase (gethash "method" request)
-      ("client/registerCapability")
-      ("client/unregisterCapability")
-      ("workspace/applyEdit" (lsp--workspace-apply-edit-handler
-                              (lsp--parser-workspace p) params))
-      (other
-       (setq handler (gethash other (lsp--client-request-handlers client) nil))
-       (if (not handler)
-           (message "Unknown request method: %s" other)
-         (funcall handler (lsp--parser-workspace p) params))))))
+         (client (lsp--workspace-client (lsp--parser-workspace p)))
+         (process (lsp--workspace-proc (lsp--parser-workspace p)))
+         (empty-response (lsp--make-response (gethash "id" request) nil nil))
+         handler response)
+    (setq response
+      (pcase (gethash "method" request)
+        ("client/registerCapability" empty-response)
+        ("client/unregisterCapability" empty-response)
+        ("workspace/applyEdit" (lsp--workspace-apply-edit-handler
+                                 (lsp--parser-workspace p) params)
+          empty-response)
+        (other
+          (setq handler (gethash other (lsp--client-request-handlers client) nil))
+          (if (not handler)
+            (progn
+              (message "Unknown request method: %s" other)
+              empty-response)
+            (lsp--make-response (gethash "id" request)
+              (funcall handler (lsp--parser-workspace p) params) nil)))))
+    (funcall (lsp--client-send-async client)(lsp--make-message response) process)))
 
 (defconst lsp--errors
   '((-32700 "Parse Error")

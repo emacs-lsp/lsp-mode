@@ -185,20 +185,27 @@ initialized. When set this turns off use of
 (defun lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
   (plist-put (lsp--make-notification method params)
-             :id (cl-incf (lsp--workspace-last-id lsp--cur-workspace))))
+    :id (cl-incf (lsp--workspace-last-id lsp--cur-workspace))))
+
+(defun lsp--make-response-error (code message data)
+  (cl-check-type code number)
+  (cl-check-type message string)
+  `(:code ,code :message ,message :data ,data))
+
+(defun lsp--make-response (id result error)
+  (cl-check-type error list)
+  `(:id ,id :result ,result :error ,error))
 
 (defun lsp--make-notification (method &optional params)
   "Create notification body for method METHOD and parameters PARAMS."
-  (unless (stringp method)
-    (signal 'wrong-type-argument (list 'stringp method)))
+  (cl-check-type method string)
   `(:jsonrpc "2.0" :method ,method :params ,params))
 
 (defun lsp--make-message (params)
-  "Create a LSP message from PARAMS."
-  (let ((json-str (json-encode params)))
-    (format
-     "Content-Length: %d\r\n\r\n%s"
-     (string-bytes json-str) json-str)))
+  "Create a LSP message from PARAMS, after encoding it to a JSON string."
+  (let* ((json-false :json-false)
+         (body (json-encode params)))
+    (format "Content-Length: %d\r\n\r\n%s" (string-bytes body) body)))
 
 (defun lsp--send-notification (body)
   "Send BODY as a notification to the language server."
