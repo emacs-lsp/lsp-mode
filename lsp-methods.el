@@ -939,7 +939,16 @@ https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#co
      :annotation-function #'lsp--annotate
      :display-sort-function #'lsp--sort-completions)))
 
-;;; TODO: implement completionItem/resolve
+(defun lsp--resolve-completion (item)
+  (lsp--cur-workspace-check)
+  (lsp--send-changes lsp--cur-workspace)
+  (cl-assert item nil "Completion item must not be nil")
+  (if (gethash "resolveProvider" (lsp--capability "completionProvider"))
+      (lsp--send-request
+       (lsp--make-request
+	"completionItem/resolve"
+	item))
+    item))
 
 (defun lsp--location-to-xref (location)
   "Convert Location object LOCATION to an xref-item.
