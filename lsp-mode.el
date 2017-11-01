@@ -138,7 +138,7 @@ Optional arguments:
                      (if (y-or-n-p question) ;; cannot use when , side effects problem
                          (progn (message "About to customize lsp-project-whitelist")
                                 (customize-save-variable 'lsp-project-whitelist (add-to-list 'lsp-project-whitelist root)))
-                       t)
+                       (setq lsp--project-whitelist-temp (add-to-list 'lsp--project-whitelist-temp root)))
                      ;; start regardless, this is called interactively
                      (lsp-mode 1)
                      (lsp--start client))
