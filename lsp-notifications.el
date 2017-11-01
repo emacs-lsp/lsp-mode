@@ -63,7 +63,8 @@ server and put in `lsp--diagnostics'."
      :original diag)))
 
 (defun lsp--equal-files (f1 f2)
-  (string-equal (expand-file-name f1) (expand-file-name f2)))
+  (and f1 f2
+    (string-equal (expand-file-name f1) (expand-file-name f2))))
 
 (defun lsp--on-diagnostics (params workspace)
   "Callback for textDocument/publishDiagnostics.
