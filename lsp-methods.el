@@ -505,11 +505,8 @@ interface Range {
      end: Position;
  }"
   ;; make sure start and end are Position objects
-  (unless (lsp--position-p start)
-    (signal 'wrong-type-argument `(lsp--position-p ,start)))
-  (unless (lsp--position-p end)
-    (signal 'wrong-type-argument `(lsp--position-p ,end)))
-
+  (cl-assert (lsp--position-p start) nil "start should be a valid lsp--position value")
+  (cl-assert (lsp--position-p end) nil "end should be a valid lsp--position value")
   `(:start ,start :end ,end))
 
 (define-inline lsp--region-to-range (start end)
