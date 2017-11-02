@@ -467,13 +467,13 @@ interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
   (inline-quote (plist-put (lsp--text-document-identifier)
                   :version (lsp--cur-file-version))))
 
-(defun lsp--position (line char)
+(define-inline lsp--position (line char)
   "Make a Position object for the given LINE and CHAR.
 interface Position {
     line: number;
     character: number;
 }"
-  `(:line ,line :character ,char))
+  (inline-quote (list :line ,line :character ,char)))
 
 (define-inline lsp--cur-line ()
   (inline-quote (1- (line-number-at-pos))))
@@ -481,9 +481,9 @@ interface Position {
 (define-inline lsp--cur-column ()
   (inline-quote (- (point) (line-beginning-position))))
 
-(defun lsp--cur-position ()
+(define-inline lsp--cur-position ()
   "Make a Position object for the current point."
-  (lsp--position (lsp--cur-line) (lsp--cur-column)))
+  (inline-quote (lsp--position (lsp--cur-line) (lsp--cur-column))))
 
 (defun lsp--point-to-position (point)
   "Convert POINT to Position."
@@ -493,11 +493,12 @@ interface Position {
       (widen) ;; May be in a narrowed region
       (lsp--cur-position))))
 
-(defun lsp--position-p (p)
-  (and (numberp (plist-get p :line))
-       (numberp (plist-get p :character))))
+(define-inline lsp--position-p (p)
+  (inline-quote
+    (and (numberp (plist-get ,p :line))
+      (numberp (plist-get ,p :character)))))
 
-(defun lsp--range (start end)
+(define-inline lsp--range (start end)
   "Make Range body from START and END.
 
 interface Range {
@@ -505,9 +506,11 @@ interface Range {
      end: Position;
  }"
   ;; make sure start and end are Position objects
-  (cl-assert (lsp--position-p start) nil "start should be a valid lsp--position value")
-  (cl-assert (lsp--position-p end) nil "end should be a valid lsp--position value")
-  `(:start ,start :end ,end))
+  (inline-quote
+    (progn
+      (cl-assert (lsp--position-p ,start) nil "start should be a valid lsp--position value")
+      (cl-assert (lsp--position-p ,end) nil "end should be a valid lsp--position value")
+      (list :start ,start :end ,end))))
 
 (define-inline lsp--region-to-range (start end)
   "Make Range object for the current region."
