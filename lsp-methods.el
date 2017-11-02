@@ -194,7 +194,7 @@ initialized. When set this turns off use of
 
 (defun lsp--make-response (id result error)
   (cl-check-type error list)
-  `(:id ,id :result ,result :error ,error))
+  `(:jsonrpc "2.0" :id ,id :result ,result :error ,error))
 
 (defun lsp--make-notification (method &optional params)
   "Create notification body for method METHOD and parameters PARAMS."
@@ -1050,12 +1050,14 @@ type MarkedString = string | { language: string; value: string };"
   "Request code action to automatically fix issues reported by
 the diagnostics"
   (lsp--cur-workspace-check)
-  (let* ((actions (lsp--send-request (lsp--make-request
-                                      "textDocument/codeAction"
-                                      (lsp--text-document-code-action-params))
-                                     )))
-    (setq lsp-code-actions (cl-union actions lsp-code-actions))
-    nil))
+  (lsp--send-request-async (lsp--make-request
+                            "textDocument/codeAction"
+                            (lsp--text-document-code-action-params))
+                           #'lsp--text-document-code-action-callback))
+
+(defun lsp--text-document-code-action-callback (actions)
+  "Callback to process the reply to a 'textDocument/codeAction' request."
+  (setq lsp-code-actions (cl-union actions lsp-code-actions)))
 
 (defun lsp--make-document-formatting-options ()
   (let ((json-false :json-false))
@@ -1099,10 +1101,16 @@ interface DocumentRangeFormattingParams {
   "Highlight all relevant references to the symbol under point."
   (interactive)
   (lsp--send-changes lsp--cur-workspace)
+  (lsp--send-request-async (lsp--make-request
+                            "textDocument/documentHighlight"
+                            (lsp--text-document-position-params))
+                           #'lsp--symbol-highlight-callback))
+
+(defun lsp--symbol-highlight-callback (highlights)
+  "Callback function to process the reply of a
+ 'textDocument/documentHightlight' message."
   (lsp--remove-cur-overlays)
-  (let ((highlights (lsp--send-request (lsp--make-request
-                                        "textDocument/documentHighlight"
-                                        (lsp--text-document-position-params)))))
+  (let (kind start-point end-point range)
     (dolist (highlight highlights)
       (let* ((range (gethash "range" highlight nil))
              (kind (gethash "kind" highlight 1))
