@@ -198,10 +198,11 @@ initialized. When set this turns off use of
   (cl-check-type error list)
   `(:id ,id :result ,result :error ,error))
 
-(defun lsp--make-notification (method &optional params)
+(define-inline lsp--make-notification (method &optional params)
   "Create notification body for method METHOD and parameters PARAMS."
-  (cl-check-type method string)
-  `(:jsonrpc "2.0" :method ,method :params ,params))
+  (inline-quote
+    (progn (cl-check-type ,method string)
+      (list :jsonrpc "2.0" :method ,method :params ,params))))
 
 (defun lsp--make-message (params)
   "Create a LSP message from PARAMS, after encoding it to a JSON string."
