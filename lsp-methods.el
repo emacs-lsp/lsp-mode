@@ -40,7 +40,6 @@
 
 (cl-defstruct lsp--workspace
   (parser nil :read-only t)
-  (language-id nil :read-only t)
   (last-id 0)
   ;; file-versions is a hashtable of files "owned" by the workspace
   (file-versions nil)
@@ -266,10 +265,11 @@ interface TextDocumentItem {
     version: number;
     text: string;
 }"
-  `(:uri ,(concat "file://" buffer-file-name)
-         :languageId ,(lsp--workspace-language-id lsp--cur-workspace)
-         :version ,(lsp--cur-file-version)
-         :text ,(buffer-substring-no-properties (point-min) (point-max))))
+  (let ((language-id-fn (lsp--client-language-id (lsp--workspace-client lsp--cur-workspace))))
+    `(:uri ,(concat "file://" buffer-file-name)
+       :languageId ,(funcall language-id-fn (current-buffer))
+       :version ,(lsp--cur-file-version)
+       :text ,(buffer-substring-no-properties (point-min) (point-max)))))
 
 (defun lsp--shutdown-cur-workspace ()
   "Shut down the language server process for lsp--cur-workspace"
@@ -368,7 +368,6 @@ disappearing, unset all the variables related to it."
        parser (make-lsp--parser)
        lsp--cur-workspace (make-lsp--workspace
                            :parser parser
-                           :language-id (lsp--client-language-id client)
                            :file-versions (make-hash-table :test 'equal)
                            :last-id 0
                            :root root
