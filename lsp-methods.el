@@ -999,12 +999,6 @@ Returns xref-item(s)."
         (mapcar 'lsp--location-to-xref location)
       (and location (lsp--location-to-xref location)))))
 
-(defun lsp--marked-string-to-string (contents)
-  "Convert the MarkedString object to a user viewable string."
-  (if (hash-table-p contents)
-      (gethash "value" contents)
-    contents))
-
 (defun lsp--on-hover ()
   (when (and (lsp--capability "documentHighlightProvider")
              lsp-highlight-symbol-at-point)
@@ -1027,11 +1021,12 @@ type MarkedString = string | { language: string; value: string };"
       (let* ((hover (lsp--send-request (lsp--make-request
                                         "textDocument/hover"
                                         (lsp--text-document-position-params))))
-             (contents (gethash "contents" (or (if (consp hover) (car hover) hover)
-                                               (make-hash-table)))))
-        (lsp--marked-string-to-string (if (consp contents)
-                                          (car contents)
-                                        contents)))
+             (contents (gethash "contents" hover)))
+        (mapconcat #'(lambda (e)
+                       (if (hash-table-p e)
+                         (gethash "value" e)
+                         e))
+          (if (listp contents) contents (list contents)) "\n"))
     nil))
 
 (defun lsp-info-under-point ()
