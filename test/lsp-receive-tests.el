@@ -1,4 +1,6 @@
-;; Copyright (C) 2016  Vibhav Pant <vibhavp@gmail.com> -*- lexical-binding: t -*-
+;;; lsp-receive-tests.el --- unit tests for lsp-receive.el -*- lexical-binding: t -*-
+
+;; Copyright (C) 2016  Vibhav Pant <vibhavp@gmail.com>.
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -57,3 +59,5 @@
 									 '("{\"somedata\":2}")))))
 
 (provide 'lsp-receive-tests)
+
+;;; lsp-receive-tests.el ends here
