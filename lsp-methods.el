@@ -171,6 +171,12 @@ initialized. When set this turns off use of
   "Face used for highlighting symbols being written to."
   :group 'lsp-faces)
 
+(define-error 'lsp-error "Unkown LSP error")
+(define-error 'lsp-empty-response-error
+  "Recived empty response from language server" 'lsp-error)
+(define-error 'lsp-capability-not-supported
+  "Capability is not supported by this language server" 'lsp-error)
+
 (defun lsp-client-on-notification (client method callback)
   (cl-check-type client lsp--client)
   (cl-check-type method string)
@@ -397,7 +403,7 @@ disappearing, unset all the variables related to it."
       (puthash root lsp--cur-workspace lsp--workspaces)
       (setf response (lsp--send-request (lsp--make-request "initialize" init-params)))
       (unless response
-        (signal 'lsp-empty-response-error "initialize"))
+        (signal 'lsp-empty-response-error (list "initialize")))
       (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
             (gethash "capabilities" response))
       ;; Version 3.0 now sends an "initialized" notification to allow registration
@@ -1234,7 +1240,7 @@ interface RenameParams {
   (lsp--cur-workspace-check)
   (lsp--send-changes lsp--cur-workspace)
   (unless (lsp--capability "renameProvider")
-    (user-error "This language server doesn't support renaming symbols"))
+    (signal 'lsp-capability-not-supported (list "renameProvider")))
   (let ((edits (lsp--send-request (lsp--make-request
                                    "textDocument/rename"
                                    (lsp--make-document-rename-params newname)))))
