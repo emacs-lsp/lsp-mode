@@ -31,7 +31,7 @@
 (require 'network-stream)
 
 (defvar lsp-version-support "3.0"
-  "This is the version of the Language Server Protocol currently supported by lsp-mode")
+  "This is the version of the Language Server Protocol currently supported by ‘lsp-mode’.")
 
 (defun lsp--make-stdio-connection (name command command-fn)
   (lambda (filter sentinel)
@@ -80,13 +80,21 @@
 (defmacro lsp-define-stdio-client (name language-id get-root command &rest args)
   "Define a LSP client using stdio.
 NAME is the symbol to use for the name of the client.
-LANGUAGE-ID is the language id to be used when communication with the Language Server.
-COMMAND is the command to run.
+LANGUAGE-ID is the language id to be used when communication with
+the Language Server.  COMMAND is the command to run.
+
 Optional arguments:
-`:ignore-regexps' is a list of regexps which when matched will be ignored by the output parser.
-`:command-fn' is a function that returns the command string/list to be used to launch the language server. If non-nil, COMMAND is ignored.
-`:initialize' is a function called when the client is intiailized. It takes a single argument, the newly created client.
-"
+
+`:ignore-regexps' is a list of regexps which when matched will be
+ignored by the output parser.
+
+`:command-fn' is a function that returns the command string/list
+to be used to launch the language server.  If non-nil, COMMAND is
+ignored.
+
+`:initialize' is a function called when the client is
+initialized.  It takes a single argument, the newly created
+client."
   (let ((enable (intern (format "%s-enable" name))))
     `(defun ,enable ()
        ,(plist-get args :docstring)
@@ -112,14 +120,21 @@ Optional arguments:
 (defmacro lsp-define-tcp-client (name language-id get-root command host port &rest args)
   "Define a LSP client using TCP.
 NAME is the symbol to use for the name of the client.
-LANGUAGE-ID is the language id to be used when communication with the Language Server.
-COMMAND is the command to run.
-HOST is the host address.
-PORT is the port number.
+LANGUAGE-ID is the language id to be used when communication with
+the Language Server.  COMMAND is the command to run.  HOST is the
+host address.  PORT is the port number.
+
 Optional arguments:
+
 `:ignore-regexps' is a list of regexps which when matched will be ignored by the output parser.
-`:command-fn' is a function that returns the command string/list to be used to launch the language server. If non-nil, COMMAND is ignored.
-`:initialize' is a function called when the client is intiailized. It takes a single argument, the newly created client."
+
+`:command-fn' is a function that returns the command string/list
+to be used to launch the language server.  If non-nil, COMMAND is
+ignored.
+
+`:initialize' is a function called when the client is
+initialized.  It takes a single argument, the newly created
+client."
   (let ((enable (intern (format "%s-enable" name))))
     `(defun ,enable ()
        ,(plist-get args :docstring)

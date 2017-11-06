@@ -65,7 +65,7 @@ See https://github.com/emacs-lsp/lsp-mode."
   :error-explainer #'lsp-error-explainer)
 
 (defun lsp-flycheck-add-mode (mode)
-  "Add MODE as a valid major-mode for the lsp checker."
+  "Add MODE as a valid major mode for the lsp checker."
   (unless (flycheck-checker-supports-major-mode-p 'lsp mode)
     (flycheck-add-mode 'lsp mode)))
 

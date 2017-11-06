@@ -61,10 +61,10 @@
 
 (defvar lsp--ignored-workspace-roots (make-hash-table :test #'equal)
   "Table of project roots which should not have a workspace,
-  indexed by the project root directory.
+indexed by the project root directory.
 
-  This is populated when the user declines to open a workspace
-  for a file in the workspace")
+This is populated when the user declines to open a workspace
+for a file in the workspace.")
 
 (defcustom lsp-after-initialize-hook nil
   "List of functions to be called after a Language Server has been initialized
@@ -231,7 +231,7 @@ initialized. When set this turns off use of
 
 (defun lsp--send-request (body &optional no-wait)
   "Send BODY as a request to the language server, get the response.
-If no-wait is non-nil, don't synchronously wait for a response."
+If NO-WAIT is non-nil, don't synchronously wait for a response."
   ;; lsp-send-sync should loop until lsp--from-server returns nil
   ;; in the case of Rust Language Server, this can be done with
   ;; 'accept-process-output`.'
@@ -283,7 +283,7 @@ interface TextDocumentItem {
       :text (buffer-substring-no-properties (point-min) (point-max)))))
 
 (defun lsp--shutdown-cur-workspace ()
-  "Shut down the language server process for lsp--cur-workspace"
+  "Shut down the language server process for ‘lsp--cur-workspace’."
   (ignore-errors
     (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)) t)
     (lsp--send-notification (lsp--make-notification "exit" nil)))
@@ -316,16 +316,16 @@ disappearing, unset all the variables related to it."
 ;; NOTE: Possibly make this function subject to a setting, if older LSP servers
 ;; are unhappy
 (defun lsp--client-capabilities ()
-  "Return the client capabilites"
+  "Return the client capabilites."
   `(:workspace    ,(lsp--client-workspace-capabilities)
                   :textDocument ,(lsp--client-textdocument-capabilities)))
 
 (defun lsp--client-workspace-capabilities ()
-  "Client Workspace capabilities according to LSP"
+  "Client Workspace capabilities according to LSP."
   `(:executeCommand (:dynamicRegistration t)))
 
 (defun lsp--client-textdocument-capabilities ()
-  "Client Text document capabilities according to LSP"
+  "Client Text document capabilities according to LSP."
   `(:synchronization (:didSave t)))
 
 (define-inline lsp--server-capabilities ()
@@ -359,8 +359,8 @@ disappearing, unset all the variables related to it."
 
 (defun lsp--should-start-p (root)
   "Consult `lsp-project-blacklist' and `lsp-project-whitelist' to
-  determine if a server should be started for the given ROOT
-  directory"
+determine if a server should be started for the given ROOT
+directory."
   (if lsp-project-whitelist
       (member root lsp-project-whitelist)
     (not (member root lsp-project-blacklist))))
@@ -525,20 +525,20 @@ interface Range {
                   (lsp--point-to-position ,end))))
 
 (defun lsp--current-region-or-pos ()
-  "If the region is active return that, else get the point"
+  "If the region is active return that, else get the point."
   (if (use-region-p)
       (lsp--region-to-range (region-beginning) (region-end))
     (lsp--region-to-range (point) (point))))
 
 (defun lsp--get-start-position ()
-  "Get the start of the region if active, else current POINT"
+  "Get the start of the region if active, else current point."
   (let ((pos (if (use-region-p)
                  (region-beginning)
                (point))))
     (lsp-point-to-position pos)))
 
 (defun lsp--get-end-position ()
-  "Get the end of the region if active, else current POINT"
+  "Get the end of the region if active, else current point."
   (let ((pos (if (use-region-p)
                  (region-end)
                (point))))
@@ -754,7 +754,7 @@ to a text document."
 
 (defun lsp-before-change (start end)
   "Executed before a file is changed.
-  Added to `before-change-functions'"
+Added to `before-change-functions'."
   ;; Note:
   ;;
   ;; This variable holds a list of functions to call when Emacs is about to
@@ -782,7 +782,7 @@ to a text document."
 
 (defun lsp-on-change (start end length)
   "Executed when a file is changed.
-  Added to `after-change-functions'"
+Added to `after-change-functions'."
   ;; Note:
   ;;
   ;; Each function receives three arguments: the beginning and end of the region
@@ -968,7 +968,7 @@ https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#co
     item))
 
 (defun lsp--location-to-xref (location)
-  "Convert Location object LOCATION to an xref-item.
+  "Convert Location object LOCATION to an ‘xref-item’.
 interface Location {
     uri: string;
     range: Range;
@@ -1118,7 +1118,7 @@ interface DocumentRangeFormattingParams {
 
 (defun lsp--symbol-highlight-callback (highlights)
   "Callback function to process the reply of a
- 'textDocument/documentHightlight' message."
+'textDocument/documentHightlight' message."
   (lsp--remove-cur-overlays)
   (let (kind start-point end-point range)
     (dolist (highlight highlights)
@@ -1291,10 +1291,10 @@ command COMMAND and optionsl ARGS"
   (remove-hook 'before-change-functions #'lsp-before-change t))
 
 (defun lsp--error-explainer (fc-error)
-  "Proof of concept to use this flycheck function to apply a
-    codeAction. This should eventually make use of the completion of
-    https://github.com/flycheck/flycheck/pull/1022 and
-    https://github.com/flycheck/flycheck/issues/530#issuecomment-235224763"
+  "Proof of concept to use this flycheck function to apply a codeAction.
+This should eventually make use of the completion of
+https://github.com/flycheck/flycheck/pull/1022 and
+https://github.com/flycheck/flycheck/issues/530#issuecomment-235224763."
   (message "lsp--error-explainer: got %s" fc-error))
 
 (defun lsp--set-configuration (settings)
