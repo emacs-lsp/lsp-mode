@@ -72,6 +72,11 @@ for a new workspace."
   :type 'hook
   :group 'lsp-mode)
 
+(defcustom lsp-after-open-hook nil
+  "List of functions to be called after a new file with LSP support is opened."
+  :type 'hook
+  :group 'lsp-mode)
+
 (defvar lsp--sync-methods
   '((0 . none)
     (1 . full)
@@ -455,7 +460,8 @@ directory."
   ;; Make sure the hook is local (last param) otherwise we see all changes for all buffers
   (add-hook 'before-change-functions #'lsp-before-change nil t)
   (add-hook 'after-change-functions #'lsp-on-change nil t)
-  (lsp--set-sync-method))
+  (lsp--set-sync-method)
+  (run-hooks 'lsp-after-open-hook))
 
 (define-inline lsp--text-document-identifier ()
   "Make TextDocumentIdentifier.
