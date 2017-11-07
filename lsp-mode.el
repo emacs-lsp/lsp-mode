@@ -77,47 +77,47 @@
                 "lsp-define-client: :ignore-regexps element %s is not a string"
                 e))))
 
-(defmacro lsp-define-stdio-client (name language-id get-root command &rest args)
+(cl-defmacro lsp-define-stdio-client (name language-id get-root command &key docstring (language-id-fn #'(lambda (_b) language-id)) command-fn ignore-regexps initialize)
   "Define a LSP client using stdio.
 NAME is the symbol to use for the name of the client.
 LANGUAGE-ID is the language id to be used when communication with
 the Language Server.  COMMAND is the command to run.
 
 Optional arguments:
+`:ignore-regexps' is a list of regexps which when matched will be ignored by the 
+ output parser.
 
-`:ignore-regexps' is a list of regexps which when matched will be
-ignored by the output parser.
+`:command-fn' is a function that returns the command string/list to be used to 
+ launch the language server. If non-nil, COMMAND is ignored.
 
-`:command-fn' is a function that returns the command string/list
-to be used to launch the language server.  If non-nil, COMMAND is
-ignored.
+`:language-id-fn' is a function that returns the language-id string to be used
+ while opening a new file. If non-nil, LANGUAGE-ID is ignored.
 
-`:initialize' is a function called when the client is
-initialized.  It takes a single argument, the newly created
-client."
+`:initialize' is a function called when the client is intiailized. It takes a
+  single argument, the newly created client."
   (let ((enable (intern (format "%s-enable" name))))
     `(defun ,enable ()
-       ,(plist-get args :docstring)
+       ,docstring
        (interactive)
        (let ((client (make-lsp--client
-                      :language-id ,(lsp--assert-type language-id #'stringp)
-                      :send-sync #'lsp--stdio-send-sync
-                      :send-async #'lsp--stdio-send-async
-                      :new-connection (lsp--make-stdio-connection ,(symbol-name name) ,command
-                                                                  ,(plist-get args :command-fn))
-                      :get-root ,get-root
-                      :ignore-regexps ,(plist-get args :ignore-regexps))))
+                       :language-id ,language-id-fn
+                       :send-sync #'lsp--stdio-send-sync
+                       :send-async #'lsp--stdio-send-async
+                       :new-connection (lsp--make-stdio-connection ,(symbol-name name) ,command
+                                         ,command-fn)
+                       :get-root ,get-root
+                       :ignore-regexps ,ignore-regexps)))
          (unless lsp-mode
-           ,(when (plist-get args :initialize)
-              `(funcall ,(plist-get args :initialize) client))
+           ,(when initialize
+              `(funcall ,initialize client))
            (let ((root (funcall (lsp--client-get-root client))))
              (if (lsp--should-start-p root)
-                 (progn
-                   (lsp-mode 1)
-                   (lsp--start client))
+               (progn
+                 (lsp-mode 1)
+                 (lsp--start client))
                (message "Not initializing project %s" root))))))))
 
-(defmacro lsp-define-tcp-client (name language-id get-root command host port &rest args)
+(cl-defmacro lsp-define-tcp-client (name language-id get-root command host port &key docstring (language-id-fn #'(lambda (_b) language-id)) command-fn ignore-regexps initialize)
   "Define a LSP client using TCP.
 NAME is the symbol to use for the name of the client.
 LANGUAGE-ID is the language id to be used when communication with
@@ -125,35 +125,36 @@ the Language Server.  COMMAND is the command to run.  HOST is the
 host address.  PORT is the port number.
 
 Optional arguments:
+`:ignore-regexps' is a list of regexps which when matched will be ignored by the 
+ output parser.
 
-`:ignore-regexps' is a list of regexps which when matched will be ignored by the output parser.
+`:command-fn' is a function that returns the command string/list to be used to 
+ launch the language server. If non-nil, COMMAND is ignored.
 
-`:command-fn' is a function that returns the command string/list
-to be used to launch the language server.  If non-nil, COMMAND is
-ignored.
+`:language-id-fn' is a function that returns the language-id string to be used
+ while opening a new file. If non-nil, LANGUAGE-ID is ignored.
 
-`:initialize' is a function called when the client is
-initialized.  It takes a single argument, the newly created
-client."
+`:initialize' is a function called when the client is intiailized. It takes a
+  single argument, the newly created client."
   (let ((enable (intern (format "%s-enable" name))))
     `(defun ,enable ()
-       ,(plist-get args :docstring)
+       ,docstring
        (interactive)
        (let ((client (make-lsp--client
-                      :language-id ,(lsp--assert-type language-id #'stringp)
-                      :send-sync #'lsp--stdio-send-sync
-                      :send-async #'lsp--stdio-send-async
-                      :new-connection (lsp--make-tcp-connection ,(symbol-name name) ,command ,(plist-get args :command-fn) ,host ,port)
-                      :get-root ,get-root
-                      :ignore-regexps ,(plist-get args :ignore-regexps))))
+                       :language-id ,language-id-fn
+                       :send-sync #'lsp--stdio-send-sync
+                       :send-async #'lsp--stdio-send-async
+                       :new-connection (lsp--make-tcp-connection ,(symbol-name name) ,command ,command-fn ,host ,port)
+                       :get-root ,get-root
+                       :ignore-regexps ,ignore-regexps)))
          (unless lsp-mode
-           ,(when (plist-get args :initialize)
-              `(funcall ,(plist-get args :initialize) client))
+           ,(when initialize
+              `(funcall ,initialize client))
            (let ((root (funcall (lsp--client-get-root client))))
              (if (lsp--should-start-p root)
-                 (progn
-                   (lsp-mode 1)
-                   (lsp--start client))
+               (progn
+                 (lsp-mode 1)
+                 (lsp--start client))
                (message "Not initializing project %s" root))))))))
 
 ;;;###autoload

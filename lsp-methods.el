@@ -41,7 +41,6 @@
 
 (cl-defstruct lsp--workspace
   (parser nil :read-only t)
-  (language-id nil :read-only t)
   (last-id 0)
   ;; file-versions is a hashtable of files "owned" by the workspace
   (file-versions nil)
@@ -282,10 +281,11 @@ interface TextDocumentItem {
     text: string;
 }"
   (inline-quote
-    (list :uri (concat "file://" buffer-file-name)
-      :languageId (lsp--workspace-language-id lsp--cur-workspace)
-      :version (lsp--cur-file-version)
-      :text (buffer-substring-no-properties (point-min) (point-max)))))
+    (let ((language-id-fn (lsp--client-language-id (lsp--workspace-client lsp--cur-workspace))))
+      (list :uri (concat "file://" buffer-file-name)
+	      :languageId (funcall language-id-fn (current-buffer))
+	      :version (lsp--cur-file-version)
+	      :text (buffer-substring-no-properties (point-min) (point-max))))))
 
 (defun lsp--shutdown-cur-workspace ()
   "Shut down the language server process for ‘lsp--cur-workspace’."
@@ -384,7 +384,6 @@ directory."
        parser (make-lsp--parser)
        lsp--cur-workspace (make-lsp--workspace
                            :parser parser
-                           :language-id (lsp--client-language-id client)
                            :file-versions (make-hash-table :test 'equal)
                            :last-id 0
                            :root root
@@ -1016,12 +1015,6 @@ Returns xref-item(s)."
         (mapcar 'lsp--location-to-xref location)
       (and location (lsp--location-to-xref location)))))
 
-(defun lsp--marked-string-to-string (contents)
-  "Convert the MarkedString object to a user viewable string."
-  (if (hash-table-p contents)
-      (gethash "value" contents)
-    contents))
-
 (defun lsp--on-hover ()
   (when (and (lsp--capability "documentHighlightProvider")
              lsp-highlight-symbol-at-point)
@@ -1044,11 +1037,12 @@ type MarkedString = string | { language: string; value: string };"
       (let* ((hover (lsp--send-request (lsp--make-request
                                         "textDocument/hover"
                                         (lsp--text-document-position-params))))
-             (contents (gethash "contents" (or (if (consp hover) (car hover) hover)
-                                               (make-hash-table)))))
-        (lsp--marked-string-to-string (if (consp contents)
-                                          (car contents)
-                                        contents)))
+             (contents (gethash "contents" hover)))
+        (mapconcat #'(lambda (e)
+                       (if (hash-table-p e)
+                         (gethash "value" e)
+                         e))
+          (if (listp contents) contents (list contents)) "\n"))
     nil))
 
 (defun lsp-info-under-point ()
