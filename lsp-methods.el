@@ -284,7 +284,7 @@ interface TextDocumentItem {
 
 (defun lsp--shutdown-cur-workspace ()
   "Shut down the language server process for ‘lsp--cur-workspace’."
-  (ignore-errors
+  (with-demoted-errors "LSP error: %S"
     (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)) t)
     (lsp--send-notification (lsp--make-notification "exit" nil)))
   (lsp--uninitialize-workspace))
