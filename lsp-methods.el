@@ -391,7 +391,6 @@ directory."
     (if workspace
         (setq lsp--cur-workspace workspace)
 
-      (run-hooks 'lsp-before-initialize-hook)
       (setf
        parser (make-lsp--parser)
        lsp--cur-workspace (make-lsp--workspace
@@ -417,6 +416,7 @@ directory."
                                 :rootUri ,(concat "file://" root)
                                 :capabilities ,(lsp--client-capabilities)))
       (puthash root lsp--cur-workspace lsp--workspaces)
+      (run-hooks 'lsp-before-initialize-hook)
       (setf response (lsp--send-request (lsp--make-request "initialize" init-params)))
       (unless response
         (signal 'lsp-empty-response-error (list "initialize")))
