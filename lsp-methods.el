@@ -65,9 +65,20 @@ indexed by the project root directory.
 This is populated when the user declines to open a workspace
 for a file in the workspace.")
 
+(defcustom lsp-before-initialize-hook nil
+  "List of functions to be called before a Language Server has been initialized
+for a new workspace."
+  :type 'hook
+  :group 'lsp-mode)
+
 (defcustom lsp-after-initialize-hook nil
   "List of functions to be called after a Language Server has been initialized
 for a new workspace."
+  :type 'hook
+  :group 'lsp-mode)
+
+(defcustom lsp-before-open-hook nil
+  "List of functions to be called before a new file with LSP support is opened."
   :type 'hook
   :group 'lsp-mode)
 
@@ -380,6 +391,7 @@ directory."
     (if workspace
         (setq lsp--cur-workspace workspace)
 
+      (run-hooks 'lsp-before-initialize-hook)
       (setf
        parser (make-lsp--parser)
        lsp--cur-workspace (make-lsp--workspace
@@ -423,6 +435,7 @@ directory."
 (defvar flycheck-check-syntax-automatically)
 
 (defun lsp--text-document-did-open ()
+  (run-hooks 'lsp-before-open-hook)
   (puthash buffer-file-name 0 (lsp--workspace-file-versions lsp--cur-workspace))
   (push (current-buffer) (lsp--workspace-buffers lsp--cur-workspace))
   (lsp--send-notification (lsp--make-notification
