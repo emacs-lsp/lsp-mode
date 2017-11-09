@@ -35,13 +35,15 @@
   (new-connection nil :read-only t)
   (get-root nil :read-only t)
   (ignore-regexps nil :read-only t)
+
   (notification-handlers (make-hash-table :test 'equal) :read-only t)
   (request-handlers (make-hash-table :test 'equal) :read-only t)
-  (response-handlers (make-hash-table :test 'eq) :read-only t))
+  (response-handlers (make-hash-table :test 'eq) :read-only t)
+
+  (last-id 0))
 
 (cl-defstruct lsp--workspace
   (parser nil :read-only t)
-  (last-id 0)
   ;; file-versions is a hashtable of files "owned" by the workspace
   (file-versions nil)
   (server-capabilities nil)
@@ -208,7 +210,7 @@ initialized. When set this turns off use of
   "Create request body for method METHOD and parameters PARAMS."
   (inline-quote
     (plist-put (lsp--make-notification ,method ,params)
-      :id (cl-incf (lsp--workspace-last-id lsp--cur-workspace)))))
+      :id (cl-incf (lsp--client-last-id (lsp--workspace-client lsp--cur-workspace))))))
 
 (defun lsp--make-response-error (code message data)
   (cl-check-type code number)
@@ -396,7 +398,6 @@ directory."
        lsp--cur-workspace (make-lsp--workspace
                            :parser parser
                            :file-versions (make-hash-table :test 'equal)
-                           :last-id 0
                            :root root
                            :client client)
        (lsp--parser-workspace parser) lsp--cur-workspace
