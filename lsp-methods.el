@@ -364,7 +364,7 @@ can be either plists or nil. The non-nil plists in the rest of
 the arguments will be merged into FIRST.
 
 Return the merged plist."
-  (cl-assert (listp first))
+  (cl-check-type first list)
   (seq-each (lambda (pl)
               (setq first
                 (lsp--merge-two-plists first pl)))
@@ -429,15 +429,14 @@ packages provide different values for the same leaf capability
 entry, the value is set to the one that registers later. Default
 leaf capability entries can not be overwritten."
   (lsp--cur-workspace-check)
-  (cl-assert (symbolp package-name))
-  (cl-assert (or (listp caps) (functionp caps)))
+  (cl-check-type package-name symbolp)
+  (cl-check-type package-name (or list function))
   (let ((extra-client-capabilities
           (lsp--workspace-extra-client-capabilities lsp--cur-workspace)))
     (if (alist-get package-name extra-client-capabilities)
         (message "%s has already registered client capabilities" package-name)
-      (setf (lsp--workspace-extra-client-capabilities lsp--cur-workspace)
-        (cons `(,package-name . ,caps)
-          extra-client-capabilities)))))
+      (push `(,package-name . ,caps)
+        (lsp--workspace-extra-client-capabilities lsp--cur-workspace)))))
 
 (defun lsp-unregister-client-capabilities (package-name)
   "Unregister extra capabilities provided by PACKAGE-NAME for the current workspace.
@@ -446,7 +445,7 @@ PACKAGE-NAME is a symbol of the name of the package that has
 registered client capabilities by calling
 `lsp-register-client-capabilities'."
   (lsp--cur-workspace-check)
-  (cl-assert (symbolp package-name))
+  (cl-check-type package-name symbol)
   (let ((extra-client-capabilities
           (lsp--workspace-extra-client-capabilities lsp--cur-workspace)))
     (setf (lsp--workspace-extra-client-capabilities lsp--cur-workspace)
@@ -627,8 +626,7 @@ interface Position {
 
 (define-inline lsp--position-p (p)
   (inline-quote
-    (and (numberp (plist-get ,p :line))
-      (numberp (plist-get ,p :character)))))
+    (and (numberp (plist-get ,p :line)) (numberp (plist-get ,p :character)))))
 
 (define-inline lsp--range (start end)
   "Make Range body from START and END.
@@ -640,8 +638,8 @@ interface Range {
   ;; make sure start and end are Position objects
   (inline-quote
     (progn
-      (cl-assert (lsp--position-p ,start) nil "start should be a valid lsp--position value")
-      (cl-assert (lsp--position-p ,end) nil "end should be a valid lsp--position value")
+      (cl-check-type ,start (satisfies lsp--position-p))
+      (cl-check-type ,end (satisfies lsp--position-p))
       (list :start ,start :end ,end))))
 
 (define-inline lsp--region-to-range (start end)
