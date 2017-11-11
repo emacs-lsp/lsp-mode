@@ -1134,16 +1134,15 @@ interface DocumentRangeFormattingParams {
   "Callback function to process the reply of a
 'textDocument/documentHightlight' message."
   (lsp--remove-cur-overlays)
-  (let (kind start-point end-point range)
-    (dolist (highlight highlights)
-      (let* ((range (gethash "range" highlight nil))
-             (kind (gethash "kind" highlight 1))
-             (start-point (lsp--position-to-point (gethash "start" range)))
-             (end-point (lsp--position-to-point (gethash "end" range)))
-             (overlay (make-overlay start-point end-point)))
-        (overlay-put overlay 'face
-                     (cdr (assq kind lsp--highlight-kind-face)))
-        (push overlay (lsp--workspace-highlight-overlays lsp--cur-workspace))))))
+  (dolist (highlight highlights)
+    (let* ((range (gethash "range" highlight nil))
+           (kind (gethash "kind" highlight 1))
+           (start-point (lsp--position-to-point (gethash "start" range)))
+           (end-point (lsp--position-to-point (gethash "end" range)))
+           (overlay (make-overlay start-point end-point)))
+      (overlay-put overlay 'face
+                   (cdr (assq kind lsp--highlight-kind-face)))
+      (push overlay (lsp--workspace-highlight-overlays lsp--cur-workspace)))))
 
 (defconst lsp--symbol-kind
   '((1 . "File")
