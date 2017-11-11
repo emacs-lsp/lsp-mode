@@ -54,7 +54,13 @@
   (cmd-proc nil) ;; the process we launch initially
   (buffers nil) ;; a list of buffers associated with this workspace
   (highlight-overlays nil) ;; a list of overlays used for highlighting the symbol under point
-  )
+
+  ;; Extra client capabilities provided by third-party packages using
+  ;; `lsp-register-client-capabilities'. It's value is an alist of (PACKAGE-NAME
+  ;; . CAPS), where PACKAGE-NAME is a symbol of the third-party package name,
+  ;; and CAPS is either a plist of the client capabilities, or a function that
+  ;; takes no argument and returns a plist of the client capabilities or nil.")
+  (extra-client-capabilities nil))
 
 (defvar-local lsp--cur-workspace nil)
 (defvar lsp--workspaces (make-hash-table :test #'equal)
@@ -335,8 +341,67 @@ disappearing, unset all the variables related to it."
 ;; are unhappy
 (defun lsp--client-capabilities ()
   "Return the client capabilites."
-  `(:workspace    ,(lsp--client-workspace-capabilities)
-                  :textDocument ,(lsp--client-textdocument-capabilities)))
+  (apply #'lsp--merge-plists
+    `(:workspace    ,(lsp--client-workspace-capabilities)
+       :textDocument ,(lsp--client-textdocument-capabilities))
+    (seq-map (lambda (extra-capabilities-cons)
+               (let* ((package-name (car extra-capabilities-cons))
+                       (value (cdr extra-capabilities-cons))
+                       (capabilities (if (functionp value) (funcall value)
+                                       value)))
+                 (if (and capabilities (not (listp capabilities)))
+                   (progn
+                     (message "Capabilities provided by %s are not a plist: %s" package-name value)
+                     nil)
+                   capabilities)))
+      (lsp--workspace-extra-client-capabilities lsp--cur-workspace))))
+
+(defun lsp--merge-plists (first &rest rest)
+  "Deeply merge plists.
+
+FIRST is the plist to be merged into. The rest of the arguments
+can be either plists or nil. The non-nil plists in the rest of
+the arguments will be merged into FIRST.
+
+Return the merged plist."
+  (cl-assert (listp first))
+  (seq-each (lambda (pl)
+              (setq first
+                (lsp--merge-two-plists first pl)))
+    rest)
+  first)
+
+(defun lsp--merge-two-plists (first second)
+  "Deeply merge two plists.
+
+All values in SECOND are merged into FIRST. FIRST can be nil or a
+plist. SECOND must be a plist.
+
+Return the merged plist."
+  (when second
+    (if (not (listp second))
+      (warn "Cannot merge non-list value into a plist. The value is %s" second)
+      (cl-loop for (key second-value) on second
+        collect (progn
+                  (let ((first-value (plist-get first key))
+                         merged-value)
+                    (cond
+                      ((null second-value)) ; do nothing
+                      ((null first-value)
+                        (if (listp second-value)
+                          ;; Deep copy second-value so that the original value won't
+                          ;; be modified.
+                          (setq merged-value
+                            (lsp--merge-two-plists nil second-value)))
+                        (setq merged-value second-value))
+                      ((and (listp first-value) (listp second-value))
+                        (setq merged-value (lsp--merge-two-plists first-value second-value)))
+                      ;; Otherwise, the first value is a leaf entry and should
+                      ;; not be overridden.
+                      )
+                    (when merged-value
+                      (setq first (plist-put first key merged-value))))))))
+  first)
 
 (defun lsp--client-workspace-capabilities ()
   "Client Workspace capabilities according to LSP."
@@ -345,6 +410,47 @@ disappearing, unset all the variables related to it."
 (defun lsp--client-textdocument-capabilities ()
   "Client Text document capabilities according to LSP."
   `(:synchronization (:didSave t)))
+
+(defun lsp-register-client-capabilities (package-name caps)
+  "Register extra client capabilities for the current workspace.
+
+This function must be called before the initialize request is
+sent. It's recommended to to call it in the
+`lsp-before-initialize-hook'.
+
+PACKAGE name is the symbol of the name of the package that
+registers the capabilities. CAPS is either a plist of the
+capabilities, or a function that takes no argument and return a
+plist of the client capabilties or nil.
+
+Registered capabilities are merged into the default capabilities
+before sending to the server via the initialize request. If two
+packages provide different values for the same leaf capability
+entry, the value is set to the one that registers later. Default
+leaf capability entries can not be overwritten."
+  (lsp--cur-workspace-check)
+  (cl-assert (symbolp package-name))
+  (cl-assert (or (listp caps) (functionp caps)))
+  (let ((extra-client-capabilities
+          (lsp--workspace-extra-client-capabilities lsp--cur-workspace)))
+    (if (alist-get package-name extra-client-capabilities)
+        (message "%s has already registered client capabilities" package-name)
+      (setf (lsp--workspace-extra-client-capabilities lsp--cur-workspace)
+        (cons `(,package-name . ,caps)
+          extra-client-capabilities)))))
+
+(defun lsp-unregister-client-capabilities (package-name)
+  "Unregister extra capabilities provided by PACKAGE-NAME for the current workspace.
+
+PACKAGE-NAME is a symbol of the name of the package that has
+registered client capabilities by calling
+`lsp-register-client-capabilities'."
+  (lsp--cur-workspace-check)
+  (cl-assert (symbolp package-name))
+  (let ((extra-client-capabilities
+          (lsp--workspace-extra-client-capabilities lsp--cur-workspace)))
+    (setf (lsp--workspace-extra-client-capabilities lsp--cur-workspace)
+      (assq-delete-all package-name extra-client-capabilities))))
 
 (define-inline lsp--server-capabilities ()
   "Return the capabilities of the language server associated with the buffer."
@@ -411,13 +517,13 @@ directory."
        proc (if (consp new-conn) (cdr new-conn) new-conn)
 
        (lsp--workspace-proc lsp--cur-workspace) proc
-       (lsp--workspace-cmd-proc lsp--cur-workspace) cmd-proc
+       (lsp--workspace-cmd-proc lsp--cur-workspace) cmd-proc)
 
-       init-params `(:processId ,(emacs-pid) :rootPath ,root
-                                :rootUri ,(concat "file://" root)
-                                :capabilities ,(lsp--client-capabilities)))
       (puthash root lsp--cur-workspace lsp--workspaces)
       (run-hooks 'lsp-before-initialize-hook)
+      (setq init-params `(:processId ,(emacs-pid) :rootPath ,root
+                           :rootUri ,(concat "file://" root)
+                           :capabilities ,(lsp--client-capabilities)))
       (setf response (lsp--send-request (lsp--make-request "initialize" init-params)))
       (unless response
         (signal 'lsp-empty-response-error (list "initialize")))
