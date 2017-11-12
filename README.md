@@ -30,7 +30,7 @@ Clone this repository to a suitable path, and add
  "language-id"
  ;; This will be used to report a project's root directory to the LSP
  ;; server.
- #'default-directory
+ (lambda () default-directory)
  ;; This is the command to start the LSP server. It may either be a
  ;; string containing the path of the command, or a list wherein the
  ;; car is a string containing the path of the command, and the cdr
