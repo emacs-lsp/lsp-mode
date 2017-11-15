@@ -40,6 +40,7 @@
   (request-handlers (make-hash-table :test 'equal) :read-only t)
   (response-handlers (make-hash-table :test 'eq) :read-only t)
 
+  (string-renderers '())
   (last-id 0))
 
 (cl-defstruct lsp--workspace
@@ -1155,13 +1156,23 @@ type MarkedString = string | { language: string; value: string };"
       (let* ((hover (lsp--send-request (lsp--make-request
                                         "textDocument/hover"
                                         (lsp--text-document-position-params))))
-             (contents (gethash "contents" hover)))
+              (contents (gethash "contents" hover))
+              (client (lsp--workspace-client lsp--cur-workspace))
+              (renderers (lsp--client-string-renderers client)))
         (mapconcat #'(lambda (e)
                        (if (hash-table-p e)
-                         (gethash "value" e)
+                         (if-let* ((renderer (alist-get (gethash "language" e)
+                                               renderers nil nil #'string-equal)))
+                           (funcall renderer (gethash "value" e))
+                           (gethash "value" e))
                          e))
           (if (listp contents) contents (list contents)) "\n"))
     nil))
+
+(defun lsp-provide-marked-string-renderer (client language renderer)
+  (cl-check-type language string)
+  (cl-check-type renderer function)
+  (setf (alist-get language (lsp--client-string-renderers client)) renderer))
 
 (defun lsp-info-under-point ()
   "Show relevant documentation for the thing under point."
