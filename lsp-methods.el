@@ -1161,7 +1161,7 @@ type MarkedString = string | { language: string; value: string };"
               (renderers (lsp--client-string-renderers client)))
         (mapconcat #'(lambda (e)
                        (if (hash-table-p e)
-                         (if-let* ((renderer (cdr (assoc-string (gethash "language" e) renderers))))
+                         (if-let ((renderer (cdr (assoc-string (gethash "language" e) renderers))))
                            (funcall renderer (gethash "value" e))
                            (gethash "value" e))
                          e))
