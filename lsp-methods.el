@@ -410,7 +410,7 @@ Return the merged plist."
 
 (defun lsp--client-textdocument-capabilities ()
   "Client Text document capabilities according to LSP."
-  `(:synchronization (:didSave t)))
+  `(:synchronization (:willSave t :didSave t)))
 
 (defun lsp-register-client-capabilities (package-name caps)
   "Register extra client capabilities for the current workspace.
@@ -579,6 +579,8 @@ directory."
   ;; Make sure the hook is local (last param) otherwise we see all changes for all buffers
   (add-hook 'before-change-functions #'lsp-before-change nil t)
   (add-hook 'after-change-functions #'lsp-on-change nil t)
+  (add-hook 'before-save-hook #'lsp--before-save nil t)
+  (add-hook 'auto-save-hook #'lsp--on-auto-save nil t)
   (lsp--set-sync-method)
   (run-hooks 'lsp-after-open-hook))
 
@@ -963,6 +965,22 @@ Added to `after-change-functions'."
         `(:textDocument ,(lsp--versioned-text-document-identifier))))
       (when (and (= 0 (hash-table-count file-versions)) (lsp--shut-down-p))
         (lsp--shutdown-cur-workspace)))))
+
+(defun lsp--before-save ()
+  (when lsp--cur-workspace
+    (lsp--send-changes lsp--cur-workspace)
+    (lsp--send-notification
+      (lsp--make-notification "textDocument/willSave"
+        `(:textDocument ,(lsp--text-document-identifier)
+           :reason 1)))))
+
+(defun lsp--on-auto-save ()
+  (when lsp--cur-workspace
+    (lsp--send-changes lsp--cur-workspace)
+    (lsp--send-notification
+      (lsp--make-notification "textDocument/willSave"
+        `(:textDocument ,(lsp--text-document-identifier)
+           :reason 2)))))
 
 (defun lsp--text-document-did-save ()
   "Executed when the file is closed, added to `after-save-hook''."
