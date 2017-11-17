@@ -46,7 +46,8 @@
        :command final-command
        :filter filter
        :sentinel sentinel
-       :stderr (generate-new-buffer-name (concat "*" name " stderr*"))))))
+       :stderr (generate-new-buffer-name (concat "*" name " stderr*"))
+       :noquery t))))
 
 (defun lsp--make-tcp-connection (name command command-fn host port)
   (lambda (filter sentinel)
@@ -60,7 +61,8 @@
                   :coding 'no-conversion
                   :command final-command
                   :sentinel sentinel
-                  :stderr (generate-new-buffer-name (concat "*" name " stderr*")))
+                  :stderr (generate-new-buffer-name (concat "*" name " stderr*"))
+                  :noquery t)
             tcp-proc (open-network-stream (concat name " TCP connection")
                                           nil host port
                                           :type 'plain))
