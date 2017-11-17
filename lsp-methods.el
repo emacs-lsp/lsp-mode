@@ -944,9 +944,6 @@ Added to `after-change-functions'."
         (lsp--send-changes lsp--cur-workspace)
       (lsp--set-idle-timer lsp--cur-workspace))))
 
-(defun lsp--shut-down-p ()
-  (y-or-n-p "Close the language server for this workspace? "))
-
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
   (lsp--send-changes lsp--cur-workspace)
@@ -963,7 +960,7 @@ Added to `after-change-functions'."
        (lsp--make-notification
         "textDocument/didClose"
         `(:textDocument ,(lsp--versioned-text-document-identifier))))
-      (when (and (= 0 (hash-table-count file-versions)) (lsp--shut-down-p))
+      (when (= 0 (hash-table-count file-versions))
         (lsp--shutdown-cur-workspace)))))
 
 (defun lsp--before-save ()
