@@ -81,7 +81,7 @@
 
 (cl-defmacro lsp-define-stdio-client (name language-id get-root command
                                        &key docstring
-                                       (language-id-fn #'(lambda (_b) language-id))
+                                       language-id-fn
                                        command-fn
                                        ignore-regexps
                                        initialize)
@@ -107,7 +107,7 @@ Optional arguments:
        ,docstring
        (interactive)
        (let ((client (make-lsp--client
-                       :language-id ,language-id-fn
+                       :language-id (if ,language-id-fn ,language-id-fn #'(lambda (_) ,language-id))
                        :send-sync #'lsp--stdio-send-sync
                        :send-async #'lsp--stdio-send-async
                        :new-connection (lsp--make-stdio-connection
@@ -128,7 +128,7 @@ Optional arguments:
 
 (cl-defmacro lsp-define-tcp-client (name language-id get-root command host port
                                      &key docstring
-                                     (language-id-fn #'(lambda (_b) language-id))
+                                     language-id-fn
                                      command-fn
                                      ignore-regexps
                                      initialize)
@@ -155,7 +155,7 @@ Optional arguments:
        ,docstring
        (interactive)
        (let ((client (make-lsp--client
-                       :language-id ,language-id-fn
+                       :language-id (if ,language-id-fn ,language-id-fn #'(lambda (_) ,language-id))
                        :send-sync #'lsp--stdio-send-sync
                        :send-async #'lsp--stdio-send-async
                        :new-connection (lsp--make-tcp-connection
