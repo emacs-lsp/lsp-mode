@@ -51,8 +51,8 @@
 
 (ert-deftest lsp--parser-read--multiple-multibyte-chunks ()
   (let* ((p (make-lsp--parser :workspace lsp--test-workspace)))
-		(should (equal (lsp--parser-read p "Content-Length: 18\r\n\r\n{") nil))
-		(should (equal (lsp--parser-read p "\"somedata\":\"\xe2\x80") nil))
+		(should (equal (lsp--parser-read p "Content-Length: 18\r") nil))
+		(should (equal (lsp--parser-read p "\n\r\n{\"somedata\":\"\xe2\x80") nil))
 		(should (equal (lsp--parser-read p "\x99\"}Content-Length: 14\r\n\r\n{")
 									 '("{\"somedata\":\"’\"}")))
 		(should (equal (lsp--parser-read p "\"somedata\":2}")
