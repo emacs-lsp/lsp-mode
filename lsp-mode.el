@@ -79,7 +79,17 @@
                 "lsp-define-client: :ignore-regexps element %s is not a string"
                 e))))
 
-(cl-defmacro lsp-define-stdio-client (name language-id get-root command
+;; --------------------------------------------------------
+
+(defmacro lsp-define-interactive-client (name)
+  (let ((enable-noninteractive (intern (format "%s-enable-hook" name)))
+        (enable-interactive    (intern (format "%s-enable" name)))
+        )
+    `(defun ,enable-interactive (&optional ask)
+       (interactive)
+       (,enable-noninteractive t))))
+
+(cl-defmacro lsp-define-stdio-client-noninteractive (name language-id get-root command
                                        &key docstring
                                        language-id-fn
                                        command-fn
@@ -102,8 +112,8 @@ Optional arguments:
 
 `:initialize' is a function called when the client is intiailized. It takes a
   single argument, the newly created client."
-  (let ((enable (intern (format "%s-enable" name))))
-    `(defun ,enable ()
+  (let ((enable (intern (format "%s-enable-hook" name))))
+    `(defun ,enable (&optional ask)
        ,docstring
        (interactive)
        (let ((client (make-lsp--client
@@ -121,10 +131,20 @@ Optional arguments:
               `(funcall ,initialize client))
            (let ((root (funcall (lsp--client-get-root client))))
              (if (lsp--should-start-p root)
-               (progn
-                 (lsp-mode 1)
-                 (lsp--start client))
-               (message "Not initializing project %s" root))))))))
+                 (progn
+                   (lsp-mode 1)
+                   (lsp--start client))
+               (if ask
+                   (let ((question (format-message "Add %s to lsp-project-whitelist? " root)))
+                     (if (y-or-n-p question) ;; cannot use when , side effects problem
+                         (progn (message "About to customize lsp-project-whitelist")
+                                (customize-save-variable 'lsp-project-whitelist (add-to-list 'lsp-project-whitelist root)))
+                       (setq lsp--project-whitelist-temp (add-to-list 'lsp--project-whitelist-temp root)))
+                     ;; start regardless, this is called interactively
+                     (lsp-mode 1)
+                     (lsp--start client))
+                 (message "Not initializing project %s" root))))))))
+  )
 
 (cl-defmacro lsp-define-tcp-client (name language-id get-root command host port
                                      &key docstring
