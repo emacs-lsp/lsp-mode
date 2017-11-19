@@ -49,11 +49,6 @@
     (move-to-column (gethash "character" params))
     (point)))
 
-(defun lsp--assert-type (obj pred)
-  (if (funcall pred obj)
-      obj
-    (signal 'wrong-type-argument `(,pred ,obj))))
-
 (defun lsp-make-traverser (name)
   "Return a closure that walks up the current directory until NAME is found.
 NAME can either be a string or a predicate used for `locate-dominating-file'.
