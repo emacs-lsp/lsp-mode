@@ -489,7 +489,7 @@ directory."
       (member root lsp-project-whitelist)
     (not (member root lsp-project-blacklist))))
 
-(defun lsp--start (client)
+(defun lsp--start (client &optional extra-init-params)
   (when lsp--cur-workspace
     (user-error "LSP mode is already enabled for this buffer"))
   (let* ((root (funcall (lsp--client-get-root client)))
@@ -521,10 +521,17 @@ directory."
 
       (puthash root lsp--cur-workspace lsp--workspaces)
       (run-hooks 'lsp-before-initialize-hook)
-      (setq init-params `(:processId ,(emacs-pid) :rootPath ,root
-                           :rootUri ,(concat "file://" root)
-                           :capabilities ,(lsp--client-capabilities)))
-      (setf response (lsp--send-request (lsp--make-request "initialize" init-params)))
+      (setq init-params
+            (lsp--merge-plists
+             `(:processId ,(emacs-pid)
+                :rootPath ,root
+                :rootUri ,(concat "file://" root)
+                :capabilities ,(lsp--client-capabilities)
+                :initializationOptions ,(if (functionp extra-init-params)
+                                            (funcall extra-init-params lsp--cur-workspace)
+                                          extra-init-params))))
+      (setf response (lsp--send-request
+                      (lsp--make-request "initialize" init-params)))
       (unless response
         (signal 'lsp-empty-response-error (list "initialize")))
       (setf (lsp--workspace-server-capabilities lsp--cur-workspace)

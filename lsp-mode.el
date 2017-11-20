@@ -84,6 +84,7 @@
                                        language-id-fn
                                        command-fn
                                        ignore-regexps
+                                       extra-init-params
                                        initialize)
   "Define a LSP client using stdio.
 NAME is the symbol to use for the name of the client.
@@ -100,8 +101,12 @@ Optional arguments:
 `:language-id-fn' is a function that returns the language-id string to be used
  while opening a new file. If non-nil, LANGUAGE-ID is ignored.
 
+`:extra-init-params' is a plist that specifies any (optional)
+ initializeOptions parameters required by the LSP server. A function taking
+ a single argument (LSP workspace) and returning a plist is also accepted.
+
 `:initialize' is a function called when the client is intiailized. It takes a
-  single argument, the newly created client."
+ single argument, the newly created client."
   (let ((enable (intern (format "%s-enable" name))))
     `(defun ,enable ()
        ,docstring
@@ -123,7 +128,7 @@ Optional arguments:
              (if (lsp--should-start-p root)
                (progn
                  (lsp-mode 1)
-                 (lsp--start client))
+                 (lsp--start client ,extra-init-params))
                (message "Not initializing project %s" root))))))))
 
 (cl-defmacro lsp-define-tcp-client (name language-id get-root command host port
@@ -131,6 +136,7 @@ Optional arguments:
                                      language-id-fn
                                      command-fn
                                      ignore-regexps
+                                     extra-init-params
                                      initialize)
   "Define a LSP client using TCP.
 NAME is the symbol to use for the name of the client.
@@ -148,7 +154,11 @@ Optional arguments:
 `:language-id-fn' is a function that returns the language-id string to be used
  while opening a new file. If non-nil, LANGUAGE-ID is ignored.
 
-`:initialize' is a function called when the client is intiailized. It takes a
+`:extra-init-params' is a plist that specifies any (optional)
+ initializeOptions parameters required by the LSP server. A function taking
+ a single argument (LSP workspace) and returning a plist is also accepted.
+
+`:initialize' is a function called when the client is initialized. It takes a
   single argument, the newly created client."
   (let ((enable (intern (format "%s-enable" name))))
     `(defun ,enable ()
@@ -172,7 +182,7 @@ Optional arguments:
              (if (lsp--should-start-p root)
                (progn
                  (lsp-mode 1)
-                 (lsp--start client))
+                 (lsp--start client ,extra-init-params))
                (message "Not initializing project %s" root))))))))
 
 ;;;###autoload
