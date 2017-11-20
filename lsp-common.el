@@ -46,7 +46,7 @@
   (save-excursion
     (goto-char (point-min))
     (forward-line (gethash "line" params))
-    (move-to-column (gethash "character" params))
+    (forward-char (gethash "character" params))
     (point)))
 
 (defun lsp-make-traverser (name)
