@@ -1170,26 +1170,26 @@ Returns xref-item(s)."
     contents: MarkedString | MarkedString[];
     range?: Range;
 }
-
 type MarkedString = string | { language: string; value: string };"
   (lsp--cur-workspace-check)
   (lsp--send-changes lsp--cur-workspace)
-  (if (symbol-at-point)
-      (let* ((hover (lsp--send-request (lsp--make-request
-                                        "textDocument/hover"
-                                        (lsp--text-document-position-params))))
-              (contents (gethash "contents" hover))
+  (when (symbol-at-point)
+    (lsp--send-request-async
+     (lsp--make-request "textDocument/hover" (lsp--text-document-position-params))
+     (lambda (hover)
+       (let* ((contents (gethash "contents" hover))
               (client (lsp--workspace-client lsp--cur-workspace))
               (renderers (lsp--client-string-renderers client))
-              renderer)
-        (mapconcat #'(lambda (e)
-                       (if (hash-table-p e)
-                         (if (setq renderer (cdr (assoc-string
-                                                   (gethash "language" e) renderers)))
-                           (funcall renderer (gethash "value" e))
-                           (gethash "value" e))
-                         e))
-          (if (listp contents) contents (list contents)) "\n"))
+              renderer
+              (str (mapconcat #'(lambda (e)
+                                  (if (hash-table-p e)
+                                      (if (setq renderer (cdr (assoc-string
+                                                               (gethash "language" e) renderers)))
+                                          (funcall renderer (gethash "value" e))
+                                        (gethash "value" e))
+                                    e))
+                              (if (listp contents) contents (list contents)) "\n")))
+         (eldoc-message str))))
     nil))
 
 (defun lsp-provide-marked-string-renderer (client language renderer)
