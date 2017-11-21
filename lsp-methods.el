@@ -280,7 +280,8 @@ the response recevied from the server asynchronously."
     (cl-assert id nil "body missing id field")
     (puthash id callback (lsp--client-response-handlers client))
     (funcall (lsp--client-send-async client) (lsp--make-message body)
-             (lsp--workspace-proc lsp--cur-workspace))))
+      (lsp--workspace-proc lsp--cur-workspace))
+    body))
 
 (define-inline lsp--inc-cur-file-version ()
   (inline-quote (cl-incf (gethash buffer-file-name
@@ -1156,6 +1157,15 @@ Returns xref-item(s)."
         (mapcar 'lsp--location-to-xref location)
       (and location (lsp--location-to-xref location)))))
 
+(defun lsp--cancel-request (id)
+  (lsp--cur-workspace-check)
+  (cl-check-type id (or number string))
+  (let ((response-handlers (lsp--client-response-handlers (lsp--workspace-client
+                                                            lsp--cur-workspace))))
+    (remhash id response-handlers)
+    (lsp--send-notification (lsp--make-notification "$/cancelRequest"
+                              `(:id ,id)))))
+
 (defun lsp--on-hover ()
   (when (and (lsp--capability "documentHighlightProvider")
              lsp-highlight-symbol-at-point)
@@ -1164,6 +1174,8 @@ Returns xref-item(s)."
     (lsp--text-document-code-action))
   (when lsp-enable-eldoc
     (lsp--text-document-hover-string)))
+
+(defvar-local lsp--cur-hover-request-id nil)
 
 (defun lsp--text-document-hover-string ()
   "interface Hover {
@@ -1174,23 +1186,43 @@ Returns xref-item(s)."
 type MarkedString = string | { language: string; value: string };"
   (lsp--cur-workspace-check)
   (lsp--send-changes lsp--cur-workspace)
-  (if (symbol-at-point)
-      (let* ((hover (lsp--send-request (lsp--make-request
-                                        "textDocument/hover"
-                                        (lsp--text-document-position-params))))
-              (contents (gethash "contents" hover))
-              (client (lsp--workspace-client lsp--cur-workspace))
-              (renderers (lsp--client-string-renderers client))
-              renderer)
-        (mapconcat #'(lambda (e)
-                       (if (hash-table-p e)
-                         (if (setq renderer (cdr (assoc-string
-                                                   (gethash "language" e) renderers)))
-                           (funcall renderer (gethash "value" e))
-                           (gethash "value" e))
-                         e))
-          (if (listp contents) contents (list contents)) "\n"))
-    nil))
+  (when lsp--cur-hover-request-id
+    (lsp--cancel-request lsp--cur-hover-request-id))
+  (let* ((client (lsp--workspace-client lsp--cur-workspace))
+          (renderers (lsp--client-string-renderers client))
+          bounds body)
+    (when (symbol-at-point)
+      (setq bounds (bounds-of-thing-at-point 'symbol)
+        body (lsp--send-request-async (lsp--make-request "textDocument/hover"
+                                        (lsp--text-document-position-params))
+               (lsp--make-hover-callback renderers (car bounds) (cdr bounds)
+                 (current-buffer)))
+        lsp--cur-hover-request-id (plist-get body :id))
+      (cl-assert (integerp lsp--cur-hover-request-id)))))
+
+(define-inline lsp--point-is-within-bounds-p (start end)
+  "Return whether the current point is within START and END."
+  (inline-quote
+    (let ((p (point)))
+      (and (>= p ,start) (<= p ,end)))))
+
+;; start and end are the bounds of the symbol at point
+(defun lsp--make-hover-callback (renderers start end buffer)
+  (lambda (hover)
+    (setq lsp--cur-hover-request-id nil)
+    (when (and (lsp--point-is-within-bounds-p start end)
+            (eq (current-buffer) buffer) (eldoc-display-message-p))
+      (let ((contents (gethash "contents" hover)))
+        (eldoc-message
+          (mapconcat (lambda (e)
+                       (let (renderer)
+                         (if (hash-table-p e)
+                           (if (setq renderer (cdr (assoc-string
+                                                     (gethash "language" e) renderers)))
+                             (funcall renderer (gethash "value" e))
+                             (gethash "value" e))
+                           e)))
+            (if (listp contents) contents (list contents)) "\n"))))))
 
 (defun lsp-provide-marked-string-renderer (client language renderer)
   (cl-check-type language string)
