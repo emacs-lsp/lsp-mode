@@ -187,14 +187,15 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
       ('notification (lsp--on-notification p json-data))
       ('request      (lsp--on-request p json-data)))))
 
-(defun lsp--parser-read (p chunk)
+(defun lsp--parser-read (p output)
   (cl-assert (lsp--parser-workspace p) nil "Parser workspace cannot be nil.")
 
-  (let ((messages '()))
+  (let ((messages '())
+        (chunk (concat (lsp--parser-leftovers p) output)))
     (while (not (string-empty-p chunk))
       (if (not (lsp--parser-reading-body p))
-          (let* ((full-chunk (concat (lsp--parser-leftovers p) chunk))
-                 (body-sep-pos (string-match-p "\r\n\r\n" chunk)))
+          ;; Read headers
+          (let* ((body-sep-pos (string-match-p "\r\n\r\n" chunk)))
             (if body-sep-pos
                 ;; We've got all the headers, handle them all at once:
                 (let* ((header-raw (substring chunk 0 body-sep-pos))
@@ -212,9 +213,9 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
                    (lsp--parser-leftovers p) nil)
                   (setq chunk content))
 
-              ;; Haven't found the end of the headers yet, save everything
-              ;; for when the next chunk arrives:
-              (setf (lsp--parser-leftovers p) full-chunk)
+              ;; Haven't found the end of the headers yet. Save everything
+              ;; for when the next chunk arrives and await further input.
+              (setf (lsp--parser-leftovers p) chunk)
               (setq chunk "")))
 
         ;; Read body
