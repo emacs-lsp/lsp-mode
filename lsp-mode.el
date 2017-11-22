@@ -133,10 +133,15 @@ Optional arguments:
 
 `:initialize' is a function called when the client is intiailized. It takes a
  single argument, the newly created client."
-  (let ((enable (intern (format "%s-enable" name))))
-    `(defun ,enable ()
+   (let ((enable (intern (format "%s-enable" name))))
+    `(progn
+    (lsp-define-whitelist-enable ,name ,get-root)
+    (lsp-define-whitelist-disable ,name ,get-root)
+
+    (defun ,enable ()
        ,docstring
        (interactive)
+       (lsp-define-whitelist-disable ,name ,get-root)
        (let ((client (make-lsp--client
                        :language-id (if ,language-id-fn ,language-id-fn #'(lambda (_) ,language-id))
                        :send-sync #'lsp--stdio-send-sync
@@ -155,7 +160,7 @@ Optional arguments:
                (progn
                  (lsp-mode 1)
                  (lsp--start client ,extra-init-params))
-               (message "Not initializing project %s" root))))))))
+               (message "Not initializing project %s" root)))))))))
 
 (cl-defmacro lsp-define-tcp-client (name language-id get-root command host port
                                      &key docstring
