@@ -79,6 +79,32 @@
                 "lsp-define-client: :ignore-regexps element %s is not a string"
                 e))))
 
+(cl-defmacro lsp-define-whitelist-enable (name get-root
+                                               &key docstring)
+  "Define a function to add the project root for the current buffer to the whitleist.
+NAME is the base name for the command.
+GET-ROOT is the language-specific function to determint the project root for the current buffer."
+  (let ((enable (intern (format "%s-whitelist-add" name))))
+    `(defun ,enable ()
+       ,docstring
+       (interactive)
+       (let ((root (funcall ,get-root)))
+         (customize-save-variable 'lsp-project-whitelist
+                                    (add-to-list 'lsp-project-whitelist root))))))
+
+(cl-defmacro lsp-define-whitelist-disable (name get-root
+                                               &key docstring)
+  "Define a function to remove the project root for the current buffer from the whitleist.
+NAME is the base name for the command.
+GET-ROOT is the language-specific function to determint the project root for the current buffer."
+  (let ((enable (intern (format "%s-whitelist-remove" name))))
+    `(defun ,enable ()
+       ,docstring
+       (interactive)
+       (let ((root (funcall ,get-root)))
+         (customize-save-variable 'lsp-project-whitelist
+                                  (remove root 'lsp-project-whitelist ))))))
+
 (cl-defmacro lsp-define-stdio-client (name language-id get-root command
                                        &key docstring
                                        language-id-fn
