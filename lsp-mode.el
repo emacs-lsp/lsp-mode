@@ -18,7 +18,7 @@
 ;; Author: Vibhav Pant <vibhavp@gmail.com>
 ;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; Package-Requires: ((emacs "25.1") (flycheck "30"))
-;; Version: 3.3
+;; Version: 3.4
 
 ;;; Commentary:
 
@@ -185,11 +185,19 @@ Optional arguments:
                  (lsp--start client ,extra-init-params))
                (message "Not initializing project %s" root))))))))
 
+(defvar-local lsp-status nil
+  "The current status of the LSP server.")
+
+(defun lsp-mode-line ()
+  "Construct the mode line text."
+  (concat " LSP" lsp-status))
+
 ;;;###autoload
 (define-minor-mode lsp-mode ""
   nil nil nil
-  :lighter " LSP"
-  :group 'lsp-mode)
+  :lighter (:eval (lsp-mode-line))
+  :group 'lsp-mode
+  (lsp--start))
 
 (defconst lsp--sync-type
   `((0 . "None")
