@@ -1302,17 +1302,23 @@ interface DocumentRangeFormattingParams {
 
 (defun lsp--symbol-highlight-callback (highlights)
   "Callback function to process the reply of a
-'textDocument/documentHightlight' message."
+'textDocument/documentHightlight' message.
+A reference is highlighted only if it is visible in a window."
   (lsp--remove-cur-overlays)
-  (dolist (highlight highlights)
-    (let* ((range (gethash "range" highlight nil))
-           (kind (gethash "kind" highlight 1))
-           (start-point (lsp--position-to-point (gethash "start" range)))
-           (end-point (lsp--position-to-point (gethash "end" range)))
-           (overlay (make-overlay start-point end-point)))
-      (overlay-put overlay 'face
-                   (cdr (assq kind lsp--highlight-kind-face)))
-      (push overlay (lsp--workspace-highlight-overlays lsp--cur-workspace)))))
+  (let ((windows-on-buffer (get-buffer-window-list nil nil 'visible)))
+    (dolist (highlight highlights)
+      (let* ((range (gethash "range" highlight nil))
+             (kind (gethash "kind" highlight 1))
+             (start-point (lsp--position-to-point (gethash "start" range)))
+             (end-point (lsp--position-to-point (gethash "end" range)))
+             overlay)
+        (dolist (win windows-on-buffer)
+          (when (or (pos-visible-in-window-group-p start-point win t)
+                    (pos-visible-in-window-group-p end-point win t))
+            (setq overlay (make-overlay start-point end-point))
+            (overlay-put overlay 'face
+                         (cdr (assq kind lsp--highlight-kind-face)))
+            (push overlay (lsp--workspace-highlight-overlays lsp--cur-workspace))))))))
 
 (defconst lsp--symbol-kind
   '((1 . "File")
