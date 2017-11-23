@@ -196,8 +196,7 @@ Optional arguments:
 (define-minor-mode lsp-mode ""
   nil nil nil
   :lighter (:eval (lsp-mode-line))
-  :group 'lsp-mode
-  (lsp--start))
+  :group 'lsp-mode)
 
 (defconst lsp--sync-type
   `((0 . "None")
