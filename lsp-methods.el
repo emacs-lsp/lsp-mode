@@ -523,14 +523,13 @@ directory."
       (puthash root lsp--cur-workspace lsp--workspaces)
       (run-hooks 'lsp-before-initialize-hook)
       (setq init-params
-            (lsp--merge-plists
-             `(:processId ,(emacs-pid)
-                :rootPath ,root
-                :rootUri ,(concat "file://" root)
-                :capabilities ,(lsp--client-capabilities)
-                :initializationOptions ,(if (functionp extra-init-params)
-                                            (funcall extra-init-params lsp--cur-workspace)
-                                          extra-init-params))))
+            `(:processId ,(emacs-pid)
+                         :rootPath ,root
+                         :rootUri ,(concat "file://" root)
+                         :capabilities ,(lsp--client-capabilities)
+                         :initializationOptions ,(if (functionp extra-init-params)
+                                                     (funcall extra-init-params lsp--cur-workspace)
+                                                   extra-init-params)))
       (setf response (lsp--send-request
                       (lsp--make-request "initialize" init-params)))
       (unless response
