@@ -1400,7 +1400,7 @@ A reference is highlighted only if it is visible in a window."
          (params (plist-get properties 'ref-params))
          (ref (lsp--send-request (lsp--make-request
                                   "textDocument/references"
-                                  params))))
+                                  (or params (lsp--make-reference-params))))))
     (if (consp ref)
         (mapcar 'lsp--location-to-xref ref)
       (and ref `(,(lsp--location-to-xref ref))))))
