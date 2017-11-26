@@ -1149,7 +1149,6 @@ The function returns a list of `xref-item'."
          (fn (lambda (loc) (lsp--xref-make-item filename loc))))
     (if visiting
         (with-current-buffer visiting
-          (font-lock-ensure)
           (mapcar fn (cdr file)))
       (when (file-readable-p filename)
         (with-temp-buffer
