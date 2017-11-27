@@ -1294,30 +1294,32 @@ interface DocumentRangeFormattingParams {
   "Highlight all relevant references to the symbol under point."
   (interactive)
   (lsp--send-changes lsp--cur-workspace)
-  (lsp--send-request-async (lsp--make-request
-                            "textDocument/documentHighlight"
-                            (lsp--text-document-position-params))
-                           #'lsp--symbol-highlight-callback))
+  (lsp--send-request-async (lsp--make-request "textDocument/documentHighlight"
+                             (lsp--text-document-position-params))
+    (lsp--make-symbol-highlight-callback (current-buffer))))
 
-(defun lsp--symbol-highlight-callback (highlights)
-  "Callback function to process the reply of a
-'textDocument/documentHightlight' message.
+(defun lsp--make-symbol-highlight-callback (buf)
+  "Create a callback to process the reply of a
+'textDocument/documentHightlight' message for the buffer BUF.
 A reference is highlighted only if it is visible in a window."
-  (lsp--remove-cur-overlays)
-  (let ((windows-on-buffer (get-buffer-window-list nil nil 'visible)))
-    (dolist (highlight highlights)
-      (let* ((range (gethash "range" highlight nil))
-             (kind (gethash "kind" highlight 1))
-             (start-point (lsp--position-to-point (gethash "start" range)))
-             (end-point (lsp--position-to-point (gethash "end" range)))
-             overlay)
-        (dolist (win windows-on-buffer)
-          (when (or (pos-visible-in-window-group-p start-point win t)
-                    (pos-visible-in-window-group-p end-point win t))
-            (setq overlay (make-overlay start-point end-point))
-            (overlay-put overlay 'face
-                         (cdr (assq kind lsp--highlight-kind-face)))
-            (push overlay (lsp--workspace-highlight-overlays lsp--cur-workspace))))))))
+  (cl-check-type buf buffer)
+  (lambda (highlights)
+    (with-current-buffer buf
+      (lsp--remove-cur-overlays)
+      (let ((windows-on-buffer (get-buffer-window-list nil nil 'visible)))
+        (dolist (highlight highlights)
+          (let* ((range (gethash "range" highlight nil))
+                  (kind (gethash "kind" highlight 1))
+                  (start-point (lsp--position-to-point (gethash "start" range)))
+                  (end-point (lsp--position-to-point (gethash "end" range)))
+                  overlay)
+            (dolist (win windows-on-buffer)
+              (when (or (pos-visible-in-window-group-p start-point win t)
+                      (pos-visible-in-window-group-p end-point win t))
+                (setq overlay (make-overlay start-point end-point))
+                (overlay-put overlay 'face
+                  (cdr (assq kind lsp--highlight-kind-face)))
+                (push overlay (lsp--workspace-highlight-overlays lsp--cur-workspace))))))))))
 
 (defconst lsp--symbol-kind
   '((1 . "File")
