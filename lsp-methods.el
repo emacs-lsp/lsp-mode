@@ -1164,19 +1164,28 @@ The function returns a list of `xref-item'."
           (insert-file-contents-literally filename)
           (mapcar fn (cdr file)))))))
 
+(defun lsp--locations-to-xref-items (locations)
+  "Return a list of xref-item from LOCATIONS."
+  (when locations
+    (let* ((fn (lambda (loc) (string-remove-prefix "file://" (gethash "uri" loc))))
+           ;; We group all locations by file
+           ;; locations-by-file is a list where each element is a cons.
+           ;; The car is a filename and the cdr is a list of location:
+           ;; ((FILENAME . (LOCATION LOCATION ..)) ..)
+           (locations-by-file (seq-group-by fn locations))
+           ;; items-by-file is a list of list of xref-item
+           (items-by-file (mapcar #'lsp--get-xrefs-in-file locations-by-file)))
+      ;; flatten the list
+      (apply #'append items-by-file))))
+
 (defun lsp--get-defitions ()
   "Get definition of the current symbol under point.
 Returns xref-item(s)."
   (lsp--send-changes lsp--cur-workspace)
-  (let ((def (lsp--send-request (lsp--make-request
-                                 "textDocument/definition"
-                                 (lsp--text-document-position-params)))))
-    (when def
-      ;; See `xref-backend-references' for explanations
-      (let* ((fn (lambda (loc) (string-remove-prefix "file://" (gethash "uri" loc))))
-             (locations-by-file (seq-group-by fn def))
-             (def-by-file (mapcar #'lsp--get-xrefs-in-file locations-by-file)))
-        (apply #'append def-by-file)))))
+  (let ((defs (lsp--send-request (lsp--make-request
+                                  "textDocument/definition"
+                                  (lsp--text-document-position-params)))))
+    (lsp--locations-to-xref-items defs)))
 
 (defun lsp--make-reference-params (&optional td-position)
   "Make a ReferenceParam object.
@@ -1189,15 +1198,10 @@ If TD-POSITION is non-nil, use it as TextDocumentPositionParams object instead."
   "Get all references for the symbol under point.
 Returns xref-item(s)."
   (lsp--send-changes lsp--cur-workspace)
-  (let ((ref  (lsp--send-request (lsp--make-request
-                                  "textDocument/references"
-                                  (lsp--make-reference-params)))))
-    (when ref
-      ;; See `xref-backend-references' for explanations
-      (let* ((fn (lambda (loc) (string-remove-prefix "file://" (gethash "uri" loc))))
-             (locations-by-file (seq-group-by fn ref))
-             (def-by-file (mapcar #'lsp--get-xrefs-in-file locations-by-file)))
-        (apply #'append def-by-file)))))
+  (let ((refs  (lsp--send-request (lsp--make-request
+                                   "textDocument/references"
+                                   (lsp--make-reference-params)))))
+    (lsp--locations-to-xref-items refs)))
 
 (defun lsp--cancel-request (id)
   (lsp--cur-workspace-check)
@@ -1431,33 +1435,18 @@ A reference is highlighted only if it is visible in a window."
          (params (if (null maybeparams)
                      (lsp--text-document-position-params)
                    maybeparams))
-         (def (lsp--send-request (lsp--make-request
-                                  "textDocument/definition"
-                                  params))))
-    (when def
-      ;; See `xref-backend-references' for explanations
-      (let* ((fn (lambda (loc) (string-remove-prefix "file://" (gethash "uri" loc))))
-             (locations-by-file (seq-group-by fn def))
-             (def-by-file (mapcar #'lsp--get-xrefs-in-file locations-by-file)))
-        (apply #'append def-by-file)))))
+         (defs (lsp--send-request (lsp--make-request
+                                   "textDocument/definition"
+                                   params))))
+    (lsp--locations-to-xref-items defs)))
 
 (cl-defmethod xref-backend-references ((_backend (eql xref-lsp)) identifier)
   (let* ((properties (text-properties-at 0 identifier))
          (params (plist-get properties 'ref-params))
-         (ref (lsp--send-request (lsp--make-request
-                                  "textDocument/references"
-                                  (or params (lsp--make-reference-params))))))
-    (when ref
-      (let* ((fn (lambda (loc) (string-remove-prefix "file://" (gethash "uri" loc))))
-             ;; We group all references by file
-             ;; locations-by-file is a list where each element is a cons.
-             ;; The car is a filename and the cdr is a list of location:
-             ;; ((FILENAME . (LOCATION LOCATION ..)) ..)
-             (locations-by-file (seq-group-by fn ref))
-             ;; ref-by-file is a list of list of xref-item
-             (ref-by-file (mapcar #'lsp--get-xrefs-in-file locations-by-file)))
-        ;; flatten the list
-        (apply #'append ref-by-file)))))
+         (refs (lsp--send-request (lsp--make-request
+                                   "textDocument/references"
+                                   (or params (lsp--make-reference-params))))))
+    (lsp--locations-to-xref-items refs)))
 
 (cl-defmethod xref-backend-apropos ((_backend (eql xref-lsp)) pattern)
   (let ((symbols (lsp--send-request (lsp--make-request
