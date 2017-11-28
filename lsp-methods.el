@@ -1122,6 +1122,15 @@ POS is a LSP position on the line."
       (goto-char point)
       (buffer-substring (line-beginning-position) (line-end-position)))))
 
+(defun lsp--location-to-xref (location)
+  "Convert Location object LOCATION to an `xref-item'.
+ interface Location {
+ 	uri: string;
+ 	range: Range;
+ }"
+  (let ((uri (string-remove-prefix "file://" (gethash "uri" location))))
+    (lsp--xref-make-item uri location)))
+
 (defun lsp--xref-make-item (filename location)
   "Return a xref-item from a LOCATION in FILENAME."
   (let* ((range (gethash "range" location))
@@ -1419,9 +1428,12 @@ A reference is highlighted only if it is visible in a window."
          (def (lsp--send-request (lsp--make-request
                                   "textDocument/definition"
                                   params))))
-    (if (consp def)
-        (mapcar 'lsp--location-to-xref def)
-      (and def `(,(lsp--location-to-xref def))))))
+    (when def
+      ;; See `xref-backend-references' for explanations
+      (let* ((fn (lambda (loc) (string-remove-prefix "file://" (gethash "uri" loc))))
+             (locations-by-file (seq-group-by fn def))
+             (def-by-file (mapcar #'lsp--get-xrefs-in-file locations-by-file)))
+        (apply #'append def-by-file)))))
 
 (cl-defmethod xref-backend-references ((_backend (eql xref-lsp)) identifier)
   (let* ((properties (text-properties-at 0 identifier))
