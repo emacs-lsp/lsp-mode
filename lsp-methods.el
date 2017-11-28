@@ -1122,15 +1122,6 @@ POS is a LSP position on the line."
       (goto-char point)
       (buffer-substring (line-beginning-position) (line-end-position)))))
 
-(defun lsp--location-to-xref (location)
-  "Convert Location object LOCATION to an `xref-item'.
- interface Location {
- 	uri: string;
- 	range: Range;
- }"
-  (let ((uri (string-remove-prefix "file://" (gethash "uri" location))))
-    (lsp--xref-make-item uri location)))
-
 (defun lsp--xref-make-item (filename location)
   "Return a xref-item from a LOCATION in FILENAME."
   (let* ((range (gethash "range" location))
@@ -1165,7 +1156,7 @@ The function returns a list of `xref-item'."
           (mapcar fn (cdr file)))))))
 
 (defun lsp--locations-to-xref-items (locations)
-  "Return a list of xref-item from LOCATIONS."
+  "Return a list of `xref-item' from LOCATIONS."
   (when locations
     (let* ((fn (lambda (loc) (string-remove-prefix "file://" (gethash "uri" loc))))
            ;; We group all locations by file
@@ -1387,10 +1378,17 @@ A reference is highlighted only if it is visible in a window."
     (18 . "Array")))
 
 (defun lsp--symbol-information-to-xref (symbol)
-  (xref-make (format "%s %s"
-                     (alist-get (gethash "kind" symbol) lsp--symbol-kind)
-                     (gethash "name" symbol))
-             (lsp--location-to-xref (gethash "location" symbol))))
+  "Return a `xref-item' from SYMBOL information."
+  (let* ((location (gethash "location" symbol))
+         (uri (gethash "uri" location))
+         (range (gethash "range" location))
+         (start (gethash "start" range)))
+    (xref-make (format "[%s] %s"
+                       (alist-get (gethash "kind" symbol) lsp--symbol-kind)
+                       (gethash "name" symbol))
+               (xref-make-file-location (string-remove-prefix "file://" uri)
+                                        (1+ (gethash "line" start))
+                                        (gethash "character" start)))))
 
 (defun lsp-format-region (s e)
   (lsp--send-changes lsp--cur-workspace)
