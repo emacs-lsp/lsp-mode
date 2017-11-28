@@ -1168,12 +1168,15 @@ The function returns a list of `xref-item'."
   "Get definition of the current symbol under point.
 Returns xref-item(s)."
   (lsp--send-changes lsp--cur-workspace)
-  (let ((location (lsp--send-request (lsp--make-request
-                                      "textDocument/definition"
-                                      (lsp--text-document-position-params)))))
-    (if (consp location) ;;multiple definitions
-        (mapcar 'lsp--location-to-xref location)
-      (lsp--location-to-xref location))))
+  (let ((def (lsp--send-request (lsp--make-request
+                                 "textDocument/definition"
+                                 (lsp--text-document-position-params)))))
+    (when def
+      ;; See `xref-backend-references' for explanations
+      (let* ((fn (lambda (loc) (string-remove-prefix "file://" (gethash "uri" loc))))
+             (locations-by-file (seq-group-by fn def))
+             (def-by-file (mapcar #'lsp--get-xrefs-in-file locations-by-file)))
+        (apply #'append def-by-file)))))
 
 (defun lsp--make-reference-params (&optional td-position)
   "Make a ReferenceParam object.
@@ -1186,12 +1189,15 @@ If TD-POSITION is non-nil, use it as TextDocumentPositionParams object instead."
   "Get all references for the symbol under point.
 Returns xref-item(s)."
   (lsp--send-changes lsp--cur-workspace)
-  (let ((location  (lsp--send-request (lsp--make-request
-                                       "textDocument/references"
-                                       (lsp--make-reference-params)))))
-    (if (consp location)
-        (mapcar 'lsp--location-to-xref location)
-      (and location (lsp--location-to-xref location)))))
+  (let ((ref  (lsp--send-request (lsp--make-request
+                                  "textDocument/references"
+                                  (lsp--make-reference-params)))))
+    (when ref
+      ;; See `xref-backend-references' for explanations
+      (let* ((fn (lambda (loc) (string-remove-prefix "file://" (gethash "uri" loc))))
+             (locations-by-file (seq-group-by fn ref))
+             (def-by-file (mapcar #'lsp--get-xrefs-in-file locations-by-file)))
+        (apply #'append def-by-file)))))
 
 (defun lsp--cancel-request (id)
   (lsp--cur-workspace-check)
