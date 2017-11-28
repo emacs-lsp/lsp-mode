@@ -1274,7 +1274,7 @@ type MarkedString = string | { language: string; value: string };"
 ;; NOTE: the code actions cannot currently be applied. There is some non-GNU
 ;; code to do this in the lsp-haskell module. We still need a GNU version, here.
 ;; PRs accepted.
-(defvar lsp-code-actions nil
+(defvar-local lsp-code-actions nil
   "Code actions for the buffer.")
 
 (defun lsp--text-document-code-action ()
@@ -1283,12 +1283,13 @@ the diagnostics"
   (lsp--cur-workspace-check)
   (lsp--send-request-async (lsp--make-request
                             "textDocument/codeAction"
-                            (lsp--text-document-code-action-params))
-                           #'lsp--text-document-code-action-callback))
+                             (lsp--text-document-code-action-params))
+    (lsp--make-code-action-callback (current-buffer))))
 
-(defun lsp--text-document-code-action-callback (actions)
-  "Callback to process the reply to a 'textDocument/codeAction' request."
-  (setq lsp-code-actions (cl-union actions lsp-code-actions)))
+(defun lsp--make-code-action-callback (buf)
+  (lambda (actions)
+    (with-current-buffer buf
+      (setq lsp-code-actions actions))))
 
 (defun lsp--make-document-formatting-options ()
   (let ((json-false :json-false))
