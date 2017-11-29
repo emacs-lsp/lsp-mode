@@ -1241,17 +1241,45 @@ type MarkedString = string | { language: string; value: string };"
 
 (defun lsp--text-document-code-action ()
   "Request code action to automatically fix issues reported by
-the diagnostics"
+the diagnostics."
   (lsp--cur-workspace-check)
   (lsp--send-request-async (lsp--make-request
                             "textDocument/codeAction"
                              (lsp--text-document-code-action-params))
     (lsp--make-code-action-callback (current-buffer))))
 
+(defun lsp--command-get-title (cmd)
+  "Given a Command object CMD, get the title.
+If title is nil, return the name for the command handler."
+  (gethash "title" cmd (gethash "command" cmd)))
+
 (defun lsp--make-code-action-callback (buf)
   (lambda (actions)
     (with-current-buffer buf
       (setq lsp-code-actions actions))))
+
+(defun lsp--command-p (cmd)
+  (and (cl-typep cmd 'hash-table)
+    (cl-typep (gethash "title" cmd) 'string)
+    (cl-typep (gethash "command" cmd) 'string)))
+
+(defun lsp-execute-code-action (action)
+  "Execute code action ACTION."
+  (interactive (list (completing-read "Select code action: "
+                       (seq-group-by #'lsp--command-get-title lsp-code-actions))))
+  (lsp--execute-command action))
+
+(defvar-local lsp-code-lenses nil
+  "A list of code lenses computed for the buffer.")
+
+(defun lsp--update-code-lenses ()
+  (lsp--cur-workspace-check)
+  (lsp--send-request-async (lsp--make-request "textDocument/codeLens"
+                               (lsp--text-document-identifier))
+      (let ((buf (current-buffer)))
+        #'(lambda (lenses)
+            (with-current-buffer buf
+              (setq lsp-code-lenses lenses))))))
 
 (defun lsp--make-document-formatting-options ()
   (let ((json-false :json-false))
@@ -1437,13 +1465,16 @@ interface RenameParams {
                                    (lsp--make-document-rename-params newname)))))
     (lsp--apply-workspace-edits edits)))
 
-(defun lsp--execute-lsp-server-command (command)
-  "Given a COMMAND returned from the server via e.g.
-'textDocument/codeAction' ceate and send a
-'workspace/executeCommand' message"
-
-  (lsp--send-execute-command (gethash "command" command) (gethash "arguments" command nil))
-  )
+(define-inline lsp--execute-command (command)
+  "Given a COMMAND returned from the server, create and send a
+'workspace/executeCommand' message."
+  (inline-letevals (command)
+    (inline-quote
+      (progn
+        (cl-check-type ,command (satisfies lsp--command-p))
+        (lsp--send-execute-command
+          (gethash "command" ,command)
+          (gethash "arguments" ,command nil))))))
 
 (defun lsp--send-execute-command (command &optional args)
   "Create and send a 'workspace/executeCommand' message having
