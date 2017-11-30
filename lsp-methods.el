@@ -610,6 +610,7 @@ interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
 
 (define-inline lsp--position (line char)
   "Make a Position object for the given LINE and CHAR.
+
 interface Position {
     line: number;
     character: number;
@@ -1113,30 +1114,77 @@ https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#co
 	item))
     item))
 
-(defun lsp--location-to-xref (location)
-  "Convert Location object LOCATION to an ‘xref-item’.
-interface Location {
-    uri: string;
-    range: Range;
-}"
-  (lsp--send-changes lsp--cur-workspace)
-  (let ((uri (string-remove-prefix "file://" (gethash "uri" location)))
-        (ref-pos (gethash "start" (gethash "range" location))))
-    (xref-make uri
-               (xref-make-file-location uri
-                                        (1+ (gethash "line" ref-pos))
-                                        (gethash "character" ref-pos)))))
+(defun lsp--extract-line-from-buffer (pos)
+  "Return the line pointed to by POS (a Position object) in the current buffer."
+  (let* ((point (lsp--position-to-point pos))
+         (inhibit-field-text-motion t))
+    (save-excursion
+      (goto-char point)
+      (buffer-substring (line-beginning-position) (line-end-position)))))
 
-(defun lsp--get-defitions ()
+(defun lsp--xref-make-item (filename location)
+  "Return a xref-item from a LOCATION in FILENAME."
+  (let* ((range (gethash "range" location))
+         (pos-start (gethash "start" range))
+         (pos-end (gethash "end" range))
+         (line (lsp--extract-line-from-buffer pos-start))
+         (start (gethash "character" pos-start))
+         (end (gethash "character" pos-end))
+         (len (length line)))
+    (add-face-text-property (max (min start len) 0)
+                            (max (min end len) 0)
+                            'highlight t line)
+    ;; LINE is nil when FILENAME is not being current visited by any buffer.
+    (xref-make (or line filename)
+               (xref-make-file-location filename
+                                        (1+ (gethash "line" pos-start))
+                                        (gethash "character" pos-start)))))
+
+(defun lsp--get-xrefs-in-file (file)
+  "Return all references that contain a file.
+FILE is a cons where its car is the filename and the cdr is a list of Locations
+within the file.  We open and/or create the file/buffer only once for all
+references.  The function returns a list of `xref-item'."
+  (let* ((filename (car file))
+         (visiting (find-buffer-visiting filename))
+         (fn (lambda (loc) (lsp--xref-make-item filename loc))))
+    (if visiting
+        (with-current-buffer visiting
+          (mapcar fn (cdr file)))
+      (when (file-readable-p filename)
+        (with-temp-buffer
+          (insert-file-contents-literally filename)
+          (mapcar fn (cdr file)))))))
+
+(defun lsp--locations-to-xref-items (locations)
+  "Return a list of `xref-item' from LOCATIONS.
+LOCATIONS is an array of Location objects:
+
+interface Location {
+	uri: DocumentUri;
+	range: Range;
+}"
+  (when locations
+    (let* ((fn (lambda (loc) (string-remove-prefix "file://" (gethash "uri" loc))))
+            ;; locations-by-file is an alist of the form
+            ;; ((FILENAME . LOCATIONS)...), where FILENAME is a string of the
+            ;; actual file name, and LOCATIONS is a list of Location objects
+            ;; pointing to Ranges inside that file.
+            (locations-by-file (seq-group-by fn locations))
+            ;; items-by-file is a list of list of xref-item
+            (items-by-file (mapcar #'lsp--get-xrefs-in-file locations-by-file)))
+      ;; flatten the list
+      (apply #'append items-by-file))))
+
+(defun lsp--get-definitions ()
   "Get definition of the current symbol under point.
 Returns xref-item(s)."
   (lsp--send-changes lsp--cur-workspace)
-  (let ((location (lsp--send-request (lsp--make-request
-                                      "textDocument/definition"
-                                      (lsp--text-document-position-params)))))
-    (if (consp location) ;;multiple definitions
-        (mapcar 'lsp--location-to-xref location)
-      (lsp--location-to-xref location))))
+  (let ((defs (lsp--send-request (lsp--make-request
+                                  "textDocument/definition"
+                                   (lsp--text-document-position-params)))))
+    ;; textDocument/definition returns Location | Location[]
+    (lsp--locations-to-xref-items (if (listp defs) defs (list defs)))))
 
 (defun lsp--make-reference-params (&optional td-position)
   "Make a ReferenceParam object.
@@ -1149,12 +1197,10 @@ If TD-POSITION is non-nil, use it as TextDocumentPositionParams object instead."
   "Get all references for the symbol under point.
 Returns xref-item(s)."
   (lsp--send-changes lsp--cur-workspace)
-  (let ((location  (lsp--send-request (lsp--make-request
-                                       "textDocument/references"
-                                       (lsp--make-reference-params)))))
-    (if (consp location)
-        (mapcar 'lsp--location-to-xref location)
-      (and location (lsp--location-to-xref location)))))
+  (let ((refs  (lsp--send-request (lsp--make-request
+                                   "textDocument/references"
+                                   (lsp--make-reference-params)))))
+    (lsp--locations-to-xref-items refs)))
 
 (defun lsp--cancel-request (id)
   (lsp--cur-workspace-check)
@@ -1371,10 +1417,17 @@ A reference is highlighted only if it is visible in a window."
     (18 . "Array")))
 
 (defun lsp--symbol-information-to-xref (symbol)
-  (xref-make (format "%s %s"
-                     (alist-get (gethash "kind" symbol) lsp--symbol-kind)
-                     (gethash "name" symbol))
-             (lsp--location-to-xref (gethash "location" symbol))))
+  "Return a `xref-item' from SYMBOL information."
+  (let* ((location (gethash "location" symbol))
+         (uri (gethash "uri" location))
+         (range (gethash "range" location))
+         (start (gethash "start" range)))
+    (xref-make (format "[%s] %s"
+                       (alist-get (gethash "kind" symbol) lsp--symbol-kind)
+                       (gethash "name" symbol))
+               (xref-make-file-location (string-remove-prefix "file://" uri)
+                                        (1+ (gethash "line" start))
+                                        (gethash "character" start)))))
 
 (defun lsp-format-region (s e)
   (lsp--send-changes lsp--cur-workspace)
@@ -1419,22 +1472,18 @@ A reference is highlighted only if it is visible in a window."
          (params (if (null maybeparams)
                      (lsp--text-document-position-params)
                    maybeparams))
-         (def (lsp--send-request (lsp--make-request
-                                  "textDocument/definition"
-                                  params))))
-    (if (consp def)
-        (mapcar 'lsp--location-to-xref def)
-      (and def `(,(lsp--location-to-xref def))))))
+         (defs (lsp--send-request (lsp--make-request
+                                   "textDocument/definition"
+                                   params))))
+    (lsp--locations-to-xref-items (if (listp defs) defs (list defs)))))
 
 (cl-defmethod xref-backend-references ((_backend (eql xref-lsp)) identifier)
   (let* ((properties (text-properties-at 0 identifier))
          (params (plist-get properties 'ref-params))
-         (ref (lsp--send-request (lsp--make-request
-                                  "textDocument/references"
-                                  (or params (lsp--make-reference-params))))))
-    (if (consp ref)
-        (mapcar 'lsp--location-to-xref ref)
-      (and ref `(,(lsp--location-to-xref ref))))))
+         (refs (lsp--send-request (lsp--make-request
+                                   "textDocument/references"
+                                   (or params (lsp--make-reference-params))))))
+    (lsp--locations-to-xref-items refs)))
 
 (cl-defmethod xref-backend-apropos ((_backend (eql xref-lsp)) pattern)
   (let ((symbols (lsp--send-request (lsp--make-request
