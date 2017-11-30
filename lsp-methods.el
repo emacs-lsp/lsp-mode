@@ -610,6 +610,7 @@ interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
 
 (define-inline lsp--position (line char)
   "Make a Position object for the given LINE and CHAR.
+
 interface Position {
     line: number;
     character: number;
@@ -1114,8 +1115,7 @@ https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#co
     item))
 
 (defun lsp--extract-line-from-buffer (pos)
-  "Return a line from the current buffer.
-POS is a LSP position on the line."
+  "Return the line pointed to by POS (a Position object) in the current buffer."
   (let* ((point (lsp--position-to-point pos))
          (inhibit-field-text-motion t))
     (save-excursion
@@ -1134,6 +1134,7 @@ POS is a LSP position on the line."
     (add-face-text-property (max (min start len) 0)
                             (max (min end len) 0)
                             'highlight t line)
+    ;; LINE is nil when FILENAME is not being current visited by any buffer.
     (xref-make (or line filename)
                (xref-make-file-location filename
                                         (1+ (gethash "line" pos-start))
@@ -1141,9 +1142,9 @@ POS is a LSP position on the line."
 
 (defun lsp--get-xrefs-in-file (file)
   "Return all references that contain a file.
-FILE is a cons where its car is the filename and the cdr is a list of locations.
-We open and/or create the file/buffer only once for all references.
-The function returns a list of `xref-item'."
+FILE is a cons where its car is the filename and the cdr is a list of Locations
+within the file.  We open and/or create the file/buffer only once for all
+references.  The function returns a list of `xref-item'."
   (let* ((filename (car file))
          (visiting (find-buffer-visiting filename))
          (fn (lambda (loc) (lsp--xref-make-item filename loc))))
@@ -1156,27 +1157,34 @@ The function returns a list of `xref-item'."
           (mapcar fn (cdr file)))))))
 
 (defun lsp--locations-to-xref-items (locations)
-  "Return a list of `xref-item' from LOCATIONS."
+  "Return a list of `xref-item' from LOCATIONS.
+LOCATIONS is an array of Location objects:
+
+interface Location {
+	uri: DocumentUri;
+	range: Range;
+}"
   (when locations
     (let* ((fn (lambda (loc) (string-remove-prefix "file://" (gethash "uri" loc))))
-           ;; We group all locations by file
-           ;; locations-by-file is a list where each element is a cons.
-           ;; The car is a filename and the cdr is a list of location:
-           ;; ((FILENAME . (LOCATION LOCATION ..)) ..)
-           (locations-by-file (seq-group-by fn locations))
-           ;; items-by-file is a list of list of xref-item
-           (items-by-file (mapcar #'lsp--get-xrefs-in-file locations-by-file)))
+            ;; locations-by-file is an alist of the form
+            ;; ((FILENAME . LOCATIONS)...), where FILENAME is a string of the
+            ;; actual file name, and LOCATIONS is a list of Location objects
+            ;; pointing to Ranges inside that file.
+            (locations-by-file (seq-group-by fn locations))
+            ;; items-by-file is a list of list of xref-item
+            (items-by-file (mapcar #'lsp--get-xrefs-in-file locations-by-file)))
       ;; flatten the list
       (apply #'append items-by-file))))
 
-(defun lsp--get-defitions ()
+(defun lsp--get-definitions ()
   "Get definition of the current symbol under point.
 Returns xref-item(s)."
   (lsp--send-changes lsp--cur-workspace)
   (let ((defs (lsp--send-request (lsp--make-request
                                   "textDocument/definition"
-                                  (lsp--text-document-position-params)))))
-    (lsp--locations-to-xref-items defs)))
+                                   (lsp--text-document-position-params)))))
+    ;; textDocument/definition returns Location | Location[]
+    (lsp--locations-to-xref-items (if (listp defs) defs (list defs)))))
 
 (defun lsp--make-reference-params (&optional td-position)
   "Make a ReferenceParam object.
@@ -1467,7 +1475,7 @@ A reference is highlighted only if it is visible in a window."
          (defs (lsp--send-request (lsp--make-request
                                    "textDocument/definition"
                                    params))))
-    (lsp--locations-to-xref-items defs)))
+    (lsp--locations-to-xref-items (if (listp defs) defs (list defs)))))
 
 (cl-defmethod xref-backend-references ((_backend (eql xref-lsp)) identifier)
   (let* ((properties (text-properties-at 0 identifier))
