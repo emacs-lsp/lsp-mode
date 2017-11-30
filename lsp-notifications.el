@@ -33,7 +33,9 @@ server and put in `lsp--diagnostics'."
   "Hash table storing the diagnostics per file.")
 
 (cl-defstruct lsp-diagnostic
-  (range nil :read-only t) ;; of the form (number . number), both are points
+  (range nil :read-only t)
+  ;; range has the form (:start (:line N :column N) :end (:line N :column N) )
+  ;; where N are zero-indexed numbers
   (line nil :read-only t)
   (column nil :read-only t)
   (severity nil :read-only t) ;; 1 - error, 2 - warning, 3 - information, 4 - hint
@@ -49,11 +51,14 @@ server and put in `lsp--diagnostics'."
   "Make a `lsp-diagnostic' from DIAG."
   (let* ((range (gethash "range" diag))
          (start (gethash "start" range))
+         (end (gethash "end" range))
          (message (gethash "message" diag))
          (source (gethash "source" diag)))
     (make-lsp-diagnostic
-     :range `(,(lsp--position-to-point start)
-              ,(lsp--position-to-point (gethash "end" range)))
+     :range (list :start (list :line   (gethash "line" start)
+                               :column (gethash "character" start))
+                  :end   (list :line   (gethash "line" end)
+                               :column (gethash "character" end)))
      :line (gethash "line" start)
      :column (gethash "character" start)
      :severity (gethash "severity" diag)
