@@ -1,4 +1,4 @@
-;; Copyright (C) 2016  Vibhav Pant <vibhavp@gmail.com>  -*- lexical-binding: t -*-
+;; Copyright (C) 2016-2017  Vibhav Pant <vibhavp@gmail.com>  -*- lexical-binding: t -*-
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -1108,10 +1108,10 @@ https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#co
   (lsp--send-changes lsp--cur-workspace)
   (cl-assert item nil "Completion item must not be nil")
   (if (gethash "resolveProvider" (lsp--capability "completionProvider"))
-      (lsp--send-request
-       (lsp--make-request
-	"completionItem/resolve"
-	item))
+    (lsp--send-request
+      (lsp--make-request
+	      "completionItem/resolve"
+	      item))
     item))
 
 (defun lsp--extract-line-from-buffer (pos)
