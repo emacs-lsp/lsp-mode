@@ -92,6 +92,9 @@ LANGUAGE-ID is the language id to be used when communication with
 the Language Server.  COMMAND is the command to run.
 
 Optional arguments:
+`:docstring' is an optional docstring used for the entrypoint function created by
+`lsp-define-stdio-client'.
+
 `:ignore-regexps' is a list of regexps which when matched will be ignored by the
  output parser.
 

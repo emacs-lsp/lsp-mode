@@ -3,7 +3,8 @@ language clients. It also allows the user to add custom handlers for
 non-standard notifications from the server.
 
 * Functions
-** lsp-define-stdio-client /name language-id get-root command &rest args/
+** Defining LSP clients
+*** lsp-define-stdio-client /name language-id get-root command &rest args/
    Define a LSP client that uses stdio to communicate with the language server.
 
 ~name~ is the symbol to use for the name of the client.
@@ -16,27 +17,53 @@ command, and the ~cdr~ are arguments to that command.
 
 Optional arguments:
 
-~:ignore-regexps~ is a list of regexps which when matched will be ignored by
- the output parser.
+~:docstring~ is an optional docstring used for the entrypoint function created by
+`lsp-define-stdio-client'.
+
+~:ignore-regexps~ is a list of regexps which when matched will be ignored by the
+ output parser.
 
 ~:command-fn~ is a function that returns the command string/list to be used to
-launch the language server. If non-nil, ~command~ is ignored.
+ launch the language server. If non-nil, COMMAND is ignored.
 
-~:initialize~ is a function called when the client is intiailized. It takes a 
-single argument, the newly created client.
+~:language-id-fn~ is a function that returns the language-id string to be used
+ while opening a new file. If non-nil, LANGUAGE-ID is ignored.
 
-** lsp-client-on-notification /mode method callback/
-   Add a method handler when Emacs get a notification from the language server
-   for major-mode MODE.
+~:extra-init-params~ is a plist that specifies any (optional)
+ initializeOptions parameters required by the LSP server. A function taking
+ a single argument (LSP workspace) and returning a plist is also accepted.
 
-~mode~ should be a symbol of the major-mode name for the programming language.
+~:initialize~ is a function called when the client is intiailized. It takes a
+ single argument, the newly created client.
+
+** Communication with the language server
+*** lsp-client-on-notification /client method callback/
+   Add a handler for when Emacs receives a notification from the language server.
+
+
+~client~ is the client object, received by the ~:initialize~ callback in
+~lsp-define-*-client~.
 
 ~method~ should be a string with the method name.
 
 ~callback~ should be a lisp function taking a single argument, the parameters
-passed with the notification as a hash table.
+passed with the notification as a hash table. The return value of the callback is
+ignored.
 
-** lsp-make-traverser /name/
+*** lsp-client-on-request /client method callback/
+    Add a handler for when Emacs receives a request from the language server.
+
+~client~ is the client object, received by the ~:initialize~ callback in
+~lsp-define-*-client~.
+
+~method~ should be a string with the method name.
+
+~callback~ should be a lisp function taking a single argument, the parameters
+passed with the request as a hash table. The return value of the callback should
+be JSON friendly, as it will be sent to the server as a response.
+
+** Other
+*** lsp-make-traverser /name/
    Return a closure that walks up the current directory until NAME is found.
 
 NAME can either be a string or a predicate used for ~locate-dominating-file~.
