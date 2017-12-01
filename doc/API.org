@@ -81,8 +81,16 @@ Example for `lsp-python`:
 			 '("pyls"))
 #+END_SRC
 * Hooks
+** lsp-before-initialize-hook
+   List of functions to be called before a Language Server has been initialized
+   for a new workspace.
 ** lsp-after-initialize-hook
-   A list of functions to be called after a Language Server has been initialized for a new workspace.
-
+   A list of functions to be called after a Language Server has been initialized
+   for a new workspace.
 ** lsp-after-diagnostics-hook
-   A list of functions to be called after the Language Server publishes diagnostics for a file.
+   A list of functions to be called after the Language Server publishes
+   diagnostics for a file.
+** lsp-before-open-hook
+   List of functions to be called before a new file with LSP support is opened.
+** lsp-after-open-hook
+   List of functions to be called after a new file with LSP support is opened.
