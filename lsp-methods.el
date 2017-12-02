@@ -1455,6 +1455,12 @@ A reference is highlighted only if it is visible in a window."
               'ref-params (lsp--make-reference-params
                            (lsp--location-to-td-position (gethash "location" symbol)))))
 
+(defun lsp--get-document-symbols ()
+  (lsp--cur-workspace-check)
+  (lsp--send-request (lsp--make-request
+                       "textDocument/documentSymbol"
+                       `(:textDocument ,(lsp--text-document-identifier)))))
+
 (defun lsp--xref-backend () 'xref-lsp)
 
 (cl-defmethod xref-backend-identifier-at-point ((_backend (eql xref-lsp)))
@@ -1464,9 +1470,7 @@ A reference is highlighted only if it is visible in a window."
 
 (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
   (let ((json-false :json-false)
-        (symbols (lsp--send-request (lsp--make-request
-                                     "textDocument/documentSymbol"
-                                     `(:textDocument ,(lsp--text-document-identifier))))))
+        (symbols (lsp--get-document-symbols)))
     (mapcar #'lsp--symbol-info-to-identifier symbols)))
 
 ;; (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
