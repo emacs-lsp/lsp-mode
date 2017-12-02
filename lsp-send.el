@@ -38,7 +38,9 @@
   (with-local-quit
     (accept-process-output proc lsp-response-timeout))
   (when lsp--no-response
-    (signal 'lsp-timed-out-error nil)))
+    (process-send-string proc "\r\n") ; sometimes the server just needs a little coaxing
+    (when lsp--no-response
+    (signal 'lsp-timed-out-error nil))))
 
 (defun lsp--stdio-send-async (message proc)
   (when lsp-print-io
