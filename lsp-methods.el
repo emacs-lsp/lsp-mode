@@ -578,7 +578,7 @@ directory."
     (setq-local indent-region-function #'lsp-format-region))
 
   (when lsp-enable-xref
-    (setq-local xref-backend-functions #'lsp--xref-backend))
+    (setq-local xref-backend-functions (list #'lsp--xref-backend)))
 
   (when (and lsp-enable-completion-at-point (lsp--capability "completionProvider"))
     (setq-local completion-at-point-functions nil)
