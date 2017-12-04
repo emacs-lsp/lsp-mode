@@ -93,6 +93,14 @@ to find the references to the symbol under point.
 ### Flycheck
 ![flycheck](./examples/flycheck.gif)
 
+### Imenu
+![imenu-1](./examples/imenu-1.png)
+![imenu-2](./examples/imenu-2.png)
+
+#### With [helm-imenu](https://github.com/emacs-helm/helm)
+![helm-imenu](./examples/helm-imenu.gif)
+
+
 ## Finer Control of Starting lsp-mode
 
 In order to more finely control the `lsp-mode` startup, there are a number of
