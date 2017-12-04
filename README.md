@@ -48,16 +48,6 @@ Clone this repository to a suitable path, and add
 to your .emacs, where `prog-major-mode` is the hook variable for a supported
 programming language major mode.
 
-## Clients
-Support for programming languages is provided by the following packages:
-
-- [lsp-go](https://github.com/emacs-lsp/lsp-go)
-- [lsp-haskell](https://github.com/emacs-lsp/lsp-haskell)
-- [lsp-java](https://github.com/emacs-lsp/lsp-java)
-- [lsp-ocaml](https://github.com/emacs-lsp/lsp-ocaml)
-- [lsp-python](https://github.com/emacs-lsp/lsp-python)
-- [lsp-rust](https://github.com/emacs-lsp/lsp-rust)
-
 ## Adding support for languages
 See [API docs](./doc/API.org)
 
