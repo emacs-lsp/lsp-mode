@@ -83,7 +83,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
         (other
          (setq handler (gethash other (lsp--client-notification-handlers client) nil))
          (if (not handler)
-             (message "Unknown method: %s" other)
+           (message "Unknown method: %s" other)
            (funcall handler (lsp--parser-workspace p) params)))))))
 
 (defun lsp--on-request (p request)
@@ -95,10 +95,17 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
          handler response)
     (setq response
       (pcase (gethash "method" request)
-        ("client/registerCapability" empty-response)
-        ("client/unregisterCapability" empty-response)
-        ("workspace/applyEdit" (lsp--workspace-apply-edit-handler
-                                 (lsp--parser-workspace p) params)
+        ("client/registerCapability"
+          (dolist (reg (gethash "registrations" params))
+            (lsp--server-register-capability reg))
+          empty-response)
+        ("client/unregisterCapability"
+          (dolist (unreg (gethash "unregisterations" params))
+            (lsp--server-unregister-capability unreg))
+          empty-response)
+        ("workspace/applyEdit"
+          (lsp--workspace-apply-edit-handler
+            (lsp--parser-workspace p) params)
           empty-response)
         (other
           (setq handler (gethash other (lsp--client-request-handlers client) nil))
@@ -108,7 +115,8 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
               empty-response)
             (lsp--make-response (gethash "id" request)
               (funcall handler (lsp--parser-workspace p) params) nil)))))
-    (funcall (lsp--client-send-async client)(lsp--make-message response) process)))
+    ;; Send response to the server.
+    (funcall (lsp--client-send-async client) (lsp--make-message response) process)))
 
 (defconst lsp--errors
   '((-32700 "Parse Error")
