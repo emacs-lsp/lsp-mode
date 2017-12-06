@@ -43,11 +43,17 @@
   (string-renderers '())
   (last-id 0))
 
+(cl-defstruct lsp--registered-capability
+  (id "" :type string)
+  (method " " :type string)
+  (options nil))
+
 (cl-defstruct lsp--workspace
   (parser nil :read-only t)
   ;; file-versions is a hashtable of files "owned" by the workspace
   (file-versions nil)
   (server-capabilities nil)
+  (registered-server-capabilities nil)
   (root nil :ready-only t)
   (client nil :read-only t)
   (change-timer-disabled nil)
@@ -404,6 +410,23 @@ Return the merged plist."
                     (when merged-value
                       (setq first (plist-put first key merged-value))))))))
   first)
+
+(defun lsp--server-register-capability (reg)
+  (lsp--cur-workspace-check)
+  (let ((method (gethash "method" reg)))
+    (push
+      (make-lsp--registered-capability
+        :id (gethash "id" reg)
+        :method method
+        :options (gethash "registerOptions" reg))
+      (lsp--workspace-registered-server-capabilities lsp--cur-workspace))))
+
+(defun lsp--server-unregister-capability (unreg)
+  (let* ((id (gethash "id" unreg))
+          (fn (lambda (e) (equal (lsp--registered-capability-id e) id))))
+    (setf (lsp--workspace-registered-server-capabilities lsp--cur-workspace)
+      (seq-remove fn
+        (lsp--workspace-registered-server-capabilities lsp--cur-workspace)))))
 
 (defun lsp--client-workspace-capabilities ()
   "Client Workspace capabilities according to LSP."
