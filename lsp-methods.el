@@ -785,38 +785,32 @@ interface Range {
   ;;   lsp-on-change:(start,end,length)=(19,19,8)
 
   (if (eq length 0)
-      ;; Adding something only, work from start only
-      `(:range ,(lsp--range (lsp--point-to-position start)
-                            (lsp--point-to-position start))
-               :rangeLength 0
-               :text ,(buffer-substring-no-properties start end))
+    ;; Adding something only, work from start only
+    `(:range ,(lsp--range (lsp--point-to-position start)
+                (lsp--point-to-position start))
+       :rangeLength 0
+       :text ,(buffer-substring-no-properties start end))
 
     (if (eq start end)
-        ;; Deleting something only
-        (if (lsp--bracketed-change-p start end length)
-            ;; (if (and (eq start (plist-get lsp--before-change-vals :start) )
-            ;;          (eq length (- (plist-get lsp--before-change-vals :end)
-            ;;                        (plist-get lsp--before-change-vals :start))))
-            ;; The before-change value is valid, use it
-            `(:range ,(lsp--range (lsp--point-to-position start)
-                                  (plist-get lsp--before-change-vals :end-pos))
-                     :rangeLength ,length
-                     :text "")
-          (lsp--change-for-mismatch start end length))
+      ;; Deleting something only
+      (if (lsp--bracketed-change-p start end length)
+        ;; The before-change value is bracketed, use it
+        `(:range ,(lsp--range (lsp--point-to-position start)
+                    (plist-get lsp--before-change-vals :end-pos))
+           :rangeLength ,length
+           :text "")
+        ;; If the change is not bracketed, send a full change event instead.
+        (lsp--full-change-event))
+
       ;; Deleting some things, adding others
       (if (lsp--bracketed-change-p start end length)
-          ;; The before-change value is valid, use it
-          `(:range ,(lsp--range (lsp--point-to-position start)
-                                (plist-get lsp--before-change-vals :end-pos))
-                   :rangeLength ,length
-                   :text ,(buffer-substring-no-properties start end))
-        (lsp--change-for-mismatch start end length)))))
+        ;; The before-change value is valid, use it
+        `(:range ,(lsp--range (lsp--point-to-position start)
+                    (plist-get lsp--before-change-vals :end-pos))
+           :rangeLength ,length
+           :text ,(buffer-substring-no-properties start end))
+        (lsp--full-change-event)))))
 
-
-(defun lsp--change-for-mismatch (_start _end _length)
-  "If the current change is not fully bracketed, report it and
-return the full contents of the buffer as the change."
-  (lsp--full-change-event))
 
 ;; TODO: Add tests for this function.
 (defun lsp--bracketed-change-p (start _end length)
@@ -842,73 +836,6 @@ is the size of the start range, we are probably good."
   (save-restriction
     (widen)
     `(:text ,(buffer-substring-no-properties (point-min) (point-max)))))
-
-;;;###autoload
-(defcustom lsp-change-idle-delay 0.5
-  "Number of seconds of idle timer to wait before sending file changes to the server."
-  :group 'lsp-mode
-  :type 'number)
-
-(defvar lsp--change-idle-timer nil
-  "Idle timer which sends changes to the language server.")
-(defvar lsp--last-workspace-timer nil
-  "The last workspace for which the onChange idle timer was set.")
-
-(defvar-local lsp--changes [])
-(defvar-local lsp--has-changes []
-  "non-nil if the current buffer has any changes yet to be sent.")
-
-(defun lsp--rem-idle-timer ()
-  (when lsp--change-idle-timer
-    (cancel-timer lsp--change-idle-timer)
-    (setq
-     lsp--change-idle-timer nil
-     lsp--last-workspace-timer nil)))
-
-(defun lsp--set-idle-timer (workspace)
-  (setq lsp--change-idle-timer (run-at-time lsp-change-idle-delay nil
-                                            #'(lambda ()
-                                                (cl-assert workspace)
-                                                (lsp--send-changes workspace)))
-        lsp--last-workspace-timer lsp--cur-workspace))
-
-(defun lsp--flush-other-workspace-changes ()
-  "Flush changes for any other workspace."
-  (when (and lsp--last-workspace-timer
-             (not (eq lsp--last-workspace-timer lsp--cur-workspace)))
-    ;; A timer for a different workspace was set, flush those
-    ;; changes first.
-    (lsp--send-changes lsp--last-workspace-timer t)))
-
-(defun lsp--send-changes (workspace &optional no-flush-other)
-  "Sends any queued changes for this WORKSPACE.
-Called before any function that performs any query to the languge server related
-to a text document."
-  (unless no-flush-other
-    (lsp--flush-other-workspace-changes))
-  (lsp--rem-idle-timer)
-  (dolist (buffer (lsp--workspace-buffers workspace))
-    (with-current-buffer buffer
-      (when (and lsp--has-changes
-                 (not (eq lsp--server-sync-method 'none)))
-        (lsp--inc-cur-file-version)
-        (lsp--send-notification
-         (lsp--make-notification
-          "textDocument/didChange"
-          `(:textDocument
-            ,(lsp--versioned-text-document-identifier)
-            :contentChanges
-            ,(pcase lsp--server-sync-method
-               ('incremental lsp--changes)
-               ('full `[,(lsp--full-change-event)])
-               ('none `[])))))
-        (setq lsp--changes []
-              lsp--has-changes nil)))))
-
-(defun lsp--push-change (change-event)
-  "Push CHANGE-EVENT to the buffer change vector."
-  ;; (message "lsp--push-change entered")
-  (setq lsp--changes (vconcat lsp--changes `(,change-event))))
 
 (defun lsp-before-change (start end)
   "Executed before a file is changed.
@@ -957,28 +884,21 @@ Added to `after-change-functions'."
   ;; So (47 47 7) means delete 7 chars starting at pos 47
   ;; (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length)
   ;; (message "lsp-on-change:(lsp--before-change-vals)=%s" lsp--before-change-vals)
-  (lsp--flush-other-workspace-changes)
-  (when (and lsp--cur-workspace
-             (not (or (eq lsp--server-sync-method 'none)
-                      (eq lsp--server-sync-method nil))))
-    (setq lsp--has-changes t)
-    (lsp--rem-idle-timer)
-    (when (eq lsp--server-sync-method 'incremental)
-      ;; (lsp--push-change (lsp--text-document-content-change-event start end length)))
+  (when lsp--cur-workspace
+    (lsp--inc-cur-file-version)
+    (unless (eq lsp--server-sync-method 'none)
+      (lsp--send-notification
+        (lsp--make-notification "textDocument/didChange"
+          `(:textDocument ,(lsp--versioned-text-document-identifier)
+             :contentChanges
+             ,(pcase lsp--server-sync-method
+                ('incremental (vector (lsp--text-document-content-change-event
+                                        start end length)))
 
-      ;; Each change needs to be wrt to the current doc, so send immediately.
-      ;; Otherwise we need to adjust the coordinates of the new change according
-      ;; to the cumulative changes already queued.
-      (progn
-        (lsp--push-change (lsp--text-document-content-change-event start end length))
-        (lsp--send-changes lsp--cur-workspace)))
-    (if (lsp--workspace-change-timer-disabled lsp--cur-workspace)
-        (lsp--send-changes lsp--cur-workspace)
-      (lsp--set-idle-timer lsp--cur-workspace))))
+                ('full (vector (lsp--full-change-event))))))))))
 
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
-  (lsp--send-changes lsp--cur-workspace)
   (let ((file-versions (lsp--workspace-file-versions lsp--cur-workspace))
         (old-buffers (lsp--workspace-buffers lsp--cur-workspace)))
     ;; remove buffer from the current workspace's list of buffers
@@ -997,7 +917,6 @@ Added to `after-change-functions'."
 
 (defun lsp--before-save ()
   (when lsp--cur-workspace
-    (lsp--send-changes lsp--cur-workspace)
     (lsp--send-notification
       (lsp--make-notification "textDocument/willSave"
         `(:textDocument ,(lsp--text-document-identifier)
@@ -1005,7 +924,6 @@ Added to `after-change-functions'."
 
 (defun lsp--on-auto-save ()
   (when lsp--cur-workspace
-    (lsp--send-changes lsp--cur-workspace)
     (lsp--send-notification
       (lsp--make-notification "textDocument/willSave"
         `(:textDocument ,(lsp--text-document-identifier)
@@ -1014,7 +932,6 @@ Added to `after-change-functions'."
 (defun lsp--text-document-did-save ()
   "Executed when the file is closed, added to `after-save-hook''."
   (when lsp--cur-workspace
-    (lsp--send-changes lsp--cur-workspace)
     (lsp--send-notification
      (lsp--make-notification
       "textDocument/didSave"
@@ -1107,7 +1024,6 @@ https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#co
                           t))))
 
 (defun lsp--get-completions ()
-  (lsp--send-changes lsp--cur-workspace)
   (let ((bounds (bounds-of-thing-at-point 'symbol)))
     (list
      (if bounds (car bounds) (point))
@@ -1129,7 +1045,6 @@ https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#co
 
 (defun lsp--resolve-completion (item)
   (lsp--cur-workspace-check)
-  (lsp--send-changes lsp--cur-workspace)
   (cl-assert item nil "Completion item must not be nil")
   (if (gethash "resolveProvider" (lsp--capability "completionProvider"))
     (lsp--send-request
@@ -1203,7 +1118,6 @@ interface Location {
 (defun lsp--get-definitions ()
   "Get definition of the current symbol under point.
 Returns xref-item(s)."
-  (lsp--send-changes lsp--cur-workspace)
   (let ((defs (lsp--send-request (lsp--make-request
                                   "textDocument/definition"
                                    (lsp--text-document-position-params)))))
@@ -1220,7 +1134,6 @@ If TD-POSITION is non-nil, use it as TextDocumentPositionParams object instead."
 (defun lsp--get-references ()
   "Get all references for the symbol under point.
 Returns xref-item(s)."
-  (lsp--send-changes lsp--cur-workspace)
   (let ((refs  (lsp--send-request (lsp--make-request
                                    "textDocument/references"
                                    (lsp--make-reference-params)))))
@@ -1254,7 +1167,6 @@ Returns xref-item(s)."
 
 type MarkedString = string | { language: string; value: string };"
   (lsp--cur-workspace-check)
-  (lsp--send-changes lsp--cur-workspace)
   (when lsp--cur-hover-request-id
     (lsp--cancel-request lsp--cur-hover-request-id))
   (let* ((client (lsp--workspace-client lsp--cur-workspace))
@@ -1363,7 +1275,6 @@ If title is nil, return the name for the command handler."
 (defun lsp-format-buffer ()
   "Ask the server to format this document."
   (interactive)
-  (lsp--send-changes lsp--cur-workspace)
   (let ((edits (lsp--send-request (lsp--make-request
                                    "textDocument/formatting"
                                    (lsp--make-document-formatting-params)))))
@@ -1392,7 +1303,6 @@ interface DocumentRangeFormattingParams {
 (defun lsp-symbol-highlight ()
   "Highlight all relevant references to the symbol under point."
   (interactive)
-  (lsp--send-changes lsp--cur-workspace)
   (lsp--send-request-async (lsp--make-request "textDocument/documentHighlight"
                              (lsp--text-document-position-params))
     (lsp--make-symbol-highlight-callback (current-buffer))))
@@ -1462,7 +1372,6 @@ A reference is highlighted only if it is visible in a window."
                                         (gethash "character" start)))))
 
 (defun lsp-format-region (s e)
-  (lsp--send-changes lsp--cur-workspace)
   (let ((edits (lsp--send-request (lsp--make-request
                                    "textDocument/rangeFormatting"
                                    (lsp--make-document-range-formatting-params s e)))))
@@ -1542,7 +1451,6 @@ interface RenameParams {
   "Rename the symbol (and all references to it) under point to NEWNAME."
   (interactive "sRename to: ")
   (lsp--cur-workspace-check)
-  (lsp--send-changes lsp--cur-workspace)
   (unless (lsp--capability "renameProvider")
     (signal 'lsp-capability-not-supported (list "renameProvider")))
   (let ((edits (lsp--send-request (lsp--make-request
@@ -1565,7 +1473,6 @@ interface RenameParams {
   "Create and send a 'workspace/executeCommand' message having
 command COMMAND and optionsl ARGS"
   (lsp--cur-workspace-check)
-  (lsp--send-changes lsp--cur-workspace)
   (lsp--send-request
    (lsp--make-request
     "workspace/executeCommand"
