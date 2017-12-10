@@ -147,25 +147,27 @@ Optional arguments:
        (defun ,enable ()
          ,docstring
          (interactive)
-         (let ((client (make-lsp--client
-                        :language-id (if ,language-id-fn ,language-id-fn #'(lambda (_) ,language-id))
-                        :send-sync #'lsp--stdio-send-sync
-                        :send-async #'lsp--stdio-send-async
-                        :new-connection (lsp--make-stdio-connection
-                                         ,(symbol-name name)
-                                         ,command
-                                         ,command-fn)
-                       :get-root ,get-root
-                       :ignore-regexps ,ignore-regexps)))
-         (unless lsp-mode
-           ,(when initialize
-              `(funcall ,initialize client))
-           (let ((root (funcall (lsp--client-get-root client))))
-             (if (lsp--should-start-p root)
-               (progn
-                 (lsp-mode 1)
-                 (lsp--start client ,extra-init-params))
-               (message "Not initializing project %s" root)))))))))
+         (when (and (not lsp-mode) (buffer-file-name))
+           (let ((client (make-lsp--client
+                           :language-id (if ,language-id-fn
+                                          ,language-id-fn
+                                          (lambda (_) ,language-id))
+                           :send-sync #'lsp--stdio-send-sync
+                           :send-async #'lsp--stdio-send-async
+                           :new-connection (lsp--make-stdio-connection
+                                             ,(symbol-name name)
+                                             ,command
+                                             ,command-fn)
+                           :get-root ,get-root
+                           :ignore-regexps ,ignore-regexps)))
+             ,(when initialize
+                `(funcall ,initialize client))
+             (let ((root (funcall (lsp--client-get-root client))))
+               (if (lsp--should-start-p root)
+                 (progn
+                   (lsp-mode 1)
+                   (lsp--start client ,extra-init-params))
+                 (message "Not initializing project %s" root)))))))))
 
 (cl-defmacro lsp-define-tcp-client (name language-id get-root command host port
                                      &key docstring
@@ -204,26 +206,28 @@ Optional arguments:
        (defun ,enable ()
          ,docstring
          (interactive)
-         (let ((client (make-lsp--client
-                        :language-id (if ,language-id-fn ,language-id-fn #'(lambda (_) ,language-id))
-                        :send-sync #'lsp--stdio-send-sync
-                        :send-async #'lsp--stdio-send-async
-                        :new-connection (lsp--make-tcp-connection
-                                         ,(symbol-name name)
-                                         ,command
-                                         ,command-fn
-                                         ,host ,port)
-                       :get-root ,get-root
-                       :ignore-regexps ,ignore-regexps)))
-         (unless lsp-mode
-           ,(when initialize
-              `(funcall ,initialize client))
-           (let ((root (funcall (lsp--client-get-root client))))
-             (if (lsp--should-start-p root)
-               (progn
-                 (lsp-mode 1)
-                 (lsp--start client ,extra-init-params))
-               (message "Not initializing project %s" root)))))))))
+         (when (and (not lsp-mode) (buffer-file-name))
+           (let ((client (make-lsp--client
+                           :language-id (if ,language-id-fn
+                                          ,language-id-fn
+                                          (lambda (_) ,language-id))
+                           :send-sync #'lsp--stdio-send-sync
+                           :send-async #'lsp--stdio-send-async
+                           :new-connection (lsp--make-tcp-connection
+                                             ,(symbol-name name)
+                                             ,command
+                                             ,command-fn
+                                             ,host ,port)
+                           :get-root ,get-root
+                           :ignore-regexps ,ignore-regexps)))
+             ,(when initialize
+                `(funcall ,initialize client))
+             (let ((root (funcall (lsp--client-get-root client))))
+               (if (lsp--should-start-p root)
+                 (progn
+                   (lsp-mode 1)
+                   (lsp--start client ,extra-init-params))
+                 (message "Not initializing project %s" root)))))))))
 
 (defvar-local lsp-status nil
   "The current status of the LSP server.")
