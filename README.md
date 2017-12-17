@@ -16,6 +16,7 @@ The library is designed to integrate with existing Emacs IDE frameworks
 ## Installation
 
 Clone this repository to a suitable path, and add
+
 ```emacs-lisp
 (add-to-list 'load-path "<path to emacs-lsp>")
 (with-eval-after-load 'lsp-mode
