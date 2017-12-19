@@ -309,7 +309,7 @@ interface TextDocumentItem {
 }"
   (inline-quote
     (let ((language-id-fn (lsp--client-language-id (lsp--workspace-client lsp--cur-workspace))))
-      (list :uri (concat "file://" buffer-file-name)
+      (list :uri (concat lsp--uri-file-prefix buffer-file-name)
 	      :languageId (funcall language-id-fn (current-buffer))
 	      :version (lsp--cur-file-version)
 	      :text (buffer-substring-no-properties (point-min) (point-max))))))
@@ -549,7 +549,7 @@ directory."
       (setq init-params
             `(:processId ,(emacs-pid)
                          :rootPath ,root
-                         :rootUri ,(concat "file://" root)
+                         :rootUri ,(concat lsp--uri-file-prefix root)
                          :capabilities ,(lsp--client-capabilities)
                          :initializationOptions ,(if (functionp extra-init-params)
                                                      (funcall extra-init-params lsp--cur-workspace)
@@ -621,7 +621,7 @@ directory."
 interface TextDocumentIdentifier {
     uri: string;
 }"
-  (inline-quote (list :uri (concat "file://" buffer-file-name))))
+  (inline-quote (list :uri (concat lsp--uri-file-prefix buffer-file-name))))
 
 (define-inline lsp--versioned-text-document-identifier ()
   "Make VersionedTextDocumentIdentifier.
@@ -717,7 +717,7 @@ interface Range {
              (gethash "changes" edits))))
 
 (defun lsp--apply-workspace-edit (uri edits)
-  (let ((filename (string-remove-prefix "file://" uri)))
+  (let ((filename (string-remove-prefix lsp--uri-file-prefix uri)))
     ;; TODO: What if the buffer has been modified?
     ;;       Although, for incremental sync that should be fine
     (when (not (find-buffer-visiting filename))
@@ -1104,7 +1104,7 @@ interface Location {
 	range: Range;
 }"
   (when locations
-    (let* ((fn (lambda (loc) (string-remove-prefix "file://" (gethash "uri" loc))))
+    (let* ((fn (lambda (loc) (string-remove-prefix lsp--uri-file-prefix (gethash "uri" loc))))
             ;; locations-by-file is an alist of the form
             ;; ((FILENAME . LOCATIONS)...), where FILENAME is a string of the
             ;; actual file name, and LOCATIONS is a list of Location objects
@@ -1367,7 +1367,7 @@ A reference is highlighted only if it is visible in a window."
     (xref-make (format "[%s] %s"
                        (alist-get (gethash "kind" symbol) lsp--symbol-kind)
                        (gethash "name" symbol))
-               (xref-make-file-location (string-remove-prefix "file://" uri)
+               (xref-make-file-location (string-remove-prefix lsp--uri-file-prefix uri)
                                         (1+ (gethash "line" start))
                                         (gethash "character" start)))))
 

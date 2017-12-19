@@ -28,6 +28,11 @@
   :group 'lsp-mode
   :type 'boolean)
 
+(defvar lsp--uri-file-prefix (pcase system-type
+                               (`windows-nt "file:///")
+                               (_ "file://"))
+  "Prefix for a file-uri.")
+
 (define-error 'lsp-error "Unknown lsp-mode error")
 (define-error 'lsp-empty-response-error
   "Empty response from the language server" 'lsp-error)
