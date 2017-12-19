@@ -1191,7 +1191,8 @@ type MarkedString = string | { language: string; value: string };"
 (defun lsp--make-hover-callback (renderers start end buffer)
   (lambda (hover)
     (setq lsp--cur-hover-request-id nil)
-    (when (and (lsp--point-is-within-bounds-p start end)
+    (when (and hover
+            (lsp--point-is-within-bounds-p start end)
             (eq (current-buffer) buffer) (eldoc-display-message-p))
       (let ((contents (gethash "contents" hover)))
         (eldoc-message
