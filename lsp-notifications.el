@@ -27,13 +27,9 @@
 (defun lsp--window-show-message (params)
   "Send the server's messages to message, inhibit if `lsp-inhibit-message'
 is set."
-  (let* ((prev-inhibit-message inhibit-message))
-    (when lsp-inhibit-message
-      (setq inhibit-message t))
+  (let* ((inhibit-message (or inhibit-message lsp-inhibit-message)))
     (message "%s" (lsp--propertize (gethash "message" params)
-                    (gethash "type" params)))
-    (when lsp-inhibit-message
-      (setq inhibit-message prev-inhibit-message))))
+                    (gethash "type" params)))))
 
 (defcustom lsp-after-diagnostics-hook nil
   "Hooks to run after diagnostics are received from the language
