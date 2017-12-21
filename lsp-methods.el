@@ -508,8 +508,8 @@ registered client capabilities by calling
       (let ((status (process-status process))
             (buffer-stderr (get-buffer stderr)))
         (and (buffer-live-p buffer-stderr)
-             (or (equal status 'exit)
-                 (equal status 'signal))
+             (or (eq status 'exit)
+                 (eq status 'signal))
              (kill-buffer stderr))))))
 
 (defun lsp--should-start-p (root)
