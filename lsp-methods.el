@@ -482,16 +482,13 @@ registered client capabilities by calling
 
 (defun lsp--set-sync-method ()
   (let* ((sync (gethash "textDocumentSync" (lsp--server-capabilities)))
-         (kind (if (hash-table-p sync) (gethash "change" sync) sync))
-         (method (alist-get kind lsp--sync-methods))
-         )
+          (kind (if (hash-table-p sync) (gethash "change" sync) sync))
+          (method (alist-get kind lsp--sync-methods)))
     (setq lsp--server-sync-method (or lsp-document-sync-method
-                                      method))))
+                                    method))))
 
 (defun lsp--workspace-apply-edit-handler (_workspace params)
-  (lsp--apply-workspace-edits (gethash "edit" params))
-  ;; TODO: send reply
-  )
+  (lsp--apply-workspace-edits (gethash "edit" params)))
 
 (defun lsp--make-sentinel (buffer)
   (lambda (_p exit-str)
