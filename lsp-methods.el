@@ -711,10 +711,16 @@ interface Range {
   (inline-quote (plist-get (plist-get ,range :end) :line)))
 
 (defun lsp--apply-workspace-edits (edits)
-  (cl-letf (((lsp--workspace-change-timer-disabled lsp--cur-workspace) t))
-    (maphash (lambda (key value)
-               (lsp--apply-workspace-edit key value))
-             (gethash "changes" edits))))
+  (cl-letf (((lsp--workspace-change-timer-disabled lsp--cur-workspace) t)
+             (fn (lambda (key value)
+                   (lsp--apply-workspace-edit key value))))
+    (if-let (changes (gethash "documentChanges" edits))
+      (seq-do (lambda (td-edit)
+                ;; TODO: Verify VersionedTextDocumentIdentifier
+                (funcall fn (gethash "uri" (gethash "textDocument" td-edit))
+                  (gethash "edits" td-edit))) changes)
+      (when-let (changes (gethash "changes" edits))
+        (maphash fn changes)))))
 
 (defun lsp--apply-workspace-edit (uri edits)
   (let ((filename (string-remove-prefix lsp--uri-file-prefix uri)))
