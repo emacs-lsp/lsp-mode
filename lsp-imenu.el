@@ -21,6 +21,7 @@
 
 ;;; Code:
 
+(require 'imenu)
 (require 'lsp-methods)
 
 (define-inline lsp--point-to-marker (p)
