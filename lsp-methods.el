@@ -881,18 +881,19 @@ Added to `after-change-functions'."
   ;; So (47 47 7) means delete 7 chars starting at pos 47
   ;; (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length)
   ;; (message "lsp-on-change:(lsp--before-change-vals)=%s" lsp--before-change-vals)
-  (when lsp--cur-workspace
-    (lsp--inc-cur-file-version)
-    (unless (eq lsp--server-sync-method 'none)
-      (lsp--send-notification
-        (lsp--make-notification "textDocument/didChange"
-          `(:textDocument ,(lsp--versioned-text-document-identifier)
-             :contentChanges
-             ,(pcase lsp--server-sync-method
-                ('incremental (vector (lsp--text-document-content-change-event
-                                        start end length)))
+  (save-match-data
+    (when lsp--cur-workspace
+      (lsp--inc-cur-file-version)
+      (unless (eq lsp--server-sync-method 'none)
+        (lsp--send-notification
+          (lsp--make-notification "textDocument/didChange"
+            `(:textDocument ,(lsp--versioned-text-document-identifier)
+               :contentChanges
+               ,(pcase lsp--server-sync-method
+                  ('incremental (vector (lsp--text-document-content-change-event
+                                          start end length)))
 
-                ('full (vector (lsp--full-change-event))))))))))
+                  ('full (vector (lsp--full-change-event)))))))))))
 
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
