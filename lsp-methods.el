@@ -1481,7 +1481,10 @@ interface RenameParams {
   (let ((edits (lsp--send-request (lsp--make-request
                                    "textDocument/rename"
                                    (lsp--make-document-rename-params newname)))))
-    (lsp--apply-workspace-edits edits)))
+    (if (sequencep edits)
+      (lsp--apply-workspace-edits edits)
+
+      (lsp--apply-workspace-edit edits))))
 
 (define-inline lsp--execute-command (command)
   "Given a COMMAND returned from the server, create and send a
