@@ -720,12 +720,13 @@ interface WorkspaceEdit {
     (if document-changes
       (mapc #'lsp--apply-text-document-edit document-changes)
 
-      (maphash
-        (lambda (uri text-edits)
-          (let ((filename (string-remove-prefix lsp--uri-file-prefix uri)))
-            (with-current-buffer (find-file-noselect filename)
-              (lsp--apply-text-edits text-edits))))
-        changes))))
+      (when (hash-table-p changes)
+        (maphash
+          (lambda (uri text-edits)
+            (let ((filename (string-remove-prefix lsp--uri-file-prefix uri)))
+              (with-current-buffer (find-file-noselect filename)
+                (lsp--apply-text-edits text-edits))))
+          changes)))))
 
 (define-inline lsp--apply-workspace-edits (edits)
   (inline-quote (mapc #'lsp--apply-workspace-edit ,edits)))
