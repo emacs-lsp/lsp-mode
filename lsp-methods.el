@@ -748,9 +748,14 @@ interface TextDocumentEdit {
         (lsp--apply-text-edits (gethash "edits" edit))))))
 
 (defun lsp--text-edit-sort-predicate (e1 e2)
-  (let* ((start1 (lsp--position-to-point (gethash "start" (gethash "range" e1))))
+  (let ((start1 (lsp--position-to-point (gethash "start" (gethash "range" e1))))
           (start2 (lsp--position-to-point (gethash "start" (gethash "range" e2)))))
-    (> start1 start2)))
+    (if (= start1 start2)
+      (let ((end1 (lsp--position-to-point (gethash "end" (gethash "range" e1))))
+             (end2 (lsp--position-to-point (gethash "end" (gethash "range" e2)))))
+        (> end1 end2))
+
+      (> start1 start2))))
 
 (define-inline lsp--apply-text-edits (edits)
   "Apply the edits described in the TextEdit[] object in EDITS."
