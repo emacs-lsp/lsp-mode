@@ -489,7 +489,7 @@ registered client capabilities by calling
                                     method))))
 
 (defun lsp--workspace-apply-edit-handler (_workspace params)
-  (lsp--apply-workspace-edits (gethash "edit" params)))
+  (lsp--apply-workspace-edit (gethash "edit" params)))
 
 (defun lsp--make-sentinel (buffer)
   (lambda (_p exit-str)
@@ -727,9 +727,6 @@ interface WorkspaceEdit {
               (with-current-buffer (find-file-noselect filename)
                 (lsp--apply-text-edits text-edits))))
           changes)))))
-
-(define-inline lsp--apply-workspace-edits (edits)
-  (inline-quote (mapc #'lsp--apply-workspace-edit ,edits)))
 
 (defun lsp--apply-text-document-edit (edit)
   "Apply the TextDocumentEdit object EDIT.
@@ -1486,10 +1483,7 @@ interface RenameParams {
   (let ((edits (lsp--send-request (lsp--make-request
                                    "textDocument/rename"
                                    (lsp--make-document-rename-params newname)))))
-    (if (sequencep edits)
-      (lsp--apply-workspace-edits edits)
-
-      (lsp--apply-workspace-edit edits))))
+    (lsp--apply-workspace-edit edits)))
 
 (define-inline lsp--execute-command (command)
   "Given a COMMAND returned from the server, create and send a
