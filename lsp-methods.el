@@ -750,9 +750,15 @@ interface TextDocumentEdit {
       (when (= version (lsp--cur-file-version))
         (lsp--apply-text-edits (gethash "edits" edit))))))
 
+(defun lsp--text-edit-sort-predicate (e1 e2)
+  (let* ((start1 (lsp--position-to-point (gethash "start" (gethash "range" e1))))
+          (start2 (lsp--position-to-point (gethash "start" (gethash "range" e2)))))
+    (> start1 start2)))
+
 (define-inline lsp--apply-text-edits (edits)
   "Apply the edits described in the TextEdit[] object in EDITS."
-  (inline-quote (mapc #'lsp--apply-text-edit ,edits)))
+  (inline-quote
+    (mapc #'lsp--apply-text-edit (sort ,edits #'lsp--text-edit-sort-predicate))))
 
 (defun lsp--apply-text-edit (text-edit)
   "Apply the edits described in the TextEdit object in TEXT-EDIT."
@@ -1301,10 +1307,9 @@ If title is nil, return the name for the command handler."
   "Ask the server to format this document."
   (interactive)
   (let ((edits (lsp--send-request (lsp--make-request
-                                   "textDocument/formatting"
-                                   (lsp--make-document-formatting-params)))))
-    (dolist (edit edits)
-      (lsp--apply-text-edit edit))))
+                                    "textDocument/formatting"
+                                    (lsp--make-document-formatting-params)))))
+    (lsp--apply-text-edits edits)))
 
 (defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region.
