@@ -1284,7 +1284,7 @@ export interface MarkupContent {
                                  (funcall renderer (gethash "value" e)))
                                (gethash "value" e))
                              e)))
-              (if (listp contents) contents (list contents)) "\n")))))))
+              (if (listp contents) (last contents) (list contents)) "\n")))))))
 
 (defun lsp-provide-marked-string-renderer (client language renderer)
   (cl-check-type language string)
