@@ -430,11 +430,13 @@ Return the merged plist."
 
 (defun lsp--client-workspace-capabilities ()
   "Client Workspace capabilities according to LSP."
-  `(:executeCommand (:dynamicRegistration t)))
+  `(:applyEdit t
+     :executeCommand (:dynamicRegistration t)))
 
 (defun lsp--client-textdocument-capabilities ()
   "Client Text document capabilities according to LSP."
-  `(:synchronization (:willSave t :didSave t)))
+  `(:synchronization (:willSave t :didSave t)
+     :symbol (:symbolKind (:valueSet ,(cl-loop for kind from 1 to 25 collect kind)))))
 
 (defun lsp-register-client-capabilities (package-name caps)
   "Register extra client capabilities for the current workspace.
@@ -488,7 +490,7 @@ registered client capabilities by calling
                                     method))))
 
 (defun lsp--workspace-apply-edit-handler (_workspace params)
-  (lsp--apply-workspace-edits (gethash "edit" params)))
+  (lsp--apply-workspace-edit (gethash "edit" params)))
 
 (defun lsp--make-sentinel (buffer)
   (lambda (_p exit-str)
@@ -707,25 +709,59 @@ interface Range {
   "Return the end line for a given LSP range, in LSP coordinates"
   (inline-quote (plist-get (plist-get ,range :end) :line)))
 
-(defun lsp--apply-workspace-edits (edits)
-  (cl-letf (((lsp--workspace-change-timer-disabled lsp--cur-workspace) t))
-    (maphash (lambda (key value)
-               (lsp--apply-workspace-edit key value))
-             (gethash "changes" edits))))
+(defun lsp--apply-workspace-edit (edit)
+  "Apply the WorkspaceEdit object EDIT.
 
-(defun lsp--apply-workspace-edit (uri edits)
-  (let ((filename (string-remove-prefix lsp--uri-file-prefix uri)))
-    ;; TODO: What if the buffer has been modified?
-    ;;       Although, for incremental sync that should be fine
-    (when (not (find-buffer-visiting filename))
-      (progn (find-file filename)
-             (lsp--text-document-did-open)))
-    (lsp--apply-text-edits edits)))
+interface WorkspaceEdit {
+	changes?: { [uri: string]: TextEdit[]; };
+	documentChanges?: TextDocumentEdit[];
+}"
+  (let ((changes (gethash "changes" edit))
+         (document-changes (gethash "documentChanges" edit)))
+    (if document-changes
+      (mapc #'lsp--apply-text-document-edit document-changes)
 
-(defun lsp--apply-text-edits (edits)
+      (when (hash-table-p changes)
+        (maphash
+          (lambda (uri text-edits)
+            (let ((filename (string-remove-prefix lsp--uri-file-prefix uri)))
+              (with-current-buffer (find-file-noselect filename)
+                (lsp--apply-text-edits text-edits))))
+          changes)))))
+
+(defun lsp--apply-text-document-edit (edit)
+  "Apply the TextDocumentEdit object EDIT.
+If the file is not being visited by any buffer, it is opened with
+`find-file-noselect'.
+Because lsp-mode does not store previous document versions, the edit is only
+applied if the version of the textDocument matches the version of the
+corresponding file.
+
+interface TextDocumentEdit {
+	textDocument: VersionedTextDocumentIdentifier;
+	edits: TextEdit[];
+}"
+  (let* ((ident (gethash "textDocument" edit))
+          (filename (string-remove-prefix lsp--uri-file-prefix (gethash "uri" ident)))
+          (version (gethash "version" ident)))
+    (with-current-buffer (find-file-noselect filename)
+      (when (= version (lsp--cur-file-version))
+        (lsp--apply-text-edits (gethash "edits" edit))))))
+
+(defun lsp--text-edit-sort-predicate (e1 e2)
+  (let ((start1 (lsp--position-to-point (gethash "start" (gethash "range" e1))))
+          (start2 (lsp--position-to-point (gethash "start" (gethash "range" e2)))))
+    (if (= start1 start2)
+      (let ((end1 (lsp--position-to-point (gethash "end" (gethash "range" e1))))
+             (end2 (lsp--position-to-point (gethash "end" (gethash "range" e2)))))
+        (> end1 end2))
+
+      (> start1 start2))))
+
+(define-inline lsp--apply-text-edits (edits)
   "Apply the edits described in the TextEdit[] object in EDITS."
-  (dolist (edit edits)
-    (lsp--apply-text-edit edit)))
+  (inline-quote
+    (mapc #'lsp--apply-text-edit (sort ,edits #'lsp--text-edit-sort-predicate))))
 
 (defun lsp--apply-text-edit (text-edit)
   "Apply the edits described in the TextEdit object in TEXT-EDIT."
@@ -1275,10 +1311,9 @@ If title is nil, return the name for the command handler."
   "Ask the server to format this document."
   (interactive)
   (let ((edits (lsp--send-request (lsp--make-request
-                                   "textDocument/formatting"
-                                   (lsp--make-document-formatting-params)))))
-    (dolist (edit edits)
-      (lsp--apply-text-edit edit))))
+                                    "textDocument/formatting"
+                                    (lsp--make-document-formatting-params)))))
+    (lsp--apply-text-edits edits)))
 
 (defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region.
@@ -1455,7 +1490,7 @@ interface RenameParams {
   (let ((edits (lsp--send-request (lsp--make-request
                                    "textDocument/rename"
                                    (lsp--make-document-rename-params newname)))))
-    (lsp--apply-workspace-edits edits)))
+    (lsp--apply-workspace-edit edits)))
 
 (define-inline lsp--execute-command (command)
   "Given a COMMAND returned from the server, create and send a
