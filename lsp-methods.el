@@ -80,6 +80,17 @@ indexed by the project root directory.
 This is populated when the user declines to open a workspace
 for a file in the workspace.")
 
+(defcustom lsp-render-markdown-markup-content nil
+  "Function to be use for rendering MarkupContent.
+
+It should take two arguments - a string denoting the type of markup content
+and a string containing the text to be rendered.  The returned value should
+be a string that may be fontified/propertized.
+
+When nil, MarkupContent is rendered as plain text."
+  :type 'function
+  :group 'lsp-mode)
+
 (defcustom lsp-before-initialize-hook nil
   "List of functions to be called before a Language Server has been initialized
 for a new workspace."
@@ -1215,30 +1226,60 @@ type MarkedString = string | { language: string; value: string };"
         lsp--cur-hover-request-id (plist-get body :id))
       (cl-assert (integerp lsp--cur-hover-request-id)))))
 
+(defun lsp--render-markup-content (content)
+  "Render MarkupContent object CONTENT.
+
+export interface MarkupContent {
+	      kind: MarkupKind;
+	      value: string;
+}"
+  (let ((kind (gethash "kind" content))
+         (content (gethash "value" content))
+         out)
+    (if (functionp lsp-render-markdown-markup-content)
+      (progn
+        (setq out (funcall lsp-render-markdown-markup-content kind content))
+        (cl-assert (stringp out) t
+          "value returned by lsp-render-markdown-markup-content should be a string")
+        out)
+      content)))
+
 (define-inline lsp--point-is-within-bounds-p (start end)
   "Return whether the current point is within START and END."
   (inline-quote
     (let ((p (point)))
       (and (>= p ,start) (<= p ,end)))))
 
+(define-inline lsp--markup-content-p (obj)
+  (inline-letevals (obj)
+    (inline-quote (and (hash-table-p ,obj)
+                    (gethash "kind" ,obj nil) (gethash "value" ,obj nil)))))
+
 ;; start and end are the bounds of the symbol at point
 (defun lsp--make-hover-callback (renderers start end buffer)
   (lambda (hover)
-    (setq lsp--cur-hover-request-id nil)
+    (with-current-buffer buffer
+      (setq lsp--cur-hover-request-id nil))
     (when (and hover
             (lsp--point-is-within-bounds-p start end)
             (eq (current-buffer) buffer) (eldoc-display-message-p))
       (let ((contents (gethash "contents" hover)))
         (eldoc-message
-          (mapconcat (lambda (e)
-                       (let (renderer)
-                         (if (hash-table-p e)
-                           (if (setq renderer (cdr (assoc-string
-                                                     (gethash "language" e) renderers)))
-                             (funcall renderer (gethash "value" e))
-                             (gethash "value" e))
-                           e)))
-            (if (listp contents) contents (list contents)) "\n"))))))
+          ;; contents: MarkedString | MarkedString[] | MarkupContent
+          (if (lsp--markup-content-p contents)
+            (lsp--render-markup-content hover)
+
+            (mapconcat (lambda (e)
+                         (let (renderer)
+                           (if (hash-table-p e)
+                             (if (setq renderer
+                                   (cdr (assoc-string
+                                          (gethash "language" e)
+                                          renderers)))
+                               (funcall renderer (gethash "value" e))
+                               (gethash "value" e))
+                             e)))
+              (if (listp contents) contents (list contents)) "\n")))))))
 
 (defun lsp-provide-marked-string-renderer (client language renderer)
   (cl-check-type language string)
