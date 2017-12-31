@@ -25,8 +25,7 @@
 ;;; Code:
 
 (require 'lsp-methods)
-(require 'lsp-receive)
-(require 'lsp-send)
+(require 'lsp-io)
 (require 'cl-lib)
 (require 'network-stream)
 
@@ -152,8 +151,6 @@ Optional arguments:
                            :language-id (if ,language-id-fn
                                           ,language-id-fn
                                           (lambda (_) ,language-id))
-                           :send-sync #'lsp--stdio-send-sync
-                           :send-async #'lsp--stdio-send-async
                            :new-connection (lsp--make-stdio-connection
                                              ,(symbol-name name)
                                              ,command
@@ -211,8 +208,6 @@ Optional arguments:
                            :language-id (if ,language-id-fn
                                           ,language-id-fn
                                           (lambda (_) ,language-id))
-                           :send-sync #'lsp--stdio-send-sync
-                           :send-async #'lsp--stdio-send-async
                            :new-connection (lsp--make-tcp-connection
                                              ,(symbol-name name)
                                              ,command

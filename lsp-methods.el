@@ -18,7 +18,7 @@
 (require 'xref)
 (require 'subr-x)
 (require 'widget)
-(require 'lsp-receive)
+(require 'lsp-io)
 (require 'lsp-common)
 (require 'pcase)
 (require 'inline)
@@ -27,10 +27,12 @@
 
 (cl-defstruct lsp--client
   (language-id nil :read-only t)
-  ;; function to send a message and waits for the next message from the server
+  
+  ;; send-async and send-sync are unused field, but haven't been
+  ;; removed so as to avoid breaking byte-compiled clients.
   (send-sync nil :read-only t)
-  ;; function to send a message and not wait for the next response
   (send-async nil :read-only t)
+
   (type nil :read-only t)
   (new-connection nil :read-only t)
   (get-root nil :read-only t)
@@ -257,11 +259,12 @@ initialized. When set this turns off use of
          (body (json-encode params)))
     (format "Content-Length: %d\r\n\r\n%s" (string-bytes body) body)))
 
-(defun lsp--send-notification (body)
+(define-inline lsp--send-notification (body)
   "Send BODY as a notification to the language server."
-  (funcall (lsp--client-send-async (lsp--workspace-client lsp--cur-workspace))
-           (lsp--make-message body)
-           (lsp--workspace-proc lsp--cur-workspace)))
+  (inline-quote
+    (lsp--send-no-wait
+      (lsp--make-message ,body)
+      (lsp--workspace-proc lsp--cur-workspace))))
 
 (define-inline lsp--cur-workspace-check ()
   (inline-quote (cl-assert lsp--cur-workspace nil
@@ -273,18 +276,13 @@ initialized. When set this turns off use of
 (defun lsp--send-request (body &optional no-wait)
   "Send BODY as a request to the language server, get the response.
 If NO-WAIT is non-nil, don't synchronously wait for a response."
-  ;; lsp-send-sync should loop until lsp--from-server returns nil
-  ;; in the case of Rust Language Server, this can be done with
-  ;; 'accept-process-output`.'
-  (let* ((client (lsp--workspace-client lsp--cur-workspace))
-         (parser (lsp--cur-parser))
-         (send-func (if no-wait
-                        (lsp--client-send-async client)
-                      (lsp--client-send-sync client))))
+  (let* ((parser (lsp--cur-parser))
+          (message (lsp--make-message body))
+          (process (lsp--workspace-proc lsp--cur-workspace)))
     (setf (lsp--parser-waiting-for-response parser) (not no-wait))
-    (funcall send-func
-             (lsp--make-message body)
-             (lsp--workspace-proc lsp--cur-workspace))
+    (if no-wait
+      (lsp--send-no-wait message process)
+      (lsp--send-wait message process))
     (when (not no-wait)
       (prog1 (lsp--parser-response-result parser)
         (setf (lsp--parser-response-result parser) nil)))))
@@ -296,7 +294,7 @@ the response recevied from the server asynchronously."
         (id (plist-get body :id)))
     (cl-assert id nil "body missing id field")
     (puthash id callback (lsp--client-response-handlers client))
-    (funcall (lsp--client-send-async client) (lsp--make-message body)
+    (lsp--send-no-wait (lsp--make-message body)
       (lsp--workspace-proc lsp--cur-workspace))
     body))
 

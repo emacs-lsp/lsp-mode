@@ -22,6 +22,37 @@
 (require 'pcase)
 (require 'subr-x)
 
+;; vibhavp: Should we use a lower value (5)?
+(defcustom lsp-response-timeout 10
+  "Number of seconds to wait for a response from the language server before timing out."
+  :type 'number
+  :group 'lsp-mode)
+
+(defvar lsp--no-response)
+
+(defun lsp--send-wait (message proc)
+  "Send MESSAGE to PROC and wait for output from the process."
+  (when lsp-print-io
+    (message "lsp--stdio-wait: %s" message))
+  (when (memq (process-status proc) '(stop exit closed failed nil))
+    (error "%s: Cannot communicate with the process (%s)" (process-name proc)
+           (process-status proc)))
+  (process-send-string proc message)
+  (setq lsp--no-response t)
+  (with-local-quit
+    (accept-process-output proc lsp-response-timeout))
+  (when lsp--no-response
+    (signal 'lsp-timed-out-error nil)))
+
+(defun lsp--send-no-wait (message proc)
+  "Send MESSAGE to PROC without waiting for further output."
+  (when lsp-print-io
+    (message "lsp--send-no-wait: %s" message))
+  (when (memq (process-status proc) '(stop exit closed failed nil))
+    (error "%s: Cannot communicate with the process (%s)" (process-name proc)
+           (process-status proc)))
+  (process-send-string proc message))
+
 (cl-defstruct lsp--parser
   (waiting-for-response nil)
   (response-result nil)
@@ -116,7 +147,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
             (lsp--make-response (gethash "id" request)
               (funcall handler (lsp--parser-workspace p) params) nil)))))
     ;; Send response to the server.
-    (funcall (lsp--client-send-async client) (lsp--make-message response) process)))
+    (lsp--send-no-wait (lsp--make-message response) process)))
 
 (defconst lsp--errors
   '((-32700 "Parse Error")
@@ -249,8 +280,6 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 
     (reverse messages)))
 
-(defvar lsp--no-response)  ; shared with lsp-send.el
-
 (defun lsp--parser-make-filter (p ignore-regexps)
   #'(lambda (proc output)
       (setq lsp--no-response nil)
@@ -280,5 +309,5 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
 (declare-function lsp--workspace-client "lsp-methods" (workspace))
 (declare-function lsp--workspace-apply-edit-handler "lsp-methods" (workspace params))
 
-(provide 'lsp-receive)
-;;; lsp-receive.el ends here
+(provide 'lsp-io)
+;;; lsp-io.el ends here
