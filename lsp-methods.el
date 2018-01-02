@@ -1289,6 +1289,61 @@ export interface MarkupContent {
   (interactive)
   (lsp--text-document-hover-string))
 
+(defvar-local lsp--current-signature-help-request-id nil)
+
+(defun lsp--text-document-signature-help ()
+  "interface SignatureHelp {
+signatures: SignatureInformation[];
+activeSignature?: number;
+activeParameter?: number;
+};
+
+interface SignatureInformation {
+label: string;
+documentation?: string | MarkupContent;
+parameters?: ParameterInformation[];
+};
+
+interface ParameterInformation {
+label: string;
+documentation?: string | MarkupContent;
+};
+
+interface MarkupContent {
+kind: MarkupKind;
+value: string;
+};
+
+type MarkupKind = 'plaintext' | 'markdown';"
+  (lsp--cur-workspace-check)
+  (when lsp--current-signature-help-request-id
+    (lsp--cancel-request lsp--current-signature-help-request-id))
+  (let (bounds body)
+    (when (symbol-at-point)
+      (setq bounds (bounds-of-thing-at-point 'symbol)
+            body (lsp--send-request-async
+                  (lsp--make-request "textDocument/signatureHelp"
+                                     (lsp--text-document-position-params))
+                  (lsp--make-text-document-signature-help-callback
+                   (car bounds) (cdr bounds) (current-buffer)))
+            lsp--current-signature-help-request-id (plist-get body :id))
+      (cl-assert (integerp lsp--current-signature-help-request-id)))))
+
+(defun lsp--make-text-document-signature-help-callback (start end buffer)
+  (lambda (signature-help)
+    (with-current-buffer buffer
+      (setq lsp--current-signature-help-request-id nil))
+    (when (and signature-help
+               (lsp--point-is-within-bounds-p start end)
+               (eq (current-buffer) buffer) (eldoc-display-message-p))
+      (let* ((active-signature-number
+              (or (gethash "activeSignature" signature-help) 0))
+             (active-signature (nth
+                                active-signature-number
+                                (gethash "signatures" signature-help))))
+        (when active-signature
+          (eldoc-message (gethash "label" active-signature)))))))
+
 ;; NOTE: the code actions cannot currently be applied. There is some non-GNU
 ;; code to do this in the lsp-haskell module. We still need a GNU version, here.
 ;; PRs accepted.
