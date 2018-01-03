@@ -1274,7 +1274,8 @@ export interface MarkupContent {
                                    (cdr (assoc-string
                                           (gethash "language" e)
                                           renderers)))
-                               (funcall renderer (gethash "value" e))
+                               (when (gethash "value" e nil)
+                                 (funcall renderer (gethash "value" e)))
                                (gethash "value" e))
                              e)))
               (if (listp contents) contents (list contents)) "\n")))))))
