@@ -35,6 +35,7 @@
 
   (type nil :read-only t)
   (new-connection nil :read-only t)
+  (stderr nil :read-only t)
   (get-root nil :read-only t)
   (ignore-regexps nil :read-only t)
 
@@ -501,17 +502,22 @@ registered client capabilities by calling
 (defun lsp--workspace-apply-edit-handler (_workspace params)
   (lsp--apply-workspace-edit (gethash "edit" params)))
 
-(defun lsp--make-sentinel (buffer)
-  (lambda (_p exit-str)
-    (when (buffer-live-p buffer)
-      (with-current-buffer buffer
-        (dolist (buf (lsp--workspace-buffers lsp--cur-workspace))
-          (with-current-buffer buf
-            (message "%s: %s has exited (%s)"
-                     (lsp--workspace-root lsp--cur-workspace)
-                     (process-name (lsp--workspace-proc lsp--cur-workspace))
-                     exit-str)
-            (lsp--uninitialize-workspace)))))))
+(defun lsp--make-sentinel (buffer stderr)
+  (lambda (process exit-str)
+    (if (buffer-live-p buffer)
+        (with-current-buffer buffer
+          (dolist (buf (lsp--workspace-buffers lsp--cur-workspace))
+            (with-current-buffer buf
+              (message "%s: %s has exited (%s)"
+                       (lsp--workspace-root lsp--cur-workspace)
+                       (process-name (lsp--workspace-proc lsp--cur-workspace))
+                       exit-str)
+              (lsp--uninitialize-workspace))))
+      (let ((status (process-status process))
+            (buffer-stderr (get-buffer stderr)))
+        (and (buffer-live-p buffer-stderr)
+             (memq status '(exit signal))
+             (kill-buffer stderr))))))
 
 (defun lsp--should-start-p (root)
   "Consult `lsp-project-blacklist' and `lsp-project-whitelist' to
@@ -543,7 +549,7 @@ directory."
        new-conn (funcall
                  (lsp--client-new-connection client)
                  (lsp--parser-make-filter parser (lsp--client-ignore-regexps client))
-                 (lsp--make-sentinel (current-buffer)))
+                 (lsp--make-sentinel (current-buffer) (lsp--client-stderr client)))
        ;; the command line process invoked
        cmd-proc (if (consp new-conn) (car new-conn) new-conn)
        ;; the process we actually communicate with
