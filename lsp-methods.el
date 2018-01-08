@@ -1198,13 +1198,16 @@ Returns xref-item(s)."
                               `(:id ,id)))))
 
 (defun lsp--on-hover ()
-  (when (and (lsp--capability "documentHighlightProvider")
-             lsp-highlight-symbol-at-point)
-    (lsp-symbol-highlight))
-  (when (and (lsp--capability "codeActionProvider") lsp-enable-codeaction)
-    (lsp--text-document-code-action))
-  (when lsp-enable-eldoc
-    (lsp--text-document-hover-string)))
+  ;; This function is used as ‘eldoc-documentation-function’, so it’s important
+  ;; that it doesn’t fail.
+  (with-demoted-errors "Error in ‘lsp--on-hover’: %S"
+    (when (and (lsp--capability "documentHighlightProvider")
+               lsp-highlight-symbol-at-point)
+      (lsp-symbol-highlight))
+    (when (and (lsp--capability "codeActionProvider") lsp-enable-codeaction)
+      (lsp--text-document-code-action))
+    (when lsp-enable-eldoc
+      (lsp--text-document-hover-string))))
 
 (defvar-local lsp--cur-hover-request-id nil)
 
