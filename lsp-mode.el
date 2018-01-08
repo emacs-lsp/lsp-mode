@@ -57,6 +57,7 @@
         (error (format "Couldn't find executable %s" (nth 0 final-command))))
       (setq proc (make-process
                   :name name
+                  :connection-type 'pipe
                   :coding 'no-conversion
                   :command final-command
                   :sentinel sentinel
