@@ -948,21 +948,22 @@ Added to `after-change-functions'."
 
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
-  (let ((file-versions (lsp--workspace-file-versions lsp--cur-workspace))
-        (old-buffers (lsp--workspace-buffers lsp--cur-workspace)))
-    ;; remove buffer from the current workspace's list of buffers
-    ;; do a sanity check first
-    (when (memq (current-buffer) old-buffers)
-      (setf (lsp--workspace-buffers lsp--cur-workspace)
-            (delq (current-buffer) old-buffers))
+  (when lsp--cur-workspace
+    (let ((file-versions (lsp--workspace-file-versions lsp--cur-workspace))
+          (old-buffers (lsp--workspace-buffers lsp--cur-workspace)))
+      ;; remove buffer from the current workspace's list of buffers
+      ;; do a sanity check first
+      (when (memq (current-buffer) old-buffers)
+        (setf (lsp--workspace-buffers lsp--cur-workspace)
+              (delq (current-buffer) old-buffers))
 
-      (remhash buffer-file-name file-versions)
-      (lsp--send-notification
-       (lsp--make-notification
-        "textDocument/didClose"
-        `(:textDocument ,(lsp--versioned-text-document-identifier))))
-      (when (= 0 (hash-table-count file-versions))
-        (lsp--shutdown-cur-workspace)))))
+        (remhash buffer-file-name file-versions)
+        (lsp--send-notification
+         (lsp--make-notification
+          "textDocument/didClose"
+          `(:textDocument ,(lsp--versioned-text-document-identifier))))
+        (when (= 0 (hash-table-count file-versions))
+          (lsp--shutdown-cur-workspace))))))
 
 (defun lsp--before-save ()
   (when lsp--cur-workspace
