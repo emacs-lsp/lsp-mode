@@ -16,6 +16,7 @@
 ;;; Code:
 
 (require 'compile)
+(require 'url-util)
 
 (defconst lsp--message-type-face
   `((1 . ,compilation-error-face)
@@ -68,6 +69,14 @@ If no such directory could be found, log a warning and return `default-directory
            (message
             "Couldn't find project root, using the current directory as the root.")
            default-directory)))))
+
+(defun lsp--uri-to-path (uri)
+  "Convert URI to a file path."
+  (string-remove-prefix lsp--uri-file-prefix (url-unhex-string uri)))
+
+(defun lsp--path-to-uri (path)
+  "Convert PATH to a uri."
+  (concat lsp--uri-file-prefix (url-hexify-string path url-path-allowed-chars)))
 
 (provide 'lsp-common)
 ;;; lsp-common.el ends here

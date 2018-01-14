@@ -35,7 +35,7 @@
 (defun lsp--symbol-filter (sym)
   (not
     (lsp--equal-files
-      (string-remove-prefix lsp--uri-file-prefix (gethash "uri" (gethash "location" sym)))
+      (lsp--uri-to-path (gethash "uri" (gethash "location" sym)))
       (buffer-file-name))))
 
 (defun lsp--get-symbol-type (sym)
