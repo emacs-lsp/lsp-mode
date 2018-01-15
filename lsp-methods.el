@@ -215,6 +215,11 @@ initialized. When set this turns off use of
   "Face used for highlighting symbols being written to."
   :group 'lsp-faces)
 
+(defcustom lsp-change-idle-timeout 0.1
+  "Wait till emacs has been idle for this number of seconds before sending `textDocument/didChange'"
+  :type 'number
+  :group 'lsp-mode)
+
 (define-error 'lsp-error "Unkown LSP error")
 (define-error 'lsp-empty-response-error
   "Recived empty response from language server" 'lsp-error)
@@ -260,12 +265,64 @@ initialized. When set this turns off use of
          (body (json-encode params)))
     (format "Content-Length: %d\r\n\r\n%s" (string-bytes body) body)))
 
+(define-inline lsp--inc-cur-file-version ()
+  (inline-quote (cl-incf (gethash buffer-file-name
+                                  (lsp--workspace-file-versions lsp--cur-workspace)))))
+
+(define-inline lsp--cur-file-version ()
+  "Return the file version number.  If INC, increment it before."
+  (inline-quote
+   (gethash buffer-file-name (lsp--workspace-file-versions lsp--cur-workspace))))
+
+(define-inline lsp--text-document-identifier ()
+  "Make TextDocumentIdentifier.
+
+interface TextDocumentIdentifier {
+    uri: string;
+}"
+  (inline-quote (list :uri (concat lsp--uri-file-prefix buffer-file-name))))
+
+(define-inline lsp--versioned-text-document-identifier ()
+  "Make VersionedTextDocumentIdentifier.
+
+interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
+    version: number;
+}"
+  (inline-quote (plist-put (lsp--text-document-identifier)
+                           :version (lsp--cur-file-version))))
+
+(defvar-local lsp--on-change-idle-timer nil)
+(defvar-local lsp--accumulated-on-change-events (vector))
+
+(defun lsp--send-did-change ()
+  "Sends `textDocument/didChange' with all accumulated changes from previous 
+`lsp-on-change' events"
+  (unless (eq lsp--accumulated-on-change-events [])
+    (with-demoted-errors "Error in ‘lsp--send-did-change’: %S"
+      (save-match-data
+        (when lsp--cur-workspace
+          (lsp--inc-cur-file-version)
+          (unless (eq lsp--server-sync-method 'none)
+            ;; Do not use lsp--send-notification since this is called from there
+            (lsp--send-no-wait
+             (lsp--make-message
+              (lsp--make-notification
+               "textDocument/didChange"
+               `(:textDocument
+                 ,(lsp--versioned-text-document-identifier)
+                 :contentChanges
+                 ,lsp--accumulated-on-change-events)))
+             (lsp--workspace-proc lsp--cur-workspace)))))
+      (setq lsp--accumulated-on-change-events []))))
+
 (define-inline lsp--send-notification (body)
   "Send BODY as a notification to the language server."
   (inline-quote
-    (lsp--send-no-wait
+   (progn
+     (lsp--send-did-change)
+     (lsp--send-no-wait
       (lsp--make-message ,body)
-      (lsp--workspace-proc lsp--cur-workspace))))
+      (lsp--workspace-proc lsp--cur-workspace)))))
 
 (define-inline lsp--cur-workspace-check ()
   (inline-quote (cl-assert lsp--cur-workspace nil
@@ -277,12 +334,13 @@ initialized. When set this turns off use of
 (defun lsp--send-request (body &optional no-wait)
   "Send BODY as a request to the language server, get the response.
 If NO-WAIT is non-nil, don't synchronously wait for a response."
+  (lsp--send-did-change)
   (let* ((parser (lsp--cur-parser))
-          (message (lsp--make-message body))
-          (process (lsp--workspace-proc lsp--cur-workspace)))
+         (message (lsp--make-message body))
+         (process (lsp--workspace-proc lsp--cur-workspace)))
     (setf (lsp--parser-waiting-for-response parser) (not no-wait))
     (if no-wait
-      (lsp--send-no-wait message process)
+        (lsp--send-no-wait message process)
       (lsp--send-wait message process))
     (when (not no-wait)
       (prog1 (lsp--parser-response-result parser)
@@ -291,22 +349,14 @@ If NO-WAIT is non-nil, don't synchronously wait for a response."
 (defun lsp--send-request-async (body callback)
   "Send BODY as a request to the language server, and call CALLBACK with
 the response recevied from the server asynchronously."
+  (lsp--send-did-change)
   (let ((client (lsp--workspace-client lsp--cur-workspace))
         (id (plist-get body :id)))
     (cl-assert id nil "body missing id field")
     (puthash id callback (lsp--client-response-handlers client))
     (lsp--send-no-wait (lsp--make-message body)
-      (lsp--workspace-proc lsp--cur-workspace))
+                       (lsp--workspace-proc lsp--cur-workspace))
     body))
-
-(define-inline lsp--inc-cur-file-version ()
-  (inline-quote (cl-incf (gethash buffer-file-name
-                           (lsp--workspace-file-versions lsp--cur-workspace)))))
-
-(define-inline lsp--cur-file-version ()
-  "Return the file version number.  If INC, increment it before."
-  (inline-quote
-    (gethash buffer-file-name (lsp--workspace-file-versions lsp--cur-workspace))))
 
 (define-inline lsp--make-text-document-item ()
   "Make TextDocumentItem for the currently opened file.
@@ -318,11 +368,11 @@ interface TextDocumentItem {
     text: string;
 }"
   (inline-quote
-    (let ((language-id-fn (lsp--client-language-id (lsp--workspace-client lsp--cur-workspace))))
-      (list :uri (concat lsp--uri-file-prefix buffer-file-name)
-	      :languageId (funcall language-id-fn (current-buffer))
-	      :version (lsp--cur-file-version)
-	      :text (buffer-substring-no-properties (point-min) (point-max))))))
+   (let ((language-id-fn (lsp--client-language-id (lsp--workspace-client lsp--cur-workspace))))
+     (list :uri (concat lsp--uri-file-prefix buffer-file-name)
+	   :languageId (funcall language-id-fn (current-buffer))
+	   :version (lsp--cur-file-version)
+	   :text (buffer-substring-no-properties (point-min) (point-max))))))
 
 (defun lsp--shutdown-cur-workspace ()
   "Shut down the language server process for ‘lsp--cur-workspace’."
@@ -630,23 +680,6 @@ directory."
   (lsp--set-sync-method)
   (run-hooks 'lsp-after-open-hook))
 
-(define-inline lsp--text-document-identifier ()
-  "Make TextDocumentIdentifier.
-
-interface TextDocumentIdentifier {
-    uri: string;
-}"
-  (inline-quote (list :uri (concat lsp--uri-file-prefix buffer-file-name))))
-
-(define-inline lsp--versioned-text-document-identifier ()
-  "Make VersionedTextDocumentIdentifier.
-
-interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
-    version: number;
-}"
-  (inline-quote (plist-put (lsp--text-document-identifier)
-                  :version (lsp--cur-file-version))))
-
 (define-inline lsp--position (line char)
   "Make a Position object for the given LINE and CHAR.
 
@@ -834,30 +867,30 @@ interface TextDocumentEdit {
   ;;   lsp-on-change:(start,end,length)=(19,19,8)
 
   (if (eq length 0)
-    ;; Adding something only, work from start only
-    `(:range ,(lsp--range (lsp--point-to-position start)
-                (lsp--point-to-position start))
-       :rangeLength 0
-       :text ,(buffer-substring-no-properties start end))
+      ;; Adding something only, work from start only
+      `(:range ,(lsp--range (lsp--point-to-position start)
+                            (lsp--point-to-position start))
+               :rangeLength 0
+               :text ,(buffer-substring-no-properties start end))
 
     (if (eq start end)
-      ;; Deleting something only
-      (if (lsp--bracketed-change-p start end length)
-        ;; The before-change value is bracketed, use it
-        `(:range ,(lsp--range (lsp--point-to-position start)
-                    (plist-get lsp--before-change-vals :end-pos))
-           :rangeLength ,length
-           :text "")
-        ;; If the change is not bracketed, send a full change event instead.
-        (lsp--full-change-event))
+        ;; Deleting something only
+        (if (lsp--bracketed-change-p start end length)
+            ;; The before-change value is bracketed, use it
+            `(:range ,(lsp--range (lsp--point-to-position start)
+                                  (plist-get lsp--before-change-vals :end-pos))
+                     :rangeLength ,length
+                     :text "")
+          ;; If the change is not bracketed, send a full change event instead.
+          (lsp--full-change-event))
 
       ;; Deleting some things, adding others
       (if (lsp--bracketed-change-p start end length)
-        ;; The before-change value is valid, use it
-        `(:range ,(lsp--range (lsp--point-to-position start)
-                    (plist-get lsp--before-change-vals :end-pos))
-           :rangeLength ,length
-           :text ,(buffer-substring-no-properties start end))
+          ;; The before-change value is valid, use it
+          `(:range ,(lsp--range (lsp--point-to-position start)
+                                (plist-get lsp--before-change-vals :end-pos))
+                   :rangeLength ,length
+                   :text ,(buffer-substring-no-properties start end))
         (lsp--full-change-event)))))
 
 
@@ -934,21 +967,18 @@ Added to `after-change-functions'."
   ;; So (47 47 7) means delete 7 chars starting at pos 47
   ;; (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length)
   ;; (message "lsp-on-change:(lsp--before-change-vals)=%s" lsp--before-change-vals)
-  (with-demoted-errors "Error in ‘lsp-on-change’: %S"
-    (save-match-data
-      (when lsp--cur-workspace
-        (lsp--inc-cur-file-version)
-        (unless (eq lsp--server-sync-method 'none)
-          (lsp--send-notification
-           (lsp--make-notification
-            "textDocument/didChange"
-            `(:textDocument
-              ,(lsp--versioned-text-document-identifier)
-              :contentChanges
-              ,(pcase lsp--server-sync-method
-                 ('incremental (vector (lsp--text-document-content-change-event
-                                        start end length)))
-                 ('full (vector (lsp--full-change-event))))))))))))
+
+  (when lsp--on-change-idle-timer
+    (cancel-timer lsp--on-change-idle-timer))
+  (setq lsp--accumulated-on-change-events
+        (vconcat lsp--accumulated-on-change-events
+                 (pcase lsp--server-sync-method
+                   ('incremental (vector (lsp--text-document-content-change-event
+                                          start end length)))
+                   ('full (vector (lsp--full-change-event)))))
+        lsp--on-change-idle-timer (run-with-idle-timer
+                                   lsp-change-idle-timeout nil
+                                   #'lsp--send-did-change)))
 
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
