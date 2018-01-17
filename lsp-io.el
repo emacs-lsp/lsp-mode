@@ -102,7 +102,7 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
         handler)
     ;; If we've been explicitly told to queue
     (if (and (not dont-queue) (lsp--parser-response-result p))
-        (push (lsp--parser-queued-notifications p) notification)
+        (push notification (lsp--parser-queued-notifications p))
       ;; else, call the appropriate handler
       (pcase (gethash "method" notification)
         ("window/showMessage" (lsp--window-show-message params))
@@ -302,7 +302,9 @@ Else it is queued (unless DONT-QUEUE is non-nil)"
             (when lsp-print-io (message "Output from language server: %s" m))
             (lsp--parser-on-message p m))))
       (when (lsp--parser-waiting-for-response p)
-        (with-local-quit (accept-process-output proc)))))
+        (with-local-quit (accept-process-output proc)))
+      (lsp--flush-notifications p)
+      ))
 
 (declare-function lsp--client-notification-handlers "lsp-methods" (client))
 (declare-function lsp--client-request-handlers "lsp-methods" (client))
