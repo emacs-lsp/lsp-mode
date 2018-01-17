@@ -63,7 +63,7 @@
   (body-received 0) ;; amount of current message body currently stored in 'body'
   (leftovers nil) ;; Leftover data from previous chunk; to be processed
 
-  (queued-notifications nil)
+  (queued-notifications nil) ;; Unused field
   (queued-requests nil)
 
   (workspace nil) ;; the workspace
@@ -88,34 +88,23 @@
         'notification
       (error "Couldn't guess message type from json-data"))))
 
-(defun lsp--flush-notifications (p)
-  "Flush any notifications that were queued while processing the last response."
-  (dolist (el (nreverse (lsp--parser-queued-notifications p)))
-    (lsp--on-notification p el t))
-  (setf (lsp--parser-queued-notifications p) nil))
-
-(defun lsp--on-notification (p notification &optional dont-queue)
-  "If response queue is empty, call the appropriate handler for NOTIFICATION.
-Else it is queued (unless DONT-QUEUE is non-nil)"
+(defun lsp--on-notification (p notification)
+  "Call the appropriate handler for NOTIFICATION."
   (let ((params (gethash "params" notification))
         (client (lsp--workspace-client (lsp--parser-workspace p)))
         handler)
-    ;; If we've been explicitly told to queue
-    (if (and (not dont-queue) (lsp--parser-response-result p))
-        (push (lsp--parser-queued-notifications p) notification)
-      ;; else, call the appropriate handler
-      (pcase (gethash "method" notification)
-        ("window/showMessage" (lsp--window-show-message params))
-        ("window/logMessage" (lsp--window-show-message params)) ;; Treat as showMessage for now
-        ("textDocument/publishDiagnostics" (lsp--on-diagnostics params
-                                                                (lsp--parser-workspace p)))
-        ("textDocument/diagnosticsEnd")
-        ("textDocument/diagnosticsBegin")
-        (other
-         (setq handler (gethash other (lsp--client-notification-handlers client) nil))
-         (if (not handler)
-           (message "Unknown method: %s" other)
-           (funcall handler (lsp--parser-workspace p) params)))))))
+    (pcase (gethash "method" notification)
+      ("window/showMessage" (lsp--window-show-message params))
+      ("window/logMessage" (lsp--window-show-message params)) ;; Treat as showMessage for now
+      ("textDocument/publishDiagnostics" (lsp--on-diagnostics params
+                                           (lsp--parser-workspace p)))
+      ("textDocument/diagnosticsEnd")
+      ("textDocument/diagnosticsBegin")
+      (other
+        (setq handler (gethash other (lsp--client-notification-handlers client) nil))
+        (if (not handler)
+          (message "Unknown method: %s" other)
+          (funcall handler (lsp--parser-workspace p) params))))))
 
 (defun lsp--on-request (p request)
   "Call the appropriate handler for REQUEST, and send the return value to the server."
