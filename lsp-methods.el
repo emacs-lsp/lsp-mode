@@ -27,7 +27,7 @@
 
 (cl-defstruct lsp--client
   (language-id nil :read-only t)
-  
+
   ;; send-async and send-sync are unused field, but haven't been
   ;; removed so as to avoid breaking byte-compiled clients.
   (send-sync nil :read-only t)
@@ -214,12 +214,6 @@ initialized. When set this turns off use of
   '((t :background "green"))
   "Face used for highlighting symbols being written to."
   :group 'lsp-faces)
-
-(define-error 'lsp-error "Unkown LSP error")
-(define-error 'lsp-empty-response-error
-  "Recived empty response from language server" 'lsp-error)
-(define-error 'lsp-capability-not-supported
-  "Capability is not supported by this language server" 'lsp-error)
 
 (defun lsp-client-on-notification (client method callback)
   (cl-check-type client lsp--client)
