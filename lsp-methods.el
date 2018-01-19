@@ -313,7 +313,7 @@ interface TextDocumentItem {
 }"
   (inline-quote
     (let ((language-id-fn (lsp--client-language-id (lsp--workspace-client lsp--cur-workspace))))
-      (list :uri (concat lsp--uri-file-prefix buffer-file-name)
+      (list :uri (lsp--path-to-uri buffer-file-name)
 	      :languageId (funcall language-id-fn (current-buffer))
 	      :version (lsp--cur-file-version)
 	      :text (buffer-substring-no-properties (point-min) (point-max))))))
@@ -558,7 +558,7 @@ directory."
       (setq init-params
             `(:processId ,(emacs-pid)
                          :rootPath ,root
-                         :rootUri ,(concat lsp--uri-file-prefix root)
+                         :rootUri ,(lsp--path-to-uri root)
                          :capabilities ,(lsp--client-capabilities)
                          :initializationOptions ,(if (functionp extra-init-params)
                                                      (funcall extra-init-params lsp--cur-workspace)
@@ -630,7 +630,7 @@ directory."
 interface TextDocumentIdentifier {
     uri: string;
 }"
-  (inline-quote (list :uri (concat lsp--uri-file-prefix buffer-file-name))))
+  (inline-quote (list :uri (lsp--path-to-uri buffer-file-name))))
 
 (define-inline lsp--versioned-text-document-identifier ()
   "Make VersionedTextDocumentIdentifier.
@@ -734,7 +734,7 @@ interface WorkspaceEdit {
       (when (hash-table-p changes)
         (maphash
           (lambda (uri text-edits)
-            (let ((filename (string-remove-prefix lsp--uri-file-prefix uri)))
+            (let ((filename (lsp--uri-to-path uri)))
               (with-current-buffer (find-file-noselect filename)
                 (lsp--apply-text-edits text-edits))))
           changes)))))
@@ -752,7 +752,7 @@ interface TextDocumentEdit {
 	edits: TextEdit[];
 }"
   (let* ((ident (gethash "textDocument" edit))
-          (filename (string-remove-prefix lsp--uri-file-prefix (gethash "uri" ident)))
+          (filename (lsp--uri-to-path (gethash "uri" ident)))
           (version (gethash "version" ident)))
     (with-current-buffer (find-file-noselect filename)
       (when (= version (lsp--cur-file-version))
@@ -1160,7 +1160,7 @@ interface Location {
 	range: Range;
 }"
   (when locations
-    (let* ((fn (lambda (loc) (string-remove-prefix lsp--uri-file-prefix (gethash "uri" loc))))
+    (let* ((fn (lambda (loc) (lsp--uri-to-path (gethash "uri" loc))))
             ;; locations-by-file is an alist of the form
             ;; ((FILENAME . LOCATIONS)...), where FILENAME is a string of the
             ;; actual file name, and LOCATIONS is a list of Location objects
@@ -1512,7 +1512,7 @@ A reference is highlighted only if it is visible in a window."
     (xref-make (format "[%s] %s"
                        (alist-get (gethash "kind" symbol) lsp--symbol-kind)
                        (gethash "name" symbol))
-               (xref-make-file-location (string-remove-prefix lsp--uri-file-prefix uri)
+               (xref-make-file-location (lsp--uri-to-path uri)
                                         (1+ (gethash "line" start))
                                         (gethash "character" start)))))
 
