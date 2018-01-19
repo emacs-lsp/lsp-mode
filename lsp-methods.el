@@ -246,7 +246,7 @@ initialized. When set this turns off use of
   "Create notification body for method METHOD and parameters PARAMS."
   (inline-quote
     (progn (cl-check-type ,method string)
-      (list :jsonrpc "2.0" :method ,method :params ,params))))
+      (list :jsonrpc "2.0" :method ,method :params ,(or params (make-hash-table))))))
 
 (defun lsp--make-message (params)
   "Create a LSP message from PARAMS, after encoding it to a JSON string."
@@ -571,7 +571,7 @@ directory."
             (gethash "capabilities" response))
       ;; Version 3.0 now sends an "initialized" notification to allow registration
       ;; of server capabilities
-      (lsp--send-notification (lsp--make-notification "initialized" nil))
+      (lsp--send-notification (lsp--make-notification "initialized"))
       (run-hooks 'lsp-after-initialize-hook))
     (lsp--text-document-did-open)))
 
