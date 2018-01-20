@@ -1424,7 +1424,7 @@ If title is nil, return the name for the command handler."
   (let ((edits (lsp--send-request (lsp--make-request
                                     "textDocument/formatting"
                                     (lsp--make-document-formatting-params)))))
-    (lsp--apply-text-edits edits)))
+    (save-excursion (lsp--apply-text-edits edits))))
 
 (defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region.
