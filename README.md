@@ -85,6 +85,13 @@ to find the references to the symbol under point.
 ![flycheck](./examples/flycheck.gif)
 
 ### Imenu
+Add
+```emacs-lisp
+(require 'lsp-imenu)
+(add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
+```
+to your init file to enable imenu integration.
+
 ![imenu-1](./examples/imenu-1.png)
 ![imenu-2](./examples/imenu-2.png)
 
