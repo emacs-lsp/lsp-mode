@@ -266,8 +266,7 @@
             (lsp--parser-reset p))
 
           (setq chunk leftovers))))
-
-    (reverse messages)))
+    (nreverse messages)))
 
 (defun lsp--parser-make-filter (p ignore-regexps)
   #'(lambda (proc output)
