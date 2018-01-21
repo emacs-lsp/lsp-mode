@@ -69,6 +69,17 @@
   (workspace nil) ;; the workspace
   )
 
+(define-error 'lsp-parse-error
+  "Error parsing message from language server" 'lsp-error)
+(define-error 'lsp-unknown-message-type
+  "Unknown message type" '(lsp-error lsp-parse-error))
+(define-error 'lsp-unknown-json-rpc-version
+  "Unknown JSON-RPC protocol version" '(lsp-error lsp-parse-error))
+(define-error 'lsp-no-content-length
+  "Content-Length header missing in message" '(lsp-error lsp-parse-error))
+(define-error 'lsp-invalid-header-name
+  "Invalid header name" '(lsp-error lsp-parse-error))
+
 ;;  id  method
 ;;   x    x     request
 ;;   x    .     response
@@ -77,7 +88,7 @@
 (defun lsp--get-message-type (json-data)
   "Get the message type from JSON-DATA."
   (when (not (string= (gethash "jsonrpc" json-data "") "2.0"))
-    (error "JSON-RPC version is not 2.0"))
+    (signal 'lsp-unknown-json-rpc-version (list (gethash "jsonrpc" json-data))))
   (if (gethash "id" json-data nil)
       (if (gethash "error" json-data nil)
           'response-error
@@ -85,8 +96,8 @@
             'request
           'response))
     (if (gethash "method" json-data nil)
-        'notification
-      (error "Couldn't guess message type from json-data"))))
+      'notification
+      (signal 'lsp-unknown-message-type (list json-data)))))
 
 (defun lsp--on-notification (p notification)
   "Call the appropriate handler for NOTIFICATION."
@@ -169,7 +180,7 @@
   (let ((pos (string-match "\:" s))
         key val)
     (unless pos
-      (error "Invalid header string"))
+      (signal 'lsp-invalid-header-name (list s)))
     (setq key (substring s 0 pos)
           val (substring s (+ 2 pos)))
     (when (equal key "Content-Length")
@@ -218,7 +229,6 @@
 
 (defun lsp--parser-read (p output)
   (cl-assert (lsp--parser-workspace p) nil "Parser workspace cannot be nil.")
-
   (let ((messages '())
         (chunk (concat (lsp--parser-leftovers p) output)))
     (while (not (string-empty-p chunk))
