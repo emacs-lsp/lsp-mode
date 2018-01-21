@@ -156,7 +156,14 @@
     (-32602 "Invalid Parameters")
     (-32603 "Internal Error")
     (-32099 "Server Start Error")
-    (-32000 "Server End Error")))
+    (-32000 "Server End Error")
+    (-32002 "Server Not Initialized")
+    (-32001 "Unknown Error Code")
+    (-32800 "Request Cancelled"))
+  "alist of error codes to user friendly strings.")
+
+(defconst lsp--silent-errors '(-32800)
+  "Error codes that are okay to not notify the user about")
 
 (defun lsp--error-string (err)
   "Format ERR as a user friendly string."
@@ -219,9 +226,11 @@
             (and json-data (gethash "result" json-data nil))
             (lsp--parser-waiting-for-response p) nil)))
       ('response-error
-        (setf (lsp--parser-response-result p) nil)
-        (when json-data
-          (message (lsp--error-string (gethash "error" json-data nil))))
+        (let* ((err (gethash "error" json-data nil))
+               (code (gethash "code" err nil)))
+          (when (and json-data
+                     (not (memq code lsp--silent-errors)))
+            (message (lsp--error-string err))))
         (setf (lsp--parser-response-result p) nil
           (lsp--parser-waiting-for-response p) nil))
       ('notification (lsp--on-notification p json-data))
