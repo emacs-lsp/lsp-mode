@@ -17,6 +17,7 @@
 
 (require 'compile)
 (require 'url-util)
+(require 'subr-x)
 
 (defconst lsp--message-type-face
   `((1 . ,compilation-error-face)
