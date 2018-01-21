@@ -38,15 +38,18 @@
            (final-command (if (consp command) command (list command))))
       (unless (executable-find (nth 0 final-command))
         (error (format "Couldn't find executable %s" (nth 0 final-command))))
-      (make-process
-       :name name
-       :connection-type 'pipe
-       :coding 'no-conversion
-       :command final-command
-       :filter filter
-       :sentinel sentinel
-       :stderr stderr
-       :noquery t))))
+      (let ((proc (make-process
+                    :name name
+                    :connection-type 'pipe
+                    :coding 'no-conversion
+                    :command final-command
+                    :filter filter
+                    :sentinel sentinel
+                    :stderr stderr
+                    :noquery t)))
+        (set-process-query-on-exit-flag proc nil)
+        (set-process-query-on-exit-flag (get-buffer-process (get-buffer stderr)) nil)
+        proc))))
 
 (defun lsp--make-tcp-connection (name command command-fn host port stderr)
   (lambda (filter sentinel)
@@ -66,6 +69,9 @@
             tcp-proc (open-network-stream (concat name " TCP connection")
                                           nil host port
                                           :type 'plain))
+      (set-process-query-on-exit-flag proc nil)
+      (set-process-query-on-exit-flag tcp-proc nil)
+      (set-process-query-on-exit-flag (get-buffer-process (get-buffer stderr)) nil)
       (set-process-filter tcp-proc filter)
       (cons proc tcp-proc))))
 
