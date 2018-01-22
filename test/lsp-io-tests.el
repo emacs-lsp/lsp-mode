@@ -58,5 +58,18 @@
 		(should (equal (lsp--parser-read p "\"somedata\":2}")
 									 '("{\"somedata\":2}")))))
 
+(ert-deftest lsp--parser-read--multiple-chunks-ignored ()
+  (let* ((log '())
+         (p (make-lsp--parser :workspace lsp--test-workspace))
+         (lsp--parser-reset p)
+         (filter (lsp--parser-make-filter p '("IGNORE_ME"))))
+    (cl-letf (((symbol-function 'lsp--parser-on-message)
+               (lambda (p msg) (push msg log))))
+      (funcall filter nil "Content-Length: 2\r\n")
+      (funcall filter nil "\r\n{}Content-Length: 15\r\n\r\n")
+      (funcall filter nil "{\"IGNORE_")
+      (funcall filter nil "ME\":1}Content-Length: 2\r\n\r\n{}"))
+		(should (equal log '("{}" "{}")))))
+
 (provide 'lsp-io-tests)
 ;;; lsp-io-tests.el ends here
