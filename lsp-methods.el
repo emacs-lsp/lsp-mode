@@ -125,12 +125,12 @@ for a new workspace."
 
 ;;;###autoload
 (defgroup lsp-mode nil
-  "Customization group for lsp-mode."
+  "Customization group for ‘lsp-mode’."
   :group 'tools)
 
 ;;;###autoload
 (defgroup lsp-faces nil
-  "Faces for lsp-mode."
+  "Faces for ‘lsp-mode’."
   :group 'lsp-mode)
 
 ;;;###autoload
@@ -149,9 +149,8 @@ for a new workspace."
   :group 'lsp-mode)
 
 (defcustom lsp-project-whitelist nil
-  "A list of project directories for which LSP shouldn be
-initialized. When set this turns off use of
-`lsp-project-blacklist'"
+  "A list of project directories for which LSP should be initialized.
+When set this turns off use of `lsp-project-blacklist'"
   :type '(repeat directory)
   :group 'lsp-mode)
 
@@ -387,8 +386,8 @@ Return the merged plist."
 (defun lsp--merge-two-plists (first second)
   "Deeply merge two plists.
 
-All values in SECOND are merged into FIRST. FIRST can be nil or a
-plist. SECOND must be a plist.
+All values in SECOND are merged into FIRST.  FIRST can be nil or
+a plist.  SECOND must be a plist.
 
 Return the merged plist."
   (when second
@@ -447,18 +446,18 @@ Return the merged plist."
   "Register extra client capabilities for the current workspace.
 
 This function must be called before the initialize request is
-sent. It's recommended to to call it in the
+sent.  It's recommended to to call it in the
 `lsp-before-initialize-hook'.
 
 PACKAGE name is the symbol of the name of the package that
-registers the capabilities. CAPS is either a plist of the
+registers the capabilities.  CAPS is either a plist of the
 capabilities, or a function that takes no argument and return a
 plist of the client capabilties or nil.
 
 Registered capabilities are merged into the default capabilities
-before sending to the server via the initialize request. If two
+before sending to the server via the initialize request.  If two
 packages provide different values for the same leaf capability
-entry, the value is set to the one that registers later. Default
+entry, the value is set to the one that registers later.  Default
 leaf capability entries can not be overwritten."
   (lsp--cur-workspace-check)
   (cl-check-type package-name symbolp)
