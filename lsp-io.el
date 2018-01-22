@@ -281,23 +281,22 @@
 (defun lsp--parser-make-filter (p ignore-regexps)
   #'(lambda (proc output)
       (setq lsp--no-response nil)
-      (when (cl-loop for r in ignore-regexps
-                     ;; check if the output is to be ignored or not
-                     ;; TODO: Would this ever result in false positives?
-                     when (string-match r output) return nil
-                     finally return t)
-        (let ((messages
-               (condition-case err
-                   (lsp--parser-read p output)
-                 (error
-                  (progn
-                    (lsp--parser-reset p)
-                    (setf (lsp--parser-response-result p) nil
-                          (lsp--parser-waiting-for-response p) nil)
-                    (error "Error parsing language server output: %s" err))))))
-
-          (dolist (m messages)
-            (when lsp-print-io (message "Output from language server: %s" m))
+      (let ((messages
+             (condition-case err
+                 (lsp--parser-read p output)
+               (error
+                (progn
+                  (lsp--parser-reset p)
+                  (setf (lsp--parser-response-result p) nil
+                        (lsp--parser-waiting-for-response p) nil)
+                  (error "Error parsing language server output: %s" err))))))
+        (dolist (m messages)
+          (when lsp-print-io (message "Output from language server: %s" m))
+          (when (cl-loop for r in ignore-regexps
+                         ;; check if the output is to be ignored or not
+                         ;; TODO: Would this ever result in false positives?
+                         when (string-match r m) return nil
+                         finally return t)
             (lsp--parser-on-message p m))))
       (when (lsp--parser-waiting-for-response p)
         (with-local-quit (accept-process-output proc)))))
