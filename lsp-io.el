@@ -28,21 +28,24 @@
   :type 'number
   :group 'lsp-mode)
 
-(defvar lsp--no-response)
-
-(defun lsp--send-wait (message proc)
+(defun lsp--send-wait (message proc parser)
   "Send MESSAGE to PROC and wait for output from the process."
   (when lsp-print-io
     (message "lsp--stdio-wait: %s" message))
   (when (memq (process-status proc) '(stop exit closed failed nil))
     (error "%s: Cannot communicate with the process (%s)" (process-name proc)
-           (process-status proc)))
+      (process-status proc)))
   (process-send-string proc message)
-  (setq lsp--no-response t)
   (with-local-quit
-    (accept-process-output proc lsp-response-timeout))
-  (when lsp--no-response
-    (signal 'lsp-timed-out-error nil)))
+    (let* ((send-time (time-to-seconds (current-time)))
+            ;; max time by which we must get a response
+           (expected-time (+ send-time lsp-response-timeout)))
+      (while (lsp--parser-waiting-for-response parser)
+        ;; Wait for expected-time - current-time
+        (accept-process-output proc (- expected-time (time-to-seconds (current-time))))
+        ;; We have timed out when expected-time < (current-time)
+        (when (< expected-time (time-to-seconds (current-time)))
+          (signal 'lsp-timed-out-error nil))))))
 
 (defun lsp--send-no-wait (message proc)
   "Send MESSAGE to PROC without waiting for further output."
@@ -292,8 +295,7 @@
     (nreverse messages)))
 
 (defun lsp--parser-make-filter (p ignore-regexps)
-  #'(lambda (proc output)
-      (setq lsp--no-response nil)
+  #'(lambda (_proc output)
       (when (cl-loop for r in ignore-regexps
                      ;; check if the output is to be ignored or not
                      ;; TODO: Would this ever result in false positives?
@@ -311,9 +313,7 @@
 
           (dolist (m messages)
             (when lsp-print-io (message "Output from language server: %s" m))
-            (lsp--parser-on-message p m))))
-      (when (lsp--parser-waiting-for-response p)
-        (with-local-quit (accept-process-output proc)))))
+            (lsp--parser-on-message p m))))))
 
 (declare-function lsp--client-notification-handlers "lsp-methods" (client))
 (declare-function lsp--client-request-handlers "lsp-methods" (client))

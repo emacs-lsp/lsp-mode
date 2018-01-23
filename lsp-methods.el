@@ -277,7 +277,7 @@ If NO-WAIT is non-nil, don't synchronously wait for a response."
     (setf (lsp--parser-waiting-for-response parser) (not no-wait))
     (if no-wait
       (lsp--send-no-wait message process)
-      (lsp--send-wait message process))
+      (lsp--send-wait message process parser))
     (when (not no-wait)
       (prog1 (lsp--parser-response-result parser)
         (setf (lsp--parser-response-result parser) nil)))))
