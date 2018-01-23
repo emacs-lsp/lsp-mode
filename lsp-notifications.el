@@ -25,8 +25,7 @@
   :group 'lsp-mode)
 
 (defun lsp--window-show-message (params)
-  "Send the server's messages to message, inhibit if `lsp-inhibit-message'
-is set."
+  "Send the server's messages to message, inhibit if `lsp-inhibit-message' is set."
   (let* ((inhibit-message (or inhibit-message lsp-inhibit-message)))
     (message "%s" (lsp--propertize (gethash "message" params)
                     (gethash "type" params)))))
