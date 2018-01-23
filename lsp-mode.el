@@ -47,7 +47,9 @@
                     :sentinel sentinel
                     :stderr stderr
                     :noquery t)))
-        (set-process-query-on-exit-flag proc nil)
+        ;; TODO: This is redundant with :noquery above, but due to a
+        ;; bug pre-Emacs 26 it is still needed
+        ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=30031
         (set-process-query-on-exit-flag (get-buffer-process (get-buffer stderr)) nil)
         proc))))
 
@@ -69,9 +71,9 @@
             tcp-proc (open-network-stream (concat name " TCP connection")
                                           nil host port
                                           :type 'plain))
-      (set-process-query-on-exit-flag proc nil)
-      (set-process-query-on-exit-flag tcp-proc nil)
+      ;; TODO: Same :noquery issue (see above)
       (set-process-query-on-exit-flag (get-buffer-process (get-buffer stderr)) nil)
+      (set-process-query-on-exit-flag tcp-proc nil)
       (set-process-filter tcp-proc filter)
       (cons proc tcp-proc))))
 
