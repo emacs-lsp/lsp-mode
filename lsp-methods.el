@@ -570,7 +570,7 @@ directory."
             (gethash "capabilities" response))
       ;; Version 3.0 now sends an "initialized" notification to allow registration
       ;; of server capabilities
-      (lsp--send-notification (lsp--make-notification "initialized" nil))
+      (lsp--send-notification (lsp--make-notification "initialized" (make-hash-table)))
       (run-hooks 'lsp-after-initialize-hook))
     (lsp--text-document-did-open)))
 
