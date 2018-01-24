@@ -144,14 +144,15 @@ for a new workspace."
 
 ;;;###autoload
 (defcustom lsp-project-blacklist nil
-  "A list of project directories for which LSP shouldn't be initialized."
-  :type '(repeat directory)
+  "A list of project directory regexps for which LSP shouldn't be initialized.
+LSP should be initialized if the given project root matches one pattern in the
+whitelist, or does not match any pattern in the blacklist."
+  :type '(repeat regexp)
   :group 'lsp-mode)
 
 (defcustom lsp-project-whitelist nil
-  "A list of project directories for which LSP should be initialized.
-When set this turns off use of `lsp-project-blacklist'"
-  :type '(repeat directory)
+  "A list of project directory regexps for which LSP should be initialized."
+  :type '(repeat regexp)
   :group 'lsp-mode)
 
 ;;;###autoload
@@ -517,9 +518,11 @@ registered client capabilities by calling
   "Consult `lsp-project-blacklist' and `lsp-project-whitelist' to
 determine if a server should be started for the given ROOT
 directory."
-  (if lsp-project-whitelist
-      (member root lsp-project-whitelist)
-    (not (member root lsp-project-blacklist))))
+  (or
+    (cl-some (lambda (p) (string-match-p p root))
+      lsp-project-whitelist)
+    (cl-notany (lambda (p) (string-match-p p root))
+      lsp-project-blacklist)))
 
 (defun lsp--start (client &optional extra-init-params)
   (when lsp--cur-workspace
