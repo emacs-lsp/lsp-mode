@@ -58,18 +58,34 @@
 		(should (equal (lsp--parser-read p "\"somedata\":2}")
 									 '("{\"somedata\":2}")))))
 
+(defun random-string-chunks (str)
+  "Randomly split a string 'abcdefghi' into chunks of random lengths:
+(\"ab\" \"cdefgh\" \"i\"). Slightly biased towards having longer
+chunks earlier in the list."
+  (if (string= str "") '()
+    (let* ((n (length str))
+           (i (1+ (random n))))
+      (cons (substring str 0 i)
+            (random-string-chunks (substring str i n))))))
+
+(defconst lsp--example-ignore-msg
+  (concat
+   "Content-Length: 2\r\n\r\n{}"
+   "Content-Length: 15\r\n\r\n{\"IGNORE_ME\":1}"
+   "Content-Length: 2\r\n\r\n{}"))
+
 (ert-deftest lsp--parser-read--multiple-chunks-ignored ()
-  (let* ((log '())
-         (p (make-lsp--parser :workspace lsp--test-workspace))
-         (lsp--parser-reset p)
-         (filter (lsp--parser-make-filter p '("IGNORE_ME"))))
-    (cl-letf (((symbol-function 'lsp--parser-on-message)
-               (lambda (p msg) (push msg log))))
-      (funcall filter nil "Content-Length: 2\r\n")
-      (funcall filter nil "\r\n{}Content-Length: 15\r\n\r\n")
-      (funcall filter nil "{\"IGNORE_")
-      (funcall filter nil "ME\":1}Content-Length: 2\r\n\r\n{}"))
-		(should (equal log '("{}" "{}")))))
+  (cl-letf* ((log '())
+             (p (make-lsp--parser :workspace lsp--test-workspace))
+             (lsp--parser-reset p)
+             (filter (lsp--parser-make-filter p '("IGNORE_ME")))
+             ((symbol-function 'lsp--parser-on-message)
+              (lambda (p msg) (push msg log))))
+    (dotimes (i 2000)
+      (setq log '())
+      (dolist (chunk (random-string-chunks lsp--example-ignore-msg))
+        (funcall filter nil chunk))
+      (should (equal log '("{}" "{}"))))))
 
 (provide 'lsp-io-tests)
 ;;; lsp-io-tests.el ends here
