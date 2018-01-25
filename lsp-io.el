@@ -99,23 +99,27 @@
       'notification
       (signal 'lsp-unknown-message-type (list json-data)))))
 
+(defconst lsp--default-notification-handlers
+  #s(hash-table
+     test eq
+     data
+     ("window/showMessage" (lambda (_w params) (lsp--window-show-message params))
+      "window/logMessage" (lambda (_w params) (lsp--window-show-message params))
+      "textDocument/publishDiagnostics" (lambda (w p) (lsp--on-diagnostics p w))
+      "textDocument/diagnosticsEnd" ignore
+      "textDocument/diagnosticsBegin" ignore)))
+
 (defun lsp--on-notification (p notification)
   "Call the appropriate handler for NOTIFICATION."
-  (let ((params (gethash "params" notification))
-        (client (lsp--workspace-client (lsp--parser-workspace p)))
-        handler)
-    (pcase (gethash "method" notification)
-      ("window/showMessage" (lsp--window-show-message params))
-      ("window/logMessage" (lsp--window-show-message params)) ;; Treat as showMessage for now
-      ("textDocument/publishDiagnostics" (lsp--on-diagnostics params
-                                           (lsp--parser-workspace p)))
-      ("textDocument/diagnosticsEnd")
-      ("textDocument/diagnosticsBegin")
-      (other
-        (setq handler (gethash other (lsp--client-notification-handlers client) nil))
-        (if (not handler)
-          (message "Unknown method: %s" other)
-          (funcall handler (lsp--parser-workspace p) params))))))
+  (let* ((params (gethash "params" notification))
+         (client (lsp--workspace-client (lsp--parser-workspace p)))
+         (method (gethash "method" notification))
+         (handler (gethash method
+                           (lsp--client-notification-handlers client)
+                           (gethash method lsp--default-notification-handlers))))
+    (if handler
+        (funcall handler (lsp--parser-workspace p) params)
+      (message "Unknown method: %s" other))))
 
 (defun lsp--on-request (p request)
   "Call the appropriate handler for REQUEST, and send the return value to the server."
