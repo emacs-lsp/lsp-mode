@@ -1422,16 +1422,22 @@ If title is nil, return the name for the command handler."
   (interactive)
   (let ((edits (lsp--send-request (lsp--make-request
                                    "textDocument/formatting"
-                                   (lsp--make-document-formatting-params))))
-        (content (buffer-string))
-        (buffer (get-buffer-create " *lsp-formatting*")))
-    (replace-buffer-contents
-     (with-current-buffer buffer
-       (erase-buffer)
-       (insert content)
-       (lsp--apply-text-edits edits)
-       (current-buffer)))
-    (kill-buffer buffer)))
+                                   (lsp--make-document-formatting-params)))))
+    (if (fboundp 'replace-buffer-contents)
+        (let ((content (buffer-string))
+              (buffer (get-buffer-create " *lsp-formatting*")))
+          (unwind-protect
+              (replace-buffer-contents
+               (with-current-buffer buffer
+                 (erase-buffer)
+                 (insert content)
+                 (lsp--apply-text-edits edits)
+                 (current-buffer)))
+            (kill-buffer buffer)))
+      (let ((point (point)))
+        (lsp--apply-text-edits edits)
+        (goto-char point)
+        (goto-char (line-beginning-position))))))
 
 (defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region.
