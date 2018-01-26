@@ -1434,10 +1434,12 @@ If title is nil, return the name for the command handler."
                  (lsp--apply-text-edits edits)
                  (current-buffer)))
             (kill-buffer buffer)))
-      (let ((point (point)))
+      (let ((point (point))
+            (w-start (window-start)))
         (lsp--apply-text-edits edits)
         (goto-char point)
-        (goto-char (line-beginning-position))))))
+        (goto-char (line-beginning-position))
+        (set-window-start (selected-window) w-start)))))
 
 (defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region.
