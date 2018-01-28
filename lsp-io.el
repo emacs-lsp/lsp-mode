@@ -101,7 +101,7 @@
 
 (defconst lsp--default-notification-handlers
   #s(hash-table
-     test eq
+     test equal
      data
      ("window/showMessage" (lambda (_w params) (lsp--window-show-message params))
       "window/logMessage" (lambda (_w params) (lsp--window-show-message params))
@@ -119,7 +119,7 @@
                            (gethash method lsp--default-notification-handlers))))
     (if handler
         (funcall handler (lsp--parser-workspace p) params)
-      (message "Unknown method: %s" other))))
+      (message "Unknown method: %s" method))))
 
 (defun lsp--on-request (p request)
   "Call the appropriate handler for REQUEST, and send the return value to the server."
