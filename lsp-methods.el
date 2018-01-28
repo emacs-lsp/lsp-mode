@@ -1424,13 +1424,13 @@ If title is nil, return the name for the command handler."
                                    "textDocument/formatting"
                                    (lsp--make-document-formatting-params)))))
     (if (fboundp 'replace-buffer-contents)
-        (let ((content (buffer-string))
-              (buffer (get-buffer-create " *lsp-formatting*")))
+        (let ((current-buffer (current-buffer))
+              (buffer (generate-new-buffer " *lsp-formatting*")))
           (unwind-protect
               (replace-buffer-contents
                (with-current-buffer buffer
                  (erase-buffer)
-                 (insert content)
+                 (insert-buffer-substring-no-properties current-buffer)
                  (lsp--apply-text-edits edits)
                  (current-buffer)))
             (kill-buffer buffer)))
