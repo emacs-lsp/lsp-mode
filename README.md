@@ -104,12 +104,11 @@ to your init file to enable imenu integration.
 In order to more finely control the `lsp-mode` startup, there are a number of
 customizable variables.
 
-`lsp-project-whitelist` : Defaults to `nil`. If set, `lsp-mode` will only be
-started if the given project root appears in the whitelist.
+`lsp-project-whitelist` : Defaults to `nil`.
+`lsp-project-blacklist` : Defaults to `nil`.
 
-`lsp-project-blacklist` : Defaults to `nil`. If set, all projects will be
-started except those in this list. It is ignored if `lsp-project-whitelist` is
-set.
+`lsp-mode` will only be started if the given project root matches one pattern
+in the whitelist, or does not match any pattern in the blacklist.
 
 There are also the functions `lsp-MAJOR-MODE-whitelist-add` and
 `lsp-MAJOR-MODE-whitelist-remove` to adjust the current buffer project root

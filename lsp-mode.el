@@ -91,7 +91,7 @@
                                                &key docstring)
   "Define a function to add the project root for the current buffer to the whitleist.
 NAME is the base name for the command.
-GET-ROOT is the language-specific function to determint the project root for the current buffer."
+GET-ROOT is the language-specific function to determine the project root for the current buffer."
   (let ((whitelist-add      (intern (format "%s-whitelist-add" name)))
         (enable-interactive (intern (format "%s-enable" name))))
     `(defun ,whitelist-add ()
@@ -99,22 +99,22 @@ GET-ROOT is the language-specific function to determint the project root for the
        (interactive)
        (let ((root (funcall ,get-root)))
          (customize-save-variable 'lsp-project-whitelist
-                                  (add-to-list 'lsp-project-whitelist root))
+           (add-to-list 'lsp-project-whitelist (concat "^" (regexp-quote root) "$")))
          (,enable-interactive)
          ))))
 
 (cl-defmacro lsp-define-whitelist-disable (name get-root
-                                               &key docstring)
+                                            &key docstring)
   "Define a function to remove the project root for the current buffer from the whitleist.
 NAME is the base name for the command.
-GET-ROOT is the language-specific function to determint the project root for the current buffer."
+GET-ROOT is the language-specific function to determine the project root for the current buffer."
   (let ((whitelist-remove (intern (format "%s-whitelist-remove" name))))
     `(defun ,whitelist-remove ()
        ,docstring
        (interactive)
        (let ((root (funcall ,get-root)))
          (customize-save-variable 'lsp-project-whitelist
-                                  (remove root 'lsp-project-whitelist ))))))
+           (remove (concat "^" (regexp-quote root) "$") 'lsp-project-whitelist))))))
 
 (cl-defmacro lsp-define-stdio-client (name language-id get-root command
                                        &key docstring
