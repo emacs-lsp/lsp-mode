@@ -121,6 +121,7 @@ GET-ROOT is the language-specific function to determine the project root for the
                                        language-id-fn
                                        command-fn
                                        ignore-regexps
+                                       ignore-messages
                                        extra-init-params
                                        initialize)
   "Define a LSP client using stdio.
@@ -132,8 +133,14 @@ Optional arguments:
 `:docstring' is an optional docstring used for the entrypoint function created by
 `lsp-define-stdio-client'.
 
-`:ignore-regexps' is a list of regexps which when matched will be ignored by the
- output parser.
+`:ignore-regexps' is a list of regexps.  When a data packet from the LSP server
+ matches any of these regexps, it will be ignored.  This is intended for dealing
+ with LSP servers that output non-protocol data.
+
+`:ignore-messages' is a list of regexps.  When a message from the LSP server
+ matches any of these regexps, it will be ignored.  This is useful for filtering
+ out unwanted messages; such as servers that send nonstandard message types, or
+ extraneous `logMessage's.
 
 `:command-fn' is a function that returns the command string/list to be used to
  launch the language server. If non-nil, COMMAND is ignored.
@@ -168,7 +175,8 @@ Optional arguments:
                                             stderr)
                            :stderr stderr
                            :get-root ,get-root
-                           :ignore-regexps ,ignore-regexps)))
+                           :ignore-regexps ,ignore-regexps
+                           :ignore-messages ,ignore-messages)))
              ,(when initialize
                 `(funcall ,initialize client))
              (let ((root (funcall (lsp--client-get-root client))))
@@ -183,6 +191,7 @@ Optional arguments:
                                      language-id-fn
                                      command-fn
                                      ignore-regexps
+                                     ignore-messages
                                      extra-init-params
                                      initialize)
   "Define a LSP client using TCP.
@@ -192,8 +201,14 @@ the Language Server.  COMMAND is the command to run.  HOST is the
 host address.  PORT is the port number.
 
 Optional arguments:
-`:ignore-regexps' is a list of regexps which when matched will be ignored by the
- output parser.
+`:ignore-regexps' is a list of regexps.  When a data packet from the LSP server
+ matches any of these regexps, it will be ignored.  This is intended for dealing
+ with LSP servers that output non-protocol data.
+
+`:ignore-messages' is a list of regexps.  When a message from the LSP server
+ matches any of these regexps, it will be ignored.  This is useful for filtering
+ out unwanted messages; such as servers that send nonstandard message types, or
+ extraneous `logMessage's.
 
 `:command-fn' is a function that returns the command string/list to be used to
  launch the language server. If non-nil, COMMAND is ignored.
@@ -230,7 +245,8 @@ Optional arguments:
                                             stderr)
                            :stderr stderr
                            :get-root ,get-root
-                           :ignore-regexps ,ignore-regexps)))
+                           :ignore-regexps ,ignore-regexps
+                           :ignore-messages ,ignore-messages)))
              ,(when initialize
                 `(funcall ,initialize client))
              (let ((root (funcall (lsp--client-get-root client))))
