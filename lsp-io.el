@@ -102,12 +102,15 @@
       'notification
       (signal 'lsp-unknown-message-type (list json-data)))))
 
+(defun lsp--default-message-handler (workspace params)
+  (lsp--window-show-message params workspace))
+
 (defconst lsp--default-notification-handlers
   #s(hash-table
      test equal
      data
-     ("window/showMessage" (lambda (_w params) (lsp--window-show-message params))
-      "window/logMessage" (lambda (_w params) (lsp--window-show-message params))
+     ("window/showMessage" lsp--default-message-handler
+      "window/logMessage" lsp--default-message-handler
       "textDocument/publishDiagnostics" (lambda (w p) (lsp--on-diagnostics p w))
       "textDocument/diagnosticsEnd" ignore
       "textDocument/diagnosticsBegin" ignore)))
