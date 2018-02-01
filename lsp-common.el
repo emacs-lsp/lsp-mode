@@ -17,6 +17,7 @@
 
 (require 'compile)
 (require 'url-util)
+(require 'url-parse)
 (require 'subr-x)
 
 (defconst lsp--message-type-face
@@ -73,7 +74,11 @@ If no such directory could be found, log a warning and return `default-directory
 
 (defun lsp--uri-to-path (uri)
   "Convert URI to a file path."
-  (string-remove-prefix lsp--uri-file-prefix (url-unhex-string uri)))
+  (let* ((url (url-generic-parse-url (url-unhex-string uri)))
+         (type (url-type url)))
+    (when (and type (not (string= type "file")))
+      (error "Unsupported file scheme: %s" uri))
+    (url-filename url)))
 
 (defun lsp--path-to-uri (path)
   "Convert PATH to a uri."
