@@ -1186,7 +1186,7 @@ Returns xref-item(s)."
 (defun lsp--make-reference-params (&optional td-position include-declaration)
   "Make a ReferenceParam object.
 If TD-POSITION is non-nil, use it as TextDocumentPositionParams object instead.
-If INCLUDE-DECLARATION is t, request the server to include declarations."
+If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
   (let ((json-false :json-false))
     (plist-put (or td-position (lsp--text-document-position-params))
       :context `(:includeDeclaration ,(or include-declaration json-false)))))
