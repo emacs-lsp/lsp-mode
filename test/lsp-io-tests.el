@@ -22,7 +22,8 @@
 (require 'lsp-io)
 
 (defvar lsp--test-workspace
-  (make-lsp--workspace))
+  (make-lsp--workspace
+   :client (make-lsp--client :ignore-messages '("readFile .* requested"))))
 
 (ert-deftest lsp--parser-read--multiple-messages ()
   (let* ((p (make-lsp--parser :workspace lsp--test-workspace))
@@ -57,6 +58,15 @@
 									 '("{\"somedata\":\"’\"}")))
 		(should (equal (lsp--parser-read p "\"somedata\":2}")
 									 '("{\"somedata\":2}")))))
+
+(ert-deftest lsp--parser-read--ignored-messages ()
+  (cl-letf* ((log '())
+             (p (make-lsp--parser :workspace lsp--test-workspace))
+             ((symbol-function 'message)
+              (lambda (&rest args) (push (apply 'format args) log))))
+    (lsp--on-notification p (lsp--read-json "{\"jsonrpc\":\"2.0\",\"method\":\"window/logMessage\",\"params\":{\"type\":2,\"message\":\"readFile /some/path requested by TypeScript but content not available\"}}"))
+    (lsp--on-notification p (lsp--read-json "{\"jsonrpc\":\"2.0\",\"method\":\"window/logMessage\",\"params\":{\"type\":2,\"message\":\"Important message\"}}"))
+    (should (equal log '("Important message")))))
 
 (provide 'lsp-io-tests)
 ;;; lsp-io-tests.el ends here

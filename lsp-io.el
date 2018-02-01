@@ -102,12 +102,15 @@
       'notification
       (signal 'lsp-unknown-message-type (list json-data)))))
 
+(defun lsp--default-message-handler (workspace params)
+  (lsp--window-show-message params workspace))
+
 (defconst lsp--default-notification-handlers
   #s(hash-table
      test equal
      data
-     ("window/showMessage" (lambda (_w params) (lsp--window-show-message params))
-      "window/logMessage" (lambda (_w params) (lsp--window-show-message params))
+     ("window/showMessage" lsp--default-message-handler
+      "window/logMessage" lsp--default-message-handler
       "textDocument/publishDiagnostics" (lambda (w p) (lsp--on-diagnostics p w))
       "textDocument/diagnosticsEnd" ignore
       "textDocument/diagnosticsBegin" ignore)))
@@ -213,12 +216,15 @@
    (lsp--parser-body p) nil
    (lsp--parser-reading-body p) nil))
 
+(defun lsp--read-json (str)
+  (let* ((json-array-type 'list)
+         (json-object-type 'hash-table)
+         (json-false nil))
+    (json-read-from-string str)))
+
 (defun lsp--parser-on-message (p msg)
   "Called when the parser reads a complete message from the server."
-  (let* ((json-array-type 'list)
-          (json-object-type 'hash-table)
-          (json-false nil)
-          (json-data (json-read-from-string msg))
+  (let* ((json-data (lsp--read-json msg))
           (id (gethash "id" json-data nil))
           (client (lsp--workspace-client (lsp--parser-workspace p)))
           callback)

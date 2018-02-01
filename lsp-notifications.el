@@ -24,11 +24,16 @@
   :type 'boolean
   :group 'lsp-mode)
 
-(defun lsp--window-show-message (params)
-  "Send the server's messages to message, inhibit if `lsp-inhibit-message' is set."
-  (let* ((inhibit-message (or inhibit-message lsp-inhibit-message)))
-    (message "%s" (lsp--propertize (gethash "message" params)
-                    (gethash "type" params)))))
+(defun lsp--window-show-message (params &optional workspace)
+  "Send the server's messages to message, inhibit if `lsp-inhibit-message' is set,
+or the message matches one of this client's :ignore-messages"
+  (let* ((inhibit-message (or inhibit-message lsp-inhibit-message))
+         (message (gethash "message" params))
+         (client (lsp--workspace-client workspace)))
+    (when (or (not client)
+              (cl-notany (lambda (r) (string-match-p r message))
+                         (lsp--client-ignore-messages client)))
+      (message "%s" (lsp--propertize message (gethash "type" params))))))
 
 (defcustom lsp-after-diagnostics-hook nil
   "Hooks to run after diagnostics are received from the language

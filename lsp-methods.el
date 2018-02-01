@@ -38,6 +38,7 @@
   (stderr nil :read-only t)
   (get-root nil :read-only t)
   (ignore-regexps nil :read-only t)
+  (ignore-messages nil :read-only t)
 
   (notification-handlers (make-hash-table :test 'equal) :read-only t)
   (request-handlers (make-hash-table :test 'equal) :read-only t)
