@@ -1281,7 +1281,7 @@ export interface MarkupContent {
     (when (and hover
             (lsp--point-is-within-bounds-p start end)
             (eq (current-buffer) buffer) (eldoc-display-message-p))
-      (let ((contents (gethash "contents" hover)))
+      (when-let ((contents (gethash "contents" hover)))
         (eldoc-message
           ;; contents: MarkedString | MarkedString[] | MarkupContent
           (if (lsp--markup-content-p contents)
@@ -1618,9 +1618,9 @@ interface RenameParams {
   (lsp--cur-workspace-check)
   (unless (lsp--capability "renameProvider")
     (signal 'lsp-capability-not-supported (list "renameProvider")))
-  (let ((edits (lsp--send-request (lsp--make-request
-                                   "textDocument/rename"
-                                   (lsp--make-document-rename-params newname)))))
+  (when-let ((edits (lsp--send-request (lsp--make-request
+                                        "textDocument/rename"
+                                        (lsp--make-document-rename-params newname)))))
     (lsp--apply-workspace-edit edits)))
 
 (define-inline lsp--execute-command (command)
