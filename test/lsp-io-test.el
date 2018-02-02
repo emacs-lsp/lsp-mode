@@ -1,4 +1,4 @@
-;;; lsp-io-tests.el --- unit tests for lsp-io.el -*- lexical-binding: t -*-
+;;; lsp-io-test.el --- unit tests for lsp-io.el -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2016-2017  Vibhav Pant <vibhavp@gmail.com>.
 
@@ -68,5 +68,4 @@
     (lsp--on-notification p (lsp--read-json "{\"jsonrpc\":\"2.0\",\"method\":\"window/logMessage\",\"params\":{\"type\":2,\"message\":\"Important message\"}}"))
     (should (equal log '("Important message")))))
 
-(provide 'lsp-io-tests)
-;;; lsp-io-tests.el ends here
+;;; lsp-io-test.el ends here
