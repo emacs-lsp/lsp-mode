@@ -1618,9 +1618,9 @@ interface RenameParams {
   (lsp--cur-workspace-check)
   (unless (lsp--capability "renameProvider")
     (signal 'lsp-capability-not-supported (list "renameProvider")))
-  (let ((edits (lsp--send-request (lsp--make-request
-                                   "textDocument/rename"
-                                   (lsp--make-document-rename-params newname)))))
+  (when-let ((edits (lsp--send-request (lsp--make-request
+                                        "textDocument/rename"
+                                        (lsp--make-document-rename-params newname)))))
     (lsp--apply-workspace-edit edits)))
 
 (define-inline lsp--execute-command (command)
