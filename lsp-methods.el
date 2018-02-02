@@ -1281,24 +1281,25 @@ export interface MarkupContent {
     (when (and hover
             (lsp--point-is-within-bounds-p start end)
             (eq (current-buffer) buffer) (eldoc-display-message-p))
-      (when-let ((contents (gethash "contents" hover)))
-        (eldoc-message
-          ;; contents: MarkedString | MarkedString[] | MarkupContent
-          (if (lsp--markup-content-p contents)
-            (lsp--render-markup-content hover)
+      (let ((contents (gethash "contents" hover)))
+        (when contents
+          (eldoc-message
+           ;; contents: MarkedString | MarkedString[] | MarkupContent
+           (if (lsp--markup-content-p contents)
+               (lsp--render-markup-content hover)
 
-            (mapconcat (lambda (e)
-                         (let (renderer)
-                           (if (hash-table-p e)
-                             (if (setq renderer
-                                   (cdr (assoc-string
-                                          (gethash "language" e)
-                                          renderers)))
-                               (when (gethash "value" e nil)
-                                 (funcall renderer (gethash "value" e)))
-                               (gethash "value" e))
-                             e)))
-              (if (listp contents) contents (list contents)) "\n")))))))
+             (mapconcat (lambda (e)
+                          (let (renderer)
+                            (if (hash-table-p e)
+                                (if (setq renderer
+                                          (cdr (assoc-string
+                                                (gethash "language" e)
+                                                renderers)))
+                                    (when (gethash "value" e nil)
+                                      (funcall renderer (gethash "value" e)))
+                                  (gethash "value" e))
+                              e)))
+                        (if (listp contents) contents (list contents)) "\n"))))))))
 
 (defun lsp-provide-marked-string-renderer (client language renderer)
   (cl-check-type language string)
@@ -1618,10 +1619,11 @@ interface RenameParams {
   (lsp--cur-workspace-check)
   (unless (lsp--capability "renameProvider")
     (signal 'lsp-capability-not-supported (list "renameProvider")))
-  (when-let ((edits (lsp--send-request (lsp--make-request
-                                        "textDocument/rename"
-                                        (lsp--make-document-rename-params newname)))))
-    (lsp--apply-workspace-edit edits)))
+  (let ((edits (lsp--send-request (lsp--make-request
+                                   "textDocument/rename"
+                                   (lsp--make-document-rename-params newname)))))
+    (when edits
+      (lsp--apply-workspace-edit edits))))
 
 (define-inline lsp--execute-command (command)
   "Given a COMMAND returned from the server, create and send a
