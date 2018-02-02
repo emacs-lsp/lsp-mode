@@ -1281,7 +1281,7 @@ export interface MarkupContent {
     (when (and hover
             (lsp--point-is-within-bounds-p start end)
             (eq (current-buffer) buffer) (eldoc-display-message-p))
-      (let ((contents (gethash "contents" hover)))
+      (when-let ((contents (gethash "contents" hover)))
         (eldoc-message
           ;; contents: MarkedString | MarkedString[] | MarkupContent
           (if (lsp--markup-content-p contents)
