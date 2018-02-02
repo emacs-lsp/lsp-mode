@@ -43,3 +43,7 @@ flycheck_*.el
 
 # directory configuration
 .dir-locals.el
+
+# Test server binary and logs
+test/test_server
+test/test_server.log

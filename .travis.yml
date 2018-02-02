@@ -1,4 +1,4 @@
-language: emacs-lisp
+language: go
 sudo: required
 dist: trusty
 cache:
@@ -20,9 +20,12 @@ before_install:
   - make -f emacs-travis.mk install_cask
 install:
   - cask install
+  - go get github.com/sourcegraph/jsonrpc2
 script:
-  - cask build
-  - cask exec ert-runner
+  - make test
+
+go:
+  - 1.x
 
 notifications:
   webhooks:
