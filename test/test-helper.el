@@ -1,10 +1,8 @@
-;;; lsp-mode-tests.el --- unit tests for lsp-mode.el  -*- lexical-binding: t; -*-
+;;; test-helper.el --- Helpers for lsp-mode-test.el  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2017  Google Inc.
+;; Copyright (C) 2018  Google LLC <phst@google.com>
 
-;; Author: Philipp Stephani <phst@google.com>
-
-;; This program is free software; you can redistribute it and/or modify
+;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
@@ -19,18 +17,13 @@
 
 ;;; Commentary:
 
-;; Unit tests for lsp-mode.el.
+;; Initializes test support for ‘lsp-mode’.
 
 ;;; Code:
 
-(require 'lsp-mode)
+(require 'f)
 
-(require 'ert)
+(add-to-list 'load-path
+             (file-name-as-directory (f-parent (f-parent (f-this-file)))))
 
-(ert-deftest lsp-define-stdio-client ()
-  (lsp-define-stdio-client test-client "test language"
-                           (lambda () default-directory)
-                           '("/bin/false"))
-  (should (fboundp 'test-client-enable)))
-
-;;; lsp-mode-tests.el ends here
+;;; test-helper.el ends here

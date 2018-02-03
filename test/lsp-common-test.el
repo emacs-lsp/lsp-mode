@@ -1,4 +1,4 @@
-;;; lsp-common-tests.el --- unit tests for lsp-io.el -*- lexical-binding: t -*-
+;;; lsp-common-test.el --- unit tests for lsp-io.el -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2017  Lukas Fuermetz <fuermetz@mailbox.org>.
 
@@ -32,5 +32,4 @@
   (let ((lsp--uri-file-prefix "file://"))
     (should (equal (lsp--uri-to-path "/root/%5E/%60") "/root/^/`"))))
 
-(provide 'lsp-common-tests)
-;;; lsp-common-tests.el ends here
+;;; lsp-common-test.el ends here
