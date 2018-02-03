@@ -77,7 +77,7 @@ If no such directory could be found, log a warning and return `default-directory
 
 (defun lsp--path-to-uri (path)
   "Convert PATH to a uri."
-  (concat lsp--uri-file-prefix (url-hexify-string path url-path-allowed-chars)))
+  (concat lsp--uri-file-prefix (url-hexify-string (file-truename path) url-path-allowed-chars)))
 
 (provide 'lsp-common)
 ;;; lsp-common.el ends here

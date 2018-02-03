@@ -529,7 +529,7 @@ directory."
   (when lsp--cur-workspace
     (user-error "LSP mode is already enabled for this buffer"))
   (cl-assert client)
-  (let* ((root (funcall (lsp--client-get-root client)))
+  (let* ((root (file-truename (funcall (lsp--client-get-root client))))
          (workspace (gethash root lsp--workspaces))
          new-conn response init-params
          parser proc cmd-proc)
