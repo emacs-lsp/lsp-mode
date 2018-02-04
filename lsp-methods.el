@@ -1425,7 +1425,7 @@ If title is nil, return the name for the command handler."
 
 (defun lsp-format-buffer ()
   "Ask the server to format this document."
-  (interactive)
+  (interactive "*")
   (let ((edits (lsp--send-request (lsp--make-request
                                    "textDocument/formatting"
                                    (lsp--make-document-formatting-params)))))
@@ -1612,7 +1612,7 @@ interface RenameParams {
 
 (defun lsp-rename (newname)
   "Rename the symbol (and all references to it) under point to NEWNAME."
-  (interactive "sRename to: ")
+  (interactive "*sRename to: ")
   (lsp--cur-workspace-check)
   (unless (lsp--capability "renameProvider")
     (signal 'lsp-capability-not-supported (list "renameProvider")))
