@@ -140,6 +140,11 @@
           (dolist (reg (gethash "registrations" params))
             (lsp--server-register-capability reg))
           empty-response)
+        ("window/showMessageRequest"
+         (let ((choice (lsp--window-show-message-request params)))
+           (lsp--make-response (gethash "id" request)
+                               `(:title ,choice)
+                               nil)))
         ("client/unregisterCapability"
           (dolist (unreg (gethash "unregisterations" params))
             (lsp--server-unregister-capability unreg))
