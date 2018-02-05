@@ -35,6 +35,17 @@ or the message matches one of this client's :ignore-messages"
                          (lsp--client-ignore-messages client)))
       (message "%s" (lsp--propertize message (gethash "type" params))))))
 
+(defun lsp--window-show-message-request (params)
+  "Display a message request to the user and send the user's
+selection back to the server."
+  (let* ((type (gethash "type" params))
+         (message (lsp--propertize (gethash "message" params) type))
+         (choices (mapcar (lambda (choice) (gethash "title" choice))
+                          (gethash "actions" params))))
+    (if choices
+        (completing-read (concat message " ") choices nil t)
+      (message message))))
+
 (defcustom lsp-after-diagnostics-hook nil
   "Hooks to run after diagnostics are received from the language
 server and put in `lsp--diagnostics'."
