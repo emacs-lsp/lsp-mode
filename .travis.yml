@@ -21,7 +21,7 @@ install:
   - cask install
 script:
   - cask build
-  - emacs -batch -l ert -L . -l test/lsp-mode-test.el -l test/lsp-io-test.el -l test/lsp-common-test.el -f ert-run-tests-batch-and-exit
+  - cask exec ert-runner
 
 notifications:
   webhooks:
