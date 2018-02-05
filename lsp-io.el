@@ -221,11 +221,12 @@
    (lsp--parser-body p) nil
    (lsp--parser-reading-body p) nil))
 
-(defun lsp--read-json (str)
-  (let* ((json-array-type 'list)
-         (json-object-type 'hash-table)
-         (json-false nil))
-    (json-read-from-string str)))
+(define-inline lsp--read-json (str)
+  (inline-quote
+    (let* ((json-array-type 'list)
+            (json-object-type 'hash-table)
+            (json-false nil))
+      (json-read-from-string ,str))))
 
 (defun lsp--parser-on-message (p msg)
   "Called when the parser reads a complete message from the server."
