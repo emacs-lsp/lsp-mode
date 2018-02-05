@@ -23,6 +23,7 @@
 
 (require 'imenu)
 (require 'lsp-methods)
+(require 'seq)
 
 (define-inline lsp--point-to-marker (p)
   (inline-quote (save-excursion (goto-char ,p) (point-marker))))
