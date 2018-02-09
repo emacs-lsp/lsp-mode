@@ -1048,7 +1048,7 @@ DFLT defaults to nil.
 Needed for completion request fallback behavior for the fields
 'sortText', 'filterText', and 'insertText' as described here:
 
-https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#completion-request"
+https://microsoft.github.io/language-server-protocol/specification#textDocument_completion"
 
   (let ((result (gethash key table dflt)))
     (when (member result '(nil "" 0 :json-false))
