@@ -533,6 +533,7 @@ directory."
          (workspace (gethash root lsp--workspaces))
          new-conn response init-params
          parser proc cmd-proc)
+    (setq-local projectile-project-root root)
     (if workspace
         (setq lsp--cur-workspace workspace)
 
