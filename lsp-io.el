@@ -331,6 +331,7 @@
 (declare-function lsp--client-request-handlers "lsp-methods" (client))
 (declare-function lsp--workspace-client "lsp-methods" (workspace))
 (declare-function lsp--workspace-apply-edit-handler "lsp-methods" (workspace params))
+(declare-function lsp--window-show-message-request "lsp-notifications" (params))
 
 (provide 'lsp-io)
 ;;; lsp-io.el ends here
