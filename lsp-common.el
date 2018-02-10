@@ -75,10 +75,16 @@ If no such directory could be found, log a warning and return `default-directory
 (defun lsp--uri-to-path (uri)
   "Convert URI to a file path."
   (let* ((url (url-generic-parse-url (url-unhex-string uri)))
-         (type (url-type url)))
+         (type (url-type url))
+         (file (url-filename url)))
     (when (and type (not (string= type "file")))
       (error "Unsupported file scheme: %s" uri))
-    (url-filename url)))
+    ;; `url-generic-parse-url' is buggy on windows:
+    ;; https://github.com/emacs-lsp/lsp-mode/pull/265
+    (or (and (eq system-type 'window-nt)
+             (eq (elt file 0) ?\/)
+             (substring file 1))
+        file)))
 
 (defun lsp--path-to-uri (path)
   "Convert PATH to a uri."
