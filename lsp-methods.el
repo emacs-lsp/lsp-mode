@@ -535,22 +535,31 @@ ServerCapabilities.textDocumentSync."
 (defun lsp--workspace-apply-edit-handler (_workspace params)
   (lsp--apply-workspace-edit (gethash "edit" params)))
 
-(defun lsp--make-sentinel (buffer stderr)
+(defun lsp--make-sentinel (workspace)
+  (cl-check-type workspace lsp--workspace)
   (lambda (process exit-str)
-    (if (buffer-live-p buffer)
-        (with-current-buffer buffer
-          (dolist (buf (lsp--workspace-buffers lsp--cur-workspace))
-            (with-current-buffer buf
-              (message "%s: %s has exited (%s)"
-                       (lsp--workspace-root lsp--cur-workspace)
-                       (process-name (lsp--workspace-proc lsp--cur-workspace))
-                       exit-str)
-              (lsp--uninitialize-workspace))))
-      (let ((status (process-status process))
-            (buffer-stderr (get-buffer stderr)))
-        (and (buffer-live-p buffer-stderr)
-             (memq status '(exit signal))
-             (kill-buffer stderr))))))
+    (let ((status (process-status process)))
+      (when (memq status '(exit signal))
+        ;; Server has exited.  Uninitialize all buffer-local state for this
+        ;; workspace.
+        (message "%s: %s has exited (%s)"
+                 (lsp--workspace-root workspace)
+                 (process-name (lsp--workspace-proc workspace))
+                 exit-str)
+        (dolist (buf (lsp--workspace-buffers workspace))
+          (with-current-buffer buf
+            (lsp--uninitialize-workspace)))
+        ;; Kill standard error buffer only if the process exited normally.
+        ;; Leave it intact otherwise for debugging purposes.
+        (when (and (eq status 'exit) (zerop (process-exit-status process)))
+          ;; FIXME: The client structure should store the standard error
+          ;; buffer, not its name.
+          ;; FIXME: Probably the standard error buffer should be per workspace,
+          ;; not per client.
+          (let ((stderr (get-buffer (lsp--client-stderr
+                                     (lsp--workspace-client workspace)))))
+            (when (buffer-live-p stderr)
+              (kill-buffer stderr))))))))
 
 (defun lsp--should-start-p (root)
   "Consult `lsp-project-blacklist' and `lsp-project-whitelist' to
@@ -586,7 +595,7 @@ directory."
        new-conn (funcall
                  (lsp--client-new-connection client)
                  (lsp--parser-make-filter parser (lsp--client-ignore-regexps client))
-                 (lsp--make-sentinel (current-buffer) (lsp--client-stderr client)))
+                 (lsp--make-sentinel lsp--cur-workspace))
        ;; the command line process invoked
        cmd-proc (if (consp new-conn) (car new-conn) new-conn)
        ;; the process we actually communicate with
