@@ -1,6 +1,6 @@
 ;;; lsp-io-test.el --- unit tests for lsp-io.el -*- lexical-binding: t -*-
 
-;; Copyright (C) 2016-2017  Vibhav Pant <vibhavp@gmail.com>.
+;; Copyright (C) 2016-2018  Vibhav Pant <vibhavp@gmail.com>.
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
