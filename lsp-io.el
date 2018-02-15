@@ -69,7 +69,7 @@
   (queued-notifications nil) ;; Unused field
   (queued-requests nil)
 
-  (workspace nil) ;; the workspace
+  (client nil) ;; the client
   )
 
 (define-error 'lsp-parse-error
@@ -102,8 +102,8 @@
       'notification
       (signal 'lsp-unknown-message-type (list json-data)))))
 
-(defun lsp--default-message-handler (workspace params)
-  (lsp--window-show-message params workspace))
+(defun lsp--default-message-handler (client params)
+  (lsp--window-show-message params client))
 
 (defconst lsp--default-notification-handlers
   #s(hash-table
@@ -118,20 +118,20 @@
 (defun lsp--on-notification (p notification)
   "Call the appropriate handler for NOTIFICATION."
   (let* ((params (gethash "params" notification))
-         (client (lsp--workspace-client (lsp--parser-workspace p)))
+         (client (lsp--parser-client p))
          (method (gethash "method" notification))
          (handler (gethash method
                            (lsp--client-notification-handlers client)
                            (gethash method lsp--default-notification-handlers))))
     (if handler
-        (funcall handler (lsp--parser-workspace p) params)
+        (funcall handler (lsp--parser-client p) params)
       (message "Unknown method: %s" method))))
 
 (defun lsp--on-request (p request)
   "Call the appropriate handler for REQUEST, and send the return value to the server."
   (let ((params (gethash "params" request))
-         (client (lsp--workspace-client (lsp--parser-workspace p)))
-         (process (lsp--workspace-proc (lsp--parser-workspace p)))
+         (client (lsp--parser-client p))
+         (process (lsp--client-proc (lsp--parser-client p)))
          (empty-response (lsp--make-response (gethash "id" request) nil nil))
          handler response)
     (setq response
@@ -151,7 +151,7 @@
           empty-response)
         ("workspace/applyEdit"
           (lsp--workspace-apply-edit-handler
-            (lsp--parser-workspace p) params)
+            (lsp--parser-client p) params)
           empty-response)
         (other
           (setq handler (gethash other (lsp--client-request-handlers client) nil))
@@ -160,7 +160,7 @@
               (message "Unknown request method: %s" other)
               empty-response)
             (lsp--make-response (gethash "id" request)
-              (funcall handler (lsp--parser-workspace p) params) nil)))))
+              (funcall handler (lsp--parser-client p) params) nil)))))
     ;; Send response to the server.
     (lsp--send-no-wait (lsp--make-message response) process)))
 
@@ -232,7 +232,7 @@
   "Called when the parser reads a complete message from the server."
   (let* ((json-data (lsp--read-json msg))
           (id (gethash "id" json-data nil))
-          (client (lsp--workspace-client (lsp--parser-workspace p)))
+          (client (lsp--parser-client p))
           callback)
     (pcase (lsp--get-message-type json-data)
       ('response
@@ -256,7 +256,7 @@
       ('request      (lsp--on-request p json-data)))))
 
 (defun lsp--parser-read (p output)
-  (cl-assert (lsp--parser-workspace p) nil "Parser workspace cannot be nil.")
+  (cl-assert (lsp--parser-client p) nil "Parser client cannot be nil.")
   (let ((messages '())
         (chunk (concat (lsp--parser-leftovers p) output)))
     (while (not (string-empty-p chunk))
@@ -328,9 +328,9 @@
             (lsp--parser-on-message p m))))))
 
 (declare-function lsp--client-notification-handlers "lsp-methods" (client))
+(declare-function lsp--client-proc "lsp-methods" (client))
 (declare-function lsp--client-request-handlers "lsp-methods" (client))
-(declare-function lsp--workspace-client "lsp-methods" (workspace))
-(declare-function lsp--workspace-apply-edit-handler "lsp-methods" (workspace params))
+(declare-function lsp--workspace-apply-edit-handler "lsp-methods" (client params))
 (declare-function lsp--window-show-message-request "lsp-notifications" (params))
 
 (provide 'lsp-io)

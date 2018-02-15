@@ -21,12 +21,11 @@
 (require 'lsp-methods)
 (require 'lsp-io)
 
-(defvar lsp--test-workspace
-  (make-lsp--workspace
-   :client (make-lsp--client :ignore-messages '("readFile .* requested"))))
+(defvar lsp--test-client
+  (make-lsp--client :ignore-messages '("readFile .* requested")))
 
 (ert-deftest lsp--parser-read--multiple-messages ()
-  (let* ((p (make-lsp--parser :workspace lsp--test-workspace))
+  (let* ((p (make-lsp--parser :client lsp--test-client))
          (messages-in '("Content-Length: 2\r\n\r\n{}"
                         "Content-Length: 2\r\n\r\n{}"
                         "Content-Length: 2\r\n\r\n{}"
@@ -36,13 +35,13 @@
     (should (equal messages '("{}" "{}" "{}" "{}" "{}")))))
 
 (ert-deftest lsp--parser-read--multibyte ()
-  (let* ((p (make-lsp--parser :workspace lsp--test-workspace))
+  (let* ((p (make-lsp--parser :client lsp--test-client))
 				 (message-in "Content-Length: 3\r\n\r\n\xe2\x80\x99")
          (messages (lsp--parser-read p message-in)))
     (should (equal messages '("’")))))
 
 (ert-deftest lsp--parser-read--multiple-chunks ()
-  (let* ((p (make-lsp--parser :workspace lsp--test-workspace)))
+  (let* ((p (make-lsp--parser :client lsp--test-client)))
 		(should (equal (lsp--parser-read p "Content-Length: 14\r\n\r\n{") nil))
 		(should (equal (lsp--parser-read p "\"somedata\":1") nil))
 		(should (equal (lsp--parser-read p "}Content-Length: 14\r\n\r\n{")
@@ -51,7 +50,7 @@
 									 '("{\"somedata\":2}")))))
 
 (ert-deftest lsp--parser-read--multiple-multibyte-chunks ()
-  (let* ((p (make-lsp--parser :workspace lsp--test-workspace)))
+  (let* ((p (make-lsp--parser :client lsp--test-client)))
 		(should (equal (lsp--parser-read p "Content-Length: 18\r") nil))
 		(should (equal (lsp--parser-read p "\n\r\n{\"somedata\":\"\xe2\x80") nil))
 		(should (equal (lsp--parser-read p "\x99\"}Content-Length: 14\r\n\r\n{")
@@ -61,7 +60,7 @@
 
 (ert-deftest lsp--parser-read--ignored-messages ()
   (cl-letf* ((log '())
-             (p (make-lsp--parser :workspace lsp--test-workspace))
+             (p (make-lsp--parser :client lsp--test-client))
              ((symbol-function 'message)
               (lambda (&rest args) (push (apply 'format args) log))))
     (lsp--on-notification p (lsp--read-json "{\"jsonrpc\":\"2.0\",\"method\":\"window/logMessage\",\"params\":{\"type\":2,\"message\":\"readFile /some/path requested by TypeScript but content not available\"}}"))

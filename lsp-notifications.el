@@ -24,12 +24,11 @@
   :type 'boolean
   :group 'lsp-mode)
 
-(defun lsp--window-show-message (params &optional workspace)
+(defun lsp--window-show-message (params &optional client)
   "Send the server's messages to message, inhibit if `lsp-inhibit-message' is set,
 or the message matches one of this client's :ignore-messages"
   (let* ((inhibit-message (or inhibit-message lsp-inhibit-message))
-         (message (gethash "message" params))
-         (client (lsp--workspace-client workspace)))
+         (message (gethash "message" params)))
     (when (or (not client)
               (cl-notany (lambda (r) (string-match-p r message))
                          (lsp--client-ignore-messages client)))
@@ -94,7 +93,7 @@ server and put in `lsp--diagnostics'."
   (and f1 f2
        (string-equal (file-truename f1) (file-truename f2))))
 
-(defun lsp--on-diagnostics (params workspace)
+(defun lsp--on-diagnostics (params client)
   "Callback for textDocument/publishDiagnostics.
 interface PublishDiagnosticsParams {
     uri: string;
@@ -103,7 +102,7 @@ interface PublishDiagnosticsParams {
   (let ((file (lsp--uri-to-path (gethash "uri" params)))
         (diagnostics (gethash "diagnostics" params)) buffer)
     (puthash file (mapcar #'lsp--make-diag diagnostics) lsp--diagnostics)
-    (setq buffer (cl-loop for buffer in (lsp--workspace-buffers workspace)
+    (setq buffer (cl-loop for buffer in (lsp--client-buffers client)
                           when (lsp--equal-files (buffer-file-name buffer) file)
                           return buffer
                           finally return nil))
@@ -111,7 +110,7 @@ interface PublishDiagnosticsParams {
       (with-current-buffer buffer
         (run-hooks 'lsp-after-diagnostics-hook)))))
 
-(declare-function lsp--workspace-buffers "lsp-methods" (workspace))
+(declare-function lsp--client-buffers "lsp-methods" (client))
 
 (provide 'lsp-notifications)
 ;;; lsp-notifications.el ends here

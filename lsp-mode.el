@@ -150,7 +150,7 @@ Optional arguments:
 
 `:extra-init-params' is a plist that specifies any (optional)
  initializeOptions parameters required by the LSP server. A function taking
- a single argument (LSP workspace) and returning a plist is also accepted.
+ a single argument (LSP client) and returning a plist is also accepted.
 
 `:initialize' is a function called when the client is intiailized. It takes a
  single argument, the newly created client."
@@ -218,7 +218,7 @@ Optional arguments:
 
 `:extra-init-params' is a plist that specifies any (optional)
  initializeOptions parameters required by the LSP server. A function taking
- a single argument (LSP workspace) and returning a plist is also accepted.
+ a single argument (LSP client) and returning a plist is also accepted.
 
 `:initialize' is a function called when the client is initialized. It takes a
   single argument, the newly created client."
@@ -304,7 +304,7 @@ Optional arguments:
 (defun lsp-capabilities ()
   "View all capabilities for the language server associated with this buffer."
   (interactive)
-  (unless lsp--cur-workspace
+  (unless lsp--cur-client
     (user-error "No language server is associated with this buffer"))
   (let ((str (mapconcat #'lsp--cap-str (reverse (hash-table-keys
                                                  (lsp--server-capabilities))) ""))
