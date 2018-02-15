@@ -199,6 +199,13 @@ whitelist, or does not match any pattern in the blacklist."
   :group 'lsp-mode)
 
 ;;;###autoload
+(defcustom lsp-before-save-edits t
+  "If non-nil, `lsp-mode' will apply edits suggested by the language server
+before saving a document."
+  :type 'boolean
+  :group 'lsp-mode)
+
+;;;###autoload
 (defface lsp-face-highlight-textual
   '((t :background "yellow"))
   "Face used for textual occurances of symbols."
@@ -487,6 +494,36 @@ registered client capabilities by calling
 (define-inline lsp--server-capabilities ()
   "Return the capabilities of the language server associated with the buffer."
   (inline-quote (lsp--workspace-server-capabilities lsp--cur-workspace)))
+
+(defun lsp--server-has-sync-options-p ()
+  "Return whether the server has a TextDocumentSyncOptions object in
+ServerCapabilities.textDocumentSync."
+  (hash-table-p (gethash "textDocumentSync" (lsp--server-capabilities))))
+
+(defun lsp--send-open-close-p ()
+  "Return whether open and close notifications should be sent to the server."
+  (let ((sync (gethash "textDocumentSync" (lsp--server-capabilities))))
+    (and (hash-table-p sync)
+      (gethash "openClose" sync))))
+
+(defun lsp--send-will-save-p ()
+  "Return whether will save notifications should be sent to the server."
+  (let ((sync (gethash "textDocumentSync" (lsp--server-capabilities))))
+    (and (hash-table-p sync)
+      (gethash "willSave" sync))))
+
+(defun lsp--send-will-save-wait-until-p ()
+  "Return whether will save wait until notifications should be sent to the server."
+  (let ((sync (gethash "textDocumentSync" (lsp--server-capabilities))))
+      (and (hash-table-p sync)
+        (gethash "willSaveWaitUntil" sync))))
+
+(defun lsp--save-include-text-p ()
+  "Return whether save notifications should include the text document's contents."
+  (let ((sync (gethash "textDocumentSync" (lsp--server-capabilities))))
+    (and (hash-table-p sync)
+      (hash-table-p (gethash "save" sync nil))
+      (gethash "includeText" (gethash "save" sync)))))
 
 (defun lsp--set-sync-method ()
   (let* ((sync (gethash "textDocumentSync" (lsp--server-capabilities)))
@@ -969,23 +1006,31 @@ Added to `after-change-functions'."
           (when (= 0 (hash-table-count file-versions))
             (lsp--shutdown-cur-workspace)))))))
 
+(define-inline lsp--will-save-text-document-params (reason)
+  (cl-check-type reason number)
+  (inline-quote
+    (list :textDocument (lsp--text-document-identifier)
+      :reason ,reason)))
+
 (defun lsp--before-save ()
   (when lsp--cur-workspace
     (with-demoted-errors "Error in ‘lsp--before-save’: %S"
-      (lsp--send-notification
-       (lsp--make-notification
-        "textDocument/willSave"
-        (list :textDocument (lsp--text-document-identifier)
-              :reason 1))))))
+      (let ((params (lsp--will-save-text-document-params 1)))
+        (if (lsp--send-will-save-p)
+          (lsp--send-notification
+            (lsp--make-notification "textDocument/willSave" params))
+          (when (and (lsp--send-will-save-wait-until-p) lsp-before-save-edits)
+            (lsp--apply-text-edits
+              (lsp--send-request (lsp--make-request
+                                   "textDocument/willSaveWaitUntil" params)))))))))
 
 (defun lsp--on-auto-save ()
-  (when lsp--cur-workspace
+  (when (and lsp--cur-workspace
+          (lsp--send-will-save-p))
     (with-demoted-errors "Error in ‘lsp--on-auto-save’: %S"
       (lsp--send-notification
-       (lsp--make-notification
-        "textDocument/willSave"
-        (list :textDocument (lsp--text-document-identifier)
-              :reason 2))))))
+        (lsp--make-notification
+          "textDocument/willSave" (lsp--will-save-text-document-params 2))))))
 
 (defun lsp--text-document-did-save ()
   "Executed when the file is closed, added to `after-save-hook''."
@@ -994,7 +1039,12 @@ Added to `after-change-functions'."
       (lsp--send-notification
        (lsp--make-notification
         "textDocument/didSave"
-        `(:textDocument ,(lsp--versioned-text-document-identifier)))))))
+         `(:textDocument ,(lsp--versioned-text-document-identifier)
+            :includeText ,(if (lsp--save-include-text-p)
+                            (save-excursion
+                              (widen)
+                              (buffer-substring-no-properties (point-min) (point-max)))
+                            nil)))))))
 
 (define-inline lsp--text-document-position-params ()
   "Make TextDocumentPositionParams for the current point in the current document."
@@ -1019,7 +1069,6 @@ Added to `after-change-functions'."
                               (and (>= line start-line) (<= line end-line))))
                           diags)))
     (cl-coerce (mapcar #'lsp-diagnostic-original diags-in-range) 'vector)))
-
 
 (defconst lsp--completion-item-kind
   `(
