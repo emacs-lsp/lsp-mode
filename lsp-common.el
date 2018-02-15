@@ -81,7 +81,7 @@ If no such directory could be found, log a warning and return `default-directory
       (error "Unsupported file scheme: %s" uri))
     ;; `url-generic-parse-url' is buggy on windows:
     ;; https://github.com/emacs-lsp/lsp-mode/pull/265
-    (or (and (eq system-type 'window-nt)
+    (or (and (eq system-type 'windows-nt)
              (eq (elt file 0) ?\/)
              (substring file 1))
         file)))
