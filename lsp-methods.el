@@ -55,7 +55,7 @@
 (cl-defstruct lsp--workspace
   (parser nil :read-only t)
   ;; file-versions is a hashtable of files "owned" by the workspace
-  (file-versions nil)
+  (file-versions nil :read-only t)
   (server-capabilities nil)
   (registered-server-capabilities nil)
   (root nil :ready-only t)
