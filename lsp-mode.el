@@ -202,7 +202,8 @@ Optional arguments:
                     :stderr stderr
                     :get-root root-directory-fn
                     :ignore-regexps ignore-regexps
-                    :ignore-messages ignore-messages)))
+                    :ignore-messages ignore-messages
+                    :restart-command (function ,enable))))
       (when initialize-fn
         (funcall initialize-fn client))
       (let ((root (funcall (lsp--client-get-root client))))
@@ -300,7 +301,8 @@ Optional arguments:
                     :stderr stderr
                     :get-root root-directory-fn
                     :ignore-regexps ignore-regexps
-                    :ignore-messages ignore-messages)))
+                    :ignore-messages ignore-messages
+                    :restart-command (function ,enable))))
       (when initialize-fn
         (funcall initialize-fn client))
       (let ((root (funcall (lsp--client-get-root client))))
