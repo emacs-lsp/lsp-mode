@@ -646,8 +646,10 @@ directory."
   (add-hook 'after-save-hook #'lsp-on-save nil t)
   (add-hook 'kill-buffer-hook #'lsp--text-document-did-close nil t)
 
-  (setq-local eldoc-documentation-function #'lsp--on-hover)
   (when lsp-enable-eldoc
+    ;; XXX: The documentation for `eldoc-documentation-function' suggests
+    ;; using `add-function' for modifying its value, use that instead?
+    (setq-local eldoc-documentation-function #'lsp--on-hover)
     (eldoc-mode 1))
 
   (when (and lsp-enable-flycheck (featurep 'lsp-flycheck))
