@@ -1470,14 +1470,20 @@ If title is nil, return the name for the command handler."
 (defvar-local lsp-code-lenses nil
   "A list of code lenses computed for the buffer.")
 
-(defun lsp--update-code-lenses ()
+(defun lsp--update-code-lenses (&optional callback)
+  "Update the list of code lenses for the current buffer.
+Optionally, CALLBACK is a function that accepts a single argument, the code lens object."
   (lsp--cur-workspace-check)
-  (lsp--send-request-async (lsp--make-request "textDocument/codeLens"
-                             `(:textDocument ,(lsp--text-document-identifier)))
+  (when callback
+    (cl-check-type callback function))
+  (when (gethash "codeLensProvider" (lsp--server-capabilities))
+    (lsp--send-request-async (lsp--make-request "textDocument/codeLens"
+                               `(:textDocument ,(lsp--text-document-identifier)))
       (let ((buf (current-buffer)))
         #'(lambda (lenses)
             (with-current-buffer buf
-              (setq lsp-code-lenses lenses))))))
+              (setq lsp-code-lenses lenses)
+              (funcall callback lenses)))))))
 
 (defun lsp--make-document-formatting-options ()
   (let ((json-false :json-false))
