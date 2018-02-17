@@ -270,8 +270,11 @@ before saving a document."
       (lsp--workspace-proc lsp--cur-workspace))))
 
 (define-inline lsp--cur-workspace-check ()
-  (inline-quote (cl-assert lsp--cur-workspace nil
-                  "No language server is associated with this buffer.")))
+  (inline-quote
+    (progn
+      (cl-assert lsp--cur-workspace nil
+        "No language server is associated with this buffer.")
+      (cl-assert (lsp--workspace-p lsp--cur-workspace)))))
 
 (define-inline lsp--cur-parser ()
   (inline-quote (lsp--workspace-parser lsp--cur-workspace)))
