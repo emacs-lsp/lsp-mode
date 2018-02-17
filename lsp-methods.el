@@ -1473,7 +1473,7 @@ If title is nil, return the name for the command handler."
 (defun lsp--update-code-lenses ()
   (lsp--cur-workspace-check)
   (lsp--send-request-async (lsp--make-request "textDocument/codeLens"
-                               (lsp--text-document-identifier))
+                             `(:textDocument ,(lsp--text-document-identifier)))
       (let ((buf (current-buffer)))
         #'(lambda (lenses)
             (with-current-buffer buf
