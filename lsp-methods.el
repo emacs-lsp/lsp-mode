@@ -124,10 +124,9 @@
   ;; FIXME: ‘last-id’ should be in ‘lsp--workspace’.
   (last-id 0)
 
-  ;; If the workspace is restarted, we need to keep the original lsp-XXX-enable,
-  ;; as it is created via a macro, and without this we do not know how to
-  ;; recreate the client.
-  (restart-command nil :read-only t))
+  ;; Function to enable the client for the current buffer, called without
+  ;; arguments.
+  (enable-function nil :read-only t))
 
 (cl-defstruct lsp--registered-capability
   (id "" :type string)
@@ -492,23 +491,23 @@ the client, and then starting up again."
   (interactive)
   (when (and (lsp-mode) (buffer-file-name))
     (let ((old-buffers (lsp--workspace-buffers lsp--cur-workspace))
-          (restart (lsp--client-restart-command (lsp--workspace-client lsp--cur-workspace)))
+          (restart (lsp--client-enable-function (lsp--workspace-client lsp--cur-workspace)))
           (proc (lsp--workspace-proc lsp--cur-workspace)))
 
       ;; Shut down the LSP mode for each buffer in the workspace
-      (dolist (buffer1 old-buffers)
-        (with-current-buffer buffer1
+      (dolist (buffer old-buffers)
+        (with-current-buffer buffer
           (lsp--text-document-did-close)
           (setq lsp--cur-workspace nil)
           (lsp-mode -1)))
 
-      ; Let the process actually shut down
+      ;; Let the process actually shut down
       (while (process-live-p proc)
         (accept-process-output proc))
 
-      ; Re-enable LSP mode for each buffer
-      (dolist (buffer2 old-buffers)
-        (with-current-buffer buffer2
+      ;; Re-enable LSP mode for each buffer
+      (dolist (buffer old-buffers)
+        (with-current-buffer buffer
           (funcall restart)
           ))
       )
