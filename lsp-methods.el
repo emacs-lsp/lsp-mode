@@ -460,11 +460,9 @@ interface TextDocumentItem {
 
 (defun lsp--shutdown-cur-workspace ()
   "Shut down the language server process for ‘lsp--cur-workspace’."
-  (message "lsp--shutdown-cur-workspace")
   (with-demoted-errors "LSP error: %S"
     (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)) t)
     (lsp--send-notification (lsp--make-notification "exit" nil)))
-  (message "lsp--shutdown-cur-workspace after demoted errors")
   (lsp--uninitialize-workspace))
 
 (defun lsp--uninitialize-workspace ()
@@ -472,7 +470,6 @@ interface TextDocumentItem {
 disappearing, unset all the variables related to it."
   (let (proc
         (root (lsp--workspace-root lsp--cur-workspace)))
-    (message "lsp--uninitialize-workspace: %s" root)
     (with-current-buffer (current-buffer)
       (setq proc (lsp--workspace-proc lsp--cur-workspace))
       (unless (eq (process-status proc) 'exit)
@@ -490,28 +487,24 @@ the workspace, closing the process managing communication with
 the client, and then starting up again."
   (interactive)
   (when (and (lsp-mode) (buffer-file-name))
-    (message "could restart mode" )
-    ;; Get the buffers associated with the workspace
     (let ((old-buffers (lsp--workspace-buffers lsp--cur-workspace))
           (restart (lsp--client-restart-command (lsp--workspace-client lsp--cur-workspace))))
+
+      ;; Shut down the LSP mode for each buffer in the workspace
       (dolist (buffer1 old-buffers)
         (with-current-buffer buffer1
-          (message "lsp--restart-workspace:shutting down '%s'" buffer1)
-          (message "lsp--restart-workspace:current-buffer '%s'" (current-buffer))
-          (message "lsp--restart-workspace:lsp--current-workspace root '%s'" (lsp--workspace-root lsp--cur-workspace))
-          (message "lsp--restart-workspace:lsp--current-workspace files '%s'" (lsp--workspace-file-versions lsp--cur-workspace))
           (lsp--text-document-did-close)
           (setq lsp--cur-workspace nil)
           (lsp-mode -1)))
-      (message "shutdown complete")
+
+      ;; Need to let the sentinel finish off. It would be better to make this
+      ;; deterministic, not sure how to.
       (sleep-for 2)
+
+      ; Re-enable LSP mode for each buffer
       (dolist (buffer2 old-buffers)
         (with-current-buffer buffer2
-          (message "about to call restart for: %s" buffer2)
-          (message "lsp--restart-workspace:current-buffer '%s'" (current-buffer))
-          (message "restart function: %s" restart)
           (funcall restart)
-          (message "after funcall restart")
           ))
       )
   ))
