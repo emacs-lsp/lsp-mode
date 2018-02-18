@@ -154,37 +154,63 @@ Optional arguments:
 
 `:initialize' is a function called when the client is intiailized. It takes a
  single argument, the newly created client."
-  (let ((enable (intern (format "%s-enable" name))))
+  (cl-check-type name symbol)
+  (macroexp-let2 nil get-root get-root
     `(progn
        (lsp-define-whitelist-enable ,name ,get-root)
        (lsp-define-whitelist-disable ,name ,get-root)
-       (defun ,enable ()
+       (defun ,(intern (format "%s-enable" name)) ()
          ,docstring
          (interactive)
-         (when (and (not lsp-mode) (buffer-file-name))
-           (let* ((stderr (generate-new-buffer-name
-                           ,(concat "*" (symbol-name name) " stderr*")))
-                  (client (make-lsp--client
-                           :language-id (if ,language-id-fn
-                                            ,language-id-fn
-                                          (lambda (_) ,language-id))
-                           :new-connection (lsp--make-stdio-connection
-                                            ,(symbol-name name)
-                                            ,command
-                                            ,command-fn
-                                            stderr)
-                           :stderr stderr
-                           :get-root ,get-root
-                           :ignore-regexps ,ignore-regexps
-                           :ignore-messages ,ignore-messages)))
-             ,(when initialize
-                `(funcall ,initialize client))
-             (let ((root (funcall (lsp--client-get-root client))))
-               (if (lsp--should-start-p root)
-                   (progn
-                     (lsp-mode 1)
-                     (lsp--start client ,extra-init-params))
-                 (message "Not initializing project %s" root)))))))))
+         (lsp--enable-stdio-client ',name
+                                   :language-id ,language-id
+                                   :language-id-fn ,language-id-fn
+                                   :root-directory-fn ,get-root
+                                   :command ,command
+                                   :command-fn ,command-fn
+                                   :ignore-regexps ,ignore-regexps
+                                   :ignore-messages ,ignore-messages
+                                   :extra-init-params ,extra-init-params
+                                   :initialize-fn ,initialize)))))
+
+
+
+(cl-defun lsp--enable-stdio-client (name &key language-id language-id-fn
+                                         root-directory-fn command command-fn
+                                         ignore-regexps ignore-messages
+                                         extra-init-params initialize-fn)
+  (cl-check-type name symbol)
+  (cl-check-type language-id (or null string))
+  (cl-check-type language-id-fn (or null function))
+  (cl-check-type root-directory-fn (or null function))
+  (cl-check-type command list)
+  (cl-check-type command-fn (or null function))
+  (cl-check-type ignore-regexps list)
+  (cl-check-type ignore-messages list)
+  (cl-check-type extra-init-params (or list function))
+  (cl-check-type initialize-fn (or null function))
+  (when (and (not lsp-mode) (buffer-file-name))
+    (let* ((stderr (generate-new-buffer-name
+                    (concat "*" (symbol-name name) " stderr*")))
+           (client (make-lsp--client
+                    :language-id (or language-id-fn (lambda (_) language-id))
+                    :new-connection (lsp--make-stdio-connection
+                                     (symbol-name name)
+                                     command
+                                     command-fn
+                                     stderr)
+                    :stderr stderr
+                    :get-root root-directory-fn
+                    :ignore-regexps ignore-regexps
+                    :ignore-messages ignore-messages)))
+      (when initialize-fn
+        (funcall initialize-fn client))
+      (let ((root (funcall (lsp--client-get-root client))))
+        (if (lsp--should-start-p root)
+            (progn
+              (lsp-mode 1)
+              (lsp--start client extra-init-params))
+          (message "Not initializing project %s" root))))))
 
 (cl-defmacro lsp-define-tcp-client (name language-id get-root command host port
                                      &key docstring
@@ -222,39 +248,67 @@ Optional arguments:
 
 `:initialize' is a function called when the client is initialized. It takes a
   single argument, the newly created client."
-  (let ((enable (intern (format "%s-enable" name))))
+  (cl-check-type name symbol)
+  (macroexp-let2 nil get-root get-root
     `(progn
        (lsp-define-whitelist-enable ,name ,get-root)
        (lsp-define-whitelist-disable ,name ,get-root)
-
-       (defun ,enable ()
+       (defun ,(intern (format "%s-enable" name)) ()
          ,docstring
          (interactive)
-         (when (and (not lsp-mode) (buffer-file-name))
-           (let* ((stderr (generate-new-buffer-name
-                           ,(concat "*" (symbol-name name) " stderr*")))
-                  (client (make-lsp--client
-                           :language-id (if ,language-id-fn
-                                            ,language-id-fn
-                                          (lambda (_) ,language-id))
-                           :new-connection (lsp--make-tcp-connection
-                                            ,(symbol-name name)
-                                            ,command
-                                            ,command-fn
-                                            ,host ,port
-                                            stderr)
-                           :stderr stderr
-                           :get-root ,get-root
-                           :ignore-regexps ,ignore-regexps
-                           :ignore-messages ,ignore-messages)))
-             ,(when initialize
-                `(funcall ,initialize client))
-             (let ((root (funcall (lsp--client-get-root client))))
-               (if (lsp--should-start-p root)
-                   (progn
-                     (lsp-mode 1)
-                     (lsp--start client ,extra-init-params))
-                 (message "Not initializing project %s" root)))))))))
+         (lsp--enable-tcp-client ',name
+                                 :language-id ,language-id
+                                 :language-id-fn ,language-id-fn
+                                 :root-directory-fn ,get-root
+                                 :command ,command
+                                 :command-fn ,command-fn
+                                 :host ,host
+                                 :port ,port
+                                 :ignore-regexps ,ignore-regexps
+                                 :ignore-messages ,ignore-messages
+                                 :extra-init-params ,extra-init-params
+                                 :initialize-fn ,initialize)))))
+
+(cl-defun lsp--enable-tcp-client (name &key language-id language-id-fn
+                                       root-directory-fn command command-fn
+                                       host port
+                                       ignore-regexps ignore-messages
+                                       extra-init-params initialize-fn)
+  (cl-check-type name symbol)
+  (cl-check-type language-id (or null string))
+  (cl-check-type language-id-fn (or null function))
+  (cl-check-type root-directory-fn (or null function))
+  (cl-check-type command list)
+  (cl-check-type command-fn (or null function))
+  (cl-check-type host string)
+  (cl-check-type port (integer 1 #xFFFF))
+  (cl-check-type ignore-regexps list)
+  (cl-check-type ignore-messages list)
+  (cl-check-type extra-init-params (or list function))
+  (cl-check-type initialize-fn (or null function))
+  (when (and (not lsp-mode) (buffer-file-name))
+    (let* ((stderr (generate-new-buffer-name
+                    (concat "*" (symbol-name name) " stderr*")))
+           (client (make-lsp--client
+                    :language-id (or language-id-fn (lambda (_) language-id))
+                    :new-connection (lsp--make-tcp-connection
+                                     (symbol-name name)
+                                     command
+                                     command-fn
+                                     host port
+                                     stderr)
+                    :stderr stderr
+                    :get-root root-directory-fn
+                    :ignore-regexps ignore-regexps
+                    :ignore-messages ignore-messages)))
+      (when initialize-fn
+        (funcall initialize-fn client))
+      (let ((root (funcall (lsp--client-get-root client))))
+        (if (lsp--should-start-p root)
+            (progn
+              (lsp-mode 1)
+              (lsp--start client extra-init-params))
+          (message "Not initializing project %s" root))))))
 
 (defvar-local lsp-status nil
   "The current status of the LSP server.")
