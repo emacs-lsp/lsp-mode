@@ -123,6 +123,10 @@
   ;; ‘last-id’ is the last JSON-RPC identifier used.
   ;; FIXME: ‘last-id’ should be in ‘lsp--workspace’.
   (last-id 0)
+
+  ;; If the workspace is restarted, we need to keep the original lsp-XXX-enable,
+  ;; as it is created via a macro, and without this we do not know how to
+  ;; recreate the client.
   (restart-command nil :read-only t))
 
 (cl-defstruct lsp--registered-capability
@@ -480,7 +484,7 @@ disappearing, unset all the variables related to it."
     (remhash root lsp--workspaces))
   )
 
-(defun lsp--restart-workspace ()
+(defun lsp-restart-workspace ()
   "Shut down and then restart the current workspace.
 This involves uninitializing each of the buffers associated with
 the workspace, closing the process managing communication with
@@ -488,7 +492,8 @@ the client, and then starting up again."
   (interactive)
   (when (and (lsp-mode) (buffer-file-name))
     (let ((old-buffers (lsp--workspace-buffers lsp--cur-workspace))
-          (restart (lsp--client-restart-command (lsp--workspace-client lsp--cur-workspace))))
+          (restart (lsp--client-restart-command (lsp--workspace-client lsp--cur-workspace)))
+          (proc (lsp--workspace-proc lsp--cur-workspace)))
 
       ;; Shut down the LSP mode for each buffer in the workspace
       (dolist (buffer1 old-buffers)
@@ -497,9 +502,9 @@ the client, and then starting up again."
           (setq lsp--cur-workspace nil)
           (lsp-mode -1)))
 
-      ;; Need to let the sentinel finish off. It would be better to make this
-      ;; deterministic, not sure how to.
-      (sleep-for 2)
+      ; Let the process actually shut down
+      (while (process-live-p proc)
+        (accept-process-output proc))
 
       ; Re-enable LSP mode for each buffer
       (dolist (buffer2 old-buffers)
@@ -1887,7 +1892,6 @@ command COMMAND and optionsl ARGS"
 ;; (defalias 'lsp-on-change #'lsp--text-document-did-change)
 (defalias 'lsp-completion-at-point #'lsp--get-completions)
 (defalias 'lsp-error-explainer #'lsp--error-explainer)
-(defalias 'lsp-restart-workspace #'lsp--restart-workspace)
 
 (defun lsp--unset-variables ()
   (when lsp-enable-eldoc
