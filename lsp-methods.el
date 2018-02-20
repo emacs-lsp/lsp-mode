@@ -1178,10 +1178,13 @@ Added to `after-change-functions'."
                               (buffer-substring-no-properties (point-min) (point-max)))
                             nil)))))))
 
-(define-inline lsp--text-document-position-params ()
-  "Make TextDocumentPositionParams for the current point in the current document."
-  (inline-quote (list :textDocument (lsp--text-document-identifier)
-                  :position (lsp--position (lsp--cur-line) (lsp--cur-column)))))
+(define-inline lsp--text-document-position-params (&optional identifier position)
+  "Make TextDocumentPositionParams for the current point in the current document.
+If IDENTIFIER and POSITION are non-nil, they will be used as the document identifier
+and the position respectively."
+  (inline-quote (list :textDocument (or ,identifier (lsp--text-document-identifier))
+                  :position (or ,position
+                              (lsp--position (lsp--cur-line) (lsp--cur-column))))))
 
 (define-inline lsp--text-document-code-action-params ()
   "Make CodeActionParams for the current region in the current document."
