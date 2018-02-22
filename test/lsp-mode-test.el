@@ -28,9 +28,19 @@
 (require 'ert)
 
 (ert-deftest lsp-define-stdio-client ()
-  (lsp-define-stdio-client test-client "test language"
+  (lsp-define-stdio-client test-stdio-client "test language"
                            (lambda () default-directory)
                            '("/bin/false"))
-  (should (fboundp 'test-client-enable)))
+  (should (fboundp 'test-stdio-client-enable))
+  (with-temp-buffer
+    (test-stdio-client-enable)))
+
+(ert-deftest lsp-define-tcp-client ()
+  (lsp-define-tcp-client test-tcp-client "test language"
+                           (lambda () default-directory)
+                           '("/bin/false") "localhost" 12345)
+  (should (fboundp 'test-tcp-client-enable))
+  (with-temp-buffer
+    (test-tcp-client-enable)))
 
 ;;; lsp-mode-test.el ends here
