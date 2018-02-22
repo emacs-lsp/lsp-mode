@@ -1744,9 +1744,10 @@ A reference is highlighted only if it is visible in a window."
                   :position ,(gethash "start" (gethash "range" location))))
 
 (defun lsp--symbol-info-to-identifier (symbol)
-  (propertize (gethash "name" symbol)
-              'ref-params (lsp--make-reference-params
-                           (lsp--location-to-td-position (gethash "location" symbol)))))
+  (let ((td-params (lsp--location-to-td-position (gethash "location" symbol))))
+    (propertize (gethash "name" symbol)
+      'ref-params (lsp--make-reference-params td-params)
+      'def-params td-params)))
 
 (defun lsp--get-document-symbols ()
   (lsp--cur-workspace-check)
