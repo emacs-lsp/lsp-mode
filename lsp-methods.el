@@ -1259,11 +1259,10 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
   (lsp--gethash "sortText" c (gethash "label" c "")))
 
 (defun lsp--sort-completions (completions)
-  (sort completions #'(lambda (c1 c2)
-                        (when (string-lessp
-                               (lsp--sort-string c1)
-                               (lsp--sort-string c2))
-                          t))))
+  (sort completions (lambda (c1 c2)
+                      (string-lessp
+                        (lsp--sort-string c1)
+                        (lsp--sort-string c2)))))
 
 (defun lsp--get-completions ()
   (with-demoted-errors "Error in ‘lsp--get-completions’: %S"
