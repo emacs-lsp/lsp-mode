@@ -278,7 +278,8 @@ Optional arguments:
                                        root-directory-fn command command-fn
                                        host port
                                        ignore-regexps ignore-messages
-                                       extra-init-params initialize-fn)
+                                       extra-init-params initialize-fn
+                                       enable-function)
   (cl-check-type name symbol)
   (cl-check-type language-id (or null string))
   (cl-check-type language-id-fn (or null function))
