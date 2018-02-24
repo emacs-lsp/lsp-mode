@@ -155,7 +155,7 @@ Optional arguments:
 `:initialize' is a function called when the client is intiailized. It takes a
  single argument, the newly created client."
   (cl-check-type name symbol)
-  (macroexp-let2 nil get-root get-root
+  (macroexp-let2 (lambda (_) t) get-root get-root
     `(progn
        (lsp-define-whitelist-enable ,name ,get-root)
        (lsp-define-whitelist-disable ,name ,get-root)
