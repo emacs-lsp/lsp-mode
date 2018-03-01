@@ -171,14 +171,16 @@ Optional arguments:
                                    :ignore-regexps ,ignore-regexps
                                    :ignore-messages ,ignore-messages
                                    :extra-init-params ,extra-init-params
-                                   :initialize-fn ,initialize)))))
+                                   :initialize-fn ,initialize
+                                   :enable-function (function ,(intern (format "%s-enable" name))))))))
 
 
 
 (cl-defun lsp--enable-stdio-client (name &key language-id language-id-fn
                                          root-directory-fn command command-fn
                                          ignore-regexps ignore-messages
-                                         extra-init-params initialize-fn)
+                                         extra-init-params initialize-fn
+                                         enable-function)
   (cl-check-type name symbol)
   (cl-check-type language-id (or null string))
   (cl-check-type language-id-fn (or null function))
@@ -189,6 +191,7 @@ Optional arguments:
   (cl-check-type ignore-messages list)
   (cl-check-type extra-init-params (or list function))
   (cl-check-type initialize-fn (or null function))
+  ;; (cl-check-type enable-function function)
   (when (and (not lsp-mode) (buffer-file-name))
     (let* ((stderr (generate-new-buffer-name
                     (concat "*" (symbol-name name) " stderr*")))
@@ -202,7 +205,8 @@ Optional arguments:
                     :stderr stderr
                     :get-root root-directory-fn
                     :ignore-regexps ignore-regexps
-                    :ignore-messages ignore-messages)))
+                    :ignore-messages ignore-messages
+                    :enable-function enable-function)))
       (when initialize-fn
         (funcall initialize-fn client))
       (let ((root (funcall (lsp--client-get-root client))))
@@ -267,13 +271,15 @@ Optional arguments:
                                  :ignore-regexps ,ignore-regexps
                                  :ignore-messages ,ignore-messages
                                  :extra-init-params ,extra-init-params
-                                 :initialize-fn ,initialize)))))
+                                 :initialize-fn ,initialize
+                                 :enable-function (function ,(intern (format "%s-enable" name))))))))
 
 (cl-defun lsp--enable-tcp-client (name &key language-id language-id-fn
                                        root-directory-fn command command-fn
                                        host port
                                        ignore-regexps ignore-messages
-                                       extra-init-params initialize-fn)
+                                       extra-init-params initialize-fn
+                                       enable-function)
   (cl-check-type name symbol)
   (cl-check-type language-id (or null string))
   (cl-check-type language-id-fn (or null function))
@@ -300,7 +306,8 @@ Optional arguments:
                     :stderr stderr
                     :get-root root-directory-fn
                     :ignore-regexps ignore-regexps
-                    :ignore-messages ignore-messages)))
+                    :ignore-messages ignore-messages
+                    :enable-function enable-function)))
       (when initialize-fn
         (funcall initialize-fn client))
       (let ((root (funcall (lsp--client-get-root client))))

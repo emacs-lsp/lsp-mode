@@ -120,10 +120,13 @@
   ;; functions are called with a single argument, the MarkedString value.  They
   ;; should return a propertized string with the rendered output.
   (string-renderers '())
-
   ;; ‘last-id’ is the last JSON-RPC identifier used.
   ;; FIXME: ‘last-id’ should be in ‘lsp--workspace’.
-  (last-id 0))
+  (last-id 0)
+
+  ;; Function to enable the client for the current buffer, called without
+  ;; arguments.
+  (enable-function nil :read-only t))
 
 (cl-defstruct lsp--registered-capability
   (id "" :type string)
@@ -446,6 +449,18 @@ interface TextDocumentItem {
 	      :version (lsp--cur-file-version)
 	      :text (buffer-substring-no-properties (point-min) (point-max))))))
 
+;; Clean up the entire state of lsp mode when Emacs is killed, to get rid of any
+;; pending language servers.
+(add-hook 'kill-emacs-hook #'lsp--global-teardown)
+
+(defun lsp--global-teardown ()
+  (with-demoted-errors "Error in ‘lsp--global-teardown’: %S"
+    (maphash (lambda (_k value) (lsp--teardown-workspace value)) lsp--workspaces)))
+
+(defun lsp--teardown-workspace (workspace)
+  (setq lsp--cur-workspace workspace)
+  (lsp--shutdown-cur-workspace))
+
 (defun lsp--shutdown-cur-workspace ()
   "Shut down the language server process for ‘lsp--cur-workspace’."
   (with-demoted-errors "LSP error: %S"
@@ -453,30 +468,50 @@ interface TextDocumentItem {
     (lsp--send-notification (lsp--make-notification "exit" nil)))
   (lsp--uninitialize-workspace))
 
-;; Clean up the entire state of lsp mode when Emacs is killed, to get rid of any
-;; pending language servers.
-(add-hook 'kill-emacs-hook #'lsp--global-teardown)
-
-(defun lsp--global-teardown ()
-  (with-demoted-errors "Error in ‘lsp--global-teardown’: %S"
-    (maphash (lambda (_k value) (lsp--teardown-client value)) lsp--workspaces)))
-
-(defun lsp--teardown-client (client)
-  (setq lsp--cur-workspace client)
-  (lsp--shutdown-cur-workspace))
-
 (defun lsp--uninitialize-workspace ()
   "When a workspace is shut down, by request or from just
 disappearing, unset all the variables related to it."
-  (remhash (lsp--workspace-root lsp--cur-workspace) lsp--workspaces)
-  (let (proc)
+  (let (proc
+        (root (lsp--workspace-root lsp--cur-workspace)))
     (with-current-buffer (current-buffer)
       (setq proc (lsp--workspace-proc lsp--cur-workspace))
       (unless (eq (process-status proc) 'exit)
         (kill-process (lsp--workspace-proc lsp--cur-workspace)))
       (setq lsp--cur-workspace nil)
       (lsp--unset-variables)
-      (kill-local-variable 'lsp--cur-workspace))))
+      (kill-local-variable 'lsp--cur-workspace))
+    (remhash root lsp--workspaces))
+  )
+
+(defun lsp-restart-workspace ()
+  "Shut down and then restart the current workspace.
+This involves uninitializing each of the buffers associated with
+the workspace, closing the process managing communication with
+the client, and then starting up again."
+  (interactive)
+  (when (and (lsp-mode) (buffer-file-name))
+    (let ((old-buffers (lsp--workspace-buffers lsp--cur-workspace))
+          (restart (lsp--client-enable-function (lsp--workspace-client lsp--cur-workspace)))
+          (proc (lsp--workspace-proc lsp--cur-workspace)))
+
+      ;; Shut down the LSP mode for each buffer in the workspace
+      (dolist (buffer old-buffers)
+        (with-current-buffer buffer
+          (lsp--text-document-did-close)
+          (setq lsp--cur-workspace nil)
+          (lsp-mode -1)))
+
+      ;; Let the process actually shut down
+      (while (process-live-p proc)
+        (accept-process-output proc))
+
+      ;; Re-enable LSP mode for each buffer
+      (dolist (buffer old-buffers)
+        (with-current-buffer buffer
+          (funcall restart)
+          ))
+      )
+  ))
 
 ;; NOTE: Possibly make this function subject to a setting, if older LSP servers
 ;; are unhappy
