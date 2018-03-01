@@ -43,4 +43,25 @@
   (with-temp-buffer
     (test-tcp-client-enable)))
 
+(ert-deftest lsp-define-whitelist ()
+  (lsp-define-stdio-client test-stdio-client "test language"
+                           (lambda () "/tmp/baz/")
+                           '("/bin/false"))
+  (should (fboundp 'test-stdio-client-whitelist-add))
+  (should (fboundp 'test-stdio-client-whitelist-remove))
+  (should (not lsp-project-whitelist))
+  (with-temp-buffer
+    (test-stdio-client-whitelist-add)
+    (should (equal lsp-project-whitelist '("^/tmp/baz/$") ))
+    ;; Should not add a duplicate
+    (test-stdio-client-whitelist-add)
+    (should (equal lsp-project-whitelist '("^/tmp/baz/$") ))
+    ;; testing remove
+    (customize-save-variable 'lsp-project-whitelist
+           (add-to-list 'lsp-project-whitelist (concat "^" (regexp-quote "/tmp/foo") "$")))
+    (should (equal lsp-project-whitelist '("^/tmp/foo$" "^/tmp/baz/$") ))
+    (test-stdio-client-whitelist-remove)
+    (should (equal lsp-project-whitelist '("^/tmp/foo$") ))
+    ))
+
 ;;; lsp-mode-test.el ends here
