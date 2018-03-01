@@ -105,7 +105,7 @@ GET-ROOT is the language-specific function to determine the project root for the
        (interactive)
        (let ((root (funcall ,get-root)))
          (customize-save-variable 'lsp-project-whitelist
-           (add-to-list 'lsp-project-whitelist (concat "^" (regexp-quote root) "$")))
+           (add-to-list 'lsp-project-whitelist (lsp--as-regex root)))
          (,enable-interactive)
          ))))
 
@@ -120,7 +120,11 @@ GET-ROOT is the language-specific function to determine the project root for the
        (interactive)
        (let ((root (funcall ,get-root)))
          (customize-save-variable 'lsp-project-whitelist
-           (remove (concat "^" (regexp-quote root) "$") 'lsp-project-whitelist))))))
+           (remove (lsp--as-regex root) lsp-project-whitelist))))))
+
+(defun lsp--as-regex (root)
+  "Convert the directory path in ROOT to an equivalent regex."
+  (concat "^" (regexp-quote root) "$"))
 
 (cl-defmacro lsp-define-stdio-client (name language-id get-root command
                                        &key docstring

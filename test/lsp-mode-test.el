@@ -62,6 +62,9 @@
     (should (equal lsp-project-whitelist '("^/tmp/foo$" "^/tmp/baz/$") ))
     (test-stdio-client-whitelist-remove)
     (should (equal lsp-project-whitelist '("^/tmp/foo$") ))
+    ;; Should be idempotent
+    (test-stdio-client-whitelist-remove)
+    (should (equal lsp-project-whitelist '("^/tmp/foo$") ))
     ))
 
 ;;; lsp-mode-test.el ends here
