@@ -57,6 +57,14 @@
     (forward-char (gethash "character" params))
     (point)))
 
+;;; TODO: Use the current LSP client name instead of lsp-mode for the type.
+(define-inline lsp-warn (message &rest args)
+  "Display a warning message made from (`format-message' MESSAGE ARGS...).
+This is equivalent to `display-warning', using `lsp-mode' as the type and
+`:warning' as the level."
+  (inline-quote
+    (display-warning 'lsp-mode (apply #'format-message ,message ,args))))
+
 (defun lsp-make-traverser (name)
   "Return a closure that walks up the current directory until NAME is found.
 NAME can either be a string or a predicate used for `locate-dominating-file'.
@@ -88,7 +96,8 @@ If no such directory could be found, log a warning and return `default-directory
 
 (defun lsp--path-to-uri (path)
   "Convert PATH to a uri."
-  (concat lsp--uri-file-prefix (url-hexify-string (file-truename path) url-path-allowed-chars)))
+  (concat lsp--uri-file-prefix
+    (url-hexify-string (file-truename path) url-path-allowed-chars)))
 
 (provide 'lsp-common)
 ;;; lsp-common.el ends here
