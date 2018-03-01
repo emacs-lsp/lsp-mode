@@ -93,7 +93,7 @@
                 "lsp-define-client: :ignore-regexps element %s is not a string"
                 e))))
 
-(cl-defmacro lsp-define-whitelist-enable (name get-root
+(cl-defmacro lsp-define-whitelist-add (name get-root
                                                &key docstring)
   "Define a function to add the project root for the current buffer to the whitleist.
 NAME is the base name for the command.
@@ -109,7 +109,7 @@ GET-ROOT is the language-specific function to determine the project root for the
          (,enable-interactive)
          ))))
 
-(cl-defmacro lsp-define-whitelist-disable (name get-root
+(cl-defmacro lsp-define-whitelist-remove(name get-root
                                             &key docstring)
   "Define a function to remove the project root for the current buffer from the whitleist.
 NAME is the base name for the command.
@@ -167,8 +167,8 @@ Optional arguments:
   (cl-check-type name symbol)
   (let ((enable-name (intern (format "%s-enable" name))))
     `(progn
-       (lsp-define-whitelist-enable ,name ,get-root)
-       (lsp-define-whitelist-disable ,name ,get-root)
+       (lsp-define-whitelist-add ,name ,get-root)
+       (lsp-define-whitelist-remove,name ,get-root)
        (defun ,enable-name ()
          ,docstring
          (interactive)
@@ -263,8 +263,8 @@ Optional arguments:
   (cl-check-type name symbol)
   (let ((enable-name (intern (format "%s-enable" name))))
     `(progn
-       (lsp-define-whitelist-enable ,name ,get-root)
-       (lsp-define-whitelist-disable ,name ,get-root)
+       (lsp-define-whitelist-add ,name ,get-root)
+       (lsp-define-whitelist-remove,name ,get-root)
        (defun ,enable-name ()
          ,docstring
          (interactive)
