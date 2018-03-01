@@ -480,8 +480,7 @@ disappearing, unset all the variables related to it."
       (setq lsp--cur-workspace nil)
       (lsp--unset-variables)
       (kill-local-variable 'lsp--cur-workspace))
-    (remhash root lsp--workspaces))
-  )
+    (remhash root lsp--workspaces)))
 
 (defun lsp-restart-workspace ()
   "Shut down and then restart the current workspace.
@@ -491,8 +490,8 @@ the client, and then starting up again."
   (interactive)
   (when (and (lsp-mode) (buffer-file-name))
     (let ((old-buffers (lsp--workspace-buffers lsp--cur-workspace))
-          (restart (lsp--client-enable-function (lsp--workspace-client lsp--cur-workspace)))
-          (proc (lsp--workspace-proc lsp--cur-workspace)))
+           (restart (lsp--client-enable-function (lsp--workspace-client lsp--cur-workspace)))
+           (proc (lsp--workspace-proc lsp--cur-workspace)))
 
       ;; Shut down the LSP mode for each buffer in the workspace
       (dolist (buffer old-buffers)
@@ -508,10 +507,7 @@ the client, and then starting up again."
       ;; Re-enable LSP mode for each buffer
       (dolist (buffer old-buffers)
         (with-current-buffer buffer
-          (funcall restart)
-          ))
-      )
-  ))
+          (funcall restart))))))
 
 ;; NOTE: Possibly make this function subject to a setting, if older LSP servers
 ;; are unhappy
@@ -541,9 +537,8 @@ the arguments will be merged into FIRST.
 
 Return the merged plist."
   (cl-check-type first list)
-  (seq-each (lambda (pl)
-              (setq first
-                (lsp--merge-two-plists first pl)))
+  (seq-each
+    (lambda (pl) (setq first (lsp--merge-two-plists first pl)))
     rest)
   first)
 
