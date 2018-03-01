@@ -94,10 +94,11 @@ If no such directory could be found, log a warning and return `default-directory
              (substring file 1))
         file)))
 
-(defun lsp--path-to-uri (path)
+(define-inline lsp--path-to-uri (path)
   "Convert PATH to a uri."
-  (concat lsp--uri-file-prefix
-    (url-hexify-string (file-truename path) url-path-allowed-chars)))
+  (inline-quote
+    (concat lsp--uri-file-prefix
+      (url-hexify-string (file-truename ,path) url-path-allowed-chars))))
 
 (provide 'lsp-common)
 ;;; lsp-common.el ends here
