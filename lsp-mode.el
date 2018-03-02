@@ -18,7 +18,7 @@
 ;; Author: Vibhav Pant <vibhavp@gmail.com>
 ;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; Package-Requires: ((emacs "25.1"))
-;; Version: 3.4
+;; Version: 4.0
 
 ;;; Commentary:
 
