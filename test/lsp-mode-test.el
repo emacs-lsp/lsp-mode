@@ -58,7 +58,7 @@
     (should (equal lsp-project-whitelist '("^/tmp/baz/$") ))
     ;; testing remove
     (customize-save-variable 'lsp-project-whitelist
-           (add-to-list 'lsp-project-whitelist (concat "^" (regexp-quote "/tmp/foo") "$")))
+           (add-to-list 'lsp-project-whitelist (lsp--as-regex "/tmp/foo")))
     (should (equal lsp-project-whitelist '("^/tmp/foo$" "^/tmp/baz/$") ))
     (test-stdio-client-whitelist-remove)
     (should (equal lsp-project-whitelist '("^/tmp/foo$") ))

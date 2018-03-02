@@ -109,7 +109,7 @@ GET-ROOT is the language-specific function to determine the project root for the
          (,enable-interactive)
          ))))
 
-(cl-defmacro lsp-define-whitelist-remove(name get-root
+(cl-defmacro lsp-define-whitelist-remove (name get-root
                                             &key docstring)
   "Define a function to remove the project root for the current buffer from the whitleist.
 NAME is the base name for the command.
@@ -168,7 +168,7 @@ Optional arguments:
   (let ((enable-name (intern (format "%s-enable" name))))
     `(progn
        (lsp-define-whitelist-add ,name ,get-root)
-       (lsp-define-whitelist-remove,name ,get-root)
+       (lsp-define-whitelist-remove ,name ,get-root)
        (defun ,enable-name ()
          ,docstring
          (interactive)
@@ -264,7 +264,7 @@ Optional arguments:
   (let ((enable-name (intern (format "%s-enable" name))))
     `(progn
        (lsp-define-whitelist-add ,name ,get-root)
-       (lsp-define-whitelist-remove,name ,get-root)
+       (lsp-define-whitelist-remove ,name ,get-root)
        (defun ,enable-name ()
          ,docstring
          (interactive)
