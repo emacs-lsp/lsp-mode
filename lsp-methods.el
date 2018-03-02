@@ -307,12 +307,6 @@ whitelist, or does not match any pattern in the blacklist."
   :group 'lsp-mode)
 
 ;;;###autoload
-(defcustom lsp-enable-flycheck t
-  "Enable flycheck integration."
-  :type 'boolean
-  :group 'lsp-mode)
-
-;;;###autoload
 (defcustom lsp-enable-indentation t
   "Indent regions using the file formatting functionality provided by the language server."
   :type 'boolean
@@ -776,12 +770,6 @@ directory."
       (run-hooks 'lsp-after-initialize-hook))
     (lsp--text-document-did-open)))
 
-;; Forward-declare variables defined in flycheck.el.
-(defvar flycheck-mode)
-(defvar flycheck-checkers)
-(defvar flycheck-checker)
-(defvar flycheck-check-syntax-automatically)
-
 (defun lsp--text-document-did-open ()
   (run-hooks 'lsp-before-open-hook)
   (puthash buffer-file-name 0 (lsp--workspace-file-versions lsp--cur-workspace))
@@ -798,15 +786,6 @@ directory."
     ;; using `add-function' for modifying its value, use that instead?
     (setq-local eldoc-documentation-function #'lsp--on-hover)
     (eldoc-mode 1))
-
-  (when (and lsp-enable-flycheck (featurep 'lsp-flycheck))
-    (setq-local flycheck-check-syntax-automatically nil)
-    (setq-local flycheck-checker 'lsp)
-    (lsp-flycheck-add-mode major-mode)
-    (add-to-list 'flycheck-checkers 'lsp)
-    (add-hook 'lsp-after-diagnostics-hook (lambda ()
-                                            (when flycheck-mode
-                                              (flycheck-buffer)))))
 
   (when (and lsp-enable-indentation
              (lsp--capability "documentRangeFormattingProvider"))
@@ -1884,7 +1863,6 @@ command COMMAND and optionsl ARGS"
 (defalias 'lsp-on-save #'lsp--text-document-did-save)
 ;; (defalias 'lsp-on-change #'lsp--text-document-did-change)
 (defalias 'lsp-completion-at-point #'lsp--get-completions)
-(defalias 'lsp-error-explainer #'lsp--error-explainer)
 
 (defun lsp--unset-variables ()
   (when lsp-enable-eldoc
@@ -1896,21 +1874,11 @@ command COMMAND and optionsl ARGS"
   (remove-hook 'after-change-functions #'lsp-on-change t)
   (remove-hook 'before-change-functions #'lsp-before-change t))
 
-(defun lsp--error-explainer (fc-error)
-  "Proof of concept to use this flycheck function to apply a codeAction.
-This should eventually make use of the completion of
-https://github.com/flycheck/flycheck/pull/1022 and
-https://github.com/flycheck/flycheck/issues/530#issuecomment-235224763."
-  (message "lsp--error-explainer: got %s" fc-error))
-
 (defun lsp--set-configuration (settings)
   "Set the configuration for the lsp server."
   (lsp--send-notification (lsp--make-notification
                            "workspace/didChangeConfiguration"
                            `(:settings , settings))))
-
-(declare-function lsp-flycheck-add-mode "lsp-flycheck" (mode))
-(declare-function flycheck-buffer "flycheck" ())
 
 (provide 'lsp-methods)
 ;;; lsp-methods.el ends here
