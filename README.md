@@ -12,14 +12,14 @@ A Emacs Lisp library for implementing clients for servers using Microsoft's
 The library is designed to integrate with existing Emacs IDE frameworks
 (completion-at-point, xref (beginning with Emacs 25.1), flycheck, etc).
 
+_Note: Starting from version 4.0, flycheck support has been moved to the package [lsp-ui](https://github.com/emacs-lsp/lsp-ui)_
+
 ## Installation
 
 Clone this repository to a suitable path, and add
 
 ```emacs-lisp
 (add-to-list 'load-path "<path to emacs-lsp>")
-(with-eval-after-load 'lsp-mode
-    (require 'lsp-flycheck))
 (require 'lsp-mode)
 
 (lsp-define-stdio-client
@@ -79,9 +79,6 @@ to find the references to the symbol under point.
 
 ### Symbol Highlighting
 ![sym_highlight](./examples/sym_highlight.gif)
-
-### Flycheck
-![flycheck](./examples/flycheck.gif)
 
 ### Imenu
 Add
