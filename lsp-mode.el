@@ -17,8 +17,8 @@
 
 ;; Author: Vibhav Pant <vibhavp@gmail.com>
 ;; URL: https://github.com/emacs-lsp/lsp-mode
-;; Package-Requires: ((emacs "25.1") (flycheck "30"))
-;; Version: 3.4
+;; Package-Requires: ((emacs "25.1"))
+;; Version: 4.0
 
 ;;; Commentary:
 
@@ -31,6 +31,12 @@
 
 (defvar lsp-version-support "3.0"
   "This is the version of the Language Server Protocol currently supported by ‘lsp-mode’.")
+
+;;;###autoload
+(define-minor-mode lsp-mode ""
+  nil nil nil
+  :lighter (:eval (lsp-mode-line))
+  :group 'lsp-mode)
 
 (defun lsp--make-stdio-connection (name command command-fn stderr)
   (lambda (filter sentinel)
@@ -321,12 +327,6 @@ Optional arguments:
 (defun lsp-mode-line ()
   "Construct the mode line text."
   (concat " LSP" lsp-status))
-
-;;;###autoload
-(define-minor-mode lsp-mode ""
-  nil nil nil
-  :lighter (:eval (lsp-mode-line))
-  :group 'lsp-mode)
 
 (defconst lsp--sync-type
   `((0 . "None")
