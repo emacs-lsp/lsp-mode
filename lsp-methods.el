@@ -126,7 +126,13 @@
 
   ;; Function to enable the client for the current buffer, called without
   ;; arguments.
-  (enable-function nil :read-only t))
+  (enable-function nil :read-only t)
+
+  ;; ‘prefix-function’ is called for getting the prefix for completion.
+  ;; The function takes no parameter and returns a cons (start . end) representing
+  ;; the start and end bounds of the prefix. If it's not set, the client uses a
+  ;; default prefix function."
+  (prefix-function nil :read-only t))
 
 (cl-defstruct lsp--registered-capability
   (id "" :type string)
@@ -1273,9 +1279,15 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
                         (lsp--sort-string c1)
                         (lsp--sort-string c2)))))
 
+(defun lsp--default-prefix-function ()
+  (bounds-of-thing-at-point 'symbol))
+
 (defun lsp--get-completions ()
   (with-demoted-errors "Error in ‘lsp--get-completions’: %S"
-    (let ((bounds (bounds-of-thing-at-point 'symbol)))
+    (let* ((prefix-function (or (lsp--client-prefix-function
+                                  (lsp--workspace-client lsp--cur-workspace))
+                             #'lsp--default-prefix-function))
+            (bounds (funcall prefix-function)))
       (list
        (if bounds (car bounds) (point))
        (if bounds (cdr bounds) (point))

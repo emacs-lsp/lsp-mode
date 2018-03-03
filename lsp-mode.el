@@ -133,7 +133,8 @@ GET-ROOT is the language-specific function to determine the project root for the
                                        ignore-regexps
                                        ignore-messages
                                        extra-init-params
-                                       initialize)
+                                       initialize
+                                       prefix-function)
   "Define a LSP client using stdio.
 NAME is the symbol to use for the name of the client.
 LANGUAGE-ID is the language id to be used when communication with
@@ -163,7 +164,12 @@ Optional arguments:
  a single argument (LSP workspace) and returning a plist is also accepted.
 
 `:initialize' is a function called when the client is intiailized. It takes a
- single argument, the newly created client."
+ single argument, the newly created client.
+
+`:prefix-function' is a function called for getting the prefix for completion.
+ The function takes no parameter and returns a cons (start . end) representing
+ the start and end bounds of the prefix. If it's not set, the client uses a
+ default prefix function."
   (cl-check-type name symbol)
   (let ((enable-name (intern (format "%s-enable" name))))
     `(progn
@@ -182,13 +188,15 @@ Optional arguments:
            :ignore-messages ,ignore-messages
            :extra-init-params ,extra-init-params
            :initialize-fn ,initialize
-           :enable-function (function ,enable-name))))))
+           :enable-function (function ,enable-name)
+           :prefix-function ,prefix-function)))))
 
 (cl-defun lsp--enable-stdio-client (name &key language-id language-id-fn
                                          root-directory-fn command command-fn
                                          ignore-regexps ignore-messages
                                          extra-init-params initialize-fn
-                                         enable-function)
+                                         enable-function
+                                         prefix-function)
   (cl-check-type name symbol)
   (cl-check-type language-id (or null string))
   (cl-check-type language-id-fn (or null function))
@@ -200,6 +208,7 @@ Optional arguments:
   (cl-check-type extra-init-params (or list function))
   (cl-check-type initialize-fn (or null function))
   ;; (cl-check-type enable-function function)
+  (cl-check-type prefix-function (or null function))
   (when (and (not lsp-mode) (buffer-file-name))
     (let* ((stderr (generate-new-buffer-name
                     (concat "*" (symbol-name name) " stderr*")))
@@ -214,7 +223,8 @@ Optional arguments:
                     :get-root root-directory-fn
                     :ignore-regexps ignore-regexps
                     :ignore-messages ignore-messages
-                    :enable-function enable-function)))
+                    :enable-function enable-function
+                    :prefix-function prefix-function)))
       (when initialize-fn
         (funcall initialize-fn client))
       (let ((root (funcall (lsp--client-get-root client))))
@@ -231,7 +241,8 @@ Optional arguments:
                                      ignore-regexps
                                      ignore-messages
                                      extra-init-params
-                                     initialize)
+                                     initialize
+                                     prefix-function)
   "Define a LSP client using TCP.
 NAME is the symbol to use for the name of the client.
 LANGUAGE-ID is the language id to be used when communication with
@@ -259,7 +270,12 @@ Optional arguments:
  a single argument (LSP workspace) and returning a plist is also accepted.
 
 `:initialize' is a function called when the client is initialized. It takes a
-  single argument, the newly created client."
+  single argument, the newly created client.
+
+`:prefix-function' is a function called for getting the prefix for completion.
+ The function takes no parameter and returns a cons (start . end) representing
+ the start and end bounds of the prefix. If it's not set, the client uses a
+ default prefix function."
   (cl-check-type name symbol)
   (let ((enable-name (intern (format "%s-enable" name))))
     `(progn
@@ -280,14 +296,16 @@ Optional arguments:
            :ignore-messages ,ignore-messages
            :extra-init-params ,extra-init-params
            :initialize-fn ,initialize
-           :enable-function (function ,enable-name))))))
+           :enable-function (function ,enable-name)
+           :prefix-function ,prefix-function)))))
 
 (cl-defun lsp--enable-tcp-client (name &key language-id language-id-fn
                                        root-directory-fn command command-fn
                                        host port
                                        ignore-regexps ignore-messages
                                        extra-init-params initialize-fn
-                                       enable-function)
+                                       enable-function
+                                       prefix-function)
   (cl-check-type name symbol)
   (cl-check-type language-id (or null string))
   (cl-check-type language-id-fn (or null function))
@@ -300,6 +318,7 @@ Optional arguments:
   (cl-check-type ignore-messages list)
   (cl-check-type extra-init-params (or list function))
   (cl-check-type initialize-fn (or null function))
+  (cl-check-type prefix-function (or null function))
   (when (and (not lsp-mode) (buffer-file-name))
     (let* ((stderr (generate-new-buffer-name
                     (concat "*" (symbol-name name) " stderr*")))
@@ -315,7 +334,8 @@ Optional arguments:
                     :get-root root-directory-fn
                     :ignore-regexps ignore-regexps
                     :ignore-messages ignore-messages
-                    :enable-function enable-function)))
+                    :enable-function enable-function
+                    :prefix-function prefix-function)))
       (when initialize-fn
         (funcall initialize-fn client))
       (let ((root (funcall (lsp--client-get-root client))))
