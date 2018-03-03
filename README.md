@@ -110,3 +110,19 @@ There are also the functions `lsp-MAJOR-MODE-whitelist-add` and
 `lsp-MAJOR-MODE-whitelist-remove` to adjust the current buffer project root
 entry on the whitelist.
 
+
+### Hooks
+
+`lsp-mode` provides a handful of hooks that can be used to extend and configure
+the behaviour of language servers. A full list of hooks is available in the
+[API documentation](./doc/API.org).
+
+For example, you can automatically set [`projectile-project-root`][https://github.com/bbatsov/projectile/blob/master/doc/configuration.md#file-local-project-root-definitions] by attaching
+the following function to `lsp-before-open-hook`:
+
+```emacs-lisp
+(defun my-set-projectile-root ()
+  (when lsp--cur-workspace
+    (setq projectile-project-root (lsp--workspace-root lsp--cur-workspace))))
+(add-hook 'lsp-before-open-hook #'my-set-projectile-root)
+```
