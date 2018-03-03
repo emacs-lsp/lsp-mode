@@ -376,11 +376,12 @@ before saving a document."
     (progn (cl-check-type ,method string)
       (list :jsonrpc "2.0" :method ,method :params ,params))))
 
-(defun lsp--make-message (params)
+(define-inline lsp--make-message (params)
   "Create a LSP message from PARAMS, after encoding it to a JSON string."
-  (let* ((json-false :json-false)
-         (body (json-encode params)))
-    (format "Content-Length: %d\r\n\r\n%s" (string-bytes body) body)))
+  (inline-quote
+    (let* ((json-false :json-false)
+            (body (json-encode ,params)))
+      (format "Content-Length: %d\r\n\r\n%s" (string-bytes body) body))))
 
 (define-inline lsp--send-notification (body)
   "Send BODY as a notification to the language server."
