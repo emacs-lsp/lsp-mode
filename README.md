@@ -117,7 +117,7 @@ entry on the whitelist.
 the behaviour of language servers. A full list of hooks is available in the
 [API documentation](./doc/API.org).
 
-For example, you can automatically set [`projectile-project-root`][https://github.com/bbatsov/projectile/blob/master/doc/configuration.md#file-local-project-root-definitions] by attaching
+For example, you can automatically set [`projectile-project-root`](https://github.com/bbatsov/projectile/blob/master/doc/configuration.md#file-local-project-root-definitions) by attaching
 the following function to `lsp-before-open-hook`:
 
 ```emacs-lisp
