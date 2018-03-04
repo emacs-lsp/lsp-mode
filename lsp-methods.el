@@ -1891,5 +1891,7 @@ command COMMAND and optionsl ARGS"
                            "workspace/didChangeConfiguration"
                            `(:settings , settings))))
 
+(declare-function lsp-mode "lsp-mode" (&optional arg))
+
 (provide 'lsp-methods)
 ;;; lsp-methods.el ends here
