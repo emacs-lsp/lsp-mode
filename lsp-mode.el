@@ -163,7 +163,7 @@ Optional arguments:
  initializeOptions parameters required by the LSP server. A function taking
  a single argument (LSP workspace) and returning a plist is also accepted.
 
-`:initialize' is a function called when the client is intiailized. It takes a
+`:initialize' is a function called when the client is initialized. It takes a
  single argument, the newly created client.
 
 `:prefix-function' is a function called for getting the prefix for completion.
