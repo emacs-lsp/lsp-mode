@@ -58,12 +58,11 @@
     (point)))
 
 ;;; TODO: Use the current LSP client name instead of lsp-mode for the type.
-(define-inline lsp-warn (message &rest args)
+(defun lsp-warn (message &rest args)
   "Display a warning message made from (`format-message' MESSAGE ARGS...).
 This is equivalent to `display-warning', using `lsp-mode' as the type and
 `:warning' as the level."
-  (inline-quote
-    (display-warning 'lsp-mode (apply #'format-message ,message ,args))))
+  (display-warning 'lsp-mode (apply #'format-message message args)))
 
 (defun lsp-make-traverser (name)
   "Return a closure that walks up the current directory until NAME is found.
