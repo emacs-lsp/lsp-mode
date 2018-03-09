@@ -62,36 +62,26 @@
 (defun lsp--make-tcp-connection (name command command-fn host port stderr)
   (lambda (filter sentinel)
     (let* ((command (if command-fn (funcall command-fn) command))
-           (final-command (if (consp command) command (list command)))
-           proc tcp-proc)
+            (final-command (if (consp command) command (list command)))
+            proc tcp-proc)
       (unless (executable-find (nth 0 final-command))
         (error (format "Couldn't find executable %s" (nth 0 final-command))))
       (setq proc (make-process
-                  :name name
-                  :connection-type 'pipe
-                  :coding 'no-conversion
-                  :command final-command
-                  :sentinel sentinel
-                  :stderr stderr
-                  :noquery t)
-            tcp-proc (open-network-stream (concat name " TCP connection")
-                                          nil host port
-                                          :type 'plain))
+                   :name name
+                   :connection-type 'pipe
+                   :coding 'no-conversion
+                   :command final-command
+                   :sentinel sentinel
+                   :stderr stderr
+                   :noquery t)
+        tcp-proc (open-network-stream (concat name " TCP connection")
+                   nil host port
+                   :type 'plain))
       ;; TODO: Same :noquery issue (see above)
       (set-process-query-on-exit-flag (get-buffer-process (get-buffer stderr)) nil)
       (set-process-query-on-exit-flag tcp-proc nil)
       (set-process-filter tcp-proc filter)
       (cons proc tcp-proc))))
-
-(defun lsp--verify-regexp-list (l)
-  (cl-assert (cl-typep l 'list) nil
-             "lsp-define-client: :ignore-regexps is not a list")
-  (dolist (e l l)
-    (cl-assert (cl-typep e 'string)
-               nil
-               (format
-                "lsp-define-client: :ignore-regexps element %s is not a string"
-                e))))
 
 (cl-defmacro lsp-define-whitelist-add (name get-root
                                                &key docstring)
@@ -106,8 +96,7 @@ GET-ROOT is the language-specific function to determine the project root for the
        (let ((root (funcall ,get-root)))
          (customize-save-variable 'lsp-project-whitelist
            (add-to-list 'lsp-project-whitelist (lsp--as-regex root)))
-         (,enable-interactive)
-         ))))
+         (,enable-interactive)))))
 
 (cl-defmacro lsp-define-whitelist-remove (name get-root
                                             &key docstring)
