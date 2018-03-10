@@ -1712,7 +1712,7 @@ A reference is highlighted only if it is visible in a window."
               (dolist (win wins-visible-pos)
                 (let* ((start-window (car win))
                        (end-window (cdr win)))
-                  ;; Make the overlay only it will be visible
+                  ;; Make the overlay only if the reference is visible
                   (when (and (> (1+ (gethash "line" start)) start-window)
                              (< (1+ (gethash "line" end)) end-window))
                     (setq overlay (make-overlay (lsp--position-to-point start)
