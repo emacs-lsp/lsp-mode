@@ -70,14 +70,13 @@ NAME can either be a string or a predicate used for `locate-dominating-file'.
 The value returned by the function will be the directory name for NAME.
 
 If no such directory could be found, log a warning and return `default-directory'"
-  #'(lambda ()
-      (let ((dir (locate-dominating-file "." name)))
-        (expand-file-name
-         (if dir
-             dir
-           (message
-            "Couldn't find project root, using the current directory as the root.")
-           default-directory)))))
+  (lambda ()
+    (let ((dir (locate-dominating-file "." name)))
+      (if dir
+        (file-truename dir)
+        (lsp-warn
+          "Couldn't find project root, using the current directory as the root.")
+        default-directory))))
 
 (defun lsp--uri-to-path (uri)
   "Convert URI to a file path."
