@@ -492,11 +492,11 @@ This involves uninitializing each of the buffers associated with
 the workspace, closing the process managing communication with
 the client, and then starting up again."
   (interactive)
-  (when (and (lsp-mode) (buffer-file-name))
+  (when (and (lsp-mode) (buffer-file-name) lsp--cur-workspace)
     (let ((old-buffers (lsp--workspace-buffers lsp--cur-workspace))
            (restart (lsp--client-enable-function (lsp--workspace-client lsp--cur-workspace)))
            (proc (lsp--workspace-proc lsp--cur-workspace)))
-
+      (lsp--remove-cur-overlays)
       ;; Shut down the LSP mode for each buffer in the workspace
       (dolist (buffer old-buffers)
         (with-current-buffer buffer
