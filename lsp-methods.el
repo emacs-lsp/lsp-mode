@@ -699,7 +699,7 @@ ServerCapabilities.textDocumentSync."
         (message "%s: %s has exited (%s)"
                  (lsp--workspace-root workspace)
                  (process-name (lsp--workspace-proc workspace))
-                 exit-str)
+                 (string-trim-right exit-str))
         (dolist (buf (lsp--workspace-buffers workspace))
           (with-current-buffer buf
             (lsp--uninitialize-workspace)))
