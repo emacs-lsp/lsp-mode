@@ -237,7 +237,11 @@
     (pcase (lsp--get-message-type json-data)
       ('response
         (cl-assert id)
-        (setq callback (gethash id (lsp--client-response-handlers client) nil))
+        (setq callback (gethash (if (stringp id)
+                                  (string-to-number id)
+                                  id)
+                         (lsp--client-response-handlers client)
+                         nil))
         (if callback
           (progn (funcall callback (gethash "result" json-data nil))
             (remhash id (lsp--client-response-handlers client)))
