@@ -76,7 +76,7 @@ be JSON friendly, as it will be sent to the server as a response.
     Send a notification to the language server. The response from the language
     server is unmarshalled to a hash table.
 
-~body~ should be a notification body, returned by ~lsp-make-notification~
+~body~ should be a notification body, returned by ~lsp-make-notification~.
 
 *** lsp-make-request /method &optional params/
     Create request body.
