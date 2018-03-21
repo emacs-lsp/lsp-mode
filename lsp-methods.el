@@ -364,6 +364,10 @@ before saving a document."
     (plist-put (lsp--make-notification ,method ,params)
       :id (cl-incf (lsp--client-last-id (lsp--workspace-client lsp--cur-workspace))))))
 
+(defun lsp-make-request (method &optional params)
+  "Create request body for method METHOD and parameters PARAMS."
+  (lsp--make-request method params))
+
 (defun lsp--make-response-error (code message data)
   (cl-check-type code number)
   (cl-check-type message string)
@@ -379,6 +383,11 @@ before saving a document."
     (progn (cl-check-type ,method string)
       (list :jsonrpc "2.0" :method ,method :params ,params))))
 
+;; Define non-inline public aliases to avoid breaking binary compatibility.
+(defun lsp-make-notification (method &optional params)
+  "Create notification body for method METHOD and parameters PARAMS."
+  (lsp--make-notification method params))
+
 (define-inline lsp--make-message (params)
   "Create a LSP message from PARAMS, after encoding it to a JSON string."
   (inline-quote
@@ -392,6 +401,10 @@ before saving a document."
     (lsp--send-no-wait
       (lsp--make-message ,body)
       (lsp--workspace-proc lsp--cur-workspace))))
+
+(defun lsp-send-notification (body)
+  "Send BODY as a notification to the language server."
+  (lsp--send-notification body))
 
 (define-inline lsp--cur-workspace-check ()
   (inline-quote
@@ -417,6 +430,11 @@ If NO-WAIT is non-nil, don't synchronously wait for a response."
       (prog1 (lsp--parser-response-result parser)
         (setf (lsp--parser-response-result parser) nil)))))
 
+(defalias 'lsp-send-request 'lsp--send-request
+  "Send BODY as a request to the language server and return the response synchronously.
+
+\n(fn BODY)")
+
 (defun lsp--send-request-async (body callback)
   "Send BODY as a request to the language server, and call CALLBACK with
 the response recevied from the server asynchronously."
@@ -427,6 +445,8 @@ the response recevied from the server asynchronously."
     (lsp--send-no-wait (lsp--make-message body)
       (lsp--workspace-proc lsp--cur-workspace))
     body))
+
+(defalias 'lsp-send-request-async 'lsp--send-request-async)
 
 (define-inline lsp--inc-cur-file-version ()
   (inline-quote (cl-incf (gethash buffer-file-name

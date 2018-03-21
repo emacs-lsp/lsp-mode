@@ -37,6 +37,41 @@ Optional arguments:
  single argument, the newly created client.
 
 ** Communication with the language server
+*** lsp-make-notification /method &optional params/
+    Create a notification body.
+
+~method~ should be a string with the notification method name.
+
+~params~ should be a Lisp value that can be encoded using ~json-encode~.
+
+*** lsp-send-notification /body/
+    Send a notification to the language server. The response from the language
+    server is unmarshalled to a hash table.
+
+~body~ should be a notification body, returned by ~lsp-make-notification~
+
+*** lsp-make-request /method &optional params/
+    Create request body.
+
+~method~ should be a string with the request method name.
+
+~params~ should be a Lisp value that can be encoded using ~json-encode~.
+
+*** lsp-send-request /body/
+    Send a request to the language server and get the response synchronously.
+    The response from the language server is unmarshalled to a hash table.
+
+~body~ should be a request body, returned by ~lsp-make-request~.
+
+*** lsp-send-request-async /body callback/
+    Send a request to the language server, and call the provided callback with
+    the response asynchronously.
+
+~body~ should be a request body, returned by ~lsp-make-request~.
+
+~callback~ should be a function taking two arguments: the LSP workspace object,
+and the response received from the server, as a hash table.
+
 *** lsp-client-on-notification /client method callback/
    Add a handler for when Emacs receives a notification from the language server.
 
