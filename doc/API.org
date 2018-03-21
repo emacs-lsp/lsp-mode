@@ -37,6 +37,34 @@ Optional arguments:
  single argument, the newly created client.
 
 ** Communication with the language server
+*** lsp-client-on-notification /client method callback/
+   Add a handler for when Emacs receives a notification from the language server.
+
+
+~client~ is the client object, received by the ~:initialize~ callback in
+~lsp-define-*-client~.
+
+~method~ should be a string with the method name.
+
+~callback~ should be a lisp function taking a single argument, the parameters
+passed with the notification as a hash table. The return value of the callback is
+ignored.
+
+*** lsp-client-on-request /client method callback/
+    Add a handler for when Emacs receives a request from the language server.
+
+~client~ is the client object, received by the ~:initialize~ callback in
+~lsp-define-*-client~.
+
+~method~ should be a string with the method name.
+
+~callback~ should be a lisp function taking a single argument, the parameters
+passed with the request as a hash table. The return value of the callback should
+be JSON friendly, as it will be sent to the server as a response.
+
+
+/The following functions require ~lsp-mode~ >= 4.1/:
+
 *** lsp-make-notification /method &optional params/
     Create a notification body.
 
@@ -71,31 +99,6 @@ Optional arguments:
 
 ~callback~ should be a function taking two arguments: the LSP workspace object,
 and the response received from the server, as a hash table.
-
-*** lsp-client-on-notification /client method callback/
-   Add a handler for when Emacs receives a notification from the language server.
-
-
-~client~ is the client object, received by the ~:initialize~ callback in
-~lsp-define-*-client~.
-
-~method~ should be a string with the method name.
-
-~callback~ should be a lisp function taking a single argument, the parameters
-passed with the notification as a hash table. The return value of the callback is
-ignored.
-
-*** lsp-client-on-request /client method callback/
-    Add a handler for when Emacs receives a request from the language server.
-
-~client~ is the client object, received by the ~:initialize~ callback in
-~lsp-define-*-client~.
-
-~method~ should be a string with the method name.
-
-~callback~ should be a lisp function taking a single argument, the parameters
-passed with the request as a hash table. The return value of the callback should
-be JSON friendly, as it will be sent to the server as a response.
 
 ** Other
 *** lsp-make-traverser /name/
