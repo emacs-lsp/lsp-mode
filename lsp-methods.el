@@ -329,6 +329,12 @@ before saving a document."
   :group 'lsp-mode)
 
 ;;;###autoload
+(defcustom lsp-symbol-highlight-delay eldoc-idle-delay
+  "Seconds of idle time to wait before showing symbol highlight."
+  :type 'number
+  :group 'lsp-mode)
+
+;;;###autoload
 (defface lsp-face-highlight-textual
   '((((background dark))  :background "saddle brown")
     (((background light)) :background "yellow"))
@@ -818,6 +824,7 @@ directory."
   (add-hook 'after-save-hook #'lsp-on-save nil t)
   (add-hook 'kill-buffer-hook #'lsp--text-document-did-close nil t)
 
+  (add-hook 'post-command-hook 'lsp--highlight nil t)
   (when lsp-enable-eldoc
     ;; XXX: The documentation for `eldoc-documentation-function' suggests
     ;; using `add-function' for modifying its value, use that instead?
@@ -1453,13 +1460,31 @@ Returns xref-item(s)."
     (lsp--send-notification (lsp--make-notification "$/cancelRequest"
                               `(:id ,id)))))
 
+(defvar-local lsp--highlight-bounds nil)
+
+(defun lsp--highlight ()
+  (with-demoted-errors "Error in ‘lsp--highlight’: %S"
+    (when (and lsp--cur-workspace
+               (lsp--capability "documentHighlightProvider")
+               lsp-highlight-symbol-at-point)
+      (let ((bounds (bounds-of-thing-at-point 'symbol))
+            (last lsp--highlight-bounds))
+        (when (and last (not (lsp--point-is-within-bounds-p (car last) (cdr last))))
+          (setq lsp--highlight-bounds nil)
+          (lsp--remove-cur-overlays))
+        (when (and bounds (not (equal last bounds)))
+          (run-with-idle-timer
+           lsp-symbol-highlight-delay nil
+           (lambda nil
+             (when lsp--cur-workspace
+               (setq lsp--highlight-bounds
+                     (bounds-of-thing-at-point 'symbol))
+               (lsp-symbol-highlight)))))))))
+
 (defun lsp--on-hover ()
   ;; This function is used as ‘eldoc-documentation-function’, so it’s important
   ;; that it doesn’t fail.
   (with-demoted-errors "Error in ‘lsp--on-hover’: %S"
-    (when (and (lsp--capability "documentHighlightProvider")
-               lsp-highlight-symbol-at-point)
-      (lsp-symbol-highlight))
     (when (and (lsp--capability "codeActionProvider") lsp-enable-codeaction)
       (lsp--text-document-code-action))
     (when lsp-enable-eldoc
