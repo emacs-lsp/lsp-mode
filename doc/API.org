@@ -46,9 +46,9 @@ Optional arguments:
 
 ~method~ should be a string with the method name.
 
-~callback~ should be a lisp function taking a single argument, the parameters
-passed with the notification as a hash table. The return value of the callback is
-ignored.
+~callback~ should be a lisp function taking two arguments, the workspace and the
+parameters passed with the notification as a hash table. The return value of the
+callback is ignored.
 
 *** lsp-client-on-request /client method callback/
     Add a handler for when Emacs receives a request from the language server.
