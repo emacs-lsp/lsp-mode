@@ -868,15 +868,16 @@ interface Position {
 
 (define-inline lsp--cur-position ()
   "Make a Position object for the current point."
-  (inline-quote (lsp--position (lsp--cur-line) (lsp--cur-column))))
+  (inline-quote
+   (save-restriction
+     (widen)
+     (lsp--position (lsp--cur-line) (lsp--cur-column)))))
 
 (defun lsp--point-to-position (point)
   "Convert POINT to Position."
   (save-excursion
     (goto-char point)
-    (save-restriction
-      (widen) ;; May be in a narrowed region
-      (lsp--cur-position))))
+    (lsp--cur-position)))
 
 (define-inline lsp--position-p (p)
   (inline-quote
@@ -1219,8 +1220,7 @@ Added to `after-change-functions'."
 If IDENTIFIER and POSITION are non-nil, they will be used as the document identifier
 and the position respectively."
   (inline-quote (list :textDocument (or ,identifier (lsp--text-document-identifier))
-                  :position (or ,position
-                              (lsp--position (lsp--cur-line) (lsp--cur-column))))))
+                      :position (or ,position (lsp--cur-position)))))
 
 (define-inline lsp--text-document-code-action-params ()
   "Make CodeActionParams for the current region in the current document."
