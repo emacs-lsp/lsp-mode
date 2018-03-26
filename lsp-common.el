@@ -48,14 +48,18 @@
 
 (defvar lsp--no-response)
 
-;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--position-to-point (params)
   "Convert Position object in PARAMS to a point."
   (save-excursion
-    (goto-char (point-min))
-    (forward-line (gethash "line" params))
-    (forward-char (gethash "character" params))
-    (point)))
+    (save-restriction
+      (widen)
+      (goto-char 1)
+      ;; The next line calculs the point from the LSP position.
+      ;; We use `goto-char' to ensure that we return a point inside the buffer
+      ;; to avoid out of range error
+      (goto-char (+ (line-beginning-position (1+ (gethash "line" params)))
+                    (gethash "character" params)))
+      (point))))
 
 ;;; TODO: Use the current LSP client name instead of lsp-mode for the type.
 (defun lsp-warn (message &rest args)
