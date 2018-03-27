@@ -982,7 +982,7 @@ interface TextDocumentEdit {
 (define-inline lsp--apply-text-edits (edits)
   "Apply the edits described in the TextEdit[] object in EDITS."
   (inline-quote
-    (mapc #'lsp--apply-text-edit (sort ,edits #'lsp--text-edit-sort-predicate))))
+    (mapc #'lsp--apply-text-edit (sort (reverse ,edits) #'lsp--text-edit-sort-predicate))))
 
 (defun lsp--apply-text-edit (text-edit)
   "Apply the edits described in the TextEdit object in TEXT-EDIT."
