@@ -1345,7 +1345,8 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
          (inhibit-field-text-motion t))
     (save-excursion
       (goto-char point)
-      (buffer-substring (line-beginning-position) (line-end-position)))))
+      (buffer-substring-no-properties (line-beginning-position)
+                                      (line-end-position)))))
 
 (defun lsp--xref-make-item (filename location)
   "Return a xref-item from a LOCATION in FILENAME."
