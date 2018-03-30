@@ -41,6 +41,8 @@
   "Empty response from the language server" 'lsp-error)
 (define-error 'lsp-timed-out-error
   "Timed out while waiting for a response from the language server" 'lsp-error)
+(define-error 'lsp-capability-not-supported
+  "Capability not supported by the language server" 'lsp-error)
 
 (defun lsp--propertize (str type)
   "Propertize STR as per TYPE."
