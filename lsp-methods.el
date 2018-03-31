@@ -989,7 +989,7 @@ interface TextDocumentEdit {
     ;; We reverse the initial list to make sure that the order among edits with
     ;; the same position is preserved.
 
-    (mapc #'lsp--apply-text-edit (sort (reverse ,edits) #'lsp--text-edit-sort-predicate))))
+    (mapc #'lsp--apply-text-edit (sort (nreverse ,edits) #'lsp--text-edit-sort-predicate))))
 
 (defun lsp--apply-text-edit (text-edit)
   "Apply the edits described in the TextEdit object in TEXT-EDIT."
