@@ -982,7 +982,14 @@ interface TextDocumentEdit {
 (define-inline lsp--apply-text-edits (edits)
   "Apply the edits described in the TextEdit[] object in EDITS."
   (inline-quote
-    (mapc #'lsp--apply-text-edit (sort ,edits #'lsp--text-edit-sort-predicate))))
+    ;; We sort text edits so as to apply edits that modify earlier parts of the
+    ;; document first. Furthermore, because the LSP spec dictates that:
+    ;; "If multiple inserts have the same position, the order in the array
+    ;; defines which edit to apply first."
+    ;; We reverse the initial list to make sure that the order among edits with
+    ;; the same position is preserved.
+
+    (mapc #'lsp--apply-text-edit (sort (nreverse ,edits) #'lsp--text-edit-sort-predicate))))
 
 (defun lsp--apply-text-edit (text-edit)
   "Apply the edits described in the TextEdit object in TEXT-EDIT."
