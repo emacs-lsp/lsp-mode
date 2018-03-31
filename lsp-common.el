@@ -19,7 +19,6 @@
 (require 'url-util)
 (require 'url-parse)
 (require 'subr-x)
-(require 'cl)
 
 (defconst lsp--message-type-face
   `((1 . ,compilation-error-face)
@@ -102,9 +101,10 @@ If no such directory could be found, log a warning and return `default-directory
          (type (url-type url))
          (file (url-filename url)))
     (if (and type (not (string= type "file")))
-      (if-let* ((handler (second (assoc type lsp--uri-handlers))))
-        (funcall handler uri)
-        (error "Unsupported file scheme: %s" uri))
+      (let ((handler (cadr (assoc type lsp--uri-handlers))))
+        (if handler
+          (funcall handler uri)
+          (error "Unsupported file scheme: %s" uri)))
       ;; `url-generic-parse-url' is buggy on windows:
       ;; https://github.com/emacs-lsp/lsp-mode/pull/265
       (or (and (eq system-type 'windows-nt)
