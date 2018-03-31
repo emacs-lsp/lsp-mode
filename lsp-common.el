@@ -19,6 +19,7 @@
 (require 'url-util)
 (require 'url-parse)
 (require 'subr-x)
+(require 'cl)
 
 (defconst lsp--message-type-face
   `((1 . ,compilation-error-face)
@@ -36,6 +37,12 @@
                                (_ "file://"))
   "Prefix for a file-uri.")
 
+(defvar-local lsp-buffer-uri nil
+  "If set, return it instead of calculating it using `buffer-file-name'.")
+
+(defvar lsp--uri-handlers ()
+  "Contains mapping of scheme to the function that is going to be used to load the file.")
+
 (define-error 'lsp-error "Unknown lsp-mode error")
 (define-error 'lsp-empty-response-error
   "Empty response from the language server" 'lsp-error)
@@ -43,6 +50,13 @@
   "Timed out while waiting for a response from the language server" 'lsp-error)
 (define-error 'lsp-capability-not-supported
   "Capability not supported by the language server" 'lsp-error)
+
+(defun lsp-register-uri-handler  (url-scheme handler-fn)
+  "Registers handler for handling particular URI scheme.
+The function HANDLER-FN will be called when LSP returns URI
+starts with URL-SCHEME and must return the full path to the
+resource."
+  (add-to-list 'lsp--uri-handlers (list url-scheme handler-fn)))
 
 (defun lsp--propertize (str type)
   "Propertize STR as per TYPE."
@@ -87,14 +101,21 @@ If no such directory could be found, log a warning and return `default-directory
   (let* ((url (url-generic-parse-url (url-unhex-string uri)))
          (type (url-type url))
          (file (url-filename url)))
-    (when (and type (not (string= type "file")))
-      (error "Unsupported file scheme: %s" uri))
-    ;; `url-generic-parse-url' is buggy on windows:
-    ;; https://github.com/emacs-lsp/lsp-mode/pull/265
-    (or (and (eq system-type 'windows-nt)
-             (eq (elt file 0) ?\/)
-             (substring file 1))
-        file)))
+    (if (and type (not (string= type "file")))
+      (if-let* ((handler (second (assoc type lsp--uri-handlers))))
+        (funcall handler uri)
+        (error "Unsupported file scheme: %s" uri))
+      ;; `url-generic-parse-url' is buggy on windows:
+      ;; https://github.com/emacs-lsp/lsp-mode/pull/265
+      (or (and (eq system-type 'windows-nt)
+            (eq (elt file 0) ?\/)
+            (substring file 1))
+        file))))
+
+(define-inline lsp--buffer-uri ()
+  "Return URI of the current buffer."
+  (inline-quote
+    (or lsp-buffer-uri (lsp--path-to-uri buffer-file-name))))
 
 (define-inline lsp--path-to-uri (path)
   "Convert PATH to a uri."

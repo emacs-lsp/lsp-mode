@@ -468,7 +468,7 @@ interface TextDocumentItem {
 }"
   (inline-quote
     (let ((language-id-fn (lsp--client-language-id (lsp--workspace-client lsp--cur-workspace))))
-      (list :uri (lsp--path-to-uri buffer-file-name)
+      (list :uri (lsp--buffer-uri)
 	      :languageId (funcall language-id-fn (current-buffer))
 	      :version (lsp--cur-file-version)
 	      :text (buffer-substring-no-properties (point-min) (point-max))))))
@@ -840,7 +840,7 @@ directory."
 interface TextDocumentIdentifier {
     uri: string;
 }"
-  (inline-quote (list :uri (lsp--path-to-uri buffer-file-name))))
+  (inline-quote (list :uri (lsp--buffer-uri))))
 
 (define-inline lsp--versioned-text-document-identifier ()
   "Make VersionedTextDocumentIdentifier.
