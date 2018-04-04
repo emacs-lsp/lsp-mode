@@ -132,7 +132,10 @@
   ;; The function takes no parameter and returns a cons (start . end) representing
   ;; the start and end bounds of the prefix. If it's not set, the client uses a
   ;; default prefix function."
-  (prefix-function nil :read-only t))
+  (prefix-function nil :read-only t)
+  ;; Contains mapping of scheme to the function that is going to be used to load
+  ;; the file.
+  (uri-handlers (make-hash-table :test #'equal) :read-only t))
 
 (cl-defstruct lsp--registered-capability
   (id "" :type string)
@@ -345,6 +348,12 @@ before saving a document."
      (((background light)) :background "green"))
   "Face used for highlighting symbols being written to."
   :group 'lsp-faces)
+
+(defun lsp-client-register-uri-handler (client scheme handler)
+  (cl-check-type client lsp--client)
+  (cl-check-type scheme string)
+  (cl-check-type handler function)
+  (puthash scheme handler (lsp--client-uri-handlers client)))
 
 (defun lsp-client-on-notification (client method callback)
   (cl-check-type client lsp--client)

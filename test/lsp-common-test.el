@@ -33,8 +33,16 @@
   (let ((lsp--uri-file-prefix "file://"))
     (should (equal (lsp--uri-to-path "/root/%5E/%60") "/root/^/`"))))
 
-(ert-deftest lsp-common--path-to-uri-custom-schemes ()
-  (lsp-register-uri-handler "custom" (lambda (_) "file-path"))
-  (should (equal (lsp--uri-to-path "custom://file-path") "file-path")))
+(ert-deftest lsp-common-test--path-to-uri-custom-schemes ()
+  (let* ((client (make-lsp--client))
+         (lsp--cur-workspace (make-lsp--workspace :client client)))
+    (lsp-client-register-uri-handler  client "custom" (lambda (_) "file-path"))
+    (should (equal (lsp--uri-to-path "custom://file-path") "file-path"))))
+
+(ert-deftest lsp-common-test--unexpected-scheme ()
+  (condition-case err
+    (lsp--uri-to-path "will-fail://file-path")
+    (error (should (string= (error-message-string err)
+                     "Unsupported file scheme: will-fail://file-path")))))
 
 ;;; lsp-common-test.el ends here

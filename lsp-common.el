@@ -39,9 +39,6 @@
 (defvar-local lsp-buffer-uri nil
   "If set, return it instead of calculating it using `buffer-file-name'.")
 
-(defvar lsp--uri-handlers ()
-  "Contains mapping of scheme to the function that is going to be used to load the file.")
-
 (define-error 'lsp-error "Unknown lsp-mode error")
 (define-error 'lsp-empty-response-error
   "Empty response from the language server" 'lsp-error)
@@ -49,13 +46,6 @@
   "Timed out while waiting for a response from the language server" 'lsp-error)
 (define-error 'lsp-capability-not-supported
   "Capability not supported by the language server" 'lsp-error)
-
-(defun lsp-register-uri-handler  (url-scheme handler-fn)
-  "Registers handler for handling particular URI scheme.
-The function HANDLER-FN will be called when LSP returns URI
-starts with URL-SCHEME and must return the full path to the
-resource."
-  (add-to-list 'lsp--uri-handlers (list url-scheme handler-fn)))
 
 (defun lsp--propertize (str type)
   "Propertize STR as per TYPE."
@@ -95,13 +85,19 @@ If no such directory could be found, log a warning and return `default-directory
           "Couldn't find project root, using the current directory as the root.")
         default-directory))))
 
+(defun lsp--get-uri-handler (scheme)
+  "Get uri handler for SCHEME in the current workspace."
+  (when lsp--cur-workspace
+    (gethash scheme (lsp--client-uri-handlers
+                      (lsp--workspace-client lsp--cur-workspace)))))
+
 (defun lsp--uri-to-path (uri)
   "Convert URI to a file path."
   (let* ((url (url-generic-parse-url (url-unhex-string uri)))
          (type (url-type url))
          (file (url-filename url)))
     (if (and type (not (string= type "file")))
-      (let ((handler (cadr (assoc type lsp--uri-handlers))))
+      (let ((handler (lsp--get-uri-handler type)))
         (if handler
           (funcall handler uri)
           (error "Unsupported file scheme: %s" uri)))
