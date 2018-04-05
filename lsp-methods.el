@@ -113,12 +113,6 @@
   ;; single argument, the deserialized response parameters.
   (response-handlers (make-hash-table :test 'eql) :read-only t)
 
-  ;; ‘action-handlers’ is a hash table mapping action to a handler function. It
-  ;; can be used in `lsp-execute-code-action' to determine whether the action
-  ;; current client is interested in executing the action instead of sending it
-  ;; to the server.
-  (action-handlers (make-hash-table :test 'equal) :read-only t)
-
   ;; ‘string-renderers’ is an alist mapping MarkedString language identifiers
   ;; (see
   ;; https://microsoft.github.io/language-server-protocol/specification#textDocument_hover)
@@ -138,7 +132,13 @@
   ;; The function takes no parameter and returns a cons (start . end) representing
   ;; the start and end bounds of the prefix. If it's not set, the client uses a
   ;; default prefix function."
-  (prefix-function nil :read-only t))
+  (prefix-function nil :read-only t)
+
+  ;; ‘action-handlers’ is a hash table mapping action to a handler function. It
+  ;; can be used in `lsp-execute-code-action' to determine whether the action
+  ;; current client is interested in executing the action instead of sending it
+  ;; to the server.
+  (action-handlers (make-hash-table :test 'equal) :read-only t))
 
 (cl-defstruct lsp--registered-capability
   (id "" :type string)
