@@ -499,7 +499,7 @@ disappearing, unset all the variables related to it."
         (root (lsp--workspace-root lsp--cur-workspace)))
     (with-current-buffer (current-buffer)
       (setq proc (lsp--workspace-proc lsp--cur-workspace))
-      (unless (eq (process-status proc) 'exit)
+      (if (process-live-p proc)
         (kill-process (lsp--workspace-proc lsp--cur-workspace)))
       (setq lsp--cur-workspace nil)
       (lsp--unset-variables)
@@ -1175,10 +1175,11 @@ Added to `after-change-functions'."
                 (delq (current-buffer) old-buffers))
 
           (remhash buffer-file-name file-versions)
-          (lsp--send-notification
-           (lsp--make-notification
-            "textDocument/didClose"
-            `(:textDocument ,(lsp--versioned-text-document-identifier))))
+          (with-demoted-errors "Error sending didClose notification in ‘lsp--text-document-did-close’: %S"
+            (lsp--send-notification
+             (lsp--make-notification
+              "textDocument/didClose"
+              `(:textDocument ,(lsp--versioned-text-document-identifier)))))
           (when (= 0 (hash-table-count file-versions))
             (lsp--shutdown-cur-workspace)))))))
 
