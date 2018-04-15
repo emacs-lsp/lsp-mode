@@ -508,7 +508,7 @@ disappearing, unset all the variables related to it."
         (root (lsp--workspace-root lsp--cur-workspace)))
     (with-current-buffer (current-buffer)
       (setq proc (lsp--workspace-proc lsp--cur-workspace))
-      (unless (eq (process-status proc) 'exit)
+      (if (process-live-p proc)
         (kill-process (lsp--workspace-proc lsp--cur-workspace)))
       (setq lsp--cur-workspace nil)
       (lsp--unset-variables)
@@ -943,8 +943,8 @@ interface Range {
   "Apply the WorkspaceEdit object EDIT.
 
 interface WorkspaceEdit {
-	changes?: { [uri: string]: TextEdit[]; };
-	documentChanges?: TextDocumentEdit[];
+  changes?: { [uri: string]: TextEdit[]; };
+  documentChanges?: TextDocumentEdit[];
 }"
   (let ((changes (gethash "changes" edit))
          (document-changes (gethash "documentChanges" edit)))
@@ -968,8 +968,8 @@ applied if the version of the textDocument matches the version of the
 corresponding file.
 
 interface TextDocumentEdit {
-	textDocument: VersionedTextDocumentIdentifier;
-	edits: TextEdit[];
+  textDocument: VersionedTextDocumentIdentifier;
+  edits: TextEdit[];
 }"
   (let* ((ident (gethash "textDocument" edit))
           (filename (lsp--uri-to-path (gethash "uri" ident)))
@@ -1184,10 +1184,11 @@ Added to `after-change-functions'."
                 (delq (current-buffer) old-buffers))
 
           (remhash buffer-file-name file-versions)
-          (lsp--send-notification
-           (lsp--make-notification
-            "textDocument/didClose"
-            `(:textDocument ,(lsp--versioned-text-document-identifier))))
+          (with-demoted-errors "Error sending didClose notification in ‘lsp--text-document-did-close’: %S"
+            (lsp--send-notification
+             (lsp--make-notification
+              "textDocument/didClose"
+              `(:textDocument ,(lsp--versioned-text-document-identifier)))))
           (when (= 0 (hash-table-count file-versions))
             (lsp--shutdown-cur-workspace)))))))
 
@@ -1351,8 +1352,8 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
   (if (gethash "resolveProvider" (lsp--capability "completionProvider"))
     (lsp--send-request
       (lsp--make-request
-	      "completionItem/resolve"
-	      item))
+        "completionItem/resolve"
+        item))
     item))
 
 (defun lsp--extract-line-from-buffer (pos)
@@ -1403,8 +1404,8 @@ references.  The function returns a list of `xref-item'."
 LOCATIONS is an array of Location objects:
 
 interface Location {
-	uri: DocumentUri;
-	range: Range;
+  uri: DocumentUri;
+  range: Range;
 }"
   (when locations
     (let* ((fn (lambda (loc) (lsp--uri-to-path (gethash "uri" loc))))
@@ -1492,8 +1493,8 @@ type MarkedString = string | { language: string; value: string };"
   "Render MarkupContent object CONTENT.
 
 export interface MarkupContent {
-	      kind: MarkupKind;
-	      value: string;
+        kind: MarkupKind;
+        value: string;
 }"
   (let ((kind (gethash "kind" content))
          (content (gethash "value" content))
@@ -1676,6 +1677,8 @@ Optionally, CALLBACK is a function that accepts a single argument, the code lens
 (defun lsp-format-buffer ()
   "Ask the server to format this document."
   (interactive "*")
+  (unless (lsp--capability "documentFormattingProvider")
+    (signal 'lsp-capability-not-supported (list "documentFormattingProvider")))
   (let ((edits (lsp--send-request (lsp--make-request
                                    "textDocument/formatting"
                                    (lsp--make-document-formatting-params)))))
