@@ -36,6 +36,9 @@
                                (_ "file://"))
   "Prefix for a file-uri.")
 
+(defvar-local lsp-buffer-uri nil
+  "If set, return it instead of calculating it using `buffer-file-name'.")
+
 (define-error 'lsp-error "Unknown lsp-mode error")
 (define-error 'lsp-empty-response-error
   "Empty response from the language server" 'lsp-error)
@@ -82,19 +85,33 @@ If no such directory could be found, log a warning and return `default-directory
           "Couldn't find project root, using the current directory as the root.")
         default-directory))))
 
+(defun lsp--get-uri-handler (scheme)
+  "Get uri handler for SCHEME in the current workspace."
+  (when lsp--cur-workspace
+    (gethash scheme (lsp--client-uri-handlers
+                      (lsp--workspace-client lsp--cur-workspace)))))
+
 (defun lsp--uri-to-path (uri)
   "Convert URI to a file path."
   (let* ((url (url-generic-parse-url (url-unhex-string uri)))
          (type (url-type url))
          (file (url-filename url)))
-    (when (and type (not (string= type "file")))
-      (error "Unsupported file scheme: %s" uri))
-    ;; `url-generic-parse-url' is buggy on windows:
-    ;; https://github.com/emacs-lsp/lsp-mode/pull/265
-    (or (and (eq system-type 'windows-nt)
-             (eq (elt file 0) ?\/)
-             (substring file 1))
-        file)))
+    (if (and type (not (string= type "file")))
+      (let ((handler (lsp--get-uri-handler type)))
+        (if handler
+          (funcall handler uri)
+          (error "Unsupported file scheme: %s" uri)))
+      ;; `url-generic-parse-url' is buggy on windows:
+      ;; https://github.com/emacs-lsp/lsp-mode/pull/265
+      (or (and (eq system-type 'windows-nt)
+            (eq (elt file 0) ?\/)
+            (substring file 1))
+        file))))
+
+(define-inline lsp--buffer-uri ()
+  "Return URI of the current buffer."
+  (inline-quote
+    (or lsp-buffer-uri (lsp--path-to-uri buffer-file-name))))
 
 (define-inline lsp--path-to-uri (path)
   "Convert PATH to a uri."
