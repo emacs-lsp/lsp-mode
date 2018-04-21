@@ -838,6 +838,7 @@ directory."
   ;; Make sure the hook is local (last param) otherwise we see all changes for all buffers
   (add-hook 'before-change-functions #'lsp-before-change nil t)
   (add-hook 'after-change-functions #'lsp-on-change nil t)
+  (add-hook 'after-revert-hook #'lsp-on-revert nil t)
   (add-hook 'before-save-hook #'lsp--before-save nil t)
   (add-hook 'auto-save-hook #'lsp--on-auto-save nil t)
   (lsp--set-sync-method)
@@ -1157,7 +1158,12 @@ Added to `after-change-functions'."
   ;; (message "lsp-on-change:(lsp--before-change-vals)=%s" lsp--before-change-vals)
   (with-demoted-errors "Error in ‘lsp-on-change’: %S"
     (save-match-data
-      (when lsp--cur-workspace
+      ;; A (revert-buffer) call with the 'preserve-modes parameter (eg, as done
+      ;; by auto-revert-mode) will cause this hander to get called with a nil
+      ;; buffer-file-name. We need the buffer-file-name to send notifications;
+      ;; so we skip handling revert-buffer-caused changes and instead handle
+      ;; reverts separately in lsp-on-revert
+      (when (and lsp--cur-workspace (not revert-buffer-in-progress-p))
         (lsp--inc-cur-file-version)
         (unless (eq lsp--server-sync-method 'none)
           (lsp--send-notification
@@ -1170,6 +1176,13 @@ Added to `after-change-functions'."
                  ('incremental (vector (lsp--text-document-content-change-event
                                         start end length)))
                  ('full (vector (lsp--full-change-event))))))))))))
+
+(defun lsp-on-revert ()
+  "Executed when a file is reverted.
+Added to `after-revert-hook'."
+  (let ((n (buffer-size))
+        (revert-buffer-in-progress-p nil))
+    (lsp-on-change 0 n n)))
 
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
@@ -1968,6 +1981,7 @@ command COMMAND and optionsl ARGS"
   (when lsp-enable-completion-at-point
     (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t))
   (remove-hook 'after-change-functions #'lsp-on-change t)
+  (remove-hook 'after-revert-hook #'lsp-on-revert t)
   (remove-hook 'before-change-functions #'lsp-before-change t))
 
 (defun lsp--set-configuration (settings)
