@@ -458,13 +458,13 @@ the response recevied from the server asynchronously."
 (defalias 'lsp-send-request-async 'lsp--send-request-async)
 
 (define-inline lsp--inc-cur-file-version ()
-  (inline-quote (cl-incf (gethash buffer-file-name
+  (inline-quote (cl-incf (gethash (current-buffer)
                            (lsp--workspace-file-versions lsp--cur-workspace)))))
 
 (define-inline lsp--cur-file-version ()
   "Return the file version number.  If INC, increment it before."
   (inline-quote
-    (gethash buffer-file-name (lsp--workspace-file-versions lsp--cur-workspace))))
+    (gethash (current-buffer) (lsp--workspace-file-versions lsp--cur-workspace))))
 
 (define-inline lsp--make-text-document-item ()
   "Make TextDocumentItem for the currently opened file.
@@ -809,7 +809,7 @@ directory."
 
 (defun lsp--text-document-did-open ()
   (run-hooks 'lsp-before-open-hook)
-  (puthash buffer-file-name 0 (lsp--workspace-file-versions lsp--cur-workspace))
+  (puthash (current-buffer) 0 (lsp--workspace-file-versions lsp--cur-workspace))
   (push (current-buffer) (lsp--workspace-buffers lsp--cur-workspace))
   (lsp--send-notification (lsp--make-notification
                            "textDocument/didOpen"
@@ -1183,7 +1183,7 @@ Added to `after-change-functions'."
           (setf (lsp--workspace-buffers lsp--cur-workspace)
                 (delq (current-buffer) old-buffers))
 
-          (remhash buffer-file-name file-versions)
+          (remhash (current-buffer) file-versions)
           (with-demoted-errors "Error sending didClose notification in ‘lsp--text-document-did-close’: %S"
             (lsp--send-notification
              (lsp--make-notification
