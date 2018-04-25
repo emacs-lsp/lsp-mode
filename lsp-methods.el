@@ -99,7 +99,7 @@
   ;; deserialized notification parameters.
   (notification-handlers (make-hash-table :test 'equal) :read-only t)
 
-  ;; ‘notification-handlers’ is a hash table mapping request method names
+  ;; ‘request-handlers’ is a hash table mapping request method names
   ;; (strings) to functions handling the respective notifications.  Upon
   ;; receiving a request, ‘lsp-mode’ will call the associated handler function
   ;; passing two arguments, the ‘lsp--workspace’ object and the deserialized
@@ -133,9 +133,15 @@
   ;; the start and end bounds of the prefix. If it's not set, the client uses a
   ;; default prefix function."
   (prefix-function nil :read-only t)
+
   ;; Contains mapping of scheme to the function that is going to be used to load
   ;; the file.
-  (uri-handlers (make-hash-table :test #'equal) :read-only t))
+  (uri-handlers (make-hash-table :test #'equal) :read-only t)
+  ;; ‘action-handlers’ is a hash table mapping action to a handler function. It
+  ;; can be used in `lsp-execute-code-action' to determine whether the action
+  ;; current client is interested in executing the action instead of sending it
+  ;; to the server.
+  (action-handlers (make-hash-table :test 'equal) :read-only t))
 
 (cl-defstruct lsp--registered-capability
   (id "" :type string)
@@ -366,6 +372,12 @@ before saving a document."
   (cl-check-type method string)
   (cl-check-type callback function)
   (puthash method callback (lsp--client-request-handlers client)))
+
+(defun lsp-client-on-action (client method callback)
+  (cl-check-type client lsp--client)
+  (cl-check-type method string)
+  (cl-check-type callback function)
+  (puthash method callback (lsp--client-action-handlers client)))
 
 (define-inline lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
@@ -1641,11 +1653,28 @@ If title is nil, return the name for the command handler."
     (cl-typep (gethash "title" cmd) 'string)
     (cl-typep (gethash "command" cmd) 'string)))
 
+(defun lsp--select-action (actions)
+  "Select an action to execute."
+  (let ((name->action (mapcar (lambda (a)
+                                 (list (lsp--command-get-title a) a))
+                         actions)))
+    (cadr (assoc
+            (completing-read "Select code action: " name->action)
+            name->action))))
+
 (defun lsp-execute-code-action (action)
-  "Execute code action ACTION."
-  (interactive (list (completing-read "Select code action: "
-                       (seq-group-by #'lsp--command-get-title lsp-code-actions))))
-  (lsp--execute-command action))
+  "Execute code action ACTION.
+
+If ACTION is not set it will be selected from `lsp-code-actions'."
+  (interactive (list (lsp--select-action lsp-code-actions)))
+  (lsp--cur-workspace-check)
+  (let* ((command (gethash "command" action))
+         (action-handler (gethash command
+                           (lsp--client-action-handlers
+                             (lsp--workspace-client lsp--cur-workspace)))))
+    (if action-handler
+      (funcall action-handler action)
+      (lsp--execute-command action))))
 
 (defvar-local lsp-code-lenses nil
   "A list of code lenses computed for the buffer.")
