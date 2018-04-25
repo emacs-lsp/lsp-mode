@@ -206,7 +206,10 @@
   ;; . CAPS), where PACKAGE-NAME is a symbol of the third-party package name,
   ;; and CAPS is either a plist of the client capabilities, or a function that
   ;; takes no argument and returns a plist of the client capabilities or nil.")
-  (extra-client-capabilities nil))
+  (extra-client-capabilities nil)
+
+  ;; Workspace status
+  (status nil))
 
 (defvar-local lsp--cur-workspace nil)
 (defvar lsp--workspaces (make-hash-table :test #'equal)

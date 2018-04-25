@@ -337,9 +337,14 @@ Optional arguments:
 (defvar-local lsp-status nil
   "The current status of the LSP server.")
 
+(defun lsp-workspace-status (status-string &optional workspace)
+  "Set current workspace status to STATUS-STRING.
+If WORKSPACE is not specified defaults to lsp--cur-workspace."
+  (setf (lsp--workspace-status (or workspace lsp--cur-workspace)) status-string))
+
 (defun lsp-mode-line ()
   "Construct the mode line text."
-  (concat " LSP" lsp-status))
+  (concat " LSP" lsp-status (lsp--workspace-status lsp--cur-workspace)))
 
 (defconst lsp--sync-type
   `((0 . "None")
