@@ -473,13 +473,13 @@ the response recevied from the server asynchronously."
 (defalias 'lsp-send-request-async 'lsp--send-request-async)
 
 (define-inline lsp--inc-cur-file-version ()
-  (inline-quote (cl-incf (gethash buffer-file-name
+  (inline-quote (cl-incf (gethash (current-buffer)
                            (lsp--workspace-file-versions lsp--cur-workspace)))))
 
 (define-inline lsp--cur-file-version ()
   "Return the file version number.  If INC, increment it before."
   (inline-quote
-    (gethash buffer-file-name (lsp--workspace-file-versions lsp--cur-workspace))))
+    (gethash (current-buffer) (lsp--workspace-file-versions lsp--cur-workspace))))
 
 (define-inline lsp--make-text-document-item ()
   "Make TextDocumentItem for the currently opened file.
@@ -824,7 +824,7 @@ directory."
 
 (defun lsp--text-document-did-open ()
   (run-hooks 'lsp-before-open-hook)
-  (puthash buffer-file-name 0 (lsp--workspace-file-versions lsp--cur-workspace))
+  (puthash (current-buffer) 0 (lsp--workspace-file-versions lsp--cur-workspace))
   (push (current-buffer) (lsp--workspace-buffers lsp--cur-workspace))
   (lsp--send-notification (lsp--make-notification
                            "textDocument/didOpen"
@@ -853,6 +853,7 @@ directory."
   ;; Make sure the hook is local (last param) otherwise we see all changes for all buffers
   (add-hook 'before-change-functions #'lsp-before-change nil t)
   (add-hook 'after-change-functions #'lsp-on-change nil t)
+  (add-hook 'after-revert-hook #'lsp-on-revert nil t)
   (add-hook 'before-save-hook #'lsp--before-save nil t)
   (add-hook 'auto-save-hook #'lsp--on-auto-save nil t)
   (lsp--set-sync-method)
@@ -1172,7 +1173,12 @@ Added to `after-change-functions'."
   ;; (message "lsp-on-change:(lsp--before-change-vals)=%s" lsp--before-change-vals)
   (with-demoted-errors "Error in ‘lsp-on-change’: %S"
     (save-match-data
-      (when lsp--cur-workspace
+      ;; A (revert-buffer) call with the 'preserve-modes parameter (eg, as done
+      ;; by auto-revert-mode) will cause this hander to get called with a nil
+      ;; buffer-file-name. We need the buffer-file-name to send notifications;
+      ;; so we skip handling revert-buffer-caused changes and instead handle
+      ;; reverts separately in lsp-on-revert
+      (when (and lsp--cur-workspace (not revert-buffer-in-progress-p))
         (lsp--inc-cur-file-version)
         (unless (eq lsp--server-sync-method 'none)
           (lsp--send-notification
@@ -1186,6 +1192,13 @@ Added to `after-change-functions'."
                                         start end length)))
                  ('full (vector (lsp--full-change-event))))))))))))
 
+(defun lsp-on-revert ()
+  "Executed when a file is reverted.
+Added to `after-revert-hook'."
+  (let ((n (buffer-size))
+        (revert-buffer-in-progress-p nil))
+    (lsp-on-change 0 n n)))
+
 (defun lsp--text-document-did-close ()
   "Executed when the file is closed, added to `kill-buffer-hook'."
   (when lsp--cur-workspace
@@ -1198,7 +1211,7 @@ Added to `after-change-functions'."
           (setf (lsp--workspace-buffers lsp--cur-workspace)
                 (delq (current-buffer) old-buffers))
 
-          (remhash buffer-file-name file-versions)
+          (remhash (current-buffer) file-versions)
           (with-demoted-errors "Error sending didClose notification in ‘lsp--text-document-did-close’: %S"
             (lsp--send-notification
              (lsp--make-notification
@@ -2000,6 +2013,7 @@ command COMMAND and optionsl ARGS"
   (when lsp-enable-completion-at-point
     (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t))
   (remove-hook 'after-change-functions #'lsp-on-change t)
+  (remove-hook 'after-revert-hook #'lsp-on-revert t)
   (remove-hook 'before-change-functions #'lsp-before-change t))
 
 (defun lsp--set-configuration (settings)
