@@ -209,7 +209,11 @@
   (extra-client-capabilities nil)
 
   ;; Workspace status
-  (status nil))
+  (status nil)
+
+  ;; ‘metadata’ is a generic storage for workspace specific data. It is
+  ;; accessed via `lsp-workspace-set-metadata' and `lsp-workspace-set-metadata'
+  (metadata (make-hash-table :test 'equal)))
 
 (defvar-local lsp--cur-workspace nil)
 (defvar lsp--workspaces (make-hash-table :test #'equal)
@@ -381,6 +385,16 @@ before saving a document."
   (cl-check-type method string)
   (cl-check-type callback function)
   (puthash method callback (lsp--client-action-handlers client)))
+
+(defun lsp-workspace-set-metadata (key value &optional workspace)
+  "Associate KEY with VALUE in the WORKSPACE metadata.
+If WORKSPACE is not provided current workspace will be used."
+  (puthash key value (lsp--workspace-metadata (or workspace lsp--cur-workspace ))))
+
+(defun lsp-workspace-get-metadata (key &optional workspace)
+  "Lookup KEY in WORKSPACE metadata.
+If WORKSPACE is not provided current workspace will be used."
+  (gethash key (lsp--workspace-metadata (or workspace lsp--cur-workspace))))
 
 (define-inline lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
