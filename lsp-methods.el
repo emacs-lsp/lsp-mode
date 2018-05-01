@@ -1254,11 +1254,11 @@ Added to `after-revert-hook'."
        (lsp--make-notification
         "textDocument/didSave"
          `(:textDocument ,(lsp--versioned-text-document-identifier)
-            :includeText ,(if (lsp--save-include-text-p)
-                            (save-excursion
-                              (widen)
-                              (buffer-substring-no-properties (point-min) (point-max)))
-                            nil)))))))
+                         :text ,(if (lsp--save-include-text-p)
+                                    (save-excursion
+                                      (widen)
+                                      (buffer-substring-no-properties (point-min) (point-max)))
+                                  nil)))))))
 
 (define-inline lsp--text-document-position-params (&optional identifier position)
   "Make TextDocumentPositionParams for the current point in the current document.
