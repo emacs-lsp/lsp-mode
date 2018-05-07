@@ -142,10 +142,41 @@
     (add-to-list 'expected-events (list 'created matching-file))
     (add-to-list 'expected-events (list 'changed matching-file))
 
-    (should (equal expected-events events))))
+    (should (equal expected-events events))
+    (lsp-kill-watch watch)))
+
+(ert-deftest lsp-file-watch--relative-path-glob-patterns ()
+  (let* ((temp-directory (file-name-as-directory
+                          (concat (temporary-file-directory) "common-test-dir")))
+          (matching-file (concat temp-directory "file.ext"))
+          (nested-dir (file-name-as-directory
+                        (concat temp-directory "nested")))
+          (nested-matching-file (concat nested-dir "file.ext"))
+         events watch expected-events)
+
+    (delete-directory temp-directory t)
+    (mkdir temp-directory)
+    (mkdir nested-dir)
+
+    (setq watch (lsp-create-watch
+                  temp-directory
+                  (list (eshell-glob-regexp "**/file.ext"))
+                  (lambda (event)
+                    (message "received: %s" event)
+                    (add-to-list 'events (cdr event)))))
+
+    (write-region "bla" nil matching-file)
+    (sit-for 0.1)
+
+    (add-to-list 'expected-events (list 'created matching-file))
+    (add-to-list 'expected-events (list 'changed matching-file))
+
+    (should (equal expected-events events))
+    (lsp-kill-watch watch)))
 
 (ert-deftest lsp-file-watch--glob-pattern ()
   (should (string-match (eshell-glob-regexp "pom.xml") "pom.xml"))
+  (should (string-match (eshell-glob-regexp "**/pom.xml") "/pom.xml"))
   (should (string-match (eshell-glob-regexp "**/*.xml") "data/pom.xml"))
   (should (not (string-match (eshell-glob-regexp "**/*.xml") "pom.xml"))))
 

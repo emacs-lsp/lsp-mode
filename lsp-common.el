@@ -158,13 +158,15 @@ already have been created. "
                    (thread-last
                      (directory-files-recursively file-name ".*" t)
                      (seq-do (lambda (f)
-                               (when (and (lsp--string-match-any file-regexp-list
-                                            (file-relative-name f root-dir))
+                               (when (and (lsp--string-match-any
+                                           file-regexp-list
+                                           (concat "/" (file-relative-name f root-dir)))
                                        (not (file-directory-p f)))
                                  (funcall callback (list nil 'created f)))))))
                  ((and (not (file-directory-p file-name))
-                    (lsp--string-match-any file-regexp-list
-                      (file-relative-name file-name root-dir)))
+                       (lsp--string-match-any
+                        file-regexp-list
+                        (concat "/" (file-relative-name file-name root-dir))))
                    (funcall callback event))))))
           watches))
       all-dirs)
