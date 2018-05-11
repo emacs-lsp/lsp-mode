@@ -31,7 +31,8 @@
 (defun lsp--send-wait (message proc parser)
   "Send MESSAGE to PROC and wait for output from the process."
   (when lsp-print-io
-    (message "lsp--stdio-wait: %s" message))
+    (let ((inhibit-message t))
+      (message "lsp--stdio-wait: %s" message)))
   (when (memq (process-status proc) '(stop exit closed failed nil))
     (error "%s: Cannot communicate with the process (%s)" (process-name proc)
       (process-status proc)))
@@ -50,7 +51,8 @@
 (defun lsp--send-no-wait (message proc)
   "Send MESSAGE to PROC without waiting for further output."
   (when lsp-print-io
-    (message "lsp--send-no-wait: %s" message))
+    (let ((inhibit-message t))
+      (message "lsp--send-no-wait: %s" message)))
   (when (memq (process-status proc) '(stop exit closed failed nil))
     (error "%s: Cannot communicate with the process (%s)" (process-name proc)
            (process-status proc)))
@@ -310,6 +312,11 @@
           (setq chunk leftovers))))
     (nreverse messages)))
 
+(defun lsp--json-pretty-print (msg)
+  "Convert json MSG string to pretty printed json string."
+  (let ((json-encoding-pretty-print t))
+    (json-encode (json-read-from-string msg))))
+
 (defun lsp--parser-make-filter (p ignore-regexps)
   #'(lambda (_proc output)
       (when (cl-loop for r in ignore-regexps
@@ -328,7 +335,9 @@
                     (error "Error parsing language server output: %s" err))))))
 
           (dolist (m messages)
-            (when lsp-print-io (message "Output from language server: %s" m))
+            (when lsp-print-io
+              (let ((inhibit-message t))
+                (message "Output from language server: %s" (lsp--json-pretty-print m))))
             (lsp--parser-on-message p m))))))
 
 (declare-function lsp--client-notification-handlers "lsp-methods" (client))

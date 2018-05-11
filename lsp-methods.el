@@ -215,9 +215,14 @@
   ;; Workspace status
   (status nil)
 
+  ;; ‘metadata’ is a generic storage for workspace specific data. It is
+  ;; accessed via `lsp-workspace-set-metadata' and `lsp-workspace-set-metadata'
+  (metadata (make-hash-table :test 'equal))
+              
   ;; contains all the file notification watches that have been created for the
   ;; current workspace in format filePath->file notification handle.
   (watches (make-hash-table :test 'equal)))
+
 
 (defvar-local lsp--cur-workspace nil)
 
@@ -391,6 +396,16 @@ before saving a document."
   (cl-check-type callback function)
   (puthash method callback (lsp--client-action-handlers client)))
 
+(defun lsp-workspace-set-metadata (key value &optional workspace)
+  "Associate KEY with VALUE in the WORKSPACE metadata.
+If WORKSPACE is not provided current workspace will be used."
+  (puthash key value (lsp--workspace-metadata (or workspace lsp--cur-workspace ))))
+
+(defun lsp-workspace-get-metadata (key &optional workspace)
+  "Lookup KEY in WORKSPACE metadata.
+If WORKSPACE is not provided current workspace will be used."
+  (gethash key (lsp--workspace-metadata (or workspace lsp--cur-workspace))))
+
 (define-inline lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
   (inline-quote
@@ -424,8 +439,9 @@ before saving a document."
 (define-inline lsp--make-message (params)
   "Create a LSP message from PARAMS, after encoding it to a JSON string."
   (inline-quote
-    (let* ((json-false :json-false)
-            (body (json-encode ,params)))
+    (let* ((json-encoding-pretty-print lsp-print-io)
+           (json-false :json-false)
+           (body (json-encode ,params)))
       (format "Content-Length: %d\r\n\r\n%s" (string-bytes body) body))))
 
 (define-inline lsp--send-notification (body)
@@ -1265,11 +1281,11 @@ Added to `after-revert-hook'."
        (lsp--make-notification
         "textDocument/didSave"
          `(:textDocument ,(lsp--versioned-text-document-identifier)
-            :includeText ,(if (lsp--save-include-text-p)
-                            (save-excursion
-                              (widen)
-                              (buffer-substring-no-properties (point-min) (point-max)))
-                            nil)))))))
+                         :text ,(if (lsp--save-include-text-p)
+                                    (save-excursion
+                                      (widen)
+                                      (buffer-substring-no-properties (point-min) (point-max)))
+                                  nil)))))))
 
 (define-inline lsp--text-document-position-params (&optional identifier position)
   "Make TextDocumentPositionParams for the current point in the current document.
