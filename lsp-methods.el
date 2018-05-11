@@ -429,8 +429,9 @@ If WORKSPACE is not provided current workspace will be used."
 (define-inline lsp--make-message (params)
   "Create a LSP message from PARAMS, after encoding it to a JSON string."
   (inline-quote
-    (let* ((json-false :json-false)
-            (body (json-encode ,params)))
+    (let* ((json-encoding-pretty-print lsp-print-io)
+           (json-false :json-false)
+           (body (json-encode ,params)))
       (format "Content-Length: %d\r\n\r\n%s" (string-bytes body) body))))
 
 (define-inline lsp--send-notification (body)
