@@ -31,6 +31,12 @@
   :group 'lsp-mode
   :type 'boolean)
 
+
+(defcustom lsp-prompt-project-root nil
+  "If non-nil, choose project root interactively when could not find specified project root."
+  :group 'lsp-mode
+  :type 'boolean)
+
 (defvar lsp--uri-file-prefix (pcase system-type
                                (`windows-nt "file:///")
                                (_ "file://"))
@@ -71,25 +77,41 @@ This is equivalent to `display-warning', using `lsp-mode' as the type and
 `:warning' as the level."
   (display-warning 'lsp-mode (apply #'format-message message args)))
 
+(defvar-local lsp-default-directory nil)
+(defvar-local lsp-project-root nil)
 (defun lsp-make-traverser (name)
   "Return a closure that walks up the current directory until NAME is found.
 NAME can either be a string or a predicate used for `locate-dominating-file'.
 The value returned by the function will be the directory name for NAME.
 
-If no such directory could be found, log a warning and return `default-directory'"
+When no such directory could be found, and lsp-prompt-project-root is `t` then.
+prompting user to choose project root interactively, or log a warning and.
+return `default-directory'"
   (lambda ()
     (let ((dir (locate-dominating-file "." name)))
       (if dir
-        (file-truename dir)
-        (lsp-warn
-          "Couldn't find project root, using the current directory as the root.")
-        default-directory))))
+	  (file-truename dir)
+	(if lsp-prompt-project-root
+	    (progn
+	      ;; Because this function return a closure, in case this closure.
+	      ;; called several time for a same project, just directly return
+	      ;; project-root instead of prompting again.
+	      (when (not (eq lsp-default-directory default-directory))
+		(let* ((project-root (read-directory-name "Couldn't find project root, choosing project root manually: ")))
+		  (setq lsp-default-directory default-directory)
+		  (setq lsp-project-root project-root)
+		  ))
+	      lsp-project-root)
+	  (lsp-warn
+	   "Couldn't find project root, using the current directory as the root.")
+	  default-directory
+	  )))))
 
 (defun lsp--get-uri-handler (scheme)
   "Get uri handler for SCHEME in the current workspace."
   (when lsp--cur-workspace
     (gethash scheme (lsp--client-uri-handlers
-                      (lsp--workspace-client lsp--cur-workspace)))))
+		      (lsp--workspace-client lsp--cur-workspace)))))
 
 (defun lsp--uri-to-path (uri)
   "Convert URI to a file path."
