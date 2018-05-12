@@ -146,6 +146,7 @@
     (lsp-kill-watch watch)))
 
 (ert-deftest lsp-file-watch--relative-path-glob-patterns ()
+  :tags '(no-win)
   (let* ((temp-directory (file-name-as-directory
                            (concat temporary-file-directory "common-test-dir")))
           (matching-file (concat temp-directory "file.ext"))
