@@ -147,7 +147,7 @@
 
 (ert-deftest lsp-file-watch--relative-path-glob-patterns ()
   (let* ((temp-directory (file-name-as-directory
-                          (concat (temporary-file-directory) "common-test-dir")))
+                           (concat temporary-file-directory "common-test-dir")))
           (matching-file (concat temp-directory "file.ext"))
           (nested-dir (file-name-as-directory
                         (concat temp-directory "nested")))
