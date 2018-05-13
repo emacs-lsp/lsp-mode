@@ -127,3 +127,7 @@ the following function to `lsp-before-open-hook`:
     (setq projectile-project-root (lsp--workspace-root lsp--cur-workspace))))
 (add-hook 'lsp-before-open-hook #'my-set-projectile-root)
 ```
+
+### See also
+
+[`eglot`](https://github.com/joaotavora/eglot) - An alternative and lighter LSP implementation.
