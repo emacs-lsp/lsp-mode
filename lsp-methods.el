@@ -1018,7 +1018,7 @@ interface TextDocumentEdit {
           (filename (lsp--uri-to-path (gethash "uri" ident)))
           (version (gethash "version" ident)))
     (with-current-buffer (find-file-noselect filename)
-      (when (= version (lsp--cur-file-version))
+      (when (and version (= version (lsp--cur-file-version)))
         (lsp--apply-text-edits (gethash "edits" edit))))))
 
 (defun lsp--text-edit-sort-predicate (e1 e2)
