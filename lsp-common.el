@@ -19,6 +19,8 @@
 (require 'url-util)
 (require 'url-parse)
 (require 'subr-x)
+(require 'filenotify)
+(require 'cl)
 
 (defconst lsp--message-type-face
   `((1 . ,compilation-error-face)
@@ -118,6 +120,64 @@ If no such directory could be found, log a warning and return `default-directory
   (inline-quote
     (concat lsp--uri-file-prefix
       (url-hexify-string (file-truename ,path) url-path-allowed-chars))))
+
+(defun lsp--string-match-any (regex-list str)
+  "Given a list of REGEX-LIST and STR return the first matching regex if any."
+  (find-if (lambda (regex) (string-match regex str)) regex-list))
+
+(defun lsp-create-watch (dir file-regexp-list callback &optional watches root-dir)
+  "Create recursive file notificaton watch in DIR monitoring FILE-REGEXP-LIST.
+CALLBACK is the will be called when there are changes in any of
+the monitored files. WATCHES is a hash table directory->file
+notification handle which contains all of the watches that
+already have been created. "
+  (let ((all-dirs (thread-last
+                    (directory-files-recursively dir ".*" t)
+                    (seq-filter (lambda (f) (file-directory-p f)))
+                    (list* dir)))
+         (watches (or watches (make-hash-table :test 'equal)))
+         (root-dir (or root-dir dir)))
+    (seq-do
+      (lambda (dir-to-watch)
+        (puthash
+          dir-to-watch
+          (file-notify-add-watch
+            dir-to-watch
+            '(change)
+            (lambda (event)
+              (let ((file-name (caddr event))
+                    (event-type (cadr event)))
+                (cond
+                 ((and (file-directory-p file-name)
+                    (equal 'created event-type))
+
+                   (lsp-create-watch file-name file-regexp-list callback watches root-dir)
+
+                   ;; process the files that are already present in
+                   ;; the directory.
+                   (thread-last
+                     (directory-files-recursively file-name ".*" t)
+                     (seq-do (lambda (f)
+                               (when (and (lsp--string-match-any
+                                           file-regexp-list
+                                           (concat "/" (file-relative-name f root-dir)))
+                                       (not (file-directory-p f)))
+                                 (funcall callback (list nil 'created f)))))))
+                 ((and (not (file-directory-p file-name))
+                       (lsp--string-match-any
+                        file-regexp-list
+                        (concat "/" (file-relative-name file-name root-dir))))
+                   (funcall callback event))))))
+          watches))
+      all-dirs)
+    watches))
+
+(defun lsp-kill-watch (watches)
+  "Delete WATCHES."
+  (maphash
+    (lambda (_dir watch)
+      (file-notify-rm-watch watch))
+    watches))
 
 (provide 'lsp-common)
 ;;; lsp-common.el ends here

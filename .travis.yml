@@ -22,7 +22,7 @@ install:
   - cask install
 script:
   - cask build
-  - cask exec ert-runner
+  - cask exec ert-runner -t "!no-win"
 
 notifications:
   webhooks:

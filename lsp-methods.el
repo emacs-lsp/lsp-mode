@@ -22,8 +22,12 @@
 (require 'lsp-common)
 (require 'pcase)
 (require 'inline)
+(require 'em-glob)
 
-;;; Code:
+(defconst lsp--file-change-type
+  `((created . 1)
+     (changed . 2)
+     (deleted . 3)))
 
 ;; A ‘lsp--client’ object describes the client-side behavior of a language
 ;; server.  It is used to start individual server processes, each of which is
@@ -213,9 +217,15 @@
 
   ;; ‘metadata’ is a generic storage for workspace specific data. It is
   ;; accessed via `lsp-workspace-set-metadata' and `lsp-workspace-set-metadata'
-  (metadata (make-hash-table :test 'equal)))
+  (metadata (make-hash-table :test 'equal))
+              
+  ;; contains all the file notification watches that have been created for the
+  ;; current workspace in format filePath->file notification handle.
+  (watches (make-hash-table :test 'equal)))
+
 
 (defvar-local lsp--cur-workspace nil)
+
 (defvar lsp--workspaces (make-hash-table :test #'equal)
   "Table of known workspaces, indexed by the project root directory.")
 
@@ -534,6 +544,8 @@ interface TextDocumentItem {
 (defun lsp--uninitialize-workspace ()
   "When a workspace is shut down, by request or from just
 disappearing, unset all the variables related to it."
+  (lsp-kill-watch (lsp--workspace-watches lsp--cur-workspace))
+
   (let (proc
         (root (lsp--workspace-root lsp--cur-workspace)))
     (with-current-buffer (current-buffer)
@@ -2036,6 +2048,31 @@ command COMMAND and optionsl ARGS"
   (lsp--send-notification (lsp--make-notification
                            "workspace/didChangeConfiguration"
                            `(:settings , settings))))
+
+(defun lsp-workspace-register-watch (to-watch &optional workspace)
+  "Monitor for file change and trigger workspace/didChangeConfiguration.
+
+TO-WATCH is a list of the directories and regexp in the following format:
+'((root-dir1 (glob-pattern1 glob-pattern2))
+  (root-dir2 (glob-pattern3 glob-pattern4)))
+
+If WORKSPACE is not specified the `lsp--cur-workspace' will be used."
+  (setq workspace (or workspace lsp--cur-workspace))
+  (let ((watches (lsp--workspace-watches workspace)))
+    (cl-loop for (dir glob-patterns) in to-watch do
+      (lsp-create-watch
+        dir
+        (mapcar 'eshell-glob-regexp glob-patterns)
+        (lambda (event)
+          (let ((lsp--cur-workspace workspace))
+            (lsp-send-notification
+              (lsp-make-notification
+                "workspace/didChangeWatchedFiles"
+                (list :changes
+                  (list
+                    :type (alist-get (cadr event) lsp--file-change-type)
+                    :uri (lsp--path-to-uri (caddr event))))))))
+        watches))))
 
 (declare-function lsp-mode "lsp-mode" (&optional arg))
 
