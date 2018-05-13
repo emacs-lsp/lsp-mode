@@ -673,7 +673,7 @@ Return the merged plist."
 
 (defun lsp--client-textdocument-capabilities ()
   "Client Text document capabilities according to LSP."
-  `(:synchronization (:willSave t :didSave t)
+  `(:synchronization (:willSave t :didSave t :willSaveWaitUntil t)
      :symbol (:symbolKind (:valueSet ,(cl-loop for kind from 1 to 25 collect kind)))))
 
 (defun lsp-register-client-capabilities (package-name caps)
@@ -1257,13 +1257,13 @@ Added to `after-revert-hook'."
   (when lsp--cur-workspace
     (with-demoted-errors "Error in ‘lsp--before-save’: %S"
       (let ((params (lsp--will-save-text-document-params 1)))
-        (if (lsp--send-will-save-p)
+        (when (lsp--send-will-save-p)
           (lsp--send-notification
-            (lsp--make-notification "textDocument/willSave" params))
-          (when (and (lsp--send-will-save-wait-until-p) lsp-before-save-edits)
-            (lsp--apply-text-edits
-              (lsp--send-request (lsp--make-request
-                                   "textDocument/willSaveWaitUntil" params)))))))))
+            (lsp--make-notification "textDocument/willSave" params)))
+        (when (and (lsp--send-will-save-wait-until-p) lsp-before-save-edits)
+          (lsp--apply-text-edits
+           (lsp--send-request (lsp--make-request
+                               "textDocument/willSaveWaitUntil" params))))))))
 
 (defun lsp--on-auto-save ()
   (when (and lsp--cur-workspace
