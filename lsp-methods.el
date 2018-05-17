@@ -352,6 +352,15 @@ before saving a document."
   :group 'lsp-mode)
 
 ;;;###autoload
+(defcustom lsp-hover-text-function 'lsp--text-document-hover
+  "The LSP method to use to display text on hover."
+  :type '(choice (function :tag "textDocument/hover"
+                           'lsp--text-document-hover-string)
+                 (function :tag "textDocument/signatureHelp"
+                           'lsp--text-document-signature-help))
+  :group 'lsp-mode)
+
+;;;###autoload
 (defface lsp-face-highlight-textual
   '((((background dark))  :background "saddle brown")
     (((background light)) :background "yellow"))
@@ -399,7 +408,7 @@ before saving a document."
 (defun lsp-workspace-set-metadata (key value &optional workspace)
   "Associate KEY with VALUE in the WORKSPACE metadata.
 If WORKSPACE is not provided current workspace will be used."
-  (puthash key value (lsp--workspace-metadata (or workspace lsp--cur-workspace ))))
+  (puthash key value (lsp--workspace-metadata (or workspace lsp--cur-workspace))))
 
 (defun lsp-workspace-get-metadata (key &optional workspace)
   "Lookup KEY in WORKSPACE metadata.
@@ -1518,7 +1527,7 @@ Returns xref-item(s)."
     (when (and (lsp--capability "codeActionProvider") lsp-enable-codeaction)
       (lsp--text-document-code-action))
     (when lsp-enable-eldoc
-      (lsp--text-document-hover-string))))
+      (funcall lsp-hover-text-function))))
 
 (defvar-local lsp--cur-hover-request-id nil)
 
