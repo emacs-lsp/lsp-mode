@@ -704,7 +704,7 @@ entry, the value is set to the one that registers later.  Default
 leaf capability entries can not be overwritten."
   (lsp--cur-workspace-check)
   (cl-check-type package-name symbolp)
-  (cl-check-type package-name (or list function))
+  (cl-check-type caps (or list function))
   (let ((extra-client-capabilities
           (lsp--workspace-extra-client-capabilities lsp--cur-workspace)))
     (if (alist-get package-name extra-client-capabilities)
