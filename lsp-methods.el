@@ -1968,7 +1968,7 @@ interface RenameParams {
 
 (defun lsp-rename (newname)
   "Rename the symbol (and all references to it) under point to NEWNAME."
-  (interactive "*sRename to: ")
+  (interactive (list (read-string "Rename to: " (thing-at-point 'symbol))))
   (lsp--cur-workspace-check)
   (unless (lsp--capability "renameProvider")
     (signal 'lsp-capability-not-supported (list "renameProvider")))
