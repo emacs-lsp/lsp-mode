@@ -29,7 +29,7 @@
     (changed . 2)
     (deleted . 3)))
 
-(defconst lsp-default-renderer-language "DEFAULT")
+(defconst lsp-default-renderer-language "__default__renderer__language")
 
 ;; A ‘lsp--client’ object describes the client-side behavior of a language
 ;; server.  It is used to start individual server processes, each of which is
