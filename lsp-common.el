@@ -73,6 +73,9 @@ This is equivalent to `display-warning', using `lsp-mode' as the type and
 `:warning' as the level."
   (display-warning 'lsp-mode (apply #'format-message message args)))
 
+(defvar lsp-message-project-root-warning nil
+  "Output the project root warning as a message and not to the *Warnings* buffer.")
+
 (defun lsp-make-traverser (name)
   "Return a closure that walks up the current directory until NAME is found.
 NAME can either be a string or a predicate used for `locate-dominating-file'.
@@ -82,10 +85,11 @@ If no such directory could be found, log a warning and return `default-directory
   (lambda ()
     (let ((dir (locate-dominating-file "." name)))
       (if dir
-        (file-truename dir)
-        (lsp-warn
-          "Couldn't find project root, using the current directory as the root.")
-        default-directory))))
+          (file-truename dir)
+	(if lsp-message-project-root-warning
+	    (message "Couldn't find project root, using the current directory as the root.")
+          (lsp-warn "Couldn't find project root, using the current directory as the root.")
+          default-directory)))))
 
 (defun lsp--get-uri-handler (scheme)
   "Get uri handler for SCHEME in the current workspace."
