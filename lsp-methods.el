@@ -1526,7 +1526,7 @@ Returns xref-item(s)."
       (lsp-symbol-highlight))
     (when (and (lsp--capability "codeActionProvider") lsp-enable-codeaction)
       (lsp--text-document-code-action))
-    (when lsp-enable-eldoc
+    (when (and (lsp--capability "hoverProvider") lsp-enable-eldoc)
       (funcall lsp-hover-text-function))))
 
 (defvar-local lsp--cur-hover-request-id nil)
