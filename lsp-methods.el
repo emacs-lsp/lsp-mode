@@ -1064,7 +1064,7 @@ interface TextDocumentEdit {
 
 (define-inline lsp--capability (cap &optional capabilities)
   "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
-  (inline-quote (gethash ,cap (or ,capabilities (lsp--server-capabilities)))))
+  (inline-quote (gethash ,cap (or ,capabilities (lsp--server-capabilities) (make-hash-table)))))
 
 (defvar-local lsp--before-change-vals nil
   "Store the positions from the `lsp-before-change' function
