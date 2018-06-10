@@ -353,9 +353,9 @@ If WORKSPACE is not specified defaults to lsp--cur-workspace."
 
 (defconst lsp--capabilities
   `(("textDocumentSync" . ("Document sync method" .
-                           ((1 . "None")
-                            (2 . "Send full contents")
-                            (3 . "Send incremental changes."))))
+                           ((0 . "None")
+                            (1 . "Send full contents")
+                            (2 . "Send incremental changes."))))
     ("hoverProvider" . ("The server provides hover support" . boolean))
     ("completionProvider" . ("The server provides completion support" . boolean))
     ("signatureHelpProvider" . ("The server provides signature help support" . boolean))
