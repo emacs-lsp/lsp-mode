@@ -29,8 +29,6 @@
     (changed . 2)
     (deleted . 3)))
 
-(defconst lsp-default-renderer-language "__default__renderer__language")
-
 ;; A ‘lsp--client’ object describes the client-side behavior of a language
 ;; server.  It is used to start individual server processes, each of which is
 ;; represented by a ‘lsp--workspace’ object.  Client objects are normally
@@ -147,7 +145,12 @@
   ;; can be used in `lsp-execute-code-action' to determine whether the action
   ;; current client is interested in executing the action instead of sending it
   ;; to the server.
-  (action-handlers (make-hash-table :test 'equal) :read-only t))
+  (action-handlers (make-hash-table :test 'equal) :read-only t)
+
+  ;; ‘default-renderer’ is the renderer that is going to be used when there is
+  ;; no concrete "language" specified for the current MarkedString. (see
+  ;; https://microsoft.github.io/language-server-protocol/specification#textDocument_hover)
+  (default-renderer nil))
 
 (cl-defstruct lsp--registered-capability
   (id "" :type string)
@@ -1544,7 +1547,6 @@ Returns xref-item(s)."
   (interactive)
   (lsp--cur-workspace-check)
   (let* ((client (lsp--workspace-client lsp--cur-workspace))
-         (renderers (lsp--client-string-renderers client))
          (contents (gethash "contents" (lsp--send-request
                                         (lsp--make-request "textDocument/hover"
                                                            (lsp--text-document-position-params))))))
@@ -1552,7 +1554,7 @@ Returns xref-item(s)."
      (with-current-buffer (get-buffer-create "*lsp-help*")
        (let ((inhibit-read-only t))
          (erase-buffer)
-         (insert (lsp--render-on-hover-content contents renderers t))
+         (insert (lsp--render-on-hover-content contents client t))
          (goto-char (point-min))
          (view-mode t)
          (current-buffer))))))
@@ -1570,13 +1572,12 @@ type MarkedString = string | { language: string; value: string };"
   (when lsp--cur-hover-request-id
     (lsp--cancel-request lsp--cur-hover-request-id))
   (let* ((client (lsp--workspace-client lsp--cur-workspace))
-          (renderers (lsp--client-string-renderers client))
           bounds body)
     (when (symbol-at-point)
       (setq bounds (bounds-of-thing-at-point 'symbol)
         body (lsp--send-request-async (lsp--make-request "textDocument/hover"
                                         (lsp--text-document-position-params))
-               (lsp--make-hover-callback renderers (car bounds) (cdr bounds)
+               (lsp--make-hover-callback client (car bounds) (cdr bounds)
                  (current-buffer)))
         lsp--cur-hover-request-id (plist-get body :id))
       (cl-assert (integerp lsp--cur-hover-request-id)))))
@@ -1611,47 +1612,49 @@ export interface MarkupContent {
     (inline-quote (and (hash-table-p ,obj)
                     (gethash "kind" ,obj nil) (gethash "value" ,obj nil)))))
 
-(defun lsp--render-on-hover-content (contents renderers render-all)
+(defun lsp--render-on-hover-content (contents client render-all)
   "Render the content received from 'document/onHover' request.
 
-RENDERERS - client renderers to use.
+CLIENT - client to use.
 CONTENTS  - MarkedString | MarkedString[] | MarkupContent
 RENDER-ALL if set to nil render only the first element from CONTENTS."
-  (string-join
-   (mapcar
-    (lambda (e)
-      (let (renderer)
-        (cond
-         ;; hash table, language renderer set
-         ((and (hash-table-p e)
-               (setq renderer (cdr (assoc-string
-                                    (gethash "language" e lsp-default-renderer-language)
-                                    renderers))))
-          (when (gethash "value" e nil)
-            (funcall renderer (gethash "value" e))))
+  (let ((renderers (lsp--client-string-renderers client))
+        (default-client-renderer (lsp--client-default-renderer client)))
+    (string-join
+     (mapcar
+      (lambda (e)
+        (let (renderer)
+          (cond
+           ;; hash table, language renderer set
+           ((and (hash-table-p e)
+                 (setq renderer
+                       (if-let (language (gethash "language" e))
+                           (cdr (assoc-string language renderers))
+                         default-client-renderer)))
+            (when (gethash "value" e nil)
+              (funcall renderer (gethash "value" e))))
 
-         ;; hash table - workspace renderer not set
-         ;; trying to render using global renderer
-         ((lsp--markup-content-p e) (lsp--render-markup-content e))
+           ;; hash table - workspace renderer not set
+           ;; trying to render using global renderer
+           ((lsp--markup-content-p e) (lsp--render-markup-content e))
 
-         ;; hash table - anything other has failed
-         ((hash-table-p e) (gethash "value" e nil))
+           ;; hash table - anything other has failed
+           ((hash-table-p e) (gethash "value" e nil))
 
-         ;; string, default workspace renderer set
-         ((setq renderer (cdr (assoc-string lsp-default-renderer-language renderers)))
-          (funcall renderer e))
+           ;; string, default workspace renderer set
+           (default-client-renderer (funcall default-client-renderer  e))
 
-         ;; no rendering
-         (t e))))
-    (if (listp contents)
-        (if render-all
-            contents
-          (list (car contents)))
-      (list contents)))
-   "\n"))
+           ;; no rendering
+           (t e))))
+      (if (listp contents)
+          (if render-all
+              contents
+            (list (car contents)))
+        (list contents)))
+     "\n")))
 
 ;; start and end are the bounds of the symbol at point
-(defun lsp--make-hover-callback (renderers start end buffer)
+(defun lsp--make-hover-callback (client start end buffer)
   (lambda (hover)
     (with-current-buffer buffer
       (setq lsp--cur-hover-request-id nil))
@@ -1661,13 +1664,20 @@ RENDER-ALL if set to nil render only the first element from CONTENTS."
       (let ((contents (gethash "contents" hover)))
         (when contents
           (eldoc-message (lsp--render-on-hover-content contents
-                                                       renderers
+                                                       client
                                                        lsp-eldoc-render-all)))))))
 
 (defun lsp-provide-marked-string-renderer (client language renderer)
   (cl-check-type language string)
   (cl-check-type renderer function)
   (setf (alist-get language (lsp--client-string-renderers client)) renderer))
+
+(defun lsp-provide-default-marked-string-renderer (client renderer)
+  "Set the RENDERER for CLIENT.
+
+It will be used when no language has been specified in document/onHover result."
+  (cl-check-type renderer function)
+  (setf (lsp--client-default-renderer client) renderer))
 
 (defun lsp-info-under-point ()
   "Show relevant documentation for the thing under point."
