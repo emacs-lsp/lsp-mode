@@ -355,9 +355,9 @@ before saving a document."
 (defcustom lsp-hover-text-function 'lsp--text-document-hover-string
   "The LSP method to use to display text on hover."
   :type '(choice (function :tag "textDocument/hover"
-                           'lsp--text-document-hover-string)
+                           lsp--text-document-hover-string)
                  (function :tag "textDocument/signatureHelp"
-                           'lsp--text-document-signature-help))
+                           lsp--text-document-signature-help))
   :group 'lsp-mode)
 
 ;;;###autoload
