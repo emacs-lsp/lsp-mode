@@ -218,9 +218,7 @@ Optional arguments:
         (funcall initialize-fn client))
       (let ((root (funcall (lsp--client-get-root client))))
         (if (lsp--should-start-p root)
-            (progn
-              (lsp-mode 1)
-              (lsp--start client extra-init-params))
+            (lsp--start client extra-init-params)
           (message "Not initializing project %s" root))))))
 
 (cl-defmacro lsp-define-tcp-client (name language-id get-root command host port
@@ -329,9 +327,7 @@ Optional arguments:
         (funcall initialize-fn client))
       (let ((root (funcall (lsp--client-get-root client))))
         (if (lsp--should-start-p root)
-            (progn
-              (lsp-mode 1)
-              (lsp--start client extra-init-params))
+            (lsp--start client extra-init-params)
           (message "Not initializing project %s" root))))))
 
 (defvar-local lsp-status nil
