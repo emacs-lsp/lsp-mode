@@ -25,13 +25,32 @@
 (require 'lsp-methods)
 (require 'seq)
 
+(defgroup lsp-imenu nil
+  "Customization group for `lsp-imenu'."
+  :group 'lsp-mode)
+
+(defcustom lsp-imenu-show-container-name t
+  "Display the symbol's container name in an imenu entry."
+  :type 'boolean
+  :group 'lsp-imenu)
+
+(defcustom lsp-imenu-container-name-separator "/"
+  "Separator string to use to separate the container name from the symbol while displaying imenu entries."
+  :type 'string
+  :group 'lsp-imenu)
+
 (define-inline lsp--point-to-marker (p)
   (inline-quote (save-excursion (goto-char ,p) (point-marker))))
 
 (defun lsp--symbol-to-imenu-elem (sym)
-  (let ((pt (lsp--position-to-point (gethash "start"
-                                      (gethash "range" (gethash "location" sym))))))
-    (cons (gethash "name" sym) (if imenu-use-markers (lsp--point-to-marker pt) pt))))
+  (let ((pt (lsp--position-to-point
+             (gethash "start" (gethash "range" (gethash "location" sym)))))
+        (name (gethash "name" sym))
+        (container (gethash "containerName" sym)))
+    (cons (if (and lsp-imenu-show-container-name container)
+              (concat container lsp-imenu-container-name-separator name)
+            name)
+          (if imenu-use-markers (lsp--point-to-marker pt) pt))))
 
 (defun lsp--symbol-filter (sym)
   (not
