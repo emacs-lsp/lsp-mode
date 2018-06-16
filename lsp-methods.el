@@ -814,7 +814,9 @@ directory."
          new-conn response init-params
          parser proc cmd-proc)
     (if workspace
-        (setq lsp--cur-workspace workspace)
+        (progn
+          (setq lsp--cur-workspace workspace)
+          (lsp-mode 1))
 
       (setf
        parser (make-lsp--parser)
@@ -837,6 +839,7 @@ directory."
        (lsp--workspace-cmd-proc lsp--cur-workspace) cmd-proc)
 
       (puthash root lsp--cur-workspace lsp--workspaces)
+      (lsp-mode 1)
       (run-hooks 'lsp-before-initialize-hook)
       (setq init-params
             `(:processId ,(emacs-pid)
