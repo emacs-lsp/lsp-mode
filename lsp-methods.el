@@ -223,9 +223,6 @@
   ;; current workspace in format filePath->file notification handle.
   (watches (make-hash-table :test 'equal)))
 
-
-(defvar-local lsp--cur-workspace nil)
-
 (defvar lsp--workspaces (make-hash-table :test #'equal)
   "Table of known workspaces, indexed by the project root directory.")
 

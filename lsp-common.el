@@ -33,6 +33,8 @@
   :group 'lsp-mode
   :type 'boolean)
 
+(defvar-local lsp--cur-workspace nil)
+
 (defvar lsp--uri-file-prefix (pcase system-type
                                (`windows-nt "file:///")
                                (_ "file://"))
@@ -182,6 +184,9 @@ already have been created. "
     (lambda (_dir watch)
       (file-notify-rm-watch watch))
     watches))
+
+(declare-function lsp--workspace-client "lsp-methods" (cl-x))
+(declare-function lsp--client-uri-handlers "lsp-methods" (cl-x))
 
 (provide 'lsp-common)
 ;;; lsp-common.el ends here
