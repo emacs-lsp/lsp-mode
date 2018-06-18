@@ -18,7 +18,7 @@
 ;; Author: Vibhav Pant <vibhavp@gmail.com>
 ;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; Package-Requires: ((emacs "25.1"))
-;; Version: 4.1
+;; Version: 4.2
 
 ;;; Commentary:
 
@@ -218,9 +218,7 @@ Optional arguments:
         (funcall initialize-fn client))
       (let ((root (funcall (lsp--client-get-root client))))
         (if (lsp--should-start-p root)
-            (progn
-              (lsp-mode 1)
-              (lsp--start client extra-init-params))
+            (lsp--start client extra-init-params)
           (message "Not initializing project %s" root))))))
 
 (cl-defmacro lsp-define-tcp-client (name language-id get-root command host port
@@ -329,9 +327,7 @@ Optional arguments:
         (funcall initialize-fn client))
       (let ((root (funcall (lsp--client-get-root client))))
         (if (lsp--should-start-p root)
-            (progn
-              (lsp-mode 1)
-              (lsp--start client extra-init-params))
+            (lsp--start client extra-init-params)
           (message "Not initializing project %s" root))))))
 
 (defvar-local lsp-status nil
@@ -353,9 +349,9 @@ If WORKSPACE is not specified defaults to lsp--cur-workspace."
 
 (defconst lsp--capabilities
   `(("textDocumentSync" . ("Document sync method" .
-                           ((1 . "None")
-                            (2 . "Send full contents")
-                            (3 . "Send incremental changes."))))
+                           ((0 . "None")
+                            (1 . "Send full contents")
+                            (2 . "Send incremental changes."))))
     ("hoverProvider" . ("The server provides hover support" . boolean))
     ("completionProvider" . ("The server provides completion support" . boolean))
     ("signatureHelpProvider" . ("The server provides signature help support" . boolean))

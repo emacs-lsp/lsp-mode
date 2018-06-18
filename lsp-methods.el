@@ -228,9 +228,6 @@
   ;; current workspace in format filePath->file notification handle.
   (watches (make-hash-table :test 'equal)))
 
-
-(defvar-local lsp--cur-workspace nil)
-
 (defvar lsp--workspaces (make-hash-table :test #'equal)
   "Table of known workspaces, indexed by the project root directory.")
 
@@ -368,9 +365,9 @@ before saving a document."
 (defcustom lsp-hover-text-function 'lsp--text-document-hover-string
   "The LSP method to use to display text on hover."
   :type '(choice (function :tag "textDocument/hover"
-                           'lsp--text-document-hover-string)
+                           lsp--text-document-hover-string)
                  (function :tag "textDocument/signatureHelp"
-                           'lsp--text-document-signature-help))
+                           lsp--text-document-signature-help))
   :group 'lsp-mode)
 
 ;;;###autoload
@@ -717,7 +714,7 @@ entry, the value is set to the one that registers later.  Default
 leaf capability entries can not be overwritten."
   (lsp--cur-workspace-check)
   (cl-check-type package-name symbolp)
-  (cl-check-type package-name (or list function))
+  (cl-check-type caps (or list function))
   (let ((extra-client-capabilities
           (lsp--workspace-extra-client-capabilities lsp--cur-workspace)))
     (if (alist-get package-name extra-client-capabilities)
@@ -827,7 +824,9 @@ directory."
          new-conn response init-params
          parser proc cmd-proc)
     (if workspace
-        (setq lsp--cur-workspace workspace)
+        (progn
+          (setq lsp--cur-workspace workspace)
+          (lsp-mode 1))
 
       (setf
        parser (make-lsp--parser)
@@ -850,6 +849,7 @@ directory."
        (lsp--workspace-cmd-proc lsp--cur-workspace) cmd-proc)
 
       (puthash root lsp--cur-workspace lsp--workspaces)
+      (lsp-mode 1)
       (run-hooks 'lsp-before-initialize-hook)
       (setq init-params
             `(:processId ,(emacs-pid)
@@ -1077,7 +1077,7 @@ interface TextDocumentEdit {
 
 (define-inline lsp--capability (cap &optional capabilities)
   "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
-  (inline-quote (gethash ,cap (or ,capabilities (lsp--server-capabilities)))))
+  (inline-quote (gethash ,cap (or ,capabilities (lsp--server-capabilities) (make-hash-table)))))
 
 (defvar-local lsp--before-change-vals nil
   "Store the positions from the `lsp-before-change' function
@@ -1539,7 +1539,7 @@ Returns xref-item(s)."
       (lsp-symbol-highlight))
     (when (and (lsp--capability "codeActionProvider") lsp-enable-codeaction)
       (lsp--text-document-code-action))
-    (when lsp-enable-eldoc
+    (when (and (lsp--capability "hoverProvider") lsp-enable-eldoc)
       (funcall lsp-hover-text-function))))
 
 (defun lsp-describe-thing-at-point ()
@@ -1745,24 +1745,31 @@ type MarkupKind = 'plaintext' | 'markdown';"
 (defvar-local lsp-code-actions nil
   "Code actions for the buffer.")
 
+(defvar-local lsp-code-action-params nil
+  "The last code action params.")
+
 (defun lsp--text-document-code-action ()
   "Request code action to automatically fix issues reported by
 the diagnostics."
   (lsp--cur-workspace-check)
-  (lsp--send-request-async (lsp--make-request
-                            "textDocument/codeAction"
-                             (lsp--text-document-code-action-params))
-    (lsp--make-code-action-callback (current-buffer))))
+  (let ((params (lsp--text-document-code-action-params)))
+    (lsp--send-request-async
+     (lsp--make-request "textDocument/codeAction" params)
+     (lambda (actions)
+       (lsp--set-code-action-params (current-buffer) actions params)))))
 
 (defun lsp--command-get-title (cmd)
   "Given a Command object CMD, get the title.
 If title is nil, return the name for the command handler."
   (gethash "title" cmd (gethash "command" cmd)))
 
-(defun lsp--make-code-action-callback (buf)
-  (lambda (actions)
+(defun lsp--set-code-action-params (buf actions params)
+  "Update set `lsp-code-actions' to ACTIONS and `lsp-code-action-params' to PARAMS in BUF."
+  (when (buffer-live-p buf)
     (with-current-buffer buf
-      (setq lsp-code-actions actions))))
+      (when (equal params (lsp--text-document-code-action-params))
+        (setq lsp-code-actions actions)
+        (setq lsp-code-action-params params)))))
 
 (defun lsp--command-p (cmd)
   (and (cl-typep cmd 'hash-table)
@@ -1770,26 +1777,45 @@ If title is nil, return the name for the command handler."
     (cl-typep (gethash "command" cmd) 'string)))
 
 (defun lsp--select-action (actions)
-  "Select an action to execute."
-  (let ((name->action (mapcar (lambda (a)
-                                 (list (lsp--command-get-title a) a))
-                         actions)))
-    (cadr (assoc
-            (completing-read "Select code action: " name->action)
-            name->action))))
+  "Select an action to execute from ACTIONS."
+  (if actions
+      (let ((name->action (mapcar (lambda (a)
+                                    (list (lsp--command-get-title a) a))
+                                  actions)))
+        (cadr (assoc
+               (completing-read "Select code action: " name->action)
+               name->action)))
+    (error "No actions to select from")))
+
+(defun lsp-get-or-calculate-code-actions ()
+  "Get or calculate the current code actions.
+
+The method will either retrieve the current code actions or it will calculate the actual one."
+  (let ((current-code-action-params (lsp--text-document-code-action-params)))
+    (when (not (equal current-code-action-params lsp-code-action-params))
+      (let* ((request-params (lsp--make-request
+                             "textDocument/codeAction"
+                             (lsp--text-document-code-action-params)))
+             (actions (lsp--send-request request-params)))
+        (setq lsp-code-action-params current-code-action-params)
+        (lsp--set-code-action-params (current-buffer)
+                                     actions
+                                     current-code-action-params)))
+    lsp-code-actions))
 
 (defun lsp-execute-code-action (action)
   "Execute code action ACTION.
 
 If ACTION is not set it will be selected from `lsp-code-actions'."
-  (interactive (list (lsp--select-action lsp-code-actions)))
+  (interactive (list
+                (lsp--select-action (lsp-get-or-calculate-code-actions))))
   (lsp--cur-workspace-check)
   (let* ((command (gethash "command" action))
          (action-handler (gethash command
-                           (lsp--client-action-handlers
-                             (lsp--workspace-client lsp--cur-workspace)))))
+                                  (lsp--client-action-handlers
+                                   (lsp--workspace-client lsp--cur-workspace)))))
     (if action-handler
-      (funcall action-handler action)
+        (funcall action-handler action)
       (lsp--execute-command action))))
 
 (defvar-local lsp-code-lenses nil
@@ -2033,7 +2059,7 @@ interface RenameParams {
 
 (defun lsp-rename (newname)
   "Rename the symbol (and all references to it) under point to NEWNAME."
-  (interactive "*sRename to: ")
+  (interactive (list (read-string "Rename to: " (thing-at-point 'symbol))))
   (lsp--cur-workspace-check)
   (unless (lsp--capability "renameProvider")
     (signal 'lsp-capability-not-supported (list "renameProvider")))
