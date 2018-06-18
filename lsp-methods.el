@@ -320,7 +320,8 @@ whitelist, or does not match any pattern in the blacklist."
 (defcustom lsp-eldoc-render-all t
   "Define whether all of the returned by document/onHover will be displayed.
 
-If `lsp-markup-display-all' is set to nil `eldoc' will show only the first element."
+If `lsp-markup-display-all' is set to nil `eldoc' will show only
+the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
