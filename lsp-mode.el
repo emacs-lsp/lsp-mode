@@ -59,11 +59,11 @@
         (set-process-query-on-exit-flag (get-buffer-process (get-buffer stderr)) nil)
         proc))))
 
-(defun lsp--make-tcp-connection (name command command-fn host port stderr)
+(defun lsp--make-tcp-connection (name command command-fn host port stderr &key port-fn)
   (lambda (filter sentinel)
     (let* ((command (if command-fn (funcall command-fn) command))
-            (final-command (if (consp command) command (list command)))
-            proc tcp-proc)
+           (final-command (if (consp command) command (list command)))
+           proc tcp-proc)
       (unless (executable-find (nth 0 final-command))
         (error (format "Couldn't find executable %s" (nth 0 final-command))))
       (setq proc (make-process
@@ -75,8 +75,9 @@
                    :stderr stderr
                    :noquery t)
         tcp-proc (open-network-stream (concat name " TCP connection")
-                   nil host port
-                   :type 'plain))
+                                      nil host
+                                      (if port-fn (funcall port-fn proc stderr) port)
+                                      :type 'plain))
       ;; TODO: Same :noquery issue (see above)
       (set-process-query-on-exit-flag (get-buffer-process (get-buffer stderr)) nil)
       (set-process-query-on-exit-flag tcp-proc nil)
@@ -229,7 +230,8 @@ Optional arguments:
                                      ignore-messages
                                      extra-init-params
                                      initialize
-                                     prefix-function)
+                                     prefix-function
+				                             port-fn)
   "Define a LSP client using TCP.
 NAME is the symbol to use for the name of the client.
 LANGUAGE-ID is the language id to be used when communication with
@@ -262,7 +264,12 @@ Optional arguments:
 `:prefix-function' is a function called for getting the prefix for completion.
  The function takes no parameter and returns a cons (start . end) representing
  the start and end bounds of the prefix. If it's not set, the client uses a
- default prefix function."
+ default prefix function.
+
+`:port-fn' is a function called after starting the language server process, but
+ before connecting to it. The function must return a number, which will be used
+ as the port to connect to. This is useful for servers which use random port
+ numbers, and also for delaying until the server is ready to accept connections."
   (cl-check-type name symbol)
   (let ((enable-name (intern (format "%s-enable" name))))
     `(progn
@@ -284,7 +291,8 @@ Optional arguments:
            :extra-init-params ,extra-init-params
            :initialize-fn ,initialize
            :enable-function (function ,enable-name)
-           :prefix-function ,prefix-function)))))
+           :prefix-function ,prefix-function
+           :port-fn ,port-fn)))))
 
 (cl-defun lsp--enable-tcp-client (name &key language-id language-id-fn
                                        root-directory-fn command command-fn
@@ -292,7 +300,8 @@ Optional arguments:
                                        ignore-regexps ignore-messages
                                        extra-init-params initialize-fn
                                        enable-function
-                                       prefix-function)
+                                       prefix-function
+				                               port-fn)
   (cl-check-type name symbol)
   (cl-check-type language-id (or null string))
   (cl-check-type language-id-fn (or null function))
@@ -316,7 +325,8 @@ Optional arguments:
                                      command
                                      command-fn
                                      host port
-                                     stderr)
+                                     stderr
+				                             :port-fn port-fn)
                     :stderr stderr
                     :get-root root-directory-fn
                     :ignore-regexps ignore-regexps
