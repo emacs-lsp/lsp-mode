@@ -59,14 +59,21 @@
 
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--position-to-point (params)
-  "Convert Position object in PARAMS to a point."
-  (save-excursion
-    (save-restriction
-      (widen)
-      (goto-char (point-min))
-      (forward-line (gethash "line" params))
-      (forward-char (gethash "character" params))
-      (point))))
+  "Convert Position object in PARAMS to a point.
+
+If the contained Position is out of bounds of the buffer, return `point-max'."
+  (let ((line (gethash "line" params))
+        (char (gethash "character" params))
+        (max (point-max)))
+    (if (< char max)
+        (save-excursion
+          (save-restriction
+            (widen)
+            (goto-char (point-min))
+            (forward-line line)
+            (forward-char char)
+            (point)))
+      (point-max))))
 
 ;;; TODO: Use the current LSP client name instead of lsp-mode for the type.
 (defun lsp-warn (message &rest args)
