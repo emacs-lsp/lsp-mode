@@ -57,16 +57,67 @@
 
 (defvar lsp--no-response)
 
+(defun lsp--number-of-lines (buffer)
+  "Return the number of lines in buffer BUFFER, ignoring any buffer narrowing."
+  (with-current-buffer buffer
+    (save-excursion
+      (save-restriction
+        (widen)
+        (goto-char (point-max))
+        (line-number-at-pos (point) t)))))
+
+(defmacro lsp-if-let* (varlist then &rest else)
+  (declare (indent 2)
+           (debug ((&rest [&or symbolp (symbolp form) (form)])
+                   form body)))
+  (if (or (> emacs-major-version 26) (and (= emacs-major-version 26)
+                                          (>= emacs-minor-version 1)))
+      `(if-let* ,varlist ,then ,@else)
+    `(if-let ,varlist ,then ,@else)))
+
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--position-to-point (params)
   "Convert Position object in PARAMS to a point."
-  (save-excursion
-    (save-restriction
-      (widen)
-      (goto-char (point-min))
-      (forward-line (gethash "line" params))
-      (forward-char (gethash "character" params))
-      (point))))
+  (lsp-if-let* ((cache (gethash 'lsp--position-cached-point params nil)))
+      (progn
+        (cl-assert (integerp cache) t "cached point is not a number")
+        cache)
+    (let ((char (gethash "character" params)))
+      (save-excursion
+        (save-restriction
+          (widen)
+          (goto-char (point-min))
+          (forward-line (gethash "line" params))
+          (if (<= char (- (line-end-position) (line-beginning-position)))
+              (progn
+                (forward-char char)
+                (point))
+            ;; From the LSP spec:
+            ;; "If the character value is greater than the line
+            ;;  length it defaults back to the line length."
+            (line-end-position)))))))
+
+(defun lsp--position-valid-p (pos)
+  "Return non-nil if the Position object POS is a valid text position for the current buffer."
+  (let ((line (gethash "line" pos))
+        (char (gethash "character" pos)))
+    (save-excursion
+      (save-restriction
+        (widen)
+        (goto-char (point-min))
+        (if (or (< line 0) (>= line (lsp--number-of-lines (current-buffer))))
+            nil
+          (forward-line line)
+          (prog1
+              (>= char 0)
+            (if (<= char (- (line-end-position) (line-beginning-position)))
+                (progn
+                  (forward-char char)
+                  (puthash 'lsp--position-cached-point (point) pos))
+              ;; From the LSP spec:
+              ;; "If the character value is greater than the line
+              ;;  length it defaults back to the line length."
+              (puthash 'lsp--position-cached-point (line-end-position) pos))))))))
 
 ;;; TODO: Use the current LSP client name instead of lsp-mode for the type.
 (defun lsp-warn (message &rest args)

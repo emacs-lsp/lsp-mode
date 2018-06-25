@@ -1054,17 +1054,28 @@ interface TextDocumentEdit {
 
       (> start1 start2))))
 
-(define-inline lsp--apply-text-edits (edits)
-  "Apply the edits described in the TextEdit[] object in EDITS."
-  (inline-quote
-    ;; We sort text edits so as to apply edits that modify earlier parts of the
-    ;; document first. Furthermore, because the LSP spec dictates that:
-    ;; "If multiple inserts have the same position, the order in the array
-    ;; defines which edit to apply first."
-    ;; We reverse the initial list to make sure that the order among edits with
-    ;; the same position is preserved.
+(defun lsp--text-edit-valid-p (edit)
+  (let* ((range (gethash "range" edit))
+         (start (gethash "start" range))
+         (end (gethash "end" range)))
+    (and (lsp--position-valid-p start) (lsp--position-valid-p end))))
 
-    (mapc #'lsp--apply-text-edit (sort (nreverse ,edits) #'lsp--text-edit-sort-predicate))))
+(defun lsp--apply-text-edits (edits)
+  "Apply the edits described in the TextEdit[] object in EDITS."
+  ;; We sort text edits so as to apply edits that modify earlier parts of the
+  ;; document first. Furthermore, because the LSP spec dictates that:
+  ;; "If multiple inserts have the same position, the order in the array
+  ;; defines which edit to apply first."
+  ;; We reverse the initial list to make sure that the order among edits with
+  ;; the same position is preserved.
+  (let ((sorted-edits (sort (nreverse edits) #'lsp--text-edit-sort-predicate))
+        valid)
+    (setq valid (cl-loop for edit in sorted-edits
+                         if (not (lsp--text-edit-valid-p edit)) return nil
+                         finally return t))
+    (if valid
+        (mapc #'lsp--apply-text-edit sorted-edits)
+      (lsp-warn "Not applying edits, received invalid text edits from the server."))))
 
 (defun lsp--apply-text-edit (text-edit)
   "Apply the edits described in the TextEdit object in TEXT-EDIT."
