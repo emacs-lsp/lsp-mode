@@ -64,7 +64,7 @@
       (save-restriction
         (widen)
         (goto-char (point-max))
-        (line-number-at-pos (point) t)))))
+        (line-number-at-pos (point))))))
 
 (defmacro lsp-if-let* (varlist then &rest else)
   (declare (indent 2)
