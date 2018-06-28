@@ -96,6 +96,11 @@ to your init file to enable imenu integration.
 ![helm-imenu](./examples/helm-imenu.gif)
 
 
+### Rename
+Use <kbd>M</kbd> - <kbd>x</kbd> `lsp-rename`.
+
+![rename](./examples/rename.gif)
+
 ## Finer Control of Starting lsp-mode
 
 In order to more finely control the `lsp-mode` startup, there are a number of
