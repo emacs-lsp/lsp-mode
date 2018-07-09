@@ -893,7 +893,9 @@ directory."
              (lsp--capability "documentRangeFormattingProvider"))
     (setq-local indent-region-function #'lsp-format-region))
 
-  (when lsp-enable-xref
+  (when (and lsp-enable-xref
+             (lsp--capability "referencesProvider")
+             (lsp--capability "definitionProvider"))
     (setq-local xref-backend-functions (list #'lsp--xref-backend)))
 
   (when (and lsp-enable-completion-at-point (lsp--capability "completionProvider"))
