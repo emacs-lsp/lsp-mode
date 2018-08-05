@@ -1755,6 +1755,8 @@ type MarkupKind = 'plaintext' | 'markdown';"
   "Request code action to automatically fix issues reported by
 the diagnostics."
   (lsp--cur-workspace-check)
+  (unless (lsp--capability "codeActionProvider")
+    (signal 'lsp-capability-not-supported (list "codeActionProvider")))
   (let ((params (lsp--text-document-code-action-params)))
     (lsp--send-request-async
      (lsp--make-request "textDocument/codeAction" params)
@@ -2115,6 +2117,8 @@ interface RenameParams {
   "Create and send a 'workspace/executeCommand' message having
 command COMMAND and optionsl ARGS"
   (lsp--cur-workspace-check)
+  (unless (lsp--capability "executeCommandProvider")
+    (signal 'lsp-capability-not-supported (list "executeCommandProvider")))
   (lsp--send-request
    (lsp--make-request
     "workspace/executeCommand"
