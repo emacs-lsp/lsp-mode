@@ -694,7 +694,8 @@ Return the merged plist."
 (defun lsp--client-textdocument-capabilities ()
   "Client Text document capabilities according to LSP."
   `(:synchronization (:willSave t :didSave t :willSaveWaitUntil t)
-     :symbol (:symbolKind (:valueSet ,(cl-loop for kind from 1 to 25 collect kind)))))
+                     :symbol (:symbolKind (:valueSet ,(cl-coerce (cl-loop for kind from 1 to 25 collect kind) 'vector)))
+                     :formatting (:dynamicRegistration t)))
 
 (defun lsp-register-client-capabilities (package-name caps)
   "Register extra client capabilities for the current workspace.
