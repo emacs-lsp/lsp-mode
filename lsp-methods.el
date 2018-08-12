@@ -695,7 +695,8 @@ Return the merged plist."
   "Client Text document capabilities according to LSP."
   `(:synchronization (:willSave t :didSave t :willSaveWaitUntil t)
                      :symbol (:symbolKind (:valueSet ,(cl-coerce (cl-loop for kind from 1 to 25 collect kind) 'vector)))
-                     :formatting (:dynamicRegistration t)))
+                     :formatting (:dynamicRegistration t)
+                     :codeAction (:dynamicRegistration t)))
 
 (defun lsp-register-client-capabilities (package-name caps)
   "Register extra client capabilities for the current workspace.
@@ -1553,7 +1554,9 @@ Returns xref-item(s)."
     (when (and (lsp--capability "documentHighlightProvider")
                lsp-highlight-symbol-at-point)
       (lsp-symbol-highlight))
-    (when (and (lsp--capability "codeActionProvider") lsp-enable-codeaction)
+    (when (and (or (lsp--capability "codeActionProvider")
+                   (lsp--registered-capability "textDocument/codeAction"))
+               lsp-enable-codeaction)
       (lsp--text-document-code-action))
     (when (and (lsp--capability "hoverProvider") lsp-enable-eldoc)
       (funcall lsp-hover-text-function))))
@@ -1768,7 +1771,8 @@ type MarkupKind = 'plaintext' | 'markdown';"
   "Request code action to automatically fix issues reported by
 the diagnostics."
   (lsp--cur-workspace-check)
-  (unless (lsp--capability "codeActionProvider")
+  (unless (or (lsp--capability "codeActionProvider")
+              (lsp--registered-capability "textDocument/codeAction"))
     (signal 'lsp-capability-not-supported (list "codeActionProvider")))
   (let ((params (lsp--text-document-code-action-params)))
     (lsp--send-request-async
