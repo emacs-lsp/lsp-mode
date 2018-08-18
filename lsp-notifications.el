@@ -102,12 +102,12 @@ interface PublishDiagnosticsParams {
 }"
   (let ((file (lsp--uri-to-path (gethash "uri" params)))
         (diagnostics (gethash "diagnostics" params)) buffer)
-    (puthash file (mapcar #'lsp--make-diag diagnostics) lsp--diagnostics)
     (setq buffer (cl-loop for buffer in (lsp--workspace-buffers workspace)
                           when (lsp--equal-files (buffer-file-name buffer) file)
                           return buffer
                           finally return nil))
     (when buffer
+      (puthash file (mapcar #'lsp--make-diag diagnostics) lsp--diagnostics)
       (with-current-buffer buffer
         (run-hooks 'lsp-after-diagnostics-hook)))))
 
