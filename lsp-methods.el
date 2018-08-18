@@ -2135,8 +2135,9 @@ interface RenameParams {
   "Create and send a 'workspace/executeCommand' message having
 command COMMAND and optionsl ARGS"
   (lsp--cur-workspace-check)
-  (unless (lsp--capability "executeCommandProvider")
-    (signal 'lsp-capability-not-supported (list "executeCommandProvider")))
+  ;; uncomment when https://github.com/eclipse/eclipse.jdt.ls/issues/757 is in.
+  ;; (unless (lsp--capability "executeCommandProvider")
+  ;;   (signal 'lsp-capability-not-supported (list "executeCommandProvider")))
   (lsp--send-request
    (lsp--make-request
     "workspace/executeCommand"
