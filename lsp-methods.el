@@ -2092,19 +2092,24 @@ interface RenameParams {
     (when edits
       (lsp--apply-workspace-edit edits))))
 
+(defun lsp-find-custom (method &optional extra)
+  "Send request named METHOD and get cross references of the symbol under point.
+EXTRA is a plist of extra parameters."
+  (let ((loc (lsp--send-request
+              (lsp--make-request method
+                                 (append (lsp--text-document-position-params) extra)))))
+    (if loc
+        (xref--show-xrefs
+         (lsp--locations-to-xref-items (if (listp loc) loc (list loc))) nil)
+      (message "Not found for: %s" (thing-at-point 'symbol t)))))
+
 (defun lsp-goto-implementation ()
   "Resolve, and go to the implementation(s) of the symbol under point."
   (interactive)
   (lsp--cur-workspace-check)
   (unless (lsp--capability "implementationProvider")
     (signal 'lsp-capability-not-supported (list "implementationProvider")))
-  (let ((loc (lsp--send-request (lsp--make-request "textDocument/implementation"
-                                  (lsp--text-document-position-params)))))
-    (if loc
-      (progn
-        (setq loc (if (listp loc) loc (list loc)))
-        (xref--show-xrefs (lsp--locations-to-xref-items loc) nil))
-      (message "No implementations found for: %s" (thing-at-point 'symbol t)))))
+  (lsp-find-custom "textDocument/implementation"))
 
 (defun lsp-goto-type-definition ()
   "Resolve, and go to the type definition(s) of the symbol under point."
@@ -2112,13 +2117,7 @@ interface RenameParams {
   (lsp--cur-workspace-check)
   (unless (lsp--capability "typeDefinitionProvider")
     (signal 'lsp-capability-not-supported (list "typeDefinitionProvider")))
-  (let ((loc (lsp--send-request (lsp--make-request "textDocument/typeDefinition"
-                                  (lsp--text-document-position-params)))))
-    (if loc
-      (progn
-        (setq loc (if (listp loc) loc (list loc)))
-        (xref--show-xrefs (lsp--locations-to-xref-items loc) nil))
-      (message "No type definitions found for: %s" (thing-at-point 'symbol t)))))
+  (lsp-find-custom "textDocument/typeDefinition"))
 
 (define-inline lsp--execute-command (command)
   "Given a COMMAND returned from the server, create and send a
