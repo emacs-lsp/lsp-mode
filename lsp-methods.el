@@ -1878,13 +1878,13 @@ Optionally, CALLBACK is a function that accepts a single argument, the code lens
                                    "textDocument/formatting"
                                    (lsp--make-document-formatting-params)))))
     (if (fboundp 'replace-buffer-contents)
-        (let ((current-buffer (current-buffer)))
-          (with-temp-buffer
+        (let* ((current-buffer (current-buffer))
+               (temp-buffer (get-buffer-create "*lsp-format*")))
+          (with-current-buffer temp-buffer
             (insert-buffer-substring-no-properties current-buffer)
             (lsp--apply-text-edits edits)
-            (let ((temp-buffer (current-buffer)))
-              (with-current-buffer current-buffer
-                (replace-buffer-contents temp-buffer)))))
+            (copy-to-buffer current-buffer (point-min) (point-max))
+            (kill-buffer temp-buffer)))
       (let ((point (point))
             (w-start (window-start)))
         (lsp--apply-text-edits edits)
