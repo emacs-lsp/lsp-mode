@@ -1877,20 +1877,12 @@ Optionally, CALLBACK is a function that accepts a single argument, the code lens
   (let ((edits (lsp--send-request (lsp--make-request
                                    "textDocument/formatting"
                                    (lsp--make-document-formatting-params)))))
-    (if (fboundp 'replace-buffer-contents)
-        (let* ((current-buffer (current-buffer))
-               (temp-buffer (get-buffer-create "*lsp-format*")))
-          (with-current-buffer temp-buffer
-            (insert-buffer-substring-no-properties current-buffer)
-            (lsp--apply-text-edits edits)
-            (copy-to-buffer current-buffer (point-min) (point-max))
-            (kill-buffer temp-buffer)))
-      (let ((point (point))
-            (w-start (window-start)))
-        (lsp--apply-text-edits edits)
-        (goto-char point)
-        (goto-char (line-beginning-position))
-        (set-window-start (selected-window) w-start)))))
+    (let ((point (point))
+          (w-start (window-start)))
+      (lsp--apply-text-edits edits)
+      (goto-char point)
+      (goto-char (line-beginning-position))
+      (set-window-start (selected-window) w-start))))
 
 (defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region.
