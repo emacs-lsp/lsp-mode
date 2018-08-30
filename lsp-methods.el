@@ -2134,7 +2134,8 @@ EXTRA is a plist of extra parameters."
   "Create and send a 'workspace/executeCommand' message having
 command COMMAND and optionsl ARGS"
   (lsp--cur-workspace-check)
-  (unless (lsp--capability "executeCommandProvider")
+  (unless (or (lsp--capability "executeCommandProvider")
+              (lsp--registered-capability "workspace/executeCommand"))
     (signal 'lsp-capability-not-supported (list "executeCommandProvider")))
   (lsp--send-request
    (lsp--make-request
