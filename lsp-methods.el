@@ -1353,25 +1353,33 @@ and the position respectively."
     (cl-coerce (mapcar #'lsp-diagnostic-original diags-in-range) 'vector)))
 
 (defconst lsp--completion-item-kind
-  `(
-    (1 . "Text")
-    (2 . "Method")
-    (3 . "Function")
-    (4 . "Constructor")
-    (5 . "Field")
-    (6 . "Variable")
-    (7 . "Class")
-    (8 . "Interface")
-    (9 . "Module")
-    (10 . "Property")
-    (11 . "Unit")
-    (12 . "Value")
-    (13 . "Enum")
-    (14 . "Keyword")
-    (15 . "Snippet")
-    (16 . "Color")
-    (17 . "File")
-    (18 . "Reference")))
+  [nil
+   "Text"
+   "Method"
+   "Function"
+   "Constructor"
+   "Field"
+   "Variable"
+   "Class"
+   "Interface"
+   "Module"
+   "Property"
+   "Unit"
+   "Value"
+   "Enum"
+   "Keyword"
+   "Snippet"
+   "Color"
+   "File"
+   "Reference"
+   "Folder"
+   "EnumMember"
+   "Constant"
+   "Struct"
+   "Event"
+   "Operator"
+   "TypeParameter"
+   ])
 
 (defun lsp--gethash (key table &optional dflt)
   "Look up KEY in TABLE and return its associated value,
@@ -1396,12 +1404,11 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
 (defun lsp--annotate (item)
   (let* ((table (plist-get (text-properties-at 0 item) 'lsp-completion-item))
          (detail (gethash "detail" table nil))
-         (kind (alist-get (gethash "kind" table nil) lsp--completion-item-kind)))
+         (kind (aref lsp--completion-item-kind (gethash "kind" table nil))))
     (concat
      " "
      detail
-     (when kind " ")
-     (when kind (format "(%s)" kind)))))
+     (when kind (format " (%s)" kind)))))
 
 (defun lsp--sort-string (c)
   (lsp--gethash "sortText" c (gethash "label" c "")))
