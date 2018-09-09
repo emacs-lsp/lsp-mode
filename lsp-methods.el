@@ -1019,7 +1019,7 @@ interface WorkspaceEdit {
   (let ((changes (gethash "changes" edit))
          (document-changes (gethash "documentChanges" edit)))
     (if document-changes
-      (mapc #'lsp--apply-text-document-edit document-changes)
+      (seq-do #'lsp--apply-text-document-edit document-changes)
 
       (when (hash-table-p changes)
         (maphash
@@ -1068,7 +1068,7 @@ interface TextDocumentEdit {
     ;; We reverse the initial list to make sure that the order among edits with
     ;; the same position is preserved.
 
-    (mapc #'lsp--apply-text-edit (sort (nreverse ,edits) #'lsp--text-edit-sort-predicate))))
+    (seq-do #'lsp--apply-text-edit (sort (nreverse ,edits) #'lsp--text-edit-sort-predicate))))
 
 (defun lsp--apply-text-edit (text-edit)
   "Apply the edits described in the TextEdit object in TEXT-EDIT."
@@ -1350,7 +1350,7 @@ and the position respectively."
                             (let ((line (lsp-diagnostic-line diag)))
                               (and (>= line start-line) (<= line end-line))))
                           diags)))
-    (cl-coerce (mapcar #'lsp-diagnostic-original diags-in-range) 'vector)))
+    (cl-coerce (seq-map #'lsp-diagnostic-original diags-in-range) 'vector)))
 
 (defconst lsp--completion-item-kind
   [nil
@@ -1443,7 +1443,7 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
                            ((null resp) nil)
                            ((hash-table-p resp) (gethash "items" resp nil))
                            ((sequencep resp) resp))))
-              (mapcar #'lsp--make-completion-item items))))
+              (seq-map #'lsp--make-completion-item items))))
        :annotation-function #'lsp--annotate
        :display-sort-function #'lsp--sort-completions))))
 
@@ -1647,7 +1647,7 @@ RENDER-ALL if set to nil render only the first element from CONTENTS."
   (let ((renderers (lsp--client-string-renderers client))
         (default-client-renderer (lsp--client-default-renderer client)))
     (string-join
-     (mapcar
+     (seq-map
       (lambda (e)
         (let (renderer)
           (cond
@@ -1672,10 +1672,10 @@ RENDER-ALL if set to nil render only the first element from CONTENTS."
 
            ;; no rendering
            (t e))))
-      (if (listp contents)
+      (if (sequencep contents)
           (if render-all
               contents
-            (list (car contents)))
+            (seq-take contents 1))
         (list contents)))
      "\n")))
 
@@ -1950,7 +1950,7 @@ A reference is highlighted only if it is visible in a window."
                 (push (cons (1- (line-number-at-pos win-start))
                             (1+ (line-number-at-pos win-end)))
                       wins-visible-pos)))
-            (dolist (highlight highlights)
+            (seq-doseq (highlight highlights)
               (let* ((range (gethash "range" highlight nil))
                      (kind (gethash "kind" highlight 1))
                      (start (gethash "start" range))
@@ -2043,7 +2043,7 @@ A reference is highlighted only if it is visible in a window."
 (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
   (let ((json-false :json-false)
         (symbols (lsp--get-document-symbols)))
-    (mapcar #'lsp--symbol-info-to-identifier symbols)))
+    (seq-map #'lsp--symbol-info-to-identifier symbols)))
 
 ;; (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
 ;;   nil)
@@ -2074,7 +2074,7 @@ A reference is highlighted only if it is visible in a window."
   (let ((symbols (lsp--send-request (lsp--make-request
                                      "workspace/symbol"
                                      `(:query ,pattern)))))
-    (mapcar 'lsp--symbol-information-to-xref symbols)))
+    (seq-map #'lsp--symbol-information-to-xref symbols)))
 
 (defun lsp--make-document-rename-params (newname)
   "Make DocumentRangeFormattingParams for selected region.
