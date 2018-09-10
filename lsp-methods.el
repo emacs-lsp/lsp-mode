@@ -1407,7 +1407,7 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
          (kind-index (gethash "kind" table nil)))
     ;; We need check index before call `aref'.
     (when kind-index
-      (setq kind (aref (remove nil lsp--completion-item-kind) kind-index))
+      (setq kind (aref lsp--completion-item-kind kind-index))
       (concat
        " "
        detail
