@@ -18,6 +18,7 @@
 (require 'compile)
 (require 'url-util)
 (require 'url-parse)
+(require 'seq)
 (require 'subr-x)
 (require 'filenotify)
 (require 'cl)
