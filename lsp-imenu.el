@@ -39,36 +39,162 @@
   :type 'string
   :group 'lsp-imenu)
 
+(defcustom lsp-imenu-sort-methods '(kind name)
+  "How to sort the imenu items.
+
+The value is a list of `kind' `name' or `position'. Priorities
+are determined by the index of the element."
+  :type '(repeat (choice (const name)
+                         (const position)
+                         (const kind))))
+
+(defconst lsp--imenu-compare-function-alist
+  (list (cons 'name #'lsp--imenu-compare-name)
+        (cons 'kind #'lsp--imenu-compare-kind)
+        (cons 'position #'lsp--imenu-compare-position))
+  "An alist of (METHOD . FUNCTION).
+
+METHOD is one of the symbols accepted by
+`lsp-imenu-sort-methods'.
+
+FUNCTION takes two hash tables representing DocumentSymbol. It
+returns a negative number, 0, or a positive number indicating
+whether the first parameter is less than, equal to, or greater
+than the second parameter.")
+
 (define-inline lsp--point-to-marker (p)
   (inline-quote (save-excursion (goto-char ,p) (point-marker))))
 
 (defun lsp--symbol-to-imenu-elem (sym)
-  (let ((pt (lsp--position-to-point
-             (gethash "start" (gethash "range" (gethash "location" sym)))))
-        (name (gethash "name" sym))
-        (container (gethash "containerName" sym)))
+  "Convert SYM to imenu element.
+
+SYM is a SymbolInformation message.
+
+Return a cons cell (full-name . start-point)."
+  (let* ((start-point (lsp--symbol-get-start-point sym))
+         (name (gethash "name" sym))
+         (container (gethash "containerName" sym)))
     (cons (if (and lsp-imenu-show-container-name container)
               (concat container lsp-imenu-container-name-separator name)
             name)
-          (if imenu-use-markers (lsp--point-to-marker pt) pt))))
+          start-point)))
+
+(defun lsp--symbol-to-hierarchical-imenu-elem (sym)
+  "Convert SYM to hierarchical imenu elements.
+
+SYM is a DocumentSymbol message.
+
+Return cons cell (\"symbol-name (symbol-kind)\" . start-point) if
+SYM doesn't have any children. Otherwise return a cons cell with
+an alist
+
+  (\"symbol-name\" . ((\"(symbol-kind)\" . start-point)
+                    cons-cells-from-children))"
+  (let* ((start-point (lsp--symbol-get-start-point sym))
+         (name (gethash "name" sym)))
+    (if (gethash "children" sym)
+        (cons name
+              (cons (cons (format "(%s)" (lsp--get-symbol-type sym)) start-point)
+                    (lsp--imenu-create-hierarchical-index (gethash "children" sym))))
+      (cons (format "%s (%s)" name (lsp--get-symbol-type sym)) start-point))))
+
+(defun lsp--symbol-get-start-point (sym)
+  "Get the start point of the name of SYM.
+
+SYM can be either DocumentSymbol or SymbolInformation."
+  (let* ((location (gethash "location" sym))
+         (name-range (or (and location (gethash "range" location))
+                         (gethash "selectionRange" sym)))
+         (start-point (lsp--position-to-point
+                       (gethash "start" name-range))))
+    (if imenu-use-markers (lsp--point-to-marker start-point) start-point)))
 
 (defun lsp--symbol-filter (sym)
-  (not
-    (lsp--equal-files
-      (lsp--uri-to-path (gethash "uri" (gethash "location" sym)))
-      (buffer-file-name))))
+  "Determine if SYM is for the current document."
+  (if-let ((location (gethash "location" sym)))
+      ;; It's a SymbolInformation
+      (not
+       (lsp--equal-files
+        (lsp--uri-to-path (gethash "uri" (gethash "location" sym)))
+        (buffer-file-name)))
+    ;; It's a DocumentSymbol, which is always in the current buffer file.
+    nil))
 
 (defun lsp--get-symbol-type (sym)
+  "The string name of the kind of SYM."
   (or (cdr (assoc (gethash "kind" sym) lsp--symbol-kind)) "Other"))
 
 (defun lsp--imenu-create-index ()
-  (let ((symbols (seq-remove #'lsp--symbol-filter (lsp--get-document-symbols))))
-    (mapcar (lambda (nested-alist)
-              (cons (car nested-alist)
-                (mapcar #'lsp--symbol-to-imenu-elem (cdr nested-alist))))
-      (seq-group-by #'lsp--get-symbol-type symbols))))
+  "Create imenu index from document symbols."
+  (let ((symbols (lsp--get-document-symbols)))
+    (if (lsp--imenu-hierarchical-p symbols)
+        (lsp--imenu-create-hierarchical-index symbols)
+      (mapcar (lambda (nested-alist)
+                (cons (car nested-alist)
+                      (mapcar #'lsp--symbol-to-imenu-elem (cdr nested-alist))))
+              (seq-group-by #'lsp--get-symbol-type (lsp--imenu-filter-symbols symbols))))))
+
+(defun lsp--imenu-filter-symbols (symbols)
+  "Filter out unsupported symbols from SYMBOLS."
+  (seq-remove #'lsp--symbol-filter symbols))
+
+(defun lsp--imenu-hierarchical-p (symbols)
+  "Determine whether any element in SYMBOLS has children."
+  (seq-some (lambda (sym)
+              (gethash "children" sym))
+            symbols))
+
+(defun lsp--imenu-create-hierarchical-index (symbols)
+  "Create imenu index for hierarchical SYMBOLS.
+
+SYMBOLS are a list of DocumentSymbol messages.
+
+Return a nested alist keyed by symbol names. e.g.
+
+   ((\"SomeClass\" (\"(Class)\" . 10)
+                 (\"someField (Field)\" . 20)
+                 (\"someFunction (Function)\" . 25)
+                 (\"SomeSubClass\" (\"(Class)\" . 30)
+                                  (\"someSubField (Field)\" . 35))
+    (\"someFunction (Function)\" . 40))"
+  (let ((symbols (lsp--imenu-filter-symbols symbols)))
+    (mapcar (lambda (sym)
+              (lsp--symbol-to-hierarchical-imenu-elem sym))
+            (sort (lsp--imenu-filter-symbols symbols)
+                  (lambda (sym1 sym2)
+                    (lsp--imenu-symbol-lessp sym1 sym2))))))
+
+(defun lsp--imenu-symbol-lessp (sym1 sym2)
+  (let* ((compare-results (mapcar (lambda (method)
+                                    (funcall (alist-get method lsp--imenu-compare-function-alist)
+                                             sym1 sym2))
+                                  lsp-imenu-sort-methods))
+         (result (seq-find (lambda (result)
+                             (not (= result 0)))
+                           compare-results
+                           0)))
+    (and (numberp result) (< result 0))))
+
+(defun lsp--imenu-compare-kind (sym1 sym2)
+  (let ((kind1 (gethash "kind" sym1))
+        (kind2 (gethash "kind" sym2)))
+    (- kind1 kind2)))
+
+(defun lsp--imenu-compare-position (sym1 sym2)
+  (let ((position1 (lsp--symbol-get-start-point sym1))
+        (position2 (lsp--symbol-get-start-point sym2)))
+    (- position1 position2)))
+
+(defun lsp--imenu-compare-name (sym1 sym2)
+  (let* ((name1 (gethash "name" sym1))
+         (name2 (gethash "name" sym2))
+         (result (compare-strings name1 0 (length name1) name2 0 (length name2))))
+    (if (numberp result)
+        result
+      0)))
 
 (defun lsp-enable-imenu ()
+  "Use lsp-imenu for the current buffer."
   (setq-local imenu-create-index-function #'lsp--imenu-create-index))
 
 (provide 'lsp-imenu)
