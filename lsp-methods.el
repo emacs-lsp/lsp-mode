@@ -1757,13 +1757,15 @@ type MarkupKind = 'plaintext' | 'markdown';"
     (when (and signature-help
                (lsp--point-is-within-bounds-p start end)
                (eq (current-buffer) buffer) (eldoc-display-message-p))
-      (let* ((active-signature-number
-              (or (gethash "activeSignature" signature-help) 0))
-             (active-signature (nth
-                                active-signature-number
-                                (gethash "signatures" signature-help))))
-        (when active-signature
-          (eldoc-message (gethash "label" active-signature)))))))
+      (when-let* ((sig-i (gethash "activeSignature" signature-help))
+                  (sig (seq-elt (gethash "signatures" signature-help) sig-i)))
+        (if-let* ((param-i (gethash "activeParameter" signature-help))
+                  (param (gethash "label" (seq-elt (gethash "parameters" sig) param-i)))
+                  (parts (split-string (gethash "label" sig) param)))
+            (eldoc-message (concat (car parts)
+                            (propertize param 'face 'eldoc-highlight-function-argument)
+                            (string-join (cdr parts) param)))
+         (eldoc-message (gethash "label" sig)))))))
 
 ;; NOTE: the code actions cannot currently be applied. There is some non-GNU
 ;; code to do this in the lsp-haskell module. We still need a GNU version, here.
