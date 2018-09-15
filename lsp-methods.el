@@ -694,7 +694,8 @@ Return the merged plist."
 (defun lsp--client-textdocument-capabilities ()
   "Client Text document capabilities according to LSP."
   `(:synchronization (:willSave t :didSave t :willSaveWaitUntil t)
-                     :symbol (:symbolKind (:valueSet ,(cl-coerce (cl-loop for kind from 1 to 25 collect kind) 'vector)))
+                     :documentSymbol (:symbolKind (:valueSet ,(cl-coerce (cl-loop for kind from 1 to 25 collect kind) 'vector))
+                                                  :hierarchicalDocumentSymbolSupport t)
                      :formatting (:dynamicRegistration t)
                      :codeAction (:dynamicRegistration t)))
 
@@ -1984,7 +1985,7 @@ A reference is highlighted only if it is visible in a window."
      (6 . "Method")
      (7 . "Property")
      (8 . "Field")
-     (9 . "Constructor"),
+     (9 . "Constructor")
      (10 . "Enum")
      (11 . "Interface")
      (12 . "Function")
