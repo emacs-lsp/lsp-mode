@@ -1764,8 +1764,10 @@ type MarkupKind = 'plaintext' | 'markdown';"
                (eq (current-buffer) buffer) (eldoc-display-message-p))
       (when-let* ((sig-i (gethash "activeSignature" signature-help))
                   (sig (seq-elt (gethash "signatures" signature-help) sig-i)))
-        (if-let* ((param-i (gethash "activeParameter" signature-help))
-                  (param (gethash "label" (seq-elt (gethash "parameters" sig) param-i)))
+        (if-let* ((parameter-i (gethash "activeParameter" signature-help))
+                  ;; Bail out if activeParameter lies outside parameters.
+                  (parameter (seq-elt (gethash "parameters" sig) parameter-i))
+                  (param (gethash "label" parameter))
                   (parts (split-string (gethash "label" sig) param)))
             (eldoc-message (concat (car parts)
                             (propertize param 'face 'eldoc-highlight-function-argument)
