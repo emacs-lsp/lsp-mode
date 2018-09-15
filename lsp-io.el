@@ -28,6 +28,16 @@
   :type 'number
   :group 'lsp-mode)
 
+(defcustom lsp--json-array-use-vector nil
+  "Use vectors to represent JSON arrays.
+
+If set, native JSON serialization will be used if available.
+
+This option exists to port existing plugins that rely on JSON arrays serialized as lists.
+It will be removed and vectors will be used by default in the future."
+  :type 'boolean
+  :group 'lsp-mode)
+
 (defun lsp--send-wait (message proc parser)
   "Send MESSAGE to PROC and wait for output from the process."
   (when lsp-print-io
@@ -225,10 +235,16 @@
 
 (define-inline lsp--read-json (str)
   (inline-quote
-    (let* ((json-array-type 'list)
+   (if lsp--json-array-use-vector
+       (if (fboundp 'json-parse-string)
+           (json-parse-string ,str :false-object :json-false :null-object nil)
+         (let* ((json-object-type 'hash-table)
+                (json-false nil))
+           (json-read-from-string ,str)))
+     (let* ((json-array-type 'list)
             (json-object-type 'hash-table)
             (json-false nil))
-      (json-read-from-string ,str))))
+       (json-read-from-string ,str)))))
 
 (defun lsp--parser-on-message (p msg)
   "Called when the parser reads a complete message from the server."
