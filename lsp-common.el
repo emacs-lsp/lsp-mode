@@ -189,5 +189,19 @@ already have been created. "
 (declare-function lsp--workspace-client "lsp-methods" (cl-x))
 (declare-function lsp--client-uri-handlers "lsp-methods" (cl-x))
 
+(defmacro with-lsp-workspace (workspace &rest body)
+  "Helper macro for invoking BODY in WORKSPACE context."
+  (declare (debug (form body))
+           (indent 1))
+  `(let ((lsp--cur-workspace ,workspace))
+     ,@body))
+
+(defmacro when-lsp-workspace (workspace &rest body)
+  "Helper macro for invoking BODY in WORKSPACE context if present."
+  (declare (debug (form body))
+           (indent 1))
+  `(when-let (lsp--cur-workspace ,workspace)
+     ,@body))
+
 (provide 'lsp-common)
 ;;; lsp-common.el ends here
