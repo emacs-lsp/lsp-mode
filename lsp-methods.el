@@ -694,7 +694,8 @@ Return the merged plist."
 (defun lsp--client-textdocument-capabilities ()
   "Client Text document capabilities according to LSP."
   `(:synchronization (:willSave t :didSave t :willSaveWaitUntil t)
-                     :symbol (:symbolKind (:valueSet ,(cl-coerce (cl-loop for kind from 1 to 25 collect kind) 'vector)))
+                     :documentSymbol (:symbolKind (:valueSet ,(cl-coerce (cl-loop for kind from 1 to 25 collect kind) 'vector))
+                                                  :hierarchicalDocumentSymbolSupport t)
                      :formatting (:dynamicRegistration t)
                      :codeAction (:dynamicRegistration t)))
 
@@ -1019,7 +1020,7 @@ interface WorkspaceEdit {
   (let ((changes (gethash "changes" edit))
          (document-changes (gethash "documentChanges" edit)))
     (if document-changes
-      (mapc #'lsp--apply-text-document-edit document-changes)
+      (seq-do #'lsp--apply-text-document-edit document-changes)
 
       (when (hash-table-p changes)
         (maphash
@@ -1068,7 +1069,7 @@ interface TextDocumentEdit {
     ;; We reverse the initial list to make sure that the order among edits with
     ;; the same position is preserved.
 
-    (mapc #'lsp--apply-text-edit (sort (nreverse ,edits) #'lsp--text-edit-sort-predicate))))
+    (seq-do #'lsp--apply-text-edit (sort (nreverse ,edits) #'lsp--text-edit-sort-predicate))))
 
 (defun lsp--apply-text-edit (text-edit)
   "Apply the edits described in the TextEdit object in TEXT-EDIT."
@@ -1350,28 +1351,36 @@ and the position respectively."
                             (let ((line (lsp-diagnostic-line diag)))
                               (and (>= line start-line) (<= line end-line))))
                           diags)))
-    (cl-coerce (mapcar #'lsp-diagnostic-original diags-in-range) 'vector)))
+    (cl-coerce (seq-map #'lsp-diagnostic-original diags-in-range) 'vector)))
 
 (defconst lsp--completion-item-kind
-  `(
-    (1 . "Text")
-    (2 . "Method")
-    (3 . "Function")
-    (4 . "Constructor")
-    (5 . "Field")
-    (6 . "Variable")
-    (7 . "Class")
-    (8 . "Interface")
-    (9 . "Module")
-    (10 . "Property")
-    (11 . "Unit")
-    (12 . "Value")
-    (13 . "Enum")
-    (14 . "Keyword")
-    (15 . "Snippet")
-    (16 . "Color")
-    (17 . "File")
-    (18 . "Reference")))
+  [nil
+   "Text"
+   "Method"
+   "Function"
+   "Constructor"
+   "Field"
+   "Variable"
+   "Class"
+   "Interface"
+   "Module"
+   "Property"
+   "Unit"
+   "Value"
+   "Enum"
+   "Keyword"
+   "Snippet"
+   "Color"
+   "File"
+   "Reference"
+   "Folder"
+   "EnumMember"
+   "Constant"
+   "Struct"
+   "Event"
+   "Operator"
+   "TypeParameter"
+   ])
 
 (defun lsp--gethash (key table &optional dflt)
   "Look up KEY in TABLE and return its associated value,
@@ -1396,12 +1405,15 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
 (defun lsp--annotate (item)
   (let* ((table (plist-get (text-properties-at 0 item) 'lsp-completion-item))
          (detail (gethash "detail" table nil))
-         (kind (alist-get (gethash "kind" table nil) lsp--completion-item-kind)))
-    (concat
-     " "
-     detail
-     (when kind " ")
-     (when kind (format "(%s)" kind)))))
+         (kind-index (gethash "kind" table nil)))
+    ;; We need check index before call `aref'.
+    (when kind-index
+      (setq kind (aref lsp--completion-item-kind kind-index))
+      (concat
+       " "
+       detail
+       (when kind (format " (%s)" kind))))
+    ))
 
 (defun lsp--sort-string (c)
   (lsp--gethash "sortText" c (gethash "label" c "")))
@@ -1436,7 +1448,7 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
                            ((null resp) nil)
                            ((hash-table-p resp) (gethash "items" resp nil))
                            ((sequencep resp) resp))))
-              (mapcar #'lsp--make-completion-item items))))
+              (seq-map #'lsp--make-completion-item items))))
        :annotation-function #'lsp--annotate
        :display-sort-function #'lsp--sort-completions))))
 
@@ -1640,7 +1652,7 @@ RENDER-ALL if set to nil render only the first element from CONTENTS."
   (let ((renderers (lsp--client-string-renderers client))
         (default-client-renderer (lsp--client-default-renderer client)))
     (string-join
-     (mapcar
+     (seq-map
       (lambda (e)
         (let (renderer)
           (cond
@@ -1665,10 +1677,10 @@ RENDER-ALL if set to nil render only the first element from CONTENTS."
 
            ;; no rendering
            (t e))))
-      (if (listp contents)
+      (if (sequencep contents)
           (if render-all
               contents
-            (list (car contents)))
+            (seq-take contents 1))
         (list contents)))
      "\n")))
 
@@ -1750,13 +1762,17 @@ type MarkupKind = 'plaintext' | 'markdown';"
     (when (and signature-help
                (lsp--point-is-within-bounds-p start end)
                (eq (current-buffer) buffer) (eldoc-display-message-p))
-      (let* ((active-signature-number
-              (or (gethash "activeSignature" signature-help) 0))
-             (active-signature (nth
-                                active-signature-number
-                                (gethash "signatures" signature-help))))
-        (when active-signature
-          (eldoc-message (gethash "label" active-signature)))))))
+      (when-let* ((sig-i (gethash "activeSignature" signature-help))
+                  (sig (seq-elt (gethash "signatures" signature-help) sig-i)))
+        (if-let* ((parameter-i (gethash "activeParameter" signature-help))
+                  ;; Bail out if activeParameter lies outside parameters.
+                  (parameter (seq-elt (gethash "parameters" sig) parameter-i))
+                  (param (gethash "label" parameter))
+                  (parts (split-string (gethash "label" sig) param)))
+            (eldoc-message (concat (car parts)
+                            (propertize param 'face 'eldoc-highlight-function-argument)
+                            (string-join (cdr parts) param)))
+         (eldoc-message (gethash "label" sig)))))))
 
 ;; NOTE: the code actions cannot currently be applied. There is some non-GNU
 ;; code to do this in the lsp-haskell module. We still need a GNU version, here.
@@ -1935,7 +1951,7 @@ A reference is highlighted only if it is visible in a window."
                 (push (cons (1- (line-number-at-pos win-start))
                             (1+ (line-number-at-pos win-end)))
                       wins-visible-pos)))
-            (dolist (highlight highlights)
+            (seq-doseq (highlight highlights)
               (let* ((range (gethash "range" highlight nil))
                      (kind (gethash "kind" highlight 1))
                      (start (gethash "start" range))
@@ -1963,7 +1979,7 @@ A reference is highlighted only if it is visible in a window."
      (6 . "Method")
      (7 . "Property")
      (8 . "Field")
-     (9 . "Constructor"),
+     (9 . "Constructor")
      (10 . "Enum")
      (11 . "Interface")
      (12 . "Function")
@@ -2028,7 +2044,7 @@ A reference is highlighted only if it is visible in a window."
 (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
   (let ((json-false :json-false)
         (symbols (lsp--get-document-symbols)))
-    (mapcar #'lsp--symbol-info-to-identifier symbols)))
+    (seq-map #'lsp--symbol-info-to-identifier symbols)))
 
 ;; (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
 ;;   nil)
@@ -2059,7 +2075,7 @@ A reference is highlighted only if it is visible in a window."
   (let ((symbols (lsp--send-request (lsp--make-request
                                      "workspace/symbol"
                                      `(:query ,pattern)))))
-    (mapcar 'lsp--symbol-information-to-xref symbols)))
+    (seq-map #'lsp--symbol-information-to-xref symbols)))
 
 (defun lsp--make-document-rename-params (newname)
   "Make DocumentRangeFormattingParams for selected region.

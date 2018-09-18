@@ -139,7 +139,7 @@
     (setq response
       (pcase (gethash "method" request)
         ("client/registerCapability"
-          (dolist (reg (gethash "registrations" params))
+          (seq-doseq (reg (gethash "registrations" params))
             (lsp--server-register-capability reg))
           empty-response)
         ("window/showMessageRequest"
@@ -148,7 +148,7 @@
                                `(:title ,choice)
                                nil)))
         ("client/unregisterCapability"
-          (dolist (unreg (gethash "unregisterations" params))
+          (seq-doseq (unreg (gethash "unregisterations" params))
             (lsp--server-unregister-capability unreg))
           empty-response)
         ("workspace/applyEdit"
