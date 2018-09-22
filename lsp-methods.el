@@ -1405,15 +1405,15 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
 (defun lsp--annotate (item)
   (let* ((table (plist-get (text-properties-at 0 item) 'lsp-completion-item))
          (detail (gethash "detail" table nil))
-         (kind-index (gethash "kind" table nil)))
+         (kind-index (gethash "kind" table nil))
+         kind)
     ;; We need check index before call `aref'.
     (when kind-index
       (setq kind (aref lsp--completion-item-kind kind-index))
       (concat
        " "
        detail
-       (when kind (format " (%s)" kind))))
-    ))
+       (when kind (format " (%s)" kind))))))
 
 (defun lsp--sort-string (c)
   (lsp--gethash "sortText" c (gethash "label" c "")))
