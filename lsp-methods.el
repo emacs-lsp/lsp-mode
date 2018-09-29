@@ -13,6 +13,8 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;;; Code:
+
 (require 'cl-lib)
 (require 'json)
 (require 'xref)
@@ -24,7 +26,7 @@
 (require 'inline)
 (require 'em-glob)
 
-(defcustom lsp-workspace-folders-changed nil
+(defcustom lsp-workspace-folders-change nil
   "Hooks to run after the folders has changed.
 The hook will receive two parameters list of added and removed folders."
   :type 'hook
@@ -891,7 +893,7 @@ FILE-NAME the file name."
       (puthash dir lsp--cur-workspace lsp--workspaces))
 
     (lsp--update-folders current-folders)
-    (run-hook-with-args 'lsp-workspace-folders-changed directories nil)))
+    (run-hook-with-args 'lsp-workspace-folders-change directories nil)))
 
 (defun lsp-workspace-folders-remove (directories)
   "Remove DIRECTORIES to the list of workspace folders.
@@ -924,7 +926,7 @@ remove."
       (setq current-folders (delete dir current-folders))
       (remhash dir lsp--workspaces))
     (lsp--update-folders current-folders))
-  (run-hook-with-args 'lsp-workspace-folders-changed nil directories))
+  (run-hook-with-args 'lsp-workspace-folders-change nil directories))
 
 (defun lsp-workspace-folders-switch()
   "Switch to another workspace folder from the current workspace."
@@ -996,7 +998,7 @@ remove."
                          :rootPath ,root
                          :rootUri ,(lsp--path-to-uri root)
                          :capabilities ,(lsp--client-capabilities)
-                                :initializationOptions ,extra-init-params-resolved)
+                         :initializationOptions ,extra-init-params-resolved)
        response (lsp--send-request
                  (lsp--make-request "initialize" init-params))
 
