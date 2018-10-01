@@ -321,6 +321,11 @@ whitelist, or does not match any pattern in the blacklist."
   :type 'boolean
   :group 'lsp-mode)
 
+(defcustom lsp-auto-execute-action t
+  "Auto-execute single action."
+  :type 'boolean
+  :group 'lsp-mode)
+
 ;;;###autoload
 (defcustom lsp-eldoc-render-all t
   "Define whether all of the returned by document/onHover will be displayed.
@@ -1825,14 +1830,15 @@ If title is nil, return the name for the command handler."
 
 (defun lsp--select-action (actions)
   "Select an action to execute from ACTIONS."
-  (if actions
-      (let ((name->action (mapcar (lambda (a)
+  (cond
+   ((not actions) (error "No actions to select from"))
+   ((and (= (length actions) 1) lsp-auto-execute-action) (car actions))
+   (t (let ((name->action (mapcar (lambda (a)
                                     (list (lsp--command-get-title a) a))
                                   actions)))
         (cadr (assoc
                (completing-read "Select code action: " name->action)
-               name->action)))
-    (error "No actions to select from")))
+               name->action))))))
 
 (defun lsp-get-or-calculate-code-actions ()
   "Get or calculate the current code actions.
