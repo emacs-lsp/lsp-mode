@@ -1272,8 +1272,11 @@ Added to `after-revert-hook'."
         (revert-buffer-in-progress-p nil))
     (lsp-on-change 0 n n)))
 
-(defun lsp--text-document-did-close ()
-  "Executed when the file is closed, added to `kill-buffer-hook'."
+(defun lsp--text-document-did-close (&optional keep-workspace-alive)
+  "Executed when the file is closed, added to `kill-buffer-hook'.
+
+If KEEP-WORKSPACE-ALIVE is non-nil, do not shutdown the workspace
+if it's closing the last buffer in the workspace."
   (when lsp--cur-workspace
     (with-demoted-errors "Error on ‘lsp--text-document-did-close’: %S"
       (let ((file-versions (lsp--workspace-file-versions lsp--cur-workspace))
@@ -1290,7 +1293,7 @@ Added to `after-revert-hook'."
              (lsp--make-notification
               "textDocument/didClose"
               `(:textDocument ,(lsp--versioned-text-document-identifier)))))
-          (when (= 0 (hash-table-count file-versions))
+          (when (and (not keep-workspace-alive) (= 0 (hash-table-count file-versions)))
             (lsp--shutdown-cur-workspace)))))))
 
 (define-inline lsp--will-save-text-document-params (reason)
@@ -2220,6 +2223,21 @@ If WORKSPACE is not specified the `lsp--cur-workspace' will be used."
                     :type (alist-get (cadr event) lsp--file-change-type)
                     :uri (lsp--path-to-uri (caddr event))))))))
         watches))))
+
+(defun lsp--on-set-visitied-file-name (old-func &rest args)
+  "Advice around function `set-visited-file-name'.
+
+This advice sends textDocument/didClose for the old file and
+textDocument/didOpen for the new file."
+  (let ((old-file-name (buffer-file-name)))
+    (when lsp--cur-workspace
+      (lsp--text-document-did-close t))
+    (prog1
+        (apply old-func args)
+      (when lsp--cur-workspace
+        (lsp--text-document-did-open)))))
+
+(advice-add 'set-visited-file-name :around #'lsp--on-set-visitied-file-name)
 
 (declare-function lsp-mode "lsp-mode" (&optional arg))
 
