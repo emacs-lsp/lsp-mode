@@ -271,6 +271,11 @@ for a new workspace."
   :type 'hook
   :group 'lsp-mode)
 
+(defcustom lsp-before-uninitialized-hook nil
+  "List of functions to be called before a Language Server has been uninitialized."
+  :type 'hook
+  :group 'lsp-mode)
+
 (defvar lsp--sync-methods
   '((0 . none)
     (1 . full)
@@ -564,6 +569,7 @@ interface TextDocumentItem {
 (defun lsp--uninitialize-workspace ()
   "When a workspace is shut down, by request or from just
 disappearing, unset all the variables related to it."
+  (run-hooks 'lsp-workspace-uninitialized-hook)
   (lsp-kill-watch (lsp--workspace-watches lsp--cur-workspace))
 
   (let (proc
