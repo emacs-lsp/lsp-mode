@@ -150,7 +150,11 @@
   ;; ‘default-renderer’ is the renderer that is going to be used when there is
   ;; no concrete "language" specified for the current MarkedString. (see
   ;; https://microsoft.github.io/language-server-protocol/specification#textDocument_hover)
-  (default-renderer nil))
+  (default-renderer nil)
+
+  ;; Use the native JSON API in Emacs 27 and above. If non-nil, JSON arrays will
+  ;; be parsed as vectors.
+  (use-native-json nil))
 
 (cl-defstruct lsp--registered-capability
   (id "" :type string)
@@ -466,13 +470,18 @@ If WORKSPACE is not provided current workspace will be used."
   "Create notification body for method METHOD and parameters PARAMS."
   (lsp--make-notification method params))
 
-(define-inline lsp--make-message (params)
+(defun lsp--make-message (params)
   "Create a LSP message from PARAMS, after encoding it to a JSON string."
-  (inline-quote
-    (let* ((json-encoding-pretty-print lsp-print-io)
-           (json-false :json-false)
-           (body (json-encode ,params)))
-      (format "Content-Length: %d\r\n\r\n%s" (string-bytes body) body))))
+  (lsp--cur-workspace-check)
+  (let* ((json-encoding-pretty-print lsp-print-io)
+         (json-false :json-false)
+         (client (lsp--workspace-client lsp--cur-workspace))
+         (body (if (and (lsp--client-use-native-json client)
+                        (fboundp 'json-serialize))
+                   (json-serialize params :null-object nil
+                                   :false-object json-false)
+                 (json-encode params))))
+    (format "Content-Length: %d\r\n\r\n%s" (string-bytes body) body)))
 
 (define-inline lsp--send-notification (body)
   "Send BODY as a notification to the language server."
@@ -627,7 +636,7 @@ the client, and then starting up again."
                        (value (cdr extra-capabilities-cons))
                        (capabilities (if (functionp value) (funcall value)
                                        value)))
-                 (if (and capabilities (not (listp capabilities)))
+                 (if (and capabilities (not (sequencep capabilities)))
                    (progn
                      (message "Capabilities provided by %s are not a plist: %s" package-name value)
                      nil)
@@ -1546,7 +1555,7 @@ Returns xref-item(s)."
                                   "textDocument/definition"
                                    (lsp--text-document-position-params)))))
     ;; textDocument/definition returns Location | Location[]
-    (lsp--locations-to-xref-items (if (listp defs) defs (list defs)))))
+    (lsp--locations-to-xref-items (if (sequencep defs) defs (vector defs)))))
 
 (defun lsp--make-reference-params (&optional td-position include-declaration)
   "Make a ReferenceParam object.
@@ -2084,7 +2093,7 @@ A reference is highlighted only if it is visible in a window."
          (defs (lsp--send-request (lsp--make-request
                                    "textDocument/definition"
                                    params))))
-    (lsp--locations-to-xref-items (if (listp defs) defs (list defs)))))
+    (lsp--locations-to-xref-items (if (sequencep defs) defs (vector defs)))))
 
 (cl-defmethod xref-backend-references ((_backend (eql xref-lsp)) identifier)
   (let* ((properties (text-properties-at 0 identifier))
@@ -2131,7 +2140,7 @@ EXTRA is a plist of extra parameters."
                                  (append (lsp--text-document-position-params) extra)))))
     (if loc
         (xref--show-xrefs
-         (lsp--locations-to-xref-items (if (listp loc) loc (list loc))) nil)
+         (lsp--locations-to-xref-items (if (sequencep loc) loc (vector loc))) nil)
       (message "Not found for: %s" (thing-at-point 'symbol t)))))
 
 (defun lsp-goto-implementation ()

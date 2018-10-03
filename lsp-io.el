@@ -223,18 +223,21 @@
    (lsp--parser-body p) nil
    (lsp--parser-reading-body p) nil))
 
-(define-inline lsp--read-json (str)
-  (inline-quote
-    (let* ((json-array-type 'list)
-            (json-object-type 'hash-table)
-            (json-false nil))
-      (json-read-from-string ,str))))
+(defun lsp--read-json (str use-native-json)
+  (let* ((use-native-json (and use-native-json (fboundp 'json-parse-string)))
+         (json-array-type (if use-native-json 'vector 'list))
+         (json-object-type 'hash-table)
+         (json-false nil))
+    (if use-native-json
+        (json-parse-string str :object-type 'hash-table
+                           :null-object nil :false-object nil)
+      (json-read-from-string str))))
 
 (defun lsp--parser-on-message (p msg)
   "Called when the parser reads a complete message from the server."
-  (let* ((json-data (lsp--read-json msg))
+  (let* ((client (lsp--workspace-client (lsp--parser-workspace p)))
+         (json-data (lsp--read-json msg (lsp--client-use-native-json client)))
           (id (gethash "id" json-data nil))
-          (client (lsp--workspace-client (lsp--parser-workspace p)))
           callback)
     (pcase (lsp--get-message-type json-data)
       ('response
