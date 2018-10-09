@@ -150,7 +150,11 @@
   ;; ‘default-renderer’ is the renderer that is going to be used when there is
   ;; no concrete "language" specified for the current MarkedString. (see
   ;; https://microsoft.github.io/language-server-protocol/specification#textDocument_hover)
-  (default-renderer nil))
+  (default-renderer nil)
+
+  ;; Use the native JSON API in Emacs 27 and above. If non-nil, JSON arrays will
+  ;; be parsed as vectors.
+  (use-native-json nil))
 
 (cl-defstruct lsp--registered-capability
   (id "" :type string)
@@ -271,6 +275,11 @@ for a new workspace."
   :type 'hook
   :group 'lsp-mode)
 
+(defcustom lsp-before-uninitialized-hook nil
+  "List of functions to be called before a Language Server has been uninitialized."
+  :type 'hook
+  :group 'lsp-mode)
+
 (defvar lsp--sync-methods
   '((0 . none)
     (1 . full)
@@ -313,6 +322,11 @@ whitelist, or does not match any pattern in the blacklist."
 ;;;###autoload
 (defcustom lsp-enable-eldoc t
   "Enable `eldoc-mode' integration."
+  :type 'boolean
+  :group 'lsp-mode)
+
+(defcustom lsp-auto-execute-action t
+  "Auto-execute single action."
   :type 'boolean
   :group 'lsp-mode)
 
@@ -456,13 +470,18 @@ If WORKSPACE is not provided current workspace will be used."
   "Create notification body for method METHOD and parameters PARAMS."
   (lsp--make-notification method params))
 
-(define-inline lsp--make-message (params)
+(defun lsp--make-message (params)
   "Create a LSP message from PARAMS, after encoding it to a JSON string."
-  (inline-quote
-    (let* ((json-encoding-pretty-print lsp-print-io)
-           (json-false :json-false)
-           (body (json-encode ,params)))
-      (format "Content-Length: %d\r\n\r\n%s" (string-bytes body) body))))
+  (lsp--cur-workspace-check)
+  (let* ((json-encoding-pretty-print lsp-print-io)
+         (json-false :json-false)
+         (client (lsp--workspace-client lsp--cur-workspace))
+         (body (if (and (lsp--client-use-native-json client)
+                        (fboundp 'json-serialize))
+                   (json-serialize params :null-object nil
+                                   :false-object json-false)
+                 (json-encode params))))
+    (format "Content-Length: %d\r\n\r\n%s" (string-bytes body) body)))
 
 (define-inline lsp--send-notification (body)
   "Send BODY as a notification to the language server."
@@ -564,6 +583,7 @@ interface TextDocumentItem {
 (defun lsp--uninitialize-workspace ()
   "When a workspace is shut down, by request or from just
 disappearing, unset all the variables related to it."
+  (run-hooks 'lsp-workspace-uninitialized-hook)
   (lsp-kill-watch (lsp--workspace-watches lsp--cur-workspace))
 
   (let (proc
@@ -616,7 +636,7 @@ the client, and then starting up again."
                        (value (cdr extra-capabilities-cons))
                        (capabilities (if (functionp value) (funcall value)
                                        value)))
-                 (if (and capabilities (not (listp capabilities)))
+                 (if (and capabilities (not (sequencep capabilities)))
                    (progn
                      (message "Capabilities provided by %s are not a plist: %s" package-name value)
                      nil)
@@ -1266,8 +1286,11 @@ Added to `after-revert-hook'."
         (revert-buffer-in-progress-p nil))
     (lsp-on-change 0 n n)))
 
-(defun lsp--text-document-did-close ()
-  "Executed when the file is closed, added to `kill-buffer-hook'."
+(defun lsp--text-document-did-close (&optional keep-workspace-alive)
+  "Executed when the file is closed, added to `kill-buffer-hook'.
+
+If KEEP-WORKSPACE-ALIVE is non-nil, do not shutdown the workspace
+if it's closing the last buffer in the workspace."
   (when lsp--cur-workspace
     (with-demoted-errors "Error on ‘lsp--text-document-did-close’: %S"
       (let ((file-versions (lsp--workspace-file-versions lsp--cur-workspace))
@@ -1284,7 +1307,7 @@ Added to `after-revert-hook'."
              (lsp--make-notification
               "textDocument/didClose"
               `(:textDocument ,(lsp--versioned-text-document-identifier)))))
-          (when (= 0 (hash-table-count file-versions))
+          (when (and (not keep-workspace-alive) (= 0 (hash-table-count file-versions)))
             (lsp--shutdown-cur-workspace)))))))
 
 (define-inline lsp--will-save-text-document-params (reason)
@@ -1532,7 +1555,7 @@ Returns xref-item(s)."
                                   "textDocument/definition"
                                    (lsp--text-document-position-params)))))
     ;; textDocument/definition returns Location | Location[]
-    (lsp--locations-to-xref-items (if (listp defs) defs (list defs)))))
+    (lsp--locations-to-xref-items (if (sequencep defs) defs (vector defs)))))
 
 (defun lsp--make-reference-params (&optional td-position include-declaration)
   "Make a ReferenceParam object.
@@ -1816,14 +1839,15 @@ If title is nil, return the name for the command handler."
 
 (defun lsp--select-action (actions)
   "Select an action to execute from ACTIONS."
-  (if actions
-      (let ((name->action (mapcar (lambda (a)
+  (cond
+   ((not actions) (error "No actions to select from"))
+   ((and (= (length actions) 1) lsp-auto-execute-action) (car actions))
+   (t (let ((name->action (mapcar (lambda (a)
                                     (list (lsp--command-get-title a) a))
                                   actions)))
         (cadr (assoc
                (completing-read "Select code action: " name->action)
-               name->action)))
-    (error "No actions to select from")))
+               name->action))))))
 
 (defun lsp-get-or-calculate-code-actions ()
   "Get or calculate the current code actions.
@@ -2061,7 +2085,7 @@ A reference is highlighted only if it is visible in a window."
          (defs (lsp--send-request (lsp--make-request
                                    "textDocument/definition"
                                    params))))
-    (lsp--locations-to-xref-items (if (listp defs) defs (list defs)))))
+    (lsp--locations-to-xref-items (if (sequencep defs) defs (vector defs)))))
 
 (cl-defmethod xref-backend-references ((_backend (eql xref-lsp)) identifier)
   (let* ((properties (text-properties-at 0 identifier))
@@ -2108,7 +2132,7 @@ EXTRA is a plist of extra parameters."
                                  (append (lsp--text-document-position-params) extra)))))
     (if loc
         (xref--show-xrefs
-         (lsp--locations-to-xref-items (if (listp loc) loc (list loc))) nil)
+         (lsp--locations-to-xref-items (if (sequencep loc) loc (vector loc))) nil)
       (message "Not found for: %s" (thing-at-point 'symbol t)))))
 
 (defun lsp-goto-implementation ()
@@ -2206,6 +2230,21 @@ If WORKSPACE is not specified the `lsp--cur-workspace' will be used."
                     :type (alist-get (cadr event) lsp--file-change-type)
                     :uri (lsp--path-to-uri (caddr event))))))))
         watches))))
+
+(defun lsp--on-set-visitied-file-name (old-func &rest args)
+  "Advice around function `set-visited-file-name'.
+
+This advice sends textDocument/didClose for the old file and
+textDocument/didOpen for the new file."
+  (let ((old-file-name (buffer-file-name)))
+    (when lsp--cur-workspace
+      (lsp--text-document-did-close t))
+    (prog1
+        (apply old-func args)
+      (when lsp--cur-workspace
+        (lsp--text-document-did-open)))))
+
+(advice-add 'set-visited-file-name :around #'lsp--on-set-visitied-file-name)
 
 (declare-function lsp-mode "lsp-mode" (&optional arg))
 

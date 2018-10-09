@@ -123,7 +123,8 @@ GET-ROOT is the language-specific function to determine the project root for the
                                        ignore-messages
                                        extra-init-params
                                        initialize
-                                       prefix-function)
+                                       prefix-function
+                                       use-native-json)
   "Define a LSP client using stdio.
 NAME is the symbol to use for the name of the client.
 LANGUAGE-ID is the language id to be used when communication with
@@ -158,7 +159,10 @@ Optional arguments:
 `:prefix-function' is a function called for getting the prefix for completion.
  The function takes no parameter and returns a cons (start . end) representing
  the start and end bounds of the prefix. If it's not set, the client uses a
- default prefix function."
+ default prefix function.
+
+ If `:use-native-json' is non-nil, lsp-mode will use the native JSON encoding
+ functions, and parse JSON strings as vectors."
   (cl-check-type name symbol)
   (let ((enable-name (intern (format "%s-enable" name))))
     `(progn
@@ -178,14 +182,15 @@ Optional arguments:
            :extra-init-params ,extra-init-params
            :initialize-fn ,initialize
            :enable-function (function ,enable-name)
-           :prefix-function ,prefix-function)))))
+           :prefix-function ,prefix-function
+           :use-native-json ,use-native-json)))))
 
 (cl-defun lsp--enable-stdio-client (name &key language-id language-id-fn
                                          root-directory-fn command command-fn
                                          ignore-regexps ignore-messages
                                          extra-init-params initialize-fn
                                          enable-function
-                                         prefix-function)
+                                         prefix-function use-native-json)
   (cl-check-type name symbol)
   (cl-check-type language-id (or null string))
   (cl-check-type language-id-fn (or null function))
@@ -213,7 +218,8 @@ Optional arguments:
                     :ignore-regexps ignore-regexps
                     :ignore-messages ignore-messages
                     :enable-function enable-function
-                    :prefix-function prefix-function)))
+                    :prefix-function prefix-function
+                    :use-native-json use-native-json)))
       (when initialize-fn
         (funcall initialize-fn client))
       (let ((root (funcall (lsp--client-get-root client))))
@@ -229,7 +235,8 @@ Optional arguments:
                                      ignore-messages
                                      extra-init-params
                                      initialize
-                                     prefix-function)
+                                     prefix-function
+                                     use-native-json)
   "Define a LSP client using TCP.
 NAME is the symbol to use for the name of the client.
 LANGUAGE-ID is the language id to be used when communication with
@@ -262,7 +269,10 @@ Optional arguments:
 `:prefix-function' is a function called for getting the prefix for completion.
  The function takes no parameter and returns a cons (start . end) representing
  the start and end bounds of the prefix. If it's not set, the client uses a
- default prefix function."
+ default prefix function.
+
+ If `:use-native-json' is non-nil, lsp-mode will use the native JSON encoding
+ functions, and parse JSON strings as vectors."
   (cl-check-type name symbol)
   (let ((enable-name (intern (format "%s-enable" name))))
     `(progn
@@ -284,7 +294,8 @@ Optional arguments:
            :extra-init-params ,extra-init-params
            :initialize-fn ,initialize
            :enable-function (function ,enable-name)
-           :prefix-function ,prefix-function)))))
+           :prefix-function ,prefix-function
+           :use-native-json ,use-native-json)))))
 
 (cl-defun lsp--enable-tcp-client (name &key language-id language-id-fn
                                        root-directory-fn command command-fn
@@ -292,7 +303,8 @@ Optional arguments:
                                        ignore-regexps ignore-messages
                                        extra-init-params initialize-fn
                                        enable-function
-                                       prefix-function)
+                                       prefix-function
+                                       use-native-json)
   (cl-check-type name symbol)
   (cl-check-type language-id (or null string))
   (cl-check-type language-id-fn (or null function))
@@ -322,7 +334,8 @@ Optional arguments:
                     :ignore-regexps ignore-regexps
                     :ignore-messages ignore-messages
                     :enable-function enable-function
-                    :prefix-function prefix-function)))
+                    :prefix-function prefix-function
+                    :use-native-json use-native-json)))
       (when initialize-fn
         (funcall initialize-fn client))
       (let ((root (funcall (lsp--client-get-root client))))
