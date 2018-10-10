@@ -2015,11 +2015,12 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
   (interactive (list
                 (lsp--select-action (lsp-get-or-calculate-code-actions))))
   (lsp--cur-workspace-check)
-  (let* ((command (gethash "command" action))
-         (action-handler (gethash command
-                                  (lsp--client-action-handlers
-                                   (lsp--workspace-client lsp--cur-workspace)))))
-    (if action-handler
+  (when-let ((edit (gethash "edit" action)))
+    (lsp--apply-workspace-edit edit))
+  (when-let ((command (gethash "command" action)))
+    (if-let ((action-handler (gethash command
+                                      (lsp--client-action-handlers
+                                       (lsp--workspace-client lsp--cur-workspace)))))
         (funcall action-handler action)
       (lsp--execute-command action))))
 
