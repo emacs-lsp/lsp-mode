@@ -112,8 +112,10 @@ interface PublishDiagnosticsParams {
                           return buffer
                           finally return nil))
 
-    (when (or lsp-report-if-no-buffer buffer)
-      (puthash file (mapcar #'lsp--make-diag diagnostics) lsp--diagnostics))
+    (if diagnostics
+        (when (or lsp-report-if-no-buffer buffer)
+          (puthash file (mapcar #'lsp--make-diag diagnostics) lsp--diagnostics))
+      (remhash file lsp--diagnostics))
 
     (when buffer
       (with-current-buffer buffer

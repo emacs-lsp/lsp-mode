@@ -13,6 +13,8 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;;; Code:
+
 (require 'cl-lib)
 (require 'json)
 (require 'xref)
@@ -23,6 +25,12 @@
 (require 'pcase)
 (require 'inline)
 (require 'em-glob)
+
+(defcustom lsp-workspace-folders-change nil
+  "Hooks to run after the folders has changed.
+The hook will receive two parameters list of added and removed folders."
+  :type 'hook
+  :group 'lsp-mode)
 
 (defconst lsp--file-change-type
   `((created . 1)
@@ -230,7 +238,10 @@
 
   ;; contains all the file notification watches that have been created for the
   ;; current workspace in format filePath->file notification handle.
-  (watches (make-hash-table :test 'equal)))
+  (watches (make-hash-table :test 'equal))
+
+  ;; list of workspace folders
+  (workspace-folders nil))
 
 (defvar lsp--workspaces (make-hash-table :test #'equal)
   "Table of known workspaces, indexed by the project root directory.")
@@ -708,8 +719,9 @@ Return the merged plist."
 
 (defun lsp--client-workspace-capabilities ()
   "Client Workspace capabilities according to LSP."
-  `(:applyEdit t
-     :executeCommand (:dynamicRegistration t)))
+  '(:applyEdit t
+               :executeCommand (:dynamicRegistration t)
+               :workspaceFolders t))
 
 (defun lsp--client-textdocument-capabilities ()
   "Client Text document capabilities according to LSP."
@@ -839,6 +851,115 @@ directory."
     (cl-notany (lambda (p) (string-match-p p root))
       lsp-project-blacklist)))
 
+(defun lsp--workspace-folders-capability-p ()
+  "Return whether current server supports workspace folders."
+  (when-let (workspace (gethash "workspace" (lsp--server-capabilities)))
+    (when-let (capability (gethash "workspaceFolders" workspace))
+      (gethash "supported" capability))))
+
+(defun lsp--suggest-project-root ()
+  "Caculates project root or fallbacks to the current directory."
+  (cond
+   ((and (featurep 'projectile) (projectile-project-p)) (projectile-project-root))
+   ((vc-backend default-directory) (expand-file-name (vc-root-dir)))
+   (t default-directory)))
+
+(defun lsp--read-from-file (file)
+  "Read FILE content."
+  (when (file-exists-p file)
+    (with-demoted-errors "Failed to read file with message %S"
+      (with-temp-buffer
+        (insert-file-contents-literally file)
+        (first (read-from-string
+                (buffer-substring-no-properties (point-min) (point-max))))))))
+
+(defun lsp--persist (file-name to-persist)
+  "Persist TO-PERSIST.
+
+FILE-NAME the file name."
+  (with-demoted-errors
+      "Failed to persist file: %S"
+    (with-temp-file file-name
+      (erase-buffer)
+      (insert (prin1-to-string to-persist)))))
+
+(defun lsp--update-folders (folders)
+  "Update workspace FOLDERS."
+  (lsp--persist (concat (file-name-as-directory (lsp--workspace-root lsp--cur-workspace)) ".folders")
+                folders)
+  (setf (lsp--workspace-workspace-folders lsp--cur-workspace) folders))
+
+(defun lsp-workspace-folders-add (directories)
+  "Add DIRECTORIES to the list of workspace folders."
+  (interactive (list (list (read-directory-name "Select folder to add: "
+                                                (lsp--suggest-project-root)
+                                                nil
+                                                t))))
+  (unless (lsp--workspace-folders-capability-p)
+    (signal 'lsp-capability-not-supported (list "workspaceFolders")))
+
+  (let ((current-folders (lsp--workspace-workspace-folders lsp--cur-workspace)))
+    (lsp-send-notification
+     (lsp-make-notification "workspace/didChangeWorkspaceFolders"
+                            `(:event (:added
+                                      ,(apply 'vector (mapcar
+                                                       (lambda (dir)
+                                                         (when (member dir current-folders)
+                                                           (error "Folder %s is already part of the project" dir))
+                                                         (list :uri (lsp--path-to-uri dir)))
+                                                       directories))))))
+    (dolist (dir directories)
+      (setq current-folders (push dir current-folders))
+      (puthash dir lsp--cur-workspace lsp--workspaces))
+
+    (lsp--update-folders current-folders)
+    (run-hook-with-args 'lsp-workspace-folders-change directories nil)))
+
+(defun lsp-workspace-folders-remove (directories)
+  "Remove DIRECTORIES to the list of workspace folders.
+When called interactively it asks user to select the folder to
+remove."
+  (interactive (list (list
+                      (completing-read
+                       "Select folder to remove: "
+                       (progn
+                         (lsp--cur-workspace-check)
+                         (lsp--workspace-workspace-folders lsp--cur-workspace))
+                       nil
+                       t
+                       (let ((root (lsp--suggest-project-root)))
+                         (when (member root (lsp--workspace-workspace-folders lsp--cur-workspace))
+                           root))))))
+
+  (unless (lsp--workspace-folders-capability-p)
+    (signal 'lsp-capability-not-supported (list "workspaceFolders")))
+
+  (lsp-send-notification
+   (lsp-make-notification "workspace/didChangeWorkspaceFolders"
+                          `(:event (:removed
+                                    ,(apply 'vector (mapcar
+                                                     (lambda (dir)
+                                                       (list :uri (lsp--path-to-uri dir)))
+                                                     directories))))))
+  (let ((current-folders (lsp--workspace-workspace-folders lsp--cur-workspace)))
+    (dolist (dir directories)
+      (setq current-folders (delete dir current-folders))
+      (remhash dir lsp--workspaces))
+    (lsp--update-folders current-folders))
+  (run-hook-with-args 'lsp-workspace-folders-change nil directories))
+
+(defun lsp-workspace-folders-switch()
+  "Switch to another workspace folder from the current workspace."
+  (interactive)
+  (unless (lsp--workspace-folders-capability-p)
+    (signal 'lsp-capability-not-supported (list "workspaceFolders")))
+  (let ((folder-name (completing-read
+                      "Select workspace folder: "
+                      (lsp--workspace-workspace-folders lsp--cur-workspace)
+                      nil
+                      t)))
+    (find-file folder-name)))
+
 (defun lsp--start (client &optional extra-init-params)
   (when lsp--cur-workspace
     (user-error "LSP mode is already enabled for this buffer"))
@@ -846,12 +967,11 @@ directory."
   (let* ((root (file-truename (funcall (lsp--client-get-root client))))
          (workspace (gethash root lsp--workspaces))
          new-conn response init-params
-         parser proc cmd-proc)
+         parser proc cmd-proc workspace-folders extra-init-params-resolved)
     (if workspace
         (progn
           (setq lsp--cur-workspace workspace)
           (lsp-mode 1))
-
       (setf
        parser (make-lsp--parser)
        lsp--cur-workspace (make-lsp--workspace
@@ -875,16 +995,39 @@ directory."
       (puthash root lsp--cur-workspace lsp--workspaces)
       (lsp-mode 1)
       (run-hooks 'lsp-before-initialize-hook)
-      (setq init-params
-            `(:processId ,(emacs-pid)
+
+      (setf
+       extra-init-params-resolved (if (functionp extra-init-params)
+                                      (funcall extra-init-params lsp--cur-workspace)
+                                    extra-init-params)
+       ;; join the saved workspace folders + the folders comming from the
+       ;; language extension to keep backward compatibility with `lsp-java'
+       workspace-folders (append
+                          (lsp--read-from-file
+                           (concat (file-name-as-directory root) ".folders"))
+                          (mapcar 'lsp--uri-to-path
+                                  (plist-get extra-init-params :workspaceFolders)))
+
+       extra-init-params-resolved (if workspace-folders
+                                      (plist-put extra-init-params-resolved
+                                                 :workspaceFolders
+                                                 (mapcar (lambda (dir) (lsp--path-to-uri dir))
+                                                         workspace-folders))
+                                    extra-init-params-resolved)
+       init-params `(:processId ,(emacs-pid)
                          :rootPath ,root
                          :rootUri ,(lsp--path-to-uri root)
                          :capabilities ,(lsp--client-capabilities)
-                         :initializationOptions ,(if (functionp extra-init-params)
-                                                     (funcall extra-init-params lsp--cur-workspace)
-                                                   extra-init-params)))
-      (setf response (lsp--send-request
-                      (lsp--make-request "initialize" init-params)))
+                         :initializationOptions ,extra-init-params-resolved)
+       response (lsp--send-request
+                 (lsp--make-request "initialize" init-params))
+
+       (lsp--workspace-workspace-folders lsp--cur-workspace) workspace-folders)
+
+      (mapc (lambda (dir)
+              (puthash dir lsp--cur-workspace lsp--workspaces))
+            workspace-folders)
+
       (unless response
         (signal 'lsp-empty-response-error (list "initialize")))
       (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
@@ -1872,11 +2015,12 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
   (interactive (list
                 (lsp--select-action (lsp-get-or-calculate-code-actions))))
   (lsp--cur-workspace-check)
-  (let* ((command (gethash "command" action))
-         (action-handler (gethash command
-                                  (lsp--client-action-handlers
-                                   (lsp--workspace-client lsp--cur-workspace)))))
-    (if action-handler
+  (when-let ((edit (gethash "edit" action)))
+    (lsp--apply-workspace-edit edit))
+  (when-let ((command (gethash "command" action)))
+    (if-let ((action-handler (gethash command
+                                      (lsp--client-action-handlers
+                                       (lsp--workspace-client lsp--cur-workspace)))))
         (funcall action-handler action)
       (lsp--execute-command action))))
 
