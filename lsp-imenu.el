@@ -115,7 +115,7 @@ SYM can be either DocumentSymbol or SymbolInformation."
   ;; buffer file.
   (when-let (location (gethash "location" sym))
     (not
-     (equal
+     (eq
       (find-buffer-visiting (lsp--uri-to-path (gethash "uri" (gethash "location" sym))))
       (current-buffer)))))
 
