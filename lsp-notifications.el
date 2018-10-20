@@ -95,22 +95,15 @@ server and put in `lsp--diagnostics'."
      :message (if source (format "%s: %s" source message) message)
      :original diag)))
 
-(defun lsp--equal-files (f1 f2)
-  (and f1 f2
-       (string-equal (file-truename f1) (file-truename f2))))
-
 (defun lsp--on-diagnostics (params workspace)
   "Callback for textDocument/publishDiagnostics.
 interface PublishDiagnosticsParams {
     uri: string;
     diagnostics: Diagnostic[];
 }"
-  (let ((file (lsp--uri-to-path (gethash "uri" params)))
-        (diagnostics (gethash "diagnostics" params)) buffer)
-    (setq buffer (cl-loop for buffer in (lsp--workspace-buffers workspace)
-                          when (lsp--equal-files (buffer-file-name buffer) file)
-                          return buffer
-                          finally return nil))
+  (let* ((file (lsp--uri-to-path (gethash "uri" params)))
+         (diagnostics (gethash "diagnostics" params))
+         (buffer (find-buffer-visiting file)))
 
     (if diagnostics
         (when (or lsp-report-if-no-buffer buffer)

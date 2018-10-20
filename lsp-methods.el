@@ -1222,17 +1222,16 @@ interface TextDocumentEdit {
 
       (> start1 start2))))
 
-(define-inline lsp--apply-text-edits (edits)
+(defun lsp--apply-text-edits (edits)
   "Apply the edits described in the TextEdit[] object in EDITS."
-  (inline-quote
-    ;; We sort text edits so as to apply edits that modify earlier parts of the
-    ;; document first. Furthermore, because the LSP spec dictates that:
-    ;; "If multiple inserts have the same position, the order in the array
-    ;; defines which edit to apply first."
-    ;; We reverse the initial list to make sure that the order among edits with
-    ;; the same position is preserved.
-
-    (seq-do #'lsp--apply-text-edit (sort (nreverse ,edits) #'lsp--text-edit-sort-predicate))))
+  ;; We sort text edits so as to apply edits that modify latter parts of the
+  ;; document first. Furthermore, because the LSP spec dictates that:
+  ;; "If multiple inserts have the same position, the order in the array
+  ;; defines which edit to apply first."
+  ;; We reverse the initial list and sort stably to make sure the order among
+  ;; edits with the same position is preserved.
+  (mapc #'lsp--apply-text-edit
+        (sort (nreverse edits) #'lsp--text-edit-sort-predicate)))
 
 (defun lsp--apply-text-edit (text-edit)
   "Apply the edits described in the TextEdit object in TEXT-EDIT."
@@ -1585,10 +1584,10 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
   (lsp--gethash "sortText" c (gethash "label" c "")))
 
 (defun lsp--sort-completions (completions)
-  (sort completions (lambda (c1 c2)
-                      (string-lessp
-                        (lsp--sort-string c1)
-                        (lsp--sort-string c2)))))
+  (seq-into (sort completions
+                  (lambda (c1 c2)
+                    (string-lessp (lsp--sort-string c1) (lsp--sort-string c2))))
+            'list))
 
 (defun lsp--default-prefix-function ()
   (bounds-of-thing-at-point 'symbol))

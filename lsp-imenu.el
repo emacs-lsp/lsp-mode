@@ -111,14 +111,13 @@ SYM can be either DocumentSymbol or SymbolInformation."
 
 (defun lsp--symbol-filter (sym)
   "Determine if SYM is for the current document."
-  (if-let ((location (gethash "location" sym)))
-      ;; It's a SymbolInformation
-      (not
-       (lsp--equal-files
-        (lsp--uri-to-path (gethash "uri" (gethash "location" sym)))
-        (buffer-file-name)))
-    ;; It's a DocumentSymbol, which is always in the current buffer file.
-    nil))
+  ;; It's a SymbolInformation or DocumentSymbol, which is always in the current
+  ;; buffer file.
+  (when-let (location (gethash "location" sym))
+    (not
+     (eq
+      (find-buffer-visiting (lsp--uri-to-path (gethash "uri" (gethash "location" sym))))
+      (current-buffer)))))
 
 (defun lsp--get-symbol-type (sym)
   "The string name of the kind of SYM."
