@@ -1928,10 +1928,11 @@ type MarkupKind = 'plaintext' | 'markdown';"
                (lsp--point-is-within-bounds-p start end)
                (eq (current-buffer) buffer) (eldoc-display-message-p))
       (when-let* ((sig-i (gethash "activeSignature" signature-help))
-                  (sig (seq-elt (gethash "signatures" signature-help) sig-i)))
+                  (sigs (gethash "signatures" signature-help))
+                  (sig (when (< sig-i (length sigs)) (elt sigs sig-i))))
         (if-let* ((parameter-i (gethash "activeParameter" signature-help))
                   ;; Bail out if activeParameter lies outside parameters.
-                  (parameter (seq-elt (gethash "parameters" sig) parameter-i))
+                  (parameter (elt (gethash "parameters" sig) parameter-i))
                   (param (gethash "label" parameter))
                   (parts (split-string (gethash "label" sig) param)))
             (eldoc-message (concat (car parts)
