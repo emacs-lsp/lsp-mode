@@ -1842,10 +1842,10 @@ RENDER-ALL if set to nil render only the first element from CONTENTS."
 
            ;; no rendering
            (t e))))
-      (if (sequencep contents)
+      (if (and (sequencep contents) (not (stringp contents)))
           (if render-all
               contents
-            (seq-take contents 1))
+            (seq-take (or (seq-filter 'hash-table-p contents) contents) 1))
         (list contents)))
      "\n")))
 
