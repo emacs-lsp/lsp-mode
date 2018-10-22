@@ -25,6 +25,8 @@
 (require 'pcase)
 (require 'inline)
 (require 'em-glob)
+(unless (version< emacs-version "26")
+  (require 'project))
 
 (defcustom lsp-workspace-folders-change nil
   "Hooks to run after the folders has changed.
@@ -858,11 +860,12 @@ directory."
       (gethash "supported" capability))))
 
 (defun lsp--suggest-project-root ()
-  "Caculates project root or fallbacks to the current directory."
-  (cond
-   ((and (featurep 'projectile) (projectile-project-p)) (projectile-project-root))
-   ((vc-backend default-directory) (expand-file-name (vc-root-dir)))
-   (t default-directory)))
+  "Get project root."
+  (or
+   (when (featurep 'projectile) (projectile-project-root))
+   (when (featurep 'project)
+     (when-let ((project (project-current)))
+       (car (project-roots project))))))
 
 (defun lsp--read-from-file (file)
   "Read FILE content."
@@ -892,7 +895,7 @@ FILE-NAME the file name."
 (defun lsp-workspace-folders-add (directories)
   "Add DIRECTORIES to the list of workspace folders."
   (interactive (list (list (read-directory-name "Select folder to add: "
-                                                (lsp--suggest-project-root)
+                                                (or (lsp--suggest-project-root) default-directory)
                                                 nil
                                                 t))))
   (unless (lsp--workspace-folders-capability-p)
@@ -960,82 +963,86 @@ remove."
                       t)))
     (find-file folder-name)))
 
-(defun lsp--start (client &optional extra-init-params)
+(cl-defun lsp--start (client &optional extra-init-params)
   (when lsp--cur-workspace
     (user-error "LSP mode is already enabled for this buffer"))
   (cl-assert client)
-  (let* ((root (file-truename (funcall (lsp--client-get-root client))))
-         (workspace (gethash root lsp--workspaces))
+  (let* ((root-fn (lsp--client-get-root client))
+         (root (or (when root-fn (funcall root-fn))
+                   (lsp--suggest-project-root)))
          new-conn response init-params
          parser proc cmd-proc workspace-folders extra-init-params-resolved)
-    (if workspace
-        (progn
-          (setq lsp--cur-workspace workspace)
-          (lsp-mode 1))
-      (setf
-       parser (make-lsp--parser)
-       lsp--cur-workspace (make-lsp--workspace
-                           :parser parser
-                           :file-versions (make-hash-table :test 'equal)
-                           :root root
-                           :client client)
-       (lsp--parser-workspace parser) lsp--cur-workspace
-       new-conn (funcall
-                 (lsp--client-new-connection client)
-                 (lsp--parser-make-filter parser (lsp--client-ignore-regexps client))
-                 (lsp--make-sentinel lsp--cur-workspace))
-       ;; the command line process invoked
-       cmd-proc (if (consp new-conn) (car new-conn) new-conn)
-       ;; the process we actually communicate with
-       proc (if (consp new-conn) (cdr new-conn) new-conn)
-
-       (lsp--workspace-proc lsp--cur-workspace) proc
-       (lsp--workspace-cmd-proc lsp--cur-workspace) cmd-proc)
-
-      (puthash root lsp--cur-workspace lsp--workspaces)
+    (unless (and root (lsp--should-start-p (setq root (file-truename root))))
+      (cl-return-from lsp--start nil))
+    (when-let ((workspace (gethash root lsp--workspaces)))
+      (setq lsp--cur-workspace workspace)
       (lsp-mode 1)
-      (run-hooks 'lsp-before-initialize-hook)
+      (lsp--text-document-did-open)
+      (cl-return-from lsp--start nil))
+    (setf
+     parser (make-lsp--parser)
+     lsp--cur-workspace (make-lsp--workspace
+                         :parser parser
+                         :file-versions (make-hash-table :test 'equal)
+                         :root root
+                         :client client)
+     (lsp--parser-workspace parser) lsp--cur-workspace
+     new-conn (funcall
+               (lsp--client-new-connection client)
+               (lsp--parser-make-filter parser (lsp--client-ignore-regexps client))
+               (lsp--make-sentinel lsp--cur-workspace))
+     ;; the command line process invoked
+     cmd-proc (if (consp new-conn) (car new-conn) new-conn)
+     ;; the process we actually communicate with
+     proc (if (consp new-conn) (cdr new-conn) new-conn)
 
-      (setf
-       extra-init-params-resolved (if (functionp extra-init-params)
-                                      (funcall extra-init-params lsp--cur-workspace)
-                                    extra-init-params)
-       ;; join the saved workspace folders + the folders comming from the
-       ;; language extension to keep backward compatibility with `lsp-java'
-       workspace-folders (append
-                          (lsp--read-from-file
-                           (concat (file-name-as-directory root) ".folders"))
-                          (mapcar 'lsp--uri-to-path
-                                  (plist-get extra-init-params :workspaceFolders)))
+     (lsp--workspace-proc lsp--cur-workspace) proc
+     (lsp--workspace-cmd-proc lsp--cur-workspace) cmd-proc)
 
-       extra-init-params-resolved (if workspace-folders
-                                      (plist-put extra-init-params-resolved
-                                                 :workspaceFolders
-                                                 (mapcar (lambda (dir) (lsp--path-to-uri dir))
-                                                         workspace-folders))
-                                    extra-init-params-resolved)
-       init-params `(:processId ,(emacs-pid)
-                         :rootPath ,root
-                         :rootUri ,(lsp--path-to-uri root)
-                         :capabilities ,(lsp--client-capabilities)
-                         :initializationOptions ,extra-init-params-resolved)
-       response (lsp--send-request
-                 (lsp--make-request "initialize" init-params))
+    (puthash root lsp--cur-workspace lsp--workspaces)
+    (lsp-mode 1)
+    (run-hooks 'lsp-before-initialize-hook)
 
-       (lsp--workspace-workspace-folders lsp--cur-workspace) workspace-folders)
+    (setf
+     extra-init-params-resolved (if (functionp extra-init-params)
+                                    (funcall extra-init-params lsp--cur-workspace)
+                                  extra-init-params)
+     ;; join the saved workspace folders + the folders comming from the
+     ;; language extension to keep backward compatibility with `lsp-java'
+     workspace-folders (append
+                        (lsp--read-from-file
+                         (concat (file-name-as-directory root) ".folders"))
+                        (mapcar 'lsp--uri-to-path
+                                (plist-get extra-init-params :workspaceFolders)))
 
-      (mapc (lambda (dir)
-              (puthash dir lsp--cur-workspace lsp--workspaces))
-            workspace-folders)
+     extra-init-params-resolved (if workspace-folders
+                                    (plist-put extra-init-params-resolved
+                                               :workspaceFolders
+                                               (mapcar (lambda (dir) (lsp--path-to-uri dir))
+                                                       workspace-folders))
+                                  extra-init-params-resolved)
+     init-params `(:processId ,(emacs-pid)
+                              :rootPath ,root
+                              :rootUri ,(lsp--path-to-uri root)
+                              :capabilities ,(lsp--client-capabilities)
+                              :initializationOptions ,extra-init-params-resolved)
+     response (lsp--send-request
+               (lsp--make-request "initialize" init-params))
 
-      (unless response
-        (signal 'lsp-empty-response-error (list "initialize")))
-      (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
-            (gethash "capabilities" response))
-      ;; Version 3.0 now sends an "initialized" notification to allow registration
-      ;; of server capabilities
-      (lsp--send-notification (lsp--make-notification "initialized" (make-hash-table)))
-      (run-hooks 'lsp-after-initialize-hook))
+     (lsp--workspace-workspace-folders lsp--cur-workspace) workspace-folders)
+
+    (mapc (lambda (dir)
+            (puthash dir lsp--cur-workspace lsp--workspaces))
+          workspace-folders)
+
+    (unless response
+      (signal 'lsp-empty-response-error (list "initialize")))
+    (setf (lsp--workspace-server-capabilities lsp--cur-workspace)
+          (gethash "capabilities" response))
+    ;; Version 3.0 now sends an "initialized" notification to allow registration
+    ;; of server capabilities
+    (lsp--send-notification (lsp--make-notification "initialized" (make-hash-table)))
+    (run-hooks 'lsp-after-initialize-hook)
     (lsp--text-document-did-open)))
 
 (defun lsp--text-document-did-open ()

@@ -222,10 +222,7 @@ Optional arguments:
                     :use-native-json use-native-json)))
       (when initialize-fn
         (funcall initialize-fn client))
-      (let ((root (funcall (lsp--client-get-root client))))
-        (if (lsp--should-start-p root)
-            (lsp--start client extra-init-params)
-          (message "Not initializing project %s" root))))))
+      (lsp--start client extra-init-params))))
 
 (cl-defmacro lsp-define-tcp-client (name language-id get-root command host port
                                      &key docstring
@@ -338,10 +335,7 @@ Optional arguments:
                     :use-native-json use-native-json)))
       (when initialize-fn
         (funcall initialize-fn client))
-      (let ((root (funcall (lsp--client-get-root client))))
-        (if (lsp--should-start-p root)
-            (lsp--start client extra-init-params)
-          (message "Not initializing project %s" root))))))
+      (lsp--start client extra-init-params))))
 
 (defvar-local lsp-status nil
   "The current status of the LSP server.")
