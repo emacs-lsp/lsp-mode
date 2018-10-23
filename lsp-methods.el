@@ -382,6 +382,11 @@ the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
+(defcustom lsp-enable-on-type-formatting t
+  "Enable `textDocument/onTypeFormatting' integration."
+  :type 'boolean
+  :group 'lsp-mode)
+
 ;;;###autoload
 (defcustom lsp-before-save-edits t
   "If non-nil, `lsp-mode' will apply edits suggested by the language server
@@ -1078,6 +1083,7 @@ remove."
   ;; Make sure the hook is local (last param) otherwise we see all changes for all buffers
   (add-hook 'before-change-functions #'lsp-before-change nil t)
   (add-hook 'after-change-functions #'lsp-on-change nil t)
+  (add-hook 'post-self-insert-hook #'lsp--on-self-insert nil t)
   (add-hook 'after-revert-hook #'lsp-on-revert nil t)
   (add-hook 'before-save-hook #'lsp--before-save nil t)
   (add-hook 'auto-save-hook #'lsp--on-auto-save nil t)
@@ -1427,6 +1433,24 @@ Added to `after-change-functions'."
                  ('incremental (vector (lsp--text-document-content-change-event
                                         start end length)))
                  ('full (vector (lsp--full-change-event))))))))))))
+
+(defun lsp--on-self-insert ()
+  (when-let* ((provider (and lsp-enable-on-type-formatting
+                             (lsp--capability "documentOnTypeFormattingProvider")))
+              (ch last-command-event)
+              (_ (or (eq (string-to-char (gethash "firstTriggerCharacter" provider)) ch)
+                     (cl-find ch (gethash "moreTriggerCharacter" provider) :key #'string-to-char))))
+    ;; TODO lsp--send-request-async should do (with-current-buffer buf)
+    (let ((buf (current-buffer))
+          (tick (buffer-chars-modified-tick)))
+      (lsp--send-request-async
+       (lsp--make-request
+        "textDocument/onTypeFormatting"
+        (append (lsp--make-document-formatting-params)
+                `(:ch ,(char-to-string ch) :position ,(lsp--cur-position))))
+       (lambda (edits)
+         (with-current-buffer buf
+           (when (= tick (buffer-chars-modified-tick)) (lsp--apply-text-edits edits))))))))
 
 (defun lsp-on-revert ()
   "Executed when a file is reverted.
@@ -2356,6 +2380,7 @@ command COMMAND and optionsl ARGS"
   (when lsp-enable-completion-at-point
     (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t))
   (remove-hook 'after-change-functions #'lsp-on-change t)
+  (remove-hook 'post-self-insert-hook #'lsp--on-self-insert t)
   (remove-hook 'after-revert-hook #'lsp-on-revert t)
   (remove-hook 'before-change-functions #'lsp-before-change t))
 
