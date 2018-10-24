@@ -541,13 +541,23 @@ If NO-WAIT is non-nil, don't synchronously wait for a response."
 
 \n(fn BODY)")
 
-(defun lsp--send-request-async (body callback)
+(defun lsp--send-request-async (body callback &optional mode)
   "Send BODY as a request to the language server, and call CALLBACK with
 the response recevied from the server asynchronously."
   (let ((client (lsp--workspace-client lsp--cur-workspace))
+        (buf (current-buffer))
         (id (plist-get body :id)))
     (cl-assert id nil "body missing id field")
-    (puthash id callback (lsp--client-response-handlers client))
+    (puthash id
+             (pcase mode
+               ('detached callback)
+               ('alive (lambda (result)
+                         (when (buffer-live-p buf)
+                           (with-current-buffer buf (funcall callback result)))))
+               (_ (lambda (result)
+                    (when (and (buffer-live-p buf) (eq buf (current-buffer)))
+                      (funcall callback result)))))
+             (lsp--client-response-handlers client))
     (lsp--send-no-wait (lsp--make-message body)
       (lsp--workspace-proc lsp--cur-workspace))
     body))
@@ -1441,7 +1451,6 @@ Added to `after-change-functions'."
               (ch last-command-event)
               (_ (or (eq (string-to-char (gethash "firstTriggerCharacter" provider)) ch)
                      (cl-find ch (gethash "moreTriggerCharacter" provider) :key #'string-to-char))))
-    ;; TODO lsp--send-request-async should do (with-current-buffer buf)
     (let ((buf (current-buffer))
           (tick (buffer-chars-modified-tick)))
       (lsp--send-request-async
@@ -1450,8 +1459,7 @@ Added to `after-change-functions'."
         (append (lsp--make-document-formatting-params)
                 `(:ch ,(char-to-string ch) :position ,(lsp--cur-position))))
        (lambda (edits)
-         (with-current-buffer buf
-           (when (= tick (buffer-chars-modified-tick)) (lsp--apply-text-edits edits))))))))
+         (when (= tick (buffer-chars-modified-tick)) (lsp--apply-text-edits edits)))))))
 
 (defun lsp-on-revert ()
   "Executed when a file is reverted.
@@ -1805,8 +1813,7 @@ type MarkedString = string | { language: string; value: string };"
       (setq bounds (bounds-of-thing-at-point 'symbol)
         body (lsp--send-request-async (lsp--make-request "textDocument/hover"
                                         (lsp--text-document-position-params))
-               (lsp--make-hover-callback client (car bounds) (cdr bounds)
-                 (current-buffer)))
+               (lsp--make-hover-callback client (car bounds) (cdr bounds)))
         lsp--cur-hover-request-id (plist-get body :id))
       (cl-assert (integerp lsp--cur-hover-request-id)))))
 
@@ -1882,18 +1889,16 @@ RENDER-ALL if set to nil render only the first element from CONTENTS."
      "\n")))
 
 ;; start and end are the bounds of the symbol at point
-(defun lsp--make-hover-callback (client start end buffer)
+(defun lsp--make-hover-callback (client start end)
   (lambda (hover)
-    (with-current-buffer buffer
-      (setq lsp--cur-hover-request-id nil))
+    (setq lsp--cur-hover-request-id nil)
     (when (and hover
                (lsp--point-is-within-bounds-p start end)
-               (eq (current-buffer) buffer) (eldoc-display-message-p))
-      (let ((contents (gethash "contents" hover)))
-        (when contents
-          (eldoc-message (lsp--render-on-hover-content contents
-                                                       client
-                                                       lsp-eldoc-render-all)))))))
+               (eldoc-display-message-p))
+      (when-let ((contents (gethash "contents" hover)))
+        (eldoc-message (lsp--render-on-hover-content contents
+                                                     client
+                                                     lsp-eldoc-render-all))))))
 
 (defun lsp-provide-marked-string-renderer (client language renderer)
   (cl-check-type language string)
@@ -1948,17 +1953,16 @@ type MarkupKind = 'plaintext' | 'markdown';"
                   (lsp--make-request "textDocument/signatureHelp"
                                      (lsp--text-document-position-params))
                   (lsp--make-text-document-signature-help-callback
-                   (car bounds) (cdr bounds) (current-buffer)))
+                   (car bounds) (cdr bounds)))
             lsp--current-signature-help-request-id (plist-get body :id))
       (cl-assert (integerp lsp--current-signature-help-request-id)))))
 
-(defun lsp--make-text-document-signature-help-callback (start end buffer)
+(defun lsp--make-text-document-signature-help-callback (start end)
   (lambda (signature-help)
-    (with-current-buffer buffer
-      (setq lsp--current-signature-help-request-id nil))
+    (setq lsp--current-signature-help-request-id nil)
     (when (and signature-help
                (lsp--point-is-within-bounds-p start end)
-               (eq (current-buffer) buffer) (eldoc-display-message-p))
+               (eldoc-display-message-p))
       (when-let* ((sig-i (gethash "activeSignature" signature-help))
                   (sigs (gethash "signatures" signature-help))
                   (sig (when (< sig-i (length sigs)) (elt sigs sig-i))))
@@ -1992,20 +1996,19 @@ the diagnostics."
     (lsp--send-request-async
      (lsp--make-request "textDocument/codeAction" params)
      (lambda (actions)
-       (lsp--set-code-action-params (current-buffer) actions params)))))
+       (lsp--set-code-action-params actions params))
+     'alive)))
 
 (defun lsp--command-get-title (cmd)
   "Given a Command object CMD, get the title.
 If title is nil, return the name for the command handler."
   (gethash "title" cmd (gethash "command" cmd)))
 
-(defun lsp--set-code-action-params (buf actions params)
+(defun lsp--set-code-action-params (actions params)
   "Update set `lsp-code-actions' to ACTIONS and `lsp-code-action-params' to PARAMS in BUF."
-  (when (buffer-live-p buf)
-    (with-current-buffer buf
-      (when (equal params (lsp--text-document-code-action-params))
-        (setq lsp-code-actions actions)
-        (setq lsp-code-action-params params)))))
+  (when (equal params (lsp--text-document-code-action-params))
+    (setq lsp-code-actions actions)
+    (setq lsp-code-action-params params)))
 
 (defun lsp--command-p (cmd)
   (and (cl-typep cmd 'hash-table)
@@ -2035,8 +2038,7 @@ The method will either retrieve the current code actions or it will calculate th
                              (lsp--text-document-code-action-params)))
              (actions (lsp--send-request request-params)))
         (setq lsp-code-action-params current-code-action-params)
-        (lsp--set-code-action-params (current-buffer)
-                                     actions
+        (lsp--set-code-action-params actions
                                      current-code-action-params)))
     lsp-code-actions))
 
