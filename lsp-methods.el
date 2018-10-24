@@ -1222,7 +1222,7 @@ interface TextDocumentEdit {
           (filename (lsp--uri-to-path (gethash "uri" ident)))
           (version (gethash "version" ident)))
     (with-current-buffer (find-file-noselect filename)
-      (when (and version (= version (lsp--cur-file-version)))
+      (when (or (null version) (equal version (lsp--cur-file-version)))
         (lsp--apply-text-edits (gethash "edits" edit))))))
 
 (defun lsp--text-edit-sort-predicate (e1 e2)
@@ -1243,8 +1243,9 @@ interface TextDocumentEdit {
   ;; defines which edit to apply first."
   ;; We reverse the initial list and sort stably to make sure the order among
   ;; edits with the same position is preserved.
-  (mapc #'lsp--apply-text-edit
-        (sort (nreverse edits) #'lsp--text-edit-sort-predicate)))
+  (atomic-change-group
+    (mapc #'lsp--apply-text-edit
+          (sort (nreverse edits) #'lsp--text-edit-sort-predicate))))
 
 (defun lsp--apply-text-edit (text-edit)
   "Apply the edits described in the TextEdit object in TEXT-EDIT."
