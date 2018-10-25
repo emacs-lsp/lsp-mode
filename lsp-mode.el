@@ -38,10 +38,11 @@
   :lighter (:eval (lsp-mode-line))
   :group 'lsp-mode)
 
-(defun lsp--make-stdio-connection (name command command-fn stderr)
+(defun lsp--make-stdio-connection (name command command-fn get-root-fn stderr)
   (lambda (filter sentinel)
     (let* ((command (if command-fn (funcall command-fn) command))
-           (final-command (if (consp command) command (list command))))
+           (final-command (if (consp command) command (list command)))
+           (default-directory (if get-root-fn (funcall get-root-fn) default-directory)))
       (unless (executable-find (nth 0 final-command))
         (error (format "Couldn't find executable %s" (nth 0 final-command))))
       (let ((proc (make-process
@@ -212,6 +213,7 @@ Optional arguments:
                                      (symbol-name name)
                                      command
                                      command-fn
+                                     root-directory-fn
                                      stderr)
                     :stderr stderr
                     :get-root root-directory-fn
