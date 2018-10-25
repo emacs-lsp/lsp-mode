@@ -621,7 +621,7 @@ disappearing, unset all the variables related to it."
       (if (process-live-p proc)
         (kill-process (lsp--workspace-proc lsp--cur-workspace)))
       (setq lsp--cur-workspace nil)
-      (lsp--unset-variables)
+      (lsp--managed-mode -1)
       (kill-local-variable 'lsp--cur-workspace))
     (remhash root lsp--workspaces)))
 
@@ -1060,6 +1060,52 @@ remove."
     (run-hooks 'lsp-after-initialize-hook)
     (lsp--text-document-did-open)))
 
+(define-minor-mode lsp--managed-mode
+  "Mode for source buffers managed by lsp-mode."
+  nil nil nil
+  (cond
+   (lsp--managed-mode
+    (when (and lsp-enable-indentation
+               (lsp--capability "documentRangeFormattingProvider"))
+      (setq-local indent-region-function #'lsp-format-region))
+
+    (when lsp-enable-eldoc
+      ;; XXX: The documentation for `eldoc-documentation-function' suggests
+      ;; using `add-function' for modifying its value, use that instead?
+      (setq-local eldoc-documentation-function #'lsp--on-hover)
+      (eldoc-mode 1))
+
+    (add-hook 'after-change-functions #'lsp-on-change nil t)
+    (add-hook 'after-revert-hook #'lsp-on-revert nil t)
+    (add-hook 'after-save-hook #'lsp-on-save nil t)
+    (add-hook 'auto-save-hook #'lsp--on-auto-save nil t)
+    (add-hook 'before-change-functions #'lsp-before-change nil t)
+    (add-hook 'before-save-hook #'lsp--before-save nil t)
+    (when (and lsp-enable-completion-at-point (lsp--capability "completionProvider"))
+      (setq-local completion-at-point-functions nil)
+      (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t))
+    (add-hook 'kill-buffer-hook #'lsp--text-document-did-close nil t)
+    (add-hook 'post-self-insert-hook #'lsp--on-self-insert nil t)
+    (when lsp-enable-xref
+     (add-hook 'xref-backend-functions #'lsp--xref-backend nil t))
+    )
+   (t
+    (setq-local indent-region-function nil)
+    (remove-function (local 'eldoc-documentation-function) #'lsp-eldoc-function)
+
+    (remove-hook 'after-change-functions #'lsp-on-change t)
+    (remove-hook 'after-revert-hook #'lsp-on-revert t)
+    (remove-hook 'after-save-hook #'lsp-on-save t)
+    (remove-hook 'auto-save-hook #'lsp--on-auto-save t)
+    (remove-hook 'before-change-functions #'lsp-before-change t)
+    (remove-hook 'before-save-hook #'lsp--before-save t)
+    (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t)
+    (remove-hook 'kill-buffer-hook #'lsp--text-document-did-close t)
+    (remove-hook 'post-self-insert-hook #'lsp--on-self-insert t)
+    (remove-hook 'xref-backend-functions #'lsp--xref-backend t)
+    ))
+  )
+
 (defun lsp--text-document-did-open ()
   (run-hooks 'lsp-before-open-hook)
   (puthash (current-buffer) 0 (lsp--workspace-file-versions lsp--cur-workspace))
@@ -1068,35 +1114,8 @@ remove."
                            "textDocument/didOpen"
                            `(:textDocument ,(lsp--make-text-document-item))))
 
-  (add-hook 'after-save-hook #'lsp-on-save nil t)
-  (add-hook 'kill-buffer-hook #'lsp--text-document-did-close nil t)
+  (lsp--managed-mode 1)
 
-  (when lsp-enable-eldoc
-    ;; XXX: The documentation for `eldoc-documentation-function' suggests
-    ;; using `add-function' for modifying its value, use that instead?
-    (setq-local eldoc-documentation-function #'lsp--on-hover)
-    (eldoc-mode 1))
-
-  (when (and lsp-enable-indentation
-             (lsp--capability "documentRangeFormattingProvider"))
-    (setq-local indent-region-function #'lsp-format-region))
-
-  (when (and lsp-enable-xref
-             (lsp--capability "referencesProvider")
-             (lsp--capability "definitionProvider"))
-    (setq-local xref-backend-functions (list #'lsp--xref-backend)))
-
-  (when (and lsp-enable-completion-at-point (lsp--capability "completionProvider"))
-    (setq-local completion-at-point-functions nil)
-    (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t))
-
-  ;; Make sure the hook is local (last param) otherwise we see all changes for all buffers
-  (add-hook 'before-change-functions #'lsp-before-change nil t)
-  (add-hook 'after-change-functions #'lsp-on-change nil t)
-  (add-hook 'post-self-insert-hook #'lsp--on-self-insert nil t)
-  (add-hook 'after-revert-hook #'lsp-on-revert nil t)
-  (add-hook 'before-save-hook #'lsp--before-save nil t)
-  (add-hook 'auto-save-hook #'lsp--on-auto-save nil t)
   (lsp--set-sync-method)
   (run-hooks 'lsp-after-open-hook))
 
@@ -2374,18 +2393,6 @@ command COMMAND and optionsl ARGS"
 (defalias 'lsp-on-save #'lsp--text-document-did-save)
 ;; (defalias 'lsp-on-change #'lsp--text-document-did-change)
 (defalias 'lsp-completion-at-point #'lsp--get-completions)
-
-(defun lsp--unset-variables ()
-  (when lsp-enable-eldoc
-    (setq-local eldoc-documentation-function 'ignore))
-  (when lsp-enable-xref
-    (setq-local xref-backend-functions nil))
-  (when lsp-enable-completion-at-point
-    (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t))
-  (remove-hook 'after-change-functions #'lsp-on-change t)
-  (remove-hook 'post-self-insert-hook #'lsp--on-self-insert t)
-  (remove-hook 'after-revert-hook #'lsp-on-revert t)
-  (remove-hook 'before-change-functions #'lsp-before-change t))
 
 (defun lsp--set-configuration (settings)
   "Set the configuration for the lsp server."
