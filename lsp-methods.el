@@ -1446,20 +1446,20 @@ Added to `after-change-functions'."
                  ('full (vector (lsp--full-change-event))))))))))))
 
 (defun lsp--on-self-insert ()
-  (when-let* ((provider (and lsp-enable-on-type-formatting
-                             (lsp--capability "documentOnTypeFormattingProvider")))
-              (ch last-command-event)
-              (_ (or (eq (string-to-char (gethash "firstTriggerCharacter" provider)) ch)
-                     (cl-find ch (gethash "moreTriggerCharacter" provider) :key #'string-to-char))))
-    (let ((buf (current-buffer))
-          (tick (buffer-chars-modified-tick)))
-      (lsp--send-request-async
-       (lsp--make-request
-        "textDocument/onTypeFormatting"
-        (append (lsp--make-document-formatting-params)
-                `(:ch ,(char-to-string ch) :position ,(lsp--cur-position))))
-       (lambda (edits)
-         (when (= tick (buffer-chars-modified-tick)) (lsp--apply-text-edits edits)))))))
+  (when-let (provider (and lsp-enable-on-type-formatting
+                           (lsp--capability "documentOnTypeFormattingProvider")))
+    (when-let (ch last-command-event)
+      (when (or (eq (string-to-char (gethash "firstTriggerCharacter" provider)) ch)
+                    (cl-find ch (gethash "moreTriggerCharacter" provider) :key #'string-to-char))
+        (let ((buf (current-buffer))
+              (tick (buffer-chars-modified-tick)))
+          (lsp--send-request-async
+           (lsp--make-request
+            "textDocument/onTypeFormatting"
+            (append (lsp--make-document-formatting-params)
+                    `(:ch ,(char-to-string ch) :position ,(lsp--cur-position))))
+           (lambda (edits)
+             (when (= tick (buffer-chars-modified-tick)) (lsp--apply-text-edits edits)))))))))
 
 (defun lsp-on-revert ()
   "Executed when a file is reverted.
