@@ -127,7 +127,8 @@
                            (gethash method lsp--default-notification-handlers))))
     (if handler
         (funcall handler (lsp--parser-workspace p) params)
-      (lsp-warn "Unknown method: %s" method))))
+      (unless (string-prefix-p "$" method)
+        (lsp-warn "Unknown method: %s" method)))))
 
 (defun lsp--on-request (p request)
   "Call the appropriate handler for REQUEST, and send the return value to the server."
