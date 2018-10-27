@@ -2306,26 +2306,17 @@ A reference is highlighted only if it is visible in a window."
                                      `(:query ,pattern)))))
     (seq-map #'lsp--symbol-information-to-xref symbols)))
 
-(defun lsp--make-document-rename-params (newname)
-  "Make DocumentRangeFormattingParams for selected region.
-interface RenameParams {
-    textDocument: TextDocumentIdentifier;
-    position: Position;
-    newName: string;
-}"
-  `(:position ,(lsp--cur-position)
-              :textDocument ,(lsp--text-document-identifier)
-              :newName ,newname))
-
 (defun lsp-rename (newname)
   "Rename the symbol (and all references to it) under point to NEWNAME."
-  (interactive (list (read-string "Rename to: " (thing-at-point 'symbol))))
+  (interactive (list (read-string (format "Rename %s to: " (thing-at-point 'symbol t)))))
   (lsp--cur-workspace-check)
   (unless (lsp--capability "renameProvider")
     (signal 'lsp-capability-not-supported (list "renameProvider")))
   (let ((edits (lsp--send-request (lsp--make-request
                                    "textDocument/rename"
-                                   (lsp--make-document-rename-params newname)))))
+                                   `(:textDocument ,(lsp--text-document-identifier)
+                                                   :position ,(lsp--cur-position)
+                                                   :newName ,newname)))))
     (when edits
       (lsp--apply-workspace-edit edits))))
 
