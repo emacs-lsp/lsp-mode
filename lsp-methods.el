@@ -405,22 +405,19 @@ before saving a document."
 
 ;;;###autoload
 (defface lsp-face-highlight-textual
-  '((((background dark))  :background "saddle brown")
-    (((background light)) :background "yellow"))
+  '((t :inherit highlight))
   "Face used for textual occurances of symbols."
   :group 'lsp-faces)
 
 ;;;###autoload
 (defface lsp-face-highlight-read
-  '((((background dark))  :background "firebrick")
-    (((background light)) :background "red"))
+  '((t :inherit highlight :underline t))
   "Face used for highlighting symbols being read."
   :group 'lsp-faces)
 
 ;;;###autoload
 (defface lsp-face-highlight-write
-  '((((background dark))  :background "sea green")
-     (((background light)) :background "green"))
+  '((t :inherit highlight :italic t))
   "Face used for highlighting symbols being written to."
   :group 'lsp-faces)
 
