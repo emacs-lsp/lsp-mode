@@ -34,6 +34,11 @@ The hook will receive two parameters list of added and removed folders."
   :type 'hook
   :group 'lsp-mode)
 
+(defcustom lsp-eldoc-hook '(lsp-document-highlight lsp-hover)
+  "Hooks to run for eldoc."
+  :type 'hook
+  :group 'lsp-mode)
+
 (defconst lsp--file-change-type
   `((created . 1)
     (changed . 2)
@@ -332,12 +337,6 @@ whitelist, or does not match any pattern in the blacklist."
   :type '(repeat regexp)
   :group 'lsp-mode)
 
-;;;###autoload
-(defcustom lsp-enable-eldoc t
-  "Enable `eldoc-mode' integration."
-  :type 'boolean
-  :group 'lsp-mode)
-
 (defcustom lsp-auto-execute-action t
   "Auto-execute single action."
   :type 'boolean
@@ -349,18 +348,6 @@ whitelist, or does not match any pattern in the blacklist."
 
 If `lsp-markup-display-all' is set to nil `eldoc' will show only
 the symbol information."
-  :type 'boolean
-  :group 'lsp-mode)
-
-;;;###autoload
-(defcustom lsp-highlight-symbol-at-point t
-  "Highlight the symbol under the point."
-  :type 'boolean
-  :group 'lsp-mode)
-
-;;;###autoload
-(defcustom lsp-enable-codeaction t
-  "Enable code action processing."
   :type 'boolean
   :group 'lsp-mode)
 
@@ -392,15 +379,6 @@ the symbol information."
   "If non-nil, `lsp-mode' will apply edits suggested by the language server
 before saving a document."
   :type 'boolean
-  :group 'lsp-mode)
-
-;;;###autoload
-(defcustom lsp-hover-text-function 'lsp--text-document-hover-string
-  "The LSP method to use to display text on hover."
-  :type '(choice (function :tag "textDocument/hover"
-                           lsp--text-document-hover-string)
-                 (function :tag "textDocument/signatureHelp"
-                           lsp--text-document-signature-help))
   :group 'lsp-mode)
 
 ;;;###autoload
@@ -1066,11 +1044,8 @@ remove."
                (lsp--capability "documentRangeFormattingProvider"))
       (setq-local indent-region-function #'lsp-format-region))
 
-    (when lsp-enable-eldoc
-      ;; XXX: The documentation for `eldoc-documentation-function' suggests
-      ;; using `add-function' for modifying its value, use that instead?
-      (setq-local eldoc-documentation-function #'lsp--on-hover)
-      (eldoc-mode 1))
+    (add-function :before-until (local 'eldoc-documentation-function) #'lsp-eldoc-function)
+    (eldoc-mode 1)
 
     (add-hook 'after-change-functions #'lsp-on-change nil t)
     (add-hook 'after-revert-hook #'lsp-on-revert nil t)
@@ -1253,7 +1228,7 @@ interface TextDocumentEdit {
 
 (defun lsp--text-edit-sort-predicate (e1 e2)
   (let ((start1 (lsp--position-to-point (gethash "start" (gethash "range" e1))))
-          (start2 (lsp--position-to-point (gethash "start" (gethash "range" e2)))))
+        (start2 (lsp--position-to-point (gethash "start" (gethash "range" e2)))))
     (if (= start1 start2)
       (let ((end1 (lsp--position-to-point (gethash "end" (gethash "range" e1))))
              (end2 (lsp--position-to-point (gethash "end" (gethash "range" e2)))))
@@ -1780,19 +1755,16 @@ Returns xref-item(s)."
     (lsp--send-notification (lsp--make-notification "$/cancelRequest"
                               `(:id ,id)))))
 
-(defun lsp--on-hover ()
+(defun lsp-eldoc-function ()
   ;; This function is used as ‘eldoc-documentation-function’, so it’s important
   ;; that it doesn’t fail.
-  (with-demoted-errors "Error in ‘lsp--on-hover’: %S"
-    (when (and (lsp--capability "documentHighlightProvider")
-               lsp-highlight-symbol-at-point)
-      (lsp-symbol-highlight))
-    (when (and (or (lsp--capability "codeActionProvider")
-                   (lsp--registered-capability "textDocument/codeAction"))
-               lsp-enable-codeaction)
-      (lsp--text-document-code-action))
-    (when (and (lsp--capability "hoverProvider") lsp-enable-eldoc)
-      (funcall lsp-hover-text-function))))
+  (run-hook-wrapped 'lsp-eldoc-hook
+                    (lambda (fn)
+                      (condition-case nil
+                          (funcall fn)
+                        (lsp-capability-not-supported nil))
+                      nil))
+  nil)
 
 (defun lsp-describe-thing-at-point ()
   "Display the full documentation of the thing at point."
@@ -1928,38 +1900,17 @@ It will be used when no language has been specified in document/onHover result."
   (cl-check-type renderer function)
   (setf (lsp--client-default-renderer client) renderer))
 
-(defun lsp-info-under-point ()
+(defun lsp-hover ()
   "Show relevant documentation for the thing under point."
   (interactive)
   (lsp--text-document-hover-string))
 
 (defvar-local lsp--current-signature-help-request-id nil)
 
-(defun lsp--text-document-signature-help ()
-  "interface SignatureHelp {
-signatures: SignatureInformation[];
-activeSignature?: number;
-activeParameter?: number;
-};
-
-interface SignatureInformation {
-label: string;
-documentation?: string | MarkupContent;
-parameters?: ParameterInformation[];
-};
-
-interface ParameterInformation {
-label: string;
-documentation?: string | MarkupContent;
-};
-
-interface MarkupContent {
-kind: MarkupKind;
-value: string;
-};
-
-type MarkupKind = 'plaintext' | 'markdown';"
-  (lsp--cur-workspace-check)
+(defun lsp-signature-help ()
+  (interactive)
+  (unless (lsp--capability "signatureHelpProvider")
+    (signal 'lsp-capability-not-supported (list "signatureHelpProvider")))
   (when lsp--current-signature-help-request-id
     (lsp--cancel-request lsp--current-signature-help-request-id))
   (let (bounds body)
@@ -2148,14 +2099,16 @@ interface DocumentRangeFormattingParams {
       (delete-overlay overlay))
     (remhash buf overlays)))
 
-(defun lsp-symbol-highlight ()
+(defun lsp-document-highlight ()
   "Highlight all relevant references to the symbol under point."
   (interactive)
+  (unless (lsp--capability "documentHighlightProvider")
+    (signal 'lsp-capability-not-supported (list "documentHighlightProvider")))
   (lsp--send-request-async (lsp--make-request "textDocument/documentHighlight"
                              (lsp--text-document-position-params))
-    (lsp--make-symbol-highlight-callback (current-buffer))))
+    (lsp--make-document-highlight-callback (current-buffer))))
 
-(defun lsp--make-symbol-highlight-callback (buf)
+(defun lsp--make-document-highlight-callback (buf)
   "Create a callback to process the reply of a
 'textDocument/documentHightlight' message for the buffer BUF.
 A reference is highlighted only if it is visible in a window."
