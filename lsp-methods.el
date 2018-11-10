@@ -560,9 +560,9 @@ interface TextDocumentItem {
   (inline-quote
     (let ((language-id-fn (lsp--client-language-id (lsp--workspace-client lsp--cur-workspace))))
       (list :uri (lsp--buffer-uri)
-	      :languageId (funcall language-id-fn (current-buffer))
-	      :version (lsp--cur-file-version)
-	      :text (buffer-substring-no-properties (point-min) (point-max))))))
+          :languageId (funcall language-id-fn (current-buffer))
+          :version (lsp--cur-file-version)
+          :text (buffer-substring-no-properties (point-min) (point-max))))))
 
 ;; Clean up the entire state of lsp mode when Emacs is killed, to get rid of any
 ;; pending language servers.
@@ -855,7 +855,8 @@ directory."
    (when (featurep 'projectile) (projectile-project-root))
    (when (featurep 'project)
      (when-let ((project (project-current)))
-       (car (project-roots project))))))
+       (car (project-roots project))))
+   default-directory))
 
 (defun lsp--read-from-file (file)
   "Read FILE content."
