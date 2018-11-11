@@ -852,11 +852,13 @@ directory."
 (defun lsp--suggest-project-root ()
   "Get project root."
   (or
-   (when (featurep 'projectile) (projectile-project-root))
+   (when (featurep 'projectile)
+     (projectile-ensure-project (projectile-project-root)))
    (when (featurep 'project)
-     (when-let ((project (project-current)))
-       (car (project-roots project))))
-   default-directory))
+     (let ((project (project-current)))
+       (if project
+           (car (project-roots project))
+         default-directory)))))
 
 (defun lsp--read-from-file (file)
   "Read FILE content."
@@ -2353,19 +2355,19 @@ If WORKSPACE is not specified the `lsp--cur-workspace' will be used."
   (setq workspace (or workspace lsp--cur-workspace))
   (let ((watches (lsp--workspace-watches workspace)))
     (cl-loop for (dir glob-patterns) in to-watch do
-      (lsp-create-watch
-        dir
-        (mapcar 'eshell-glob-regexp glob-patterns)
-        (lambda (event)
-          (let ((lsp--cur-workspace workspace))
-            (lsp-send-notification
-              (lsp-make-notification
-                "workspace/didChangeWatchedFiles"
-                (list :changes
-                  (list
-                    :type (alist-get (cadr event) lsp--file-change-type)
-                    :uri (lsp--path-to-uri (caddr event))))))))
-        watches))))
+             (lsp-create-watch
+              dir
+              (mapcar 'eshell-glob-regexp glob-patterns)
+              (lambda (event)
+                (let ((lsp--cur-workspace workspace))
+                  (lsp-send-notification
+                   (lsp-make-notification
+                    "workspace/didChangeWatchedFiles"
+                    (list :changes
+                          (list
+                           :type (alist-get (cadr event) lsp--file-change-type)
+                           :uri (lsp--path-to-uri (caddr event))))))))
+              watches))))
 
 (defun lsp--on-set-visitied-file-name (old-func &rest args)
   "Advice around function `set-visited-file-name'.
