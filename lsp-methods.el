@@ -855,10 +855,9 @@ directory."
    (when (featurep 'projectile)
      (projectile-ensure-project (projectile-project-root)))
    (when (featurep 'project)
-     (let ((project (project-current)))
-       (if project
-           (car (project-roots project))
-         default-directory)))))
+     (when-let ((project (project-current)))
+       (car (project-roots project))))
+   default-directory))
 
 (defun lsp--read-from-file (file)
   "Read FILE content."
