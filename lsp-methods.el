@@ -558,11 +558,11 @@ interface TextDocumentItem {
     text: string;
 }"
   (inline-quote
-   (let ((language-id-fn (lsp--client-language-id (lsp--workspace-client lsp--cur-workspace))))
-     (list :uri (lsp--buffer-uri)
-           :languageId (funcall language-id-fn (current-buffer))
-           :version (lsp--cur-file-version)
-           :text (buffer-substring-no-properties (point-min) (point-max))))))
+    (let ((language-id-fn (lsp--client-language-id (lsp--workspace-client lsp--cur-workspace))))
+      (list :uri (lsp--buffer-uri)
+	      :languageId (funcall language-id-fn (current-buffer))
+	      :version (lsp--cur-file-version)
+	      :text (buffer-substring-no-properties (point-min) (point-max))))))
 
 ;; Clean up the entire state of lsp mode when Emacs is killed, to get rid of any
 ;; pending language servers.
@@ -2355,19 +2355,19 @@ If WORKSPACE is not specified the `lsp--cur-workspace' will be used."
   (setq workspace (or workspace lsp--cur-workspace))
   (let ((watches (lsp--workspace-watches workspace)))
     (cl-loop for (dir glob-patterns) in to-watch do
-             (lsp-create-watch
-              dir
-              (mapcar 'eshell-glob-regexp glob-patterns)
-              (lambda (event)
-                (let ((lsp--cur-workspace workspace))
-                  (lsp-send-notification
-                   (lsp-make-notification
-                    "workspace/didChangeWatchedFiles"
-                    (list :changes
-                          (list
-                           :type (alist-get (cadr event) lsp--file-change-type)
-                           :uri (lsp--path-to-uri (caddr event))))))))
-              watches))))
+      (lsp-create-watch
+        dir
+        (mapcar 'eshell-glob-regexp glob-patterns)
+        (lambda (event)
+          (let ((lsp--cur-workspace workspace))
+            (lsp-send-notification
+              (lsp-make-notification
+                "workspace/didChangeWatchedFiles"
+                (list :changes
+                  (list
+                    :type (alist-get (cadr event) lsp--file-change-type)
+                    :uri (lsp--path-to-uri (caddr event))))))))
+        watches))))
 
 (defun lsp--on-set-visitied-file-name (old-func &rest args)
   "Advice around function `set-visited-file-name'.
