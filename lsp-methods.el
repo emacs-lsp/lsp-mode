@@ -852,8 +852,7 @@ directory."
 (defun lsp--suggest-project-root ()
   "Get project root."
   (or
-   (when (featurep 'projectile)
-     (projectile-ensure-project (projectile-project-root)))
+   (when (featurep 'projectile) (projectile-project-root))
    (when (featurep 'project)
      (when-let ((project (project-current)))
        (car (project-roots project))))
