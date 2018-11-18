@@ -404,5 +404,27 @@ If WORKSPACE is not specified defaults to lsp--cur-workspace."
       (view-mode 1))
     (switch-to-buffer buffer-name)))
 
+(defun lsp-get-renderer (language)
+  "Return a function to fontify a string in LANGUAGE."
+  (thread-last lsp--cur-workspace
+    lsp--workspace-client
+    lsp--client-string-renderers
+    (assoc-string language)
+    cdr))
+
+(defun lsp-workspace-root (&optional _path)
+  "Find the workspace root for the current file."
+  (when lsp--cur-workspace
+    (lsp--workspace-root lsp--cur-workspace)))
+
+(defun lsp-buffer-language ()
+  "Get language for the current buffer."
+  (when-let (language-id-fn (lsp--client-language-id (lsp--workspace-client lsp--cur-workspace)))
+    (funcall language-id-fn (current-buffer))))
+
+(defun lsp-diagnostics ()
+  "Return diagnostics."
+  lsp--diagnostics)
+
 (provide 'lsp-mode)
 ;;; lsp-mode.el ends here
