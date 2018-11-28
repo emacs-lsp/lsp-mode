@@ -129,5 +129,5 @@ settings supported on registration time.
 ```
 
 ### See also
-[`dap-mode`](https://github.com/yyoncho/dap-mode) - Debugger integration for
-[`eglot`](https://github.com/joaotavora/eglot) - An alternative and lighter LSP implementation.
+* [`dap-mode`](https://github.com/yyoncho/dap-mode) - Debugger integration for
+* [`eglot`](https://github.com/joaotavora/eglot) - An alternative and lighter LSP implementation.

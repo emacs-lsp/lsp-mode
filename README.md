@@ -15,7 +15,7 @@ The library is designed to integrate with existing Emacs IDE frameworks
 
 _Note: Starting from version 4.0, flycheck support has been moved to the package [lsp-ui](https://github.com/emacs-lsp/lsp-ui)_
 
-_Note: Refer to [lsp-mode NEXT](./README-NEXT.md) for `lsp-mode` single entry point.
+_Note: Refer to [lsp-mode NEXT](./README-NEXT.md) for `lsp-mode` single entry point._
 
 ## Installation
 
