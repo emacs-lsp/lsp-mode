@@ -48,8 +48,8 @@
   (lsp--apply-text-edits (caddr (gethash "arguments" action))))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '("css-langageserver" "--stdio"))
-                  :major-modes '(css-mode java-mode)
+ (make-lsp-client :new-connection (lsp-stdio-connection '("css-languageserver" "--stdio"))
+                  :major-modes '(css-mode)
                   :action-handlers (lsp-ht ("_css.applyCodeAction" 'lsp-clients-css--apply-code-action))
                   :server-id 'css-ls))
 
