@@ -38,6 +38,7 @@
 (require 'f)
 (require 'filenotify)
 (require 'files)
+(require 'ht)
 (require 'imenu)
 (require 'inline)
 (require 'json)
