@@ -433,11 +433,10 @@ If WORKSPACE is not provided current workspace will be used."
 If WORKSPACE is not provided current workspace will be used."
   (gethash key (lsp--workspace-metadata (or workspace lsp--cur-workspace))))
 
-(define-inline lsp--make-request (method &optional params)
+(defun lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
-  (inline-quote
-    (plist-put (lsp--make-notification ,method ,params)
-      :id (cl-incf (lsp--client-last-id (lsp--workspace-client lsp--cur-workspace))))))
+  (plist-put (lsp--make-notification ,method ,params)
+             :id (cl-incf (lsp--client-last-id (lsp--workspace-client lsp--cur-workspace)))))
 
 (defun lsp-make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
@@ -452,11 +451,10 @@ If WORKSPACE is not provided current workspace will be used."
   (cl-check-type error list)
   `(:jsonrpc "2.0" :id ,id :result ,result :error ,error))
 
-(define-inline lsp--make-notification (method &optional params)
+(defun lsp--make-notification (method &optional params)
   "Create notification body for method METHOD and parameters PARAMS."
-  (inline-quote
-    (progn (cl-check-type ,method string)
-      (list :jsonrpc "2.0" :method ,method :params ,params))))
+  (progn (cl-check-type ,method string)
+         (list :jsonrpc "2.0" :method ,method :params ,params)))
 
 ;; Define non-inline public aliases to avoid breaking binary compatibility.
 (defun lsp-make-notification (method &optional params)
@@ -476,26 +474,24 @@ If WORKSPACE is not provided current workspace will be used."
                  (json-encode params))))
     (format "Content-Length: %d\r\n\r\n%s" (string-bytes body) body)))
 
-(define-inline lsp--send-notification (body)
+(defun lsp--send-notification (body)
   "Send BODY as a notification to the language server."
-  (inline-quote
-    (lsp--send-no-wait
-      (lsp--make-message ,body)
-      (lsp--workspace-proc lsp--cur-workspace))))
+  (lsp--send-no-wait
+   (lsp--make-message ,body)
+   (lsp--workspace-proc lsp--cur-workspace)))
 
 (defun lsp-send-notification (body)
   "Send BODY as a notification to the language server."
   (lsp--send-notification body))
 
-(define-inline lsp--cur-workspace-check ()
-  (inline-quote
-    (progn
-      (cl-assert lsp--cur-workspace nil
-        "No language server is associated with this buffer.")
-      (cl-assert (lsp--workspace-p lsp--cur-workspace)))))
+(defun lsp--cur-workspace-check ()
+  (progn
+    (cl-assert lsp--cur-workspace nil
+               "No language server is associated with this buffer.")
+      (cl-assert (lsp--workspace-p lsp--cur-workspace))))
 
-(define-inline lsp--cur-parser ()
-  (inline-quote (lsp--workspace-parser lsp--cur-workspace)))
+(defun lsp--cur-parser ()
+  (lsp--workspace-parser lsp--cur-workspace))
 
 (defun lsp--send-request (body &optional no-wait)
   "Send BODY as a request to the language server, get the response.
@@ -539,16 +535,15 @@ the response recevied from the server asynchronously."
 
 (defalias 'lsp-send-request-async 'lsp--send-request-async)
 
-(define-inline lsp--inc-cur-file-version ()
-  (inline-quote (cl-incf (gethash (current-buffer)
-                           (lsp--workspace-file-versions lsp--cur-workspace)))))
+(defun lsp--inc-cur-file-version ()
+  (cl-incf (gethash (current-buffer)
+                    (lsp--workspace-file-versions lsp--cur-workspace))))
 
-(define-inline lsp--cur-file-version ()
+(defun lsp--cur-file-version ()
   "Return the file version number.  If INC, increment it before."
-  (inline-quote
-    (gethash (current-buffer) (lsp--workspace-file-versions lsp--cur-workspace))))
+  (gethash (current-buffer) (lsp--workspace-file-versions lsp--cur-workspace)))
 
-(define-inline lsp--make-text-document-item ()
+(defun lsp--make-text-document-item ()
   "Make TextDocumentItem for the currently opened file.
 
 interface TextDocumentItem {
@@ -557,12 +552,11 @@ interface TextDocumentItem {
     version: number;
     text: string;
 }"
-  (inline-quote
-    (let ((language-id-fn (lsp--client-language-id (lsp--workspace-client lsp--cur-workspace))))
-      (list :uri (lsp--buffer-uri)
-	      :languageId (funcall language-id-fn (current-buffer))
-	      :version (lsp--cur-file-version)
-	      :text (buffer-substring-no-properties (point-min) (point-max))))))
+  (let ((language-id-fn (lsp--client-language-id (lsp--workspace-client lsp--cur-workspace))))
+    (list :uri (lsp--buffer-uri)
+          :languageId (funcall language-id-fn (current-buffer))
+          :version (lsp--cur-file-version)
+          :text (buffer-substring-no-properties (point-min) (point-max)))))
 
 ;; Clean up the entire state of lsp mode when Emacs is killed, to get rid of any
 ;; pending language servers.
@@ -763,9 +757,9 @@ registered client capabilities by calling
     (setf (lsp--workspace-extra-client-capabilities lsp--cur-workspace)
       (assq-delete-all package-name extra-client-capabilities))))
 
-(define-inline lsp--server-capabilities ()
+(defun lsp--server-capabilities ()
   "Return the capabilities of the language server associated with the buffer."
-  (inline-quote (lsp--workspace-server-capabilities lsp--cur-workspace)))
+  (lsp--workspace-server-capabilities lsp--cur-workspace))
 
 (defun lsp--server-has-sync-options-p ()
   "Return whether the server has a TextDocumentSyncOptions object in
@@ -1091,22 +1085,22 @@ remove."
   (lsp--set-sync-method)
   (run-hooks 'lsp-after-open-hook))
 
-(define-inline lsp--text-document-identifier ()
+(defun lsp--text-document-identifier ()
   "Make TextDocumentIdentifier.
 
 interface TextDocumentIdentifier {
     uri: string;
 }"
-  (inline-quote (list :uri (lsp--buffer-uri))))
+  (list :uri (lsp--buffer-uri)))
 
-(define-inline lsp--versioned-text-document-identifier ()
+(defun lsp--versioned-text-document-identifier ()
   "Make VersionedTextDocumentIdentifier.
 
 interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
     version: number;
 }"
-  (inline-quote (plist-put (lsp--text-document-identifier)
-                  :version (lsp--cur-file-version))))
+  (plist-put (lsp--text-document-identifier)
+             :version (lsp--cur-file-version)))
 
 (define-inline lsp--position (line char)
   "Make a Position object for the given LINE and CHAR.
