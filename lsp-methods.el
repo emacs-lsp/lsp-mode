@@ -435,7 +435,7 @@ If WORKSPACE is not provided current workspace will be used."
 
 (defun lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
-  (plist-put (lsp--make-notification ,method ,params)
+  (plist-put (lsp--make-notification method params)
              :id (cl-incf (lsp--client-last-id (lsp--workspace-client lsp--cur-workspace)))))
 
 (defun lsp-make-request (method &optional params)
@@ -453,8 +453,8 @@ If WORKSPACE is not provided current workspace will be used."
 
 (defun lsp--make-notification (method &optional params)
   "Create notification body for method METHOD and parameters PARAMS."
-  (progn (cl-check-type ,method string)
-         (list :jsonrpc "2.0" :method ,method :params ,params)))
+  (progn (cl-check-type method string)
+         (list :jsonrpc "2.0" :method method :params params)))
 
 ;; Define non-inline public aliases to avoid breaking binary compatibility.
 (defun lsp-make-notification (method &optional params)
@@ -477,7 +477,7 @@ If WORKSPACE is not provided current workspace will be used."
 (defun lsp--send-notification (body)
   "Send BODY as a notification to the language server."
   (lsp--send-no-wait
-   (lsp--make-message ,body)
+   (lsp--make-message body)
    (lsp--workspace-proc lsp--cur-workspace)))
 
 (defun lsp-send-notification (body)
