@@ -365,6 +365,7 @@ than the second parameter.")
      :registered-capability "workspace/executeCommand")
     ("textDocument/hover" :capability "hoverProvider")
     ("textDocument/documentSymbol" :capability "documentSymbolProvider")
+    ("textDocument/documentHighlight" :capability "documentHighlightProvider")
     ("textDocument/definition" :capability "definitionProvider"))
 
   "Contain method to requirements mapping.
@@ -2392,15 +2393,15 @@ EXTRA is a plist of extra parameters."
 (defun lsp--find-workspaces-for (msg)
   "Find all workspaces in the current that can handle MSG."
   ;; (setq my/msg msg)
-  (-if-let ((&plist :capability :registered-capability)
-            (cdr (assoc (plist-get msg :method) lsp-method-requirements)))
-      (--filter
-       (with-lsp-workspace it
-         (or (when capability (lsp--capability capability))
-             (when registered-capability
-               (lsp--registered-capability registered-capability))
-             (and (not capability) (not registered-capability))))
-       (lsp-workspaces))
+  (-if-let (reqs (cdr (assoc (plist-get msg :method) lsp-method-requirements)))
+      (-let (((&plist :capability :registered-capability) reqs))
+        (--filter
+         (with-lsp-workspace it
+           (or (when capability (lsp--capability capability))
+               (when registered-capability
+                 (lsp--registered-capability registered-capability))
+               (and (not capability) (not registered-capability))))
+         (lsp-workspaces)))
     (lsp-workspaces)))
 
 (defun lsp--send-execute-command (command &optional args)
