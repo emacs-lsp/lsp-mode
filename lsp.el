@@ -2971,7 +2971,8 @@ HOST and PORT will be used for opening the connection."
 INITIALIZATION-OPTIONS are passed to initialize function.
 SESSION is the active session."
   (lsp--spinner-start)
-  (-let* ((client (copy-lsp--client client-template))
+  (-let* ((default-directory root)
+          (client (copy-lsp--client client-template))
           (workspace (lsp--make-workspace client root))
           ((proc . cmd-proc) (funcall
                               (lsp--client-new-connection client)
