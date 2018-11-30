@@ -193,7 +193,7 @@ defaults to half of your CPU cores."
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-clients-go-server))
                   :major-modes '(go-mode)
-                  :extra-init-params 'lsp-clients-go--make-init-options
+                  :initialization-options 'lsp-clients-go--make-init-options
                   :server-id 'go-ls
                   :library-folders-fn (lambda (_workspace)
                                         lsp-clients-go-library-directories)))
