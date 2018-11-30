@@ -1863,7 +1863,8 @@ It will be used when no language has been specified in document/onHover result."
 (defvar-local lsp--hover-saved-contents nil)
 
 (defun lsp--hover-callback (from-cache)
-  (message lsp--hover-saved-contents))
+  ;; Without run-with-idle-timer, echo area will be cleared after displaying the message instantly.
+  (run-with-idle-timer 0 nil (lambda () (eldoc-message lsp--hover-saved-contents))))
 
 (defun lsp-hover ()
   "Show relevant documentation for the thing under point."
