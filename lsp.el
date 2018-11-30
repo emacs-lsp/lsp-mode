@@ -555,8 +555,8 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   (server-id)
   ;; defines whether the client supports multi root workspaces.
   (multi-root)
-  ;; extra init params.
-  (extra-init-params)
+  ;; Initialization options or a function that returns initialization options.
+  (initialization-options)
   ;; Function which returns the folders that are considered to be not projects but library files.
   ;; The function accepts one parameter currently active workspace.
   ;; See: https://github.com/emacs-lsp/lsp-mode/issues/225.
@@ -2966,9 +2966,9 @@ HOST and PORT will be used for opening the connection."
           (message "Workspace %s shutdown." (lsp--workspace-print workspace))
         (lsp--restart-if-needed workspace)))))
 
-(defun lsp--start-workspace (session client-template root &optional extra-init-params)
+(defun lsp--start-workspace (session client-template root &optional initialization-options)
   "Create new workspace for CLIENT-TEMPLATE with project root ROOT.
-EXTRA-INIT-PARAMS are passed to initialize function.
+INITIALIZATION-OPTIONS are passed to initialize function.
 SESSION is the active session."
   (lsp--spinner-start)
   (-let* ((client (copy-lsp--client client-template))
@@ -2990,7 +2990,7 @@ SESSION is the active session."
                  (gethash project-root)
                  (pushnew workspace)))
           (or (-map 'lsp--uri-to-path
-                    (plist-get extra-init-params :workspaceFolders))
+                    (plist-get initialization-options :workspaceFolders))
               (list root)))
 
     (with-lsp-workspace workspace
@@ -3002,7 +3002,7 @@ SESSION is the active session."
                                 :rootPath root
                                 :rootUri (lsp--path-to-uri root)
                                 :capabilities (lsp--client-capabilities)
-                                :initializationOptions extra-init-params))
+                                :initializationOptions initialization-options))
        (lambda (response)
          (unless response
            (lsp--spinner-stop)
@@ -3041,22 +3041,22 @@ SESSION is the active session."
   "Registers LSP client CLIENT."
   (puthash (lsp--client-server-id client) client lsp-clients))
 
-(defun lsp--create-extra-init-params (session client)
-  "Create extra-init-params from SESSION and CLIENT.
+(defun lsp--create-initialization-options (session client)
+  "Create initialization-options from SESSION and CLIENT.
 Add workspace folders depending on server being multiroot and
 session workspce folder configuration for the server."
-  (let* ((extra-init-params-or-fn (lsp--client-extra-init-params client))
-         (extra-init-params (if (functionp extra-init-params-or-fn)
-                                (funcall extra-init-params-or-fn)
-                              extra-init-params-or-fn)))
+  (let* ((initialization-options-or-fn (lsp--client-initialization-options client))
+         (initialization-options (if (functionp initialization-options-or-fn)
+                                     (funcall initialization-options-or-fn)
+                                   initialization-options-or-fn)))
     (if (lsp--client-multi-root client)
         (or (-some->> session
                       (lsp-session-server-id->folders)
                       (gethash (lsp--client-server-id client))
                       (-map 'lsp--path-to-uri)
-                      (plist-put extra-init-params :workspaceFolders))
-            extra-init-params)
-      extra-init-params)))
+                      (plist-put initialization-options :workspaceFolders))
+            initialization-options)
+      initialization-options)))
 
 (defun lsp--start-connection (session client project-root)
   "Initiates connection created from CLIENT for PROJECT-ROOT.
@@ -3065,7 +3065,7 @@ SESSION is the active session."
     (pushnew project-root (gethash (lsp--client-server-id client)
                                    (lsp-session-server-id->folders session)) ))
   (condition-case err
-      (lsp--start-workspace session client project-root (lsp--create-extra-init-params session client))
+      (lsp--start-workspace session client project-root (lsp--create-initialization-options session client))
     (error (progn (lsp--spinner-stop) (error (error-message-string err))))
     (user-error (progn (lsp--spinner-stop) (user-error (error-message-string err))))))
 
