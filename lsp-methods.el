@@ -16,6 +16,7 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'dash)
 (require 'json)
 (require 'xref)
 (require 'subr-x)
@@ -1777,28 +1778,6 @@ Returns xref-item(s)."
          (view-mode t)
          (current-buffer))))))
 
-(defvar-local lsp--cur-hover-request-id nil)
-
-(defun lsp--text-document-hover-string ()
-  "interface Hover {
-    contents: MarkedString | MarkedString[];
-    range?: Range;
-}
-
-type MarkedString = string | { language: string; value: string };"
-  (lsp--cur-workspace-check)
-  (when lsp--cur-hover-request-id
-    (lsp--cancel-request lsp--cur-hover-request-id))
-  (let* ((client (lsp--workspace-client lsp--cur-workspace))
-          bounds body)
-    (when (symbol-at-point)
-      (setq bounds (bounds-of-thing-at-point 'symbol)
-        body (lsp--send-request-async (lsp--make-request "textDocument/hover"
-                                        (lsp--text-document-position-params))
-               (lsp--make-hover-callback client (car bounds) (cdr bounds)))
-        lsp--cur-hover-request-id (plist-get body :id))
-      (cl-assert (integerp lsp--cur-hover-request-id)))))
-
 (defun lsp--render-markup-content-1 (kind content)
   (if (functionp lsp-render-markdown-markup-content)
     (let ((out (funcall lsp-render-markdown-markup-content kind content)))
@@ -1818,11 +1797,9 @@ export interface MarkupContent {
         (content (gethash "value" content)))
     (lsp--render-markup-content-1 kind content)))
 
-(define-inline lsp--point-is-within-bounds-p (start end)
-  "Return whether the current point is within START and END."
-  (inline-quote
-    (let ((p (point)))
-      (and (>= p ,start) (<= p ,end)))))
+(defun lsp--point-in-bounds-p (bounds)
+  "Return whether the current point is within BOUNDS."
+  (and (<= (car bounds) (point)) (< (point) (cdr bounds))))
 
 (define-inline lsp--markup-content-p (obj)
   (inline-letevals (obj)
@@ -1870,18 +1847,6 @@ RENDER-ALL if set to nil render only the first element from CONTENTS."
         (list contents)))
      "\n")))
 
-;; start and end are the bounds of the symbol at point
-(defun lsp--make-hover-callback (client start end)
-  (lambda (hover)
-    (setq lsp--cur-hover-request-id nil)
-    (when (and hover
-               (lsp--point-is-within-bounds-p start end)
-               (eldoc-display-message-p))
-      (when-let ((contents (gethash "contents" hover)))
-        (eldoc-message (lsp--render-on-hover-content contents
-                                                     client
-                                                     lsp-eldoc-render-all))))))
-
 (defun lsp-provide-marked-string-renderer (client language renderer)
   (cl-check-type language string)
   (cl-check-type renderer function)
@@ -1894,14 +1859,34 @@ It will be used when no language has been specified in document/onHover result."
   (cl-check-type renderer function)
   (setf (lsp--client-default-renderer client) renderer))
 
+(defvar-local lsp--hover-saved-bounds nil)
+(defvar-local lsp--hover-saved-contents nil)
+
+(defun lsp--hover-callback (from-cache)
+  (message lsp--hover-saved-contents))
+
 (defun lsp-hover ()
   "Show relevant documentation for the thing under point."
   (interactive)
-  (lsp--text-document-hover-string))
+  (if (and lsp--hover-saved-bounds
+           (lsp--point-in-bounds-p lsp--hover-saved-bounds))
+      (lsp--hover-callback t)
+    (lsp--send-request-async
+     (lsp--make-request "textDocument/hover"
+                        (lsp--text-document-position-params))
+     (-lambda ((&hash "contents" contents "range" range))
+       (setq lsp--hover-saved-bounds
+               (and range
+                    (cons (lsp--position-to-point (gethash "start" range))
+                          (lsp--position-to-point (gethash "end" range)))))
+         (setq lsp--hover-saved-contents
+               (and contents (lsp--render-on-hover-content contents lsp-eldoc-render-all)))
+         (lsp--hover-callback nil)))))
 
 (defvar-local lsp--current-signature-help-request-id nil)
 
 (defun lsp-signature-help ()
+  "Display signature help."
   (interactive)
   (unless (lsp--capability "signatureHelpProvider")
     (signal 'lsp-capability-not-supported (list "signatureHelpProvider")))
@@ -1913,29 +1898,26 @@ It will be used when no language has been specified in document/onHover result."
             body (lsp--send-request-async
                   (lsp--make-request "textDocument/signatureHelp"
                                      (lsp--text-document-position-params))
-                  (lsp--make-text-document-signature-help-callback
-                   (car bounds) (cdr bounds)))
+                  (lambda (signature-help)
+                    (setq lsp--current-signature-help-request-id nil)
+                    (when (and signature-help
+                               (lsp--point-in-bounds-p bounds)
+                               (eldoc-display-message-p))
+                      (when-let* ((sig-i (gethash "activeSignature" signature-help))
+                                  (sigs (gethash "signatures" signature-help))
+                                  (sig (when (< sig-i (length sigs)) (elt sigs sig-i))))
+                        (if-let* ((parameter-i (gethash "activeParameter" signature-help))
+                                  ;; Bail out if activeParameter lies outside parameters.
+                                  (parameter (elt (gethash "parameters" sig) parameter-i))
+                                  (param (gethash "label" parameter))
+                                  (parts (split-string (gethash "label" sig) param)))
+                            (eldoc-message (concat (car parts)
+                                                   (propertize param 'face 'eldoc-highlight-function-argument)
+                                                   (string-join (cdr parts) param)))
+                          (eldoc-message (gethash "label" sig))))))
+                  )
             lsp--current-signature-help-request-id (plist-get body :id))
       (cl-assert (integerp lsp--current-signature-help-request-id)))))
-
-(defun lsp--make-text-document-signature-help-callback (start end)
-  (lambda (signature-help)
-    (setq lsp--current-signature-help-request-id nil)
-    (when (and signature-help
-               (lsp--point-is-within-bounds-p start end)
-               (eldoc-display-message-p))
-      (when-let* ((sig-i (gethash "activeSignature" signature-help))
-                  (sigs (gethash "signatures" signature-help))
-                  (sig (when (< sig-i (length sigs)) (elt sigs sig-i))))
-        (if-let* ((parameter-i (gethash "activeParameter" signature-help))
-                  ;; Bail out if activeParameter lies outside parameters.
-                  (parameter (elt (gethash "parameters" sig) parameter-i))
-                  (param (gethash "label" parameter))
-                  (parts (split-string (gethash "label" sig) param)))
-            (eldoc-message (concat (car parts)
-                            (propertize param 'face 'eldoc-highlight-function-argument)
-                            (string-join (cdr parts) param)))
-         (eldoc-message (gethash "label" sig)))))))
 
 ;; NOTE: the code actions cannot currently be applied. There is some non-GNU
 ;; code to do this in the lsp-haskell module. We still need a GNU version, here.
