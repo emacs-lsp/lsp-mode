@@ -331,7 +331,9 @@ than the second parameter.")
                                         (html-mode . "html")
                                         (sgml-mode . "html")
                                         (mhtml-mode . "html")
-                                        (go-mode . "go"))
+                                        (go-mode . "go")
+                                        (php-mode . "php")
+                                        (json-mode . "json"))
   "Language id configuration.")
 
 (defvar lsp-method-requirements
@@ -1999,14 +2001,15 @@ RENDER-ALL - nil if only the first element should be rendered."
     (lsp--send-request-async
      (lsp--make-request "textDocument/hover"
                         (lsp--text-document-position-params))
-     (-lambda ((&hash "contents" contents "range" range))
-       (setq lsp--hover-saved-bounds
+     (-lambda (hover)
+       (-let (((&hash "contents" "range") (or hover (make-hash-table))))
+         (setq lsp--hover-saved-bounds
                (and range
                     (cons (lsp--position-to-point (gethash "start" range))
                           (lsp--position-to-point (gethash "end" range)))))
          (setq lsp--hover-saved-contents
                (and contents (lsp--render-on-hover-content contents lsp-eldoc-render-all)))
-         (lsp--hover-callback nil)))))
+         (lsp--hover-callback nil))))))
 
 (defvar-local lsp--current-signature-help-request-id nil)
 
