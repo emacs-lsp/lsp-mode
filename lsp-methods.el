@@ -1257,11 +1257,10 @@ interface TextDocumentEdit {
   "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
   (gethash cap (or capabilities (lsp--server-capabilities) (make-hash-table))))
 
-(define-inline lsp--registered-capability (method)
-  (inline-quote
-   (seq-find (lambda (reg) (equal (lsp--registered-capability-method reg) ,method))
-             (lsp--workspace-registered-server-capabilities lsp--cur-workspace)
-             nil)))
+(defun lsp--registered-capability (method)
+  (seq-find (lambda (reg) (equal (lsp--registered-capability-method reg) method))
+            (lsp--workspace-registered-server-capabilities lsp--cur-workspace)
+            nil))
 
 (define-inline lsp--registered-capability-by-id (id)
   (inline-quote
