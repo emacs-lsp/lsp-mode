@@ -571,13 +571,17 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--position-to-point (params)
   "Convert Position object in PARAMS to a point."
-  (save-excursion
-    (save-restriction
-      (widen)
-      (goto-char (point-min))
-      (forward-line (gethash "line" params))
-      (forward-char (gethash "character" params))
-      (point))))
+  (-let [(&hash "line" "character") params]
+    (save-excursion
+      (save-restriction
+        (condition-case _err
+            (progn
+              (widen)
+              (goto-char (point-min))
+              (forward-line line)
+              (forward-char character)
+              (point))
+          (error (point)))))))
 
 (defmacro lsp-define-stdio-client (&rest _rest)
   "No op - only for backward compatibility.")
