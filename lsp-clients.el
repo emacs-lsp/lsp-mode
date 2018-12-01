@@ -199,5 +199,18 @@ defaults to half of your CPU cores."
                                         lsp-clients-go-library-directories)))
 
 
+;; RUST
+(defun lsp-clients--rust-window-progress (_workspace params)
+  "Progress report handling.
+PARAMS progress report notification data."
+  ;; Minimal implementation - we could show the progress as well.
+  (message (gethash "title" params)))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection '("rls"))
+                  :major-modes '(rust-mode)
+                  :server-id 'rls
+                  :notification-handlers (lsp-ht ("window/progress" 'lsp-clients--rust-window-progress))))
+
 (provide 'lsp-clients)
 ;;; lsp-clients.el ends here
