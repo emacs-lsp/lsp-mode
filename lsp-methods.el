@@ -1253,9 +1253,9 @@ interface TextDocumentEdit {
       (delete-region start-point end-point)
       (insert (gethash "newText" text-edit)))))
 
-(define-inline lsp--capability (cap &optional capabilities)
+(defun lsp--capability (cap &optional capabilities)
   "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
-  (inline-quote (gethash ,cap (or ,capabilities (lsp--server-capabilities) (make-hash-table)))))
+  (gethash cap (or capabilities (lsp--server-capabilities) (make-hash-table))))
 
 (define-inline lsp--registered-capability (method)
   (inline-quote
