@@ -621,7 +621,9 @@ This is equivalent to `display-warning', using `lsp-mode' as the type and
 
 (defun lsp--buffer-uri ()
   "Return URI of the current buffer."
-  (or lsp-buffer-uri (lsp--path-to-uri buffer-file-name)))
+  (or lsp-buffer-uri
+      (lsp--path-to-uri
+       (or buffer-file-name (ignore-errors (buffer-file-name (buffer-base-buffer)))))))
 
 (defun lsp-register-client-capabilities (&rest _args)
   "Implemented only to make `company-lsp' happy.
