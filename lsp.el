@@ -2065,13 +2065,15 @@ RENDER-ALL - nil if only the first element should be rendered."
                     (gethash command))
           (lsp-workspaces)))
 
+(defun lsp--text-document-code-action-params ()
+  "Code action params."
+  (list :textDocument (lsp--text-document-identifier)
+        :range (lsp--region-or-line)
+        :context (list :diagnostics (lsp--cur-line-diagnotics))))
+
 (defun lsp-code-actions-at-point ()
   "Retrieve the code actions for the active region or the current line."
-  (lsp-request
-   "textDocument/codeAction"
-   (list :textDocument (lsp--text-document-identifier)
-         :range (lsp--region-or-line)
-         :context (list :diagnostics (lsp--cur-line-diagnotics)))))
+  (lsp-request "textDocument/codeAction" (lsp--text-document-code-action-params)))
 
 (defalias 'lsp-get-or-calculate-code-actions 'lsp-code-actions-at-point)
 
