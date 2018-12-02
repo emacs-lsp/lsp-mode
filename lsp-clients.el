@@ -25,6 +25,8 @@
 ;;; Code:
 
 (require 'lsp)
+(require 'dash)
+(require 'dash-functional)
 
 
 ;; Python
@@ -109,7 +111,7 @@ finding the executable with `exec-path'."
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("typescript-language-server" "--stdio"))
-                  :major-modes '(typescript-mode js-mode)
+                  :major-modes '(typescript-mode js-mode js2-mode)
                   :server-id 'ts-ls))
 
 
@@ -211,6 +213,27 @@ PARAMS progress report notification data."
                   :major-modes '(rust-mode)
                   :server-id 'rls
                   :notification-handlers (lsp-ht ("window/progress" 'lsp-clients--rust-window-progress))))
+
+;; Ruby
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection '("solargraph" "stdio"))
+                  :major-modes '(ruby-mode)
+                  :multi-root t
+                  :server-id 'ruby-ls))
+
+;; PHP
+(defcustom lsp-clients-php-server-command
+  `("php" ,(expand-file-name "~/.composer/vendor/felixfbecker/language-server/bin/php-language-server.php"))
+  "Install directory for php-language-server."
+  :group 'lsp-php
+  :type 'file)
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (-const lsp-clients-php-server-command))
+                  :major-modes '(php-mode)
+                  :server-id 'php-ls))
+
 
 (provide 'lsp-clients)
 ;;; lsp-clients.el ends here
