@@ -326,7 +326,9 @@ than the second parameter.")
                                         (rust-mode . "rust")
                                         (css-mode . "css")
                                         (xml-mode . "xml")
+                                        (c-mode . "c")
                                         (c++-mode . "cpp")
+                                        (objc-mode . "objective-c")
                                         (web-mode . "html")
                                         (html-mode . "html")
                                         (sgml-mode . "html")
@@ -1287,7 +1289,7 @@ remove."
                            "textDocument/didOpen"
                            (list :textDocument
                                  (list :uri (lsp--buffer-uri)
-                                       :languageId (alist-get major-mode lsp-language-id-configuration)
+                                       :languageId (alist-get major-mode lsp-language-id-configuration "")
                                        :version (lsp--cur-file-version)
                                        :text (buffer-substring-no-properties (point-min) (point-max))))))
 
