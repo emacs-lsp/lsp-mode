@@ -966,6 +966,9 @@ If WORKSPACE is not provided current workspace will be used."
 
 (defalias 'lsp-send-notification 'lsp--send-notification)
 
+(defun lsp-notify (method params)
+  (lsp--send-notification (lsp--make-notification method params)))
+
 (defun lsp--cur-workspace-check ()
   "Check whether buffer lsp workspace(s) are set."
   (cl-assert (lsp-workspaces) nil
@@ -1064,7 +1067,7 @@ depending on the condition of the original buffer."
   "Shut down the language server process for ‘lsp--cur-workspace’."
   (with-demoted-errors "LSP error: %S"
     (lsp-request "shutdown" nil :no-wait t)
-    (lsp--send-notification (lsp--make-notification "exit" nil)))
+    (lsp-notify "exit" nil))
   (lsp--uninitialize-workspace))
 
 (defun lsp--uninitialize-workspace ()
@@ -1220,14 +1223,13 @@ remove."
   (unless (lsp--workspace-folders-capability-p)
     (signal 'lsp-capability-not-supported (list "workspaceFolders")))
 
-  (lsp-send-notification
-   (lsp-make-notification
-    "workspace/didChangeWorkspaceFolders"
-    `(:event (:removed
-              ,(apply 'vector (mapcar
-                               (lambda (dir)
-                                 (list :uri (lsp--path-to-uri dir)))
-                               directories))))))
+  (lsp-notify
+   "workspace/didChangeWorkspaceFolders"
+   `(:event (:removed
+             ,(apply 'vector (mapcar
+                              (lambda (dir)
+                                (list :uri (lsp--path-to-uri dir)))
+                              directories)))))
   (let ((current-folders (lsp--workspace-workspace-folders lsp--cur-workspace)))
     (dolist (dir directories)
       (setq current-folders (delete dir current-folders))))
@@ -1289,13 +1291,13 @@ remove."
   (run-hooks 'lsp-before-open-hook)
   (puthash (current-buffer) 0 (lsp--workspace-file-versions lsp--cur-workspace))
   (pushnew (current-buffer) (lsp--workspace-buffers lsp--cur-workspace))
-  (lsp--send-notification (lsp--make-notification
-                           "textDocument/didOpen"
-                           (list :textDocument
-                                 (list :uri (lsp--buffer-uri)
-                                       :languageId (alist-get major-mode lsp-language-id-configuration "")
-                                       :version (lsp--cur-file-version)
-                                       :text (buffer-substring-no-properties (point-min) (point-max))))))
+  (lsp-notify
+   "textDocument/didOpen"
+   (list :textDocument
+         (list :uri (lsp--buffer-uri)
+               :languageId (alist-get major-mode lsp-language-id-configuration "")
+               :version (lsp--cur-file-version)
+               :text (buffer-substring-no-properties (point-min) (point-max)))))
 
   (lsp--managed-mode 1)
 
@@ -1603,16 +1605,15 @@ Added to `after-change-functions'."
            (cl-incf (gethash (current-buffer)
                              (lsp--workspace-file-versions lsp--cur-workspace)))
            (unless (eq lsp--server-sync-method 'none)
-             (lsp--send-notification
-              (lsp--make-notification
-               "textDocument/didChange"
-               `(:textDocument
-                 ,(lsp--versioned-text-document-identifier)
-                 :contentChanges
-                 ,(pcase lsp--server-sync-method
-                    ('incremental (vector (lsp--text-document-content-change-event
-                                           start end length)))
-                    ('full (vector (lsp--full-change-event)))))))))))
+             (lsp-notify
+              "textDocument/didChange"
+              `(:textDocument
+                ,(lsp--versioned-text-document-identifier)
+                :contentChanges
+                ,(pcase lsp--server-sync-method
+                   ('incremental (vector (lsp--text-document-content-change-event
+                                          start end length)))
+                   ('full (vector (lsp--full-change-event))))))))))
      (lsp-workspaces))))
 
 (defun lsp--on-self-insert ()
@@ -1666,10 +1667,9 @@ if it's closing the last buffer in the workspace."
                (delq (current-buffer) old-buffers))
          (remhash (current-buffer) file-versions)
          (with-demoted-errors "Error sending didClose notification in ‘lsp--text-document-did-close’: %S"
-           (lsp--send-notification
-            (lsp--make-notification
-             "textDocument/didClose"
-             `(:textDocument ,(lsp--versioned-text-document-identifier)))))
+           (lsp-notify
+            "textDocument/didClose"
+            `(:textDocument ,(lsp--versioned-text-document-identifier))))
          (when (and (not lsp-keep-workspace-alive)
                     (not keep-workspace-alive)
                     (= 0 (hash-table-count file-versions)))
@@ -1687,8 +1687,7 @@ if it's closing the last buffer in the workspace."
   (with-demoted-errors "Error in ‘lsp--before-save’: %S"
     (let ((params (lsp--will-save-text-document-params 1)))
       (when (lsp--send-will-save-p)
-        (lsp--send-notification
-         (lsp--make-notification "textDocument/willSave" params)))
+        (lsp-notify "textDocument/willSave" params))
       (when (and (lsp--send-will-save-wait-until-p) lsp-before-save-edits)
         (lsp--apply-text-edits
          (lsp-request "textDocument/willSaveWaitUntil" params))))))
@@ -1697,9 +1696,7 @@ if it's closing the last buffer in the workspace."
   "Handler for auto-save."
   (when (lsp--send-will-save-p)
     (with-demoted-errors "Error in ‘lsp--on-auto-save’: %S"
-      (lsp--send-notification
-       (lsp--make-notification "textDocument/willSave"
-                               (lsp--will-save-text-document-params 2))))))
+      (lsp-notify "textDocument/willSave" (lsp--will-save-text-document-params 2)))))
 
 (defun lsp--text-document-did-save ()
   "Executed when the file is closed, added to `after-save-hook''."
@@ -1899,8 +1896,7 @@ Returns xref-item(s)."
       (let ((response-handlers (lsp--client-response-handlers (lsp--workspace-client
                                                                lsp--cur-workspace))))
         (remhash id response-handlers)
-        (lsp--send-notification (lsp--make-notification "$/cancelRequest"
-                                                        `(:id ,id)))))))
+        (lsp-notify "$/cancelRequest" `(:id ,id))))))
 
 (defun lsp-eldoc-function ()
   ;; This function is used as ‘eldoc-documentation-function’, so it’s important
@@ -2359,9 +2355,7 @@ EXTRA is a plist of extra parameters."
 
 (defun lsp--set-configuration (settings)
   "Set the SETTINGS for the lsp server."
-  (lsp--send-notification (lsp--make-notification
-                           "workspace/didChangeConfiguration"
-                           `(:settings , settings))))
+  (lsp-notify "workspace/didChangeConfiguration" `(:settings , settings)))
 
 (defun lsp-workspace-register-watch (to-watch &optional workspace)
   "Monitor for file change and trigger workspace/didChangeConfiguration.
@@ -2379,13 +2373,12 @@ If WORKSPACE is not specified the `lsp--cur-workspace' will be used."
               (mapcar 'eshell-glob-regexp glob-patterns)
               (lambda (event)
                 (let ((lsp--cur-workspace workspace))
-                  (lsp-send-notification
-                   (lsp-make-notification
-                    "workspace/didChangeWatchedFiles"
-                    (list :changes
-                          (list
-                           :type (alist-get (cadr event) lsp--file-change-type)
-                           :uri (lsp--path-to-uri (caddr event))))))))
+                  (lsp-notify
+                   "workspace/didChangeWatchedFiles"
+                   (list :changes
+                         (list
+                          :type (alist-get (cadr event) lsp--file-change-type)
+                          :uri (lsp--path-to-uri (caddr event)))))))
               watches))))
 
 (defun lsp--on-set-visitied-file-name (old-func &rest args)
@@ -3000,7 +2993,7 @@ SESSION is the active session."
                (lsp--workspace-status workspace) 'initialized)
 
          (with-lsp-workspace workspace
-           (lsp--send-notification (lsp--make-notification "initialized" (make-hash-table))))
+           (lsp-notify "initialized" (make-hash-table)))
 
          (--each (lsp--workspace-buffers workspace)
            (with-current-buffer it
