@@ -999,6 +999,9 @@ If NO-WAIT is non-nil, don't synchronously wait for a response."
   "Send BODY as a request to the language server and return the response synchronously.
 \n(fn BODY)")
 
+(cl-defun lsp-request (method params &key no-wait)
+  (lsp--send-request `(:jsonrpc "2.0" :method ,method :params ,params) no-wait))
+
 (defun lsp--create-async-callback-wrapper (count callback mode method)
   "Create async handler expecting COUNT results, merge them and call CALLBACK.
 MODE determines when the callback will be called depending on the
@@ -1061,7 +1064,7 @@ depending on the condition of the original buffer."
 (defun lsp--shutdown-workspace ()
   "Shut down the language server process for ‘lsp--cur-workspace’."
   (with-demoted-errors "LSP error: %S"
-    (lsp--send-request (lsp--make-request "shutdown" (make-hash-table)) t)
+    (lsp-request "shutdown" nil :no-wait t)
     (lsp--send-notification (lsp--make-notification "exit" nil)))
   (lsp--uninitialize-workspace))
 
@@ -1689,8 +1692,7 @@ if it's closing the last buffer in the workspace."
          (lsp--make-notification "textDocument/willSave" params)))
       (when (and (lsp--send-will-save-wait-until-p) lsp-before-save-edits)
         (lsp--apply-text-edits
-         (lsp--send-request (lsp--make-request
-                             "textDocument/willSaveWaitUntil" params)))))))
+         (lsp-request "textDocument/willSaveWaitUntil" params))))))
 
 (defun lsp--on-auto-save ()
   "Handler for auto-save."
@@ -1782,10 +1784,8 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
         #'(lambda (_)
             ;; *we* don't need to know the string being completed
             ;; the language server does all the work by itself
-            (let* ((resp (lsp--send-request
-                          (lsp--make-request
-                           "textDocument/completion"
-                           (lsp--text-document-position-params))))
+            (let* ((resp (lsp-request "textDocument/completion"
+                                      (lsp--text-document-position-params)))
                    (items (cond
                            ((null resp) nil)
                            ((hash-table-p resp) (gethash "items" resp nil))
@@ -1808,7 +1808,7 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
   (or (-first 'identity
               (lsp-foreach-workspace
                (when (gethash "resolveProvider" (lsp--capability "completionProvider"))
-                 (lsp--send-request (lsp--make-request "completionItem/resolve" item)))))
+                 (lsp-request "completionItem/resolve" item))))
       item))
 
 (defun lsp--extract-line-from-buffer (pos)
@@ -1877,9 +1877,8 @@ interface Location {
 (defun lsp--get-definitions ()
   "Get definition of the current symbol under point.
 Returns xref-item(s)."
-  (let ((defs (lsp--send-request (lsp--make-request
-                                  "textDocument/definition"
-                                  (lsp--text-document-position-params)))))
+  (let ((defs (lsp-request "textDocument/definition"
+                           (lsp--text-document-position-params))))
     ;; textDocument/definition returns Location | Location[]
     (lsp--locations-to-xref-items (if (sequencep defs) defs (vector defs)))))
 
@@ -1894,9 +1893,8 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
 (defun lsp--get-references ()
   "Get all references for the symbol under point.
 Returns xref-item(s)."
-  (let ((refs  (lsp--send-request (lsp--make-request
-                                   "textDocument/references"
-                                   (lsp--make-reference-params)))))
+  (let ((refs (lsp-request "textDocument/references"
+                           (lsp--make-reference-params))))
     (lsp--locations-to-xref-items refs)))
 
 (defun lsp--cancel-request (id)
@@ -1999,7 +1997,11 @@ RENDER-ALL - nil if only the first element should be rendered."
 
 (defun lsp--hover-callback (from-cache)
   ;; Without run-with-idle-timer, echo area will be cleared after displaying the message instantly.
-  (run-with-idle-timer 0 nil (lambda () (eldoc-message lsp--hover-saved-contents))))
+  (run-with-idle-timer
+   0 nil
+   (lambda ()
+     (unless (string= lsp--hover-saved-contents (current-message))
+       (eldoc-message lsp--hover-saved-contents)))))
 
 (defun lsp-hover ()
   "Show relevant documentation for the thing under point."
@@ -2105,9 +2107,8 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
   (unless (or (lsp--capability "documentFormattingProvider")
               (lsp--registered-capability "textDocument/formatting"))
     (signal 'lsp-capability-not-supported (list "documentFormattingProvider")))
-  (let ((edits (lsp--send-request (lsp--make-request
-                                   "textDocument/formatting"
-                                   (lsp--make-document-formatting-params)))))
+  (let ((edits (lsp-request "textDocument/formatting"
+                            (lsp--make-document-formatting-params))))
     (if (fboundp 'replace-buffer-contents)
         (let ((current-buffer (current-buffer)))
           (with-temp-buffer
@@ -2237,9 +2238,8 @@ A reference is highlighted only if it is visible in a window."
                                         (gethash "character" start)))))
 
 (defun lsp-format-region (s e)
-  (let ((edits (lsp--send-request (lsp--make-request
-                                   "textDocument/rangeFormatting"
-                                   (lsp--make-document-range-formatting-params s e)))))
+  (let ((edits (lsp-request "textDocument/rangeFormatting"
+                            (lsp--make-document-range-formatting-params s e))))
     (lsp--apply-text-edits edits)))
 
 (defun lsp--location-to-td-position (location)
@@ -2254,10 +2254,8 @@ A reference is highlighted only if it is visible in a window."
                 'def-params td-params)))
 
 (defun lsp--get-document-symbols ()
-  (lsp--cur-workspace-check)
-  (lsp--send-request (lsp--make-request
-                      "textDocument/documentSymbol"
-                      `(:textDocument ,(lsp--text-document-identifier)))))
+  (lsp-request "textDocument/documentSymbol"
+               `(:textDocument ,(lsp--text-document-identifier))))
 
 (defun lsp--xref-backend () 'xref-lsp)
 
@@ -2288,16 +2286,13 @@ A reference is highlighted only if it is visible in a window."
 (cl-defmethod xref-backend-references ((_backend (eql xref-lsp)) identifier)
   (let* ((properties (text-properties-at 0 identifier))
          (params (plist-get properties 'ref-params))
-         (refs (lsp--send-request (lsp--make-request
-                                   "textDocument/references"
-                                   (or params (lsp--make-reference-params))))))
+         (refs (lsp-request "textDocument/references"
+                            (or params (lsp--make-reference-params)))))
     (lsp--locations-to-xref-items refs)))
 
 (cl-defmethod xref-backend-apropos ((_backend (eql xref-lsp)) pattern)
-  (seq-map #'lsp--symbol-information-to-xref
-           (lsp--send-request (lsp--make-request
-                               "workspace/symbol"
-                               (list :query pattern)))))
+  (mapcar #'lsp--symbol-information-to-xref
+          (lsp-request "workspace/symbol" `(:query ,pattern))))
 
 (defun lsp-rename (newname)
   "Rename the symbol (and all references to it) under point to NEWNAME."
@@ -2305,20 +2300,18 @@ A reference is highlighted only if it is visible in a window."
   (lsp--cur-workspace-check)
   (unless (lsp--capability "renameProvider")
     (signal 'lsp-capability-not-supported (list "renameProvider")))
-  (let ((edits (lsp--send-request (lsp--make-request
-                                   "textDocument/rename"
-                                   `(:textDocument ,(lsp--text-document-identifier)
-                                                   :position ,(lsp--cur-position)
-                                                   :newName ,newname)))))
+  (let ((edits (lsp-request "textDocument/rename"
+                            `(:textDocument ,(lsp--text-document-identifier)
+                                            :position ,(lsp--cur-position)
+                                            :newName ,newname))))
     (when edits
       (lsp--apply-workspace-edit edits))))
 
 (defun lsp-find-custom (method &optional extra)
   "Send request named METHOD and get cross references of the symbol under point.
 EXTRA is a plist of extra parameters."
-  (let ((loc (lsp--send-request
-              (lsp--make-request method
-                                 (append (lsp--text-document-position-params) extra)))))
+  (let ((loc (lsp-request method
+                          (append (lsp--text-document-position-params) extra))))
     (if loc
         (xref--show-xrefs
          (lsp--locations-to-xref-items (if (sequencep loc) loc (vector loc))) nil)
@@ -2358,7 +2351,7 @@ EXTRA is a plist of extra parameters."
   (let ((params (if args
                     (list :command command :arguments args)
                   (list :command command))))
-    (lsp--send-request (lsp--make-request "workspace/executeCommand" params))))
+    (lsp-request "workspace/executeCommand" params)))
 
 (defalias 'lsp-point-to-position #'lsp--point-to-position)
 (defalias 'lsp-text-document-identifier #'lsp--text-document-identifier)
