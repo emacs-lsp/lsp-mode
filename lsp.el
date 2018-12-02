@@ -3226,6 +3226,16 @@ Returns nil if the project should not be added to the current SESSION."
        (lsp-session-folders)
        (--first (f-ancestor-of? it file-name))))
 
+(defun lsp-find-workspace (server-id file-name)
+  "Find workspace for SERVER-ID for FILE-NAME."
+  (when-let* ((session (lsp-session))
+              (folder->servers (lsp-session-folder->servers session))
+              (workspaces (if file-name
+                              (gethash (lsp-find-session-folder session file-name) folder->servers)
+                            (lsp--session-workspaces session))))
+
+    (--first (eq (lsp--client-server-id (lsp--workspace-client it)) server-id) workspaces)))
+
 (defun lsp--calculate-root (session file-name)
   "Calculate project root for FILE-NAME in SESSION."
   (and
