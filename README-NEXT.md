@@ -42,26 +42,35 @@ Some of the servers are directly supported by `lsp-mode` by requiring
 `lsp-clients.el` while other require isntalling additional package which provide
 server specific functionality.
 
-| Language           | Extension                                                                    |
-|--------------------|------------------------------------------------------------------------------|
-| Bash               | [Built-in](https://github.com/emacs-lsp/lsp-mode/blob/master/lsp-clients.el) |
-| C (ccls)           | [emacs-ccls](https://github.com/MaskRay/emacs-ccls)                          |
-| C (clangd)         | [lsp-clangd](https://github.com/emacs-lsp/lsp-clangd)                        |
-| C (cquery)         | [emacs-cquery](https://github.com/cquery-project/emacs-cquery)               |
-| CSS                | [Built-in](https://github.com/emacs-lsp/lsp-mode/blob/master/lsp-clients.el) |
-| Go                 | [Built-in](https://github.com/emacs-lsp/lsp-mode/blob/master/lsp-clients.el) |
-| Groovy             | [Built-in](https://github.com/emacs-lsp/lsp-mode/blob/master/lsp-clients.el) |
-| HTML               | [Built-in](https://github.com/emacs-lsp/lsp-mode/blob/master/lsp-clients.el) |
-| Haskell            | [lsp-haskell](https://github.com/emacs-lsp/lsp-haskell)                      |
-| Java (Eclipse JDT) | [lsp-java](https://github.com/emacs-lsp/lsp-java)                            |
-| Javascript         | [lsp-javascript](https://github.com/emacs-lsp/lsp-javascript)                |
-| OCaml              | [lsp-ocaml](https://github.com/emacs-lsp/lsp-ocaml)                          |
-| PHP                | [lsp-php](https://github.com/emacs-lsp/lsp-php)                              |
-| Python             | [Built-in](https://github.com/emacs-lsp/lsp-mode/blob/master/lsp-clients.el) |
-| Ruby               | [lsp-ruby](https://github.com/emacs-lsp/lsp-ruby)                            |
-| Rust               | [lsp-rust](https://github.com/emacs-lsp/lsp-rust)                            |
-| Scala              | [lsp-scala](https://github.com/rossabaker/lsp-scala)                         |
-| Vue                | [lsp-vue](https://github.com/emacs-lsp/lsp-vue)                              |
+
+
+[ccls]: https://github.com/MaskRay/ccls
+[clangd]: https://clang.llvm.org/extra/clangd.html
+[ocaml-language-server]:
+
+
+
+
+| Language              | Language Server                                                                                | Built-in                                                             | Installation command                                                                |
+|-----------------------|------------------------------------------------------------------------------------------------|----------------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| Bash                  | [bash-language-server](https://github.com/mads-hartmann/bash-language-server)                  | Yes                                                                  | npm i -g bash-language-server                                                       |
+| C++                   | [ccls](https://github.com/MaskRay/ccls)                                                        | [emacs-ccls](https://github.com/MaskRay/emacs-ccls) (TBD)            | Refer to [ccls](https://github.com/MaskRay/ccls)                                    |
+| C++                   | [clangd](https://clang.llvm.org/extra/clangd.html)                                             | Yes                                                                  | Refer to [clangd](https://clang.llvm.org/extra/clangd.html)                         |
+| C++                   | [cquery](https://github.com/cquery-project/cquery)                                             | [emacs-cquery](https://github.com/cquery-project/emacs-cquery) (TBD) | Refer to [cquery](https://github.com/cquery-project/cquery)                        |
+| CSS                   | [css](https://github.com/vscode-langservers/vscode-css-languageserver-bin)                     | Yes                                                                  | npm install -g vscode-css-languageserver-bin                                  |
+| Go                    | [go-langserver](https://github.com/sourcegraph/go-langserver)                                  | Yes                                                                  | go get -u github.com/sourcegraph/go-langserver                                      |
+| Groovy                | [groovy-language-server](https://github.com/palantir/language-servers)                         | Yes                                                                  | Refer to [groovy-language-server](https://github.com/palantir/language-servers)     |
+| HTML                  | [html](https://github.com/vscode-langservers/vscode-html-languageserver)                       | Yes                                                                  | npm install -g vscode-html-languageserver-bin                                 |
+| Haskell               | [IDE engine](https://github.com/haskell/haskell-ide-engine)                                    | (TBD)                                                                | Refer to [IDE engine](https://github.com/haskell/haskell-ide-engine)                |
+| JSON                  | [vscode-json-languageserver](https://github.com/vscode-langservers/vscode-json-languageserver) | Yes                                                                  |                                                                                     |
+| Java                  | [Eclipse JDT LS](https://github.com/eclipse/eclipse.jdt.ls)                     | [lsp-java](https://github.com/emacs-lsp/lsp-java)   (TBD)            | Automatic by [lsp-java](https://github.com/emacs-lsp/lsp-java)                      |
+| Javascript/Typescript | [javascript-typescript-stdio](https://github.com/sourcegraph/javascript-typescript-langserver) | Yes                                                                  | npm i -g javascript-typescript-langserver                                           |
+| Ocaml                 | [ocaml-language-server](https://github.com/freebroccolo/ocaml-language-server)                 | (TBD)                                                                |                                                                                     |
+| PHP                   | [php-language-server](https://github.com/felixfbecker/php-language-server)                     | Yes                                                                  | Refer to [php-language-server](https://github.com/felixfbecker/php-language-server) |
+| Python                | [pyls](https://github.com/palantir/python-language-server)                                     | Yes                                                                  | pip install 'python-language-server[all]'                                           |
+| Ruby                  | [solargraph](https://github.com/castwide/solargraph)                                           | Yes                                                                  | gem install solargraph                                                              |
+| Rust                  | [rls](https://github.com/rust-lang-nursery/rls)                                                | Yes                                                                  | Refer to [rls](https://github.com/rust-lang-nursery/rls)                            |
+| Scala                 | [lsp-scala](https://github.com/rossabaker/lsp-scala)                                           | TBD                                                                  |                                                                                     |
 ## Examples
 
 ### Completion
@@ -92,14 +101,7 @@ to find the references to the symbol under point.
 ![sym_highlight](./examples/sym_highlight.gif)
 
 ### Imenu
-Add
-```emacs-lisp
-(add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
-```
-to your init file to enable imenu integration.
-
 ![imenu-1](./examples/imenu-1.png)
-![imenu-2](./examples/imenu-2.png)
 
 #### With [helm-imenu](https://github.com/emacs-helm/helm)
 ![helm-imenu](./examples/helm-imenu.gif)
@@ -110,7 +112,6 @@ Use <kbd>M</kbd> - <kbd>x</kbd> `lsp-rename`.
 ![rename](./examples/rename.gif)
 
 ### Hooks
-
 `lsp-mode` provides a handful of hooks that can be used to extend and configure
 the behaviour of language servers. A full list of hooks is available in the
 [API documentation](./doc/API.org).
