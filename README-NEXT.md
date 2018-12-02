@@ -43,27 +43,19 @@ Some of the servers are directly supported by `lsp-mode` by requiring
 server specific functionality.
 
 
-
-[ccls]: https://github.com/MaskRay/ccls
-[clangd]: https://clang.llvm.org/extra/clangd.html
-[ocaml-language-server]:
-
-
-
-
 | Language              | Language Server                                                                                | Built-in                                                             | Installation command                                                                |
 |-----------------------|------------------------------------------------------------------------------------------------|----------------------------------------------------------------------|-------------------------------------------------------------------------------------|
 | Bash                  | [bash-language-server](https://github.com/mads-hartmann/bash-language-server)                  | Yes                                                                  | npm i -g bash-language-server                                                       |
 | C++                   | [ccls](https://github.com/MaskRay/ccls)                                                        | [emacs-ccls](https://github.com/MaskRay/emacs-ccls) (TBD)            | Refer to [ccls](https://github.com/MaskRay/ccls)                                    |
 | C++                   | [clangd](https://clang.llvm.org/extra/clangd.html)                                             | Yes                                                                  | Refer to [clangd](https://clang.llvm.org/extra/clangd.html)                         |
-| C++                   | [cquery](https://github.com/cquery-project/cquery)                                             | [emacs-cquery](https://github.com/cquery-project/emacs-cquery) (TBD) | Refer to [cquery](https://github.com/cquery-project/cquery)                        |
-| CSS                   | [css](https://github.com/vscode-langservers/vscode-css-languageserver-bin)                     | Yes                                                                  | npm install -g vscode-css-languageserver-bin                                  |
+| C++                   | [cquery](https://github.com/cquery-project/cquery)                                             | [emacs-cquery](https://github.com/cquery-project/emacs-cquery) (TBD) | Refer to [cquery](https://github.com/cquery-project/cquery)                         |
+| CSS                   | [css](https://github.com/vscode-langservers/vscode-css-languageserver-bin)                     | Yes                                                                  | npm install -g vscode-css-languageserver-bin                                        |
 | Go                    | [go-langserver](https://github.com/sourcegraph/go-langserver)                                  | Yes                                                                  | go get -u github.com/sourcegraph/go-langserver                                      |
 | Groovy                | [groovy-language-server](https://github.com/palantir/language-servers)                         | Yes                                                                  | Refer to [groovy-language-server](https://github.com/palantir/language-servers)     |
-| HTML                  | [html](https://github.com/vscode-langservers/vscode-html-languageserver)                       | Yes                                                                  | npm install -g vscode-html-languageserver-bin                                 |
+| HTML                  | [html](https://github.com/vscode-langservers/vscode-html-languageserver)                       | Yes                                                                  | npm install -g vscode-html-languageserver-bin                                       |
 | Haskell               | [IDE engine](https://github.com/haskell/haskell-ide-engine)                                    | (TBD)                                                                | Refer to [IDE engine](https://github.com/haskell/haskell-ide-engine)                |
 | JSON                  | [vscode-json-languageserver](https://github.com/vscode-langservers/vscode-json-languageserver) | Yes                                                                  |                                                                                     |
-| Java                  | [Eclipse JDT LS](https://github.com/eclipse/eclipse.jdt.ls)                     | [lsp-java](https://github.com/emacs-lsp/lsp-java)   (TBD)            | Automatic by [lsp-java](https://github.com/emacs-lsp/lsp-java)                      |
+| Java                  | [Eclipse JDT LS](https://github.com/eclipse/eclipse.jdt.ls)                                    | [lsp-java](https://github.com/emacs-lsp/lsp-java)                    | Automatic by [lsp-java](https://github.com/emacs-lsp/lsp-java)                      |
 | Javascript/Typescript | [javascript-typescript-stdio](https://github.com/sourcegraph/javascript-typescript-langserver) | Yes                                                                  | npm i -g javascript-typescript-langserver                                           |
 | Ocaml                 | [ocaml-language-server](https://github.com/freebroccolo/ocaml-language-server)                 | (TBD)                                                                |                                                                                     |
 | PHP                   | [php-language-server](https://github.com/felixfbecker/php-language-server)                     | Yes                                                                  | Refer to [php-language-server](https://github.com/felixfbecker/php-language-server) |
