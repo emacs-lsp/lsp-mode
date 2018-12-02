@@ -1088,7 +1088,7 @@ disappearing, unset all the variables related to it."
   "Return the client capabilites."
   `(:workspace (
                 :applyEdit t
-                :executeCommand (:dynamicRegistration nil)
+                :executeCommand (:dynamicRegistration :json-false)
                 :workspaceFolders t)
                :textDocument (
                               :synchronization (:willSave t :didSave t :willSaveWaitUntil t)
