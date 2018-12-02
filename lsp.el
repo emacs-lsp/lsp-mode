@@ -565,7 +565,9 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   ;; function which will be called when opening file in the workspace to perfom
   ;; client specific initialization. The function accepts one parameter
   ;; currently active workspace.
-  (before-file-open-fn))
+  (before-file-open-fn)
+  ;; Function which will be called right after a workspace has been intialized.
+  (initialized-fn))
 
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--position-to-point (params)
@@ -1082,7 +1084,7 @@ disappearing, unset all the variables related to it."
   "Return the client capabilites."
   `(:workspace (
                 :applyEdit t
-                :executeCommand (:dynamicRegistration t)
+                :executeCommand (:dynamicRegistration nil)
                 :workspaceFolders t)
                :textDocument (
                               :synchronization (:willSave t :didSave t :willSaveWaitUntil t)
@@ -3002,7 +3004,10 @@ SESSION is the active session."
 
          (--each (lsp--workspace-buffers workspace)
            (with-current-buffer it
-             (lsp--open-in-workspace workspace))))
+             (lsp--open-in-workspace workspace)))
+
+         (when-let (initialize-fn (lsp--client-initialized-fn client))
+           (funcall initialize-fn workspace)))
        'detached))
     workspace))
 
@@ -3226,7 +3231,8 @@ Returns nil if the project should not be added to the current SESSION."
   "Look in the current SESSION for folder containing FILE-NAME."
   (->> session
        (lsp-session-folders)
-       (--first (f-ancestor-of? it file-name))))
+       (--first (or (f-same? it file-name)
+                    (f-ancestor-of? it file-name)))))
 
 (defun lsp-find-workspace (server-id file-name)
   "Find workspace for SERVER-ID for FILE-NAME."
