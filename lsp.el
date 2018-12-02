@@ -2882,6 +2882,8 @@ HOST and PORT will be used for opening the connection."
     (flycheck-mode)
     (lsp-ui-mode))
 
+  (lsp-enable-imenu)
+
   (when (functionp 'company-lsp)
     (company-mode 1)
     (setq-local company-backends '(company-lsp))
