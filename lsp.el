@@ -374,9 +374,6 @@ must be used for handling a particular message.")
 (defvar-local lsp--buffer-workspaces ()
   "List of the buffer workspaces.")
 
-(defvar-local lsp-code-actions nil
-  "Code actions for the buffer.")
-
 (defvar lsp--session nil
   "Contain the `lsp-session' for the current Emacs instance.")
 
@@ -1371,11 +1368,11 @@ interface Range {
   (inline-quote (lsp--range (lsp--point-to-position ,start)
                             (lsp--point-to-position ,end))))
 
-(defun lsp--current-region-or-pos ()
-  "If the region is active return that, else get the point."
+(defun lsp--region-or-line ()
+  "The active region or the current line."
   (if (use-region-p)
       (lsp--region-to-range (region-beginning) (region-end))
-    (lsp--region-to-range (point) (point))))
+    (lsp--region-to-range (point-at-bol) (point-at-eol))))
 
 (defun lsp--apply-workspace-edit (edit)
   "Apply the WorkspaceEdit object EDIT.
@@ -1720,15 +1717,9 @@ and the position respectively."
   (inline-quote (list :textDocument (or ,identifier (lsp--text-document-identifier))
                       :position (or ,position (lsp--cur-position)))))
 
-(define-inline lsp--text-document-code-action-params ()
-  "Make CodeActionParams for the current region in the current document."
-  (inline-quote (list :textDocument (lsp--text-document-identifier)
-                      :range (lsp--current-region-or-pos)
-                      :context (list :diagnostics (lsp--cur-line-diagnotics)))))
-
 (defun lsp--cur-line-diagnotics ()
   "Return any diagnostics that apply to the current line."
-  (-let* (((&plist :start (&plist :line start) :end (&plist :line end)) (lsp--current-region-or-pos))
+  (-let* (((&plist :start (&plist :line start) :end (&plist :line end)) (lsp--region-or-line))
           (diags-in-range (cl-remove-if-not
                            (lambda (diag)
                              (let ((line (lsp-diagnostic-line diag)))
@@ -2073,10 +2064,12 @@ RENDER-ALL - nil if only the first element should be rendered."
           (lsp-workspaces)))
 
 (defun lsp-code-actions-at-point ()
-  "Retrieve the code actions at point."
-  (->> (lsp--text-document-code-action-params)
-       (lsp--make-request "textDocument/codeAction")
-       (lsp--send-request)))
+  "Retrieve the code actions for the active region or the current line."
+  (lsp-request
+   "textDocument/codeAction"
+   (list :textDocument (lsp--text-document-identifier)
+         :range (lsp--region-or-line)
+         :context (list :diagnostics (lsp--cur-line-diagnotics)))))
 
 (defalias 'lsp-get-or-calculate-code-actions 'lsp-code-actions-at-point)
 
@@ -2084,7 +2077,7 @@ RENDER-ALL - nil if only the first element should be rendered."
   "Execute code action ACTION.
 If ACTION is not set it will be selected from `lsp-code-actions'."
   (interactive (list (lsp--select-action
-                      (or lsp-code-actions (lsp-code-actions-at-point)))))
+                      (lsp-code-actions-at-point))))
   (when-let ((edit (gethash "edit" action)))
     (lsp--apply-workspace-edit edit))
   (when-let ((command (gethash "command" action)))
