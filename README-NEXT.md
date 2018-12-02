@@ -111,9 +111,7 @@ the behaviour of language servers. A full list of hooks is available in the
 ## Adding support for languages
 See [API docs](./doc/API.org)
 
-Here it is the minimal configuration that is needed for new language server
-registation. Refer to the documentation of `lsp--client` for the additional
-settings supported on registration time.
+Here it is the minimal configuration that is needed for new language server registation. Refer to the documentation of `lsp--client` for the additional settings supported on registration time. `lsp-language-id-configuration` must be updated to contain the corresponding mode -> language id - in this case `(python-mode . "python")`
 ``` emacs-lisp
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection "pyls")
