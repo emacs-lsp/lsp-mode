@@ -2086,8 +2086,8 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
   (when-let ((command (gethash "command" action)))
     (if-let ((action-handler (lsp--find-action-handler command)))
         (funcall action-handler action)
-      (lsp--send-execute-command (gethash "command" command)
-                                 (gethash "arguments" command nil)))))
+      (lsp--send-execute-command (gethash "command" action)
+                                 (gethash "arguments" action nil)))))
 
 (defun lsp--make-document-formatting-params ()
   "Create document formatting params."
