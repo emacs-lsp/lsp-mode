@@ -111,13 +111,13 @@ finding the executable with `exec-path'."
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("typescript-language-server" "--stdio"))
-                  :major-modes '(typescript-mode js-mode js2-mode)
+                  :major-modes '(typescript-mode js-mode js2-mode rjsx-mode)
                   :server-id 'ts-ls))
 
 
 ;;; GO language
 
-(defcustom lsp-clients-go-server "go-langageserver"
+(defcustom lsp-clients-go-server "go-langserver"
   "The go-langageserver executable to use."
   :group 'lsp-go
   :risky t
