@@ -17,7 +17,7 @@
 
 ;; Author: Vibhav Pant <vibhavp@gmail.com>
 ;; URL: https://github.com/emacs-lsp/lsp-mode
-;; Package-Requires: ((emacs "25.1") (dash "2.14.1") (dash-functional "2.14.1") (spinner "1.7.3")) (spinner "1.7.3") (ht "2.0"))
+;; Package-Requires: ((emacs "25.1") (dash "2.14.1") (dash-functional "2.14.1") (f "0.20.0") (ht "2.0") (spinner "1.7.3"))
 ;; Version: 5.0
 
 ;;; Commentary:
