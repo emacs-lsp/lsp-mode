@@ -336,7 +336,8 @@ than the second parameter.")
                                         (go-mode . "go")
                                         (haskell-mode . "haskell")
                                         (php-mode . "php")
-                                        (json-mode . "json"))
+                                        (json-mode . "json")
+                                        (rjsx-mode . "javascript"))
   "Language id configuration.")
 
 (defvar lsp-method-requirements
