@@ -337,7 +337,9 @@ than the second parameter.")
                                         (haskell-mode . "haskell")
                                         (php-mode . "php")
                                         (json-mode . "json")
-                                        (rjsx-mode . "javascript"))
+                                        (rjsx-mode . "javascript")
+                                        (js2-mode . "javascript")
+                                        (typescript-mode . "typescript"))
   "Language id configuration.")
 
 (defvar lsp-method-requirements
@@ -2982,7 +2984,7 @@ SESSION is the active session."
       (lsp--send-request-async
        (lsp--make-request "initialize"
                           (list :processId (emacs-pid)
-                                :rootPath root
+                                :rootPath (expand-file-name root)
                                 :rootUri (lsp--path-to-uri root)
                                 :capabilities (lsp--client-capabilities)
                                 :initializationOptions initialization-options))
