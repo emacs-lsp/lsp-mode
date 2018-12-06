@@ -339,7 +339,10 @@ than the second parameter.")
                                         (json-mode . "json")
                                         (rjsx-mode . "javascript")
                                         (js2-mode . "javascript")
-                                        (typescript-mode . "typescript"))
+                                        (typescript-mode . "typescript")
+                                        (reason-mode . "reason")
+                                        (caml-mode . "ocaml")
+                                        (tuareg-mode . "ocaml"))
   "Language id configuration.")
 
 (defvar lsp-method-requirements

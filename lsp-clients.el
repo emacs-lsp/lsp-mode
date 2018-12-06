@@ -235,5 +235,31 @@ PARAMS progress report notification data."
                   :server-id 'php-ls))
 
 
+
+(defcustom lsp-ocaml-ocaml-lang-server-command
+  '("ocaml-language-server" "--stdio")
+  "The command that starts the language server."
+  :group 'lsp-ocaml
+  :type '(choice
+          (string :tag "Single string value")
+          (repeat :tag "List of string values"
+                  string)))
+
+(defcustom lsp-ocaml-reason-lang-server-command
+  '("ocaml-language-server" "--stdio")
+  "The command that starts the language server."
+  :group 'lsp-ocaml
+  :type '(choice
+          (string :tag "Single string value")
+          (repeat :tag "List of string values"
+                  string)))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (-const lsp-ocaml-ocaml-lang-server-command))
+                  :major-modes '(reason-mode caml-mode tuareg-mode)
+                  :server-id 'ocaml-ls))
+
+
 (provide 'lsp-clients)
 ;;; lsp-clients.el ends here
