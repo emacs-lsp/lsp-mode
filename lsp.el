@@ -1941,16 +1941,17 @@ Returns xref-item(s)."
 (defun lsp--render-string (str language)
   "Render STR using `major-mode' corresponding to LANGUAGE.
 When language is nil render as markup if `markdown-mode' is loaded."
-  (if-let (mode (first (rassoc language lsp-language-id-configuration)))
-      (if (functionp mode)
-          (condition-case nil
-              (with-temp-buffer
-                (delay-mode-hooks (funcall mode))
-                (insert str)
-                (font-lock-ensure)
-                (buffer-string))
-            (error str))
-        str)
+  (if-let (mode (-some (-lambda ((mode . lang))
+                         (when (and (equal lang language) (functionp mode))
+                           mode))
+                       lsp-language-id-configuration))
+      (condition-case nil
+          (with-temp-buffer
+            (delay-mode-hooks (funcall mode))
+            (insert str)
+            (font-lock-ensure)
+            (buffer-string))
+        (error str))
     str))
 
 (defun lsp--render-element (content)
