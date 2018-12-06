@@ -89,7 +89,7 @@ This directory shoud contain a file matching groovy-language-server-*.jar"
                   :server-id 'html-ls))
 
 ;;; Typescript
-(defcustom lsp-clients-typescript-server "typescript-language-server"
+(defcustom lsp-clients-typescript-server "javascript-typescript-stdio"
   "The typescript-language-server executable to use.
 Leave as just the executable name to use the default behavior of
 finding the executable with `exec-path'."
@@ -106,11 +106,10 @@ finding the executable with `exec-path'."
 (defun lsp-typescript--ls-command ()
   "Generate the language server startup command."
   `(,lsp-clients-typescript-server
-    "--stdio"
     ,@lsp-clients-typescript-server-args))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '("typescript-language-server" "--stdio"))
+ (make-lsp-client :new-connection (lsp-stdio-connection (lsp-typescript--ls-command))
                   :major-modes '(typescript-mode js-mode js2-mode rjsx-mode)
                   :server-id 'ts-ls))
 
