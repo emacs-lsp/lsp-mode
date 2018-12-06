@@ -2000,21 +2000,23 @@ RENDER-ALL - nil if only the first element should be rendered."
 (defun lsp-hover ()
   "Show relevant documentation for the thing under point."
   (interactive)
-  (if (and lsp--hover-saved-bounds
-           (lsp--point-in-bounds-p lsp--hover-saved-bounds))
-      (lsp--hover-callback t)
-    (lsp--send-request-async
-     (lsp--make-request "textDocument/hover"
-                        (lsp--text-document-position-params))
-     (-lambda (hover)
-       (-let (((&hash "contents" "range") (or hover (make-hash-table))))
-         (setq lsp--hover-saved-bounds
-               (and range
-                    (cons (lsp--position-to-point (gethash "start" range))
-                          (lsp--position-to-point (gethash "end" range)))))
-         (setq lsp--hover-saved-contents
-               (and contents (lsp--render-on-hover-content contents lsp-eldoc-render-all)))
-         (lsp--hover-callback nil))))))
+  (let ((method (lsp--make-request "textDocument/hover"
+                                   (lsp--text-document-position-params))))
+    (when (lsp--find-workspaces-for method)
+      (if (and lsp--hover-saved-bounds
+               (lsp--point-in-bounds-p lsp--hover-saved-bounds))
+          (lsp--hover-callback t)
+        (lsp--send-request-async
+         method
+         (-lambda (hover)
+           (-let (((&hash "contents" "range") (or hover (make-hash-table))))
+             (setq lsp--hover-saved-bounds
+                   (and range
+                        (cons (lsp--position-to-point (gethash "start" range))
+                              (lsp--position-to-point (gethash "end" range)))))
+             (setq lsp--hover-saved-contents
+                   (and contents (lsp--render-on-hover-content contents lsp-eldoc-render-all)))
+             (lsp--hover-callback nil))))))))
 
 (defvar-local lsp--current-signature-help-request-id nil)
 
