@@ -261,5 +261,32 @@ PARAMS progress report notification data."
                   :server-id 'ocaml-ls))
 
 
+;; C-family (C, C++, Objective-C, Objective-C++)
+
+(defcustom lsp-clients-clangd-executable "clangd"
+  "The clangd executable to use.
+Leave as just the executable name to use the default behavior of
+finding the executable with `exec-path'."
+  :group 'lsp-clangd
+  :risky t
+  :type 'file)
+
+(defcustom lsp-clients-clangd-args '()
+  "Extra arguments for the clangd executable."
+  :group 'lsp-clangd
+  :risky t
+  :type '(repeat string))
+
+(defun lsp-clients--clangd-command ()
+  "Generate the language server startup command."
+  (concat lsp-clients-clangd-executable (concat lsp-clients-clangd-args)))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (lsp-clients--clangd-command))
+                  :major-modes '(c-mode c++-mode objc-mode)
+                  :server-id 'clangd))
+
+
 (provide 'lsp-clients)
 ;;; lsp-clients.el ends here
