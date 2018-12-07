@@ -109,7 +109,7 @@ finding the executable with `exec-path'."
     ,@lsp-clients-typescript-server-args))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection (lsp-typescript--ls-command))
+ (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-typescript--ls-command)
                   :major-modes '(typescript-mode js-mode js2-mode rjsx-mode)
                   :server-id 'ts-ls))
 
