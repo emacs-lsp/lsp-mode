@@ -602,12 +602,6 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   (cons (lsp--position-to-point (gethash "start" range))
         (lsp--position-to-point (gethash "end" range))))
 
-(defmacro lsp-define-stdio-client (&rest _rest)
-  "No op - only for backward compatibility.")
-
-(defmacro lsp-define-tcp-client (&rest _rest)
-  "No op - only for backward compatibility.")
-
 (defun lsp-warn (message &rest args)
   "Display a warning message made from (`format-message' MESSAGE ARGS...).
 This is equivalent to `display-warning', using `lsp-mode' as the type and
@@ -1140,7 +1134,7 @@ disappearing, unset all the variables related to it."
   (run-hooks 'lsp-workspace-uninitialized-hook)
   (lsp-kill-watch (lsp--workspace-watches lsp--cur-workspace))
 
-  (let ((proc (lsp--workspace-proc lsp--cur-workspace)))
+  (let ((proc (lsp--workspace-cmd-proc lsp--cur-workspace)))
     (when (process-live-p proc)
       (kill-process proc))
     (unless (lsp-workspaces)
@@ -2891,15 +2885,51 @@ returns the command to execute."
         (set-process-query-on-exit-flag (get-buffer-process (get-buffer (process-name proc))) nil)
         (cons proc proc)))))
 
-(defun lsp-tcp-connection (command-fn host port)
+(defun lsp--wait-for-port (host port &optional retry-count sleep-interval)
+  "Wait for PORT to be open on HOST.
+
+RETRY-COUNT is the number of the retries.
+SLEEP-INTERVAL is the sleep interval between each retry."
+  (let ((success nil)
+        (retries 0))
+    (while (and (not success) (< retries (or retry-count 100)))
+      (condition-case err
+          (progn
+            (delete-process (open-network-stream "*connection-test*" nil host port :type 'plain))
+            (setq success t))
+        (file-error
+         (let ((inhibit-message t))
+           (message "Failed to connect to %s:%s with error message %s"
+                    host
+                    port
+                    (error-message-string err))
+           (sit-for (or sleep-interval 0.02))
+           (setq retries (1+ retries))))))
+    success))
+
+(defun lsp--find-available-port (host starting-port)
+  "Find available port on HOST starting from STARTING-PORT."
+  (let ((success nil)
+        (port starting-port))
+    (while (and (not success))
+      (condition-case _err
+          (progn
+            (delete-process (open-network-stream "*connection-test*" nil host port :type 'plain))
+            (setq port (1+ port)))
+        (file-error (setq success t))))
+    port))
+
+(defun lsp-tcp-client (command-fn)
   "Create LSP TCP connection named name.
 COMMAND-FN will be called to generate Language Server command.
 HOST and PORT will be used for opening the connection."
   (lambda (filter sentinel name)
-    (let* ((command (funcall command-fn))
+    (let* ((host "localhost")
+           (port (lsp--find-available-port host 20000))
+           (command (funcall command-fn port))
            (final-command (if (consp command) command (list command)))
            proc tcp-proc)
-      (unless (executable-find (nth 0 final-command))
+      (unless (executable-find (first final-command))
         (user-error (format "Couldn't find executable %s" (nth 0 final-command))))
       (setq proc (make-process
                   :name name
@@ -2908,15 +2938,64 @@ HOST and PORT will be used for opening the connection."
                   :command final-command
                   :sentinel sentinel
                   :stderr name
-                  :noquery t)
-            tcp-proc (open-network-stream (concat name " TCP connection")
-                                          nil host port
-                                          :type 'plain))
+                  :noquery t))
+
+      (lsp--wait-for-port host port)
+
+      (setq tcp-proc (open-network-stream (concat name "::TCP") nil host port :type 'plain))
       ;; TODO: Same :noquery issue (see above)
       (set-process-query-on-exit-flag (get-buffer-process (get-buffer (process-name proc))) nil)
       (set-process-query-on-exit-flag tcp-proc nil)
       (set-process-filter tcp-proc filter)
-      (cons proc tcp-proc))))
+      (cons tcp-proc proc))))
+
+(defun lsp-tcp-server (command-fn)
+  "Create tcp server connection.
+In this mode the emacs is TCP server and the LS connects to it.
+COMMAND-FN is function with one parameter(the port) and it should
+return the command to start the LS server."
+  (lambda (filter sentinel name)
+    (let* ((host "localhost")
+           (port (lsp--find-available-port host 20000))
+           (command (funcall command-fn port))
+           tcp-client-connection
+           (final-command (if (consp command) command (list command)))
+           (tcp-server (make-network-process :name (concat "TCP Server for: " name)
+                                             :buffer "*echo-server*"
+                                             :family 'ipv4
+                                             :service port
+                                             :sentinel (lambda (proc string)
+                                                         (message "Language server is connected on port %s"
+                                                                  port)
+                                                         (setf tcp-client-connection proc))
+                                             :server 't))
+           (cmd-proc (make-process :name name
+                                   :connection-type 'pipe
+                                   :coding 'no-conversion
+                                   :command final-command
+                                   :sentinel sentinel
+                                   :stderr (concat name "::stderr")
+                                   :noquery t)))
+      (let ((retries 0))
+        (while (and (not tcp-client-connection) (< retries 100))
+          (sit-for 0.02)
+
+          (incf retries)))
+
+      (unless tcp-client-connection
+        (condition-case nil (delete-process tcp-server) (error))
+        (condition-case nil (delete-process cmd-proc) (error))
+        (error "Failed to create connection to %s on port %s" name port))
+
+      ;; TODO: Same :noquery issue (see above)
+      (set-process-query-on-exit-flag cmd-proc nil)
+      (set-process-query-on-exit-flag tcp-client-connection  nil)
+      (set-process-query-on-exit-flag tcp-server nil)
+
+      (set-process-filter tcp-client-connection filter)
+      (set-process-sentinel tcp-client-connection sentinel)
+
+      (cons tcp-client-connection (list cmd-proc tcp-server)))))
 
 (defun lsp--auto-configure ()
   "Autoconfigure `lsp-ui', `company-lsp' if they are installed."
@@ -3124,7 +3203,7 @@ SESSION is the active session."
 
 (defun lsp--workspace-print (workspace)
   "Visual representation WORKSPACE."
-  (let* ((proc (lsp--workspace-proc workspace))
+  (let* ((proc (lsp--workspace-cmd-proc workspace))
          (status (lsp--workspace-status workspace))
          (server-id (-> workspace lsp--workspace-client lsp--client-server-id symbol-name (propertize 'face 'bold-italic)))
          (pid (propertize (format "%s" (process-id proc)) 'face 'italic)))
