@@ -47,16 +47,13 @@
 
 ** Spacemacs
    [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] is included in spacemacs. Add ~lsp~ to ~dotspacemacs-configuration-layers~ and configure the language that you want to use to be backed by ~lsp~ backend.
-
 * Configuration
-  Add the following line in your configuration file where ~programming-mode-hook~ stands for the language specific hook like ~python-mode-hook~.  In addition, ~lsp-mode~ will automatically detect and configure [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] and [[https://github.com/tigersoldier/company-lsp][company-lsp]]. To turn off that behavior you could set ~lsp-auto-configure~ to ~nil~.
+  Add the following line in your configuration file:
   #+BEGIN_SRC emacs-lisp
     (require 'lsp)
-    ;; in case you are using client which is available as part of lsp refer to the
-    ;; table bellow for the clients that are distributed as part of lsp-mode.el
-    (require 'lsp-clients)
-    (add-hook 'programming-mode-hook 'lsp)
+    (add-hook 'XXX-mode-hook 'lsp)
   #+END_SRC
+  where ~XXX~ could be major mode like ~python~, ~java~, ~c++~. Alternatively, if you want to minimize you configuration you may use ~prog-mode-hook~. In case you do that, `lsp` will try to start for each programming mode and echo a message when there is no client registered for the current mode or if the corresponding server is not present. In addition, ~lsp-mode~ will automatically detect and configure [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] and [[https://github.com/tigersoldier/company-lsp][company-lsp]]. To turn off that behavior you could set ~lsp-auto-configure~ to ~nil~.
 
 * Supported languages
   Some of the servers are directly supported by ~lsp-mode~ by requiring
@@ -141,7 +138,13 @@
                       :major-modes '(python-mode)
                       :server-id 'pyls))
   #+END_SRC
-
+** FAQ
+*** How to configure a server with local variables?
+    Add ~lsp~ server call to ~hack-local-variables-hook~ which runs right after the local variables are loaded.
+    #+BEGIN_SRC emacs-lisp
+      (add-hook 'hack-local-variables-hook
+                (lambda () (when (derived-mode-p 'XXX-mode) (lsp))))
+    #+END_SRC
 ** See also
    - [[https://github.com/yyoncho/dap-mode][dap-mode]] - Debugger integration for ~lsp-mode~.
    - [[https://github.com/joaotavora/eglot][eglot]] - An alternative minimal LSP implementation.
