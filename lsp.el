@@ -26,7 +26,8 @@
 ;;; Code:
 
 (unless (version< emacs-version "26")
-  (require 'project))
+  (require 'project)
+  (require 'flymake))
 
 (eval-when-compile
   (require 'cl))
@@ -311,7 +312,6 @@ are determined by the index of the element."
         (cons 'kind #'lsp--imenu-compare-kind)
         (cons 'position #'lsp--imenu-compare-position))
   "An alist of (METHOD . FUNCTION).
-
 METHOD is one of the symbols accepted by
 `lsp-imenu-sort-methods'.
 
@@ -319,6 +319,14 @@ FUNCTION takes two hash tables representing DocumentSymbol. It
 returns a negative number, 0, or a positive number indicating
 whether the first parameter is less than, equal to, or greater
 than the second parameter.")
+
+(defcustom lsp-prefer-flymake nil
+  "Auto-configure  to prefer `flymake' over `lsp-ui' if both are present."
+  :type 'boolean
+  :group 'lsp-mode)
+
+(defvar-local lsp--flymake-report-fn nil)
+(defvar-local lsp--flymake-report-pending nil)
 
 (defvar lsp-language-id-configuration '((java-mode . "java")
                                         (python-mode . "python")
@@ -798,6 +806,35 @@ WORKSPACE is the workspace that contains the diagnostics."
     (when buffer
       (with-current-buffer buffer
         (run-hooks 'lsp-after-diagnostics-hook)))))
+
+(eval-after-load 'flymake
+  '(progn
+     (defun lsp--flymake-setup()
+       "Setup flymake."
+       (flymake-mode-on)
+       (add-hook 'flymake-diagnostic-functions 'lsp--flymake-backend nil t)
+       (add-hook 'lsp-after-diagnostics-hook 'lsp--flymake-after-diagnostics nil t))
+
+     (defun lsp--flymake-after-diagnostics ()
+       "Handler for `lsp-after-diagnostics-hook'"
+       (when lsp--flymake-report-fn
+         (lsp--flymake-backend lsp--flymake-report-fn)
+         (remove-hook 'lsp-after-diagnostics-hook 'lsp--flymake-after-diagnostics t)))
+
+     (defun lsp--flymake-backend (report-fn &rest _args)
+       "Flymake backend."
+       (funcall report-fn
+                (-some->> (lsp-diagnostics)
+                          (gethash buffer-file-name)
+                          (--map (-let (((&hash "message" "severity" "range" (&hash "start" "end")) (lsp-diagnostic-original it)))
+                                   (flymake-make-diagnostic (current-buffer)
+                                                            (lsp--position-to-point start)
+                                                            (lsp--position-to-point end)
+                                                            (case severity
+                                                              (1 :error)
+                                                              (2 :warning)
+                                                              (_ :success))
+                                                            message))))))))
 
 (define-minor-mode lsp-mode ""
   nil nil nil
@@ -1367,11 +1404,7 @@ interface Position {
     (goto-char point)
     (lsp--cur-position)))
 
-(define-inline lsp--position-p (p)
-  (inline-quote
-   (and (numberp (plist-get ,p :line)) (numberp (plist-get ,p :character)))))
-
-(define-inline lsp--range (start end)
+(defun lsp--range (start end)
   "Make Range body from START and END.
 
 interface Range {
@@ -1379,11 +1412,7 @@ interface Range {
      end: Position;
  }"
   ;; make sure start and end are Position objects
-  (inline-quote
-   (progn
-     (cl-check-type ,start (satisfies lsp--position-p))
-     (cl-check-type ,end (satisfies lsp--position-p))
-     (list :start ,start :end ,end))))
+  (list :start start :end end))
 
 (define-inline lsp--region-to-range (start end)
   "Make Range object for the current region."
@@ -2881,9 +2910,16 @@ HOST and PORT will be used for opening the connection."
 
 (defun lsp--auto-configure ()
   "Autoconfigure `lsp-ui', `company-lsp' if they are installed."
-  (when (functionp 'lsp-ui-mode)
+
+  ;; prefer lsp-ui of flymake if both are present.
+  (when (and (functionp 'lsp-ui-mode) (not lsp-prefer-flymake))
     (flycheck-mode)
     (lsp-ui-mode))
+
+  ;; prefer lsp-ui of flymake if both are present.
+  (when (and (version< "26" emacs-version)
+             (or lsp-prefer-flymake (not (functionp 'lsp-ui-mode))))
+    (lsp--flymake-setup))
 
   (lsp-enable-imenu)
 
