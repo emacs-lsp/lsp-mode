@@ -22,7 +22,7 @@
 ;;; Code:
 
 (require 'json)
-(require 'lsp-methods)
+(require 'lsp)
 
 (defconst lsp-methods-test--changes "
 [

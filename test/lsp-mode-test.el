@@ -23,7 +23,7 @@
 
 ;;; Code:
 
-(require 'lsp-mode)
+(require 'lsp)
 
 (require 'ert)
 

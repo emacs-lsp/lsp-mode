@@ -22,9 +22,8 @@
 ;; Tests for file notifications functions.
 
 ;;; Code:
-(require 'lsp-mode)
+(require 'lsp)
 (require 'filenotify)
-(require 'lsp-common)
 (require 'em-glob)
 
 (ert-deftest lsp-file-watch--notifications ()
