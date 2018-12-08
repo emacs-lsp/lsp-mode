@@ -320,7 +320,7 @@ returns a negative number, 0, or a positive number indicating
 whether the first parameter is less than, equal to, or greater
 than the second parameter.")
 
-(defcustom lsp-prefer-flymake nil
+(defcustom lsp-prefer-flymake t
   "Auto-configure  to prefer `flymake' over `lsp-ui' if both are present."
   :type 'boolean
   :group 'lsp-mode)
@@ -2911,15 +2911,16 @@ HOST and PORT will be used for opening the connection."
 (defun lsp--auto-configure ()
   "Autoconfigure `lsp-ui', `company-lsp' if they are installed."
 
-  ;; prefer lsp-ui of flymake if both are present.
-  (when (and (functionp 'lsp-ui-mode) (not lsp-prefer-flymake))
-    (flycheck-mode)
+  (when (functionp 'lsp-ui-mode)
     (lsp-ui-mode))
 
-  ;; prefer lsp-ui of flymake if both are present.
-  (when (and (version< "26" emacs-version)
-             (or lsp-prefer-flymake (not (functionp 'lsp-ui-mode))))
+  (cond
+   ((and (not (version< emacs-version "26.1")) lsp-prefer-flymake)
     (lsp--flymake-setup))
+   ((and (functionp 'lsp-ui-mode) (featurep 'flycheck))
+    (require 'lsp-ui-flycheck)
+    (lsp-ui-flycheck-enable t)
+    (flycheck-mode 1)))
 
   (lsp-enable-imenu)
 

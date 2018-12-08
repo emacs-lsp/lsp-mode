@@ -14,7 +14,7 @@
 
    /Note: if your server is still not ported to the new interface, please file a bug in the corresponding repo./
 
-   - As you type reporting of parsing and compilation errors (via [[https://github.com/flycheck/flycheck][flycheck]]/[[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] or builtin ~flymake~ when Emacs > 26)
+   - Diagnostics (via builtin ~flymake~ when Emacs > 26 or [[https://github.com/flycheck/flycheck][flycheck]]/[[https://github.com/emacs-lsp/lsp-ui][lsp-ui]])
    - Code completion - using [[https://github.com/tigersoldier/company-lsp][company-lsp]] or builtin ~complete-at-point~
    - Hovers - using [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]]
    - Code actions - using ~lsp-execute-code-action~ or [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]]
@@ -26,7 +26,7 @@
    - Debugger - [[https://github.com/yyoncho/dap-mode/][dap-mode]]
 * What's new in lsp.el?
   - ~lsp-mode~ now have single entry point ~lsp~ for all language and based on the major mode starts the corresponding language servers.
-  - ~flymake~ integration
+  - ~flymake~ integration.
   - ~lsp~ automatically enables and configures ~company-lsp~, ~lsp-ui~, ~yassnippet~, or ~flymake~ if they are present so no additional configuration is needed except installing the packages. That behavior could be disabled by setting ~lsp-auto-configure~ to ~nil~.
   - ~lsp-mode~ ships with several predefined servers located in ~lsp-clients.el~ which does not require additional package. For the more complex Language Servers like ~Eclipse JDT~, ~ccls~, ~cquery~ and ~haskell~ we still require separate package due to relatively high code base.
   - ~lsp-mode~ handles automatically server failures by asking the user whether he/she wants to restart the server.
@@ -116,7 +116,7 @@
   - ~lsp-eldoc-render-all~ - Define whether all of the returned by ~document/onHover~ will be displayed. If ~lsp-markup-display-all~ is set to nil ~eldoc~ will show only the symbol information.
   - ~lsp-enable-completion-at-point~ - Enable ~completion-at-point~ integration.
   - ~lsp-enable-xref~ - Enable xref integration.
-  - ~lsp-prefer-flymake~ - auto-configure to prefer `flymake' over `lsp-ui' if both are present.
+  - ~lsp-prefer-flymake~ - If you prefer flycheck and ~lsp-ui-flycheck~ is available, ~(setq lsp-prefer-flymake nil)~.
   - ~lsp-enable-indentation~ - Indent regions using the file formatting functionality provided by the language server.
   - ~lsp-enable-on-type-formatting~ - Enable ~textDocument/onTypeFormatting~ integration.
   - ~lsp-before-save-edits~ - If non-nil, ~lsp-mode~ will apply edits suggested by the language server before saving a document.
