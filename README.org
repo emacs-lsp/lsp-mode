@@ -12,7 +12,7 @@
 
    /Note: if you still want to use the legacy lsp-mode refer to melpa stable./
 
-   /Note: if your server is still not ported to the new interface, please file in the corresponding repo./
+   /Note: if your server is still not ported to the new interface, please file a bug in the corresponding repo./
 
    - As you type reporting of parsing and compilation errors (via [[https://github.com/flycheck/flycheck][flycheck]]/[[https://github.com/emacs-lsp/lsp-ui][lsp-ui]])
    - Code completion - using [[https://github.com/tigersoldier/company-lsp][company-lsp]] or builtin ~complete-at-point~
@@ -70,7 +70,6 @@
   | Rust                  | [[https://github.com/rust-lang-nursery/rls][rls]]                                                | Yes                                                              | [[https://github.com/rust-lang-nursery/rls][rls]]                                |          |
   | Scala                 | [[https://github.com/rossabaker/lsp-scala][lsp-scala]]                                           | TBD                                                              |                                                                                  |          |
 
-
 * Commands
   - ~lsp-describe-session~ - Display session folders and running servers.
   - ~lsp-describe-thing-at-point~ - Display help for the thing at point.
@@ -84,7 +83,7 @@
   - ~lsp-workspace-folders-add~ - Add workspace folder
   - ~lsp-workspace-folders-remove~ - Remove workspace folder
   - ~lsp-workspace-folders-switch~ - Switch workspace folder
-  - ~imenu~/~helm-imenu~ - display document structure.
+  - ~imenu~ or ~helm-imenu~ - display document structure.
   - ~completion-at-point~ - display completion using built-in emacs ~completion-at-point~ framework.
   - ~xref-find-definition~ - to find the definition for the symbol under point. (~M-.~)
   - ~xref-find-references~ - Find references (~M-?~)
@@ -115,7 +114,7 @@
 ** Hooks
    ~lsp-mode~ provides a handful of hooks that can be used to extend and configure
    the behaviour of language servers. A full list of hooks is available in the
-   [API documentation](./doc/API.org).
+   [[API documentation][./doc/API.org]].
 
 * Adding support for languages
   See [[./doc/API.org][API docs]]
@@ -129,5 +128,5 @@
   #+END_SRC
 
 ** See also
-   - [[https://github.com/yyoncho/dap-mode][~dap-mode~]] - Debugger integration for
-   - [[https://github.com/joaotavora/eglot][~eglot~]] - An alternative minimal LSP implementation.
+   - [[https://github.com/yyoncho/dap-mode][dap-mode]] - Debugger integration for
+   - [[https://github.com/joaotavora/eglot][eglot]] - An alternative minimal LSP implementation.
