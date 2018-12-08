@@ -3389,11 +3389,5 @@ such."
   (when lsp-auto-configure (lsp--auto-configure)))
 
 (provide 'lsp-mode)
-(provide 'lsp-notifications)
-(provide 'lsp-imenu)
-(provide 'lsp-io)
-(provide 'lsp-methods)
-(provide 'lsp-common)
-
 (provide 'lsp)
 ;;; lsp.el ends here
