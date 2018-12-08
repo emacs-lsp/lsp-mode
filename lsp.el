@@ -157,7 +157,7 @@
                  (const auto-restart)
                  (const ignore)))
 
-(defcustom lsp-session-file (expand-file-name (locate-user-emacs-file ".lsp-session"))
+(defcustom lsp-session-file (expand-file-name (locate-user-emacs-file ".lsp-session-v1"))
   "Automatically guess the project root using projectile/project."
   :group 'lsp
   :type 'file)
@@ -915,22 +915,30 @@ WORKSPACE is the workspace that contains the diagnostics."
   ;; multi root LSP server.
   (server-id->folders (make-hash-table :test 'equal) :read-only t)
   ;; folder to list of the servers that are associated with the folder.
-  (folder->servers (make-hash-table :test 'equal) :read-only t))
+  (folder->servers (make-hash-table :test 'equal) :read-only t)
+
+  ;; ‘metadata’ is a generic storage for workspace specific data. It is
+  ;; accessed via `lsp-workspace-set-metadata' and `lsp-workspace-set-metadata'
+  (metadata (make-hash-table :test 'equal)))
 
 (defun lsp-workspace-status (status-string &optional workspace)
   "Set current workspace status to STATUS-STRING.
 If WORKSPACE is not specified defaults to lsp--cur-workspace."
   (setf (lsp--workspace-status-string (or workspace lsp--cur-workspace)) status-string))
 
-(defun lsp-workspace-set-metadata (key value &optional workspace)
+(defun lsp-session-set-metadata (key value &optional _workspace)
   "Associate KEY with VALUE in the WORKSPACE metadata.
 If WORKSPACE is not provided current workspace will be used."
-  (puthash key value (lsp--workspace-metadata (or workspace lsp--cur-workspace))))
+  (puthash key value (lsp-session-metadata (lsp-session))))
 
-(defun lsp-workspace-get-metadata (key &optional workspace)
+(defalias 'lsp-workspace-set-metadata 'lsp-session-set-metadata)
+
+(defun lsp-session-get-metadata (key &optional _workspace)
   "Lookup KEY in WORKSPACE metadata.
 If WORKSPACE is not provided current workspace will be used."
-  (gethash key (lsp--workspace-metadata (or workspace lsp--cur-workspace))))
+  (gethash key (lsp-session-metadata (lsp-session))))
+
+(defalias 'lsp-workspace-get-metadata 'lsp-session-get-metadata)
 
 (define-inline lsp--make-notification (method &optional params)
   "Create notification body for method METHOD and parameters PARAMS."
