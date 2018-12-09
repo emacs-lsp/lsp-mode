@@ -18,8 +18,7 @@
 ;;; Code:
 
 (require 'ert)
-(require 'lsp-methods)
-(require 'lsp-io)
+(require 'lsp)
 
 (defvar lsp--test-workspace
   (make-lsp--workspace
