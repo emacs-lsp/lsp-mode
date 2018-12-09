@@ -279,7 +279,7 @@ finding the executable with `exec-path'."
 
 (defun lsp-clients--clangd-command ()
   "Generate the language server startup command."
-  `(,lsp-clients-langd-executable ,@lsp-clients-clangd-args))
+  `(,lsp-clients-clangd-executable ,@lsp-clients-clangd-args))
 
 (defun lsp-clients-register-clangd ()
   (lsp-register-client
