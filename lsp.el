@@ -3386,8 +3386,9 @@ current language. When IGNORE-MULTI-FOLDER is nil current file
 will be openned in multi folder language server if there is
 such."
   (interactive)
-  (when (setq-local lsp--buffer-workspaces (or (lsp--try-open-in-library-workspace)
-                                               (lsp--try-project-root-workspaces ignore-multi-folder)))
+  (when (and (buffer-file-name)
+             (setq-local lsp--buffer-workspaces (or (lsp--try-open-in-library-workspace)
+                                                    (lsp--try-project-root-workspaces ignore-multi-folder))))
     (lsp-mode 1)
     (when lsp-auto-configure (lsp--auto-configure))))
 
