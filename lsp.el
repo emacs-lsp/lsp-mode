@@ -431,8 +431,7 @@ depending on it."
                                  results)))))))
 (defun lsp--spinner-start ()
   "Start spinner indication."
-  (with-demoted-errors "Unable to start spinner. Error: %s"
-    (spinner-start 'progress-bar-filled)))
+  (condition-case _err (spinner-start 'progress-bar-filled) (error)))
 
 (defun lsp--propertize (str type)
   "Propertize STR as per TYPE."
