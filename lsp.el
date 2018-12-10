@@ -3259,7 +3259,7 @@ Returns nil if the project should not be added to the current SESSION."
                        (format "Do not ask more for the current project(add \"%s\" to lsp-session-folder-blacklist)"
                                project-root-suggestion)
                        "Do not ask more for the current project(select ignore path interactively)."
-                       "Do nothing and as be again when opening a other files from the folder."))
+                       "Do nothing and ask me again when opening other files from the folder."))
              (action-index (cl-position
                             (completing-read (format "%s is not part of any project. Select action: "
                                                      (buffer-name))
