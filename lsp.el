@@ -2017,7 +2017,7 @@ When language is nil render as markup if `markdown-mode' is loaded."
    ((and (hash-table-p content)
          (gethash "kind" content))
     (-let [(&hash "value" "kind") content]
-      (lsp--render-string kind value)))
+      (lsp--render-string value kind)))
    ;; plain string
    ((stringp content) (lsp--render-string content "markdown"))
    (t (error "Failed to handle %s" content))))
