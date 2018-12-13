@@ -291,7 +291,9 @@ finding the executable with `exec-path'."
 
 ;; Dart
 (defcustom lsp-clients-dart-server-command
-  (expand-file-name "~/.pub-cache/bin/dart_language_server")
+  (expand-file-name (if (equal system-type 'windows-nt)
+                        "~/Pub/Cache/bin/dart_language_server"
+                      "~/.pub-cache/bin/dart_language_server"))
   "The dart_language_server executable to use."
   :group 'lsp-dart
   :type 'file)
