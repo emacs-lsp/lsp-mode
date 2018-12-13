@@ -52,6 +52,7 @@
 (require 'url-util)
 (require 'widget)
 (require 'xref)
+(require 'tree-widget)
 
 (defconst lsp--message-type-face
   `((1 . ,compilation-error-face)
