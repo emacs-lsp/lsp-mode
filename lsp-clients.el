@@ -289,5 +289,19 @@ finding the executable with `exec-path'."
                     :server-id 'clangd)))
 
 
+;; Dart
+(defcustom lsp-clients-dart-server-command
+  (expand-file-name "~/.pub-cache/bin/dart_language_server")
+  "The dart_language_server executable to use."
+  :group 'lsp-dart
+  :type 'file)
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   lsp-clients-dart-server-command)
+                  :major-modes '(dart-mode)
+                  :server-id 'dart_language_server))
+
+
 (provide 'lsp-clients)
 ;;; lsp-clients.el ends here
