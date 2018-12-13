@@ -2994,8 +2994,7 @@ return the command to start the LS server."
 
       (set-process-filter tcp-client-connection filter)
       (set-process-sentinel tcp-client-connection sentinel)
-
-      (cons tcp-client-connection (list cmd-proc tcp-server)))))
+      (cons tcp-client-connection cmd-proc))))
 
 (defun lsp--auto-configure ()
   "Autoconfigure `lsp-ui', `company-lsp' if they are installed."
