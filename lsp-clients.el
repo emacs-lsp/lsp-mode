@@ -298,9 +298,22 @@ finding the executable with `exec-path'."
   :group 'lsp-dart
   :type 'file)
 
+(defun lsp-dart--lsp-command ()
+  "Generate LSP startup command."
+  (let ((dls lsp-clients-dart-server-command)
+        (pub (executable-find "pub")))
+    (if pub
+        (if (executable-find dls)
+            dls
+          (message "Installing dart_language_server...")
+          (shell-command (concat pub " global activate dart_language_server"))
+          (message "Installed dart_language_server")
+          dls)
+      (error "Please ensure /path/to/dart-sdk/bin is on system path"))))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
-                                   lsp-clients-dart-server-command)
+                                   'lsp-dart--lsp-command)
                   :major-modes '(dart-mode)
                   :server-id 'dart_language_server))
 
