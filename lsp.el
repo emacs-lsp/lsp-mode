@@ -2124,7 +2124,9 @@ RENDER-ALL - nil if only the first element should be rendered."
 (defun lsp--text-document-code-action-params ()
   "Code action params."
   (list :textDocument (lsp--text-document-identifier)
-        :range (lsp--region-or-line)
+        :range (if (use-region-p)
+                   (lsp--region-to-range (region-beginning) (region-end))
+                 (lsp--region-to-range (point) (point)))
         :context (list :diagnostics (lsp--cur-line-diagnotics))))
 
 (defun lsp-code-actions-at-point ()
