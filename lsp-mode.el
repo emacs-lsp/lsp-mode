@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-
 (require 'lsp)
+(provide 'lsp-mode)
 
 ;;; lsp-mode.el ends here
