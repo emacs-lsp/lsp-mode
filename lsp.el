@@ -3405,6 +3405,5 @@ such."
     (lsp-mode 1)
     (when lsp-auto-configure (lsp--auto-configure))))
 
-(provide 'lsp-mode)
 (provide 'lsp)
 ;;; lsp.el ends here
