@@ -354,7 +354,8 @@ than the second parameter.")
                                         (typescript-mode . "typescript")
                                         (reason-mode . "reason")
                                         (caml-mode . "ocaml")
-                                        (tuareg-mode . "ocaml"))
+                                        (tuareg-mode . "ocaml")
+                                        (swift-mode . "swift"))
   "Language id configuration.")
 
 (defvar lsp-method-requirements
