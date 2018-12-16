@@ -2325,7 +2325,7 @@ A reference is highlighted only if it is visible in a window."
 (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
   (let ((json-false :json-false)
         (symbols (lsp--get-document-symbols)))
-    (seq-map #'lsp--symbol-info-to-identifier symbols)))
+    (seq-map #'lsp--symbol-info-to-identifier (-filter 'identity symbols))))
 
 (cl-defmethod xref-backend-definitions ((_backend (eql xref-lsp)) identifier)
   (let* ((maybeparams (get-text-property 0 'def-params identifier))
