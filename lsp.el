@@ -1208,7 +1208,8 @@ disappearing, unset all the variables related to it."
                                                            :hierarchicalDocumentSymbolSupport t)
                               :formatting (:dynamicRegistration t)
                               :codeAction (:dynamicRegistration t)
-                              :completion (:completionItem (:snippetSupport ,lsp-enable-snippet)))))
+                              :completion (:completionItem (:snippetSupport ,lsp-enable-snippet))
+                              :signatureHelp (:signatureInformation (:parameterInformation (:labelOffsetSupport t))))))
 
 (defun lsp--server-register-capability (reg)
   "Register capability REG."
@@ -2022,23 +2023,21 @@ RENDER-ALL - nil if only the first element should be rendered."
 
 (defun lsp--signature->eldoc-message (signature-help)
   "Generate eldoc message from SIGNATURE-HELP response."
+
   (-when-let* (((&hash "activeSignature" active-signature-index
                        "activeParameter" active-parameter
                        "signatures") signature-help)
-               ((&hash "label" "parameters") (or (nth active-signature-index signatures)
-                                                 (first signatures)))
-               (result (lsp--fontlock-with-mode label major-mode)))
-    (-if-let* ((selected-param-label (-some->> parameters
-                                               (nth active-parameter)
-                                               (gethash "label")))
-               (index (-some-> (s-index-of selected-param-label result) 1+)))
-        (with-temp-buffer
-          (insert result)
-          (add-face-text-property index
-                                  (+ index (length selected-param-label))
-                                  '(:weight bold :slant italic :underline t))
-          (buffer-string))
-      result)))
+               (signature (seq-elt signatures (or active-signature-index 0)))
+               (result (lsp--fontlock-with-mode (gethash "label" signature) major-mode)))
+    (-when-let* ((selected-param-label (-some->> (gethash "parameters" signature)
+                                                 (nth active-parameter)
+                                                 (gethash "label")))
+                 (start (if (stringp selected-param-label)
+                            (-some-> (s-index-of selected-param-label result) 1+)
+                          (car selected-param-label)))
+                 (end (if (stringp selected-param-label) (+ start (length selected-param-label)) (cadr selected-param-label))))
+      (add-face-text-property start end '(:weight bold :slant italic :underline t) nil result))
+    result))
 
 (defun lsp--display-signature-or-hover (signature-response hover-response)
   "Display signature or hover based on SIGNATURE-RESPONSE HOVER-RESPONSE."
