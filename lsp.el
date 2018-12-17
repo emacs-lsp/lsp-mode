@@ -54,6 +54,11 @@
 (require 'xref)
 (require 'tree-widget)
 
+(eval-when-compile
+  (when (version< emacs-version "26")
+    (defalias 'if-let* #'if-let)
+    (defalias 'when-let* #'when-let)))
+
 (defconst lsp--message-type-face
   `((1 . ,compilation-error-face)
     (2 . ,compilation-warning-face)
