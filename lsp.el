@@ -3326,10 +3326,12 @@ Returns nil if the project should not be added to the current SESSION."
         (--first (f-ancestor-of? it file-name))
         not)
    (or
+    (when lsp-auto-guess-root
+      (lsp--suggest-project-root))
     (lsp-find-session-folder session file-name)
-    (if lsp-auto-guess-root
-        (lsp--suggest-project-root)
-      (lsp--find-root-interactively session)))))
+    (unless lsp-auto-guess-root
+      (lsp--find-root-interactively session))
+    )))
 
 (defun lsp--try-open-in-library-workspace ()
   "Try opening current file as library file in any of the active workspace.
