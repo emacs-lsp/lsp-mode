@@ -210,7 +210,7 @@ PARAMS progress report notification data."
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("rls"))
-                  :major-modes '(rust-mode)
+                  :major-modes '(rust-mode rustic-mode)
                   :server-id 'rls
                   :notification-handlers (lsp-ht ("window/progress" 'lsp-clients--rust-window-progress))))
 
