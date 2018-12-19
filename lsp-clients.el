@@ -115,6 +115,33 @@ finding the executable with `exec-path'."
                   :server-id 'ts-ls))
 
 
+;;; Vue
+(defcustom lsp-clients-vue-server "vls"
+  "The vue-language-server executable to use.
+Leave as just the executable name to use the default behavior of
+finding the executable with `exec-path'."
+  :group 'lsp-vue
+  :risky t
+  :type 'file)
+
+(defcustom lsp-clients-vue-server-args '()
+  "Extra arguments for the vue-language-server language server."
+  :group 'lsp-vue
+  :risky t
+  :type '(repeat string))
+
+(defun lsp-vue--ls-command ()
+  "Generate the language server startup command."
+  `(,lsp-clients-vue-server
+    ,@lsp-clients-vue-server-args))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-vue--ls-command)
+                  :major-modes '(vue-mode)
+                  :ignore-messages '("readFile .*? requested by Vue but content not available")
+                  :server-id 'vls))
+
+
 ;;; GO language
 
 (defcustom lsp-clients-go-server "go-langserver"

@@ -83,6 +83,7 @@
   | Ruby                  | [[https://github.com/castwide/solargraph][solargraph]]                  | Yes          | gem install solargraph                         |          |
   | Rust                  | [[https://github.com/rust-lang-nursery/rls][rls]]                         | Yes          | [[https://github.com/rust-lang-nursery/rls][rls]]                                            |          |
   | Scala                 | [[https://github.com/rossabaker/lsp-scala][lsp-scala]]                   | TBD          |                                                |          |
+  | Vue                   | [[https://github.com/vuejs/vetur/tree/master/server][vue-language-server]]         | Yes          | npm install -g vue-language-server                                               |          |
 
 * Commands
   - ~lsp-describe-session~ - Display session folders and running servers.
