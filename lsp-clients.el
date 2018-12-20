@@ -308,12 +308,14 @@ finding the executable with `exec-path'."
   "Generate the language server startup command."
   `(,lsp-clients-clangd-executable ,@lsp-clients-clangd-args))
 
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   'lsp-clients--clangd-command)
+                  :major-modes '(c-mode c++-mode objc-mode)
+                  :server-id 'clangd))
+
 (defun lsp-clients-register-clangd ()
-  (lsp-register-client
-   (make-lsp-client :new-connection (lsp-stdio-connection
-                                     'lsp-clients--clangd-command)
-                    :major-modes '(c-mode c++-mode objc-mode)
-                    :server-id 'clangd)))
+  (warn "This call is no longer needed. clangd is now automatically registered. Delete lsp-clients-register-clangd call from your config."))
 
 
 ;; Dart
