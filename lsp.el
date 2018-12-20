@@ -850,13 +850,13 @@ WORKSPACE is the workspace that contains the diagnostics."
         (run-hooks 'lsp-after-diagnostics-hook)))))
 
 (with-eval-after-load 'flymake
-  (put 'lsp-note 'flymake-category 'flymake-note)
-  (put 'lsp-warning 'flymake-category 'flymake-warning)
-  (put 'lsp-error 'flymake-category 'flymake-error)
+  ;; (put 'lsp-note 'flymake-category 'flymake-note)
+  ;; (put 'lsp-warning 'flymake-category 'flymake-warning)
+  ;; (put 'lsp-error 'flymake-category 'flymake-error)
 
   (defun lsp--flymake-setup()
     "Setup flymake."
-    (flymake-mode-on)
+    (flymake-mode 1)
     (add-hook 'flymake-diagnostic-functions 'lsp--flymake-backend nil t)
     (add-hook 'lsp-after-diagnostics-hook 'lsp--flymake-after-diagnostics nil t))
 
@@ -882,9 +882,9 @@ WORKSPACE is the workspace that contains the diagnostics."
                                                          start
                                                          end
                                                          (case severity
-                                                           (1 'lsp-error)
-                                                           (2 'lsp-warning)
-                                                           (_ 'lsp-note))
+                                                           (1 :error)
+                                                           (2 :warning)
+                                                           (_ :note))
                                                          message)))))))
 
 (define-minor-mode lsp-mode ""
