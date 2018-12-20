@@ -50,7 +50,7 @@
 * Configuration
   Add the following line in your configuration file:
   #+BEGIN_SRC emacs-lisp
-    (require 'lsp)
+    (require 'lsp-mode)
     (add-hook 'XXX-mode-hook 'lsp)
   #+END_SRC
   where ~XXX~ could be major mode like ~python~, ~java~, ~c++~. Alternatively, if you want to minimize you configuration you may use ~prog-mode-hook~. In case you do that, `lsp` will try to start for each programming mode and echo a message when there is no client registered for the current mode or if the corresponding server is not present. In addition, ~lsp-mode~ will automatically detect and configure [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] and [[https://github.com/tigersoldier/company-lsp][company-lsp]]. To turn off that behavior you could set ~lsp-auto-configure~ to ~nil~.

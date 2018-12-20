@@ -3503,5 +3503,5 @@ such."
                (apply 'concat (--map (format "[%s]" (lsp--workspace-print it))
                                      lsp--buffer-workspaces)))))
 
-(provide 'lsp)
+(provide 'lsp-mode)
 ;;; lsp.el ends here
