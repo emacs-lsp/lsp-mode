@@ -2745,15 +2745,15 @@ PARSER is the workspace parser used for handling the message."
                      ;; TODO: Would this ever result in false positives?
                      when (string-match r output) return nil
                      finally return t)
-        (let ((messages
-               (condition-case err
-                   (lsp--parser-read p output)
-                 (error
-                  (progn
-                    (lsp--parser-reset p)
-                    (setf (lsp--parser-response-result p) nil
-                          (lsp--parser-waiting-for-response p) nil)
-                    (error "Error parsing language server output: %s" err))))))
+        (-when-let (messages (condition-case err
+                                 (lsp--parser-read p output)
+                               (error
+                                (let ((chunk (concat (lsp--parser-leftovers p) output)))
+                                  (lsp--parser-reset p)
+                                  (setf (lsp--parser-response-result p) nil
+                                        (lsp--parser-waiting-for-response p) nil)
+                                  (lsp-warn "Failed to parse the following chunk:\n'''\n%s\n'''\nwith message %s" chunk err)
+                                  nil))))
           (dolist (m messages)
             (when lsp-print-io
               (let ((inhibit-message t))
