@@ -2078,7 +2078,7 @@ RENDER-ALL - nil if only the first element should be rendered."
 
   (if (and lsp--hover-saved-bounds
            (lsp--point-in-bounds-p lsp--hover-saved-bounds))
-      lsp--eldoc-saved-hover-message
+      (lsp--eldoc-message lsp--eldoc-saved-hover-message)
     (setq lsp--hover-saved-bounds nil
           lsp--eldoc-saved-hover-message nil)
 
@@ -2101,8 +2101,7 @@ RENDER-ALL - nil if only the first element should be rendered."
                                (when (eq request-id lsp-hover-request-id)
                                  (setf hover-response (or hover :empty))
                                  (lsp--display-signature-or-hover signature-response hover-response))))
-        (setf hover-response :empty))
-      eldoc-last-message)))
+        (setf hover-response :empty)))))
 
 (defun lsp--select-action (actions)
   "Select an action to execute from ACTIONS."
