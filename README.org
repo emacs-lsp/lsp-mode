@@ -146,6 +146,11 @@
       (add-hook 'hack-local-variables-hook
                 (lambda () (when (derived-mode-p 'XXX-mode) (lsp))))
     #+END_SRC
+*** I have multiple language servers registered for language FOO and I am asked to select a server the first time I am opening a file from a project, what can I do to have only one of the servers enabled?
+    Add the following like to your config, where ~BAR~ is the id of the server that you do not want to use.
+    #+BEGIN_SRC emacs-lisp
+      (remhash 'BAR lsp-clients)
+    #+END_SRC
 ** See also
    - [[https://github.com/yyoncho/dap-mode][dap-mode]] - Debugger integration for ~lsp-mode~.
    - [[https://github.com/joaotavora/eglot][eglot]] - An alternative minimal LSP implementation.

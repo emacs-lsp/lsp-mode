@@ -3149,7 +3149,16 @@ SESSION is the active session."
   "Get the session associated with the current buffer."
   (or lsp--session (setq lsp--session (lsp--load-default-session))))
 
-(defun lsp--find-clients (buffer-major-mode)
+(defun lsp--find-started-workspace (session clients file-name)
+  "Look for a workspace in SESSION matching FILE-NAME and any of CLIENTS."
+  (-some (lambda (workspace)
+           (--first (eq (lsp--client-server-id (lsp--workspace-client workspace))
+                        (lsp--client-server-id it))
+                    clients))
+         (gethash (lsp-find-session-folder session file-name)
+                  (lsp-session-folder->servers session))))
+
+(defun lsp--find-clients (session buffer-major-mode file-name)
   "Find clients which can handle BUFFER-MAJOR-MODE.
 SESSION is the currently active session."
   (--when-let (->> lsp-clients
@@ -3162,10 +3171,12 @@ SESSION is the currently active session."
       ;; this will allow user to pick a lsp client for the current project.
       (cons (pcase main-clients
               (`(,single) single)
-              (_ (lsp--completing-read (format "There multiple clients registered for %s" buffer-major-mode)
-                                       main-clients
-                                       (lambda (client) (format "%s" (lsp--client-server-id client)))
-                                       nil t)))
+              (_ (or
+                  (lsp--find-started-workspace session main-clients file-name)
+                  (lsp--completing-read (format "There multiple clients registered for %s" buffer-major-mode)
+                                        main-clients
+                                        (lambda (client) (format "%s" (lsp--client-server-id client)))
+                                        nil t))))
             add-on-clients))))
 
 (defun lsp-register-client (client)
@@ -3405,8 +3416,7 @@ Returns nil if the project should not be added to the current SESSION."
       (lsp--suggest-project-root))
     (lsp-find-session-folder session file-name)
     (unless lsp-auto-guess-root
-      (lsp--find-root-interactively session))
-    )))
+      (lsp--find-root-interactively session)))))
 
 (defun lsp--try-open-in-library-workspace ()
   "Try opening current file as library file in any of the active workspace.
@@ -3438,7 +3448,7 @@ current language. When IGNORE-MULTI-FOLDER is nil current file
 will be openned in multi folder language server if there is
 such."
   (-let ((session (lsp-session)))
-    (-if-let (clients (lsp--find-clients major-mode))
+    (-if-let (clients (lsp--find-clients session major-mode (buffer-file-name)))
         (-if-let (project-root (lsp--calculate-root session (buffer-file-name)))
             (progn
               ;; update project roots if needed and persit the lsp session
