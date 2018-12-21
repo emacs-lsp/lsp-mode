@@ -2034,7 +2034,7 @@ RENDER-ALL - nil if only the first element should be rendered."
                                                  (nth active-parameter)
                                                  (gethash "label")))
                  (start (if (stringp selected-param-label)
-                            (-some-> (s-index-of selected-param-label result) 1+)
+                            (s-index-of selected-param-label result)
                           (car selected-param-label)))
                  (end (if (stringp selected-param-label) (+ start (length selected-param-label)) (cadr selected-param-label))))
       (add-face-text-property start end '(:weight bold :slant italic :underline t) nil result))
