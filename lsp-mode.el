@@ -379,7 +379,8 @@ In case both signature and hover info are present and
                                         (reason-mode . "reason")
                                         (caml-mode . "ocaml")
                                         (tuareg-mode . "ocaml")
-                                        (swift-mode . "swift"))
+                                        (swift-mode . "swift")
+                                        (elixir-mode . "elixir"))
   "Language id configuration.")
 
 (defvar lsp-method-requirements
