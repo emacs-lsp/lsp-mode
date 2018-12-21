@@ -347,5 +347,20 @@ finding the executable with `exec-path'."
                   :server-id 'dart_language_server))
 
 
+;; Elixir
+(defcustom lsp-clients-elixir-server-executable "language_server.sh"
+    "The elixir-language-server executable to use.
+Leave as just the executable name to use the default behavior of
+finding the executable with `exec-path'."
+  :group 'lsp-elixir
+  :type 'file)
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (-const lsp-clients-elixir-server-executable))
+                  :major-modes '(elixir-mode)
+                  :server-id 'elixir-ls))
+
+
 (provide 'lsp-clients)
 ;;; lsp-clients.el ends here

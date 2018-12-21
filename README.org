@@ -68,6 +68,7 @@
   | C++                   | [[https://github.com/cquery-project/cquery][cquery]]                      | [[https://github.com/cquery-project/emacs-cquery][emacs-cquery]] | [[https://github.com/cquery-project/cquery][cquery]]                                         |          |
   | CSS                   | [[https://github.com/vscode-langservers/vscode-css-languageserver-bin][css]]                         | Yes          | npm install -g vscode-css-languageserver-bin   |          |
   | Dart                  | [[https://github.com/natebosch/dart_language_server][dart_language_server]]        | Yes          | pub global activate dart_language_server       |          |
+  | Elixir                | [[https://github.com/JakeBecker/elixir-ls][elixir-ls]]                   | Yes          | [[https://github.com/JakeBecker/elixir-ls][elixir-ls]]                                      |          |
   | Go                    | [[https://github.com/sourcegraph/go-langserver][go-langserver]]               | Yes          | go get -u github.com/sourcegraph/go-langserver |          |
   | Groovy                | [[https://github.com/palantir/language-servers][groovy-language-server]]      | Yes          | [[https://github.com/palantir/language-servers][groovy-language-server]]                         |          |
   | HTML                  | [[https://github.com/vscode-langservers/vscode-html-languageserver][html]]                        | Yes          | npm install -g vscode-html-languageserver-bin  |          |
