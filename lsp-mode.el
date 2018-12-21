@@ -232,7 +232,7 @@ It contains all of the clients that are currently regitered.")
   :type 'boolean
   :group 'lsp-mode)
 
-(defcustom lsp-eldoc-render-all t
+(defcustom lsp-eldoc-render-all nil
   "Define whether all of the returned by document/onHover will be displayed.
 If `lsp-markup-display-all' is set to nil `eldoc' will show only
 the symbol information."
