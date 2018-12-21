@@ -78,10 +78,10 @@
   | Ocaml                 | [[https://github.com/freebroccolo/ocaml-language-server][ocaml-language-server]]       | Yes          | [[https://github.com/freebroccolo/ocaml-language-server][ocaml-language-server]]                          |          |
   | PHP                   | [[https://github.com/felixfbecker/php-language-server][php-language-server]]         | Yes          | [[https://github.com/felixfbecker/php-language-server][php-language-server]]                            |          |
   | Python                | [[https://github.com/palantir/python-language-server][pyls]]                        | Yes          | pip install 'python-language-server[all]'      | Yes      |
-  | Ruby                  | [[https://github.com/castwide/solargraph][solargraph]]                  | Yes          | gem install solargraph                         |          |
+  | Ruby                  | [[https://github.com/castwide/solargraph][solargraph]]                  | Yes          | gem install solargraph                         | Yes      |
   | Rust                  | [[https://github.com/rust-lang-nursery/rls][rls]]                         | Yes          | [[https://github.com/rust-lang-nursery/rls][rls]]                                            |          |
   | Scala                 | [[https://github.com/rossabaker/lsp-scala][lsp-scala]]                   | TBD          |                                                |          |
-  | Vue                   | [[https://github.com/vuejs/vetur/tree/master/server][vue-language-server]]         | Yes          | npm install -g vue-language-server                                               |          |
+  | Vue                   | [[https://github.com/vuejs/vetur/tree/master/server][vue-language-server]]         | Yes          | npm install -g vue-language-server             |          |
 
 * Commands
   - ~lsp-describe-session~ - Display session folders and running servers.
