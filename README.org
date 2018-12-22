@@ -27,7 +27,7 @@
 * What's new in lsp.el?
   - ~lsp-mode~ now have single entry point ~lsp~ for all language and based on the major mode starts the corresponding language servers.
   - ~flymake~ integration.
-  - ~lsp~ automatically enables and configures ~company-lsp~, ~lsp-ui~, ~yassnippet~, or ~flymake~ if they are present so no additional configuration is needed except installing the packages. That behavior could be disabled by setting ~lsp-auto-configure~ to ~nil~.
+  - ~lsp~ automatically enables and configures ~company-lsp~, ~lsp-ui~, ~yasnippet~, or ~flymake~ if they are present so no additional configuration is needed except installing the packages. That behavior could be disabled by setting ~lsp-auto-configure~ to ~nil~.
   - ~lsp-mode~ ships with several predefined servers located in ~lsp-clients.el~ which does not require additional package. For the more complex Language Servers like ~Eclipse JDT~, ~ccls~, ~cquery~ and ~haskell~ we still require separate package due to relatively high code base.
   - ~lsp-mode~ handles automatically server failures by asking the user whether he/she wants to restart the server.
   - introduced new command ~lsp-describe-session~ which replaces the existing one ~lsp-capabilities~. The command lists the folders that are part of the workspace and the servers that are associated with the corresponding folder.
@@ -51,10 +51,21 @@
   Add the following line in your configuration file:
   #+BEGIN_SRC emacs-lisp
     (require 'lsp-mode)
-    (add-hook 'XXX-mode-hook 'lsp)
+    (add-hook 'XXX-mode-hook #'lsp)
   #+END_SRC
-  where ~XXX~ could be major mode like ~python~, ~java~, ~c++~. Alternatively, if you want to minimize you configuration you may use ~prog-mode-hook~. In case you do that, `lsp` will try to start for each programming mode and echo a message when there is no client registered for the current mode or if the corresponding server is not present. In addition, ~lsp-mode~ will automatically detect and configure [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] and [[https://github.com/tigersoldier/company-lsp][company-lsp]]. To turn off that behavior you could set ~lsp-auto-configure~ to ~nil~.
+  where ~XXX~ could be major mode like ~python~, ~java~, ~c++~. Alternatively, if you want to minimize you configuration you may use ~prog-mode-hook~. In case you do that, ~lsp~ will try to start for each programming mode and echo a message when there is no client registered for the current mode or if the corresponding server is not present. In addition, ~lsp-mode~ will automatically detect and configure [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] and [[https://github.com/tigersoldier/company-lsp][company-lsp]]. To turn off that behavior you could set ~lsp-auto-configure~ to ~nil~.
 
+** use-package
+Replace ~(require 'lsp-mode)~ with the following if you use use-package.
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-mode
+  :commands lsp
+  :init
+  (setq ...))
+
+(use-package lsp-ui :commands lsp-ui-mode)
+(use-package company-lsp :commands company-lsp)
+#+END_SRC
 * Supported languages
   Some of the servers are directly supported by ~lsp-mode~ by requiring
   ~lsp-clients.el~ while other require installing additional package which provide
@@ -148,11 +159,9 @@
       (add-hook 'hack-local-variables-hook
                 (lambda () (when (derived-mode-p 'XXX-mode) (lsp))))
     #+END_SRC
-*** I have multiple language servers registered for language FOO and I am asked to select a server the first time I am opening a file from a project, what can I do to have only one of the servers enabled?
-    Add the following like to your config, where ~BAR~ is the id of the server that you do not want to use.
-    #+BEGIN_SRC emacs-lisp
-      (remhash 'BAR lsp-clients)
-    #+END_SRC
+*** I have multiple language servers registered for language FOO. Which one will be used when opening a project?
+The one with highest priority wins. ~lsp-clients.el~ predefined servers have
+priority -1, lower than external packages (priority 0 if unspecified).
 ** See also
    - [[https://github.com/yyoncho/dap-mode][dap-mode]] - Debugger integration for ~lsp-mode~.
    - [[https://github.com/joaotavora/eglot][eglot]] - An alternative minimal LSP implementation.
