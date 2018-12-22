@@ -135,6 +135,10 @@
   :group 'lsp-mode
   :type 'boolean)
 
+;; Use the native JSON API in Emacs 27 and above.
+;; When set to t, it helps migrating hash tables to plists.
+(defvar lsp-use-native-json nil)
+
 (defvar-local lsp--cur-workspace nil)
 
 (defvar lsp--uri-file-prefix (pcase system-type
@@ -608,10 +612,6 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
 
   (DEPRECATED_default-renderer nil)
 
-  ;; Use the native JSON API in Emacs 27 and above. If non-nil, JSON arrays will
-  ;; be parsed as vectors.
-  (use-native-json nil)
-
   ;; major modes supported by the client.
   (major-modes)
   ;; Break the tie when major-mode is supported by multiple clients.
@@ -1058,8 +1058,7 @@ If WORKSPACE is not provided current workspace will be used."
   (let* ((json-encoding-pretty-print lsp-print-io)
          (json-false :json-false)
          (client (lsp--workspace-client lsp--cur-workspace))
-         (body (if (and (lsp--client-use-native-json client)
-                        (fboundp 'json-serialize))
+         (body (if lsp-use-native-json
                    (json-serialize params :null-object nil
                                    :false-object json-false)
                  (json-encode params))))
@@ -2651,21 +2650,20 @@ PARSER is the workspace parser used for handling the message."
    (lsp--parser-body p) nil
    (lsp--parser-reading-body p) nil))
 
-(defun lsp--read-json (str use-native-json)
-  (let* ((use-native-json (and use-native-json (fboundp 'json-parse-string)))
-         (json-array-type (if use-native-json 'vector 'list))
-         (json-object-type 'hash-table)
-         (json-false nil))
-    (if use-native-json
-        (json-parse-string str :object-type 'hash-table
-                           :null-object nil :false-object nil)
+(defun lsp--read-json (str)
+  (if lsp-use-native-json
+      (json-parse-string str :object-type 'plist
+                         :null-object nil :false-object :json-false)
+    (let* ((json-array-type 'list)
+           (json-object-type 'hash-table)
+           (json-false :json-false))
       (json-read-from-string str))))
 
 (defun lsp--parser-on-message (p msg)
   "Called when the parser P read a complete MSG from the server."
   (let* ((lsp--cur-workspace (lsp--parser-workspace p))
          (client (lsp--workspace-client lsp--cur-workspace))
-         (json-data (lsp--read-json msg (lsp--client-use-native-json client)))
+         (json-data (lsp--read-json msg))
          (id (gethash "id" json-data nil)))
     (pcase (lsp--get-message-type json-data)
       ('response
