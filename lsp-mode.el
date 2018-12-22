@@ -2011,16 +2011,24 @@ When language is nil render as markup if `markdown-mode' is loaded."
 (defun lsp--render-on-hover-content (contents render-all)
   "Render the content received from 'document/onHover' request.
 CONTENTS  - MarkedString | MarkedString[] | MarkupContent
-RENDER-ALL - nil if only the first element should be rendered."
-  (string-join
-   (seq-map
-    'lsp--render-element
-    (if (or (hash-table-p contents) (stringp contents))
-        (list contents)
+RENDER-ALL - nil if only the signature should be rendered."
+  (if (and (hash-table-p contents) (gethash "kind" contents))
+      ;; MarkupContent, deprecated by LSP but actually very flexible.
+      ;; It tends to be long and is not suitable in echo area.
+      (if render-all (lsp--render-element contents) "")
+    ;; MarkedString -> MarkedString[]
+    (when (or (hash-table-p contents) (stringp contents))
+      (setq contents (list contents)))
+    ;; Consider the signature consisting of the elements who have a renderable
+    ;; "language" property. When render-all is nil, ignore other elements.
+    (string-join
+     (seq-map
+      #'lsp--render-element
       (if render-all
           contents
-        (seq-take (or (seq-filter 'hash-table-p contents) contents) 1))))
-   "\n"))
+        (--filter (and (hash-table-p it) (lsp-get-renderer (gethash "language" it)))
+                  contents)))
+     "\n")))
 
 (defvar-local lsp--hover-saved-bounds nil)
 (defvar-local lsp--eldoc-saved-hover-message nil)
