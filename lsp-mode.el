@@ -614,6 +614,8 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
 
   ;; major modes supported by the client.
   (major-modes)
+  ;; Break the tie when major-mode is supported by multiple clients.
+  (priority 0)
   ;; Unique identifier for
   (server-id)
   ;; defines whether the client supports multi root workspaces.
@@ -3150,15 +3152,6 @@ SESSION is the active session."
   "Get the session associated with the current buffer."
   (or lsp--session (setq lsp--session (lsp--load-default-session))))
 
-(defun lsp--find-started-workspace (session clients file-name)
-  "Look for a workspace in SESSION matching FILE-NAME and any of CLIENTS."
-  (-some (lambda (workspace)
-           (--first (eq (lsp--client-server-id (lsp--workspace-client workspace))
-                        (lsp--client-server-id it))
-                    clients))
-         (gethash (lsp-find-session-folder session file-name)
-                  (lsp-session-folder->servers session))))
-
 (defun lsp--find-clients (session buffer-major-mode file-name)
   "Find clients which can handle BUFFER-MAJOR-MODE.
 SESSION is the currently active session."
@@ -3168,16 +3161,8 @@ SESSION is the currently active session."
                               (and (-contains? (lsp--client-major-modes client) buffer-major-mode)
                                    (-> client lsp--client-new-connection (plist-get :test?) funcall)))))
     (-let (((add-on-clients main-clients) (-separate 'lsp--client-add-on? it)))
-      ;; allow only one client that is not declared as add-on? t.
-      ;; this will allow user to pick a lsp client for the current project.
-      (cons (pcase main-clients
-              (`(,single) single)
-              (_ (or
-                  (lsp--find-started-workspace session main-clients file-name)
-                  (lsp--completing-read (format "There multiple clients registered for %s" buffer-major-mode)
-                                        main-clients
-                                        (lambda (client) (format "%s" (lsp--client-server-id client)))
-                                        nil t))))
+      ;; Pick only one client (with the highest priority) that is not declared as add-on? t.
+      (cons (and main-clients (--max-by (> (lsp--client-priority it) (lsp--client-priority other)) main-clients))
             add-on-clients))))
 
 (defun lsp-register-client (client)
