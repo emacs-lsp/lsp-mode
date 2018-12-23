@@ -428,6 +428,8 @@ must be used for handling a particular message.")
 (defvar lsp--session nil
   "Contain the `lsp-session' for the current Emacs instance.")
 
+(defvar lsp--tcp-port 10000)
+
 (defun lsp--info (format &rest args)
   "Display lsp info message with FORMAT with ARGS."
   (message "%s :: %s" (propertize "LSP" 'face 'success) (apply #'format format args)))
@@ -538,9 +540,6 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   ;; ‘add-on?’ when set to t the server will be started no matter whether there
   ;; is another server hadling the same mode.
   (add-on? nil :read-only t)
-  (DEPRECATED_send-async nil :read-only t)
-  (DEPRECATED_type nil :read-only t)
-
   ;; ‘new-connection’ is a function that should start a language server process
   ;; and return a cons (COMMAND-PROCESS . COMMUNICATION-PROCESS).
   ;; COMMAND-PROCESS must be a process object representing the server process
@@ -554,9 +553,6 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   ;; COMMUNICATION-PROCESS, and SENTINEL should be used as process sentinel for
   ;; COMMAND-PROCESS.
   (new-connection nil :read-only t)
-
-  (DEPRECATED_stderr nil :read-only t)
-  (DEPRECATED_get-root nil :read-only t)
 
   ;; ‘ignore-regexps’ is a list of regexps.  When a data packet from the
   ;; language server matches any of these regexps, it will be ignored.  This is
@@ -590,12 +586,6 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   ;; single argument, the deserialized response parameters.
   (response-handlers (make-hash-table :test 'eql) :read-only t)
 
-  ;; TODO - remove when lsp-ui is fixed to use `lsp-mode' methods for rendering
-  (string-renderers '())
-
-  (DEPRECATED_last-id 0)
-  (DEPRECATED_enable-function nil :read-only t)
-
   ;; ‘prefix-function’ is called for getting the prefix for completion.
   ;; The function takes no parameter and returns a cons (start . end) representing
   ;; the start and end bounds of the prefix. If it's not set, the client uses a
@@ -605,13 +595,12 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   ;; Contains mapping of scheme to the function that is going to be used to load
   ;; the file.
   (uri-handlers (make-hash-table :test #'equal) :read-only t)
+
   ;; ‘action-handlers’ is a hash table mapping action to a handler function. It
   ;; can be used in `lsp-execute-code-action' to determine whether the action
   ;; current client is interested in executing the action instead of sending it
   ;; to the server.
   (action-handlers (make-hash-table :test 'equal) :read-only t)
-
-  (DEPRECATED_default-renderer nil)
 
   ;; Use the native JSON API in Emacs 27 and above. If non-nil, JSON arrays will
   ;; be parsed as vectors.
@@ -636,7 +625,9 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   ;; currently active workspace.
   (before-file-open-fn)
   ;; Function which will be called right after a workspace has been intialized.
-  (initialized-fn))
+  (initialized-fn)
+  ;; ‘remote?’ indicate whether the client can be used for LSP server over TRAMP.
+  (remote? nil))
 
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--position-to-point (params)
@@ -665,25 +656,25 @@ This is equivalent to `display-warning', using `lsp-mode' as the type and
 
 (defun lsp--get-uri-handler (scheme)
   "Get uri handler for SCHEME in the current workspace."
-  (-first 'identity (--map (gethash scheme (lsp--client-uri-handlers (lsp--workspace-client it)))
-                           (lsp-workspaces))))
+  (--some (gethash scheme (lsp--client-uri-handlers (lsp--workspace-client it)))
+          (lsp-workspaces)))
 
 (defun lsp--uri-to-path (uri)
   "Convert URI to a file path."
   (let* ((url (url-generic-parse-url (url-unhex-string uri)))
          (type (url-type url))
-         (file (url-filename url)))
-    (if (and type (not (string= type "file")))
-        (let ((handler (lsp--get-uri-handler type)))
-          (if handler
-              (funcall handler uri)
-            (error "Unsupported file scheme: %s" uri)))
-      ;; `url-generic-parse-url' is buggy on windows:
-      ;; https://github.com/emacs-lsp/lsp-mode/pull/265
-      (or (and (eq system-type 'windows-nt)
-               (eq (elt file 0) ?\/)
-               (substring file 1))
-          file))))
+         (file (url-filename url))
+         (file-name (if (and type (not (string= type "file")))
+                        (if-let ((handler (lsp--get-uri-handler type)))
+                            (funcall handler uri)
+                          (error "Unsupported file scheme: %s" uri))
+                      ;; `url-generic-parse-url' is buggy on windows:
+                      ;; https://github.com/emacs-lsp/lsp-mode/pull/265
+                      (or (and (eq system-type 'windows-nt)
+                               (eq (elt file 0) ?\/)
+                               (substring file 1))
+                          file))))
+    (concat (-some 'lsp--workspace-host-root (lsp-workspaces)) file-name)))
 
 (defun lsp--buffer-uri ()
   "Return URI of the current buffer."
@@ -698,7 +689,8 @@ DELETE when `lsp-mode.el' is deleted.")
 (defun lsp--path-to-uri (path)
   "Convert PATH to a uri."
   (concat lsp--uri-file-prefix
-          (url-hexify-string (file-truename path) url-path-allowed-chars)))
+          (url-hexify-string (file-truename (or (file-remote-p path 'localname t) path))
+                             url-path-allowed-chars)))
 
 (defun lsp--string-match-any (regex-list str)
   "Given a list of REGEX-LIST and STR return the first matching regex if any."
@@ -951,8 +943,10 @@ WORKSPACE is the workspace that contains the diagnostics."
   ;; ‘client’ is the ‘lsp--client’ object associated with this workspace.
   (client nil :read-only t)
 
-  ;; FIXME: ‘change-timer-disabled’ is unused and should be removed.
-  (change-timer-disabled nil)
+  ;; ‘host-root’ contains the host root info as derived from `file-remote-p'. It
+  ;; used to deriver the file path in `lsp--uri-to-path' when using tramp
+  ;; connection.
+  (host-root nil)
 
   ;; ‘proc’ is a process object; it may represent a regular process, a pipe, or
   ;; a network connection.  ‘lsp-mode’ communicates with ‘proc’ using the
@@ -2558,49 +2552,42 @@ PARSER is the workspace parser used for handling the message."
           ("textDocument/diagnosticsEnd" 'ignore)
           ("textDocument/diagnosticsBegin" 'ignore)))
 
-(defun lsp--on-notification (p notification)
+(defun lsp--on-notification (workspace notification)
   "Call the appropriate handler for NOTIFICATION."
-  (let* ((params (gethash "params" notification))
-         (client (lsp--workspace-client (lsp--parser-workspace p)))
-         (method (gethash "method" notification))
-         (handler (gethash method
-                           (lsp--client-notification-handlers client)
-                           (gethash method lsp--default-notification-handlers))))
-    (if handler
-        (funcall handler (lsp--parser-workspace p) params)
+  (-let* (((&hash "params" "method") notification))
+    (if-let (handler (or (gethash method (lsp--client-notification-handlers (lsp--workspace-client workspace)))
+                         (gethash method lsp--default-notification-handlers)))
+        (funcall handler workspace params)
       (unless (string-prefix-p "$" method)
         (lsp-warn "Unknown method: %s" method)))))
 
-(defun lsp--on-request (p request)
-  "Call the appropriate handler for REQUEST, and send the return value to the server."
-  (let ((params (gethash "params" request))
-        (client (lsp--workspace-client (lsp--parser-workspace p)))
-        (process (lsp--workspace-proc (lsp--parser-workspace p)))
-        (empty-response (lsp--make-response request nil))
-        handler response)
-    (setq response
-          (pcase (gethash "method" request)
-            ("client/registerCapability"
-             (seq-doseq (reg (gethash "registrations" params))
-               (lsp--server-register-capability reg))
-             empty-response)
-            ("window/showMessageRequest"
-             (let ((choice (lsp--window-show-message-request params)))
-               (lsp--make-response request `(:title ,choice))))
-            ("client/unregisterCapability"
-             (seq-doseq (unreg (gethash "unregisterations" params))
-               (lsp--server-unregister-capability unreg))
-             empty-response)
-            ("workspace/applyEdit"
-             (lsp--apply-workspace-edit (gethash "edit" params))
-             empty-response)
-            (other
-             (setq handler (gethash other (lsp--client-request-handlers client) nil))
-             (if (not handler)
-                 (progn
-                   (lsp-warn "Unknown request method: %s" other)
-                   empty-response)
-               (lsp--make-response request (funcall handler (lsp--parser-workspace p) params))))))
+(defun lsp--on-request (workspace request)
+  "Call the appropriate handler for REQUEST, and send the return value to the server.
+WORKSPACE is the active workspace."
+  (-let* (((&hash "params" "method") request)
+          (client (lsp--workspace-client workspace))
+          (process (lsp--workspace-proc workspace))
+          (empty-response (lsp--make-response request nil))
+          (response (pcase method
+                      ("client/registerCapability"
+                       (seq-doseq (reg (gethash "registrations" params))
+                         (lsp--server-register-capability reg))
+                       empty-response)
+                      ("window/showMessageRequest"
+                       (let ((choice (lsp--window-show-message-request params)))
+                         (lsp--make-response request `(:title ,choice))))
+                      ("client/unregisterCapability"
+                       (seq-doseq (unreg (gethash "unregisterations" params))
+                         (lsp--server-unregister-capability unreg))
+                       empty-response)
+                      ("workspace/applyEdit"
+                       (lsp--apply-workspace-edit (gethash "edit" params))
+                       empty-response)
+                      (other
+                       (-if-let (handler (gethash other (lsp--client-request-handlers client) nil))
+                           (lsp--make-response request (funcall handler workspace params))
+                         (lsp-warn "Unknown request method: %s" other)
+                         empty-response)))))
     ;; Send response to the server.
     (lsp--send-no-wait (lsp--make-message response) process)))
 
@@ -2657,33 +2644,32 @@ PARSER is the workspace parser used for handling the message."
 
 (defun lsp--parser-on-message (p msg)
   "Called when the parser P read a complete MSG from the server."
-  (let* ((lsp--cur-workspace (lsp--parser-workspace p))
-         (client (lsp--workspace-client lsp--cur-workspace))
-         (json-data (lsp--read-json msg (lsp--client-use-native-json client)))
-         (id (gethash "id" json-data nil)))
-    (pcase (lsp--get-message-type json-data)
-      ('response
-       (cl-assert id)
-       (if-let (callback (gethash (if (stringp id)
-                                      (string-to-number id)
-                                    id)
-                                  (lsp--client-response-handlers client)
-                                  nil))
-           (progn (funcall callback (gethash "result" json-data nil))
-                  (remhash id (lsp--client-response-handlers client)))
-         (setf (lsp--parser-response-result p)
-               (and json-data (gethash "result" json-data nil))
-               (lsp--parser-waiting-for-response p) nil)))
-      ('response-error
-       (let* ((err (gethash "error" json-data nil))
-              (code (gethash "code" err nil)))
-         (when (and json-data
-                    (not (memq code lsp--silent-errors)))
-           (message (lsp--error-string err))))
-       (setf (lsp--parser-response-result p) nil
-             (lsp--parser-waiting-for-response p) nil))
-      ('notification (lsp--on-notification p json-data))
-      ('request      (lsp--on-request p json-data)))))
+  (with-lsp-workspace (lsp--parser-workspace p)
+    (let* ((client (lsp--workspace-client lsp--cur-workspace))
+           (json-data (lsp--read-json msg (lsp--client-use-native-json client)))
+           (id (gethash "id" json-data nil)))
+      (pcase (lsp--get-message-type json-data)
+        ('response
+         (cl-assert id)
+         (if-let (callback (gethash (if (stringp id)
+                                        (string-to-number id)
+                                      id)
+                                    (lsp--client-response-handlers client)
+                                    nil))
+             (progn (funcall callback (gethash "result" json-data nil))
+                    (remhash id (lsp--client-response-handlers client)))
+           (setf (lsp--parser-response-result p)
+                 (and json-data (gethash "result" json-data nil))
+                 (lsp--parser-waiting-for-response p) nil)))
+        ('response-error
+         (let* ((err (gethash "error" json-data nil))
+                (code (gethash "code" err nil)))
+           (when (not (memq code lsp--silent-errors))
+             (message (lsp--error-string err))))
+         (setf (lsp--parser-response-result p) nil
+               (lsp--parser-waiting-for-response p) nil))
+        ('notification (lsp--on-notification lsp--cur-workspace json-data))
+        ('request      (lsp--on-request lsp--cur-workspace json-data))))))
 
 (defun lsp--parser-read (p output)
   (cl-assert (lsp--parser-workspace p) nil "Parser workspace cannot be nil.")
@@ -2820,10 +2806,8 @@ SYM can be either DocumentSymbol or SymbolInformation."
   ;; It's a SymbolInformation or DocumentSymbol, which is always in the current
   ;; buffer file.
   (when-let (location (gethash "location" sym))
-    (not
-     (eq
-      (find-buffer-visiting (lsp--uri-to-path (gethash "uri" (gethash "location" sym))))
-      (current-buffer)))))
+    (not (eq (find-buffer-visiting (lsp--uri-to-path (gethash "uri" (gethash "location" sym))))
+             (current-buffer)))))
 
 (defun lsp--get-symbol-type (sym)
   "The string name of the kind of SYM."
@@ -2933,27 +2917,25 @@ returns the command to execute."
                        (cons proc proc))))
         :test? (lambda () (-> command lsp-resolve-final-function lsp-server-present?))))
 
-(defun lsp--wait-for-port (host port &optional retry-count sleep-interval)
-  "Wait for PORT to be open on HOST.
-
+(defun lsp--open-network-stream (host port name &optional retry-count sleep-interval)
+  "Open network stream to HOST:PORT.
+NAME will be passed to `open-network-stream'.
 RETRY-COUNT is the number of the retries.
 SLEEP-INTERVAL is the sleep interval between each retry."
-  (let ((success nil)
-        (retries 0))
-    (while (and (not success) (< retries (or retry-count 100)))
+  (let ((retries 0)
+        connection)
+    (while (and (not connection) (< retries (or retry-count 100)))
       (condition-case err
-          (progn
-            (delete-process (open-network-stream "*connection-test*" nil host port :type 'plain))
-            (setq success t))
+          (setq connection (open-network-stream name nil host port :type 'plain))
         (file-error
          (let ((inhibit-message t))
-           (lsp--error "Failed to connect to %s:%s with error message %s"
-                       host
-                       port
-                       (error-message-string err))
+           (lsp--warn "Failed to connect to %s:%s with error message %s"
+                      host
+                      port
+                      (error-message-string err))
            (sit-for (or sleep-interval 0.02))
            (cl-incf retries)))))
-    success))
+    connection))
 
 (defun lsp--find-available-port (host starting-port)
   "Find available port on HOST starting from STARTING-PORT."
@@ -2967,35 +2949,54 @@ SLEEP-INTERVAL is the sleep interval between each retry."
         (file-error (setq success t))))
     port))
 
-(defun lsp-tcp-connection (command-fn)
+(defun lsp-tcp-connection (command)
   "Create LSP TCP connection named name.
-COMMAND-FN will be called to generate Language Server command.
-HOST and PORT will be used for opening the connection."
-  (lambda (filter sentinel name)
-    (let* ((host "localhost")
-           (port (lsp--find-available-port host 20000))
-           (command (funcall command-fn port))
-           (final-command (if (consp command) command (list command)))
-           proc tcp-proc)
-      (unless (executable-find (first final-command))
-        (user-error (format "Couldn't find executable %s" (nth 0 final-command))))
-      (setq proc (make-process
-                  :name name
-                  :connection-type 'pipe
-                  :coding 'no-conversion
-                  :command final-command
-                  :sentinel sentinel
-                  :stderr name
-                  :noquery t))
+COMMAND-FN will be called to generate Language Server command."
+  (list
+   :connect (lambda (filter sentinel name)
+              (let* ((host "localhost")
+                     (port (lsp--find-available-port host (cl-incf lsp--tcp-port)))
+                     (command (funcall command-fn port))
+                     (final-command (if (consp command) command (list command)))
+                     (_ (unless (executable-find (first final-command))
+                          (user-error (format "Couldn't find executable %s" (first final-command)))))
+                     (proc (make-process :name name :connection-type 'pipe :coding 'no-conversion
+                                         :command final-command :sentinel sentinel :stderr name :noquery t))
+                     (tcp-proc (lsp--open-network-stream host port (concat name "::tcp"))))
 
-      (lsp--wait-for-port host port)
+                ;; TODO: Same :noquery issue (see above)
+                (set-process-query-on-exit-flag (get-buffer-process (get-buffer (process-name proc))) nil)
+                (set-process-query-on-exit-flag tcp-proc nil)
+                (set-process-filter tcp-proc filter)
+                (cons tcp-proc proc)))
+   :test? (lambda () (-> command lsp-resolve-final-function lsp-server-present?))))
 
-      (setq tcp-proc (open-network-stream (concat name "::TCP") nil host port :type 'plain))
-      ;; TODO: Same :noquery issue (see above)
-      (set-process-query-on-exit-flag (get-buffer-process (get-buffer (process-name proc))) nil)
-      (set-process-query-on-exit-flag tcp-proc nil)
-      (set-process-filter tcp-proc filter)
-      (cons tcp-proc proc))))
+(defun lsp-tramp-connection (command-fn)
+  "Create LSP TRAMP connection named.
+COMMAND-FN will be called to generate Language Server command."
+  (list
+   :connect (lambda (filter sentinel name)
+              (let* ((host (file-remote-p (buffer-file-name) 'host t))
+                     (port (lsp--find-available-port host (cl-incf lsp--tcp-port)))
+                     (command (funcall command-fn name port))
+                     (proc (progn
+                             (lsp--info "Starting %s" command)
+                             (async-shell-command command
+                                                  (generate-new-buffer-name (format "%s::stdout" name))
+                                                  (generate-new-buffer-name (format "%s::stderr" name)))))
+                     (tcp-proc (lsp--open-network-stream host port (concat name "::tramp::tcp"))))
+
+                (set-process-sentinel proc sentinel)
+                (set-process-query-on-exit-flag proc nil)
+                (set-process-query-on-exit-flag tcp-proc nil)
+                (set-process-filter tcp-proc filter)
+                (cons tcp-proc proc)))
+   :test? (-const t)))
+
+(defun lsp-make-nc-tramp-command (program)
+  "Return a function which will convert PROGRAM from STDIO command to TCP one."
+  (lambda (_name port)
+    (format "nc -l -p %s -c '%s'" port program)))
 
 (defun lsp--auto-configure ()
   "Autoconfigure `lsp-ui', `company-lsp' if they are installed."
@@ -3029,7 +3030,8 @@ HOST and PORT will be used for opening the connection."
                      :root root
                      :client client
                      :status 'starting
-                     :buffers (list (current-buffer)))))
+                     :buffers (list (current-buffer))
+                     :host-root (file-remote-p root))))
     (setf (lsp--parser-workspace parser) workspace)
     workspace))
 
@@ -3156,18 +3158,22 @@ SESSION is the active session."
   "Get the session associated with the current buffer."
   (or lsp--session (setq lsp--session (lsp--load-default-session))))
 
-(defun lsp--find-clients (session buffer-major-mode file-name)
+(defun lsp--find-clients (buffer-major-mode file-name)
   "Find clients which can handle BUFFER-MAJOR-MODE.
-SESSION is the currently active session."
-  (--when-let (->> lsp-clients
-                   hash-table-values
-                   (-filter (-lambda (client)
-                              (and (-contains? (lsp--client-major-modes client) buffer-major-mode)
-                                   (-> client lsp--client-new-connection (plist-get :test?) funcall)))))
-    (-let (((add-on-clients main-clients) (-separate 'lsp--client-add-on? it)))
-      ;; Pick only one client (with the highest priority) that is not declared as add-on? t.
-      (cons (and main-clients (--max-by (> (lsp--client-priority it) (lsp--client-priority other)) main-clients))
-            add-on-clients))))
+SESSION is the currently active session. The function will also
+pick only remote enabled clients in case the FILE-NAME is on
+remote machine and vice versa."
+  (let ((remote? (file-remote-p file-name)))
+    (--when-let (->> lsp-clients
+                     hash-table-values
+                     (-filter (-lambda (client)
+                                (and (-contains? (lsp--client-major-modes client) buffer-major-mode)
+                                     (-some-> client lsp--client-new-connection (plist-get :test?) funcall)
+                                     (eq (---truthy? remote?) (---truthy? (lsp--client-remote? client)))))))
+      (-let (((add-on-clients main-clients) (-separate 'lsp--client-add-on? it)))
+        ;; Pick only one client (with the highest priority) that is not declared as add-on? t.
+        (cons (and main-clients (--max-by (> (lsp--client-priority it) (lsp--client-priority other)) main-clients))
+              add-on-clients)))))
 
 (defun lsp-register-client (client)
   "Registers LSP client CLIENT."
@@ -3438,7 +3444,7 @@ current language. When IGNORE-MULTI-FOLDER is nil current file
 will be openned in multi folder language server if there is
 such."
   (-let ((session (lsp-session)))
-    (-if-let (clients (lsp--find-clients session major-mode (buffer-file-name)))
+    (-if-let (clients (lsp--find-clients major-mode (buffer-file-name)))
         (-if-let (project-root (lsp--calculate-root session (buffer-file-name)))
             (progn
               ;; update project roots if needed and persit the lsp session
