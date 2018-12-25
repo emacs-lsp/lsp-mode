@@ -3290,7 +3290,7 @@ SESSION is the active session."
                                                        (lsp--client-server-id client)))))
       (with-lsp-workspace multi-root-workspace
         (lsp-notify "workspace/didChangeWorkspaceFolders"
-                    `(:event (:removed ,(vector (list :uri (lsp--path-to-uri project-root)))))))
+                    `(:event (:added ,(vector (list :uri (lsp--path-to-uri project-root)))))))
 
       (->> session (lsp-session-folder->servers) (gethash project-root) (pushnew multi-root-workspace))
       (->> session (lsp-session-server-id->folders) (gethash (lsp--client-server-id client)) (pushnew project-root))
