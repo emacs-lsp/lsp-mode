@@ -1948,18 +1948,20 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
 (defun lsp-describe-thing-at-point ()
   "Display the full documentation of the thing at point."
   (interactive)
-  (let ((contents (->> (lsp--text-document-position-params)
-                       (lsp--make-request "textDocument/hover")
-                       (lsp--send-request)
-                       (gethash "contents"))))
-    (pop-to-buffer
-     (with-current-buffer (get-buffer-create "*lsp-help*")
-       (let ((inhibit-read-only t))
-         (erase-buffer)
-         (insert (lsp--render-on-hover-content contents t))
-         (goto-char (point-min))
-         (view-mode t)
-         (current-buffer))))))
+  (let ((contents (-some->> (lsp--text-document-position-params)
+                            (lsp--make-request "textDocument/hover")
+                            (lsp--send-request)
+                            (gethash "contents"))))
+    (if (and contents (not (equal contents "")) )
+        (pop-to-buffer
+         (with-current-buffer (get-buffer-create "*lsp-help*")
+           (let ((inhibit-read-only t))
+             (erase-buffer)
+             (insert (lsp--render-on-hover-content contents t))
+             (goto-char (point-min))
+             (view-mode t)
+             (current-buffer))))
+      (lsp--info "No content at point."))))
 
 (defun lsp--point-in-bounds-p (bounds)
   "Return whether the current point is within BOUNDS."
