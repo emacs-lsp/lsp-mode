@@ -71,28 +71,29 @@ Replace ~(require 'lsp-mode)~ with the following if you use use-package.
   ~lsp-clients.el~ while other require installing additional package which provide
   server specific functionality.
 
-  | Language              | Language Server             | Built-in     | Installation command                           | Debugger |
-  |-----------------------+-----------------------------+--------------+------------------------------------------------+----------|
-  | Bash                  | [[https://github.com/mads-hartmann/bash-language-server][bash-language-server]]        | Yes          | npm i -g bash-language-server                  |          |
-  | C++                   | [[https://github.com/MaskRay/ccls][ccls]]                        | [[https://github.com/MaskRay/emacs-ccls][emacs-ccls]]   | [[https://github.com/MaskRay/ccls][ccls]]                                           |          |
-  | C++                   | [[https://clang.llvm.org/extra/clangd.html][clangd]]                      | Yes          | [[https://clang.llvm.org/extra/clangd.html][clangd]]                                         |          |
-  | C++                   | [[https://github.com/cquery-project/cquery][cquery]]                      | [[https://github.com/cquery-project/emacs-cquery][emacs-cquery]] | [[https://github.com/cquery-project/cquery][cquery]]                                         |          |
-  | CSS                   | [[https://github.com/vscode-langservers/vscode-css-languageserver-bin][css]]                         | Yes          | npm install -g vscode-css-languageserver-bin   |          |
-  | Dart                  | [[https://github.com/natebosch/dart_language_server][dart_language_server]]        | Yes          | pub global activate dart_language_server       |          |
-  | Elixir                | [[https://github.com/JakeBecker/elixir-ls][elixir-ls]]                   | Yes          | [[https://github.com/JakeBecker/elixir-ls][elixir-ls]]                                      |          |
-  | Go                    | [[https://github.com/sourcegraph/go-langserver][go-langserver]]               | Yes          | go get -u github.com/sourcegraph/go-langserver |          |
-  | Groovy                | [[https://github.com/palantir/language-servers][groovy-language-server]]      | Yes          | [[https://github.com/palantir/language-servers][groovy-language-server]]                         |          |
-  | HTML                  | [[https://github.com/vscode-langservers/vscode-html-languageserver][html]]                        | Yes          | npm install -g vscode-html-languageserver-bin  |          |
-  | Haskell               | [[https://github.com/haskell/haskell-ide-engine][IDE engine]]                  | [[https://github.com/emacs-lsp/lsp-haskell][lsp-haskell]]  | [[https://github.com/haskell/haskell-ide-engine][IDE engine]]                                     |          |
-  | Java                  | [[https://github.com/eclipse/eclipse.jdt.ls][Eclipse JDT LS]]              | [[https://github.com/emacs-lsp/lsp-java][lsp-java]]     | Automatic by [[https://github.com/emacs-lsp/lsp-java][lsp-java]]                          | Yes      |
-  | Javascript/Typescript | [[https://github.com/sourcegraph/javascript-typescript-langserver][javascript-typescript-stdio]] | Yes          | npm i -g javascript-typescript-langserver      |          |
-  | Ocaml                 | [[https://github.com/freebroccolo/ocaml-language-server][ocaml-language-server]]       | Yes          | [[https://github.com/freebroccolo/ocaml-language-server][ocaml-language-server]]                          |          |
-  | PHP                   | [[https://github.com/felixfbecker/php-language-server][php-language-server]]         | Yes          | [[https://github.com/felixfbecker/php-language-server][php-language-server]]                            |          |
-  | Python                | [[https://github.com/palantir/python-language-server][pyls]]                        | Yes          | pip install 'python-language-server[all]'      | Yes      |
-  | Ruby                  | [[https://github.com/castwide/solargraph][solargraph]]                  | Yes          | gem install solargraph                         | Yes      |
-  | Rust                  | [[https://github.com/rust-lang-nursery/rls][rls]]                         | Yes          | [[https://github.com/rust-lang-nursery/rls][rls]]                                            |          |
-  | Scala                 | [[https://github.com/rossabaker/lsp-scala][lsp-scala]]                   | TBD          |                                                |          |
-  | Vue                   | [[https://github.com/vuejs/vetur/tree/master/server][vue-language-server]]         | Yes          | npm install -g vue-language-server             |          |
+  | Language              | Language Server             | Built-in      | Installation command                           | Debugger |
+  |-----------------------+-----------------------------+---------------+------------------------------------------------+----------|
+  | Bash                  | [[https://github.com/mads-hartmann/bash-language-server][bash-language-server]]        | Yes           | npm i -g bash-language-server                  |          |
+  | C++                   | [[https://github.com/MaskRay/ccls][ccls]]                        | [[https://github.com/MaskRay/emacs-ccls][emacs-ccls]]    | [[https://github.com/MaskRay/ccls][ccls]]                                           |          |
+  | C++                   | [[https://clang.llvm.org/extra/clangd.html][clangd]]                      | Yes           | [[https://clang.llvm.org/extra/clangd.html][clangd]]                                         |          |
+  | C++                   | [[https://github.com/cquery-project/cquery][cquery]]                      | [[https://github.com/cquery-project/emacs-cquery][emacs-cquery]]  | [[https://github.com/cquery-project/cquery][cquery]]                                         |          |
+  | CSS                   | [[https://github.com/vscode-langservers/vscode-css-languageserver-bin][css]]                         | Yes           | npm install -g vscode-css-languageserver-bin   |          |
+  | Dart                  | [[https://github.com/natebosch/dart_language_server][dart_language_server]]        | Yes           | pub global activate dart_language_server       |          |
+  | Elixir                | [[https://github.com/JakeBecker/elixir-ls][elixir-ls]]                   | Yes           | [[https://github.com/JakeBecker/elixir-ls][elixir-ls]]                                      |          |
+  | Go                    | [[https://github.com/sourcegraph/go-langserver][go-langserver]]               | Yes           | go get -u github.com/sourcegraph/go-langserver |          |
+  | Groovy                | [[https://github.com/palantir/language-servers][groovy-language-server]]      | Yes           | [[https://github.com/palantir/language-servers][groovy-language-server]]                         |          |
+  | HTML                  | [[https://github.com/vscode-langservers/vscode-html-languageserver][html]]                        | Yes           | npm install -g vscode-html-languageserver-bin  |          |
+  | Haskell               | [[https://github.com/haskell/haskell-ide-engine][IDE engine]]                  | [[https://github.com/emacs-lsp/lsp-haskell][lsp-haskell]]   | [[https://github.com/haskell/haskell-ide-engine][IDE engine]]                                     |          |
+  | Java                  | [[https://github.com/eclipse/eclipse.jdt.ls][Eclipse JDT LS]]              | [[https://github.com/emacs-lsp/lsp-java][lsp-java]]      | Automatic by [[https://github.com/emacs-lsp/lsp-java][lsp-java]]                          | Yes      |
+  | Javascript/Typescript | [[https://github.com/sourcegraph/javascript-typescript-langserver][javascript-typescript-stdio]] | Yes           | npm i -g javascript-typescript-langserver      |          |
+  | Ocaml                 | [[https://github.com/freebroccolo/ocaml-language-server][ocaml-language-server]]       | Yes           | [[https://github.com/freebroccolo/ocaml-language-server][ocaml-language-server]]                          |          |
+  | PHP                   | [[https://github.com/felixfbecker/php-language-server][php-language-server]]         | Yes           | [[https://github.com/felixfbecker/php-language-server][php-language-server]]                            |          |
+  | Python                | [[https://github.com/palantir/python-language-server][pyls]]                        | Yes           | pip install 'python-language-server[all]'      | Yes      |
+  | Ruby                  | [[https://github.com/castwide/solargraph][solargraph]]                  | Yes           | gem install solargraph                         | Yes      |
+  | Rust                  | [[https://github.com/rust-lang-nursery/rls][rls]]                         | Yes           | [[https://github.com/rust-lang-nursery/rls][rls]]                                            |          |
+  | Scala                 | [[https://github.com/rossabaker/lsp-scala][lsp-scala]]                   | TBD           |                                                |          |
+  | Swift                 | [[https://github.com/apple/sourcekit-lsp][sourcekit-LSP]]               | [[https://github.com/emacs-lsp/lsp-sourcekit][lsp-sourcekit]] | [[https://github.com/apple/sourcekit-lsp][sourcekit-LSP]]                                  |          |
+  | Vue                   | [[https://github.com/vuejs/vetur/tree/master/server][vue-language-server]]         | Yes           | npm install -g vue-language-server             |          |
 
 * Commands
   - ~lsp-describe-session~ - Display session folders and running servers.
