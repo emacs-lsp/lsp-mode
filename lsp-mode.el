@@ -3376,7 +3376,7 @@ Returns nil if the project should not be added to the current SESSION."
 
 (defun lsp-find-workspace (server-id file-name)
   "Find workspace for SERVER-ID for FILE-NAME."
-  (when-let* ((session (lsp-session))
+  (-when-let* ((session (lsp-session))
               (folder->servers (lsp-session-folder->servers session))
               (workspaces (if file-name
                               (gethash (lsp-find-session-folder session file-name) folder->servers)
