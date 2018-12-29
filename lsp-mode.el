@@ -1963,7 +1963,7 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
              (insert (lsp--render-on-hover-content contents t))
              (goto-char (point-min))
              (view-mode t)
-             (current-buffer))))
+             (display-buffer (current-buffer)))))
       (lsp--info "No content at point."))))
 
 (defun lsp--point-in-bounds-p (bounds)
