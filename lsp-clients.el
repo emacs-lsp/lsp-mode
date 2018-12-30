@@ -151,16 +151,11 @@ finding the executable with `exec-path'."
 
 ;;; GO language
 
-(defcustom lsp-clients-go-server "go-langserver"
+(defcustom lsp-clients-go-server "bingo"
   "The go-langageserver executable to use."
   :group 'lsp-go
   :risky t
   :type 'file)
-
-(defcustom lsp-clients-go-executable-path (executable-find "go-langserver")
-  "Path to the go-langserver executable."
-  :type 'string
-  :group 'lsp-clients-go)
 
 (defcustom lsp-clients-go-language-server-flags '("-gocodecompletion")
   "Extra arguments for the go-langserver."
@@ -230,6 +225,15 @@ defaults to half of your CPU cores."
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-clients-go-server))
                   :major-modes '(go-mode)
                   :priority -1
+                  :initialization-options 'lsp-clients-go--make-init-options
+                  :server-id 'go-bingo
+                  :library-folders-fn (lambda (_workspace)
+                                        lsp-clients-go-library-directories)))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection "go-langserver")
+                  :major-modes '(go-mode)
+                  :priority -2
                   :initialization-options 'lsp-clients-go--make-init-options
                   :server-id 'go-ls
                   :library-folders-fn (lambda (_workspace)
