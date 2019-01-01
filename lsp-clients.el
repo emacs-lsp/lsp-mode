@@ -380,6 +380,39 @@ finding the executable with `exec-path'."
                   :priority -1
                   :server-id 'elixir-ls))
 
+;; Fortran
+(defcustom lsp-clients-fortls-executable "fortls"
+  "The fortls executable to use.
+Leave as just the executable name to use the default behavior of
+finding the executable with `exec-path'."
+  :group 'lsp-fortran
+  :risky t
+  :type 'file)
+
+(defcustom lsp-clients-fortls-args '()
+  "Extra arguments for the fortls executable"
+  :group 'lsp-fortran
+  :risky t
+  :type '(repeat string))
+
+(defun lsp-clients--fortls-command ()
+  "Generate the language server startup command."
+  `(,lsp-clients-fortls-executable,@lsp-clients-fortls-args))
+
+(defun fortls--suggest-project-root ()
+  (and (memq major-mode '(f90-mode))
+       (when-let (dir (locate-dominating-file default-directory ".fortls"))
+         (expand-file-name dir))))
+
+(advice-add 'lsp--suggest-project-root :before-until #'fortls--suggest-project-root)
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   'lsp-clients--fortls-command)
+                  :major-modes '(f90-mode)
+                  :priority -1
+                  :server-id 'fortls))
+
 
 (provide 'lsp-clients)
 ;;; lsp-clients.el ends here
