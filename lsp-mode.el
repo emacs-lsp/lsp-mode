@@ -1292,12 +1292,12 @@ disappearing, unset all the variables related to it."
       (erase-buffer)
       (insert (prin1-to-string to-persist)))))
 
-(defun lsp-workspace-folders-add ()
-  "Add to the list of workspace folders."
-  (interactive)
-  (push (read-directory-name "Select folder to add: "
-                             (or (lsp--suggest-project-root) default-directory) nil t)
-        (lsp-session-folders (lsp-session))))
+(defun lsp-workspace-folders-add (project-root)
+  "Add PROJECT-ROOT to the list of workspace folders."
+  (interactive
+   (list (read-directory-name "Select folder to add: "
+                              (or (lsp--suggest-project-root) default-directory) nil t)))
+  (push project-root (lsp-session-folders (lsp-session))))
 
 (defun lsp-workspace-folders-remove (project-root)
   "Remove PROJECT-ROOT to the list of workspace folders."
