@@ -2913,11 +2913,12 @@ returns the command to execute."
                      (let ((proc (make-process
                                   :name process-name
                                   :connection-type 'pipe
+                                  :buffer (format "*%s*" process-name)
                                   :coding 'no-conversion
                                   :command final-command
                                   :filter filter
                                   :sentinel sentinel
-                                  :stderr process-name
+                                  :stderr (format "*%s::stderr*" process-name)
                                   :noquery t)))
                        (set-process-query-on-exit-flag proc nil)
                        (cons proc proc))))
