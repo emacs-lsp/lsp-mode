@@ -404,8 +404,6 @@ finding the executable with `exec-path'."
        (when-let (dir (locate-dominating-file default-directory ".fortls"))
          (expand-file-name dir))))
 
-(advice-add 'lsp--suggest-project-root :before-until #'fortls--suggest-project-root)
-
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    'lsp-clients--fortls-command)
