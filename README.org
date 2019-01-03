@@ -80,6 +80,7 @@ Replace ~(require 'lsp-mode)~ with the following if you use use-package.
   | CSS                   | [[https://github.com/vscode-langservers/vscode-css-languageserver-bin][css]]                         | Yes           | npm install -g vscode-css-languageserver-bin   |          |
   | Dart                  | [[https://github.com/natebosch/dart_language_server][dart_language_server]]        | Yes           | pub global activate dart_language_server       |          |
   | Elixir                | [[https://github.com/JakeBecker/elixir-ls][elixir-ls]]                   | Yes           | [[https://github.com/JakeBecker/elixir-ls][elixir-ls]]                                      |          |
+  | Fortran               | [[https://github.com/hansec/fortran-language-server][fortran-language-server]]     | Yes | pip install fortran-language-server |          |
   | Go                    | [[https://github.com/saibing/bingo][bingo]]                       | Yes           | [[https://github.com/saibing/bingo/wiki/Install][bingo]]                                         |          |
   | Groovy                | [[https://github.com/palantir/language-servers][groovy-language-server]]      | Yes           | [[https://github.com/palantir/language-servers][groovy-language-server]]                         |          |
   | HTML                  | [[https://github.com/vscode-langservers/vscode-html-languageserver][html]]                        | Yes           | npm install -g vscode-html-languageserver-bin  |          |
@@ -95,6 +96,7 @@ Replace ~(require 'lsp-mode)~ with the following if you use use-package.
   | Swift                 | [[https://github.com/apple/sourcekit-lsp][sourcekit-LSP]]               | [[https://github.com/emacs-lsp/lsp-sourcekit][lsp-sourcekit]] | [[https://github.com/apple/sourcekit-lsp][sourcekit-LSP]]                                  |          |
   | Vue                   | [[https://github.com/vuejs/vetur/tree/master/server][vue-language-server]]         | Yes           | npm install -g vue-language-server             |          |
 
+  
 * Commands
   - ~lsp-describe-session~ - Display session folders and running servers.
   - ~lsp-describe-thing-at-point~ - Display help for the thing at point.

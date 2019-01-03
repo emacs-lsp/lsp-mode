@@ -383,7 +383,8 @@ than the second parameter.")
                                         (caml-mode . "ocaml")
                                         (tuareg-mode . "ocaml")
                                         (swift-mode . "swift")
-                                        (elixir-mode . "elixir"))
+                                        (elixir-mode . "elixir")
+                                        (f90-mode . "fortran"))
   "Language id configuration.")
 
 (defvar lsp-method-requirements
