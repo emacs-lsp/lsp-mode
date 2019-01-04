@@ -395,7 +395,8 @@ than the second parameter.")
     ("textDocument/hover" :capability "hoverProvider")
     ("textDocument/documentSymbol" :capability "documentSymbolProvider")
     ("textDocument/documentHighlight" :capability "documentHighlightProvider")
-    ("textDocument/definition" :capability "definitionProvider"))
+    ("textDocument/definition" :capability "definitionProvider")
+    ("workspace/symbol" :capability "workspaceSymbolProvider"))
 
   "Contain method to requirements mapping.
 It is used by send request functions to determine which server
