@@ -2055,7 +2055,7 @@ RENDER-ALL - nil if only the signature should be rendered."
                             (s-index-of selected-param-label result)
                           (car selected-param-label)))
                  (end (if (stringp selected-param-label) (+ start (length selected-param-label)) (cadr selected-param-label))))
-      (add-face-text-property start end '(:weight bold :slant italic :underline t) nil result))
+      (add-face-text-property start end 'eldoc-highlight-function-argument nil result))
     result))
 
 (defvar-local lsp-hover-request-id 0)
