@@ -759,6 +759,12 @@ already have been created."
            (indent 1))
   `(let ((lsp--cur-workspace ,workspace)) ,@body))
 
+(defmacro with-lsp-workspaces (workspaces &rest body)
+  "Helper macro for invoking BODY against multiple WORKSPACES."
+  (declare (debug (form body))
+           (indent 1))
+  `(let ((lsp--buffer-workspaces ,workspaces)) ,@body))
+
 (defmacro lsp-foreach-workspace (&rest body)
   "Execute BODY for each of the current workspaces."
   (declare (debug (form body)))
