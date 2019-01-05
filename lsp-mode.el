@@ -2687,8 +2687,9 @@ PARSER is the workspace parser used for handling the message."
 
 (defun lsp--parser-read (p output)
   (cl-assert (lsp--parser-workspace p) nil "Parser workspace cannot be nil.")
-  (let ((messages '())
-        (chunk (concat (lsp--parser-leftovers p) output)))
+  (let* ((messages '())
+         (output (string-as-unibyte output))
+         (chunk (concat (lsp--parser-leftovers p) output)))
     (while (not (string-empty-p chunk))
       (if (not (lsp--parser-reading-body p))
           ;; Read headers
