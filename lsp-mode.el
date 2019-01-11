@@ -657,7 +657,7 @@ This is equivalent to `display-warning', using `lsp-mode' as the type and
 (defun lsp--get-uri-handler (scheme)
   "Get uri handler for SCHEME in the current workspace."
   (--some (gethash scheme (lsp--client-uri-handlers (lsp--workspace-client it)))
-          (lsp-workspaces)))
+          (or (lsp-workspaces) (lsp--session-workspaces (lsp-session)))))
 
 (defun lsp--uri-to-path (uri)
   "Convert URI to a file path."
@@ -3393,10 +3393,10 @@ Returns nil if the project should not be added to the current SESSION."
 (defun lsp-find-workspace (server-id file-name)
   "Find workspace for SERVER-ID for FILE-NAME."
   (-when-let* ((session (lsp-session))
-              (folder->servers (lsp-session-folder->servers session))
-              (workspaces (if file-name
-                              (gethash (lsp-find-session-folder session file-name) folder->servers)
-                            (lsp--session-workspaces session))))
+               (folder->servers (lsp-session-folder->servers session))
+               (workspaces (if file-name
+                               (gethash (lsp-find-session-folder session file-name) folder->servers)
+                             (lsp--session-workspaces session))))
 
     (--first (eq (lsp--client-server-id (lsp--workspace-client it)) server-id) workspaces)))
 
@@ -3444,7 +3444,11 @@ current language. When IGNORE-MULTI-FOLDER is nil current file
 will be openned in multi folder language server if there is
 such."
   (-let ((session (lsp-session)))
-    (-if-let (clients (lsp--find-clients major-mode (buffer-file-name)))
+    (-if-let (clients (if current-prefix-arg
+                          (list (lsp--completing-read "Select server to start: "
+                                                      (ht-values lsp-clients)
+                                                      (-compose 'symbol-name 'lsp--client-server-id) nil t))
+                        (lsp--find-clients major-mode (buffer-file-name))))
         (-if-let (project-root (lsp--calculate-root session (buffer-file-name)))
             (progn
               ;; update project roots if needed and persit the lsp session
