@@ -66,11 +66,12 @@
 
 (ert-deftest lsp--parser-read--ignored-messages ()
   (cl-letf* ((log '())
-             (p (make-lsp--parser :workspace lsp--test-workspace))
              ((symbol-function 'message)
               (lambda (&rest args) (push (apply 'format args) log))))
-    (lsp--on-notification p (lsp--read-json "{\"jsonrpc\":\"2.0\",\"method\":\"window/logMessage\",\"params\":{\"type\":2,\"message\":\"readFile /some/path requested by TypeScript but content not available\"}}" nil))
-    (lsp--on-notification p (lsp--read-json "{\"jsonrpc\":\"2.0\",\"method\":\"window/logMessage\",\"params\":{\"type\":2,\"message\":\"Important message\"}}" nil))
+    (lsp--on-notification
+     lsp--test-workspace
+     (lsp--read-json "{\"jsonrpc\":\"2.0\",\"method\":\"window/logMessage\",\"params\":{\"type\":2,\"message\":\"readFile /some/path requested by TypeScript but content not available\"}}" nil))
+    (lsp--on-notification lsp--test-workspace (lsp--read-json "{\"jsonrpc\":\"2.0\",\"method\":\"window/logMessage\",\"params\":{\"type\":2,\"message\":\"Important message\"}}" nil))
     (should (equal log '("Important message")))))
 
 ;;; lsp-io-test.el ends here

@@ -96,7 +96,7 @@ Replace ~(require 'lsp-mode)~ with the following if you use use-package.
   | Swift                 | [[https://github.com/apple/sourcekit-lsp][sourcekit-LSP]]               | [[https://github.com/emacs-lsp/lsp-sourcekit][lsp-sourcekit]] | [[https://github.com/apple/sourcekit-lsp][sourcekit-LSP]]                                  |          |
   | Vue                   | [[https://github.com/vuejs/vetur/tree/master/server][vue-language-server]]         | Yes           | npm install -g vue-language-server             |          |
 
-  
+
 * Commands
   - ~lsp-describe-session~ - Display session folders and running servers.
   - ~lsp-describe-thing-at-point~ - Display help for the thing at point.
@@ -114,7 +114,6 @@ Replace ~(require 'lsp-mode)~ with the following if you use use-package.
   - ~completion-at-point~ - display completion using built-in emacs ~completion-at-point~ framework.
   - ~lsp-find-definition~ - to find the definition for the symbol under point.
   - ~lsp-find-references~ - Find references for the symbol under point.
-
 * Configuration
   - ~lsp-print-io~ - If non-nil, print all messages to and from the language server to ~*Messages*~.
   - ~lsp-inhibit-message~ - If non-nil, inhibit the message echo via ~inhibit-message~.
@@ -143,6 +142,28 @@ Replace ~(require 'lsp-mode)~ with the following if you use use-package.
    the behaviour of language servers. A full list of hooks is available in the
    [[API documentation][./doc/API.org]].
 
+* TRAMP (Experimental)
+  LSP mode has support for tramp buffers with the following requirements.
+  - The language server have to be present on the remote server since it is running on the remote machine.
+  - Having multi folder language server (like [[https://github.com/eclipse/eclipse.jdt.ls][Eclipse JDT LS]]) cannot have local and remote servers.
+  - The server must be using TCP connection or it should be coverted to TCP via ~netcat~ or similar tool.
+*** How it works?
+    ~lsp-mode~ detects that a particular file is located on remote machine and looks for a clients which can handle the current major mode and it is markred as with ~:remote?~ t. Then ~lsp-mode~ starts the client and it expects to use TCP connection. Since not all of the server have TCP support ~netcat~ is used to convert STDIO to TCP using ~lsp-make-nc-tramp-command~.
+#+BEGIN_SRC bash
+  nc -l -p {port} -c '{command}'
+#+END_SRC
+   In case the server already supports TCP connection it could be used directly without ~netcat~ adapter.
+*** Sample configuration
+    Here it is example how you can configure python language server to work when using ~TRAMP~.
+   #+BEGIN_SRC emacs-lisp
+     (lsp-register-client
+      (make-lsp-client :new-connection (lsp-tramp-connection
+                                        (lsp-make-nc-tramp-command "pyls"))
+                       :major-modes '(python-mode)
+                       :remote? t
+                       :server-id 'pyls-tramp))
+   #+END_SRC
+** Requirements
 * Adding support for languages
   See [[./doc/API.org][API docs]]
 
