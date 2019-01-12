@@ -31,24 +31,29 @@
 
 ;;; Code:
 
+(require 'package)
 
-(let* ((lexical-binding t)
-       (package-archives '(("melpa" . "http://melpa.org/packages/")
+(setq debug-on-error t)
+
+(let* ((package-archives '(("melpa" . "http://melpa.org/packages/")
                            ("gnu" . "http://elpa.gnu.org/packages/")))
        (no-byte-compile t)
-       (package-user-dir (expand-file-name "tmpelpa" user-emacs-directory))
-       (custom-file (expand-file-name "custom.el" package-user-dir)))
-  (require 'cl-lib)
-  (require 'package)
-  (setq debug-on-error t)
+       (package-user-dir (expand-file-name (make-temp-name "lsp-tmp-elpa")
+                                           user-emacs-directory))
+       (custom-file (expand-file-name "custom.el" package-user-dir))
+       (pkg-list '(lsp-mode lsp-ui company-lsp)))
+
   (package-initialize)
   (package-refresh-contents)
-  (cl-flet ((ensure-pkg (pkg)
-                        (unless (package-installed-p pkg)
-                          (package-install pkg))
-                        (require pkg)))
-    (ensure-pkg 'lsp-mode)
-    (ensure-pkg 'lsp-ui)
-    (ensure-pkg 'company-lsp))
+  
+  (mapcar (lambda (pkg)
+            (unless (package-installed-p pkg)
+              (package-install pkg))
+            (require pkg))
+          pkg-list)
+  
   (add-hook 'kill-emacs-hook `(lambda ()
                                 (delete-directory ,package-user-dir t))))
+
+(provide 'lsp-start-plain)
+;;; lsp-start-plain.el ends here
