@@ -32,12 +32,12 @@
 ;;; Code:
 
 
-(let ((lexical-binding t)
-      (package-archives '(("melpa" . "http://melpa.org/packages/")
-                          ("gnu" . "http://elpa.gnu.org/packages/")))
-      (no-byte-compile t)
-      (package-user-dir (expand-file-name "tmpelpa" user-emacs-directory))
-      (custom-file (expand-file-name "custom.el" package-user-dir)))
+(let* ((lexical-binding t)
+       (package-archives '(("melpa" . "http://melpa.org/packages/")
+                           ("gnu" . "http://elpa.gnu.org/packages/")))
+       (no-byte-compile t)
+       (package-user-dir (expand-file-name "tmpelpa" user-emacs-directory))
+       (custom-file (expand-file-name "custom.el" package-user-dir)))
   (require 'cl-lib)
   (require 'package)
   (setq debug-on-error t)
