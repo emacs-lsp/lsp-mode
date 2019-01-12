@@ -23,7 +23,7 @@
 ;; This file is a helper to start a minimal lsp environment.
 ;; To use this, start your Emacs with "emacs -q" and load this file.
 
-;; It will install `use-package' and `lsp-mode', `lsp-ui', `company-lsp'
+;; It will install  `lsp-mode', `lsp-ui' and `company-lsp'
 ;; with their depedencies to start a minimal lsp environment.
 
 ;; And it forces Emacs to load `.el' files rather than `.elc' files
