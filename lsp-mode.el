@@ -659,7 +659,7 @@ This is equivalent to `display-warning', using `lsp-mode' as the type and
   (--some (gethash scheme (lsp--client-uri-handlers (lsp--workspace-client it)))
           (or (lsp-workspaces) (lsp--session-workspaces (lsp-session)))))
 
-(defun lsp--downcasePathOnWindows(path)
+(defun lsp--fix-path-casing (path)
   "On windows, downcases path because the windows file system is
 case-insensitive.
 
@@ -682,7 +682,7 @@ On other systems, returns path without change."
                                (substring file 1))
                           file))))
     
-    (lsp--downcasePathOnWindows
+    (lsp--fix-path-casing
      (concat (-some 'lsp--workspace-host-root (lsp-workspaces)) file-name))))
 
 (defun lsp--buffer-uri ()
