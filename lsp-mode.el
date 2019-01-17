@@ -681,7 +681,7 @@ On other systems, returns path without change."
                                (eq (elt file 0) ?\/)
                                (substring file 1))
                           file))))
-    
+
     (lsp--fix-path-casing
      (concat (-some 'lsp--workspace-host-root (lsp-workspaces)) file-name))))
 
@@ -3382,12 +3382,14 @@ Returns nil if the project should not be added to the current SESSION."
                                   nil
                                   t))
           (2 (push project-root-suggestion (lsp-session-folders-blacklist session))
+             (lsp--persist-session session)
              nil)
           (3 (push (read-directory-name "Select folder to blacklist: "
                                         (or project-root-suggestion default-directory)
                                         nil
                                         t)
                    (lsp-session-folders-blacklist session))
+             (lsp--persist-session session)
              nil)
           (t nil)))
     ('quit)))
