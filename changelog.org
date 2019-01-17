@@ -1,0 +1,14 @@
+* Release 6.0
+  - ~lsp-mode~ now have single entry point ~lsp~ for all language and based on the major mode starts the corresponding language servers.
+  - Added ~flymake~ integration.
+  - ~lsp~ automatically enables and configures ~company-lsp~, ~lsp-ui~, ~yasnippet~, or ~flymake~ if they are present so no additional configuration is needed except installing the packages. That behavior could be disabled by setting ~lsp-auto-configure~ to ~nil~.
+  - ~lsp-mode~ ships with several predefined servers located in ~lsp-clients.el~ which does not require additional package. For the more complex Language Servers like ~Eclipse JDT~, ~ccls~, ~cquery~ and ~haskell~ we still require separate package due to relatively high code base.
+  - ~lsp-mode~ handles automatically server failures by asking the user whether he/she wants to restart the server.
+  - introduced new command ~lsp-describe-session~ which replaces the existing one ~lsp-capabilities~. The command lists the folders that are part of the workspace and the servers that are associated with the corresponding folder.
+  - ~lsp-mode~ displays information about the running server and it's status in the modeline.
+  - ~lsp-define-stdio-client~ and ~lsp-define-tcp-client~ are replaced with ~lsp-register-client~
+  - ~lsp~ rely on ~projectile~ or ~project.el~ now only for suggesting project root. Once you open new file in a project and start ~lsp~ it will provide several options(import project, blacklist project, select other directory root). Once you select a root it will be persisted and used for the next sessions.
+  - support for multiple language servers per single file and workspace.
+  - changed ~lsp-mode~ settings to more sensible defaults.
+  - Removed all synchronous calls from the server startup.
+  - Improved multi-folder support.
