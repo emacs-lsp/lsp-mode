@@ -93,11 +93,36 @@ This directory shoud contain a file matching groovy-language-server-*.jar"
                   :priority -1
                   :server-id 'html-ls))
 
-;;; Typescript
-(defcustom lsp-clients-typescript-server "javascript-typescript-stdio"
+;;; Typescript/Javascript
+(defcustom lsp-clients-javascript-typescript-server "javascript-typescript-stdio"
+  "The javascript-typescript-stdio executable to use.
+Leave as just the executable name to use the default behavior of
+finding the executable with variable `exec-path'."
+  :group 'lsp-typescript-javascript
+  :risky t
+  :type 'file)
+
+(defcustom lsp-clients-typescript-javascript-server-args '()
+  "Extra arguments for the typescript-language-server language server."
+  :group 'lsp-typescript-javascript
+  :risky t
+  :type '(repeat string))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (-const `(,lsp-clients-javascript-typescript-server
+                                             ,@lsp-clients-typescript-javascript-server-args)))
+                  :major-modes '(typescript-mode typescript-tsx-mode js-mode js2-mode rjsx-mode)
+                  :priority -2
+                  :ignore-messages '("readFile .*? requested by TypeScript but content not available")
+                  :server-id 'jsts-ls))
+
+
+;;; Typescript/Javascript
+(defcustom lsp-clients-typescript-server "typescript-language-server"
   "The typescript-language-server executable to use.
 Leave as just the executable name to use the default behavior of
-finding the executable with `exec-path'."
+finding the executable with variable `exec-path'."
   :group 'lsp-typescript
   :risky t
   :type 'file)
@@ -108,13 +133,10 @@ finding the executable with `exec-path'."
   :risky t
   :type '(repeat string))
 
-(defun lsp-typescript--ls-command ()
-  "Generate the language server startup command."
-  `(,lsp-clients-typescript-server
-    ,@lsp-clients-typescript-server-args))
-
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-typescript--ls-command)
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (-const `(,lsp-clients-typescript-server
+                                             ,@lsp-clients-typescript-server-args)))
                   :major-modes '(typescript-mode typescript-tsx-mode js-mode js2-mode rjsx-mode)
                   :priority -1
                   :ignore-messages '("readFile .*? requested by TypeScript but content not available")
