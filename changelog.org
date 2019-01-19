@@ -12,3 +12,4 @@
   - changed ~lsp-mode~ settings to more sensible defaults.
   - Removed all synchronous calls from the server startup.
   - Improved multi-folder support.
+  - added backends for: Bash, C++, CSS, Dart, Elixir, Fortran, Go, Groovy, HTML, Javascript/Typescript, Javascript/Typescript, Ocaml, PHP, Python, Ruby, Rust, Vue, Flow

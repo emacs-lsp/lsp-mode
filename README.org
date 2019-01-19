@@ -135,9 +135,9 @@
    - ~completion-at-point~ - display completion using built-in emacs ~completion-at-point~ framework.
    - ~lsp-find-definition~ - to find the definition for the symbol under point.
    - ~lsp-find-references~ - Find references for the symbol under point.
-   - ~lsp-lenses-show~ - Show lenses in the current file
-   - ~lsp-lenses-hide~ - Hide lenses in the current file
-   - ~lsp-lenses-mode~ (experimental) - Turn on/off lenses in the current file.
+   - ~lsp-lens-show~ - Show lenses in the current file
+   - ~lsp-lens-hide~ - Hide lenses in the current file
+   - ~lsp-lens-mode~ (experimental) - Turn on/off lenses in the current file.
 ** Settings
    - ~lsp-print-io~ - If non-nil, print all messages to and from the language server to ~*Messages*~.
    - ~lsp-inhibit-message~ - If non-nil, inhibit the message echo via ~inhibit-message~.
