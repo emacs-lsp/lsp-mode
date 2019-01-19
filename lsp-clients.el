@@ -127,7 +127,7 @@ finding the executable with variable `exec-path'."
   :risky t
   :type 'file)
 
-(defcustom lsp-clients-typescript-server-args '()
+(defcustom lsp-clients-typescript-server-args '("--stdio")
   "Extra arguments for the typescript-language-server language server."
   :group 'lsp-typescript
   :risky t
@@ -389,7 +389,7 @@ finding the executable with `exec-path'."
 
 ;; Elixir
 (defcustom lsp-clients-elixir-server-executable "language_server.sh"
-    "The elixir-language-server executable to use.
+  "The elixir-language-server executable to use.
 Leave as just the executable name to use the default behavior of
 finding the executable with `exec-path'."
   :group 'lsp-elixir
