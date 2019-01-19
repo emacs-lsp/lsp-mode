@@ -784,7 +784,7 @@ DELETE when `lsp-mode.el' is deleted.")
 (defun lsp--path-to-uri (path)
   "Convert PATH to a uri."
   (concat lsp--uri-file-prefix
-          (url-hexify-string (file-truename (or (file-remote-p path 'localname t) path))
+          (url-hexify-string (or (file-remote-p path 'localname t) path)
                              url-path-allowed-chars)))
 
 (defun lsp--string-match-any (regex-list str)
@@ -1389,8 +1389,10 @@ If WORKSPACE is not provided current workspace will be used."
                         (fboundp 'json-serialize))
                    (json-serialize params :null-object nil
                                    :false-object json-false)
-                 (json-encode params))))
-    (format "Content-Length: %d\r\n\r\n%s" (string-bytes body) body)))
+                 (json-encode params)))
+         (body-with-newline (concat body "\n")))
+    (concat (format "Content-Length: %d\r\n\r\n" (string-bytes body-with-newline))
+                    body-with-newline)))
 
 (defun lsp--send-notification (body)
   "Send BODY as a notification to the language server."
@@ -3240,7 +3242,13 @@ Return a nested alist keyed by symbol names. e.g.
 
 (defun lsp-server-present? (final-command)
   "Check whether FINAL-COMMAND is present."
-  (executable-find (nth 0 final-command)))
+  ;; executable-find only gained support for remote checks after 26.1 release
+  (cond
+   ((not (file-remote-p default-directory))
+    (executable-find (nth 0 final-command)))
+   ((not (version<= emacs-version "26.1"))
+    (executable-find (nth 0 final-command) (file-remote-p default-directory)))
+   (t)))
 
 (defun lsp-stdio-connection (command)
   "Create LSP stdio connection named name.
@@ -3319,32 +3327,23 @@ COMMAND-FN will be called to generate Language Server command."
                 (cons tcp-proc proc)))
    :test? (lambda () (-> command lsp-resolve-final-function lsp-server-present?))))
 
-(defun lsp-tramp-connection (command-fn)
-  "Create LSP TRAMP connection named.
-COMMAND-FN will be called to generate Language Server command."
-  (list
-   :connect (lambda (filter sentinel name)
-              (let* ((host (file-remote-p (buffer-file-name) 'host t))
-                     (port (lsp--find-available-port host (cl-incf lsp--tcp-port)))
-                     (command (funcall command-fn name port))
-                     (proc (progn
-                             (lsp--info "Starting %s" command)
-                             (async-shell-command command
-                                                  (generate-new-buffer-name (format "%s::stdout" name))
-                                                  (generate-new-buffer-name (format "%s::stderr" name)))))
-                     (tcp-proc (lsp--open-network-stream host port (concat name "::tramp::tcp"))))
-
-                (set-process-sentinel proc sentinel)
-                (set-process-query-on-exit-flag proc nil)
-                (set-process-query-on-exit-flag tcp-proc nil)
-                (set-process-filter tcp-proc filter)
-                (cons tcp-proc proc)))
-   :test? (-const t)))
-
-(defun lsp-make-nc-tramp-command (program)
-  "Return a function which will convert PROGRAM from STDIO command to TCP one."
-  (lambda (_name port)
-    (format "nc -l -p %s -c '%s'" port program)))
+(defun lsp-tramp-connection (local-command)
+  "Create LSP stdio connection named name.
+COMMAND is either list of strings, string or function which
+returns the command to execute."
+  (list :connect (lambda (filter sentinel name)
+                   (let* ((final-command (lsp-resolve-final-function local-command))
+                          ;; wrap with stty to disable converting \r to \n
+                          (wrapped-command (append '("stty" "-icrnl" ";") final-command))
+                          (process-name (generate-new-buffer-name name)))
+                     (let ((proc (apply 'start-file-process-shell-command process-name
+                                        (format "*%s*" process-name) wrapped-command)))
+                       (set-process-sentinel proc sentinel)
+                       (set-process-filter proc filter)
+                       (set-process-query-on-exit-flag proc nil)
+                       (set-process-coding-system proc 'binary 'binary)
+                       (cons proc proc))))
+        :test? (lambda () (-> local-command lsp-resolve-final-function lsp-server-present?))))
 
 (defun lsp--auto-configure ()
   "Autoconfigure `lsp-ui', `company-lsp' if they are installed."
@@ -3473,7 +3472,7 @@ SESSION is the active session."
       (run-hooks 'lsp-before-initialize-hook)
       (lsp-request-async "initialize"
                          (list :processId (emacs-pid)
-                               :rootPath (expand-file-name root)
+                               :rootPath (file-local-name (expand-file-name root))
                                :rootUri (lsp--path-to-uri root)
                                :capabilities (lsp--client-capabilities)
                                :initializationOptions initialization-options)
