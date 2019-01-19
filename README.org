@@ -23,20 +23,15 @@
   - [[#commands][Commands]]
   - [[#configuration-1][Configuration]]
   - [[#requirements][Requirements]]
-    - [[#hooks][Hooks]]
     - [[#supported-languages-1][Supported languages]]
     - [[#commands-1][Commands]]
     - [[#configuration-2][Configuration]]
   - [[#screenshots][Screenshots]]
-      - [[#rust-completion-with-company-lsp][RUST Completion with company-lsp]]
-      - [[#typescript-references-using-lsp-ui][Typescript references using lsp-ui]]
-      - [[#debugging-python-using-dap-mode][Debugging Python using dap-mode]]
-    - [[#hooks-1][Hooks]]
   - [[#extensions][Extensions]]
     - [[#tramp-experimental][TRAMP (Experimental)]]
-    - [[#how-it-works-1][How it works?]]
-    - [[#sample-configuration][Sample configuration]]
-  - [[#troubleshoooting][Troubleshoooting]]
+      - [[#how-it-works-1][How it works?]]
+      - [[#sample-configuration][Sample configuration]]
+  - [[#troubleshooting][Troubleshooting]]
   - [[#adding-support-for-languages][Adding support for languages]]
   - [[#faq][FAQ]]
   - [[#see-also][See also]]
@@ -169,9 +164,6 @@
    - ~lsp-imenu-sort-methods~ - How to sort the imenu items. The value is a list of ~kind~, ~name~ or ~position~. Priorities are determined by the index of the element.
    - ~lsp-response-timeout~ - Number of seconds to wait for a response from the language server before timing out.
 ** Requirements
-*** Hooks
-    ~lsp-mode~ provides a handful of hooks that can be used to extend and configure
-    the behaviour of language servers.
 *** Supported languages
     Some of the servers are directly supported by ~lsp-mode~ by requiring
     ~lsp-clients.el~ while other require installing additional package which provide
@@ -243,40 +235,38 @@
     - ~lsp-imenu-sort-methods~ - How to sort the imenu items. The value is a list of ~kind~, ~name~ or ~position~. Priorities are determined by the index of the element.
     - ~lsp-response-timeout~ - Number of seconds to wait for a response from the language server before timing out.
 ** Screenshots
-**** RUST Completion with company-lsp
+    - RUST Completion with company-lsp
      [[file:examples/completion.png]]
-**** Typescript references using lsp-ui
+    - Typescript references using lsp-ui
      [[file:examples/references.png]]
-**** Debugging Python using dap-mode
+    - Debugging Python using dap-mode
      [[file:examples/python_debugging.png]]
-*** Hooks
-    ~lsp-mode~ provides a handful of hooks that can be used to extend and configure
-    the behaviour of language servers.
+    - Call hierarchy via ccls
+     [[file:examples/call-hierarchy-ccls.png]]
 ** Extensions
 *** TRAMP (Experimental)
     LSP mode has support for tramp buffers with the following requirements.
     - The language server have to be present on the remote server since it is running on the remote machine.
     - Having multi folder language server (like [[https://github.com/eclipse/eclipse.jdt.ls][Eclipse JDT LS]]) cannot have local and remote servers.
-    - The server must be using TCP connection or it should be coverted to TCP via ~netcat~ or similar tool.
-*** How it works?
-    ~lsp-mode~ detects that a particular file is located on remote machine and looks for a clients which can handle the current major mode and it is markred as with ~:remote?~ t. Then ~lsp-mode~ starts the client and it expects to use TCP connection. Since not all of the server have TCP support ~netcat~ is used to convert STDIO to TCP using ~lsp-make-nc-tramp-command~.
-    #+BEGIN_SRC bash
-      nc -l -p {port} -c '{command}'
-    #+END_SRC
-    In case the server already supports TCP connection it could be used directly without ~netcat~ adapter.
-*** Sample configuration
-    Here it is example how you can configure python language server to work when using ~TRAMP~.
-    #+BEGIN_SRC emacs-lisp
-      (lsp-register-client
-       (make-lsp-client :new-connection (lsp-tramp-connection
-                                         (lsp-make-nc-tramp-command "pyls"))
-                        :major-modes '(python-mode)
-                        :remote? t
-                        :server-id 'pyls-tramp))
-    #+END_SRC
-
-** Troubleshoooting
-   - set ~lsp-print-io~ to ~t~ to inspect communicaiton between client and the server.
+    - The server must be using TCP connection or it should be converted to TCP via ~netcat~ or similar tool.
+**** How it works?
+     ~lsp-mode~ detects that a particular file is located on remote machine and looks for a clients which can handle the current major mode and it is marked as with ~:remote?~ t. Then ~lsp-mode~ starts the client and it expects to use TCP connection. Since not all of the server have TCP support ~netcat~ is used to convert STDIO to TCP using ~lsp-make-nc-tramp-command~.
+     #+BEGIN_SRC bash
+       nc -l -p {port} -c '{command}'
+     #+END_SRC
+     In case the server already supports TCP connection it could be used directly without ~netcat~ adapter.
+**** Sample configuration
+     Here it is example how you can configure python language server to work when using ~TRAMP~.
+     #+BEGIN_SRC emacs-lisp
+       (lsp-register-client
+        (make-lsp-client :new-connection (lsp-tramp-connection
+                                          (lsp-make-nc-tramp-command "pyls"))
+                         :major-modes '(python-mode)
+                         :remote? t
+                         :server-id 'pyls-tramp))
+     #+END_SRC
+** Troubleshooting
+   - set ~lsp-print-io~ to ~t~ to inspect communication between client and the server.
    - ~lsp-describe-session~ will show the current projects roots + the started severs and allows inspecting the server capabilities.
    #+caption: Describe session
    [file:examples/describe.png]]
