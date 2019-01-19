@@ -473,6 +473,9 @@ must be used for handling a particular message.")
 
 (defvar lsp--tcp-port 10000)
 
+(cl-defgeneric lsp-execute-command (server command arguments)
+  "Ask SERVER to execute COMMAND with ARGUMENTS.")
+
 (defun lsp--info (format &rest args)
   "Display lsp info message with FORMAT with ARGS."
   (message "%s :: %s" (propertize "LSP" 'face 'success) (apply #'format format args)))
@@ -1023,6 +1026,17 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
   (setq-local lsp--lens-refresh-timer
               (run-with-timer lsp-lens-debounce-interval nil 'lsp--lens-refresh buffer-modified?)))
 
+(defun lsp--lens-keymap (command)
+  (let ((map (make-sparse-keymap))
+        (server-id (lsp--client-server-id (lsp--workspace-client lsp--cur-workspace))))
+    (define-key map [mouse-1]
+      (lambda ()
+        (interactive)
+        (lsp-execute-command server-id
+                             (intern (gethash "command" command))
+                             (gethash "arguments" command))))
+    map))
+
 (defun lsp--lens-display (lenses)
   "Show LENSES."
   (let ((overlays
@@ -1042,14 +1056,7 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
                                      title
                                      'face 'lsp-lens-face
                                      'mouse-face 'lsp-lens-mouse-face
-                                     'local-map (let ((map (make-sparse-keymap)))
-                                                  (define-key map [mouse-1]
-                                                    (if (commandp command)
-                                                        command
-                                                      (lambda ()
-                                                        (interactive)
-                                                        (lsp-execute-code-action command))))
-                                                  map)))
+                                     'local-map (lsp--lens-keymap command)))
                                   sorted))))))
               (-map (-lambda ((position str))
                       (lsp--lens-show str position))))))
@@ -2699,6 +2706,11 @@ EXTRA is a plist of extra parameters."
                (and (not capability) (not registered-capability))))
          (lsp-workspaces)))
     (lsp-workspaces)))
+
+(cl-defmethod lsp-execute-command (server command arguments)
+  "Execute COMMAND on SERVER with `workspace/executeCommand'."
+  (lsp-request "workspace/executeCommand"
+               `(:command ,(format "%s" command) :arguments ,arguments)))
 
 (defun lsp--send-execute-command (command &optional args)
   "Create and send a 'workspace/executeCommand' message having command COMMAND and optional ARGS."
