@@ -201,7 +201,7 @@ particular FILE-NAME and MAJOR-MODE."
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (-const `(,lsp-clients-flow-server
                                              ,@lsp-clients-flow-server-args)))
-                  :activation-fn (lambda (file-name major-mode)(lsp-clients-flow-activate-p file-name major-mode))
+                  :activation-fn 'lsp-clients-flow-activate-p
                   :add-on? t
                   :server-id 'flow-ls))
 
