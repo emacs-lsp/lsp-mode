@@ -143,6 +143,68 @@ finding the executable with variable `exec-path'."
                   :server-id 'ts-ls))
 
 
+
+;;; JavaScript Flow
+(defcustom lsp-clients-flow-server "flow"
+  "The Flow executable to use.
+Leave as just the executable name to use the default behavior of
+finding the executable with variable `exec-path'."
+  :group 'lsp-flow
+  :risky t
+  :type 'file)
+
+(defcustom lsp-clients-flow-server-args '("lsp")
+  "Extra arguments for starting the Flow language server."
+  :group 'lsp-flow
+  :risky t
+  :type '(repeat string))
+
+(defun lsp-clients-flow-tag-present-p (file-name)
+  "Checks if the '// @flow' or `/* @flow */' tag is present in
+the contents of FILE-NAME."
+  (with-temp-buffer
+    (insert-file-contents file-name)
+    (save-excursion
+      (goto-char (point-min))
+      (let (stop found)
+        (while (not stop)
+          (when (not (re-search-forward "[^\n[:space:]]" nil t))
+            (setq stop t))
+          (if (equal (point) (point-min))
+              (setq stop t)
+            (backward-char))
+          (cond ((or (looking-at "//+[ ]*@flow")
+                     (looking-at "/\\**[ ]*@flow"))
+                 (setq found t)
+                 (setq stop t))
+                ((looking-at "//")
+                 (forward-line))
+                ((looking-at "/\\*")
+                 (when (not (re-search-forward "*/" nil t))
+                   (setq stop t)))
+                (t (setq stop t))))
+        found))))
+
+(defun lsp-clients-flow-project-p (file-name)
+  "Checks if FILE-NAME is part of a Flow project, that is, if
+there is a .flowconfig file in the folder hierarchy."
+  (locate-dominating-file file-name ".flowconfig"))
+
+(defun lsp-clients-flow-activate-p (file-name major-mode)
+  "Checks if the Flow language server should be enabled for a
+particular FILE-NAME and MAJOR-MODE."
+  (and (member major-mode '(js-mode js2-mode flow-js2-mode))
+       (lsp-clients-flow-project-p file-name)
+       (lsp-clients-flow-tag-present-p file-name)))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (-const `(,lsp-clients-flow-server
+                                             ,@lsp-clients-flow-server-args)))
+                  :activation-fn (lambda (file-name major-mode)(lsp-clients-flow-activate-p file-name major-mode))
+                  :add-on? t
+                  :server-id 'flow-ls))
+
 ;;; Vue
 (defcustom lsp-clients-vue-server "vls"
   "The vue-language-server executable to use.
