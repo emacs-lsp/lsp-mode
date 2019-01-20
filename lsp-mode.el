@@ -654,6 +654,12 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
 
   ;; major modes supported by the client.
   (major-modes)
+  ;; Function that will be called to decide if this language client
+  ;; should manage a particular buffer. The function will be passed
+  ;; the file name and major mode to inform the decision. Setting
+  ;; `activation-fn' will override `major-modes' and `remote?', if
+  ;; present.
+  (activation-fn)
   ;; Break the tie when major-mode is supported by multiple clients.
   (priority 0)
   ;; Unique identifier for
@@ -3453,9 +3459,11 @@ remote machine and vice versa."
     (--when-let (->> lsp-clients
                      hash-table-values
                      (-filter (-lambda (client)
-                                (and (-contains? (lsp--client-major-modes client) buffer-major-mode)
-                                     (-some-> client lsp--client-new-connection (plist-get :test?) funcall)
-                                     (eq (---truthy? remote?) (---truthy? (lsp--client-remote? client)))))))
+                                (and (or
+                                      (-some-> client lsp--client-activation-fn (funcall buffer-file-name buffer-major-mode))
+                                      (and (-contains? (lsp--client-major-modes client) buffer-major-mode)
+                                           (eq (---truthy? remote?) (---truthy? (lsp--client-remote? client)))))
+                                     (-some-> client lsp--client-new-connection (plist-get :test?) funcall)))))
       (-let (((add-on-clients main-clients) (-separate 'lsp--client-add-on? it)))
         ;; Pick only one client (with the highest priority) that is not declared as add-on? t.
         (cons (and main-clients (--max-by (> (lsp--client-priority it) (lsp--client-priority other)) main-clients))
