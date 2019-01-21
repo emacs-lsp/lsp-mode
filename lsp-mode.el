@@ -531,6 +531,8 @@ FORMAT and ARGS i the same as for `message'."
           (unless at-bottom
             (goto-char current-point)))))))
 
+(defalias 'lsp-message 'lsp-log)
+
 (defalias 'lsp-ht 'ht)
 
 (defun lsp--merge-results (results method)
