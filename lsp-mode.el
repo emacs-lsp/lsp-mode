@@ -477,6 +477,9 @@ must be used for handling a particular message.")
 
 (defvar lsp--tcp-port 10000)
 
+;; Buffer local variable for storing number of lines.
+(defvar lsp-log-lines)
+
 (cl-defgeneric lsp-execute-command (server command arguments)
   "Ask SERVER to execute COMMAND with ARGUMENTS.")
 
@@ -506,8 +509,7 @@ FORMAT and ARGS i the same as for `message'."
       (unless log-buffer
         (setq log-buffer (get-buffer-create "*lsp-log*"))
         (with-current-buffer log-buffer
-          (toggle-read-only 1)
-          (set (make-local-variable 'window-point-insertion-type) t)
+          (view-mode 1)
           (set (make-local-variable 'lsp-log-lines) 0)))
       (with-current-buffer log-buffer
         (let* ((current-point (point))
