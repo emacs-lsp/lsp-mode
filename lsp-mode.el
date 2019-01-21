@@ -1181,8 +1181,12 @@ CALLBACK - callback for the lenses."
 
 
 
+(defvar lsp-mode-map (make-sparse-keymap)
+  "Keymap for `lsp-mode'.")
+
 (define-minor-mode lsp-mode ""
   nil nil nil
+  :keymap lsp-mode-map
   :lighter (:eval (lsp-mode-line))
   :group 'lsp-mode)
 
