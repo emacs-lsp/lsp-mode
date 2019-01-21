@@ -3312,7 +3312,7 @@ COMMAND-FN will be called to generate Language Server command."
 
   (when (functionp 'company-lsp)
     (company-mode 1)
-    (setq-local company-backends '(company-lsp))
+    (add-to-list 'company-backends 'company-lsp)
 
     (when (functionp 'yas-minor-mode)
       (yas-minor-mode t))))
