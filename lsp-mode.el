@@ -110,7 +110,7 @@
   :group 'lsp-mode
   :type 'boolean)
 
-(defcustom lsp-log-max 1000
+(defcustom lsp-log-max message-log-max
   "Maximum number of lines to keep in the log buffer.
 If nil, disable message logging.  If t, log messages but don’t truncate
 the buffer when it becomes large."
