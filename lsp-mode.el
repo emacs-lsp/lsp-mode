@@ -2423,18 +2423,40 @@ RENDER-ALL - nil if only the signature should be rendered."
 
 (defalias 'lsp-get-or-calculate-code-actions 'lsp-code-actions-at-point)
 
+(defun lsp--execute-code-action (action)
+  "Parses a code action represented as a CodeAction LSP type."
+  ;; If we have edits, we can apply them directly without incurring in
+  ;; another roundtrip.
+  (when-let ((edit (gethash "edit" action)))
+    (lsp--apply-workspace-edit edit))
+  (if-let ((command (gethash "command" action))
+           (action-handler (lsp--find-action-handler command)))
+      (funcall action-handler action)
+    (lsp--execute-command command)))
+
+(defun lsp--execute-command (action)
+  "Parses and executes a code action represented as a Command LSP
+type."
+  (lsp--send-execute-command (gethash "command" action)
+                             (gethash "arguments" action)))
+
+(defun lsp--execute-command-or-code-action (action)
+  "Parses and calls 'workspace/executeCommand' on the result of a
+'textDocument/codeAction' call, which can be a Command or a
+CodeAction type."
+  (when-let ((command (gethash "command" action)))
+    ;; If we have a "command" and it's of string type, we received a
+    ;; Command; otherwise, a CodeAction.
+    (if-let ((is-command? (stringp command)))
+        (lsp--execute-command action)
+      (lsp--execute-code-action action))))
+
 (defun lsp-execute-code-action (action)
   "Execute code action ACTION.
 If ACTION is not set it will be selected from `lsp-code-actions'."
   (interactive (list (lsp--select-action
                       (lsp-code-actions-at-point))))
-  (when-let ((edit (gethash "edit" action)))
-    (lsp--apply-workspace-edit edit))
-  (when-let ((command (gethash "command" action)))
-    (if-let ((action-handler (lsp--find-action-handler command)))
-        (funcall action-handler action)
-      (lsp--send-execute-command (gethash "command" action)
-                                 (gethash "arguments" action nil)))))
+  (lsp--execute-command-or-code-action action))
 
 (defun lsp--make-document-formatting-params ()
   "Create document formatting params."
