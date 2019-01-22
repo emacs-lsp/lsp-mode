@@ -116,7 +116,7 @@
    | Ruby                  | [[https://github.com/castwide/solargraph][solargraph]]                                | Yes           | gem install solargraph                        | Yes                          |
    | Rust                  | [[https://github.com/rust-lang-nursery/rls][rls]]                                       | Yes           | [[https://github.com/rust-lang-nursery/rls][rls]]                                           | Yes (via llvm debug adapter) |
    | Scala                 | [[https://github.com/rossabaker/lsp-scala][lsp-scala]]                                 | [[https://github.com/rossabaker/lsp-scala][lsp-scala]]     | [[https://github.com/rossabaker/lsp-scala][lsp-scala]]                                     |                              |
-   | Swift                 | [[https://github.com/apple/sourcekit-lsp][sourcekit-LSP]]                             | [[https://github.com/emacs-lsp/lsp-sourcekit][lsp-sourcekit]] | [[https://github.com/apple/sourcekit-lsp][sourcekit-LSP]]                                 |                              |
+   | Swift                 | [[https://github.com/apple/sourcekit-lsp][sourcekit-LSP]]                             | [[https://github.com/emacs-lsp/lsp-sourcekit][lsp-sourcekit]] | [[https://github.com/apple/sourcekit-lsp][sourcekit-LSP]]                                 | Yes (via llvm debug adapter) |
    | Vue                   | [[https://github.com/vuejs/vetur/tree/master/server][vue-language-server]]                       | Yes           | npm install -g vue-language-server            |                              |
 ** Commands
    - ~lsp-describe-session~ - Display session folders and running servers.
