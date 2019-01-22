@@ -513,16 +513,17 @@ FORMAT and ARGS i the same as for `message'."
           (set (make-local-variable 'lsp--log-lines) 0)))
       (with-current-buffer log-buffer
         (let* ((current-point (point))
+               (message (concat (apply 'format format args) "\n"))
                ;; Count newlines in message.
                (newlines (loop with start = 0
                                for count from 0
-                               while (string-match "\n" format start)
+                               while (string-match "\n" message start)
                                do (setq start (match-end 0))
                                finally return count))
                (at-bottom (eq current-point (point-max))))
           (goto-char (point-max))
-          (insert (concat (apply 'format format args) "\n"))
-          (setq lsp--log-lines (+ lsp--log-lines newlines 1))
+          (insert message)
+          (setq lsp--log-lines (+ lsp--log-lines newlines))
           (when (and (integerp lsp-log-max) (> lsp--log-lines lsp-log-max))
             (let ((to-delete (- lsp--log-lines lsp-log-max)))
               (save-excursion
