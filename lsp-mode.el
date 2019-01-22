@@ -2447,7 +2447,7 @@ CodeAction type."
   (when-let ((command (gethash "command" action)))
     ;; If we have a "command" and it's of string type, we received a
     ;; Command; otherwise, a CodeAction.
-    (if-let ((is-command? (stringp command)))
+    (if (stringp command)
         (lsp--execute-command action)
       (lsp--execute-code-action action))))
 
