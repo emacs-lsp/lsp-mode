@@ -478,7 +478,7 @@ must be used for handling a particular message.")
 (defvar lsp--tcp-port 10000)
 
 ;; Buffer local variable for storing number of lines.
-(defvar lsp-log-lines)
+(defvar lsp--log-lines)
 
 (cl-defgeneric lsp-execute-command (server command arguments)
   "Ask SERVER to execute COMMAND with ARGUMENTS.")
@@ -510,7 +510,7 @@ FORMAT and ARGS i the same as for `message'."
         (setq log-buffer (get-buffer-create "*lsp-log*"))
         (with-current-buffer log-buffer
           (view-mode 1)
-          (set (make-local-variable 'lsp-log-lines) 0)))
+          (set (make-local-variable 'lsp--log-lines) 0)))
       (with-current-buffer log-buffer
         (let* ((current-point (point))
                ;; Count newlines in message.
@@ -522,14 +522,14 @@ FORMAT and ARGS i the same as for `message'."
                (at-bottom (eq current-point (point-max))))
           (goto-char (point-max))
           (insert (concat (apply 'format format args) "\n"))
-          (setq lsp-log-lines (+ lsp-log-lines newlines 1))
-          (when (and (integerp lsp-log-max) (> lsp-log-lines lsp-log-max))
-            (let ((to-delete (- lsp-log-lines lsp-log-max)))
+          (setq lsp--log-lines (+ lsp--log-lines newlines 1))
+          (when (and (integerp lsp-log-max) (> lsp--log-lines lsp-log-max))
+            (let ((to-delete (- lsp--log-lines lsp-log-max)))
               (save-excursion
                 (goto-char (point-min))
                 (forward-line to-delete)
                 (delete-region (point-min) (point))
-                (setq lsp-log-lines lsp-log-max))))
+                (setq lsp--log-lines lsp-log-max))))
           (unless at-bottom
             (goto-char current-point)))))))
 
