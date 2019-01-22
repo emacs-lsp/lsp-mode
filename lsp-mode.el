@@ -110,10 +110,14 @@
   :group 'lsp-mode
   :type 'boolean)
 
-(defcustom lsp-inhibit-message t
-  "If non-nil, inhibit the message echo via `inhibit-message'."
-  :type 'boolean
-  :group 'lsp-mode)
+(defcustom lsp-log-max message-log-max
+  "Maximum number of lines to keep in the log buffer.
+If nil, disable message logging.  If t, log messages but don’t truncate
+the buffer when it becomes large."
+  :group 'lsp-mode
+  :type '(choice (const :tag "Disable" nil)
+                 (integer :tag "lines")
+                 (const :tag "Unlimited" t)))
 
 (defcustom lsp-report-if-no-buffer t
   "If non nil the errors will be reported even when the file is not open."
@@ -473,6 +477,9 @@ must be used for handling a particular message.")
 
 (defvar lsp--tcp-port 10000)
 
+;; Buffer local variable for storing number of lines.
+(defvar lsp--log-lines)
+
 (cl-defgeneric lsp-execute-command (server command arguments)
   "Ask SERVER to execute COMMAND with ARGUMENTS.")
 
@@ -492,15 +499,42 @@ must be used for handling a particular message.")
   "Show MSG in eldoc."
   (run-with-idle-timer 0 nil (lambda () (eldoc-message msg))))
 
-(defun lsp-message (format &rest args)
-  "Wrapper over `message' which preserves the `eldoc-message'.
-FORMAT with ARGS are the original message formats."
-  (let ((inhibit-message lsp-inhibit-message)
-        (last eldoc-last-message))
-    (apply #'message format args)
+(defun lsp-log (format &rest args)
+  "Log message to the ’*lsp-log*’ buffer.
 
-    (when lsp-inhibit-message
-      (lsp--eldoc-message last))))
+FORMAT and ARGS i the same as for `message'."
+  (when lsp-log-max
+    (let ((log-buffer (get-buffer "*lsp-log*"))
+          (inhibit-read-only t))
+      (unless log-buffer
+        (setq log-buffer (get-buffer-create "*lsp-log*"))
+        (with-current-buffer log-buffer
+          (view-mode 1)
+          (set (make-local-variable 'lsp--log-lines) 0)))
+      (with-current-buffer log-buffer
+        (let* ((current-point (point))
+               (message (concat (apply 'format format args) "\n"))
+               ;; Count newlines in message.
+               (newlines (loop with start = 0
+                               for count from 0
+                               while (string-match "\n" message start)
+                               do (setq start (match-end 0))
+                               finally return count))
+               (at-bottom (eq current-point (point-max))))
+          (goto-char (point-max))
+          (insert message)
+          (setq lsp--log-lines (+ lsp--log-lines newlines))
+          (when (and (integerp lsp-log-max) (> lsp--log-lines lsp-log-max))
+            (let ((to-delete (- lsp--log-lines lsp-log-max)))
+              (save-excursion
+                (goto-char (point-min))
+                (forward-line to-delete)
+                (delete-region (point-min) (point))
+                (setq lsp--log-lines lsp-log-max))))
+          (unless at-bottom
+            (goto-char current-point)))))))
+
+(defalias 'lsp-message 'lsp-log)
 
 (defalias 'lsp-ht 'ht)
 
@@ -829,20 +863,17 @@ already have been created."
            (indent 1))
   `(when-let (lsp--cur-workspace ,workspace) ,@body))
 
-(defun lsp--window-show-message (workspace params)
-  "Send the server's messages to message.
-Inhibit if `lsp-inhibit-message' is set,or the message matches
-one of this client's :ignore-messages. PARAMS - the data sent
-from WORKSPACE."
-  (let* ((inhibit-message (or inhibit-message lsp-inhibit-message))
-         (message (gethash "message" params))
+(defun lsp--window-log-message (workspace params)
+  "Send the server's messages to log.
+PARAMS - the data sent from WORKSPACE."
+  (let* ((message (gethash "message" params))
          (client (lsp--workspace-client workspace)))
     (when (or (not client)
               (cl-notany (lambda (r) (string-match-p r message))
                          (lsp--client-ignore-messages client)))
-      (lsp-message (lsp--propertize message (gethash "type" params))))))
+      (lsp-log (lsp--propertize message (gethash "type" params))))))
 
-(defun lsp--window-show-message-request (params)
+(defun lsp--window-log-message-request (params)
   "Display a message request to the user and send the user's selection back to the server."
   (let* ((type (gethash "type" params))
          (message (lsp--propertize (gethash "message" params) type))
@@ -850,7 +881,7 @@ from WORKSPACE."
                           (gethash "actions" params))))
     (if choices
         (completing-read (concat message " ") choices nil t)
-      (lsp-message message))))
+      (lsp-log message))))
 
 (defun lsp-diagnostics ()
   "Return the diagnostics from all workspaces."
@@ -2781,10 +2812,9 @@ textDocument/didOpen for the new file."
   "Send MESSAGE to PROC and wait for output from the process.
 PARSER is the workspace parser used for handling the message."
   (when lsp-print-io
-    (let ((inhibit-message t))
-      (lsp-message ">>> %s(sync)\n%s"
-                   (-> parser lsp--parser-workspace lsp--workspace-print)
-                   message)))
+    (lsp-log ">>> %s(sync)\n%s"
+             (-> parser lsp--parser-workspace lsp--workspace-print)
+             message))
   (when (memq (process-status proc) '(stop exit closed failed nil))
     (error "%s: Cannot communicate with the process (%s)" (process-name proc)
            (process-status proc)))
@@ -2803,10 +2833,9 @@ PARSER is the workspace parser used for handling the message."
 (defun lsp--send-no-wait (message proc)
   "Send MESSAGE to PROC without waiting for further output."
   (when lsp-print-io
-    (let ((inhibit-message t))
-      (lsp-message ">>> %s(async)\n%s"
-                   (lsp--workspace-print lsp--cur-workspace)
-                   message)))
+    (lsp-log ">>> %s(async)\n%s"
+             (lsp--workspace-print lsp--cur-workspace)
+             message))
   (when (memq (process-status proc) '(stop exit closed failed nil))
     (error "%s: Cannot communicate with the process (%s)" (process-name proc)
            (process-status proc)))
@@ -2842,8 +2871,8 @@ PARSER is the workspace parser used for handling the message."
       (signal 'lsp-unknown-message-type (list json-data)))))
 
 (defconst lsp--default-notification-handlers
-  (lsp-ht ("window/showMessage" 'lsp--window-show-message)
-          ("window/logMessage" 'lsp--window-show-message)
+  (lsp-ht ("window/showMessage" 'lsp--window-log-message)
+          ("window/logMessage" 'lsp--window-log-message)
           ("textDocument/publishDiagnostics" 'lsp--on-diagnostics)
           ("textDocument/diagnosticsEnd" 'ignore)
           ("textDocument/diagnosticsBegin" 'ignore)))
@@ -2870,7 +2899,7 @@ WORKSPACE is the active workspace."
                          (lsp--server-register-capability reg))
                        empty-response)
                       ("window/showMessageRequest"
-                       (let ((choice (lsp--window-show-message-request params)))
+                       (let ((choice (lsp--window-log-message-request params)))
                          (lsp--make-response request `(:title ,choice))))
                       ("client/unregisterCapability"
                        (seq-doseq (unreg (gethash "unregisterations" params))
@@ -3043,10 +3072,9 @@ WORKSPACE is the active workspace."
                                   nil))))
           (dolist (m messages)
             (when lsp-print-io
-              (let ((inhibit-message t))
-                (lsp-message "<<<< %s\n%s"
-                             (-> p lsp--parser-workspace lsp--workspace-print)
-                             (lsp--json-pretty-print m))))
+              (lsp-log "<<<< %s\n%s"
+                       (-> p lsp--parser-workspace lsp--workspace-print)
+                       (lsp--json-pretty-print m)))
             (lsp--parser-on-message p m))))))
 
 
