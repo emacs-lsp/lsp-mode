@@ -2468,8 +2468,10 @@ RENDER-ALL - nil if only the signature should be rendered."
 (defun lsp--execute-command (action)
   "Parses and executes a code action represented as a Command LSP
 type."
-  (lsp--send-execute-command (gethash "command" action)
-                             (gethash "arguments" action)))
+  (if-let* ((command (gethash "command" action))
+            (action-handler (lsp--find-action-handler command)))
+      (funcall action-handler action)
+    (lsp--send-execute-command command (gethash "arguments" action))))
 
 (defun lsp--execute-command-or-code-action (action)
   "Parses and calls 'workspace/executeCommand' on the result of a
