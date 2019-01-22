@@ -108,11 +108,19 @@ finding the executable with variable `exec-path'."
   :risky t
   :type '(repeat string))
 
+(defun lsp-typescript-javascript-tsx-jsx-activate-p (filename major-mode)
+  "Checks if the javascript-typescript language server should be enabled
+based on FILE-NAME and MAJOR-MODE"
+  (or (member major-mode '(typescript-mode typescript-tsx-mode js-mode js2-mode rjsx-mode))
+      (and (eq major-mode 'web-mode)
+           (or (string-suffix-p ".tsx" filename t)
+               (string-suffix-p ".jsx" filename t)))))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (-const `(,lsp-clients-javascript-typescript-server
                                              ,@lsp-clients-typescript-javascript-server-args)))
-                  :major-modes '(typescript-mode typescript-tsx-mode js-mode js2-mode rjsx-mode)
+                  :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
                   :priority -2
                   :ignore-messages '("readFile .*? requested by TypeScript but content not available")
                   :server-id 'jsts-ls))
