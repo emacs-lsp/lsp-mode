@@ -145,7 +145,7 @@ finding the executable with variable `exec-path'."
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (-const `(,lsp-clients-typescript-server
                                              ,@lsp-clients-typescript-server-args)))
-                  :major-modes '(typescript-mode typescript-tsx-mode js-mode js2-mode rjsx-mode)
+                  :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
                   :priority -1
                   :ignore-messages '("readFile .*? requested by TypeScript but content not available")
                   :server-id 'ts-ls))
