@@ -196,7 +196,7 @@
    - set ~lsp-print-io~ to ~t~ to inspect communication between client and the server.
    - ~lsp-describe-session~ will show the current projects roots + the started severs and allows inspecting the server capabilities.
    #+caption: Describe session
-   [file:examples/describe.png]]
+   [[file:examples/describe.png]]
 ** Adding support for languages
    Here it is the minimal configuration that is needed for new language server registration. Refer to the documentation of ~lsp-client.el~ for the additional settings supported on registration time. ~lsp-language-id-configuration~ must be updated to contain the corresponding mode -> language id - in this case ~(python-mode . "python")~
    #+BEGIN_SRC emacs-lisp
