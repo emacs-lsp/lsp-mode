@@ -175,23 +175,16 @@
     LSP mode has support for tramp buffers with the following requirements.
     - The language server have to be present on the remote server since it is running on the remote machine.
     - Having multi folder language server (like [[https://github.com/eclipse/eclipse.jdt.ls][Eclipse JDT LS]]) cannot have local and remote servers.
-    - The server must be using TCP connection or it should be converted to TCP via ~netcat~ or similar tool.
-**** How it works?
-     ~lsp-mode~ detects that a particular file is located on remote machine and looks for a clients which can handle the current major mode and it is marked as with ~:remote?~ t. Then ~lsp-mode~ starts the client and it expects to use TCP connection. Since not all of the server have TCP support ~netcat~ is used to convert STDIO to TCP using ~lsp-make-nc-tramp-command~.
-     #+BEGIN_SRC bash
-       nc -l -p {port} -c '{command}'
-     #+END_SRC
-     In case the server already supports TCP connection it could be used directly without ~netcat~ adapter.
+**** How does it work?
+    ~lsp-mode~ detects whether a particular file is located on remote machine and looks for a client which can handle the current major mode and it is marked as ~:remote?~ t. Then ~lsp-mode~ starts the client through tramp.
 **** Sample configuration
-     Here it is example how you can configure python language server to work when using ~TRAMP~.
-     #+BEGIN_SRC emacs-lisp
-       (lsp-register-client
-        (make-lsp-client :new-connection (lsp-tramp-connection
-                                          (lsp-make-nc-tramp-command "pyls"))
-                         :major-modes '(python-mode)
-                         :remote? t
-                         :server-id 'pyls-tramp))
-     #+END_SRC
+    Here it is example how you can configure python language server to work when using ~TRAMP~.
+   #+BEGIN_SRC emacs-lisp
+     (lsp-register-client
+      (make-lsp-client :new-connection (lsp-tramp-connection "pyls")
+                       :major-modes '(python-mode)
+                       :server-id 'pyls))
+   #+END_SRC
 ** Troubleshooting
    - set ~lsp-print-io~ to ~t~ to inspect communication between client and the server.
    - ~lsp-describe-session~ will show the current projects roots + the started severs and allows inspecting the server capabilities.
