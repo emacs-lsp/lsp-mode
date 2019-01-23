@@ -3772,8 +3772,8 @@ The library folders are defined by each client for each of the active workspace.
   (when-let (workspace (->> (lsp-session)
                             (lsp--session-workspaces)
                             (--first
-                             (and (contains? (-> it lsp--workspace-client lsp--client-major-modes)
-                                             major-mode)
+                             (and (-contains? (-> it lsp--workspace-client lsp--client-major-modes)
+                                              major-mode)
                                   (when-let (library-folders-fn
                                              (-> it lsp--workspace-client lsp--client-library-folders-fn))
                                     (-first (lambda (library-folder)
