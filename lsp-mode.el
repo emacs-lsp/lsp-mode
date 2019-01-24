@@ -2901,7 +2901,8 @@ PARSER is the workspace parser used for handling the message."
           ("window/logMessage" 'lsp--window-log-message)
           ("textDocument/publishDiagnostics" 'lsp--on-diagnostics)
           ("textDocument/diagnosticsEnd" 'ignore)
-          ("textDocument/diagnosticsBegin" 'ignore)))
+          ("textDocument/diagnosticsBegin" 'ignore)
+          ("telemetry/event" 'ignore)))
 
 (defun lsp--on-notification (workspace notification)
   "Call the appropriate handler for NOTIFICATION."
