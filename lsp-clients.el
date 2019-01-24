@@ -121,7 +121,7 @@ based on FILE-NAME and MAJOR-MODE"
                                    (-const `(,lsp-clients-javascript-typescript-server
                                              ,@lsp-clients-typescript-javascript-server-args)))
                   :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
-                  :priority -2
+                  :priority -3
                   :ignore-messages '("readFile .*? requested by TypeScript but content not available")
                   :server-id 'jsts-ls))
 
@@ -146,7 +146,7 @@ finding the executable with variable `exec-path'."
                                    (-const `(,lsp-clients-typescript-server
                                              ,@lsp-clients-typescript-server-args)))
                   :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
-                  :priority -1
+                  :priority -2
                   :ignore-messages '("readFile .*? requested by TypeScript but content not available")
                   :server-id 'ts-ls))
 
@@ -209,8 +209,8 @@ particular FILE-NAME and MAJOR-MODE."
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (-const `(,lsp-clients-flow-server
                                              ,@lsp-clients-flow-server-args)))
+                  :priority -1
                   :activation-fn 'lsp-clients-flow-activate-p
-                  :add-on? t
                   :server-id 'flow-ls))
 
 ;;; Vue
