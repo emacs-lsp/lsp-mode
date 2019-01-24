@@ -182,7 +182,7 @@ When set to t `lsp-mode' will auto-configure `lsp-ui' and `company-lsp'."
 
 (defvar lsp-clients (make-hash-table :test 'eql)
   "Hash table server-id -> client.
-It contains all of the clients that are currently regitered.")
+It contains all of the clients that are currently registered.")
 
 (defvar lsp-last-id 0
   "Last request id.")
