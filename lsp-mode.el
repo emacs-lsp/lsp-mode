@@ -726,7 +726,7 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--position-to-point (params)
   "Convert Position object in PARAMS to a point."
-  (-let [(&hash "line" "character") params]
+  (-let [(&hash "line" line "character" character) params]
     (save-excursion
       (save-restriction
         (condition-case _err
@@ -918,7 +918,7 @@ PARAMS - the data sent from WORKSPACE."
 
 (defun lsp--make-diag (diag)
   "Make a `lsp-diagnostic' from DIAG."
-  (-let* (((&hash "message" "code" "source" "severity"
+  (-let* (((&hash "message" message "code" code "source" source "severity" severity
                   "range" (&hash "start" (&hash "line"      start-line
                                                 "character" start-character)
                                  "end"   (&hash "line"      end-line
@@ -979,10 +979,10 @@ WORKSPACE is the workspace that contains the diagnostics."
     (funcall report-fn
              (-some->> (lsp-diagnostics)
                        (gethash buffer-file-name)
-                       (--map (-let* (((&hash "message" "severity" "range") (lsp-diagnostic-original it))
+                       (--map (-let* (((&hash "message" message "severity" severity "range" range) (lsp-diagnostic-original it))
                                       ((start . end) (lsp--range-to-region range)))
                                 (when (= start end)
-                                  (-let* (((&hash "line" "character") (gethash "start" range))
+                                  (-let* (((&hash "line" line "character" character) (gethash "start" range))
                                           (region (flymake-diag-region (current-buffer) (1+ line) character)))
                                     (setq start (car region) end (cdr region))))
                                 (flymake-make-diagnostic (current-buffer)
@@ -1096,7 +1096,7 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
                    (list (lsp--position-to-point (lsp--ht-get (first sorted) "range" "start"))
                          (s-join (propertize "|" 'face 'lsp-lens-face)
                                  (-map
-                                  (-lambda ((lens &as &hash "command" (command &as &hash "title")))
+                                  (-lambda ((lens &as &hash "command" (command &as &hash "title" title)))
                                     (propertize
                                      title
                                      'face 'lsp-lens-face
@@ -1144,14 +1144,14 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
 
 (defun lsp--lens-backend-not-loaded? (lens)
   "Return t if LENS has to be loaded."
-  (-let (((&hash "range" (&hash "start") "command" "pending") lens))
+  (-let (((&hash "range" (&hash "start" start) "command" command "pending" pending) lens))
     (and (< (window-start) (lsp--position-to-point start) (window-end))
          (not command)
          (not pending))))
 
 (defun lsp--lens-backend-present? (lens)
   "Return t if LENS has to be loaded."
-  (-let (((&hash "range" (&hash "start") "command") lens))
+  (-let (((&hash "range" (&hash "start" start) "command" command) lens))
     (or command
         (not (< (window-start) (lsp--position-to-point start) (window-end))))))
 
@@ -1555,7 +1555,7 @@ disappearing, unset all the variables related to it."
 (defun lsp--server-register-capability (reg)
   "Register capability REG."
   (lsp--cur-workspace-check)
-  (-let (((&hash "method" "id" "registerOptions") reg))
+  (-let (((&hash "method" method "id" id "registerOptions" registerOptions) reg))
     (push
      (make-lsp--registered-capability :id id :method method :options registerOptions)
      (lsp--workspace-registered-server-capabilities lsp--cur-workspace))))
@@ -1849,7 +1849,7 @@ interface TextDocumentEdit {
 
 (defun lsp--apply-text-edit (text-edit)
   "Apply the edits described in the TextEdit object in TEXT-EDIT."
-  (-let* (((&hash "newText" "range") text-edit)
+  (-let* (((&hash "newText" newText "range" range) text-edit)
           ((start . end) (lsp--range-to-region range)))
     (save-excursion
       (goto-char start)
@@ -2150,8 +2150,8 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
 
 (defun lsp--annotate (item)
   "Annotate ITEM detail."
-  (-let (((&hash "detail" "kind" kind-index) (plist-get (text-properties-at 0 item) 'lsp-completion-item))
-         kind)
+  (-let (((&hash "detail" detail "kind" kind-index) (plist-get (text-properties-at 0 item) 'lsp-completion-item))
+         (kind))
     ;; We need check index before call `aref'.
     (when kind-index
       (setq kind (aref lsp--completion-item-kind kind-index))
@@ -2335,13 +2335,13 @@ When language is nil render as markup if `markdown-mode' is loaded."
   (cond
    ((and (hash-table-p content)
          (gethash "language" content))
-    (-let [(&hash "language" "value") content]
+    (-let [(&hash "language" language "value" value) content]
       (lsp--render-string value language)))
 
    ;; MarkupContent
    ((and (hash-table-p content)
          (gethash "kind" content))
-    (-let [(&hash "value" "kind") content]
+    (-let [(&hash "value" value "kind" kind) content]
       (lsp--render-string value kind)))
    ;; plain string
    ((stringp content) (lsp--render-string content "markdown"))
@@ -2377,7 +2377,7 @@ RENDER-ALL - nil if only the signature should be rendered."
 
   (-when-let* (((&hash "activeSignature" active-signature-index
                        "activeParameter" active-parameter
-                       "signatures") signature-help)
+                       "signatures" signatures) signature-help)
                (signature (seq-elt signatures (or active-signature-index 0)))
                (result (lsp--fontlock-with-mode (gethash "label" signature) major-mode)))
     (-when-let* ((selected-param-label (-some->> (gethash "parameters" signature)
@@ -2411,7 +2411,7 @@ RENDER-ALL - nil if only the signature should be rendered."
              (when hover
                (when-let (range (gethash "range" hover))
                  (setq lsp--hover-saved-bounds (lsp--range-to-region range)))
-               (-let (((&hash "contents") hover))
+               (-let (((&hash "contents" contents) hover))
                  (when-let (message
                             (and contents (lsp--render-on-hover-content contents lsp-eldoc-render-all)))
                    (when (or (and (not lsp-eldoc-prefer-signature-help) (setq pending 1))
@@ -2440,7 +2440,7 @@ RENDER-ALL - nil if only the signature should be rendered."
    ((not actions) (user-error "No actions to select from"))
    ((and (not (cdr actions)) lsp-auto-execute-action) (car actions))
    (t (lsp--completing-read "Select code action: " actions
-                            (-lambda ((&hash "title" "command")) (or title command)) nil t))))
+                            (-lambda ((&hash "title" title "command" command)) (or title command)) nil t))))
 
 (defun lsp--find-action-handler (command)
   "Find action handler for particular COMMAND."
@@ -2772,7 +2772,7 @@ EXTRA is a plist of extra parameters."
 (defun lsp--find-workspaces-for (msg)
   "Find all workspaces in the current that can handle MSG."
   (-if-let (reqs (cdr (assoc (plist-get msg :method) lsp-method-requirements)))
-      (-let (((&plist :capability :registered-capability) reqs))
+      (-let (((&plist :capability capability :registered-capability registered-capability) reqs))
         (--filter
          (with-lsp-workspace it
            (or (when capability (lsp--capability capability))
@@ -2914,7 +2914,7 @@ PARSER is the workspace parser used for handling the message."
 
 (defun lsp--on-notification (workspace notification)
   "Call the appropriate handler for NOTIFICATION."
-  (-let* (((&hash "params" "method") notification))
+  (-let* (((&hash "params" params "method" method) notification))
     (if-let (handler (or (gethash method (lsp--client-notification-handlers (lsp--workspace-client workspace)))
                          (gethash method lsp--default-notification-handlers)))
         (funcall handler workspace params)
@@ -2924,7 +2924,7 @@ PARSER is the workspace parser used for handling the message."
 (defun lsp--on-request (workspace request)
   "Call the appropriate handler for REQUEST, and send the return value to the server.
 WORKSPACE is the active workspace."
-  (-let* (((&hash "params" "method") request)
+  (-let* (((&hash "params" params "method" method) request)
           (client (lsp--workspace-client workspace))
           (process (lsp--workspace-proc workspace))
           (empty-response (lsp--make-response request nil))
