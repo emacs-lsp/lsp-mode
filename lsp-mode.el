@@ -538,6 +538,14 @@ FORMAT and ARGS i the same as for `message'."
 
 (defalias 'lsp-ht 'ht)
 
+;; `file-local-name' was added in Emacs 26.1.
+(defalias 'lsp-file-local-name
+  (if (fboundp 'file-local-name)
+      'file-local-name
+    (lambda (file)
+      "Return the local name component of FILE."
+      (or (file-remote-p file 'localname) file))))
+
 (defun lsp--merge-results (results method)
   "Merge RESULTS by filtering the empty hash-tables and merging the lists.
 METHOD is the executed method so the results could be merged
@@ -3473,7 +3481,7 @@ SESSION is the active session."
       (run-hooks 'lsp-before-initialize-hook)
       (lsp-request-async "initialize"
                          (list :processId (emacs-pid)
-                               :rootPath (file-local-name (expand-file-name root))
+                               :rootPath (lsp-file-local-name (expand-file-name root))
                                :rootUri (lsp--path-to-uri root)
                                :capabilities (lsp--client-capabilities)
                                :initializationOptions initialization-options)
