@@ -74,9 +74,6 @@
     (-32800 "Request Cancelled"))
   "Alist of error codes to user friendly strings.")
 
-(defconst lsp--silent-errors '(-32800)
-  "Error codes that are okay to not notify the user about.")
-
 (defconst lsp--completion-item-kind
   [nil
    "Text"
@@ -606,7 +603,7 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   (body-length nil) ;; length of current message body
   (body-received 0) ;; amount of current message body currently stored in 'body'
   (leftovers nil) ;; Leftover data from previous chunk; to be processed
-  (queued-notifications nil) ;; Unused field
+  (response-error nil) ;; the error that
   (queued-requests nil)
   (workspace nil))
 
@@ -1434,9 +1431,12 @@ If NO-WAIT is non-nil, don't synchronously wait for a response."
               (if no-wait
                   (lsp--send-no-wait message process)
                 (lsp--send-wait message process parser))
-              (when (not no-wait)
-                (prog1 (lsp--parser-response-result parser)
-                  (setf (lsp--parser-response-result parser) nil)))))
+              (unless no-wait
+                (unwind-protect
+                    (or (lsp--parser-response-result parser)
+                        (error (gethash "message" (lsp--parser-response-error parser))))
+                  (setf (lsp--parser-response-result parser) nil
+                        (lsp--parser-response-error parser) nil)))))
           target-workspaces)
          method)
       (error "No workspace could handle %s" method))))
@@ -1448,11 +1448,11 @@ If NO-WAIT is non-nil, don't synchronously wait for a response."
 (cl-defun lsp-request (method params &key no-wait)
   (lsp--send-request `(:jsonrpc "2.0" :method ,method :params ,params) no-wait))
 
-(cl-defun lsp-request-async (method params callback &key mode)
+(cl-defun lsp-request-async (method params callback &key mode error-handler)
   "Send request METHOD with PARAMS."
-  (lsp--send-request-async `(:jsonrpc "2.0" :method ,method :params ,params) callback mode))
+  (lsp--send-request-async `(:jsonrpc "2.0" :method ,method :params ,params) callback mode error-handler))
 
-(defun lsp--create-async-callback-wrapper (count callback mode method)
+(defun lsp--create-async-callback (count callback mode method)
   "Create async handler expecting COUNT results, merge them and call CALLBACK.
 MODE determines when the callback will be called depending on the
 condition of the original buffer. METHOD is the invoked method."
@@ -1476,20 +1476,37 @@ condition of the original buffer. METHOD is the invoked method."
                       (eq buf (current-buffer)))
              (funcall callback (lsp--merge-results results method))))))))
 
-(defun lsp--send-request-async (body callback &optional mode)
+(defun lsp--create-default-error-handler (method)
+  "Default error handler.
+METHOD is the executed method."
+  (lambda (error)
+    (lsp--warn (or (gethash "message" error)
+                   (format "%s Request has failed" method)))))
+
+(defun lsp--send-request-async (body callback &optional mode error-callback)
   "Send BODY as a request to the language server.
 Call CALLBACK with the response recevied from the server
 asynchronously. MODE determines when the callback will be called
-depending on the condition of the original buffer."
+depending on the condition of the original buffer.
+ERROR-CALLBACK will be called in case the request has failed."
   (if-let ((target-workspaces (lsp--find-workspaces-for body)))
-      (let* ((async-callback (lsp--create-async-callback-wrapper
-                              (length target-workspaces) callback mode (plist-get body :method)))
+      (let* ((method (plist-get body :method))
+             (workspaces-count (length target-workspaces))
+             (async-callback (lsp--create-async-callback workspaces-count
+                                                         callback
+                                                         mode
+                                                         method))
+             (error-async-callback (lsp--create-async-callback workspaces-count
+                                                               (or error-callback
+                                                                   (lsp--create-default-error-handler method))
+                                                               mode
+                                                               method))
              (id (cl-incf lsp-last-id))
              (body (plist-put body :id id)))
         (--each target-workspaces
           (with-lsp-workspace it
             (let ((message (lsp--make-message body)))
-              (puthash id async-callback
+              (puthash id (list async-callback error-async-callback)
                        (-> lsp--cur-workspace
                            lsp--workspace-client
                            lsp--client-response-handlers))
@@ -2263,17 +2280,14 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
                :context `(:includeDeclaration ,(or include-declaration json-false)))))
 
 (defun lsp--cancel-request (id)
-  "Cancel requiest with ID in all workspaces."
-  (lsp--cur-workspace-check)
-  (cl-check-type id (or number string))
+  "Cancel request with ID in all workspaces."
   (--each (lsp-workspaces)
     (with-lsp-workspace it
-      (let ((response-handlers (lsp--client-response-handlers (lsp--workspace-client
-                                                               lsp--cur-workspace))))
-        (remhash id response-handlers)
-        (lsp-notify "$/cancelRequest" `(:id ,id))))))
+      (->> lsp--cur-workspace lsp--workspace-client lsp--client-response-handlers (remhash id))
+      (lsp-notify "$/cancelRequest" `(:id ,id)))))
 
 (defun lsp-eldoc-function ()
+  "`lsp-mode' eldoc function."
   (run-hook-wrapped
    'lsp-eldoc-hook
    (lambda (fn)
@@ -3007,27 +3021,25 @@ WORKSPACE is the active workspace."
   (with-lsp-workspace (lsp--parser-workspace p)
     (let* ((client (lsp--workspace-client lsp--cur-workspace))
            (json-data (lsp--read-json msg (lsp--client-use-native-json client)))
-           (id (gethash "id" json-data nil)))
+           (id (--when-let (gethash "id" json-data)
+                 (if (stringp it) (string-to-number it) it))))
       (pcase (lsp--get-message-type json-data)
         ('response
          (cl-assert id)
-         (if-let (callback (gethash (if (stringp id)
-                                        (string-to-number id)
-                                      id)
-                                    (lsp--client-response-handlers client)
-                                    nil))
-             (progn (funcall callback (gethash "result" json-data nil))
+         (if-let (callback (first (gethash id (lsp--client-response-handlers client))))
+             (progn (funcall callback (gethash "result" json-data))
                     (remhash id (lsp--client-response-handlers client)))
-           (setf (lsp--parser-response-result p)
-                 (and json-data (gethash "result" json-data nil))
+           (setf (lsp--parser-response-result p) (gethash "result" json-data)
                  (lsp--parser-waiting-for-response p) nil)))
         ('response-error
-         (let* ((err (gethash "error" json-data nil))
-                (code (gethash "code" err nil)))
-           (when (not (memq code lsp--silent-errors))
-             (message (lsp--error-string err))))
-         (setf (lsp--parser-response-result p) nil
-               (lsp--parser-waiting-for-response p) nil))
+         (cl-assert id)
+         (if-let (callback (second (gethash id (lsp--client-response-handlers client))))
+             (progn
+               (funcall callback (gethash "error" json-data))
+               (remhash id (lsp--client-response-handlers client)))
+           (setf (lsp--parser-response-result p) nil
+                 (lsp--parser-response-error p) (gethash "error" json-data)
+                 (lsp--parser-waiting-for-response p) nil)))
         ('notification (lsp--on-notification lsp--cur-workspace json-data))
         ('request      (lsp--on-request lsp--cur-workspace json-data))))))
 
