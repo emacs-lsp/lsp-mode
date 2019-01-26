@@ -1434,7 +1434,8 @@ If NO-WAIT is non-nil, don't synchronously wait for a response."
               (unless no-wait
                 (unwind-protect
                     (or (lsp--parser-response-result parser)
-                        (error (gethash "message" (lsp--parser-response-error parser))))
+                        (error (or (-some->> parser lsp--parser-response-error (gethash "message"))
+                                   "Unknown error occuranced")))
                   (setf (lsp--parser-response-result parser) nil
                         (lsp--parser-response-error parser) nil)))))
           target-workspaces)
@@ -2714,9 +2715,21 @@ A reference is highlighted only if it is visible in a window."
   (mapcar #'lsp--symbol-information-to-xref
           (lsp-request "workspace/symbol" `(:query ,pattern))))
 
+(defun lsp--get-symbol-to-rename ()
+  "Get synbol at point."
+  (if (let ((table (lsp--capability "renameProvider")))
+        (and (hash-table-p table)
+             (gethash "prepareProvider" table)))
+      (-let (((start . end) (lsp--range-to-region
+                             (lsp-request "textDocument/prepareRename"
+                                          (lsp--text-document-position-params)))))
+        (buffer-substring-no-properties start end))
+    (thing-at-point 'symbol t)))
+
 (defun lsp-rename (newname)
   "Rename the symbol (and all references to it) under point to NEWNAME."
-  (interactive (list (read-string (format "Rename %s to: " (thing-at-point 'symbol t)))))
+  (interactive (list (let ((symbol (lsp--get-symbol-to-rename)))
+                       (read-string (format "Rename %s to: " symbol) symbol))))
   (lsp--cur-workspace-check)
   (unless (lsp--capability "renameProvider")
     (signal 'lsp-capability-not-supported (list "renameProvider")))
