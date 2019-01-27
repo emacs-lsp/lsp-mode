@@ -103,7 +103,7 @@
    "TypeParameter"])
 
 (defcustom lsp-print-io nil
-  "If non-nil, print all messages to and from the language server to *Messages*."
+  "If non-nil, print all messages to and from the language server to *lsp-log*."
   :group 'lsp-mode
   :type 'boolean)
 
