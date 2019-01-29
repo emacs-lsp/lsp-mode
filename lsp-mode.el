@@ -1466,16 +1466,27 @@ condition of the original buffer. METHOD is the invoked method."
                      (funcall callback (lsp--merge-results results method)))))
       ('alive (lambda (result)
                 (push result results)
-                (when (and (eq (length results) count)
-                           (buffer-live-p buf))
-                  (with-current-buffer buf
-                    (funcall callback (lsp--merge-results results method))))))
+                (if (and (eq (length results) count)
+                         (buffer-live-p buf))
+                    (with-current-buffer buf
+                      (funcall callback (lsp--merge-results results method)))
+                  (lsp-log "Buffer is not alive ignoring reponse."))))
+      ('tick (let ((tick (buffer-modified-tick)))
+               (lambda (result)
+                 (when (buffer-live-p buf)
+                   (with-current-buffer buf
+                     (if (and (= tick (buffer-modified-tick)))
+                         (progn
+                           (push result results)
+                           (when (eq (length results) count)
+                             (funcall callback (lsp--merge-results results method))))
+                       (lsp-log "Buffer modified ignoring response response.")))))))
       (_ (lambda (result)
            (push result results)
-           (when (and (eq (length results) count)
-                      (buffer-live-p buf)
-                      (eq buf (current-buffer)))
-             (funcall callback (lsp--merge-results results method))))))))
+           (if (and (eq (length results) count)
+                    (eq buf (current-buffer)))
+               (funcall callback (lsp--merge-results results method))
+             (lsp-log "Buffer switched - ignoring reponse.")))))))
 
 (defun lsp--create-default-error-handler (method)
   "Default error handler.
@@ -1488,8 +1499,16 @@ METHOD is the executed method."
   "Send BODY as a request to the language server.
 Call CALLBACK with the response recevied from the server
 asynchronously. MODE determines when the callback will be called
-depending on the condition of the original buffer.
-ERROR-CALLBACK will be called in case the request has failed."
+depending on the condition of the original buffer. It could be:
+`detached' which means that the callback will be executed no
+matter what has happened to the buffer. `alive' - the callback
+will be executed only if the buffer from which the call was
+executed is still alive. `current' the callback will be executed
+only if the original buffer is still selected. `tick' - the
+callback will be executed only if the buffer was not modified.
+
+ERROR-CALLBACK will be called in case the request has failed.
+"
   (if-let ((target-workspaces (lsp--find-workspaces-for body)))
       (let* ((method (plist-get body :method))
              (workspaces-count (length target-workspaces))
@@ -2110,8 +2129,10 @@ if it's closing the last buffer in the workspace."
       (when (lsp--send-will-save-p)
         (lsp-notify "textDocument/willSave" params))
       (when (and (lsp--send-will-save-wait-until-p) lsp-before-save-edits)
-        (lsp--apply-text-edits
-         (lsp-request "textDocument/willSaveWaitUntil" params))))))
+        (lsp-request-async "textDocument/willSaveWaitUntil"
+                           params
+                           #'lsp--apply-text-edits
+                           :mode 'tick)))))
 
 (defun lsp--on-auto-save ()
   "Handler for auto-save."
