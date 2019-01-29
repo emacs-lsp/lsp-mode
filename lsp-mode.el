@@ -1434,8 +1434,8 @@ If NO-WAIT is non-nil, don't synchronously wait for a response."
               (unless no-wait
                 (unwind-protect
                     (or (lsp--parser-response-result parser)
-                        (error (or (-some->> parser lsp--parser-response-error (gethash "message"))
-                                   "Unknown error occurred")))
+                        (--when-let (-some->> parser lsp--parser-response-error (gethash "message"))
+                          (error it)))
                   (setf (lsp--parser-response-result parser) nil
                         (lsp--parser-response-error parser) nil)))))
           target-workspaces)
