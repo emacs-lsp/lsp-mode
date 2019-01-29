@@ -1571,28 +1571,31 @@ disappearing, unset all the variables related to it."
 
 (defun lsp--client-capabilities ()
   "Return the client capabilites."
-  `(:workspace (
-                :applyEdit t
-                :executeCommand (:dynamicRegistration :json-false)
-                :workspaceFolders t)
-               :textDocument (
-                              :declaration (:linkSupport t)
-                              :definition (:linkSupport t)
-                              :implementation (:linkSupport t)
-                              :typeDefinition (:linkSupport t)
-                              :synchronization (:willSave t :didSave t :willSaveWaitUntil t)
-                              :documentSymbol (:symbolKind (:valueSet ,(cl-coerce
-                                                                        (cl-loop for kind from 1 to 25 collect kind)
-                                                                        'vector))
-                                                           :hierarchicalDocumentSymbolSupport t)
-                              :formatting (:dynamicRegistration t)
-                              :codeAction (:dynamicRegistration t)
-                              :completion (:completionItem (:snippetSupport ,lsp-enable-snippet))
-                              :signatureHelp (:signatureInformation (:parameterInformation (:labelOffsetSupport t))))))
+  `(
+    :workspace (:workspaceEdit (
+                                :documentChanges t
+                                :resourceOperations ("create" "rename" "delete"))
+                               :applyEdit t
+                               :executeCommand (:dynamicRegistration :json-false)
+                               :didChangeWatchedFiles (:dynamicRegistration t)
+                               :workspaceFolders t)
+    :textDocument (
+                   :declaration (:linkSupport t)
+                   :definition (:linkSupport t)
+                   :implementation (:linkSupport t)
+                   :typeDefinition (:linkSupport t)
+                   :synchronization (:willSave t :didSave t :willSaveWaitUntil t)
+                   :documentSymbol (:symbolKind (:valueSet ,(cl-coerce
+                                                             (cl-loop for kind from 1 to 25 collect kind)
+                                                             'vector))
+                                                :hierarchicalDocumentSymbolSupport t)
+                   :formatting (:dynamicRegistration t)
+                   :codeAction (:dynamicRegistration t)
+                   :completion (:completionItem (:snippetSupport ,lsp-enable-snippet))
+                   :signatureHelp (:signatureInformation (:parameterInformation (:labelOffsetSupport t))))))
 
 (defun lsp--server-register-capability (reg)
   "Register capability REG."
-  (lsp--cur-workspace-check)
   (-let (((&hash "method" "id" "registerOptions") reg))
     (push
      (make-lsp--registered-capability :id id :method method :options registerOptions)
@@ -1825,25 +1828,32 @@ interface Range {
       (lsp--region-to-range (region-beginning) (region-end))
     (lsp--region-to-range (point-at-bol) (point-at-eol))))
 
+(defun lsp--check-document-changes-version (document-changes)
+  "Verify that DOCUMENT-CHANGES have the proper version."
+  (unless (--every?
+           (or
+            (not (gethash "textDocument" it))
+            (let* ((ident (gethash "textDocument" it))
+                   (filename (lsp--uri-to-path (gethash "uri" ident)))
+                   (version (gethash "version" ident)))
+              (with-current-buffer (find-file-noselect filename)
+                (or (null version) (zerop version) (equal version (lsp--cur-file-version))))))
+           document-changes)
+    (error "Document changes cannot be applied")))
+
 (defun lsp--apply-workspace-edit (edit)
-  "Apply the WorkspaceEdit object EDIT.
-
-interface WorkspaceEdit {
-  changes?: { [uri: string]: TextEdit[]; };
-  documentChanges?: TextDocumentEdit[];
-}"
-  (let ((changes (gethash "changes" edit))
-        (document-changes (gethash "documentChanges" edit)))
-    (if document-changes
-        (seq-do #'lsp--apply-text-document-edit document-changes)
-
-      (when (hash-table-p changes)
-        (maphash
-         (lambda (uri text-edits)
-           (let ((filename (lsp--uri-to-path uri)))
-             (with-current-buffer (find-file-noselect filename)
-               (lsp--apply-text-edits text-edits))))
-         changes)))))
+  "Apply the WorkspaceEdit object EDIT."
+  (if-let (document-changes (gethash "documentChanges" edit))
+      (progn
+        (lsp--check-document-changes-version document-changes)
+        (seq-do #'lsp--apply-text-document-edit document-changes))
+    (when-let (changes (gethash "changes" edit))
+      (maphash
+       (lambda (uri text-edits)
+         (let ((filename (lsp--uri-to-path uri)))
+           (with-current-buffer (find-file-noselect filename)
+             (lsp--apply-text-edits text-edits))))
+       changes))))
 
 (defun lsp--apply-text-document-edit (edit)
   "Apply the TextDocumentEdit object EDIT.
@@ -1857,12 +1867,32 @@ interface TextDocumentEdit {
   textDocument: VersionedTextDocumentIdentifier;
   edits: TextEdit[];
 }"
-  (let* ((ident (gethash "textDocument" edit))
-         (filename (lsp--uri-to-path (gethash "uri" ident)))
-         (version (gethash "version" ident)))
-    (with-current-buffer (find-file-noselect filename)
-      (when (or (null version) (equal version (lsp--cur-file-version)))
-        (lsp--apply-text-edits (gethash "edits" edit))))))
+  (pcase (gethash "kind" edit)
+    ("create" (-let* (((&hash "uri" "options") edit)
+                      (file-name (lsp--uri-to-path uri)))
+                (f-touch file-name)
+                (when (-some->> options (gethash "override"))
+                  (f-write-text "" nil file-name))))
+    ("delete" (-let* (((&hash "uri" "options") edit)
+                      (file-name (lsp--uri-to-path uri))
+                      (recursive (and options (gethash "recursive" options))))
+                (f-delete file-name recursive)))
+    ("rename" (-let* (((&hash "oldUri" "newUri" "options") edit)
+                      (old-file-name (lsp--uri-to-path oldUri))
+                      (new-file-name (lsp--uri-to-path newUri))
+                      (buf (find-buffer-visiting old-file-name)))
+                (when buf
+                  (with-current-buffer buf
+                    (save-buffer)
+                    (lsp--text-document-did-close)))
+                (rename-file old-file-name new-file-name (and options (gethash "override" options)))
+                (when buf
+                  (with-current-buffer buf
+                    (set-buffer-modified-p nil)
+                    (set-visited-file-name new-file-name)
+                    (lsp)))))
+    (_ (with-current-buffer (find-file-noselect (lsp--uri-to-path (lsp--ht-get edit "textDocument" "uri")))
+         (lsp--apply-text-edits (gethash "edits" edit))))))
 
 (defun lsp--text-edit-sort-predicate (e1 e2)
   (let ((start1 (lsp--position-to-point (gethash "start" (gethash "range" e1))))
