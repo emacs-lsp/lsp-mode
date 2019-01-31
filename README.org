@@ -25,7 +25,7 @@
   - [[#screenshots][Screenshots]]
   - [[#extensions][Extensions]]
     - [[#tramp-experimental][TRAMP (Experimental)]]
-      - [[#how-it-works-1][How it works?]]
+      - [[#how-does-it-work][How does it work?]]
       - [[#sample-configuration][Sample configuration]]
   - [[#troubleshooting][Troubleshooting]]
   - [[#adding-support-for-languages][Adding support for languages]]
@@ -153,7 +153,7 @@
    - ~lsp-eldoc-render-all~ - Define whether all of the returned by ~document/onHover~ will be displayed. If ~lsp-markup-display-all~ is set to nil ~eldoc~ will show only the symbol information.
    - ~lsp-enable-completion-at-point~ - Enable ~completion-at-point~ integration.
    - ~lsp-enable-xref~ - Enable xref integration.
-   - ~lsp-prefer-flymake~ - If you prefer flycheck and ~lsp-ui-flycheck~ is available, ~(setq lsp-prefer-flymake nil)~.
+   - ~lsp-prefer-flymake~ - If you prefer flycheck and ~lsp-ui-flycheck~ is available, ~(setq lsp-prefer-flymake nil)~. If set to ~:none~ neither of two will be enabled.
    - ~lsp-enable-indentation~ - Indent regions using the file formatting functionality provided by the language server.
    - ~lsp-enable-on-type-formatting~ - Enable ~textDocument/onTypeFormatting~ integration.
    - ~lsp-before-save-edits~ - If non-nil, ~lsp-mode~ will apply edits suggested by the language server before saving a document.
