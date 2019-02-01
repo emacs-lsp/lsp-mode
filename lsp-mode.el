@@ -2531,42 +2531,25 @@ RENDER-ALL - nil if only the signature should be rendered."
 
 (defalias 'lsp-get-or-calculate-code-actions 'lsp-code-actions-at-point)
 
-(defun lsp--execute-code-action (action)
-  "Parses a code action represented as a CodeAction LSP type."
-  ;; If we have edits, we can apply them directly without incurring in
-  ;; another roundtrip.
-  (when-let ((edit (gethash "edit" action)))
-    (lsp--apply-workspace-edit edit))
-  (if-let ((command (gethash "command" action))
-           (action-handler (lsp--find-action-handler command)))
-      (funcall action-handler action)
-    (lsp--execute-command command)))
-
 (defun lsp--execute-command (action)
-  "Parses and executes a code action represented as a Command LSP
-type."
+  "Parse and execute a code ACTION represented as a Command LSP type."
   (if-let* ((command (gethash "command" action))
             (action-handler (lsp--find-action-handler command)))
       (funcall action-handler action)
     (lsp--send-execute-command command (gethash "arguments" action))))
-
-(defun lsp--execute-command-or-code-action (action)
-  "Parses and calls 'workspace/executeCommand' on the result of a
-'textDocument/codeAction' call, which can be a Command or a
-CodeAction type."
-  (when-let ((command (gethash "command" action)))
-    ;; If we have a "command" and it's of string type, we received a
-    ;; Command; otherwise, a CodeAction.
-    (if (stringp command)
-        (lsp--execute-command action)
-      (lsp--execute-code-action action))))
 
 (defun lsp-execute-code-action (action)
   "Execute code action ACTION.
 If ACTION is not set it will be selected from `lsp-code-actions'."
   (interactive (list (lsp--select-action
                       (lsp-code-actions-at-point))))
-  (lsp--execute-command-or-code-action action))
+  (when-let ((edit (gethash "edit" action)))
+    (lsp--apply-workspace-edit edit))
+
+  (let ((command (gethash "command" action)))
+    (cond
+     ((stringp command) (lsp--execute-command action))
+     ((hash-table-p command) (lsp--execute-command command)))))
 
 (defun lsp--make-document-formatting-params ()
   "Create document formatting params."
