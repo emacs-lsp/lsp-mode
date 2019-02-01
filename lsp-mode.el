@@ -869,6 +869,16 @@ already have been created."
            (indent 1))
   `(when-let (lsp--cur-workspace ,workspace) ,@body))
 
+(defun lsp--window-show-message (_workspace params)
+  "Send the server's messages to log.
+PARAMS - the data sent from _WORKSPACE."
+  (-let (((&hash "message" "type") params))
+    (funcall (case type
+               (1 'lsp--error)
+               (2 'lsp--warn)
+               (t 'lsp--info))
+             message)))
+
 (defun lsp--window-log-message (workspace params)
   "Send the server's messages to log.
 PARAMS - the data sent from WORKSPACE."
@@ -2967,7 +2977,7 @@ PARSER is the workspace parser used for handling the message."
       (signal 'lsp-unknown-message-type (list json-data)))))
 
 (defconst lsp--default-notification-handlers
-  (lsp-ht ("window/showMessage" 'lsp--window-log-message)
+  (lsp-ht ("window/showMessage" 'lsp--window-show-message)
           ("window/logMessage" 'lsp--window-log-message)
           ("textDocument/publishDiagnostics" 'lsp--on-diagnostics)
           ("textDocument/diagnosticsEnd" 'ignore)
