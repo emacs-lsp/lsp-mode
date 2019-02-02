@@ -1586,6 +1586,7 @@ disappearing, unset all the variables related to it."
                                 :documentChanges t
                                 :resourceOperations ("create" "rename" "delete"))
                                :applyEdit t
+                               :symbol (:symbolKind (:valueSet ,(apply 'vector (number-sequence 1 26))))
                                :executeCommand (:dynamicRegistration :json-false)
                                :didChangeWatchedFiles (:dynamicRegistration t)
                                :workspaceFolders t)
@@ -1595,9 +1596,7 @@ disappearing, unset all the variables related to it."
                    :implementation (:linkSupport t)
                    :typeDefinition (:linkSupport t)
                    :synchronization (:willSave t :didSave t :willSaveWaitUntil t)
-                   :documentSymbol (:symbolKind (:valueSet ,(cl-coerce
-                                                             (cl-loop for kind from 1 to 25 collect kind)
-                                                             'vector))
+                   :documentSymbol (:symbolKind (:valueSet ,(apply 'vector (number-sequence 1 26)))
                                                 :hierarchicalDocumentSymbolSupport t)
                    :formatting (:dynamicRegistration t)
                    :codeAction (:dynamicRegistration t)
