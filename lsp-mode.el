@@ -3412,7 +3412,7 @@ returns the command to execute."
   (list :connect (lambda (filter sentinel name)
                    (let* ((final-command (lsp-resolve-final-function local-command))
                           ;; wrap with stty to disable converting \r to \n
-                          (wrapped-command (append '("stty" "-icrnl" ";") final-command))
+                          (wrapped-command (append '("stty" "raw" ";") final-command))
                           (process-name (generate-new-buffer-name name)))
                      (let ((proc (apply 'start-file-process-shell-command process-name
                                         (format "*%s*" process-name) wrapped-command)))
