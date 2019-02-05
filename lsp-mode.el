@@ -1663,18 +1663,11 @@ disappearing, unset all the variables related to it."
 (defun lsp--read-from-file (file)
   "Read FILE content."
   (when (file-exists-p file)
-    (with-demoted-errors "Failed to read file with message %S"
-      (with-temp-buffer
-        (insert-file-contents-literally file)
-        (first (read-from-string
-                (buffer-substring-no-properties (point-min) (point-max))))))))
+    (first (read-from-string (f-read-text file 'utf-8)))))
 
 (defun lsp--persist (file-name to-persist)
   "Persist TO-PERSIST in FILE-NAME."
-  (with-demoted-errors "Failed to persist file: %S"
-    (with-temp-file file-name
-      (erase-buffer)
-      (insert (prin1-to-string to-persist)))))
+  (f-write-text (prin1-to-string to-persist) 'utf-8 file-name))
 
 (defun lsp-workspace-folders-add (project-root)
   "Add PROJECT-ROOT to the list of workspace folders."
