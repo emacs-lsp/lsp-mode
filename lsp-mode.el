@@ -3314,22 +3314,23 @@ Return a nested alist keyed by symbol names. e.g.
 (defun lsp-server-present? (final-command)
   "Check whether FINAL-COMMAND is present."
   ;; executable-find only gained support for remote checks after 26.1 release
-  (cond
-   ((not (file-remote-p default-directory))
-    (executable-find (nth 0 final-command)))
-   ((not (version<= emacs-version "26.1"))
-    (executable-find (nth 0 final-command) (file-remote-p default-directory)))
-   (t)))
+  (or (and (cond
+            ((not (file-remote-p default-directory))
+             (executable-find (first final-command)))
+            ((not (version<= emacs-version "26.1"))
+             (executable-find (first final-command) (file-remote-p default-directory)))
+            (t))
+           (prog1 t
+             (lsp-log "Command \"%s\" is present on the path." (s-join " " final-command))))
+      (ignore (lsp-log "Command \"%s\" is not present on the path." (s-join " " final-command)))))
 
 (defun lsp-stdio-connection (command)
   "Create LSP stdio connection named name.
-COMMAND is either list of strings, string or function which
-returns the command to execute."
+  COMMAND is either list of strings, string or function which
+  returns the command to execute."
   (list :connect (lambda (filter sentinel name)
                    (let ((final-command (lsp-resolve-final-function command))
                          (process-name (generate-new-buffer-name name)))
-                     (unless (lsp-server-present? final-command)
-                       (error (format "Couldn't find command %s" final-command)))
                      (let ((proc (make-process
                                   :name process-name
                                   :connection-type 'pipe
@@ -3346,9 +3347,9 @@ returns the command to execute."
 
 (defun lsp--open-network-stream (host port name &optional retry-count sleep-interval)
   "Open network stream to HOST:PORT.
-NAME will be passed to `open-network-stream'.
-RETRY-COUNT is the number of the retries.
-SLEEP-INTERVAL is the sleep interval between each retry."
+  NAME will be passed to `open-network-stream'.
+  RETRY-COUNT is the number of the retries.
+  SLEEP-INTERVAL is the sleep interval between each retry."
   (let ((retries 0)
         connection)
     (while (and (not connection) (< retries (or retry-count 100)))
@@ -3378,7 +3379,7 @@ SLEEP-INTERVAL is the sleep interval between each retry."
 
 (defun lsp-tcp-connection (command)
   "Create LSP TCP connection named name.
-COMMAND-FN will be called to generate Language Server command."
+  COMMAND-FN will be called to generate Language Server command."
   (list
    :connect (lambda (filter sentinel name)
               (let* ((host "localhost")
@@ -3400,21 +3401,21 @@ COMMAND-FN will be called to generate Language Server command."
 
 (defun lsp-tramp-connection (local-command)
   "Create LSP stdio connection named name.
-COMMAND is either list of strings, string or function which
-returns the command to execute."
+  COMMAND is either list of strings, string or function which
+  returns the command to execute."
   (list :connect (lambda (filter sentinel name)
                    (let* ((final-command (lsp-resolve-final-function local-command))
                           ;; wrap with stty to disable converting \r to \n
                           (wrapped-command (append '("stty" "raw" ";") final-command))
-                          (process-name (generate-new-buffer-name name)))
-                     (let ((proc (apply 'start-file-process-shell-command process-name
-                                        (format "*%s*" process-name) wrapped-command)))
-                       (set-process-sentinel proc sentinel)
-                       (set-process-filter proc filter)
-                       (set-process-query-on-exit-flag proc nil)
-                       (set-process-coding-system proc 'binary 'binary)
-                       (cons proc proc))))
-        :test? (lambda () (-> local-command lsp-resolve-final-function lsp-server-present?))))
+  (process-name (generate-new-buffer-name name)))
+             (let ((proc (apply 'start-file-process-shell-command process-name
+                                (format "*%s*" process-name) wrapped-command)))
+               (set-process-sentinel proc sentinel)
+               (set-process-filter proc filter)
+               (set-process-query-on-exit-flag proc nil)
+               (set-process-coding-system proc 'binary 'binary)
+               (cons proc proc))))
+      :test? (lambda () (-> local-command lsp-resolve-final-function lsp-server-present?))))
 
 (defun lsp--auto-configure ()
   "Autoconfigure `lsp-ui', `company-lsp' if they are installed."
@@ -3586,15 +3587,31 @@ remote machine and vice versa."
     (--when-let (->> lsp-clients
                      hash-table-values
                      (-filter (-lambda (client)
-                                (and (or
-                                      (-some-> client lsp--client-activation-fn (funcall buffer-file-name buffer-major-mode))
-                                      (and (-contains? (lsp--client-major-modes client) buffer-major-mode)
-                                           (eq (---truthy? remote?) (---truthy? (lsp--client-remote? client)))))
+                                (and (or (-some-> client lsp--client-activation-fn (funcall buffer-file-name buffer-major-mode))
+                                         (and (-contains? (lsp--client-major-modes client) buffer-major-mode)
+                                              (eq (---truthy? remote?) (---truthy? (lsp--client-remote? client)))))
                                      (-some-> client lsp--client-new-connection (plist-get :test?) funcall)))))
-      (-let (((add-on-clients main-clients) (-separate 'lsp--client-add-on? it)))
-        ;; Pick only one client (with the highest priority) that is not declared as add-on? t.
-        (cons (and main-clients (--max-by (> (lsp--client-priority it) (lsp--client-priority other)) main-clients))
-              add-on-clients)))))
+      (lsp-log "Found the following clients for %s: %s"
+               file-name
+               (s-join ", "
+                       (-map (lambda (client)
+                               (format "(server-id %s, priority %s)"
+                                       (lsp--client-server-id client)
+                                       (lsp--client-priority client)))
+                             it)))
+      (-let* (((add-on-clients main-clients) (-separate 'lsp--client-add-on? it))
+              (selected-clients (cons (and main-clients (--max-by (> (lsp--client-priority it)
+                                                                     (lsp--client-priority other))
+                                                                  main-clients))
+                                      add-on-clients)))
+        (lsp-log "The following clients were selected based on priority: %s"
+                 (s-join ", "
+                         (-map (lambda (client)
+                                 (format "(server-id %s, priority %s)"
+                                         (lsp--client-server-id client)
+                                         (lsp--client-priority client)))
+                               selected-clients)))
+        selected-clients))))
 
 (defun lsp-register-client (client)
   "Registers LSP client CLIENT."
