@@ -201,7 +201,7 @@ there is a .flowconfig file in the folder hierarchy."
 (defun lsp-clients-flow-activate-p (file-name major-mode)
   "Checks if the Flow language server should be enabled for a
 particular FILE-NAME and MAJOR-MODE."
-  (and (member major-mode '(js-mode js2-mode flow-js2-mode rjsx-mode))
+  (and (derived-mode-p 'js-mode 'web-mode 'js2-mode 'flow-js2-mode 'rjsx-mode)
        (lsp-clients-flow-project-p file-name)
        (lsp-clients-flow-tag-present-p file-name)))
 
