@@ -1081,7 +1081,7 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
 
 (defun lsp--lens-keymap (command)
   (let ((map (make-sparse-keymap))
-        (server-id (lsp--client-server-id (lsp--workspace-client lsp--cur-workspace))))
+        (server-id (lsp--client-server-id (lsp--workspace-client (or lsp--cur-workspace (first (lsp-workspaces)))))))
     (define-key map [mouse-1]
       (lambda ()
         (interactive)
