@@ -107,6 +107,11 @@
   :group 'lsp-mode
   :type 'boolean)
 
+(defcustom lsp-print-performance nil
+  "If non-nil, print performance info in the logs."
+  :group 'lsp-mode
+  :type 'boolean)
+
 (defcustom lsp-log-max message-log-max
   "Maximum number of lines to keep in the log buffer.
 If nil, disable message logging.  If t, log messages but don’t truncate
@@ -1429,15 +1434,20 @@ If WORKSPACE is not provided current workspace will be used."
 (defun lsp--send-request (body &optional no-wait)
   "Send BODY as a request to the language server, get the response.
 If NO-WAIT is non-nil, don't synchronously wait for a response."
-  (let ((method (plist-get body :method)))
+  (let ((method (plist-get body :method))
+        (start-time (current-time)))
     (if-let ((target-workspaces (lsp--find-workspaces-for body)))
         (lsp--merge-results
          (--map
           (with-lsp-workspace it
-            (let* ((body (plist-put body :id (cl-incf lsp-last-id)))
+            (let* ((id (cl-incf lsp-last-id))
+                   (body (plist-put body :id id))
                    (parser (lsp--workspace-parser lsp--cur-workspace))
                    (message (lsp--make-message body))
                    (process (lsp--workspace-proc lsp--cur-workspace)))
+              (puthash id
+                       (list nil nil method start-time (current-time))
+                       (-> lsp--cur-workspace lsp--workspace-client lsp--client-response-handlers))
               (setf (lsp--parser-waiting-for-response parser) (not no-wait))
               (if no-wait
                   (lsp--send-no-wait message process)
@@ -1521,7 +1531,8 @@ callback will be executed only if the buffer was not modified.
 ERROR-CALLBACK will be called in case the request has failed.
 "
   (if-let ((target-workspaces (lsp--find-workspaces-for body)))
-      (let* ((method (plist-get body :method))
+      (let* ((start-time (current-time))
+             (method (plist-get body :method))
              (workspaces-count (length target-workspaces))
              (async-callback (lsp--create-async-callback workspaces-count
                                                          callback
@@ -1537,7 +1548,8 @@ ERROR-CALLBACK will be called in case the request has failed.
         (--each target-workspaces
           (with-lsp-workspace it
             (let ((message (lsp--make-message body)))
-              (puthash id (list async-callback error-async-callback)
+              (puthash id
+                       (list async-callback error-async-callback method start-time (current-time))
                        (-> lsp--cur-workspace
                            lsp--workspace-client
                            lsp--client-response-handlers))
@@ -3066,35 +3078,83 @@ WORKSPACE is the active workspace."
                            :null-object nil :false-object nil)
       (json-read-from-string str))))
 
+(defun lsp--log-request-time (server-id method id start-time before-send received-time after-parsed-time after-processed-time)
+  (when lsp-print-performance
+    (lsp-log "Perf> Request/Response
+  ServerId: %s
+  Request: %s (%s)
+  Serialization took: %.06f
+  ServerTime: %.06f
+  Deserialization: %.06f
+  CallbackTime: %s"
+             server-id
+             method
+             id
+             (float-time (time-subtract before-send start-time))
+             (float-time (time-subtract received-time before-send))
+             (float-time (time-subtract after-parsed-time received-time))
+             (if after-processed-time
+                 (format "%.06f" (float-time (time-subtract after-processed-time after-parsed-time)))
+               "N/A"))))
+
+(defun log--notification-performance (server-id json-data received-time after-parsed-time before-notification after-processed-time)
+  (when lsp-print-performance
+    (lsp-log "Perf> notification
+  ServerId: %s
+  Notification: %s
+  Deserialization: %.06f
+  Processing: %.06f "
+             server-id
+             (when json-data (gethash "method" json-data))
+             (float-time (time-subtract after-parsed-time received-time))
+             (float-time (time-subtract after-processed-time before-notification)))))
+
 (defun lsp--parser-on-message (p msg)
   "Called when the parser P read a complete MSG from the server."
   (with-lsp-workspace (lsp--parser-workspace p)
     (let* ((client (lsp--workspace-client lsp--cur-workspace))
+           (received-time (current-time))
+           (server-id (lsp--client-server-id client))
            (json-data (lsp--read-json msg (lsp--client-use-native-json client)))
+           (after-parsed-time (current-time))
            (id (--when-let (gethash "id" json-data)
-                 (if (stringp it) (string-to-number it) it))))
+                 (if (stringp it) (string-to-number it) it)))
+           after-processed-time)
       (pcase (lsp--get-message-type json-data)
         ('response
          (cl-assert id)
-         (if-let (callback (first (gethash id (lsp--client-response-handlers client))))
-             (progn (funcall callback (gethash "result" json-data))
-                    (remhash id (lsp--client-response-handlers client)))
-           (setf (lsp--parser-response-result p) (gethash "result" json-data)
-                 (lsp--parser-waiting-for-response p) nil)))
+         (-let [(callback _ method start-time before-send) (gethash id (lsp--client-response-handlers client))]
+           (if callback
+               (progn
+                 (funcall callback (gethash "result" json-data))
+                 (remhash id (lsp--client-response-handlers client))
+                 (setq after-processed-time (current-time)))
+             (setf (lsp--parser-response-result p) (gethash "result" json-data)
+                   (lsp--parser-waiting-for-response p) nil))
+           (lsp--log-request-time server-id method id start-time before-send
+                                  received-time after-parsed-time after-processed-time)))
         ('response-error
          (cl-assert id)
-         (if-let (callback (second (gethash id (lsp--client-response-handlers client))))
-             (progn
-               (funcall callback (gethash "error" json-data))
-               (remhash id (lsp--client-response-handlers client)))
-           (setf (lsp--parser-response-result p) nil
-                 (lsp--parser-response-error p) (gethash "error" json-data)
-                 (lsp--parser-waiting-for-response p) nil)))
-        ('notification (lsp--on-notification lsp--cur-workspace json-data))
+         (-let [(_ callback method start-time before-send) (gethash id (lsp--client-response-handlers client))]
+           (if callback
+               (progn
+                 (funcall callback (gethash "error" json-data))
+                 (remhash id (lsp--client-response-handlers client))
+                 (setq after-processed-time (current-time)))
+             (setf (lsp--parser-response-result p) nil
+                   (lsp--parser-response-error p) (gethash "error" json-data)
+                   (lsp--parser-waiting-for-response p) nil))
+           (lsp--log-request-time server-id method id start-time before-send
+                                  received-time after-parsed-time after-processed-time)))
+        ('notification
+         (let ((before-notification (current-time)))
+           (lsp--on-notification lsp--cur-workspace json-data)
+           (log--notification-performance
+            server-id json-data received-time after-parsed-time before-notification (current-time))))
         ('request      (lsp--on-request lsp--cur-workspace json-data))))))
 
 (defun lsp--parser-read (p output)
-  (cl-assert (lsp--parser-workspace p) nil "Parser workspace cannot be nil.")
+  "Handle OUTPUT using parser P."
   (let* ((messages '())
          (output (string-as-unibyte output))
          (chunk (concat (lsp--parser-leftovers p) output)))
@@ -3407,15 +3467,15 @@ Return a nested alist keyed by symbol names. e.g.
                    (let* ((final-command (lsp-resolve-final-function local-command))
                           ;; wrap with stty to disable converting \r to \n
                           (wrapped-command (append '("stty" "raw" ";") final-command))
-  (process-name (generate-new-buffer-name name)))
-             (let ((proc (apply 'start-file-process-shell-command process-name
-                                (format "*%s*" process-name) wrapped-command)))
-               (set-process-sentinel proc sentinel)
-               (set-process-filter proc filter)
-               (set-process-query-on-exit-flag proc nil)
-               (set-process-coding-system proc 'binary 'binary)
-               (cons proc proc))))
-      :test? (lambda () (-> local-command lsp-resolve-final-function lsp-server-present?))))
+                          (process-name (generate-new-buffer-name name)))
+                     (let ((proc (apply 'start-file-process-shell-command process-name
+                                        (format "*%s*" process-name) wrapped-command)))
+                       (set-process-sentinel proc sentinel)
+                       (set-process-filter proc filter)
+                       (set-process-query-on-exit-flag proc nil)
+                       (set-process-coding-system proc 'binary 'binary)
+                       (cons proc proc))))
+        :test? (lambda () (-> local-command lsp-resolve-final-function lsp-server-present?))))
 
 (defun lsp--auto-configure ()
   "Autoconfigure `lsp-ui', `company-lsp' if they are installed."
