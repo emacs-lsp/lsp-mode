@@ -52,7 +52,7 @@
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("css-languageserver" "--stdio"))
-                  :major-modes '(css-mode less-mode sass-mode scss-mode)
+                  :major-modes '(css-mode less-mode less-css-mode sass-mode scss-mode)
                   :priority -1
                   :action-handlers (lsp-ht ("_css.applyCodeAction" 'lsp-clients-css--apply-code-action))
                   :server-id 'css-ls))
