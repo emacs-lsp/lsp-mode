@@ -369,6 +369,7 @@ If set to `:none' neither of two will be enabled."
                                         (rust-mode . "rust")
                                         (css-mode . "css")
                                         (less-mode . "less")
+                                        (less-css-mode . "less")
                                         (sass-mode . "sass")
                                         (scss-mode . "scss")
                                         (xml-mode . "xml")
