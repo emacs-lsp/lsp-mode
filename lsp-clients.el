@@ -340,7 +340,7 @@ defaults to half of your CPU cores."
   "Progress report handling.
 PARAMS progress report notification data."
   ;; Minimal implementation - we could show the progress as well.
-  (message (gethash "title" params)))
+  (lsp-log (gethash "title" params)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("rls"))
