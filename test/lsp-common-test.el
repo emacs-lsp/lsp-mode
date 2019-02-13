@@ -44,4 +44,11 @@
     (error (should (string= (error-message-string err)
                      "Unsupported file scheme: will-fail://file-path")))))
 
+(ert-deftest lsp--uri-to-path--handle-utf8 ()
+  (let ((lsp--uri-file-prefix "file:///")
+        (system-type 'windows-nt))
+    (should (equal (lsp--uri-to-path "file:///c:/Users/%E4%BD%A0%E5%A5%BD/") "c:/users/你好/")))
+  (let ((lsp--uri-file-prefix "file://"))
+    (should (equal (lsp--uri-to-path "/root/%E4%BD%A0%E5%A5%BD/%E8%B0%A2%E8%B0%A2") "/root/你好/谢谢"))))
+
 ;;; lsp-common-test.el ends here
