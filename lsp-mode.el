@@ -3438,7 +3438,7 @@ Return a nested alist keyed by symbol names. e.g.
         (file-error (setq success t))))
     port))
 
-(defun lsp-tcp-connection (command)
+(defun lsp-tcp-connection (command-fn)
   "Create LSP TCP connection named name.
   COMMAND-FN will be called to generate Language Server command."
   (list
@@ -3458,7 +3458,7 @@ Return a nested alist keyed by symbol names. e.g.
                 (set-process-query-on-exit-flag tcp-proc nil)
                 (set-process-filter tcp-proc filter)
                 (cons tcp-proc proc)))
-   :test? (lambda () (-> command lsp-resolve-final-function lsp-server-present?))))
+   :test? (lambda () (-> command-fn lsp-resolve-final-function lsp-server-present?))))
 
 (defun lsp-tramp-connection (local-command)
   "Create LSP stdio connection named name.
