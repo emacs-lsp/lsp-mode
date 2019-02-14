@@ -36,12 +36,101 @@
   :risky t
   :type '(repeat string))
 
+(defcustom lsp-clients-python-command '("pyls")
+  "PYLS command."
+  :group 'lsp-python
+  :risky t
+  :type 'list)
+
+(defcustom lsp-clients-python-settings
+  '(
+    :plugins.jedi_completion.enabled t
+    :plugins.jedi_definition.follow_imports t
+    ;; List of configuration sources to use. (enum: ["pycodestyle", "pyflakes"])
+    :configurationSources  ("pycodestyle")
+    ;; Enable or disable the plugin.
+    :plugins.jedi_completion.enabled t
+    ;; Enable or disable the plugin.
+    :plugins.jedi_definition.enabled t
+    ;; The goto call will follow imports.
+    :plugins.jedi_definition.follow_imports nil
+    ;; If follow_imports is True will decide if it follow builtin imports.
+    :plugins.jedi_definition.follow_builtin_imports nil
+    ;; Enable or disable the plugin.
+    :plugins.jedi_hover.enabled t
+    ;; Enable or disable the plugin.
+    :plugins.jedi_references.enabled t
+    ;; Enable or disable the plugin.
+    :plugins.jedi_signature_help.enabled nil
+    ;; Enable or disable the plugin.
+    :plugins.jedi_symbols.enabled nil
+    ;; If True lists the names of all scopes instead of only the module namespace.
+    :plugins.jedi_symbols.all_scopes t
+    ;; Enable or disable the plugin.
+    :plugins.mccabe.enabled nil
+    ;; The minimum threshold that triggers warnings about cyclomatic complexity.
+    :plugins.mccabe.threshold 15
+    ;; Enable or disable the plugin.
+    :plugins.preload.enabled true
+    ;; List of modules to import on startup
+    :plugins.preload.modules nil
+    ;; Enable or disable the plugin.
+    :plugins.pycodestyle.enabled t
+    ;; Exclude files or directories which match these patterns(list of strings).
+    :plugins.pycodestyle.exclude nil
+    ;;  When parsing directories, only check filenames matching these patterns.
+    :plugins.pycodestyle.filename nil
+    ;; Select errors and warnings (list of string)
+    :plugins.pycodestyle.select nil
+    ;; Ignore errors and warnings (list of string)
+    :plugins.pycodestyle.ignore nil
+    ;; Hang closing bracket instead of matching indentation of opening bracket's line.
+    :plugins.pycodestyle.hangClosing nil
+    ;; Set maximum allowed line length.
+    :plugins.pycodestyle.maxLineLength nil
+    ;; Enable or disable the plugin.
+    :plugins.pydocstyle.enabled nil
+    ;; Choose the basic list of checked errors by specifying an existing
+    ;; convention. One of ("pep257","numpy")
+    :plugins.pydocstyle.convention nil
+    ;; Ignore errors and warnings in addition to the specified convention.
+    :plugins.pydocstyle.addIgnore nil
+    ;; Select errors and warnings in addition to the specified convention.
+    :plugins.pydocstyle.addSelect nil
+    ;; Ignore errors and warnings
+    :plugins.pydocstyle.ignore nil
+    ;; Select errors and warnings
+    :plugins.pydocstyle.select nil
+    ;; Check only files that exactly match the given regular expression; default
+    ;; is to match files that don't start with 'test_' but end with '.py'.
+    :plugins.pydocstyle.match "(?!test_).*\\.py"
+    ;; Enable or disable the plugin.
+    :plugins.pydocstyle.matchDir nil
+    ;; Enable or disable the plugin.
+    :plugins.pyflakes.enabled t
+    ;; Enable or disable the plugin.
+    :plugins.rope_completion.enabled t
+    ;; Enable or disable the plugin.
+    :plugins.yapf.enabled t
+    ;; Builtin and c-extension modules that are allowed to be imported and inspected by rope.
+    :rope.extensionModules nil
+    ;; The name of the folder in which rope stores project configurations and
+    ;; data. Pass `nil' for not using such a folder at all.
+    :rope.ropeFolder nil)
+  "Lsp clients configuration settings."
+  :group 'lsp-python
+  :risky t
+  :type 'plist)
+
 ;;; pyls
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "pyls")
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-clients-python-command))
                   :major-modes '(python-mode)
                   :priority -1
                   :server-id 'pyls
+                  :initialized-fn (lambda (workspace)
+                                    (with-lsp-workspace workspace
+                                      (lsp--set-configuration `(:pyls ,lsp-clients-python-settings))))
                   :library-folders-fn (lambda (_workspace)
                                         lsp-clients-python-library-directories)))
 
