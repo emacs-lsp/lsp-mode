@@ -1622,7 +1622,7 @@ ERROR-CALLBACK will be called in case the request has failed.
              (body (plist-put body :id id)))
         (--each target-workspaces
           (with-lsp-workspace it
-            (when lsp-entry
+            (when lsp-trace
               (push (lsp--make-log-entry method id body 'outgoing-req)
                     (lsp--client-message-trace (lsp--workspace-client
                                                 lsp--cur-workspace))))
@@ -3070,7 +3070,7 @@ PARSER is the workspace parser used for handling the message."
 (defun lsp--on-notification (workspace notification)
   "Call the appropriate handler for NOTIFICATION."
   (-let* (((&hash "params" "method" "result") notification))
-    (when lsp-entry
+    (when lsp-trace
       (push (lsp--make-log-entry method nil nil 'incoming-notif result)
             (lsp--client-message-trace client)))
     (if-let (handler (or (gethash method (lsp--client-notification-handlers (lsp--workspace-client workspace)))
@@ -3207,7 +3207,7 @@ WORKSPACE is the active workspace."
         ('response
          (cl-assert id)
          (-let [(callback _ method start-time before-send) (gethash id (lsp--client-response-handlers client))]
-           (when lsp-entry
+           (when lsp-trace
              (push
               (lsp--make-log-entry method id nil 'incoming-resp data
                                    (/ (nth 2 (time-since before-send)) 1000))
