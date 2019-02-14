@@ -1448,10 +1448,18 @@ TYPE can either be 'incoming or 'outgoing"
    :type type
    :body (or arg (plist-get body :params))))
 
-(defun lsp-save-logs (file)
-  (interactive "F")
+(defun lsp-save-logs (workspace file)
+  (interactive
+   (list (let ((workspace-alist (mapcar (lambda (w)
+                                         (list (lsp--workspace-print w) w))
+                                        (lsp-workspaces))))
+           (cadr (assoc-string
+                 (completing-read "Workspace: "  workspace-alist nil t)
+                 workspace-alist)))
+         (read-file-name "Log File: ")))
+  (cl-assert workspace nil "Invalid/Missing LSP workspace")
   (let ((trace (reverse (lsp--client-message-trace (lsp--workspace-client
-                                                    (nth 0 (lsp-workspaces))))))
+                                                    workspace))))
         (json-encoding-pretty-print t))
     (with-temp-buffer
       (mapc (lambda (entry)
