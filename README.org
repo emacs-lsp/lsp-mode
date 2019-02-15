@@ -138,8 +138,10 @@
    - ~lsp-lens-show~ - Show lenses in the current file
    - ~lsp-lens-hide~ - Hide lenses in the current file
    - ~lsp-lens-mode~ (experimental) - Turn on/off lenses in the current file.
+   - ~lsp-save-logs~ - Save a trace of all messages to and from the language server to a given file. Only works when ~lsp-save-logs~ is non-nil.
 ** Settings
    - ~lsp-print-io~ - If non-nil, print all messages to and from the language server to ~*lsp-log*~.
+   - ~lsp-trace~ - If non-nil, keep a trace of all messages to and from the language server, which can be saved to a file with ~lsp-save-logs~.
    - ~lsp-print-performance~ - If non-nil, print performance info. to ~*lsp-log*~.
    - ~lsp-inhibit-message~ - If non-nil, inhibit the message echo via ~inhibit-message~.
    - ~lsp-report-if-no-buffer~ - If non nil the errors will be reported even when the file is not open.
