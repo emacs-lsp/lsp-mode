@@ -441,7 +441,7 @@ PARAMS progress report notification data."
 ;; Ruby
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("solargraph" "stdio"))
-                  :major-modes '(ruby-mode)
+                  :major-modes '(ruby-mode enh-ruby-mode)
                   :priority -1
                   :multi-root t
                   :server-id 'ruby-ls))

@@ -397,6 +397,8 @@ If set to `:none' neither of two will be enabled."
                                         (tuareg-mode . "ocaml")
                                         (swift-mode . "swift")
                                         (elixir-mode . "elixir")
+                                        (ruby-mode . "ruby")
+                                        (enh-ruby-mode . "ruby")
                                         (f90-mode . "fortran"))
   "Language id configuration.")
 
