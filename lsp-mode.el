@@ -4066,7 +4066,7 @@ such."
   (interactive)
   (--when-let (pcase (lsp-workspaces)
                 (`nil (user-error "There are no active servers in the current buffer"))
-                (`(,workspace) (when (y-or-n-p (format "Are you sure tou want to stop server %s?"
+                (`(,workspace) (when (y-or-n-p (format "Are you sure you want to stop the server %s?"
                                                        (lsp--workspace-print workspace)))
                                  workspace))
                 (workspaces (lsp--completing-read "Select server: "
