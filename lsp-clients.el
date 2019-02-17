@@ -652,14 +652,8 @@ finding the executable with `exec-path'."
   "Generate the language server startup command."
   `(,lsp-clients-fortls-executable,@lsp-clients-fortls-args))
 
-(defun fortls--suggest-project-root ()
-  (and (memq major-mode '(f90-mode))
-       (when-let (dir (locate-dominating-file default-directory ".fortls"))
-         (expand-file-name dir))))
-
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection
-                                   'lsp-clients--fortls-command)
+ (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-clients--fortls-command)
                   :major-modes '(f90-mode)
                   :priority -1
                   :server-id 'fortls))
