@@ -166,26 +166,26 @@ the buffer when it becomes large."
 
 (defcustom lsp-auto-guess-root nil
   "Automatically guess the project root using projectile/project."
-  :group 'lsp
-  :type 'bool)
+  :group 'lsp-mode
+  :type 'boolean)
 
 (defcustom lsp-restart 'interactive
   "Defines how server exited event must be handled."
-  :group 'lsp
+  :group 'lsp-mode
   :type '(choice (const interactive)
                  (const auto-restart)
                  (const ignore)))
 
 (defcustom lsp-session-file (expand-file-name (locate-user-emacs-file ".lsp-session-v1"))
   "Automatically guess the project root using projectile/project."
-  :group 'lsp
+  :group 'lsp-mode
   :type 'file)
 
 (defcustom lsp-auto-configure t
   "Auto configure `lsp-mode'.
 When set to t `lsp-mode' will auto-configure `lsp-ui' and `company-lsp'."
-  :group 'lsp
-  :type 'bool)
+  :group 'lsp-mode
+  :type 'boolean)
 
 (defvar lsp-clients (make-hash-table :test 'eql)
   "Hash table server-id -> client.
@@ -223,12 +223,14 @@ It contains all of the clients that are currently registered.")
   "Sync method recommended by the server.")
 
 (defgroup lsp-mode nil
-  "Customization group for ‘lsp-mode’."
-  :group 'tools)
+  "Language Server Protocol client."
+  :group 'tools
+  :tag "Language Server")
 
 (defgroup lsp-faces nil
-  "Faces for ‘lsp-mode’."
-  :group 'lsp-mode)
+  "Faces."
+  :group 'lsp-mode
+  :tag "Faces")
 
 (defcustom lsp-document-sync-method nil
   "How to sync the document with the language server."
@@ -318,8 +320,9 @@ The hook is called with two params: the signature information and hover data."
   :group 'lsp-mode)
 
 (defgroup lsp-imenu nil
-  "Customization group for `lsp-imenu'."
-  :group 'lsp-mode)
+  "Imenu."
+  :group 'lsp-mode
+  :tag "Imenu")
 
 (defcustom lsp-imenu-show-container-name t
   "Display the symbol's container name in an imenu entry."
@@ -450,7 +453,7 @@ must be used for handling a particular message.")
 (defface lsp-lens-mouse-face
   '((t :height 0.8 :inherit link))
   "The face used for code lens overlays."
-  :group'lsp-mode)
+  :group 'lsp-mode)
 
 (defface lsp-lens-face
   '((t :height 0.8 :inherit shadow))
