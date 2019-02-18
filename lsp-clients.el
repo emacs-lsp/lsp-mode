@@ -30,6 +30,12 @@
 
 
 ;; Python
+
+(defgroup lsp-python nil
+  "Python."
+  :group 'lsp-mode
+  :tag "Python")
+
 (defcustom lsp-clients-python-library-directories '("/usr/")
   "List of directories which will be considered to be libraries."
   :group 'lsp-python
@@ -154,6 +160,11 @@
                   :server-id 'bash-ls))
 
 ;;; Groovy
+(defgroup lsp-groovy nil
+  "Groovy."
+  :group 'lsp-mode
+  :tag "Groovy")
+
 (defcustom lsp-groovy-server-install-dir
   (locate-user-emacs-file "groovy-language-server/")
   "Install directory for groovy-language-server.
@@ -182,7 +193,12 @@ This directory shoud contain a file matching groovy-language-server-*.jar"
                   :priority -1
                   :server-id 'html-ls))
 
-;;; Typescript/Javascript
+;;; TypeScript/JavaScript
+(defgroup lsp-typescript-javascript nil
+  "TypeScript/JavaScript."
+  :group 'lsp-mode
+  :tag "TypeScript/JavaScript")
+
 (defcustom lsp-clients-javascript-typescript-server "javascript-typescript-stdio"
   "The javascript-typescript-stdio executable to use.
 Leave as just the executable name to use the default behavior of
@@ -215,7 +231,12 @@ based on FILE-NAME and MAJOR-MODE"
                   :server-id 'jsts-ls))
 
 
-;;; Typescript/Javascript
+;;; TypeScript
+(defgroup lsp-typescript nil
+  "TypeScript."
+  :group 'lsp-mode
+  :tag "TypeScript")
+
 (defcustom lsp-clients-typescript-server "typescript-language-server"
   "The typescript-language-server executable to use.
 Leave as just the executable name to use the default behavior of
@@ -242,6 +263,11 @@ finding the executable with variable `exec-path'."
 
 
 ;;; JavaScript Flow
+(defgroup lsp-flow nil
+  "JavaScript Flow."
+  :group 'lsp-mode
+  :tag "Flow")
+
 (defcustom lsp-clients-flow-server "flow"
   "The Flow executable to use.
 Leave as just the executable name to use the default behavior of
@@ -306,6 +332,11 @@ particular FILE-NAME and MAJOR-MODE."
                   :server-id 'flow-ls))
 
 ;;; Vue
+(defgroup lsp-vue nil
+  "Vue."
+  :group 'lsp-mode
+  :tag "Vue")
+
 (defcustom lsp-clients-vue-server "vls"
   "The vue-language-server executable to use.
 Leave as just the executable name to use the default behavior of
@@ -335,9 +366,14 @@ finding the executable with `exec-path'."
 
 ;;; GO language
 
+(defgroup lsp-clients-go nil
+  "Go language."
+  :group 'lsp-mode
+  :tag "Go language")
+
 (defcustom lsp-clients-go-server "bingo"
   "The go-langageserver executable to use."
-  :group 'lsp-go
+  :group 'lsp-clients-go
   :risky t
   :type 'file)
 
@@ -349,12 +385,12 @@ finding the executable with `exec-path'."
 (defcustom lsp-clients-go-func-snippet-enabled t
   "Enable the returning of argument snippets on `func' completions, eg.
 `func(foo string, arg2 bar)'.  Requires code completion to be enabled."
-  :type 'bool
+  :type 'boolean
   :group 'lsp-clients-go)
 
 (defcustom lsp-clients-go-gocode-completion-enabled t
   "Enable code completion feature (using gocode)."
-  :type 'bool
+  :type 'boolean
   :group 'lsp-clients-go)
 
 (defcustom lsp-clients-go-format-tool "goimports"
@@ -378,17 +414,17 @@ defaults to half of your CPU cores."
 
 (defcustom lsp-clients-go-use-binary-pkg-cache t
   "Whether or not $GOPATH/pkg binary .a files should be used."
-  :type 'bool
+  :type 'boolean
   :group 'lsp-clients-go)
 
 (defcustom lsp-clients-go-diagnostics-enabled t
   "Whether diagnostics are enabled."
-  :type 'bool
+  :type 'boolean
   :group 'lsp-clients-go)
 
 (defcustom lsp-clients-go-library-directories '("/usr")
   "List of directories which will be considered to be libraries."
-  :group 'lsp-go
+  :group 'lsp-clients-go
   :risky t
   :type '(repeat string))
 
@@ -447,6 +483,11 @@ PARAMS progress report notification data."
                   :server-id 'ruby-ls))
 
 ;; PHP
+(defgroup lsp-php nil
+  "PHP."
+  :group 'lsp-mode
+  :tag "PHP")
+
 (defcustom lsp-clients-php-server-command
   `("php" ,(expand-file-name "~/.composer/vendor/felixfbecker/language-server/bin/php-language-server.php"))
   "Install directory for php-language-server."
@@ -461,6 +502,11 @@ PARAMS progress report notification data."
                   :server-id 'php-ls))
 
 
+
+(defgroup lsp-ocaml nil
+  "OCaml."
+  :group 'lsp-mode
+  :tag "OCaml")
 
 (defcustom lsp-ocaml-ocaml-lang-server-command
   '("ocaml-language-server" "--stdio")
@@ -489,6 +535,11 @@ PARAMS progress report notification data."
 
 
 ;; C-family (C, C++, Objective-C, Objective-C++)
+
+(defgroup lsp-clangd nil
+  "C-family (C, C++, Objective-C, Objective-C++)"
+  :group 'lsp-mode
+  :tag "C-family")
 
 (defcustom lsp-clients-clangd-executable "clangd"
   "The clangd executable to use.
@@ -520,6 +571,11 @@ finding the executable with `exec-path'."
 
 
 ;; Dart
+(defgroup lsp-dart nil
+  "Dart."
+  :group 'lsp-mode
+  :tag "Dart")
+
 (defcustom lsp-clients-dart-server-command
   (expand-file-name (if (equal system-type 'windows-nt)
                         "~/Pub/Cache/bin/dart_language_server"
@@ -550,6 +606,11 @@ finding the executable with `exec-path'."
 
 
 ;; Elixir
+(defgroup lsp-elixir nil
+  "Elixir."
+  :group 'lsp-mode
+  :tag "Elixir")
+
 (defcustom lsp-clients-elixir-server-executable "language_server.sh"
   "The elixir-language-server executable to use.
 Leave as just the executable name to use the default behavior of
@@ -565,6 +626,11 @@ finding the executable with `exec-path'."
                   :server-id 'elixir-ls))
 
 ;; Fortran
+(defgroup lsp-fortran nil
+  "Fortran."
+  :group 'lsp-mode
+  :tag "Fortran")
+
 (defcustom lsp-clients-fortls-executable "fortls"
   "The fortls executable to use.
 Leave as just the executable name to use the default behavior of
