@@ -2239,8 +2239,7 @@ Applies on type formatting."
     (setq-local lsp--links-idle-timer nil)))
 
 (defun lsp--update-document-links (&optional buffer)
-  (when (or (not buffer) (and (eq (current-buffer) buffer)
-                              (buffer-live-p buffer)))
+  (when (or (not buffer) (eq (current-buffer) buffer))
     (cl-assert (lsp--capability "documentLinkProvider"))
     (let ((buffer (current-buffer)))
       (lsp-request-async "textDocument/documentLink"
@@ -2253,12 +2252,15 @@ Applies on type formatting."
                             (lambda (link)
                               (with-current-buffer buffer
                                 (-let* (((&hash "range") link)
-                                        (start (lsp--position-to-point (gethash "start" range)))
-                                        (end (lsp--position-to-point (gethash "end" range)))
+                                        (start (lsp--position-to-point
+                                                (gethash "start" range)))
+                                        (end (lsp--position-to-point
+                                              (gethash "end" range)))
                                         (button (make-button start end 'action
                                                              (lsp--document-link-keymap link))))
                                   (push button lsp--link-overlays))))
-                            links))))
+                            links))
+                         :mode 'alive))
     (cancel-timer lsp--links-idle-timer)
     (setq-local lsp--links-idle-timer nil)))
 
