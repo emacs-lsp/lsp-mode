@@ -163,6 +163,8 @@ the buffer when it becomes large."
   "Timed out while waiting for a response from the language server" 'lsp-error)
 (define-error 'lsp-capability-not-supported
   "Capability not supported by the language server" 'lsp-error)
+(define-error 'lsp-file-scheme-not-supported
+  "Unsupported file scheme" 'lsp-error)
 
 (defcustom lsp-auto-guess-root nil
   "Automatically guess the project root using projectile/project."
@@ -2269,14 +2271,18 @@ Applies on type formatting."
          (type (url-type parsed-url))
          (file (decode-coding-string (url-filename parsed-url)
                                      locale-coding-system)))
-    (if (string= type "file")
-        (if (and (eq system-type 'windows-nt) (eq (elt file 0) ?\/)
-                 (substring file 1))
-            (find-file (lsp--fix-path-casing
-                        (concat (-some 'lsp--workspace-host-root (lsp-workspaces))
-                                file)))
-          (find-file file))
-      (browse-url url))))
+    (pcase type
+      ("file" (if (and (eq system-type 'windows-nt) (eq (elt file 0) ?\/)
+                       (substring file 1))
+                  (find-file (lsp--fix-path-casing
+                              (concat (-some 'lsp--workspace-host-root
+                                             (lsp-workspaces))
+                                      file)))
+                (find-file file)))
+      ((or "http" "https") (browse-url url))
+      (type (if-let ((handler (lsp--get-uri-handler type)))
+                (funcall handler uri)
+              (signal 'lsp-file-scheme-not-supported (list url)))))))
 
 (defun lsp--document-link-keymap (link)
   (-let (((&hash "target") link))
