@@ -2282,7 +2282,7 @@ Applies on type formatting."
                 (find-file file)))
       ((or "http" "https") (browse-url url))
       (type (if-let ((handler (lsp--get-uri-handler type)))
-                (funcall handler uri)
+                (funcall handler url)
               (signal 'lsp-file-scheme-not-supported (list url)))))))
 
 (defun lsp--document-link-keymap (link)
