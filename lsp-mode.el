@@ -2229,6 +2229,7 @@ Applies on type formatting."
                              (when (= tick (buffer-chars-modified-tick)) (lsp--apply-text-edits edits))))))))
 
 (defun lsp--set-document-link-timer ()
+  (lsp--cancel-document-link-timer)
   (when (and lsp-enable-links (lsp--capability "documentLinkProvider"))
     (setq-local lsp--links-idle-timer (run-with-idle-timer
                                        lsp-links-check-internal nil
