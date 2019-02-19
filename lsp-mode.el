@@ -798,7 +798,7 @@ On other systems, returns path without change."
          (file-name (if (and type (not (string= type "file")))
                         (if-let ((handler (lsp--get-uri-handler type)))
                             (funcall handler uri)
-                          (error "Unsupported file scheme: %s" uri))
+                          (signal 'lsp-file-scheme-not-supported (list uri)))
                       ;; `url-generic-parse-url' is buggy on windows:
                       ;; https://github.com/emacs-lsp/lsp-mode/pull/265
                       (or (and (eq system-type 'windows-nt)
