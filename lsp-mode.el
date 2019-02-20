@@ -377,7 +377,9 @@ than the second parameter.")
 (defcustom lsp-prefer-flymake t
   "Auto-configure to prefer `flymake' over `lsp-ui' if both are present.
 If set to `:none' neither of two will be enabled."
-  :type 'boolean
+  :type '(choice (const :tag "Prefer flymake" t)
+                 (const :tag "Prefer lsp-ui" nil)
+                 (const :tag "Use neither flymake nor lsp-ui" :none))
   :group 'lsp-mode)
 
 (defvar-local lsp--flymake-report-fn nil)
