@@ -434,12 +434,13 @@ defaults to half of your CPU cores."
 (defun lsp-clients-go--make-init-options ()
   "Init options for golang."
   `(:funcSnippetEnabled ,(lsp-clients-go--bool-to-json lsp-clients-go-func-snippet-enabled)
-                        :gocodeCompletionEnabled ,(lsp-clients-go--bool-to-json lsp-clients-go-gocode-completion-enabled)
-                        :formatTool ,lsp-clients-go-format-tool
-                        :goimportsLocalPrefix ,lsp-clients-go-imports-local-prefix
-                        :maxParallelism ,lsp-clients-go-max-parallelism
-                        :useBinaryPkgCache ,lsp-clients-go-use-binary-pkg-cache
-                        :diagnosticsEnabled ,lsp-clients-go-diagnostics-enabled))
+    :disableFuncSnippet ,(lsp-clients-go--bool-to-json (not lsp-clients-go-func-snippet-enabled))
+    :gocodeCompletionEnabled ,(lsp-clients-go--bool-to-json lsp-clients-go-gocode-completion-enabled)
+    :formatTool ,lsp-clients-go-format-tool
+    :goimportsLocalPrefix ,lsp-clients-go-imports-local-prefix
+    :maxParallelism ,lsp-clients-go-max-parallelism
+    :useBinaryPkgCache ,lsp-clients-go-use-binary-pkg-cache
+    :diagnosticsEnabled ,lsp-clients-go-diagnostics-enabled))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-clients-go-server))
