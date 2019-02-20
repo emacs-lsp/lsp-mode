@@ -912,6 +912,7 @@ PARAMS - the data sent from _WORKSPACE."
                (1 'lsp--error)
                (2 'lsp--warn)
                (t 'lsp--info))
+             "%s"
              message)))
 
 (defun lsp--window-log-message (workspace params)
@@ -922,7 +923,7 @@ PARAMS - the data sent from WORKSPACE."
     (when (or (not client)
               (cl-notany (lambda (r) (string-match-p r message))
                          (lsp--client-ignore-messages client)))
-      (lsp-log (lsp--propertize message (gethash "type" params))))))
+      (lsp-log "%s" (lsp--propertize message (gethash "type" params))))))
 
 (defun lsp--window-log-message-request (params)
   "Display a message request to the user and send the user's selection back to the server."
