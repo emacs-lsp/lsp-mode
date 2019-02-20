@@ -1721,7 +1721,7 @@ disappearing, unset all the variables related to it."
                                                 :hierarchicalDocumentSymbolSupport t)
                    :formatting (:dynamicRegistration t)
                    :codeAction (:dynamicRegistration t)
-                   :completion (:completionItem (:snippetSupport ,lsp-enable-snippet))
+                   :completion (:completionItem (:snippetSupport ,(if lsp-enable-snippet t :json-false)))
                    :signatureHelp (:signatureInformation (:parameterInformation (:labelOffsetSupport t)))
                    :documentLink (:dynamicRegistration t))))
 
