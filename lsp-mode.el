@@ -3047,7 +3047,7 @@ EXTRA is a plist of extra parameters."
          (lsp-workspaces)))
     (lsp-workspaces)))
 
-(cl-defmethod lsp-execute-command (server command arguments)
+(cl-defmethod lsp-execute-command (_server command arguments)
   "Execute COMMAND on SERVER with `workspace/executeCommand'."
   (lsp-request "workspace/executeCommand"
                `(:command ,(format "%s" command) :arguments ,arguments)))
@@ -3179,11 +3179,12 @@ PARSER is the workspace parser used for handling the message."
 
 (defun lsp--on-notification (workspace notification)
   "Call the appropriate handler for NOTIFICATION."
-  (-let* (((&hash "params" "method" "result") notification))
+  (-let (((&hash "params" "method" "result") notification)
+         (client (lsp--workspace-client workspace)))
     (when lsp-trace
       (push (lsp--make-log-entry method nil nil 'incoming-notif result)
             (lsp--client-message-trace client)))
-    (if-let (handler (or (gethash method (lsp--client-notification-handlers (lsp--workspace-client workspace)))
+    (if-let (handler (or (gethash method (lsp--client-notification-handlers client))
                          (gethash method lsp--default-notification-handlers)))
         (funcall handler workspace params)
       (unless (string-prefix-p "$" method)
