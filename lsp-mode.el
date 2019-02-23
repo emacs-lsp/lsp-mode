@@ -148,6 +148,8 @@ the buffer when it becomes large."
 
 (defvar-local lsp--cur-workspace nil)
 
+(defvar-local lsp--cur-version nil)
+
 (defvar lsp--uri-file-prefix (pcase system-type
                                (`windows-nt "file:///")
                                (_ "file://"))
@@ -415,6 +417,7 @@ If set to `:none' neither of two will be enabled."
                                         (swift-mode . "swift")
                                         (elixir-mode . "elixir")
                                         (conf-javaprop-mode . "spring-boot-properties")
+                                        (yaml-mode . "spring-boot-properties-yaml")
                                         (ruby-mode . "ruby")
                                         (enh-ruby-mode . "ruby")
                                         (f90-mode . "fortran"))
@@ -487,14 +490,17 @@ must be used for handling a particular message.")
 (defvar-local lsp--lens-page nil
   "Pair of points which holds the last window location the lenses were loaded.")
 
+(defvar-local lsp--lens-last-count nil
+  "The number of lenses the last time they were rendered.")
+
 (defvar lsp-lens-backends '(lsp-lens-backend)
   "Backends providing lenses.")
 
 (defvar-local lsp--lens-refresh-timer nil
-  "Pair of points which holds the last window location the lenses were loaded.")
+  "Refresh timer for the lenses.")
 
 (defvar-local lsp--lens-idle-timer  nil
-  "Pair of points which holds the last window location the lenses were loaded.")
+  "Lens idle timer.")
 
 (defvar-local lsp--lens-data nil
   "Pair of points which holds the last window location the lenses were loaded.")
@@ -1107,6 +1113,10 @@ Results are meaningful only if FROM and TO are on the same line."
        (<= (overlay-start ov) pos)
        (< pos (overlay-end ov))))
 
+(defun lsp--lens-after-save ()
+  "Handler for `after-save-hook' for lens mode."
+  (lsp--lens-schedule-refresh t))
+
 (defun lsp--lens-idle-function (&optional buffer)
   "Create idle function for buffer BUFFER."
   (when (and (or (not buffer) (eq (current-buffer) buffer))
@@ -1135,45 +1145,60 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
 
 (defun lsp--lens-display (lenses)
   "Show LENSES."
-  (let ((overlays
-         (->> lenses
-              (--filter (gethash "command" it))
-              (--group-by (lsp--ht-get it "range" "start" "line"))
-              (-map
-               (-lambda ((_ . lenses))
-                 (let ((sorted (--sort (< (lsp--ht-get it "range" "start" "character")
-                                          (lsp--ht-get other "range" "start" "character"))
-                                       lenses)))
-                   (list (lsp--position-to-point (lsp--ht-get (first sorted) "range" "start"))
-                         (s-join (propertize "|" 'face 'lsp-lens-face)
-                                 (-map
-                                  (-lambda ((lens &as &hash "command" (command &as &hash "title")))
-                                    (propertize
-                                     title
-                                     'face 'lsp-lens-face
-                                     'mouse-face 'lsp-lens-mouse-face
-                                     'local-map (lsp--lens-keymap command)))
-                                  sorted))))))
-              (-map (-lambda ((position str))
-                      (lsp--lens-show str position))))))
-    (--each lsp--lens-overlays
-      (unless (-contains? overlays it)
-        (delete-overlay it)))
-    (setq-local lsp--lens-overlays overlays)))
+  ;; rerender only if there are lenses which are not processed or if their count
+  ;; has changed(e. g. delete lens should trigger redisplay).
+  (when (or (--any? (not (gethash "processed" it)) lenses) (eq (length lenses) lsp--lens-last-count))
+    (setq-local lsp--lens-last-count (length lenses))
+    (let ((overlays
+           (->> lenses
+                (--filter (gethash "command" it))
+                (--map (prog1 it (puthash "processed" t it)))
+                (--group-by (lsp--ht-get it "range" "start" "line"))
+                (-map
+                 (-lambda ((_ . lenses))
+                   (let ((sorted (--sort (< (lsp--ht-get it "range" "start" "character")
+                                            (lsp--ht-get other "range" "start" "character"))
+                                         lenses)))
+                     (list (lsp--position-to-point (lsp--ht-get (first sorted) "range" "start"))
+                           (s-join (propertize "|" 'face 'lsp-lens-face)
+                                   (-map
+                                    (-lambda ((lens &as &hash "command" (command &as &hash "title")))
+                                      (propertize
+                                       title
+                                       'face 'lsp-lens-face
+                                       'mouse-face 'lsp-lens-mouse-face
+                                       'local-map (lsp--lens-keymap command)))
+                                    sorted))))))
+                (-map (-lambda ((position str))
+                        (lsp--lens-show str position))))))
+      (--each lsp--lens-overlays
+        (unless (-contains? overlays it)
+          (delete-overlay it)))
+      (setq-local lsp--lens-overlays overlays))))
 
 (defun lsp--lens-refresh (buffer-modified?)
   "Refresh lenses using lenses backend.
 BUFFER-MODIFIED? determines whether the buffer is modified or not."
   (dolist (backend lsp-lens-backends)
     (funcall backend buffer-modified?
-             (lambda (lenses)
-               (lsp--process-lenses backend lenses)))))
+             (lambda (lenses version)
+               (lsp--process-lenses backend lenses version)))))
 
-(defun lsp--process-lenses (backend lenses)
-  "Process LENSES originated from BACKEND."
+(defun lsp--process-lenses (backend lenses version)
+  "Process LENSES originated from BACKEND.
+VERSION is the version of the file. The lenses has to be
+refreshed only when all backends have reported for the same
+version."
   (setq-local lsp--lens-data (or lsp--lens-data (make-hash-table)))
-  (puthash backend lenses lsp--lens-data)
-  (lsp--lens-display (-flatten (ht-values lsp--lens-data))))
+  (puthash backend (cons version lenses) lsp--lens-data)
+
+  (-let [backend-data (->> lsp--lens-data ht-values (-filter #'cl-rest))]
+    (when (-all? (-lambda ((version))
+                   (eq version lsp--cur-version))
+                 backend-data)
+      ;; display the data only when the backends have reported data for the
+      ;; current version of the file
+      (lsp--lens-display (-flatten (-map 'cl-rest backend-data))))))
 
 (defun lsp-lens-show ()
   "Display lenses in the buffer."
@@ -1205,13 +1230,14 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
     (or command
         (not (< (window-start) (lsp--position-to-point start) (window-end))))))
 
-(defun lsp--lens-backend-fetch-missing (lenses callback)
+(defun lsp--lens-backend-fetch-missing (lenses callback file-version)
   "Fetch LENSES without command in for the current window.
 
 TICK is the buffer modified tick. If it does not match
 `buffer-modified-tick' at the time of receiving the updates the
 updates must be discarded..
-CALLBACK - the callback for the lenses."
+CALLBACK - the callback for the lenses.
+FILE-VERSION - the version of the file."
   (--each (-filter #'lsp--lens-backend-not-loaded? lenses)
     (with-lsp-workspace (gethash "workspace" it)
       (puthash "pending" t it)
@@ -1220,8 +1246,8 @@ CALLBACK - the callback for the lenses."
                          (lambda (lens)
                            (remhash "pending" it)
                            (puthash "command" (gethash "command" lens) it)
-                           (when (-all? #'lsp--lens-backend-present?  lenses)
-                             (funcall callback lenses)))
+                           (when (-all? #'lsp--lens-backend-present? lenses)
+                             (funcall callback lenses file-version)))
                          :mode 'tick))))
 
 (defun lsp-lens-backend (modified? callback)
@@ -1243,13 +1269,13 @@ CALLBACK - callback for the lenses."
                                               workspace-lenses)
                                             lenses))
                                (if (--every? (gethash "command" it) lsp--lens-backend-cache)
-                                   (funcall callback lsp--lens-backend-cache)
-                                 (lsp--lens-backend-fetch-missing lsp--lens-backend-cache callback)))
+                                   (funcall callback lsp--lens-backend-cache lsp--cur-version)
+                                 (lsp--lens-backend-fetch-missing lsp--lens-backend-cache callback lsp--cur-version)))
                              :mode 'tick
                              :no-merge t))
       (if (-all? #'lsp--lens-backend-present? lsp--lens-backend-cache)
-          (funcall callback lsp--lens-backend-cache)
-        (lsp--lens-backend-fetch-missing lsp--lens-backend-cache callback)))))
+          (funcall callback lsp--lens-backend-cache lsp--cur-version)
+        (lsp--lens-backend-fetch-missing lsp--lens-backend-cache callback lsp--cur-version)))))
 
 (defun lsp--lens-stop-timer ()
   "Stop `lsp--lens-idle-timer'."
@@ -1268,12 +1294,14 @@ CALLBACK - callback for the lenses."
                                       lsp-lens-check-interval t #'lsp--lens-idle-function (current-buffer)))
     (lsp--lens-refresh t)
     (add-hook 'kill-buffer-hook #'lsp--lens-stop-timer nil t)
-    (add-hook 'after-save-hook #'lsp--lens-idle-function nil t))
+    (add-hook 'after-save-hook 'lsp--lens-after-save nil t))
    (t
     (lsp--lens-stop-timer)
     (lsp-lens-hide)
     (remove-hook 'kill-buffer-hook #'lsp--lens-stop-timer t)
-    (remove-hook 'after-save-hook #'lsp--lens-idle-function t))))
+    (remove-hook 'after-save-hook #'lsp--lens-after-save t)
+    (setq-local lsp--lens-last-count nil)
+    (setq-local lsp--lens-backend-cache nil))))
 
 
 
@@ -1305,11 +1333,6 @@ CALLBACK - callback for the lenses."
   ;; ‘parser’ is a ‘lsp--parser’ object used to parse messages for this
   ;; workspace.  Parsers are not shared between workspaces.
   (parser nil :read-only t)
-
-  ;; ‘file-versions’ is a hashtable of files "owned" by the workspace.  It maps
-  ;; file names to file versions.  See
-  ;; https://microsoft.github.io/language-server-protocol/specification#versionedtextdocumentidentifier.
-  (file-versions nil :read-only t)
 
   ;; ‘server-capabilities’ is a hash table of the language server capabilities.
   ;; It is the hash table representation of a LSP ServerCapabilities structure;
@@ -1683,10 +1706,6 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
 
 (defalias 'lsp-send-request-async 'lsp--send-request-async)
 
-(defun lsp--cur-file-version ()
-  "Return the file version number."
-  (gethash (current-buffer) (lsp--workspace-file-versions (first (lsp-workspaces)))))
-
 ;; Clean up the entire state of lsp mode when Emacs is killed, to get rid of any
 ;; pending language servers.
 (add-hook 'kill-emacs-hook #'lsp--global-teardown)
@@ -1884,14 +1903,14 @@ disappearing, unset all the variables related to it."
 (defun lsp--text-document-did-open ()
   "'document/didOpen event."
   (run-hooks 'lsp-before-open-hook)
-  (puthash (current-buffer) 0 (lsp--workspace-file-versions lsp--cur-workspace))
+  (setq-local lsp--cur-version (or lsp--cur-version 0))
   (pushnew (current-buffer) (lsp--workspace-buffers lsp--cur-workspace))
   (lsp-notify
    "textDocument/didOpen"
    (list :textDocument
          (list :uri (lsp--buffer-uri)
                :languageId (alist-get major-mode lsp-language-id-configuration "")
-               :version (lsp--cur-file-version)
+               :version lsp--cur-version
                :text (buffer-substring-no-properties (point-min) (point-max)))))
 
   (lsp--managed-mode 1)
@@ -1917,8 +1936,7 @@ interface TextDocumentIdentifier {
 interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
     version: number;
 }"
-  (plist-put (lsp--text-document-identifier)
-             :version (lsp--cur-file-version)))
+  (plist-put (lsp--text-document-identifier) :version lsp--cur-version))
 
 (define-inline lsp--position (line char)
   "Make a Position object for the given LINE and CHAR.
@@ -2216,8 +2234,7 @@ Added to `after-change-functions'."
            ;; buffer-file-name. We need the buffer-file-name to send notifications;
            ;; so we skip handling revert-buffer-caused changes and instead handle
            ;; reverts separately in lsp-on-revert
-           (cl-incf (gethash (current-buffer)
-                             (lsp--workspace-file-versions lsp--cur-workspace)))
+           (cl-incf lsp--cur-version)
            (unless (eq lsp--server-sync-method 'none)
              (lsp-notify
               "textDocument/didChange"
@@ -2308,18 +2325,18 @@ Applies on type formatting."
 (defun lsp--document-link-keymap (link)
   (-let (((&hash "target") link))
     (if target
-          (lambda (_)
-            (interactive)
-            (lsp--document-link-handle-target target))
         (lambda (_)
           (interactive)
-          (when (lsp--ht-get (lsp--capability "documentLinkProvider")
-                             "resolveProvider")
-            (lsp-request-async
-             "documentLink/resolve"
-             link
-             (-lambda ((&hash "target"))
-               (lsp--document-link-handle-target target))))))))
+          (lsp--document-link-handle-target target))
+      (lambda (_)
+        (interactive)
+        (when (lsp--ht-get (lsp--capability "documentLinkProvider")
+                           "resolveProvider")
+          (lsp-request-async
+           "documentLink/resolve"
+           link
+           (-lambda ((&hash "target"))
+             (lsp--document-link-handle-target target))))))))
 
 (defun lsp-buffer-language ()
   "Get language corresponding current buffer."
@@ -2346,21 +2363,19 @@ If KEEP-WORKSPACE-ALIVE is non-nil, do not shutdown the workspace
 if it's closing the last buffer in the workspace."
   (lsp-foreach-workspace
    (with-demoted-errors "Error on ‘lsp--text-document-did-close’: %S"
-     (let ((file-versions (lsp--workspace-file-versions lsp--cur-workspace))
-           (old-buffers (lsp--workspace-buffers lsp--cur-workspace)))
+     (let ((old-buffers (lsp--workspace-buffers lsp--cur-workspace)))
        ;; remove buffer from the current workspace's list of buffers
        ;; do a sanity check first
        (when (memq (current-buffer) old-buffers)
          (setf (lsp--workspace-buffers lsp--cur-workspace)
                (delq (current-buffer) old-buffers))
-         (remhash (current-buffer) file-versions)
          (with-demoted-errors "Error sending didClose notification in ‘lsp--text-document-did-close’: %S"
            (lsp-notify
             "textDocument/didClose"
             `(:textDocument ,(lsp--versioned-text-document-identifier))))
          (when (and (not lsp-keep-workspace-alive)
                     (not keep-workspace-alive)
-                    (= 0 (hash-table-count file-versions)))
+                    (hash-table-empty-p old-buffers))
            (setf (lsp--workspace-shutdown-action lsp--cur-workspace) 'shutdown)
            (lsp--shutdown-workspace)))))))
 
@@ -3665,7 +3680,6 @@ should return the command to start the LS server."
                                              :connection-type 'pipe
                                              :coding 'no-conversion
                                              :command final-command
-                                             ;; :sentinel sentinel
                                              :stderr (format "*tcp-server-%s*::stderr" name)
                                              :noquery t)))
                 (let ((retries 0))
@@ -3691,8 +3705,8 @@ should return the command to start the LS server."
 
 (defun lsp-tramp-connection (local-command)
   "Create LSP stdio connection named name.
-  COMMAND is either list of strings, string or function which
-  returns the command to execute."
+LOCAL-COMMAND is either list of strings, string or function which
+returns the command to execute."
   (list :connect (lambda (filter sentinel name)
                    (let* ((final-command (lsp-resolve-final-function local-command))
                           ;; wrap with stty to disable converting \r to \n
@@ -3726,7 +3740,8 @@ should return the command to start the LS server."
 
   (when (functionp 'company-lsp)
     (company-mode 1)
-    (add-to-list 'company-backends 'company-lsp)
+    (with-no-warnings
+      (add-to-list 'company-backends 'company-lsp))
 
     (when (functionp 'yas-minor-mode)
       (yas-minor-mode t))))
@@ -3736,7 +3751,6 @@ should return the command to start the LS server."
   (let* ((parser (make-lsp--parser))
          (workspace (make-lsp--workspace
                      :parser parser
-                     :file-versions (make-hash-table :test 'equal)
                      :root root
                      :client client
                      :status 'starting
