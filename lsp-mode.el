@@ -484,9 +484,6 @@ must be used for handling a particular message.")
 (defvar-local lsp--lens-overlays nil
   "Current lenses.")
 
-(defvar-local lsp--lens-modified-tick 0
-  "The tick last time the lenses where modified.")
-
 (defvar-local lsp--lens-page nil
   "Pair of points which holds the last window location the lenses were loaded.")
 
@@ -1112,20 +1109,15 @@ Results are meaningful only if FROM and TO are on the same line."
 
 (defun lsp--lens-idle-function (&optional buffer)
   "Create idle function for buffer BUFFER."
-  (when (or (not buffer) (eq (current-buffer) buffer))
-    (cond
-     ((/= (buffer-modified-tick) lsp--lens-modified-tick)
-      (lsp--lens-schedule-refresh t))
-
-     ((not (equal (cons (window-start) (window-end)) lsp--lens-page))
-      (lsp--lens-schedule-refresh nil)))))
+  (when (and (or (not buffer) (eq (current-buffer) buffer))
+             (not (equal (cons (window-start) (window-end)) lsp--lens-page)))
+    (lsp--lens-schedule-refresh nil)))
 
 (defun lsp--lens-schedule-refresh (buffer-modified?)
   "Call each of the backend.
 BUFFER-MODIFIED? determines whether the buffer is modified or not."
   (-some-> lsp--lens-refresh-timer cancel-timer)
 
-  (setq-local lsp--lens-modified-tick (buffer-modified-tick))
   (setq-local lsp--lens-page (cons (window-start) (window-end)))
   (setq-local lsp--lens-refresh-timer
               (run-with-timer lsp-lens-debounce-interval nil 'lsp--lens-refresh buffer-modified?)))
@@ -1172,7 +1164,6 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
 (defun lsp--lens-refresh (buffer-modified?)
   "Refresh lenses using lenses backend.
 BUFFER-MODIFIED? determines whether the buffer is modified or not."
-  (setq-local lsp--lens-modified-tick (buffer-modified-tick))
   (dolist (backend lsp-lens-backends)
     (funcall backend buffer-modified?
              (lambda (lenses)
@@ -1618,23 +1609,23 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
                            (buffer-live-p buf))
                       (with-current-buffer buf
                         (handle-result))
-                    (lsp-log "Buffer is not alive ignoring reponse."))))
-        ('tick (let ((tick (buffer-modified-tick)))
+                    (lsp-log "Buffer is not alive ignoring reponse. Method %s." method))))
+        ('tick (let ((tick (buffer-chars-modified-tick)))
                  (lambda (result)
                    (when (buffer-live-p buf)
                      (with-current-buffer buf
-                       (if (and (= tick (buffer-modified-tick)))
+                       (if (and (= tick (buffer-chars-modified-tick)))
                            (progn
                              (push (cons lsp--cur-workspace result)  results)
                              (when (eq (length results) count)
                                (handle-result)))
-                         (lsp-log "Buffer modified ignoring response response.")))))))
+                         (lsp-log "Buffer modified ignoring response. Method %s." method)))))))
         (_ (lambda (result)
              (push (cons lsp--cur-workspace result) results)
              (if (and (eq (length results) count)
                       (eq buf (current-buffer)))
                  (handle-result)
-               (lsp-log "Buffer switched - ignoring reponse."))))))))
+               (lsp-log "Buffer switched - ignoring reponse. Method %s" method))))))))
 
 (defun lsp--create-default-error-handler (method)
   "Default error handler.
@@ -2238,7 +2229,9 @@ Added to `after-change-functions'."
                                           start end length)))
                    ('full (vector (lsp--full-change-event))))))))))
      (lsp-workspaces)))
-  (lsp--set-document-link-timer))
+  (lsp--set-document-link-timer)
+  (when lsp-lens-mode
+    (lsp--lens-schedule-refresh t)))
 
 (defun lsp--on-self-insert ()
   "Self insert handling.
