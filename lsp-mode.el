@@ -30,8 +30,7 @@
   (require 'project)
   (require 'flymake))
 
-(eval-when-compile
-  (require 'cl))
+(require 'cl)
 
 (require 'cl-lib)
 (require 'compile)
@@ -1619,7 +1618,7 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
                                    callback
                                    (if no-merge
                                        results
-                                     (lsp--merge-results (-map #'rest results) method)))))
+                                     (lsp--merge-results (-map #'cl-rest results) method)))))
       (pcase mode
         ('detached (lambda (result)
                      (push (cons lsp--cur-workspace result) results)
