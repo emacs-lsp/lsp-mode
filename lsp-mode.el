@@ -1738,7 +1738,7 @@ disappearing, unset all the variables related to it."
   `(
     :workspace (:workspaceEdit (
                                 :documentChanges t
-                                :resourceOperations ("create" "rename" "delete"))
+                                :resourceOperations ["create" "rename" "delete"])
                                :applyEdit t
                                :symbol (:symbolKind (:valueSet ,(apply 'vector (number-sequence 1 26))))
                                :executeCommand (:dynamicRegistration :json-false)
