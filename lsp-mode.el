@@ -1995,7 +1995,7 @@ interface Range {
                    (filename (lsp--uri-to-path (gethash "uri" ident)))
                    (version (gethash "version" ident)))
               (with-current-buffer (find-file-noselect filename)
-                (or (null version) (zerop version) (equal version (lsp--cur-file-version))))))
+                (or (null version) (zerop version) (equal version lsp--cur-version)))))
            document-changes)
     (error "Document changes cannot be applied")))
 
@@ -2374,7 +2374,7 @@ if it's closing the last buffer in the workspace."
             `(:textDocument ,(lsp--versioned-text-document-identifier))))
          (when (and (not lsp-keep-workspace-alive)
                     (not keep-workspace-alive)
-                    (hash-table-empty-p old-buffers))
+                    (not (lsp--workspace-buffers lsp--cur-workspace)))
            (setf (lsp--workspace-shutdown-action lsp--cur-workspace) 'shutdown)
            (lsp--shutdown-workspace)))))))
 
