@@ -1756,7 +1756,8 @@ disappearing, unset all the variables related to it."
                    :codeAction (:dynamicRegistration t)
                    :completion (:completionItem (:snippetSupport ,(if lsp-enable-snippet t :json-false)))
                    :signatureHelp (:signatureInformation (:parameterInformation (:labelOffsetSupport t)))
-                   :documentLink (:dynamicRegistration t))))
+                   :documentLink (:dynamicRegistration t)
+                   :hover (:contentFormat ["plaintext" "markdown"]))))
 
 (defun lsp--server-register-capability (reg)
   "Register capability REG."
