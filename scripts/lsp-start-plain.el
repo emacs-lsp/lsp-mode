@@ -35,8 +35,8 @@
 
 (setq debug-on-error t)
 
-(let* ((package-archives '(("melpa" . "http://melpa.org/packages/")
-                           ("gnu" . "http://elpa.gnu.org/packages/")))
+(let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("gnu" . "https://elpa.gnu.org/packages/")))
        (no-byte-compile t)
        (package-user-dir (expand-file-name (make-temp-name "lsp-tmp-elpa")
                                            user-emacs-directory))
