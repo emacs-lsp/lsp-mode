@@ -1053,7 +1053,11 @@ WORKSPACE is the workspace that contains the diagnostics."
                                                            (1 :error)
                                                            (2 :warning)
                                                            (t :note))
-                                                         message)))))))
+                                                         message))))
+             ;; This :region keyword forces flymake to delete old diagnostics in
+             ;; case the buffer hasn't changed since the last call to the report
+             ;; function. See https://github.com/joaotavora/eglot/issues/159
+             :region (cons (point-min) (point-max)))))
 
 (defun lsp--ht-get (tbl &rest keys)
   "Get nested KEYS in TBL."
