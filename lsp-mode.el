@@ -385,7 +385,6 @@ If set to `:none' neither of two will be enabled."
   :group 'lsp-mode)
 
 (defvar-local lsp--flymake-report-fn nil)
-(defvar-local lsp--flymake-report-pending nil)
 
 (defvar lsp-language-id-configuration '((java-mode . "java")
                                         (python-mode . "python")
@@ -1047,12 +1046,18 @@ WORKSPACE is the workspace that contains the diagnostics."
 
   (defun lsp--flymake-after-diagnostics ()
     "Handler for `lsp-after-diagnostics-hook'"
-    (when (and lsp--flymake-report-fn flymake-mode)
-      (lsp--flymake-update-diagnostics)))
+    (cond
+     ((and lsp--flymake-report-fn flymake-mode)
+      (lsp--flymake-update-diagnostics))
+     ((not flymake-mode)
+      (setq lsp--flymake-report-fn nil))))
 
   (defun lsp--flymake-backend (report-fn &rest _args)
     "Flymake backend."
-    (setq lsp--flymake-report-fn report-fn))
+    (let ((first-run (null lsp--flymake-report-fn)))
+      (setq lsp--flymake-report-fn report-fn)
+      (when first-run
+        (lsp--flymake-update-diagnostics))))
 
   (defun lsp--flymake-update-diagnostics ()
     "Report new diagnostics to flymake."
