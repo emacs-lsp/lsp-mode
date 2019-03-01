@@ -1047,14 +1047,16 @@ WORKSPACE is the workspace that contains the diagnostics."
 
   (defun lsp--flymake-after-diagnostics ()
     "Handler for `lsp-after-diagnostics-hook'"
-    (when lsp--flymake-report-fn
-      (lsp--flymake-backend lsp--flymake-report-fn)
-      (remove-hook 'lsp-after-diagnostics-hook 'lsp--flymake-after-diagnostics t)))
+    (when (and lsp--flymake-report-fn flymake-mode)
+      (lsp--flymake-update-diagnostics)))
 
   (defun lsp--flymake-backend (report-fn &rest _args)
     "Flymake backend."
-    (setq lsp--flymake-report-fn report-fn)
-    (funcall report-fn
+    (setq lsp--flymake-report-fn report-fn))
+
+  (defun lsp--flymake-update-diagnostics ()
+    "Report new diagnostics to flymake."
+    (funcall lsp--flymake-report-fn
              (-some->> (lsp-diagnostics)
                        (gethash buffer-file-name)
                        (--map (-let* (((&hash "message" "severity" "range") (lsp-diagnostic-original it))
