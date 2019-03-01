@@ -1052,7 +1052,7 @@ WORKSPACE is the workspace that contains the diagnostics."
                                                          (case severity
                                                            (1 :error)
                                                            (2 :warning)
-                                                           (_ :note))
+                                                           (t :note))
                                                          message)))))))
 
 (defun lsp--ht-get (tbl &rest keys)
