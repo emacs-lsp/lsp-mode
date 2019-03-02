@@ -3028,8 +3028,8 @@ A reference is highlighted only if it is visible in a window."
     (lsp--locations-to-xref-items refs)))
 
 (cl-defmethod xref-backend-apropos ((_backend (eql xref-lsp)) pattern)
-  (mapcar #'lsp--symbol-information-to-xref
-          (lsp-request "workspace/symbol" `(:query ,pattern))))
+  (seq-map #'lsp--symbol-information-to-xref
+           (lsp-request "workspace/symbol" `(:query ,pattern))))
 
 (defun lsp--get-symbol-to-rename ()
   "Get synbol at point."
