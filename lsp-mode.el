@@ -2899,7 +2899,7 @@ A reference is highlighted only if it is visible in a window."
   (lambda (highlights)
     (with-current-buffer buf
       (lsp--remove-cur-overlays)
-      (when (and highlights (/= (length highlights) 0))
+      (when (/= (seq-length highlights) 0)
         (let* ((windows-on-buffer (get-buffer-window-list nil nil 'visible))
                (overlays (lsp--workspace-highlight-overlays lsp--cur-workspace))
                (buf-overlays (gethash (current-buffer) overlays))
