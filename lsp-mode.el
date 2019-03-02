@@ -2516,10 +2516,9 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
             (let* ((resp (lsp-request "textDocument/completion"
                                       (lsp--text-document-position-params)))
                    (items (cond
-                           ((null resp) nil)
-                           ((hash-table-p resp) (gethash "items" resp nil))
-                           ((sequencep resp) resp))))
-              (seq-map #'lsp--make-completion-item items))))
+                           ((seqp resp) resp)
+                           ((hash-table-p resp) (gethash "items" resp nil)))))
+              (seq-into (seq-map #'lsp--make-completion-item items) 'list))))
        :annotation-function #'lsp--annotate))))
 
 (defun lsp--sort-string (c)
