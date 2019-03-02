@@ -965,7 +965,7 @@ PARAMS - the data sent from WORKSPACE."
          (choices (seq-map (-partial 'gethash "title")
                            (gethash "actions" params))))
     (if choices
-        (completing-read (concat message " ") choices nil t)
+        (completing-read (concat message " ") (seq-into choices 'list) nil t)
       (lsp-log message))))
 
 (defun lsp-diagnostics ()
