@@ -593,7 +593,7 @@ FORMAT and ARGS i the same as for `message'."
   "Merge RESULTS by filtering the empty hash-tables and merging the lists.
 METHOD is the executed method so the results could be merged
 depending on it."
-  (pcase  (seq-remove 'nilp results)
+  (pcase  (seq-remove #'null results)
     (`() ())
     ;; only one result - simply return it
     (`(,fst) fst)
