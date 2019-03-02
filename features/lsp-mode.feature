@@ -6,7 +6,13 @@ Feature: PYLS configuration
     And I call "lsp"
     Then the "pyls" status will become "initialized"
 
-  Scenario: Server xref
+  Scenario: Server xref definitions
     Given I place the cursor after "print x"
     When I call "lsp-find-definition"
-    And the cursor should be before "x"
+    Then the cursor should be before "x = 10"
+
+  Scenario: Server xref references
+    Given I place the cursor before "x = 10"
+    When I select item "2" from the next xref call
+    And I call "lsp-find-references"
+    Then the cursor should be after "print "

@@ -6,6 +6,24 @@
 
 (setq lexical-binding t)
 
+(require 'xref)
+(defvar lsp-mode-steps-xref-index nil)
+
+(defun lsp-steps-xref-goto-xref-item (xref-item func)
+  "Set buffer and point according to xref-item XREF-ITEM.
+
+Use FUNC to display buffer."
+  (with-slots (summary location) xref-item
+    (let* ((marker (xref-location-marker location))
+           (buf (marker-buffer marker))
+           (offset (marker-position marker)))
+      (with-current-buffer buf
+        (goto-char offset)
+        (funcall func buf)))))
+
+(setq xref-show-xrefs-function (lambda (xrefs _)
+                                 (lsp-steps-xref-goto-xref-item (seq-elt xrefs lsp-mode-steps-xref-index) 'switch-to-buffer)))
+
 (defun lsp-mode-steps--async-call (pred  callback)
   "Call CALLBACK when PRED becomes true."
   (let (timer
@@ -31,14 +49,22 @@
 
 (And "^I open file \"\\([^\"]+\\)\"$"
      (lambda (file)
-       (find-file (f-join lsp-mode-support-path "projects" file))
-       ))
+       (find-file (f-join lsp-mode-support-path "projects" file))))
+
+(And "^I log current line"
+     (lambda ()
+       (message "Placed on line  %s: %s (point = %s)" (line-number-at-pos) (buffer-substring (point-at-bol)
+                                                                                             (point-at-eol))
+                (point))))
 
 
 (Then "^the \"\\([^\"]+\\)\" status will become \"\\([^\"]+\\)\"$"
       (lambda (server-id status callback)
-        ;; (message "The function failed, attempt %s %s" server-id status)
         (lsp-mode-steps-async
          (eql (lsp--workspace-status (lsp-find-workspace (intern server-id) nil))
               (intern status))
          callback)))
+
+(When "^I select item \"\\([^\"]+\\)\" from the next xref call$"
+      (lambda (arg)
+        (setq lsp-mode-steps-xref-index (1- (string-to-number arg)))))
