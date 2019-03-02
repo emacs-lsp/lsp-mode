@@ -526,12 +526,10 @@ must be used for handling a particular message.")
 (cl-defgeneric lsp-execute-command (server command arguments)
   "Ask SERVER to execute COMMAND with ARGUMENTS.")
 
-(eval-when-compile
-  (unless (fboundp 'seq-first)
-    (with-no-warnings
-      (defun seq-first (sequence)
-        "Return the first element of SEQUENCE."
-        (seq-elt sequence 0)))))
+;; define seq-first for older emacs
+(defun seq-first (sequence)
+  "Return the first element of SEQUENCE."
+  (seq-elt sequence 0))
 
 (defun lsp--info (format &rest args)
   "Display lsp info message with FORMAT with ARGS."

@@ -6,13 +6,10 @@ cache:
       - "$HOME/emacs/"
 matrix:
   fast_finish: true
-  allow_failures:
-    - env: EMACS_VERSION=snapshot
 env:
   - EMACS_VERSION=25.1
   - EMACS_VERSION=25.2
   - EMACS_VERSION=25.3
-  - EMACS_VERSION=snapshot
 before_install:
   - export PATH="$HOME/bin:$PATH"
   - wget 'https://raw.githubusercontent.com/flycheck/emacs-travis/master/emacs-travis.mk'
@@ -20,9 +17,11 @@ before_install:
   - make -f emacs-travis.mk install_cask
 install:
   - cask install
+  - sudo pip install python-language-server
 script:
   - cask build
   - cask exec ert-runner -t "!no-win"
+  - cask exec ecukes
 
 notifications:
   webhooks:
