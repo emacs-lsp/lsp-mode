@@ -2594,7 +2594,7 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
                (seq-map
                 (-rpartial #'get-xrefs-in-file t)
                 (seq-group-by
-                 (-compose #'lsp-uri-to-path (-partial 'gethash "targetUri"))
+                 (-compose #'lsp--uri-to-path (-partial 'gethash "targetUri"))
                  locations)))))))
 
 (defun lsp--make-reference-params (&optional td-position include-declaration)
