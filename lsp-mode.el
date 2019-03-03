@@ -2731,7 +2731,7 @@ RENDER-ALL - nil if only the signature should be rendered."
                           (seq-first selected-param-label)))
                  (end (if (stringp selected-param-label)
                           (+ start (length selected-param-label))
-                        (seq-last selected-param-label))))
+                        (seq-rest selected-param-label))))
       (add-face-text-property start end 'eldoc-highlight-function-argument nil result))
     result))
 
