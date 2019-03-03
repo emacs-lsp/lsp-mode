@@ -872,7 +872,7 @@ the monitored files. WATCHES is a hash table directory->file
 notification handle which contains all of the watches that
 already have been created."
   (let ((all-dirs (->> (directory-files-recursively dir ".*" t)
-                       (seq-filter (lambda (f) (file-directory-p f)))
+                       (seq-filter #'file-directory-p)
                        (list* dir)))
         (watches (or watches (make-hash-table :test 'equal)))
         (root-dir (or root-dir dir)))
@@ -954,7 +954,7 @@ PARAMS - the data sent from WORKSPACE."
   (let* ((message (gethash "message" params))
          (client (lsp--workspace-client workspace)))
     (when (or (not client)
-              (cl-notany (lambda (r) (string-match-p r message))
+              (cl-notany (-rpartial #'string-match-p nil message)
                          (lsp--client-ignore-messages client)))
       (lsp-log "%s" (lsp--propertize message (gethash "type" params))))))
 
@@ -3534,22 +3534,29 @@ SYM can be either DocumentSymbol or SymbolInformation."
   "Determine if SYM is for the current document."
   ;; It's a SymbolInformation or DocumentSymbol, which is always in the current
   ;; buffer file.
-  (when-let (location (gethash "location" sym))
-    (not (eq (find-buffer-visiting (lsp--uri-to-path (gethash "uri" (gethash "location" sym))))
-             (current-buffer)))))
+  (-if-let ((&hash "location") sym)
+      (not (eq (->> location
+                    (gethash "uri")
+                    (lsp--uri-to-path)
+                    (find-buffer-visiting))
+               (current-buffer)))))
 
 (defun lsp--get-symbol-type (sym)
   "The string name of the kind of SYM."
-  (or (cdr (assoc (gethash "kind" sym) lsp--symbol-kind)) "Other"))
+  (-> (gethash "kind" sym)
+      (assoc lsp--symbol-kind)
+      (cdr)
+
+      (or "Other")))
 
 (defun lsp--imenu-create-index ()
   "Create imenu index from document symbols."
   (let ((symbols (lsp--get-document-symbols)))
     (if (lsp--imenu-hierarchical-p symbols)
         (lsp--imenu-create-hierarchical-index symbols)
-      (mapcar (lambda (nested-alist)
-                (cons (car nested-alist)
-                      (mapcar #'lsp--symbol-to-imenu-elem (cdr nested-alist))))
+      (seq-map (lambda (nested-alist)
+                 (cons (car nested-alist)
+                       (seq-map #'lsp--symbol-to-imenu-elem (cdr nested-alist))))
               (seq-group-by #'lsp--get-symbol-type (lsp--imenu-filter-symbols symbols))))))
 
 (defun lsp--imenu-filter-symbols (symbols)
@@ -3558,7 +3565,7 @@ SYM can be either DocumentSymbol or SymbolInformation."
 
 (defun lsp--imenu-hierarchical-p (symbols)
   "Determine whether any element in SYMBOLS has children."
-  (--some (gethash "children" it) symbols))
+  (seq-some (-partial 'gethash "children") symbols))
 
 (defun lsp--imenu-create-hierarchical-index (symbols)
   "Create imenu index for hierarchical SYMBOLS.
@@ -3574,11 +3581,9 @@ Return a nested alist keyed by symbol names. e.g.
                                   (\"someSubField (Field)\" . 35))
     (\"someFunction (Function)\" . 40))"
   (let ((symbols (lsp--imenu-filter-symbols symbols)))
-    (mapcar (lambda (sym)
-              (lsp--symbol-to-hierarchical-imenu-elem sym))
-            (sort (lsp--imenu-filter-symbols symbols)
-                  (lambda (sym1 sym2)
-                    (lsp--imenu-symbol-lessp sym1 sym2))))))
+    (seq-map #'lsp--symbol-to-hierarchical-imenu-elem
+             (seq-sort #'lsp--imenu-symbol-lessp
+                       (lsp--imenu-filter-symbols symbols)))))
 
 (defun lsp--imenu-symbol-lessp (sym1 sym2)
   (let* ((compare-results (mapcar (lambda (method)
