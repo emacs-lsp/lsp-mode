@@ -1749,7 +1749,7 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
 (defun lsp--shutdown-workspace ()
   "Shut down the language server process for ‘lsp--cur-workspace’."
   (with-demoted-errors "LSP error: %S"
-    (lsp-request "shutdown" nil :no-wait t)
+    (lsp-request "shutdown" nil)
     (lsp-notify "exit" nil))
   (lsp--uninitialize-workspace))
 
