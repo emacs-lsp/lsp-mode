@@ -954,7 +954,7 @@ PARAMS - the data sent from WORKSPACE."
   (let* ((message (gethash "message" params))
          (client (lsp--workspace-client workspace)))
     (when (or (not client)
-              (cl-notany (-rpartial #'string-match-p nil message)
+              (cl-notany (-rpartial #'string-match-p message)
                          (lsp--client-ignore-messages client)))
       (lsp-log "%s" (lsp--propertize message (gethash "type" params))))))
 
