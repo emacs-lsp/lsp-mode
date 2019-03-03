@@ -46,3 +46,4 @@ flycheck_*.el
 
 /*-autoloads.el
 /*-pkg.el
+/.ecukes-failing-scenarios
