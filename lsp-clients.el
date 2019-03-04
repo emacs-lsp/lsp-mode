@@ -53,7 +53,7 @@
     :plugins.jedi_completion.enabled t
     :plugins.jedi_definition.follow_imports t
     ;; List of configuration sources to use. (enum: ["pycodestyle", "pyflakes"])
-    :configurationSources  ("pycodestyle")
+    :configurationSources ["pycodestyle"]
     ;; Enable or disable the plugin.
     :plugins.jedi_completion.enabled t
     ;; Enable or disable the plugin.
@@ -77,7 +77,7 @@
     ;; The minimum threshold that triggers warnings about cyclomatic complexity.
     :plugins.mccabe.threshold 15
     ;; Enable or disable the plugin.
-    :plugins.preload.enabled true
+    :plugins.preload.enabled t
     ;; List of modules to import on startup
     :plugins.preload.modules nil
     ;; Enable or disable the plugin.
