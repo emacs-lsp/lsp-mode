@@ -68,3 +68,13 @@ Use FUNC to display buffer."
 (When "^I select item \"\\([^\"]+\\)\" from the next xref call$"
       (lambda (arg)
         (setq lsp-mode-steps-xref-index (1- (string-to-number arg)))))
+
+(When "^I goto imenu \"\\([^\"]+\\)\" -> \"\\([^\"]+\\)\"$"
+      (lambda (type element)
+        (->> imenu-create-index-function
+             funcall
+             (assoc "Function")
+             cl-rest
+             (assoc "fn1")
+             cl-rest
+             goto-char)))

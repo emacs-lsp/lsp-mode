@@ -143,7 +143,7 @@
 ;;; CSS
 (defun lsp-clients-css--apply-code-action (action)
   "Apply ACTION as workspace edit command."
-  (lsp--apply-text-edits (caddr (gethash "arguments" action))))
+  (lsp--apply-text-edits (cl-caddr (gethash "arguments" action))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("css-languageserver" "--stdio"))
@@ -213,10 +213,10 @@ finding the executable with variable `exec-path'."
   :risky t
   :type '(repeat string))
 
-(defun lsp-typescript-javascript-tsx-jsx-activate-p (filename major-mode)
+(defun lsp-typescript-javascript-tsx-jsx-activate-p (filename mode)
   "Checks if the javascript-typescript language server should be enabled
 based on FILE-NAME and MAJOR-MODE"
-  (or (member major-mode '(typescript-mode typescript-tsx-mode js-mode js2-mode rjsx-mode))
+  (or (member mode '(typescript-mode typescript-tsx-mode js-mode js2-mode rjsx-mode))
       (and (eq major-mode 'web-mode)
            (or (string-suffix-p ".tsx" filename t)
                (string-suffix-p ".jsx" filename t)))))
@@ -316,9 +316,9 @@ the contents of FILE-NAME."
 there is a .flowconfig file in the folder hierarchy."
   (locate-dominating-file file-name ".flowconfig"))
 
-(defun lsp-clients-flow-activate-p (file-name major-mode)
+(defun lsp-clients-flow-activate-p (file-name _mode)
   "Checks if the Flow language server should be enabled for a
-particular FILE-NAME and MAJOR-MODE."
+particular FILE-NAME and MODE."
   (and (derived-mode-p 'js-mode 'web-mode 'js2-mode 'flow-js2-mode 'rjsx-mode)
        (lsp-clients-flow-project-p file-name)
        (lsp-clients-flow-tag-present-p file-name)))

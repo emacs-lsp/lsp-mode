@@ -49,4 +49,17 @@
   (let ((lsp--uri-file-prefix "file://"))
     (should (equal (lsp--uri-to-path "/root/%E4%BD%A0%E5%A5%BD/%E8%B0%A2%E8%B0%A2") "/root/你好/谢谢"))))
 
+(ert-deftest lsp-byte-compilation-test ()
+  (let ((byte-compile-error-on-warn t))
+    (cl-assert (byte-compile-file (save-excursion
+                                    (find-library "lsp-mode")
+                                    (buffer-file-name)))
+               t
+               "Failed to byte-compile")
+    (cl-assert (byte-compile-file (save-excursion
+                                    (find-library "lsp-clients")
+                                    (buffer-file-name)))
+               t
+               "Failed to byte-compile")))
+
 ;;; lsp-common-test.el ends here
