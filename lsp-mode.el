@@ -4193,8 +4193,10 @@ Returns nil if the project should not be added to the current SESSION."
   "Look in the current SESSION for folder containing FILE-NAME."
   (->> session
        (lsp-session-folders)
-       (--first (or (f-same? it file-name)
-                    (f-ancestor-of? it file-name)))))
+       (--filter (or (f-same? it file-name)
+                     (f-ancestor-of? it file-name)))
+       (--max-by (> (length it)
+                    (length other)))))
 
 (defun lsp-find-workspace (server-id file-name)
   "Find workspace for SERVER-ID for FILE-NAME."
