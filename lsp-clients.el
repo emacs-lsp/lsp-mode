@@ -661,14 +661,6 @@ finding the executable with `exec-path'."
 
 
 ;; Kotlin
-
-(defcustom lsp-clients-kotlin-settings
-  '()
-  "Lsp clients configuration settings."
-  :group 'lsp-kotlin
-  :risky t
-  :type 'plist)
-
 (defgroup lsp-kotlin nil
   "Kotlin."
   :group 'lsp-mode
@@ -684,10 +676,6 @@ finding the executable with `exec-path'."
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("kotlin-language-server"))
 		  :major-modes '(kotlin-mode)
-		  ;; :request-handlers (ht ("workspace/configuration" #'your-handler))
-		  :request-handlers (ht ("workspace/configuration" (lambda (workspace)
-								     (with-lsp-workspace workspace
-								       (lsp--set-configuration `(:kotlin-ls, lsp-clients-kotlin-settings))))))
 		  :priority -1
 		  :server-id 'kotlin-ls))
 
