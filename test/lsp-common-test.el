@@ -62,4 +62,23 @@
                t
                "Failed to byte-compile")))
 
+(ert-deftest lsp--find-session-folder ()
+  (cl-assert (string= "/folder/"
+                      (lsp-find-session-folder
+                       (make-lsp-session :folders '("/folder/"))
+                       "/folder/file"))
+             t
+             "failed to find the proper root")
+  (cl-assert (string= "/folder/nested-project"
+                      (lsp-find-session-folder
+                       (make-lsp-session :folders '("/folder/"
+                                                    "/folder/nested-project"))
+                       "/folder/nested-project/file-in-nested-project"))
+             t
+             "failed to find nested project")
+  (cl-assert (null (lsp-find-session-folder
+                    (make-lsp-session :folders '("/folder/"))
+                    "/foo"))
+             t
+             "Should not find any root."))
 ;;; lsp-common-test.el ends here
