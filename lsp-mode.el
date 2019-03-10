@@ -394,6 +394,7 @@ If set to `:none' neither of two will be enabled."
                                         (python-mode . "python")
                                         (gfm-view-mode . "markdown")
                                         (rust-mode . "rust")
+                                        (kotlin-mode . "kotlin")
                                         (css-mode . "css")
                                         (less-mode . "less")
                                         (less-css-mode . "less")

@@ -88,7 +88,7 @@
     ~lsp-mode~ has predefined list of server configurations (located in ~lsp-clients.el~) containing a mapping from ~major-mode~ to the server configuration. In addition to the default server configuration located in ~lsp-clients.el~ there are few languages servers which require separate package(check [[#supported-languages][Supported languages]]). When you open a file from a particular project ~lsp-mode~ and call ~lsp~ command ~lsp-mode~ will look for server registrations able to handle current ~major-mode~. If there is such client ~lsp-mode~ will look for the project root. If you open a file from the project for the first time you will be prompted the project. Once the project is imported project root is saved in ~lsp-session~ file and it will be loaded the next time you start Emacs so you no longer will be asked for a project root when you open a file from that project. Later if you want to change the project root you may use ~lsp-workspace-folder-remove~ to remove the project and call ~lsp-workspace-folder-add~ to add the root. If you want to force starting a particular language server in a file you may use ~C-u~ ~M-x~ ~lsp~ which will prompt you to select language server to start.
 ** Supported languages
    Some of the servers are directly supported by ~lsp-mode~ by requiring
-   ~lsp-clients.el~ while other require installing additional package which provide
+   ~lsp-clients.el~ while others require installing additional packages which provide
    server specific functionality.
 
    | Language              | Language Server                           | Built-in      | Installation command                                     | Debugger                     |
@@ -97,7 +97,7 @@
    | C++                   | [[https://github.com/MaskRay/ccls][ccls]]                                      | [[https://github.com/MaskRay/emacs-ccls][emacs-ccls]]    | [[https://github.com/MaskRay/ccls][ccls]]                                                     | Yes (via llvm debug adapter) |
    | C++                   | [[https://clang.llvm.org/extra/clangd.html][clangd]]                                    | Yes           | [[https://clang.llvm.org/extra/clangd.html][clangd]]                                                   | Yes (via llvm debug adapter) |
    | C++                   | [[https://github.com/cquery-project/cquery][cquery]]                                    | [[https://github.com/cquery-project/emacs-cquery][emacs-cquery]]  | [[https://github.com/cquery-project/cquery][cquery]]                                                   | Yes (via llvm debug adapter) |
-   | CSS/LessCSS/SASS/SCSS | [[https://github.com/vscode-langservers/vscode-css-languageserver-bin][css]]                                   | Yes           | npm install -g vscode-css-languageserver-bin             |                              |
+   | CSS/LessCSS/SASS/SCSS | [[https://github.com/vscode-langservers/vscode-css-languageserver-bin][css]]                                       | Yes           | npm install -g vscode-css-languageserver-bin             |                              |
    | Dart                  | [[https://github.com/natebosch/dart_language_server][dart_language_server]]                      | Yes           | pub global activate dart_language_server                 |                              |
    | Elixir                | [[https://github.com/JakeBecker/elixir-ls][elixir-ls]]                                 | Yes           | [[https://github.com/JakeBecker/elixir-ls][elixir-ls]]                                                | Yes                          |
    | Fortran               | [[https://github.com/hansec/fortran-language-server][fortran-language-server]]                   | Yes           | pip install fortran-language-server                      |                              |
@@ -118,6 +118,7 @@
    | Scala                 | [[https://github.com/rossabaker/lsp-scala][lsp-scala]]                                 | [[https://github.com/rossabaker/lsp-scala][lsp-scala]]     | [[https://github.com/rossabaker/lsp-scala][lsp-scala]]                                                |                              |
    | Swift                 | [[https://github.com/apple/sourcekit-lsp][sourcekit-LSP]]                             | [[https://github.com/emacs-lsp/lsp-sourcekit][lsp-sourcekit]] | [[https://github.com/apple/sourcekit-lsp][sourcekit-LSP]]                                            | Yes (via llvm debug adapter) |
    | Vue                   | [[https://github.com/vuejs/vetur/tree/master/server][vue-language-server]]                       | Yes           | npm install -g vue-language-server                       |                              |
+   | Kotlin                | [[https://github.com/fwcd/KotlinLanguageServer][kotlin-language-server]]                    | Yes           | [[https://github.com/fwcd/KotlinLanguageServer][kotlin-language-server]]                                   |                              |
 ** Commands
    - ~lsp-describe-session~ - Display session folders and running servers.
    - ~lsp-describe-thing-at-point~ - Display help for the thing at point.
