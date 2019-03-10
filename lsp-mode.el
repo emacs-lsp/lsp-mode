@@ -530,10 +530,15 @@ must be used for handling a particular message.")
 (cl-defgeneric lsp-execute-command (server command arguments)
   "Ask SERVER to execute COMMAND with ARGUMENTS.")
 
+(defun lsp-elt (sequence n)
+  "Return Nth element of SEQUENCE or nil if N is out of range."
+  (if (listp sequence) (elt sequence n)
+    (and (> (length sequence) n) (elt sequence n))))
+
 ;; define seq-first for older emacs
 (defun seq-first (sequence)
   "Return the first element of SEQUENCE."
-  (seq-elt sequence 0))
+  (lsp-elt sequence 0))
 
 (defun lsp--info (format &rest args)
   "Display lsp info message with FORMAT with ARGS."
@@ -2726,17 +2731,17 @@ RENDER-ALL - nil if only the signature should be rendered."
   (-when-let* (((&hash "activeSignature" active-signature-index
                        "activeParameter" active-parameter
                        "signatures") signature-help)
-               (signature (seq-elt signatures (or active-signature-index 0)))
+               (signature (lsp-elt signatures (or active-signature-index 0)))
                (result (lsp--fontlock-with-mode (gethash "label" signature) major-mode)))
     (-when-let* (((&hash "parameters" parameters) signature)
-                 (param (seq-elt parameters active-parameter))
+                 (param (lsp-elt parameters active-parameter))
                  (selected-param-label (-some->> param (gethash "label")))
                  (start (if (stringp selected-param-label)
                             (s-index-of selected-param-label result)
                           (seq-first selected-param-label)))
                  (end (if (stringp selected-param-label)
                           (+ start (length selected-param-label))
-                        (seq-elt selected-param-label (1- (seq-length selected-param-label))))))
+                        (lsp-elt selected-param-label (1- (seq-length selected-param-label))))))
       (add-face-text-property start end 'eldoc-highlight-function-argument nil result))
     result))
 
