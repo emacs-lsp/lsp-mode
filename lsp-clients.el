@@ -666,13 +666,6 @@ finding the executable with `exec-path'."
   :group 'lsp-mode
   :tag "Kotlin")
 
-(defcustom lsp-clients-kotlin-server-command
-  `("kotlin" ,(expand-file-name "~/.emacs.d/language-servers/kotlin-language-server"))
-  "Install directory for kotlin language-server."
-  :group 'lsp-kotlin
-  :type 'file)
-
-
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("kotlin-language-server"))
 		  :major-modes '(kotlin-mode)
