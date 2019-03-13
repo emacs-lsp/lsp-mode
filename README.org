@@ -27,6 +27,7 @@
     - [[#tramp-experimental][TRAMP (Experimental)]]
       - [[#how-does-it-work][How does it work?]]
       - [[#sample-configuration][Sample configuration]]
+  - [[#contributions][Contributions]]
   - [[#troubleshooting][Troubleshooting]]
   - [[#adding-support-for-languages][Adding support for languages]]
   - [[#faq][FAQ]]
@@ -190,6 +191,13 @@
                        :remote? t
                        :server-id 'pyls))
    #+END_SRC
+
+** Contributions
+   Contributions are very much welcome.
+
+Here is a throughput graph of the repository for the last few weeks:
+
+[[file:https://graphs.waffle.io/emacs-lsp/lsp-mode/throughput.svg]]
 ** Troubleshooting
    - set ~lsp-print-io~ to ~t~ to inspect communication between client and the server.
    - ~lsp-describe-session~ will show the current projects roots + the started severs and allows inspecting the server capabilities.
