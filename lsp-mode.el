@@ -145,6 +145,22 @@ the buffer when it becomes large."
   :group 'lsp-mode
   :type 'boolean)
 
+(defcustom lsp-enable-folding t
+  "Enable/disable code folding support."
+  :group 'lsp-mode
+  :type 'boolean)
+
+(defcustom lsp-folding-range-limit nil
+  "The maximum number of folding ranges to receive from the language server."
+  :group 'lsp-mode
+  :type '(choice (const :tag "No limit." nil)
+                 (integer :tag "Number of lines.")))
+
+(defcustom lsp-folding-line-folding-only nil
+  "If non-nil, only fold complete lines."
+  :group 'lsp-mode
+  :type 'boolean)
+
 (defcustom lsp-auto-require-clients t
   "Auto require lsp-clients."
   :group 'lsp-mode
@@ -1801,7 +1817,12 @@ disappearing, unset all the variables related to it."
                    :completion (:completionItem (:snippetSupport ,(if lsp-enable-snippet t :json-false)))
                    :signatureHelp (:signatureInformation (:parameterInformation (:labelOffsetSupport t)))
                    :documentLink (:dynamicRegistration t)
-                   :hover (:contentFormat ["plaintext" "markdown"]))))
+                   :hover (:contentFormat ["plaintext" "markdown"])
+                   :foldingRange (if lsp-enable-folding
+                                     (list :dynamicRegistration t
+                                           :rangeLimit lsp-folding-range-limit
+                                           :lineFoldingOnly lsp-folding-line-folding-only)
+                                   nil))))
 
 (defun lsp--server-register-capability (reg)
   "Register capability REG."
