@@ -614,7 +614,10 @@ finding the executable with `exec-path'."
   :group 'lsp-mode
   :tag "Elixir")
 
-(defcustom lsp-clients-elixir-server-executable "language_server.sh"
+(defcustom lsp-clients-elixir-server-executable
+  (if (equal system-type 'windows-nt)
+      "language_server.bat"
+    "language_server.sh")
   "The elixir-language-server executable to use.
 Leave as just the executable name to use the default behavior of
 finding the executable with `exec-path'."
