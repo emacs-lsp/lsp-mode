@@ -243,6 +243,29 @@ It contains all of the clients that are currently registered.")
   :type 'hook
   :group 'lsp-mode)
 
+(defcustom lsp-enable-file-watchers t
+  "If non-nil lsp-mode will watch the files in the workspace if
+the server has requested that."
+  :type 'boolean
+  :group 'lsp-mode)
+
+(defcustom lsp-file-watch-ignored '(".idea"
+                                    ".ensime_cache"
+                                    ".eunit"
+                                    "node_modules"
+                                    ".git"
+                                    ".hg"
+                                    ".fslckout"
+                                    "_FOSSIL_"
+                                    ".bzr"
+                                    "_darcs"
+                                    ".tox"
+                                    ".svn"
+                                    ".stack-work")
+  "List of directories which won't be monitored when creating file watches."
+  :group 'lsp-mode
+  :type '(repeat string))
+
 (defcustom lsp-before-uninitialized-hook nil
   "List of functions to be called before a Language Server has been uninitialized."
   :type 'hook
@@ -898,54 +921,53 @@ DELETE when `lsp-mode.el' is deleted.")
   "Given a list of REGEX-LIST and STR return the first matching regex if any."
   (--first (string-match it str) regex-list))
 
-(defun lsp-create-watch (dir file-regexp-list callback &optional watches root-dir)
-  "Create recursive file notificaton watch in DIR monitoring FILE-REGEXP-LIST.
+(cl-defstruct lsp-watch
+  (descriptors (make-hash-table :test 'equal) :read-only t)
+  (root-directory))
+
+(defun lsp-watch-root-folder (dir callback &optional watch)
+  "Create recursive file notificaton watch in DIR.
 CALLBACK is the will be called when there are changes in any of
 the monitored files. WATCHES is a hash table directory->file
-notification handle which contains all of the watches that
+notification handle which contains all of the watch that
 already have been created."
-  (let ((all-dirs (->> (directory-files-recursively dir ".*" t)
-                       (seq-filter #'file-directory-p)
-                       (cl-list* dir)))
-        (watches (or watches (make-hash-table :test 'equal)))
-        (root-dir (or root-dir dir)))
-    (seq-do
-     (lambda (dir-to-watch)
-       (puthash
-        dir-to-watch
-        (file-notify-add-watch
-         dir-to-watch
-         '(change)
-         (lambda (event)
-           (let ((file-name (cl-caddr event))
-                 (event-type (cadr event)))
-             (cond
-              ((and (file-directory-p file-name)
-                    (equal 'created event-type))
+  (let ((watch (or watch (prog1 (make-lsp-watch :root-directory dir)
+                           (lsp-log "Creating watch for %s" dir)))))
+    (->> (directory-files-recursively dir ".*" t)
+         (seq-filter (lambda (f) (and (file-directory-p f)
+                                      (not (lsp--string-match-any lsp-file-watch-ignored f)))))
+         (cl-list* dir)
+         (seq-do (lambda (d)
+                   (puthash
+                    d
+                    (file-notify-add-watch
+                     d
+                     '(change)
+                     (lambda (event)
+                       (let ((file-name (cl-caddr event))
+                             (event-type (cadr event)))
+                         (cond
+                          ((and (file-directory-p file-name)
+                                (equal 'created event-type))
 
-               (lsp-create-watch file-name file-regexp-list callback watches root-dir)
+                           (lsp-watch-root-folder file-name callback watch)
 
-               ;; process the files that are already present in
-               ;; the directory.
-               (->> (directory-files-recursively file-name ".*" t)
-                    (seq-do (lambda (f)
-                              (when (and (lsp--string-match-any
-                                          file-regexp-list
-                                          (concat "/" (file-relative-name f root-dir)))
-                                         (not (file-directory-p f)))
-                                (funcall callback (list nil 'created f)))))))
-              ((and (not (file-directory-p file-name))
-                    (lsp--string-match-any
-                     file-regexp-list
-                     (concat "/" (file-relative-name file-name root-dir))))
-               (funcall callback event))))))
-        watches))
-     all-dirs)
-    watches))
+                           ;; process the files that are already present in
+                           ;; the directory.
+                           (->> (directory-files-recursively file-name ".*" t)
+                                (seq-do (lambda (f)
+                                          (unless (file-directory-p f)
+                                            (funcall callback (list nil 'created f)))))))
+                          ((and (not (file-directory-p file-name))
+                                (memq event-type '(created deleted changed)))
+                           (funcall callback event))))))
+                    (lsp-watch-descriptors watch)))))
+    watch))
 
-(defun lsp-kill-watch (watches)
-  "Delete WATCHES."
-  (->> watches hash-table-values (-map 'file-notify-rm-watch)))
+(defun lsp-kill-watch (watch)
+  "Delete WATCH."
+  (-> watch lsp-watch-descriptors hash-table-values (-each #'file-notify-rm-watch))
+  (ht-clear! (lsp-watch-descriptors watch)))
 
 (defmacro with-lsp-workspace (workspace &rest body)
   "Helper macro for invoking BODY in WORKSPACE context."
@@ -1490,7 +1512,6 @@ CALLBACK - callback for the lenses."
   (server-id->folders (make-hash-table :test 'equal) :read-only t)
   ;; folder to list of the servers that are associated with the folder.
   (folder->servers (make-hash-table :test 'equal) :read-only t)
-
   ;; ‘metadata’ is a generic storage for workspace specific data. It is
   ;; accessed via `lsp-workspace-set-metadata' and `lsp-workspace-set-metadata'
   (metadata (make-hash-table :test 'equal)))
@@ -1796,7 +1817,6 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
 When a workspace is shut down, by request or from just
 disappearing, unset all the variables related to it."
   (run-hooks 'lsp-workspace-uninitialized-hook)
-  (lsp-kill-watch (lsp--workspace-watches lsp--cur-workspace))
 
   (let ((proc (lsp--workspace-cmd-proc lsp--cur-workspace)))
     (when (process-live-p proc)
@@ -1835,27 +1855,94 @@ disappearing, unset all the variables related to it."
                                             :lineFoldingOnly lsp-folding-line-folding-only)
                                     nil))))
 
+(defun lsp-find-roots-for-workspace (workspace session)
+  "Get all roots for the WORKSPACE."
+  (-filter #'identity (ht-map (lambda (folder workspaces)
+                                (when (-contains? workspaces workspace)
+                                  folder))
+                              (lsp-session-folder->servers session))))
+
+(defun lsp-session-watches (&optional session)
+  "Get watches created for SESSION."
+  (or (gethash "__watches" (lsp-session-metadata (or session (lsp-session))))
+      (-let [res (make-hash-table :test 'equal)]
+        (puthash "__watches" res (lsp-session-metadata (or session (lsp-session))))
+        res)))
+
+(defun lsp--file-process-event (session root-folder event)
+  "Process file event."
+  (let ((changed-file (cl-caddr event)))
+    (->> session
+         lsp-session-folder->servers
+         (gethash root-folder)
+         (seq-do (lambda (workspace)
+                   (when (->> workspace
+                              lsp--workspace-registered-server-capabilities
+                              (-any? (lambda (capability)
+                                       (and (string= (lsp--registered-capability-method capability)
+                                                     "workspace/didChangeWatchedFiles")
+                                            (->> capability
+                                                 lsp--registered-capability-options
+                                                 (gethash "watchers")
+                                                 (seq-find (-lambda ((&hash "globPattern" glob-pattern))
+                                                             (-let [glob-regex (eshell-glob-regexp glob-pattern)]
+                                                               (or (string-match glob-regex changed-file)
+                                                                   (string-match glob-regex (f-relative changed-file root-folder)))))))))))
+                     (with-lsp-workspace workspace
+                       (lsp-notify
+                        "workspace/didChangeWatchedFiles"
+                        `((changes . [((type . ,(alist-get (cadr event) lsp--file-change-type))
+                                       (uri . ,(lsp--path-to-uri changed-file)))]))))))))))
+
 (defun lsp--server-register-capability (reg)
   "Register capability REG."
-  (-let (((&hash "method" "id" "registerOptions") reg))
+  (-let (((&hash "method" "id" "registerOptions") reg)
+         (session (lsp-session)))
+    (when (and lsp-enable-file-watchers
+               (string= method "workspace/didChangeWatchedFiles"))
+      (-let* ((created-watches (lsp-session-watches session))
+              (root-folders (cl-set-difference (lsp-find-roots-for-workspace lsp--cur-workspace session)
+                                               (ht-keys created-watches))))
+        ;; create watch for each root folder withtout such
+        (dolist (folder root-folders)
+          (puthash folder (lsp-watch-root-folder
+                           folder
+                           (-partial #'lsp--file-process-event session folder))
+                   created-watches))))
+
     (push
      (make-lsp--registered-capability :id id :method method :options registerOptions)
      (lsp--workspace-registered-server-capabilities lsp--cur-workspace))))
 
+(defun lsp--cleanup-hanging-watches ()
+  "Cleanup watches in case there are no more workspaces that are interested
+in that particular folder."
+  (let* ((session (lsp-session))
+         (watches (lsp-session-watches session)))
+    (dolist (watched-folder (ht-keys watches))
+      (when (-none? (lambda (workspace)
+                      (with-lsp-workspace workspace
+                        (lsp--registered-capability "workspace/didChangeWatchedFiles")))
+                    (gethash watched-folder (lsp-session-folder->servers (lsp-session))))
+        (lsp-log "Cleaning up watches for folder %s. There is no workspace watching this folder..." watched-folder)
+        (lsp-kill-watch (gethash watched-folder watches))
+        (remhash watched-folder watches)))))
+
 (defun lsp--server-unregister-capability (unreg)
   "Unregister capability UNREG."
-  (let* ((id (gethash "id" unreg))
-         (fn (lambda (e) (equal (lsp--registered-capability-id e) id))))
+  (-let [(&hash "id" "method") unreg]
     (setf (lsp--workspace-registered-server-capabilities lsp--cur-workspace)
-          (seq-remove fn
-                      (lsp--workspace-registered-server-capabilities lsp--cur-workspace)))))
+          (seq-remove (lambda (e) (equal (lsp--registered-capability-id e) id))
+                      (lsp--workspace-registered-server-capabilities lsp--cur-workspace)))
+    (when (string= method "workspace/didChangeWatchedFiles")
+      (lsp--cleanup-hanging-watches))))
 
 (defun lsp--server-capabilities ()
   "Return the capabilities of the language server associated with the buffer."
   (->> (lsp-workspaces)
-       (-map 'lsp--workspace-server-capabilities)
-       (-filter 'identity)
-       (apply 'ht-merge)))
+       (-map #'lsp--workspace-server-capabilities)
+       (-filter #'identity)
+       (apply #'ht-merge)))
 
 (defun lsp--send-open-close-p ()
   "Return whether open and close notifications should be sent to the server."
@@ -3195,30 +3282,6 @@ EXTRA is a plist of extra parameters."
   "Set the SETTINGS for the lsp server."
   (lsp-notify "workspace/didChangeConfiguration" `(:settings , settings)))
 
-(defun lsp-workspace-register-watch (to-watch &optional workspace)
-  "Monitor for file change and trigger workspace/didChangeConfiguration.
-
-TO-WATCH is a list of the directories and regexp in the following format:
-'((root-dir1 (glob-pattern1 glob-pattern2))
-  (root-dir2 (glob-pattern3 glob-pattern4)))
-
-If WORKSPACE is not specified the `lsp--cur-workspace' will be used."
-  (setq workspace (or workspace lsp--cur-workspace))
-  (let ((watches (lsp--workspace-watches workspace)))
-    (cl-loop for (dir glob-patterns) in to-watch do
-             (lsp-create-watch
-              dir
-              (mapcar 'eshell-glob-regexp glob-patterns)
-              (lambda (event)
-                (let ((lsp--cur-workspace workspace))
-                  (lsp-notify
-                   "workspace/didChangeWatchedFiles"
-                   (list :changes
-                         (list
-                          :type (alist-get (cadr event) lsp--file-change-type)
-                          :uri (lsp--path-to-uri (cl-caddr event)))))))
-              watches))))
-
 (defun lsp--on-set-visitied-file-name (old-func &rest args)
   "Advice around function `set-visited-file-name'.
 
@@ -3917,7 +3980,8 @@ returns the command to execute."
 
       (if (eq (lsp--workspace-shutdown-action workspace) 'shutdown)
           (lsp--info "Workspace %s shutdown." (lsp--workspace-print workspace))
-        (lsp--restart-if-needed workspace)))))
+        (lsp--restart-if-needed workspace))
+      (lsp--cleanup-hanging-watches))))
 
 (defun lsp--start-workspace (session client-template root &optional initialization-options)
   "Create new workspace for CLIENT-TEMPLATE with project root ROOT.
