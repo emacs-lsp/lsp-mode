@@ -1818,11 +1818,11 @@ disappearing, unset all the variables related to it."
                    :signatureHelp (:signatureInformation (:parameterInformation (:labelOffsetSupport t)))
                    :documentLink (:dynamicRegistration t)
                    :hover (:contentFormat ["plaintext" "markdown"])
-                   :foldingRange (if lsp-enable-folding
-                                     (list :dynamicRegistration t
-                                           :rangeLimit lsp-folding-range-limit
-                                           :lineFoldingOnly lsp-folding-line-folding-only)
-                                   nil))))
+                   :foldingRange ,(if lsp-enable-folding
+                                      (list :dynamicRegistration t
+                                            :rangeLimit lsp-folding-range-limit
+                                            :lineFoldingOnly lsp-folding-line-folding-only)
+                                    nil))))
 
 (defun lsp--server-register-capability (reg)
   "Register capability REG."
