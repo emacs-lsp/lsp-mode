@@ -276,6 +276,20 @@ the server has requested that."
     (1 . full)
     (2 . incremental)))
 
+(defcustom lsp-debounce-full-sync-notifications t
+  "If non-nil debounce full sync events.
+This flag affects only server which do not support incremental update."
+  :type 'boolean
+  :group 'lsp-mode)
+
+(defcustom lsp-debounce-full-sync-notifications-interval 1.0
+  "Time to wait before sending full sync synchronization after buffer modication."
+  :type 'float
+  :group 'lsp-mode)
+
+(defvar lsp--delayed-requests nil)
+(defvar lsp--delay-timer nil)
+
 (defvar-local lsp--server-sync-method nil
   "Sync method recommended by the server.")
 
@@ -1164,8 +1178,8 @@ WORKSPACE is the workspace that contains the diagnostics."
 
 (define-inline lsp--folding-range-width (range)
   (inline-letevals (range)
-      (inline-quote (- (lsp--folding-range-end ,range)
-                       (lsp--folding-range-beg ,range)))))
+    (inline-quote (- (lsp--folding-range-end ,range)
+                     (lsp--folding-range-beg ,range)))))
 
 (defun lsp--get-folding-ranges ()
   "Get the folding ranges for the current buffer."
@@ -1180,17 +1194,17 @@ WORKSPACE is the workspace that contains the diagnostics."
             (cons (buffer-chars-modified-tick)
                   (seq-map
                    (-lambda ((&hash "startLine" start-line
-		                    "startCharacter" start-character
-		                    "endLine" end-line
-		                    "endCharacter" end-character
+		                                "startCharacter" start-character
+		                                "endLine" end-line
+		                                "endCharacter" end-character
                                     "kind" kind))
                      (make-lsp--folding-range
                       :beg (lsp--position-to-point
                             (ht ("line" start-line)
-				("character" start-character)))
- 	              :end (lsp--position-to-point
+				                        ("character" start-character)))
+ 	                    :end (lsp--position-to-point
                             (ht ("line" end-line)
-				("character" end-character)))
+				                        ("character" end-character)))
                       :kind kind))
                    ranges)))
       (cdr lsp--cached-folding-ranges))))
@@ -1213,10 +1227,10 @@ WORKSPACE is the workspace that contains the diagnostics."
   (let (inner)
     (seq-doseq (range (lsp--get-folding-ranges))
       (when (lsp--point-inside-range-p point range)
-          (if inner
-              (when (lsp--range-inside-p inner range)
-                (setq inner range))
-            (setq inner range))))
+        (if inner
+            (when (lsp--range-inside-p inner range)
+              (setq inner range))
+          (setq inner range))))
     inner))
 
 (cl-defun lsp--get-current-outermost-range (&optional (point (point)))
@@ -1235,8 +1249,8 @@ WORKSPACE is the workspace that contains the diagnostics."
      (lambda ()
        (if (and (lsp--capability "foldingRangeProvider") lsp-enable-folding)
            (if-let ((range (lsp--get-current-innermost-range)))
-             (cons (lsp--folding-range-beg range)
-                   (lsp--folding-range-end range)))
+               (cons (lsp--folding-range-beg range)
+                     (lsp--folding-range-end range)))
          nil)))
 
 
@@ -1858,6 +1872,8 @@ callback will be executed only if the buffer was not modified.
 
 ERROR-CALLBACK will be called in case the request has failed.
 If NO-MERGE is non-nil, don't merge the results but return alist workspace->result."
+  (lsp--flush-delayed-changes)
+
   (if-let ((target-workspaces (lsp--find-workspaces-for body)))
       (let* ((start-time (current-time))
              (method (plist-get body :method))
@@ -2467,6 +2483,18 @@ Added to `before-change-functions'."
                 :start-pos (lsp--point-to-position start)
                 :end-pos (lsp--point-to-position end)))))
 
+(defun lsp--flush-delayed-changes ()
+  (-each (prog1 lsp--delayed-requests
+           (setq lsp--delayed-requests nil))
+    (-lambda ((workspace . buffer))
+      (with-current-buffer buffer
+        (with-lsp-workspace workspace
+          (lsp-notify
+           "textDocument/didChange"
+           `(:textDocument
+             ,(lsp--versioned-text-document-identifier)
+             :contentChanges ,(vector (lsp--full-change-event)))))))))
+
 (defun lsp-on-change (start end length)
   "Executed when a file is changed.
 Added to `after-change-functions'."
@@ -2500,16 +2528,31 @@ Added to `after-change-functions'."
             ;; buffer-file-name. We need the buffer-file-name to send notifications;
             ;; so we skip handling revert-buffer-caused changes and instead handle
             ;; reverts separately in lsp-on-revert
-            (unless (eq lsp--server-sync-method 'none)
-              (lsp-notify
-               "textDocument/didChange"
-               `(:textDocument
-                 ,(lsp--versioned-text-document-identifier)
-                 :contentChanges
-                 ,(pcase lsp--server-sync-method
-                    ('incremental (vector (lsp--text-document-content-change-event
-                                           start end length)))
-                    ('full (vector (lsp--full-change-event))))))))))))
+            (pcase lsp--server-sync-method
+              ('incremental (lsp-notify
+                             "textDocument/didChange"
+                             `(:textDocument
+                               ,(lsp--versioned-text-document-identifier)
+                               :contentChanges ,(vector (lsp--text-document-content-change-event
+                                                         start end length)))))
+              ('full
+               (if lsp-debounce-full-sync-notifications
+                   (progn
+                     (-some-> lsp--delay-timer cancel-timer)
+                     (cl-pushnew (cons lsp--cur-workspace (current-buffer))
+                                 lsp--delayed-requests
+                                 :test 'equal)
+                     (setq lsp--delay-timer (run-with-idle-timer
+                                             lsp-debounce-full-sync-notifications-interval
+                                             nil
+                                             (lambda ()
+                                               (setq lsp--delay-timer nil)
+                                               (lsp--flush-delayed-changes)))))
+                 (lsp-notify
+                  "textDocument/didChange"
+                  `(:textDocument
+                    ,(lsp--versioned-text-document-identifier)
+                    :contentChanges (vector (lsp--full-change-event))))))))))))
   (lsp--set-document-link-timer)
   (when lsp-lens-mode
     (lsp--lens-schedule-refresh t)))
