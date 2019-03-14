@@ -1093,6 +1093,7 @@ WORKSPACE is the workspace that contains the diagnostics."
   (with-eval-after-load 'flymake
     (defun lsp--flymake-setup()
       "Setup flymake."
+      (setq lsp--flymake-report-fn nil)
       (flymake-mode 1)
       (add-hook 'flymake-diagnostic-functions 'lsp--flymake-backend nil t)
       (add-hook 'lsp-after-diagnostics-hook 'lsp--flymake-after-diagnostics nil t))
