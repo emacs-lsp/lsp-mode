@@ -2293,6 +2293,7 @@ Added to `after-change-functions'."
   ;; (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length)
   ;; (message "lsp-on-change:(lsp--before-change-vals)=%s" lsp--before-change-vals)
   (when (not revert-buffer-in-progress-p)
+    (cl-incf lsp--cur-version)
     (--each (lsp-workspaces)
       (with-lsp-workspace it
         (with-demoted-errors "Error in ‘lsp-on-change’: %S"
@@ -2302,7 +2303,6 @@ Added to `after-change-functions'."
             ;; buffer-file-name. We need the buffer-file-name to send notifications;
             ;; so we skip handling revert-buffer-caused changes and instead handle
             ;; reverts separately in lsp-on-revert
-            (cl-incf lsp--cur-version)
             (unless (eq lsp--server-sync-method 'none)
               (lsp-notify
                "textDocument/didChange"
