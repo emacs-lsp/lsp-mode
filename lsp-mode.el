@@ -2392,7 +2392,10 @@ Added to `after-change-functions'."
   ;; (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length)
   ;; (message "lsp-on-change:(lsp--before-change-vals)=%s" lsp--before-change-vals)
   (when (not revert-buffer-in-progress-p)
-    (cl-incf lsp--cur-version)
+    (if lsp--cur-version
+        (cl-incf lsp--cur-version)
+      ;; buffer has been reset - start from scratch.
+      (setq lsp--cur-version 0))
     (--each (lsp-workspaces)
       (with-lsp-workspace it
         (with-demoted-errors "Error in ‘lsp-on-change’: %S"
