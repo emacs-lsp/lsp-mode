@@ -2854,7 +2854,7 @@ RENDER-ALL - nil if only the signature should be rendered."
                (signatures (append signatures nil))
                (signature (seq-elt signatures (or active-signature-index 0)))
                (result (lsp--fontlock-with-mode (gethash "label" signature) major-mode)))
-    (-when-let* (((&hash "parameters" parameters) signature)
+    (-when-let* ((parameters (append (gethash "parameters" signature) nil))
                  (param (seq-elt parameters active-parameter))
                  (selected-param-label (let ((label (-some->> param (gethash "label"))))
                                          (if (stringp label) label (append label nil))))
