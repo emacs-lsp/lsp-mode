@@ -243,7 +243,7 @@ It contains all of the clients that are currently registered.")
   :type 'hook
   :group 'lsp-mode)
 
-(defcustom lsp-enable-file-watchers t
+(defcustom lsp-enable-file-watchers nil
   "If non-nil lsp-mode will watch the files in the workspace if
 the server has requested that."
   :type 'boolean
