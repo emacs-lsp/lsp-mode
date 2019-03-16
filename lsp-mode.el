@@ -243,7 +243,7 @@ It contains all of the clients that are currently registered.")
   :type 'hook
   :group 'lsp-mode)
 
-(defcustom lsp-enable-file-watchers nil
+(defcustom lsp-enable-file-watchers t
   "If non-nil lsp-mode will watch the files in the workspace if
 the server has requested that."
   :type 'boolean
@@ -931,37 +931,43 @@ CALLBACK is the will be called when there are changes in any of
 the monitored files. WATCHES is a hash table directory->file
 notification handle which contains all of the watch that
 already have been created."
-  (let ((watch (or watch (prog1 (make-lsp-watch :root-directory dir)
-                           (lsp-log "Creating watch for %s" dir)))))
-    (->> (directory-files-recursively dir ".*" t)
-         (seq-filter (lambda (f) (and (file-directory-p f)
-                                      (not (lsp--string-match-any lsp-file-watch-ignored f)))))
-         (cl-list* dir)
-         (seq-do (lambda (d)
-                   (puthash
-                    d
-                    (file-notify-add-watch
-                     d
-                     '(change)
-                     (lambda (event)
-                       (let ((file-name (cl-caddr event))
-                             (event-type (cadr event)))
-                         (cond
-                          ((and (file-directory-p file-name)
-                                (equal 'created event-type))
+  (lsp-log "Creating watch for %s" dir)
+  (let ((watch (or watch (make-lsp-watch :root-directory dir))))
+    (condition-case err
+        (progn
+          (puthash
+           dir
+           (file-notify-add-watch
+            dir
+            '(change)
+            (lambda (event)
+              (let ((file-name (cl-caddr event))
+                    (event-type (cadr event)))
+                (cond
+                 ((and (file-directory-p file-name)
+                       (equal 'created event-type))
 
-                           (lsp-watch-root-folder file-name callback watch)
+                  (lsp-watch-root-folder file-name callback watch)
 
-                           ;; process the files that are already present in
-                           ;; the directory.
-                           (->> (directory-files-recursively file-name ".*" t)
-                                (seq-do (lambda (f)
-                                          (unless (file-directory-p f)
-                                            (funcall callback (list nil 'created f)))))))
-                          ((and (not (file-directory-p file-name))
-                                (memq event-type '(created deleted changed)))
-                           (funcall callback event))))))
-                    (lsp-watch-descriptors watch)))))
+                  ;; process the files that are already present in
+                  ;; the directory.
+                  (->> (directory-files-recursively file-name ".*" t)
+                       (seq-do (lambda (f)
+                                 (unless (file-directory-p f)
+                                   (funcall callback (list nil 'created f)))))))
+                 ((and (not (file-directory-p file-name))
+                       (memq event-type '(created deleted changed)))
+                  (funcall callback event))))))
+           (lsp-watch-descriptors watch))
+          (seq-do
+           (-rpartial #'lsp-watch-root-folder callback watch)
+           (seq-filter (lambda (f)
+                         (and (file-directory-p f)
+                              (not (lsp--string-match-any lsp-file-watch-ignored f))
+                              (not (-contains? '("." "..") (f-filename f)))))
+                       (directory-files dir t))))
+      (error (lsp-log "Failed to create a watch for %s: message" (error-message-string err)))
+      (file-missing (lsp-log "Failed to create a watch for %s: message" (error-message-string err))))
     watch))
 
 (defun lsp-kill-watch (watch)

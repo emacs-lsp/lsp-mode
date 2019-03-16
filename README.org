@@ -27,6 +27,8 @@
     - [[#tramp-experimental][TRAMP (Experimental)]]
       - [[#how-does-it-work][How does it work?]]
       - [[#sample-configuration][Sample configuration]]
+  - [[#limitations][Limitations]]
+    - [[#file-watches][File watches]]
   - [[#contributions][Contributions]]
   - [[#troubleshooting][Troubleshooting]]
   - [[#adding-support-for-languages][Adding support for languages]]
@@ -166,6 +168,7 @@
    - ~lsp-imenu-container-name-separator~ - Separator string to use to separate the container name from the symbol while displaying imenu entries.
    - ~lsp-imenu-sort-methods~ - How to sort the imenu items. The value is a list of ~kind~, ~name~ or ~position~. Priorities are determined by the index of the element.
    - ~lsp-response-timeout~ - Number of seconds to wait for a response from the language server before timing out.
+   - ~lsp-enable-file-watchers~ - If non-nil lsp-mode will watch the files in the workspace if the server has requested that.
 ** Screenshots
     - RUST Completion with company-lsp
      [[file:examples/completion.png]]
@@ -192,6 +195,9 @@
                        :server-id 'pyls))
    #+END_SRC
 
+** Limitations
+*** File watches
+    When some of the workspaces that are active in the current project requests file notifications via ~workspace/didChangeWatchedFiles~ ~lsp-mode~ will start monitoring each of the folders in the workspace for changes. In case your project contains a lot of files you might want to disable file monitoring via ~lsp-enable-file-watchers~ (you may use dir-locals).
 ** Contributions
    Contributions are very much welcome.
 

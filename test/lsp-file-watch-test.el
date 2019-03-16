@@ -108,6 +108,12 @@
 
     (should (equal expected-events events))))
 
+(ert-deftest lsp-file-watch--non-existing ()
+  :tags '(no-win)
+  (lsp-kill-watch (lsp-watch-root-folder
+                   "non-existing-directory"
+                   #'ignore)))
+
 (ert-deftest lsp-file-watch--relative-path-glob-patterns ()
   :tags '(no-win)
   (let* ((temp-directory (file-name-as-directory
