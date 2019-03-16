@@ -121,7 +121,7 @@
   :group 'lsp-mode
   :type 'boolean)
 
-(defcustom lsp-use-native-json nil
+(defcustom lsp-use-native-json t
   "If non-nil, use native json parsing if available."
   :group 'lsp-mode
   :type 'boolean)
