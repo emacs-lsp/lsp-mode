@@ -52,7 +52,7 @@
   '(
     :plugins.jedi_completion.enabled t
     :plugins.jedi_definition.follow_imports t
-    ;; List of configuration sources to use. (enum: ["pycodestyle", "pyflakes"])
+    ;; List of configuration sources to use. (enum: ["pycodestyle" "pyflakes"])
     :configurationSources ["pycodestyle"]
     ;; Enable or disable the plugin.
     :plugins.jedi_completion.enabled t
