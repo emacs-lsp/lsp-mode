@@ -3271,7 +3271,7 @@ A reference is highlighted only if it is visible in a window."
 (defun lsp--xref-backend () 'xref-lsp)
 
 (cl-defmethod xref-backend-identifier-at-point ((_backend (eql xref-lsp)))
-  (propertize (symbol-name (symbol-at-point))
+  (propertize (or (thing-at-point 'symbol) "")
               'def-params (lsp--text-document-position-params)
               'ref-params (lsp--make-reference-params)))
 
