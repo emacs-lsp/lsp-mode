@@ -457,6 +457,7 @@ defaults to half of your CPU cores."
                                                     lsp-clients-go-server-args)))
                   :major-modes '(go-mode)
                   :priority -1
+                  :multi-root t
                   :initialization-options 'lsp-clients-go--make-init-options
                   :server-id 'go-bingo
                   :library-folders-fn (lambda (_workspace)
