@@ -2793,13 +2793,14 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
               (seq-into (seq-map #'lsp--make-completion-item items) 'list))))
        :annotation-function #'lsp--annotate))))
 
-(define-inline lsp--sort-string (c)
-  (inline-quote (or (gethash "sortText" ,c)
-                    (gethash "label" ,c ""))))
-
 (defun lsp--sort-completions (completions)
   "Sort COMPLETIONS."
-  (--sort (string-lessp (lsp--sort-string it) (lsp--sort-string other)) completions))
+  (--sort (let ((left (gethash "sortText" it))
+                (right (gethash "sortText" other)))
+            (if (string= left right)
+                (string-lessp (gethash "label" it) (gethash "label" other))
+              (string-lessp left right)))
+          completions))
 
 (defun lsp--resolve-completion (item)
   "Resolve completion ITEM."
