@@ -508,7 +508,7 @@ PARAMS progress report notification data."
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
-                                                          (cons lsp-clients-php-server-command)))
+                                                          `(,lsp-clients-php-server-command)))
                   :major-modes '(php-mode)
                   :priority -1
                   :server-id 'php-ls))
@@ -540,7 +540,7 @@ PARAMS progress report notification data."
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
-                                                          (cons lsp-ocaml-ocaml-lang-server-command)))
+                                                          `(,lsp-ocaml-ocaml-lang-server-command)))
                   :major-modes '(reason-mode caml-mode tuareg-mode)
                   :priority -1
                   :server-id 'ocaml-ls))
@@ -635,7 +635,7 @@ finding the executable with `exec-path'."
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
-                                                          (cons lsp-clients-elixir-server-executable)))
+                                                          `(,lsp-clients-elixir-server-executable)))
                   :major-modes '(elixir-mode)
                   :priority -1
                   :server-id 'elixir-ls))
