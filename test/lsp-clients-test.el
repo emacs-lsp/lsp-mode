@@ -66,13 +66,13 @@
 (ert-deftest lsp-flow-should-activate-on-flow-project ()
   ;; Set `js-mode' ON and check that a Flow project activates the Flow
   ;; LSP client.
-  (js-mode)
-  (should (lsp-clients-flow-activate-p (concat test-location "fixtures/SampleFlowProject/src/sample.js") nil)))
+  (let ((major-mode 'js-mode))
+    (should (lsp-clients-flow-activate-p (concat test-location "fixtures/SampleFlowProject/src/sample.js") nil))))
 
 (ert-deftest lsp-flow-should-not-activate-on-typescript-project ()
   ;; Set `js-mode' ON and check that a TypeScript project does not
   ;; activate the Flow LSP client.
-  (js-mode)
-  (should (not (lsp-clients-flow-activate-p (concat test-location "fixtures/SampleTypeScriptProject/src/sample.ts") nil))))
+  (let ((major-mode 'js-mode))
+    (should (not (lsp-clients-flow-activate-p (concat test-location "fixtures/SampleTypeScriptProject/src/sample.ts") nil)))))
 
 ;;; lsp-clients-test.el ends here
