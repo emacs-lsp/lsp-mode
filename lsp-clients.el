@@ -507,10 +507,9 @@ PARAMS progress report notification data."
   :type 'file)
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
-                                                          `(,lsp-clients-php-server-command)))
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-clients-php-server-command))
                   :major-modes '(php-mode)
-                  :priority -1
+                  :priority -2
                   :server-id 'php-ls))
 
 
@@ -529,18 +528,8 @@ PARAMS progress report notification data."
           (repeat :tag "List of string values"
                   string)))
 
-(defcustom lsp-ocaml-reason-lang-server-command
-  '("ocaml-language-server" "--stdio")
-  "The command that starts the language server."
-  :group 'lsp-ocaml
-  :type '(choice
-          (string :tag "Single string value")
-          (repeat :tag "List of string values"
-                  string)))
-
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
-                                                          `(,lsp-ocaml-ocaml-lang-server-command)))
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-ocaml-ocaml-lang-server-command))
                   :major-modes '(reason-mode caml-mode tuareg-mode)
                   :priority -1
                   :server-id 'ocaml-ls))
@@ -680,10 +669,28 @@ finding the executable with `exec-path'."
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("kotlin-language-server"))
-		  :major-modes '(kotlin-mode)
-		  :priority -1
-		  :server-id 'kotlin-ls))
+		              :major-modes '(kotlin-mode)
+		              :priority -1
+		              :server-id 'kotlin-ls))
 
+
+;; PHP intelephense
+(defgroup lsp-php-iph nil
+  "PHP."
+  :group 'lsp-mode
+  :tag "PHP")
+
+(defcustom lsp-clients-php-iph-server-command
+  `("intelephense" "--stdio")
+  "Install directory for php-language-server."
+  :group 'lsp-php-ip
+  :type '(repeat string))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-clients-php-server-command))
+                  :major-modes '(php-mode)
+                  :priority -1
+                  :server-id 'iph))
 
 
 (provide 'lsp-clients)
