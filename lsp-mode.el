@@ -632,27 +632,34 @@ FORMAT and ARGS i the same as for `message'."
           (view-mode 1)
           (set (make-local-variable 'lsp--log-lines) 0)))
       (with-current-buffer log-buffer
-        (let* ((current-point (point))
-               (message (concat (apply 'format format args) "\n"))
-               ;; Count newlines in message.
-               (newlines (cl-loop with start = 0
-                                  for count from 0
-                                  while (string-match "\n" message start)
-                                  do (setq start (match-end 0))
-                                  finally return count))
-               (at-bottom (eq current-point (point-max))))
-          (goto-char (point-max))
-          (insert message)
-          (setq lsp--log-lines (+ lsp--log-lines newlines))
-          (when (and (integerp lsp-log-max) (> lsp--log-lines lsp-log-max))
-            (let ((to-delete (- lsp--log-lines lsp-log-max)))
-              (save-excursion
+        (save-excursion
+          (let* ((message (apply 'format format args))
+                 ;; Count newlines in message.
+                 (newlines (1+ (cl-loop with start = 0
+                                        for count from 0
+                                        while (string-match "\n" message start)
+                                        do (setq start (match-end 0))
+                                        finally return count))))
+            (goto-char (point-max))
+
+            ;; in case the buffer is not empty insert before last \n to preserve
+            ;; the point position(in case it is in the end)
+            (if (eq (point) (point-min))
+                (progn
+                  (insert "\n")
+                  (backward-char))
+              (backward-char)
+              (insert "\n"))
+            (insert message)
+
+            (setq lsp--log-lines (+ lsp--log-lines newlines))
+
+            (when (and (integerp lsp-log-max) (> lsp--log-lines lsp-log-max))
+              (let ((to-delete (- lsp--log-lines lsp-log-max)))
                 (goto-char (point-min))
                 (forward-line to-delete)
                 (delete-region (point-min) (point))
-                (setq lsp--log-lines lsp-log-max))))
-          (unless at-bottom
-            (goto-char current-point)))))))
+                (setq lsp--log-lines lsp-log-max)))))))))
 
 (defalias 'lsp-message 'lsp-log)
 
