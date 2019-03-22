@@ -353,6 +353,11 @@ the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
+(defcustom lsp-enable-symbol-highlighting t
+  "Highlight references of the symbol at point."
+  :type 'boolean
+  :group 'lsp-mode)
+
 (defcustom lsp-enable-xref t
   "Enable xref integration."
   :type 'boolean
@@ -2908,10 +2913,12 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
      nil)) nil)
 
 (defvar-local lsp--highlight-bounds nil)
+(defvar-local lsp--highlight-timer nil)
 
 (defun lsp--highlight ()
   (with-demoted-errors "Error in ‘lsp--highlight’: %S"
-    (when (lsp--capability "documentHighlightProvider")
+    (when (and lsp-enable-symbol-highlighting
+               (lsp--capability "documentHighlightProvider"))
       (let ((bounds (bounds-of-thing-at-point 'symbol))
             (last lsp--highlight-bounds)
             (point (point)))
@@ -2921,12 +2928,14 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
             (with-lsp-workspace it
               (lsp--remove-cur-overlays))))
         (when (and bounds (not (equal last bounds)))
-          (run-with-idle-timer
-           lsp-document-highlight-delay nil
-           (lambda nil
-             (setq lsp--highlight-bounds
-                   (bounds-of-thing-at-point 'symbol))
-             (lsp--document-highlight))))))))
+          (and lsp--highlight-timer (cancel-timer lsp--highlight-timer))
+          (setq lsp--highlight-timer
+                (run-with-idle-timer
+                 lsp-document-highlight-delay nil
+                 (lambda nil
+                   (setq lsp--highlight-bounds
+                         (bounds-of-thing-at-point 'symbol))
+                   (lsp--document-highlight)))))))))
 
 (defun lsp-describe-thing-at-point ()
   "Display the full documentation of the thing at point."
