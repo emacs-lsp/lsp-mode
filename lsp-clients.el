@@ -655,7 +655,7 @@ finding the executable with `exec-path'."
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-clients--fortls-command)
-                  :major-modes '(f90-mode)
+                  :major-modes '(f90-mode fortran-mode)
                   :priority -1
                   :server-id 'fortls))
 
