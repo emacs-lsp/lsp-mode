@@ -687,7 +687,7 @@ finding the executable with `exec-path'."
   :type '(repeat string))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-clients-php-server-command))
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-clients-php-iph-server-command))
                   :major-modes '(php-mode)
                   :priority -1
                   :server-id 'iph))
