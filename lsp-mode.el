@@ -1370,7 +1370,7 @@ WORKSPACE is the workspace that contains the diagnostics."
         nil)))
 
 ;; A more general purpose "thing", useful for applications like focus.el
-(put 'lsp-range 'bounds-of-thing-at-point
+(put 'lsp--range 'bounds-of-thing-at-point
      #'lsp--range-at-point-bounds)
 
 
