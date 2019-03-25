@@ -1195,9 +1195,12 @@ WORKSPACE is the workspace that contains the diagnostics."
 (cl-defstruct lsp--folding-range
   (beg)
   (end)
-  (kind))
+  (kind)
+  (children)
+  (orig-folding-range))
 
 (defvar-local lsp--cached-folding-ranges nil)
+(defvar-local lsp--cached-nested-folding-ranges nil)
 
 (define-inline lsp--folding-range-width (range)
   (inline-letevals (range)
@@ -1215,37 +1218,80 @@ WORKSPACE is the workspace that contains the diagnostics."
                                 `(:textDocument ,(lsp--text-document-identifier))))
       (setq lsp--cached-folding-ranges
             (cons (buffer-chars-modified-tick)
-                  (seq-map
-                   (-lambda ((&hash "startLine" start-line
-		                                "startCharacter" start-character
-		                                "endLine" end-line
-		                                "endCharacter" end-character
-                                    "kind" kind))
-                     (make-lsp--folding-range
-                      :beg (lsp--position-to-point
-                            (ht ("line" start-line)
-				                        ("character" start-character)))
- 	                    :end (lsp--position-to-point
-                            (ht ("line" end-line)
-				                        ("character" end-character)))
-                      :kind kind))
-                   ranges)))
+                  (-> (lambda (range)
+                        (-let [(&hash "startLine" start-line
+		                      "startCharacter" start-character
+		                      "endLine" end-line
+		                      "endCharacter" end-character
+                                      "kind" kind)
+                               range]
+                          (make-lsp--folding-range
+                           :beg (lsp--line-character-to-point
+                                 start-line start-character)
+ 	                   :end (lsp--line-character-to-point
+                                 end-line end-character)
+                           :kind kind
+                           :orig-folding-range range)))
+                      (seq-map ranges)
+                      (seq-into 'list)
+                      (delete-dups))))
       (cdr lsp--cached-folding-ranges))))
 
+(defun lsp--get-nested-folding-ranges ()
+  "Get a list of nested folding ranges for the current buffer."
+  (-let [(tick . _) lsp--cached-folding-ranges]
+    (if (and (eq tick (buffer-chars-modified-tick))
+             lsp--cached-nested-folding-ranges)
+        lsp--cached-nested-folding-ranges
+      (setq lsp--cached-nested-folding-ranges
+            (lsp--folding-range-build-trees (lsp--get-folding-ranges))))))
+
+(defun lsp--folding-range-insert-into-trees (trees range)
+  (unless
+      (cl-block top
+        (dolist (tree-node (reverse trees))
+          (when (lsp--range-inside-p range tree-node)
+            (setf (lsp--folding-range-children tree-node)
+                  (nconc (lsp--folding-range-children tree-node)
+                         (list range)))
+            (cl-return-from top t))))
+    (nconc trees (list range))))
+
+(defun lsp--folding-range-build-trees (ranges)
+  (setq ranges (seq-sort #'lsp--range-before-p ranges))
+  (let ((trees (list (seq-first ranges))))
+    (dolist (range (seq-rest ranges))
+      (lsp--folding-range-insert-into-trees trees range))
+    trees))
+
 (define-inline lsp--range-inside-p (r1 r2)
-  "Return non-nil if range R1 lies inside range R2"
+  "Return non-nil if folding range R1 lies inside R2"
   (inline-letevals (r1 r2)
     (inline-quote
      (and (>= (lsp--folding-range-beg ,r1) (lsp--folding-range-beg ,r2))
           (<= (lsp--folding-range-end ,r1) (lsp--folding-range-end ,r2))))))
 
+(define-inline lsp--range-before-p (r1 r2)
+  "Return non-nil if folding range R1 ends before R2"
+  (inline-letevals (r1 r2)
+    (inline-quote
+     ;; Ensure r1 comes before r2
+     (or (< (lsp--folding-range-beg ,r1)
+            (lsp--folding-range-beg ,r2))
+         ;; If beg(r1) == beg(r2), make sure r2 ends first
+         (and (= (lsp--folding-range-beg ,r1)
+                 (lsp--folding-range-beg ,r2))
+              (< (lsp--folding-range-end ,r2)
+                 (lsp--folding-range-end ,r1)))))))
+
 (define-inline lsp--point-inside-range-p (point range)
+  "Return non-nil if POINT lies inside folding range RANGE."
   (inline-letevals (point range)
     (inline-quote
      (and (>= ,point (lsp--folding-range-beg ,range))
           (<= ,point (lsp--folding-range-end ,range))))))
 
-(cl-defun lsp--get-current-innermost-range (&optional (point (point)))
+(cl-defun lsp--get-current-innermost-folding-range (&optional (point (point)))
   "Return the innermost folding range POINT lies in."
   (let (inner)
     (seq-doseq (range (lsp--get-folding-ranges))
@@ -1256,7 +1302,7 @@ WORKSPACE is the workspace that contains the diagnostics."
           (setq inner range))))
     inner))
 
-(cl-defun lsp--get-current-outermost-range (&optional (point (point)))
+(cl-defun lsp--get-current-outermost-folding-range (&optional (point (point)))
   "Return the outermost folding range POINT lies in."
   (let (outer width)
     (seq-doseq (range (lsp--get-folding-ranges))
@@ -1268,13 +1314,64 @@ WORKSPACE is the workspace that contains the diagnostics."
           (setq outer (cons width range)))))
     (cdr outer)))
 
+(defun lsp--folding-range-at-point-bounds ()
+  (if (and (lsp--capability "foldingRangeProvider") lsp-enable-folding)
+      (if-let ((range (lsp--get-current-innermost-folding-range)))
+          (cons (lsp--folding-range-beg range)
+                (lsp--folding-range-end range)))
+    nil))
 (put 'lsp-folding-range 'bounds-of-thing-at-point
-     (lambda ()
-       (if (and (lsp--capability "foldingRangeProvider") lsp-enable-folding)
-           (if-let ((range (lsp--get-current-innermost-range)))
-               (cons (lsp--folding-range-beg range)
-                     (lsp--folding-range-end range)))
-         nil)))
+     #'lsp--folding-range-at-point-bounds)
+
+(defun lsp--get-nearest-folding-range (&optional backward)
+  (let ((point (point))
+        (found nil))
+    (while (not
+            (or found
+                (if backward
+                    (<= point (point-min))
+                  (>= point (point-max)))))
+      (if backward (cl-decf point) (cl-incf point))
+      (setq found (lsp--get-current-innermost-folding-range point)))
+    found))
+
+(defun lsp--folding-range-at-point-forward-op (n)
+  (when (and (lsp--capability "foldingRangeProvider") lsp-enable-folding
+             (not (zerop n)))
+    (cl-block break
+      (dotimes (_ (abs n))
+        (if-let (range (lsp--get-nearest-folding-range (< n 0)))
+            (goto-char (if (< n 0)
+                           (lsp--folding-range-beg range)
+                         (lsp--folding-range-end range)))
+          (cl-return-from break))))))
+(put 'lsp--folding-range 'forward-op
+     #'lsp--folding-range-at-point-forward-op)
+
+(defun lsp--folding-range-at-point-beginning-op ()
+  (goto-char (car (lsp--folding-range-at-point-bounds))))
+(put 'lsp--folding-range 'beginning-op
+     #'lsp--folding-range-at-point-beginning-op)
+
+(defun lsp--folding-range-at-point-end-op ()
+  (goto-char (cdr (lsp--folding-range-at-point-bounds))))
+(put 'lsp--folding-range 'end-op
+     #'lsp--folding-range-at-point-end-op)
+
+(defun lsp--range-at-point-bounds ()
+  (or (lsp--folding-range-at-point-bounds)
+      (if-let ((range (and
+                       (lsp--capability "hoverProvider")
+                       (->> (lsp--text-document-position-params)
+                            (lsp-request "textDocument/hover")
+                            (gethash "range")))))
+          (cons (lsp--position-to-point (gethash "start" range))
+                (lsp--position-to-point (gethash "end" range)))
+        nil)))
+
+;; A more general purpose "thing", useful for applications like focus.el
+(put 'lsp-range 'bounds-of-thing-at-point
+     #'lsp--range-at-point-bounds)
 
 
 ;; lenses support
