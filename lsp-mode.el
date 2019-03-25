@@ -608,10 +608,14 @@ must be used for handling a particular message.")
   (if (listp sequence) (elt sequence n)
     (and (> (length sequence) n) (elt sequence n))))
 
-;; define seq-first for older emacs
+;; define seq-first and seq-rest for older emacs
 (defun seq-first (sequence)
   "Return the first element of SEQUENCE."
   (lsp-elt sequence 0))
+
+(defun seq-rest (sequence)
+  "Return a sequence of the elements of SEQUENCE except the first one."
+  (seq-drop sequence 1))
 
 (defun lsp--info (format &rest args)
   "Display lsp info message with FORMAT with ARGS."
