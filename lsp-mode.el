@@ -3075,8 +3075,8 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
   "Fontlock STR with MODE."
   (condition-case nil
       (with-temp-buffer
-        (delay-mode-hooks (funcall mode))
         (insert str)
+        (delay-mode-hooks (funcall mode))
         (font-lock-ensure)
         (buffer-string))
     (error str)))
