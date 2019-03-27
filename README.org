@@ -123,6 +123,7 @@
    | Swift                 | [[https://github.com/apple/sourcekit-lsp][sourcekit-LSP]]                                              | [[https://github.com/emacs-lsp/lsp-sourcekit][lsp-sourcekit]]            | [[https://github.com/apple/sourcekit-lsp][sourcekit-LSP]]                        | Yes (via llvm debug adapter) |
    | Vue                   | [[https://github.com/vuejs/vetur/tree/master/server][vue-language-server]]                             | Yes                                                                      | npm install -g vue-language-server                                               |                              |
    | Kotlin                | [[https://github.com/fwcd/KotlinLanguageServer][kotlin-language-server]]                               | Yes                                                                      | [[https://github.com/fwcd/KotlinLanguageServer][kotlin-language-server]]         |                              |
+   | Powershell            | [[https://github.com/PowerShell/PowerShellEditorServices][PowerShellEditorServices]]                   | [[https://github.com/kiennq/lsp-powershell][lsp-powershell]]             | Automatic by [[https://github.com/kiennq/lsp-powershell][lsp-powershell]]        |                              |
 ** Commands
    - ~lsp-describe-session~ - Display session folders and running servers.
    - ~lsp-describe-thing-at-point~ - Display help for the thing at point.
