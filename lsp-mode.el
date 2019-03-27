@@ -261,7 +261,10 @@ the server has requested that."
                                     "_darcs"
                                     ".tox"
                                     ".svn"
-                                    ".stack-work")
+                                    ".stack-work"
+                                    ".bloop"
+                                    ".metals"
+                                    "target")
   "List of directories which won't be monitored when creating file watches."
   :group 'lsp-mode
   :type '(repeat string))
