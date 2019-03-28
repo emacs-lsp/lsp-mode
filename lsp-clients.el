@@ -451,6 +451,16 @@ defaults to half of your CPU cores."
     :useBinaryPkgCache ,lsp-clients-go-use-binary-pkg-cache
     :diagnosticsEnabled ,lsp-clients-go-diagnostics-enabled))
 
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection "gopls")
+                  :major-modes '(go-mode)
+                  :priority 0
+                  :initialization-options 'lsp-clients-go--make-init-options
+                  :server-id 'gopls
+                  :library-folders-fn (lambda (_workspace)
+                                        lsp-clients-go-library-directories)))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda () (cons lsp-clients-go-server
