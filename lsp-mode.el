@@ -2072,7 +2072,8 @@ disappearing, unset all the variables related to it."
                                :symbol (:symbolKind (:valueSet ,(apply 'vector (number-sequence 1 26))))
                                :executeCommand (:dynamicRegistration :json-false)
                                :didChangeWatchedFiles (:dynamicRegistration t)
-                               :workspaceFolders t)
+                               :workspaceFolders t
+                               :configuration t)
     :textDocument (
                    :declaration (:linkSupport t)
                    :definition (:linkSupport t)
@@ -3679,6 +3680,9 @@ WORKSPACE is the active workspace."
                       ("workspace/applyEdit"
                        (lsp--apply-workspace-edit (gethash "edit" params))
                        empty-response)
+                      ("workspace/configuration"
+                       (or (lsp--create-initialization-options (lsp-session) client)
+                           empty-response))
                       (other
                        (-if-let (handler (gethash other (lsp--client-request-handlers client) nil))
                            (lsp--make-response request (funcall handler workspace params))
