@@ -1227,15 +1227,15 @@ WORKSPACE is the workspace that contains the diagnostics."
             (cons (buffer-chars-modified-tick)
                   (-> (lambda (range)
                         (-let [(&hash "startLine" start-line
-		                      "startCharacter" start-character
-		                      "endLine" end-line
-		                      "endCharacter" end-character
+                                      "startCharacter" start-character
+                                      "endLine" end-line
+                                      "endCharacter" end-character
                                       "kind" kind)
                                range]
                           (make-lsp--folding-range
                            :beg (lsp--line-character-to-point
                                  start-line start-character)
- 	                   :end (lsp--line-character-to-point
+                           :end (lsp--line-character-to-point
                                  end-line end-character)
                            :kind kind
                            :orig-folding-range range)))
@@ -2239,22 +2239,40 @@ in that particular folder."
   (interactive (list (completing-read "Select folder to remove: "
                                       (lsp-session-folders (lsp-session)) nil t
                                       (lsp-find-session-folder (lsp-session) default-directory))))
-  (lsp-notify "workspace/didChangeWorkspaceFolders"
-              `(:event (:removed ,(vector (list :uri (lsp--path-to-uri project-root))))))
+  ;; send remove folder to each multiroot workspace associated with the folder
+  (dolist (wks (->> (lsp-session)
+                    (lsp-session-folder->servers)
+                    (gethash project-root)
+                    (--filter (lsp--client-multi-root (lsp--workspace-client it)))))
+    (with-lsp-workspace wks
+      (lsp-notify "workspace/didChangeWorkspaceFolders"
+                  `(:event (:removed ,(vector (list :uri (lsp--path-to-uri project-root))))))))
 
-  ;; turn off servers in the removed directories
+  ;; turn off servers in the removed directory
   (let* ((session (lsp-session))
-         (folder->servers  (lsp-session-folder->servers session)))
-    ;; turn off the servers in directories if they are not multifolder
-    (-each (gethash project-root folder->servers)
-      (lambda (workspace)
-        (unless (lsp--client-multi-root (lsp--workspace-client workspace))
-          (lsp--info "Shutdown %s since folder %s is removed..." (lsp--workspace-print workspace) project-root)
-          (setf (lsp--workspace-shutdown-action workspace) 'shutdown)
-          (with-lsp-workspace workspace (lsp--shutdown-workspace)))))
+         (folder->servers (lsp-session-folder->servers session))
+         (server-id->folders (lsp-session-server-id->folders session))
+         (workspaces (gethash project-root folder->servers)))
+
+    (remhash project-root folder->servers)
+
+    ;; turn off the servers without root folders
+    (dolist (workspace workspaces)
+      (when (--none? (-contains? it workspace) (ht-values folder->servers))
+        (lsp--info "Shutdown %s since folder %s is removed..."
+                   (lsp--workspace-print workspace) project-root)
+        (setf (lsp--workspace-shutdown-action workspace) 'shutdown)
+        (with-lsp-workspace workspace (lsp--shutdown-workspace))))
 
     (setf (lsp-session-folders session)
-          (-remove-item project-root (lsp-session-folders session))))
+          (-remove-item project-root (lsp-session-folders session)))
+
+    (ht-aeach (puthash key
+                       (-remove-item project-root value)
+                       server-id->folders)
+              server-id->folders)
+    (lsp--persist-session (lsp-session)))
+
   (run-hook-with-args 'lsp-workspace-folders-changed-hook nil (list project-root)))
 
 (defun lsp-workspace-folders-switch()
