@@ -1136,8 +1136,9 @@ WORKSPACE is the workspace that contains the diagnostics."
         (puthash file (seq-map #'lsp--make-diag diagnostics) workspace-diagnostics)))
 
     (when buffer
-      (with-current-buffer buffer
-        (run-hooks 'lsp-after-diagnostics-hook)))))
+      (save-mark-and-excursion
+        (with-current-buffer buffer
+          (run-hooks 'lsp-after-diagnostics-hook))))))
 
 (with-no-warnings
   (with-eval-after-load 'flymake
