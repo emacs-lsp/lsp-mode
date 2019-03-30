@@ -4300,7 +4300,9 @@ returns the command to execute."
         ;; Kill standard error buffer only if the process exited normally.
         ;; Leave it intact otherwise for debugging purposes.
         (when (and (eq status 'exit) (zerop (process-exit-status process)) (buffer-live-p stderr))
-          (kill-buffer stderr)))
+          (kill-buffer stderr))
+
+        (lsp--remove-cur-overlays))
 
       (run-hook-with-args 'lsp-after-uninitialized-hook workspace)
 
