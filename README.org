@@ -36,6 +36,8 @@
   - [[#contributions][Contributions]]
   - [[#troubleshooting][Troubleshooting]]
   - [[#adding-support-for-languages][Adding support for languages]]
+    - [[#registering-server][Registering server]]
+    - [[#sections][Sections]]
   - [[#faq][FAQ]]
   - [[#see-also][See also]]
 
@@ -218,13 +220,28 @@
    #+caption: Describe session
    [[file:examples/describe.png]]
 ** Adding support for languages
-   Here it is the minimal configuration that is needed for new language server registration. Refer to the documentation of ~lsp-client.el~ for the additional settings supported on registration time. ~lsp-language-id-configuration~ must be updated to contain the corresponding mode -> language id - in this case ~(python-mode . "python")~
-   #+BEGIN_SRC emacs-lisp
-     (lsp-register-client
-      (make-lsp-client :new-connection (lsp-stdio-connection "pyls")
-                       :major-modes '(python-mode)
-                       :server-id 'pyls))
-   #+END_SRC
+*** Registering server
+    Here it is the minimal configuration that is needed for new language server registration. Refer to the documentation of ~lsp-client.el~ for the additional settings supported on registration time. ~lsp-language-id-configuration~ must be updated to contain the corresponding mode -> language id - in this case ~(python-mode . "python")~
+    #+BEGIN_SRC emacs-lisp
+      (lsp-register-client
+       (make-lsp-client :new-connection (lsp-stdio-connection "pyls")
+                        :major-modes '(python-mode)
+                        :server-id 'pyls))
+    #+END_SRC
+*** Sections
+    ~lsp-mode~ provides tools to bridge emacs ~defcustom~ as a language configuration sections properties(see [[https://microsoft.github.io/language-server-protocol/specification#workspace_configuration][specification workspace/configuration]]). In addition you may use ~lsp-generate-settings~ from [[https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-generate-settings.el][Generate Settings script]] to generate ~defcustom~ from ~package.json~ VScode plugin manifest. Example:
+    #+BEGIN_SRC emacs-lisp
+      (defcustom lsp-foo-language-server-property "bar"
+        "Demo property."
+        :group 'foo-ls
+        :risky t)
+
+      (lsp-register-custom-settings '(("foo.section.property" lsp-foo-language-server-property)))
+
+      (lsp-configuration-section  "foo")
+      ;; =>  (("foo" ("settings" ("property" . "bar"))))
+    #+END_SRC
+
 ** FAQ
    - How to configure a server with local variables?
      Add ~lsp~ server call to ~hack-local-variables-hook~ which runs right after the local variables are loaded.

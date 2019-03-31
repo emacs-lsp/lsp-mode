@@ -461,7 +461,8 @@ If set to `:none' neither of two will be enabled."
 
 (defvar-local lsp--flymake-report-fn nil)
 
-(defvar lsp-language-id-configuration '((java-mode . "java")
+(defvar lsp-language-id-configuration '((".*.vue" . "vue")
+                                        (java-mode . "java")
                                         (python-mode . "python")
                                         (gfm-view-mode . "markdown")
                                         (rust-mode . "rust")
@@ -2346,7 +2347,7 @@ in that particular folder."
    "textDocument/didOpen"
    (list :textDocument
          (list :uri (lsp--buffer-uri)
-               :languageId (alist-get major-mode lsp-language-id-configuration "")
+               :languageId (lsp-buffer-language)
                :version lsp--cur-version
                :text (buffer-substring-no-properties (point-min) (point-max)))))
 
@@ -2809,7 +2810,12 @@ Applies on type formatting."
 
 (defun lsp-buffer-language ()
   "Get language corresponding current buffer."
-  (alist-get major-mode lsp-language-id-configuration))
+  (->> lsp-language-id-configuration
+       (-first (-lambda ((mode-or-pattern . language))
+                 (cond
+                  ((stringp mode-or-pattern) language)
+                  ((eq mode-or-pattern major-mode) language))))
+       cl-rest))
 
 (defun lsp-workspace-root (&optional path)
   "Find the workspace root for the current file or PATH."
@@ -4440,15 +4446,71 @@ session workspce folder configuration for the server."
          (initialization-options (if (functionp initialization-options-or-fn)
                                      (funcall initialization-options-or-fn)
                                    initialization-options-or-fn)))
-    (if (lsp--client-multi-root client)
-        (or (-some->> session
-                      (lsp-session-server-id->folders)
-                      (gethash (lsp--client-server-id client))
-                      (-map 'lsp--path-to-uri)
-                      (apply 'vector)
-                      (plist-put initialization-options :workspaceFolders))
-            initialization-options)
-      initialization-options)))
+    (or (when (lsp--client-multi-root client)
+          (when-let (workspace-folders (-some->> session
+                                                 lsp-session-server-id->folders
+                                                 (gethash (lsp--client-server-id client))
+                                                 (-map #'lsp--path-to-uri)
+                                                 (apply 'vector)))
+            (if (ht? initialization-options)
+                (prog1 initialization-options
+                  (puthash "workspaceFolders" workspace-folders initialization-options))
+              (plist-put initialization-options :workspaceFolders workspace-folders))))
+        initialization-options)))
+
+(defun lsp--plist-delete (prop plist)
+  "Delete by side effect the property PROP from PLIST.
+If PROP is the first property in PLIST, there is no way
+to remove it by side-effect; therefore, write
+\(setq foo (evil-plist-delete :prop foo)) to be sure of
+changing the value of `foo'."
+  (let ((tail plist) elt head)
+    (while tail
+      (setq elt (car tail))
+      (cond
+       ((eq elt prop)
+        (setq tail (cdr (cdr tail)))
+        (if head
+            (setcdr (cdr head) tail)
+          (setq plist tail)))
+       (t
+        (setq head tail
+              tail (cdr (cdr tail))))))
+    plist))
+
+(defvar lsp-client-settings nil)
+
+(defun lsp-register-custom-settings (props)
+  "Register PROPS.
+The PROPS is list of triple (path symbol boolean?) Where: path is
+the path to the property, symbol is the defcustom symbol which
+will be used to retrieve the value and boolean determines whether
+the type of the property is boolean?"
+  (setq lsp-client-settings (-uniq (append lsp-client-settings props))))
+
+(defun lsp-ht-set (tbl paths value)
+  "Set nested hashtable value.
+TBL - a hashtable, PATHS is the path to the nested VALUE."
+  (pcase paths
+    (`(,path) (ht-set! tbl path value))
+    (`(,path . ,rst) (let ((nested-tbl (or (gethash path tbl)
+                                           (let ((temp-tbl (ht)))
+                                             (ht-set! tbl path temp-tbl)
+                                             temp-tbl)) ))
+                       (lsp-ht-set nested-tbl rst value)))))
+
+(defun lsp-configuration-section (section)
+  "Get settings for SECTION."
+  (let ((ret (ht-create)))
+    (mapc (-lambda ((path variable boolean?))
+            (when (s-matches? (concat section "\\..*") path)
+              (let* ((symbol-value (symbol-value variable))
+                     (value (if (and boolean? (not symbol-value))
+                                :json-false
+                              symbol-value)))
+                (lsp-ht-set ret (s-split "\\." path) value))))
+          lsp-client-settings)
+    ret))
 
 (defun lsp--start-connection (session client project-root)
   "Initiates connection created from CLIENT for PROJECT-ROOT.

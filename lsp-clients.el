@@ -27,118 +27,11 @@
 (require 'lsp)
 (require 'dash)
 (require 'dash-functional)
+(require 'lsp-pyls)
+(require 'lsp-rust)
+(require 'lsp-solargraph)
+(require 'lsp-vetur)
 
-
-;; Python
-
-(defgroup lsp-python nil
-  "Python."
-  :group 'lsp-mode
-  :tag "Python")
-
-(defcustom lsp-clients-python-library-directories '("/usr/")
-  "List of directories which will be considered to be libraries."
-  :group 'lsp-python
-  :risky t
-  :type '(repeat string))
-
-(defcustom lsp-clients-python-command '("pyls")
-  "PYLS command."
-  :group 'lsp-python
-  :risky t
-  :type 'list)
-
-(defcustom lsp-clients-python-settings
-  '(
-    :plugins.jedi_completion.enabled t
-    :plugins.jedi_definition.follow_imports t
-    ;; List of configuration sources to use. (enum: ["pycodestyle" "pyflakes"])
-    :configurationSources ["pycodestyle"]
-    ;; Enable or disable the plugin.
-    :plugins.jedi_completion.enabled t
-    ;; Enable or disable the plugin.
-    :plugins.jedi_definition.enabled t
-    ;; The goto call will follow imports.
-    :plugins.jedi_definition.follow_imports nil
-    ;; If follow_imports is True will decide if it follow builtin imports.
-    :plugins.jedi_definition.follow_builtin_imports nil
-    ;; Enable or disable the plugin.
-    :plugins.jedi_hover.enabled t
-    ;; Enable or disable the plugin.
-    :plugins.jedi_references.enabled t
-    ;; Enable or disable the plugin.
-    :plugins.jedi_signature_help.enabled nil
-    ;; Enable or disable the plugin.
-    :plugins.jedi_symbols.enabled nil
-    ;; If True lists the names of all scopes instead of only the module namespace.
-    :plugins.jedi_symbols.all_scopes t
-    ;; Enable or disable the plugin.
-    :plugins.mccabe.enabled nil
-    ;; The minimum threshold that triggers warnings about cyclomatic complexity.
-    :plugins.mccabe.threshold 15
-    ;; Enable or disable the plugin.
-    :plugins.preload.enabled t
-    ;; List of modules to import on startup
-    :plugins.preload.modules nil
-    ;; Enable or disable the plugin.
-    :plugins.pycodestyle.enabled t
-    ;; Exclude files or directories which match these patterns(list of strings).
-    :plugins.pycodestyle.exclude nil
-    ;;  When parsing directories, only check filenames matching these patterns.
-    :plugins.pycodestyle.filename nil
-    ;; Select errors and warnings (list of string)
-    :plugins.pycodestyle.select nil
-    ;; Ignore errors and warnings (list of string)
-    :plugins.pycodestyle.ignore nil
-    ;; Hang closing bracket instead of matching indentation of opening bracket's line.
-    :plugins.pycodestyle.hangClosing nil
-    ;; Set maximum allowed line length.
-    :plugins.pycodestyle.maxLineLength nil
-    ;; Enable or disable the plugin.
-    :plugins.pydocstyle.enabled nil
-    ;; Choose the basic list of checked errors by specifying an existing
-    ;; convention. One of ("pep257","numpy")
-    :plugins.pydocstyle.convention nil
-    ;; Ignore errors and warnings in addition to the specified convention.
-    :plugins.pydocstyle.addIgnore nil
-    ;; Select errors and warnings in addition to the specified convention.
-    :plugins.pydocstyle.addSelect nil
-    ;; Ignore errors and warnings
-    :plugins.pydocstyle.ignore nil
-    ;; Select errors and warnings
-    :plugins.pydocstyle.select nil
-    ;; Check only files that exactly match the given regular expression; default
-    ;; is to match files that don't start with 'test_' but end with '.py'.
-    :plugins.pydocstyle.match "(?!test_).*\\.py"
-    ;; Enable or disable the plugin.
-    :plugins.pydocstyle.matchDir nil
-    ;; Enable or disable the plugin.
-    :plugins.pyflakes.enabled t
-    ;; Enable or disable the plugin.
-    :plugins.rope_completion.enabled t
-    ;; Enable or disable the plugin.
-    :plugins.yapf.enabled t
-    ;; Builtin and c-extension modules that are allowed to be imported and inspected by rope.
-    :rope.extensionModules nil
-    ;; The name of the folder in which rope stores project configurations and
-    ;; data. Pass `nil' for not using such a folder at all.
-    :rope.ropeFolder nil)
-  "Lsp clients configuration settings."
-  :group 'lsp-python
-  :risky t
-  :type 'plist)
-
-;;; pyls
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-clients-python-command))
-                  :major-modes '(python-mode)
-                  :priority -1
-                  :server-id 'pyls
-                  :initialized-fn (lambda (workspace)
-                                    (with-lsp-workspace workspace
-                                      (lsp--set-configuration `(:pyls ,lsp-clients-python-settings))))
-                  :library-folders-fn (lambda (_workspace)
-                                        lsp-clients-python-library-directories)))
 
 ;;; CSS
 (defun lsp-clients-css--apply-code-action (action)
@@ -214,7 +107,7 @@ finding the executable with variable `exec-path'."
   :type '(repeat string))
 
 (defun lsp-typescript-javascript-tsx-jsx-activate-p (filename mode)
-  "Checks if the javascript-typescript language server should be enabled
+  "Check if the javascript-typescript language server should be enabled
 based on FILE-NAME and MAJOR-MODE"
   (or (member mode '(typescript-mode typescript-tsx-mode js-mode js2-mode rjsx-mode))
       (and (eq major-mode 'web-mode)
@@ -283,7 +176,7 @@ finding the executable with variable `exec-path'."
   :type '(repeat string))
 
 (defun lsp-clients-flow-tag-file-present-p (file-name)
-  "Checks if the '// @flow' or `/* @flow */' tag is present in
+  "Check if the '// @flow' or `/* @flow */' tag is present in
 the contents of FILE-NAME."
   (with-temp-buffer
     (insert-file-contents file-name)
@@ -321,12 +214,12 @@ with the file contents."
         found))))
 
 (defun lsp-clients-flow-project-p (file-name)
-  "Checks if FILE-NAME is part of a Flow project, that is, if
+  "Check if FILE-NAME is part of a Flow project, that is, if
 there is a .flowconfig file in the folder hierarchy."
   (locate-dominating-file file-name ".flowconfig"))
 
 (defun lsp-clients-flow-activate-p (file-name _mode)
-  "Checks if the Flow language server should be enabled for a
+  "Check if the Flow language server should be enabled for a
 particular FILE-NAME and MODE."
   (and (derived-mode-p 'js-mode 'web-mode 'js2-mode 'flow-js2-mode 'rjsx-mode)
        (lsp-clients-flow-project-p file-name)
@@ -339,38 +232,6 @@ particular FILE-NAME and MODE."
                   :priority -1
                   :activation-fn 'lsp-clients-flow-activate-p
                   :server-id 'flow-ls))
-
-;;; Vue
-(defgroup lsp-vue nil
-  "Vue."
-  :group 'lsp-mode
-  :tag "Vue")
-
-(defcustom lsp-clients-vue-server "vls"
-  "The vue-language-server executable to use.
-Leave as just the executable name to use the default behavior of
-finding the executable with `exec-path'."
-  :group 'lsp-vue
-  :risky t
-  :type 'file)
-
-(defcustom lsp-clients-vue-server-args '()
-  "Extra arguments for the vue-language-server language server."
-  :group 'lsp-vue
-  :risky t
-  :type '(repeat string))
-
-(defun lsp-vue--ls-command ()
-  "Generate the language server startup command."
-  `(,lsp-clients-vue-server
-    ,@lsp-clients-vue-server-args))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-vue--ls-command)
-                  :major-modes '(vue-mode)
-                  :priority -1
-                  :ignore-messages '("readFile .*? requested by Vue but content not available")
-                  :server-id 'vls))
 
 
 ;;; GO language
@@ -443,13 +304,13 @@ defaults to half of your CPU cores."
 (defun lsp-clients-go--make-init-options ()
   "Init options for golang."
   `(:funcSnippetEnabled ,(lsp-clients-go--bool-to-json lsp-clients-go-func-snippet-enabled)
-    :disableFuncSnippet ,(lsp-clients-go--bool-to-json (not lsp-clients-go-func-snippet-enabled))
-    :gocodeCompletionEnabled ,(lsp-clients-go--bool-to-json lsp-clients-go-gocode-completion-enabled)
-    :formatTool ,lsp-clients-go-format-tool
-    :goimportsLocalPrefix ,lsp-clients-go-imports-local-prefix
-    :maxParallelism ,lsp-clients-go-max-parallelism
-    :useBinaryPkgCache ,lsp-clients-go-use-binary-pkg-cache
-    :diagnosticsEnabled ,lsp-clients-go-diagnostics-enabled))
+                        :disableFuncSnippet ,(lsp-clients-go--bool-to-json (not lsp-clients-go-func-snippet-enabled))
+                        :gocodeCompletionEnabled ,(lsp-clients-go--bool-to-json lsp-clients-go-gocode-completion-enabled)
+                        :formatTool ,lsp-clients-go-format-tool
+                        :goimportsLocalPrefix ,lsp-clients-go-imports-local-prefix
+                        :maxParallelism ,lsp-clients-go-max-parallelism
+                        :useBinaryPkgCache ,lsp-clients-go-use-binary-pkg-cache
+                        :diagnosticsEnabled ,lsp-clients-go-diagnostics-enabled))
 
 
 (lsp-register-client
@@ -481,28 +342,6 @@ defaults to half of your CPU cores."
                   :library-folders-fn (lambda (_workspace)
                                         lsp-clients-go-library-directories)))
 
-
-;; RUST
-(defun lsp-clients--rust-window-progress (_workspace params)
-  "Progress report handling.
-PARAMS progress report notification data."
-  ;; Minimal implementation - we could show the progress as well.
-  (lsp-log (gethash "title" params)))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '("rls"))
-                  :major-modes '(rust-mode rustic-mode)
-                  :priority -1
-                  :server-id 'rls
-                  :notification-handlers (lsp-ht ("window/progress" 'lsp-clients--rust-window-progress))))
-
-;; Ruby
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '("solargraph" "stdio"))
-                  :major-modes '(ruby-mode enh-ruby-mode)
-                  :priority -1
-                  :multi-root t
-                  :server-id 'ruby-ls))
 
 ;; PHP
 (defgroup lsp-php nil

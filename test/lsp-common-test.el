@@ -81,4 +81,50 @@
                     "/foo"))
              t
              "Should not find any root."))
+
+
+
+(defun lsp-ht->alist (table)
+  (ht-amap (cons key (if (ht? value)
+                         (lsp-ht->alist value)
+                       value))
+           table))
+
+(defcustom lsp-prop1 "10"
+  "docs"
+  :group 'lsp-python
+  :risky t
+  :type 'list)
+
+(lsp-register-custom-settings '(("section1.prop1" lsp-prop1)))
+
+(ert-deftest lsp--custom-settings-test ()
+  (cl-assert (equal (lsp-ht->alist  (lsp-configuration-section  "section1"))
+                    '(("section1" ("prop1" . "10")))))
+  (let ((lsp-prop1 1))
+    (cl-assert (equal (lsp-ht->alist (lsp-configuration-section  "section1"))
+                      '(("section1" ("prop1" . 1)))))))
+
+(defcustom lsp-nested-prop1 "10"
+  "docs"
+  :risky t
+  :type 'list)
+
+(lsp-register-custom-settings '(("section2.nested.prop1" lsp-nested-prop1)))
+
+(ert-deftest lsp--custom-settings-test ()
+  (cl-assert (equal (lsp-ht->alist (lsp-configuration-section "section2"))
+                    '(("section2" ("nested" ("prop1" . "10")))))))
+
+(defcustom lsp-prop3 nil
+  "docs"
+  :group 'lsp-python
+  :risky t)
+
+(lsp-register-custom-settings '(("section3.prop1" lsp-prop3 t)))
+
+(ert-deftest lsp--boolean-property ()
+  (cl-assert (equal (lsp-ht->alist  (lsp-configuration-section  "section3"))
+                    '(("section3" ("prop1" . :json-false))))))
+
 ;;; lsp-common-test.el ends here
