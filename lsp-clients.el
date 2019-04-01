@@ -242,7 +242,8 @@ particular FILE-NAME and MODE."
   :tag "Go language")
 
 (defcustom lsp-clients-go-server "bingo"
-  "The go language server executable to use."
+  "The go language server executable to use.  One of `bingo',
+`gopls', `go-langserver' to use. Defaults to `bingo'."
   :group 'lsp-clients-go
   :risky t
   :type 'file)
@@ -314,31 +315,13 @@ defaults to half of your CPU cores."
 
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "gopls")
-                  :major-modes '(go-mode)
-                  :priority 0
-                  :initialization-options 'lsp-clients-go--make-init-options
-                  :server-id 'gopls
-                  :library-folders-fn (lambda (_workspace)
-                                        lsp-clients-go-library-directories)))
-
-(lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda () (cons lsp-clients-go-server
                                                     lsp-clients-go-server-args)))
                   :major-modes '(go-mode)
                   :priority -1
                   :initialization-options 'lsp-clients-go--make-init-options
-                  :server-id 'go-bingo
-                  :library-folders-fn (lambda (_workspace)
-                                        lsp-clients-go-library-directories)))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "go-langserver")
-                  :major-modes '(go-mode)
-                  :priority -2
-                  :initialization-options 'lsp-clients-go--make-init-options
-                  :server-id 'go-ls
+                  :server-id (intern lsp-clients-go-server)
                   :library-folders-fn (lambda (_workspace)
                                         lsp-clients-go-library-directories)))
 
