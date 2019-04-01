@@ -679,9 +679,9 @@ finding the executable with `exec-path'."
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("kotlin-language-server"))
-		              :major-modes '(kotlin-mode)
-		              :priority -1
-		              :server-id 'kotlin-ls))
+                  :major-modes '(kotlin-mode)
+                  :priority -1
+                  :server-id 'kotlin-ls))
 
 
 ;; PHP intelephense
@@ -701,6 +701,28 @@ finding the executable with `exec-path'."
                   :major-modes '(php-mode)
                   :priority -1
                   :server-id 'iph))
+
+;; Hack
+(defgroup lsp-hack nil
+  "Hack."
+  :group 'lsp-mode
+  :tag "Hack")
+
+(defcustom lsp-clients-hack-command '("hh_client" "lsp" "--from" "emacs")
+  "hh_client command."
+  :group 'lsp-hack
+  :risky t
+  :type 'list)
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-clients-hack-command))
+                  :major-modes '(hack-mode)
+                  :priority -1
+                  :server-id 'hack
+                  ;; ignore some unsupported messages from Nuclide
+                  :notification-handlers (lsp-ht ("telemetry/event" 'ignore)
+                                                 ("$/cancelRequest" 'ignore))
+                  :request-handlers (lsp-ht ("window/showStatus" 'ignore))))
 
 
 (provide 'lsp-clients)
