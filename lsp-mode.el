@@ -758,7 +758,7 @@ TRANSFORM-FN will be used to transform each of the items before displaying.
 PROMPT COLLECTION PREDICATE REQUIRE-MATCH INITIAL-INPUT HIST DEF
 INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   (let* ((result (--map (cons (funcall transform-fn it) it) collection))
-         (completion (completing-read prompt (-map 'first result)
+         (completion (completing-read prompt (-map 'cl-first result)
                                       predicate require-match initial-input hist
                                       def inherit-input-method)))
     (cdr (assoc completion result))))
