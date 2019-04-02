@@ -4387,7 +4387,8 @@ remote machine and vice versa."
                      hash-table-values
                      (-filter (-lambda (client)
                                 (and (or (-some-> client lsp--client-activation-fn (funcall buffer-file-name buffer-major-mode))
-                                         (and (-contains? (lsp--client-major-modes client) buffer-major-mode)
+                                         (and (not (lsp--client-activation-fn client))
+                                              (-contains? (lsp--client-major-modes client) buffer-major-mode)
                                               (eq (---truthy? remote?) (---truthy? (lsp--client-remote? client)))))
                                      (-some-> client lsp--client-new-connection (plist-get :test?) funcall)))))
       (lsp-log "Found the following clients for %s: %s"
