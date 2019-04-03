@@ -904,9 +904,21 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
      (lsp--line-character-to-point (gethash "line" ,params)
                                    (gethash "character" ,params)))))
 
-(defun lsp--range-to-region (range)
-  (cons (lsp--position-to-point (gethash "start" range))
-        (lsp--position-to-point (gethash "end" range))))
+(define-inline lsp--range-to-region (range)
+  (inline-letevals (range)
+    (inline-quote
+     (cons (lsp--position-to-point (gethash "start" ,range))
+           (lsp--position-to-point (gethash "end" ,range))))))
+
+(pcase-defmacro lsp-range (region)
+  "Build a `pcase' pattern that matches a LSP Range object.
+Elements should be of the form (START . END), where START and END are bound
+to the beginning and ending points in the range correspondingly."
+  `(and (pred hash-table-p)
+        (app (lambda (range) (lsp--position-to-point (gethash "start" range)))
+             ,(car region))
+        (app (lambda (range) (lsp--position-to-point (gethash "end" range)))
+             ,(cdr region))))
 
 (defun lsp-warn (message &rest args)
   "Display a warning message made from (`format-message' MESSAGE ARGS...).
@@ -961,9 +973,11 @@ DELETE when `lsp-mode.el' is deleted.")
           (url-hexify-string (expand-file-name (or (file-remote-p path 'localname t) path))
                              url-path-allowed-chars)))
 
-(defun lsp--string-match-any (regex-list str)
+(define-inline lsp--string-match-any (regex-list str)
   "Given a list of REGEX-LIST and STR return the first matching regex if any."
-  (--first (string-match it str) regex-list))
+  (inline-letevals (regex-list str)
+    (inline-quote
+     (--first (string-match it ,str) ,regex-list))))
 
 (cl-defstruct lsp-watch
   (descriptors (make-hash-table :test 'equal) :read-only t)
