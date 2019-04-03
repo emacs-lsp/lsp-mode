@@ -2,6 +2,10 @@
 [[https://stable.melpa.org/#/lsp-mode][file:https://stable.melpa.org/packages/lsp-mode-badge.svg]]
 [[https://gitter.im/emacs-lsp/lsp-mode][file:https://badges.gitter.im/emacs-lsp/lsp-mode.svg]]
 [[https://travis-ci.org/emacs-lsp/lsp-mode][file:https://travis-ci.org/emacs-lsp/lsp-mode.svg?branch=master]]
+
+#+ATTR_HTML: align="center"; margin-right="auto"; margin-left="auto"  
+[[examples/logo.png]]
+
 * Language Server Protocol Support for Emacs
   #+caption: LSP mode
   [[file:examples/head.png]]
