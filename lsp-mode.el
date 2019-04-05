@@ -3714,8 +3714,7 @@ WORKSPACE is the active workspace."
                        (lsp--apply-workspace-edit (gethash "edit" params))
                        empty-response)
                       ("workspace/configuration"
-                       (or (lsp--create-initialization-options (lsp-session) client)
-                           empty-response))
+                       (lsp--make-response request (lsp--create-initialization-options (lsp-session) client)))
                       (other
                        (-if-let (handler (gethash other (lsp--client-request-handlers client) nil))
                            (lsp--make-response request (funcall handler workspace params))
