@@ -4762,7 +4762,7 @@ The library folders are defined by each client for each of the active workspace.
                                   :folders-blacklist (lsp-session-folders-blacklist session)
                                   :server-id->folders (lsp-session-server-id->folders session))))
 
-(defun lsp--try-project-root-workspaces (ignore-multi-folder)
+(defun lsp--try-project-root-workspaces (ask-for-client ignore-multi-folder)
   "Try create opening file as a project file.
 When IGNORE-MULTI-FOLDER is t the lsp mode will start new
 language server even if there is language server which can handle
@@ -4770,7 +4770,7 @@ current language. When IGNORE-MULTI-FOLDER is nil current file
 will be openned in multi folder language server if there is
 such."
   (-let ((session (lsp-session)))
-    (-if-let (clients (if current-prefix-arg
+    (-if-let (clients (if ask-for-client
                           (list (lsp--completing-read "Select server to start: "
                                                       (ht-values lsp-clients)
                                                       (-compose 'symbol-name 'lsp--client-server-id) nil t))
@@ -4816,21 +4816,23 @@ such."
     (with-lsp-workspace it (lsp--shutdown-workspace))))
 
 ;;;###autoload
-(defun lsp (&optional ignore-multi-folder)
+(defun lsp (&optional arg)
   "Entry point for the server startup.
-When IGNORE-MULTI-FOLDER is t the lsp mode will start new
-language server even if there is language server which can handle
-current language. When IGNORE-MULTI-FOLDER is nil current file
-will be openned in multi folder language server if there is
-such."
-  (interactive)
+When ARG is t the lsp mode will start new language server even if
+there is language server which can handle current language. When
+ARG is nil current file will be openned in multi folder language
+server if there is such. When `lsp' is called with prefix
+argument ask the user to select which language server to start. "
+  (interactive "P")
 
   (when (and lsp-auto-configure lsp-auto-require-clients)
     (require 'lsp-clients))
 
   (when (and (buffer-file-name)
-             (setq-local lsp--buffer-workspaces (or (lsp--try-open-in-library-workspace)
-                                                    (lsp--try-project-root-workspaces ignore-multi-folder))))
+             (setq-local lsp--buffer-workspaces
+                         (or (lsp--try-open-in-library-workspace)
+                             (lsp--try-project-root-workspaces (equal arg '(4))
+                                                               (and arg (not (equal arg 1)))))))
     (lsp-mode 1)
     (when lsp-auto-configure (lsp--auto-configure))
 
