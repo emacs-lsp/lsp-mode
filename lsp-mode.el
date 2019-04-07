@@ -2357,6 +2357,9 @@ in that particular folder."
          (kind (if (hash-table-p sync) (gethash "change" sync) sync)))
     (setq lsp--server-sync-method (or lsp-document-sync-method
                                       (alist-get kind lsp--sync-methods))))
+  (when (and lsp-auto-configure (lsp--capability "documentSymbolProvider"))
+    (lsp-enable-imenu))
+
   (run-hooks 'lsp-after-open-hook)
   (lsp--set-document-link-timer))
 
@@ -4249,8 +4252,6 @@ returns the command to execute."
       (require 'lsp-ui-flycheck)
       (lsp-ui-flycheck-enable t)
       (flycheck-mode 1)))
-
-    (lsp-enable-imenu)
 
     (when (functionp 'company-lsp)
       (company-mode 1)
