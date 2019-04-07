@@ -2816,7 +2816,7 @@ Applies on type formatting."
   (->> lsp-language-id-configuration
        (-first (-lambda ((mode-or-pattern . language))
                  (cond
-                  ((stringp mode-or-pattern) language)
+                  ((and (stringp mode-or-pattern) (s-matches? mode-or-pattern buffer-file-name)) language)
                   ((eq mode-or-pattern major-mode) language))))
        cl-rest))
 
