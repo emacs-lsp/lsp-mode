@@ -548,6 +548,11 @@ must be used for handling a particular message.")
 (defcustom lsp-lens-debounce-interval 0.7
   "Debounce interval for loading lenses."
   :group 'lsp-mode
+  :type 'number)
+
+(defcustom lsp-symbol-highlighting-skip-current nil
+  "If non-nil skip current symbol when setting symbol highlights."
+  :group 'lsp-mode
   :type 'boolean)
 
 (defcustom lsp-document-highlight-delay 0.2
@@ -3403,7 +3408,11 @@ A reference is highlighted only if it is visible in a window."
                          (end-window (cdr win)))
                     ;; Make the overlay only if the reference is visible
                     (when (and (> (1+ (gethash "line" start)) start-window)
-                               (< (1+ (gethash "line" end)) end-window))
+                               (< (1+ (gethash "line" end)) end-window)
+                               (not (and lsp-symbol-highlighting-skip-current
+                                         (< (lsp--position-to-point start)
+                                            (point)
+                                            (lsp--position-to-point end)))))
                       (setq overlay (make-overlay (lsp--position-to-point start)
                                                   (lsp--position-to-point end)))
                       (overlay-put overlay 'face
