@@ -31,6 +31,7 @@
 (require 'lsp-rust)
 (require 'lsp-solargraph)
 (require 'lsp-vetur)
+(require 'lsp-intelephense)
 
 
 ;;; CSS
@@ -522,24 +523,6 @@ finding the executable with `exec-path'."
                   :priority -1
                   :server-id 'kotlin-ls))
 
-
-;; PHP intelephense
-(defgroup lsp-php-iph nil
-  "PHP."
-  :group 'lsp-mode
-  :tag "PHP")
-
-(defcustom lsp-clients-php-iph-server-command
-  `("intelephense" "--stdio")
-  "Install directory for php-language-server."
-  :group 'lsp-php-ip
-  :type '(repeat string))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-clients-php-iph-server-command))
-                  :major-modes '(php-mode)
-                  :priority -1
-                  :server-id 'iph))
 
 ;; Hack
 (defgroup lsp-hack nil

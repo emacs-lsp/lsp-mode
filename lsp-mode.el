@@ -3704,6 +3704,16 @@ textDocument/didOpen for the new file."
       (unless (string-prefix-p "$" method)
         (lsp-warn "Unknown method: %s" method)))))
 
+
+(defun lsp--build-workspace-configuration-response (params)
+  "Get section configuration.
+PARAMS are the `workspace/configuration' request params"
+  (-some->> params
+            (gethash "items")
+            (-map (-lambda ((&hash "section"))
+                    (gethash section (lsp-configuration-section section))))
+            (apply #'vector)))
+
 (defun lsp--on-request (workspace request)
   "Call the appropriate handler for REQUEST, and send the return value to the server.
 WORKSPACE is the active workspace."
@@ -3727,7 +3737,7 @@ WORKSPACE is the active workspace."
                        (lsp--apply-workspace-edit (gethash "edit" params))
                        empty-response)
                       ("workspace/configuration"
-                       (lsp--make-response request (lsp--create-initialization-options (lsp-session) client)))
+                       (lsp--make-response request (lsp--build-workspace-configuration-response params)))
                       (other
                        (-if-let (handler (gethash other (lsp--client-request-handlers client) nil))
                            (lsp--make-response request (funcall handler workspace params))
@@ -4367,11 +4377,20 @@ SESSION is the active session."
     (with-lsp-workspace workspace
       (run-hooks 'lsp-before-initialize-hook)
       (lsp-request-async "initialize"
-                         (list :processId (emacs-pid)
-                               :rootPath (lsp-file-local-name (expand-file-name root))
-                               :rootUri (lsp--path-to-uri root)
-                               :capabilities (lsp--client-capabilities)
-                               :initializationOptions initialization-options)
+                         (append
+                          (list :processId (emacs-pid)
+                                :rootPath (lsp-file-local-name (expand-file-name root))
+                                :rootUri (lsp--path-to-uri root)
+                                :capabilities (lsp--client-capabilities)
+                                :initializationOptions initialization-options)
+                          (when (lsp--client-multi-root client)
+                            (list :workspaceFolders (-some->> session
+                                                              lsp-session-server-id->folders
+                                                              (gethash (lsp--client-server-id client))
+                                                              (-map (lambda (folder)
+                                                                      (list :uri (lsp--path-to-uri folder)
+                                                                            :name (f-filename folder))))
+                                                              (apply 'vector)))))
                          (lambda (response)
                            (unless response
                              (lsp--spinner-stop)
@@ -4443,25 +4462,14 @@ remote machine and vice versa."
   "Registers LSP client CLIENT."
   (puthash (lsp--client-server-id client) client lsp-clients))
 
-(defun lsp--create-initialization-options (session client)
+(defun lsp--create-initialization-options (_session client)
   "Create initialization-options from SESSION and CLIENT.
 Add workspace folders depending on server being multiroot and
 session workspce folder configuration for the server."
-  (let* ((initialization-options-or-fn (lsp--client-initialization-options client))
-         (initialization-options (if (functionp initialization-options-or-fn)
-                                     (funcall initialization-options-or-fn)
-                                   initialization-options-or-fn)))
-    (or (when (lsp--client-multi-root client)
-          (when-let (workspace-folders (-some->> session
-                                                 lsp-session-server-id->folders
-                                                 (gethash (lsp--client-server-id client))
-                                                 (-map #'lsp--path-to-uri)
-                                                 (apply 'vector)))
-            (if (ht? initialization-options)
-                (prog1 initialization-options
-                  (puthash "workspaceFolders" workspace-folders initialization-options))
-              (plist-put initialization-options :workspaceFolders workspace-folders))))
-        initialization-options)))
+  (let* ((initialization-options-or-fn (lsp--client-initialization-options client)))
+    (if (functionp initialization-options-or-fn)
+        (funcall initialization-options-or-fn)
+      initialization-options-or-fn)))
 
 (defun lsp--plist-delete (prop plist)
   "Delete by side effect the property PROP from PLIST.
