@@ -3066,26 +3066,30 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
 (defvar-local lsp--highlight-timer nil)
 
 (defun lsp--highlight ()
-  (with-demoted-errors "Error in ‘lsp--highlight’: %S"
-    (when (and lsp-enable-symbol-highlighting
-               (lsp--capability "documentHighlightProvider"))
-      (let ((bounds (bounds-of-thing-at-point 'symbol))
-            (last lsp--highlight-bounds)
-            (point (point)))
-        (when (and last (or (< point (car last)) (> point (cdr last))))
-          (setq lsp--highlight-bounds nil)
-          (--each (lsp-workspaces)
-            (with-lsp-workspace it
-              (lsp--remove-cur-overlays))))
-        (when (and bounds (not (equal last bounds)))
-          (and lsp--highlight-timer (cancel-timer lsp--highlight-timer))
-          (setq lsp--highlight-timer
-                (run-with-idle-timer
-                 lsp-document-highlight-delay nil
-                 (lambda nil
-                   (setq lsp--highlight-bounds
-                         (bounds-of-thing-at-point 'symbol))
-                   (lsp--document-highlight)))))))))
+  (let ((buff (current-buffer)))
+    (with-demoted-errors "Error in ‘lsp--highlight’: %S"
+      (when (and lsp-enable-symbol-highlighting
+                 (lsp--capability "documentHighlightProvider"))
+        (let ((bounds (bounds-of-thing-at-point 'symbol))
+              (last lsp--highlight-bounds)
+              (point (point)))
+          (when (and last (or (< point (car last)) (> point (cdr last))))
+            (setq lsp--highlight-bounds nil)
+            (--each (lsp-workspaces)
+              (with-lsp-workspace it
+                (lsp--remove-cur-overlays))))
+          (when (and bounds (not (equal last bounds)))
+            (and lsp--highlight-timer (cancel-timer lsp--highlight-timer))
+            (setq lsp--highlight-timer
+                  (run-with-idle-timer
+                   lsp-document-highlight-delay nil
+                   (lambda nil
+                     (when (and (eq buff (current-buffer))
+                                lsp-enable-symbol-highlighting
+                                (lsp--capability "documentHighlightProvider"))
+                       (setq lsp--highlight-bounds
+                             (bounds-of-thing-at-point 'symbol))
+                       (lsp--document-highlight)))))))))))
 
 (defun lsp-describe-thing-at-point ()
   "Display the full documentation of the thing at point."
