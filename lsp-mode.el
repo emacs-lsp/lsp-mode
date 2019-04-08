@@ -2391,7 +2391,8 @@ interface Position {
     line: number;
     character: number;
 }"
-  (inline-quote (list :line ,line :character ,char)))
+  (inline-letevals (line char)
+    (inline-quote (list :line ,line :character ,char))))
 
 (define-inline lsp--cur-line ()
   (inline-quote (1- (line-number-at-pos))))
@@ -2412,7 +2413,7 @@ interface Position {
     (goto-char point)
     (lsp--cur-position)))
 
-(defun lsp--range (start end)
+(define-inline lsp--range (start end)
   "Make Range body from START and END.
 
 interface Range {
@@ -2420,12 +2421,15 @@ interface Range {
      end: Position;
  }"
   ;; make sure start and end are Position objects
-  (list :start start :end end))
+  (inline-letevals (start end)
+    (inline-quote
+     (list :start ,start :end ,end))))
 
 (define-inline lsp--region-to-range (start end)
   "Make Range object for the current region."
-  (inline-quote (lsp--range (lsp--point-to-position ,start)
-                            (lsp--point-to-position ,end))))
+  (inline-letevals (start end)
+    (inline-quote (lsp--range (lsp--point-to-position ,start)
+                              (lsp--point-to-position ,end)))))
 
 (defun lsp--region-or-line ()
   "The active region or the current line."
@@ -2616,7 +2620,7 @@ interface TextDocumentEdit {
 (defun lsp--bracketed-change-p (start _end length)
   "If the before and after positions are the same, and the length
 is the size of the start range, we are probably good."
-  (and (eq start (plist-get lsp--before-change-vals :start) )
+  (and (eq start (plist-get lsp--before-change-vals :start))
        (eq length (- (plist-get lsp--before-change-vals :end)
                      (plist-get lsp--before-change-vals :start)))))
 
