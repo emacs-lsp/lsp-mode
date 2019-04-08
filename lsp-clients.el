@@ -32,20 +32,8 @@
 (require 'lsp-solargraph)
 (require 'lsp-vetur)
 (require 'lsp-intelephense)
+(require 'lsp-css)
 
-
-;;; CSS
-(defun lsp-clients-css--apply-code-action (action)
-  "Apply ACTION as workspace edit command."
-  (lsp--apply-text-edits (cl-caddr (gethash "arguments" action))))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '("css-languageserver" "--stdio"))
-                  :major-modes '(css-mode less-mode less-css-mode sass-mode scss-mode)
-                  :priority -1
-                  :action-handlers (lsp-ht ("_css.applyCodeAction" 'lsp-clients-css--apply-code-action))
-                  :server-id 'css-ls))
-
 ;;; Bash
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("bash-language-server" "start"))
