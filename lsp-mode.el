@@ -2003,8 +2003,8 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
   "Default error handler.
 METHOD is the executed method."
   (lambda (error)
-    (lsp--warn (or (gethash "message" error)
-                   (format "%s Request has failed" method)))))
+    (lsp--warn "%s" (or (gethash "message" error)
+                        (format "%s Request has failed" method)))))
 
 (defun lsp--send-request-async (body callback &optional mode error-callback no-merge)
   "Send BODY as a request to the language server.
@@ -4433,43 +4433,63 @@ SESSION is the active session."
   "Get the session associated with the current buffer."
   (or lsp--session (setq lsp--session (lsp--load-default-session))))
 
+(defun lsp--make-client-handle-pred (buffer-major-mode remote?)
+  (lambda (client)
+    (if (lsp--client-p client)
+        (pcase-let* (((cl-struct lsp--client activation-fn new-connection) client))
+          (and (if activation-fn ;; if there's an activation function, call it.
+	           (funcall activation-fn buffer-file-name buffer-major-mode)
+	         ;; no activation function, we try checking by ourselves
+	         (and
+                  (seq-some (lambda (mode) (equal buffer-major-mode mode))
+                            (lsp--client-major-modes client))
+		  (if remote?
+		      ;; If this is a remote file, check if the client supports
+		      ;; remote operation.
+		      (lsp--client-remote? client)
+		    t)))
+	       (if-let (new-conn-test (and new-connection
+                                           (plist-get new-connection :test?)))
+	           (funcall new-conn-test)
+	         nil))))))
+
+(defun lsp--clients-get-by-max-priority (clients)
+  (seq-reduce (lambda (c1 c2)
+		(if (> (lsp--client-priority c1)
+		       (lsp--client-priority c2))
+		    c1
+		  c2))
+	      clients
+	      (seq-first clients)))
+
+(defun lsp--client-format (client)
+  (format "(server-id %s, priority %s)"
+          (lsp--client-server-id client)
+          (lsp--client-priority client)))
+
 (defun lsp--find-clients (buffer-major-mode file-name)
   "Find clients which can handle BUFFER-MAJOR-MODE.
 SESSION is the currently active session. The function will also
 pick only remote enabled clients in case the FILE-NAME is on
 remote machine and vice versa."
-  (let ((remote? (file-remote-p file-name)))
-    (--when-let (->> lsp-clients
-                     hash-table-values
-                     (-filter (-lambda (client)
-                                (and (or (-some-> client lsp--client-activation-fn (funcall buffer-file-name buffer-major-mode))
-                                         (and (not (lsp--client-activation-fn client))
-                                              (-contains? (lsp--client-major-modes client) buffer-major-mode)
-                                              (eq (---truthy? remote?) (---truthy? (lsp--client-remote? client)))))
-                                     (-some-> client lsp--client-new-connection (plist-get :test?) funcall)))))
-      (lsp-log "Found the following clients for %s: %s"
-               file-name
-               (s-join ", "
-                       (-map (lambda (client)
-                               (format "(server-id %s, priority %s)"
-                                       (lsp--client-server-id client)
-                                       (lsp--client-priority client)))
-                             it)))
-      (-let* (((add-on-clients main-clients) (-separate 'lsp--client-add-on? it))
-              (selected-clients (if-let (main-client (and main-clients
-                                                          (--max-by (> (lsp--client-priority it)
-                                                                       (lsp--client-priority other))
-                                                                    main-clients)))
-                                    (cons main-client add-on-clients)
-                                  add-on-clients)))
-        (lsp-log "The following clients were selected based on priority: %s"
-                 (s-join ", "
-                         (-map (lambda (client)
-                                 (format "(server-id %s, priority %s)"
-                                         (lsp--client-server-id client)
-                                         (lsp--client-priority client)))
-                               selected-clients)))
-        selected-clients))))
+  (let* ((remote? (file-remote-p file-name))
+         (client-pred (lsp--make-client-handle-pred buffer-major-mode remote?))
+         (clients (seq-filter client-pred (hash-table-values lsp-clients))))
+    (if clients
+        (progn
+          (lsp-log "Found the following clients for %s: %s"
+                   file-name (mapconcat #'lsp--client-format clients ", "))
+          (-let* (((add-on-clients main-clients) (-separate 'lsp--client-add-on?
+                                                            clients))
+                  (selected-clients (if main-clients
+				        (cons (lsp--clients-get-by-max-priority
+				               main-clients)
+				              add-on-clients)
+			              add-on-clients)))
+            (lsp-log "The following clients were selected based on priority: %s"
+	             (mapconcat #'lsp--client-format selected-clients ", "))
+            selected-clients))
+      nil)))
 
 (defun lsp-register-client (client)
   "Registers LSP client CLIENT."
