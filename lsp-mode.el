@@ -2003,8 +2003,8 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
   "Default error handler.
 METHOD is the executed method."
   (lambda (error)
-    (lsp--warn (or (gethash "message" error)
-                   (format "%s Request has failed" method)))))
+    (lsp--warn "%s" (or (gethash "message" error)
+                        (format "%s Request has failed" method)))))
 
 (defun lsp--send-request-async (body callback &optional mode error-callback no-merge)
   "Send BODY as a request to the language server.
