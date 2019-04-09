@@ -4,7 +4,7 @@
 
 ;; Author: Vibhav Pant, Fangrui Song, Ivan Yonchovski
 ;; Keywords: languages
-;; Package-Requires: ((emacs "25.1") (dash "2.14.1") (dash-functional "2.14.1") (f "0.20.0") (ht "2.0") (spinner "1.7.3"))
+;; Package-Requires: ((emacs "25.1") (dash "2.14.1") (dash-functional "2.14.1") (f "0.20.0") (ht "2.0") (spinner "1.7.3") (markdown-mode "2.3"))
 ;; Version: 6.0
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -52,6 +52,7 @@
 (require 'widget)
 (require 'xref)
 (require 'tree-widget)
+(require 'markdown-mode)
 
 (declare-function company-mode "company")
 (declare-function flycheck-mode "flycheck")
@@ -464,7 +465,7 @@ If set to `:none' neither of two will be enabled."
 (defvar lsp-language-id-configuration '((".*.vue" . "vue")
                                         (java-mode . "java")
                                         (python-mode . "python")
-                                        (gfm-view-mode . "markdown")
+                                        (lsp--render-markdown . "markdown")
                                         (rust-mode . "rust")
                                         (kotlin-mode . "kotlin")
                                         (css-mode . "css")
@@ -559,6 +560,11 @@ must be used for handling a particular message.")
   "Seconds of idle time to wait before showing symbol highlight."
   :type 'number
   :group 'lsp-mode)
+
+(defvar lsp-custom-markup-modes
+  '((rust-mode "no_run" "rust,no_run" "rust,ignore" "rust,should_panic"))
+  "Mode to uses with markdown code blocks.
+They are added to `markdown-code-lang-modes'")
 
 (defface lsp-lens-mouse-face
   '((t :height 0.8 :inherit link))
@@ -3130,6 +3136,46 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
   (lambda (str)
     (lsp--render-string str language)))
 
+(defun lsp--setup-markdown (mode)
+  "Setup the ‘markdown-mode’ in the frame.
+MODE is the mode used in the parent frame."
+  (make-local-variable 'markdown-code-lang-modes)
+  (dolist (mark (alist-get mode lsp-custom-markup-modes))
+    (add-to-list 'markdown-code-lang-modes (cons mark mode)))
+  (setq-local markdown-fontify-code-blocks-natively t)
+  (setq-local markdown-fontify-code-block-default-mode mode)
+  (setq-local markdown-hide-markup t))
+
+(defun lsp--buffer-string-visible ()
+  "Return visible buffer string.
+Stolen from `org-copy-visible'."
+  (let ((result "")
+        (beg (point-min))
+        (end (point-max)))
+    (while (/= beg end)
+      (when (get-char-property beg 'invisible)
+	      (setq beg (next-single-char-property-change beg 'invisible nil end)))
+      (let ((next (next-single-char-property-change beg 'invisible nil end)))
+	      (setq result (concat result (buffer-substring beg next)))
+	      (setq beg next)))
+    (setq deactivate-mark t)
+    result))
+
+(defun lsp--render-markdown ()
+  "Render markdown."
+  (lsp--setup-markdown major-mode)
+
+  (goto-char (point-min))
+  (while (re-search-forward "&gt;" nil t)
+    (replace-match ">"))
+
+  (goto-char (point-min))
+  (while (re-search-forward "&lt;" nil t)
+    (replace-match "<"))
+
+  (gfm-view-mode)
+  (font-lock-ensure))
+
 (defun lsp--fontlock-with-mode (str mode)
   "Fontlock STR with MODE."
   (condition-case nil
@@ -3137,7 +3183,7 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
         (insert str)
         (delay-mode-hooks (funcall mode))
         (font-lock-ensure)
-        (buffer-string))
+        (lsp--buffer-string-visible))
     (error str)))
 
 (defun lsp--render-string (str language)
