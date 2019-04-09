@@ -3330,20 +3330,33 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
     (signal 'lsp-capability-not-supported (list "documentFormattingProvider")))
   (let ((edits (lsp-request "textDocument/formatting"
                             (lsp--make-document-formatting-params))))
-    (if (fboundp 'replace-buffer-contents)
-        (let ((current-buffer (current-buffer)))
-          (with-temp-buffer
-            (insert-buffer-substring-no-properties current-buffer)
-            (lsp--apply-text-edits edits)
-            (let ((temp-buffer (current-buffer)))
-              (with-current-buffer current-buffer
-                (replace-buffer-contents temp-buffer)))))
-      (let ((point (point))
-            (w-start (window-start)))
-        (lsp--apply-text-edits edits)
-        (goto-char point)
-        (goto-char (line-beginning-position))
-        (set-window-start (selected-window) w-start)))))
+    (lsp--apply-formatting edits)))
+
+(defun lsp-format-region (s e)
+  "Ask the server to format the region, or if none is selected, the current line."
+  (interactive "r")
+  (unless (or (lsp--capability "documentFormattingProvider")
+              (lsp--registered-capability "textDocument/rangeFormatting"))
+    (signal 'lsp-capability-not-supported (list "documentFormattingProvider")))
+  (let ((edits (lsp-request "textDocument/rangeFormatting"
+                            (lsp--make-document-range-formatting-params s e))))
+    (lsp--apply-formatting edits)))
+
+(defun lsp--apply-formatting (edits)
+  (if (fboundp 'replace-buffer-contents)
+      (let ((current-buffer (current-buffer)))
+        (with-temp-buffer
+          (insert-buffer-substring-no-properties current-buffer)
+          (lsp--apply-text-edits edits)
+          (let ((temp-buffer (current-buffer)))
+            (with-current-buffer current-buffer
+              (replace-buffer-contents temp-buffer)))))
+    (let ((point (point))
+          (w-start (window-start)))
+      (lsp--apply-text-edits edits)
+      (goto-char point)
+      (goto-char (line-beginning-position))
+      (set-window-start (selected-window) w-start))))
 
 (defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region.
@@ -3464,11 +3477,6 @@ A reference is highlighted only if it is visible in a window."
                (xref-make-file-location (lsp--uri-to-path uri)
                                         (1+ (gethash "line" start))
                                         (gethash "character" start)))))
-
-(defun lsp-format-region (s e)
-  (let ((edits (lsp-request "textDocument/rangeFormatting"
-                            (lsp--make-document-range-formatting-params s e))))
-    (lsp--apply-text-edits edits)))
 
 (defun lsp--location-to-td-position (location)
   "Convert LOCATION to a TextDocumentPositionParams object."
