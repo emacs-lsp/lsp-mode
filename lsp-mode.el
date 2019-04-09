@@ -4374,13 +4374,15 @@ SESSION is the active session."
   (-let* ((default-directory root)
           (client (copy-lsp--client client-template))
           (workspace (lsp--make-workspace client root))
+          (server-id (lsp--client-server-id client))
           ((proc . cmd-proc) (funcall
                               (or (plist-get (lsp--client-new-connection client) :connect)
                                   (user-error "Client %s is configured incorrectly" client))
                               (lsp--parser-make-filter (lsp--workspace-parser workspace)
                                                        (lsp--client-ignore-regexps client))
                               (lsp--create-sentinel workspace)
-                              (format "%s" (lsp--client-server-id client)))))
+                              (format "%s" server-id)))
+          (workspace-folders (gethash server-id (lsp-session-server-id->folders session))))
     (setf (lsp--workspace-proc workspace) proc
           (lsp--workspace-cmd-proc workspace) cmd-proc)
 
@@ -4391,9 +4393,7 @@ SESSION is the active session."
                  lsp-session-folder->servers
                  (gethash project-root)
                  (cl-pushnew workspace)))
-          (or (-map 'lsp--uri-to-path
-                    (plist-get initialization-options :workspaceFolders))
-              (list root)))
+          (or workspace-folders (list root)))
 
     (with-lsp-workspace workspace
       (run-hooks 'lsp-before-initialize-hook)
@@ -4405,13 +4405,12 @@ SESSION is the active session."
                                 :capabilities (lsp--client-capabilities)
                                 :initializationOptions initialization-options)
                           (when (lsp--client-multi-root client)
-                            (list :workspaceFolders (-some->> session
-                                                              lsp-session-server-id->folders
-                                                              (gethash (lsp--client-server-id client))
-                                                              (-map (lambda (folder)
-                                                                      (list :uri (lsp--path-to-uri folder)
-                                                                            :name (f-filename folder))))
-                                                              (apply 'vector)))))
+                            (->> workspace-folders
+                                 (-map (lambda (folder)
+                                         (list :uri (lsp--path-to-uri folder)
+                                               :name (f-filename folder))))
+                                 (apply 'vector)
+                                 (list :workspaceFolders))))
                          (lambda (response)
                            (unless response
                              (lsp--spinner-stop)
