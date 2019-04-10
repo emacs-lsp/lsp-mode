@@ -3336,6 +3336,7 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
   "Ask the server to format the region, or if none is selected, the current line."
   (interactive "r")
   (unless (or (lsp--capability "documentFormattingProvider")
+              (lsp--capability "documentRangeFormattingProvider")
               (lsp--registered-capability "textDocument/rangeFormatting"))
     (signal 'lsp-capability-not-supported (list "documentFormattingProvider")))
   (let ((edits (lsp-request "textDocument/rangeFormatting"
