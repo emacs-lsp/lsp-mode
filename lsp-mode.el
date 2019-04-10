@@ -3555,6 +3555,17 @@ A reference is highlighted only if it is visible in a window."
     (when edits
       (lsp--apply-workspace-edit edits))))
 
+(defun lsp-organize-imports ()
+  "Organize the imports."
+  (interactive)
+  (lsp--cur-workspace-check)
+  (unless (lsp--capability "codeActionsProvider")
+    (signal 'lsp-capability-not-supported (list "codeActionsProvider")))
+  (let ((edits (lsp-request "organizeImports"
+                            `(:textDocument ,(lsp--text-document-identifier)))))
+    (when edits
+      (lsp--apply-workspace-edit edits))))
+
 (cl-defun lsp-find-locations (method &optional extra &key display-action)
   "Send request named METHOD and get cross references of the symbol under point.
 EXTRA is a plist of extra parameters."

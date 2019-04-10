@@ -140,6 +140,7 @@
    - ~lsp-goto-implementation~ - Go to implementation
    - ~lsp-goto-type-definition~ - Go to type definition
    - ~lsp-rename~ - Rename symbol at point
+   - ~lsp-organize-imports~ - Organize imports
    - ~lsp-restart-workspace~ - Restart project
    - ~lsp-symbol-highlight~ - Highlight all relevant references to the symbol under point.
    - ~lsp-workspace-folders-add~ - Add workspace folder
