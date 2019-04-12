@@ -4050,11 +4050,11 @@ an alist
                     cons-cells-from-children))"
   (let* ((start-point (lsp--symbol-get-start-point sym))
          (name (gethash "name" sym)))
-    (if (gethash "children" sym)
-        (cons name
-              (cons (cons (format "(%s)" (lsp--get-symbol-type sym)) start-point)
-                    (lsp--imenu-create-hierarchical-index (gethash "children" sym))))
-      (cons (format "%s (%s)" name (lsp--get-symbol-type sym)) start-point))))
+    (if (seq-empty-p (gethash "children" sym))
+        (cons (format "%s (%s)" name (lsp--get-symbol-type sym)) start-point)
+      (cons name
+            (cons (cons (format "(%s)" (lsp--get-symbol-type sym)) start-point)
+                  (lsp--imenu-create-hierarchical-index (gethash "children" sym)))))))
 
 (defun lsp--symbol-get-start-point (sym)
   "Get the start point of the name of SYM.
