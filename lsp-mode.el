@@ -3159,7 +3159,7 @@ Stolen from `org-copy-visible'."
 	      (setq result (concat result (buffer-substring beg next)))
 	      (setq beg next)))
     (setq deactivate-mark t)
-    result))
+    (s-chop-suffix "\n" result)))
 
 (defun lsp--render-markdown ()
   "Render markdown."
@@ -3221,7 +3221,7 @@ RENDER-ALL - nil if only the signature should be rendered."
   (if (and (hash-table-p contents) (gethash "kind" contents))
       ;; MarkupContent, deprecated by LSP but actually very flexible.
       ;; It tends to be long and is not suitable in echo area.
-      (if render-all (lsp--render-element contents) "")
+      (lsp--render-element contents)
     ;; MarkedString -> MarkedString[]
     (when (or (hash-table-p contents) (stringp contents))
       (setq contents (list contents)))
@@ -3293,7 +3293,8 @@ RENDER-ALL - nil if only the signature should be rendered."
                      (setq lsp--eldoc-saved-message message)))))
              (when (zerop (cl-decf pending))
                (lsp--eldoc-message lsp--eldoc-saved-message))
-             (run-hook-with-args 'lsp-on-hover-hook hover)))))
+             (run-hook-with-args 'lsp-on-hover-hook hover)))
+         :error-handler #'ignore))
       (when (and lsp-eldoc-enable-signature-help (lsp--capability "signatureHelpProvider"))
         (cl-incf pending)
         (lsp-request-async
@@ -3306,7 +3307,8 @@ RENDER-ALL - nil if only the signature should be rendered."
                          (not lsp--eldoc-saved-message))
                  (setq lsp--eldoc-saved-message message)))
              (when (zerop (cl-decf pending))
-               (lsp--eldoc-message lsp--eldoc-saved-message)))))))))
+               (lsp--eldoc-message lsp--eldoc-saved-message))))
+         :error-handler #'ignore)))))
 
 (defun lsp--select-action (actions)
   "Select an action to execute from ACTIONS."
