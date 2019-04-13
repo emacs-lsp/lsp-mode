@@ -1,5 +1,8 @@
 (require 'f)
 
+(when (require 'undercover nil t)
+  (undercover "*.el"))
+
 (defvar lsp-mode-support-path
   (f-dirname load-file-name))
 

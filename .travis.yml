@@ -23,9 +23,11 @@ install:
   - sudo pip install python-language-server
 script:
   - cask build
+  - cask clean-elc
   - cask exec ert-runner -t "!no-win"
   - cask exec ecukes
-
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 notifications:
   webhooks:
     urls:
