@@ -4185,7 +4185,13 @@ Return a nested alist keyed by symbol names. e.g.
 
 (defun lsp-enable-imenu ()
   "Use lsp-imenu for the current buffer."
-  (setq-local imenu-create-index-function #'lsp--imenu-create-index))
+  (setq-local imenu-create-index-function #'lsp--imenu-create-index)
+  (imenu--cleanup)
+  ;; Make sure imenu-update-menubar redoes everything.
+  (setq imenu-menubar-modified-tick -1)
+  (setq imenu--index-alist nil)
+  (setq imenu--last-menubar-index-alist nil)
+  (imenu-update-menubar))
 
 (defun lsp-resolve-final-function (command)
   "Resolve final function COMMAND."
