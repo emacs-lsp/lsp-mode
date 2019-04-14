@@ -1667,6 +1667,33 @@ CALLBACK - callback for the lenses."
   :lighter (:eval (lsp-mode-line))
   :group 'lsp-mode)
 
+(easy-menu-define lsp-mode-menu lsp-mode-map
+  "Menu for lsp-mode."
+  '("LSP"
+    ["Describe current LSP session" lsp-describe-session]
+    ["Add folder to workspace" lsp-workspace-folders-add]
+    ["Remove folder from workspace" lsp-workspace-folders-remove]
+    ["Switch to another workspace folder" lsp-workspace-folders-switch]
+    "--"
+    ["Toggle Code Lenses" lsp-lens-mode]
+    "--"
+    ["Describe thing at point" lsp-describe-thing-at-point]
+    ["Execute code action" lsp-execute-code-action]
+    ["Format buffer" lsp-format-buffer]
+    ["Format current region or line" lsp-format-region]
+    ["Highlight references to symbol under point" lsp-document-highlight]
+    ["Rename symbol under point" lsp-rename]
+    "--"
+    ["Find declarations of symbol under point" lsp-find-declaration]
+    ["Find definitions of symbol" lsp-find-definition]
+    ["Find implementations of symbbol under point" lsp-find-implementation]
+    ["Find references to symbol under point" lsp-find-references]
+    ["Find type definitions of symbol under point" lsp-find-type-definition]
+    "--"
+    ["Save logs for workspace" lsp-save-logs]
+    ["Shutdown language server" lsp-shutdown-workspace]
+    ["Restart language server" lsp-restart-workspace]))
+
 (defun lsp-mode-line ()
   "Construct the mode line text."
   (if-let (workspaces (lsp-workspaces))
