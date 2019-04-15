@@ -1686,7 +1686,7 @@ CALLBACK - callback for the lenses."
     "--"
     ["Find declarations of symbol under point" lsp-find-declaration]
     ["Find definitions of symbol" lsp-find-definition]
-    ["Find implementations of symbbol under point" lsp-find-implementation]
+    ["Find implementations of symbol under point" lsp-find-implementation]
     ["Find references to symbol under point" lsp-find-references]
     ["Find type definitions of symbol under point" lsp-find-type-definition]
     "--"
