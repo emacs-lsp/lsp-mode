@@ -33,6 +33,7 @@
 (require 'lsp-vetur)
 (require 'lsp-intelephense)
 (require 'lsp-css)
+(require 'lsp-xml)
 
 ;;; Bash
 (lsp-register-client

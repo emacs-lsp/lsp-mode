@@ -3,7 +3,7 @@
 [[https://gitter.im/emacs-lsp/lsp-mode][file:https://badges.gitter.im/emacs-lsp/lsp-mode.svg]]
 [[https://travis-ci.org/emacs-lsp/lsp-mode][file:https://travis-ci.org/emacs-lsp/lsp-mode.svg?branch=master]]
 
-#+ATTR_HTML: align="center"; margin-right="auto"; margin-left="auto"  
+#+ATTR_HTML: align="center"; margin-right="auto"; margin-left="auto"
 [[examples/logo.png]]
 
 * Language Server Protocol Support for Emacs
@@ -120,6 +120,7 @@
    | JavaScript/TypeScript | [[https://github.com/theia-ide/typescript-language-server][typescript-language-server]]  (recommended) | Yes            | npm i -g typescript-language-server; npm i -g typescript | Yes (Firefox/Chrome)         |
    | JavaScript/TypeScript | [[https://github.com/sourcegraph/javascript-typescript-langserver][javascript-typescript-stdio]]               | Yes            | npm i -g javascript-typescript-langserver                | Yes (Firefox/Chrome)         |
    | JavaScript Flow       | [[https://flow.org][flow]] (add-on if working on a Flow file)   | Yes            | [[https://flow.org][flow]]                                                     | Yes (Firefox/Chrome)         |
+   | Kotlin                | [[https://github.com/fwcd/KotlinLanguageServer][kotlin-language-server]]                    | Yes            | [[https://github.com/fwcd/KotlinLanguageServer][kotlin-language-server]]                                   |                              |
    | Ocaml                 | [[https://github.com/freebroccolo/ocaml-language-server][ocaml-language-server]]                     | Yes            | [[https://github.com/freebroccolo/ocaml-language-server][ocaml-language-server]]                                    |                              |
    | PHP(recommended)      | [[https://github.com/bmewburn/vscode-intelephense][intelephense]]                              | Yes            | npm i intelephense -g                                    | Yes                          |
    | PHP                   | [[https://github.com/felixfbecker/php-language-server][php-language-server]]                       | Yes            | [[https://github.com/felixfbecker/php-language-server][php-language-server]]                                      | Yes                          |
@@ -131,7 +132,7 @@
    | Scala                 | [[https://github.com/rossabaker/lsp-scala][lsp-scala]]                                 | [[https://github.com/rossabaker/lsp-scala][lsp-scala]]      | [[https://github.com/rossabaker/lsp-scala][lsp-scala]]                                                |                              |
    | Swift                 | [[https://github.com/apple/sourcekit-lsp][sourcekit-LSP]]                             | [[https://github.com/emacs-lsp/lsp-sourcekit][lsp-sourcekit]]  | [[https://github.com/apple/sourcekit-lsp][sourcekit-LSP]]                                            | Yes (via llvm debug adapter) |
    | Vue                   | [[https://github.com/vuejs/vetur/tree/master/server][vue-language-server]]                       | Yes            | npm install -g vue-language-server                       | Yes (Firefox/Chrome)         |
-   | Kotlin                | [[https://github.com/fwcd/KotlinLanguageServer][kotlin-language-server]]                    | Yes            | [[https://github.com/fwcd/KotlinLanguageServer][kotlin-language-server]]                                   |                              |
+   | XML                   | [[https://github.com/angelozerr/lsp4xml][lsp4xml]]                                   | Yes            | Download from [[https://github.com/angelozerr/lsp4xml/releases][lsp4xml releases]]                           |                              |
 ** Commands
    - ~lsp-describe-session~ - Display session folders and running servers.
    - ~lsp-describe-thing-at-point~ - Display help for the thing at point.
