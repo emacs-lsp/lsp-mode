@@ -3248,7 +3248,7 @@ RENDER-ALL - nil if only the signature should be rendered."
   (if (and (hash-table-p contents) (gethash "kind" contents))
       ;; MarkupContent, deprecated by LSP but actually very flexible.
       ;; It tends to be long and is not suitable in echo area.
-      (lsp--render-element contents)
+      (if render-all (lsp--render-element contents) "")
     ;; MarkedString -> MarkedString[]
     (when (or (hash-table-p contents) (stringp contents))
       (setq contents (list contents)))
