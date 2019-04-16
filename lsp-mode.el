@@ -1913,14 +1913,18 @@ TYPE can either be 'incoming or 'outgoing"
     (insert (json-encode body))
     (insert "\n\n\n")))
 
+(defvar-local lsp--log-io-ewoc nil)
+
 (defun lsp--get-create-io-ewoc (workspace)
-  (if (lsp--workspace-ewoc workspace)
+  (if (and (lsp--workspace-ewoc workspace)
+       (buffer-live-p (ewoc-buffer (lsp--workspace-ewoc workspace))))
       (lsp--workspace-ewoc workspace)
     (let ((buffer (get-buffer-create (format "*lsp-io: %s*"
                                              (lsp--workspace-root workspace)))))
       (with-current-buffer buffer
-        (setf (lsp--workspace-ewoc workspace)
-              (ewoc-create #'lsp--log-entry-pp nil nil t)))
+        (lsp-log-io-mode)
+        (setq-local lsp--log-io-ewoc (ewoc-create #'lsp--log-entry-pp nil nil t))
+        (setf (lsp--workspace-ewoc workspace) lsp--log-io-ewoc))
       (lsp--workspace-ewoc workspace))))
 
 (define-inline lsp--log-entry-new (entry workspace)
@@ -4637,6 +4641,20 @@ SESSION is the active session."
   (unwind-protect
       (lsp--start-workspace session client project-root (lsp--create-initialization-options session client))
     (lsp--spinner-stop)))
+
+(defun lsp--log-io-next (arg)
+  (interactive "P")
+  (ewoc-goto-next lsp--log-io-ewoc (or arg 1)))
+
+(defun lsp--log-io-prev (arg)
+  (interactive "P")
+  (ewoc-goto-prev lsp--log-io-ewoc (or arg 1)))
+
+(define-derived-mode lsp-log-io-mode view-modxe "LspLogIo"
+  "Special mode for viewing IO logs.")
+
+(define-key lsp-log-io-mode-map (kbd "<down>") #'lsp--log-io-next)
+(define-key lsp-log-io-mode-map (kbd "<up>")  #'lsp--log-io-prev)
 
 (define-derived-mode lsp-browser-mode special-mode "LspBrowser"
   "Define mode for displaying lsp sessions."
