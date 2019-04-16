@@ -4650,7 +4650,7 @@ SESSION is the active session."
   (interactive "P")
   (ewoc-goto-prev lsp--log-io-ewoc (or arg 1)))
 
-(define-derived-mode lsp-log-io-mode view-modxe "LspLogIo"
+(define-derived-mode lsp-log-io-mode view-mode "LspLogIo"
   "Special mode for viewing IO logs.")
 
 (define-key lsp-log-io-mode-map (kbd "<down>") #'lsp--log-io-next)
