@@ -53,6 +53,7 @@
 (require 'xref)
 (require 'tree-widget)
 (require 'markdown-mode)
+(require 'ewoc)
 
 (declare-function company-mode "company")
 (declare-function flycheck-mode "flycheck")
@@ -109,11 +110,6 @@
 
 (defcustom lsp-print-io nil
   "If non-nil, print all messages to and from the language server to *lsp-log*."
-  :group 'lsp-mode
-  :type 'boolean)
-
-(defcustom lsp-trace nil
-  "If non-nil, keep a trace of all messages to and from the language server."
   :group 'lsp-mode
   :type 'boolean)
 
@@ -891,9 +887,7 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   ;; Function which will be called right after a workspace has been intialized.
   (initialized-fn)
   ;; ‘remote?’ indicate whether the client can be used for LSP server over TRAMP.
-  (remote? nil)
-  ;; A trace of all messages to and from the language server
-  (message-trace nil))
+  (remote? nil))
 
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--line-character-to-point (line character)
@@ -1791,7 +1785,9 @@ CALLBACK - callback for the lenses."
   (shutdown-action)
 
   ;; ‘diagnostics’ a hashmap with workspace diagnostics.
-  (diagnostics (make-hash-table :test 'equal)))
+  (diagnostics (make-hash-table :test 'equal))
+  ;; the `ewoc' object for displaying I/O to and from the server
+  (ewoc nil))
 
 (cl-defstruct lsp-session
   ;; contains the folders that are part of the current session
@@ -1849,8 +1845,7 @@ If WORKSPACE is not provided current workspace will be used."
 (defun lsp--make-message (params)
   "Create a LSP message from PARAMS, after encoding it to a JSON string."
   (lsp--cur-workspace-check)
-  (let* ((json-encoding-pretty-print lsp-print-io)
-         (json-false :json-false)
+  (let* ((json-false :json-false)
          (body (if (and lsp-use-native-json
                         (fboundp 'json-serialize))
                    (with-no-warnings
@@ -1872,7 +1867,7 @@ If WORKSPACE is not provided current workspace will be used."
   (id)
   (body))
 
-(defun lsp--make-log-entry (method id body type &optional arg process-time)
+(defun lsp--make-log-entry (method id body type &optional process-time)
   "Create an outgoing log object from BODY with method METHOD and id ID.
 If ID is non-nil, then the body is assumed to be a notification.
 TYPE can either be 'incoming or 'outgoing"
@@ -1887,52 +1882,60 @@ TYPE can either be 'incoming or 'outgoing"
    :method method
    :id id
    :type type
-   :body (or arg (plist-get body :params))))
+   :body body))
 
-(defun lsp-save-logs (workspace file)
-  (interactive
-   (list (lsp--completing-read "Workspace: "  (lsp-workspaces) 'lsp--workspace-print nil t)
-         (read-file-name "Log File: ")))
-  (cl-assert workspace nil "Invalid/Missing LSP workspace")
-  (let ((trace (reverse (lsp--client-message-trace (lsp--workspace-client
-                                                    workspace))))
-        (json-encoding-pretty-print t))
-    (with-temp-buffer
-      (mapc (lambda (entry)
-              (let ((method (lsp--log-entry-method entry))
-                    (id (lsp--log-entry-id entry))
-                    (type (lsp--log-entry-type entry))
-                    (process-time (lsp--log-entry-process-time entry)))
-                (insert (format "[Trace - %s] " (lsp--log-entry-timestamp entry)))
-                (insert
-                 (pcase type
-                   ('incoming-req (format "Received request '%s - (%d)." method id))
-                   ('outgoing-req (format "Sending request '%s - (%d)'." method id))
+(defun lsp--log-entry-pp (entry)
+  (cl-assert (lsp--log-entry-p entry))
+  (pcase-let (((cl-struct lsp--log-entry timestamp method id type process-time
+                          body)
+               entry)
+              (json-false :json-false)
+              (json-encoding-pretty-print t))
+    (insert (format "[Trace - %s] " timestamp))
+    (insert
+     (pcase type
+       ('incoming-req (format "Received request '%s - (%d)." method id))
+       ('outgoing-req (format "Sending request '%s - (%d)'." method id))
 
-                   ('incoming-notif (format "Received notification '%s'." method))
-                   ('outgoing-notif (format "Sending notification '%s'." method))
+       ('incoming-notif (format "Received notification '%s'." method))
+       ('outgoing-notif (format "Sending notification '%s'." method))
 
-                   ('incoming-resp (format "Received response '%s - (%d)' in %dms."
-                                           method id process-time))
-                   ('outgoing-resp
-                    (format
-                     "Sending response '%s - (%d)'. Processing request took %dms"
-                     method id process-time))))
-                (insert "\n")
-                (insert (if (memq type '(incoming-resp ougoing-resp))
-                            "Result: "
-                          "Params: "))
-                (insert (json-encode (lsp--log-entry-body entry)))
-                (insert "\n\n\n")))
-            trace)
-      (write-region nil nil file))))
+       ('incoming-resp (format "Received response '%s - (%d)' in %dms."
+                               method id process-time))
+       ('outgoing-resp
+        (format
+         "Sending response '%s - (%d)'. Processing request took %dms"
+         method id process-time))))
+    (insert "\n")
+    (insert (if (memq type '(incoming-resp ougoing-resp))
+                "Result: "
+              "Params: "))
+    (insert (json-encode body))
+    (insert "\n\n\n")))
+
+(defun lsp--get-create-io-ewoc (workspace)
+  (if (lsp--workspace-ewoc workspace)
+      (lsp--workspace-ewoc workspace)
+    (let ((buffer (get-buffer-create (format "*lsp-io: %s*"
+                                             (lsp--workspace-root workspace)))))
+      (with-current-buffer buffer
+        (setf (lsp--workspace-ewoc workspace)
+              (ewoc-create #'lsp--log-entry-pp nil nil t)))
+      (lsp--workspace-ewoc workspace))))
+
+(define-inline lsp--log-entry-new (entry workspace)
+  (inline-letevals (entry workspace)
+    (inline-quote
+     (ewoc-enter-last (lsp--get-create-io-ewoc ,workspace) ,entry))))
 
 (defun lsp--send-notification (body)
   "Send BODY as a notification to the language server."
   (lsp-foreach-workspace
-   (when lsp-trace
-     (push (lsp--make-log-entry (plist-get body :method) nil body 'outgoing-notif)
-           (lsp--client-message-trace (lsp--workspace-client lsp--cur-workspace))))
+   (when lsp-print-io
+     (lsp--log-entry-new (lsp--make-log-entry
+                          (plist-get body :method)
+                          nil (plist-get body :params) 'outgoing-notif)
+                         lsp--cur-workspace))
    (lsp--send-no-wait (lsp--make-message body)
                       (lsp--workspace-proc lsp--cur-workspace))))
 
@@ -2074,10 +2077,11 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
              (body (plist-put body :id id)))
         (--each target-workspaces
           (with-lsp-workspace it
-            (when lsp-trace
-              (push (lsp--make-log-entry method id body 'outgoing-req)
-                    (lsp--client-message-trace (lsp--workspace-client
-                                                lsp--cur-workspace))))
+            (when lsp-print-io
+              (lsp--log-entry-new (lsp--make-log-entry method id
+                                                       (plist-get body :params)
+                                                       'outgoing-req)
+                                  it))
             (let ((message (lsp--make-message body)))
               (puthash id
                        (list async-callback error-async-callback method start-time (current-time))
@@ -3742,10 +3746,6 @@ textDocument/didOpen for the new file."
 
 (defun lsp--send-no-wait (message proc)
   "Send MESSAGE to PROC without waiting for further output."
-  (when lsp-print-io
-    (lsp-log ">>> %s(async)\n%s"
-             (lsp--workspace-print lsp--cur-workspace)
-             message))
   (when (memq (process-status proc) '(stop exit closed failed nil))
     (error "%s: Cannot communicate with the process (%s)" (process-name proc)
            (process-status proc)))
@@ -3792,9 +3792,9 @@ textDocument/didOpen for the new file."
   "Call the appropriate handler for NOTIFICATION."
   (-let (((&hash "params" "method" "result") notification)
          (client (lsp--workspace-client workspace)))
-    (when lsp-trace
-      (push (lsp--make-log-entry method nil nil 'incoming-notif result)
-            (lsp--client-message-trace client)))
+    (when lsp-print-io
+      (lsp--log-entry-new (lsp--make-log-entry method nil result 'incoming-notif)
+                          lsp--cur-workspace))
     (if-let (handler (or (gethash method (lsp--client-notification-handlers client))
                          (gethash method lsp--default-notification-handlers)))
         (funcall handler workspace params)
@@ -3814,7 +3814,10 @@ PARAMS are the `workspace/configuration' request params"
 (defun lsp--on-request (workspace request)
   "Call the appropriate handler for REQUEST, and send the return value to the server.
 WORKSPACE is the active workspace."
-  (-let* (((&hash "params" "method") request)
+  (-let* ((recv-time (current-time))
+          ((&hash "params" "method" "id") request)
+          (req-entry (and lsp-print-io
+                           (lsp--make-log-entry method id params 'incoming-req)))
           (client (lsp--workspace-client workspace))
           (process (lsp--workspace-proc workspace))
           (empty-response (lsp--make-response request nil))
@@ -3839,8 +3842,14 @@ WORKSPACE is the active workspace."
                        (-if-let (handler (gethash other (lsp--client-request-handlers client) nil))
                            (lsp--make-response request (funcall handler workspace params))
                          (lsp-warn "Unknown request method: %s" other)
-                         empty-response)))))
+                         empty-response))))
+          (resp-entry (and lsp-print-io
+                           (lsp--make-log-entry method id response 'outgoing-resp
+                                                (/ (nth 2 (time-since recv-time)) 1000)))))
     ;; Send response to the server.
+    (when lsp-print-io
+      (lsp--log-entry-new req-entry workspace)
+      (lsp--log-entry-new resp-entry workspace))
     (lsp--send-no-wait (lsp--make-message response) process)))
 
 (defun lsp--error-string (err)
@@ -3947,11 +3956,11 @@ WORKSPACE is the active workspace."
         ('response
          (cl-assert id)
          (-let [(callback _ method start-time before-send) (gethash id (lsp--client-response-handlers client))]
-           (when lsp-trace
-             (push
-              (lsp--make-log-entry method id nil 'incoming-resp data
+           (when lsp-print-io
+             (lsp--log-entry-new
+              (lsp--make-log-entry method id data 'incoming-resp
                                    (/ (nth 2 (time-since before-send)) 1000))
-              (lsp--client-message-trace client)))
+              lsp--cur-workspace))
            (when callback
              (funcall callback (gethash "result" json-data))
              (remhash id (lsp--client-response-handlers client))
@@ -4046,10 +4055,6 @@ WORKSPACE is the active workspace."
                                   (lsp--parser-reset p)
                                   (ignore (lsp-warn "Failed to parse the following chunk:\n'''\n%s\n'''\nwith message %s" chunk err))))))
           (dolist (m messages)
-            (when lsp-print-io
-              (lsp-log "<<<< %s\n%s"
-                       (-> p lsp--parser-workspace lsp--workspace-print)
-                       (lsp--json-pretty-print m)))
             (lsp--parser-on-message p m))))))
 
 (defun lsp--symbol-to-imenu-elem (sym)
