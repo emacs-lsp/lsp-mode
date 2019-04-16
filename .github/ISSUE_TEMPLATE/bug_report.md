@@ -23,7 +23,7 @@ Mention which server/language did you use (e. g. lsp-python, lsp-ccls, lsp-java,
 Which os do you use?
 
 **Error callstack**
-If there is an error please reproduce the issue with `toggle-debug-on-error` and after setting `lsp-print-io` to t, and then include the callstack and attach the content of \*Messages\* buffer.
+If there is an error please reproduce the issue with `toggle-debug-on-error` and after setting `lsp-print-io` to t, and then include the callstack and attach the content of `*lsp-log*` buffer.
 
 ``` emacs-lisp
 (setq lsp-print-io t)
