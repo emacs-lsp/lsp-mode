@@ -3869,7 +3869,7 @@ WORKSPACE is the active workspace."
     (setq key (substring s 0 pos)
           val (substring s (+ 2 pos)))
     (when (string-equal key "Content-Length")
-      (cl-assert (cl-loop for c being the elements of val
+      (cl-assert (cl-loop for c across val
                           when (or (> c ?9) (< c ?0)) return nil
                           finally return t)
                  nil (format "Invalid Content-Length value: %s" val)))
