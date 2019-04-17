@@ -4597,6 +4597,11 @@ will be used to retrieve the value and boolean determines whether
 the type of the property is boolean?"
   (setq lsp-client-settings (-uniq (append lsp-client-settings props))))
 
+(defun lsp-region-text (region)
+  "Get the text for REGION in current buffer."
+  (-let (((start . end) (lsp--range-to-region region)))
+    (buffer-substring-no-properties start end)))
+
 (defun lsp-ht-set (tbl paths value)
   "Set nested hashtable value.
 TBL - a hashtable, PATHS is the path to the nested VALUE."
