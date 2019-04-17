@@ -3794,17 +3794,16 @@ textDocument/didOpen for the new file."
 
 (defun lsp--on-notification (workspace notification)
   "Call the appropriate handler for NOTIFICATION."
-  (-let (((&hash "params" "method" "result") notification)
+  (-let (((&hash "params" "method") notification)
          (client (lsp--workspace-client workspace)))
     (when lsp-print-io
-      (lsp--log-entry-new (lsp--make-log-entry method nil result 'incoming-notif)
+      (lsp--log-entry-new (lsp--make-log-entry method nil params 'incoming-notif)
                           lsp--cur-workspace))
     (if-let (handler (or (gethash method (lsp--client-notification-handlers client))
                          (gethash method lsp--default-notification-handlers)))
         (funcall handler workspace params)
       (unless (string-prefix-p "$" method)
         (lsp-warn "Unknown method: %s" method)))))
-
 
 (defun lsp--build-workspace-configuration-response (params)
   "Get section configuration.
