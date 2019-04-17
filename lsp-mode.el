@@ -1890,28 +1890,31 @@ TYPE can either be 'incoming or 'outgoing"
                           body)
                entry)
               (json-false :json-false)
-              (json-encoding-pretty-print t))
-    (insert (format "[Trace - %s] " timestamp))
-    (insert
-     (pcase type
-       ('incoming-req (format "Received request '%s - (%d)." method id))
-       ('outgoing-req (format "Sending request '%s - (%d)'." method id))
+              (json-encoding-pretty-print t)
+              (str nil))
+    (setq str
+          (concat (format "[Trace - %s]\n" timestamp)
+                  (pcase type
+                    ('incoming-req (format "Received request '%s - (%d).\n" method id))
+                    ('outgoing-req (format "Sending request '%s - (%d)'.\n" method id))
 
-       ('incoming-notif (format "Received notification '%s'." method))
-       ('outgoing-notif (format "Sending notification '%s'." method))
+                    ('incoming-notif (format "Received notification '%s'.\n" method))
+                    ('outgoing-notif (format "Sending notification '%s'.\n" method))
 
-       ('incoming-resp (format "Received response '%s - (%d)' in %dms."
-                               method id process-time))
-       ('outgoing-resp
-        (format
-         "Sending response '%s - (%d)'. Processing request took %dms"
-         method id process-time))))
-    (insert "\n")
-    (insert (if (memq type '(incoming-resp ougoing-resp))
-                "Result: "
-              "Params: "))
-    (insert (json-encode body))
-    (insert "\n\n\n")))
+                    ('incoming-resp (format "Received response '%s - (%d)' in %dms.\n"
+                                            method id process-time))
+                    ('outgoing-resp
+                     (format
+                      "Sending response '%s - (%d)'. Processing request took %dms\n"
+                      method id process-time)))
+                  "\n"
+                  (if (memq type '(incoming-resp ougoing-resp))
+                      "Result: \n"
+                    "Params: \n")
+                  (json-encode body) "\n"
+                  "\n\n\n"))
+    (setq str (propertize str 'mouse-face 'highlight 'read-only t))
+    (insert str)))
 
 (defvar-local lsp--log-io-ewoc nil)
 
@@ -1923,7 +1926,7 @@ TYPE can either be 'incoming or 'outgoing"
                                              (lsp--workspace-root workspace)))))
       (with-current-buffer buffer
         (lsp-log-io-mode)
-        (setq-local lsp--log-io-ewoc (ewoc-create #'lsp--log-entry-pp nil nil t))
+        (setq-local lsp--log-io-ewoc (ewoc-create #'lsp--log-entry-pp nil nil))
         (setf (lsp--workspace-ewoc workspace) lsp--log-io-ewoc))
       (lsp--workspace-ewoc workspace))))
 
