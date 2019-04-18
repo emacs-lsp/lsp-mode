@@ -1850,7 +1850,6 @@ If WORKSPACE is not provided current workspace will be used."
 
 (defun lsp--make-message (params)
   "Create a LSP message from PARAMS, after encoding it to a JSON string."
-  (lsp--cur-workspace-check)
   (let* ((json-encoding-pretty-print lsp-print-io)
          (json-false :json-false)
          (body (if (and lsp-use-native-json
@@ -2120,35 +2119,40 @@ disappearing, unset all the variables related to it."
 
 (defun lsp--client-capabilities ()
   "Return the client capabilites."
-  `(
-    :workspace (:workspaceEdit (
-                                :documentChanges t
-                                :resourceOperations ["create" "rename" "delete"])
-                               :applyEdit t
-                               :symbol (:symbolKind (:valueSet ,(apply 'vector (number-sequence 1 26))))
-                               :executeCommand (:dynamicRegistration :json-false)
-                               :didChangeWatchedFiles (:dynamicRegistration t)
-                               :workspaceFolders t
-                               :configuration t)
-    :textDocument (
-                   :declaration (:linkSupport t)
-                   :definition (:linkSupport t)
-                   :implementation (:linkSupport t)
-                   :typeDefinition (:linkSupport t)
-                   :synchronization (:willSave t :didSave t :willSaveWaitUntil t)
-                   :documentSymbol (:symbolKind (:valueSet ,(apply 'vector (number-sequence 1 26)))
-                                                :hierarchicalDocumentSymbolSupport t)
-                   :formatting (:dynamicRegistration t)
-                   :codeAction (:dynamicRegistration t)
-                   :completion (:completionItem (:snippetSupport ,(if lsp-enable-snippet t :json-false)))
-                   :signatureHelp (:signatureInformation (:parameterInformation (:labelOffsetSupport t)))
-                   :documentLink (:dynamicRegistration t)
-                   :hover (:contentFormat ["plaintext" "markdown"])
-                   :foldingRange ,(if lsp-enable-folding
-                                      (list :dynamicRegistration t
-                                            :rangeLimit lsp-folding-range-limit
-                                            :lineFoldingOnly lsp-folding-line-folding-only)
-                                    nil))))
+  `((workspace . ((workspaceEdit . ((documentChanges . t)
+                                    (resourceOperations . ["create" "rename" "delete"])))
+                  (applyEdit . t)
+                  (symbol . ((symbolKind . ((valueSet . ,(apply 'vector (number-sequence 1 26)))))))
+                  (executeCommand . ((dynamicRegistration . :json-false)))
+                  (didChangeWatchedFiles . ((dynamicRegistration . t)))
+                  (workspaceFolders . t)
+                  (configuration . t)))
+    (textDocument . ((declaration . ((linkSupport . t)))
+                     (definition . ((linkSupport . t)))
+                     (implementation . ((linkSupport . t)))
+                     (typeDefinition . ((linkSupport . t)))
+                     (synchronization . ((willSave . t) (didSave . t) (willSaveWaitUntil . t)))
+                     (documentSymbol . ((symbolKind . ((valueSet . ,(apply 'vector (number-sequence 1 26)))))
+                                        (hierarchicalDocumentSymbolSupport . t)))
+                     (formatting . ((dynamicRegistration . t)))
+                     (codeAction . ((dynamicRegistration . t)
+                                    (codeActionLiteralSupport . ((codeActionKind .
+                                                                                 ((valueSet . [""
+                                                                                               "quickfix"
+                                                                                               "refactor"
+                                                                                               "refactor.extract"
+                                                                                               "refactor.inline"
+                                                                                               "refactor.rewrite"
+                                                                                               "source"
+                                                                                               "source.organizeImports"])))))))
+                     (completion . ((completionItem . ((snippetSupport . ,(if lsp-enable-snippet t :json-false))))))
+                     (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))))
+                     (documentLink . ((dynamicRegistration . t)))
+                     (hover . ((contentFormat . ["plaintext" "markdown"])))
+                     (foldingRange . ,(when lsp-enable-folding
+                                        `((dynamicRegistration . t)
+                                          (rangeLimit . ,lsp-folding-range-limit)
+                                          (lineFoldingOnly . ,lsp-folding-line-folding-only))))))))
 
 (defun lsp-find-roots-for-workspace (workspace session)
   "Get all roots for the WORKSPACE."
@@ -3183,10 +3187,10 @@ Stolen from `org-copy-visible'."
         (end (point-max)))
     (while (/= beg end)
       (when (get-char-property beg 'invisible)
-	      (setq beg (next-single-char-property-change beg 'invisible nil end)))
+        (setq beg (next-single-char-property-change beg 'invisible nil end)))
       (let ((next (next-single-char-property-change beg 'invisible nil end)))
-	      (setq result (concat result (buffer-substring beg next)))
-	      (setq beg next)))
+        (setq result (concat result (buffer-substring beg next)))
+        (setq beg next)))
     (setq deactivate-mark t)
     (s-chop-suffix "\n" result)))
 
@@ -3370,6 +3374,15 @@ RENDER-ALL - nil if only the signature should be rendered."
 (defun lsp-code-actions-at-point ()
   "Retrieve the code actions for the active region or the current line."
   (lsp-request "textDocument/codeAction" (lsp--text-document-code-action-params)))
+
+(defun lsp-execute-code-action-by-kind (command-kind)
+  "Execute code action by name."
+  (if-let (action (-first
+                   (-lambda ((&hash "kind"))
+                     (equal command-kind kind))
+                   (lsp-get-or-calculate-code-actions)))
+      (lsp-execute-code-action action)
+    (user-error "No to action")))
 
 (defalias 'lsp-get-or-calculate-code-actions 'lsp-code-actions-at-point)
 
