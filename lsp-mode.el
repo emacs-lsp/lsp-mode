@@ -4198,7 +4198,7 @@ Return a nested alist keyed by symbol names. e.g.
   (or (and (cond
             ((not (file-remote-p default-directory))
              (executable-find (cl-first final-command)))
-            ((not (version<= emacs-version "26.1"))
+            ((not (version<= emacs-version "26.2"))
              (with-no-warnings (executable-find (cl-first final-command) (file-remote-p default-directory))))
             (t))
            (prog1 t
