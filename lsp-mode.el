@@ -468,6 +468,7 @@ If set to `:none' neither of two will be enabled."
                                         (python-mode . "python")
                                         (lsp--render-markdown . "markdown")
                                         (rust-mode . "rust")
+                                        (rustic-mode . "rust")
                                         (kotlin-mode . "kotlin")
                                         (css-mode . "css")
                                         (less-mode . "less")
