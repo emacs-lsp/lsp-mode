@@ -47,7 +47,7 @@ completing function calls."
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda () (cons "gopls" lsp-clients-go-server-args)))
+                                   (lambda () (cons "gopls" lsp-gopls-server-args)))
                   :major-modes '(go-mode)
                   :priority 0
                   :server-id 'gopls
