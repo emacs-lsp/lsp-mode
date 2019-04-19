@@ -190,7 +190,7 @@
    - Call hierarchy via ccls
      [[file:examples/call-hierarchy-ccls.png]]
 ** Extensions
-*** TRAMP (Experimental)
+*** TRAMP
     LSP mode has support for tramp buffers with the following requirements.
     - The language server have to be present on the remote server since it is running on the remote machine.
     - Having multi folder language server (like [[https://github.com/eclipse/eclipse.jdt.ls][Eclipse JDT LS]]) cannot have local and remote servers.
@@ -200,10 +200,10 @@
      Here it is example how you can configure python language server to work when using ~TRAMP~.
      #+BEGIN_SRC emacs-lisp
        (lsp-register-client
-        (make-lsp-client :new-connection (lsp-tramp-connection "pyls")
+        (make-lsp-client :new-connection (lsp-tramp-connection "binary-or-full-path")
                          :major-modes '(python-mode)
                          :remote? t
-                         :server-id 'pyls))
+                         :server-id 'pyls-remote))
      #+END_SRC
 
 ** Limitations
