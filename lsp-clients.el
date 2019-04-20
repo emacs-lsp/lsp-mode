@@ -100,7 +100,7 @@ finding the executable with variable `exec-path'."
 (defun lsp-typescript-javascript-tsx-jsx-activate-p (filename mode)
   "Check if the javascript-typescript language server should be enabled
 based on FILE-NAME and MAJOR-MODE"
-  (or (member mode '(typescript-mode typescript-tsx-mode js-mode js2-mode rjsx-mode))
+  (or (member mode '(typescript-mode typescript-tsx-mode js-mode js-jsx-mode js2-mode js2-jsx-mode rjsx-mode))
       (and (eq major-mode 'web-mode)
            (or (string-suffix-p ".tsx" filename t)
                (string-suffix-p ".jsx" filename t)))))
