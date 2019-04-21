@@ -4667,11 +4667,11 @@ SESSION is the active session."
       (lsp--start-workspace session client project-root (lsp--create-initialization-options session client))
     (lsp--spinner-stop)))
 
-(defun lsp--log-io-next (arg)
+(defun lsp-log-io-next (arg)
   (interactive "P")
   (ewoc-goto-next lsp--log-io-ewoc (or arg 1)))
 
-(defun lsp--log-io-prev (arg)
+(defun lsp-log-io-prev (arg)
   (interactive "P")
   (ewoc-goto-prev lsp--log-io-ewoc (or arg 1)))
 
