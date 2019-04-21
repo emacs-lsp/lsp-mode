@@ -3606,10 +3606,9 @@ perform the request synchronously."
       lsp--document-symbols
     (let ((method "textDocument/documentSymbol")
 	  (params `(:textDocument ,(lsp--text-document-identifier))))
+      (setq lsp--document-symbols-tick (buffer-chars-modified-tick))
       (if (not lsp--document-symbols-request-async)
-	  (setq lsp--document-symbols-tick (buffer-chars-modified-tick)
-		lsp--document-symbols (lsp-request method params))
-	(setq lsp--document-symbols-tick (buffer-chars-modified-tick))
+	  (setq lsp--document-symbols (lsp-request method params))
 	(lsp-request-async method params
 			   (lambda (document-symbols)
 			     (setq lsp--document-symbols document-symbols)
