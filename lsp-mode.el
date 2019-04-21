@@ -3247,6 +3247,24 @@ When language is nil render as markup if `markdown-mode' is loaded."
    ((stringp content) (lsp--render-string content "markdown"))
    (t (error "Failed to handle %s" content))))
 
+(defun lsp--render-simple (content)
+  "Render first line of code block in CONTENT element.
+Fallback to lsp--render-element if not found."
+  (let* ((value (if (hash-table-p content) (gethash "value" content) content))
+         (lang (if (hash-table-p content) (gethash "language" content) "markdown"))
+         (lines (split-string value "\n"))
+         (start (--drop-while (not (string-prefix-p "```" it)) lines))
+         (block (car (--filter (string-suffix-p "```" (car (last it)))
+                               (-drop 2 (-inits start))))))
+    (if block
+        (progn ;; guess lang from multiline block
+          (setq lang (or (substring (car block) 3) lang))
+          (setq block (string-join (--remove-last t (cdr block)) "\n")))
+      (setq block (car start)))
+    (if block
+        (lsp--render-string block lang)
+      (lsp--render-element content))))
+
 (defun lsp--render-on-hover-content (contents render-all)
   "Render the content received from 'document/onHover' request.
 CONTENTS  - MarkedString | MarkedString[] | MarkupContent
@@ -3254,7 +3272,9 @@ RENDER-ALL - nil if only the signature should be rendered."
   (if (and (hash-table-p contents) (gethash "kind" contents))
       ;; MarkupContent, deprecated by LSP but actually very flexible.
       ;; It tends to be long and is not suitable in echo area.
-      (if render-all (lsp--render-element contents) "")
+      (if render-all
+          (lsp--render-element contents)
+        (lsp--render-simple contents))
     ;; MarkedString -> MarkedString[]
     (when (or (hash-table-p contents) (stringp contents))
       (setq contents (list contents)))
