@@ -4678,8 +4678,8 @@ SESSION is the active session."
 (define-derived-mode lsp-log-io-mode view-mode "LspLogIo"
   "Special mode for viewing IO logs.")
 
-(define-key lsp-log-io-mode-map (kbd "<down>") #'lsp--log-io-next)
-(define-key lsp-log-io-mode-map (kbd "<up>")  #'lsp--log-io-prev)
+(define-key lsp-log-io-mode-map (kbd "M-n") #'lsp--log-io-next)
+(define-key lsp-log-io-mode-map (kbd "M-p")  #'lsp--log-io-prev)
 
 (define-derived-mode lsp-browser-mode special-mode "LspBrowser"
   "Define mode for displaying lsp sessions."
