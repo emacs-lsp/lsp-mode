@@ -614,6 +614,16 @@ They are added to `markdown-code-lang-modes'")
 
 (defvar lsp--tcp-port 10000)
 
+(defvar-local lsp--document-symbols nil
+  "The latest document symbols.")
+
+(defvar-local lsp--document-symbols-request-async nil
+  "If non-nil, request document symbols asynchronously.")
+
+(defvar-local lsp--document-symbols-tick -1
+  "The value of `buffer-chars-modified-tick' when document
+  symbols were last retrieved.")
+
 ;; Buffer local variable for storing number of lines.
 (defvar lsp--log-lines)
 
@@ -3581,8 +3591,37 @@ A reference is highlighted only if it is visible in a window."
                 'def-params td-params)))
 
 (defun lsp--get-document-symbols ()
-  (lsp-request "textDocument/documentSymbol"
-               `(:textDocument ,(lsp--text-document-identifier))))
+  "Get document symbols.
+
+If the buffer has not been modified since symbols were last
+retrieved, simply return the latest result.
+
+Else, if the request was initiated by Imenu updating its menu-bar
+entry, perform it asynchronously; i.e., give Imenu the latest
+result and then force a refresh when a new one is available.
+
+Else (e.g., due to intereactive use of `imenu' or `xref'),
+perform the request synchronously."
+  (if (= (buffer-chars-modified-tick) lsp--document-symbols-tick)
+      lsp--document-symbols
+    (if (not lsp--document-symbols-request-async)
+	(setq lsp--document-symbols-tick (buffer-chars-modified-tick)
+	      lsp--document-symbols (lsp-request
+				     "textDocument/documentSymbol"
+				     `(:textDocument ,(lsp--text-document-identifier))))
+      (lsp-request-async "textDocument/documentSymbol"
+			 `(:textDocument ,(lsp--text-document-identifier)
+					 :mode alive)
+			 (lambda (document-symbols)
+			   (setq lsp--document-symbols-tick (buffer-chars-modified-tick)
+				 lsp--document-symbols document-symbols)
+			   (lsp--imenu-refresh)))
+      lsp--document-symbols)))
+
+(advice-add 'imenu-update-menubar :around
+	    (lambda (oldfun &rest r)
+	      (let ((lsp--document-symbols-request-async t))
+		(apply oldfun r))))
 
 (defun lsp--xref-backend () 'xref-lsp)
 
@@ -4198,9 +4237,14 @@ Return a nested alist keyed by symbol names. e.g.
          (result (compare-strings name1 0 (length name1) name2 0 (length name2))))
     (if (numberp result) result 0)))
 
+(defun lsp--imenu-refresh ()
+  "Force Imenu to refresh itself."
+  (imenu--menubar-select imenu--rescan-item))
+
 (defun lsp-enable-imenu ()
   "Use lsp-imenu for the current buffer."
-  (setq-local imenu-create-index-function #'lsp--imenu-create-index))
+  (setq-local imenu-create-index-function #'lsp--imenu-create-index)
+  (lsp--imenu-refresh))
 
 (defun lsp-resolve-final-function (command)
   "Resolve final function COMMAND."
