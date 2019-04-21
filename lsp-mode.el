@@ -3609,10 +3609,10 @@ perform the request synchronously."
       (if (not lsp--document-symbols-request-async)
 	  (setq lsp--document-symbols-tick (buffer-chars-modified-tick)
 		lsp--document-symbols (lsp-request method params))
+	(setq lsp--document-symbols-tick (buffer-chars-modified-tick))
 	(lsp-request-async method params
 			   (lambda (document-symbols)
-			     (setq lsp--document-symbols-tick (buffer-chars-modified-tick)
-				   lsp--document-symbols document-symbols)
+			     (setq lsp--document-symbols document-symbols)
 			     (lsp--imenu-refresh))
 			   :mode 'alive)
 	lsp--document-symbols))))
