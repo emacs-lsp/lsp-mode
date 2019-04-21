@@ -137,6 +137,12 @@ the buffer when it becomes large."
                  (integer :tag "lines")
                  (const :tag "Unlimited" t)))
 
+(defcustom lsp-io-messages-max t
+  "Maximum number of messages that can be locked in a `lsp-io' buffer."
+  :group 'lsp-mode
+  :type '(choice (const :tag "Unlimited" t)
+                 (integer :tag "Messages")))
+
 (defcustom lsp-report-if-no-buffer t
   "If non nil the errors will be reported even when the file is not open."
   :type 'boolean
@@ -1930,10 +1936,27 @@ TYPE can either be 'incoming or 'outgoing"
         (setf (lsp--workspace-ewoc workspace) lsp--log-io-ewoc))
       (lsp--workspace-ewoc workspace))))
 
-(define-inline lsp--log-entry-new (entry workspace)
-  (inline-letevals (entry workspace)
-    (inline-quote
-     (ewoc-enter-last (lsp--get-create-io-ewoc ,workspace) ,entry))))
+(define-inline lsp--ewoc-count (ewoc)
+  (inline-quote
+   (let* ((count 0)
+          (count-fn (lambda (_) (setq count (1+ count)))))
+     (ewoc-map count-fn ,ewoc)
+     count)))
+
+(defun lsp--log-entry-new (entry workspace)
+  (let* ((ewoc (lsp--get-create-io-ewoc workspace))
+         (count (lsp--ewoc-count ewoc))
+         (node (if (or (eq lsp-io-messages-max t)
+                       (>= lsp-io-messages-max count))
+                   nil
+                 (ewoc-nth ewoc (1- lsp-io-messages-max))))
+         (prev nil)
+         (inhibit-read-only t))
+    (while node
+      (setq prev (ewoc-prev ewoc node))
+      (ewoc-delete ewoc node)
+      (setq node prev))
+    (ewoc-enter-last ewoc entry)))
 
 (defun lsp--send-notification (body)
   "Send BODY as a notification to the language server."
