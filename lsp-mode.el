@@ -3604,19 +3604,18 @@ Else (e.g., due to intereactive use of `imenu' or `xref'),
 perform the request synchronously."
   (if (= (buffer-chars-modified-tick) lsp--document-symbols-tick)
       lsp--document-symbols
-    (if (not lsp--document-symbols-request-async)
-	(setq lsp--document-symbols-tick (buffer-chars-modified-tick)
-	      lsp--document-symbols (lsp-request
-				     "textDocument/documentSymbol"
-				     `(:textDocument ,(lsp--text-document-identifier))))
-      (lsp-request-async "textDocument/documentSymbol"
-			 `(:textDocument ,(lsp--text-document-identifier)
-					 :mode alive)
-			 (lambda (document-symbols)
-			   (setq lsp--document-symbols-tick (buffer-chars-modified-tick)
-				 lsp--document-symbols document-symbols)
-			   (lsp--imenu-refresh)))
-      lsp--document-symbols)))
+    (let ((method "textDocument/documentSymbol")
+	  (params `(:textDocument ,(lsp--text-document-identifier))))
+      (if (not lsp--document-symbols-request-async)
+	  (setq lsp--document-symbols-tick (buffer-chars-modified-tick)
+		lsp--document-symbols (lsp-request method params))
+	(lsp-request-async method params
+			   (lambda (document-symbols)
+			     (setq lsp--document-symbols-tick (buffer-chars-modified-tick)
+				   lsp--document-symbols document-symbols)
+			     (lsp--imenu-refresh))
+			   :mode 'alive)
+	lsp--document-symbols))))
 
 (advice-add 'imenu-update-menubar :around
 	    (lambda (oldfun &rest r)
