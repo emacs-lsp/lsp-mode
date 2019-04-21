@@ -1945,7 +1945,7 @@ TYPE can either be 'incoming or 'outgoing"
 
 (defun lsp--log-entry-new (entry workspace)
   (let* ((ewoc (lsp--get-create-io-ewoc workspace))
-         (count (lsp--ewoc-count ewoc))
+         (count (and (not (eq lsp-io-messages-max t)) (lsp--ewoc-count ewoc)))
          (node (if (or (eq lsp-io-messages-max t)
                        (>= lsp-io-messages-max count))
                    nil
