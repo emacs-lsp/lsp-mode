@@ -27,7 +27,7 @@
 (require 'lsp-mode)
 
 (defgroup lsp-intelephense nil
-  "Settings for pyls."
+  "Settings for php-language-server."
   :group 'tools
   :tag "PHP Language Server")
 
