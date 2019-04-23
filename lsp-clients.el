@@ -101,7 +101,7 @@ finding the executable with variable `exec-path'."
   "Check if the javascript-typescript language server should be enabled
 based on FILE-NAME and MAJOR-MODE"
   (or (member mode '(typescript-mode typescript-tsx-mode js-mode js-jsx-mode js2-mode js2-jsx-mode rjsx-mode))
-      (and (eq major-mode 'web-mode)
+      (and (provided-mode-derived-p mode 'web-mode)
            (or (string-suffix-p ".tsx" filename t)
                (string-suffix-p ".jsx" filename t)))))
 
