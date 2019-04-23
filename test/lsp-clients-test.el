@@ -75,4 +75,12 @@
   (let ((major-mode 'js-mode))
     (should (not (lsp-clients-flow-activate-p (concat test-location "fixtures/SampleTypeScriptProject/src/sample.ts") nil)))))
 
+(ert-deftest lsp-typescript-javascript-activates-based-on-file-extension ()
+  (should (lsp-typescript-javascript-tsx-jsx-activate-p "abc.js"))
+  (should (lsp-typescript-javascript-tsx-jsx-activate-p "abc.jsx"))
+  (should (lsp-typescript-javascript-tsx-jsx-activate-p "abc.ts"))
+  (should (lsp-typescript-javascript-tsx-jsx-activate-p "abc.tsx"))
+  (should (not (lsp-typescript-javascript-tsx-jsx-activate-p "abc.tsxx")))
+  (should (not (lsp-typescript-javascript-tsx-jsx-activate-p "abc.jss"))))
+
 ;;; lsp-clients-test.el ends here

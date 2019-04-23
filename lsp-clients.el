@@ -97,12 +97,9 @@ finding the executable with variable `exec-path'."
   :risky t
   :type '(repeat string))
 
-(defun lsp-typescript-javascript-tsx-jsx-activate-p (filename _)
+(defun lsp-typescript-javascript-tsx-jsx-activate-p (filename &optional _)
   "Check if the javascript-typescript language server should be enabled based on FILENAME."
-  (or (string-suffix-p ".tsx" filename t)
-      (string-suffix-p ".jsx" filename t)
-      (string-suffix-p ".js" filename t)
-      (string-suffix-p ".ts" filename t)))
+  (not (null (string-match-p (rx (one-or-more char) "." (or "ts" "js") (opt "x") string-end) filename))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
