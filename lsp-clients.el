@@ -99,7 +99,7 @@ finding the executable with variable `exec-path'."
 
 (defun lsp-typescript-javascript-tsx-jsx-activate-p (filename &optional _)
   "Check if the javascript-typescript language server should be enabled based on FILENAME."
-  (not (null (string-match-p (rx (one-or-more char) "." (or "ts" "js") (opt "x") string-end) filename))))
+  (string-match-p (rx (one-or-more char) "." (or "ts" "js") (opt "x") string-end) filename))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
