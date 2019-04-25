@@ -3916,12 +3916,6 @@ WORKSPACE is the active workspace."
       ;; screwed up with a previous Content-Length
       (error "No Content-Length header"))))
 
-(defun s-trim-left (s)
-  "Remove whitespace at the beginning of S."
-  (if (string-match "\\`[ \t\n\r]+" s)
-      (replace-match "" t t s)
-    s))
-
 (defun lsp--parse-header (s)
   "Parse string S as a LSP (KEY . VAL) header."
   (let ((pos (string-match "\:" s))
