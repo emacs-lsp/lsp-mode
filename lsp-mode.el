@@ -3923,7 +3923,7 @@ WORKSPACE is the active workspace."
     (unless pos
       (signal 'lsp-invalid-header-name (list s)))
     (setq key (substring s 0 pos)
-          val (substring s (+ 2 pos)))
+          val (s-trim-left (substring s (+ 1 pos))))
     (when (string-equal key "Content-Length")
       (cl-assert (cl-loop for c across val
                           when (or (> c ?9) (< c ?0)) return nil
