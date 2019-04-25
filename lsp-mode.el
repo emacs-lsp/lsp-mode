@@ -1936,12 +1936,11 @@ TYPE can either be 'incoming or 'outgoing"
         (setf (lsp--workspace-ewoc workspace) lsp--log-io-ewoc))
       (lsp--workspace-ewoc workspace))))
 
-(define-inline lsp--ewoc-count (ewoc)
-  (inline-quote
-   (let* ((count 0)
-          (count-fn (lambda (_) (setq count (1+ count)))))
-     (ewoc-map count-fn ,ewoc)
-     count)))
+(defun lsp--ewoc-count (ewoc)
+  (let* ((count 0)
+         (count-fn (lambda (_) (setq count (1+ count)))))
+    (ewoc-map count-fn ewoc)
+    count))
 
 (defun lsp--log-entry-new (entry workspace)
   (let* ((ewoc (lsp--get-create-io-ewoc workspace))
