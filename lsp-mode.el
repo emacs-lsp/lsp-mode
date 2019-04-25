@@ -1690,6 +1690,7 @@ CALLBACK - callback for the lenses."
     ["Find references to symbol under point" lsp-find-references]
     ["Find type definitions of symbol under point" lsp-find-type-definition]
     "--"
+    ["View IO logs for workspace" lsp-switch-to-io-log-buffer]
     ["Shutdown language server" lsp-shutdown-workspace]
     ["Restart language server" lsp-restart-workspace]))
 
@@ -4672,10 +4673,12 @@ SESSION is the active session."
 
 (defun lsp-switch-to-io-log-buffer (workspace)
   (interactive
-   (list (lsp--completing-read "Workspace: "  (lsp-workspaces)
-                               'lsp--workspace-print nil t)))
-  (unless lsp-print-io
-    (user-error "IO logging is disabled."))
+   (list (if lsp-print-io
+             (if (eq (length (lsp-workspaces)) 1)
+                 (nth 0 (lsp-workspaces))
+               (lsp--completing-read "Workspace: " (lsp-workspaces)
+                                     'lsp--workspace-print nil t))
+           (user-error "IO logging is disabled"))))
   (let ((buffer (get-buffer-create (format "*lsp-io: %s*"
                                            (lsp--workspace-root workspace)))))
     (switch-to-buffer buffer)))
