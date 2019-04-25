@@ -3916,7 +3916,7 @@ WORKSPACE is the active workspace."
       ;; screwed up with a previous Content-Length
       (error "No Content-Length header"))))
 
-(defun lsp--trim-left (s)
+(defun s-trim-left (s)
   "Remove whitespace at the beginning of S."
   (if (string-match "\\`[ \t\n\r]+" s)
       (replace-match "" t t s)
@@ -3929,7 +3929,7 @@ WORKSPACE is the active workspace."
     (unless pos
       (signal 'lsp-invalid-header-name (list s)))
     (setq key (substring s 0 pos)
-          val (lsp--trim-left (substring s (+ 1 pos))))
+          val (s-trim-left (substring s (+ 1 pos))))
     (when (string-equal key "Content-Length")
       (cl-assert (cl-loop for c across val
                           when (or (> c ?9) (< c ?0)) return nil
