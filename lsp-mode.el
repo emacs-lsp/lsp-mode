@@ -1690,7 +1690,6 @@ CALLBACK - callback for the lenses."
     ["Find references to symbol under point" lsp-find-references]
     ["Find type definitions of symbol under point" lsp-find-type-definition]
     "--"
-    ["Save logs for workspace" lsp-save-logs]
     ["Shutdown language server" lsp-shutdown-workspace]
     ["Restart language server" lsp-restart-workspace]))
 
