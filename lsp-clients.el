@@ -33,6 +33,8 @@
 (require 'lsp-vetur)
 (require 'lsp-intelephense)
 (require 'lsp-css)
+(require 'lsp-xml)
+(require 'lsp-go)
 
 ;;; Bash
 (lsp-register-client
@@ -221,115 +223,6 @@ particular FILE-NAME and MODE."
                   :priority -1
                   :activation-fn 'lsp-clients-flow-activate-p
                   :server-id 'flow-ls))
-
-
-;;; GO language
-
-(defgroup lsp-clients-go nil
-  "Go language."
-  :group 'lsp-mode
-  :tag "Go language")
-
-(defcustom lsp-clients-go-server "bingo"
-  "The go language server executable to use."
-  :group 'lsp-clients-go
-  :risky t
-  :type 'file)
-
-(defcustom lsp-clients-go-server-args nil
-  "Extra arguments for the go language server."
-  :type '(repeat string)
-  :group 'lsp-clients-go)
-
-(defcustom lsp-clients-go-func-snippet-enabled t
-  "Enable the returning of argument snippets on `func' completions, eg.
-`func(foo string, arg2 bar)'.  Requires code completion to be enabled."
-  :type 'boolean
-  :group 'lsp-clients-go)
-
-(defcustom lsp-clients-go-gocode-completion-enabled t
-  "Enable code completion feature (using gocode)."
-  :type 'boolean
-  :group 'lsp-clients-go)
-
-(defcustom lsp-clients-go-format-tool "goimports"
-  "The tool to be used for formatting documents.  Defaults to `goimports' if nil."
-  :type '(choice (const :tag "goimports" "goimports")
-                 (const :tag "gofmt" "gofmt"))
-  :group 'lsp-clients-go)
-
-(defcustom lsp-clients-go-imports-local-prefix ""
-  "The local prefix (comma-separated string) that goimports will use."
-  :type 'string
-  :group 'lsp-clients-go)
-
-(defcustom lsp-clients-go-max-parallelism nil
-  "The maximum number of goroutines that should be used to fulfill requests.
-This is useful in editor environments where users do not want results ASAP,
-but rather just semi quickly without eating all of their CPU.  When nil,
-defaults to half of your CPU cores."
-  :type '(choice integer (const nil "Half of CPU cores."))
-  :group 'lsp-clients-go)
-
-(defcustom lsp-clients-go-use-binary-pkg-cache t
-  "Whether or not $GOPATH/pkg binary .a files should be used."
-  :type 'boolean
-  :group 'lsp-clients-go)
-
-(defcustom lsp-clients-go-diagnostics-enabled t
-  "Whether diagnostics are enabled."
-  :type 'boolean
-  :group 'lsp-clients-go)
-
-(defcustom lsp-clients-go-library-directories '("/usr")
-  "List of directories which will be considered to be libraries."
-  :group 'lsp-clients-go
-  :risky t
-  :type '(repeat string))
-
-(define-inline lsp-clients-go--bool-to-json (val)
-  (inline-quote (if ,val t :json-false)))
-
-(defun lsp-clients-go--make-init-options ()
-  "Init options for golang."
-  `(:funcSnippetEnabled ,(lsp-clients-go--bool-to-json lsp-clients-go-func-snippet-enabled)
-                        :disableFuncSnippet ,(lsp-clients-go--bool-to-json (not lsp-clients-go-func-snippet-enabled))
-                        :gocodeCompletionEnabled ,(lsp-clients-go--bool-to-json lsp-clients-go-gocode-completion-enabled)
-                        :formatTool ,lsp-clients-go-format-tool
-                        :goimportsLocalPrefix ,lsp-clients-go-imports-local-prefix
-                        :maxParallelism ,lsp-clients-go-max-parallelism
-                        :useBinaryPkgCache ,lsp-clients-go-use-binary-pkg-cache
-                        :diagnosticsEnabled ,lsp-clients-go-diagnostics-enabled))
-
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "gopls")
-                  :major-modes '(go-mode)
-                  :priority 0
-                  :initialization-options 'lsp-clients-go--make-init-options
-                  :server-id 'gopls
-                  :library-folders-fn (lambda (_workspace)
-                                        lsp-clients-go-library-directories)))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda () (cons lsp-clients-go-server
-                                                    lsp-clients-go-server-args)))
-                  :major-modes '(go-mode)
-                  :priority -1
-                  :initialization-options 'lsp-clients-go--make-init-options
-                  :server-id 'go-bingo
-                  :library-folders-fn (lambda (_workspace)
-                                        lsp-clients-go-library-directories)))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "go-langserver")
-                  :major-modes '(go-mode)
-                  :priority -2
-                  :initialization-options 'lsp-clients-go--make-init-options
-                  :server-id 'go-ls
-                  :library-folders-fn (lambda (_workspace)
-                                        lsp-clients-go-library-directories)))
 
 
 ;; PHP

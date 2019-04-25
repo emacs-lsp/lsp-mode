@@ -1686,7 +1686,7 @@ CALLBACK - callback for the lenses."
     "--"
     ["Find declarations of symbol under point" lsp-find-declaration]
     ["Find definitions of symbol" lsp-find-definition]
-    ["Find implementations of symbbol under point" lsp-find-implementation]
+    ["Find implementations of symbol under point" lsp-find-implementation]
     ["Find references to symbol under point" lsp-find-references]
     ["Find type definitions of symbol under point" lsp-find-type-definition]
     "--"
@@ -3280,7 +3280,7 @@ RENDER-ALL - nil if only the signature should be rendered."
   (if (and (hash-table-p contents) (gethash "kind" contents))
       ;; MarkupContent, deprecated by LSP but actually very flexible.
       ;; It tends to be long and is not suitable in echo area.
-      (lsp--render-element contents)
+      (if render-all (lsp--render-element contents) "")
     ;; MarkedString -> MarkedString[]
     (when (or (hash-table-p contents) (stringp contents))
       (setq contents (list contents)))
@@ -3905,7 +3905,7 @@ WORKSPACE is the active workspace."
     (setq key (substring s 0 pos)
           val (substring s (+ 2 pos)))
     (when (string-equal key "Content-Length")
-      (cl-assert (cl-loop for c being the elements of val
+      (cl-assert (cl-loop for c across val
                           when (or (> c ?9) (< c ?0)) return nil
                           finally return t)
                  nil (format "Invalid Content-Length value: %s" val)))
@@ -4628,6 +4628,11 @@ the path to the property, symbol is the defcustom symbol which
 will be used to retrieve the value and boolean determines whether
 the type of the property is boolean?"
   (setq lsp-client-settings (-uniq (append lsp-client-settings props))))
+
+(defun lsp-region-text (region)
+  "Get the text for REGION in current buffer."
+  (-let (((start . end) (lsp--range-to-region region)))
+    (buffer-substring-no-properties start end)))
 
 (defun lsp-ht-set (tbl paths value)
   "Set nested hashtable value.

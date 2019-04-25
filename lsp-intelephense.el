@@ -82,6 +82,11 @@
   language server."
   :type '(choice (:tag "off" "messages" "verbose")))
 
+(defcustom lsp-intelephense-storage-path (locate-user-emacs-file "lsp-cache")
+  "Optional absolute path to storage dir."
+  :group 'lsp-php-ip
+  :type 'directory)
+
 (lsp-register-custom-settings
  '(("intelephense.trace.server" lsp-intelephense-trace-server)
    ("intelephense.format.enable" lsp-intelephense-format-enable t)
@@ -105,6 +110,8 @@
                   :priority -1
                   :notification-handlers (ht ("indexingStarted" #'ignore)
                                              ("indexingEnded" #'ignore))
+                  :initialization-options (lambda ()
+                                            (list :storagePath lsp-intelephense-storage-path))
                   :multi-root t
                   :server-id 'iph))
 
