@@ -4666,6 +4666,16 @@ SESSION is the active session."
       (lsp--start-workspace session client project-root (lsp--create-initialization-options session client))
     (lsp--spinner-stop)))
 
+(defun lsp-switch-to-io-log-buffer (workspace)
+  (interactive
+   (list (lsp--completing-read "Workspace: "  (lsp-workspaces)
+                               'lsp--workspace-print nil t)))
+  (unless lsp-print-io
+    (user-error "IO logging is disabled."))
+  (let ((buffer (get-buffer-create (format "*lsp-io: %s*"
+                                           (lsp--workspace-root workspace)))))
+    (switch-to-buffer buffer)))
+
 (defun lsp-log-io-next (arg)
   (interactive "P")
   (ewoc-goto-next lsp--log-io-ewoc (or arg 1)))
