@@ -103,6 +103,10 @@ complexity."
   "List of modules to import on startup"
   :type '(repeat string))
 
+(defcustom lsp-pyls-plugins-pylint-enabled t
+  "Enable or disable the plugin."
+  :type 'boolean)
+
 (defcustom lsp-pyls-plugins-pycodestyle-enabled t
   "Enable or disable the plugin."
   :type 'boolean)
@@ -216,6 +220,7 @@ at all."
    ("pyls.plugins.pycodestyle.filename" lsp-pyls-plugins-pycodestyle-filename)
    ("pyls.plugins.pycodestyle.exclude" lsp-pyls-plugins-pycodestyle-exclude)
    ("pyls.plugins.pycodestyle.enabled" lsp-pyls-plugins-pycodestyle-enabled t)
+   ("pyls.plugins.pylint.enabled" lsp-pyls-plugins-pylint-enabled t)
    ("pyls.plugins.preload.modules" lsp-pyls-plugins-preload-modules)
    ("pyls.plugins.preload.enabled" lsp-pyls-plugins-preload-enabled t)
    ("pyls.plugins.mccabe.threshold" lsp-pyls-plugins-mccabe-threshold)
