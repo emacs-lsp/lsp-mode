@@ -4902,7 +4902,9 @@ Returns nil if the project should not be added to the current SESSION."
   (and
    (->> session
         (lsp-session-folders-blacklist)
-        (--first (f-ancestor-of? it file-name))
+        (--first (and (f-ancestor-of? it file-name)
+                      (prog1 t
+                        (lsp--info "File %s is in blacklisted directory %s" file-name it))))
         not)
    (or
     (when lsp-auto-guess-root
@@ -4955,7 +4957,7 @@ such."
                 (push project-root (lsp-session-folders session))
                 (lsp--persist-session session))
               (lsp--ensure-lsp-servers session clients project-root ignore-multi-folder))
-          (lsp--warn  "%s not in project." (buffer-name))
+          (lsp--warn "%s not in project or it is blacklisted." (buffer-name))
           nil)
       (lsp--warn "No LSP server for %s." major-mode)
       nil)))
