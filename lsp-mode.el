@@ -4584,14 +4584,14 @@ SESSION is the currently active session. The function will also
 pick only remote enabled clients in case the FILE-NAME is on
 remote machine and vice versa."
   (let ((remote? (file-remote-p file-name)))
-    (--when-let (->> lsp-clients
-                     hash-table-values
-                     (-filter (-lambda (client)
-                                (and (or (-some-> client lsp--client-activation-fn (funcall buffer-file-name buffer-major-mode))
-                                         (and (not (lsp--client-activation-fn client))
-                                              (-contains? (lsp--client-major-modes client) buffer-major-mode)
-                                              (eq (---truthy? remote?) (---truthy? (lsp--client-remote? client)))))
-                                     (-some-> client lsp--client-new-connection (plist-get :test?) funcall)))))
+    (-when-let (matching-clients (->> lsp-clients
+                                      hash-table-values
+                                      (-filter (-lambda (client)
+                                                 (and (or (-some-> client lsp--client-activation-fn (funcall buffer-file-name buffer-major-mode))
+                                                          (and (not (lsp--client-activation-fn client))
+                                                               (-contains? (lsp--client-major-modes client) buffer-major-mode)
+                                                               (eq (---truthy? remote?) (---truthy? (lsp--client-remote? client)))))
+                                                      (-some-> client lsp--client-new-connection (plist-get :test?) funcall))))))
       (lsp-log "Found the following clients for %s: %s"
                file-name
                (s-join ", "
@@ -4599,8 +4599,8 @@ remote machine and vice versa."
                                (format "(server-id %s, priority %s)"
                                        (lsp--client-server-id client)
                                        (lsp--client-priority client)))
-                             it)))
-      (-let* (((add-on-clients main-clients) (-separate 'lsp--client-add-on? it))
+                             matching-clients)))
+      (-let* (((add-on-clients main-clients) (-separate 'lsp--client-add-on? matching-clients))
               (selected-clients (if-let (main-client (and main-clients
                                                           (--max-by (> (lsp--client-priority it)
                                                                        (lsp--client-priority other))
