@@ -1019,7 +1019,7 @@ already have been created."
     (condition-case err
         (progn
           (puthash
-           dir
+           (file-truename dir)
            (file-notify-add-watch
             dir
             '(change)
@@ -1046,6 +1046,7 @@ already have been created."
            (-rpartial #'lsp-watch-root-folder callback watch)
            (seq-filter (lambda (f)
                          (and (file-directory-p f)
+                              (not (gethash (file-truename f) (lsp-watch-descriptors watch)))
                               (not (lsp--string-match-any lsp-file-watch-ignored f))
                               (not (-contains? '("." "..") (f-filename f)))))
                        (directory-files dir t))))
