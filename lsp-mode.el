@@ -227,6 +227,10 @@ When set to t `lsp-mode' will auto-configure `lsp-ui' and `company-lsp'."
   "Hash table server-id -> client.
 It contains all of the clients that are currently registered.")
 
+(defvar lsp-enabled-clients nil
+  "List of clients allowed to be used for projects.
+When nil, all registered clients are considered candidates.")
+
 (defvar lsp-last-id 0
   "Last request id.")
 
@@ -4587,11 +4591,15 @@ remote machine and vice versa."
     (-when-let (matching-clients (->> lsp-clients
                                       hash-table-values
                                       (-filter (-lambda (client)
-                                                 (and (or (-some-> client lsp--client-activation-fn (funcall buffer-file-name buffer-major-mode))
-                                                          (and (not (lsp--client-activation-fn client))
-                                                               (-contains? (lsp--client-major-modes client) buffer-major-mode)
-                                                               (eq (---truthy? remote?) (---truthy? (lsp--client-remote? client)))))
-                                                      (-some-> client lsp--client-new-connection (plist-get :test?) funcall))))))
+                                                 (and (and (or (-some-> client lsp--client-activation-fn (funcall buffer-file-name buffer-major-mode))
+                                                               (and (not (lsp--client-activation-fn client))
+                                                                    (-contains? (lsp--client-major-modes client) buffer-major-mode)
+                                                                    (eq (---truthy? remote?) (---truthy? (lsp--client-remote? client)))))
+                                                           (-some-> client lsp--client-new-connection (plist-get :test?) funcall))
+                                                      (or (null lsp-enabled-clients)
+                                                          (or (member (lsp--client-server-id client) lsp-enabled-clients)
+                                                              (ignore (lsp--info "Client %s is not in lsp-enabled-clients"
+                                                                                 (lsp--client-server-id client))))))))))
       (lsp-log "Found the following clients for %s: %s"
                file-name
                (s-join ", "
