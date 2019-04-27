@@ -3006,6 +3006,8 @@ and the position respectively."
                            (gethash buffer-file-name (lsp-diagnostics) nil))))
     (cl-coerce (seq-map #'lsp-diagnostic-original diags-in-range) 'vector)))
 
+(defalias 'lsp--cur-line-diagnotics 'lsp--cur-line-diagnostics)
+
 (defun lsp--gethash (key table &optional dflt)
   "Look up KEY in TABLE and return its associated value,
 unless KEY not found or its value is falsy, when it returns DFLT.
