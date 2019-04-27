@@ -27,7 +27,7 @@
 (require 'lsp-mode)
 
 (defgroup lsp-intelephense nil
-  "Settings for pyls."
+  "Settings for php-language-server."
   :group 'tools
   :tag "PHP Language Server")
 
@@ -82,7 +82,7 @@
   language server."
   :type '(choice (:tag "off" "messages" "verbose")))
 
-(defcustom lsp-intelephense-storage-path (locate-user-emacs-file "lsp-cache")
+(defcustom lsp-intelephense-storage-path (expand-file-name (locate-user-emacs-file "lsp-cache"))
   "Optional absolute path to storage dir."
   :group 'lsp-php-ip
   :type 'directory)

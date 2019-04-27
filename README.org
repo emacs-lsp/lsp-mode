@@ -106,6 +106,7 @@
    | C++                   | [[https://github.com/MaskRay/ccls][ccls]]                                      | [[https://github.com/MaskRay/emacs-ccls][emacs-ccls]]     | [[https://github.com/MaskRay/ccls][ccls]]                                                     | Yes (gdb or lldb)            |
    | C++                   | [[https://clang.llvm.org/extra/clangd.html][clangd]]                                    | Yes            | [[https://clang.llvm.org/extra/clangd.html][clangd]]                                                   | Yes (gdb or lldb)            |
    | C++                   | [[https://github.com/cquery-project/cquery][cquery]]                                    | [[https://github.com/cquery-project/emacs-cquery][emacs-cquery]]   | [[https://github.com/cquery-project/cquery][cquery]]                                                   | Yes (gdb or lldb)            |
+   | Clojure               | [[https://github.com/snoe/clojure-lsp][clojure-lsp]]                               | Yes            | [[https://github.com/snoe/clojure-lsp][clojure-lisp]]                                             |                              |
    | CSS/LessCSS/SASS/SCSS | [[https://github.com/vscode-langservers/vscode-css-languageserver-bin][css]]                                       | Yes            | npm install -g vscode-css-languageserver-bin             |                              |
    | Dart                  | [[https://github.com/natebosch/dart_language_server][dart_language_server]]                      | Yes            | pub global activate dart_language_server                 |                              |
    | Elixir                | [[https://github.com/JakeBecker/elixir-ls][elixir-ls]]                                 | Yes            | [[https://github.com/JakeBecker/elixir-ls][elixir-ls]]                                                | Yes                          |
@@ -188,7 +189,7 @@
    - Call hierarchy via ccls
      [[file:examples/call-hierarchy-ccls.png]]
 ** Extensions
-*** TRAMP (Experimental)
+*** TRAMP
     LSP mode has support for tramp buffers with the following requirements.
     - The language server have to be present on the remote server since it is running on the remote machine.
     - Having multi folder language server (like [[https://github.com/eclipse/eclipse.jdt.ls][Eclipse JDT LS]]) cannot have local and remote servers.
@@ -198,10 +199,10 @@
      Here it is example how you can configure python language server to work when using ~TRAMP~.
      #+BEGIN_SRC emacs-lisp
        (lsp-register-client
-        (make-lsp-client :new-connection (lsp-tramp-connection "pyls")
+        (make-lsp-client :new-connection (lsp-tramp-connection "binary-or-full-path")
                          :major-modes '(python-mode)
                          :remote? t
-                         :server-id 'pyls))
+                         :server-id 'pyls-remote))
      #+END_SRC
 
 ** Limitations

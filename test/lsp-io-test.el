@@ -28,15 +28,23 @@
   (let* ((p (make-lsp--parser :workspace lsp--test-workspace))
          (messages-in '("Content-Length: 2\r\n\r\n{}"
                         "Content-Length: 2\r\n\r\n{}"
+                        "Content-Length:2\r\n\r\n{}"
                         "Content-Length: 2\r\n\r\n{}"
+                        "Content-Length:2\r\n\r\n{}"
                         "Content-Length: 2\r\n\r\n{}"
                         "Content-Length: 2\r\n\r\n{}"))
          (messages (lsp--parser-read p (string-join messages-in))))
-    (should (equal messages '("{}" "{}" "{}" "{}" "{}")))))
+    (should (equal messages '("{}" "{}" "{}" "{}" "{}" "{}" "{}")))))
 
 (ert-deftest lsp--parser-read--multibyte ()
   (let* ((p (make-lsp--parser :workspace lsp--test-workspace))
 				 (message-in "Content-Length: 3\r\n\r\n\xe2\x80\x99")
+         (messages (lsp--parser-read p message-in)))
+    (should (equal messages '("’")))))
+
+(ert-deftest lsp--parser-read--multibyte-nospace ()
+  (let* ((p (make-lsp--parser :workspace lsp--test-workspace))
+				 (message-in "Content-Length:3\r\n\r\n\xe2\x80\x99")
          (messages (lsp--parser-read p message-in)))
     (should (equal messages '("’")))))
 

@@ -7,6 +7,7 @@
 ;; Package-Requires: ((emacs "25.1") (dash "2.14.1") (dash-functional "2.14.1") (f "0.20.0") (ht "2.0") (spinner "1.7.3") (markdown-mode "2.3"))
 ;; Version: 6.0
 
+;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
@@ -227,6 +228,10 @@ When set to t `lsp-mode' will auto-configure `lsp-ui' and `company-lsp'."
 (defvar lsp-clients (make-hash-table :test 'eql)
   "Hash table server-id -> client.
 It contains all of the clients that are currently registered.")
+
+(defvar lsp-enabled-clients nil
+  "List of clients allowed to be used for projects.
+When nil, all registered clients are considered candidates.")
 
 (defvar lsp-last-id 0
   "Last request id.")
@@ -465,10 +470,12 @@ If set to `:none' neither of two will be enabled."
 (defvar-local lsp--flymake-report-fn nil)
 
 (defvar lsp-language-id-configuration '((".*.vue" . "vue")
+                                        (".*.tsx" . "typescriptreact")
                                         (java-mode . "java")
                                         (python-mode . "python")
                                         (lsp--render-markdown . "markdown")
                                         (rust-mode . "rust")
+                                        (rustic-mode . "rust")
                                         (kotlin-mode . "kotlin")
                                         (css-mode . "css")
                                         (less-mode . "less")
@@ -613,6 +620,16 @@ They are added to `markdown-code-lang-modes'")
   "Contain the `lsp-session' for the current Emacs instance.")
 
 (defvar lsp--tcp-port 10000)
+
+(defvar-local lsp--document-symbols nil
+  "The latest document symbols.")
+
+(defvar-local lsp--document-symbols-request-async nil
+  "If non-nil, request document symbols asynchronously.")
+
+(defvar-local lsp--document-symbols-tick -1
+  "The value of `buffer-chars-modified-tick' when document
+  symbols were last retrieved.")
 
 ;; Buffer local variable for storing number of lines.
 (defvar lsp--log-lines)
@@ -1006,7 +1023,7 @@ already have been created."
     (condition-case err
         (progn
           (puthash
-           dir
+           (file-truename dir)
            (file-notify-add-watch
             dir
             '(change)
@@ -1033,6 +1050,7 @@ already have been created."
            (-rpartial #'lsp-watch-root-folder callback watch)
            (seq-filter (lambda (f)
                          (and (file-directory-p f)
+                              (not (gethash (file-truename f) (lsp-watch-descriptors watch)))
                               (not (lsp--string-match-any lsp-file-watch-ignored f))
                               (not (-contains? '("." "..") (f-filename f)))))
                        (directory-files dir t))))
@@ -1850,7 +1868,6 @@ If WORKSPACE is not provided current workspace will be used."
 
 (defun lsp--make-message (params)
   "Create a LSP message from PARAMS, after encoding it to a JSON string."
-  (lsp--cur-workspace-check)
   (let* ((json-false :json-false)
          (body (if (and lsp-use-native-json
                         (fboundp 'json-serialize))
@@ -2151,35 +2168,40 @@ disappearing, unset all the variables related to it."
 
 (defun lsp--client-capabilities ()
   "Return the client capabilites."
-  `(
-    :workspace (:workspaceEdit (
-                                :documentChanges t
-                                :resourceOperations ["create" "rename" "delete"])
-                               :applyEdit t
-                               :symbol (:symbolKind (:valueSet ,(apply 'vector (number-sequence 1 26))))
-                               :executeCommand (:dynamicRegistration :json-false)
-                               :didChangeWatchedFiles (:dynamicRegistration t)
-                               :workspaceFolders t
-                               :configuration t)
-    :textDocument (
-                   :declaration (:linkSupport t)
-                   :definition (:linkSupport t)
-                   :implementation (:linkSupport t)
-                   :typeDefinition (:linkSupport t)
-                   :synchronization (:willSave t :didSave t :willSaveWaitUntil t)
-                   :documentSymbol (:symbolKind (:valueSet ,(apply 'vector (number-sequence 1 26)))
-                                                :hierarchicalDocumentSymbolSupport t)
-                   :formatting (:dynamicRegistration t)
-                   :codeAction (:dynamicRegistration t)
-                   :completion (:completionItem (:snippetSupport ,(if lsp-enable-snippet t :json-false)))
-                   :signatureHelp (:signatureInformation (:parameterInformation (:labelOffsetSupport t)))
-                   :documentLink (:dynamicRegistration t)
-                   :hover (:contentFormat ["plaintext" "markdown"])
-                   :foldingRange ,(if lsp-enable-folding
-                                      (list :dynamicRegistration t
-                                            :rangeLimit lsp-folding-range-limit
-                                            :lineFoldingOnly lsp-folding-line-folding-only)
-                                    nil))))
+  `((workspace . ((workspaceEdit . ((documentChanges . t)
+                                    (resourceOperations . ["create" "rename" "delete"])))
+                  (applyEdit . t)
+                  (symbol . ((symbolKind . ((valueSet . ,(apply 'vector (number-sequence 1 26)))))))
+                  (executeCommand . ((dynamicRegistration . :json-false)))
+                  (didChangeWatchedFiles . ((dynamicRegistration . t)))
+                  (workspaceFolders . t)
+                  (configuration . t)))
+    (textDocument . ((declaration . ((linkSupport . t)))
+                     (definition . ((linkSupport . t)))
+                     (implementation . ((linkSupport . t)))
+                     (typeDefinition . ((linkSupport . t)))
+                     (synchronization . ((willSave . t) (didSave . t) (willSaveWaitUntil . t)))
+                     (documentSymbol . ((symbolKind . ((valueSet . ,(apply 'vector (number-sequence 1 26)))))
+                                        (hierarchicalDocumentSymbolSupport . t)))
+                     (formatting . ((dynamicRegistration . t)))
+                     (codeAction . ((dynamicRegistration . t)
+                                    (codeActionLiteralSupport . ((codeActionKind .
+                                                                                 ((valueSet . [""
+                                                                                               "quickfix"
+                                                                                               "refactor"
+                                                                                               "refactor.extract"
+                                                                                               "refactor.inline"
+                                                                                               "refactor.rewrite"
+                                                                                               "source"
+                                                                                               "source.organizeImports"])))))))
+                     (completion . ((completionItem . ((snippetSupport . ,(if lsp-enable-snippet t :json-false))))))
+                     (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))))
+                     (documentLink . ((dynamicRegistration . t)))
+                     (hover . ((contentFormat . ["plaintext" "markdown"])))
+                     (foldingRange . ,(when lsp-enable-folding
+                                        `((dynamicRegistration . t)
+                                          (rangeLimit . ,lsp-folding-range-limit)
+                                          (lineFoldingOnly . ,lsp-folding-line-folding-only))))))))
 
 (defun lsp-find-roots-for-workspace (workspace session)
   "Get all roots for the WORKSPACE."
@@ -2900,7 +2922,7 @@ Applies on type formatting."
   (when-let (file-name (or path (buffer-file-name)))
     (->> (lsp-session)
          (lsp-session-folders)
-         (--first (f-ancestor-of? it file-name)))))
+         (--first (f-ancestor-of? it (f-canonical file-name))))))
 
 (defun lsp-on-revert ()
   "Executed when a file is reverted.
@@ -2974,7 +2996,7 @@ and the position respectively."
   (inline-quote (list :textDocument (or ,identifier (lsp--text-document-identifier))
                       :position (or ,position (lsp--cur-position)))))
 
-(defun lsp--cur-line-diagnotics ()
+(defun lsp--cur-line-diagnostics ()
   "Return any diagnostics that apply to the current line."
   (-let* (((&plist :start (&plist :line start) :end (&plist :line end)) (lsp--region-or-line))
           (diags-in-range (cl-remove-if-not
@@ -3138,7 +3160,8 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
      (condition-case nil
          (funcall fn)
        (lsp-capability-not-supported nil))
-     nil)) nil)
+     nil))
+  eldoc-last-message)
 
 (defvar-local lsp--highlight-bounds nil)
 (defvar-local lsp--highlight-timer nil)
@@ -3214,10 +3237,10 @@ Stolen from `org-copy-visible'."
         (end (point-max)))
     (while (/= beg end)
       (when (get-char-property beg 'invisible)
-	      (setq beg (next-single-char-property-change beg 'invisible nil end)))
+        (setq beg (next-single-char-property-change beg 'invisible nil end)))
       (let ((next (next-single-char-property-change beg 'invisible nil end)))
-	      (setq result (concat result (buffer-substring beg next)))
-	      (setq beg next)))
+        (setq result (concat result (buffer-substring beg next)))
+        (setq beg next)))
     (setq deactivate-mark t)
     (s-chop-suffix "\n" result)))
 
@@ -3396,11 +3419,20 @@ RENDER-ALL - nil if only the signature should be rendered."
         :range (if (use-region-p)
                    (lsp--region-to-range (region-beginning) (region-end))
                  (lsp--region-to-range (point) (point)))
-        :context (list :diagnostics (lsp--cur-line-diagnotics))))
+        :context (list :diagnostics (lsp--cur-line-diagnostics))))
 
 (defun lsp-code-actions-at-point ()
   "Retrieve the code actions for the active region or the current line."
   (lsp-request "textDocument/codeAction" (lsp--text-document-code-action-params)))
+
+(defun lsp-execute-code-action-by-kind (command-kind)
+  "Execute code action by name."
+  (if-let (action (-first
+                   (-lambda ((&hash "kind"))
+                     (equal command-kind kind))
+                   (lsp-get-or-calculate-code-actions)))
+      (lsp-execute-code-action action)
+    (user-error "No to action")))
 
 (defalias 'lsp-get-or-calculate-code-actions 'lsp-code-actions-at-point)
 
@@ -3599,8 +3631,38 @@ A reference is highlighted only if it is visible in a window."
                 'def-params td-params)))
 
 (defun lsp--get-document-symbols ()
-  (lsp-request "textDocument/documentSymbol"
-               `(:textDocument ,(lsp--text-document-identifier))))
+  "Get document symbols.
+
+If the buffer has not been modified since symbols were last
+retrieved, simply return the latest result.
+
+Else, if the request was initiated by Imenu updating its menu-bar
+entry, perform it asynchronously; i.e., give Imenu the latest
+result and then force a refresh when a new one is available.
+
+Else (e.g., due to intereactive use of `imenu' or `xref'),
+perform the request synchronously."
+  (if (= (buffer-chars-modified-tick) lsp--document-symbols-tick)
+      lsp--document-symbols
+    (let ((method "textDocument/documentSymbol")
+	  (params `(:textDocument ,(lsp--text-document-identifier)))
+	  (tick (buffer-chars-modified-tick)))
+      (if (not lsp--document-symbols-request-async)
+	  (prog1
+	      (setq lsp--document-symbols (lsp-request method params))
+	    (setq lsp--document-symbols-tick tick))
+	(lsp-request-async method params
+			   (lambda (document-symbols)
+			     (setq lsp--document-symbols document-symbols
+				   lsp--document-symbols-tick tick)
+			     (lsp--imenu-refresh))
+			   :mode 'alive)
+	lsp--document-symbols))))
+
+(advice-add 'imenu-update-menubar :around
+	    (lambda (oldfun &rest r)
+	      (let ((lsp--document-symbols-request-async t))
+		(apply oldfun r))))
 
 (defun lsp--xref-backend () 'xref-lsp)
 
@@ -3904,7 +3966,7 @@ WORKSPACE is the active workspace."
     (unless pos
       (signal 'lsp-invalid-header-name (list s)))
     (setq key (substring s 0 pos)
-          val (substring s (+ 2 pos)))
+          val (s-trim-left (substring s (+ 1 pos))))
     (when (string-equal key "Content-Length")
       (cl-assert (cl-loop for c across val
                           when (or (> c ?9) (< c ?0)) return nil
@@ -4216,9 +4278,14 @@ Return a nested alist keyed by symbol names. e.g.
          (result (compare-strings name1 0 (length name1) name2 0 (length name2))))
     (if (numberp result) result 0)))
 
+(defun lsp--imenu-refresh ()
+  "Force Imenu to refresh itself."
+  (imenu--menubar-select imenu--rescan-item))
+
 (defun lsp-enable-imenu ()
   "Use lsp-imenu for the current buffer."
-  (setq-local imenu-create-index-function #'lsp--imenu-create-index))
+  (setq-local imenu-create-index-function #'lsp--imenu-create-index)
+  (lsp--imenu-refresh))
 
 (defun lsp-resolve-final-function (command)
   "Resolve final function COMMAND."
@@ -4231,7 +4298,7 @@ Return a nested alist keyed by symbol names. e.g.
   (or (and (cond
             ((not (file-remote-p default-directory))
              (executable-find (cl-first final-command)))
-            ((not (version<= emacs-version "26.1"))
+            ((not (version<= emacs-version "26.2"))
              (with-no-warnings (executable-find (cl-first final-command) (file-remote-p default-directory))))
             (t))
            (prog1 t
@@ -4555,14 +4622,18 @@ SESSION is the currently active session. The function will also
 pick only remote enabled clients in case the FILE-NAME is on
 remote machine and vice versa."
   (let ((remote? (file-remote-p file-name)))
-    (--when-let (->> lsp-clients
-                     hash-table-values
-                     (-filter (-lambda (client)
-                                (and (or (-some-> client lsp--client-activation-fn (funcall buffer-file-name buffer-major-mode))
-                                         (and (not (lsp--client-activation-fn client))
-                                              (-contains? (lsp--client-major-modes client) buffer-major-mode)
-                                              (eq (---truthy? remote?) (---truthy? (lsp--client-remote? client)))))
-                                     (-some-> client lsp--client-new-connection (plist-get :test?) funcall)))))
+    (-when-let (matching-clients (->> lsp-clients
+                                      hash-table-values
+                                      (-filter (-lambda (client)
+                                                 (and (and (or (-some-> client lsp--client-activation-fn (funcall buffer-file-name buffer-major-mode))
+                                                               (and (not (lsp--client-activation-fn client))
+                                                                    (-contains? (lsp--client-major-modes client) buffer-major-mode)
+                                                                    (eq (---truthy? remote?) (---truthy? (lsp--client-remote? client)))))
+                                                           (-some-> client lsp--client-new-connection (plist-get :test?) funcall))
+                                                      (or (null lsp-enabled-clients)
+                                                          (or (member (lsp--client-server-id client) lsp-enabled-clients)
+                                                              (ignore (lsp--info "Client %s is not in lsp-enabled-clients"
+                                                                                 (lsp--client-server-id client))))))))))
       (lsp-log "Found the following clients for %s: %s"
                file-name
                (s-join ", "
@@ -4570,8 +4641,8 @@ remote machine and vice versa."
                                (format "(server-id %s, priority %s)"
                                        (lsp--client-server-id client)
                                        (lsp--client-priority client)))
-                             it)))
-      (-let* (((add-on-clients main-clients) (-separate 'lsp--client-add-on? it))
+                             matching-clients)))
+      (-let* (((add-on-clients main-clients) (-separate 'lsp--client-add-on? matching-clients))
               (selected-clients (if-let (main-client (and main-clients
                                                           (--max-by (> (lsp--client-priority it)
                                                                        (lsp--client-priority other))
@@ -4876,12 +4947,13 @@ Returns nil if the project should not be added to the current SESSION."
 
 (defun lsp-find-session-folder (session file-name)
   "Look in the current SESSION for folder containing FILE-NAME."
-  (->> session
-       (lsp-session-folders)
-       (--filter (or (f-same? it file-name)
-                     (f-ancestor-of? it file-name)))
-       (--max-by (> (length it)
-                    (length other)))))
+  (let ((file-name-canonical (f-canonical file-name)))
+    (->> session
+	 (lsp-session-folders)
+	 (--filter (or (f-same? it file-name-canonical)
+                       (f-ancestor-of? it file-name-canonical)))
+	 (--max-by (> (length it)
+                      (length other))))))
 
 (defun lsp-find-workspace (server-id file-name)
   "Find workspace for SERVER-ID for FILE-NAME."
@@ -4898,7 +4970,9 @@ Returns nil if the project should not be added to the current SESSION."
   (and
    (->> session
         (lsp-session-folders-blacklist)
-        (--first (f-ancestor-of? it file-name))
+        (--first (and (f-ancestor-of? it file-name)
+                      (prog1 t
+                        (lsp--info "File %s is in blacklisted directory %s" file-name it))))
         not)
    (or
     (when lsp-auto-guess-root
@@ -4951,7 +5025,7 @@ such."
                 (push project-root (lsp-session-folders session))
                 (lsp--persist-session session))
               (lsp--ensure-lsp-servers session clients project-root ignore-multi-folder))
-          (lsp--warn  "%s not in project." (buffer-name))
+          (lsp--warn "%s not in project or it is blacklisted." (buffer-name))
           nil)
       (lsp--warn "No LSP server for %s." major-mode)
       nil)))

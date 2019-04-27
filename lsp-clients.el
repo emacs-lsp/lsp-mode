@@ -35,6 +35,7 @@
 (require 'lsp-css)
 (require 'lsp-xml)
 (require 'lsp-go)
+(require 'lsp-clojure)
 
 ;;; Bash
 (lsp-register-client
@@ -97,13 +98,9 @@ finding the executable with variable `exec-path'."
   :risky t
   :type '(repeat string))
 
-(defun lsp-typescript-javascript-tsx-jsx-activate-p (filename mode)
-  "Check if the javascript-typescript language server should be enabled
-based on FILE-NAME and MAJOR-MODE"
-  (or (member mode '(typescript-mode typescript-tsx-mode js-mode js2-mode rjsx-mode))
-      (and (eq major-mode 'web-mode)
-           (or (string-suffix-p ".tsx" filename t)
-               (string-suffix-p ".jsx" filename t)))))
+(defun lsp-typescript-javascript-tsx-jsx-activate-p (filename &optional _)
+  "Check if the javascript-typescript language server should be enabled based on FILENAME."
+  (string-match-p (rx (one-or-more char) "." (or "ts" "js") (opt "x") string-end) filename))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
