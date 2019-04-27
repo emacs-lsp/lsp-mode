@@ -2963,7 +2963,7 @@ and the position respectively."
   (inline-quote (list :textDocument (or ,identifier (lsp--text-document-identifier))
                       :position (or ,position (lsp--cur-position)))))
 
-(defun lsp--cur-line-diagnotics ()
+(defun lsp--cur-line-diagnostics ()
   "Return any diagnostics that apply to the current line."
   (-let* (((&plist :start (&plist :line start) :end (&plist :line end)) (lsp--region-or-line))
           (diags-in-range (cl-remove-if-not
@@ -3386,7 +3386,7 @@ RENDER-ALL - nil if only the signature should be rendered."
         :range (if (use-region-p)
                    (lsp--region-to-range (region-beginning) (region-end))
                  (lsp--region-to-range (point) (point)))
-        :context (list :diagnostics (lsp--cur-line-diagnotics))))
+        :context (list :diagnostics (lsp--cur-line-diagnostics))))
 
 (defun lsp-code-actions-at-point ()
   "Retrieve the code actions for the active region or the current line."
