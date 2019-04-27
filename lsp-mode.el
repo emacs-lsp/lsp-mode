@@ -1131,6 +1131,25 @@ PARAMS - the data sent from WORKSPACE."
                  (lsp--workspace-diagnostics it))))
     result))
 
+(defun lsp-diagnostics-by-severity (file-diagnostics)
+  "Return diagnostics from FILE-DIAGNOSTICS, grouped by
+  diagnostic severity."
+  (-group-by 'lsp-diagnostic-severity file-diagnostics))
+
+(defun lsp-calculate-diagnostic-statistics (file-diagnostics)
+  "Calculate FILE-DIAGNOSTICS statistics in format
+  'error/warning/information/hint'."
+  (string-join
+   (-map (-lambda ((severity . diagnostics))
+           (number-to-string (length diagnostics)))
+         (lsp-diagnostics-by-severity file-diagnostics))
+   "/"))
+
+(defun lsp--calculate-workspaces-diag-statistics ()
+  "Calculate diagnostic statistics for all workspaces in a session."
+  (let ((workspace-diagnostics (-flatten (ht-values (lsp-diagnostics)))))
+    (lsp-calculate-diagnostic-statistics workspace-diagnostics)))
+
 (cl-defstruct lsp-diagnostic
   (range nil :read-only t)
   ;; range has the form (:start (:line N :column N) :end (:line N :column N) )
