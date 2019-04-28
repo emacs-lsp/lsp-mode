@@ -568,6 +568,12 @@ must be used for handling a particular message.")
   :type 'number
   :group 'lsp-mode)
 
+(defcustom lsp-show-mode-line-workspace-diagnostics t
+  "Whether to show a summary of diagnostics for all open
+  workspaces in the mode line."
+  :type 'boolean
+  :group 'lsp-mode)
+
 (defvar lsp-custom-markup-modes
   '((rust-mode "no_run" "rust,no_run" "rust,ignore" "rust,should_panic"))
   "Mode to uses with markdown code blocks.
@@ -1141,7 +1147,8 @@ PARAMS - the data sent from WORKSPACE."
   'error/warning/information/hint'."
   (string-join
    (-map (-lambda ((severity . diagnostics))
-           (number-to-string (length diagnostics)))
+           (propertize (f-filename (number-to-string (length diagnostics)))
+                       'face (cl-rest (assoc severity lsp--message-type-face))))
          (lsp-diagnostics-by-severity file-diagnostics))
    "/"))
 
@@ -1149,6 +1156,13 @@ PARAMS - the data sent from WORKSPACE."
   "Calculate diagnostic statistics for all workspaces in a session."
   (let ((workspace-diagnostics (-flatten (ht-values (lsp-diagnostics)))))
     (lsp-calculate-diagnostic-statistics workspace-diagnostics)))
+
+(defun lsp--update-mode-line-workspaces-diag-statistics ()
+  "Update the workspace diagnostic statistics and sets the
+summary information in
+`lsp--workspace-diagnostics-mode-line-string' so that it's shown
+in the mode line."
+  (setq lsp--workspace-diagnostics-mode-line-string (format "[%s] " (lsp--calculate-workspaces-diag-statistics))))
 
 (cl-defstruct lsp-diagnostic
   (range nil :read-only t)
@@ -1179,6 +1193,10 @@ PARAMS - the data sent from WORKSPACE."
      :source source
      :message (if source (format "%s: %s" source message) message)
      :original diag)))
+
+(defvar lsp-workspace-diagnostics-mode-line-string ""
+  "String with a summary of workspace diagnostic information,
+  optionally shown as part of the Emacs mode line.")
 
 (defun lsp--on-diagnostics (workspace params)
   "Callback for textDocument/publishDiagnostics.
@@ -5041,7 +5059,12 @@ argument ask the user to select which language server to start. "
 
     (lsp--info "Connected to %s."
                (apply 'concat (--map (format "[%s]" (lsp--workspace-print it))
-                                     lsp--buffer-workspaces)))))
+                                     lsp--buffer-workspaces))))
+
+  (when lsp-show-mode-line-workspace-diagnostics
+    (progn
+      (add-to-list 'global-mode-string (list '(t lsp--workspace-diagnostics-mode-line-string)))
+      (add-hook 'lsp-after-diagnostics-hook 'lsp--update-mode-line-workspaces-diag-statistics nil t))))
 
 (provide 'lsp-mode)
 ;;; lsp-mode.el ends here
