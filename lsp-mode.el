@@ -3249,17 +3249,18 @@ Stolen from `org-copy-visible'."
 (defun lsp--render-markdown ()
   "Render markdown."
 
-  (goto-char (point-min))
-  (while (re-search-forward "&gt;" nil t)
-    (replace-match ">"))
+  (let((markdown-enable-math nil))
+    (goto-char (point-min))
+    (while (re-search-forward "&gt;" nil t)
+      (replace-match ">"))
 
-  (goto-char (point-min))
+    (goto-char (point-min))
 
-  (while (re-search-forward "&lt;" nil t)
-    (replace-match "<"))
+    (while (re-search-forward "&lt;" nil t)
+      (replace-match "<"))
 
-  (gfm-view-mode)
-  (lsp--setup-markdown major-mode))
+    (gfm-view-mode)
+    (lsp--setup-markdown major-mode)))
 
 (defun lsp--fontlock-with-mode (str mode)
   "Fontlock STR with MODE."
