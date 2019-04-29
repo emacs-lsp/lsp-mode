@@ -37,9 +37,6 @@
   :risky t
   :type 'list)
 
-;; enables jumping into jarred dependencies
-;; in order to make this work the project needs to have a .lsp/config.edn with
-;; {"dependency-scheme" "jar"} in it so the server returns the URI in the right format
 (defun lsp-clj--file-in-jar (uri)
   (string-match "^\\(jar\\|zip\\):\\(file:.+\\)!/\\(.+\\)" uri)
   (when-let* ((entry (match-string 3 uri))
@@ -62,6 +59,7 @@
                                    (lambda () lsp-clojure-server-command))
                   :major-modes '(clojure-mode clojurec-mode clojurescript-mode)
                   :uri-handlers (lsp-ht ("jar" #'lsp-clj--file-in-jar))
+                  :initialization-options '(:dependency-scheme "jar")
                   :server-id 'clojure-lsp))
 
 (provide 'lsp-clojure)
