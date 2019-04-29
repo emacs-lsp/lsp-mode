@@ -37,6 +37,83 @@
   :risky t
   :type 'list)
 
+;; Refactorings
+
+(defun lsp-clojure--refactoring-call (refactor-name &rest additional-args)
+  "Send an executeCommand request for REFACTOR-NAME with ADDITIONAL-ARGS if there are more arguments expected after the line and column numbers."
+  (lsp--cur-workspace-check)
+  (lsp--send-execute-command
+   refactor-name
+   (append (list (concat "file://" buffer-file-name)
+                 (- (line-number-at-pos) 1) ;; clojure-lsp expects line numbers to start at 0
+                 (current-column))
+           additional-args)))
+
+(defun lsp-clojure-add-missing-libspec ()
+  "Apply add-missing-libspec refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "add-missing-libspec"))
+
+(defun lsp-clojure-cycle-coll ()
+  "Apply cycle-coll refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "cycle-coll"))
+
+(defun lsp-clojure-cycle-privacy ()
+  "Apply cycle-privacy refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "cycle-privacy"))
+
+(defun lsp-clojure-expand-let ()
+  "Apply expand-let refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "expand-let"))
+
+(defun lsp-clojure-extract-function (function-name)
+  "Move form at point into a new function named FUNCTION-NAME."
+  (interactive "MFunction name: ") ;; Name of the function
+  (lsp-clojure--refactoring-call "extract-function" function-name))
+
+(defun lsp-clojure-introduce-let (binding-name)
+  "Move form at point into a new let binding as BINDING-NAME."
+  (interactive "MBinding name: ") ;; Name of the let binding
+  (lsp-clojure--refactoring-call "introduce-let" binding-name))
+
+(defun lsp-clojure-move-to-let (binding-name)
+  "Move form at point into nearest existing let binding as BINDING-NAME."
+  (interactive "MBinding name: ") ;; Name of the let binding
+  (lsp-clojure--refactoring-call "move-to-let" binding-name))
+
+(defun lsp-clojure-thread-first ()
+  "Apply thread-first refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "thread-first" binding-name))
+
+(defun lsp-clojure-thread-first-all ()
+  "Apply thread-first-all refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "thread-first-all" binding-name))
+
+(defun lsp-clojure-thread-last ()
+  "Apply thread-last refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "thread-last" binding-name))
+
+(defun lsp-clojure-thread-last-all ()
+  "Apply thread-last-all refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "thread-last-all" binding-name))
+
+(defun lsp-clojure-unwind-all ()
+  "Apply unwind-all refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "unwind-all" binding-name))
+
+(defun lsp-clojure-unwind-thread ()
+  "Apply unwind-thread refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "unwind-thread" binding-name))
+
 (defun lsp-clj--file-in-jar (uri)
   (string-match "^\\(jar\\|zip\\):\\(file:.+\\)!/\\(.+\\)" uri)
   (when-let* ((entry (match-string 3 uri))
