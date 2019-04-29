@@ -1953,7 +1953,7 @@ TYPE can either be 'incoming or 'outgoing"
     (let ((buffer (get-buffer-create (format "*lsp-io: %s*"
                                              (lsp--workspace-root workspace)))))
       (with-current-buffer buffer
-        (lsp-log-io-mode)
+        (unless (eq 'lsp-log-io-mode major-mode) (lsp-log-io-mode))
         (setq-local lsp--log-io-ewoc (ewoc-create #'lsp--log-entry-pp nil nil))
         (setf (lsp--workspace-ewoc workspace) lsp--log-io-ewoc))
       (lsp--workspace-ewoc workspace))))
