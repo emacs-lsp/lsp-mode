@@ -13,3 +13,45 @@
   - Removed all synchronous calls from the server startup.
   - Improved multi-folder support.
   - added backends for: Bash, C++, CSS, Dart, Elixir, Fortran, Go, Groovy, HTML, Javascript/Typescript, Javascript/Typescript, Ocaml, PHP, Python, Ruby, Rust, Vue, Flow
+* Release 6.1
+  - Introduced =lsp-mode-map=
+  - LSP autoconfiguration adds =company-lsp= to the list of backends instead of
+    overriding it.
+  - Implemented logging into separate buffer (thanks to Thomas Fini Hansen)
+  - Tramp implementation now uses TRAMP process instead of TCP socket (thanks to
+    Karsten Patzwaldt)
+  - [spec] Prepare rename support
+  - Perform textDocument/willSaveWaitUntil asynchronously
+  - Added option :none for lsp-prefer-flymake which can be used when user does
+    not want to enable Flymake nor Flycheck.
+  - Implemented resource handling operations. Now code actions could
+    create/delete/rename files and directories.
+  - Log lsp-mode and server performance. Now users could use
+    =lsp-print-performance= to log =lsp-mode= and the server performance.
+  - Implemented support for document links.
+  - Native json support
+  - Created integration test suite
+  - Changed =flymake= to report the errors immediately after they arive instead
+    of waiting =flymake= to call =lsp-mode=
+  - Added support for =Konlin= langugage server (thanks to Jon Carr)
+  - [spec] Implemented file watches
+  - implemented folding range support (see =lsp-origami=)
+  - Add debounce when server does not support incremental updates
+  - Add intelephense PHP server configuration
+  - Added hook lsp-after-uninitialized-hook
+  - Implemented workspace/configuration request response
+  - Migrate =lsp-hack= package to =lsp-clients=
+  - Added readme logo (thanks to Jon Carr)
+  - Provide option to skip current symbol when doing symbol highlights
+  - Expose css language server properties
+  - Add menu bar entries for lsp-mode.
+  - Xml server integration via =lsp4xml=
+  - Support =gopls= server
+  - [spec] code action literal support
+  - Implemented asynchonous imenu handling(thanks to Dario Gjorgjevski)
+  - Add support for Clojure/ClojureScript via =clojure-lsp= (thanks to Benedek Fazekas)
+  - Introduces =lsp-enabled-clients= which can be used to enumerate the clients
+    that are currently enabled. It could be used to specify per project language
+    configuration.
+  - Support for multiple signatures in eldoc message. Set
+    =lsp-signature-render-all= to force =lsp-mode= to show only the active signature.
