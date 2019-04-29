@@ -67,6 +67,12 @@
     (3 . ,compilation-message-face)
     (4 . ,compilation-info-face)))
 
+(defconst lsp--message-type-help-echo
+  `((1 . "Number of errors in open LSP workspaces.")
+    (2 . "Number of warnings in open LSP workspaces.")
+    (3 . "Number of messages in open LSP workspaces.")
+    (4 . "Number of information in open LSP workspaces.")))
+
 (defconst lsp--errors
   '((-32700 "Parse Error")
     (-32600 "Invalid Request")
