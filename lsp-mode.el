@@ -574,12 +574,6 @@ must be used for handling a particular message.")
   :type 'number
   :group 'lsp-mode)
 
-(defcustom lsp-show-mode-line-workspace-diagnostics t
-  "Whether to show a summary of diagnostics for all open
-  workspaces in the mode line."
-  :type 'boolean
-  :group 'lsp-mode)
-
 (defvar lsp-custom-markup-modes
   '((rust-mode "no_run" "rust,no_run" "rust,ignore" "rust,should_panic"))
   "Mode to uses with markdown code blocks.
@@ -784,6 +778,11 @@ depending on it."
 (defun lsp--propertize (str type)
   "Propertize STR as per TYPE."
   (propertize str 'face (alist-get type lsp--message-type-face)))
+
+(defun lsp--propertize-with-help-echo (str type)
+  "Propertize STR as per TYPE."
+  (propertize str 'face (alist-get type lsp--message-type-face)
+              'help-echo (alist-get type lsp--message-type-help-echo)))
 
 (defun lsp-workspaces ()
   "Return the lsp workspaces associated with the current project."
@@ -1153,22 +1152,33 @@ PARAMS - the data sent from WORKSPACE."
   'error/warning/information/hint'."
   (string-join
    (-map (-lambda ((severity . diagnostics))
-           (propertize (f-filename (number-to-string (length diagnostics)))
-                       'face (cl-rest (assoc severity lsp--message-type-face))))
+           (lsp--propertize-with-help-echo (f-filename (number-to-string (length diagnostics)))
+                                           severity))
          (lsp-diagnostics-by-severity file-diagnostics))
-   "/"))
+   " "))
 
 (defun lsp--calculate-workspaces-diag-statistics ()
-  "Calculate diagnostic statistics for all workspaces in a session."
+  "Calculate diagnostic statistics for all workspaces associated
+with the current project."
   (let ((workspace-diagnostics (-flatten (ht-values (lsp-diagnostics)))))
     (lsp-calculate-diagnostic-statistics workspace-diagnostics)))
+
+(defvar lsp--workspace-diagnostics-mode-line-string ""
+  "String that contains the summary of diagnostic information for all workspaces.")
+;; Mark the variable as risky so that we can add text properties to it.
+(put 'lsp--workspace-diagnostics-mode-line-string 'risky-local-variable t)
 
 (defun lsp--update-mode-line-workspaces-diag-statistics ()
   "Update the workspace diagnostic statistics and sets the
 summary information in
 `lsp--workspace-diagnostics-mode-line-string' so that it's shown
 in the mode line."
-  (setq lsp--workspace-diagnostics-mode-line-string (format "[%s] " (lsp--calculate-workspaces-diag-statistics))))
+  (let ((workspace-diag-statistics (lsp--calculate-workspaces-diag-statistics)))
+    (if (string= "" workspace-diag-statistics)
+        (setq lsp--workspace-diagnostics-mode-line-string
+              "")
+      (setq lsp--workspace-diagnostics-mode-line-string
+            (format " [%s] " workspace-diag-statistics)))))
 
 (cl-defstruct lsp-diagnostic
   (range nil :read-only t)
@@ -5065,12 +5075,28 @@ argument ask the user to select which language server to start. "
 
     (lsp--info "Connected to %s."
                (apply 'concat (--map (format "[%s]" (lsp--workspace-print it))
-                                     lsp--buffer-workspaces))))
+                                     lsp--buffer-workspaces)))))
 
-  (when lsp-show-mode-line-workspace-diagnostics
-    (progn
-      (add-to-list 'global-mode-string (list '(t lsp--workspace-diagnostics-mode-line-string)))
-      (add-hook 'lsp-after-diagnostics-hook 'lsp--update-mode-line-workspaces-diag-statistics nil t))))
+;;;###autoload
+(define-minor-mode lsp-workspace-diagnostics-mode
+  "Toggle display of LSP workspace diagnostic statistics in mode
+line. With a prefix argument ARG, enable Lsp Workspace
+Diagnostics mode if ARG is positive, and disable it otherwise.
+If called from Lisp, enable it if ARG is omitted or nil.
+
+When Workspace Diagnostics Mode is enabled, it updates after the
+language servers send diagnostic information to the client."
+  :global t :group 'lsp-mode
+  (setq lsp--workspace-diagnostics-mode-line-string "")
+  (if lsp-workspace-diagnostics-mode
+      (progn
+        (or (memq 'lsp--workspace-diagnostics-mode-line-string global-mode-string)
+            (setq global-mode-string
+                  (append global-mode-string '(lsp--workspace-diagnostics-mode-line-string))))
+        (lsp--update-mode-line-workspaces-diag-statistics)
+        (add-hook 'lsp-after-diagnostics-hook 'lsp--update-mode-line-workspaces-diag-statistics nil t))
+    (remove-hook 'lsp-after-diagnostics-hook
+                 'lsp--update-mode-line-workspaces-diag-statistics)))
 
 (provide 'lsp-mode)
 ;;; lsp-mode.el ends here
