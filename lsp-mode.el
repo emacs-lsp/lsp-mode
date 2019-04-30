@@ -922,7 +922,10 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   ;; Function which will be called right after a workspace has been intialized.
   (initialized-fn)
   ;; ‘remote?’ indicate whether the client can be used for LSP server over TRAMP.
-  (remote? nil))
+  (remote? nil)
+
+  ;; ‘completion-in-comments?’ t if the client supports completion in comments.
+  (completion-in-comments? nil))
 
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--line-character-to-point (line character)
