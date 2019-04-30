@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'cl-lib)
 
 (defgroup lsp-clojure nil
   "Settings for clojure."
@@ -44,10 +45,10 @@
   (lsp--cur-workspace-check)
   (lsp--send-execute-command
    refactor-name
-   (append (list (concat "file://" buffer-file-name)
-                 (- (line-number-at-pos) 1) ;; clojure-lsp expects line numbers to start at 0
-                 (current-column))
-           additional-args)))
+   (list* (lsp--buffer-uri)
+          (- (line-number-at-pos) 1) ;; clojure-lsp expects line numbers to start at 0
+          (current-column)
+          additional-args)))
 
 (defun lsp-clojure-add-missing-libspec ()
   "Apply add-missing-libspec refactoring at point."
