@@ -137,8 +137,9 @@
 ** Commands
    - ~lsp-describe-session~ - Display session folders and running servers.
    - ~lsp-describe-thing-at-point~ - Display help for the thing at point.
-   - ~lsp-execute-code-action~ - Execute code action.
+   - ~lsp-execute-code-action~ - Execute code action
    - ~lsp-format-buffer~ - Format current buffer
+   - ~lsp-organize-imports~ - Organize library imports
    - ~lsp-goto-implementation~ - Go to implementation
    - ~lsp-goto-type-definition~ - Go to type definition
    - ~lsp-rename~ - Rename symbol at point

@@ -3497,6 +3497,11 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
                             (lsp--make-document-range-formatting-params s e))))
     (lsp--apply-formatting edits)))
 
+(defun lsp-organize-imports ()
+  "Perform the source.organizeImports code action."
+  (interactive)
+  (lsp-execute-code-action-by-kind "source.organizeImports"))
+
 (defun lsp--apply-formatting (edits)
   (if (fboundp 'replace-buffer-contents)
       (let ((current-buffer (current-buffer)))
