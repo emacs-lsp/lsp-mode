@@ -1950,7 +1950,7 @@ TYPE can either be 'incoming or 'outgoing"
   (if (and (lsp--workspace-ewoc workspace)
            (buffer-live-p (ewoc-buffer (lsp--workspace-ewoc workspace))))
       (lsp--workspace-ewoc workspace)
-    (let ((buffer (get-buffer-create (format "*lsp-io: %s*"
+    (let ((buffer (get-buffer-create (format "*lsp-log: %s*"
                                              (lsp--workspace-root workspace)))))
       (with-current-buffer buffer
         (unless (eq 'lsp-log-io-mode major-mode) (lsp-log-io-mode))
