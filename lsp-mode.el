@@ -1910,8 +1910,6 @@ TYPE can either be 'incoming or 'outgoing"
   (cl-assert (memq type '(incoming-req outgoing-req incoming-notif
                                        outgoing-notif incoming-resp
                                        outgoing-resp)))
-  (cl-check-type method string)
-  (when id (cl-check-type id number))
   (make-lsp--log-entry
    :timestamp (format-time-string "%I:%M:%S %p")
    :process-time process-time
@@ -1931,17 +1929,17 @@ TYPE can either be 'incoming or 'outgoing"
     (setq str
           (concat (format "[Trace - %s]\n" timestamp)
                   (pcase type
-                    ('incoming-req (format "Received request '%s - (%d).\n" method id))
-                    ('outgoing-req (format "Sending request '%s - (%d)'.\n" method id))
+                    ('incoming-req (format "Received request '%s - (%s).\n" method id))
+                    ('outgoing-req (format "Sending request '%s - (%s)'.\n" method id))
 
                     ('incoming-notif (format "Received notification '%s'.\n" method))
                     ('outgoing-notif (format "Sending notification '%s'.\n" method))
 
-                    ('incoming-resp (format "Received response '%s - (%d)' in %dms.\n"
+                    ('incoming-resp (format "Received response '%s - (%s)' in %dms.\n"
                                             method id process-time))
                     ('outgoing-resp
                       (format
-                       "Sending response '%s - (%d)'. Processing request took %dms\n"
+                       "Sending response '%s - (%s)'. Processing request took %dms\n"
                        method id process-time)))
                   "\n"
                   (if (memq type '(incoming-resp ougoing-resp))
@@ -1954,17 +1952,20 @@ TYPE can either be 'incoming or 'outgoing"
 
 (defvar-local lsp--log-io-ewoc nil)
 
+(defun lsp--generate-log-buffer-name (workspace)
+  (let ((server-id (-> workspace lsp--workspace-client lsp--client-server-id symbol-name))
+         (pid (format "%s" (process-id (lsp--workspace-cmd-proc workspace)))))
+    (get-buffer-create (format "*lsp-log: %s:%s*" server-id pid))))
+
 (defun lsp--get-create-io-ewoc (workspace)
   (if (and (lsp--workspace-ewoc workspace)
            (buffer-live-p (ewoc-buffer (lsp--workspace-ewoc workspace))))
       (lsp--workspace-ewoc workspace)
-    (let ((buffer (get-buffer-create (format "*lsp-log: %s*"
-                                             (lsp--workspace-root workspace)))))
-      (with-current-buffer buffer
-        (unless (eq 'lsp-log-io-mode major-mode) (lsp-log-io-mode))
-        (setq-local lsp--log-io-ewoc (ewoc-create #'lsp--log-entry-pp nil nil))
-        (setf (lsp--workspace-ewoc workspace) lsp--log-io-ewoc))
-      (lsp--workspace-ewoc workspace))))
+    (with-current-buffer (lsp--generate-log-buffer-name workspace)
+      (unless (eq 'lsp-log-io-mode major-mode) (lsp-log-io-mode))
+      (setq-local lsp--log-io-ewoc (ewoc-create #'lsp--log-entry-pp nil nil))
+      (setf (lsp--workspace-ewoc workspace) lsp--log-io-ewoc))
+    (lsp--workspace-ewoc workspace)))
 
 (defun lsp--ewoc-count (ewoc)
   (let* ((count 0)
@@ -4772,17 +4773,17 @@ SESSION is the active session."
       (lsp--start-workspace session client project-root (lsp--create-initialization-options session client))
     (lsp--spinner-stop)))
 
-(defun lsp-switch-to-io-log-buffer (workspace)
+(defun lsp-workspace-show-log (workspace)
   (interactive
    (list (if lsp-print-io
              (if (eq (length (lsp-workspaces)) 1)
-                 (nth 0 (lsp-workspaces))
+                 (cl-first (lsp-workspaces))
                (lsp--completing-read "Workspace: " (lsp-workspaces)
-                                     'lsp--workspace-print nil t))
+                                     #'lsp--workspace-print nil t))
            (user-error "IO logging is disabled"))))
-  (let ((buffer (get-buffer-create (format "*lsp-io: %s*"
-                                           (lsp--workspace-root workspace)))))
-    (switch-to-buffer buffer)))
+  (switch-to-buffer (lsp--generate-log-buffer-name workspace)))
+
+(defalias 'lsp-switch-to-io-log-buffer 'lsp-workspace-show-log)
 
 (defun lsp-log-io-next (arg)
   (interactive "P")
