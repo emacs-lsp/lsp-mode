@@ -140,7 +140,10 @@ change."
   specify `#![warn(clippy)]`.\n - \"on\": Clippy lints enabled
   for all crates in workspace.\nYou need to install clippy via
   rustup if you haven't already."
-  :type '(choice (const :tag "on" "opt-in" "off"))
+  :type '(choice
+          (const "on")
+          (const "opt-in")
+          (const "off"))
   :group 'lsp-rust
   :package-version '('lsp-mode . "6.1"))
 
