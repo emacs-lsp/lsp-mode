@@ -117,17 +117,20 @@
 (defcustom lsp-print-performance nil
   "If non-nil, print performance info in the logs."
   :group 'lsp-mode
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-use-native-json t
   "If non-nil, use native json parsing if available."
   :group 'lsp-mode
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-json-use-lists nil
   "If non-nil, use lists instead of vectors when doing json deserialization."
   :group 'lsp-mode
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-log-max message-log-max
   "Maximum number of lines to keep in the log buffer.
@@ -136,13 +139,15 @@ the buffer when it becomes large."
   :group 'lsp-mode
   :type '(choice (const :tag "Disable" nil)
                  (integer :tag "lines")
-                 (const :tag "Unlimited" t)))
+                 (const :tag "Unlimited" t))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-io-messages-max t
   "Maximum number of messages that can be locked in a `lsp-io' buffer."
   :group 'lsp-mode
   :type '(choice (const :tag "Unlimited" t)
-                 (integer :tag "Messages")))
+                 (integer :tag "Messages"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-report-if-no-buffer t
   "If non nil the errors will be reported even when the file is not open."
@@ -162,18 +167,21 @@ the buffer when it becomes large."
 (defcustom lsp-enable-folding t
   "Enable/disable code folding support."
   :group 'lsp-mode
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-folding-range-limit nil
   "The maximum number of folding ranges to receive from the language server."
   :group 'lsp-mode
   :type '(choice (const :tag "No limit." nil)
-                 (integer :tag "Number of lines.")))
+                 (integer :tag "Number of lines."))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-folding-line-folding-only nil
   "If non-nil, only fold complete lines."
   :group 'lsp-mode
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-auto-require-clients t
   "Auto require lsp-clients."
@@ -285,7 +293,8 @@ the server has requested that."
 (defcustom lsp-after-uninitialized-hook nil
   "List of functions to be called after a Language Server has been uninitialized."
   :type 'hook
-  :group 'lsp-mode)
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.1"))
 
 (defvar lsp--sync-methods
   '((0 . none)
@@ -296,12 +305,14 @@ the server has requested that."
   "If non-nil debounce full sync events.
 This flag affects only server which do not support incremental update."
   :type 'boolean
-  :group 'lsp-mode)
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-debounce-full-sync-notifications-interval 1.0
   "Time to wait before sending full sync synchronization after buffer modication."
   :type 'float
-  :group 'lsp-mode)
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.1"))
 
 (defvar lsp--delayed-requests nil)
 (defvar lsp--delay-timer nil)
@@ -335,7 +346,8 @@ This flag affects only server which do not support incremental update."
 (defcustom lsp-enable-links t
   "If non-nil, all references to links in a file will be made clickable, if supported by the language server."
   :type 'boolean
-  :group 'lsp-mode)
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-links-check-internal 0.1
   "The interval for updating document links."
@@ -369,7 +381,8 @@ the symbol information."
 If `lsp-signature-render-all' is set to nil `eldoc' will show only
 the active signature."
   :type 'boolean
-  :group 'lsp-mode)
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-enable-completion-at-point t
   "Enable `completion-at-point' integration."
@@ -477,7 +490,8 @@ If set to `:none' neither of two will be enabled."
   :type '(choice (const :tag "Prefer flymake" t)
                  (const :tag "Prefer lsp-ui" nil)
                  (const :tag "Use neither flymake nor lsp-ui" :none))
-  :group 'lsp-mode)
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.1"))
 
 (defvar-local lsp--flymake-report-fn nil)
 
