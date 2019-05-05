@@ -300,7 +300,7 @@ finding the executable with `exec-path'."
 
 (make-obsolete 'lsp-clients-register-clangd
                "This function is no longer needed, as clangd is now automatically registered."
-               "6.1")
+               "lsp-mode 6.1")
 
 
 ;; Dart
