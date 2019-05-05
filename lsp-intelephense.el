@@ -30,13 +30,13 @@
   "LSP support for PHP, using Intelephense."
   :group 'lsp-mode
   :link '(url-link "https://github.com/bmewburn/vscode-intelephense")
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-files-max-size 1000000
   "Maximum file size in bytes."
   :type 'number
   :group 'lsp-intelephense
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-files-associations
   ["*.php" "*.phtml"]
@@ -44,7 +44,7 @@
   server features."
   :type '(repeat string)
   :group 'lsp-intelephense
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-files-exclude
   ["**/.git/**" "**/.svn/**" "**/.hg/**" "**/CVS/**" "**/.DS_Store/**"
@@ -52,7 +52,7 @@
   "Configure glob patterns to exclude certain files and folders from all language server features."
   :type '(repeat string)
   :group 'lsp-intelephense
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-stubs
   ["apache" "bcmath" "bz2" "calendar"
@@ -70,40 +70,40 @@
   bundled extensions."
   :type '(repeat string)
   :group 'lsp-intelephense
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-completion-insert-use-declaration t
   "Use declarations will be automatically inserted for namespaced
   classes, traits, interfaces, functions, and constants."
   :type 'boolean
   :group 'lsp-intelephense
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-completion-fully-qualify-global-constants-and-functions nil
   "Global namespace constants and functions will be fully
   qualified (prefixed with a backslash)."
   :type 'boolean
   :group 'lsp-intelephense
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-format-enable t
   "Enables formatting"
   :type 'boolean
   :group 'lsp-intelephense
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-trace-server "off"
   "Traces the communication between VSCode and the intelephense
   language server."
   :type '(choice (:tag "off" "messages" "verbose"))
   :group 'lsp-intelephense
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-storage-path (expand-file-name (locate-user-emacs-file "lsp-cache"))
   "Optional absolute path to storage dir."
   :type 'directory
   :group 'lsp-intelephense
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (lsp-register-custom-settings
  '(("intelephense.trace.server" lsp-intelephense-trace-server)
@@ -118,14 +118,14 @@
 (define-obsolete-variable-alias
   'lsp-clients-php-iph-server-command
   'lsp-intelephense-server-command
-  "6.1")
+  "lsp-mode 6.1")
 
 (defcustom lsp-intelephense-server-command
   `("intelephense" "--stdio")
   "Command to start Intelephense."
   :group 'lsp-intelephense
   :type '(repeat string)
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
