@@ -27,79 +27,111 @@
 (require 'lsp-mode)
 
 (defgroup lsp-rust nil
-  "Settings for rls."
-  :group 'tools
-  :tag "Language Server")
+  "LSP support for Rust, using Rust Language Server."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/rust-lang/rls")
+  :package-version '('lsp-mode . "6.1"))
 
-(defcustom lsp-rust-sysroot nil
-  "--sysroot"
-  :type '(repeat string))
+(defcustom lsp-rust-sysroot ""
+  "If not empty, use the given path as the sysroot for all rustc invocations instead of trying to detect the sysroot automatically."
+  :type 'string
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
-(defcustom lsp-rust-target nil
-  "--target"
-  :type '(repeat string)
-  :group 'lsp-rust)
+(defcustom lsp-rust-target ""
+  "If not empty, use the given target triple for all rustc invocations."
+  :type 'string
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-rustflags nil
   "Flags added to RUSTFLAGS."
-  :type '(repeat string))
+  :type '(repeat string)
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-clear-env-rust-log t
   "Clear the RUST_LOG environment variable before running rustc
 or cargo."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-build-lib nil
-  "Specify to run analysis as if running `cargo check --lib`. Use
-`null` to auto-detect. (unstable)"
-  :type '(repeat boolean))
+  "If non-nil, checks the project as if you passed the `--lib' argument to cargo.
+ Mutually exclusive with, and preferred over, `lsp-rust-build-bin'. (Unstable)"
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-build-bin nil
-  "Specify to run analysis as if running `cargo check --bin
-<name>`. Use `null` to auto-detect. (unstable)"
-  :type '(repeat string))
+  "If non empty, checks the project as if you passed `-- bin <build_bin>' argument to cargo.
+ Mutually exclusive with `lsp-rust-build-lib'. (Unstable)"
+  :type 'string
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-cfg-test nil
-  "Build cfg(test) code. (unstable)"
-  :type 'boolean)
+  "If non-nil, checks the project as if you were running `cargo test' rather than cargo build. I.e., compiles (but does not run) test code."
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-unstable-features nil
   "Enable unstable features."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-wait-to-build 1500
   "Time in milliseconds between receiving a change notification
 and starting build."
-  :type 'number)
+  :type 'number
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-show-warnings t
   "Show warnings."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-use-crate-blacklist t
   "Don't index crates on the crate blacklist."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-build-on-save nil
   "Only index the project when a file is saved and not on
 change."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-features nil
   "A list of Cargo features to enable."
-  :type '(repeat string))
+  :type '(repeat string)
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-all-features nil
   "Enable all Cargo features."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-no-default-features nil
   "Do not enable default Cargo features."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-racer-completion t
   "Enables code completion using racer."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-clippy-preference "opt-in"
   "Controls eagerness of clippy diagnostics when available. Valid
@@ -108,28 +140,38 @@ change."
   specify `#![warn(clippy)]`.\n - \"on\": Clippy lints enabled
   for all crates in workspace.\nYou need to install clippy via
   rustup if you haven't already."
-  :type '(choice (const :tag "on" "opt-in" "off")))
+  :type '(choice (const :tag "on" "opt-in" "off"))
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-jobs nil
   "Number of Cargo jobs to be run in parallel."
-  :type '(repeat number))
+  :type '(repeat number)
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-all-targets t
   "Checks the project as if you were running cargo check
 --all-targets (I.e., check all targets and integration tests
 too)."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-target-dir nil
   "When specified, it places the generated analysis files at the
 specified target directory. By default it is placed target/rls
 directory."
-  :type '(repeat string))
+  :type '(repeat string)
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-rustfmt-path nil
   "When specified, RLS will use the Rustfmt pointed at the path
 instead of the bundled one"
-  :type '(repeat string))
+  :type '(repeat string)
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-build-command nil
   "EXPERIMENTAL (requires `unstable_features`)\nIf set, executes
@@ -137,17 +179,23 @@ a given program responsible for rebuilding save-analysis to be
 loaded by the RLS. The program given should output a list of
 resulting .json files on stdout. \nImplies `rust.build_on_save`:
 true."
-  :type '(repeat string))
+  :type '(repeat string)
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-full-docs nil
   "Instructs cargo to enable full documentation extraction during
 save-analysis while building the crate."
-  :type '(repeat boolean))
+  :type '(repeat boolean)
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-rust-show-hover-context t
   "Show additional context in hover tooltips when available. This
 is often the type local variable declaration."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '('lsp-mode . "6.1"))
 
 (lsp-register-custom-settings
  '(("rust.show_hover_context" lsp-rust-show-hover-context t)
