@@ -51,52 +51,88 @@ behavior."
 (defcustom lsp-css-lint-compatible-vendor-prefixes "ignore"
   "When using a vendor-specific prefix make sure to also include
 all other vendor-specific properties."
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-vendor-prefix "warning"
   "When using a vendor-specific prefix, also include the standard
 property."
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-duplicate-properties "ignore"
   "Do not use duplicate style definitions."
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-empty-rules "warning"
   "Do not use empty rulesets."
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-import-statement "ignore"
   "Import statements do not load in parallel."
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-box-model "ignore"
   nil
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-universal-selector "ignore"
   nil
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-zero-units "ignore"
   "No unit for zero needed."
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-font-face-properties "warning"
   nil
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-hex-color-length "error"
   "Hex colors must consist of three or six hex numbers."
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-arguments-in-color-function "error"
   "Invalid number of parameters."
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-unknown-properties "warning"
   "Unknown property."
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-valid-properties nil
   "A list of properties that are not validated against the
@@ -105,37 +141,61 @@ property."
 
 (defcustom lsp-css-lint-ie-hack "ignore"
   "IE hacks are only necessary when supporting IE7 and older."
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-unknown-vendor-specific-properties "ignore"
   "Unknown vendor specific property."
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-property-ignored-due-to-display "warning"
   nil
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-important "ignore"
   nil
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-float "ignore"
   nil
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-id-selector "ignore"
   "Selectors should not contain IDs because these rules are too
 tightly coupled with the HTML."
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-lint-unknown-at-rules "warning"
   "Unknown at-rule."
-  :type '(choice (:tag "ignore" "warning" "error")))
+  :type '(choice
+          (const "ignore")
+          (const "warning")
+          (const "error")))
 
 (defcustom lsp-css-trace-server "off"
   "Traces the communication between VS Code and the CSS language
 server."
-  :type '(choice (:tag "off" "messages" "verbose")))
+  :type '(choice
+          (const "off")
+          (const "messages")
+          (const "verbose")))
 
 (lsp-register-custom-settings
  '(("css.trace.server" lsp-css-trace-server)
