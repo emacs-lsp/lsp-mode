@@ -2208,7 +2208,8 @@ disappearing, unset all the variables related to it."
                                                                                                "refactor.rewrite"
                                                                                                "source"
                                                                                                "source.organizeImports"])))))))
-                     (completion . ((completionItem . ((snippetSupport . ,(if lsp-enable-snippet t :json-false))))))
+                     (completion . ((completionItem . ((snippetSupport . ,(if lsp-enable-snippet t :json-false))))
+                                    (contextSupport . t)))
                      (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))))
                      (documentLink . ((dynamicRegistration . t)))
                      (hover . ((contentFormat . ["plaintext" "markdown"])))
