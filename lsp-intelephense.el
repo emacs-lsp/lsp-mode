@@ -27,25 +27,32 @@
 (require 'lsp-mode)
 
 (defgroup lsp-intelephense nil
-  "Settings for php-language-server."
-  :group 'tools
-  :tag "PHP Language Server")
+  "LSP support for PHP, using Intelephense."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/bmewburn/vscode-intelephense")
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-files-max-size 1000000
   "Maximum file size in bytes."
-  :type 'number)
+  :type 'number
+  :group 'lsp-intelephense
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-files-associations
   ["*.php" "*.phtml"]
   "Configure glob patterns to make files available for language
   server features."
-  :type '(repeat string))
+  :type '(repeat string)
+  :group 'lsp-intelephense
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-files-exclude
   ["**/.git/**" "**/.svn/**" "**/.hg/**" "**/CVS/**" "**/.DS_Store/**"
    "**/node_modules/**" "**/bower_components/**" "**/vendor/**/{Test,test,Tests,tests}/**"]
-  "Configure glob patterns to exclude certain files and folders from all language server features." :type
-  '(repeat string))
+  "Configure glob patterns to exclude certain files and folders from all language server features."
+  :type '(repeat string)
+  :group 'lsp-intelephense
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-stubs
   ["apache" "bcmath" "bz2" "calendar"
@@ -61,31 +68,42 @@
   "Configure stub files for built in symbols and common
   extensions. The default setting includes PHP core and all
   bundled extensions."
-  :type '(repeat string))
+  :type '(repeat string)
+  :group 'lsp-intelephense
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-completion-insert-use-declaration t
   "Use declarations will be automatically inserted for namespaced
   classes, traits, interfaces, functions, and constants."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-intelephense
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-completion-fully-qualify-global-constants-and-functions nil
   "Global namespace constants and functions will be fully
   qualified (prefixed with a backslash)."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-intelephense
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-format-enable t
   "Enables formatting"
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-intelephense
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-trace-server "off"
   "Traces the communication between VSCode and the intelephense
   language server."
-  :type '(choice (:tag "off" "messages" "verbose")))
+  :type '(choice (:tag "off" "messages" "verbose"))
+  :group 'lsp-intelephense
+  :package-version '('lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-storage-path (expand-file-name (locate-user-emacs-file "lsp-cache"))
   "Optional absolute path to storage dir."
-  :group 'lsp-php-ip
-  :type 'directory)
+  :type 'directory
+  :group 'lsp-intelephense
+  :package-version '('lsp-mode . "6.1"))
 
 (lsp-register-custom-settings
  '(("intelephense.trace.server" lsp-intelephense-trace-server)
