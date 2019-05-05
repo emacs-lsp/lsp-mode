@@ -29,56 +29,82 @@
 (defgroup lsp-xml nil
   "Settings for rls."
   :group 'tools
-  :tag "Language Server")
+  :tag "Language Server"
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-trace-server "off"
   "Traces the communication between VS Code and the XML language server."
-  :type '(choice (:tag "off" "messages" "verbose")))
+  :type '(choice
+          (const "off")
+          (const "messages")
+          (const "verbose"))
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-catalogs nil
   "Array of XML Catalogs"
-  :type '(repeat string))
+  :type '(repeat string)
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-logs-client t
   "Should the server log to client output"
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-format-split-attributes nil
   "Split multiple attributes each onto a new line"
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-format-join-cdata-lines nil
   "Join lines in a CDATA tag's content"
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-format-join-comment-lines nil
   "Join comment content on format"
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-format-space-before-empty-close-tag t
   "Insert space before end of self closing tag.
 Example: <tag/> -> <tag />"
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-format-join-content-lines nil
   "Normalize the whitespace of content inside an element.
 Newlines and excess whitespace are removed."
-  :type 'boolean)
-
-
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-format-preserve-empty-content nil
   "Preserve empty content/whitespace in a tag."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-format-enabled t
   "Enable/disable ability to format document"
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-format-quotations "doubleQuotes"
   "Which type of quotes to use for attribute values when
   formatting."
-  :type '(choice (:tag "doubleQuotes" "singleQuotes")))
+  :type '(choice
+          (const "doubleQuotes")
+          (const "singleQuotes"))
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-file-associations nil
   "Allows XML schemas to be associated to file name patterns.
@@ -88,12 +114,17 @@ ystemId\":
 \"path/to/file.xsd\",\"pattern\":
   \"file1.xml\" },{ \"systemId\":
   \"http://www.w3.org/2001/XMLSchema.xsd\",\"pattern\":
-  \"**/*.xsd\" }]" :type '(repeat string))
+  \"**/*.xsd\" }]"
+  :type '(repeat string)
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-completion-auto-close-tags t
   "Enable/disable autoclosing of XML tags. IMPORTANT: Turn off
   editor.autoClosingTags for this to work"
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-server-vmargs "-noverify -Xmx64M
   -XX:+UseG1GC -XX:+UseStringDeduplication" "Specifies extra VM
@@ -101,28 +132,37 @@ ystemId\":
   `-noverify -Xmx1G -XX:+UseG1GC -XX:+UseStringDeduplication` to
   bypass class verification, increase the heap size to 1GB and
   enable String deduplication with the G1 Garbage collector"
-  :type '(repeat string))
+  :type '(repeat string)
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-server-work-dir "~/.lsp4xml"
   "Set a custom folder path for cached XML Schemas. An absolute
   path is expected, although the ~ prefix (for the user home
   directory) is supported."
-  :type 'string)
-
+  :type 'string
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-validation-no-grammar "hint"
   "The message severity when a document has no associated
   grammar."
-  :type '(choice (:tag "ignore" "hint" "info" "warning" "error")))
+  :type '(choice (:tag "ignore" "hint" "info" "warning" "error"))
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-validation-enabled t
   "Enable/disable all validation."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-validation-schema t
   "Enable/disable schema based validation. Ignored if
   \"xml.validation.enabled\": false."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (lsp-register-custom-settings '
  (("xml.validation.schema" lsp-xml-validation-schema t)
@@ -144,13 +184,19 @@ ystemId\":
   ("xml.catalogs" lsp-xml-catalogs)
   ("xml.trace.server" lsp-xml-trace-server)))
 
-(defcustom lsp-xml-jar-file (expand-file-name (locate-user-emacs-file "org.eclipse.lsp4xml-0.3.0-uber.jar"))
+(defcustom lsp-xml-jar-file (expand-file-name
+                             (locate-user-emacs-file
+                              "org.eclipse.lsp4xml-0.3.0-uber.jar"))
   "Xml server jar command."
-  :type 'string)
+  :type 'string
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-server-command `("java" "-jar" ,lsp-xml-jar-file)
   "Xml server command."
-  :type '(repeat string))
+  :type '(repeat string)
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "6.1"))
 
 (defun lsp-xml--create-connection ()
   (plist-put
