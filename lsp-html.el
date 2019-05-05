@@ -23,63 +23,75 @@
 (defgroup lsp-html nil
   "LSP support for HTML, using vscode-html-languageserver."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/vscode-langservers/vscode-html-languageserver"))
+  :link '(url-link "https://github.com/vscode-langservers/vscode-html-languageserver")
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-experimental-custom-data nil
   "A list of JSON file paths that define custom tags, properties and other HTML
 syntax constructs. Only workspace folder setting will be read."
   :type '(choice (const nil) string)
-  :group 'lsp-html)
+  :group 'lsp-html
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-format-enable t
   "Enable/disable default HTML formatter."
   :type 'boolean
-  :group 'lsp-html)
+  :group 'lsp-html
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-format-wrap-line-length 120
   "Maximum amount of characters per line (0 = disable)."
   :type 'number
-  :group 'lsp-html)
+  :group 'lsp-html
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-format-unformatted "wbr"
   nil
   :type '(choice (const nil) string)
-  :group 'lsp-html)
+  :group 'lsp-html
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-format-content-unformatted "pre,code,textarea"
   nil
   :group 'lsp-html
-  :type '(choice (const nil) string))
+  :type '(choice (const nil) string)
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-format-indent-inner-html nil
   nil
   :type 'boolean
-  :group 'lsp-html)
+  :group 'lsp-html
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-format-preserve-new-lines t
   "Controls whether existing line breaks before elements should be preserved.
 Only works before elements, not inside tags or for text."
   :type 'boolean
-  :group 'lsp-html)
+  :group 'lsp-html
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-format-max-preserve-new-lines nil
   nil
   :type '(choice (const nil) integer)
-  :group 'lsp-html)
+  :group 'lsp-html
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-format-indent-handlebars nil nil
   :type 'boolean
-  :group 'lsp-html)
+  :group 'lsp-html
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-format-end-with-newline nil
   "End with a newline."
   :type 'boolean
-  :group 'lsp-html)
+  :group 'lsp-html
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-format-extra-liners "head, body, /html"
   nil
   :type '(choice (const nil) string)
-  :group 'lsp-html)
+  :group 'lsp-html
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-format-wrap-attributes "auto"
   "Wrap attributes."
@@ -91,39 +103,44 @@ Only works before elements, not inside tags or for text."
           (const "aligned-multiple")
           (const "preserve")
           (const "preserve-aligned"))
-  :group 'lsp-html)
+  :group 'lsp-html
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-suggest-html5 t
   "Controls whether the built-in HTML language support suggests HTML5 tags,
 properties and values."
   :type 'boolean
-  :group 'lsp-html)
+  :group 'lsp-html
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-validate-scripts t
   "Controls whether the built-in HTML language support validates embedded
 scripts."
   :type 'boolean
-  :group 'lsp-html)
+  :group 'lsp-html
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-validate-styles t
   "Controls whether the built-in HTML language support validates embedded
 styles."
   :type 'boolean
-  :group 'lsp-html)
+  :group 'lsp-html
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-auto-closing-tags t
   "Enable/disable autoclosing of HTML tags."
   :type 'boolean
-  :group 'lsp-html)
+  :group 'lsp-html
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-trace-server "off"
   "Traces the communication between VS Code and the HTML language server."
   :type '(choice
-          (choice
-           (const "off")
-           (const "messages")
-           (const "verbose")))
-  :group 'lsp-html)
+          (const "off")
+          (const "messages")
+          (const "verbose"))
+  :group 'lsp-html
+  :package-version '(lsp-mode . "6.1"))
 
 (lsp-register-custom-settings
  '(("html.trace.server" lsp-html-trace-server)
