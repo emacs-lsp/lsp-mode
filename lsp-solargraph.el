@@ -30,7 +30,7 @@
   "LSP support for Ruby, using the Solargraph language server."
   :group 'lsp-mode
   :link '(url-link "https://github.com/castwide/solargraph")
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 ;; (defcustom lsp-solargraph-check-gem-version t
 ;;   "Automatically check if a new version of the Solargraph gem is available."
@@ -40,67 +40,67 @@
   "Enable completion"
   :type 'boolean
   :group 'lsp-solargraph
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-solargraph-hover t
   "Enable hover"
   :type 'boolean
   :group 'lsp-solargraph
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-solargraph-diagnostics t
   "Enable diagnostics"
   :type 'boolean
   :group 'lsp-solargraph
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-solargraph-autoformat nil
   "Enable automatic formatting while typing (WARNING: experimental)"
   :type 'boolean
   :group 'lsp-solargraph
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-solargraph-formatting t
   "Enable document formatting"
   :type 'boolean
   :group 'lsp-solargraph
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-solargraph-symbols t
   "Enable symbols"
   :type 'boolean
   :group 'lsp-solargraph
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-solargraph-definitions t
   "Enable definitions (go to, etc.)"
   :type 'boolean
   :group 'lsp-solargraph
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-solargraph-rename t
   "Enable symbol renaming"
   :type 'boolean
   :group 'lsp-solargraph
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-solargraph-references t
   "Enable finding references"
   :type 'boolean
   :group 'lsp-solargraph
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-solargraph-folding t
   "Enable folding ranges"
   :type 'boolean
   :group 'lsp-solargraph
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-solargraph-log-level "warn"
   "Level of debug info to log. `warn` is least and `debug` is most."
   :type '(choice (const :tag "warn" "info" "debug"))
   :group 'lsp-solargraph
-  :package-version '('lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.1"))
 
 (lsp-register-custom-settings
  '(("solargraph.logLevel" lsp-solargraph-log-level)
