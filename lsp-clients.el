@@ -71,13 +71,6 @@ This directory shoud contain a file matching groovy-language-server-*.jar"
                   :priority -1
                   :server-id 'groovy-ls))
 
-;;; HTML
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '("html-languageserver" "--stdio"))
-                  :major-modes '(html-mode sgml-mode mhtml-mode web-mode)
-                  :priority -1
-                  :server-id 'html-ls))
-
 ;;; TypeScript/JavaScript
 (defgroup lsp-typescript-javascript nil
   "Support for TypeScript/JavaScript, using Sourcegraph's JavaScript/TypeScript language server."

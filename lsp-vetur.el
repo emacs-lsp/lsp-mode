@@ -481,49 +481,6 @@ TypeScript 3.0 or newer in the workspace."
 Code's JavaScript and TypeScript support."
   :type 'boolean)
 
-(defcustom lsp-html-experimental-custom-data nil "A list of JSON
-  file paths that define custom tags, properties and other HTML
-  syntax constructs. Only workspace folder setting will be read."
-  :type '(repeat string))
-(defcustom lsp-html-format-enable t "Enable/disable default HTML
-formatter." :type 'boolean)
-(defcustom lsp-html-format-wrap-line-length 120 "Maximum amount
-of characters per line (0 = disable)." :type 'number)
-(defcustom lsp-html-format-unformatted "wbr" nil :type '(repeat
-  string))
-(defcustom
-  lsp-html-format-content-unformatted "pre,code,textarea" nil
-  :type '(repeat string))
-(defcustom lsp-html-format-indent-inner-html nil nil :type 'boolean)
-(defcustom lsp-html-format-preserve-new-lines t "Controls whether
-existing line breaks before elements should be preserved. Only
-works before elements, not inside tags or for text." :type
-'boolean)
-(defcustom lsp-html-format-max-preserve-new-lines nil nil :type
-  '(repeat number))
-(defcustom lsp-html-format-indent-handlebars nil nil :type 'boolean)
-(defcustom lsp-html-format-end-with-newline nil "End with a
-newline." :type 'boolean)
-(defcustom lsp-html-format-extra-liners "head, body, /html" nil
-  :type '(repeat string))
-(defcustom lsp-html-format-wrap-attributes "auto" "Wrap
-  attributes." :type '(choice
-    (:tag "auto" "force" "force-aligned" "force-expand-multiline" "aligned-multiple" "preserve" "preserve-aligned")))
-(defcustom lsp-html-suggest-html5 t "Controls whether the
-built-in HTML language support suggests HTML5 tags, properties
-and values." :type 'boolean)
-(defcustom lsp-html-validate-scripts t "Controls whether the
-built-in HTML language support validates embedded scripts." :type
-'boolean)
-(defcustom lsp-html-validate-styles t "Controls whether the
-built-in HTML language support validates embedded styles." :type
-'boolean)
-(defcustom lsp-html-auto-closing-tags t "Enable/disable
-autoclosing of HTML tags." :type 'boolean)
-(defcustom lsp-html-trace-server "off" "Traces the communication
-  between VS Code and the HTML language server." :type '(choice
-    (:tag "off" "messages" "verbose")))
-
 (lsp-register-custom-settings
  '(("javascript.autoClosingTags" lsp-javascript-auto-closing-tags t)
    ("javascript.format.enable" lsp-javascript-format-enable t)
@@ -619,24 +576,7 @@ autoclosing of HTML tags." :type 'boolean)
    ("vetur.completion.tagCasing" lsp-vetur-completion-tag-casing)
    ("vetur.completion.useScaffoldSnippets" lsp-vetur-completion-use-scaffold-snippets t)
    ("vetur.completion.autoImport" lsp-vetur-completion-auto-import t)
-   ("vetur.useWorkspaceDependencies" lsp-vetur-use-workspace-dependencies t)
-   ("html.trace.server" lsp-html-trace-server)
-   ("html.autoClosingTags" lsp-html-auto-closing-tags t)
-   ("html.validate.styles" lsp-html-validate-styles t)
-   ("html.validate.scripts" lsp-html-validate-scripts t)
-   ("html.suggest.html5" lsp-html-suggest-html5 t)
-   ("html.format.wrapAttributes" lsp-html-format-wrap-attributes)
-   ("html.format.extraLiners" lsp-html-format-extra-liners)
-   ("html.format.endWithNewline" lsp-html-format-end-with-newline t)
-   ("html.format.indentHandlebars" lsp-html-format-indent-handlebars t)
-   ("html.format.maxPreserveNewLines" lsp-html-format-max-preserve-new-lines)
-   ("html.format.preserveNewLines" lsp-html-format-preserve-new-lines t)
-   ("html.format.indentInnerHtml" lsp-html-format-indent-inner-html t)
-   ("html.format.contentUnformatted" lsp-html-format-content-unformatted)
-   ("html.format.unformatted" lsp-html-format-unformatted)
-   ("html.format.wrapLineLength" lsp-html-format-wrap-line-length)
-   ("html.format.enable" lsp-html-format-enable t)
-   ("html.experimental.customData" lsp-html-experimental-custom-data)))
+   ("vetur.useWorkspaceDependencies" lsp-vetur-use-workspace-dependencies t)))
 
 (defcustom lsp-vetur-server '("vls")
   ""
