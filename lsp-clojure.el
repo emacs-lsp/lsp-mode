@@ -28,8 +28,9 @@
 (require 'cl-lib)
 
 (defgroup lsp-clojure nil
-  "Settings for clojure."
-  :group 'tools
+  "LSP support for Clojure."
+  :link '(url-link "https://github.com/snoe/clojure-lsp")
+  :group 'lsp-mode
   :tag "Language Server")
 
 (defcustom lsp-clojure-server-command  '("bash" "-c" "clojure-lsp")

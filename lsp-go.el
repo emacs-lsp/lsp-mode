@@ -27,9 +27,9 @@
 (require 'lsp-mode)
 
 (defgroup lsp-gopls nil
-  "Settings for gopls."
-  :group 'tools
-  :tag "Language Server")
+  "LSP support for the Go Programming Language, using the gopls language server."
+  :link '(url-link "https://github.com/golang/go/wiki/gopls")
+  :group 'lsp-mode)
 
 (defcustom lsp-gopls-use-placeholders t
   "Cause gopls to provide placeholder parameter snippets when
@@ -55,9 +55,8 @@ completing function calls."
                                         lsp-clients-go-library-directories)))
 
 (defgroup lsp-clients-go nil
-  "Go language."
-  :group 'lsp-mode
-  :tag "Go language")
+  "LSP support for the Go Programming Language."
+  :group 'lsp-mode)
 
 (defcustom lsp-clients-go-server "bingo"
   "The go language server executable to use."

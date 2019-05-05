@@ -27,9 +27,10 @@
 (require 'lsp-mode)
 
 (defgroup lsp-css nil
-  "Settings for rls."
-  :group 'tools
-  :tag "CSS Language Server")
+  "LSP support for CSS."
+  :group 'lsp-mode
+  :link '(url-link
+          "https://github.com/vscode-langservers/vscode-css-languageserver-bin"))
 
 (defcustom lsp-css-experimental-custom-data nil
   "A list of JSON file paths that define custom CSS data that
