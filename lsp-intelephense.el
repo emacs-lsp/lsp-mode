@@ -97,15 +97,21 @@
    ("intelephense.files.associations" lsp-intelephense-files-associations)
    ("intelephense.files.maxSize" lsp-intelephense-files-max-size)))
 
-(defcustom lsp-clients-php-iph-server-command
+(define-obsolete-variable-alias
+  'lsp-clients-php-iph-server-command
+  'lsp-intelephense-server-command
+  "6.1")
+
+(defcustom lsp-intelephense-server-command
   `("intelephense" "--stdio")
-  "Install directory for php-language-server."
-  :group 'lsp-php-ip
-  :type '(repeat string))
+  "Command to start Intelephense."
+  :group 'lsp-intelephense
+  :type '(repeat string)
+  :package-version '('lsp-mode . "6.1"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda () lsp-clients-php-iph-server-command))
+                                   (lambda () lsp-intelephense-server-command))
                   :major-modes '(php-mode)
                   :priority -1
                   :notification-handlers (ht ("indexingStarted" #'ignore)
