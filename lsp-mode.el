@@ -2199,8 +2199,7 @@ disappearing, unset all the variables related to it."
                                         (hierarchicalDocumentSymbolSupport . t)))
                      (formatting . ((dynamicRegistration . t)))
                      (codeAction . ((dynamicRegistration . t)
-                                    (codeActionLiteralSupport . ((codeActionKind .
-                                                                                 ((valueSet . [""
+                                    (codeActionLiteralSupport . ((codeActionKind . ((valueSet . [""
                                                                                                "quickfix"
                                                                                                "refactor"
                                                                                                "refactor.extract"
@@ -2208,7 +2207,14 @@ disappearing, unset all the variables related to it."
                                                                                                "refactor.rewrite"
                                                                                                "source"
                                                                                                "source.organizeImports"])))))))
-                     (completion . ((completionItem . ((snippetSupport . ,(if lsp-enable-snippet t :json-false))))
+                     (completion . ((completionItem . ((snippetSupport . ,(if lsp-enable-snippet
+                                                                              (or
+                                                                               (featurep 'yasnippet)
+                                                                               (warn (concat
+                                                                                      "Yasnippet is not present but `lsp-enable-snippet' is set to `t'. "
+                                                                                      "You must either install yasnippet or disable snippet support."))
+                                                                               t)
+                                                                            :json-false))))
                                     (contextSupport . t)))
                      (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))))
                      (documentLink . ((dynamicRegistration . t)))
