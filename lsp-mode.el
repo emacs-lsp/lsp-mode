@@ -2223,7 +2223,7 @@ disappearing, unset all the variables related to it."
                                                                                                "source.organizeImports"])))))))
                      (completion . ((completionItem . ((snippetSupport . ,(if lsp-enable-snippet
                                                                               (or
-                                                                               (featurep 'yasnippet)
+                                                                               (fboundp 'yas-expand-snippet)
                                                                                (warn (concat
                                                                                       "Yasnippet is not present but `lsp-enable-snippet' is set to `t'. "
                                                                                       "You must either install yasnippet or disable snippet support."))
