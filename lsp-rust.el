@@ -232,8 +232,14 @@ PARAMS progress report notification data."
   ;; Minimal implementation - we could show the progress as well.
   (lsp-log (gethash "title" params)))
 
+(defcustom lsp-rust-rls-server-command '("rls")
+  "Command to start RLS."
+  :type '(repeat string)
+  :package-version '(lsp-mode . "6.1"))
+
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '("rls"))
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (lambda () lsp-rust-rls-server-command))
                   :major-modes '(rust-mode rustic-mode)
                   :priority -1
                   :server-id 'rls
