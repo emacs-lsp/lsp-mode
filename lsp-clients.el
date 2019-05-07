@@ -244,7 +244,7 @@ particular FILE-NAME and MODE."
 (define-obsolete-variable-alias
   'lsp-ocaml-ocaml-lang-server-command
   'lsp-ocaml-lang-server-command
-  "6.1")
+  "lsp-mode 6.1")
 
 (defcustom lsp-ocaml-lang-server-command
   '("ocaml-language-server" "--stdio")
