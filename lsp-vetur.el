@@ -578,14 +578,20 @@ Code's JavaScript and TypeScript support."
    ("vetur.completion.autoImport" lsp-vetur-completion-auto-import t)
    ("vetur.useWorkspaceDependencies" lsp-vetur-use-workspace-dependencies t)))
 
-(defcustom lsp-vetur-server '("vls")
-  ""
+(define-obsolete-variable-alias
+  'lsp-vetur-server
+  'lsp-vetur-server-command
+  "lsp-mode 6.1")
+
+(defcustom lsp-vetur-server-command '("vls")
+  "Command to start vetur."
+  :type '(repeat string)
   :risky t
-  :type 'file)
+  :package-version '(lsp-mode . "6.1"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda () lsp-vetur-server))
+                                   (lambda () lsp-vetur-server-command))
                   :activation-fn (lambda (filename _mode)
                                    (string= (file-name-extension filename) "vue"))
                   :priority -1
