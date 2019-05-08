@@ -25,91 +25,153 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'lsp-html)
 
 (defgroup lsp-vetur nil
-  "Settings for rls."
-  :group 'tools
-  :tag "Language Server")
+  "LSP support for Vue, using the Vue Language Server."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/vuejs/vetur/tree/master/server")
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-use-workspace-dependencies nil
   "Use dependencies from workspace. Currently only for
 TypeScript."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-completion-auto-import t
   "Include completion for module export and auto import them"
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-completion-use-scaffold-snippets t
   "Enable/disable Vetur's built-in scaffolding snippets"
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-completion-tag-casing "kebab"
   "Casing conversion for tag completion"
-  :type '(choice (const :tag "initial" "kebab")))
+  :type '(choice
+          (const "initial")
+          (const "kebab"))
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-grammar-custom-blocks '((docs . "md") (i18n . "json"))
   "Mapping from custom block tag name to language name. Used for
  generating grammar to support syntax highlighting for custom
  blocks."
-  :type 'alist)
+  :type 'alist
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-validation-template t
   "Validate vue-html in <template> using eslint-plugin-vue"
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-validation-style t
   "Validate css/scss/less/postcss in <style>"
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-validation-script t
   "Validate js/ts in <script>"
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-format-enable t
   "Enable/disable the Vetur document formatter."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-format-options-tab-size 2
   "Number of spaces per indentation level. Inherited by all formatters."
-  :type 'number)
+  :type 'number
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-format-options-use-tabs nil
   "Use tabs for indentation. Inherited by all formatters."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-format-default-formatter-html "prettyhtml"
   "Default formatter for <template> region"
-  :type '(choice (const :tag "none" "prettyhtml" "js-beautify-html" "prettier")))
+  :type '(choice
+          (const "none")
+          (const "prettyhtml")
+          (const "js-beautify-html")
+          (const "prettier"))
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-format-default-formatter-css "prettier"
   "Default formatter for <style> region"
-  :type '(choice (const :tag "none" "prettier")))
+  :type '(choice
+          (const "none")
+          (const "prettier"))
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-format-default-formatter-postcss "prettier"
   "Default formatter for <style lang='postcss'> region"
-  :type '(choice (const :tag "none" "prettier")))
+  :type '(choice
+          (const "none")
+          (const "prettier"))
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-vetur-format-default-formatter-scss
-  "prettier"
+(defcustom lsp-vetur-format-default-formatter-scss "prettier"
   "Default formatter for <style lang='scss'> region"
-  :type '(choice (const :tag "none" "prettier")) )
+  :type '(choice
+          (const "none")
+          (const "prettier"))
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-format-default-formatter-less "prettier"
   "Default formatter for <style lang='less'> region"
-  :type '(choice (const :tag "none" "prettier")))
+  :type '(choice
+          (const "none")
+          (const "prettier"))
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-format-default-formatter-stylus "stylus-supremacy"
   "Default formatter for <style lang='stylus'> region"
-  :type '(choice (const :tag "none" "stylus-supremacy")))
+  :type '(choice
+          (const "none")
+          (const "stylus-supremacy"))
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-format-default-formatter-js "prettier"
   "Default formatter for <script> region"
-  :type '(choice (const :tag "none" "prettier" "prettier-eslint" "vscode-typescript")))
+  :type '(choice
+          (const "none")
+          (const "prettier")
+          (const "prettier-eslint")
+          (const "vscode-typescript"))
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-format-default-formatter-ts "prettier"
   "Default formatter for <script> region"
-  :type '(choice (const :tag "none" "prettier" "vscode-typescript")))
+  :type '(choice
+          (const "none")
+          (const "prettier")
+          (const "vscode-typescript"))
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-format-default-formatter-options
   '((js-beautify-html (wrap_attributes . "force-expand-multiline"))
@@ -118,368 +180,493 @@ TypeScript."
                 (wrapAttributes . :json-false)
                 (sortAttributes . :json-false)))
   "Options for all default formatters"
-  :type 'alist)
+  :type 'alist
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-format-style-initial-indent nil
   "Whether to have initial indent for <style> region"
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-format-script-initial-indent nil
   "Whether to have initial indent for <script> region"
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-vetur-trace-server "off"
   "Traces the communication between VS Code and Vue Language Server."
-  :type '(choice (const :tag "off" "messages" "verbose")))
+  :type '(choice
+          (const "off")
+          (const "messages")
+          (const "verbose"))
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-tsdk nil
   "Specifies the folder path containing the tsserver and
 lib*.d.ts files to use."
-  :type '(repeat string))
+  :type '(repeat string)
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-disable-automatic-type-acquisition nil
   "Disables automatic type acquisition. Automatic type
 acquisition fetches `@types` packages from npm to improve
 IntelliSense for external libraries."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-npm nil
   "Specifies the path to the NPM executable used for Automatic
 Type Acquisition. Requires using TypeScript 2.3.4 or newer in the
 workspace."
-  :type '(repeat string))
+  :type '(repeat string)
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-check-npm-is-installed t
   "Check if NPM is installed for Automatic Type Acquisition."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-references-code-lens-enabled nil
   "Enable/disable references CodeLens in JavaScript files."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-references-code-lens-enabled nil
   "Enable/disable references CodeLens in TypeScript files."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-implementations-code-lens-enabled nil
   "Enable/disable implementations CodeLens. This CodeLens shows
 the implementers of an interface."
-  :type 'boolean)
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-tsserver-log "off"
   "Enables logging of the TS server to a file. This log can be
 used to diagnose TS Server issues. The log may contain file
 paths, source code, and other potentially sensitive information
 from your project."
-  :type '(choice (:tag "off" "terse" "normal" "verbose")))
+  :type '(choice
+          (const "off")
+          (const "terse")
+          (const "normal")
+          (const "verbose"))
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-tsserver-plugin-paths nil
   "Additional paths to discover Typescript Language Service
 plugins. Requires using TypeScript 2.3.0 or newer in the
 workspace."
-  :type '(repeat string))
+  :type '(repeat string)
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-tsserver-trace "off"
   "Enables tracing of messages sent to the TS server. This trace
 can be used to diagnose TS Server issues. The trace may contain
 file paths, source code, and other potentially sensitive
 information from your project."
-  :type '(choice (:tag "off" "messages" "verbose")))
+  :type '(choice
+          (const "off")
+          (const "messages")
+          (const "verbose"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-suggest-complete-function-calls nil
   "Complete functions with their parameter signature."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-suggest-complete-function-calls nil
   "Complete functions with their parameter signature."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-report-style-checks-as-warnings t
   "Report style checks as warnings."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-validate-enable t
   "Enable/disable TypeScript validation."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-format-enable t
   "Enable/disable default TypeScript formatter."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-format-insert-space-after-comma-delimiter t
   "Defines space handling after a comma delimiter."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-format-insert-space-after-constructor nil
   "Defines space handling after the constructor keyword. Requires
 using TypeScript 2.3.0 or newer in the workspace."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-format-insert-space-after-semicolon-in-for-statements t
   "Defines space handling after a semicolon in a for statement."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-format-insert-space-before-and-after-binary-operators t
   "Defines space handling after a binary operator."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-format-insert-space-after-keywords-in-control-flow-statements t
   "Defines space handling after keywords in a control flow
 statement."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-format-insert-space-after-function-keyword-for-anonymous-functions t
   "Defines space handling after function keyword for anonymous
 functions."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-format-insert-space-before-function-parenthesis nil
   "Defines space handling before function argument parentheses."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-parenthesis nil
   "Defines space handling after opening and before closing
 non-empty parenthesis."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-brackets nil
   "Defines space handling after opening and before closing
 non-empty brackets."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-braces t
   "Defines space handling after opening and before closing
 non-empty braces. Requires using TypeScript 2.3.0 or newer in the
 workspace."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-format-insert-space-after-opening-and-before-closing-template-string-braces nil
   "Defines space handling after opening and before closing
 template string braces."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-format-insert-space-after-opening-and-before-closing-jsx-expression-braces nil
   "Defines space handling after opening and before closing JSX
 expression braces."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-format-insert-space-after-type-assertion nil
   "Defines space handling after type assertions in TypeScript.
 Requires using TypeScript 2.4 or newer in the workspace."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-format-place-open-brace-on-new-line-for-functions nil
   "Defines whether an open brace is put onto a new line for
 functions or not."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-format-place-open-brace-on-new-line-for-control-blocks nil
   "Defines whether an open brace is put onto a new line for
 control blocks or not."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-validate-enable t
   "Enable/disable JavaScript validation."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-format-enable t
   "Enable/disable default JavaScript formatter."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-format-insert-space-after-comma-delimiter t
   "Defines space handling after a comma delimiter."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-format-insert-space-after-constructor nil
   "Defines space handling after the constructor keyword. Requires
 using TypeScript 2.3.0 or newer in the workspace."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-format-insert-space-after-semicolon-in-for-statements t
   "Defines space handling after a semicolon in a for statement."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-format-insert-space-before-and-after-binary-operators t
   "Defines space handling after a binary operator."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-format-insert-space-after-keywords-in-control-flow-statements t
   "Defines space handling after keywords in a control flow
 statement."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-format-insert-space-after-function-keyword-for-anonymous-functions t
   "Defines space handling after function keyword for anonymous
 functions."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-format-insert-space-before-function-parenthesis nil
   "Defines space handling before function argument parentheses."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-parenthesis nil
   "Defines space handling after opening and before closing
 non-empty parenthesis."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-brackets nil
   "Defines space handling after opening and before closing
 non-empty brackets."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-braces t
   "Defines space handling after opening and before closing
 non-empty braces. Requires using TypeScript 2.3.0 or newer in the
 workspace."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-format-insert-space-after-opening-and-before-closing-template-string-braces nil
   "Defines space handling after opening and before closing
 template string braces."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-format-insert-space-after-opening-and-before-closing-jsx-expression-braces nil
   "Defines space handling after opening and before closing JSX
 expression braces."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-format-place-open-brace-on-new-line-for-functions nil
   "Defines whether an open brace is put onto a new line for
 functions or not."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-format-place-open-brace-on-new-line-for-control-blocks nil
   "Defines whether an open brace is put onto a new line for
 control blocks or not."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-implicit-project-config-check-js nil
   "Enable/disable semantic checking of JavaScript files. Existing
 jsconfig.json or tsconfig.json files override this setting.
 Requires using TypeScript 2.3.1 or newer in the workspace."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-implicit-project-config-experimental-decorators nil
   nil
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-suggest-names t
   "Enable/disable including unique names from the file in
 JavaScript suggestions."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-tsc-auto-detect "on"
   "Controls auto detection of tsc tasks."
-  :type '(choice (:tag "on" "off" "build" "watch")))
+  :type '(choice
+          (const "on")
+          (const "off")
+          (const "build")
+          (const "watch"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-suggest-paths t
   "Enable/disable suggestions for paths in import statements and
 require calls."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-suggest-paths t
   "Enable/disable suggestions for paths in import statements and
 require calls."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-suggest-auto-imports t
   "Enable/disable auto import suggestions. Requires using
 TypeScript 2.6.1 or newer in the workspace."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-suggest-auto-imports t
   "Enable/disable auto import suggestions. Requires using
 TypeScript 2.6.1 or newer in the workspace."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-suggest-complete-js-docs t
   "Enable/disable suggestion to complete JSDoc comments."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-suggest-complete-js-docs t
   "Enable/disable suggestion to complete JSDoc comments."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-locale nil
   nil
-  :type
-  '(choice (:tag "de" "es" "en" "fr" "it" "ja" "ko" "ru" "zh-CN" "zh-TW"
-  nil)))
+  :type '(choice
+          (const "de")
+          (const "es")
+          (const "en")
+          (const "fr")
+          (const "it")
+          (const "ja")
+          (const "ko")
+          (const "ru")
+          (const "zh-CN")
+          (const "zh-TW")
+          nil)
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-suggestion-actions-enabled t
   "Enable/disable suggestion diagnostics for JavaScript files in
 the editor. Requires using TypeScript 2.8 or newer in the
 workspace."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-suggestion-actions-enabled t
   "Enable/disable suggestion diagnostics for TypeScript files in
 the editor. Requires using TypeScript 2.8 or newer in the
 workspace."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-preferences-quote-style "auto" nil
-  :type '(choice (:tag "auto" "single" "double")))
+  :type '(choice
+          (const "auto")
+          (const "single")
+          (const "double"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-preferences-quote-style "auto" nil
-  :type '(choice (:tag "auto" "single" "double")))
+  :type '(choice
+          (const "auto")
+          (const "single")
+          (const "double"))
+  :package-version '(lsp-mode . "6.1"))
 
-(defcustom
-lsp-javascript-preferences-import-module-specifier "auto"
+(defcustom lsp-javascript-preferences-import-module-specifier "auto"
   "Preferred path style for auto imports."
-  :type '(choice (:tag "auto" "relative" "non-relative")))
+  :type '(choice
+          (const "auto")
+          (const "relative")
+          (const "non-relative"))
+  :package-version '(lsp-mode . "6.1"))
 
-(defcustom
-lsp-typescript-preferences-import-module-specifier "auto"
+(defcustom lsp-typescript-preferences-import-module-specifier "auto"
   "Infer the shortest path type."
-  :type '(choice (:tag "auto" "relative" "non-relative")))
+  :type '(choice
+          (const "auto")
+          (const "relative")
+          (const "non-relative"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-preferences-rename-shorthand-properties t
   "Enable/disable introducing aliases for object shorthand
 properties during renames. Requires using TypeScript 3.4 or newer
 in the workspace."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-preferences-rename-shorthand-properties t
   "Enable/disable introducing aliases for object shorthand
 properties during renames. Requires using TypeScript 3.4 or newer
 in the workspace."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
-(defcustom
-lsp-typescript-update-imports-on-file-move-enabled "prompt"
+(defcustom lsp-typescript-update-imports-on-file-move-enabled "prompt"
   "Enable/disable automatic updating of import paths when you
 rename or move a file in VS Code. Requires using TypeScript 2.9
 or newer in the workspace."
-  :type '(choice (:tag "prompt" "always" "never")))
+  :type '(choice
+          (const "prompt")
+          (const "always")
+          (const "never"))
+  :package-version '(lsp-mode . "6.1"))
 
-(defcustom
-lsp-javascript-update-imports-on-file-move-enabled "prompt"
+(defcustom lsp-javascript-update-imports-on-file-move-enabled "prompt"
   "Prompt on each rename."
-  :type '(choice (:tag "prompt" "always" "never")))
+  :type '(choice
+          (const "prompt")
+          (const "always")
+          (const "never"))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-auto-closing-tags t
   "Enable/disable automatic closing of JSX tags. Requires using
 TypeScript 3.0 or newer in the workspace."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-auto-closing-tags t
   "Enable/disable automatic closing of JSX tags. Requires using
 TypeScript 3.0 or newer in the workspace."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-suggest-enabled t
   "Enabled/disable autocomplete suggestions."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-suggest-enabled t
   "Enabled/disable autocomplete suggestions."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-typescript-surveys-enabled t
   "Enabled/disable occasional surveys that help us improve VS
 Code's JavaScript and TypeScript support."
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (lsp-register-custom-settings
  '(("javascript.autoClosingTags" lsp-javascript-auto-closing-tags t)
