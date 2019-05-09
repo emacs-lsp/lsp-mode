@@ -268,7 +268,8 @@ When nil, all registered clients are considered candidates.")
   "If non-nil lsp-mode will watch the files in the workspace if
 the server has requested that."
   :type 'boolean
-  :group 'lsp-mode)
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-file-watch-ignored '(".idea"
                                     ".ensime_cache"
@@ -288,7 +289,8 @@ the server has requested that."
                                     "target")
   "List of directories which won't be monitored when creating file watches."
   :group 'lsp-mode
-  :type '(repeat string))
+  :type '(repeat string)
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-after-uninitialized-hook nil
   "List of functions to be called after a Language Server has been uninitialized."
