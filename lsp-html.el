@@ -161,8 +161,15 @@ styles."
    ("html.format.enable" lsp-html-format-enable t)
    ("html.experimental.customData" lsp-html-experimental-custom-data)))
 
+(defcustom lsp-html-server-command '("html-languageserver" "--stdio")
+  "Command to start html-languageserver."
+  :type '(repeat string)
+  :group 'lsp-html
+  :package-version '(lsp-mode . "6.1"))
+
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '("html-languageserver" "--stdio"))
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (lambda () lsp-html-server-command))
                   :major-modes '(html-mode sgml-mode mhtml-mode web-mode)
                   :priority -1
                   :server-id 'html-ls
