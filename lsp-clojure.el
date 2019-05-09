@@ -46,10 +46,10 @@
   (lsp--cur-workspace-check)
   (lsp--send-execute-command
    refactor-name
-   (list* (lsp--buffer-uri)
-          (- (line-number-at-pos) 1) ;; clojure-lsp expects line numbers to start at 0
-          (current-column)
-          additional-args)))
+   (cl-list* (lsp--buffer-uri)
+             (- (line-number-at-pos) 1) ;; clojure-lsp expects line numbers to start at 0
+             (current-column)
+             additional-args)))
 
 (defun lsp-clojure-add-missing-libspec ()
   "Apply add-missing-libspec refactoring at point."
