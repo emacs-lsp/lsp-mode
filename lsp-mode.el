@@ -606,12 +606,12 @@ They are added to `markdown-code-lang-modes'")
 (defface lsp-lens-mouse-face
   '((t :height 0.8 :inherit link))
   "The face used for code lens overlays."
-  :group 'lsp-mode)
+  :group 'lsp-faces)
 
 (defface lsp-lens-face
   '((t :height 0.8 :inherit shadow))
   "The face used for code lens overlays."
-  :group 'lsp-mode)
+  :group 'lsp-faces)
 
 (defvar-local lsp--lens-overlays nil
   "Current lenses.")
