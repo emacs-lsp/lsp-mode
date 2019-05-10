@@ -3198,9 +3198,7 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
    (lambda (fn)
      (condition-case nil
          (funcall fn)
-       (lsp-capability-not-supported nil))
-     nil))
-  eldoc-last-message)
+       (lsp-capability-not-supported nil)))))
 
 (defvar-local lsp--highlight-bounds nil)
 (defvar-local lsp--highlight-timer nil)
