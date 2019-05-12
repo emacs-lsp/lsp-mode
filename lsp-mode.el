@@ -292,6 +292,9 @@ the server has requested that."
   :type '(repeat string)
   :package-version '(lsp-mode . "6.1"))
 
+;; Allow lsp-file-watch-ignored as a file or directory-local variable
+(put 'lsp-file-watch-ignored 'safe-local-variable 'lsp--string-listp)
+
 (defcustom lsp-after-uninitialized-hook nil
   "List of functions to be called after a Language Server has been uninitialized."
   :type 'hook
@@ -679,6 +682,10 @@ They are added to `markdown-code-lang-modes'")
 (defun seq-rest (sequence)
   "Return a sequence of the elements of SEQUENCE except the first one."
   (seq-drop sequence 1))
+
+(defun lsp--string-listp (sequence)
+  "Return t if all elements of SEQUENCE are strings, else nil."
+  (not (seq-find (lambda (x) (not (stringp x))) sequence)))
 
 (defun lsp--info (format &rest args)
   "Display lsp info message with FORMAT with ARGS."
