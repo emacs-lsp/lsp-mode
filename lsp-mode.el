@@ -271,22 +271,29 @@ the server has requested that."
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-file-watch-ignored '("[/\\\\]\\.idea$"
+(defcustom lsp-file-watch-ignored '(; SCM tools
+                                    "[/\\\\]\\.git$"
+                                    "[/\\\\]\\.hg$"
+                                    "[/\\\\]\\.bzr$"
+                                    "[/\\\\]_darcs$"
+                                    "[/\\\\]\\.svn$"
+                                    "[/\\\\]_FOSSIL_$"
+                                    ; IDE tools
+                                    "[/\\\\]\\.idea$"
                                     "[/\\\\]\\.ensime_cache$"
                                     "[/\\\\]\\.eunit$"
                                     "[/\\\\]node_modules$"
-                                    "[/\\\\]\\.git$"
-                                    "[/\\\\]\\.hg$"
                                     "[/\\\\]\\.fslckout$"
-                                    "[/\\\\]_FOSSIL_$"
-                                    "[/\\\\]\\.bzr$"
-                                    "[/\\\\]_darcs$"
                                     "[/\\\\]\\.tox$"
-                                    "[/\\\\]\\.svn$"
                                     "[/\\\\]\\.stack-work$"
                                     "[/\\\\]\\.bloop$"
                                     "[/\\\\]\\.metals$"
-                                    "[/\\\\]target$")
+                                    "[/\\\\]target$"
+                                    ; Autotools output
+                                    "[/\\\\]\\.deps$"
+                                    "[/\\\\]build-aux$"
+                                    "[/\\\\]autom4te.cache$"
+                                    "[/\\\\]\\.reference$")
   "List of regexps matching directory paths which won't be monitored when creating file watches."
   :group 'lsp-mode
   :type '(repeat string)
