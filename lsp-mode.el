@@ -271,26 +271,36 @@ the server has requested that."
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-file-watch-ignored '(".idea"
-                                    ".ensime_cache"
-                                    ".eunit"
-                                    "node_modules"
-                                    ".git"
-                                    ".hg"
-                                    ".fslckout"
-                                    "_FOSSIL_"
-                                    ".bzr"
-                                    "_darcs"
-                                    ".tox"
-                                    ".svn"
-                                    ".stack-work"
-                                    ".bloop"
-                                    ".metals"
-                                    "target")
-  "List of directories which won't be monitored when creating file watches."
+(defcustom lsp-file-watch-ignored '(; SCM tools
+                                    "[/\\\\]\\.git$"
+                                    "[/\\\\]\\.hg$"
+                                    "[/\\\\]\\.bzr$"
+                                    "[/\\\\]_darcs$"
+                                    "[/\\\\]\\.svn$"
+                                    "[/\\\\]_FOSSIL_$"
+                                    ; IDE tools
+                                    "[/\\\\]\\.idea$"
+                                    "[/\\\\]\\.ensime_cache$"
+                                    "[/\\\\]\\.eunit$"
+                                    "[/\\\\]node_modules$"
+                                    "[/\\\\]\\.fslckout$"
+                                    "[/\\\\]\\.tox$"
+                                    "[/\\\\]\\.stack-work$"
+                                    "[/\\\\]\\.bloop$"
+                                    "[/\\\\]\\.metals$"
+                                    "[/\\\\]target$"
+                                    ; Autotools output
+                                    "[/\\\\]\\.deps$"
+                                    "[/\\\\]build-aux$"
+                                    "[/\\\\]autom4te.cache$"
+                                    "[/\\\\]\\.reference$")
+  "List of regexps matching directory paths which won't be monitored when creating file watches."
   :group 'lsp-mode
   :type '(repeat string)
   :package-version '(lsp-mode . "6.1"))
+
+;; Allow lsp-file-watch-ignored as a file or directory-local variable
+(put 'lsp-file-watch-ignored 'safe-local-variable 'lsp--string-listp)
 
 (defcustom lsp-after-uninitialized-hook nil
   "List of functions to be called after a Language Server has been uninitialized."
@@ -679,6 +689,10 @@ They are added to `markdown-code-lang-modes'")
 (defun seq-rest (sequence)
   "Return a sequence of the elements of SEQUENCE except the first one."
   (seq-drop sequence 1))
+
+(defun lsp--string-listp (sequence)
+  "Return t if all elements of SEQUENCE are strings, else nil."
+  (not (seq-find (lambda (x) (not (stringp x))) sequence)))
 
 (defun lsp--info (format &rest args)
   "Display lsp info message with FORMAT with ARGS."
