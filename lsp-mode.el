@@ -4588,7 +4588,8 @@ returns the command to execute."
             (with-current-buffer it
               (setq lsp--buffer-workspaces (delete workspace lsp--buffer-workspaces))
               (lsp--uninitialize-workspace)
-              (lsp--spinner-stop))))
+              (lsp--spinner-stop)
+              (lsp--remove-cur-overlays))))
 
         ;; cleanup session from references to the closed workspace.
         (--each (hash-table-keys folder->workspaces)
@@ -4597,9 +4598,7 @@ returns the command to execute."
         ;; Kill standard error buffer only if the process exited normally.
         ;; Leave it intact otherwise for debugging purposes.
         (when (and (eq status 'exit) (zerop (process-exit-status process)) (buffer-live-p stderr))
-          (kill-buffer stderr))
-
-        (lsp--remove-cur-overlays))
+          (kill-buffer stderr)))
 
       (run-hook-with-args 'lsp-after-uninitialized-hook workspace)
 
