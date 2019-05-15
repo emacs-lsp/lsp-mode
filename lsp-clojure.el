@@ -44,12 +44,12 @@
 (defun lsp-clojure--refactoring-call (refactor-name &rest additional-args)
   "Send an executeCommand request for REFACTOR-NAME with ADDITIONAL-ARGS if there are more arguments expected after the line and column numbers."
   (lsp--cur-workspace-check)
-  (lsp--send-execute-command
-   refactor-name
-   (cl-list* (lsp--buffer-uri)
-             (- (line-number-at-pos) 1) ;; clojure-lsp expects line numbers to start at 0
-             (current-column)
-             additional-args)))
+  (lsp--send-execute-command refactor-name
+                             (apply #'vector
+                                    (cl-list* (lsp--buffer-uri)
+                                              (- (line-number-at-pos) 1) ;; clojure-lsp expects line numbers to start at 0
+                                              (current-column)
+                                              additional-args))))
 
 (defun lsp-clojure-add-missing-libspec ()
   "Apply add-missing-libspec refactoring at point."
@@ -89,32 +89,32 @@
 (defun lsp-clojure-thread-first ()
   "Apply thread-first refactoring at point."
   (interactive)
-  (lsp-clojure--refactoring-call "thread-first" binding-name))
+  (lsp-clojure--refactoring-call "thread-first"))
 
 (defun lsp-clojure-thread-first-all ()
   "Apply thread-first-all refactoring at point."
   (interactive)
-  (lsp-clojure--refactoring-call "thread-first-all" binding-name))
+  (lsp-clojure--refactoring-call "thread-first-all"))
 
 (defun lsp-clojure-thread-last ()
   "Apply thread-last refactoring at point."
   (interactive)
-  (lsp-clojure--refactoring-call "thread-last" binding-name))
+  (lsp-clojure--refactoring-call "thread-last"))
 
 (defun lsp-clojure-thread-last-all ()
   "Apply thread-last-all refactoring at point."
   (interactive)
-  (lsp-clojure--refactoring-call "thread-last-all" binding-name))
+  (lsp-clojure--refactoring-call "thread-last-all"))
 
 (defun lsp-clojure-unwind-all ()
   "Apply unwind-all refactoring at point."
   (interactive)
-  (lsp-clojure--refactoring-call "unwind-all" binding-name))
+  (lsp-clojure--refactoring-call "unwind-all"))
 
 (defun lsp-clojure-unwind-thread ()
   "Apply unwind-thread refactoring at point."
   (interactive)
-  (lsp-clojure--refactoring-call "unwind-thread" binding-name))
+  (lsp-clojure--refactoring-call "unwind-thread"))
 
 (defun lsp-clj--file-in-jar (uri)
   (string-match "^\\(jar\\|zip\\):\\(file:.+\\)!/\\(.+\\)" uri)
