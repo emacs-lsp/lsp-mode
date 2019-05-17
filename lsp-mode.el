@@ -554,7 +554,8 @@ If set to `:none' neither of two will be enabled."
                                         (yaml-mode . "spring-boot-properties-yaml")
                                         (ruby-mode . "ruby")
                                         (enh-ruby-mode . "ruby")
-                                        (f90-mode . "fortran"))
+                                        (f90-mode . "fortran")
+                                        (elm-mode . "elm"))
   "Language id configuration.")
 
 (defvar lsp-method-requirements
