@@ -427,6 +427,14 @@ the active signature."
   :group 'lsp-mode)
 
 (defcustom lsp-after-diagnostics-hook nil
+  "Hooks to run after diagnostics are received.
+Note: it runs only if the receiving buffer is open. Use
+`lsp-diagnostics-updated-hook'if you want to be notified when
+diagnostics have changed."
+  :type 'hook
+  :group 'lsp-mode)
+
+(defcustom lsp-diagnostics-updated-hook nil
   "Hooks to run after diagnostics are received."
   :type 'hook
   :group 'lsp-mode)
@@ -1223,6 +1231,8 @@ WORKSPACE is the workspace that contains the diagnostics."
         (remhash file workspace-diagnostics)
       (when (or lsp-report-if-no-buffer buffer)
         (puthash file (seq-map #'lsp--make-diag diagnostics) workspace-diagnostics)))
+
+    (run-hooks 'lsp-diagnostics-updated-hook)
 
     (when buffer
       (save-mark-and-excursion
