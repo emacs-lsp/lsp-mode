@@ -108,10 +108,7 @@ Newlines and excess whitespace are removed."
 
 (defcustom lsp-xml-file-associations nil
   "Allows XML schemas to be associated to file name patterns.
-  Example: [{ \"s
-ystemId\":
-
-\"path/to/file.xsd\",\"pattern\":
+  Example: [{ \"systemId\":\"path/to/file.xsd\",\"pattern\":
   \"file1.xml\" },{ \"systemId\":
   \"http://www.w3.org/2001/XMLSchema.xsd\",\"pattern\":
   \"**/*.xsd\" }]"
