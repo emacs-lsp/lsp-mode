@@ -32,16 +32,15 @@
   :link '(url-link "https://github.com/elm-tooling/elm-language-server"))
 
 (defcustom lsp-elm-server-install-dir
-  (locate-user-emacs-file "elm-language-server/")
-  "Install directory for elm-language-server.  A slash is expected at the end.
-This directory should contain a clone of elm-tooling/elm-language-server from github."
+  (locate-user-emacs-file "elm-language-server")
+  "Install directory for elm-language-server. This directory should contain a clone of elm-tooling/elm-language-server from github."
   :group 'lsp-elm
   :risky t
   :type 'directory)
 
 (defun lsp-elm--elm-command ()
   "Generate LSP startup command for the Elm Language Server."
-  `("node" ,(concat (file-truename lsp-elm-server-install-dir)
+  `("node" ,(f-join (file-truename lsp-elm-server-install-dir)
                     "server/out/index.js")
     "--stdio"))
 
