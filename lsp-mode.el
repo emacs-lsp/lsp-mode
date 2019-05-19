@@ -3140,9 +3140,11 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
   "Resolve completion ITEM."
   (cl-assert item nil "Completion item must not be nil")
   (or (-first 'identity
-               (lsp-foreach-workspace
-                (when (gethash "resolveProvider" (lsp--capability "completionProvider"))
-                  (lsp-request "completionItem/resolve" item))))
+              (condition-case _err
+                  (lsp-foreach-workspace
+                   (when (gethash "resolveProvider" (lsp--capability "completionProvider"))
+                     (lsp-request "completionItem/resolve" item)))
+                (error)))
       item))
 
 (defun lsp--extract-line-from-buffer (pos)
@@ -4689,7 +4691,11 @@ SESSION is the active session."
 
 (defun lsp--load-default-session ()
   "Load default session."
-  (setq lsp--session (or (lsp--read-from-file lsp-session-file)
+  (setq lsp--session (or (condition-case err
+                             (lsp--read-from-file lsp-session-file)
+                           (error (lsp--error "Failed to parse the session %s, starting with clean one."
+                                              (error-message-string err))
+                                  nil))
                          (make-lsp-session))))
 
 (defun lsp-session ()
