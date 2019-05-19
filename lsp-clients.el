@@ -36,6 +36,7 @@
 (require 'lsp-xml)
 (require 'lsp-go)
 (require 'lsp-clojure)
+(require 'lsp-elm)
 
 ;;; Bash
 (lsp-register-client
