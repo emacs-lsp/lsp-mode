@@ -36,6 +36,7 @@
 (require 'lsp-xml)
 (require 'lsp-go)
 (require 'lsp-clojure)
+(require 'lsp-dart-analysis-server)
 
 ;;; Bash
 (lsp-register-client
