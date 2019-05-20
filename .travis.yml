@@ -33,7 +33,6 @@ script:
 after_success:
   - bash <(curl -s https://codecov.io/bash
   - cp -R doc/output/ output/
-  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./travis/push_gh_pages.bash output; fi
 notifications:
   webhooks:
     urls:
@@ -41,3 +40,12 @@ notifications:
     on_success: change
     on_failure: always
     on_start: never
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GH_TOKEN
+  keep_history: false
+  on:
+    branch: master
+  target_branch: gh-pages
+  local_dir: output
