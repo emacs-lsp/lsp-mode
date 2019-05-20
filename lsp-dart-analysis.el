@@ -49,7 +49,7 @@
                   :priority 0
                   :server-id 'dart_analysis_server))
 
-(provide 'lsp-dart)
+(provide 'lsp-dart-analysis)
 
 ;;; lsp-dart-analysis.el ends here
 
