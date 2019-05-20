@@ -37,6 +37,7 @@
 (require 'lsp-go)
 (require 'lsp-clojure)
 (require 'lsp-dart)
+(require 'lsp-elm)
 
 ;;; Bash
 (lsp-register-client
