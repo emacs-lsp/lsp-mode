@@ -1,4 +1,4 @@
-;;; lsp-dart-analysis.el --- LSP mode -*- lexical-binding: t; -*-
+;;; lsp-dart.el --- LSP mode -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019 Takeshi Tsukamoto
 
@@ -84,7 +84,7 @@
 
 (provide 'lsp-dart)
 
-;;; lsp-dart-analysis.el ends here
+;;; lsp-dart.el ends here
 
 ;; Local Variables:
 ;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
