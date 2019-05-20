@@ -47,5 +47,6 @@ deploy:
   keep_history: false
   on:
     branch: master
+    condition: $EMACS_VERSION = 25.3
   target_branch: gh-pages
   local_dir: output
