@@ -33,7 +33,7 @@ script:
 after_success:
   - bash <(curl -s https://codecov.io/bash
   - cp -R doc/output/ output/
-  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./travis/push_gh_pages; fi
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./travis/push_gh_pages.bash; fi
 notifications:
   webhooks:
     urls:
