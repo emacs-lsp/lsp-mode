@@ -555,7 +555,8 @@ If set to `:none' neither of two will be enabled."
                                         (ruby-mode . "ruby")
                                         (enh-ruby-mode . "ruby")
                                         (f90-mode . "fortran")
-                                        (elm-mode . "elm"))
+                                        (elm-mode . "elm")
+                                        (dart-mode . "dart"))
   "Language id configuration.")
 
 (defvar lsp-method-requirements
