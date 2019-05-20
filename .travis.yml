@@ -1,6 +1,8 @@
-language: emacs-lisp
 sudo: required
+language: emacs-lisp
 dist: trusty
+services:
+  - docker
 cache:
   - directories:
       - "$HOME/emacs/"
@@ -18,6 +20,8 @@ before_install:
   - wget 'https://raw.githubusercontent.com/flycheck/emacs-travis/master/emacs-travis.mk'
   - make -f emacs-travis.mk install_emacs
   - make -f emacs-travis.mk install_cask
+  - docker pull asciidoctor/docker-asciidoctor
+  - mkdir -p output
 install:
   - cask install
   - sudo pip install python-language-server
@@ -26,8 +30,11 @@ script:
   - cask clean-elc
   - cask exec ert-runner -t "!no-win"
   - cask exec ecukes
+  - docker -run -v $TRAVIS_BUILD_DIR:/src/ asciidoctor/docker-asciidoctor make -C /src/ docs
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash
+  - cp doc/output/* output/
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./travis/push_gh_pages; fi
 notifications:
   webhooks:
     urls:
