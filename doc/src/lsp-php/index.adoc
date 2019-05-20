@@ -1,0 +1,6 @@
+[id="lsp-php"]
+=== PHP support: `lsp-php`
+`lsp-css` provides support for CSS using
+https://github.com/felixfbecker/php-language-server[PHP Language Server].
+
+include::lsp-php-vars.adoc[]

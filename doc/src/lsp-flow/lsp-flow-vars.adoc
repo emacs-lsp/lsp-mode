@@ -1,0 +1,20 @@
+[id="lsp-flow-vars"]
+==== `lsp-flow` settings
+
+[id="lsp-clients-flow-server"]
+- `lsp-clients-flow-server`
+____
+Default value: `pass:["flow"]`
+
+The Flow executable to use.
+Leave as just the executable name to use the default behavior of
+finding the executable with variable ‘exec-path’.
+____
+[id="lsp-clients-flow-server-args"]
+- `lsp-clients-flow-server-args`
+____
+Default value: `pass:[("lsp")
+]`
+
+Extra arguments for starting the Flow language server.
+____

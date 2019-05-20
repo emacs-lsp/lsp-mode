@@ -1,0 +1,6 @@
+[id="lsp-ocaml"]
+=== Ocaml support: `lsp-ocaml`
+`lsp-ocaml` provides support for Ocaml using
+https://github.com/freebroccolo/ocaml-language-server[ocaml-language-server].
+
+include::lsp-ocaml-vars.adoc[]

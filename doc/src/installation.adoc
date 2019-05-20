@@ -1,0 +1,32 @@
+== Installation
+
+`lsp-mode` is available as a package on both http://melpa.org/[MELPA] and
+http://stable.melpa.org/[MELPA Stable]. If you haven't added either to
+Emacs' package sources, you can do that with
+
+[source,elisp]
+----
+(require 'packages)
+(add-to-list 'package-archives
+	     '("melpa" . "https://melpa.org/packages/"))
+----
+For MELPA, or
+[source,elisp]
+----
+(require 'package)
+(add-to-list 'package-archives
+	     '("melpa-stable" . "https://stable.melpa.org/packages/"))
+----
+for MELPA Stable.
+
+After updating the package list with `M-x package-refresh-contents RET`,
+you can install `lsp-mode` using `M-x package-install RET lsp-mode RET`.
+
+=== Installing language servers
+
+Because language servers exist outside of Emacs, they need to be
+installed seperately. A list of language servers is available at
+https://langserver.org/ and
+https://microsoft.github.io/language-server-protocol/implementors/servers/.
+Additionally, this documentation also provides a
+xref:lang-support[list of supported languages].

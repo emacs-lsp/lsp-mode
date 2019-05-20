@@ -1,0 +1,6 @@
+[id="lsp-elixir"]
+=== Elixir support: `lsp-css`
+`lsp-elixir` provides support for Elixir using
+https://github.com/JakeBecker/elixir-ls[ElixirLS].
+
+include::lsp-elixir-vars.adoc[]

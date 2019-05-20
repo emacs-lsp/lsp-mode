@@ -1,0 +1,6 @@
+[id="lsp-pyls"]
+=== Python support: `lsp-pyls`
+`lsp-pyls` provides support for Python using
+https://github.com/palantir/python-language-server[pyls]
+
+include::lsp-pyls-vars.adoc[]

@@ -1,0 +1,17 @@
+= lsp-mode
+Vibhav Pant <vibhavp@gmail.com>
+6.1, May 16, 2019
+:toc: left
+:homepage: https://github.com/emacs-lsp/lsp-mode
+:source-highlighter: pygments
+:icons: font
+
+include::introduction.adoc[]
+
+include::installation.adoc[]
+
+include::configuration.adoc[]
+
+include::lang-support.adoc[]
+
+include::lsp-langs.adoc[]

@@ -1,0 +1,6 @@
+[id="lsp-vetur"]
+=== Vue support: `lsp-vetur`
+`lsp-vetur` provides support for Vue using
+the https://github.com/vuejs/vetur/tree/master/server[Vue Language Server].
+
+include::lsp-vetur-vars.adoc[]

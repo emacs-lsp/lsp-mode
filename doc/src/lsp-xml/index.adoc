@@ -1,0 +1,6 @@
+[id="lsp-xml"]
+=== XML support: `lsp-xml`
+`lsp-xml` provides support for XML using
+https://github.com/angelozerr/lsp4xml[lsp4xml]
+
+include::lsp-xml-vars.adoc[]

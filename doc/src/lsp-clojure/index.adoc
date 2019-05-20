@@ -1,0 +1,6 @@
+[id="lsp-clojure"]
+=== Clojure support: `lsp-clojure`
+`lsp-clangd` provides support for Clojure/ClojureScript
+https://github.com/snoe/clojure-lsp[clojure-lsp].
+
+include::lsp-clojure-vars.adoc[]

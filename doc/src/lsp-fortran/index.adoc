@@ -1,0 +1,6 @@
+[id="lsp-fortran"]
+=== Fortran support: `lsp-fortran`
+`lsp-fortran` provides support for Fortran using the
+https://github.com/hansec/fortran-language-server[Fortran Language Server].
+
+include::lsp-fortran-vars.adoc[]

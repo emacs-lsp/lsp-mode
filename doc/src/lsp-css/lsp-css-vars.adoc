@@ -1,0 +1,180 @@
+[id="lsp-css-vars"]
+==== `lsp-css` settings
+
+[id="lsp-css-experimental-custom-data"]
+- `lsp-css-experimental-custom-data`
+____
+Default value: `pass:[nil]`
+
+A list of JSON file paths that define custom CSS data that
+loads custom properties, at directives, pseudo classes /
+elements.
+____
+[id="lsp-css-completion-trigger-property-value-completion"]
+- `lsp-css-completion-trigger-property-value-completion`
+____
+Default value: `pass:[t]`
+
+By default, VS Code triggers property value completion after
+selecting a CSS property. Use this setting to disable this
+behavior.
+____
+[id="lsp-css-validate"]
+- `lsp-css-validate`
+____
+Default value: `pass:[t]`
+
+Enables or disables all validations.
+____
+[id="lsp-css-lint-compatible-vendor-prefixes"]
+- `lsp-css-lint-compatible-vendor-prefixes`
+____
+Default value: `pass:["ignore"]`
+
+When using a vendor-specific prefix make sure to also include
+all other vendor-specific properties.
+____
+[id="lsp-css-lint-vendor-prefix"]
+- `lsp-css-lint-vendor-prefix`
+____
+Default value: `pass:["warning"]`
+
+When using a vendor-specific prefix, also include the standard
+property.
+____
+[id="lsp-css-lint-duplicate-properties"]
+- `lsp-css-lint-duplicate-properties`
+____
+Default value: `pass:["ignore"]`
+
+Do not use duplicate style definitions.
+____
+[id="lsp-css-lint-empty-rules"]
+- `lsp-css-lint-empty-rules`
+____
+Default value: `pass:["warning"]`
+
+Do not use empty rulesets.
+____
+[id="lsp-css-lint-import-statement"]
+- `lsp-css-lint-import-statement`
+____
+Default value: `pass:["ignore"]`
+
+Import statements do not load in parallel.
+____
+[id="lsp-css-lint-box-model"]
+- `lsp-css-lint-box-model`
+____
+Default value: `pass:["ignore"]`
+
+nil
+____
+[id="lsp-css-lint-universal-selector"]
+- `lsp-css-lint-universal-selector`
+____
+Default value: `pass:["ignore"]`
+
+nil
+____
+[id="lsp-css-lint-zero-units"]
+- `lsp-css-lint-zero-units`
+____
+Default value: `pass:["ignore"]`
+
+No unit for zero needed.
+____
+[id="lsp-css-lint-font-face-properties"]
+- `lsp-css-lint-font-face-properties`
+____
+Default value: `pass:["warning"]`
+
+nil
+____
+[id="lsp-css-lint-hex-color-length"]
+- `lsp-css-lint-hex-color-length`
+____
+Default value: `pass:["error"]`
+
+Hex colors must consist of three or six hex numbers.
+____
+[id="lsp-css-lint-arguments-in-color-function"]
+- `lsp-css-lint-arguments-in-color-function`
+____
+Default value: `pass:["error"]`
+
+Invalid number of parameters.
+____
+[id="lsp-css-lint-unknown-properties"]
+- `lsp-css-lint-unknown-properties`
+____
+Default value: `pass:["warning"]`
+
+Unknown property.
+____
+[id="lsp-css-lint-valid-properties"]
+- `lsp-css-lint-valid-properties`
+____
+Default value: `pass:[nil]`
+
+A list of properties that are not validated against the
+‘unknownProperties‘ rule.
+____
+[id="lsp-css-lint-ie-hack"]
+- `lsp-css-lint-ie-hack`
+____
+Default value: `pass:["ignore"]`
+
+IE hacks are only necessary when supporting IE7 and older.
+____
+[id="lsp-css-lint-unknown-vendor-specific-properties"]
+- `lsp-css-lint-unknown-vendor-specific-properties`
+____
+Default value: `pass:["ignore"]`
+
+Unknown vendor specific property.
+____
+[id="lsp-css-lint-property-ignored-due-to-display"]
+- `lsp-css-lint-property-ignored-due-to-display`
+____
+Default value: `pass:["warning"]`
+
+nil
+____
+[id="lsp-css-lint-important"]
+- `lsp-css-lint-important`
+____
+Default value: `pass:["ignore"]`
+
+nil
+____
+[id="lsp-css-lint-float"]
+- `lsp-css-lint-float`
+____
+Default value: `pass:["ignore"]`
+
+nil
+____
+[id="lsp-css-lint-id-selector"]
+- `lsp-css-lint-id-selector`
+____
+Default value: `pass:["ignore"]`
+
+Selectors should not contain IDs because these rules are too
+tightly coupled with the HTML.
+____
+[id="lsp-css-lint-unknown-at-rules"]
+- `lsp-css-lint-unknown-at-rules`
+____
+Default value: `pass:["warning"]`
+
+Unknown at-rule.
+____
+[id="lsp-css-trace-server"]
+- `lsp-css-trace-server`
+____
+Default value: `pass:["off"]`
+
+Traces the communication between VS Code and the CSS language
+server.
+____

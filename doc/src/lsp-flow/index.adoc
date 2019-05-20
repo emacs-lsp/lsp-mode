@@ -1,0 +1,6 @@
+[id="lsp-flow"]
+=== Flow support: `lsp-flow`
+`lsp-flow` provides support for the https://flow.org/[Flow] Javascript type
+checker.
+
+include::lsp-flow-vars.adoc[]

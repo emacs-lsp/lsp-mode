@@ -1,0 +1,11 @@
+[id="lsp-clojure-vars"]
+==== `lsp-clojure` settings
+
+[id="lsp-clojure-server-command"]
+- `lsp-clojure-server-command`
+____
+Default value: `pass:[("bash" "-c" "clojure-lsp")
+]`
+
+The clojure-lisp server command.
+____

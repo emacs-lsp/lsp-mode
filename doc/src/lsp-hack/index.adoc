@@ -1,0 +1,6 @@
+[id="lsp-hack"]
+=== Hack support: `lsp-css`
+`lsp-hack` provides support for Hack using
+https://docs.hhvm.com/hhvm/[HHVM].
+
+include::lsp-hack-vars.adoc[]

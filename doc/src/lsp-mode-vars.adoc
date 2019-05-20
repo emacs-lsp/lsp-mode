@@ -1,0 +1,423 @@
+[id="lsp-mode-vars"]
+==== `lsp-mode` settings
+
+[id="lsp-print-io"]
+- `lsp-print-io`
+____
+Default value: `pass:[nil]`
+
+If non-nil, print all messages to and from the language server to *lsp-log*.
+____
+[id="lsp-print-performance"]
+- `lsp-print-performance`
+____
+Default value: `pass:[nil]`
+
+If non-nil, print performance info in the logs.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-use-native-json"]
+- `lsp-use-native-json`
+____
+Default value: `pass:[t]`
+
+If non-nil, use native json parsing if available.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-json-use-lists"]
+- `lsp-json-use-lists`
+____
+Default value: `pass:[nil]`
+
+If non-nil, use lists instead of vectors when doing json deserialization.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-log-max"]
+- `lsp-log-max`
+____
+Default value: `pass:[1000]`
+
+Maximum number of lines to keep in the log buffer.
+If nil, disable message logging.  If t, log messages but don’t truncate
+the buffer when it becomes large.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-io-messages-max"]
+- `lsp-io-messages-max`
+____
+Default value: `pass:[t]`
+
+Maximum number of messages that can be locked in a ‘lsp-io’ buffer.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-report-if-no-buffer"]
+- `lsp-report-if-no-buffer`
+____
+Default value: `pass:[t]`
+
+If non nil the errors will be reported even when the file is not open.
+____
+[id="lsp-keep-workspace-alive"]
+- `lsp-keep-workspace-alive`
+____
+Default value: `pass:[t]`
+
+If non nil keep workspace alive when the last workspace buffer is closed.
+____
+[id="lsp-enable-snippet"]
+- `lsp-enable-snippet`
+____
+Default value: `pass:[nil]`
+
+Enable/disable snippet completion support.
+____
+[id="lsp-enable-folding"]
+- `lsp-enable-folding`
+____
+Default value: `pass:[t]`
+
+Enable/disable code folding support.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-folding-range-limit"]
+- `lsp-folding-range-limit`
+____
+Default value: `pass:[nil]`
+
+The maximum number of folding ranges to receive from the language server.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-folding-line-folding-only"]
+- `lsp-folding-line-folding-only`
+____
+Default value: `pass:[nil]`
+
+If non-nil, only fold complete lines.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-auto-require-clients"]
+- `lsp-auto-require-clients`
+____
+Default value: `pass:[t]`
+
+Auto require lsp-clients.
+____
+[id="lsp-auto-guess-root"]
+- `lsp-auto-guess-root`
+____
+Default value: `pass:[nil]`
+
+Automatically guess the project root using projectile/project.
+____
+[id="lsp-restart"]
+- `lsp-restart`
+____
+Default value: `pass:[interactive]`
+
+Defines how server exited event must be handled.
+____
+[id="lsp-session-file"]
+- `lsp-session-file`
+____
+Default value: `pass:["/home/vibhavp/.emacs.d/.lsp-session-v1"]`
+
+Automatically guess the project root using projectile/project.
+____
+[id="lsp-auto-configure"]
+- `lsp-auto-configure`
+____
+Default value: `pass:[t]`
+
+Auto configure ‘lsp-mode’.
+When set to t ‘lsp-mode’ will auto-configure ‘lsp-ui’ and ‘company-lsp’.
+____
+[id="lsp-before-initialize-hook"]
+- `lsp-before-initialize-hook`
+____
+Default value: `pass:[nil]`
+
+List of functions to be called before a Language Server has been initialized for a new workspace.
+____
+[id="lsp-after-initialize-hook"]
+- `lsp-after-initialize-hook`
+____
+Default value: `pass:[nil]`
+
+List of functions to be called after a Language Server has been initialized for a new workspace.
+____
+[id="lsp-before-open-hook"]
+- `lsp-before-open-hook`
+____
+Default value: `pass:[nil]`
+
+List of functions to be called before a new file with LSP support is opened.
+____
+[id="lsp-after-open-hook"]
+- `lsp-after-open-hook`
+____
+Default value: `pass:[nil]`
+
+List of functions to be called after a new file with LSP support is opened.
+____
+[id="lsp-enable-file-watchers"]
+- `lsp-enable-file-watchers`
+____
+Default value: `pass:[t]`
+
+If non-nil lsp-mode will watch the files in the workspace if
+the server has requested that.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-file-watch-ignored"]
+- `lsp-file-watch-ignored`
+____
+Default value: `pass:[("[/\\\\]\\.git$" "[/\\\\]\\.hg$" "[/\\\\]\\.bzr$" "[/\\\\]_darcs$" "[/\\\\]\\.svn$" "[/\\\\]_FOSSIL_$" "[/\\\\]\\.idea$" "[/\\\\]\\.ensime_cache$" "[/\\\\]\\.eunit$" "[/\\\\]node_modules$" "[/\\\\]\\.fslckout$" "[/\\\\]\\.tox$" "[/\\\\]\\.stack-work$" "[/\\\\]\\.bloop$" "[/\\\\]\\.metals$" "[/\\\\]target$" "[/\\\\]\\.deps$" "[/\\\\]build-aux$" "[/\\\\]autom4te.cache$" "[/\\\\]\\.reference$")
+]`
+
+List of regexps matching directory paths which won’t be monitored when creating file watches.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-after-uninitialized-hook"]
+- `lsp-after-uninitialized-hook`
+____
+Default value: `pass:[(doom-modeline-update-lsp)
+]`
+
+List of functions to be called after a Language Server has been uninitialized.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-debounce-full-sync-notifications"]
+- `lsp-debounce-full-sync-notifications`
+____
+Default value: `pass:[t]`
+
+If non-nil debounce full sync events.
+This flag affects only server which do not support incremental update.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-debounce-full-sync-notifications-interval"]
+- `lsp-debounce-full-sync-notifications-interval`
+____
+Default value: `pass:[1.0]`
+
+Time to wait before sending full sync synchronization after buffer modication.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-document-sync-method"]
+- `lsp-document-sync-method`
+____
+Default value: `pass:[nil]`
+
+How to sync the document with the language server.
+____
+[id="lsp-auto-execute-action"]
+- `lsp-auto-execute-action`
+____
+Default value: `pass:[t]`
+
+Auto-execute single action.
+____
+[id="lsp-enable-links"]
+- `lsp-enable-links`
+____
+Default value: `pass:[t]`
+
+If non-nil, all references to links in a file will be made clickable, if supported by the language server.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-links-check-internal"]
+- `lsp-links-check-internal`
+____
+Default value: `pass:[0.1]`
+
+The interval for updating document links.
+____
+[id="lsp-eldoc-enable-hover"]
+- `lsp-eldoc-enable-hover`
+____
+Default value: `pass:[t]`
+
+If non-nil, eldoc will display hover info when it is present.
+____
+[id="lsp-eldoc-enable-signature-help"]
+- `lsp-eldoc-enable-signature-help`
+____
+Default value: `pass:[t]`
+
+If non-nil, eldoc will display signature help when it is present.
+____
+[id="lsp-eldoc-prefer-signature-help"]
+- `lsp-eldoc-prefer-signature-help`
+____
+Default value: `pass:[t]`
+
+If non-nil, eldoc will display signature help when both hover and signature help are present.
+____
+[id="lsp-eldoc-render-all"]
+- `lsp-eldoc-render-all`
+____
+Default value: `pass:[nil]`
+
+Define whether all of the returned by document/onHover will be displayed.
+If ‘lsp-eldoc-render-all’ is set to nil ‘eldoc’ will show only
+the symbol information.
+____
+[id="lsp-signature-render-all"]
+- `lsp-signature-render-all`
+____
+Default value: `pass:[t]`
+
+Define whether all of the returned by textDocument/signatureHelp will be displayed.
+If ‘lsp-signature-render-all’ is set to nil ‘eldoc’ will show only
+the active signature.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-enable-completion-at-point"]
+- `lsp-enable-completion-at-point`
+____
+Default value: `pass:[t]`
+
+Enable ‘completion-at-point’ integration.
+____
+[id="lsp-enable-symbol-highlighting"]
+- `lsp-enable-symbol-highlighting`
+____
+Default value: `pass:[t]`
+
+Highlight references of the symbol at point.
+____
+[id="lsp-enable-xref"]
+- `lsp-enable-xref`
+____
+Default value: `pass:[t]`
+
+Enable xref integration.
+____
+[id="lsp-enable-indentation"]
+- `lsp-enable-indentation`
+____
+Default value: `pass:[t]`
+
+Indent regions using the file formatting functionality provided by the language server.
+____
+[id="lsp-enable-on-type-formatting"]
+- `lsp-enable-on-type-formatting`
+____
+Default value: `pass:[t]`
+
+Enable ‘textDocument/onTypeFormatting’ integration.
+____
+[id="lsp-before-save-edits"]
+- `lsp-before-save-edits`
+____
+Default value: `pass:[t]`
+
+If non-nil, ‘lsp-mode’ will apply edits suggested by the language server before saving a document.
+____
+[id="lsp-after-diagnostics-hook"]
+- `lsp-after-diagnostics-hook`
+____
+Default value: `pass:[nil]`
+
+Hooks to run after diagnostics are received.
+____
+[id="lsp-workspace-folders-changed-hook"]
+- `lsp-workspace-folders-changed-hook`
+____
+Default value: `pass:[nil]`
+
+Hooks to run after the folders has changed.
+The hook will receive two parameters list of added and removed folders.
+____
+[id="lsp-on-hover-hook"]
+- `lsp-on-hover-hook`
+____
+Default value: `pass:[nil]`
+
+The hooks that run after on hover and signature information has been loaded.
+The hook is called with two params: the signature information and hover data.
+____
+[id="lsp-eldoc-hook"]
+- `lsp-eldoc-hook`
+____
+Default value: `pass:[(lsp-hover)
+]`
+
+Hooks to run for eldoc.
+____
+[id="lsp-response-timeout"]
+- `lsp-response-timeout`
+____
+Default value: `pass:[10]`
+
+Number of seconds to wait for a response from the language server before timing out.
+____
+[id="lsp-prefer-flymake"]
+- `lsp-prefer-flymake`
+____
+Default value: `pass:[t]`
+
+Auto-configure to prefer ‘flymake’ over ‘lsp-ui’ if both are present.
+If set to ‘:none’ neither of two will be enabled.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-lens-check-interval"]
+- `lsp-lens-check-interval`
+____
+Default value: `pass:[0.1]`
+
+The interval for checking for changes in the buffer state.
+____
+[id="lsp-lens-debounce-interval"]
+- `lsp-lens-debounce-interval`
+____
+Default value: `pass:[0.7]`
+
+Debounce interval for loading lenses.
+____
+[id="lsp-symbol-highlighting-skip-current"]
+- `lsp-symbol-highlighting-skip-current`
+____
+Default value: `pass:[nil]`
+
+If non-nil skip current symbol when setting symbol highlights.
+____
+[id="lsp-document-highlight-delay"]
+- `lsp-document-highlight-delay`
+____
+Default value: `pass:[0.2]`
+
+Seconds of idle time to wait before showing symbol highlight.
+____

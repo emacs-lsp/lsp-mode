@@ -1,0 +1,6 @@
+[id="lsp-rust"]
+=== Rust support: `lsp-rust`
+`lsp-rust` provides support for Rust using the
+https://github.com/rust-lang/rls[Rust Language Server].
+
+include::lsp-rust-vars.adoc[]
