@@ -109,9 +109,12 @@ change."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-rust-features nil
+(defcustom lsp-rust-features []
   "A list of Cargo features to enable."
-  :type '(repeat string)
+  :type '(restricted-sexp :match-alternatives (lambda (xs)
+                                                (and
+                                                  (vectorp xs)
+                                                  (seq-every-p #'stringp xs))))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
