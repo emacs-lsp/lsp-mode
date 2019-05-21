@@ -135,7 +135,7 @@ ____
 [id="lsp-session-file"]
 - `lsp-session-file`
 ____
-Default value: `pass:["/home/vibhavp/.emacs.d/.lsp-session-v1"]`
+Default value: `pass:["~/.emacs.d/.lsp-session-v1"]`
 
 Automatically guess the project root using projectile/project.
 ____
