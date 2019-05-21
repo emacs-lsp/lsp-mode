@@ -2450,10 +2450,15 @@ in that particular folder."
 
   (run-hook-with-args 'lsp-workspace-folders-changed-hook nil (list project-root)))
 
-(defun lsp-workspace-folders-switch()
-  "Switch to another workspace folder from the current session."
-  (interactive)
-  (find-file (completing-read "Switch to folder: " (lsp-session-folders (lsp-session)) nil t)))
+(define-obsolete-function-alias 'lsp-workspace-folders-switch
+  'lsp-workspace-folders-open "lsp-mode 6.1")
+
+(defun lsp-workspace-folders-open (project-root)
+  "Open the directory located at PROJECT-ROOT"
+  (interactive (list (completing-read "Open folder: "
+                                      (lsp-session-folders (lsp-session))
+                                      nil t)))
+  (find-file project-root))
 
 (define-minor-mode lsp--managed-mode
   "Mode for source buffers managed by lsp-mode."
