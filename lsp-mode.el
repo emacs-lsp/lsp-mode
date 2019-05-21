@@ -2406,10 +2406,11 @@ in that particular folder."
   (interactive
    (list (read-directory-name "Select folder to add: "
                               (or (lsp--suggest-project-root) default-directory) nil t)))
-  (push project-root (lsp-session-folders (lsp-session))))
+  (push project-root (lsp-session-folders (lsp-session)))
+  (lsp--persist-session (lsp-session)))
 
 (defun lsp-workspace-folders-remove (project-root)
-  "Remove PROJECT-ROOT to the list of workspace folders."
+  "Remove PROJECT-ROOT from the list of workspace folders."
   (interactive (list (completing-read "Select folder to remove: "
                                       (lsp-session-folders (lsp-session)) nil t
                                       (lsp-find-session-folder (lsp-session) default-directory))))
