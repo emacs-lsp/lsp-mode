@@ -32,21 +32,27 @@
   :link '(url-link "https://github.com/rust-lang/rls")
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-rust-sysroot ""
-  "If not empty, use the given path as the sysroot for all rustc invocations instead of trying to detect the sysroot automatically."
-  :type 'string
+(defcustom lsp-rust-sysroot nil
+  "If non-nil, use the given path as the sysroot for all rustc invocations instead of trying to detect the sysroot automatically."
+  :type '(choice
+           (const :tag "None" nil)
+           (string :tag "Sysroot"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-rust-target ""
-  "If not empty, use the given target triple for all rustc invocations."
-  :type 'string
+(defcustom lsp-rust-target nil
+  "If non-nil, use the given target triple for all rustc invocations."
+  :type '(choice
+           (const :tag "None" nil)
+           (string :tag "Target"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-rustflags nil
   "Flags added to RUSTFLAGS."
-  :type '(repeat string)
+  :type '(choice
+           (const :tag "None" nil)
+           (string :tag "Flags"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
@@ -65,9 +71,11 @@ or cargo."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-build-bin nil
-  "If non empty, checks the project as if you passed `-- bin <build_bin>' argument to cargo.
+  "If non-nil, checks the project as if you passed `-- bin <build_bin>' argument to cargo.
  Mutually exclusive with `lsp-rust-build-lib'. (Unstable)"
-  :type 'string
+  :type '(choice
+           (const :tag "None" nil)
+           (string :tag "Binary"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
@@ -83,10 +91,13 @@ or cargo."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-rust-wait-to-build 1500
+(defcustom lsp-rust-wait-to-build nil
   "Time in milliseconds between receiving a change notification
-and starting build."
-  :type 'number
+and starting build. If not specified, automatically inferred by
+the latest build duration."
+  :type '(choice
+           (const :tag "Auto" nil)
+           (number :tag "Time"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
@@ -152,7 +163,9 @@ change."
 
 (defcustom lsp-rust-jobs nil
   "Number of Cargo jobs to be run in parallel."
-  :type '(repeat number)
+  :type '(choice
+           (const :tag "Auto" nil)
+           (number :tag "Jobs"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
@@ -168,14 +181,18 @@ too)."
   "When specified, it places the generated analysis files at the
 specified target directory. By default it is placed target/rls
 directory."
-  :type '(repeat string)
+  :type '(choice
+           (const :tag "Default" nil)
+           (string :tag "Directory"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-rustfmt-path nil
   "When specified, RLS will use the Rustfmt pointed at the path
 instead of the bundled one"
-  :type '(repeat string)
+  :type '(choice
+           (const :tag "Bundled" nil)
+           (string :tag "Path"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
@@ -185,14 +202,16 @@ a given program responsible for rebuilding save-analysis to be
 loaded by the RLS. The program given should output a list of
 resulting .json files on stdout. \nImplies `rust.build_on_save`:
 true."
-  :type '(repeat string)
+  :type '(choice
+           (const :tag "None" nil)
+           (string :tag "Command"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-full-docs nil
   "Instructs cargo to enable full documentation extraction during
 save-analysis while building the crate."
-  :type '(repeat boolean)
+  :type 'boolean
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
@@ -205,7 +224,7 @@ is often the type local variable declaration."
 
 (lsp-register-custom-settings
  '(("rust.show_hover_context" lsp-rust-show-hover-context t)
-   ("rust.full_docs" lsp-rust-full-docs)
+   ("rust.full_docs" lsp-rust-full-docs t)
    ("rust.build_command" lsp-rust-build-command)
    ("rust.rustfmt_path" lsp-rust-rustfmt-path)
    ("rust.target_dir" lsp-rust-target-dir)
@@ -223,7 +242,7 @@ is often the type local variable declaration."
    ("rust.unstable_features" lsp-rust-unstable-features t)
    ("rust.cfg_test" lsp-rust-cfg-test t)
    ("rust.build_bin" lsp-rust-build-bin)
-   ("rust.build_lib" lsp-rust-build-lib)
+   ("rust.build_lib" lsp-rust-build-lib t)
    ("rust.clear_env_rust_log" lsp-rust-clear-env-rust-log t)
    ("rust.rustflags" lsp-rust-rustflags)
    ("rust.target" lsp-rust-target)
