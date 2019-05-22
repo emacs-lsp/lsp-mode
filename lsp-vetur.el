@@ -785,6 +785,10 @@ Code's JavaScript and TypeScript support."
                   :multi-root t
                   :ignore-messages '("readFile .*? requested by Vue but content not available")
                   :server-id 'vls
+                  :initialization-options (lambda () (ht-merge (lsp-configuration-section "vetur")
+                                                               (lsp-configuration-section "html")
+                                                               (lsp-configuration-section "javascript")
+                                                               (lsp-configuration-section "typescript")))
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
