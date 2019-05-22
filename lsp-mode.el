@@ -109,8 +109,10 @@
    "Operator"
    "TypeParameter"])
 
-(defcustom lsp-print-io nil
-  "If non-nil, print all messages to and from the language server to *lsp-log*."
+(define-obsolete-variable-alias 'lsp-print-io 'lsp-log-io "lsp-mode 6.1")
+
+(defcustom lsp-log-io nil
+  "If non-nil, log all messages to and from the language server to a *lsp-log* buffer."
   :group 'lsp-mode
   :type 'boolean)
 
