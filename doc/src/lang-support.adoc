@@ -52,6 +52,12 @@
 |https://github.com/JakeBecker/elixir-ls[elixir-ls]
 |Yes
 
+|Elm
+|https://github.com/elm-tooling/elm-language-server[elmLS]
+|<<lsp-elm,Built-in>>
+| Clone the https://github.com/elm-tooling/elm-language-server[repository], run `npm install` in the root, then run https://www.typescriptlang.org/[tsc] in the server directory. Set <<lsp-elm-server-install-dir>> to wherever you cloned the repo.
+|
+
 |Fortran
 |https://github.com/hansec/fortran-language-server[fortran-language-server]
 |<<lsp-fortran,Built-in>>
