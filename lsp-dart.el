@@ -70,7 +70,7 @@
 
 (defun lsp-dart--analysis-server-command ()
   "Generate LSP startup command."
-  `("dart"
+  `(,(expand-file-name (f-join lsp-dart-sdk-dir "bin/dart"))
     ,(expand-file-name (f-join lsp-dart-sdk-dir "bin/snapshots/analysis_server.dart.snapshot"))
     "--lsp"))
 
