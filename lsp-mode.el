@@ -5134,12 +5134,20 @@ such."
                 (workspaces (lsp--completing-read "Select server: "
                                                   workspaces
                                                   'lsp--workspace-print nil t)))
-    (lsp--warn "Stopping %s" (lsp--workspace-print it))
-    (setf (lsp--workspace-shutdown-action it) 'shutdown)
-    (with-lsp-workspace it (lsp--shutdown-workspace))))
+    (lsp-workspace-shutdown it)))
+
+(make-obsolete 'lsp-shutdown-workspace 'lsp-workspace-shutdown "lsp-mode 6.1")
+
+(defun lsp-workspace-shutdown (workspace)
+  "Shut the workspace WORKSPACE and the language server associated with it"
+  (interactive (lsp--completing-read "Select server: "
+                                     (lsp-workspaces)
+                                     'lsp--workspace-print nil t))
+  (lsp--warn "Stopping %s" (lsp--workspace-print workspace))
+  (setf (lsp--workspace-shutdown-action workspace) 'shutdown)
+  (with-lsp-workspace workspace (lsp--shutdown-workspace)))
 
 (defun lsp-restart-workspace ()
-  "Restart language server."
   (interactive)
   (--when-let (pcase (lsp-workspaces)
                 (`nil (user-error "There are no active servers in the current buffer"))
@@ -5147,9 +5155,18 @@ such."
                 (workspaces (lsp--completing-read "Select server: "
                                                   workspaces
                                                   'lsp--workspace-print nil t)))
-    (lsp--warn "Restarting %s" (lsp--workspace-print it))
-    (setf (lsp--workspace-shutdown-action it) 'restart)
-    (with-lsp-workspace it (lsp--shutdown-workspace))))
+    (lsp-workspace-restart it)))
+
+(make-obsolete 'lsp-restart-workspace 'lsp-workspace-restart "lsp-mode 6.1")
+
+(defun lsp-workspace-restart (workspace)
+  "Restart the workspace WORKSPACE and the language server associated with it"
+  (interactive (lsp--completing-read "Select workspace: "
+                                     (lsp-workspaces)
+                                     'lsp--workspace-print nil t))
+  (lsp--warn "Restarting %s" (lsp--workspace-print workspace))
+  (setf (lsp--workspace-shutdown-action workspace) 'restart)
+  (with-lsp-workspace workspace (lsp--shutdown-workspace)))
 
 ;;;###autoload
 (defun lsp (&optional arg)
