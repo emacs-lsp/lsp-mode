@@ -2377,6 +2377,12 @@ in that particular folder."
     (and (hash-table-p sync)
          (gethash "willSaveWaitUntil" sync))))
 
+(defun lsp--send-did-save-p ()
+  "Return whether did save notifications should be sent to the server."
+  (let ((sync (gethash "textDocumentSync" (lsp--server-capabilities))))
+    (and (hash-table-p sync)
+         (hash-table-p (gethash "save" sync nil)))))
+
 (defun lsp--save-include-text-p ()
   "Return whether save notifications should include the text document's contents."
   (let ((sync (gethash "textDocumentSync" (lsp--server-capabilities))))
@@ -3053,14 +3059,15 @@ if it's closing the last buffer in the workspace."
 
 (defun lsp--text-document-did-save ()
   "Executed when the file is closed, added to `after-save-hook''."
-  (with-demoted-errors "Error on ‘lsp--text-document-did-save: %S’"
-    (lsp-notify "textDocument/didSave"
-                `(:textDocument ,(lsp--versioned-text-document-identifier)
-                                :text ,(if (lsp--save-include-text-p)
-                                           (save-excursion
-                                             (widen)
-                                             (buffer-substring-no-properties (point-min) (point-max)))
-                                         nil)))))
+  (when (lsp--send-did-save-p)
+    (with-demoted-errors "Error on ‘lsp--text-document-did-save: %S’"
+      (lsp-notify "textDocument/didSave"
+                  `(:textDocument ,(lsp--versioned-text-document-identifier)
+                                  :text ,(if (lsp--save-include-text-p)
+                                             (save-excursion
+                                               (widen)
+                                               (buffer-substring-no-properties (point-min) (point-max)))
+                                           nil))))))
 
 (define-inline lsp--text-document-position-params (&optional identifier position)
   "Make TextDocumentPositionParams for the current point in the current document.
