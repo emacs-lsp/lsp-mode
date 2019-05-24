@@ -1274,14 +1274,15 @@ WORKSPACE is the workspace that contains the diagnostics."
                                     (-let* (((&hash "line" "character") (gethash "start" range))
                                             (region (flymake-diag-region (current-buffer) (1+ line) character)))
                                       (setq start (car region) end (cdr region))))
-                                  (flymake-make-diagnostic (current-buffer)
-                                                           start
-                                                           end
-                                                           (cl-case severity
-                                                             (1 :error)
-                                                             (2 :warning)
-                                                             (t :note))
-                                                           message))))
+				  (when (and start end)
+                                    (flymake-make-diagnostic (current-buffer)
+                                                             start
+                                                             end
+                                                             (cl-case severity
+                                                               (1 :error)
+                                                               (2 :warning)
+                                                               (t :note))
+                                                             message)))))
                ;; This :region keyword forces flymake to delete old diagnostics in
                ;; case the buffer hasn't changed since the last call to the report
                ;; function. See https://github.com/joaotavora/eglot/issues/159
