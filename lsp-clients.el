@@ -41,6 +41,7 @@
 (require 'lsp-metals)
 (require 'lsp-fsharp)
 (require 'lsp-erlang)
+(require 'lsp-haxe)
 
 ;;; Bash
 (lsp-register-client
