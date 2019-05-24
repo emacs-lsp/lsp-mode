@@ -56,6 +56,11 @@
   (interactive)
   (lsp-clojure--refactoring-call "add-missing-libspec"))
 
+(defun lsp-clojure-clean-ns ()
+  "Apply clean-ns refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "clean-ns"))
+
 (defun lsp-clojure-cycle-coll ()
   "Apply cycle-coll refactoring at point."
   (interactive)
