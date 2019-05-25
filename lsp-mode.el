@@ -567,6 +567,7 @@ Changes take effect only when a new session is started."
                                         (".*\.ts$" . "typescript")
                                         (".*\.jsx$" . "javascriptreact")
                                         (".*\.xml$" . "xml")
+                                        (".*\.hx$" . "haxe")
                                         (sh-mode . "shellscript")
                                         (scala-mode . "scala")
                                         (julia-mode . "julia")
@@ -628,7 +629,9 @@ Changes take effect only when a new session is started."
     ("textDocument/documentHighlight" :capability "documentHighlightProvider")
     ("textDocument/definition" :capability "definitionProvider")
     ("workspace/symbol" :capability "workspaceSymbolProvider")
-    ("textDocument/codeLens" :capability "codeLensProvider")
+    ("textDocument/codeLens"
+     :capability "codeLensProvider"
+     :registered-capability "textDocument/codeLens")
     ("textDocument/selectionRange" :capability "selectionRangeProvider")
     ("textDocument/prepareRename"
      :check-command (lambda (workspace)
@@ -3466,7 +3469,8 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
             ;; *we* don't need to know the string being completed
             ;; the language server does all the work by itself
             (let* ((resp (lsp-request "textDocument/completion"
-                                      (lsp--text-document-position-params)))
+                                      (plist-put (lsp--text-document-position-params)
+                                                 :context (ht ("triggerKind" 1)))))
                    (items (cond
                            ((seqp resp) resp)
                            ((hash-table-p resp) (gethash "items" resp nil)))))

@@ -42,7 +42,7 @@
   :type 'file)
 
 ;; The server.js is being passed to node as an argument
-(defcustom lsp-clients--haxe-server-path '""
+(defcustom lsp-clients--haxe-server-path (expand-file-name "~/.haxe-language-server/bin/server.js")
   "The path to the server.js file."
   :group 'lsp-haxe
   :risky t
@@ -66,18 +66,85 @@
   "Handle processStart notification.  Just logs PARAMS."
   (lsp-log (gethash "title" params)))
 
+(defcustom lsp-haxe-executable "haxe" nil )
+(defcustom lsp-haxe-configurations nil nil :type
+  '(repeat string))
+(defcustom lsp-haxe-display-configurations nil nil :type
+  '(repeat string))
+(defcustom lsp-haxe-display-server nil nil :type 'nil)
+(defcustom lsp-haxe-display-port "auto" nil :type 'nil)
+(defcustom lsp-haxe-enable-compilation-server t nil :type 'boolean)
+(defcustom lsp-haxe-task-presentation
+  '((echo . t)
+    (reveal . "always")
+    (focus . :json-false)
+    (panel . "shared")
+    (showReuseMessage . t)
+    (clear . :json-false))
+  nil :type 'nil)
+(defcustom lsp-haxe-enable-code-lens t nil :type 'boolean)
+(defcustom lsp-haxe-enable-diagnostics t nil :type 'boolean)
+(defcustom lsp-haxe-enable-server-view nil nil :type 'boolean)
+(defcustom lsp-haxe-enable-methods-view nil nil :type 'boolean)
+(defcustom lsp-haxe-enable-signature-help-documentation t nil :type 'boolean)
+(defcustom lsp-haxe-diagnostics-path-filter "${workspaceRoot}" nil :type 'string)
+(defcustom lsp-haxe-build-completion-cache t nil :type 'boolean)
+(defcustom lsp-haxe-enable-completion-cache-warning t nil :type 'boolean)
+(defcustom lsp-haxe-code-generation nil nil :type 'nil)
+(defcustom lsp-haxe-exclude
+  ["zpp_nape"]
+  nil :type
+  '(repeat string))
+
+(defcustom lsp-haxe-postfix-completion nil nil :type 'nil)
+(lsp-register-custom-settings
+ '(("haxe.postfixCompletion" lsp-haxe-postfix-completion)
+   ("haxe.exclude" lsp-haxe-exclude)
+   ("haxe.codeGeneration" lsp-haxe-code-generation)
+   ("haxe.enableCompletionCacheWarning" lsp-haxe-enable-completion-cache-warning t)
+   ("haxe.buildCompletionCache" lsp-haxe-build-completion-cache t)
+   ("haxe.diagnosticsPathFilter" lsp-haxe-diagnostics-path-filter)
+   ("haxe.enableSignatureHelpDocumentation" lsp-haxe-enable-signature-help-documentation t)
+   ("haxe.enableMethodsView" lsp-haxe-enable-methods-view t)
+   ("haxe.enableServerView" lsp-haxe-enable-server-view t)
+   ("haxe.enableDiagnostics" lsp-haxe-enable-diagnostics t)
+   ("haxe.enableCodeLens" lsp-haxe-enable-code-lens t)
+   ("haxe.taskPresentation" lsp-haxe-task-presentation)
+   ("haxe.enableCompilationServer" lsp-haxe-enable-compilation-server t)
+   ("haxe.displayPort" lsp-haxe-display-port)
+   ("haxe.displayServer" lsp-haxe-display-server)
+   ("haxe.displayConfigurations" lsp-haxe-display-configurations)
+   ("haxe.configurations" lsp-haxe-configurations)
+   ("haxe.executable" lsp-haxe-executable)))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
-                                   'lsp-clients--haxe-command)
+                                   #'lsp-clients--haxe-command)
                   :major-modes '(haxe-mode)
-                  ; force didChangeConfiguration message
+                                        ; force didChangeConfiguration message
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
-                                      (lsp--set-configuration lsp-clients--haxe-settings)))
+                                      (lsp--set-configuration
+                                       (lsp-configuration-section "haxe"))))
                   :priority -1
                   :server-id 'haxe
+                  :initialized-fn (lambda (workspace)
+                                    '(("sendMethodResults" . t)
+                                     ("haxelibConfig"
+                                      ("executable" . "haxelib"))
+                                     ("displayServerConfig"
+                                      ("print"
+                                       ("reusing" . :json-false)
+                                       ("completion" . :json-false))
+                                      ("arguments" .
+                                       [])
+                                      ("env")
+                                      ("path" . "haxe"))
+                                     ("displayArguments" . ["build.hxml"])))
                   :notification-handlers (lsp-ht ("haxe/progressStart" 'lsp-clients--haxe-processStart)
-                                                 ("haxe/progressStop" 'ignore))))
+                                                 ("haxe/progressStop" 'ignore)
+                                                 ("haxe/didDetectOldPreview" 'ignore)
+                                                 ("haxe/didChangeDisplayPort" 'ignore))))
 
 (provide 'lsp-haxe)
 ;;; lsp-haxe.el ends here
