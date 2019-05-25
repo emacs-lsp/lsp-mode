@@ -1271,18 +1271,27 @@ WORKSPACE is the workspace that contains the diagnostics."
                          (--map (-let* (((&hash "message" "severity" "range") (lsp-diagnostic-original it))
                                         ((start . end) (lsp--range-to-region range)))
                                   (when (= start end)
-                                    (-let* (((&hash "line" "character") (gethash "start" range))
-                                            (region (flymake-diag-region (current-buffer) (1+ line) character)))
-                                      (setq start (car region) end (cdr region))))
-				  (when (and start end)
-                                    (flymake-make-diagnostic (current-buffer)
-                                                             start
-                                                             end
-                                                             (cl-case severity
-                                                               (1 :error)
-                                                               (2 :warning)
-                                                               (t :note))
-                                                             message)))))
+				    (-let (((&hash "line" start-line "character") (gethash "start" range)))
+                                      (-if-let ((region (flymake-diag-region (current-buffer)
+									     (1+ start-line)
+									     character)))
+					  (setq start (car region)
+						end (cdr region))
+					(save-excursion
+					  (save-restriction
+					    (widen)
+					    (goto-char (point-min))
+					    (-let (((&hash "line" end-line) (gethash "end" range)))
+					      (setq start (point-at-bol (1+ start-line))
+						    end (point-at-eol (1+ end-line)))))))))
+                                  (flymake-make-diagnostic (current-buffer)
+                                                           start
+                                                           end
+                                                           (cl-case severity
+                                                             (1 :error)
+                                                             (2 :warning)
+                                                             (t :note))
+                                                           message))))
                ;; This :region keyword forces flymake to delete old diagnostics in
                ;; case the buffer hasn't changed since the last call to the report
                ;; function. See https://github.com/joaotavora/eglot/issues/159
