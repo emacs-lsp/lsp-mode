@@ -1272,9 +1272,9 @@ WORKSPACE is the workspace that contains the diagnostics."
                                         ((start . end) (lsp--range-to-region range)))
                                   (when (= start end)
 				    (-let (((&hash "line" start-line "character") (gethash "start" range)))
-                                      (-if-let ((region (flymake-diag-region (current-buffer)
-									     (1+ start-line)
-									     character)))
+                                      (if-let ((region (flymake-diag-region (current-buffer)
+									    (1+ start-line)
+									    character)))
 					  (setq start (car region)
 						end (cdr region))
 					(save-excursion
