@@ -5149,9 +5149,9 @@ such."
 
 (defun lsp-workspace-shutdown (workspace)
   "Shut the workspace WORKSPACE and the language server associated with it"
-  (interactive (lsp--completing-read "Select server: "
-                                     (lsp-workspaces)
-                                     'lsp--workspace-print nil t))
+  (interactive (list (lsp--completing-read "Select server: "
+					   (lsp-workspaces)
+					   'lsp--workspace-print nil t)))
   (lsp--warn "Stopping %s" (lsp--workspace-print workspace))
   (setf (lsp--workspace-shutdown-action workspace) 'shutdown)
   (with-lsp-workspace workspace (lsp--shutdown-workspace)))
@@ -5170,9 +5170,9 @@ such."
 
 (defun lsp-workspace-restart (workspace)
   "Restart the workspace WORKSPACE and the language server associated with it"
-  (interactive (lsp--completing-read "Select workspace: "
-                                     (lsp-workspaces)
-                                     'lsp--workspace-print nil t))
+  (interactive (list (lsp--completing-read "Select workspace: "
+					   (lsp-workspaces)
+					   'lsp--workspace-print nil t)))
   (lsp--warn "Restarting %s" (lsp--workspace-print workspace))
   (setf (lsp--workspace-shutdown-action workspace) 'restart)
   (with-lsp-workspace workspace (lsp--shutdown-workspace)))
