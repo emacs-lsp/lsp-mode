@@ -1,0 +1,9 @@
+[id="lsp-dart-analysis-vars"]
+==== `lsp-dart-analysis` settings
+
+[id="lsp-dart-sdk-dir"]
+- `lsp-dart-sdk-dir`
+____
+Default value: `pass:["~/flutter/bin/cache/dart-sdk/"]`
+
+The dart-sdk dir to use.
