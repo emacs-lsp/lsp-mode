@@ -41,7 +41,7 @@
 (defun lsp-elm--elm-command ()
   "Generate LSP startup command for the Elm Language Server."
   `("node" ,(f-join (file-truename lsp-elm-server-install-dir)
-                    "server/out/index.js")
+                    "out/index.js")
     "--stdio"))
 
 (defun lsp-clients-elm--make-init-options ()
