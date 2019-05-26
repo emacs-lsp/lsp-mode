@@ -1116,6 +1116,10 @@ already have been created."
   (-> watch lsp-watch-descriptors hash-table-values (-each #'file-notify-rm-watch))
   (ht-clear! (lsp-watch-descriptors watch)))
 
+(defun lsp-json-bool (val)
+  "Convert VAL to JSON boolean."
+  (if val t :json-false))
+
 (defmacro with-lsp-workspace (workspace &rest body)
   "Helper macro for invoking BODY in WORKSPACE context."
   (declare (debug (form body))
