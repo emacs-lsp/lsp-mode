@@ -1228,7 +1228,7 @@ PARAMS contains the diagnostics data.
 WORKSPACE is the workspace that contains the diagnostics."
   (let* ((file (lsp--uri-to-path (gethash "uri" params)))
          (diagnostics (gethash "diagnostics" params))
-         (buffer (find-buffer-visiting file))
+         (buffer (get-file-buffer file))
          (workspace-diagnostics (lsp--workspace-diagnostics workspace)))
 
     (if (seq-empty-p diagnostics)
@@ -3207,7 +3207,7 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
     (cl-labels ((get-xrefs-in-file
                  (file-locs location-link)
                  (let* ((filename (seq-first file-locs))
-                        (visiting (find-buffer-visiting filename))
+                        (visiting (get-file-buffer filename))
                         (fn (lambda (loc)
                               (lsp--xref-make-item filename
                                                    (if location-link (or (gethash "targetSelectionRange" loc)
