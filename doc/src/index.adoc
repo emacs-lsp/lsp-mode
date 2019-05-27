@@ -14,6 +14,8 @@ include::configuration.adoc[]
 
 include::usage.adoc[]
 
+include::issues.adoc[]
+
 include::lang-support.adoc[]
 
 include::lsp-langs.adoc[]
