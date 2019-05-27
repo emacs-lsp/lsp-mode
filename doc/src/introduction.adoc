@@ -24,7 +24,7 @@ with non-standard, language-specific functionality as well (see:
 https://github.com/emacs-lsp/lsp-java[lsp-java],
 https://github.com/MaskRay/emacs-ccls[emacs-ccls]).
 
-Out of the box, it supports around 25+ programming languages, with
+Out of the box, it supports 25+ programming languages, with
 various other external packages that provide more specific language
 features. Adding support for a new language server can be accomplished
 in a few lines of code, with more fine tuning and configuration options
