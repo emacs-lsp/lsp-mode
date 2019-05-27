@@ -5,7 +5,7 @@
 
 https://github.com/emacs-lsp/lsp-mode[lsp-mode] is a client/library
 package that allows Emacs to communicate with
-language server
+language servers
 footnote:[A stand-alone, editor-agnostic program that provides IDE-like
 functionality (completion, references, error checking, etc) over a
 defined protocol. https://github.com/Sarcasm/irony-mode[irony-mode] and
