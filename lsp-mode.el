@@ -2470,6 +2470,16 @@ in that particular folder."
 
   (run-hook-with-args 'lsp-workspace-folders-changed-hook nil (list project-root)))
 
+(defun lsp-workspace-blacklist-remove (project-root)
+  "Remove PROJECT-ROOT from the workspace blacklist."
+  (interactive (list (completing-read "Select folder to remove:"
+                                      (lsp-session-folders-blacklist (lsp-session))
+                                      nil t)))
+  (setf (lsp-session-folders-blacklist (lsp-session))
+        (delete project-root
+                (lsp-session-folders-blacklist (lsp-session))))
+  (lsp--persist-session (lsp-session)))
+
 (define-obsolete-function-alias 'lsp-workspace-folders-switch
   'lsp-workspace-folders-open "lsp-mode 6.1")
 
