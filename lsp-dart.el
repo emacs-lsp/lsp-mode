@@ -60,18 +60,21 @@
 (defgroup lsp-dart-analysis nil
   "LSP support for Dart, using dart analysis server."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server"))
+  :link '(url-link "https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server")
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-dart-analysis-sdk-dir "~/flutter/bin/cache/dart-sdk/"
   "Install directory for dart-sdk."
   :group 'lsp-dart-analysis
   :risky t
-  :type 'directory)
+  :type 'directory
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-dart-analysis-server-command nil
   "The analysis_server executable to use"
   :type '(repeat string)
-  :group 'lsp-dart-analysis)
+  :group 'lsp-dart-analysis
+  :package-version '(lsp-mode . "6.1"))
 
 (defun lsp-dart--analysis-server-command ()
   "Generate LSP startup command."
