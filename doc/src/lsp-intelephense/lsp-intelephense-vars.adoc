@@ -93,7 +93,7 @@ ____
 [id="lsp-intelephense-storage-path"]
 - `lsp-intelephense-storage-path`
 ____
-Default value: `pass:["/home/vibhavp/.emacs.d/lsp-cache"]`
+Default value: `pass:["~/.emacs.d/lsp-cache"]`
 
 Optional absolute path to storage dir.
 

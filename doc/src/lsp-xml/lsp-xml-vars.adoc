@@ -203,7 +203,7 @@ ____
 [id="lsp-xml-jar-file"]
 - `lsp-xml-jar-file`
 ____
-Default value: `pass:["/home/vibhavp/.emacs.d/org.eclipse.lsp4xml-0.3.0-uber.jar"]`
+Default value: `pass:["~/.emacs.d/org.eclipse.lsp4xml-0.3.0-uber.jar"]`
 
 Xml server jar command.
 
@@ -213,7 +213,7 @@ ____
 [id="lsp-xml-server-command"]
 - `lsp-xml-server-command`
 ____
-Default value: `pass:[("java" "-jar" "/home/vibhavp/.emacs.d/org.eclipse.lsp4xml-0.3.0-uber.jar")
+Default value: `pass:[("java" "-jar" "~/.emacs.d/org.eclipse.lsp4xml-0.3.0-uber.jar")
 ]`
 
 Xml server command.
