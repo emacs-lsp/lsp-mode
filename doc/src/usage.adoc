@@ -19,9 +19,9 @@ The root directory is then known to `lsp-mode` as a *workspace*, and every
 file in the project is associated with it.
 
 [id="session-file"]
-The list of imported/whitelisted and blacklisted directories is stored in a 
-*Session File*, located at `~/.emacs.d/.lsp-session-v1` by default, and
-can be changed by modifying <<lsp-session-file, `lsp-session-file`>>.
+The list of imported/whitelisted and blacklisted directories is stored in a
+*Session File*, located at `~/.emacs.d/.lsp-session-v1` by default. Its
+location can be changed by modifying <<lsp-session-file, `lsp-session-file`>>.
 
 `lsp-mode` will try using https://github.com/bbatsov/projectile[Projectile]
 (if installed), or the in-built project library `project.el` to guess the
@@ -32,8 +32,7 @@ By default, `lsp-mode` will log everything to the the `*lsp-log*` buffer.
 This can be controlled using <<lsp-log-max>>, which is set to
 https://www.gnu.org/software/emacs/manual/html_node/elisp/Logging-Messages.html[message-log-max]
 by default. Additionally, `lsp-mode` can log all LSP requests, responses
-and notifications sent and received from a language server/ 
-
+and notifications sent and received from a language server.
 
 ==== Workspace Management Commands
 
