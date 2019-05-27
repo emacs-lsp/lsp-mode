@@ -32,6 +32,13 @@
   :link '(url-link "https://github.com/rust-lang/rls")
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-clients-rust-library-directories '("~/.cargo/registry/src" "~/.rustup/toolchains")
+  "List of directories which will be considered to be libraries."
+  :risky t
+  :type '(repeat string)
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "6.1"))
+
 (defcustom lsp-rust-sysroot nil
   "If non-nil, use the given path as the sysroot for all rustc invocations instead of trying to detect the sysroot automatically."
   :type '(choice
@@ -266,6 +273,7 @@ PARAMS progress report notification data."
                   :priority -1
                   :server-id 'rls
                   :notification-handlers (lsp-ht ("window/progress" 'lsp-clients--rust-window-progress))
+                  :library-folders-fn (lambda (_workspace) lsp-clients-rust-library-directories)
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
