@@ -12,14 +12,14 @@ for a specific project using https://www.gnu.org/software/emacs/manual/html_node
 
 === Frequent freezes/stuttering
 
-`lsp-mode` in Emacs versions < 27 use the
+`lsp-mode` in Emacs versions < 27 uses the
 https://github.com/emacs-mirror/emacs/blob/master/lisp/json.el[json.el] library
-bundled with Emacs to parse and encode JSON objects in order to communite
+bundled with Emacs to parse and encode JSON objects in order to communicate
 with a language server. When working with large objects, this can create a
-significant garbage collection overhead, which slows down Emacs significantly.
+significant garbage collection overhead which slows down Emacs significantly.
 This can be either fixed by setting `gc-cons-threshold` to a large enough value
 (like `30000000`, causing it to start a garbage collection cycle on every
-30 MBs of allocated memory), or using Emacs 27 compiled with native JSON support
+30 MB of allocated memory), or using Emacs 27 compiled with native JSON support
 (`--with-json`).
 
 If you're using company-lsp, setting
