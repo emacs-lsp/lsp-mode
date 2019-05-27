@@ -8,7 +8,7 @@ doc-html: output-dir
 	cp ./src/output/* ./output/
 
 doc-pdf: output-dir
-	asciidoctor-pdf  --safe -b html5 -B ./src/ -D output -o lsp-mode.pdf ./src/index.adoc
+	asciidoctor-pdf  --safe -B ./src/ -D output -o lsp-mode.pdf ./src/index.adoc
 	cp ./src/output/* ./output/
 
 clean:
