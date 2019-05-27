@@ -1984,25 +1984,25 @@ TYPE can either be 'incoming or 'outgoing"
               (json-encoding-pretty-print t)
               (str nil))
     (setq str
-          (concat (format "[Trace - %s]\n" timestamp)
+          (concat (format "[Trace - %s] " timestamp)
                   (pcase type
-                    ('incoming-req (format "Received request '%s - (%s).\n" method id))
-                    ('outgoing-req (format "Sending request '%s - (%s)'.\n" method id))
+                    ('incoming-req (format "Received request '%s - (%s)." method id))
+                    ('outgoing-req (format "Sending request '%s - (%s)'." method id))
 
-                    ('incoming-notif (format "Received notification '%s'.\n" method))
-                    ('outgoing-notif (format "Sending notification '%s'.\n" method))
+                    ('incoming-notif (format "Received notification '%s'." method))
+                    ('outgoing-notif (format "Sending notification '%s'." method))
 
-                    ('incoming-resp (format "Received response '%s - (%s)' in %dms.\n"
+                    ('incoming-resp (format "Received response '%s - (%s)' in %dms."
                                             method id process-time))
                     ('outgoing-resp
                      (format
-                      "Sending response '%s - (%s)'. Processing request took %dms\n"
+                      "Sending response '%s - (%s)'. Processing request took %dms"
                       method id process-time)))
                   "\n"
                   (if (memq type '(incoming-resp ougoing-resp))
-                      "Result: \n"
-                    "Params: \n")
-                  (json-encode body) "\n"
+                      "Result: "
+                    "Params: ")
+                  (json-encode body)
                   "\n\n\n"))
     (setq str (propertize str 'mouse-face 'highlight 'read-only t))
     (insert str)))
@@ -2020,7 +2020,7 @@ TYPE can either be 'incoming or 'outgoing"
       (lsp--workspace-ewoc workspace)
     (with-current-buffer (lsp--generate-log-buffer-name workspace)
       (unless (eq 'lsp-log-io-mode major-mode) (lsp-log-io-mode))
-      (setq-local lsp--log-io-ewoc (ewoc-create #'lsp--log-entry-pp nil nil))
+      (setq-local lsp--log-io-ewoc (ewoc-create #'lsp--log-entry-pp nil nil t))
       (setf (lsp--workspace-ewoc workspace) lsp--log-io-ewoc))
     (lsp--workspace-ewoc workspace)))
 
