@@ -146,7 +146,7 @@ Default value: `pass:[t]`
 
 Auto configure ‘lsp-mode’.
 When set to t ‘lsp-mode’ will auto-configure ‘lsp-ui’ and ‘company-lsp’.
-
+____
 [id="lsp-disabled-clients"]
 - `lsp-disabled-clients`
 ____
