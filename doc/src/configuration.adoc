@@ -45,4 +45,9 @@ A minimal `use-package` configuration for `lsp-mode` might look like this:
 `lsp` layer is available
 http://develop.spacemacs.org/layers/+tools/lsp/README.html[here].
 
+=== Doom Emacs
+
+`lsp-mode` is included in the `lsp` module. Documentation for it is available
+https://github.com/hlissner/doom-emacs/blob/develop/modules/tools/lsp/README.org[here].
+
 include::lsp-mode-vars.adoc[]
