@@ -59,6 +59,7 @@
     =lsp-signature-render-all=, which when non-nil forces =lsp-mode= to only show
     the current active signature.
   - Expose configuration settings for various language servers.
+  - Language servers can now be disabled with the variable =lsp-disabled-clients=.
 
 * Release 6.0
   - ~lsp-mode~ now have single entry point ~lsp~ for all language and based on the major mode starts the corresponding language servers.

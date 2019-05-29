@@ -146,6 +146,20 @@ Default value: `pass:[t]`
 
 Auto configure ‘lsp-mode’.
 When set to t ‘lsp-mode’ will auto-configure ‘lsp-ui’ and ‘company-lsp’.
+
+[id="lsp-disabled-clients"]
+- `lsp-disabled-clients`
+____
+Default value: `pass:[nil]`
+A list of disabled/blacklisted clients.
+Each entry in the list can be either:
+a symbol, the server-id for the LSP client, or
+a cons pair (MAJOR-MODE . CLIENTS), where MAJOR-MODE is the major-mode,
+and CLIENTS is either a client or a list of clients.
+
+This option can also be used as a file or directory local variable to
+disable a language server for individual files or directories/projects
+respectively.
 ____
 [id="lsp-before-initialize-hook"]
 - `lsp-before-initialize-hook`

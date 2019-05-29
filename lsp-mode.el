@@ -235,6 +235,21 @@ When set to t `lsp-mode' will auto-configure `lsp-ui' and `company-lsp'."
   :group 'lsp-mode
   :type 'boolean)
 
+(defcustom lsp-disabled-clients nil
+  "A list of disabled/blacklisted clients.
+Each entry in the list can be either:
+a symbol, the server-id for the LSP client, or
+a cons pair (MAJOR-MODE . CLIENTS), where MAJOR-MODE is the major-mode,
+and CLIENTS is either a client or a list of clients.
+
+This option can also be used as a file or directory local variable to
+disable a language server for individual files or directories/projects
+respectively."
+  :group 'lsp-mode
+  :type 'list
+  :safe 'listp
+  :package-version '(lsp-mode . "6.1"))
+
 (defvar lsp-clients (make-hash-table :test 'eql)
   "Hash table server-id -> client.
 It contains all of the clients that are currently registered.")
@@ -4734,6 +4749,18 @@ SESSION is the active session."
   "Get the session associated with the current buffer."
   (or lsp--session (setq lsp--session (lsp--load-default-session))))
 
+(defun lsp--client-disabled-p (buffer-major-mode client)
+  (seq-some
+   (lambda (entry)
+     (pcase entry
+       ((pred symbolp) (eq entry client))
+       (`(,mode . ,client-or-list)
+        (and (eq mode buffer-major-mode)
+             (if (listp client-or-list)
+                 (memq client client-or-list)
+               (eq client client-or-list))))))
+   lsp-disabled-clients))
+
 (defun lsp--find-clients (buffer-major-mode file-name)
   "Find clients which can handle BUFFER-MAJOR-MODE.
 SESSION is the currently active session. The function will also
@@ -4751,7 +4778,8 @@ remote machine and vice versa."
                                                       (or (null lsp-enabled-clients)
                                                           (or (member (lsp--client-server-id client) lsp-enabled-clients)
                                                               (ignore (lsp--info "Client %s is not in lsp-enabled-clients"
-                                                                                 (lsp--client-server-id client))))))))))
+                                                                                 (lsp--client-server-id client)))))
+                                                      (not (lsp--client-disabled-p buffer-major-mode (lsp--client-server-id client))))))))
       (lsp-log "Found the following clients for %s: %s"
                file-name
                (s-join ", "
