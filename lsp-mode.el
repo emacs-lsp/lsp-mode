@@ -3026,12 +3026,13 @@ Applies on type formatting."
 
 (defun lsp-buffer-language ()
   "Get language corresponding current buffer."
-  (->> lsp-language-id-configuration
-       (-first (-lambda ((mode-or-pattern . language))
-                 (cond
-                  ((and (stringp mode-or-pattern) (s-matches? mode-or-pattern buffer-file-name)) language)
-                  ((eq mode-or-pattern major-mode) language))))
-       cl-rest))
+  (or (->> lsp-language-id-configuration
+        (-first (-lambda ((mode-or-pattern . language))
+                  (cond
+                   ((and (stringp mode-or-pattern) (s-matches? mode-or-pattern buffer-file-name)) language)
+                   ((eq mode-or-pattern major-mode) language))))
+        cl-rest)
+      (lsp-warn "Unable to calculate the languageId for current buffer. Take a look at lsp-language-id-configuration.")))
 
 (defun lsp-workspace-root (&optional path)
   "Find the workspace root for the current file or PATH."
