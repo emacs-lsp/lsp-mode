@@ -3625,13 +3625,17 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
       (let ((current-buffer (current-buffer)))
         (with-temp-buffer
           (insert-buffer-substring-no-properties current-buffer)
-          (lsp--apply-text-edits edits)
+          (let ((lsp--server-sync-method 'full))
+            (save-excursion
+              (lsp--apply-text-edits edits)))
           (let ((temp-buffer (current-buffer)))
             (with-current-buffer current-buffer
               (replace-buffer-contents temp-buffer)))))
     (let ((point (point))
           (w-start (window-start)))
-      (lsp--apply-text-edits edits)
+      (let ((lsp--server-sync-method 'full))
+        (save-excursion
+          (lsp--apply-text-edits edits)))
       (goto-char point)
       (goto-char (line-beginning-position))
       (set-window-start (selected-window) w-start))))
