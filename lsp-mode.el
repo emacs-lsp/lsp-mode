@@ -4434,7 +4434,12 @@ Return a nested alist keyed by symbol names. e.g.
 (defun lsp-resolve-final-function (command)
   "Resolve final function COMMAND."
   (-let [command (if (functionp command) (funcall command) command)]
-    (if (consp command) command (list command))))
+    (cl-etypecase command
+      (list
+       (cl-assert (seq-every-p (apply-partially #'stringp) command) nil
+                  "Invalid command list")
+       command)
+      (string (list command)))))
 
 (defun lsp-server-present? (final-command)
   "Check whether FINAL-COMMAND is present."
