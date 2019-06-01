@@ -1082,35 +1082,6 @@ DELETE when `lsp-mode.el' is deleted.")
   (descriptors (make-hash-table :test 'equal) :read-only t)
   (root-directory))
 
-(defun lsp-watch-root-folder (dir callback &optional watch)
-  "Create recursive file notificaton watch in DIR.
-CALLBACK will be called when there are changes in any of
-the monitored files. WATCHES is a hash table directory->file
-notification handle which contains all of the watch that
-already have been created."
-  (lsp-log "Creating watch for %s" dir)
-  (let ((watch (or watch (make-lsp-watch :root-directory dir))))
-    (condition-case err
-        (progn
-          (puthash
-           (file-truename dir)
-           (file-notify-add-watch
-            dir
-            '(change)
-            (lambda (event) (funcall 'lsp--folder-watch-callback event callback watch)))
-           (lsp-watch-descriptors watch))
-          (seq-do
-           (-rpartial #'lsp-watch-root-folder callback watch)
-           (seq-filter (lambda (f)
-                         (and (file-directory-p f)
-                              (not (gethash (file-truename f) (lsp-watch-descriptors watch)))
-                              (not (lsp--string-match-any lsp-file-watch-ignored f))
-                              (not (-contains? '("." "..") (f-filename f)))))
-                       (directory-files dir t))))
-      (error (lsp-log "Failed to create a watch for %s: message" (error-message-string err)))
-      (file-missing (lsp-log "Failed to create a watch for %s: message" (error-message-string err))))
-    watch))
-
 (defun lsp--folder-watch-callback (event callback watch)
   (let ((file-name (cl-caddr event))
         (event-type (cadr event)))
@@ -1130,6 +1101,35 @@ already have been created."
      ((and (not (file-directory-p file-name))
            (memq event-type '(created deleted changed)))
       (funcall callback event)))))
+
+(defun lsp-watch-root-folder (dir callback &optional watch)
+  "Create recursive file notificaton watch in DIR.
+CALLBACK will be called when there are changes in any of
+the monitored files. WATCHES is a hash table directory->file
+notification handle which contains all of the watch that
+already have been created."
+  (lsp-log "Creating watch for %s" dir)
+  (let ((watch (or watch (make-lsp-watch :root-directory dir))))
+    (condition-case err
+        (progn
+          (puthash
+           (file-truename dir)
+           (file-notify-add-watch
+            dir
+            '(change)
+            (lambda (event) (lsp--folder-watch-callback event callback watch)))
+           (lsp-watch-descriptors watch))
+          (seq-do
+           (-rpartial #'lsp-watch-root-folder callback watch)
+           (seq-filter (lambda (f)
+                         (and (file-directory-p f)
+                              (not (gethash (file-truename f) (lsp-watch-descriptors watch)))
+                              (not (lsp--string-match-any lsp-file-watch-ignored f))
+                              (not (-contains? '("." "..") (f-filename f)))))
+                       (directory-files dir t))))
+      (error (lsp-log "Failed to create a watch for %s: message" (error-message-string err)))
+      (file-missing (lsp-log "Failed to create a watch for %s: message" (error-message-string err))))
+    watch))
 
 (defun lsp-kill-watch (watch)
   "Delete WATCH."
