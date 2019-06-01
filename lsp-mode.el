@@ -211,6 +211,8 @@ the buffer when it becomes large."
   "Capability not supported by the language server" 'lsp-error)
 (define-error 'lsp-file-scheme-not-supported
   "Unsupported file scheme" 'lsp-error)
+(define-error 'lsp-client-already-exists-error
+  "A client with this server-id already exists" 'lsp-error)
 
 (defcustom lsp-auto-guess-root nil
   "Automatically guess the project root using projectile/project."
@@ -4845,6 +4847,16 @@ remote machine and vice versa."
 
 (defun lsp-register-client (client)
   "Registers LSP client CLIENT."
+  (cl-assert (symbolp (lsp--client-server-id client)) t)
+  (cl-assert (or
+              (functionp (lsp--client-activation-fn client))
+              (and (listp (lsp--client-major-modes client))
+                   (seq-every-p (apply-partially #'symbolp)
+                                (lsp--client-major-modes client))))
+             nil "Invalid activation-fn and/or major-modes.")
+  (when (gethash (lsp--client-server-id client) lsp-clients)
+    (signal 'lsp-client-already-exists-error
+            (list (lsp--client-server-id client))))
   (puthash (lsp--client-server-id client) client lsp-clients))
 
 (defun lsp--create-initialization-options (_session client)
