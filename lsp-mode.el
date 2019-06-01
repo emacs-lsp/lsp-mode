@@ -4538,11 +4538,14 @@ process listening for TCP connections on the provided port."
                 (cons tcp-proc proc)))
    :test? (lambda () (executable-find (cl-first (funcall command-fn 0))))))
 
-(defun lsp-tcp-server (command)
+(defalias 'lsp-tcp-server 'lsp-tcp-server-command)
+
+(defun lsp-tcp-server-command (command-fn)
   "Create tcp server connection.
 In this mode Emacs is TCP server and the language server connects
 to it. COMMAND is function with one parameter(the port) and it
 should return the command to start the LS server."
+  (cl-check-type command-fn function)
   (list
    :connect (lambda (filter sentinel name)
               (let* (tcp-client-connection
@@ -4555,7 +4558,7 @@ should return the command to start the LS server."
                                                                    (setf tcp-client-connection proc))
                                                        :server 't))
                      (port (process-contact tcp-server :service))
-                     (final-command (funcall command port))
+                     (final-command (funcall command-fn port))
 
                      (cmd-proc (make-process :name name
                                              :connection-type 'pipe
@@ -4582,7 +4585,7 @@ should return the command to start the LS server."
                 (set-process-filter tcp-client-connection filter)
                 (set-process-sentinel tcp-client-connection sentinel)
                 (cons tcp-client-connection cmd-proc)))
-   :test? (lambda () (executable-find (cl-first (funcall command 0))))))
+   :test? (lambda () (executable-find (cl-first (funcall command-fn 0))))))
 
 (defun lsp-tramp-connection (local-command)
   "Create LSP stdio connection named name.
