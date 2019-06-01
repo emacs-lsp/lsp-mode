@@ -456,6 +456,11 @@ diagnostics have changed."
   :type 'hook
   :group 'lsp-mode)
 
+(defconst lsp--sync-type
+  `((0 . "None")
+    (1 . "Full Document")
+    (2 . "Incremental Changes")))
+
 (defcustom lsp-workspace-folders-changed-hook nil
   "Hooks to run after the folders has changed.
 The hook will receive two parameters list of added and removed folders."
@@ -3621,9 +3626,20 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
   (lsp-execute-code-action-by-kind "source.organizeImports"))
 
 (defun lsp--apply-formatting (edits)
-  (let ((lsp--server-sync-method 'full))
-    (save-excursion
-      (lsp--apply-text-edits edits))))
+  (if (fboundp 'replace-buffer-contents)
+      (let ((current-buffer (current-buffer)))
+        (with-temp-buffer
+          (insert-buffer-substring-no-properties current-buffer)
+          (lsp--apply-text-edits edits)
+          (let ((temp-buffer (current-buffer)))
+            (with-current-buffer current-buffer
+              (replace-buffer-contents temp-buffer)))))
+    (let ((point (point))
+          (w-start (window-start)))
+      (lsp--apply-text-edits edits)
+      (goto-char point)
+      (goto-char (line-beginning-position))
+      (set-window-start (selected-window) w-start))))
 
 (defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region.
