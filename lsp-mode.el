@@ -992,7 +992,9 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
             (widen)
             (goto-char (point-min))
             (forward-line line)
-            (forward-char character)
+            (if (integerp character)
+                (forward-char character)
+              (end-of-line))
             (point))
         (error (point))))))
 
