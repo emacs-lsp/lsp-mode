@@ -4450,9 +4450,20 @@ Return a nested alist keyed by symbol names. e.g.
       (ignore (lsp-log "Command \"%s\" is not present on the path." (s-join " " final-command)))))
 
 (defun lsp-stdio-connection (command)
-  "Create LSP stdio connection named name.
-  COMMAND is either list of strings, string or function which
-  returns the command to execute."
+  "Returns a connection property list using COMMAND.
+COMMAND can be:
+A string, denoting the command to launch the language server.
+A list of strings, denoting an executable with its command line arguments.
+A function, that either returns a string or a list of strings.
+In all cases, the launched language server should send and receive messages on
+standard I/O."
+  (cl-check-type command (or string
+                             function
+                             (and list
+                                  (satisfies (lambda (l)
+                                               (seq-every-p (lambda (el)
+                                                              (stringp el))
+                                                            l))))))
   (list :connect (lambda (filter sentinel name)
                    (let ((final-command (lsp-resolve-final-function command))
                          (process-name (generate-new-buffer-name name)))
@@ -4503,8 +4514,11 @@ Return a nested alist keyed by symbol names. e.g.
     port))
 
 (defun lsp-tcp-connection (command-fn)
-  "Create LSP TCP connection named name.
-  COMMAND-FN will be called to generate Language Server command."
+  "Returns a connection property list similar to `lsp-stdio-connection'.
+COMMAND-FN can only be a function that takes a single argument, a
+port number. It should return a command for launches a language server
+process listening for TCP connections on the provided port."
+  (cl-check-type command-fn function)
   (list
    :connect (lambda (filter sentinel name)
               (let* ((host "localhost")
