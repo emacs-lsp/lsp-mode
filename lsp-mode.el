@@ -456,11 +456,6 @@ diagnostics have changed."
   :type 'hook
   :group 'lsp-mode)
 
-(defconst lsp--sync-type
-  `((0 . "None")
-    (1 . "Full Document")
-    (2 . "Incremental Changes")))
-
 (defcustom lsp-workspace-folders-changed-hook nil
   "Hooks to run after the folders has changed.
 The hook will receive two parameters list of added and removed folders."
