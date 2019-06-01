@@ -1,4 +1,4 @@
-== Known limitations with `lsp-mode`
+== Common Issues/Fixes
 
 === File watches
 
