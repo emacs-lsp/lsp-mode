@@ -960,7 +960,7 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   (activation-fn)
   ;; Break the tie when major-mode is supported by multiple clients.
   (priority 0)
-  ;; Unique identifier for
+  ;; Unique identifier identifier for representing the client object.
   (server-id)
   ;; defines whether the client supports multi root workspaces.
   (multi-root)
