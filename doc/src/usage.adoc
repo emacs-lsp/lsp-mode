@@ -49,27 +49,27 @@ opening any file from the removed project will cause `lsp-mode` to ask the
 user about importing/blacklisting the directory again.
 
 [id="lsp-workspace-folders-add"]
-===== `lsp-workspace-folders-add PROJECT-ROOT`
+===== Function: `lsp-workspace-folders-add PROJECT-ROOT`
 If called interactively, it will ask the user to select a directory, and
 import it as a project root. All files located under the directory will be
 treated as belonging to the project rooted at this directory.
 
 [id="lsp-workspace-folders-switch"]
-===== `lsp-workspace-folders-open PROJECT-ROOT`
+===== Function: `lsp-workspace-folders-open PROJECT-ROOT`
 If called interactively, it asks the user to choose from a list of imported
 project roots, and opens the selected directory in `dired`.
 
 [id="lsp-workspace-shutdown"]
-==== `lsp-workspace-shutdown WORKSPACE`
+===== Function: `lsp-workspace-shutdown WORKSPACE`
 If called interactively, it asks the user to select an opened project,
 and shuts down the workspace and the language server associated with it.
 
 [id="lsp-workspace-restart"]
-==== `lsp-workspace-restart WORKSPACE`
+===== Function: `lsp-workspace-restart WORKSPACE`
 If called interactively, it asks the user to select an opened project,
 and restarts the workspace and the language server associated with it.
 
 [id="lsp-workspace-blacklist-remove"]
-==== `lsp-workspace-blacklist-remove WORKSPACE`
+===== Function: `lsp-workspace-blacklist-remove WORKSPACE`
 If called interactively, it asks the user to select a blacklisted project,
 and remove the project folder from the blacklist.
