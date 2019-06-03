@@ -4854,9 +4854,6 @@ remote machine and vice versa."
                    (seq-every-p (apply-partially #'symbolp)
                                 (lsp--client-major-modes client))))
              nil "Invalid activation-fn and/or major-modes.")
-  (when (gethash (lsp--client-server-id client) lsp-clients)
-    (signal 'lsp-client-already-exists-error
-            (list (lsp--client-server-id client))))
   (puthash (lsp--client-server-id client) client lsp-clients))
 
 (defun lsp--create-initialization-options (_session client)
