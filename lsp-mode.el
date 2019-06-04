@@ -4845,15 +4845,50 @@ remote machine and vice versa."
                                selected-clients)))
         selected-clients))))
 
+(defun lsp--validate-client (client)
+  (cl-check-type client lsp--client)
+  (pcase-let (((cl-struct lsp--client language-id new-connection ignore-regexps
+                          ignore-messages notification-handlers request-handlers
+                          response-handlers prefix-function uri-handlers
+                          action-handlers major-modes activation-fn priority
+                          server-id library-folders-fn before-file-open-fn
+                          initialized-fn)
+               client))
+    (cl-flet* ((list-of-types-p (l typ) (and (listp l)
+                                           (seq-every-p
+                                            (-rpartial 'cl-typep typ) l)))
+               (list-of-strings-p (l) (list-of-types-p l 'stringp))
+               (map-of-string-to-fns-p (h) (and (hash-table-p h)
+                                                (map-every-p
+                                                 (lambda (k v)
+                                                   (and (stringp k)
+                                                        (functionp v)))
+                                                 h))))
+      (cl-macrolet ((some-assert (val form) `(when ,val (cl-assert ,form))))
+        (some-assert language-id (functionp language-id))
+        (some-assert new-connection (and (plist-get new-connection :connect)
+                                         (plist-get new-connection :test?)))
+        (some-assert ignore-regexps (list-of-strings-p ignore-regexps))
+        (some-assert ignore-messages (list-of-strings-p ignore-messages))
+        (some-assert notification-handlers (map-of-string-to-fns-p
+                                            notification-handlers))
+        (some-assert request-handlers (map-of-string-to-fns-p request-handlers))
+        (some-assert response-handlers (map-of-string-to-fns-p response-handlers))
+        (some-assert prefix-function (functionp prefix-function))
+        (some-assert uri-handlers (map-of-string-to-fns-p uri-handlers))
+        (some-assert action-handlers (map-of-string-to-fns-p action-handlers))
+        (cl-assert (symbolp server-id))
+        (cl-assert (or (functionp activation-fn)
+                       (and (listp major-modes)
+                            (list-of-types-p major-modes 'symbolp))))
+        (cl-assert (integerp priority))
+        (some-assert library-folders-fn (functionp library-folders-fn))
+        (some-assert before-file-open-fn (functionp before-file-open-fn))
+        (some-assert initialized-fn (functionp initialized-fn))))))
+
 (defun lsp-register-client (client)
   "Registers LSP client CLIENT."
-  (cl-assert (symbolp (lsp--client-server-id client)) t)
-  (cl-assert (or
-              (functionp (lsp--client-activation-fn client))
-              (and (listp (lsp--client-major-modes client))
-                   (seq-every-p (apply-partially #'symbolp)
-                                (lsp--client-major-modes client))))
-             nil "Invalid activation-fn and/or major-modes.")
+  (lsp--validate-client client)
   (puthash (lsp--client-server-id client) client lsp-clients))
 
 (defun lsp--create-initialization-options (_session client)
