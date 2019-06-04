@@ -2937,9 +2937,12 @@ Added to `after-change-functions'."
                   `(:textDocument
                     ,(lsp--versioned-text-document-identifier)
                     :contentChanges (vector (lsp--full-change-event))))))))))))
+
   (lsp--set-document-link-timer)
   (when lsp-lens-mode
-    (lsp--lens-schedule-refresh t)))
+    (lsp--lens-schedule-refresh t))
+  ;; force cleanup overalys after each change
+  (lsp-foreach-workspace (lsp--remove-cur-overlays)))
 
 (defun lsp--on-self-insert ()
   "Self insert handling.
