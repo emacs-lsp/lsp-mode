@@ -30,6 +30,8 @@ include::lsp-pyls/index.adoc[]
 
 include::lsp-rust/index.adoc[]
 
+include::lsp-metals/index.adoc[]
+
 include::lsp-solargraph/index.adoc[]
 
 include::lsp-typescript/index.adoc[]

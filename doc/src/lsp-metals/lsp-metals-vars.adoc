@@ -1,0 +1,73 @@
+[id="lsp-metals-vars"]
+==== `lsp-metals` settings
+
+[id="lsp-metals-server-command"]
+- `lsp-metals-server-command`
+____
+Default value: `pass:["metals-emacs"]`
+
+The command to launch the Scala language server.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-metals-server-args"]
+- `lsp-metals-server-args`
+____
+Default value: `pass:[nil]`
+
+Extra arguments for the Scala language server.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-metals-java-home"]
+- `lsp-metals-java-home`
+____
+Default value: `pass:[""]`
+
+The Java Home directory used for indexing JDK sources and locating
+the ‘java‘ binary.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-metals-scalafmt-config-path"]
+- `lsp-metals-scalafmt-config-path`
+____
+Default value: `pass:[""]`
+
+Optional custom path to the .scalafmt.conf file. Should be relative
+to the workspace root directory and use forward slashes / for file
+separators (even on Windows).
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-metals-sbt-script"]
+- `lsp-metals-sbt-script`
+____
+Default value: `pass:[""]`
+
+Optional absolute path to an ‘sbt‘ executable to use for running
+‘sbt bloopInstall‘. By default, Metals uses ‘java -jar sbt-launch.jar‘
+with an embedded launcher while respecting ‘.jvmopts‘ and ‘.sbtopts‘.
+Update this setting if your ‘sbt‘ script requires more customizations
+like using environment variables.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-metals-gradle-script"]
+- `lsp-metals-gradle-script`
+____
+Default value: `pass:[""]`
+
+Optional absolute path to a ‘gradle‘ executable to use for running
+‘gradle bloopInstall‘. By default, Metals uses gradlew with 5.3.1
+gradle version. Update this setting if your ‘gradle‘ script requires
+more customizations like using environment variables.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
