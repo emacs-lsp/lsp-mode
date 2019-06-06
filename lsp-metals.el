@@ -35,16 +35,19 @@
 (defcustom lsp-metals-server-command "metals-emacs"
   "The command to launch the Scala language server."
   :group 'lsp-metals
-  :type 'file)
+  :type 'file
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-metals-server-args '()
   "Extra arguments for the Scala language server."
   :group 'lsp-metals
-  :type '(repeat string))
+  :type '(repeat string)
+  :package-version '(lsp-mode . "6.1"))
 
 (defun lsp-metals--server-command ()
   "Generate the Scala language server startup command."
-  `(,lsp-metals-server-command ,@lsp-metals-server-args))
+  `(,lsp-metals-server-command ,@lsp-metals-server-args)
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-metals-java-home ""
   "The Java Home directory used for indexing JDK sources and locating
