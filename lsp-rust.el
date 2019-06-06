@@ -255,16 +255,35 @@ is often the type local variable declaration."
    ("rust.target" lsp-rust-target)
    ("rust.sysroot" lsp-rust-sysroot)))
 
+(defvar lsp-clients-rust-progress-string ""
+  "Rust progress status as reported by the RLS server.")
+
+(put 'lsp-rust-progress-string 'risky-local-variable t)
+(add-to-list 'global-mode-string (list '(t lsp-clients-rust-progress-string)))
+
 (defun lsp-clients--rust-window-progress (_workspace params)
   "Progress report handling.
 PARAMS progress report notification data."
-  ;; Minimal implementation - we could show the progress as well.
-  (lsp-log (gethash "title" params)))
+  (-let (((&hash "done" "message" "title") params))
+    (if (or done (s-blank-str? message))
+        (setq lsp-clients-rust-progress-string nil)
+      (setq lsp-clients-rust-progress-string (format "%s - %s" title (or message "")))
+      (lsp-log lsp-clients-rust-progress-string))))
 
 (defcustom lsp-rust-rls-server-command '("rls")
   "Command to start RLS."
   :type '(repeat string)
   :package-version '(lsp-mode . "6.1"))
+
+(cl-defmethod lsp-execute-command
+  (_server (command (eql rls.run)) params)
+  (-let* (((&hash "env" "binary" "args" "cwd") (seq-first params))
+          (default-directory (or cwd (lsp-workspace-root) default-directory) ))
+    (compile
+     (format "%s %s %s"
+             (s-join " " (ht-amap (format "%s=%s" key value) env))
+             binary
+             (s-join " " args)))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
@@ -272,7 +291,10 @@ PARAMS progress report notification data."
                   :major-modes '(rust-mode rustic-mode)
                   :priority -1
                   :server-id 'rls
-                  :notification-handlers (lsp-ht ("window/progress" 'lsp-clients--rust-window-progress))
+                  :initialization-options '((omitInitBuild . t)
+                                            (cmdRun . t))
+                  :notification-handlers (ht ("window/progress" 'lsp-clients--rust-window-progress))
+                  :action-handlers (ht ("rls.run" 'lsp-rust--rls-run))
                   :library-folders-fn (lambda (_workspace) lsp-rust-library-directories)
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
