@@ -186,9 +186,9 @@
 |Yes
 
 |Scala
-|https://github.com/rossabaker/lsp-scala[lsp-scala]
-|https://github.com/rossabaker/lsp-scala[lsp-scala]
-|https://github.com/rossabaker/lsp-scala[lsp-scala]
+|https://scalameta.org/metals/[Metals]
+|Yes
+|https://scalameta.org/metals/[Metals]
 |
 
 |Swift
