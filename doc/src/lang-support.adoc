@@ -187,8 +187,8 @@
 
 |Scala
 |https://scalameta.org/metals/[Metals]
-|Yes
-|https://scalameta.org/metals/[Metals]
+|<<lsp-metals,Built-in>>
+|https://scalameta.org/metals/docs/editors/emacs.html[Metals]
 |
 
 |Swift
