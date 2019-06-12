@@ -543,6 +543,7 @@ If set to `:none' neither of two will be enabled."
                                         (css-mode . "css")
                                         (less-mode . "less")
                                         (less-css-mode . "less")
+                                        (lua-mode . "lua")
                                         (sass-mode . "sass")
                                         (scss-mode . "scss")
                                         (xml-mode . "xml")
