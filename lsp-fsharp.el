@@ -39,7 +39,7 @@
                  (const :tag "Use Mono" 'mono)
                  (const :tag "Use .Net Framework" 'net-framework)))
 
-(defcustom lsp-fsharp-server-install-dir nil
+(defcustom lsp-fsharp-server-path nil
   "The path to fsautocomplete."
   :group 'lsp-fsharp
   :risky t
@@ -63,7 +63,7 @@
   "Build the command required to launch fsautocomplete."
   (if lsp-fsharp-server-install-dir (lsp-warn "Cannot locate fsautocomplete"))
   (append (lsp-fsharp--fsac-runtime-cmd)
-          (list lsp-fsharp-server-install-dir "--mode" "lsp")
+          (list lsp-fsharp-server-path "--mode" "lsp")
           lsp-fsharp-server-args))
 
 (defun lsp-fsharp--make-init-options ()
