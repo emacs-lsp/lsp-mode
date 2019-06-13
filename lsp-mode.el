@@ -561,6 +561,7 @@ If set to `:none' neither of two will be enabled."
                                         (rjsx-mode . "javascript")
                                         (js2-mode . "javascript")
                                         (typescript-mode . "typescript")
+                                        (fsharp-mode . "fsharp")
                                         (reason-mode . "reason")
                                         (caml-mode . "ocaml")
                                         (tuareg-mode . "ocaml")
