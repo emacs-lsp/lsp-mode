@@ -560,6 +560,7 @@ If set to `:none' neither of two will be enabled."
                                         (json-mode . "json")
                                         (rjsx-mode . "javascript")
                                         (js2-mode . "javascript")
+                                        (js-mode . "javascript")
                                         (typescript-mode . "typescript")
                                         (fsharp-mode . "fsharp")
                                         (reason-mode . "reason")
