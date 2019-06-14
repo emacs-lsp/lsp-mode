@@ -3417,20 +3417,22 @@ When language is nil render as markup if `markdown-mode' is loaded."
 (defun lsp--render-element (content)
   "Render CONTENT element."
   ;; MarkedString
-  (cond
-   ((and (hash-table-p content)
-         (gethash "language" content))
-    (-let [(&hash "language" "value") content]
-      (lsp--render-string value language)))
+  (or
+   (cond
+    ((and (hash-table-p content)
+          (gethash "language" content))
+     (-let [(&hash "language" "value") content]
+       (lsp--render-string value language)))
 
-   ;; MarkupContent
-   ((and (hash-table-p content)
-         (gethash "kind" content))
-    (-let [(&hash "value" "kind") content]
-      (lsp--render-string value kind)))
-   ;; plain string
-   ((stringp content) (lsp--render-string content "markdown"))
-   (t (error "Failed to handle %s" content))))
+    ;; MarkupContent
+    ((and (hash-table-p content)
+          (gethash "kind" content))
+     (-let [(&hash "value" "kind") content]
+       (lsp--render-string value kind)))
+    ;; plain string
+    ((stringp content) (lsp--render-string content "markdown"))
+    (t (error "Failed to handle %s" content)))
+   ""))
 
 (defun lsp--render-on-hover-content (contents render-all)
   "Render the content received from 'document/onHover' request.
