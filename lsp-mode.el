@@ -4639,6 +4639,10 @@ returns the command to execute."
       (company-mode 1)
       (add-to-list 'company-backends 'company-lsp)
 
+      ;; make sure that company-capf is disabled since it is not indented to be
+      ;; used in combination with lsp-mode (see #884)
+      (setq-local company-backends (remove 'company-capf company-backends))
+
       (when (functionp 'yas-minor-mode)
         (yas-minor-mode t)))))
 
