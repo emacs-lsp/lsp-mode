@@ -79,9 +79,9 @@ or manually by cloning the repo and following the installing instructions."
 
 (defun lsp-elm--elm-language-server-command ()
   "Generate LSP startup command for the Elm Language Server."
-   `(,lsp-elm-elm-language-server-path
-     ,(string-join
-       lsp-elm-server-args " ")))
+  (cons
+   lsp-elm-elm-language-server-path
+   lsp-elm-server-args))
 
 (defun lsp-clients-elm--make-init-options ()
   "Init options for elm-language-server."
