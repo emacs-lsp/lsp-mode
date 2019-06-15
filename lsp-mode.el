@@ -3404,7 +3404,7 @@ Stolen from `org-copy-visible'."
       (with-temp-buffer
         (insert str)
         (delay-mode-hooks (funcall mode))
-        (flet ((window-body-width () lsp-window-body-width))
+        (cl-flet ((window-body-width () lsp-window-body-width))
           (font-lock-ensure))
         (lsp--buffer-string-visible))
     (error str)))
