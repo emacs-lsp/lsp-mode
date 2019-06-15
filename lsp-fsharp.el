@@ -61,7 +61,7 @@
 
 (defun lsp-fsharp--make-launch-cmd ()
   "Build the command required to launch fsautocomplete."
-  (if lsp-fsharp-server-path (lsp-warn "Cannot locate fsautocomplete"))
+  (unless lsp-fsharp-server-path (lsp-warn "Cannot locate fsautocomplete"))
   (append (lsp-fsharp--fsac-runtime-cmd)
           (list lsp-fsharp-server-path "--mode" "lsp")
           lsp-fsharp-server-args))
@@ -73,6 +73,9 @@
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-fsharp--make-launch-cmd)
                   :major-modes '(fsharp-mode)
+                  :notification-handlers (ht ("fsharp/notifyCancel" #'ignore)
+                                             ("fsharp/notifyWorkspace" #'ignore)
+                                             ("fsharp/notifyWorkspacePeek" #'ignore))
                   :initialization-options 'lsp-fsharp--make-init-options
                   :server-id 'fsac))
 
