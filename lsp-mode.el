@@ -604,6 +604,9 @@ must be used for handling a particular message.")
     (changed . 2)
     (deleted . 3)))
 
+(defvar lsp-window-body-width 40
+  "Window body width when rendering doc.")
+
 (defface lsp-face-highlight-textual
   '((t :inherit highlight))
   "Face used for textual occurances of symbols."
@@ -3401,7 +3404,8 @@ Stolen from `org-copy-visible'."
       (with-temp-buffer
         (insert str)
         (delay-mode-hooks (funcall mode))
-        (font-lock-ensure)
+        (flet ((window-body-width () lsp-window-body-width))
+          (font-lock-ensure))
         (lsp--buffer-string-visible))
     (error str)))
 
