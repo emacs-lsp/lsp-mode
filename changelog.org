@@ -8,7 +8,7 @@
    * [[http://intelephense.net/][Intelephense]] for PHP
    * [[https://github.com/snoe/clojure-lsp][clojure-lsp]] for Clojure/ClojureScipt (Thanks to Dario Benedek Fazekas)
    * [[https://github.com/elm-tooling/elm-language-server][elmLS]] for Elm (Thanks to Daniel-V)
-
+   * [[https://github.com/fsharp/FsAutoComplete][FsAutoComplete]] for F# (Thanks to Reed Mullanix)
 ** New logging options
    - =lsp-mode= now logs to buffer =*lsp-log*=, instead of =*Messages*=. This
      can be controlled with the variable =lsp-log-max= (Thanks to Thomas Fini Hansen).
