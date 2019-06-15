@@ -2299,7 +2299,8 @@ disappearing, unset all the variables related to it."
                                                                                       "Yasnippet is not present but `lsp-enable-snippet' is set to `t'. "
                                                                                       "You must either install yasnippet or disable snippet support."))
                                                                                t)
-                                                                            :json-false))))
+                                                                            :json-false))
+                                                       (documentationFormat . ["markdown"])))
                                     (contextSupport . t)))
                      (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))))
                      (documentLink . ((dynamicRegistration . t)))
@@ -3394,6 +3395,12 @@ Stolen from `org-copy-visible'."
 
     (while (re-search-forward "&lt;" nil t)
       (replace-match "<"))
+
+    (goto-char (point-min))
+
+    ;; temporary patch --- since the symbol is not rendered fine in lsp-ui
+    (while (re-search-forward "^[-]+$" nil t)
+      (replace-match ""))
 
     (gfm-view-mode)
     (lsp--setup-markdown major-mode)))
