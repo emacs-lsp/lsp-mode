@@ -58,6 +58,12 @@
 | Clone the https://github.com/elm-tooling/elm-language-server[repository], run `npm install` in the root, then run https://www.typescriptlang.org/[tsc] in the server directory. Set <<lsp-elm-server-install-dir>> to wherever you cloned the repo.
 |
 
+|F#
+|https://github.com/fsharp/FsAutoComplete[FsAutoComplete]
+|<<lsp-fsharp,Built-in>>
+|Clone the https://github.com/fsharp/FsAutoComplete[repository], run ./build.sh LocalRelease. Set lsp-fsharp-server-path, and lsp-fsharp-server-runtime. 
+|
+
 |Fortran
 |https://github.com/hansec/fortran-language-server[fortran-language-server]
 |<<lsp-fortran,Built-in>>
