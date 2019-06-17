@@ -1,12 +1,23 @@
 [id="lsp-rust-vars"]
 ==== `lsp-rust` settings
 
+[id="lsp-rust-library-directories"]
+- `lsp-rust-library-directories`
+____
+Default value: `pass:[("~/.cargo/registry/src" "~/.rustup/toolchains")
+]`
+
+List of directories which will be considered to be libraries.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
 [id="lsp-rust-sysroot"]
 - `lsp-rust-sysroot`
 ____
-Default value: `pass:[""]`
+Default value: `pass:[nil]`
 
-If not empty, use the given path as the sysroot for all rustc invocations instead of trying to detect the sysroot automatically.
+If non-nil, use the given path as the sysroot for all rustc invocations instead of trying to detect the sysroot automatically.
 
 NOTE: Introduced in `lsp-mode` 6.1
 
@@ -14,9 +25,9 @@ ____
 [id="lsp-rust-target"]
 - `lsp-rust-target`
 ____
-Default value: `pass:[""]`
+Default value: `pass:[nil]`
 
-If not empty, use the given target triple for all rustc invocations.
+If non-nil, use the given target triple for all rustc invocations.
 
 NOTE: Introduced in `lsp-mode` 6.1
 
@@ -87,10 +98,11 @@ ____
 [id="lsp-rust-wait-to-build"]
 - `lsp-rust-wait-to-build`
 ____
-Default value: `pass:[1500]`
+Default value: `pass:[nil]`
 
 Time in milliseconds between receiving a change notification
-and starting build.
+and starting build. If not specified, automatically inferred by
+the latest build duration.
 
 NOTE: Introduced in `lsp-mode` 6.1
 
@@ -129,7 +141,8 @@ ____
 [id="lsp-rust-features"]
 - `lsp-rust-features`
 ____
-Default value: `pass:[nil]`
+Default value: `pass:[[]
+]`
 
 A list of Cargo features to enable.
 
@@ -239,7 +252,7 @@ EXPERIMENTAL (requires ‘unstable_features‘)
 If set, executes
 a given program responsible for rebuilding save-analysis to be
 loaded by the RLS. The program given should output a list of
-resulting .json files on stdout.
+resulting .json files on stdout. 
 Implies ‘rust.build_on_save‘:
 true.
 
