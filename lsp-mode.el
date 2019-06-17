@@ -558,6 +558,7 @@ If set to `:none' neither of two will be enabled."
                                         (mhtml-mode . "html")
                                         (go-mode . "go")
                                         (haskell-mode . "haskell")
+                                        (hack-mode . "hack")
                                         (php-mode . "php")
                                         (json-mode . "json")
                                         (rjsx-mode . "javascript")
