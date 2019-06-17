@@ -69,7 +69,7 @@ ____
 ____
 Default value: `pass:[nil]`
 
-If non empty, checks the project as if you passed ‘-- bin <build_bin>’ argument to cargo.
+If non-nil, checks the project as if you passed `-- bin <build_bin>` argument to cargo.
  Mutually exclusive with ‘lsp-rust-build-lib’. (Unstable)
 
 NOTE: Introduced in `lsp-mode` 6.1
