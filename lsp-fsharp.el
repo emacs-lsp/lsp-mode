@@ -30,27 +30,29 @@
 (defgroup lsp-fsharp nil
   "LSP support for the F# Programming Language, using the FsharpAutoComplete server."
   :link '(url-link "https://github.com/fsharp/FsAutoComplete")
-  :group 'lsp-mode)
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-fsharp-server-runtime 'net-core
   "The .NET runtime to use."
   :group 'lsp-fsharp
   :type '(choice (const :tag "Use .Net Core" 'net-core)
                  (const :tag "Use Mono" 'mono)
-                 (const :tag "Use .Net Framework" 'net-framework)))
+                 (const :tag "Use .Net Framework" 'net-framework))
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-fsharp-server-path nil
   "The path to fsautocomplete."
   :group 'lsp-fsharp
   :risky t
-  :type 'file)
-
+  :type 'file
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-fsharp-server-args nil
   "Extra arguments for the F# language server."
   :type '(repeat string)
-  :group 'lsp-fsharp)
-
+  :group 'lsp-fsharp
+  :package-version '(lsp-mode . "6.1"))
 
 (defun lsp-fsharp--fsac-runtime-cmd ()
   "Get the command required to run fsautocomplete based off of the current runtime."
