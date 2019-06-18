@@ -1,0 +1,6 @@
+[id="lsp-fsharp"]
+=== F# support: `lsp-fsharp`
+`lsp-fsharp` provides support for F# using
+https://github.com/fsharp/FsAutoComplete[FsAutoComplete].
+
+include::lsp-fsharp-vars.adoc[]

@@ -1,0 +1,33 @@
+[id="lsp-fsharp-vars"]
+==== `lsp-fsharp` settings
+
+[id="lsp-fsharp-server-runtime"]
+- `lsp-fsharp-server-runtime`
+____
+Default value: `pass:[net-core]`
+
+The .NET runtime to use.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-fsharp-server-path"]
+- `lsp-fsharp-server-path`
+____
+Default value: `pass:[nil]`
+
+The path to fsautocomplete.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
+[id="lsp-fsharp-server-args"]
+- `lsp-fsharp-server-args`
+____
+Default value: `pass:[nil]`
+
+Extra arguments for the F# language server.
+
+NOTE: Introduced in `lsp-mode` 6.1
+
+____
