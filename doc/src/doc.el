@@ -5,7 +5,7 @@
 
 (defconst lsp-doc--client-groups
   (sort
-   '(lsp-clojure lsp-css lsp-html lsp-intelephense lsp-pyls lsp-rust lsp-solargraph lsp-vetur lsp-xml lsp-groovy lsp-typescript-javascript lsp-typescript lsp-flow lsp-php lsp-ocaml lsp-clangd lsp-dart lsp-elixir lsp-fortran lsp-kotlin lsp-hack)
+   '(lsp-clojure lsp-css lsp-html lsp-intelephense lsp-pyls lsp-rust lsp-solargraph lsp-vetur lsp-xml lsp-groovy lsp-typescript-javascript lsp-typescript lsp-flow lsp-php lsp-ocaml lsp-clangd lsp-dart lsp-elixir lsp-fortran lsp-kotlin lsp-hack lsp-metals lsp-fsharp)
    (lambda (s1 s2)
      (string< (symbol-name s1) (symbol-name s2)))))
 
@@ -32,7 +32,9 @@
 ==== \`%s\` settings\n\n" group group)
      (mapconcat
       (lambda (sym)
-        (format "[id=\"%s\"]
+        (let* ((dflt-val (default-value sym))
+               (type (get sym 'custom-type)))
+          (format "[id=\"%s\"]
 - \`%s\`
 ____
 Default value: \`pass:[%s]\`
@@ -40,19 +42,21 @@ Default value: \`pass:[%s]\`
 %s%s
 ____" sym sym
 
-(pp-to-string (default-value sym))
+(pp-to-string (if (and (memq type '(file directory)) (stringp dflt-val))
+                  (f-short dflt-val)
+                dflt-val))
 (documentation-property sym 'variable-documentation)
 (if-let (version (get sym 'custom-package-version))
     (format "
 
 NOTE: Introduced in \`%s\` %s
 " (car version) (cdr version))
-  "")))
+  ""))))
       vars "\n"))))
 
 (defun lsp-doc--write-asciidoc (group file)
   (let ((doc (lsp-doc--group-gen-asciidoc group)))
-    (write-region doc nil file)))
+    (write-region (concat doc "\n") nil file)))
 
 (seq-doseq (group lsp-doc--client-groups)
   (let ((doc-dir (f-expand (format "./%s" group))))
