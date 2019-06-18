@@ -120,10 +120,7 @@ ____
 Default value: `pass:[nil]`
 
 Allows XML schemas to be associated to file name patterns.
-  Example: [{ "s
-ystemId":
-
-"path/to/file.xsd","pattern":
+  Example: [{ "systemId":"path/to/file.xsd","pattern":
   "file1.xml" },{ "systemId":
   "http://www.w3.org/2001/XMLSchema.xsd","pattern":
   "**/*.xsd" }]
