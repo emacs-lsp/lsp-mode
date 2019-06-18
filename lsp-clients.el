@@ -39,6 +39,7 @@
 (require 'lsp-dart)
 (require 'lsp-elm)
 (require 'lsp-metals)
+(require 'lsp-fsharp)
 
 ;;; Bash
 (lsp-register-client
