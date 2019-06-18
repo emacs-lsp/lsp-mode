@@ -73,7 +73,7 @@
 |Go
 |https://golang.org/x/tools/cmd/gopls[gopls]
 |Built-in
-|`gopls go get -u golang.org/x/tools/cmd/gopls`
+|`go get -u golang.org/x/tools/cmd/gopls`
 |Yes
 
 |Go
