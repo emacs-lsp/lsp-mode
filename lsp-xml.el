@@ -187,6 +187,7 @@ Newlines and excess whitespace are removed."
   "Xml server jar command."
   :type 'string
   :group 'lsp-xml
+  :type 'file
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-xml-server-command `("java" "-jar" ,lsp-xml-jar-file)
