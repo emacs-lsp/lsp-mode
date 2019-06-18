@@ -494,6 +494,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#lsp-elixir">Elixir support: <code>lsp-css</code></a></li>
 <li><a href="#lsp-flow">Flow support: <code>lsp-flow</code></a></li>
 <li><a href="#lsp-fortran">Fortran support: <code>lsp-fortran</code></a></li>
+<li><a href="#lsp-fsharp">F# support: <code>lsp-fsharp</code></a></li>
 <li><a href="#lsp-groovy">Groovy support: <code>lsp-groovy</code></a></li>
 <li><a href="#lsp-hack">Hack support: <code>lsp-css</code></a></li>
 <li><a href="#lsp-html">HTML support: <code>lsp-html</code></a></li>
@@ -2231,7 +2232,7 @@ sent from the server to the editor:</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Go</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://golang.org/x/tools/cmd/gopls">gopls</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Built-in</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gopls go get -u golang.org/x/tools/cmd/gopls</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>go get -u golang.org/x/tools/cmd/gopls</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
 </tr>
 <tr>
@@ -3043,6 +3044,103 @@ finding the executable with ‘exec-path’.</p>
 </div>
 <div class="paragraph">
 <p>Extra arguments for the fortls executable</p>
+</div>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="lsp-fsharp">F# support: <code>lsp-fsharp</code></h3>
+<div class="paragraph">
+<p><code>lsp-fsharp</code> provides support for F# using
+<a href="https://github.com/fsharp/FsAutoComplete">FsAutoComplete</a>.</p>
+</div>
+<div class="sect3">
+<h4 id="lsp-fsharp-vars"><code>lsp-fsharp</code> settings</h4>
+<div id="lsp-fsharp-server-runtime" class="ulist">
+<ul>
+<li>
+<p><code>lsp-fsharp-server-runtime</code></p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>net-core</code></p>
+</div>
+<div class="paragraph">
+<p>The .NET runtime to use.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Introduced in <code>lsp-mode</code> 6.1
+</td>
+</tr>
+</table>
+</div>
+</blockquote>
+</div>
+<div id="lsp-fsharp-server-path" class="ulist">
+<ul>
+<li>
+<p><code>lsp-fsharp-server-path</code></p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>nil</code></p>
+</div>
+<div class="paragraph">
+<p>The path to fsautocomplete.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Introduced in <code>lsp-mode</code> 6.1
+</td>
+</tr>
+</table>
+</div>
+</blockquote>
+</div>
+<div id="lsp-fsharp-server-args" class="ulist">
+<ul>
+<li>
+<p><code>lsp-fsharp-server-args</code></p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>nil</code></p>
+</div>
+<div class="paragraph">
+<p>Extra arguments for the F# language server.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Introduced in <code>lsp-mode</code> 6.1
+</td>
+</tr>
+</table>
 </div>
 </blockquote>
 </div>
@@ -5158,6 +5256,36 @@ Introduced in <code>lsp-mode</code> 6.1
 </div>
 <div class="sect3">
 <h4 id="lsp-rust-vars"><code>lsp-rust</code> settings</h4>
+<div id="lsp-rust-library-directories" class="ulist">
+<ul>
+<li>
+<p><code>lsp-rust-library-directories</code></p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>("~/.cargo/registry/src" "~/.rustup/toolchains")
+</code></p>
+</div>
+<div class="paragraph">
+<p>List of directories which will be considered to be libraries.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Introduced in <code>lsp-mode</code> 6.1
+</td>
+</tr>
+</table>
+</div>
+</blockquote>
+</div>
 <div id="lsp-rust-sysroot" class="ulist">
 <ul>
 <li>
@@ -5168,10 +5296,10 @@ Introduced in <code>lsp-mode</code> 6.1
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
-<p>Default value: <code>""</code></p>
+<p>Default value: <code>nil</code></p>
 </div>
 <div class="paragraph">
-<p>If not empty, use the given path as the sysroot for all rustc invocations instead of trying to detect the sysroot automatically.</p>
+<p>If non-nil, use the given path as the sysroot for all rustc invocations instead of trying to detect the sysroot automatically.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -5197,10 +5325,10 @@ Introduced in <code>lsp-mode</code> 6.1
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
-<p>Default value: <code>""</code></p>
+<p>Default value: <code>nil</code></p>
 </div>
 <div class="paragraph">
-<p>If not empty, use the given target triple for all rustc invocations.</p>
+<p>If non-nil, use the given target triple for all rustc invocations.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -5318,7 +5446,7 @@ Introduced in <code>lsp-mode</code> 6.1
 <p>Default value: <code>nil</code></p>
 </div>
 <div class="paragraph">
-<p>If non empty, checks the project as if you passed ‘-- bin &lt;build_bin&gt;’ argument to cargo.
+<p>If non-nil, checks the project as if you passed <code>-- bin &lt;build_bin&gt;</code> argument to cargo.
  Mutually exclusive with ‘lsp-rust-build-lib’. (Unstable)</p>
 </div>
 <div class="admonitionblock note">
@@ -5403,11 +5531,12 @@ Introduced in <code>lsp-mode</code> 6.1
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
-<p>Default value: <code>1500</code></p>
+<p>Default value: <code>nil</code></p>
 </div>
 <div class="paragraph">
 <p>Time in milliseconds between receiving a change notification
-and starting build.</p>
+and starting build. If not specified, automatically inferred by
+the latest build duration.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -5521,7 +5650,8 @@ Introduced in <code>lsp-mode</code> 6.1
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
-<p>Default value: <code>nil</code></p>
+<p>Default value: <code>[
+]</code></p>
 </div>
 <div class="paragraph">
 <p>A list of Cargo features to enable.</p>
@@ -9737,11 +9867,7 @@ Introduced in <code>lsp-mode</code> 6.1
 </div>
 <div class="paragraph">
 <p>Allows XML schemas to be associated to file name patterns.
-  Example: [{ "s
-ystemId":</p>
-</div>
-<div class="paragraph">
-<p>"path/to/file.xsd","pattern":
+  Example: [{ "systemId":"path/to/file.xsd","pattern":
   "file1.xml" },{ "systemId":
   "http://www.w3.org/2001/XMLSchema.xsd","pattern":
   "<strong>*/</strong>.xsd" }]</p>
@@ -10016,7 +10142,7 @@ Introduced in <code>lsp-mode</code> 6.1
 <div id="footer">
 <div id="footer-text">
 Version 6.1<br>
-Last updated 2019-06-17 20:31:25 UTC
+Last updated 2019-06-18 08:49:41 UTC
 </div>
 </div>
 <style>
