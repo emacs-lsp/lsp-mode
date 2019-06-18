@@ -12,6 +12,8 @@ include::lsp-flow/index.adoc[]
 
 include::lsp-fortran/index.adoc[]
 
+include::lsp-fsharp/index.adoc[]
+
 include::lsp-groovy/index.adoc[]
 
 include::lsp-hack/index.adoc[]
