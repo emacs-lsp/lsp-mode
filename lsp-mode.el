@@ -1904,7 +1904,7 @@ CALLBACK - callback for the lenses."
   ;; the Language Server specific messages.
   (status-string nil)
 
-  ;; ‘shutdown-action’ flag used to mark that workspace should not be restarted(e. g. it
+  ;; ‘shutdown-action’ flag used to mark that workspace should not be restarted (e.g. it
   ;; was stopped).
   (shutdown-action)
 
@@ -4676,6 +4676,10 @@ returns the command to execute."
     (setf (lsp--parser-workspace parser) workspace)
     workspace))
 
+
+(defvar-local lsp--buffer-deferred nil
+  "Whether buffer was loaded via `lsp-deferred'.")
+
 (defun lsp--restart-if-needed (workspace)
   "Handler restart for WORKSPACE."
   (when (or (eq lsp-restart 'auto-restart)
@@ -4688,8 +4692,10 @@ returns the command to execute."
     (--each (lsp--workspace-buffers workspace)
       (when (buffer-live-p it)
         (with-current-buffer it
-          (lsp--info "Restarting LSP in buffer %s" (buffer-name))
-          (lsp))))))
+          (if lsp--buffer-deferred
+              (lsp-deferred)
+            (lsp--info "Restarting LSP in buffer %s" (buffer-name))
+            (lsp)))))))
 
 (defun lsp--update-key (table key fn)
   "Apply FN on value corresponding to KEY in TABLE."
@@ -5321,6 +5327,31 @@ argument ask the user to select which language server to start. "
     (lsp--info "Connected to %s."
                (apply 'concat (--map (format "[%s]" (lsp--workspace-print it))
                                      lsp--buffer-workspaces)))))
+
+(defun lsp--init-if-visible ()
+  "Run `lsp' for the current buffer if the buffer is visible.
+Returns `t' if `lsp' was run for the buffer."
+  (when (or (buffer-modified-p) (get-buffer-window nil t))
+    (remove-hook 'window-configuration-change-hook #'lsp--init-if-visible t)
+    (lsp)
+    t))
+
+;;;###autoload
+(defun lsp-deferred ()
+  "Entry point that defers server startup until buffer is visible.
+`lsp-deferred' will wait until the buffer is visible before invoking `lsp'.
+This avoids overloading the server with many files when starting Emacs."
+  ;; Workspace may not be initialized yet. Use a buffer local variable to
+  ;; remember that we deferred loading of this buffer.
+  (setq lsp--buffer-deferred t)
+  (let ((buffer (current-buffer)))
+    ;; Avoid false positives as desktop-mode restores buffers by deferring
+    ;; visibility check until the stack clears.
+    (run-with-timer 0 nil (lambda ()
+                            (when (buffer-live-p buffer)
+                              (with-current-buffer buffer
+                                (unless (lsp--init-if-visible)
+                                  (add-hook 'window-configuration-change-hook #'lsp--init-if-visible nil t))))))))
 
 (provide 'lsp-mode)
 ;;; lsp-mode.el ends here
