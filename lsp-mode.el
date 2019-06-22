@@ -3587,7 +3587,7 @@ RENDER-ALL - nil if only the signature should be rendered."
   "Execute code action by name."
   (if-let (action (->> (lsp-get-or-calculate-code-actions)
                        (-filter (-lambda ((&hash "kind"))
-                          (equal command-kind kind)))
+                                  (and kind (equal command-kind kind))))
                        lsp--select-action))
       (lsp-execute-code-action action)
     (user-error "No to action")))
