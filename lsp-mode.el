@@ -227,7 +227,7 @@ the buffer when it becomes large."
                  (const ignore)))
 
 (defcustom lsp-session-file (expand-file-name (locate-user-emacs-file ".lsp-session-v1"))
-  "Automatically guess the project root using projectile/project."
+  "File where session information is stored."
   :group 'lsp-mode
   :type 'file)
 
@@ -401,16 +401,14 @@ This flag affects only server which do not support incremental update."
   :group 'lsp-mode)
 
 (defcustom lsp-eldoc-render-all nil
-  "Define whether all of the returned by document/onHover will be displayed.
-If `lsp-eldoc-render-all' is set to nil `eldoc' will show only
-the symbol information."
+  "Display all of the info returned by document/onHover.
+If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
 (defcustom lsp-signature-render-all t
-  "Define whether all of the returned by textDocument/signatureHelp will be displayed.
-If `lsp-signature-render-all' is set to nil `eldoc' will show only
-the active signature."
+  "Display all of the info returned by textDocument/signatureHelp.
+If this is set to nil, `eldoc' will show only the active signature."
   :type 'boolean
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))

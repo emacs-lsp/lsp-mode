@@ -189,11 +189,12 @@
    - ~lsp-enable-snippet~ - Enable/disable snippet completion support.
    - ~lsp-auto-guess-root~ - Automatically guess the project root using projectile/project.
    - ~lsp-restart~ - Defines how server exited event must be handled.
-   - ~lsp-session-file~ - Automatically guess the project root using projectile/project.
+   - ~lsp-session-file~ - File where session information is stored.
    - ~lsp-auto-configure~ - Auto configure ~lsp-mode~. When set to t ~lsp-mode~ will auto-configure ~lsp-ui~ and ~company-lsp~.
    - ~lsp-document-sync-method~ - How to sync the document with the language server.
    - ~lsp-auto-execute-action~ - Auto-execute single action.
-   - ~lsp-eldoc-render-all~ - Define whether all of the returned by ~document/onHover~ will be displayed. If ~lsp-markup-display-all~ is set to nil ~eldoc~ will show only the symbol information.
+   - ~lsp-eldoc-render-all~ - Display all of the info returned by ~document/onHover~. If this is nil, ~eldoc~ will show only the symbol information.
+   - ~lsp-signature-render-all~ - Display all of the info returned by ~textDocument/signatureHelp~. If this is nil, ~eldoc~ will show only the active signature.
    - ~lsp-enable-completion-at-point~ - Enable ~completion-at-point~ integration.
    - ~lsp-enable-xref~ - Enable xref integration.
    - ~lsp-prefer-flymake~ - If you prefer flycheck and ~lsp-ui-flycheck~ is available, ~(setq lsp-prefer-flymake nil)~. If set to ~:none~ neither of two will be enabled.
