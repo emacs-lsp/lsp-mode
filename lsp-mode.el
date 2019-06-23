@@ -4797,12 +4797,12 @@ SESSION is the active session."
                            (with-lsp-workspace workspace
                              (lsp-notify "initialized" (make-hash-table)))
 
+                           (when-let (initialize-fn (lsp--client-initialized-fn client))
+                             (funcall initialize-fn workspace))
+
                            (--each (lsp--workspace-buffers workspace)
                              (with-current-buffer it
                                (lsp--open-in-workspace workspace)))
-
-                           (when-let (initialize-fn (lsp--client-initialized-fn client))
-                             (funcall initialize-fn workspace))
 
                            (with-lsp-workspace workspace
                              (run-hooks 'lsp-after-initialize-hook)))
