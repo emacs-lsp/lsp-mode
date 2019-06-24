@@ -333,7 +333,8 @@ at all."
                                       (lsp--set-configuration (lsp-configuration-section "pyls")))
                                     (puthash
                                      "textDocumentSync"
-                                     (ht ("save" t))
+                                     (ht ("save" t)
+                                         ("change" 2))
                                      (lsp--workspace-server-capabilities workspace)))))
 
 (provide 'lsp-pyls)
