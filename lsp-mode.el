@@ -2723,14 +2723,28 @@ interface TextDocumentEdit {
     (_ (with-current-buffer (find-file-noselect (lsp--uri-to-path (lsp--ht-get edit "textDocument" "uri")))
          (lsp--apply-text-edits (gethash "edits" edit))))))
 
+(defun lsp--position-compare (left right)
+  "Compare position LEFT and RIGHT."
+  (let ((left-line (gethash "line" left))
+        (right-line (gethash "line" right)))
+    (if (= left-line right-line)
+        (let ((left-character (gethash "character" left))
+              (right-character (gethash "character" right)))
+          (> left-character right-character))
+      (> left-line right-line))))
+
+(defun lsp--position-equal (left right)
+  "Return whether LEFT and RIGHT positions are equal."
+  (and (= (gethash "line" left) (gethash "line" right))
+       (= (gethash "character" left) (gethash "character" right))))
+
 (defun lsp--text-edit-sort-predicate (e1 e2)
-  (let ((start1 (lsp--position-to-point (gethash "start" (gethash "range" e1))))
-        (start2 (lsp--position-to-point (gethash "start" (gethash "range" e2)))))
-    (if (= start1 start2)
-        (let ((end1 (lsp--position-to-point (gethash "end" (gethash "range" e1))))
-              (end2 (lsp--position-to-point (gethash "end" (gethash "range" e2)))))
-          (> end1 end2))
-      (> start1 start2))))
+  (let ((start1 (gethash "start" (gethash "range" e1)))
+        (start2 (gethash "start" (gethash "range" e2))))
+    (if (lsp--position-equal start1 start2)
+        (lsp--position-compare (gethash "end" (gethash "range" e1))
+                               (gethash "end" (gethash "range" e2)))
+      (lsp--position-compare  start1 start2))))
 
 (defun lsp--apply-text-edits (edits)
   "Apply the edits described in the TextEdit[] object in EDITS."
@@ -3645,22 +3659,13 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
   (lsp-execute-code-action-by-kind "source.organizeImports"))
 
 (defun lsp--apply-formatting (edits)
-  (if (fboundp 'replace-buffer-contents)
-      (let ((current-buffer (current-buffer)))
-        (with-temp-buffer
-          (insert-buffer-substring-no-properties current-buffer)
-          (let ((lsp--server-sync-method 'full))
-            (lsp--apply-text-edits edits))
-          (let ((temp-buffer (current-buffer)))
-            (with-current-buffer current-buffer
-              (replace-buffer-contents temp-buffer)))))
-    (let ((point (point))
-          (w-start (window-start)))
-      (let ((lsp--server-sync-method 'full))
-        (lsp--apply-text-edits edits))
-      (goto-char point)
-      (goto-char (line-beginning-position))
-      (set-window-start (selected-window) w-start))))
+  (let ((point (point))
+        (w-start (window-start)))
+    (let ((lsp--server-sync-method 'full))
+      (lsp--apply-text-edits edits))
+    (goto-char point)
+    (goto-char (line-beginning-position))
+    (set-window-start (selected-window) w-start)))
 
 (defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region.
