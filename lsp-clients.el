@@ -327,7 +327,13 @@ finding the executable with `exec-path'."
                                                           `(,lsp-clients-elixir-server-executable)))
                   :major-modes '(elixir-mode)
                   :priority -1
-                  :server-id 'elixir-ls))
+                  :server-id 'elixir-ls
+                  :initialized-fn (lambda (workspace)
+                                    (puthash
+                                     "textDocumentSync"
+                                     (ht ("save" t)
+                                         ("change" 2))
+                                     (lsp--workspace-server-capabilities workspace)))))
 
 ;; Fortran
 (defgroup lsp-fortran nil
