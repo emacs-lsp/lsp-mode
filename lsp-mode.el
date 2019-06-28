@@ -3897,13 +3897,16 @@ perform the request synchronously."
 (cl-defun lsp-find-locations (method &optional extra &key display-action)
   "Send request named METHOD and get cross references of the symbol under point.
 EXTRA is a plist of extra parameters."
-  (let ((loc (lsp-request method
+  (if-let ((loc (lsp-request method
                           (append (lsp--text-document-position-params) extra))))
-    (if loc
-        (xref--show-xrefs
-         (lsp--locations-to-xref-items (if (sequencep loc) loc (list loc)))
-         display-action)
-      (message "Not found for: %s" (thing-at-point 'symbol t)))))
+      (let ((xrefs (lsp--locations-to-xref-items (if (sequencep loc)
+                                                     loc
+                                                   (list loc)))))
+        (xref--show-xrefs (if (functionp 'xref--create-fetcher)
+                              (-const xrefs)
+                            xrefs)
+                          display-action))
+    (message "Not found for: %s" (thing-at-point 'symbol t))))
 
 (cl-defun lsp-find-declaration (&key display-action)
   "Find declarations of the symbol under point."
