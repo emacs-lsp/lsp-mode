@@ -65,7 +65,7 @@
   "Build the command required to launch fsautocomplete."
   (unless lsp-fsharp-server-path (lsp-warn "Cannot locate fsautocomplete"))
   (append (lsp-fsharp--fsac-runtime-cmd)
-          (list lsp-fsharp-server-path "--mode" "lsp")
+          (list (expand-file-name lsp-fsharp-server-path) "--mode" "lsp")
           lsp-fsharp-server-args))
 
 (defun lsp-fsharp--make-init-options ()
