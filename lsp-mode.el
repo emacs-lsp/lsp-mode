@@ -3417,7 +3417,11 @@ Stolen from `org-copy-visible'."
     (while (re-search-forward "^[-]+$" nil t)
       (replace-match ""))
 
-    (gfm-view-mode)
+    ;; markdown-mode v2.3 does not yet provide gfm-view-mode
+    (if (fboundp 'gfm-view-mode)
+	(gfm-view-mode)
+      (gfm-mode))
+
     (lsp--setup-markdown major-mode)))
 
 (defun lsp--fontlock-with-mode (str mode)
