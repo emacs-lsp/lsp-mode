@@ -2455,7 +2455,8 @@ in that particular folder."
   (interactive
    (list (read-directory-name "Select folder to add: "
                               (or (lsp--suggest-project-root) default-directory) nil t)))
-  (push project-root (lsp-session-folders (lsp-session)))
+  (cl-pushnew (f-canonical project-root)
+              (lsp-session-folders (lsp-session)) :test 'equal)
   (lsp--persist-session (lsp-session)))
 
 (defun lsp-workspace-folders-remove (project-root)
