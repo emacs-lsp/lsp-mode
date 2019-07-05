@@ -112,7 +112,8 @@ more customizations like using environment variables."
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-metals--server-command)
 		  :major-modes '(scala-mode)
-                  :priority -1
+      :priority -1
+      :notification-handlers (ht ("metals/treeViewDidChange" #'ignore))
 		  :server-id 'metals
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
