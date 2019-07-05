@@ -231,7 +231,8 @@
                          :remote? t
                          :server-id 'pyls-remote))
      #+END_SRC
-
+**** Dealing with stderr
+    With TRAMP, Emacs does not have an easy way to distinguish stdout and stderr, so when the underlying LSP process writes to stderr, it breaks the ~lsp-mode~ parser. As a workaround, redirect stderr to ~/dev/null~ in the shell code, e.g. use the following ~:new-connection~ argument in the ~make-lsp-client~ call: ~(lsp-tramp-connection "/path/to/server 2>/dev/null")~.
 ** Limitations
 *** File watches
     When some of the workspaces that are active in the current project requests file notifications via ~workspace/didChangeWatchedFiles~ ~lsp-mode~ will start monitoring each of the folders in the workspace for changes. In case your project contains a lot of files you might want to disable file monitoring via ~lsp-enable-file-watchers~ (you may use dir-locals).
