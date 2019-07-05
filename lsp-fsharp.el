@@ -94,7 +94,7 @@ The slash is expected at the end."
 
 (defun lsp-fsharp--make-launch-cmd ()
   "Build the command required to launch fsautocomplete."
-  (append (list (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-locate) "--mode" "lsp")
+  (append (list (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-locate) "--mode" "lsp" "--background-service-enabled")
           lsp-fsharp-server-args))
 
 (defun lsp-fsharp--make-init-options ()
