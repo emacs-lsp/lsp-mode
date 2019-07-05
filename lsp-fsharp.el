@@ -50,7 +50,8 @@ The slash is expected at the end."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-fsharp-server-download-url "https://ci.appveyor.com/api/projects/fsautocomplete/fsautocomplete/artifacts/bin/pkgs/fsautocomplete.netcore.zip?branch=master"
-  "Fsautocomplete download url."
+  "Fsautocomplete download url.
+To use the mono/.Net framework version, set this to \"https://ci.appveyor.com/api/projects/fsautocomplete/fsautocomplete/artifacts/bin/pkgs/fsautocomplete.zip?branch=master\""
   :group 'lsp-fsharp
   :risky t
   :type 'string
@@ -70,8 +71,11 @@ The slash is expected at the end."
     ('net-framework nil)))
 
 (defun lsp-fsharp--fsac-cmd ()
-  "The location of fsautocomplete.dll."
-  (expand-file-name "fsautocomplete.dll" lsp-fsharp-server-install-dir))
+  "The location of fsautocomplete executable."
+  (let ((file-ext (if (eq lsp-fsharp-server-runtime 'net-core)
+                      ".dll"
+                    ".exe")))
+    (expand-file-name (concat "fsautocomplete" file-ext) lsp-fsharp-server-install-dir)))
 
 (defun lsp-fsharp--fsac-locate ()
   "Return the location of the fsautocomplete langauge server."
@@ -79,8 +83,8 @@ The slash is expected at the end."
     (unless (file-exists-p fsac)
       (if (yes-or-no-p "Server is not installed. Do you want to install it?")
           (lsp-fsharp--fsac-install)
-        (error "LSP F# cannot be started without FsAutoComplete Server"))))
-  fsac)
+        (error "LSP F# cannot be started without FsAutoComplete Server")))
+  fsac))
 
 (defun lsp-fsharp--fsac-install ()
   "Downloads the latest version of fsautocomplete, and set `lsp-fsharp-server-path'."
