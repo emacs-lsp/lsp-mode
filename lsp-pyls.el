@@ -256,7 +256,7 @@ dot."
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-pyls-plugins-rope-completion-enabled t
+(defcustom lsp-pyls-plugins-rope-completion-enabled nil
   "Enable or disable the plugin."
   :type 'boolean
   :group 'lsp-pyls
