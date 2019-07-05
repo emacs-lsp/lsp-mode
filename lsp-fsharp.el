@@ -41,11 +41,20 @@
                  (const :tag "Use .Net Framework" 'net-framework))
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-fsharp-server-path nil
-  "The path to fsautocomplete."
+(defcustom lsp-fsharp-server-install-dir (locate-user-emacs-file "fsautocomplete/")
+  "Install directory for fsautocomplete server.
+The slash is expected at the end."
   :group 'lsp-fsharp
   :risky t
-  :type 'file
+  :type 'directory
+  :package-version '(lsp-mode . "6.1"))
+
+(defcustom lsp-fsharp-server-download-url "https://ci.appveyor.com/api/projects/fsautocomplete/fsautocomplete/artifacts/bin/pkgs/fsautocomplete.netcore.zip?branch=master"
+  "Fsautocomplete download url.
+To use the mono/.Net framework version, set this to \"https://ci.appveyor.com/api/projects/fsautocomplete/fsautocomplete/artifacts/bin/pkgs/fsautocomplete.zip?branch=master\""
+  :group 'lsp-fsharp
+  :risky t
+  :type 'string
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-fsharp-server-args nil
@@ -57,15 +66,39 @@
 (defun lsp-fsharp--fsac-runtime-cmd ()
   "Get the command required to run fsautocomplete based off of the current runtime."
   (pcase lsp-fsharp-server-runtime
-    ('net-core '("dotnet"))
-    ('mono '("mono"))
+    ('net-core "dotnet")
+    ('mono "mono")
     ('net-framework nil)))
+
+(defun lsp-fsharp--fsac-cmd ()
+  "The location of fsautocomplete executable."
+  (let ((file-ext (if (eq lsp-fsharp-server-runtime 'net-core)
+                      ".dll"
+                    ".exe")))
+    (expand-file-name (concat "fsautocomplete" file-ext) lsp-fsharp-server-install-dir)))
+
+(defun lsp-fsharp--fsac-locate ()
+  "Return the location of the fsautocomplete langauge server."
+  (let ((fsac (lsp-fsharp--fsac-cmd)))
+    (unless (file-exists-p fsac)
+      (if (yes-or-no-p "Server is not installed. Do you want to install it?")
+          (lsp-fsharp--fsac-install)
+        (error "LSP F# cannot be started without FsAutoComplete Server")))
+    fsac))
+
+(defun lsp-fsharp--fsac-install ()
+  "Downloads the latest version of fsautocomplete, and set `lsp-fsharp-server-path'."
+  (let* ((temp-file (make-temp-file "fsautocomplete" nil ".zip"))
+         (unzip-script (cond ((executable-find "unzip") "bash -c 'mkdir -p %2$s && unzip -qq %1$s -d %2$s'")
+                             ((executable-find "powershell") "powershell -noprofile -noninteractive -nologo -ex bypass Expand-Archive -path '%s' -dest '%s'")
+                             (t (user-error "Unable to unzip server - file %s cannot be extracted, please extract it manually" temp-file)))))
+    (url-copy-file lsp-fsharp-server-download-url temp-file t)
+    (shell-command (format unzip-script temp-file (expand-file-name lsp-fsharp-server-install-dir)))
+    (shell-command (format "%s %s --version" (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-cmd)))))
 
 (defun lsp-fsharp--make-launch-cmd ()
   "Build the command required to launch fsautocomplete."
-  (unless lsp-fsharp-server-path (lsp-warn "Cannot locate fsautocomplete"))
-  (append (lsp-fsharp--fsac-runtime-cmd)
-          (list lsp-fsharp-server-path "--mode" "lsp")
+  (append (list (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-locate) "--mode" "lsp" "--background-service-enabled")
           lsp-fsharp-server-args))
 
 (defun lsp-fsharp--make-init-options ()
@@ -77,6 +110,7 @@
                   :major-modes '(fsharp-mode)
                   :notification-handlers (ht ("fsharp/notifyCancel" #'ignore)
                                              ("fsharp/notifyWorkspace" #'ignore)
+                                             ("fsharp/fileParsed" #'ignore)
                                              ("fsharp/notifyWorkspacePeek" #'ignore))
                   :initialization-options 'lsp-fsharp--make-init-options
                   :server-id 'fsac))
