@@ -22,15 +22,16 @@
       - [[#vanilla-emacs][Vanilla Emacs]]
       - [[#spacemacs][Spacemacs]]
       - [[#use-package][use-package]]
-    - [[#how-it-works][How it works?]]
+    - [[#how-does-it-work][How does it work?]]
   - [[#supported-languages][Supported languages]]
   - [[#commands][Commands]]
   - [[#settings][Settings]]
   - [[#screenshots][Screenshots]]
   - [[#extensions][Extensions]]
     - [[#tramp][TRAMP]]
-      - [[#how-does-it-work][How does it work?]]
+      - [[#how-does-it-work-1][How does it work?]]
       - [[#sample-configuration][Sample configuration]]
+      - [[#dealing-with-stderr][Dealing with stderr]]
   - [[#limitations][Limitations]]
     - [[#file-watches][File watches]]
   - [[#contributions][Contributions]]
@@ -177,6 +178,7 @@
    - ~completion-at-point~ - display completion using built-in emacs ~completion-at-point~ framework.
    - ~lsp-find-definition~ - to find the definition for the symbol under point.
    - ~lsp-find-references~ - Find references for the symbol under point.
+   - ~lsp-disconnect~ - Disconnect the buffer from the language server.
    - ~lsp-lens-show~ - Show lenses in the current file
    - ~lsp-lens-hide~ - Hide lenses in the current file
    - ~lsp-lens-mode~ (experimental) - Turn on/off lenses in the current file.
