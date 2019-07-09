@@ -473,6 +473,11 @@ The hook is called with two params: the signature information and hover data."
   :type 'hook
   :group 'lsp-mode)
 
+(defcustom lsp-before-apply-edits-hook nil
+  "Hooks to run before applying edits."
+  :type 'hook
+  :group 'lsp-mode)
+
 (defgroup lsp-imenu nil
   "Imenu."
   :group 'lsp-mode
@@ -2804,6 +2809,7 @@ The method uses `replace-buffer-contents'."
 This method is used if we do not have `buffer-replace-content'."
   (unless (seq-empty-p edits)
     (atomic-change-group
+      (run-hooks 'lsp-before-apply-edits-hook)
       (let* ((change-group (when (functionp 'undo-amalgamate-change-group)
                              (prepare-change-group)))
              (howmany (length edits))
