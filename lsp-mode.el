@@ -3720,13 +3720,8 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
   (lsp-execute-code-action-by-kind "source.organizeImports"))
 
 (defun lsp--apply-formatting (edits)
-  (let ((point (point))
-        (w-start (window-start)))
-    (let ((lsp--server-sync-method 'full))
-      (lsp--apply-text-edits edits))
-    (goto-char point)
-    (goto-char (line-beginning-position))
-    (set-window-start (selected-window) w-start)))
+  (let ((lsp--server-sync-method 'full))
+    (lsp--apply-text-edits edits)))
 
 (defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region.
