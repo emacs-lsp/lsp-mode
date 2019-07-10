@@ -14,11 +14,13 @@ env:
   - EMACS_VERSION=25.1
   - EMACS_VERSION=25.2
   - EMACS_VERSION=25.3
+  - EMACS_VERSION=26.1
+  - EMACS_VERSION=26.2
   - EMACS_VERSION=snapshot
 before_install:
   - export PATH="$HOME/bin:$PATH"
   - wget 'https://raw.githubusercontent.com/flycheck/emacs-travis/master/emacs-travis.mk'
-  - make -f emacs-travis.mk install_emacs
+  - make -f emacs-travis.mk install_gnutls install_emacs
   - make -f emacs-travis.mk install_cask
   - docker pull asciidoctor/docker-asciidoctor
 install:
@@ -28,7 +30,10 @@ script:
   - cask build
   - cask clean-elc
   - cask exec ert-runner -t "!no-win"
-  - cask exec ecukes
+  - |
+    if (( ${EMACS_VERSION:0:2} < 26 )); then
+        cask exec ecukes
+    fi
   - docker run -v $TRAVIS_BUILD_DIR:/src/ asciidoctor/docker-asciidoctor make -C /src/ docs
 after_success:
   - bash <(curl -s https://codecov.io/bash
