@@ -41,17 +41,17 @@
        (package-user-dir (expand-file-name (make-temp-name "lsp-tmp-elpa")
                                            user-emacs-directory))
        (custom-file (expand-file-name "custom.el" package-user-dir))
-       (pkg-list '(lsp-mode lsp-ui company-lsp)))
+       (pkg-list '(lsp-mode lsp-ui company-lsp yasnippet lsp-java lsp-python-ms lsp-haskell helm-lsp lsp-treemacs dap-mode lsp-focus lsp-origami)))
 
   (package-initialize)
   (package-refresh-contents)
-  
+
   (mapcar (lambda (pkg)
             (unless (package-installed-p pkg)
               (package-install pkg))
             (require pkg))
           pkg-list)
-  
+
   (add-hook 'kill-emacs-hook `(lambda ()
                                 (delete-directory ,package-user-dir t))))
 
