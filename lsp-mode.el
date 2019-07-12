@@ -1779,7 +1779,11 @@ CALLBACK - callback for the lenses."
 
 
 
-(defvar lsp-mode-map (make-sparse-keymap)
+(defvar lsp-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-<down-mouse-1>") #'lsp-find-definition-mouse)
+    (define-key map (kbd "C-<mouse-1>") #'ignore)
+    map)
   "Keymap for `lsp-mode'.")
 
 (define-minor-mode lsp-mode ""
@@ -3983,6 +3987,13 @@ REFERENCES? t when METHOD returns references."
   (unless (lsp--capability "definitionProvider")
     (signal 'lsp-capability-not-supported (list "definitionProvider")))
   (lsp-find-locations "textDocument/definition" nil :display-action display-action))
+
+(defun lsp-find-definition-mouse (click)
+  "Click to start `lsp-find-definition' at clicked point."
+  (interactive "e")
+  (let ((p1 (posn-point (event-start click))))
+    (goto-char p1)
+    (lsp-find-definition)))
 
 (cl-defun lsp-find-implementation (&key display-action)
   "Find implementations of the symbol under point."
