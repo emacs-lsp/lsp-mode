@@ -109,11 +109,56 @@ more customizations like using environment variables."
   (interactive)
   (lsp-send-execute-command "source-scan" ()))
 
+(defun lsp-metals--doctor-render (html)
+  "Render the Metals doctor html in the current buffer."
+  (require 'shr)
+  (setq-local show-trailing-whitespace nil)
+  (setq-local buffer-read-only nil)
+  (erase-buffer)
+  (insert html)
+  (shr-render-region (point-min) (point-max))
+  (setq-local buffer-read-only t))
+
+(defun lsp-metals--generate-doctor-buffer-name (workspace)
+  (format "*Metals Doctor: %s*" (process-id (lsp--workspace-cmd-proc workspace))))
+
+(defun lsp-metals--doctor-run (workspace html)
+  "Focus on a window displaying troubleshooting help from the Metals doctor."
+  (pop-to-buffer (lsp-metals--generate-doctor-buffer-name workspace))
+  (lsp-metals--doctor-render html))
+
+(defun lsp-metals--doctor-reload (workspace html)
+  "Reload the HTML contents of an open Doctor window, if any.
+Should be ignored if there is no open doctor window."
+  (when-let ((buffer (get-buffer (lsp-metals--generate-doctor-buffer-name workspace))))
+    (with-current-buffer buffer
+      (lsp-metals--doctor-render html))))
+
+(defun lsp-metals--goto-location (_workspace location)
+  "Move the cursor focus to the provided location."
+  (let ((xrefs (lsp--locations-to-xref-items (list location))))
+    (if (boundp 'xref-show-definitions-function)
+      (with-no-warnings
+        (funcall xref-show-definitions-function
+          (-const xrefs)
+          `((window . ,(selected-window)))))
+      (xref--show-xrefs xrefs nil))))
+
+(defun lsp-metals--execute-client-command (workspace params)
+  "Handle the metals/executeClientCommand extension notification."
+  (when-let ((command (pcase (ht-get params "command")
+                        (`"metals-doctor-run" #'lsp-metals--doctor-run)
+                        (`"metals-doctor-reload" #'lsp-metals--doctor-reload)
+                        (`"metals-goto-location" #'lsp-metals--goto-location)
+                        (c (ignore (lsp-warn "Unknown metals client command: %s" c))))))
+    (apply command (append (list workspace) (ht-get params "arguments") nil))))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-metals--server-command)
-		  :major-modes '(scala-mode)
-      :priority -1
-      :notification-handlers (ht ("metals/treeViewDidChange" #'ignore))
+                  :major-modes '(scala-mode)
+                  :priority -1
+                  :notification-handlers (ht ("metals/executeClientCommand" #'lsp-metals--execute-client-command)
+                                             ("metals/treeViewDidChange" #'ignore))
 		  :server-id 'metals
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
