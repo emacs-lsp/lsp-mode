@@ -3991,7 +3991,10 @@ REFERENCES? t when METHOD returns references."
 (defun lsp-find-definition-mouse (click)
   "Click to start `lsp-find-definition' at clicked point."
   (interactive "e")
-  (let ((p1 (posn-point (event-start click))))
+  (let* ((ec (event-start click))
+         (p1 (posn-point ec))
+         (w1 (posn-window ec)))
+    (select-window w1)
     (goto-char p1)
     (lsp-find-definition)))
 
