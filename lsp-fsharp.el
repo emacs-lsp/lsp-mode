@@ -104,7 +104,7 @@ To use the mono/.Net framework version, set this to \"https://ci.appveyor.com/ap
 
 (defun lsp-fsharp--make-init-options ()
   "Init options for F#."
-  `(:automaticWorkspaceInit true))
+  `(:automaticWorkspaceInit t))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-fsharp--make-launch-cmd)
