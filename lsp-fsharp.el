@@ -89,11 +89,12 @@ To use the mono/.Net framework version, set this to \"https://ci.appveyor.com/ap
 (defun lsp-fsharp--fsac-install ()
   "Downloads the latest version of fsautocomplete, and set `lsp-fsharp-server-path'."
   (let* ((temp-file (make-temp-file "fsautocomplete" nil ".zip"))
-         (unzip-script (cond ((executable-find "unzip") "bash -c 'mkdir -p %2$s && unzip -qq %1$s -d %2$s'")
-                             ((executable-find "powershell") "powershell -noprofile -noninteractive -nologo -ex bypass Expand-Archive -path '%s' -dest '%s'")
-                             (t (user-error "Unable to unzip server - file %s cannot be extracted, please extract it manually" temp-file)))))
+         (install-dir-full (expand-file-name lsp-fsharp-server-install-dir))
+         (unzip-script (cond ((executable-find "unzip") (format "bash -c 'mkdir -p %s && unzip -qq %s -d %s'") install-dir-full temp-file install-dir-full)
+                             ((executable-find "powershell") (format "powershell -noprofile -noninteractive -nologo -ex bypass Expand-Archive -path '%s' -dest '%s'" temp-file install-dir-full))
+                             (t (user-error (format "Unable to unzip server - file %s cannot be extracted, please extract it manually") temp-file)))))
     (url-copy-file lsp-fsharp-server-download-url temp-file t)
-    (shell-command (format unzip-script temp-file (expand-file-name lsp-fsharp-server-install-dir)))
+    (shell-command unzip-script)
     (shell-command (format "%s %s --version" (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-cmd)))))
 
 (defun lsp-fsharp--make-launch-cmd ()
