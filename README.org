@@ -217,6 +217,8 @@
      [[file:examples/python_debugging.png]]
    - Call hierarchy via ccls
      [[file:examples/call-hierarchy-ccls.png]]
+   - Metals Doctor
+     [[file:examples/metals-doctor.png]]
 ** Extensions
 *** TRAMP
     LSP mode has support for tramp buffers with the following requirements:
