@@ -58,6 +58,12 @@
 | Clone the https://github.com/elm-tooling/elm-language-server[repository], run `npm install` in the root, then run https://www.typescriptlang.org/[tsc] in the server directory. Set <<lsp-elm-server-install-dir>> to wherever you cloned the repo.
 |
 
+|Erlang
+|https://github.com/erlang-ls/erlang_ls[erlang_ls]
+|<<lsp-erlang,Built-in>>
+|https://github.com/erlang-ls/erlang_ls[erlang_ls]
+|
+
 |F#
 |https://github.com/fsharp/FsAutoComplete[FsAutoComplete]
 |<<lsp-fsharp,Built-in>>

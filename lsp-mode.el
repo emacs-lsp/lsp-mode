@@ -580,7 +580,8 @@ If set to `:none' neither of two will be enabled."
                                         (enh-ruby-mode . "ruby")
                                         (f90-mode . "fortran")
                                         (elm-mode . "elm")
-                                        (dart-mode . "dart"))
+                                        (dart-mode . "dart")
+                                        (erlang-mode . "erlang"))
   "Language id configuration.")
 
 (defvar lsp-method-requirements

@@ -40,6 +40,7 @@
 (require 'lsp-elm)
 (require 'lsp-metals)
 (require 'lsp-fsharp)
+(require 'lsp-erlang)
 
 ;;; Bash
 (lsp-register-client
