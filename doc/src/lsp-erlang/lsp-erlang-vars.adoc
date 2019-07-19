@@ -1,0 +1,10 @@
+[id="lsp-erlang-vars"]
+==== `lsp-erlang` settings
+
+[id="lsp-erlang-server-install-dir"]
+- `lsp-erlang-server-install-dir`
+____
+Default value: `pass:["."]`
+
+Path to the Erlang Language Server installation dir.
+____

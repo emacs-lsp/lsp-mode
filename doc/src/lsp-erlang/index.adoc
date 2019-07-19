@@ -1,0 +1,6 @@
+[id="lsp-erlang"]
+=== Erlang support: `lsp-erlang`
+`lsp-erlang` provides support for Erlang via
+https://github.com/erlang-ls/erlang_ls[erlang_ls].
+
+include::lsp-erlang-vars.adoc[]

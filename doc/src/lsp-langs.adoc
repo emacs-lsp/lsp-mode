@@ -8,6 +8,8 @@ include::lsp-dart/index.adoc[]
 
 include::lsp-elixir/index.adoc[]
 
+include::lsp-erlang/index.adoc[]
+
 include::lsp-flow/index.adoc[]
 
 include::lsp-fortran/index.adoc[]
