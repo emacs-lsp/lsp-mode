@@ -492,6 +492,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#lsp-css">CSS support: <code>lsp-css</code></a></li>
 <li><a href="#lsp-dart">Dart support: <code>lsp-dart</code></a></li>
 <li><a href="#lsp-elixir">Elixir support: <code>lsp-css</code></a></li>
+<li><a href="#lsp-erlang">Erlang support: <code>lsp-erlang</code></a></li>
 <li><a href="#lsp-flow">Flow support: <code>lsp-flow</code></a></li>
 <li><a href="#lsp-fortran">Fortran support: <code>lsp-fortran</code></a></li>
 <li><a href="#lsp-fsharp">F# support: <code>lsp-fsharp</code></a></li>
@@ -2215,6 +2216,13 @@ sent from the server to the editor:</p>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Erlang</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/erlang-ls/erlang_ls">erlang_ls</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#lsp-erlang">Built-in</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/erlang-ls/erlang_ls">erlang_ls</a></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">F#</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/fsharp/FsAutoComplete">FsAutoComplete</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#lsp-fsharp">Built-in</a></p></td>
@@ -2951,6 +2959,33 @@ server.</p>
 <p>The elixir-language-server executable to use.
 Leave as just the executable name to use the default behavior of
 finding the executable with ‘exec-path’.</p>
+</div>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="lsp-erlang">Erlang support: <code>lsp-erlang</code></h3>
+<div class="paragraph">
+<p><code>lsp-erlang</code> provides support for Erlang via
+<a href="https://github.com/erlang-ls/erlang_ls">erlang_ls</a>.</p>
+</div>
+<div class="sect3">
+<h4 id="lsp-erlang-vars"><code>lsp-erlang</code> settings</h4>
+<div id="lsp-erlang-server-install-dir" class="ulist">
+<ul>
+<li>
+<p><code>lsp-erlang-server-install-dir</code></p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>"."</code></p>
+</div>
+<div class="paragraph">
+<p>Path to the Erlang Language Server installation dir.</p>
 </div>
 </blockquote>
 </div>
@@ -10142,7 +10177,7 @@ Introduced in <code>lsp-mode</code> 6.1
 <div id="footer">
 <div id="footer-text">
 Version 6.1<br>
-Last updated 2019-07-18 14:43:35 UTC
+Last updated 2019-07-20 12:44:16 UTC
 </div>
 </div>
 <style>
