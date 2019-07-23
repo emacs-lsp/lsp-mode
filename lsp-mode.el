@@ -2697,7 +2697,14 @@ interface Range {
   (if-let (document-changes (gethash "documentChanges" edit))
       (progn
         (lsp--check-document-changes-version document-changes)
-        (seq-do #'lsp--apply-text-document-edit (seq-reverse document-changes)))
+        (->> document-changes
+             (seq-filter (lambda (edit)
+                           (string= (gethash "kind" edit) "edit")))
+             (seq-do #'lsp--apply-text-document-edit))
+        (->> document-changes
+             (seq-filter (lambda (edit)
+                           (not (string= (gethash "kind" edit) "edit"))))
+             (seq-do #'lsp--apply-text-document-edit)))
     (when-let (changes (gethash "changes" edit))
       (maphash
        (lambda (uri text-edits)
