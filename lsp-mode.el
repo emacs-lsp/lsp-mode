@@ -2473,7 +2473,9 @@ in that particular folder."
                               (or (lsp--suggest-project-root) default-directory) nil t)))
   (cl-pushnew (f-canonical project-root)
               (lsp-session-folders (lsp-session)) :test 'equal)
-  (lsp--persist-session (lsp-session)))
+  (lsp--persist-session (lsp-session))
+
+  (run-hook-with-args 'lsp-workspace-folders-changed-hook (list project-root) nil))
 
 (defun lsp-workspace-folders-remove (project-root)
   "Remove PROJECT-ROOT from the list of workspace folders."
