@@ -402,7 +402,25 @@ finding the executable with `exec-path'."
                   :notification-handlers (lsp-ht ("telemetry/event" 'ignore)
                                                  ("$/cancelRequest" 'ignore))
                   :request-handlers (lsp-ht ("window/showStatus" 'ignore))))
-
 
+
+;;; Dockerfile
+(defcustom lsp-dockerfile-language-server-command
+  '("docker-langserver" "--stdio")
+  "The command that starts the docker language server."
+  :group 'lsp-dockerfile
+  :type '(choice
+          (string :tag "Single string value")
+          (repeat :tag "List of string values"
+                  string)))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (-const lsp-dockerfile-language-server-command))
+                  :major-modes '(dockerfile-mode)
+                  :priority -1
+                  :server-id 'dockerfile-ls))
+
+
 (provide 'lsp-clients)
 ;;; lsp-clients.el ends here

@@ -583,7 +583,8 @@ If set to `:none' neither of two will be enabled."
                                         (f90-mode . "fortran")
                                         (elm-mode . "elm")
                                         (dart-mode . "dart")
-                                        (erlang-mode . "erlang"))
+                                        (erlang-mode . "erlang")
+                                        (dockerfile-mode . "dockerfile"))
   "Language id configuration.")
 
 (defvar lsp-method-requirements
