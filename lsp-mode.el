@@ -538,6 +538,7 @@ If set to `:none' neither of two will be enabled."
                                         (".*\.tsx$" . "typescriptreact")
                                         (".*\.ts$" . "typescript")
                                         (".*\.jsx$" . "javascriptreact")
+                                        (".*\.xml$" . "xml")
                                         (sh-mode . "shellscript")
                                         (scala-mode . "scala")
                                         (julia-mode . "julia")
