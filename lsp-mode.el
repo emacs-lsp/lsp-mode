@@ -3867,16 +3867,14 @@ A reference is highlighted only if it is visible in a window."
                                         (1+ (gethash "line" start))
                                         (gethash "character" start)))))
 
-(defun lsp--location-to-td-position (location)
-  "Convert LOCATION to a TextDocumentPositionParams object."
-  `(:textDocument (:uri ,(gethash "uri" location))
-                  :position ,(gethash "start" (gethash "range" location))))
-
-(defun lsp--symbol-info-to-identifier (symbol)
-  (let ((td-params (lsp--location-to-td-position (gethash "location" symbol))))
-    (propertize (gethash "name" symbol)
-                'ref-params (lsp--make-reference-params td-params)
-                'def-params td-params)))
+(defun lsp--symbol-to-identifiers (symbol)
+  "Convert DocumentSymbol or SymbolInformation into a list of xref identifiers"
+  (cons
+   (let ((td-params (lsp--text-document-position-params nil (lsp--symbol-get-start-point symbol))))
+     (propertize (gethash "name" symbol)
+                 'ref-params (lsp--make-reference-params td-params)
+                 'def-params td-params))
+   (cl-mapcan #'lsp--symbol-to-identifiers (gethash "children" symbol))))
 
 (defun lsp--get-document-symbols ()
   "Get document symbols.
@@ -3922,7 +3920,7 @@ perform the request synchronously."
 (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
   (let ((json-false :json-false)
         (symbols (lsp--get-document-symbols)))
-    (seq-map #'lsp--symbol-info-to-identifier (seq-remove 'null symbols))))
+    (cl-mapcan #'lsp--symbol-to-identifiers (seq-remove 'null symbols))))
 
 (cl-defmethod xref-backend-definitions ((_backend (eql xref-lsp)) identifier)
   (let* ((maybeparams (get-text-property 0 'def-params identifier))
