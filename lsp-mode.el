@@ -3932,17 +3932,6 @@ A reference is highlighted only if it is visible in a window."
                                         (1+ (gethash "line" start))
                                         (gethash "character" start)))))
 
-(defun lsp--location-to-td-position (location)
-  "Convert LOCATION to a TextDocumentPositionParams object."
-  `(:textDocument (:uri ,(gethash "uri" location))
-                  :position ,(gethash "start" (gethash "range" location))))
-
-(defun lsp--symbol-info-to-identifier (symbol)
-  (let ((td-params (lsp--location-to-td-position (gethash "location" symbol))))
-    (propertize (gethash "name" symbol)
-                'ref-params (lsp--make-reference-params td-params)
-                'def-params td-params)))
-
 (defun lsp--get-document-symbols ()
   "Get document symbols.
 
@@ -3981,34 +3970,41 @@ perform the request synchronously."
 
 (cl-defmethod xref-backend-identifier-at-point ((_backend (eql xref-lsp)))
   (propertize (or (thing-at-point 'symbol) "")
-              'def-params (lsp--text-document-position-params)
-              'ref-params (lsp--make-reference-params)))
+              'identifier-at-point t))
+
+(defun lsp--xref-elements-index (symbols path)
+  (-mapcat
+   (-lambda ((&hash "name" "children" "selectionRange" (&hash? "start") "location"))
+     (cons (cons (concat path name) (lsp--position-to-point (or start location)))
+           (lsp--xref-elements-index children (concat path name " / "))))
+   symbols))
+
+(defvar-local lsp--symbols-cache nil)
 
 (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
-  (let ((json-false :json-false)
-        (symbols (lsp--get-document-symbols)))
-    (seq-map #'lsp--symbol-info-to-identifier (seq-remove 'null symbols))))
+  (if (lsp--find-workspaces-for "textDocument/documentSymbol")
+      (progn
+        (setq-local lsp--symbols-cache (lsp--xref-elements-index
+                                        (lsp--get-document-symbols) nil))
+        lsp--symbols-cache)
+    (list (propertize (or (thing-at-point 'symbol) "")
+                      'identifier-at-point t))))
 
 (cl-defmethod xref-backend-definitions ((_backend (eql xref-lsp)) identifier)
-  (let* ((maybeparams (get-text-property 0 'def-params identifier))
-         ;; In some modes (such as haskell-mode), xref-find-definitions gets
-         ;; called directly without applying the properties expected here. So we
-         ;; must test if the properties are present, and if not use the current
-         ;; point location.
-         (params (if (null maybeparams)
-                     (lsp--text-document-position-params)
-                   maybeparams))
-         (defs (lsp--send-request (lsp--make-request
-                                   "textDocument/definition"
-                                   params))))
-    (lsp--locations-to-xref-items (if (sequencep defs) defs (list defs)))))
+  (save-excursion
+    (unless (get-text-property 0 'identifier-at-point identifier)
+      (goto-char (cl-rest (or (assoc identifier lsp--symbols-cache)
+                              (user-error "Unable to find symbol %s in current document" identifier)))))
+    (lsp--locations-to-xref-items (lsp-request "textDocument/definition"
+                                               (lsp--text-document-position-params)))))
 
 (cl-defmethod xref-backend-references ((_backend (eql xref-lsp)) identifier)
-  (let* ((properties (text-properties-at 0 identifier))
-         (params (plist-get properties 'ref-params))
-         (refs (lsp-request "textDocument/references"
-                            (or params (lsp--make-reference-params)))))
-    (lsp--locations-to-xref-items refs)))
+  (save-excursion
+    (unless (get-text-property 0 'identifier-at-point identifier)
+      (goto-char (cl-rest (or (assoc identifier lsp--symbols-cache)
+                              (user-error "Unable to find symbol %s" identifier)))))
+    (lsp--locations-to-xref-items (lsp-request "textDocument/references"
+                                               (lsp--make-reference-params)))))
 
 (cl-defmethod xref-backend-apropos ((_backend (eql xref-lsp)) pattern)
   (seq-map #'lsp--symbol-information-to-xref
@@ -4543,7 +4539,6 @@ SYM can be either DocumentSymbol or SymbolInformation."
   (-> (gethash "kind" sym)
       (assoc lsp--symbol-kind)
       (cdr)
-
       (or "Other")))
 
 (defun lsp--imenu-create-index ()
