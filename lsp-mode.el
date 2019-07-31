@@ -599,6 +599,7 @@ If set to `:none' neither of two will be enabled."
     ("textDocument/definition" :capability "definitionProvider")
     ("workspace/symbol" :capability "workspaceSymbolProvider")
     ("textDocument/codeLens" :capability "codeLensProvider")
+    ("textDocument/selectionRange" :capability "selectionRangeProvider")
     ("textDocument/prepareRename"
      :check-command (lambda (workspace)
                       (with-lsp-workspace workspace
@@ -706,6 +707,9 @@ They are added to `markdown-code-lang-modes'")
 
 (defvar-local lsp--document-symbols nil
   "The latest document symbols.")
+
+(defvar-local lsp--document-selection-range-cache nil
+  "The document selection cache.")
 
 (defvar-local lsp--document-symbols-request-async nil
   "If non-nil, request document symbols asynchronously.")
@@ -1038,6 +1042,46 @@ to the beginning and ending points in the range correspondingly."
              ,(car region))
         (app (lambda (range) (lsp--position-to-point (gethash "end" range)))
              ,(cdr region))))
+
+(defun lsp--find-wrapping-range (current-selection-range)
+  (-let* (((&hash "parent" "range") current-selection-range)
+          ((start . end) (lsp--range-to-region range)))
+    (cond
+     ((and
+       (region-active-p)
+       (<= start (region-beginning) end)
+       (<= start (region-end) end)
+       (or (not (= start (region-beginning)))
+           (not (= end (region-end)))))
+      (cons start end))
+     ((and (<= start (point) end)
+           (not (region-active-p)))
+      (cons start end))
+     (parent (lsp--find-wrapping-range parent)))))
+
+(defun lsp--get-selection-range ()
+  (or
+   (-when-let ((cache . cache-tick) lsp--document-selection-range-cache)
+     (when (= cache-tick (buffer-modified-tick)) cache))
+   (let ((response (cl-first
+                    (lsp-request
+                     "textDocument/selectionRange"
+                     (list :textDocument (lsp--text-document-identifier)
+                           :positions (vector (lsp--cur-position)))))))
+     (setq-local lsp--document-selection-range-cache
+                 (cons response (buffer-modified-tick)))
+     response)))
+
+(defun lsp-extend-selection ()
+  "Extend selection."
+  (interactive)
+  (unless (lsp--capability "selectionRangeProvider")
+    (signal 'lsp-capability-not-supported (list "selectionRangeProvider")))
+  (-when-let ((start . end) (lsp--find-wrapping-range (lsp--get-selection-range)))
+    (goto-char start)
+    (set-mark (point))
+    (goto-char end)
+    (exchange-point-and-mark)))
 
 (defun lsp-warn (message &rest args)
   "Display a warning message made from (`format-message' MESSAGE ARGS...).
