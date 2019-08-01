@@ -151,7 +151,7 @@ complexity."
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-pyls-plugins-pylint-args t
+(defcustom lsp-pyls-plugins-pylint-args []
   "Arguments, passed to pylint"
   :risky t
   :type '(repeat string)
