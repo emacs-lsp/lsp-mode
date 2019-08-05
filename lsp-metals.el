@@ -107,7 +107,7 @@ more customizations like using environment variables."
 (defun lsp-metals-sources-scan ()
   "Walk all files in the workspace and index where symbols are defined."
   (interactive)
-  (lsp-send-execute-command "source-scan" ()))
+  (lsp-send-execute-command "sources-scan" ()))
 
 (defun lsp-metals--doctor-render (html)
   "Render the Metals doctor html in the current buffer."
