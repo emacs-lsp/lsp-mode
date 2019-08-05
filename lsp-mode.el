@@ -2391,7 +2391,7 @@ disappearing, unset all the variables related to it."
                      (foldingRange . ,(when lsp-enable-folding
                                         `((dynamicRegistration . t)
                                           (rangeLimit . ,lsp-folding-range-limit)
-                                          (lineFoldingOnly . ,lsp-folding-line-folding-only))))))))
+                                          (lineFoldingOnly . ,(or lsp-folding-line-folding-only :json-false)))))))))
 
 (defun lsp-find-roots-for-workspace (workspace session)
   "Get all roots for the WORKSPACE."
