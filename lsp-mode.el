@@ -3533,17 +3533,21 @@ MODE is the mode used in the parent frame."
 (defun lsp--buffer-string-visible ()
   "Return visible buffer string.
 Stolen from `org-copy-visible'."
-  (let ((result "")
+  (let ((temp (generate-new-buffer " *temp*"))
         (beg (point-min))
         (end (point-max)))
     (while (/= beg end)
       (when (get-char-property beg 'invisible)
         (setq beg (next-single-char-property-change beg 'invisible nil end)))
-      (let ((next (next-single-char-property-change beg 'invisible nil end)))
-        (setq result (concat result (buffer-substring beg next)))
+      (let* ((next (next-single-char-property-change beg 'invisible nil end))
+             (substring (buffer-substring beg next)))
+        (with-current-buffer temp (insert substring))
+        ;; (setq result (concat result substring))
         (setq beg next)))
     (setq deactivate-mark t)
-    (s-chop-suffix "\n" result)))
+    (prog1 (with-current-buffer temp
+             (s-chop-suffix "\n" (buffer-string)))
+      (kill-buffer temp))))
 
 (defun lsp--render-markdown ()
   "Render markdown."
