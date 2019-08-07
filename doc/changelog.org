@@ -9,6 +9,8 @@
    * [[https://github.com/snoe/clojure-lsp][clojure-lsp]] for Clojure/ClojureScipt (Thanks to Dario Benedek Fazekas)
    * [[https://github.com/elm-tooling/elm-language-server][elmLS]] for Elm (Thanks to Daniel-V)
    * [[https://github.com/fsharp/FsAutoComplete][FsAutoComplete]] for F# (Thanks to Reed Mullanix)
+   * Added =Erlang= support via [[https://github.com/erlang-ls/erlang_ls][erlang_ls]]
+   * Added =Dockerfile= support via [[https://github.com/rcjsuen/dockerfile-language-server-nodejs][dockerfile-language-server-nodejs]]
 ** New logging options
    - =lsp-mode= now logs to buffer =*lsp-log*=, instead of =*Messages*=. This
      can be controlled with the variable =lsp-log-max= (Thanks to Thomas Fini Hansen).
@@ -31,6 +33,9 @@
    - Support resource operations (edits sent from the language server can now
      create/modify/remove files and directories).
    - Add support for [[https://microsoft.github.io/language-server-protocol/specification#workspace_configuration][workspace/configuration]].
+   - Add new function =lsp-disconnect=.
+   - Added =lsp-find-definition-mouse= and bound to =C-<down-mouse-1>=
+   - Added =lsp-extend-selection= as a frontend of new LSP method =textDocument/extendSelection=
 
 ** Other changes
   - Add project logo (thanks to Jon Carr).
@@ -60,7 +65,12 @@
     the current active signature.
   - Expose configuration settings for various language servers.
   - Language servers can now be disabled with the variable =lsp-disabled-clients=.
-
+  - Improved applying changes speed.
+  - Fixed =xref= support for emacs 27+
+  - Implemented automatic installation for F# language server.
+  - Added Emacs 26.x to CI
+  - Fixed handling of stderr when running over =TRAMP=.
+  - Implemented support for running the language server in =Docker= container over local files.
 * Release 6.0
   - ~lsp-mode~ now have single entry point ~lsp~ for all language and based on the major mode starts the corresponding language servers.
   - Added ~flymake~ integration.
