@@ -3407,6 +3407,8 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
 
 (defun lsp--locations-to-xref-items (locations)
   "Return a list of `xref-item' from Location[] or LocationLink[]."
+  (setq locations (if (sequencep locations) locations (list locations)))
+
   (unless (seq-empty-p locations)
     (cl-labels ((get-xrefs-in-file
                  (file-locs location-link)
@@ -4045,7 +4047,7 @@ EXTRA is a plist of extra parameters.
 REFERENCES? t when METHOD returns references."
   (if-let ((loc (lsp-request method
                              (append (lsp--text-document-position-params) extra))))
-      (let ((xrefs (lsp--locations-to-xref-items (if (sequencep loc) loc (list loc)))))
+      (let ((xrefs (lsp--locations-to-xref-items loc)))
         (if (boundp 'xref-show-definitions-function)
             (with-no-warnings
               (funcall (if references? xref-show-xrefs-function xref-show-definitions-function)
