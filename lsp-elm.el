@@ -64,11 +64,10 @@ or manually by cloning the repo and following the installing instructions."
   :type 'file
   :group 'lsp-elm)
 
-(defcustom lsp-elm-treesitter-runtime
-  "node"
-  "Path to your elm executable."
-  :type '(choice (const "node")
-                 (const "electron"))
+(defcustom lsp-elm-diagnostics-on-save-only
+  nil
+  "Determines whether or not diagnostic updates are triggered only on save."
+  :type 'boolean
   :group 'lsp-elm)
 
 (defcustom lsp-elm-server-args
@@ -85,12 +84,12 @@ or manually by cloning the repo and following the installing instructions."
 
 (defun lsp-clients-elm--make-init-options ()
   "Init options for elm-language-server."
-  `(:runtime ,lsp-elm-treesitter-runtime
-             :elmPath ,lsp-elm-elm-path
-             :elmFormatPath ,lsp-elm-elm-format-path
-             :elmTestPath ,lsp-elm-elm-test-path
-             :trace.server ,lsp-elm-trace-server
-             ))
+  `(
+    :elmPath ,lsp-elm-elm-path
+    :elmFormatPath ,lsp-elm-elm-format-path
+    :elmTestPath ,lsp-elm-elm-test-path
+    :diagnosticsOnSaveOnly ,(lsp-json-bool lsp-elm-diagnostics-on-save-only)
+    :trace.server ,(lsp-json-bool lsp-elm-trace-server)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-elm--elm-language-server-command)
