@@ -102,6 +102,13 @@
   :group 'lsp-solargraph
   :package-version '(lsp-mode . "6.1"))
 
+;; https://github.com/castwide/solargraph#solargraph-and-bundler
+(defcustom lsp-solargraph-use-bundler nil
+  "Run solargraph under bundler"
+  :type 'boolean
+  :group 'lsp-solargraph
+  :package-version '(lsp-mode . "6.1"))
+
 (lsp-register-custom-settings
  '(("solargraph.logLevel" lsp-solargraph-log-level)
    ("solargraph.folding" lsp-solargraph-folding t)
@@ -113,21 +120,25 @@
    ("solargraph.autoformat" lsp-solargraph-autoformat t)
    ("solargraph.diagnostics" lsp-solargraph-diagnostics t)
    ("solargraph.hover" lsp-solargraph-hover t)
-   ("solargraph.completion" lsp-solargraph-completion t)))
+   ("solargraph.completion" lsp-solargraph-completion t)
+   ("solargraph.useBundler" lsp-solargraph-use-bundler t)))
 
 ;; Ruby
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '("solargraph" "stdio"))
-                  :major-modes '(ruby-mode enh-ruby-mode)
-                  :priority -1
-                  :multi-root t
-                  :server-id 'ruby-ls
-                  :initialized-fn (lambda (workspace)
-                                    (with-lsp-workspace workspace
-                                      (lsp--set-configuration
-                                       (lsp-configuration-section "solargraph"))))))
-
-
+ (let ((lsp-command '("solargraph" "stdio")))
+   (make-lsp-client
+    :new-connection (lsp-stdio-connection
+                     (if lsp-solargraph-use-bundler
+                         (append '("bundle" "exec") lsp-command)
+                       lsp-command))
+    :major-modes '(ruby-mode enh-ruby-mode)
+    :priority -1
+    :multi-root t
+    :server-id 'ruby-ls
+    :initialized-fn (lambda (workspace)
+                      (with-lsp-workspace workspace
+                        (lsp--set-configuration
+                         (lsp-configuration-section "solargraph")))))))
 
 (provide 'lsp-solargraph)
 ;;; lsp-solargraph.el ends here
