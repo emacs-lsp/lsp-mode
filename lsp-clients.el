@@ -422,5 +422,25 @@ finding the executable with `exec-path'."
                   :server-id 'dockerfile-ls))
 
 
+;;; Angular
+(defcustom lsp-clients-angular-language-server-command
+  `("node"  ,(expand-file-name "~/.angular/extension/server/server.js") "--stdio")
+  "The command that starts the angular language server."
+  :group 'lsp-clients-angular
+  :type '(choice
+          (string :tag "Single string value")
+          (repeat :tag "List of string values"
+                  string)))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (lambda () lsp-clients-angular-language-server-command))
+                  :activation-fn (lambda (&rest _args)
+                                   (string-match-p ".*\.html$" (buffer-file-name)))
+                  :priority -1
+                  :add-on? t
+                  :server-id 'angular-ls))
+
+
 (provide 'lsp-clients)
 ;;; lsp-clients.el ends here
