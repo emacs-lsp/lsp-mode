@@ -1321,6 +1321,11 @@ PARAMS - the data sent from WORKSPACE."
      :message (if source (format "%s: %s" source message) message)
      :original diag)))
 
+(defalias 'lsp--buffer-for-file (if (eq system-type 'windows-nt)
+                                  #'find-buffer-visiting
+                                #'get-file-buffer))
+
+
 (defun lsp--on-diagnostics (workspace params)
   "Callback for textDocument/publishDiagnostics.
 interface PublishDiagnosticsParams {
@@ -1331,7 +1336,7 @@ PARAMS contains the diagnostics data.
 WORKSPACE is the workspace that contains the diagnostics."
   (let* ((file (lsp--uri-to-path (gethash "uri" params)))
          (diagnostics (gethash "diagnostics" params))
-         (buffer (find-buffer-visiting file))
+         (buffer (lsp--buffer-for-file file))
          (workspace-diagnostics (lsp--workspace-diagnostics workspace)))
 
     (if (seq-empty-p diagnostics)
@@ -2804,7 +2809,7 @@ interface TextDocumentEdit {
     ("rename" (-let* (((&hash "oldUri" "newUri" "options") edit)
                       (old-file-name (lsp--uri-to-path oldUri))
                       (new-file-name (lsp--uri-to-path newUri))
-                      (buf (find-buffer-visiting old-file-name)))
+                      (buf (lsp--buffer-for-file old-file-name)))
                 (when buf
                   (with-current-buffer buf
                     (save-buffer)
@@ -3413,7 +3418,7 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
     (cl-labels ((get-xrefs-in-file
                  (file-locs location-link)
                  (let* ((filename (seq-first file-locs))
-                        (visiting (find-buffer-visiting filename))
+                        (visiting (lsp--buffer-for-file filename))
                         (fn (lambda (loc)
                               (lsp--xref-make-item filename
                                                    (if location-link (or (gethash "targetSelectionRange" loc)
@@ -4537,7 +4542,7 @@ SYM can be either DocumentSymbol or SymbolInformation."
       (not (eq (->> location
                     (gethash "uri")
                     (lsp--uri-to-path)
-                    (find-buffer-visiting))
+                    (lsp--buffer-for-file))
                (current-buffer)))))
 
 (defun lsp--get-symbol-type (sym)
