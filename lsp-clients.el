@@ -374,11 +374,79 @@ finding the executable with `exec-path'."
   :group 'lsp-mode
   :link '(url-link "https://github.com/fwcd/KotlinLanguageServer"))
 
+(defcustom lsp-kotlin-language-server-path ""
+  "Optionally a custom path to the language server executable."
+  :type 'string
+  :group 'lsp-kotlin
+  :package-version '(lsp-mode . "6.1"))
+
+(defcustom lsp-kotlin-trace-server "off"
+  "Traces the communication between VSCode and the Kotlin language server."
+  :type '(choice (:tag "off" "messages" "verbose"))
+  :group 'lsp-kotlin
+  :package-version '(lsp-mode . "6.1"))
+
+(defcustom lsp-kotlin-compiler-jvm-target "default"
+  "Specifies the JVM target, e.g. \"1.6\" or \"1.8\""
+  :type 'string
+  :group 'lsp-kotlin
+  :package-version '(lsp-mode . "6.1"))
+
+(defcustom lsp-kotlin-linting-debounce-time 250
+  "[DEBUG] Specifies the debounce time limit. Lower to increase
+responsiveness at the cost of possibile stability issues."
+  :type 'number
+  :group 'lsp-kotlin
+  :package-version '(lsp-mode . "6.1"))
+
+(defcustom lsp-kotlin-completion-snippets-enabled t
+  "Specifies whether code completion should provide snippets (true) or plain-text items (false)."
+  :type 'boolean
+  :group 'lsp-kotlin
+  :package-version '(lsp-mode . "6.1"))
+
+(defcustom lsp-kotlin-debug-adapter-enabled t
+  "[Recommended] Specifies whether the debug adapter should be used. When enabled a debugger for Kotlin will be available."
+  :type 'boolean)
+
+(defcustom lsp-kotlin-debug-adapter-path ""
+  "Optionally a custom path to the debug adapter executable."
+  :type 'string
+  :group 'lsp-kotlin
+  :package-version '(lsp-mode . "6.1"))
+
+(defcustom lsp-kotlin-external-sources-use-kls-scheme t
+  "[Recommended] Specifies whether URIs inside JARs should be represented using the 'kls'-scheme."
+  :type 'boolean
+  :group 'lsp-kotlin
+  :package-version '(lsp-mode . "6.1"))
+
+(defcustom lsp-kotlin-external-sources-auto-convert-to-kotlin t
+  "Specifies whether decompiled/external classes should be auto-converted to Kotlin."
+  :type 'boolean
+  :group 'lsp-kotlin
+  :package-version '(lsp-mode . "6.1"))
+
+(lsp-register-custom-settings
+ '(("kotlin.externalSources.autoConvertToKotlin" lsp-kotlin-external-sources-auto-convert-to-kotlin t)
+   ("kotlin.externalSources.useKlsScheme" lsp-kotlin-external-sources-use-kls-scheme t)
+   ("kotlin.debugAdapter.path" lsp-kotlin-debug-adapter-path)
+   ("kotlin.debugAdapter.enabled" lsp-kotlin-debug-adapter-enabled t)
+   ("kotlin.completion.snippets.enabled" lsp-kotlin-completion-snippets-enabled t)
+   ("kotlin.linting.debounceTime" lsp-kotlin-linting-debounce-time)
+   ("kotlin.compiler.jvm.target" lsp-kotlin-compiler-jvm-target)
+   ("kotlin.trace.server" lsp-kotlin-trace-server)
+   ("kotlin.languageServer.path" lsp-kotlin-language-server-path)))
+
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '("kotlin-language-server"))
-                  :major-modes '(kotlin-mode)
-                  :priority -1
-                  :server-id 'kotlin-ls))
+ (make-lsp-client
+  :new-connection (lsp-stdio-connection '("kotlin-language-server"))
+  :major-modes '(kotlin-mode)
+  :priority -1
+  :server-id 'kotlin-ls
+  :initialized-fn (lambda (workspace)
+                    (with-lsp-workspace workspace
+                      (lsp--set-configuration (lsp-configuration-section "kotlin"))))))
 
 
 ;; Hack
