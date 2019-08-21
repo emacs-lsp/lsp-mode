@@ -36,9 +36,9 @@
 (defcustom lsp-fsharp-server-runtime 'net-core
   "The .NET runtime to use."
   :group 'lsp-fsharp
-  :type '(choice (const :tag "Use .Net Core" 'net-core)
-                 (const :tag "Use Mono" 'mono)
-                 (const :tag "Use .Net Framework" 'net-framework))
+  :type '(choice (const :tag "Use .Net Core" net-core)
+                 (const :tag "Use Mono" mono)
+                 (const :tag "Use .Net Framework" net-framework))
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-fsharp-server-install-dir (locate-user-emacs-file "fsautocomplete/")
