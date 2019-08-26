@@ -603,7 +603,9 @@ If set to `:none' neither of two will be enabled."
     ("textDocument/prepareRename"
      :check-command (lambda (workspace)
                       (with-lsp-workspace workspace
-                        (let ((table (lsp--capability "renameProvider")))
+                        (let ((table (or (lsp--capability "renameProvider")
+                                         (-some-> (lsp--registered-capability "textDocument/rename")
+                                                  (lsp--registered-capability-options)))))
                           (and (hash-table-p table)
                                (gethash "prepareProvider" table)))))))
 
@@ -1322,8 +1324,8 @@ PARAMS - the data sent from WORKSPACE."
      :original diag)))
 
 (defalias 'lsp--buffer-for-file (if (eq system-type 'windows-nt)
-                                  #'find-buffer-visiting
-                                #'get-file-buffer))
+                                    #'find-buffer-visiting
+                                  #'get-file-buffer))
 
 
 (defun lsp--on-diagnostics (workspace params)
@@ -2371,6 +2373,7 @@ disappearing, unset all the variables related to it."
                      (documentSymbol . ((symbolKind . ((valueSet . ,(apply 'vector (number-sequence 1 26)))))
                                         (hierarchicalDocumentSymbolSupport . t)))
                      (formatting . ((dynamicRegistration . t)))
+                     (rename . ((dynamicRegistration . t)))
                      (codeAction . ((dynamicRegistration . t)
                                     (codeActionLiteralSupport . ((codeActionKind . ((valueSet . [""
                                                                                                  "quickfix"
@@ -2928,11 +2931,11 @@ This method is used if we do not have `buffer-replace-content'."
 
 (defun lsp--registered-capability (method)
   "Check whether there is workspace providing METHOD."
-  (--first
-   (seq-find (lambda (reg)
-               (equal (lsp--registered-capability-method reg) method))
-             (lsp--workspace-registered-server-capabilities it))
-   (lsp-workspaces)))
+  (->> (lsp-workspaces)
+       (--keep (seq-find (lambda (reg)
+                           (equal (lsp--registered-capability-method reg) method))
+                         (lsp--workspace-registered-server-capabilities it)))
+       cl-first))
 
 (defvar-local lsp--before-change-vals nil
   "Store the positions from the `lsp-before-change' function
@@ -4023,9 +4026,11 @@ perform the request synchronously."
 
 (defun lsp--get-symbol-to-rename ()
   "Get synbol at point."
-  (if (let ((table (lsp--capability "renameProvider")))
-        (and (hash-table-p table)
-             (gethash "prepareProvider" table)))
+  (if (let ((rename-provider (or (lsp--capability "renameProvider")
+                                 (-some-> (lsp--registered-capability "textDocument/rename")
+                                          (lsp--registered-capability-options)))))
+        (and (hash-table-p rename-provider)
+             (gethash "prepareProvider" rename-provider)))
       (-let (((start . end) (lsp--range-to-region
                              (lsp-request "textDocument/prepareRename"
                                           (lsp--text-document-position-params)))))
@@ -4037,7 +4042,8 @@ perform the request synchronously."
   (interactive (list (let ((symbol (lsp--get-symbol-to-rename)))
                        (read-string (format "Rename %s to: " symbol) symbol))))
   (lsp--cur-workspace-check)
-  (unless (lsp--capability "renameProvider")
+  (unless (or (lsp--capability "renameProvider")
+              (lsp--registered-capability "textDocument/rename"))
     (signal 'lsp-capability-not-supported (list "renameProvider")))
   (let ((edits (lsp-request "textDocument/rename"
                             `(:textDocument ,(lsp--text-document-identifier)
