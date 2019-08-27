@@ -31,15 +31,15 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/erlang-ls/erlang_ls"))
 
-(defcustom lsp-erlang-server-install-dir
-  "."
-  "Path to the Erlang Language Server installation dir."
+(defcustom lsp-erlang-server-path
+  "erlang_ls"
+  "Path to the Erlang Language Server binary."
   :group 'lsp-erlang
   :risky t
-  :type 'directory)
+  :type 'file)
 
 (defun lsp-erlang-server-start-fun (port)
-  `(,(concat lsp-erlang-server-install-dir "/_build/default/bin/erlang_ls")
+  `(,lsp-erlang-server-path
     ,(number-to-string port)))
 
 (lsp-register-client
