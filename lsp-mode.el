@@ -2387,8 +2387,8 @@ disappearing, unset all the variables related to it."
                                                                               (or
                                                                                (fboundp 'yas-expand-snippet)
                                                                                (warn (concat
-                                                                                      "Yasnippet is not present but `lsp-enable-snippet' is set to `t'. "
-                                                                                      "You must either install yasnippet or disable snippet support."))
+                                                                                      "Yasnippet is not required but `lsp-enable-snippet' is set to `t'. "
+                                                                                      "You must either required yasnippet or disable snippet support."))
                                                                                t)
                                                                             :json-false))
                                                        (documentationFormat . ["markdown"])))
