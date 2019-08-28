@@ -144,12 +144,18 @@ Should be ignored if there is no open doctor window."
           `((window . ,(selected-window)))))
       (xref--show-xrefs xrefs nil))))
 
+(defun lsp-metals--echo-command (workspace command)
+  "A client command that should be forwarded back to the Metals server."
+  (with-lsp-workspace workspace
+    (lsp-send-execute-command command)))
+
 (defun lsp-metals--execute-client-command (workspace params)
   "Handle the metals/executeClientCommand extension notification."
   (when-let ((command (pcase (ht-get params "command")
                         (`"metals-doctor-run" #'lsp-metals--doctor-run)
                         (`"metals-doctor-reload" #'lsp-metals--doctor-reload)
                         (`"metals-goto-location" #'lsp-metals--goto-location)
+                        (`"metals-echo-command" #'lsp-metals--echo-command)
                         (c (ignore (lsp-warn "Unknown metals client command: %s" c))))))
     (apply command (append (list workspace) (ht-get params "arguments") nil))))
 
