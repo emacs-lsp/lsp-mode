@@ -306,6 +306,11 @@
        either disable them by setting =lsp-enable-snippet= to =nil= or you
        should switch to =company-lsp=. Note also that =company-tng= frontend
        does not support snippet expansion(see [[https://github.com/company-mode/company-mode/issues/891][company-mode#891]])
+   - How to automatically follow =lsp-ui-log=?
+     - Go into the log buffer and execute the following snippet(source: [[https://stackoverflow.com/questions/12663061/emacs-auto-scrolling-log-buffer][Emacs auto scrolling log buffer]])
+     #+begin_src elisp
+       (set (make-local-variable 'window-point-insertion-type) t)
+     #+end_src
 ** See also
    - [[https://github.com/sebastiencs/company-box/][company-box]] - =company= frontend with icons.
    - [[https://github.com/yyoncho/dap-mode][dap-mode]] - Debugger integration for ~lsp-mode~.
