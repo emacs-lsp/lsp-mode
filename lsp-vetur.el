@@ -770,6 +770,12 @@ Code's JavaScript and TypeScript support."
   'lsp-vetur-server-command
   "lsp-mode 6.1")
 
+(defcustom lsp-vetur-global-snippets-dir (expand-file-name (locate-user-emacs-file ".snippets/vetur"))
+  "Path to snippets dir."
+  :type 'file
+  :risky t
+  :package-version '(lsp-mode . "6.2"))
+
 (defcustom lsp-vetur-server-command '("vls")
   "Command to start vetur."
   :type '(repeat string)
@@ -788,7 +794,8 @@ Code's JavaScript and TypeScript support."
                   :initialization-options (lambda () (ht-merge (lsp-configuration-section "vetur")
                                                                (lsp-configuration-section "html")
                                                                (lsp-configuration-section "javascript")
-                                                               (lsp-configuration-section "typescript")))
+                                                               (lsp-configuration-section "typescript")
+                                                               (ht ("globalSnippetDir" lsp-vetur-global-snippets-dir))))
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
