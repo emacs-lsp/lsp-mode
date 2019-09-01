@@ -78,12 +78,20 @@ more customizations like using environment variables."
   :group 'lsp-metals
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-metals-show-hover-context t
+  "Show additional context in hover tooltips when available. This
+is often the type local variable declaration."
+  :type 'boolean
+  :group 'lsp-metals
+  :package-version '(lsp-mode . "6.1"))
+
 
 (lsp-register-custom-settings
  '(("metals.java-home" lsp-metals-java-home)
    ("metals.scalafmt-config-path" lsp-metals-scalafmt-config-path)
    ("metals.sbt-script" lsp-metals-sbt-script)
-   ("metals.gradle-script" lsp-metals-gradle-script)))
+   ("metals.gradle-script" lsp-metals-gradle-script)
+   ("metals.show-hover-context" lsp-metals-show-hover-context)))
 
 (defun lsp-metals--server-command ()
   "Generate the Scala language server startup command."
