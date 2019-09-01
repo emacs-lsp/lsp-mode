@@ -31,6 +31,7 @@
   (require 'project)
   (require 'flymake))
 
+(require 'bindat)
 (require 'cl-lib)
 (require 'compile)
 (require 'dash)
@@ -2374,6 +2375,7 @@ disappearing, unset all the variables related to it."
                                         (hierarchicalDocumentSymbolSupport . t)))
                      (formatting . ((dynamicRegistration . t)))
                      (rename . ((dynamicRegistration . t)))
+                     (semanticHighlightingCapabilities . ((semanticHighlighting . t)))
                      (codeAction . ((dynamicRegistration . t)
                                     (codeActionLiteralSupport . ((codeActionKind . ((valueSet . [""
                                                                                                  "quickfix"
@@ -3905,6 +3907,79 @@ A reference is highlighted only if it is visible in a window."
                       (push overlay buf-overlays)
                       (puthash (current-buffer) buf-overlays overlays))))))))))))
 
+(defvar lsp-semantic-highlighting-faces
+  '(("variable.other.cpp" . font-lock-variable-name-face)
+    ("variable.other.local.cpp" . font-lock-variable-name-face)
+    ("variable.parameter.cpp" . font-lock-variable-name-face)
+    ("entity.name.function.cpp" . font-lock-function-name-face)
+    ("entity.name.function.method.cpp" . font-lock-function-name-face)
+    ("entity.name.function.method.static.cpp" . font-lock-function-name-face)
+    ("variable.other.field.cpp" . font-lock-variable-name-face)
+    ("variable.other.field.static.cpp" . font-lock-variable-name-face)
+    ("entity.name.type.class.cpp" . font-lock-type-face)
+    ("entity.name.type.enum.cpp" . font-lock-type-face)
+    ("variable.other.enummember.cpp" . font-lock-constant-face)
+    ("entity.name.namespace.cpp" . font-lock-constant-face)
+    ("entity.name.function.preprocessor.cpp" . font-lock-preprocessor-face)
+    ("entity.name.type.template.cpp" . font-lock-type-face)
+    ("storage.type.primitive.cpp" . font-lock-builtin-face)))
+
+(defun lsp--semantic-highlighting-find-face (scope-names)
+  (let ((match (cl-some (lambda (scope) (assoc scope lsp-semantic-highlighting-faces))
+                        scope-names))
+        face)
+    (if match (cdr match)
+      (progn
+        (warn (format "Unknown scopes [%s], please amend lsp-semantic-highlighting-faces"
+                      (mapconcat 'identity scope-names ", ")))
+        'warning))))
+
+(defvar-local lsp--facemap nil)
+
+(defun lsp--apply-semantic-highlighting (lines)
+  (let (line raw-str i end el start (cur-line 1) ov tokens)
+    (goto-char 0)
+    (cl-loop for entry across-ref lines do
+             (setq line (1+ (gethash "line" entry))
+                   tokens (gethash "tokens" entry)
+                   i 0)
+             (forward-line (- line cur-line))
+             (setq cur-line line)
+             (remove-overlays (point) (line-end-position) 'lsp-sem-highlight t)
+             (when tokens
+               (setq raw-str (base64-decode-string tokens))
+               (setq end (length raw-str))
+               (while (< i end)
+                 (setq el
+                       (bindat-unpack
+                        '((start u32) (len u16) (scopeIndex u16))
+                        (substring-no-properties raw-str i (+ 8 i))))
+                 (setq i (+ 8 i))
+                 (setq start (bindat-get-field el 'start))
+                 (setq ov (make-overlay
+                           (+ (point) start)
+                           (+ (point) (+ start (bindat-get-field el 'len)))))
+                 (overlay-put ov 'face (elt lsp--facemap (bindat-get-field el 'scopeIndex)))
+                 (overlay-put ov 'lsp-sem-highlight t))))))
+
+(defun lsp--on-semantic-highlighting (workspace params)
+  ;; TODO: defer highlighting if buffer's not currently focused?
+  (unless lsp--facemap
+    (let* ((capabilities (lsp--workspace-server-capabilities workspace))
+           (semanticHighlighting (gethash "semanticHighlighting" capabilities))
+           (scopes (or (gethash "scopes" semanticHighlighting) [])))
+      (setq lsp--facemap
+            (mapcar #'lsp--semantic-highlighting-find-face scopes))))
+  (let* ((file (lsp--uri-to-path (gethash "uri" (gethash "textDocument" params))))
+         (lines (gethash "lines" params))
+         (buffer (lsp--buffer-for-file file))
+         (t0 (current-time)))
+    (when buffer
+      (save-mark-and-excursion
+        (with-current-buffer buffer
+          (with-silent-modifications
+            (lsp--apply-semantic-highlighting lines)))))))
+
 (defconst lsp--symbol-kind
   '((1 . "File")
     (2 . "Module")
@@ -4220,6 +4295,7 @@ textDocument/didOpen for the new file."
   (ht ("window/showMessage" #'lsp--window-show-message)
       ("window/logMessage" #'lsp--window-log-message)
       ("textDocument/publishDiagnostics" #'lsp--on-diagnostics)
+      ("textDocument/semanticHighlighting" #'lsp--on-semantic-highlighting)
       ("textDocument/diagnosticsEnd" #'ignore)
       ("textDocument/diagnosticsBegin" #'ignore)
       ("telemetry/event" #'ignore)))
