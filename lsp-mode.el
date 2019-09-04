@@ -538,6 +538,18 @@ If set to `:none' neither of two will be enabled."
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-server-trace nil
+  "Request tracing on the server side.
+The actual trace output at each level depends on the language server in use.
+Changes take effect only when a new session is started."
+  :type '(choice (const :tag "Disabled" "off")
+		 (const :tag "Messages only" "messages")
+		 (const :tag "Verbose" "verbose")
+		 (const :tag "Default (disabled)" nil))
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.1"))
+
+
 (defvar-local lsp--flymake-report-fn nil)
 
 (defvar lsp-language-id-configuration '((".*\.vue$" . "vue")
@@ -4976,6 +4988,8 @@ SESSION is the active session."
                                 :rootUri (lsp--path-to-uri root)
                                 :capabilities (lsp--client-capabilities)
                                 :initializationOptions initialization-options)
+			  (when lsp-server-trace
+			    (list :trace lsp-server-trace))
                           (when (lsp--client-multi-root client)
                             (->> workspace-folders
                                  (-map (lambda (folder)
