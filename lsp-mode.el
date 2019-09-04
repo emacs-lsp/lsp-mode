@@ -3989,7 +3989,7 @@ unless overriden by a more specific face association."
   :group 'lsp-faces)
 
 (defface lsp-face-semhl-preprocessor
-  '((t :inherit font-lock-constant-face :bold t))
+  '((t :inherit font-lock-preprocessor-face))
   "Face used for semantic highlighting scopes matching entity.name.function.preprocessor.*,
 unless overriden by a more specific face association."
   :group 'lsp-faces)
