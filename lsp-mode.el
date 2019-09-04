@@ -4045,8 +4045,8 @@ unless overriden by a more specific face association."
                       lsp-semantic-highlighting-faces))
             scope-names)))
     (unless maybe-face
-        (warn (format "Unknown scopes [%s], please amend lsp-semantic-highlighting-faces"
-                      (s-join ", " 'identity scope-names))))
+      (lsp--warn "Unknown scopes [%s], please amend lsp-semantic-highlighting-faces"
+                (s-join ", " scope-names)))
     maybe-face))
 
 (defvar-local lsp--facemap nil)
