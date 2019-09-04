@@ -31,6 +31,7 @@
   (require 'project)
   (require 'flymake))
 
+(require 'bindat)
 (require 'cl-lib)
 (require 'compile)
 (require 'dash)
@@ -45,6 +46,7 @@
 (require 'json)
 (require 'network-stream)
 (require 'pcase)
+(require 's)
 (require 'seq)
 (require 'spinner)
 (require 'subr-x)
@@ -171,6 +173,14 @@ the buffer when it becomes large."
   :group 'lsp-mode
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
+
+(defcustom lsp-enable-semantic-highlighting nil
+  "Enable/disable semantic highlighting as proposed at
+ https://github.com/microsoft/vscode-languageserver-node/pull/367.
+This feature is not yet part of the official LSP spec and may
+occasionally break as language servers are updated."
+  :group 'lsp-mode
+  :type 'boolean)
 
 (defcustom lsp-folding-range-limit nil
   "The maximum number of folding ranges to receive from the language server."
@@ -2380,6 +2390,7 @@ disappearing, unset all the variables related to it."
                                         (hierarchicalDocumentSymbolSupport . t)))
                      (formatting . ((dynamicRegistration . t)))
                      (rename . ((dynamicRegistration . t)))
+                     (semanticHighlightingCapabilities . ((semanticHighlighting . ,lsp-enable-semantic-highlighting)))
                      (codeAction . ((dynamicRegistration . t)
                                     (codeActionLiteralSupport . ((codeActionKind . ((valueSet . [""
                                                                                                  "quickfix"
@@ -3911,6 +3922,178 @@ A reference is highlighted only if it is visible in a window."
                       (push overlay buf-overlays)
                       (puthash (current-buffer) buf-overlays overlays))))))))))))
 
+(defface lsp-face-semhl-variable-parameter
+  '((t :inherit font-lock-variable-name-face))
+  "Face used for semantic highlighting scopes matching variable.parameter.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-variable-local
+  '((t :inherit font-lock-variable-name-face))
+  "Face used for semantic highlighting scopes matching variable.other.local.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-field
+  '((t :inherit font-lock-variable-name-face))
+  "Face used for semantic highlighting scopes matching variable.other.field.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-field-static
+  '((t :inherit lsp-face-semhl-field :italic t))
+  "Face used for semantic highlighting scopes matching variable.other.field.static.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-enummember
+  '((t :inherit font-lock-constant-face))
+  "Face used for semantic highlighting scopes matching variable.other.enummember.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-variable
+  '((t :inherit font-lock-variable-name-face))
+  "Face used for semantic highlighting scopes matching variable.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-function
+  '((t :inherit font-lock-function-name-face))
+  "Face used for semantic highlighting scopes matching entity.name.function.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-method
+  '((t :inherit lsp-face-semhl-function))
+  "Face used for semantic highlighting scopes matching entity.name.function.method.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-static-method
+  '((t :inherit lsp-face-semhl-function :italic ))
+  "Face used for semantic highlighting scopes matching entity.name.function.method.static.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-type-class
+  '((t :inherit font-lock-type-face))
+  "Face used for semantic highlighting scopes matching entity.name.type.class.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-type-enum
+  '((t :inherit font-lock-type-face))
+  "Face used for semantic highlighting scopes matching entity.name.type.enum.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-namespace
+  '((t :inherit font-lock-type-face :bold t))
+  "Face used for semantic highlighting scopes matching entity.name.namespace.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-preprocessor
+  '((t :inherit font-lock-preprocessor-face))
+  "Face used for semantic highlighting scopes matching entity.name.function.preprocessor.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-type-template
+  '((t :inherit font-lock-type-face :italic t))
+  "Face used for semantic highlighting scopes matching entity.name.type.template.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-type-primitive
+  '((t :inherit font-lock-type-face :italic t))
+  "Face used for semantic highlighting scopes matching storage.type.primitive.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defvar lsp-semantic-highlighting-faces
+  '(("^variable\\.parameter\\(\\..*\\)?$" . lsp-face-semhl-variable-parameter)
+    ("^variable\\.other\\.local\\(\\..*\\)?$" . lsp-face-semhl-variable-local)
+    ("^variable\\.other\\.field\\.static\\(\\..*\\)?$" . lsp-face-semhl-field-static)
+    ("^variable\\.other\\.field\\(\\..*\\)?$" . lsp-face-semhl-field)
+    ("^variable\\.other\\.enummember\\(\\..*\\)?$" . lsp-face-semhl-enummember)
+    ("^variable\\.other\\(\\..*\\)?$" . lsp-face-semhl-variable)
+    ("^entity\\.name\\.function\\.method\\.static\\(\\..*\\)?$" . lsp-face-semhl-static-method)
+    ("^entity\\.name\\.function\\.method\\(\\..*\\)?$" . lsp-face-semhl-method)
+    ("^entity\\.name\\.function\\(\\..*\\)?$" . lsp-face-semhl-function)
+    ("^entity\\.name\\.type\\.class\\(\\..*\\)?$" . lsp-face-semhl-type-class)
+    ("^entity\\.name\\.type\\.enum\\(\\..*\\)?$" . lsp-face-semhl-type-enum)
+    ("^entity\\.name\\.namespace\\(\\..*\\)?$" . lsp-face-semhl-namespace)
+    ("^entity\\.name\\.function.preprocessor\\(\\..*\\)?$" . lsp-face-semhl-preprocessor)
+    ("^entity\\.name\\.type\\.template\\(\\..*\\)?$" . lsp-face-semhl-type-template)
+    ("^storage\\.type\\.primitive\\(\\..*\\)?$" . lsp-face-semhl-type-primitive))
+  "Each element of this list should be of the form (SCOPE-RE . FACE), where SCOPE-RE
+ is a regular expression that will be compared against semantic highlighting scopes
+ sent by the language server, and FACE denotes the face that should be used for fontification.
+ Since the list is traversed in order, it should be sorted in order of decreasing
+ specificity.")
+
+(defun lsp--semantic-highlighting-find-face (scope-names)
+  (let ((maybe-face
+         (seq-some
+          (lambda (scope-name)
+            (seq-some (lambda
+                        (regexp-and-face)
+                        (when (s-matches-p (car regexp-and-face) scope-name)
+                          (cdr regexp-and-face)))
+                      lsp-semantic-highlighting-faces))
+            scope-names)))
+    (unless maybe-face
+        (warn (format "Unknown scopes [%s], please amend lsp-semantic-highlighting-faces"
+                      (s-join ", " 'identity scope-names))))
+    maybe-face))
+
+(defvar-local lsp--facemap nil)
+
+(defun lsp--apply-semantic-highlighting (lines)
+  (let (line raw-str i end el start (cur-line 1) ov tokens)
+    (goto-char 0)
+    (cl-loop for entry across-ref lines do
+             (setq line (1+ (gethash "line" entry))
+                   tokens (gethash "tokens" entry)
+                   i 0)
+             (forward-line (- line cur-line))
+             (setq cur-line line)
+             (remove-overlays (point) (line-end-position) 'lsp-sem-highlight t)
+             (when tokens
+               (setq raw-str (base64-decode-string tokens))
+               (setq end (length raw-str))
+               (while (< i end)
+                 (setq el
+                       (bindat-unpack
+                        '((start u32) (len u16) (scopeIndex u16))
+                        (substring-no-properties raw-str i (+ 8 i))))
+                 (setq i (+ 8 i))
+                 (setq start (bindat-get-field el 'start))
+                 (setq ov (make-overlay
+                           (+ (point) start)
+                           (+ (point) (+ start (bindat-get-field el 'len)))))
+                 (overlay-put ov 'face (elt lsp--facemap (bindat-get-field el 'scopeIndex)))
+                 (overlay-put ov 'lsp-sem-highlight t))))))
+
+(defun lsp--on-semantic-highlighting (workspace params)
+  ;; TODO: defer highlighting if buffer's not currently focused?
+  (unless lsp--facemap
+    (let* ((capabilities (lsp--workspace-server-capabilities workspace))
+           (semanticHighlighting (gethash "semanticHighlighting" capabilities))
+           (scopes (or (gethash "scopes" semanticHighlighting) [])))
+      (setq lsp--facemap
+            (mapcar #'lsp--semantic-highlighting-find-face scopes))))
+  (let* ((file (lsp--uri-to-path (gethash "uri" (gethash "textDocument" params))))
+         (lines (gethash "lines" params))
+         (buffer (lsp--buffer-for-file file)))
+    (when buffer
+      (with-current-buffer buffer
+        (save-mark-and-excursion
+          (with-silent-modifications
+            (lsp--apply-semantic-highlighting lines)))))))
+
 (defconst lsp--symbol-kind
   '((1 . "File")
     (2 . "Module")
@@ -4226,6 +4409,7 @@ textDocument/didOpen for the new file."
   (ht ("window/showMessage" #'lsp--window-show-message)
       ("window/logMessage" #'lsp--window-log-message)
       ("textDocument/publishDiagnostics" #'lsp--on-diagnostics)
+      ("textDocument/semanticHighlighting" #'lsp--on-semantic-highlighting)
       ("textDocument/diagnosticsEnd" #'ignore)
       ("textDocument/diagnosticsBegin" #'ignore)
       ("telemetry/event" #'ignore)))
