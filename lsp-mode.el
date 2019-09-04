@@ -46,6 +46,7 @@
 (require 'json)
 (require 'network-stream)
 (require 'pcase)
+(require 's)
 (require 'seq)
 (require 'spinner)
 (require 'subr-x)
@@ -172,6 +173,14 @@ the buffer when it becomes large."
   :group 'lsp-mode
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
+
+(defcustom lsp-enable-semantic-highlighting nil
+  "Enable/disable semantic highlighting as proposed at
+ https://github.com/microsoft/vscode-languageserver-node/pull/367.
+This feature is not yet part of the official LSP spec and may
+occasionally break as language servers are updated."
+  :group 'lsp-mode
+  :type 'boolean)
 
 (defcustom lsp-folding-range-limit nil
   "The maximum number of folding ranges to receive from the language server."
@@ -2375,7 +2384,7 @@ disappearing, unset all the variables related to it."
                                         (hierarchicalDocumentSymbolSupport . t)))
                      (formatting . ((dynamicRegistration . t)))
                      (rename . ((dynamicRegistration . t)))
-                     (semanticHighlightingCapabilities . ((semanticHighlighting . t)))
+                     (semanticHighlightingCapabilities . ((semanticHighlighting . ,lsp-enable-semantic-highlighting)))
                      (codeAction . ((dynamicRegistration . t)
                                     (codeActionLiteralSupport . ((codeActionKind . ((valueSet . [""
                                                                                                  "quickfix"
@@ -3907,32 +3916,132 @@ A reference is highlighted only if it is visible in a window."
                       (push overlay buf-overlays)
                       (puthash (current-buffer) buf-overlays overlays))))))))))))
 
+(defface lsp-face-semhl-variable-parameter
+  '((t :inherit font-lock-variable-name-face))
+  "Face used for semantic highlighting scopes matching variable.parameter.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-variable-local
+  '((t :inherit font-lock-variable-name-face))
+  "Face used for semantic highlighting scopes matching variable.other.local.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-field
+  '((t :inherit font-lock-variable-name-face))
+  "Face used for semantic highlighting scopes matching variable.other.field.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-field-static
+  '((t :inherit lsp-face-semhl-field :italic t))
+  "Face used for semantic highlighting scopes matching variable.other.field.static.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-enummember
+  '((t :inherit font-lock-constant-face))
+  "Face used for semantic highlighting scopes matching variable.other.enummember.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-variable
+  '((t :inherit font-lock-variable-name-face))
+  "Face used for semantic highlighting scopes matching variable.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-function
+  '((t :inherit font-lock-function-name-face))
+  "Face used for semantic highlighting scopes matching entity.name.function.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-method
+  '((t :inherit lsp-face-semhl-function))
+  "Face used for semantic highlighting scopes matching entity.name.function.method.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-static-method
+  '((t :inherit lsp-face-semhl-function :italic ))
+  "Face used for semantic highlighting scopes matching entity.name.function.method.static.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-type-class
+  '((t :inherit font-lock-type-face))
+  "Face used for semantic highlighting scopes matching entity.name.type.class.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-type-enum
+  '((t :inherit font-lock-type-face))
+  "Face used for semantic highlighting scopes matching entity.name.type.enum.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-namespace
+  '((t :inherit font-lock-type-face :bold t))
+  "Face used for semantic highlighting scopes matching entity.name.namespace.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-preprocessor
+  '((t :inherit font-lock-constant-face :bold t))
+  "Face used for semantic highlighting scopes matching entity.name.function.preprocessor.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-type-template
+  '((t :inherit font-lock-type-face :italic t))
+  "Face used for semantic highlighting scopes matching entity.name.type.template.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-type-primitive
+  '((t :inherit font-lock-type-face :italic t))
+  "Face used for semantic highlighting scopes matching storage.type.primitive.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
 (defvar lsp-semantic-highlighting-faces
-  '(("variable.other.cpp" . font-lock-variable-name-face)
-    ("variable.other.local.cpp" . font-lock-variable-name-face)
-    ("variable.parameter.cpp" . font-lock-variable-name-face)
-    ("entity.name.function.cpp" . font-lock-function-name-face)
-    ("entity.name.function.method.cpp" . font-lock-function-name-face)
-    ("entity.name.function.method.static.cpp" . font-lock-function-name-face)
-    ("variable.other.field.cpp" . font-lock-variable-name-face)
-    ("variable.other.field.static.cpp" . font-lock-variable-name-face)
-    ("entity.name.type.class.cpp" . font-lock-type-face)
-    ("entity.name.type.enum.cpp" . font-lock-type-face)
-    ("variable.other.enummember.cpp" . font-lock-constant-face)
-    ("entity.name.namespace.cpp" . font-lock-constant-face)
-    ("entity.name.function.preprocessor.cpp" . font-lock-preprocessor-face)
-    ("entity.name.type.template.cpp" . font-lock-type-face)
-    ("storage.type.primitive.cpp" . font-lock-builtin-face)))
+  '(("^variable\\.parameter\\(\\..*\\)?$" . lsp-face-semhl-variable-parameter)
+    ("^variable\\.other\\.local\\(\\..*\\)?$" . lsp-face-semhl-variable-local)
+    ("^variable\\.other\\.field\\.static\\(\\..*\\)?$" . lsp-face-semhl-field-static)
+    ("^variable\\.other\\.field\\(\\..*\\)?$" . lsp-face-semhl-field)
+    ("^variable\\.other\\.enummember\\(\\..*\\)?$" . lsp-face-semhl-enummember)
+    ("^variable\\.other\\(\\..*\\)?$" . lsp-face-semhl-variable)
+    ("^entity\\.name\\.function\\.method\\.static\\(\\..*\\)?$" . lsp-face-semhl-static-method)
+    ("^entity\\.name\\.function\\.method\\(\\..*\\)?$" . lsp-face-semhl-method)
+    ("^entity\\.name\\.function\\(\\..*\\)?$" . lsp-face-semhl-function)
+    ("^entity\\.name\\.type\\.class\\(\\..*\\)?$" . lsp-face-semhl-type-class)
+    ("^entity\\.name\\.type\\.enum\\(\\..*\\)?$" . lsp-face-semhl-type-enum)
+    ("^entity\\.name\\.namespace\\(\\..*\\)?$" . lsp-face-semhl-namespace)
+    ("^entity\\.name\\.function.preprocessor\\(\\..*\\)?$" . lsp-face-semhl-preprocessor)
+    ("^entity\\.name\\.type\\.template\\(\\..*\\)?$" . lsp-face-semhl-type-template)
+    ("^storage\\.type\\.primitive\\(\\..*\\)?$" . lsp-face-semhl-type-primitive))
+  "Each element of this list should be of the form (SCOPE-RE . FACE), where SCOPE-RE
+ is a regular expression that will be compared against semantic highlighting scopes
+ sent by the language server, and FACE denotes the face that should be used for fontification.
+ Since the list is traversed in order, it should be sorted in order of decreasing
+ specificity.")
 
 (defun lsp--semantic-highlighting-find-face (scope-names)
-  (let ((match (cl-some (lambda (scope) (assoc scope lsp-semantic-highlighting-faces))
-                        scope-names))
-        face)
-    (if match (cdr match)
-      (progn
+  (let ((maybe-face
+         (seq-some
+          (lambda (scope-name)
+            (seq-some (lambda
+                        (regexp-and-face)
+                        (when (s-matches-p (car regexp-and-face) scope-name)
+                          (cdr regexp-and-face)))
+                      lsp-semantic-highlighting-faces))
+            scope-names)))
+    (unless maybe-face
         (warn (format "Unknown scopes [%s], please amend lsp-semantic-highlighting-faces"
-                      (mapconcat 'identity scope-names ", ")))
-        'warning))))
+                      (s-join ", " 'identity scope-names))))
+    maybe-face))
 
 (defvar-local lsp--facemap nil)
 
@@ -3972,11 +4081,10 @@ A reference is highlighted only if it is visible in a window."
             (mapcar #'lsp--semantic-highlighting-find-face scopes))))
   (let* ((file (lsp--uri-to-path (gethash "uri" (gethash "textDocument" params))))
          (lines (gethash "lines" params))
-         (buffer (lsp--buffer-for-file file))
-         (t0 (current-time)))
+         (buffer (lsp--buffer-for-file file)))
     (when buffer
-      (save-mark-and-excursion
-        (with-current-buffer buffer
+      (with-current-buffer buffer
+        (save-mark-and-excursion
           (with-silent-modifications
             (lsp--apply-semantic-highlighting lines)))))))
 
