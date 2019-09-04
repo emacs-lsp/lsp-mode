@@ -435,3 +435,15 @@ Default value: `pass:[0.2]`
 
 Seconds of idle time to wait before showing symbol highlight.
 ____
+[id="lsp-server-trace"]
+- `lsp-server-trace`
+____
+Default value `pass:[nil]`
+
+Request tracing on the server side.
+The actual trace output at each level depends on the language server in use.
+Changes take effect only when a new session is started.
+
+Allowed options are ‘off’, ‘messages’, ‘verbose’ or `nil`. `nil` has the same
+effect as ‘off’.
+____
