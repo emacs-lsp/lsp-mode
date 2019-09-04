@@ -47,27 +47,29 @@ or manually by cloning the repo and following the installing instructions."
   :group 'lsp-elm)
 
 (defcustom lsp-elm-elm-path
-  "elm"
-  "Path to your elm executable."
+  ""
+  "The path to your elm executable.  Should be empty by default, in that case it will assume the name and try to first get it from a local npm installation or a global one.  If you set it manually it will not try to load from the npm folder."
   :type 'file
   :group 'lsp-elm)
 
 (defcustom lsp-elm-elm-format-path
-  "elm-format"
-  "Path to your elm executable."
+  ""
+  "The path to your elm-format executable.  Should be empty by default, in that case it will assume the name and try to first get it from a local npm installation or a global one.  If you set it manually it will not try to load from the npm folder."
   :type 'file
   :group 'lsp-elm)
 
 (defcustom lsp-elm-elm-test-path
-  "elm-test"
-  "Path to your elm executable."
+  ""
+  "The path to your elm-test executable.  Should be empty by default, in that case it will assume the name and try to first get it from a local npm installation or a global one.  If you set it manually it will not try to load from the npm folder."
   :type 'file
   :group 'lsp-elm)
 
-(defcustom lsp-elm-diagnostics-on-save-only
-  nil
-  "Determines whether or not diagnostic updates are triggered only on save."
-  :type 'boolean
+(defcustom lsp-elm-elm-analyse-trigger
+  "change"
+  "Elm-analyse executed on 'change', 'save' or 'never' (default: 'change')."
+  :type '(choice (const "change")
+                 (const "save")
+                 (const "never"))
   :group 'lsp-elm)
 
 (defcustom lsp-elm-server-args
@@ -88,7 +90,7 @@ or manually by cloning the repo and following the installing instructions."
     :elmPath ,lsp-elm-elm-path
     :elmFormatPath ,lsp-elm-elm-format-path
     :elmTestPath ,lsp-elm-elm-test-path
-    :diagnosticsOnSaveOnly ,(lsp-json-bool lsp-elm-diagnostics-on-save-only)
+    :elmAnalyseTrigger ,lsp-elm-elm-analyse-trigger
     :trace.server ,(lsp-json-bool lsp-elm-trace-server)))
 
 (lsp-register-client
