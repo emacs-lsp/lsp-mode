@@ -3983,7 +3983,7 @@ unless overriden by a more specific face association."
   :group 'lsp-faces)
 
 (defface lsp-face-semhl-static-method
-  '((t :inherit lsp-face-semhl-function :italic ))
+  '((t :inherit lsp-face-semhl-function :italic t))
   "Face used for semantic highlighting scopes matching entity.name.function.method.static.*,
 unless overriden by a more specific face association."
   :group 'lsp-faces)
