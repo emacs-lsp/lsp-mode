@@ -5131,7 +5131,8 @@ returns the command to execute."
               (setq lsp--buffer-workspaces (delete workspace lsp--buffer-workspaces))
               (lsp--uninitialize-workspace)
               (lsp--spinner-stop)
-              (lsp--remove-cur-overlays))))
+              (lsp--remove-cur-overlays)
+              (remove-overlays (point-min) (point-max) 'lsp-sem-highlight t))))
 
         ;; cleanup session from references to the closed workspace.
         (--each (hash-table-keys folder->workspaces)
