@@ -37,6 +37,11 @@ completing function calls."
   :type 'boolean
   :group 'lsp-gopls)
 
+(defcustom lsp-gopls-server-path "gopls"
+  "Path to gopls server binary."
+  :type 'string
+  :group 'lsp-gopls)
+
 (defcustom lsp-gopls-server-args nil
   "Extra CLI arguments for gopls."
   :type '(repeat string)
@@ -47,7 +52,7 @@ completing function calls."
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda () (cons "gopls" lsp-gopls-server-args)))
+                                   (lambda () (cons lsp-gopls-server-path lsp-gopls-server-args)))
                   :major-modes '(go-mode)
                   :priority 0
                   :server-id 'gopls
