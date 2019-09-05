@@ -3964,6 +3964,11 @@ unless overriden by a more specific face association."
 unless overriden by a more specific face association."
   :group 'lsp-faces)
 
+(defface lsp-face-semhl-constant
+  '((t :inherit font-lock-constant-face))
+  "Face used for semantic highlighting scopes matching constant scopes."
+  :group 'lsp-faces)
+
 (defface lsp-face-semhl-variable
   '((t :inherit font-lock-variable-name-face))
   "Face used for semantic highlighting scopes matching variable.*,
@@ -4024,8 +4029,14 @@ unless overriden by a more specific face association."
 unless overriden by a more specific face association."
   :group 'lsp-faces)
 
+(defface lsp-face-semhl-deprecated
+  '((t (:underline (:color "yellow" :style wave))))
+  "Face used for semantic highlighting scopes matching storage.type.primitive.*,
+unless overriden by a more specific face association."
+  :group 'lsp-faces)
+
 (defvar lsp-semantic-highlighting-faces
-  '(("^variable\\.parameter\\(\\..*\\)?$" . lsp-face-semhl-variable-parameter)
+   '(("^variable\\.parameter\\(\\..*\\)?$" . lsp-face-semhl-variable-parameter)
     ("^variable\\.other\\.local\\(\\..*\\)?$" . lsp-face-semhl-variable-local)
     ("^variable\\.other\\.field\\.static\\(\\..*\\)?$" . lsp-face-semhl-field-static)
     ("^variable\\.other\\.field\\(\\..*\\)?$" . lsp-face-semhl-field)
@@ -4039,7 +4050,11 @@ unless overriden by a more specific face association."
     ("^entity\\.name\\.namespace\\(\\..*\\)?$" . lsp-face-semhl-namespace)
     ("^entity\\.name\\.function.preprocessor\\(\\..*\\)?$" . lsp-face-semhl-preprocessor)
     ("^entity\\.name\\.type\\.template\\(\\..*\\)?$" . lsp-face-semhl-type-template)
-    ("^storage\\.type\\.primitive\\(\\..*\\)?$" . lsp-face-semhl-type-primitive))
+    ("^storage\\.type\\.primitive\\(\\..*\\)?$" . lsp-face-semhl-type-primitive)
+    ("^storage\\.modifier\\.static\\(\\..*\\)?$" .  lsp-face-semhl-field-static)
+    ("^constant\\.other\\.key\\(\\..*\\)?$" . lsp-face-semhl-constant)
+    ("^constant\\.numeric\\.decimal\\(\\..*\\)?$" . lsp-face-semhl-constant)
+    ("^invalid\\.deprecated\\(\\..*\\)?$" .  lsp-face-semhl-deprecated))
   "Each element of this list should be of the form (SCOPE-RE . FACE), where SCOPE-RE
  is a regular expression that will be compared against semantic highlighting scopes
  sent by the language server, and FACE denotes the face that should be used for fontification.
