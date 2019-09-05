@@ -660,7 +660,7 @@ must be used for handling a particular message.")
   :group 'lsp-faces)
 
 (defface lsp-face-highlight-write
-  '((t :inherit highlight :italic t))
+  '((t :inherit highlight :slant italic))
   "Face used for highlighting symbols being written to."
   :group 'lsp-faces)
 
@@ -3953,7 +3953,7 @@ unless overriden by a more specific face association."
   :group 'lsp-faces)
 
 (defface lsp-face-semhl-field-static
-  '((t :inherit lsp-face-semhl-field :italic t))
+  '((t :inherit lsp-face-semhl-field :slant italic))
   "Face used for semantic highlighting scopes matching variable.other.field.static.*,
 unless overriden by a more specific face association."
   :group 'lsp-faces)
@@ -3983,7 +3983,7 @@ unless overriden by a more specific face association."
   :group 'lsp-faces)
 
 (defface lsp-face-semhl-static-method
-  '((t :inherit lsp-face-semhl-function :italic ))
+  '((t :inherit lsp-face-semhl-function :slant italic))
   "Face used for semantic highlighting scopes matching entity.name.function.method.static.*,
 unless overriden by a more specific face association."
   :group 'lsp-faces)
@@ -4001,7 +4001,7 @@ unless overriden by a more specific face association."
   :group 'lsp-faces)
 
 (defface lsp-face-semhl-namespace
-  '((t :inherit font-lock-type-face :bold t))
+  '((t :inherit font-lock-type-face :weight bold))
   "Face used for semantic highlighting scopes matching entity.name.namespace.*,
 unless overriden by a more specific face association."
   :group 'lsp-faces)
@@ -4013,13 +4013,13 @@ unless overriden by a more specific face association."
   :group 'lsp-faces)
 
 (defface lsp-face-semhl-type-template
-  '((t :inherit font-lock-type-face :italic t))
+  '((t :inherit font-lock-type-face :slant italic))
   "Face used for semantic highlighting scopes matching entity.name.type.template.*,
 unless overriden by a more specific face association."
   :group 'lsp-faces)
 
 (defface lsp-face-semhl-type-primitive
-  '((t :inherit font-lock-type-face :italic t))
+  '((t :inherit font-lock-type-face :slant italic))
   "Face used for semantic highlighting scopes matching storage.type.primitive.*,
 unless overriden by a more specific face association."
   :group 'lsp-faces)
