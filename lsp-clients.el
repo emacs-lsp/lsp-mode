@@ -504,7 +504,7 @@ responsiveness at the cost of possibile stability issues."
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda () lsp-clients-angular-language-server-command))
                   :activation-fn (lambda (&rest _args)
-                                   (when (file-exists-p (concat (car (project-roots (project-current))) "angular.json"))
+                                   (when (file-exists-p (f-join (lsp-workspace-root) "angular.json"))
                                      (string-match-p ".*\.html$" (buffer-file-name))))
                   :priority -1
                   :add-on? t
