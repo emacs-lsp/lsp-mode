@@ -1026,6 +1026,8 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   (multi-root)
   ;; Initialization options or a function that returns initialization options.
   (initialization-options)
+  ;; Provides support for registering LSP Server specific capabilities.
+  (custom-capabilities)
   ;; Function which returns the folders that are considered to be not projects but library files.
   ;; The function accepts one parameter currently active workspace.
   ;; See: https://github.com/emacs-lsp/lsp-mode/issues/225.
@@ -2438,52 +2440,54 @@ disappearing, unset all the variables related to it."
     (unless (lsp-workspaces)
       (lsp--managed-mode -1))))
 
-(defun lsp--client-capabilities ()
+(defun lsp--client-capabilities (&optional custom-capabilities)
   "Return the client capabilites."
-  `((workspace . ((workspaceEdit . ((documentChanges . t)
-                                    (resourceOperations . ["create" "rename" "delete"])))
-                  (applyEdit . t)
-                  (symbol . ((symbolKind . ((valueSet . ,(apply 'vector (number-sequence 1 26)))))))
-                  (executeCommand . ((dynamicRegistration . :json-false)))
-                  (didChangeWatchedFiles . ((dynamicRegistration . t)))
-                  (workspaceFolders . t)
-                  (configuration . t)))
-    (textDocument . ((declaration . ((linkSupport . t)))
-                     (definition . ((linkSupport . t)))
-                     (implementation . ((linkSupport . t)))
-                     (typeDefinition . ((linkSupport . t)))
-                     (synchronization . ((willSave . t) (didSave . t) (willSaveWaitUntil . t)))
-                     (documentSymbol . ((symbolKind . ((valueSet . ,(apply 'vector (number-sequence 1 26)))))
-                                        (hierarchicalDocumentSymbolSupport . t)))
-                     (formatting . ((dynamicRegistration . t)))
-                     (rename . ((dynamicRegistration . t)))
-                     (semanticHighlightingCapabilities . ((semanticHighlighting . ,lsp-enable-semantic-highlighting)))
-                     (codeAction . ((dynamicRegistration . t)
-                                    (codeActionLiteralSupport . ((codeActionKind . ((valueSet . [""
-                                                                                                 "quickfix"
-                                                                                                 "refactor"
-                                                                                                 "refactor.extract"
-                                                                                                 "refactor.inline"
-                                                                                                 "refactor.rewrite"
-                                                                                                 "source"
-                                                                                                 "source.organizeImports"])))))))
-                     (completion . ((completionItem . ((snippetSupport . ,(if lsp-enable-snippet
-                                                                              (or
-                                                                               (fboundp 'yas-expand-snippet)
-                                                                               (warn (concat
-                                                                                      "Yasnippet is not required but `lsp-enable-snippet' is set to `t'. "
-                                                                                      "You must either required yasnippet or disable snippet support."))
-                                                                               t)
-                                                                            :json-false))
-                                                       (documentationFormat . ["markdown"])))
-                                    (contextSupport . t)))
-                     (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))))
-                     (documentLink . ((dynamicRegistration . t)))
-                     (hover . ((contentFormat . ["markdown" "plaintext"])))
-                     (foldingRange . ,(when lsp-enable-folding
-                                        `((dynamicRegistration . t)
-                                          (rangeLimit . ,lsp-folding-range-limit)
-                                          (lineFoldingOnly . ,(or lsp-folding-line-folding-only :json-false)))))))))
+  (append
+   `((workspace . ((workspaceEdit . ((documentChanges . t)
+                                     (resourceOperations . ["create" "rename" "delete"])))
+                   (applyEdit . t)
+                   (symbol . ((symbolKind . ((valueSet . ,(apply 'vector (number-sequence 1 26)))))))
+                   (executeCommand . ((dynamicRegistration . :json-false)))
+                   (didChangeWatchedFiles . ((dynamicRegistration . t)))
+                   (workspaceFolders . t)
+                   (configuration . t)))
+     (textDocument . ((declaration . ((linkSupport . t)))
+                      (definition . ((linkSupport . t)))
+                      (implementation . ((linkSupport . t)))
+                      (typeDefinition . ((linkSupport . t)))
+                      (synchronization . ((willSave . t) (didSave . t) (willSaveWaitUntil . t)))
+                      (documentSymbol . ((symbolKind . ((valueSet . ,(apply 'vector (number-sequence 1 26)))))
+                                         (hierarchicalDocumentSymbolSupport . t)))
+                      (formatting . ((dynamicRegistration . t)))
+                      (rename . ((dynamicRegistration . t)))
+                      (semanticHighlightingCapabilities . ((semanticHighlighting . ,lsp-enable-semantic-highlighting)))
+                      (codeAction . ((dynamicRegistration . t)
+                                     (codeActionLiteralSupport . ((codeActionKind . ((valueSet . [""
+                                                                                                  "quickfix"
+                                                                                                  "refactor"
+                                                                                                  "refactor.extract"
+                                                                                                  "refactor.inline"
+                                                                                                  "refactor.rewrite"
+                                                                                                  "source"
+                                                                                                  "source.organizeImports"])))))))
+                      (completion . ((completionItem . ((snippetSupport . ,(if lsp-enable-snippet
+                                                                               (or
+                                                                                (fboundp 'yas-expand-snippet)
+                                                                                (warn (concat
+                                                                                       "Yasnippet is not required but `lsp-enable-snippet' is set to `t'. "
+                                                                                       "You must either required yasnippet or disable snippet support."))
+                                                                                t)
+                                                                             :json-false))
+                                                        (documentationFormat . ["markdown"])))
+                                     (contextSupport . t)))
+                      (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))))
+                      (documentLink . ((dynamicRegistration . t)))
+                      (hover . ((contentFormat . ["markdown" "plaintext"])))
+                      (foldingRange . ,(when lsp-enable-folding
+                                         `((dynamicRegistration . t)
+                                           (rangeLimit . ,lsp-folding-range-limit)
+                                           (lineFoldingOnly . ,(or lsp-folding-line-folding-only :json-false))))))))
+   custom-capabilities))
 
 (defun lsp-find-roots-for-workspace (workspace session)
   "Get all roots for the WORKSPACE."
@@ -5250,7 +5254,8 @@ SESSION is the active session."
                           (list :processId (emacs-pid)
                                 :rootPath (lsp-file-local-name (expand-file-name root))
                                 :rootUri (lsp--path-to-uri root)
-                                :capabilities (lsp--client-capabilities)
+                                :capabilities (lsp--client-capabilities
+                                               (lsp--client-custom-capabilities client))
                                 :initializationOptions initialization-options)
                           (when lsp-server-trace
                             (list :trace lsp-server-trace))
