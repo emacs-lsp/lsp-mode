@@ -2746,7 +2746,10 @@ in that particular folder."
     (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t)
     (remove-hook 'kill-buffer-hook #'lsp--text-document-did-close t)
     (remove-hook 'post-self-insert-hook #'lsp--on-self-insert t)
-    (lsp--cancel-document-link-timer))
+    (lsp--cancel-document-link-timer)
+    (save-restriction
+      (widen)
+      (remove-overlays (point-min) (point-max) 'lsp-sem-highlight t)))
    (remove-hook 'xref-backend-functions #'lsp--xref-backend t)))
 
 (defun lsp--text-document-did-open ()
@@ -5210,8 +5213,7 @@ returns the command to execute."
               (setq lsp--buffer-workspaces (delete workspace lsp--buffer-workspaces))
               (lsp--uninitialize-workspace)
               (lsp--spinner-stop)
-              (lsp--remove-cur-overlays)
-              (remove-overlays (point-min) (point-max) 'lsp-sem-highlight t))))
+              (lsp--remove-cur-overlays))))
 
         ;; cleanup session from references to the closed workspace.
         (--each (hash-table-keys folder->workspaces)
