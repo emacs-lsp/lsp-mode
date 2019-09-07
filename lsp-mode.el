@@ -2472,10 +2472,10 @@ disappearing, unset all the variables related to it."
                                                                                                   "source.organizeImports"])))))))
                       (completion . ((completionItem . ((snippetSupport . ,(if lsp-enable-snippet
                                                                                (or
-                                                                                (fboundp 'yas-expand-snippet)
+                                                                                (featurep 'yasnippet)
                                                                                 (warn (concat
-                                                                                       "Yasnippet is not required but `lsp-enable-snippet' is set to `t'. "
-                                                                                       "You must either required yasnippet or disable snippet support."))
+                                                                                       "Yasnippet is not yet loaded, but `lsp-enable-snippet' is set to `t'. "
+                                                                                       "You must either (require 'yasnippet), or disable snippet support."))
                                                                                 t)
                                                                              :json-false))
                                                         (documentationFormat . ["markdown"])))
