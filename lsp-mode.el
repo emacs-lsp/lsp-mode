@@ -4103,42 +4103,53 @@ unless overriden by a more specific face association."
 unless overriden by a more specific face association."
   :group 'lsp-faces)
 
+(defun lsp--semhl-scope-matchp (matchspec scopes)
+  "Returns t iff there is an element M in MATCHSPEC s.t. every N in M
+ is a prefix of, or identical to, one of the scopes contained in SCOPES"
+  (-any? (lambda (or-matchspec)
+           (-all? (lambda (and-matchspec)
+                    (let ((re (format "^%s\\(\\..*\\)?$" (regexp-quote and-matchspec))))
+                      (seq-some (lambda (s) (s-matches-p re s)) scopes)))
+                  or-matchspec))
+         matchspec))
+
 (defvar lsp-semantic-highlighting-faces
-  '(("^variable\\.parameter\\(\\..*\\)?$" . lsp-face-semhl-variable-parameter)
-    ("^variable\\.other\\.local\\(\\..*\\)?$" . lsp-face-semhl-variable-local)
-    ("^variable\\.other\\.field\\.static\\(\\..*\\)?$" . lsp-face-semhl-field-static)
-    ("^variable\\.other\\.field\\(\\..*\\)?$" . lsp-face-semhl-field)
-    ("^variable\\.other\\.enummember\\(\\..*\\)?$" . lsp-face-semhl-enummember)
-    ("^variable\\.other\\(\\..*\\)?$" . lsp-face-semhl-variable)
-    ("^entity\\.name\\.function\\.method\\.static\\(\\..*\\)?$" . lsp-face-semhl-static-method)
-    ("^entity\\.name\\.function\\.method\\(\\..*\\)?$" . lsp-face-semhl-method)
-    ("^entity\\.name\\.function\\(\\..*\\)?$" . lsp-face-semhl-function)
-    ("^entity\\.name\\.type\\.class\\(\\..*\\)?$" . lsp-face-semhl-type-class)
-    ("^entity\\.name\\.type\\.enum\\(\\..*\\)?$" . lsp-face-semhl-type-enum)
-    ("^entity\\.name\\.namespace\\(\\..*\\)?$" . lsp-face-semhl-namespace)
-    ("^entity\\.name\\.function.preprocessor\\(\\..*\\)?$" . lsp-face-semhl-preprocessor)
-    ("^entity\\.name\\.type\\.template\\(\\..*\\)?$" . lsp-face-semhl-type-template)
-    ("^storage\\.type\\.primitive\\(\\..*\\)?$" . lsp-face-semhl-type-primitive)
-    ("^storage\\.modifier\\.static\\(\\..*\\)?$" .  lsp-face-semhl-field-static)
-    ("^constant\\.other\\.key\\(\\..*\\)?$" . lsp-face-semhl-constant)
-    ("^constant\\.numeric\\.decimal\\(\\..*\\)?$" . lsp-face-semhl-constant)
-    ("^invalid\\.deprecated\\(\\..*\\)?$" .  lsp-face-semhl-deprecated))
-  "Each element of this list should be of the form (SCOPE-RE . FACE), where SCOPE-RE
- is a regular expression that will be compared against semantic highlighting scopes
- sent by the language server, and FACE denotes the face that should be used for fontification.
+  '(((("variable.parameter")) . lsp-face-semhl-variable-parameter)
+    ((("variable.other.local")) . lsp-face-semhl-variable-local)
+    ((("variable.other.field.static")
+      ("storage.modifier.static" "variable.other")) . lsp-face-semhl-field-static)
+    ((("variable.other.field")) . lsp-face-semhl-field)
+    ((("variable.other.enummember")) . lsp-face-semhl-enummember)
+    ((("variable.other")) . lsp-face-semhl-variable)
+    ((("entity.name.function.method.static")
+      ("storage.modifier.static" "entity.name.function")) . lsp-face-semhl-static-method)
+    ((("entity.name.function.method")) . lsp-face-semhl-method)
+    ((("entity.name.function")) . lsp-face-semhl-function)
+    ((("entity.name.type.class")) . lsp-face-semhl-type-class)
+    ((("entity.name.type.enum")) . lsp-face-semhl-type-enum)
+    ((("entity.name.namespace")) . lsp-face-semhl-namespace)
+    ((("entity.name.function.preprocessor")) . lsp-face-semhl-preprocessor)
+    ((("entity.name.type.template")) . lsp-face-semhl-type-template)
+    ((("storage.type.primitive")) . lsp-face-semhl-type-primitive)
+    ((("constant.other.key")) . lsp-face-semhl-constant)
+    ((("constant.numeric.decimal")) . lsp-face-semhl-constant)
+    ((("invalid.deprecated")) .  lsp-face-semhl-deprecated))
+  "Each element of this list should be of the form
+ ((SCOPES-1 ... SCOPES-N) . FACE), where SCOPES-1, ..., SCOPES-N are lists of
+ strings. Given a list SCOPES of scopes sent by the language server, a match
+ will be declared if and only if for at least one of the
+ SCOPES-1, ..., SCOPES-N, every string within SCOPES-i is identical to, or a
+ prefix of, some element of SCOPES.
  Since the list is traversed in order, it should be sorted in order of decreasing
  specificity.")
 
 (defun lsp--semantic-highlighting-find-face (scope-names)
   (let ((maybe-face
-         (seq-some
-          (lambda (scope-name)
-            (seq-some (lambda
-                        (regexp-and-face)
-                        (when (s-matches-p (car regexp-and-face) scope-name)
-                          (cdr regexp-and-face)))
-                      lsp-semantic-highlighting-faces))
-          scope-names)))
+         (seq-some (lambda
+                     (matchspec-and-face)
+                     (when (lsp--semhl-scope-matchp (car matchspec-and-face) scope-names)
+                       (cdr matchspec-and-face)))
+                   lsp-semantic-highlighting-faces)))
     (unless maybe-face
       (lsp--warn "Unknown scopes [%s], please amend lsp-semantic-highlighting-faces"
                  (s-join ", " scope-names)))
