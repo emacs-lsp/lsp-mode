@@ -31,7 +31,7 @@
   "LSP support for Clojure."
   :link '(url-link "https://github.com/snoe/clojure-lsp")
   :group 'lsp-mode
-  :tag "Language Server")
+  :tag "Lsp Clojure")
 
 (defcustom lsp-clojure-server-command  '("bash" "-c" "clojure-lsp")
   "The clojure-lisp server command."
