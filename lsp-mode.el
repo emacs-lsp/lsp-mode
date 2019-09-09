@@ -4158,7 +4158,7 @@ unless overriden by a more specific face association."
                  (s-join ", " scope-names)))
     maybe-face))
 
-(defvar-local lsp--facemap nil)
+(defvar-local lsp--faces nil)
 
 (defun lsp--apply-semantic-highlighting (lines)
   (let (line raw-str i end el start (cur-line 1) ov tokens)
@@ -4183,17 +4183,17 @@ unless overriden by a more specific face association."
                  (setq ov (make-overlay
                            (+ (point) start)
                            (+ (point) (+ start (bindat-get-field el 'len)))))
-                 (overlay-put ov 'face (elt lsp--facemap (bindat-get-field el 'scopeIndex)))
+                 (overlay-put ov 'face (aref lsp--faces (bindat-get-field el 'scopeIndex)))
                  (overlay-put ov 'lsp-sem-highlight t))))))
 
 (defun lsp--on-semantic-highlighting (workspace params)
   ;; TODO: defer highlighting if buffer's not currently focused?
-  (unless lsp--facemap
+  (unless lsp--faces
     (let* ((capabilities (lsp--workspace-server-capabilities workspace))
            (semanticHighlighting (gethash "semanticHighlighting" capabilities))
            (scopes (or (gethash "scopes" semanticHighlighting) [])))
-      (setq lsp--facemap
-            (mapcar #'lsp--semantic-highlighting-find-face scopes))))
+      (setq lsp--faces
+            (vconcat (mapcar #'lsp--semantic-highlighting-find-face scopes)))))
   (let* ((file (lsp--uri-to-path (gethash "uri" (gethash "textDocument" params))))
          (lines (gethash "lines" params))
          (buffer (lsp--buffer-for-file file)))
