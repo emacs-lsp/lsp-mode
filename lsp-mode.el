@@ -684,7 +684,7 @@ must be used for handling a particular message.")
   :type 'number
   :group 'lsp-mode)
 
-(defcustom lsp-file-watch-threshold 300
+(defcustom lsp-file-watch-threshold 1000
   "Show warning if the files to watch are more than.
 Set to nil to disable the warning."
   :type 'number
