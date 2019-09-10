@@ -63,6 +63,7 @@
    - Debugger - [[https://github.com/yyoncho/dap-mode/][dap-mode]]
    - Helm integration - [[https://github.com/yyoncho/helm-lsp/][helm-lsp]]
    - Treemacs integration - [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]]
+   - Semantic highlighting (as currently implemented by JDT LS and unreleased builds of clangd, cf. [[https://github.com/microsoft/vscode-languageserver-node/pull/367][Semantic highlighting spec]])
 ** Installation
 *** Install via melpa
     The recommended way to install ~lsp-mode~ is via ~package.el~ - the built-in package manager in Emacs. ~lsp-mode~ is available on the two major ~package.el~ community maintained repos - [[http://stable.melpa.org][MELPA Stable]] and [[http://melpa.org][MELPA]].
@@ -212,6 +213,7 @@
    - ~lsp-response-timeout~ - Number of seconds to wait for a response from the language server before timing out.
    - ~lsp-enable-file-watchers~ - If non-nil lsp-mode will watch the files in the workspace if the server has requested that.
    - ~lsp-server-trace~ - Request trace mode on the language server.
+   - ~lsp-enable-semantic-highlighting~ - Enable experimental semantic highlighting support
 ** Screenshots
    - RUST Completion with company-lsp
      [[file:examples/completion.png]]
@@ -223,6 +225,9 @@
      [[file:examples/call-hierarchy-ccls.png]]
    - Metals Doctor
      [[file:examples/metals-doctor.png]]
+   - Semantic highlighting as provided by clangd (built from unreleased 10.0 branch). In this screenshot, all other font-locking has been disabled (hence no syntax highlighting of comments or basic keywords such as ~auto~)
+     [[file:examples/clangd_semantic_highlighting.png]]
+
 ** Extensions
 *** TRAMP
     LSP mode has support for tramp buffers with the following requirements:
