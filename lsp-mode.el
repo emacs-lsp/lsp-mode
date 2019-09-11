@@ -4082,6 +4082,13 @@ unless overriden by a more specific face association."
 unless overriden by a more specific face association."
   :group 'lsp-faces)
 
+(defface lsp-face-semhl-type-typedef
+  '((t :inherit font-lock-type-face :slant italic))
+  "Face used for semantic highlighting scopes matching
+ entity.name.type.typedef.*, unless overriden by a more
+ specific face association."
+  :group 'lsp-faces)
+
 (defface lsp-face-semhl-namespace
   '((t :inherit font-lock-type-face :weight bold))
   "Face used for semantic highlighting scopes matching entity.name.namespace.*,
@@ -4136,6 +4143,7 @@ unless overriden by a more specific face association."
     ((("entity.name.function")) . lsp-face-semhl-function)
     ((("entity.name.type.class")) . lsp-face-semhl-type-class)
     ((("entity.name.type.enum")) . lsp-face-semhl-type-enum)
+    ((("entity.name.type.typedef")) . lsp-face-semhl-type-typedef)
     ((("entity.name.namespace")) . lsp-face-semhl-namespace)
     ((("entity.name.function.preprocessor")) . lsp-face-semhl-preprocessor)
     ((("entity.name.type.template")) . lsp-face-semhl-type-template)
