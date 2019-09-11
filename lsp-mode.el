@@ -5667,20 +5667,24 @@ Returns nil if the project should not be added to the current SESSION."
           (t nil)))
     ('quit)))
 
+(declare-function tramp-file-name-host "tramp" (file))
+(declare-function tramp-dissect-file-name "tramp" (file))
+
 (defun lsp--files-same-host (f1 f2)
   "Predicate on whether or not two files are on the same host."
   (or (not (or (file-remote-p f1) (file-remote-p f2)))
-      (and (file-remote-p f1) 
-           (file-remote-p f2) 
-           (string-equal (tramp-file-name-host (tramp-dissect-file-name f1)) 
-                         (tramp-file-name-host (tramp-dissect-file-name f2))))))
+      (and (file-remote-p f1)
+           (file-remote-p f2)
+           (progn (require 'tramp)
+                  (string-equal (tramp-file-name-host (tramp-dissect-file-name f1))
+                                (tramp-file-name-host (tramp-dissect-file-name f2)))))))
 
 (defun lsp-find-session-folder (session file-name)
   "Look in the current SESSION for folder containing FILE-NAME."
   (let ((file-name-canonical (f-canonical file-name)))
     (->> session
          (lsp-session-folders)
-         (--filter (and (lsp--files-same-host it file-name-canonical) 
+         (--filter (and (lsp--files-same-host it file-name-canonical)
                         (or (f-same? it file-name-canonical)
                             (f-ancestor-of? it file-name-canonical))))
          (--max-by (> (length it)
