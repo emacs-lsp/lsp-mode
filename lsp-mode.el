@@ -4350,20 +4350,22 @@ perform the request synchronously."
     (when edits
       (lsp--apply-workspace-edit edits))))
 
+(defun lsp-show-xrefs (xrefs display-action references?)
+  (if (boundp 'xref-show-definitions-function)
+      (with-no-warnings
+        (funcall (if references? xref-show-xrefs-function xref-show-definitions-function)
+                 (-const xrefs)
+                 `((window . ,(selected-window))
+                   (display-action . ,display-action))))
+    (xref--show-xrefs xrefs display-action)))
+
 (cl-defun lsp-find-locations (method &optional extra &key display-action references?)
   "Send request named METHOD and get cross references of the symbol under point.
 EXTRA is a plist of extra parameters.
 REFERENCES? t when METHOD returns references."
   (if-let ((loc (lsp-request method
                              (append (lsp--text-document-position-params) extra))))
-      (let ((xrefs (lsp--locations-to-xref-items loc)))
-        (if (boundp 'xref-show-definitions-function)
-            (with-no-warnings
-              (funcall (if references? xref-show-xrefs-function xref-show-definitions-function)
-                       (-const xrefs)
-                       `((window . ,(selected-window))
-                         (display-action . ,display-action))))
-          (xref--show-xrefs xrefs display-action)))
+      (lsp-show-xrefs (lsp--locations-to-xref-items loc) display-action references?)
     (message "Not found for: %s" (thing-at-point 'symbol t))))
 
 (cl-defun lsp-find-declaration (&key display-action)
