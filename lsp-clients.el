@@ -518,7 +518,7 @@ responsiveness at the cost of possibile stability issues."
   :link '(url-link "https://github.com/OmniSharp/omnisharp-roslyn"))
 
 (defcustom lsp-clients-csharp-langauge-server-command
-  `("mono" ,(expand-file-name "~/.omnisharp/omnisharp/omnisharp/OmniSharp.exe") "lsp")
+  `("mono" ,(expand-file-name "~/.omnisharp/omnisharp/omnisharp/OmniSharp.exe") "-lsp")
   "The command that executes OmnisSharp Roslyn."
   :group 'lsp-csharp
   :type '(choice
