@@ -613,7 +613,8 @@ Changes take effect only when a new session is started."
                                         (elm-mode . "elm")
                                         (dart-mode . "dart")
                                         (erlang-mode . "erlang")
-                                        (dockerfile-mode . "dockerfile"))
+                                        (dockerfile-mode . "dockerfile")
+                                        (csharp-mode . "csharp"))
   "Language id configuration.")
 
 (defvar lsp-method-requirements
