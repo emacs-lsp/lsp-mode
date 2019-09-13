@@ -3615,7 +3615,7 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
                             (lsp--make-request "textDocument/hover")
                             (lsp--send-request)
                             (gethash "contents")))
-        (buffer (get-buffer-create "*lsp-help*")))
+        (buffer (help-buffer)))
     (if (and contents (not (equal contents "")) )
         (progn
           (pop-to-buffer buffer)
@@ -3623,8 +3623,7 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
             (let ((inhibit-read-only t))
               (erase-buffer)
               (insert (lsp--render-on-hover-content contents t))
-              (goto-char (point-min))
-              (view-mode t))))
+              (goto-char (point-min)))))
       (lsp--info "No content at point."))))
 
 (defun lsp--point-in-bounds-p (bounds)
