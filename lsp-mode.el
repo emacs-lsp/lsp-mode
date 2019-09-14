@@ -614,7 +614,9 @@ Changes take effect only when a new session is started."
                                         (dart-mode . "dart")
                                         (erlang-mode . "erlang")
                                         (dockerfile-mode . "dockerfile")
-                                        (csharp-mode . "csharp"))
+                                        (csharp-mode . "csharp")
+                                        (plain-tex-mode . "plaintex")
+                                        (latex-mode . "latex"))
   "Language id configuration.")
 
 (defvar lsp-method-requirements
