@@ -526,7 +526,7 @@ responsiveness at the cost of possibile stability issues."
 (defun lsp-clients-csharp-language-server-command ()
   (if (eq system-type 'windows-nt)
       (list lsp-clients-csharp-language-server-path "-lsp")
-    (list "mono" lsp-clients-csharp-langauge-server-path "-lsp")))
+    (list "mono" lsp-clients-csharp-language-server-path "-lsp")))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
