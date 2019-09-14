@@ -517,18 +517,20 @@ responsiveness at the cost of possibile stability issues."
   :group 'lsp-mode
   :link '(url-link "https://github.com/OmniSharp/omnisharp-roslyn"))
 
-(defcustom lsp-clients-csharp-langauge-server-command
-  `("mono" ,(expand-file-name "~/.omnisharp/omnisharp/omnisharp/OmniSharp.exe") "-lsp")
-  "The command that executes OmnisSharp Roslyn."
+(defcustom lsp-clients-csharp-language-server-path
+  (expand-file-name "~/.omnisharp/omnisharp/omnisharp/OmniSharp.exe")
+  "The path to the OmnisSharp Roslyn language-server."
   :group 'lsp-csharp
-  :type '(choice
-          (string :tag "Single string value")
-          (repeat :tag "List of string values"
-                  string)))
+  :type '(string :tag "Single string value"))
+
+(defun lsp-clients-csharp-language-server-command ()
+  (if (eq system-type 'windows-nt)
+      (list lsp-clients-csharp-language-server-path "-lsp")
+    (list "mono" lsp-clients-csharp-langauge-server-path "-lsp")))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda () lsp-clients-csharp-langauge-server-command))
+                                   #'lsp-clients-csharp-language-server-command)
                   :major-modes '(csharp-mode)
                   :server-id 'csharp))
 
