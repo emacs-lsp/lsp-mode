@@ -3442,12 +3442,10 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
 
 (defun lsp--annotate (item)
   "Annotate ITEM detail."
-  (-let (((&hash "detail" "kind" kind-index) (plist-get (text-properties-at 0 item) 'lsp-completion-item))
-         kind)
-    ;; We need check index before call `aref'.
-    (when kind-index
-      (setq kind (aref lsp--completion-item-kind kind-index))
-      (concat " " detail (when kind (format " (%s)" kind))))))
+  (-let (((&hash "detail" "kind") (plist-get (text-properties-at 0 item) 'lsp-completion-item)))
+    (concat (when detail (concat " " detail))
+            (when-let (kind-name (and kind (aref lsp--completion-item-kind kind)))
+              (format " (%s)" kind-name)))))
 
 (defun lsp--default-prefix-function ()
   "Default prefix function."
