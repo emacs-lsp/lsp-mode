@@ -3333,10 +3333,12 @@ Applies on type formatting."
 
 (defun lsp-workspace-root (&optional path)
   "Find the workspace root for the current file or PATH."
-  (when-let (file-name (or path (buffer-file-name)))
+  (-when-let* ((file-name (or path (buffer-file-name)))
+               (file-name (f-canonical file-name)))
     (->> (lsp-session)
          (lsp-session-folders)
-         (--first (f-ancestor-of? it (f-canonical file-name))))))
+         (--first (and (lsp--files-same-host it file-name)
+                       (f-ancestor-of? it file-name))))))
 
 (defun lsp-on-revert ()
   "Executed when a file is reverted.
