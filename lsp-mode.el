@@ -2459,7 +2459,7 @@ disappearing, unset all the variables related to it."
                    (applyEdit . t)
                    (symbol . ((symbolKind . ((valueSet . ,(apply 'vector (number-sequence 1 26)))))))
                    (executeCommand . ((dynamicRegistration . :json-false)))
-                   (didChangeWatchedFiles . ,(when lsp-enable-file-watchers '((dynamicRegistration . t))))
+                   ,@(when lsp-enable-file-watchers '((didChangeWatchedFiles . ((dynamicRegistration . t)))))
                    (workspaceFolders . t)
                    (configuration . t)))
      (textDocument . ((declaration . ((linkSupport . t)))
