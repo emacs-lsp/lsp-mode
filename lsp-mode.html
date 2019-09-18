@@ -611,9 +611,9 @@ Emacs' package sources, you can do that with</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="elisp"><span></span><span class="tok-p">(</span><span class="tok-nb">require</span> <span class="tok-ss">&#39;packages</span><span class="tok-p">)</span>
-<span class="tok-p">(</span><span class="tok-nv">add-to-list</span> <span class="tok-ss">&#39;package-archives</span>
-	     <span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-s">&quot;melpa&quot;</span> <span class="tok-o">.</span> <span class="tok-s">&quot;https://melpa.org/packages/&quot;</span><span class="tok-p">))</span></code></pre>
+<pre class="pygments highlight"><code data-lang="elisp">(require 'packages)
+(add-to-list 'package-archives
+	     '("melpa" . "https://melpa.org/packages/"))</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -621,9 +621,9 @@ Emacs' package sources, you can do that with</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="elisp"><span></span><span class="tok-p">(</span><span class="tok-nb">require</span> <span class="tok-ss">&#39;package</span><span class="tok-p">)</span>
-<span class="tok-p">(</span><span class="tok-nv">add-to-list</span> <span class="tok-ss">&#39;package-archives</span>
-	     <span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-s">&quot;melpa-stable&quot;</span> <span class="tok-o">.</span> <span class="tok-s">&quot;https://stable.melpa.org/packages/&quot;</span><span class="tok-p">))</span></code></pre>
+<pre class="pygments highlight"><code data-lang="elisp">(require 'package)
+(add-to-list 'package-archives
+	     '("melpa-stable" . "https://stable.melpa.org/packages/"))</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -656,10 +656,10 @@ languages, and enabling <code>lsp-mode</code> for the respective major-mode with
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="elisp"><span></span><span class="tok-p">(</span><span class="tok-nb">require</span> <span class="tok-ss">&#39;lsp-mode</span><span class="tok-p">)</span>
-<span class="tok-p">(</span><span class="tok-nv">add-hook</span> <span class="tok-ss">&#39;&lt;major-mode-hook&gt;</span> <span class="tok-nf">#&#39;</span><span class="tok-nv">lsp</span><span class="tok-p">)</span>
-<span class="tok-c1">;; Major mode hooks tend to be named as xxx-mode-hook (python-mode-hook,</span>
-<span class="tok-c1">;; c++-mode-hook, etc)</span></code></pre>
+<pre class="pygments highlight"><code data-lang="elisp">(require 'lsp-mode)
+(add-hook '&lt;major-mode-hook&gt; #'lsp)
+;; Major mode hooks tend to be named as xxx-mode-hook (python-mode-hook,
+;; c++-mode-hook, etc)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -672,9 +672,9 @@ need to <code>require</code> it as well. For instance, if you want to use
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="elisp"><span></span><span class="tok-p">(</span><span class="tok-nb">require</span> <span class="tok-ss">&#39;lsp-mode</span><span class="tok-p">)</span>
-<span class="tok-p">(</span><span class="tok-nb">require</span> <span class="tok-ss">&#39;lsp-java</span><span class="tok-p">)</span>
-<span class="tok-p">(</span><span class="tok-nv">add-hook</span> <span class="tok-ss">&#39;java-mode-hook</span> <span class="tok-ss">&#39;lsp</span><span class="tok-p">)</span></code></pre>
+<pre class="pygments highlight"><code data-lang="elisp">(require 'lsp-mode)
+(require 'lsp-java)
+(add-hook 'java-mode-hook 'lsp)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -689,10 +689,10 @@ languages.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="elisp"><span></span><span class="tok-p">(</span><span class="tok-nb">use-package</span> <span class="tok-nv">lsp-mode</span>
-  <span class="tok-nb">:commands</span> <span class="tok-nv">lsp</span>
-  <span class="tok-nb">:init</span>
-  <span class="tok-p">(</span><span class="tok-k">setq</span> <span class="tok-o">...</span><span class="tok-p">))</span></code></pre>
+<pre class="pygments highlight"><code data-lang="elisp">(use-package lsp-mode
+  :commands lsp
+  :init
+  (setq ...))</code></pre>
 </div>
 </div>
 </div>
@@ -1995,10 +1995,10 @@ to either <code>'auto</code> or <code>t</code> can help reduce freezes when perf
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="elisp"><span></span><span class="tok-p">(</span><span class="tok-nv">lsp-register-client</span>
- <span class="tok-p">(</span><span class="tok-nv">make-lsp-client</span> <span class="tok-nb">:new-connection</span> <span class="tok-nv">&lt;connection-plist&gt;</span>
-		  <span class="tok-nb">:major-modes</span> <span class="tok-o">&#39;</span><span class="tok-p">(</span><span class="tok-nv">&lt;supported-major-modes&gt;</span><span class="tok-p">)</span>
-		  <span class="tok-nb">:server-id</span> <span class="tok-nv">&lt;server-id&gt;</span><span class="tok-p">))</span></code></pre>
+<pre class="pygments highlight"><code data-lang="elisp">(lsp-register-client
+ (make-lsp-client :new-connection &lt;connection-plist&gt;
+		  :major-modes '(&lt;supported-major-modes&gt;)
+		  :server-id &lt;server-id&gt;))</code></pre>
 </div>
 </div>
 <div class="sect2">
@@ -2140,15 +2140,15 @@ sent from the server to the editor:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="elisp"><span></span><span class="tok-p">(</span><span class="tok-nb">defun</span> <span class="tok-nv">lsp-clients--rust-window-progress</span> <span class="tok-p">(</span><span class="tok-nv">_workspace</span> <span class="tok-nv">params</span><span class="tok-p">)</span>
-  <span class="tok-c1">;; Minimal implementation - we could show the progress as well.</span>
-  <span class="tok-p">(</span><span class="tok-nv">lsp-log</span> <span class="tok-p">(</span><span class="tok-nf">gethash</span> <span class="tok-s">&quot;title&quot;</span> <span class="tok-nv">params</span><span class="tok-p">)))</span>
-<span class="tok-p">(</span><span class="tok-k">defvar</span> <span class="tok-nv">lsp-rust-notification-handlers</span> <span class="tok-p">(</span><span class="tok-nf">make-hash-table</span> <span class="tok-nb">:test</span> <span class="tok-ss">&#39;equal</span><span class="tok-p">))</span>
-<span class="tok-p">(</span><span class="tok-nf">puthash</span> <span class="tok-s">&quot;window/progress&quot;</span> <span class="tok-nf">#&#39;</span><span class="tok-nv">lsp-clients--rust-window-progress</span> <span class="tok-nv">lsp-rust-notification-handlers</span><span class="tok-p">)</span>
+<pre class="pygments highlight"><code data-lang="elisp">(defun lsp-clients--rust-window-progress (_workspace params)
+  ;; Minimal implementation - we could show the progress as well.
+  (lsp-log (gethash "title" params)))
+(defvar lsp-rust-notification-handlers (make-hash-table :test 'equal))
+(puthash "window/progress" #'lsp-clients--rust-window-progress lsp-rust-notification-handlers)
 
-<span class="tok-p">(</span><span class="tok-nv">lsp-register-client</span>
- <span class="tok-p">(</span><span class="tok-nv">make-lsp-client</span> <span class="tok-nb">:notification-handlers</span> <span class="tok-nv">lsp-rust-notification-handlers</span>
-		  <span class="tok-nv">&lt;other-arguments&gt;</span><span class="tok-p">))</span></code></pre>
+(lsp-register-client
+ (make-lsp-client :notification-handlers lsp-rust-notification-handlers
+		  &lt;other-arguments&gt;))</code></pre>
 </div>
 </div>
 </div>
@@ -10200,79 +10200,8 @@ Introduced in <code>lsp-mode</code> 6.1
 <div id="footer">
 <div id="footer-text">
 Version 6.1<br>
-Last updated 2019-09-17 04:42:37 UTC
+Last updated 2019-09-18 16:11:39 UTC
 </div>
 </div>
-<style>
-pre.pygments .hll { background-color: #ffffcc }
-pre.pygments  { background: #f8f8f8; }
-pre.pygments .tok-c { color: #408080; font-style: italic } /* Comment */
-pre.pygments .tok-err { border: 1px solid #FF0000 } /* Error */
-pre.pygments .tok-k { color: #008000; font-weight: bold } /* Keyword */
-pre.pygments .tok-o { color: #666666 } /* Operator */
-pre.pygments .tok-ch { color: #408080; font-style: italic } /* Comment.Hashbang */
-pre.pygments .tok-cm { color: #408080; font-style: italic } /* Comment.Multiline */
-pre.pygments .tok-cp { color: #BC7A00 } /* Comment.Preproc */
-pre.pygments .tok-cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
-pre.pygments .tok-c1 { color: #408080; font-style: italic } /* Comment.Single */
-pre.pygments .tok-cs { color: #408080; font-style: italic } /* Comment.Special */
-pre.pygments .tok-gd { color: #A00000 } /* Generic.Deleted */
-pre.pygments .tok-ge { font-style: italic } /* Generic.Emph */
-pre.pygments .tok-gr { color: #FF0000 } /* Generic.Error */
-pre.pygments .tok-gh { color: #000080; font-weight: bold } /* Generic.Heading */
-pre.pygments .tok-gi { color: #00A000 } /* Generic.Inserted */
-pre.pygments .tok-go { color: #888888 } /* Generic.Output */
-pre.pygments .tok-gp { color: #000080; font-weight: bold } /* Generic.Prompt */
-pre.pygments .tok-gs { font-weight: bold } /* Generic.Strong */
-pre.pygments .tok-gu { color: #800080; font-weight: bold } /* Generic.Subheading */
-pre.pygments .tok-gt { color: #0044DD } /* Generic.Traceback */
-pre.pygments .tok-kc { color: #008000; font-weight: bold } /* Keyword.Constant */
-pre.pygments .tok-kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
-pre.pygments .tok-kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
-pre.pygments .tok-kp { color: #008000 } /* Keyword.Pseudo */
-pre.pygments .tok-kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
-pre.pygments .tok-kt { color: #B00040 } /* Keyword.Type */
-pre.pygments .tok-m { color: #666666 } /* Literal.Number */
-pre.pygments .tok-s { color: #BA2121 } /* Literal.String */
-pre.pygments .tok-na { color: #7D9029 } /* Name.Attribute */
-pre.pygments .tok-nb { color: #008000 } /* Name.Builtin */
-pre.pygments .tok-nc { color: #0000FF; font-weight: bold } /* Name.Class */
-pre.pygments .tok-no { color: #880000 } /* Name.Constant */
-pre.pygments .tok-nd { color: #AA22FF } /* Name.Decorator */
-pre.pygments .tok-ni { color: #999999; font-weight: bold } /* Name.Entity */
-pre.pygments .tok-ne { color: #D2413A; font-weight: bold } /* Name.Exception */
-pre.pygments .tok-nf { color: #0000FF } /* Name.Function */
-pre.pygments .tok-nl { color: #A0A000 } /* Name.Label */
-pre.pygments .tok-nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
-pre.pygments .tok-nt { color: #008000; font-weight: bold } /* Name.Tag */
-pre.pygments .tok-nv { color: #19177C } /* Name.Variable */
-pre.pygments .tok-ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
-pre.pygments .tok-w { color: #bbbbbb } /* Text.Whitespace */
-pre.pygments .tok-mb { color: #666666 } /* Literal.Number.Bin */
-pre.pygments .tok-mf { color: #666666 } /* Literal.Number.Float */
-pre.pygments .tok-mh { color: #666666 } /* Literal.Number.Hex */
-pre.pygments .tok-mi { color: #666666 } /* Literal.Number.Integer */
-pre.pygments .tok-mo { color: #666666 } /* Literal.Number.Oct */
-pre.pygments .tok-sa { color: #BA2121 } /* Literal.String.Affix */
-pre.pygments .tok-sb { color: #BA2121 } /* Literal.String.Backtick */
-pre.pygments .tok-sc { color: #BA2121 } /* Literal.String.Char */
-pre.pygments .tok-dl { color: #BA2121 } /* Literal.String.Delimiter */
-pre.pygments .tok-sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
-pre.pygments .tok-s2 { color: #BA2121 } /* Literal.String.Double */
-pre.pygments .tok-se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
-pre.pygments .tok-sh { color: #BA2121 } /* Literal.String.Heredoc */
-pre.pygments .tok-si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
-pre.pygments .tok-sx { color: #008000 } /* Literal.String.Other */
-pre.pygments .tok-sr { color: #BB6688 } /* Literal.String.Regex */
-pre.pygments .tok-s1 { color: #BA2121 } /* Literal.String.Single */
-pre.pygments .tok-ss { color: #19177C } /* Literal.String.Symbol */
-pre.pygments .tok-bp { color: #008000 } /* Name.Builtin.Pseudo */
-pre.pygments .tok-fm { color: #0000FF } /* Name.Function.Magic */
-pre.pygments .tok-vc { color: #19177C } /* Name.Variable.Class */
-pre.pygments .tok-vg { color: #19177C } /* Name.Variable.Global */
-pre.pygments .tok-vi { color: #19177C } /* Name.Variable.Instance */
-pre.pygments .tok-vm { color: #19177C } /* Name.Variable.Magic */
-pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
-</style>
 </body>
 </html>
