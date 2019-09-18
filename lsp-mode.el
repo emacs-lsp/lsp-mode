@@ -1530,7 +1530,8 @@ WORKSPACE is the workspace that contains the diagnostics."
 
 (defun lsp--get-folding-ranges ()
   "Get the folding ranges for the current buffer."
-  (unless (lsp--capability "foldingRangeProvider")
+  (unless (or (lsp--capability "foldingRangeProvider")
+              (lsp--registered-capability "textDocument/foldingRange"))
     (signal 'lsp-capability-not-supported (list "foldingRangeProvider")))
   (-let [(tick . ranges) lsp--cached-folding-ranges]
     (if (eq tick (buffer-chars-modified-tick))
@@ -1636,7 +1637,9 @@ WORKSPACE is the workspace that contains the diagnostics."
     (cdr outer)))
 
 (defun lsp--folding-range-at-point-bounds ()
-  (if (and (lsp--capability "foldingRangeProvider") lsp-enable-folding)
+  (if (and (or (lsp--capability "foldingRangeProvider")
+               (lsp--registered-capability "textDocument/foldingRange"))
+           lsp-enable-folding)
       (if-let ((range (lsp--get-current-innermost-folding-range)))
           (cons (lsp--folding-range-beg range)
                 (lsp--folding-range-end range)))
@@ -1657,7 +1660,9 @@ WORKSPACE is the workspace that contains the diagnostics."
     found))
 
 (defun lsp--folding-range-at-point-forward-op (n)
-  (when (and (lsp--capability "foldingRangeProvider") lsp-enable-folding
+  (when (and (or (lsp--capability "foldingRangeProvider")
+                 (lsp--registered-capability "textDocument/foldingRange"))
+             lsp-enable-folding
              (not (zerop n)))
     (cl-block break
       (dotimes (_ (abs n))
