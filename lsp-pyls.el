@@ -332,7 +332,7 @@ at all."
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda () lsp-clients-python-command))
-                  :major-modes '(python-mode)
+                  :major-modes '(python-mode cython-mode)
                   :priority -1
                   :server-id 'pyls
                   :library-folders-fn (lambda (_workspace) lsp-clients-python-library-directories)
