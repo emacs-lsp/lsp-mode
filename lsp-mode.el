@@ -1275,9 +1275,9 @@ already have been created."
               (condition-case _err
                   (yes-or-no-p
                    (format
-                    "There are %s files in folder %s and watching the repo which may slow Emacs down. To configure:
-1. Use `lsp-enable-file-watchers' to disable file watchers globally or for the project(via .dir-local).
-2. Increase/set to nil `lsp-file-watch-threshold' to remove the warning.
+                    "There are %s files in folder %s so watching the repo may slow Emacs down. To configure:
+1. Disable file watchers globally or for the project (via .dir-locals) by using `lsp-enable-file-watchers'.
+2. Remove this warning by increasing or setting to nil `lsp-file-watch-threshold'.
 Do you want to continue?"
                     number-of-files
                     dir))
@@ -5658,12 +5658,12 @@ Returns nil if the project should not be added to the current SESSION."
   (condition-case nil
       (let* ((project-root-suggestion (or (lsp--suggest-project-root) default-directory))
              (choices (list
-                       (format "Import project root %s" project-root-suggestion)
+                       (format "Import project root \"%s\"." project-root-suggestion)
                        "Import project by selecting root directory interactively."
-                       (format "Do not ask more for the current project(add \"%s\" to lsp-session-folder-blacklist)"
+                       (format "Do not ask again for the current project by adding \"%s\" to lsp-session-folder-blacklist."
                                project-root-suggestion)
-                       "Do not ask more for the current project(select ignore path interactively)."
-                       "Do nothing and ask me again when opening other files from the folder."))
+                       "Do not ask again for the current project by selecting ignore path interactively."
+                       "Do nothing; ask again when opening other files from the current project."))
              (action-index (cl-position
                             (completing-read (format "%s is not part of any project. Select action: "
                                                      (buffer-name))
