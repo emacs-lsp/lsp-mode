@@ -1730,7 +1730,11 @@ Results are meaningful only if FROM and TO are on the same line."
 
 (defun lsp--lens-overlay-ensure-at (pos)
   "Find or create a lens for the line at POS."
-  (or (car (cl-remove-if-not (lambda (ov) (lsp--lens-overlay-matches-pos ov pos)) lsp--lens-overlays))
+  (or (when-let ((ov (-first (lambda (ov) (lsp--lens-overlay-matches-pos ov pos)) lsp--lens-overlays)))
+        (save-excursion
+          (goto-char pos)
+          (move-overlay ov (point-at-bol) (1+ (point-at-eol))))
+        ov)
       (let* ((ov (save-excursion
                    (goto-char pos)
                    (make-overlay (point-at-bol) (1+ (point-at-eol))))))
