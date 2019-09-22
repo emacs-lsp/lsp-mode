@@ -1769,18 +1769,20 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
               (run-with-timer lsp-lens-debounce-interval nil 'lsp--lens-refresh buffer-modified?)))
 
 (defun lsp--lens-keymap (command)
-  (let ((map (make-sparse-keymap))
-        (server-id (->> (lsp-workspaces)
-                        cl-first
-                        (or lsp--cur-workspace)
-                        lsp--workspace-client
-                        lsp--client-server-id)))
+  (-let ((map (make-sparse-keymap))
+         (server-id (->> (lsp-workspaces)
+                         (cl-first)
+                         (or lsp--cur-workspace)
+                         (lsp--workspace-client)
+                         (lsp--client-server-id))))
     (define-key map [mouse-1]
-      (lambda ()
-        (interactive)
-        (lsp-execute-command server-id
-                             (intern (gethash "command" command))
-                             (gethash "arguments" command))))
+      (if (functionp (gethash "command" command))
+          (gethash "command" command)
+        (lambda ()
+          (interactive)
+          (lsp-execute-command server-id
+                               (intern (gethash "command" command))
+                               (gethash "arguments" command)))))
     map))
 
 (defun lsp--lens-display (lenses)
@@ -1802,10 +1804,10 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
                      (list (lsp--position-to-point (lsp--ht-get (cl-first sorted) "range" "start"))
                            (s-join (propertize "|" 'face 'lsp-lens-face)
                                    (-map
-                                    (-lambda ((lens &as &hash "command" (command &as &hash "title")))
+                                    (-lambda ((lens &as &hash "command" (command &as &hash "title" "face")))
                                       (propertize
                                        title
-                                       'face 'lsp-lens-face
+                                       'face (or face 'lsp-lens-face )
                                        'mouse-face 'lsp-lens-mouse-face
                                        'local-map (lsp--lens-keymap command)))
                                     sorted))))))
