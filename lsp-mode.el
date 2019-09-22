@@ -676,7 +676,7 @@ must be used for handling a particular message.")
   :group 'lsp-mode
   :type 'boolean)
 
-(defcustom lsp-lens-debounce-interval 0.7
+(defcustom lsp-lens-debounce-interval 0.2
   "Debounce interval for loading lenses."
   :group 'lsp-mode
   :type 'number)
