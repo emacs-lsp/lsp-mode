@@ -136,7 +136,7 @@ $GOPATH/pkg/mod along with the value of
                (or (and (not (file-remote-p default-directory)) (executable-find "go"))
                    (and (version<= "27.0" emacs-version) (with-no-warnings (executable-find "go" (file-remote-p default-directory))))))
               (with-temp-buffer
-                (when (zerop (call-process "go" nil t nil "env" "GOPATH"))
+                (when (zerop (process-file "go" nil t nil "env" "GOPATH"))
                   (setq library-dirs
                         (append
                          library-dirs
@@ -144,7 +144,9 @@ $GOPATH/pkg/mod along with the value of
                          (concat
                           (string-trim-right (buffer-substring (point-min) (point-max)))
                           "/pkg/mod")))))))
-    library-dirs))
+    (if (file-remote-p default-directory)
+        (mapcar (lambda (path) (concat (file-remote-p default-directory) path)) library-dirs)
+      library-dirs)))
 
 (define-inline lsp-clients-go--bool-to-json (val)
   (inline-quote (if ,val t :json-false)))
