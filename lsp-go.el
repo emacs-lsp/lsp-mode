@@ -56,8 +56,7 @@ completing function calls."
                   :major-modes '(go-mode)
                   :priority 0
                   :server-id 'gopls
-                  :library-folders-fn (lambda (_workspace)
-                                        lsp-clients-go-library-directories)))
+                  :library-folders-fn 'lsp-clients-go--library-default-directories))
 
 (defgroup lsp-clients-go nil
   "LSP support for the Go Programming Language."
@@ -120,6 +119,35 @@ defaults to half of your CPU cores."
   :risky t
   :type '(repeat string))
 
+(defcustom lsp-clients-go-library-directories-include-go-modules t
+  "Whether or not $GOPATH/pkg/mod should be included as a library directory."
+  :type 'boolean
+  :group 'lsp-clients-go)
+
+(defun lsp-clients-go--library-default-directories (_workspace)
+  "Calculate go library directories.
+
+If `lsp-clients-go-library-directories-include-go-modules' is non-nil
+and the environment variable GOPATH is set this function will return
+$GOPATH/pkg/mod along with the value of
+`lsp-clients-go-library-directories'."
+  (let ((library-dirs lsp-clients-go-library-directories))
+    (when (and lsp-clients-go-library-directories-include-go-modules
+               (or (and (not (file-remote-p default-directory)) (executable-find "go"))
+                   (and (version<= "27.0" emacs-version) (with-no-warnings (executable-find "go" (file-remote-p default-directory))))))
+              (with-temp-buffer
+                (when (zerop (process-file "go" nil t nil "env" "GOPATH"))
+                  (setq library-dirs
+                        (append
+                         library-dirs
+                         (list
+                         (concat
+                          (string-trim-right (buffer-substring (point-min) (point-max)))
+                          "/pkg/mod")))))))
+    (if (file-remote-p default-directory)
+        (mapcar (lambda (path) (concat (file-remote-p default-directory) path)) library-dirs)
+      library-dirs)))
+
 (define-inline lsp-clients-go--bool-to-json (val)
   (inline-quote (if ,val t :json-false)))
 
@@ -143,8 +171,7 @@ defaults to half of your CPU cores."
                   :priority -1
                   :initialization-options 'lsp-clients-go--make-init-options
                   :server-id 'go-bingo
-                  :library-folders-fn (lambda (_workspace)
-                                        lsp-clients-go-library-directories)))
+                  :library-folders-fn 'lsp-clients-go--library-default-directories))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection "go-langserver")
@@ -152,8 +179,7 @@ defaults to half of your CPU cores."
                   :priority -2
                   :initialization-options 'lsp-clients-go--make-init-options
                   :server-id 'go-ls
-                  :library-folders-fn (lambda (_workspace)
-                                        lsp-clients-go-library-directories)))
+                  :library-folders-fn 'lsp-clients-go--library-default-directories))
 
 (provide 'lsp-go)
 ;;; lsp-go.el ends here
