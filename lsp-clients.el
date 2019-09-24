@@ -81,7 +81,7 @@ This directory shoud contain a file matching groovy-language-server-*.jar"
 (defgroup lsp-typescript-javascript nil
   "Support for TypeScript/JavaScript, using Sourcegraph's JavaScript/TypeScript language server."
   :group 'lsp-mode
-  :link "https://github.com/sourcegraph/javascript-typescript-langserver")
+  :link '(url-link "https://github.com/sourcegraph/javascript-typescript-langserver"))
 
 (defcustom lsp-clients-javascript-typescript-server "javascript-typescript-stdio"
   "The javascript-typescript-stdio executable to use.
@@ -115,7 +115,7 @@ finding the executable with variable `exec-path'."
 (defgroup lsp-typescript nil
   "LSP support for TypeScript, using Theia/Typefox's TypeScript Language Server."
   :group 'lsp-mode
-  :link "https://github.com/theia-ide/typescript-language-server")
+  :link '(url-link "https://github.com/theia-ide/typescript-language-server"))
 
 (defcustom lsp-clients-typescript-server "typescript-language-server"
   "The typescript-language-server executable to use.
