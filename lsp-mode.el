@@ -3979,7 +3979,7 @@ interface DocumentRangeFormattingParams {
 
 (defun lsp--make-document-highlight-callback (buf)
   "Create a callback to process the reply of a
-'textDocument/documentHightlight' message for the buffer BUF.
+'textDocument/documentHighlight' message for the buffer BUF.
 A reference is highlighted only if it is visible in a window."
   (cl-check-type buf buffer)
   (lambda (highlights)
