@@ -108,13 +108,10 @@ To use the mono/.Net framework version, set this to \"https://ci.appveyor.com/ap
                                 `(:directory ,(lsp-workspace-root)
                                  :deep 10
                                  :excludedDirs ["paket-files" ".git" "packages" "node_modules"])))
-         (data (json-read-from-string (ht-get response "content"))))
-    (let-alist data
-      (let-alist (car (seq-filter (lambda (d)
-                                    (let-alist d
-                                      (equal .Type "directory")))
-                                  .Data.Found))
-        .Data.Fsprojs))))
+         (data (json-read-from-string (ht-get response "content")))
+         (found (cdr (assq 'Found (cdr (assq 'Data data)))))
+         (directory (car (seq-filter (lambda (d) (equal "directory" (cdr (assq 'Type d)))) found))))
+    (cdr (assq 'Fsprojs (cdr (assq 'Data directory))))))
 
 (defun lsp-fsharp--workspace-load (projects)
   "Load all of the provided PROJECTS."
