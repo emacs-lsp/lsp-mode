@@ -512,6 +512,30 @@ responsiveness at the cost of possibile stability issues."
                   :add-on? t
                   :server-id 'angular-ls))
 
+;;; C-sharp
+(defgroup lsp-csharp nil
+  "LSP support for C#, using the Omnisharp Language Server. Version 1.34.3 minimum required."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/OmniSharp/omnisharp-roslyn"))
+
+(defcustom lsp-clients-csharp-language-server-path
+  (expand-file-name "~/.omnisharp/omnisharp/omnisharp/OmniSharp.exe")
+  "The path to the OmnisSharp Roslyn language-server."
+  :group 'lsp-csharp
+  :type '(string :tag "Single string value"))
+
+(defun lsp-clients-csharp-language-server-command ()
+  (if (eq system-type 'windows-nt)
+      (list lsp-clients-csharp-language-server-path "-lsp")
+    (list "mono" lsp-clients-csharp-language-server-path "-lsp")))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   #'lsp-clients-csharp-language-server-command)
+                  :major-modes '(csharp-mode)
+                  :server-id 'csharp))
+
+
 
 ;; TeX
 (defgroup lsp-tex nil
