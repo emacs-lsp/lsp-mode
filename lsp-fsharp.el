@@ -102,9 +102,28 @@ To use the mono/.Net framework version, set this to \"https://ci.appveyor.com/ap
   (append (list (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-locate) "--mode" "lsp" "--background-service-enabled")
           lsp-fsharp-server-args))
 
+(defun lsp-fsharp--project-list ()
+  "Get the list of files we need to send to fsharp/workspaceLoad."
+  (let* ((response (lsp-request "fsharp/workspacePeek"
+                                `(:directory ,(lsp-workspace-root)
+                                 :deep 10
+                                 :excludedDirs ["paket-files" ".git" "packages" "node_modules"])))
+         (data (json-read-from-string (ht-get response "content")))
+         (found (cdr (assq 'Found (cdr (assq 'Data data)))))
+         (directory (car (seq-filter (lambda (d) (equal "directory" (cdr (assq 'Type d)))) found))))
+    (cdr (assq 'Fsprojs (cdr (assq 'Data directory))))))
+
+(defun lsp-fsharp--workspace-load (projects)
+  "Load all of the provided PROJECTS."
+  (lsp-request-async "fsharp/workspaceLoad"
+               `(:textDocuments ,(vconcat [] (mapcar (lambda (p) `(:uri ,p)) projects)))
+               (lambda (_)
+                 (lsp--info "Workspace Loaded!"))))
+
 (defun lsp-fsharp--make-init-options ()
   "Init options for F#."
-  `(:automaticWorkspaceInit t))
+  `()
+  )
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-fsharp--make-launch-cmd)
@@ -114,6 +133,9 @@ To use the mono/.Net framework version, set this to \"https://ci.appveyor.com/ap
                                              ("fsharp/fileParsed" #'ignore)
                                              ("fsharp/notifyWorkspacePeek" #'ignore))
                   :initialization-options 'lsp-fsharp--make-init-options
+                  :initialized-fn (lambda (workspace)
+                                    (with-lsp-workspace workspace
+                                      (lsp-fsharp--workspace-load (lsp-fsharp--project-list))))
                   :server-id 'fsac))
 
 (provide 'lsp-fsharp)
