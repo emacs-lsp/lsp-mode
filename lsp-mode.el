@@ -768,6 +768,10 @@ They are added to `markdown-code-lang-modes'")
 (cl-defgeneric lsp-execute-command (server command arguments)
   "Ask SERVER to execute COMMAND with ARGUMENTS.")
 
+(cl-defgeneric lsp-initialization-options (server)
+  "JSON object to send under `initializationOptions'"
+  (:method (_s) nil))
+
 (defun lsp-elt (sequence n)
   "Return Nth element of SEQUENCE or nil if N is out of range."
   (if (listp sequence) (elt sequence n)
@@ -5416,9 +5420,11 @@ remote machine and vice versa."
 Add workspace folders depending on server being multiroot and
 session workspce folder configuration for the server."
   (let* ((initialization-options-or-fn (lsp--client-initialization-options client)))
-    (if (functionp initialization-options-or-fn)
-        (funcall initialization-options-or-fn)
-      initialization-options-or-fn)))
+    (cond
+     ((null initialization-options-or-fn)
+      (lsp-initialization-options (lsp--client-server-id client)))
+     ((functionp initialization-options-or-fn) (funcall initialization-options-or-fn))
+     (t initialization-options-or-fn))))
 
 (defun lsp--plist-delete (prop plist)
   "Delete by side effect the property PROP from PLIST.
