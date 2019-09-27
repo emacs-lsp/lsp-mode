@@ -3917,19 +3917,24 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
 (defun lsp-format-buffer ()
   "Ask the server to format this document."
   (interactive "*")
-  (unless (or (lsp--capability "documentFormattingProvider")
-              (lsp--registered-capability "textDocument/formatting"))
-    (signal 'lsp-capability-not-supported (list "documentFormattingProvider")))
-  (let ((edits (lsp-request "textDocument/formatting"
-                            (lsp--make-document-formatting-params))))
-    (lsp--apply-formatting edits)))
+  (cond ((or (lsp--capability "documentFormattingProvider")
+             (lsp--registered-capability "textDocument/formatting"))
+         (let ((edits (lsp-request "textDocument/formatting"
+                                   (lsp--make-document-formatting-params))))
+           (lsp--apply-formatting edits)))
+        ((or (lsp--capability "documentRangeFormattingProvider")
+             (lsp--registered-capability "textDocument/rangeFormatting"))
+         (save-excursion
+           (widen)
+           (lsp-format-region (point-min) (point-max))))
+        (t (signal 'lsp-capability-not-supported (list "documentFormattingProvider")))))
 
 (defun lsp-format-region (s e)
   "Ask the server to format the region, or if none is selected, the current line."
   (interactive "r")
   (unless (or (lsp--capability "documentRangeFormattingProvider")
               (lsp--registered-capability "textDocument/rangeFormatting"))
-    (signal 'lsp-capability-not-supported (list "documentFormattingProvider")))
+    (signal 'lsp-capability-not-supported (list "documentRangeFormattingProvider")))
   (let ((edits (lsp-request "textDocument/rangeFormatting"
                             (lsp--make-document-range-formatting-params s e))))
     (lsp--apply-formatting edits)))
