@@ -114,7 +114,7 @@ the latest build duration."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-rust-use-crate-blacklist t
+(defcustom lsp-rust-crate-blacklist t
   "Don't index crates on the crate blacklist."
   :type 'boolean
   :group 'lsp-rust
@@ -243,7 +243,7 @@ is often the type local variable declaration."
    ("rust.all_features" lsp-rust-all-features t)
    ("rust.features" lsp-rust-features)
    ("rust.build_on_save" lsp-rust-build-on-save t)
-   ("rust.use_crate_blacklist" lsp-rust-use-crate-blacklist t)
+   ("rust.crate_blacklist" lsp-rust-crate-blacklist t)
    ("rust.show_warnings" lsp-rust-show-warnings t)
    ("rust.wait_to_build" lsp-rust-wait-to-build)
    ("rust.unstable_features" lsp-rust-unstable-features t)
