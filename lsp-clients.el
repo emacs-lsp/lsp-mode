@@ -589,7 +589,8 @@ responsiveness at the cost of possibile stability issues."
  (make-lsp-client :new-connection (lsp-clients-emmy-lua--create-connection)
                   :major-modes '(lua-mode)
                   :priority -1
-                  :server-id 'emmy-lua))
+                  :server-id 'emmy-lua
+                  :notification-handlers (lsp-ht ("emmy/progressReport" #'ignore))))
 
 (provide 'lsp-clients)
 ;;; lsp-clients.el ends here
