@@ -4766,7 +4766,9 @@ WORKSPACE is the active workspace."
           (let* ((body-sep-pos (string-match-p "\r\n\r\n" chunk)))
             (if body-sep-pos
                 ;; We've got all the headers, handle them all at once:
-                (let* ((header-raw (substring chunk 0 body-sep-pos))
+                (let* ((header-raw (substring chunk (or (string-match-p "Content-Length" chunk)
+                                                        (error "Unable to find Content-Length header."))
+                                              body-sep-pos))
                        (content (substring chunk (+ body-sep-pos 4)))
                        (headers
                         (mapcar 'lsp--parse-header
