@@ -4572,7 +4572,7 @@ textDocument/didOpen for the new file."
                          (gethash method lsp--default-notification-handlers)))
         (funcall handler workspace params)
       (unless (string-prefix-p "$" method)
-        (lsp-warn "Unknown method: %s" method)))))
+        (lsp-warn "Unknown notification: %s" method)))))
 
 (defun lsp--build-workspace-configuration-response (params)
   "Get section configuration.
@@ -4610,6 +4610,19 @@ WORKSPACE is the active workspace."
                        empty-response)
                       ("workspace/configuration"
                        (lsp--make-response request (lsp--build-workspace-configuration-response params)))
+                      ("workspace/workspaceFolders"
+                       (lsp--make-response
+                        request
+                        (let ((folders (or (-> workspace
+                                               (lsp--workspace-client)
+                                               (lsp--client-server-id)
+                                               (gethash (lsp-session-server-id->folders (lsp-session))))
+                                           (lsp-session-folders (lsp-session)))))
+                          (->> folders
+                               (-distinct)
+                               (-map (lambda (folder)
+                                       (list :uri (lsp--path-to-uri folder))))
+                               (apply #'vector)))))
                       (other
                        (-if-let (handler (gethash other (lsp--client-request-handlers client) nil))
                            (lsp--make-response request (funcall handler workspace params))
