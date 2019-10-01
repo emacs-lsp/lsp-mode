@@ -392,11 +392,6 @@ This flag affects only server which do not support incremental update."
   :type 'boolean
   :group 'lsp-mode)
 
-(defcustom lsp-hover-skip-whitespace-or-newline nil
-  "If non-nil, hover request will not be sent when cursor is at whitespace or newline."
-  :type 'boolean
-  :group 'lsp-mode)
-
 (defcustom lsp-eldoc-enable-signature-help t
   "If non-nil, eldoc will display signature help when it is present."
   :type 'boolean
