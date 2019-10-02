@@ -3813,9 +3813,11 @@ RENDER-ALL - nil if only the signature should be rendered."
            (lsp--point-in-bounds-p lsp--hover-saved-bounds))
       (lsp--eldoc-message lsp--eldoc-saved-message)
     (let* ((whitespace-or-newline (looking-at "[[:space:]\n]")))
-      (setq lsp--hover-saved-bounds nil
-            lsp--eldoc-saved-message nil)
-      (unless whitespace-or-newline
+      (if whitespace-or-newline
+          (progn
+            (setq lsp--hover-saved-bounds nil
+                  lsp--eldoc-saved-message nil)
+            (lsp--eldoc-message nil))
         (let ((request-id (cl-incf lsp-hover-request-id)) (pending 0))
           (when (and lsp-eldoc-enable-hover (lsp--capability "hoverProvider"))
             (cl-incf pending)
