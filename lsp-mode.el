@@ -2486,6 +2486,7 @@ disappearing, unset all the variables related to it."
                       (documentSymbol . ((symbolKind . ((valueSet . ,(apply 'vector (number-sequence 1 26)))))
                                          (hierarchicalDocumentSymbolSupport . t)))
                       (formatting . ((dynamicRegistration . t)))
+                      (rangeFormatting . ((dynamicRegistration . t)))
                       (rename . ((dynamicRegistration . t)))
                       (semanticHighlightingCapabilities . ((semanticHighlighting . ,lsp-enable-semantic-highlighting)))
                       (codeAction . ((dynamicRegistration . t)
