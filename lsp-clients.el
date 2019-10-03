@@ -131,12 +131,30 @@ finding the executable with variable `exec-path'."
   :risky t
   :type '(repeat string))
 
+(defcustom lsp-clients-typescript-log-verbosity "info"
+  "The server log verbocity."
+  :group 'lsp-typescript
+  :type 'string)
+
+(defcustom lsp-clients-typescript-plugins nil
+  "The list of plugins to load.
+It should be a vector of plist with keys `:location' and `:name'
+where `:name' is the name of the package and `:location' is the
+directory containing the package. Example:
+\(vector
+   \(list :name \"@vsintellicode/typescript-intellicode-plugin\"
+         :location \"<path>.vscode/extensions/visualstudioexptteam.vscodeintellicode-1.1.9/\"))"
+  :group 'lsp-typescript)
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
                                                           (cons lsp-clients-typescript-server
                                                                 lsp-clients-typescript-server-args)))
                   :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
                   :priority -2
+                  :initialization-options (lambda ()
+                                            (list :plugins lsp-clients-typescript-plugins
+                                                  :logVerbosity lsp-clients-typescript-log-verbosity))
                   :ignore-messages '("readFile .*? requested by TypeScript but content not available")
                   :server-id 'ts-ls))
 
