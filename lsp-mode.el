@@ -3754,10 +3754,16 @@ When language is nil render as markup if `markdown-mode' is loaded."
   "Render the content received from 'document/onHover' request.
 CONTENTS  - MarkedString | MarkedString[] | MarkupContent
 RENDER-ALL - nil if only the signature should be rendered."
-  (if (and (hash-table-p contents) (gethash "kind" contents))
-      ;; MarkupContent, deprecated by LSP but actually very flexible.
-      ;; It tends to be long and is not suitable in echo area.
-      (if render-all (lsp--render-element contents) "")
+  (cond
+   ((and (hash-table-p contents) (gethash "kind" contents))
+    ;; MarkupContent, deprecated by LSP but actually very flexible.
+    ;; It tends to be long and is not suitable in echo area.
+    (if render-all (lsp--render-element contents) ""))
+   ((and (stringp contents) (not (string-match-p "\n" contents)))
+    ;; If the contents is a single string containing a single line,
+    ;; render it always.
+    (lsp--render-element contents))
+   (t
     ;; MarkedString -> MarkedString[]
     (when (or (hash-table-p contents) (stringp contents))
       (setq contents (list contents)))
@@ -3773,7 +3779,7 @@ RENDER-ALL - nil if only the signature should be rendered."
          (-andfn 'hash-table-p
                  (-compose #'lsp-get-renderer (-partial 'gethash "language")))
          contents)))
-     "\n")))
+     "\n"))))
 
 (defvar-local lsp--hover-saved-bounds nil)
 (defvar-local lsp--eldoc-saved-message nil)
