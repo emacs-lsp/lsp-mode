@@ -23,6 +23,15 @@ before_install:
   - make -f emacs-travis.mk install_gnutls install_emacs
   - make -f emacs-travis.mk install_cask
   - docker pull asciidoctor/docker-asciidoctor
+  - |
+    case $EMACS_VERSION in
+    25.*) EMACS_GNUPGHOME=.cask/$EMACS_VERSION/elpa/gnupg ;;
+    *)    EMACS_GNUPGHOME=$HOME/.emacs.d/elpa/gnupg ;;
+    esac
+    mkdir -p "$EMACS_GNUPGHOME"
+    chmod 700 "$EMACS_GNUPGHOME"
+    wget 'https://git.savannah.gnu.org/cgit/emacs.git/plain/etc/package-keyring.gpg'
+    gpg --homedir "$EMACS_GNUPGHOME" --import package-keyring.gpg
 install:
   - cask install
   - sudo pip install python-language-server
