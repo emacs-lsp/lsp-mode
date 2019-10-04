@@ -4363,7 +4363,7 @@ perform the request synchronously."
            (lsp-request "workspace/symbol" `(:query ,pattern))))
 
 (defun lsp--get-symbol-to-rename ()
-  "Get synbol at point."
+  "Get symbol to rename and placeholder at point."
   (if (let ((rename-provider (or (lsp--capability "renameProvider")
                                  (-some-> (lsp--registered-capability "textDocument/rename")
                                           (lsp--registered-capability-options)))))
@@ -4371,15 +4371,18 @@ perform the request synchronously."
              (gethash "prepareProvider" rename-provider)))
       (-when-let (response (lsp-request "textDocument/prepareRename"
                                         (lsp--text-document-position-params)))
-        (-let (((start . end) (lsp--range-to-region
-                               (or (gethash "range" response) response))))
-          (buffer-substring-no-properties start end)))
-    (thing-at-point 'symbol t)))
+        (-let* (((start . end) (lsp--range-to-region
+                                (or (gethash "range" response) response)))
+                (symbol (buffer-substring-no-properties start end))
+                (placeholder (gethash "placeholder" response)))
+          (cons symbol (or placeholder symbol))))
+    (let ((symbol (thing-at-point 'symbol t)))
+      (cons symbol symbol))))
 
 (defun lsp-rename (newname)
   "Rename the symbol (and all references to it) under point to NEWNAME."
-  (interactive (list (-when-let (symbol (lsp--get-symbol-to-rename))
-                       (read-string (format "Rename %s to: " symbol) symbol))))
+  (interactive (list (-when-let ((symbol . placeholder) (lsp--get-symbol-to-rename))
+                       (read-string (format "Rename %s to: " symbol) placeholder nil symbol))))
   (unless newname
     (user-error "A rename is not valid at this position"))
   (lsp--cur-workspace-check)
