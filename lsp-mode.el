@@ -4369,10 +4369,11 @@ perform the request synchronously."
                                           (lsp--registered-capability-options)))))
         (and (hash-table-p rename-provider)
              (gethash "prepareProvider" rename-provider)))
-      (-let (((start . end) (lsp--range-to-region
-                             (lsp-request "textDocument/prepareRename"
-                                          (lsp--text-document-position-params)))))
-        (buffer-substring-no-properties start end))
+      (let ((response (lsp-request "textDocument/prepareRename"
+                                   (lsp--text-document-position-params))))
+        (-let (((start . end) (lsp--range-to-region
+                               (or (gethash "range" response) response))))
+          (buffer-substring-no-properties start end)))
     (thing-at-point 'symbol t)))
 
 (defun lsp-rename (newname)
