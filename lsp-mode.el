@@ -4369,8 +4369,8 @@ perform the request synchronously."
                                           (lsp--registered-capability-options)))))
         (and (hash-table-p rename-provider)
              (gethash "prepareProvider" rename-provider)))
-      (let ((response (lsp-request "textDocument/prepareRename"
-                                   (lsp--text-document-position-params))))
+      (-when-let (response (lsp-request "textDocument/prepareRename"
+                                        (lsp--text-document-position-params)))
         (-let (((start . end) (lsp--range-to-region
                                (or (gethash "range" response) response))))
           (buffer-substring-no-properties start end)))
@@ -4378,8 +4378,10 @@ perform the request synchronously."
 
 (defun lsp-rename (newname)
   "Rename the symbol (and all references to it) under point to NEWNAME."
-  (interactive (list (let ((symbol (lsp--get-symbol-to-rename)))
+  (interactive (list (-when-let (symbol (lsp--get-symbol-to-rename))
                        (read-string (format "Rename %s to: " symbol) symbol))))
+  (unless newname
+    (user-error "A rename is not valid at this position"))
   (lsp--cur-workspace-check)
   (unless (or (lsp--capability "renameProvider")
               (lsp--registered-capability "textDocument/rename"))
