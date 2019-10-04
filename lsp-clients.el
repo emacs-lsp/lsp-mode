@@ -136,7 +136,7 @@ finding the executable with variable `exec-path'."
   :group 'lsp-typescript
   :type 'string)
 
-(defcustom lsp-clients-typescript-plugins nil
+(defcustom lsp-clients-typescript-plugins (vector)
   "The list of plugins to load.
 It should be a vector of plist with keys `:location' and `:name'
 where `:name' is the name of the package and `:location' is the
