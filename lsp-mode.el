@@ -3380,7 +3380,7 @@ if it's closing the last buffer in the workspace."
          (with-demoted-errors "Error sending didClose notification in ‘lsp--text-document-did-close’: %S"
            (lsp-notify
             "textDocument/didClose"
-            `(:textDocument ,(lsp--versioned-text-document-identifier))))
+            `(:textDocument ,(lsp--text-document-identifier))))
          (when (and (not lsp-keep-workspace-alive)
                     (not keep-workspace-alive)
                     (not (lsp--workspace-buffers lsp--cur-workspace)))
