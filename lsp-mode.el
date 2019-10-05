@@ -2887,9 +2887,10 @@ interface Range {
               (not (gethash "textDocument" it))
               (let* ((ident (gethash "textDocument" it))
                      (filename (lsp--uri-to-path (gethash "uri" ident)))
-                     (version (gethash "version" ident)))
-                (with-current-buffer (find-file-noselect filename)
-                  (or (null version) (zerop version)
+                     (version (gethash "version" ident))
+                     (buf (lsp--buffer-for-file filename)))
+                (or (null version) (zerop version) (null buf)
+                    (with-current-buffer buf
                       (equal version lsp--cur-version))))))
            document-changes)
     (error "Document changes cannot be applied")))
