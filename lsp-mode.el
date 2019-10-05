@@ -2897,17 +2897,10 @@ interface Range {
 
 (defun lsp--apply-workspace-edit (edit)
   "Apply the WorkspaceEdit object EDIT."
-  (if-let (document-changes (seq-reverse (gethash "documentChanges" edit)))
+  (if-let (document-changes (gethash "documentChanges" edit))
       (progn
         (lsp--check-document-changes-version document-changes)
-        (->> document-changes
-             (seq-filter (-lambda ((&hash "kind"))
-                           (or (not kind) (string= kind "edit"))))
-             (seq-do #'lsp--apply-text-document-edit))
-        (->> document-changes
-             (seq-filter (-lambda ((&hash "kind"))
-                           (not (or (not kind) (string= kind "edit")))))
-             (seq-do #'lsp--apply-text-document-edit)))
+        (seq-do #'lsp--apply-text-document-edit document-changes))
     (when-let (changes (gethash "changes" edit))
       (maphash
        (lambda (uri text-edits)
