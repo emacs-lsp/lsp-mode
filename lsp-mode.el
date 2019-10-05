@@ -2935,16 +2935,16 @@ interface TextDocumentEdit {
                       (old-file-name (lsp--uri-to-path oldUri))
                       (new-file-name (lsp--uri-to-path newUri))
                       (buf (lsp--buffer-for-file old-file-name)))
+                (condition-case nil
+                    (rename-file old-file-name new-file-name (and options (gethash "override" options)))
+                  (file-missing))
                 (when buf
                   (with-current-buffer buf
-                    (save-buffer)
-                    (lsp--text-document-did-close)))
-                (rename-file old-file-name new-file-name (and options (gethash "override" options)))
-                (when buf
-                  (with-current-buffer buf
-                    (set-buffer-modified-p nil)
-                    (set-visited-file-name new-file-name)
-                    (lsp)))))
+                    (let ((modified (buffer-modified-p)))
+                      (lsp--text-document-did-close)
+                      (set-visited-file-name new-file-name)
+                      (set-buffer-modified-p modified)
+                      (lsp))))))
     (_ (with-current-buffer (find-file-noselect (lsp--uri-to-path (lsp--ht-get edit "textDocument" "uri")))
          (lsp--apply-text-edits (gethash "edits" edit))))))
 
