@@ -123,7 +123,7 @@
 
 (defun lsp-clj--file-in-jar (uri)
   (string-match "^\\(jar\\|zip\\):\\(file:.+\\)!/\\(.+\\)" uri)
-  (when-let* ((entry (match-string 3 uri))
+  (-when-let* ((entry (match-string 3 uri))
               (path (lsp--uri-to-path (match-string 2 uri)))
               (name (format "%s:%s" path entry))
               (content (lsp-send-request (lsp-make-request "clojure/dependencyContents" (list :uri uri)))))

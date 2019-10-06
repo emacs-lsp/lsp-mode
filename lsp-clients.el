@@ -145,7 +145,14 @@ directory containing the package. Example:
 \(vector
    \(list :name \"@vsintellicode/typescript-intellicode-plugin\"
          :location \"<path>.vscode/extensions/visualstudioexptteam.vscodeintellicode-1.1.9/\"))"
-  :group 'lsp-typescript)
+  :group 'lsp-typescript
+  :type  '(restricted-sexp :tag "Vector"
+                           :match-alternatives
+                           (lambda (xs)
+                             (and (vectorp xs) (seq-every-p
+                                                (-lambda ((&plist :name :location))
+                                                  (and name location))
+                                                xs)))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
