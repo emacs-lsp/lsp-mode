@@ -48,13 +48,9 @@
 
 (defun lsp-vhdl--create-connection ()
   "Returns lsp-stdio-connection or an error if server not found"
-  (if (file-exists-p lsp-vhdl-server-path)
-      (lsp-stdio-connection
-       (lambda ()
-         (list lsp-vhdl-server-path "lsp")))
-    (error "VHDL LSP server binary not found: `%s'" lsp-vhdl-server-path)
-    )
-  )
+  (lsp-stdio-connection
+   (lambda ()
+     (list lsp-vhdl-server-path "lsp"))))
 
 (add-to-list 'lsp-language-id-configuration '(vhdl-mode . "vhdl"))
 
