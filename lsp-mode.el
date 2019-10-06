@@ -2452,7 +2452,7 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
   (with-demoted-errors "LSP error: %S"
     (let ((lsp-response-timeout 0.5))
       (condition-case _err
-          (lsp-request "shutdown" nil)
+          (lsp-request "shutdown" (make-hash-table))
         (error (lsp--error "Timeout while sending shutdown request."))))
     (lsp-notify "exit" nil))
   (lsp--uninitialize-workspace))
