@@ -42,6 +42,7 @@
 (require 'lsp-fsharp)
 (require 'lsp-erlang)
 (require 'lsp-haxe)
+(require 'lsp-vhdl)
 
 ;;; Bash
 (lsp-register-client
