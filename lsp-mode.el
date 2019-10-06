@@ -3822,44 +3822,45 @@ RENDER-ALL - nil if only the signature should be rendered."
       (lsp--eldoc-message lsp--eldoc-saved-message)
     (setq lsp--hover-saved-bounds nil
           lsp--eldoc-saved-message nil)
-    (let* ((whitespace-or-newline (looking-at "[[:space:]\n]")))
+    (let ((request-id (cl-incf lsp-hover-request-id))
+          (pending 0)
+          (whitespace-or-newline (looking-at "[[:space:]\n]")))
       (if whitespace-or-newline
           (lsp--eldoc-message nil)
-        (let ((request-id (cl-incf lsp-hover-request-id)) (pending 0))
-          (when (and lsp-eldoc-enable-hover (lsp--capability "hoverProvider"))
-            (cl-incf pending)
-            (lsp-request-async
-             "textDocument/hover"
-             (lsp--text-document-position-params)
-             (lambda (hover)
-               (when (and (eq request-id lsp-hover-request-id))
-                 (when hover
-                   (when-let (range (gethash "range" hover))
-                     (setq lsp--hover-saved-bounds (lsp--range-to-region range)))
-                   (-let (((&hash "contents") hover))
-                     (when-let (message
-                                (and contents (lsp--render-on-hover-content contents lsp-eldoc-render-all)))
-                       (when (or (and (not lsp-eldoc-prefer-signature-help) (setq pending 1))
-                                 (not lsp--eldoc-saved-message))
-                         (setq lsp--eldoc-saved-message message)))))
-                 (when (zerop (cl-decf pending))
-                   (lsp--eldoc-message lsp--eldoc-saved-message))
-                 (run-hook-with-args 'lsp-on-hover-hook hover)))
-             :error-handler #'ignore))
-          (when (and lsp-eldoc-enable-signature-help (lsp--capability "signatureHelpProvider"))
-            (cl-incf pending)
-            (lsp-request-async
-             "textDocument/signatureHelp"
-             (lsp--text-document-position-params)
-             (lambda (signature)
-               (when (eq request-id lsp-hover-request-id)
-                 (when-let (message (and signature (lsp--signature->eldoc-message signature)))
-                   (when (or (and lsp-eldoc-prefer-signature-help (setq pending 1))
-                             (not lsp--eldoc-saved-message))
-                     (setq lsp--eldoc-saved-message message)))
-                 (when (zerop (cl-decf pending))
-                   (lsp--eldoc-message lsp--eldoc-saved-message))))
-             :error-handler #'ignore)))))))
+        (when (and lsp-eldoc-enable-hover (lsp--capability "hoverProvider"))
+          (cl-incf pending)
+          (lsp-request-async
+           "textDocument/hover"
+           (lsp--text-document-position-params)
+           (lambda (hover)
+             (when (and (eq request-id lsp-hover-request-id))
+               (when hover
+                 (when-let (range (gethash "range" hover))
+                   (setq lsp--hover-saved-bounds (lsp--range-to-region range)))
+                 (-let (((&hash "contents") hover))
+                   (when-let (message
+                              (and contents (lsp--render-on-hover-content contents lsp-eldoc-render-all)))
+                     (when (or (and (not lsp-eldoc-prefer-signature-help) (setq pending 1))
+                               (not lsp--eldoc-saved-message))
+                       (setq lsp--eldoc-saved-message message)))))
+               (when (zerop (cl-decf pending))
+                 (lsp--eldoc-message lsp--eldoc-saved-message))
+               (run-hook-with-args 'lsp-on-hover-hook hover)))
+           :error-handler #'ignore)))
+      (when (and lsp-eldoc-enable-signature-help (lsp--capability "signatureHelpProvider"))
+        (cl-incf pending)
+        (lsp-request-async
+         "textDocument/signatureHelp"
+         (lsp--text-document-position-params)
+         (lambda (signature)
+           (when (eq request-id lsp-hover-request-id)
+             (when-let (message (and signature (lsp--signature->eldoc-message signature)))
+               (when (or (and lsp-eldoc-prefer-signature-help (setq pending 1))
+                         (not lsp--eldoc-saved-message))
+                 (setq lsp--eldoc-saved-message message)))
+             (when (zerop (cl-decf pending))
+               (lsp--eldoc-message lsp--eldoc-saved-message))))
+         :error-handler #'ignore)))))
 
 (defun lsp--select-action (actions)
   "Select an action to execute from ACTIONS."
