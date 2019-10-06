@@ -413,6 +413,13 @@ This flag affects only server which do not support incremental update."
   :type 'boolean
   :group 'lsp-mode)
 
+(defcustom lsp-eldoc-skip-whitespace-and-newline t
+  "If non-nil, eldoc will display neither hover nor signature help
+when point is before whitespace or newline."
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.2"))
+
 (defcustom lsp-eldoc-render-all nil
   "Display all of the info returned by document/onHover.
 If this is set to nil, `eldoc' will show only the symbol information."
@@ -3823,7 +3830,7 @@ RENDER-ALL - nil if only the signature should be rendered."
     (setq lsp--hover-saved-bounds nil
           lsp--eldoc-saved-message nil)
     (let* ((whitespace-or-newline (looking-at "[[:space:]\n]")))
-      (if whitespace-or-newline
+      (if (and whitespace-or-newline lsp-eldoc-skip-whitespace-and-newline)
           (lsp--eldoc-message nil)
         (let ((request-id (cl-incf lsp-hover-request-id)) (pending 0))
           (when (and lsp-eldoc-enable-hover (lsp--capability "hoverProvider"))
