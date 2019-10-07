@@ -1260,6 +1260,23 @@ DELETE when `lsp-mode.el' is deleted.")
             (push (concat dir "/" file) files)))))
     (nconc result (nreverse files))))
 
+(defun lsp--ask-about-watching-big-repo (number-of-files dir)
+  "Ask the user if they want to watch NUMBER-OF-FILES from a repository DIR.
+This is useful when there is a lot of files in a repository, as
+that may slow Emacs down. Returns t if the user wants to watch
+the entire repository, nil otherwise."
+  (prog1
+      (yes-or-no-p
+       (format
+        "There are %s files in folder %s so watching the repo may slow Emacs down.
+Do you want to watch all files in %s? "
+        number-of-files
+        dir
+        dir))
+    (message
+     (concat "You can configure this warning with the `lsp-enable-file-watchers' "
+             "and `lsp-file-watch-threshold' variables"))))
+
 (defun lsp-watch-root-folder (dir callback &optional watch warn-big-repo?)
   "Create recursive file notificaton watch in DIR.
 CALLBACK will be called when there are changes in any of
@@ -1278,14 +1295,7 @@ already have been created."
              (or
               (< number-of-files lsp-file-watch-threshold)
               (condition-case _err
-                  (yes-or-no-p
-                   (format
-                    "There are %s files in folder %s so watching the repo may slow Emacs down. To configure:
-1. Disable file watchers globally or for the project (via .dir-locals) by using `lsp-enable-file-watchers'.
-2. Remove this warning by increasing or setting to nil `lsp-file-watch-threshold'.
-Do you want to continue?"
-                    number-of-files
-                    dir))
+                  (lsp--ask-about-watching-big-repo number-of-files dir)
                 ('quit)))))
       (condition-case err
           (progn
