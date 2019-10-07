@@ -191,7 +191,8 @@
    - ~lsp-disconnect~ - Disconnect the buffer from the language server.
    - ~lsp-lens-show~ - Show lenses in the current file
    - ~lsp-lens-hide~ - Hide lenses in the current file
-   - ~lsp-lens-mode~ (experimental) - Turn on/off lenses in the current file.
+   - ~lsp-lens-mode~  - Turn on/off lenses in the current file.
+   - ~lsp-avy-lens~ - Click lens using ~avy~
 ** Settings
    - ~lsp-log-io~ - If non-nil, print all messages to and from the language server to ~*lsp-log*~.
    - ~lsp-print-performance~ - If non-nil, print performance info. to ~*lsp-log*~.
