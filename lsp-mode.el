@@ -5976,12 +5976,12 @@ This avoids overloading the server with many files when starting Emacs."
                                                ,(-if-let ((_ prefix suffix) (s-match "\\(^[[:space:]]+\\)\\(.*\\)" old-token))
                                                     (concat prefix str suffix)
                                                   (concat str old-token))
-                                               ,@(-drop (1+ index) old-str-tokens))))
-                                (overlay-put ov
-                                             'before-string
-                                             (s-join (propertize "|" 'face 'lsp-lens-face)
-                                                     tokens))
-                                lens-token))
+                                               ,@(-drop (1+ index) old-str-tokens)))
+                                     (new-str (s-join (propertize "|" 'face 'lsp-lens-face) tokens))
+                                     (new-str (if (s-ends-with? "\n" new-str)
+                                                  new-str
+                                                (concat new-str "\n"))))
+                                (overlay-put ov 'before-string new-str)))
                             (lambda ()
                               (--map (overlay-put it 'before-string
                                                   (overlay-get it 'lsp-original))
