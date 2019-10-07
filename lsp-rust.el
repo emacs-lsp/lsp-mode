@@ -114,11 +114,29 @@ the latest build duration."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-rust-crate-blacklist t
-  "Don't index crates on the crate blacklist."
-  :type 'boolean
+(defcustom lsp-rust-crate-blacklist  [
+                                      "cocoa",
+                                      "gleam",
+                                      "glium",
+                                      "idna",
+                                      "libc",
+                                      "openssl",
+                                      "rustc_serialize",
+                                      "serde",
+                                      "serde_json",
+                                      "typenum",
+                                      "unicode_normalization",
+                                      "unicode_segmentation",
+                                      "winapi"
+                                      ]
+  "A list of Cargo crates to blacklist."
+  :type '(restricted-sexp :match-alternatives (lambda (xs)
+                                                (and
+                                                 (vectorp xs)
+                                                 (seq-every-p #'stringp xs))))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
+
 
 (defcustom lsp-rust-build-on-save nil
   "Only index the project when a file is saved and not on
@@ -243,7 +261,7 @@ is often the type local variable declaration."
    ("rust.all_features" lsp-rust-all-features t)
    ("rust.features" lsp-rust-features)
    ("rust.build_on_save" lsp-rust-build-on-save t)
-   ("rust.crate_blacklist" lsp-rust-crate-blacklist t)
+   ("rust.crate_blacklist" lsp-rust-crate-blacklist)
    ("rust.show_warnings" lsp-rust-show-warnings t)
    ("rust.wait_to_build" lsp-rust-wait-to-build)
    ("rust.unstable_features" lsp-rust-unstable-features t)
