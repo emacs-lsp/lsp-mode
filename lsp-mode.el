@@ -5965,7 +5965,7 @@ This avoids overloading the server with many files when starting Emacs."
                                           (list overlay index (get-text-property 0 'action lens-token)))
                                         (overlay-get overlay 'lsp--metadata)))
                                      lsp--lens-overlays)
-                            (-lambda (path ((ov index lens-token) . _win))
+                            (-lambda (path ((ov index) . _win))
                               (let* ((path (mapcar #'avy--key-to-char path))
                                      (str (propertize (string (car (last path)))
                                                       'face 'avy-lead-face))
