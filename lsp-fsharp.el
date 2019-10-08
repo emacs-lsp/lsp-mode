@@ -217,8 +217,7 @@ disable if `--backgorund-service-enabled' is not used"
 
 (defun lsp-fsharp--make-init-options ()
   "Init options for F#."
-  `((:AutomaticWorkspaceInit . t))
-  )
+  `())
 
 (lsp-register-custom-settings
  `(("FSharp.KeywordsAutocomplete" lsp-fsharp-keywords-autocomplete t)
