@@ -52,8 +52,6 @@
    (lambda ()
      (list lsp-vhdl-server-path "lsp"))))
 
-(add-to-list 'lsp-language-id-configuration '(vhdl-mode . "vhdl"))
-
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-vhdl--create-connection)
                   :major-modes '(vhdl-mode)

@@ -621,7 +621,8 @@ Changes take effect only when a new session is started."
                                         (dockerfile-mode . "dockerfile")
                                         (csharp-mode . "csharp")
                                         (plain-tex-mode . "plaintex")
-                                        (latex-mode . "latex"))
+                                        (latex-mode . "latex")
+                                        (vhdl-mode . "vhdl"))
   "Language id configuration.")
 
 (defvar lsp-method-requirements
