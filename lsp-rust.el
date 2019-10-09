@@ -114,26 +114,23 @@ the latest build duration."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-rust-crate-blacklist  [
-                                      "cocoa",
-                                      "gleam",
-                                      "glium",
-                                      "idna",
-                                      "libc",
-                                      "openssl",
-                                      "rustc_serialize",
-                                      "serde",
-                                      "serde_json",
-                                      "typenum",
-                                      "unicode_normalization",
-                                      "unicode_segmentation",
+(defcustom lsp-rust-crate-blacklist  '(
+                                      "cocoa"
+                                      "gleam"
+                                      "glium"
+                                      "idna"
+                                      "libc"
+                                      "openssl"
+                                      "rustc_serialize"
+                                      "serde"
+                                      "serde_json"
+                                      "typenum"
+                                      "unicode_normalization"
+                                      "unicode_segmentation"
                                       "winapi"
-                                      ]
+                                      )
   "A list of Cargo crates to blacklist."
-  :type '(restricted-sexp :match-alternatives (lambda (xs)
-                                                (and
-                                                 (vectorp xs)
-                                                 (seq-every-p #'stringp xs))))
+  :type '(repeat string)
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
