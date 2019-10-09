@@ -1273,7 +1273,7 @@ Do you want to watch all files in %s? "
         number-of-files
         dir
         dir))
-    (message
+    (lsp--info
      (concat "You can configure this warning with the `lsp-enable-file-watchers' "
              "and `lsp-file-watch-threshold' variables"))))
 
