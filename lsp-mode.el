@@ -570,6 +570,7 @@ Changes take effect only when a new session is started."
                                         (".*\\.xml$" . "xml")
                                         (".*\\.hx$" . "haxe")
                                         (".*\\.lua$" . "lua")
+                                        (ada-mode . "ada")
                                         (sh-mode . "shellscript")
                                         (sh-mode . "lua")
                                         (scala-mode . "scala")
