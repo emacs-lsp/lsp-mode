@@ -289,7 +289,7 @@ PARAMS progress report notification data."
       (lsp-log lsp-clients-rust-progress-string))))
 
 (defcustom lsp-rust-rls-server-command '("rls")
-  "Command to start RLS."
+  "Command to start RLS. Use 'ra_lsp_server' for rust-analyzer."
   :type '(repeat string)
   :package-version '(lsp-mode . "6.1"))
 
@@ -308,7 +308,7 @@ PARAMS progress report notification data."
                                    (lambda () lsp-rust-rls-server-command))
                   :major-modes '(rust-mode rustic-mode)
                   :priority -1
-                  :server-id 'rls
+                  :server-id (make-symbol (car lsp-rust-rls-server-command))
                   :initialization-options '((omitInitBuild . t)
                                             (cmdRun . t))
                   :notification-handlers (ht ("window/progress" 'lsp-clients--rust-window-progress))
