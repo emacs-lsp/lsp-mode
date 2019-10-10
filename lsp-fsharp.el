@@ -63,6 +63,109 @@ To use the mono/.Net framework version, set this to \"https://ci.appveyor.com/ap
   :group 'lsp-fsharp
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-fsharp-keywords-autocomplete t
+  "Provides keywords in autocomplete list"
+  :group 'lsp-fsharp
+  :type 'bool
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-fsharp-external-autocomplete nil
+  "Provides autocompletion for symbols from not opened namespaces/modules; inserts open on accept"
+  :group 'lsp-fsharp
+  :type 'bool
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-fsharp-linter t
+  "Enables FSharpLint integration, provides additional warnings and code action fixes"
+  :group 'lsp-fsharp
+  :type 'bool
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-fsharp-union-case-stub-generation t
+  "Enablesa  code action to generate pattern matching cases"
+  :group 'lsp-fsharp
+  :type 'bool
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-fsharp-union-case-stub-generation-body "failwith \"Not Implemented\""
+  "defines dummy body used by pattern matching generator"
+  :group 'lsp-fsharp
+  :type 'string
+  :risky t
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-fsharp-record-stub-generation t
+  "Enables code action to generate record stub"
+  :group 'lsp-fsharp
+  :type 'bool
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-fsharp-record-stub-generation-body "failwith \"Not Implemented\""
+  "defines dummy body used by record stub generator"
+  :group 'lsp-fsharp
+  :type 'string
+  :risky t
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-fsharp-interface-stub-generation t
+  "Enables code action to generate an interface stub"
+  :group 'lsp-fsharp
+  :type 'bool
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-fsharp-interface-stub-generation-object-identifier "this"
+  "Defines object identifier used by interface stub generator, e.g. `this' or `self'"
+  :group 'lsp-fsharp
+  :type 'string
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-fsharp-interface-stub-generation-method-body "failwith \"Not Implemented\""
+  "Defines dummy body used by interface stub generator"
+  :group 'lsp-fsharp
+  :type 'string
+  :risky t
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-fsharp-unused-opens-analyzer t
+  "Enables unused open detection"
+  :group 'lsp-fsharp
+  :type 'bool
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-fsharp-unused-declarations-analyzer t
+  "Enables unused symbol detection"
+  :group 'lsp-fsharp
+  :type 'bool
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-fsharp-simplify-name-analyzer nil
+  "Enables simplify name analyzer and remove redundant qualifier quick fix"
+  :group 'lsp-fsharp
+  :type 'bool
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-fsharp-resolve-namespaces t
+  "Enables resolve namespace quick fix; adds `open' if symbol is
+from not yet opened module/namespace"
+  :group 'lsp-fsharp
+  :type 'bool
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-fsharp-enable-reference-code-lens t
+  "Enables reference count code lenses. It is recommended to
+disable if `--backgorund-service-enabled' is not used"
+  :group 'lsp-fsharp
+  :type 'bool
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-fsharp-auto-workspace-init nil
+  "Enable automatic workspace initialization. Do note that this
+  can cause unexpected or challenging behaviors, as solutions
+  with test projects are not autoloaded by FSharpAutoComplete."
+  :group 'lsp-fsharp
+  :type 'bool
+  :risky t)
+
 (defun lsp-fsharp--fsac-runtime-cmd ()
   "Get the command required to run fsautocomplete based off of the current runtime."
   (pcase lsp-fsharp-server-runtime
@@ -106,8 +209,8 @@ To use the mono/.Net framework version, set this to \"https://ci.appveyor.com/ap
   "Get the list of files we need to send to fsharp/workspaceLoad."
   (let* ((response (lsp-request "fsharp/workspacePeek"
                                 `(:directory ,(lsp-workspace-root)
-                                 :deep 10
-                                 :excludedDirs ["paket-files" ".git" "packages" "node_modules"])))
+                                             :deep 10
+                                             :excludedDirs ["paket-files" ".git" "packages" "node_modules"])))
          (data (json-read-from-string (ht-get response "content")))
          (found (cdr (assq 'Found (cdr (assq 'Data data)))))
          (directory (car (seq-filter (lambda (d) (equal "directory" (cdr (assq 'Type d)))) found))))
@@ -116,14 +219,37 @@ To use the mono/.Net framework version, set this to \"https://ci.appveyor.com/ap
 (defun lsp-fsharp--workspace-load (projects)
   "Load all of the provided PROJECTS."
   (lsp-request-async "fsharp/workspaceLoad"
-               `(:textDocuments ,(vconcat [] (mapcar (lambda (p) `(:uri ,p)) projects)))
-               (lambda (_)
-                 (lsp--info "Workspace Loaded!"))))
+                     `(:textDocuments ,(vconcat [] (mapcar (lambda (p) `(:uri ,p)) projects)))
+                     (lambda (_)
+                       (lsp--info "Workspace Loaded!"))))
+
+(defvar lsp-fsharp--default-init-options  (list)
+  "Default init options to be passed to FSharpAutoComplete,
+  updated conditionally by `lsp-fsharp--make-init-options'.")
 
 (defun lsp-fsharp--make-init-options ()
   "Init options for F#."
-  `()
-  )
+  (-let [opts lsp-fsharp--default-init-options]
+    (if lsp-fsharp-auto-workspace-init
+        (push '(:AutomaticWorkspaceInit . t) opts)
+      opts)))
+
+(lsp-register-custom-settings
+ `(("FSharp.KeywordsAutocomplete" lsp-fsharp-keywords-autocomplete t)
+   ("FSharp.ExternalAutocomplete" lsp-fsharp-external-autocomplete t)
+   ("FSharp.Linter" lsp-fsharp-linter t)
+   ("FSharp.UnionCaseStubGeneration" lsp-fsharp-union-case-stub-generation t)
+   ("FSharp.UnionCaseStubGenerationBody" lsp-fsharp-union-case-stub-generation-body)
+   ("FSharp.RecordStubGeneration" lsp-fsharp-record-stub-generation t)
+   ("FSharp.RecordStubGenerationBody" lsp-fsharp-record-stub-generation-body)
+   ("FSharp.InterfaceStubGeneration" lsp-fsharp-interface-stub-generation t)
+   ("FSharp.InterfaceStubGenerationObjectIdentifier" lsp-fsharp-interface-stub-generation-object-identifier)
+   ("FSharp.InterfaceStubGenerationMethodBody" lsp-fsharp-interface-stub-generation-method-body)
+   ("FSharp.UnusedOpensAnalyzer" lsp-fsharp-unused-opens-analyzer t)
+   ("FSharp.UnusedDeclarationsAnalyzer" lsp-fsharp-unused-declarations-analyzer t)
+   ("FSharp.SimplifyNameAnalyzer" lsp-fsharp-simplify-name-analyzer t)
+   ("FSharp.ResolveNamespaces" lsp-fsharp-resolve-namespaces t)
+   ("FSharp.EnableReferenceCodeLens" lsp-fsharp-enable-reference-code-lens t)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-fsharp--make-launch-cmd)
@@ -135,7 +261,12 @@ To use the mono/.Net framework version, set this to \"https://ci.appveyor.com/ap
                   :initialization-options 'lsp-fsharp--make-init-options
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
-                                      (lsp-fsharp--workspace-load (lsp-fsharp--project-list))))
+                                      ;; Something needs to be calling lsp--set-configuration
+                                      (progn
+                                        (lsp--set-configuration
+                                         (lsp-configuration-section "fsharp"))
+                                        (lsp-fsharp--workspace-load
+                                         (lsp-fsharp--project-list)))))
                   :server-id 'fsac))
 
 (provide 'lsp-fsharp)
