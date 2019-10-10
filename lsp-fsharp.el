@@ -158,6 +158,14 @@ disable if `--backgorund-service-enabled' is not used"
   :type 'bool
   :package-version '(lsp-mode . "6.2"))
 
+(defcustom lsp-fsharp-auto-workspace-init nil
+  "Enable automatic workspace initialization. Do note that this
+  can cause unexpected or challenging behaviors, as solutions
+  with test projects are not autoloaded by FSharpAutoComplete."
+  :group 'lsp-fsharp
+  :type 'bool
+  :risky t)
+
 (defun lsp-fsharp--fsac-runtime-cmd ()
   "Get the command required to run fsautocomplete based off of the current runtime."
   (pcase lsp-fsharp-server-runtime
@@ -215,9 +223,16 @@ disable if `--backgorund-service-enabled' is not used"
                      (lambda (_)
                        (lsp--info "Workspace Loaded!"))))
 
+(defvar lsp-fsharp--default-init-options  (list)
+  "Default init options to be passed to FSharpAutoComplete,
+  updated conditionally by `lsp-fsharp--make-init-options'.")
+
 (defun lsp-fsharp--make-init-options ()
   "Init options for F#."
-  `())
+  (-let [opts lsp-fsharp--default-init-options]
+    (if lsp-fsharp-auto-workspace-init
+        (push '(:AutomaticWorkspaceInit . t) opts)
+      opts)))
 
 (lsp-register-custom-settings
  `(("FSharp.KeywordsAutocomplete" lsp-fsharp-keywords-autocomplete t)
