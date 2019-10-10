@@ -47,13 +47,13 @@ completing function calls."
   :type '(repeat string)
   :group 'lsp-gopls)
 
-(defcustom lsp-gopls-build-flags '("-tags")
-  "A set of flags passed on to the build system when invoked,
+(defcustom lsp-gopls-build-flags ["-tags"]
+  "A vector of flags passed on to the build system when invoked,
   applied to queries like `go list'."
   :type '(repeat string)
   :group 'lsp-gopls
   :risky t
-  :package-version '(lsp-mode "6.3"))
+  :package-version '(lsp-mode "6.2"))
 
 (defcustom lsp-gopls-env "{}"
   "`gopls' has the unusual ability to set environment variables,
@@ -63,7 +63,7 @@ completing function calls."
   :type 'string
   :group 'lsp-gopls
   :risky t
-  :package-version '(lsp-mode "6.3"))
+  :package-version '(lsp-mode "6.2"))
 
 (defcustom lsp-gopls-hover-kind "SynopsisDocumentation"
   "`gopls' allows the end user to select the desired amount of
@@ -76,7 +76,7 @@ completing function calls."
                  (const "Structured"))
   :group 'lsp-gopls
   :risky t
-  :package-version '(lsp-mode "6.3"))
+  :package-version '(lsp-mode "6.2"))
 
 ;; EXPERIMENTAL! ヽ(⌐■_■)ノ♪♬ At time of writing, these options are considered
 ;; experimental, and might either change or become durable. For more, see the
@@ -88,7 +88,7 @@ completing function calls."
   :type '(repeat string)
   :group 'lsp-gopls
   :risky t
-  :package-version '(lsp-mode "6.3"))
+  :package-version '(lsp-mode "6.2"))
 
 (defcustom lsp-gopls-experimental-staticcheck nil
   "If true, enables the use of staticcheck.io analyzers. Note
@@ -97,14 +97,14 @@ completing function calls."
   :type 'bool
   :group 'lsp-gopls
   :risky t
-  :package-version '(lsp-mode "6.3"))
+  :package-version '(lsp-mode "6.2"))
 
 (defcustom lsp-gopls-experimental-completion-documentation nil
   "If true, documentation is returned alongside completion candidates"
   :type 'bool
   :group 'lsp-gopls
   :risky t
-  :package-version '(lsp-mode "6.3"))
+  :package-version '(lsp-mode "6.2"))
 
 (defcustom lsp-gopls-experimental-complete-unimported nil
   "If true, the completion engine is allowed to make suggestions
@@ -112,7 +112,7 @@ completing function calls."
   :type 'bool
   :group 'lsp-gopls
   :risky t
-  :package-version '(lsp-mode "6.3"))
+  :package-version '(lsp-mode "6.2"))
 
 (defcustom lsp-gopls-experimental-deep-completion nil
   "If true, turns on the completion engine's ability to return
@@ -122,7 +122,7 @@ completing function calls."
   :type 'bool
   :group 'lsp-gopls
   :risky t
-  :package-version '(lsp-mode "6.3"))
+  :package-version '(lsp-mode "6.2"))
 
 (lsp-register-custom-settings
  '(("gopls.usePlaceholders" lsp-gopls-use-placeholders t)
@@ -251,7 +251,7 @@ $GOPATH/pkg/mod along with the value of
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda () (cons lsp-clients-go-server
-                                               lsp-clients-go-server-args)))
+                                                    lsp-clients-go-server-args)))
                   :major-modes '(go-mode)
                   :priority -1
                   :initialization-options 'lsp-clients-go--make-init-options
