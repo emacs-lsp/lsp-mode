@@ -133,7 +133,9 @@ the latest build duration."
   :type '(restricted-sexp :match-alternatives (lambda (xs)
                                                 (and
                                                  (vectorp xs)
-                                                 (seq-every-p #'stringp xs)))))
+                                                 (seq-every-p #'stringp xs))))
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-build-on-save nil
   "Only index the project when a file is saved and not on
