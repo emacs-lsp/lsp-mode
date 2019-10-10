@@ -114,7 +114,7 @@ the latest build duration."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-rust-crate-blacklist  '(
+(defcustom lsp-rust-crate-blacklist  [
                                       "cocoa"
                                       "gleam"
                                       "glium"
@@ -128,12 +128,12 @@ the latest build duration."
                                       "unicode_normalization"
                                       "unicode_segmentation"
                                       "winapi"
-                                      )
+                                      ]
   "A list of Cargo crates to blacklist."
-  :type '(repeat string)
-  :group 'lsp-rust
-  :package-version '(lsp-mode . "6.1"))
-
+  :type '(restricted-sexp :match-alternatives (lambda (xs)
+                                                (and
+                                                 (vectorp xs)
+                                                 (seq-every-p #'stringp xs)))))
 
 (defcustom lsp-rust-build-on-save nil
   "Only index the project when a file is saved and not on
