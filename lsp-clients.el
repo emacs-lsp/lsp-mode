@@ -337,6 +337,28 @@ particular FILE-NAME and MODE."
                   :priority -1
                   :server-id 'ocaml-ls))
 
+(defgroup lsp-merlin nil
+  "LSP support for OCaml, using merlin."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/ocaml/merlin"))
+
+(defcustom lsp-merlin-command
+  '("ocamlmerlin-lsp")
+  "Command to start ocaml-language-server."
+  :group 'lsp-ocaml
+  :type '(choice
+          (string :tag "Single string value")
+          (repeat :tag "List of string values"
+                  string)))
+
+(lsp-register-client
+ (make-lsp-client
+  :new-connection
+  (lsp-stdio-connection (lambda () lsp-merlin-command))
+  :major-modes '(caml-mode tuareg-mode)
+  :priority 0
+  :server-id 'merlin))
+
 
 ;; C-family (C, C++, Objective-C, Objective-C++)
 
