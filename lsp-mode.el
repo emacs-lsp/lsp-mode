@@ -3681,7 +3681,20 @@ MODE is the mode used in the parent frame."
     (add-to-list 'markdown-code-lang-modes (cons mark mode)))
   (setq-local markdown-fontify-code-blocks-natively t)
   (setq-local markdown-fontify-code-block-default-mode mode)
-  (setq-local markdown-hide-markup t))
+  (setq-local markdown-hide-markup t)
+
+  ;; Render some common HTML entities.
+  ;; This should really happen in markdown-mode instead,
+  ;; but it doesn't, so we do it here for now.
+  (setq prettify-symbols-alist
+	(cl-loop for i from 0 to 255
+                 collect (cons (format "&#x%02X;" i) i)))
+  (push '("&lt;" . ?<) prettify-symbols-alist)
+  (push '("&gt;" . ?>) prettify-symbols-alist)
+  (push '("&amp;" . ?&) prettify-symbols-alist)
+  (setq prettify-symbols-compose-predicate
+	(lambda (_start _end _match) t))
+  (prettify-symbols-mode 1))
 
 (defun lsp--buffer-string-visible ()
   "Return visible buffer string.
@@ -3706,18 +3719,8 @@ Stolen from `org-copy-visible'."
   "Render markdown."
 
   (let((markdown-enable-math nil))
-    (goto-char (point-min))
-    (while (re-search-forward "&gt;" nil t)
-      (replace-match ">"))
-
-    (goto-char (point-min))
-
-    (while (re-search-forward "&lt;" nil t)
-      (replace-match "<"))
-
-    (goto-char (point-min))
-
     ;; temporary patch --- since the symbol is not rendered fine in lsp-ui
+    (goto-char (point-min))
     (while (re-search-forward "^[-]+$" nil t)
       (replace-match ""))
 
