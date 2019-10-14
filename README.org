@@ -36,6 +36,7 @@
   - [[#limitations][Limitations]]
     - [[#file-watches][File watches]]
   - [[#contributions][Contributions]]
+    - [[#members][Members]]
   - [[#troubleshooting][Troubleshooting]]
   - [[#adding-support-for-languages][Adding support for languages]]
     - [[#registering-server][Registering server]]
@@ -264,6 +265,19 @@
    Here is a throughput graph of the repository for the last few weeks:
 
    [[file:https://graphs.waffle.io/emacs-lsp/lsp-mode/throughput.svg]]
+*** Members
+    Here it is a list of the current =lsp-mode= members and what they are primary working on/reposible for.
+    | Members                                               | Resposible for:                    |
+    |-------------------------------------------------------+------------------------------------|
+    | [[https://github.com/TOTBWF][TOTBWF]]                 | =F#=                               |
+    | [[https://github.com/brotzeit][brotzeit]]             | =Rust=                             |
+    | [[https://github.com/dsyzling][dsyzling]]             | =Scala=                            |
+    | [[https://github.com/kurnevsky][kurnevsky]]           | =Scala= & =Rust=                   |
+    | [[https://github.com/seagle0128][seagle0128]]         | =Go= & =MS Python Language Server= |
+    | [[https://github.com/sebastiansturm][sebastiansturm]] | =lsp-mode= core & =C++=            |
+    | [[https://github.com/vibhavp][vibhavp]]               | =lsp-mode= core                    |
+    | [[https://github.com/yyoncho][yyoncho]]               | =lsp-mode= core and =Java=         |
+
 ** Troubleshooting
    - set ~lsp-log-io~ to ~t~ to inspect communication between client and the server.
    - ~lsp-describe-session~ will show the current projects roots + the started severs and allows inspecting the server capabilities.
