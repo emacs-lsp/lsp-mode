@@ -2522,7 +2522,7 @@ disappearing, unset all the variables related to it."
                                                                                (or
                                                                                 (featurep 'yasnippet)
                                                                                 (warn (concat
-                                                                                       "Yasnippet is not yet loaded, but `lsp-enable-snippet' is set to `t'. "
+                                                                                       "Yasnippet is not installed, but `lsp-enable-snippet' is set to `t'. "
                                                                                        "You must either install yasnippet, or disable snippet support."))
                                                                                 t)
                                                                              :json-false))
