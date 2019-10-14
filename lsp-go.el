@@ -50,17 +50,17 @@ completing function calls."
 (defcustom lsp-gopls-build-flags ["-tags"]
   "A vector of flags passed on to the build system when invoked,
   applied to queries like `go list'."
-  :type '(repeat string)
+  :type '(vector string)
   :group 'lsp-gopls
   :risky t
   :package-version '(lsp-mode "6.2"))
 
-(defcustom lsp-gopls-env "{}"
+(defcustom lsp-gopls-env (make-hash-table)
   "`gopls' has the unusual ability to set environment variables,
   intended to affect the behavior of commands invoked by `gopls'
-  on the user's behalf. This variable takes a JSON object
-  literal, mapping env var name to value."
-  :type 'string
+  on the user's behalf. This variable takes a hash table of env
+  var names to desired values."
+  :type '(restricted-sexp :match-alternatives (hash-table-p))
   :group 'lsp-gopls
   :risky t
   :package-version '(lsp-mode "6.2"))
@@ -83,9 +83,9 @@ completing function calls."
 ;; official docs:
 ;; https://github.com/golang/tools/blob/master/gopls/doc/settings.md#experimental
 ;; -- @gastove 2019-10-09
-(defcustom lsp-gopls-experimental-disabled-analyses (list)
+(defcustom lsp-gopls-experimental-disabled-analyses []
   "A list of names of analysis passes that should be disabled."
-  :type '(repeat string)
+  :type '(vector string)
   :group 'lsp-gopls
   :risky t
   :package-version '(lsp-mode "6.2"))
