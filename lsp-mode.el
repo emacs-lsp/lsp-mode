@@ -2173,7 +2173,7 @@ If WORKSPACE is not provided current workspace will be used."
 (defalias 'lsp-make-request 'lsp--make-request)
 
 (defun lsp--make-response (request result)
-  "Create reponse for REQUEST with RESULT."
+  "Create response for REQUEST with RESULT."
   `(:jsonrpc "2.0" :id ,(gethash "id" request) :result ,result))
 
 (defun lsp-make-notification (method &optional params)
@@ -2379,7 +2379,7 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
                            (buffer-live-p buf))
                       (with-current-buffer buf
                         (handle-result))
-                    (lsp-log "Buffer is not alive ignoring reponse. Method %s." method))))
+                    (lsp-log "Buffer is not alive ignoring response. Method %s." method))))
         ('tick (let ((tick (buffer-chars-modified-tick)))
                  (lambda (result)
                    (when (buffer-live-p buf)
@@ -2395,7 +2395,7 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
              (if (and (eq (length results) count)
                       (eq buf (current-buffer)))
                  (handle-result)
-               (lsp-log "Buffer switched - ignoring reponse. Method %s" method))))))))
+               (lsp-log "Buffer switched - ignoring response. Method %s" method))))))))
 
 (defun lsp--create-default-error-handler (method)
   "Default error handler.
