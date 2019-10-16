@@ -338,12 +338,7 @@ at all."
                   :library-folders-fn (lambda (_workspace) lsp-clients-python-library-directories)
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
-                                      (lsp--set-configuration (lsp-configuration-section "pyls")))
-                                    (puthash
-                                     "textDocumentSync"
-                                     (ht ("save" t)
-                                         ("change" 2))
-                                     (lsp--workspace-server-capabilities workspace)))))
+                                      (lsp--set-configuration (lsp-configuration-section "pyls"))))))
 
 (provide 'lsp-pyls)
 ;;; lsp-pyls.el ends here
