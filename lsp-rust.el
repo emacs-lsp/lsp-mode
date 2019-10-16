@@ -25,11 +25,20 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'ht)
+(require 'dash)
 
 (defgroup lsp-rust nil
   "LSP support for Rust, using Rust Language Server."
   :group 'lsp-mode
   :link '(url-link "https://github.com/rust-lang/rls")
+  :package-version '(lsp-mode . "6.1"))
+
+(defcustom lsp-rust-server 'rls
+  "Choose LSP server."
+  :type '(choice (symbol :tag 'rls "rls")
+                 (symbol :tag 'rust-analyzer "rust-analyzer"))
+  :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-library-directories '("~/.cargo/registry/src" "~/.rustup/toolchains")
@@ -40,54 +49,55 @@
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-sysroot nil
-  "If non-nil, use the given path as the sysroot for all rustc invocations instead of trying to detect the sysroot automatically."
+  "If non-nil, use the given path as the sysroot for all rustc invocations instead of trying
+to detect the sysroot automatically."
   :type '(choice
-           (const :tag "None" nil)
-           (string :tag "Sysroot"))
+          (const :tag "None" nil)
+          (string :tag "Sysroot"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-target nil
   "If non-nil, use the given target triple for all rustc invocations."
   :type '(choice
-           (const :tag "None" nil)
-           (string :tag "Target"))
+          (const :tag "None" nil)
+          (string :tag "Target"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-rustflags nil
   "Flags added to RUSTFLAGS."
   :type '(choice
-           (const :tag "None" nil)
-           (string :tag "Flags"))
+          (const :tag "None" nil)
+          (string :tag "Flags"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-clear-env-rust-log t
-  "Clear the RUST_LOG environment variable before running rustc
-or cargo."
+  "Clear the RUST_LOG environment variable before running rustc or cargo."
   :type 'boolean
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-build-lib nil
   "If non-nil, checks the project as if you passed the `--lib' argument to cargo.
- Mutually exclusive with, and preferred over, `lsp-rust-build-bin'. (Unstable)"
+Mutually exclusive with, and preferred over, `lsp-rust-build-bin'. (Unstable)"
   :type 'boolean
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-build-bin nil
   "If non-nil, checks the project as if you passed `-- bin <build_bin>' argument to cargo.
- Mutually exclusive with `lsp-rust-build-lib'. (Unstable)"
+Mutually exclusive with `lsp-rust-build-lib'. (Unstable)"
   :type '(choice
-           (const :tag "None" nil)
-           (string :tag "Binary"))
+          (const :tag "None" nil)
+          (string :tag "Binary"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-cfg-test nil
-  "If non-nil, checks the project as if you were running `cargo test' rather than cargo build. I.e., compiles (but does not run) test code."
+  "If non-nil, checks the project as if you were running `cargo test' rather than cargo build.
+I.e., compiles (but does not run) test code."
   :type 'boolean
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
@@ -103,8 +113,8 @@ or cargo."
 and starting build. If not specified, automatically inferred by
 the latest build duration."
   :type '(choice
-           (const :tag "Auto" nil)
-           (number :tag "Time"))
+          (const :tag "Auto" nil)
+          (number :tag "Time"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
@@ -149,8 +159,8 @@ change."
   "A list of Cargo features to enable."
   :type '(restricted-sexp :match-alternatives (lambda (xs)
                                                 (and
-                                                  (vectorp xs)
-                                                  (seq-every-p #'stringp xs))))
+                                                 (vectorp xs)
+                                                 (seq-every-p #'stringp xs))))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
@@ -189,15 +199,14 @@ change."
 (defcustom lsp-rust-jobs nil
   "Number of Cargo jobs to be run in parallel."
   :type '(choice
-           (const :tag "Auto" nil)
-           (number :tag "Jobs"))
+          (const :tag "Auto" nil)
+          (number :tag "Jobs"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-all-targets t
-  "Checks the project as if you were running cargo check
---all-targets (I.e., check all targets and integration tests
-too)."
+  "Checks the project as if you were running cargo check --all-targets.
+I.e., check all targets and integration tests too."
   :type 'boolean
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
@@ -207,8 +216,8 @@ too)."
 specified target directory. By default it is placed target/rls
 directory."
   :type '(choice
-           (const :tag "Default" nil)
-           (string :tag "Directory"))
+          (const :tag "Default" nil)
+          (string :tag "Directory"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
@@ -216,8 +225,8 @@ directory."
   "When specified, RLS will use the Rustfmt pointed at the path
 instead of the bundled one"
   :type '(choice
-           (const :tag "Bundled" nil)
-           (string :tag "Path"))
+          (const :tag "Bundled" nil)
+          (string :tag "Path"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
@@ -228,8 +237,8 @@ loaded by the RLS. The program given should output a list of
 resulting .json files on stdout. \nImplies `rust.build_on_save`:
 true."
   :type '(choice
-           (const :tag "None" nil)
-           (string :tag "Command"))
+          (const :tag "None" nil)
+          (string :tag "Command"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
@@ -304,11 +313,9 @@ PARAMS progress report notification data."
              (s-join " " args)))))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda () lsp-rust-rls-server-command))
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-rust-rls-server-command))
                   :major-modes '(rust-mode rustic-mode)
-                  :priority -1
-                  :server-id 'rls
+                  :priority (if (eq lsp-rust-server 'rls) 1 -1)
                   :initialization-options '((omitInitBuild . t)
                                             (cmdRun . t))
                   :notification-handlers (ht ("window/progress" 'lsp-clients--rust-window-progress))
@@ -317,7 +324,65 @@ PARAMS progress report notification data."
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
-                                       (lsp-configuration-section "rust"))))))
+                                       (lsp-configuration-section "rust"))))
+                  :server-id 'rls))
+
+
+;; rust-analyzer
+
+(defcustom lsp-rust-analyzer-server-command '("ra_lsp_server")
+  "Command to start rust-analyzer."
+  :type '(repeat string)
+  :package-version '(lsp-mode . "6.1"))
+
+(defconst lsp-rust-notification-handlers
+  '(("rust-analyzer/publishDecorations" . (lambda (_w _p)))))
+
+(defconst lsp-rust-action-handlers
+  '(("rust-analyzer.applySourceChange" .
+     (lambda (p) (lsp-rust-apply-source-change-command p)))))
+
+(defun lsp-rust-apply-source-change-command (p)
+  (let ((data (-> p (ht-get "arguments") (seq-first))))
+    (lsp-rust-apply-source-change data)))
+
+(defun lsp-rust-uri-filename (text-document)
+  (lsp--uri-to-path (gethash "uri" text-document)))
+
+(defun lsp-rust-apply-text-document-edit (edit)
+  "Like lsp--apply-text-document-edit, but it allows nil version."
+  (let* ((ident (gethash "textDocument" edit))
+         (filename (lsp-rust-uri-filename ident))
+         (version (gethash "version" ident)))
+    (with-current-buffer (find-file-noselect filename)
+      (when (or (not version) (= version (lsp--cur-file-version)))
+        (lsp--apply-text-edits (gethash "edits" edit))))))
+
+(defun lsp-rust-apply-source-change (data)
+  (seq-doseq (it (-> data (ht-get "workspaceEdit") (ht-get "documentChanges")))
+    (lsp-rust-apply-text-document-edit it))
+  (-when-let (cursor-position (ht-get data "cursorPosition"))
+    (let ((filename (lsp-rust-uri-filename (ht-get cursor-position "textDocument")))
+          (position (ht-get cursor-position "position")))
+      (find-file filename)
+      (lsp-rust-goto-lsp-loc position))))
+
+(lsp-register-client
+ (make-lsp-client
+  :new-connection (lsp-stdio-connection (lambda () lsp-rust-analyzer-server-command))
+  :major-modes '(rust-mode rustic-mode)
+  :priority (if (eq lsp-rust-server 'rust-analyzer) 1 -1)
+  :notification-handlers (ht<-alist lsp-rust-notification-handlers)
+  :action-handlers (ht<-alist lsp-rust-action-handlers)
+  :ignore-messages nil
+  :server-id 'rust-analyzer))
+
+(defun lsp-rust-switch-server ()
+  "Switch priorities of lsp servers."
+  (interactive)
+  (dolist (server '(rls rust-analyzer))
+    (setf (lsp--client-priority (gethash server lsp-clients))
+          (* (lsp--client-priority (gethash server lsp-clients)) -1))))
 
 (provide 'lsp-rust)
 ;;; lsp-rust.el ends here
