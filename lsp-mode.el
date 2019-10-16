@@ -5068,7 +5068,8 @@ standard I/O."
   (list :connect (lambda (filter sentinel name)
                    (let ((final-command (lsp-resolve-final-function command))
                          (process-name (generate-new-buffer-name name)))
-                     (let ((proc (make-process
+                     (let* ((stderr-buf (format "*%s::stderr*" process-name))
+                            (proc (make-process
                                   :name process-name
                                   :connection-type 'pipe
                                   :buffer (format "*%s*" process-name)
@@ -5076,9 +5077,10 @@ standard I/O."
                                   :command final-command
                                   :filter filter
                                   :sentinel sentinel
-                                  :stderr (format "*%s::stderr*" process-name)
+                                  :stderr stderr-buf
                                   :noquery t)))
                        (set-process-query-on-exit-flag proc nil)
+                       (set-process-query-on-exit-flag (get-buffer-process stderr-buf) nil)
                        (cons proc proc))))
         :test? (lambda () (-> command lsp-resolve-final-function lsp-server-present?))))
 
