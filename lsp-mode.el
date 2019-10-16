@@ -790,6 +790,22 @@ They are added to `markdown-code-lang-modes'")
   "Return t if all elements of SEQUENCE are strings, else nil."
   (not (seq-find (lambda (x) (not (stringp x))) sequence)))
 
+(defun lsp--string-vector-p (candidate)
+  "Returns true if CANDIDATE is a vector data structure and
+every element of it is of type string, else nil."
+  (and
+   (vectorp candidate)
+   (seq-every-p #'stringp candidate)))
+
+(define-widget 'lsp-string-vector 'lazy
+  "A vector of zero or more elements, every element of which is a string.
+Appropriate for any language-specific `defcustom' that needs to
+serialize as a JSON array of strings."
+  :offset 4
+  :tag "Vector"
+  :type '(restricted-sexp
+          :match-alternatives (list #'lsp--string-vector-p)))
+
 (defun lsp--info (format &rest args)
   "Display lsp info message with FORMAT with ARGS."
   (message "%s :: %s" (propertize "LSP" 'face 'success) (apply #'format format args)))
