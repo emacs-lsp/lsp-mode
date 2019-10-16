@@ -24,7 +24,7 @@ Alternatively, in will be great if you can reproduce the issue using [lsp-docker
 A clear and concise description of what the bug is.
 
 **To Reproduce**
-Steps to reproduce the behavior:
+Steps to reproduce the behavior(sample project + file which can be used to reproduce the issue with.)
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
