@@ -140,10 +140,7 @@ the latest build duration."
                                       "winapi"
                                       ]
   "A list of Cargo crates to blacklist."
-  :type '(restricted-sexp :match-alternatives (lambda (xs)
-                                                (and
-                                                 (vectorp xs)
-                                                 (seq-every-p #'stringp xs))))
+  :type 'lsp-string-vector
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
@@ -156,10 +153,7 @@ change."
 
 (defcustom lsp-rust-features []
   "A list of Cargo features to enable."
-  :type '(restricted-sexp :match-alternatives (lambda (xs)
-                                                (and
-                                                 (vectorp xs)
-                                                 (seq-every-p #'stringp xs))))
+  :type 'lsp-string-vector
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
