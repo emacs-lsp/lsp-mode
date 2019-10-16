@@ -340,7 +340,7 @@
      #+begin_src elisp
        (set (make-local-variable 'window-point-insertion-type) t)
      #+end_src
-   - I am gettign "Package ‘spinner-1.7.3’ is unavailable" when trying to install =lsp-mode=.
+   - I am getting "Package ‘spinner-1.7.3’ is unavailable" when trying to install =lsp-mode=.
      -  This is caused by GPG keys used by the ELPA package manager not being up
        to date. You may fix by installing: [[https://elpa.gnu.org/packages/gnu-elpa-keyring-update.html][gnu-elpa-keyring-update]]
 ** See also
