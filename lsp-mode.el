@@ -5726,37 +5726,39 @@ IGNORE-MULTI-FOLDER to ignore multi folder server."
 Returns nil if the project should not be added to the current SESSION."
   (condition-case nil
       (let* ((project-root-suggestion (or (lsp--suggest-project-root) default-directory))
-             (choices (list
-                       (format "Import project root \"%s\"." project-root-suggestion)
-                       "Import project by selecting root directory interactively."
-                       (format "Do not ask again for the current project by adding \"%s\" to lsp-session-folder-blacklist."
-                               project-root-suggestion)
-                       "Do not ask again for the current project by selecting ignore path interactively."
-                       "Do nothing; ask again when opening other files from the current project."))
-             (action-index (cl-position
-                            (completing-read (format "%s is not part of any project. Select action: "
-                                                     (buffer-name))
-                                             choices
-                                             nil
-                                             t)
-                            choices
-                            :test 'equal)))
-        (cl-case action-index
-          (0 project-root-suggestion)
-          (1 (read-directory-name "Select workspace folder to add: "
-                                  (or project-root-suggestion default-directory)
-                                  nil
-                                  t))
-          (2 (push project-root-suggestion (lsp-session-folders-blacklist session))
-             (lsp--persist-session session)
-             nil)
-          (3 (push (read-directory-name "Select folder to blacklist: "
-                                        (or project-root-suggestion default-directory)
-                                        nil
-                                        t)
-                   (lsp-session-folders-blacklist session))
-             (lsp--persist-session session)
-             nil)
+             (action (read-key (format
+                                "%s is not part of any project. Select action:
+
+%s==>Import project root %s.
+%s==>Import project by selecting root directory interactively.
+%s==>Do not ask again for the current project by adding %s to lsp-session-folder-blacklist.
+%s==>Do not ask again for the current project by selecting ignore path interactively.
+%s==>Do nothing: ask again when opening other files from the current project."
+                                (propertize (buffer-name) 'face 'bold)
+                                (propertize "i" 'face 'success)
+                                (propertize project-root-suggestion 'face 'bold)
+                                (propertize "I" 'face 'success)
+                                (propertize "d" 'face 'warning)
+                                (propertize project-root-suggestion 'face 'bold)
+                                (propertize "D" 'face 'warning)
+                                (propertize "n" 'face 'warning)))))
+        (cl-case action
+          (?i project-root-suggestion)
+          (?\r project-root-suggestion)
+          (?I (read-directory-name "Select workspace folder to add: "
+                                   (or project-root-suggestion default-directory)
+                                   nil
+                                   t))
+          (?d (push project-root-suggestion (lsp-session-folders-blacklist session))
+              (lsp--persist-session session)
+              nil)
+          (?D (push (read-directory-name "Select folder to blacklist: "
+                                         (or project-root-suggestion default-directory)
+                                         nil
+                                         t)
+                    (lsp-session-folders-blacklist session))
+              (lsp--persist-session session)
+              nil)
           (t nil)))
     ('quit)))
 
