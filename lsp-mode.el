@@ -804,7 +804,7 @@ serialize as a JSON array of strings."
   :offset 4
   :tag "Vector"
   :type '(restricted-sexp
-          :match-alternatives (list #'lsp--string-vector-p)))
+          :match-alternatives (lsp--string-vector-p)))
 
 (defun lsp--info (format &rest args)
   "Display lsp info message with FORMAT with ARGS."
