@@ -39,7 +39,7 @@
   :type '(choice (symbol :tag 'rls "rls")
                  (symbol :tag 'rust-analyzer "rust-analyzer"))
   :group 'lsp-mode
-  :package-version '(lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-rust-library-directories '("~/.cargo/registry/src" "~/.rustup/toolchains")
   "List of directories which will be considered to be libraries."
@@ -332,7 +332,7 @@ PARAMS progress report notification data."
 (defcustom lsp-rust-analyzer-server-command '("ra_lsp_server")
   "Command to start rust-analyzer."
   :type '(repeat string)
-  :package-version '(lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.2"))
 
 (defconst lsp-rust-notification-handlers
   '(("rust-analyzer/publishDecorations" . (lambda (_w _p)))))
