@@ -50,7 +50,7 @@ completing function calls."
 (defcustom lsp-gopls-build-flags ["-tags"]
   "A vector of flags passed on to the build system when invoked,
   applied to queries like `go list'."
-  :type '(vector string)
+  :type 'lsp-string-vector
   :group 'lsp-gopls
   :risky t
   :package-version '(lsp-mode "6.2"))
@@ -85,7 +85,7 @@ completing function calls."
 ;; -- @gastove 2019-10-09
 (defcustom lsp-gopls-experimental-disabled-analyses []
   "A list of names of analysis passes that should be disabled."
-  :type '(vector string)
+  :type 'lsp-string-vector
   :group 'lsp-gopls
   :risky t
   :package-version '(lsp-mode "6.2"))
