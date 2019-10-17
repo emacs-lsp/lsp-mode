@@ -380,8 +380,9 @@ PARAMS progress report notification data."
   "Switch priorities of lsp servers."
   (interactive)
   (dolist (server '(rls rust-analyzer))
-    (setf (lsp--client-priority (gethash server lsp-clients))
-          (* (lsp--client-priority (gethash server lsp-clients)) -1))))
+    (when (natnump (setf (lsp--client-priority (gethash server lsp-clients))
+                         (* (lsp--client-priority (gethash server lsp-clients)) -1)))
+      (message (format "Switched to server %s." server)))))
 
 (provide 'lsp-rust)
 ;;; lsp-rust.el ends here
