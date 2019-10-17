@@ -41,7 +41,7 @@ ENUM is the value of enum key in vscode manifest."
         ("string" 'string)
         ("number" 'number)
         ("integer" 'number)
-        ("array" '(repeat string))
+        ("array" 'lsp-string-vector)
         (`(,type . ,_rest) `(repeat ,(lsp--convert-type type nil)))))))
 
 (defun lsp-generate-settings (file-name)
