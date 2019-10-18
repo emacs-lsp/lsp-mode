@@ -3584,20 +3584,22 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
   (unless (seq-empty-p locations)
     (cl-labels ((get-xrefs-in-file
                  (file-locs location-link)
-                 (let* ((filename (seq-first file-locs))
-                        (visiting (lsp--buffer-for-file filename))
-                        (fn (lambda (loc)
-                              (lsp--xref-make-item filename
-                                                   (if location-link (or (gethash "targetSelectionRange" loc)
-                                                                         (gethash "targetRange" loc))
-                                                     (gethash "range" loc))))))
-                   (if visiting
-                       (with-current-buffer visiting
-                         (seq-map fn (cdr file-locs)))
-                     (when (file-readable-p filename)
-                       (with-temp-buffer
-                         (insert-file-contents-literally filename)
-                         (seq-map fn (cdr file-locs))))))))
+                 (let ((filename (seq-first file-locs)))
+                   (if (equal filename "")
+                       (lsp-log "lsp--locations-to-xref-items, unexpected empty filename")
+                     (let ((visiting (lsp--buffer-for-file filename))
+                           (fn (lambda (loc)
+                                 (lsp--xref-make-item filename
+                                                      (if location-link (or (gethash "targetSelectionRange" loc)
+                                                                      (gethash "targetRange" loc))
+                                                        (gethash "range" loc))))))
+                       (if visiting
+                           (with-current-buffer visiting
+                             (seq-map fn (cdr file-locs)))
+                         (when (file-readable-p filename)
+                           (with-temp-buffer
+                             (insert-file-contents-literally filename)
+                             (seq-map fn (cdr file-locs))))))))))
       (apply #'append
              (if (gethash "uri" (seq-first locations))
                  (seq-map
