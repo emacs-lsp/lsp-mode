@@ -3586,20 +3586,25 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
                  (file-locs location-link)
                  (let ((filename (seq-first file-locs)))
                    (if (equal filename "")
-                       (lsp-log "lsp--locations-to-xref-items, unexpected empty filename")
-                     (let ((visiting (lsp--buffer-for-file filename))
-                           (fn (lambda (loc)
-                                 (lsp--xref-make-item filename
-                                                      (if location-link (or (gethash "targetSelectionRange" loc)
-                                                                      (gethash "targetRange" loc))
-                                                        (gethash "range" loc))))))
-                       (if visiting
-                           (with-current-buffer visiting
-                             (seq-map fn (cdr file-locs)))
-                         (when (file-readable-p filename)
-                           (with-temp-buffer
-                             (insert-file-contents-literally filename)
-                             (seq-map fn (cdr file-locs))))))))))
+                       (ignore (lsp-warn "Failed to process xref entry, unexpected empty filename"))
+                     (condition-case err
+                         (let ((visiting (lsp--buffer-for-file filename))
+                               (fn (lambda (loc)
+                                     (lsp--xref-make-item filename
+                                                          (if location-link (or (gethash "targetSelectionRange" loc)
+                                                                                (gethash "targetRange" loc))
+                                                            (gethash "range" loc))))))
+                           (if visiting
+                               (with-current-buffer visiting
+                                 (seq-map fn (cdr file-locs)))
+                             (when (file-readable-p filename)
+                               (with-temp-buffer
+                                 (insert-file-contents-literally filename)
+                                 (seq-map fn (cdr file-locs))))))
+                       (error (ignore
+                               (lsp-warn "Failed to process xref entry with message: %s" (error-message-string err))))
+                       (file-error (ignore
+                                    (lsp-warn "Failed to process xref entry, file-error, %s: %s" filename (error-message-string err)))))))))
       (apply #'append
              (if (gethash "uri" (seq-first locations))
                  (seq-map
