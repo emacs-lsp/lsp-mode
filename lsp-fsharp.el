@@ -25,7 +25,6 @@
 ;;; Code:
 
 (require 'lsp-mode)
-(require 'pcase)
 
 (defgroup lsp-fsharp nil
   "LSP support for the F# Programming Language, using the FsharpAutoComplete server."
@@ -223,6 +222,8 @@ disable if `--backgorund-service-enabled' is not used"
          (directory (car (seq-filter (lambda (d) (equal "directory" (cdr (assq 'Type d)))) found))))
     (cdr (assq 'Fsprojs (cdr (assq 'Data directory))))))
 
+
+;;;###autoload
 (defun lsp-fsharp--workspace-load (projects)
   "Load all of the provided PROJECTS."
   (lsp-request-async "fsharp/workspaceLoad"
