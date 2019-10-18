@@ -200,6 +200,13 @@ disable if `--backgorund-service-enabled' is not used"
     (shell-command unzip-script)
     (shell-command (format "%s %s --version" (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-cmd)))))
 
+(defun lsp-fsharp-update-fsac ()
+  "Update fsautocomplete to the latest version."
+  (interactive)
+  (-let [install-dir (f-expand lsp-fsharp-server-install-dir)]
+    (f-delete install-dir t)
+    (lsp-fsharp--fsac-install)))
+
 (defun lsp-fsharp--make-launch-cmd ()
   "Build the command required to launch fsautocomplete."
   (append (list (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-locate) "--mode" "lsp" "--background-service-enabled")
