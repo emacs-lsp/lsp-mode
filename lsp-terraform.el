@@ -29,19 +29,30 @@
 (defgroup lsp-terraform nil
   "LSP support for Terraform, using terraform-lsp"
   :group 'lsp-mode
-  :link '(url-link "https://github.com/juliosueiras/terraform-lsp"))
+  :link '(url-link "https://github.com/juliosueiras/terraform-lsp")
+  :package-version `(lsp-mode . "6.2"))
 
 (defcustom lsp-terraform-server "terraform-lsp"
   "Path to the `terraform-lsp' binary."
   :group 'lsp-terraform
   :risky t
-  :type 'file)
+  :type 'file
+  :package-version `(lsp-mode . "6.2"))
 
-(defun lsp-terraform-server-start ()
-  ())
+(defcustom lsp-terraform-enable-logging nil
+  "If non-nil, enable `terraform-ls''s native logging."
+  :group 'lsp-terraform
+  :risky t
+  :type 'boolean
+  :package-version `(lsp-mode . "6.2"))
+
+(defun lsp-terraform--make-launch-cmd ()
+  (-let [base `(,lsp-terraform-server)]
+    (if lsp-terraform-enable-logging
+        (append base "-enable-log-file"))))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-terraform-server-start)
+ (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-terraform--make-launch-cmd)
                   :major-modes '(terraform-mode)
                   :priority -1
                   :server-id 'tfls))
