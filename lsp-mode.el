@@ -5407,7 +5407,8 @@ SESSION is the active session."
                                (lsp--open-in-workspace workspace)))
 
                            (with-lsp-workspace workspace
-                             (run-hooks 'lsp-after-initialize-hook)))
+                             (run-hooks 'lsp-after-initialize-hook))
+                           (lsp--info "%s initialized successfully" (lsp--workspace-print workspace)))
                          :mode 'detached))
     workspace))
 
