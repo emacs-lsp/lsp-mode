@@ -25,7 +25,6 @@
 ;;; Code:
 
 (require 'lsp-mode)
-(require 'pcase)
 
 (defgroup lsp-fsharp nil
   "LSP support for the F# Programming Language, using the FsharpAutoComplete server."
@@ -200,6 +199,13 @@ disable if `--backgorund-service-enabled' is not used"
     (shell-command unzip-script)
     (shell-command (format "%s %s --version" (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-cmd)))))
 
+(defun lsp-fsharp-update-fsac ()
+  "Update fsautocomplete to the latest version."
+  (interactive)
+  (-let [install-dir (f-expand lsp-fsharp-server-install-dir)]
+    (f-delete install-dir t)
+    (lsp-fsharp--fsac-install)))
+
 (defun lsp-fsharp--make-launch-cmd ()
   "Build the command required to launch fsautocomplete."
   (append (list (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-locate) "--mode" "lsp" "--background-service-enabled")
@@ -216,6 +222,8 @@ disable if `--backgorund-service-enabled' is not used"
          (directory (car (seq-filter (lambda (d) (equal "directory" (cdr (assq 'Type d)))) found))))
     (cdr (assq 'Fsprojs (cdr (assq 'Data directory))))))
 
+
+;;;###autoload
 (defun lsp-fsharp--workspace-load (projects)
   "Load all of the provided PROJECTS."
   (lsp-request-async "fsharp/workspaceLoad"
