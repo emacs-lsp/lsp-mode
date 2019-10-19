@@ -225,7 +225,10 @@ occasionally break as language servers are updated."
   "A client with this server-id already exists" 'lsp-error)
 
 (defcustom lsp-auto-guess-root nil
-  "Automatically guess the project root using projectile/project."
+  "Automatically guess the project root using projectile/project.
+Do *not* use this setting unless you are familiar with `lsp-mode'
+internals and you are sure that all of your projects are
+following `projectile'/`project.el' conventions."
   :group 'lsp-mode
   :type 'boolean)
 

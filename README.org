@@ -204,7 +204,7 @@
    - ~lsp-report-if-no-buffer~ - If non nil the errors will be reported even when the file is not open.
    - ~lsp-keep-workspace-alive~ - If non nil keep workspace alive when the last workspace buffer is closed.
    - ~lsp-enable-snippet~ - Enable/disable snippet completion support.
-   - ~lsp-auto-guess-root~ - Automatically guess the project root using projectile/project.
+   - ~lsp-auto-guess-root~ - Automatically guess the project root using projectile/project. Do *not* use this setting unless you are familiar with =lsp-mode= internals and you are sure that all of your projects are following =projectile=/=project.el= conventions.
    - ~lsp-restart~ - Defines how server exited event must be handled.
    - ~lsp-session-file~ - File where session information is stored.
    - ~lsp-auto-configure~ - Auto configure ~lsp-mode~. When set to t ~lsp-mode~ will auto-configure ~lsp-ui~ and ~company-lsp~.
