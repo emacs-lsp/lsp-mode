@@ -5554,7 +5554,9 @@ TBL - a hashtable, PATHS is the path to the nested VALUE."
   (let ((ret (ht-create)))
     (mapc (-lambda ((path variable boolean?))
             (when (s-matches? (concat section "\\..*") path)
-              (let* ((symbol-value (symbol-value variable))
+              (let* ((symbol-value (if (symbolp variable)
+                                       (symbol-value variable)
+                                     variable))
                      (value (if (and boolean? (not symbol-value))
                                 :json-false
                               symbol-value)))

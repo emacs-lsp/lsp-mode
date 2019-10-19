@@ -127,4 +127,9 @@
   (cl-assert (equal (lsp-ht->alist  (lsp-configuration-section  "section3"))
                     '(("section3" ("prop1" . :json-false))))))
 
+(lsp-register-custom-settings '(("section4.prop1" "value")))
+
+(ert-deftest lsp--boolean-property ()
+  (cl-assert (equal (lsp-ht->alist  (lsp-configuration-section "section4"))
+                    '(("section4" ("prop1" . "value"))))))
 ;;; lsp-common-test.el ends here
