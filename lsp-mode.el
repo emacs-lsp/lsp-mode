@@ -4444,6 +4444,8 @@ perform the request synchronously."
       (lsp--apply-workspace-edit edits))))
 
 (defun lsp-show-xrefs (xrefs display-action references?)
+  (unless (region-active-p) (push-mark nil t))
+  (xref-push-marker-stack)
   (if (boundp 'xref-show-definitions-function)
       (with-no-warnings
         (funcall (if references? xref-show-xrefs-function xref-show-definitions-function)
