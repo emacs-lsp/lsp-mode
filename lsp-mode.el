@@ -637,7 +637,11 @@ Changes take effect only when a new session is started."
     ("textDocument/hover" :capability "hoverProvider")
     ("textDocument/documentSymbol" :capability "documentSymbolProvider")
     ("textDocument/documentHighlight" :capability "documentHighlightProvider")
+    ("textDocument/references" :capability "referencesProvider")
     ("textDocument/definition" :capability "definitionProvider")
+    ("textDocument/implementation" :capability "implementationProvider")
+    ("textDocument/declaration" :capability "declarationProvider")
+    ("textDocument/typeDefinition" :capability "typeDefinitionProvider")
     ("workspace/symbol" :capability "workspaceSymbolProvider")
     ("textDocument/codeLens"
      :capability "codeLensProvider"
@@ -2000,10 +2004,30 @@ CALLBACK - callback for the lenses."
 
 
 
+(defvar lsp-mode-menu)
+
+(defun lsp-mouse-click (event)
+  (interactive "e")
+  (let* ((ec (event-start event))
+         (choice (x-popup-menu event lsp-mode-menu))
+         (action (lookup-key lsp-mode-menu (apply 'vector choice))))
+
+    (select-window (posn-window ec))
+
+    (unless (and (region-active-p) (eq action 'lsp-execute-code-action))
+      (goto-char (posn-point ec)))
+    (run-with-idle-timer
+     0.001 nil
+     (lambda ()
+       (cl-labels ((check (value) (not (null value))))
+         (when choice
+           (call-interactively action)))))))
+
 (defvar lsp-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-<down-mouse-1>") #'lsp-find-definition-mouse)
     (define-key map (kbd "C-<mouse-1>") #'ignore)
+    (define-key map (kbd "<mouse-3>") #'lsp-mouse-click)
     map)
   "Keymap for `lsp-mode'.")
 
@@ -2013,32 +2037,39 @@ CALLBACK - callback for the lenses."
   :lighter (:eval (lsp-mode-line))
   :group 'lsp-mode)
 
-(easy-menu-define lsp-mode-menu lsp-mode-map
-  "Menu for lsp-mode."
-  '("LSP"
-    ["Describe current LSP session" lsp-describe-session]
-    ["Add folder to workspace" lsp-workspace-folders-add]
-    ["Remove folder from workspace" lsp-workspace-folders-remove]
-    ["Switch to another workspace folder" lsp-workspace-folders-switch]
-    "--"
-    ["Toggle Code Lenses" lsp-lens-mode]
-    "--"
-    ["Describe thing at point" lsp-describe-thing-at-point]
-    ["Execute code action" lsp-execute-code-action]
-    ["Format buffer" lsp-format-buffer]
-    ["Format current region or line" lsp-format-region]
-    ["Highlight references to symbol under point" lsp-document-highlight]
-    ["Rename symbol under point" lsp-rename]
-    "--"
-    ["Find declarations of symbol under point" lsp-find-declaration]
-    ["Find definitions of symbol" lsp-find-definition]
-    ["Find implementations of symbol under point" lsp-find-implementation]
-    ["Find references to symbol under point" lsp-find-references]
-    ["Find type definitions of symbol under point" lsp-find-type-definition]
-    "--"
-    ["View IO logs for workspace" lsp-switch-to-io-log-buffer]
-    ["Shutdown language server" lsp-shutdown-workspace]
-    ["Restart language server" lsp-restart-workspace]))
+(defvar lsp-mode-menu
+  (easy-menu-create-menu
+   nil
+   '(["Go to definition" lsp-find-definition
+      :active (lsp--find-workspaces-for "textDocument/definition")]
+     ["Find references" lsp-find-references
+      :active (lsp--find-workspaces-for "textDocument/references")]
+     ["Find implementations" lsp-find-implementation
+      :active (lsp--find-workspaces-for "textDocument/implementation")]
+     ["Find declarations" lsp-find-declaration
+      :active (lsp--find-workspaces-for "textDocument/declaration")]
+     ["Go to type declaration" lsp-find-type-definition
+      :active (lsp--find-workspaces-for "textDocument/typeDefinition")]
+     "--"
+     ["Describe" lsp-describe-thing-at-point]
+     ["Code action" lsp-execute-code-action]
+     ["Format" lsp-format-buffer]
+     ["Highlight references" lsp-document-highlight]
+     ["Rename" lsp-rename
+      :active (or (lsp--capability "renameProvider")
+                  (lsp--registered-capability "textDocument/rename"))]
+     "--"
+     ("Session"
+      ["View logs" lsp-workspace-show-log]
+      ["Describe" lsp-describe-session]
+      ["Shutdown" lsp-shutdown-workspace]
+      ["Restart" lsp-restart-workspace])
+     ("Workspace Folders"
+      ["Add" lsp-workspace-folders-add]
+      ["Remove" lsp-workspace-folders-remove]
+      ["Switch" lsp-workspace-folders-switch])
+     ["Toggle Lenses" lsp-lens-mode]))
+  "Menu for lsp-mode.")
 
 (defun lsp-mode-line ()
   "Construct the mode line text."
