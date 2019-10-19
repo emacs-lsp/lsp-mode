@@ -315,6 +315,12 @@
     #+END_SRC
 
 ** FAQ
+   - How do I troubleshoot "Server FOO-LS:pid exited with status signal. Do you want to restart it? (y or n)"?
+     - This message indicates that the language server has crashed for some
+       reason. You may check the server stderr which is =*FOO-LS::stderr*=. If
+       you get this message on startup you may try to run the exact command that
+       =lsp-mode= is running in the terminal. You may find it in =*lsp-log*=
+       buffer.
    - How to configure a server with local variables?
      - Add ~lsp~ server call to ~hack-local-variables-hook~ which runs right after the local variables are loaded.
        #+BEGIN_SRC emacs-lisp
@@ -342,8 +348,8 @@
        (set (make-local-variable 'window-point-insertion-type) t)
      #+end_src
    - I am getting "Package ‘spinner-1.7.3’ is unavailable" when trying to install =lsp-mode=.
-     -  This is caused by GPG keys used by the ELPA package manager not being up
-       to date. You may fix by installing: [[https://elpa.gnu.org/packages/gnu-elpa-keyring-update.html][gnu-elpa-keyring-update]]
+     - This is caused by GPG keys used by the ELPA package manager not being up
+      to date. You may fix by installing: [[https://elpa.gnu.org/packages/gnu-elpa-keyring-update.html][gnu-elpa-keyring-update]]
 ** See also
    - [[https://github.com/emacs-lsp/lsp-docker/][lsp-docker]] - provide docker image with preconfigured language servers with corresponding emacs configuration.
    - [[https://github.com/sebastiencs/company-box/][company-box]] - =company= frontend with icons.
