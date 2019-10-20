@@ -406,6 +406,15 @@ PARAMS progress report notification data."
           (pop-to-buffer buf)))
     (message "rust-analyzer not running.")))
 
+(defun lsp-rust-analyzer-join-lines ()
+  (interactive)
+  (let* ((params (list :textDocument (lsp--text-document-identifier)
+                       :range (if (use-region-p)
+                                  (lsp--region-to-range (region-beginning) (region-end))
+                                (lsp--region-to-range (point) (point)))))
+         (result (lsp-send-request (lsp-make-request "rust-analyzer/joinLines" params))))
+    (lsp-rust-apply-source-change result)))
+
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection (lambda () lsp-rust-analyzer-server-command))
