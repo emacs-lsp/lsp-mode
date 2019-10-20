@@ -11,7 +11,7 @@ Before logging the bug, please make sure that:
 
 1. You are using the latest version of `lsp-mode` related packages.
 2. You may also try reproduce the issue using clean environment using the following command:
-
+3. Check FAQ and Troubleshooting section (https://github.com/emacs-lsp/lsp-mode#faq and https://github.com/emacs-lsp/lsp-mode#troubleshooting)
 ``` bash
 emacs -q -l lsp-start-plain.el
 ```
@@ -36,7 +36,7 @@ Mention which server/language did you use (e. g. lsp-python, lsp-ccls, lsp-java,
 Which os do you use?
 
 **Error callstack**
-If there is an error please reproduce the issue with `toggle-debug-on-error` and after setting `lsp-print-io` to t, and then include the callstack and attach the content of `*lsp-log*` buffer.
+If there is an error please reproduce the issue with `toggle-debug-on-error` and after setting `lsp-print-io` to t, and then include the callstack and attach the content of `*lsp-log*` buffer and the content of the server log(use `lsp-workspace-show-log`)
 
 If `emacs` hangs plase do `M-x` `toggle-debug-on-quit` and then do `C-g` when emacs hangs and include the callstack as part of the issue report.
 
