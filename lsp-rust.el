@@ -360,6 +360,52 @@ PARAMS progress report notification data."
       (find-file filename)
       (lsp-rust-goto-lsp-loc position))))
 
+(define-derived-mode lsp-rust-analyzer-syntax-tree-mode special-mode "Rust-Analyzer-Syntax-Tree"
+  "Mode for the rust-analyzer status buffer.")
+
+(defun lsp-rust-analyzer-syntax-tree ()
+  "Display syntax tree for current buffer."
+  (interactive)
+  (-if-let* ((workspace (lsp-find-workspace 'rust-analyzer default-directory))
+             (root (lsp-workspace-root default-directory))
+             (params (list :textDocument (lsp--text-document-identifier)
+                           :range (if (use-region-p)
+                                      (lsp--region-to-range (region-beginning) (region-end))
+                                    (lsp--region-to-range (point-min) (point-max)))))
+             (results (with-lsp-workspace workspace
+                        (lsp-send-request (lsp-make-request
+                                           "rust-analyzer/syntaxTree"
+                                           params)))))
+      (let ((buf (get-buffer-create (format "*rust-analyzer syntax tree %s*" root)))
+            (inhibit-read-only t))
+        (with-current-buffer buf
+          (lsp-rust-analyzer-syntax-tree-mode)
+          (erase-buffer)
+          (insert results)
+          (goto-char (point-min)))
+        (pop-to-buffer buf))
+    (message "rust-analyzer not running.")))
+
+(define-derived-mode lsp-rust-analyzer-status-mode special-mode "Rust-Analyzer-Status"
+  "Mode for the rust-analyzer status buffer.")
+
+(defun lsp-rust-analyzer-status ()
+  "Displays status information for rust-analyzer."
+  (interactive)
+  (-if-let* ((workspace (lsp-find-workspace 'rust-analyzer default-directory))
+             (root (lsp-workspace-root default-directory))
+             (results (with-lsp-workspace workspace
+                        (lsp-send-request (lsp-make-request
+                                           "rust-analyzer/analyzerStatus")))))
+      (let ((buf (get-buffer-create (format "*rust-analyzer status %s*" root)))
+            (inhibit-read-only t))
+        (with-current-buffer buf
+          (lsp-rust-analyzer-status-mode)
+          (erase-buffer)
+          (insert results)
+          (pop-to-buffer buf)))
+    (message "rust-analyzer not running.")))
+
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection (lambda () lsp-rust-analyzer-server-command))
