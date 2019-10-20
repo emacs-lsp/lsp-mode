@@ -360,6 +360,29 @@ PARAMS progress report notification data."
       (find-file filename)
       (lsp-rust-goto-lsp-loc position))))
 
+(defun lsp-rust-analyzer-syntax-tree ()
+  "Display syntax tree for current buffer."
+  (interactive)
+  (-if-let* ((workspace (lsp-find-workspace 'rust-analyzer default-directory))
+             (root (lsp-workspace-root default-directory))
+             (params (list :textDocument (lsp--text-document-identifier)
+                           :range (if (use-region-p)
+                                      (lsp--region-to-range (region-beginning) (region-end))
+                                    (lsp--region-to-range (point-min) (point-max)))))
+             (parse-result (with-lsp-workspace workspace
+                             (lsp-send-request (lsp-make-request
+                                                "rust-analyzer/syntaxTree"
+                                                params)))))
+      (let ((buf (get-buffer-create (format "*rust-analyzer syntax tree %s*" root))))
+        (with-current-buffer buf
+          (let ((inhibit-read-only t))
+            (special-mode)
+            (erase-buffer)
+            (insert parse-result)
+            (goto-char (point-min))))
+        (pop-to-buffer buf))
+    (message "rust-analyzer not running.")))
+
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection (lambda () lsp-rust-analyzer-server-command))
