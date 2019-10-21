@@ -5540,10 +5540,10 @@ changing the value of `foo'."
 
 (defun lsp-register-custom-settings (props)
   "Register PROPS.
-The PROPS is list of triple (path symbol boolean?) Where: path is
-the path to the property, symbol is the defcustom symbol which
-will be used to retrieve the value and boolean determines whether
-the type of the property is boolean?"
+PROPS is list of triple (path value boolean?) where PATH is the
+path to the property, VALUE is either a literal value or symbol
+used to retrieve the value, and BOOLEAN? is an optional flag that
+should be non-nil for boolean settings."
   (let ((-compare-fn #'lsp--compare-setting-path))
     (setq lsp-client-settings (-uniq (append props lsp-client-settings)))))
 
