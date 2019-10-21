@@ -5589,6 +5589,14 @@ SESSION is the active session."
 
 ;; lsp-log-io-mode
 
+(defvar lsp-log-io-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "M-n") #'lsp--log-io-next)
+    (define-key map (kbd "M-p") #'lsp--log-io-prev)
+    (define-key map (kbd "k") #'lsp--erase-log-buffer)
+    map)
+  "Keymap for lsp log buffer mode.")
+
 (define-derived-mode lsp-log-io-mode special-mode "LspLogIo"
   "Special mode for viewing IO logs.")
 
@@ -5616,22 +5624,19 @@ SESSION is the active session."
   (interactive)
   (let* ((workspace (lsp-find-workspace 'rust-analyzer default-directory))
          (buf (lsp--get-log-buffer-create workspace))
-         (inhibit-read-only nil))
+         (inhibit-read-only t))
     (with-current-buffer buf
       (erase-buffer))))
 
-(defun lsp-log-io-next (arg)
+(defun lsp--log-io-next (arg)
   "Move to next log entry."
   (interactive "P")
   (ewoc-goto-next lsp--log-io-ewoc (or arg 1)))
 
-(defun lsp-log-io-prev (arg)
+(defun lsp--log-io-prev (arg)
   "Move to previous log entry."
   (interactive "P")
   (ewoc-goto-prev lsp--log-io-ewoc (or arg 1)))
-
-(define-key lsp-log-io-mode-map (kbd "M-n") #'lsp-log-io-next)
-(define-key lsp-log-io-mode-map (kbd "M-p")  #'lsp-log-io-prev)
 
 (defun lsp--workspace-print (workspace)
   "Visual representation WORKSPACE."
