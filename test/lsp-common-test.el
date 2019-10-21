@@ -96,6 +96,7 @@
   :risky t
   :type 'list)
 
+(lsp-register-custom-settings '(("section1.prop1" "banana")))
 (lsp-register-custom-settings '(("section1.prop1" lsp-prop1)))
 
 (ert-deftest lsp--custom-settings-test ()
