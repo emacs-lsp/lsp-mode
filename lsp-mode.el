@@ -5593,6 +5593,7 @@ SESSION is the active session."
   "Special mode for viewing IO logs.")
 
 (defun lsp-workspace-show-log (workspace)
+  "Display the log buffer of WORKSPACE."
   (interactive
    (list (if lsp-print-io
              (if (eq (length (lsp-workspaces)) 1)
@@ -5605,11 +5606,13 @@ SESSION is the active session."
 (defalias 'lsp-switch-to-io-log-buffer 'lsp-workspace-show-log)
 
 (defun lsp--get-log-buffer-create (workspace)
+  "Return the lsp log buffer of WORKSPACE, creating a new one if needed."
   (let ((server-id (-> workspace lsp--workspace-client lsp--client-server-id symbol-name))
         (pid (format "%s" (process-id (lsp--workspace-cmd-proc workspace)))))
     (get-buffer-create (format "*lsp-log: %s:%s*" server-id pid))))
 
 (defun lsp--erase-log-buffer ()
+  "Delete the contents of the lsp log buffer belonging to the workspace of the current buffer."
   (interactive)
   (let* ((workspace (lsp-find-workspace 'rust-analyzer default-directory))
          (buf (lsp--get-log-buffer-create workspace))
@@ -5618,10 +5621,12 @@ SESSION is the active session."
       (erase-buffer))))
 
 (defun lsp-log-io-next (arg)
+  "Move to next log entry."
   (interactive "P")
   (ewoc-goto-next lsp--log-io-ewoc (or arg 1)))
 
 (defun lsp-log-io-prev (arg)
+  "Move to previous log entry."
   (interactive "P")
   (ewoc-goto-prev lsp--log-io-ewoc (or arg 1)))
 
