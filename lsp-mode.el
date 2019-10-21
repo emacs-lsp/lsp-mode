@@ -2278,7 +2278,7 @@ TYPE can either be 'incoming or 'outgoing"
   (if (and (lsp--workspace-ewoc workspace)
            (buffer-live-p (ewoc-buffer (lsp--workspace-ewoc workspace))))
       (lsp--workspace-ewoc workspace)
-    (with-current-buffer (lsp--generate-log-buffer-name workspace)
+    (with-current-buffer (lsp--get-log-buffer-create workspace)
       (unless (eq 'lsp-log-io-mode major-mode) (lsp-log-io-mode))
       (setq-local window-point-insertion-type t)
       (setq-local lsp--log-io-ewoc (ewoc-create #'lsp--log-entry-pp nil nil t))
@@ -5600,14 +5600,22 @@ SESSION is the active session."
                (lsp--completing-read "Workspace: " (lsp-workspaces)
                                      #'lsp--workspace-print nil t))
            (user-error "IO logging is disabled"))))
-  (switch-to-buffer (lsp--generate-log-buffer-name workspace)))
+  (switch-to-buffer (lsp--get-log-buffer-create workspace)))
 
 (defalias 'lsp-switch-to-io-log-buffer 'lsp-workspace-show-log)
 
-(defun lsp--generate-log-buffer-name (workspace)
+(defun lsp--get-log-buffer-create (workspace)
   (let ((server-id (-> workspace lsp--workspace-client lsp--client-server-id symbol-name))
         (pid (format "%s" (process-id (lsp--workspace-cmd-proc workspace)))))
     (get-buffer-create (format "*lsp-log: %s:%s*" server-id pid))))
+
+(defun lsp--erase-log-buffer ()
+  (interactive)
+  (let* ((workspace (lsp-find-workspace 'rust-analyzer default-directory))
+         (buf (lsp--get-log-buffer-create workspace))
+         (inhibit-read-only nil))
+    (with-current-buffer buf
+      (erase-buffer))))
 
 (defun lsp-log-io-next (arg)
   (interactive "P")
