@@ -342,18 +342,9 @@ PARAMS progress report notification data."
 (defun lsp-rust-uri-filename (text-document)
   (lsp--uri-to-path (gethash "uri" text-document)))
 
-(defun lsp-rust-apply-text-document-edit (edit)
-  "Like lsp--apply-text-document-edit, but it allows nil version."
-  (let* ((ident (gethash "textDocument" edit))
-         (filename (lsp-rust-uri-filename ident))
-         (version (gethash "version" ident)))
-    (with-current-buffer (find-file-noselect filename)
-      (when (or (not version) (= version (lsp--cur-file-version)))
-        (lsp--apply-text-edits (gethash "edits" edit))))))
-
 (defun lsp-rust-apply-source-change (data)
   (seq-doseq (it (-> data (ht-get "workspaceEdit") (ht-get "documentChanges")))
-    (lsp-rust-apply-text-document-edit it))
+    (lsp--apply-text-document-edit it))
   (-when-let (cursor-position (ht-get data "cursorPosition"))
     (let ((filename (lsp-rust-uri-filename (ht-get cursor-position "textDocument")))
           (position (ht-get cursor-position "position")))
@@ -361,7 +352,7 @@ PARAMS progress report notification data."
       (lsp-rust-goto-lsp-loc position))))
 
 (define-derived-mode lsp-rust-analyzer-syntax-tree-mode special-mode "Rust-Analyzer-Syntax-Tree"
-  "Mode for the rust-analyzer status buffer.")
+  "Mode for the rust-analyzer syntax tree buffer.")
 
 (defun lsp-rust-analyzer-syntax-tree ()
   "Display syntax tree for current buffer."
