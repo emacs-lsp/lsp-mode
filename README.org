@@ -64,6 +64,7 @@
    - Formatting
    - Debugger - [[https://github.com/yyoncho/dap-mode/][dap-mode]]
    - Helm integration - [[https://github.com/yyoncho/helm-lsp/][helm-lsp]]
+   - Ivy integration - [[https://github.com/yyoncho/lsp-ivy/][lsp-ivy]]
    - Treemacs integration - [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]]
    - Semantic highlighting (as currently implemented by JDT LS and unreleased builds of clangd, cf. [[https://github.com/microsoft/vscode-languageserver-node/pull/367][Semantic highlighting spec]])
 ** Installation
