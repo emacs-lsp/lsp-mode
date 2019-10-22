@@ -78,62 +78,11 @@ completing function calls."
   :risky t
   :package-version '(lsp-mode "6.2"))
 
-;; EXPERIMENTAL! ヽ(⌐■_■)ノ♪♬ At time of writing, these options are considered
-;; experimental, and might either change or become durable. For more, see the
-;; official docs:
-;; https://github.com/golang/tools/blob/master/gopls/doc/settings.md#experimental
-;; -- @gastove 2019-10-09
-(defcustom lsp-gopls-experimental-disabled-analyses []
-  "A list of names of analysis passes that should be disabled."
-  :type 'lsp-string-vector
-  :group 'lsp-gopls
-  :risky t
-  :package-version '(lsp-mode "6.2"))
-
-(defcustom lsp-gopls-experimental-staticcheck nil
-  "If true, enables the use of staticcheck.io analyzers. Note
-  that users also have the option of using staticheck.io
-  analyzers through flycheck."
-  :type 'bool
-  :group 'lsp-gopls
-  :risky t
-  :package-version '(lsp-mode "6.2"))
-
-(defcustom lsp-gopls-experimental-completion-documentation nil
-  "If true, documentation is returned alongside completion candidates"
-  :type 'bool
-  :group 'lsp-gopls
-  :risky t
-  :package-version '(lsp-mode "6.2"))
-
-(defcustom lsp-gopls-experimental-complete-unimported nil
-  "If true, the completion engine is allowed to make suggestions
-  for packages not currently imported."
-  :type 'bool
-  :group 'lsp-gopls
-  :risky t
-  :package-version '(lsp-mode "6.2"))
-
-(defcustom lsp-gopls-experimental-deep-completion nil
-  "If true, turns on the completion engine's ability to return
-  completions from deep inside relevant entities. For an example, see:
-
-  https://github.com/golang/tools/blob/master/gopls/doc/settings.md#deepcompletion-boolean"
-  :type 'bool
-  :group 'lsp-gopls
-  :risky t
-  :package-version '(lsp-mode "6.2"))
-
 (lsp-register-custom-settings
  '(("gopls.usePlaceholders" lsp-gopls-use-placeholders t)
    ("gopls.hoverKind" lsp-gopls-hover-kind)
    ("gopls.buildFlags" lsp-gopls-build-flags)
-   ("gopls.env" lsp-gopls-env)
-   ("gopls.experimentalDisabledAnalyses" lsp-gopls-experimental-disabled-analyses)
-   ("gopls.staticcheck" lsp-gopls-experimental-staticcheck t)
-   ("gopls.completionDocumentation" lsp-gopls-experimental-completion-documentation t)
-   ("gopls.completeUnimported" lsp-gopls-experimental-complete-unimported t)
-   ("gopls.deepCompletion" lsp-gopls-experimental-deep-completion t)))
+   ("gopls.env" lsp-gopls-env)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
