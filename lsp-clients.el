@@ -300,11 +300,26 @@ particular FILE-NAME and MODE."
   `("php" ,(expand-file-name "~/.composer/vendor/felixfbecker/language-server/bin/php-language-server.php"))
   "Install directory for php-language-server."
   :group 'lsp-php
-  :type 'file)
+  :type '(repeat string))
+
+(defun lsp-php--create-connection ()
+  "Create lsp connection."
+  (plist-put
+   (lsp-stdio-connection
+    (lambda () lsp-clients-php-server-command))
+   :test? (lambda ()
+            (if (and (cdr lsp-clients-php-server-command)
+                     (eq (string-match-p "php[0-9.]*\\'" (car lsp-clients-php-server-command)) 0))
+                ;; Start with the php command and the list has more elems. Test the existence of the PHP script.
+                (let ((php-file (nth 1 lsp-clients-php-server-command)))
+                  (or (file-exists-p php-file)
+                      (progn
+                        (lsp-log "%s is not present." php-file)
+                        nil)))
+              t))))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda () lsp-clients-php-server-command))
+ (make-lsp-client :new-connection (lsp-php--create-connection)
                   :major-modes '(php-mode)
                   :priority -2
                   :server-id 'php-ls))
