@@ -57,6 +57,7 @@
 (require 'tree-widget)
 (require 'markdown-mode)
 (require 'ewoc)
+(require 'yasnippet nil t)
 
 (declare-function company-mode "company")
 (declare-function flycheck-mode "flycheck")
@@ -2540,8 +2541,8 @@ disappearing, unset all the variables related to it."
                                                                                (or
                                                                                 (featurep 'yasnippet)
                                                                                 (warn (concat
-                                                                                       "Yasnippet is not yet loaded, but `lsp-enable-snippet' is set to `t'. "
-                                                                                       "You must either (require 'yasnippet), or disable snippet support."))
+                                                                                       "Yasnippet is not installed, but `lsp-enable-snippet' is set to `t'. "
+                                                                                       "You must either install yasnippet, or disable snippet support."))
                                                                                 t)
                                                                              :json-false))
                                                         (documentationFormat . ["markdown"])))
