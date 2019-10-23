@@ -3987,7 +3987,7 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
            (lsp--apply-formatting edits)))
         ((or (lsp--capability "documentRangeFormattingProvider")
              (lsp--registered-capability "textDocument/rangeFormatting"))
-         (save-excursion
+         (save-restriction
            (widen)
            (lsp-format-region (point-min) (point-max))))
         (t (signal 'lsp-capability-not-supported (list "documentFormattingProvider")))))
