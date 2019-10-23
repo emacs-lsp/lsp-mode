@@ -575,6 +575,7 @@ Changes take effect only when a new session is started."
                                         (".*\\.hx$" . "haxe")
                                         (".*\\.lua$" . "lua")
                                         (ada-mode . "ada")
+                                        (vimrc-mode . "vim")
                                         (sh-mode . "shellscript")
                                         (sh-mode . "lua")
                                         (scala-mode . "scala")

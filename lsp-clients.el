@@ -663,13 +663,44 @@ responsiveness at the cost of possibile stability issues."
                   :server-id 'digestif))
 
 
+;; Vim script
+(defgroup lsp-vim nil
+  "LSP support for TeX and friends, using Digestif."
+  :group 'lsp-mode)
+
+(defcustom lsp-clients-vim-executable '("vim-language-server" "--stdio")
+  "Command to start the Digestif language server."
+  :group 'lsp-vim
+  :risky t
+  :type 'file)
+
+(defcustom lsp-clients-vim-initialization-options '((iskeyword . "vim iskeyword option")
+                                                    (vimruntime . "/usr/bin/vim")
+                                                    (runtimepath . "/usr/bin/vim")
+                                                    (diagnostic . ((enable . t)))
+                                                    (indexes . ((runtimepath . t)
+                                                                (gap . 100)
+                                                                (count . 3)))
+                                                    (suggest . ((fromVimruntime . t)
+                                                                (fromRuntimepath . :json-false))))
+  "Initialization options for vim language server."
+  :group 'lsp-vim
+  :type 'alist)
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-vim-executable)
+                  :major-modes '(vimrc-mode)
+                  :priority -1
+                  :server-id 'vimls
+                  :initialization-options (lambda ()
+                                            lsp-clients-vim-initialization-options)))
+
+
 ;; LUA
 (defgroup lsp-emmy-lua nil
   "LSP support for emmy-lua."
   :group 'lsp-mode
   :link '(url-link "https://github.com/EmmyLua/EmmyLua-LanguageServer"))
-
-
 
 (defcustom lsp-clients-emmy-lua-java-path "java"
   "Path to java which will be used for running emmy-lua language server."
