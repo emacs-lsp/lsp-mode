@@ -45,3 +45,5 @@ include::lsp-typescript-javascript/index.adoc[]
 include::lsp-vetur/index.adoc[]
 
 include::lsp-xml/index.adoc[]
+
+include::lsp-yaml/index.adoc[]

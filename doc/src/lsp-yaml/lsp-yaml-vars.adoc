@@ -1,0 +1,96 @@
+[id="lsp-yaml-vars"]
+==== `lsp-yaml` settings
+
+[id="lsp-yaml-format-enable"]
+- lsp-yaml-format-enable
+____
+Default value: `pass:[t]`
+
+Enable/disable default YAML formatter.
+____
+[id="lsp-yaml-single-quote"]
+- lsp-yaml-single-quote
+____
+Default value: `pass:[nil]`
+
+Use single quote instead of double quotes.
+____
+[id="lsp-yaml-bracket-spacing"]
+- lsp-yaml-bracket-spacing
+____
+Default value: `pass:[t]`
+
+Print spaces between brackets in objects.
+____
+[id="lsp-yaml-prose-wrap"]
+- lsp-yaml-prose-wrap
+____
+Default value: `pass:["preserve"]`
+
+Options for prose-wrap.
+Always: wrap prose if it exeeds the print width.
+Never: never wrap the prose.
+Preserve: wrap prose as-is.
+____
+[id="lsp-yaml-print-width"]
+- lsp-yaml-print-width
+____
+Default value: `pass:[80]`
+
+Specify the line length that the printer will wrap on.
+____
+[id="lsp-yaml-validate"]
+- lsp-yaml-validate
+____
+Default value: `pass:[t]`
+
+Enable/disable validation feature.
+____
+[id="lsp-yaml-hover"]
+- lsp-yaml-hover
+____
+Default value: `pass:[t]`
+
+Enable/disable hover feature.
+____
+[id="lsp-yaml-completion"]
+- lsp-yaml-completion
+____
+Default value: `pass:[t]`
+
+Enable/disable completion feature.
+____
+[id="lsp-yaml-schemas"]
+- lsp-yaml-schemas
+____
+Default value: `pass:[nil]`
+
+Associate schemas to YAML files in a glob pattern.
+lsp-yaml-schemas allows you to specify json schemas that you want to validate against the yaml that you write.
+Kubernetes is an optional field. It does not require a url as the language server will provide that.
+You just need the keyword kubernetes and a glob pattern.
+
+Example: `(setq lsp-yaml-schemas '(:kubernetes "*"))`
+____
+[id="lsp-yaml-lsp-yaml-schema-store-enable"]
+- lsp-yaml-lsp-yaml-schema-store-enable
+____
+Default value: `pass:[t]`
+
+Enable/disable JSON Schema store. When set to true, available YAML schemas will be automatically pulled from the store.
+____
+[id="lsp-yaml-custom-tags"]
+- lsp-yaml-custom-tags
+____
+Default value: `pass:[nil]`
+
+Custom tags for the parser to use.
+Example: `(setq lsp-yaml-custom-tags '("!Scalar-example scalar" "!Seq-example sequence" "!Mapping-example mapping"))`
+____
+[id="lsp-yaml-server-command"]
+- lsp-yaml-server-command
+____
+Default value: `pass:['("yaml-language-server" "--stdio")]`
+
+Command to start yaml-language-server.
+____

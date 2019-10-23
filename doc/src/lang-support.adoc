@@ -221,4 +221,10 @@
 |Download from https://github.com/angelozerr/lsp4xml/releases[lsp4xml releases]
 |
 
+|YAML
+|https://github.com/redhat-developer/yaml-language-server[yaml-language-server]
+|<<lsp-yaml,Built-in>>
+|`npm install -g yaml-language-server`
+|
+
 |===
