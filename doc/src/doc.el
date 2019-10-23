@@ -5,7 +5,7 @@
 
 (defconst lsp-doc--client-groups
   (sort
-   '(lsp-clojure lsp-css lsp-html lsp-intelephense lsp-pyls lsp-rust lsp-solargraph lsp-vetur lsp-xml lsp-groovy lsp-typescript-javascript lsp-typescript lsp-flow lsp-php lsp-ocaml lsp-clangd lsp-dart lsp-elixir lsp-fortran lsp-kotlin lsp-hack lsp-metals lsp-fsharp lsp-erlang)
+   '(lsp-clojure lsp-css lsp-html lsp-intelephense lsp-pyls lsp-rust lsp-solargraph lsp-vetur lsp-xml lsp-groovy lsp-typescript-javascript lsp-typescript lsp-flow lsp-php lsp-ocaml lsp-clangd lsp-dart lsp-elixir lsp-fortran lsp-kotlin lsp-hack lsp-metals lsp-fsharp lsp-erlang lsp-yaml)
    (lambda (s1 s2)
      (string< (symbol-name s1) (symbol-name s2)))))
 

@@ -43,6 +43,7 @@
 (require 'lsp-erlang)
 (require 'lsp-haxe)
 (require 'lsp-vhdl)
+(require 'lsp-yaml)
 
 ;;; Ada
 (defgroup lsp-ada nil
