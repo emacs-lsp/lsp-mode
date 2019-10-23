@@ -511,6 +511,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#lsp-typescript-javascript">Typescript support: <code>lsp-typescript-javascript</code></a></li>
 <li><a href="#lsp-vetur">Vue support: <code>lsp-vetur</code></a></li>
 <li><a href="#lsp-xml">XML support: <code>lsp-xml</code></a></li>
+<li><a href="#lsp-yaml">YAML support: <code>lsp-yaml</code></a></li>
 </ul>
 </li>
 </ul>
@@ -2426,6 +2427,13 @@ sent from the server to the editor:</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/angelozerr/lsp4xml">lsp4xml</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#lsp-xml">Built-in</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Download from <a href="https://github.com/angelozerr/lsp4xml/releases">lsp4xml releases</a></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">YAML</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/redhat-developer/yaml-language-server">yaml-language-server</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#lsp-yaml">Built-in</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>npm install -g yaml-language-server</code></p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>
@@ -10188,6 +10196,229 @@ Introduced in <code>lsp-mode</code> 6.1
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="lsp-yaml">YAML support: <code>lsp-yaml</code></h3>
+<div class="paragraph">
+<p><code>lsp-yaml</code> provides support for YAML using <a href="https://github.com/redhat-developer/yaml-language-server">yaml-language-server</a></p>
+</div>
+<div class="sect3">
+<h4 id="lsp-yaml-vars"><code>lsp-yaml</code> settings</h4>
+<div id="lsp-yaml-format-enable" class="ulist">
+<ul>
+<li>
+<p>lsp-yaml-format-enable</p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>t</code></p>
+</div>
+<div class="paragraph">
+<p>Enable/disable default YAML formatter.</p>
+</div>
+</blockquote>
+</div>
+<div id="lsp-yaml-single-quote" class="ulist">
+<ul>
+<li>
+<p>lsp-yaml-single-quote</p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>nil</code></p>
+</div>
+<div class="paragraph">
+<p>Use single quote instead of double quotes.</p>
+</div>
+</blockquote>
+</div>
+<div id="lsp-yaml-bracket-spacing" class="ulist">
+<ul>
+<li>
+<p>lsp-yaml-bracket-spacing</p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>t</code></p>
+</div>
+<div class="paragraph">
+<p>Print spaces between brackets in objects.</p>
+</div>
+</blockquote>
+</div>
+<div id="lsp-yaml-prose-wrap" class="ulist">
+<ul>
+<li>
+<p>lsp-yaml-prose-wrap</p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>"preserve"</code></p>
+</div>
+<div class="paragraph">
+<p>Options for prose-wrap.
+Always: wrap prose if it exeeds the print width.
+Never: never wrap the prose.
+Preserve: wrap prose as-is.</p>
+</div>
+</blockquote>
+</div>
+<div id="lsp-yaml-print-width" class="ulist">
+<ul>
+<li>
+<p>lsp-yaml-print-width</p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>80</code></p>
+</div>
+<div class="paragraph">
+<p>Specify the line length that the printer will wrap on.</p>
+</div>
+</blockquote>
+</div>
+<div id="lsp-yaml-validate" class="ulist">
+<ul>
+<li>
+<p>lsp-yaml-validate</p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>t</code></p>
+</div>
+<div class="paragraph">
+<p>Enable/disable validation feature.</p>
+</div>
+</blockquote>
+</div>
+<div id="lsp-yaml-hover" class="ulist">
+<ul>
+<li>
+<p>lsp-yaml-hover</p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>t</code></p>
+</div>
+<div class="paragraph">
+<p>Enable/disable hover feature.</p>
+</div>
+</blockquote>
+</div>
+<div id="lsp-yaml-completion" class="ulist">
+<ul>
+<li>
+<p>lsp-yaml-completion</p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>t</code></p>
+</div>
+<div class="paragraph">
+<p>Enable/disable completion feature.</p>
+</div>
+</blockquote>
+</div>
+<div id="lsp-yaml-schemas" class="ulist">
+<ul>
+<li>
+<p>lsp-yaml-schemas</p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>nil</code></p>
+</div>
+<div class="paragraph">
+<p>Associate schemas to YAML files in a glob pattern.
+lsp-yaml-schemas allows you to specify json schemas that you want to validate against the yaml that you write.
+Kubernetes is an optional field. It does not require a url as the language server will provide that.
+You just need the keyword kubernetes and a glob pattern.</p>
+</div>
+<div class="paragraph">
+<p>Example: <code>(setq lsp-yaml-schemas '(:kubernetes "*"))</code></p>
+</div>
+</blockquote>
+</div>
+<div id="lsp-yaml-lsp-yaml-schema-store-enable" class="ulist">
+<ul>
+<li>
+<p>lsp-yaml-lsp-yaml-schema-store-enable</p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>t</code></p>
+</div>
+<div class="paragraph">
+<p>Enable/disable JSON Schema store. When set to true, available YAML schemas will be automatically pulled from the store.</p>
+</div>
+</blockquote>
+</div>
+<div id="lsp-yaml-custom-tags" class="ulist">
+<ul>
+<li>
+<p>lsp-yaml-custom-tags</p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>nil</code></p>
+</div>
+<div class="paragraph">
+<p>Custom tags for the parser to use.
+Example: <code>(setq lsp-yaml-custom-tags '("!Scalar-example scalar" "!Seq-example sequence" "!Mapping-example mapping"))</code></p>
+</div>
+</blockquote>
+</div>
+<div id="lsp-yaml-server-command" class="ulist">
+<ul>
+<li>
+<p>lsp-yaml-server-command</p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>'("yaml-language-server" "--stdio")</code></p>
+</div>
+<div class="paragraph">
+<p>Command to start yaml-language-server.</p>
+</div>
+</blockquote>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -10200,7 +10431,7 @@ Introduced in <code>lsp-mode</code> 6.1
 <div id="footer">
 <div id="footer-text">
 Version 6.1<br>
-Last updated 2019-10-23 15:48:11 UTC
+Last updated 2019-10-23 16:51:53 UTC
 </div>
 </div>
 </body>
