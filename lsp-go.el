@@ -47,7 +47,7 @@ completing function calls."
   :type '(repeat string)
   :group 'lsp-gopls)
 
-(defcustom lsp-gopls-build-flags ["-tags"]
+(defcustom lsp-gopls-build-flags []
   "A vector of flags passed on to the build system when invoked,
   applied to queries like `go list'."
   :type 'lsp-string-vector
