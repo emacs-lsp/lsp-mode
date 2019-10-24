@@ -1,4 +1,4 @@
-;;; lsp.el --- LSP mode                              -*- lexical-binding: t; -*-
+;;; lsp-clients.el --- lightweight clients                       -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2018 Ivan Yonchovski
 

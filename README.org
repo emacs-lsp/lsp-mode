@@ -267,8 +267,8 @@
 
    [[file:https://graphs.waffle.io/emacs-lsp/lsp-mode/throughput.svg]]
 *** Members
-    Here it is a list of the current =lsp-mode= members and what they are primary working on/reposible for.
-    | Members                                               | Resposible for:                    |
+    Here it is a list of the current =lsp-mode= members and what they are primary working on/responsible for.
+    | Member                                                | Responsible for:                   |
     |-------------------------------------------------------+------------------------------------|
     | [[https://github.com/TOTBWF][TOTBWF]]                 | =F#=                               |
     | [[https://github.com/brotzeit][brotzeit]]             | =Rust=                             |
