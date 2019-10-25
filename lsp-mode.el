@@ -1376,6 +1376,18 @@ already have been created."
            (indent 1))
   `(when-let (lsp--cur-workspace ,workspace) ,@body))
 
+(defmacro with-full-sync (&rest body)
+  "Execute BODY with lsp--server-sync-method set to 'full."
+  (declare (debug (form body))
+           (indent 1))
+  `(let ((no-flush-needed (eq 'lsp--server-sync-method 'full))
+         (lsp--server-sync-method 'full))
+     ,@body
+     ;; the next didChange message to be sent out in incremental mode might
+     ;; overtake the changes caused by BODY due to sync debouncing, so we need
+     ;; to flush before switching back to 'incremental
+     (unless no-flush-needed (lsp--flush-delayed-changes))))
+
 (defun lsp--window-show-message (_workspace params)
   "Send the server's messages to log.
 PARAMS - the data sent from _WORKSPACE."
@@ -4009,8 +4021,7 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
   (lsp-execute-code-action-by-kind "source.organizeImports"))
 
 (defun lsp--apply-formatting (edits)
-  (let ((lsp--server-sync-method 'full))
-    (lsp--apply-text-edits edits)))
+  (with-full-sync (lsp--apply-text-edits edits)))
 
 (defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region.
