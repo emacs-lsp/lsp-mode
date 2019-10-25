@@ -3076,8 +3076,7 @@ The method uses `replace-buffer-contents'."
                                     length)))))))))
 
 (defun lsp--apply-text-edits (edits)
-  "Apply the edits described in the TextEdit[] object.
-This method is used if we do not have `buffer-replace-content'."
+  "Apply the edits described in the TextEdit[] object."
   (unless (seq-empty-p edits)
     (atomic-change-group
       (run-hooks 'lsp-before-apply-edits-hook)
