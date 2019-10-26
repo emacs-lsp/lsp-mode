@@ -1809,7 +1809,9 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
 
   (setq-local lsp--lens-page (cons (window-start) (window-end)))
   (setq-local lsp--lens-refresh-timer
-              (run-with-timer lsp-lens-debounce-interval nil 'lsp--lens-refresh buffer-modified?)))
+              (run-with-timer lsp-lens-debounce-interval nil 'lsp--lens-refresh
+                              (current-buffer)
+                              buffer-modified?)))
 
 (defun lsp--lens-keymap (command)
   (-doto (make-sparse-keymap)
@@ -1863,16 +1865,19 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
           (delete-overlay it)))
       (setq-local lsp--lens-overlays overlays))))
 
-(defun lsp--lens-refresh (buffer-modified?)
+(defun lsp-lens-refresh (buffer-modified? &optional buffer)
   "Refresh lenses using lenses backend.
 BUFFER-MODIFIED? determines whether the buffer is modified or not."
-  (let ((buffer (current-buffer)))
+  (setq buffer (or buffer (current-buffer)))
+  (when (buffer-live-p buffer)
     (dolist (backend lsp-lens-backends)
       (funcall backend buffer-modified?
                (lambda (lenses version)
                  (when (buffer-live-p buffer)
                    (with-current-buffer buffer
                      (lsp--process-lenses backend lenses version))))))))
+
+(defalias 'lsp--lens-refresh 'lsp-lens-refresh)
 
 (defun lsp--process-lenses (backend lenses version)
   "Process LENSES originated from BACKEND.
@@ -3713,13 +3718,13 @@ MODE is the mode used in the parent frame."
   ;; This should really happen in markdown-mode instead,
   ;; but it doesn't, so we do it here for now.
   (setq prettify-symbols-alist
-	(cl-loop for i from 0 to 255
+        (cl-loop for i from 0 to 255
                  collect (cons (format "&#x%02X;" i) i)))
   (push '("&lt;" . ?<) prettify-symbols-alist)
   (push '("&gt;" . ?>) prettify-symbols-alist)
   (push '("&amp;" . ?&) prettify-symbols-alist)
   (setq prettify-symbols-compose-predicate
-	(lambda (_start _end _match) t))
+        (lambda (_start _end _match) t))
   (prettify-symbols-mode 1))
 
 (defun lsp--buffer-string-visible ()
@@ -5098,15 +5103,15 @@ standard I/O."
                          (process-name (generate-new-buffer-name name)))
                      (let* ((stderr-buf (format "*%s::stderr*" process-name))
                             (proc (make-process
-                                  :name process-name
-                                  :connection-type 'pipe
-                                  :buffer (format "*%s*" process-name)
-                                  :coding 'no-conversion
-                                  :command final-command
-                                  :filter filter
-                                  :sentinel sentinel
-                                  :stderr stderr-buf
-                                  :noquery t)))
+                                   :name process-name
+                                   :connection-type 'pipe
+                                   :buffer (format "*%s*" process-name)
+                                   :coding 'no-conversion
+                                   :command final-command
+                                   :filter filter
+                                   :sentinel sentinel
+                                   :stderr stderr-buf
+                                   :noquery t)))
                        (set-process-query-on-exit-flag proc nil)
                        (set-process-query-on-exit-flag (get-buffer-process stderr-buf) nil)
                        (cons proc proc))))
