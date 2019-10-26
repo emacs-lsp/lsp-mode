@@ -5835,7 +5835,8 @@ Returns nil if the project should not be added to the current SESSION."
   (and
    (->> session
         (lsp-session-folders-blacklist)
-        (--first (and (f-ancestor-of? it file-name)
+        (--first (and (lsp--files-same-host it file-name)
+                      (f-ancestor-of? it file-name)
                       (prog1 t
                         (lsp--info "File %s is in blacklisted directory %s" file-name it))))
         not)
