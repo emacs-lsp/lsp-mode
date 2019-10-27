@@ -398,6 +398,7 @@ PARAMS progress report notification data."
     (message "rust-analyzer not running.")))
 
 (defun lsp-rust-analyzer-join-lines ()
+  "Join selected lines into one, smartly fixing up whitespace and trailing commas."
   (interactive)
   (let* ((params (list :textDocument (lsp--text-document-identifier)
                        :range (if (use-region-p)
