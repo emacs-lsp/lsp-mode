@@ -1959,7 +1959,7 @@ CALLBACK - callback for the lenses."
         (progn
           (setq-local lsp--lens-backend-cache nil)
           (lsp-request-async "textDocument/codeLens"
-                             `(:textDocument (:uri ,(lsp--path-to-uri buffer-file-name)))
+                             `(:textDocument (:uri ,(lsp--buffer-uri)))
                              (lambda (lenses)
                                (setq-local lsp--lens-backend-cache
                                            (seq-mapcat
@@ -5976,6 +5976,8 @@ argument ask the user to select which language server to start. "
                                                                (and arg (not (equal arg 1)))))))
     (lsp-mode 1)
     (when lsp-auto-configure (lsp--auto-configure))
+
+    (setq-local lsp-buffer-uri (lsp--buffer-uri))
 
     (lsp--info "Connected to %s."
                (apply 'concat (--map (format "[%s]" (lsp--workspace-print it))
