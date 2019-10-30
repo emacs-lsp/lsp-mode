@@ -1813,9 +1813,9 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
 
   (setq-local lsp--lens-page (cons (window-start) (window-end)))
   (setq-local lsp--lens-refresh-timer
-              (run-with-timer lsp-lens-debounce-interval nil 'lsp--lens-refresh
-                              (current-buffer)
-                              buffer-modified?)))
+              (run-with-timer lsp-lens-debounce-interval nil 'lsp-lens-refresh
+                              buffer-modified?
+                              (current-buffer))))
 
 (defun lsp--lens-keymap (command)
   (-doto (make-sparse-keymap)
@@ -1997,7 +1997,7 @@ CALLBACK - callback for the lenses."
    (lsp-lens-mode
     (setq-local lsp--lens-idle-timer (run-with-idle-timer
                                       lsp-lens-check-interval t #'lsp--lens-idle-function (current-buffer)))
-    (lsp--lens-refresh t)
+    (lsp-lens-refresh t)
     (add-hook 'kill-buffer-hook #'lsp--lens-stop-timer nil t)
     (add-hook 'after-save-hook 'lsp--lens-after-save nil t))
    (t
