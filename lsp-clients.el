@@ -495,7 +495,7 @@ finding the executable with `exec-path'."
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-kotlin-compiler-jvm-target "default"
+(defcustom lsp-kotlin-compiler-jvm-target "1.8"
   "Specifies the JVM target, e.g. \"1.6\" or \"1.8\""
   :type 'string
   :group 'lsp-kotlin
