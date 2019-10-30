@@ -3109,8 +3109,8 @@ This method is used if we do not have `buffer-replace-content'."
                              (prepare-change-group)))
              (howmany (length edits))
              (reporter (make-progress-reporter
-                        (lsp--info "Applying %s edits to `%s'..."
-                                   howmany (current-buffer))
+                        (or (lsp--info "Applying %s edits to `%s' ..."
+                                   howmany (current-buffer)) "Applying edits ...")
                         0 howmany))
              (done 0)
              (apply-edit (if (functionp 'replace-buffer-contents)
