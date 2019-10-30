@@ -3108,10 +3108,9 @@ This method is used if we do not have `buffer-replace-content'."
       (let* ((change-group (when (functionp 'undo-amalgamate-change-group)
                              (prepare-change-group)))
              (howmany (length edits))
-             (reporter (make-progress-reporter
-                        (or (lsp--info "Applying %s edits to `%s' ..."
-                                   howmany (current-buffer)) "Applying edits ...")
-                        0 howmany))
+             (message (format "Applying %s edits to `%s' ..." howmany (current-buffer)))
+             (_ (message message))
+             (reporter (make-progress-reporter message 0 howmany))
              (done 0)
              (apply-edit (if (functionp 'replace-buffer-contents)
                              'lsp--apply-text-edit-replace-buffer-contents
