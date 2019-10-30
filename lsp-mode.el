@@ -3724,8 +3724,8 @@ point."
         (let ((lsp-help-buf-name "*lsp-help*"))
           (with-current-buffer (get-buffer-create lsp-help-buf-name)
             (with-help-window lsp-help-buf-name
-              (insert (string-trim-right (lsp--render-on-hover-content contents t))))
-          (lsp--info "No content at point."))))))
+              (insert (string-trim-right (lsp--render-on-hover-content contents t))))))
+      (lsp--info "No content at point."))))
 
 (defun lsp--point-in-bounds-p (bounds)
   "Return whether the current point is within BOUNDS."
