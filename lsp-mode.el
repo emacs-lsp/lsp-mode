@@ -3641,7 +3641,7 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
                                (insert-file-contents-literally filename)
                                (seq-map fn (cdr file-locs))))))
                      (error (ignore
-                             (lsp-warn "Failed to process xref entry for filename '%s': %s" (error-message-string err))))
+                             (lsp-warn "Failed to process xref entry for filename '%s': %s" filename (error-message-string err))))
                      (file-error (ignore
                                   (lsp-warn "Failed to process xref entry, file-error, '%s': %s" filename (error-message-string err))))))))
       (apply #'append
@@ -3713,18 +3713,19 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
                        (lsp--document-highlight)))))))))))
 
 (defun lsp-describe-thing-at-point ()
-  "Display the full documentation of the thing at point."
+  "Display the type signature and documentation of the thing at
+point."
   (interactive)
   (let ((contents (-some->> (lsp--text-document-position-params)
                             (lsp--make-request "textDocument/hover")
                             (lsp--send-request)
                             (gethash "contents"))))
-
     (if (and contents (not (equal contents "")))
-        (with-current-buffer (help-buffer)
-          (with-help-window (current-buffer)
-            (insert (lsp--render-on-hover-content contents t))))
-      (lsp--info "No content at point."))))
+        (let ((lsp-help-buf-name "*lsp-help*"))
+          (with-current-buffer (get-buffer-create lsp-help-buf-name)
+            (with-help-window lsp-help-buf-name
+              (insert (string-trim-right (lsp--render-on-hover-content contents t))))
+          (lsp--info "No content at point."))))))
 
 (defun lsp--point-in-bounds-p (bounds)
   "Return whether the current point is within BOUNDS."
