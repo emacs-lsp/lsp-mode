@@ -1376,7 +1376,7 @@ already have been created."
            (indent 1))
   `(when-let (lsp--cur-workspace ,workspace) ,@body))
 
-(defmacro with-full-sync (&rest body)
+(defmacro lsp--with-full-sync (&rest body)
   "Execute BODY with lsp--server-sync-method set to 'full."
   (declare (debug (form body))
            (indent 1))
@@ -4020,7 +4020,7 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
   (lsp-execute-code-action-by-kind "source.organizeImports"))
 
 (defun lsp--apply-formatting (edits)
-  (with-full-sync (lsp--apply-text-edits edits)))
+  (lsp--with-full-sync (lsp--apply-text-edits edits)))
 
 (defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region.
