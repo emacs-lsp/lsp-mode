@@ -48,8 +48,8 @@
 
 (defun lsp-terraform--make-launch-cmd ()
   (-let [base `(,lsp-terraform-server)]
-    (if lsp-terraform-enable-logging
-        (push "-enable-log-file" base))
+    (when lsp-terraform-enable-logging
+      (push "-enable-log-file" base))
     base))
 
 (lsp-register-client
