@@ -6050,6 +6050,22 @@ This avoids overloading the server with many files when starting Emacs."
                                 (unless (lsp--init-if-visible)
                                   (add-hook 'window-configuration-change-hook #'lsp--init-if-visible nil t))))))))
 
+
+
+(defvar lsp-file-truename-cache (ht))
+
+(defmacro lsp-with-cached-filetrue-name (&rest body)
+  "Executes BODY caching the `file-truename' calls."
+  `(let ((old-fn (symbol-function 'file-truename)))
+    (unwind-protect
+        (progn
+          (fset 'file-truename
+                (lambda (file-name &optional counter prev-dirs)
+                  (or (gethash file-name lsp-file-truename-cache)
+                      (puthash file-name (apply old-fn (list file-name counter prev-dirs))
+                               lsp-file-truename-cache))))
+          ,@body)
+      (fset 'file-truename old-fn))))
 
 
 ;; avy integration
