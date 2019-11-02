@@ -3383,8 +3383,13 @@ Applies on type formatting."
                                                 (gethash "start" range)))
                                         (end (lsp--position-to-point
                                               (gethash "end" range)))
-                                        (button (make-button start end 'action
-                                                             (lsp--document-link-keymap link))))
+                                        (button (make-button start end
+                                                             'action (lsp--document-link-keymap link)
+                                                             'keymap (let ((map (make-sparse-keymap)))
+                                                                       (define-key map [M-return] 'push-button)
+                                                                       (define-key map [mouse-2] 'push-button)
+                                                                       map)
+                                                             'help-echo (purecopy "mouse-2, M-RET: Visit this link"))))
                                   (push button lsp--link-overlays))))
                             links))
                          :mode 'alive))
