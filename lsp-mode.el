@@ -397,6 +397,12 @@ This flag affects only server which do not support incremental update."
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-enable-imenu t
+  "If non-nil, automatically enable `imenu' integration when server provides `textDocument/symbols'."
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.2"))
+
 (defcustom lsp-links-check-internal 0.1
   "The interval for updating document links."
   :group 'lsp-mode
@@ -2888,7 +2894,7 @@ in that particular folder."
          (kind (if (hash-table-p sync) (gethash "change" sync) sync)))
     (setq lsp--server-sync-method (or lsp-document-sync-method
                                       (alist-get kind lsp--sync-methods))))
-  (when (and lsp-auto-configure (lsp--capability "documentSymbolProvider"))
+  (when (and lsp-auto-configure lsp-enable-imenu (lsp--capability "documentSymbolProvider"))
     (lsp-enable-imenu))
 
   (when (and lsp-auto-configure
