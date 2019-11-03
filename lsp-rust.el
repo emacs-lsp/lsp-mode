@@ -436,6 +436,7 @@ PARAMS progress report notification data."
 
 (defvar-local lsp-rust-analyzer-inlay-hints-timer nil)
 
+;; TODO: we should update only if the current buffer has changed
 (defun lsp-rust-analyzer-update-inlay-hints (buffer)
   (if (and (lsp-rust-analyzer-initialized?)
            (eq buffer (current-buffer)))
