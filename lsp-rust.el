@@ -29,7 +29,7 @@
 (require 'dash)
 
 (defgroup lsp-rust nil
-  "LSP support for Rust, using Rust Language Server."
+  "LSP support for Rust, using Rust Language Server or rust-analyzer."
   :group 'lsp-mode
   :link '(url-link "https://github.com/rust-lang/rls")
   :package-version '(lsp-mode . "6.1"))
@@ -40,6 +40,13 @@
                  (symbol :tag 'rust-analyzer "rust-analyzer"))
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.2"))
+
+;; RLS
+
+(defcustom lsp-rust-rls-server-command '("rls")
+  "Command to start RLS."
+  :type '(repeat string)
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-library-directories '("~/.cargo/registry/src" "~/.rustup/toolchains")
   "List of directories which will be considered to be libraries."
@@ -290,11 +297,6 @@ PARAMS progress report notification data."
       (setq lsp-clients-rust-progress-string (format "%s - %s" title (or message "")))
       (lsp-log lsp-clients-rust-progress-string))))
 
-(defcustom lsp-rust-rls-server-command '("rls")
-  "Command to start RLS."
-  :type '(repeat string)
-  :package-version '(lsp-mode . "6.1"))
-
 (cl-defmethod lsp-execute-command
   (_server (command (eql rls.run)) params)
   (-let* (((&hash "env" "binary" "args" "cwd") (seq-first params))
@@ -328,7 +330,7 @@ PARAMS progress report notification data."
   :type '(repeat string)
   :package-version '(lsp-mode . "6.2"))
 
-(defcustom lsp-rust-analyzer-server-display-inlay-hints t
+(defcustom lsp-rust-analyzer-server-display-inlay-hints nil
   "Show inlay hints."
   :type 'boolean
   :package-version '(lsp-mode . "6.3"))
@@ -476,8 +478,8 @@ PARAMS progress report notification data."
 
 ;; activate `lsp-rust-analyzer-inlay-hints-mode'
 (when lsp-rust-analyzer-server-display-inlay-hints
- (add-hook 'rustic-mode-hook (lambda () (lsp-rust-analyzer-inlay-hints-mode 1)))
- (add-hook 'rust-mode-hook (lambda () (lsp-rust-analyzer-inlay-hints-mode 1))))
+ (add-hook 'rustic-mode-hook (lambda () (lsp-rust-analyzer-inlay-hints-mode)))
+ (add-hook 'rust-mode-hook (lambda () (lsp-rust-analyzer-inlay-hints-mode))))
 
 (provide 'lsp-rust)
 ;;; lsp-rust.el ends here
