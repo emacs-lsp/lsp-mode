@@ -398,7 +398,7 @@ This flag affects only server which do not support incremental update."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-enable-imenu t
-  "If non-nil, automatically enable `imenu' integration when server provides `textDocument/symbols'."
+  "If non-nil, automatically enable `imenu' integration when server provides `textDocument/documentSymbol'."
   :type 'boolean
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.2"))
