@@ -23,7 +23,7 @@
 
 ;;; Commentary:
 
-;;
+;; Emacs client/library for the Language Server Protocol
 
 ;;; Code:
 
@@ -794,11 +794,11 @@ They are added to `markdown-code-lang-modes'")
     (and (> (length sequence) n) (elt sequence n))))
 
 ;; define seq-first and seq-rest for older emacs
-(defun seq-first (sequence)
+(defun lsp-seq-first (sequence)
   "Return the first element of SEQUENCE."
   (lsp-elt sequence 0))
 
-(defun seq-rest (sequence)
+(defun lsp-seq-rest (sequence)
   "Return a sequence of the elements of SEQUENCE except the first one."
   (seq-drop sequence 1))
 
@@ -1505,7 +1505,7 @@ WORKSPACE is the workspace that contains the diagnostics."
           (run-hooks 'lsp-after-diagnostics-hook))))))
 
 (with-no-warnings
-  (with-eval-after-load 'flymake
+  (unless (version< emacs-version "26")
     (defun lsp--flymake-setup()
       "Setup flymake."
       (setq lsp--flymake-report-fn nil)
@@ -1532,31 +1532,33 @@ WORKSPACE is the workspace that contains the diagnostics."
       "Report new diagnostics to flymake."
       (funcall lsp--flymake-report-fn
                (-some->> (lsp-diagnostics)
-                         (gethash buffer-file-name)
-                         (--map (-let* (((&hash "message" "severity" "range") (lsp-diagnostic-original it))
-                                        ((start . end) (lsp--range-to-region range)))
-                                  (when (= start end)
-                                    (-let (((&hash "line" start-line "character") (gethash "start" range)))
-                                      (if-let ((region (flymake-diag-region (current-buffer)
-                                                                            (1+ start-line)
-                                                                            character)))
-                                          (setq start (car region)
-                                                end (cdr region))
-                                        (save-excursion
-                                          (save-restriction
-                                            (widen)
-                                            (goto-char (point-min))
-                                            (-let (((&hash "line" end-line) (gethash "end" range)))
-                                              (setq start (point-at-bol (1+ start-line))
-                                                    end (point-at-eol (1+ end-line)))))))))
-                                  (flymake-make-diagnostic (current-buffer)
-                                                           start
-                                                           end
-                                                           (cl-case severity
-                                                             (1 :error)
-                                                             (2 :warning)
-                                                             (t :note))
-                                                           message))))
+                 (gethash buffer-file-name)
+                 (--map (-let* (((&hash "message" "severity" "range") (lsp-diagnostic-original it))
+                                ((start . end) (lsp--range-to-region range)))
+                          (when (= start end)
+                            (-let (((&hash "line" start-line "character") (gethash "start" range)))
+                              (if-let ((region (and (fboundp 'flymake-diag-region)
+                                                    (flymake-diag-region (current-buffer)
+                                                                         (1+ start-line)
+                                                                         character))))
+                                  (setq start (car region)
+                                        end (cdr region))
+                                (save-excursion
+                                  (save-restriction
+                                    (widen)
+                                    (goto-char (point-min))
+                                    (-let (((&hash "line" end-line) (gethash "end" range)))
+                                      (setq start (point-at-bol (1+ start-line))
+                                            end (point-at-eol (1+ end-line)))))))))
+                          (and (fboundp 'flymake-make-diagnostic)
+                           (flymake-make-diagnostic (current-buffer)
+                                                   start
+                                                   end
+                                                   (cl-case severity
+                                                     (1 :error)
+                                                     (2 :warning)
+                                                     (t :note))
+                                                   message)))))
                ;; This :region keyword forces flymake to delete old diagnostics in
                ;; case the buffer hasn't changed since the last call to the report
                ;; function. See https://github.com/joaotavora/eglot/issues/159
@@ -1642,8 +1644,8 @@ WORKSPACE is the workspace that contains the diagnostics."
 
 (defun lsp--folding-range-build-trees (ranges)
   (setq ranges (seq-sort #'lsp--range-before-p ranges))
-  (let ((trees (list (seq-first ranges))))
-    (dolist (range (seq-rest ranges))
+  (let ((trees (list (lsp-seq-first ranges))))
+    (dolist (range (lsp-seq-rest ranges))
       (lsp--folding-range-insert-into-trees trees range))
     trees))
 
@@ -3113,7 +3115,8 @@ The method uses `replace-buffer-contents'."
                     (length (- end beg)))
                 (run-hook-with-args 'before-change-functions
                                     beg end)
-                (with-no-warnings (replace-buffer-contents temp))
+                (when (fboundp 'replace-buffer-contents)
+                  (with-no-warnings (replace-buffer-contents temp)))
                 (run-hook-with-args 'after-change-functions
                                     beg (+ beg (length newText))
                                     length)))))))))
@@ -3140,7 +3143,7 @@ The method uses `replace-buffer-contents'."
                  (mapc (lambda (edit)
                          (progress-reporter-update reporter (cl-incf done))
                          (funcall apply-edit edit))))
-          (when (functionp 'undo-amalgamate-change-group)
+          (when (fboundp 'undo-amalgamate-change-group)
             (with-no-warnings (undo-amalgamate-change-group change-group)))
           (progress-reporter-done reporter))))))
 
@@ -3647,7 +3650,7 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
   (unless (seq-empty-p locations)
     (cl-labels ((get-xrefs-in-file
                  (file-locs location-link)
-                 (let ((filename (seq-first file-locs)))
+                 (let ((filename (lsp-seq-first file-locs)))
                    (condition-case err
                        (let ((visiting (lsp--buffer-for-file filename))
                              (fn (lambda (loc)
@@ -3667,7 +3670,7 @@ https://microsoft.github.io/language-server-protocol/specification#textDocument_
                      (file-error (ignore
                                   (lsp-warn "Failed to process xref entry, file-error, '%s': %s" filename (error-message-string err))))))))
       (apply #'append
-             (if (gethash "uri" (seq-first locations))
+             (if (gethash "uri" (lsp-seq-first locations))
                  (seq-map
                   (-rpartial #'get-xrefs-in-file nil)
                   (seq-group-by
@@ -3977,7 +3980,7 @@ RENDER-ALL - nil if only the signature should be rendered."
   (cond
    ((seq-empty-p actions) (user-error "No actions to select from"))
    ((and (eq (seq-length actions) 1) lsp-auto-execute-action)
-    (seq-first actions))
+    (lsp-seq-first actions))
    (t (lsp--completing-read "Select code action: "
                             (seq-into actions 'list)
                             (-lambda ((&hash "title" "command"))
