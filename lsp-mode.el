@@ -3809,6 +3809,10 @@ Stolen from `org-copy-visible'."
     (while (re-search-forward "^[-]+$" nil t)
       (replace-match ""))
 
+    (goto-char (point-min))
+    (while (re-search-forward "\\\\\_" nil t)
+      (replace-match "\_"))
+
     ;; markdown-mode v2.3 does not yet provide gfm-view-mode
     (if (fboundp 'gfm-view-mode)
         (gfm-view-mode)
