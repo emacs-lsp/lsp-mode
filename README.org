@@ -229,7 +229,7 @@
    - ~lsp-enable-file-watchers~ - If non-nil lsp-mode will watch the files in the workspace if the server has requested that.
    - ~lsp-server-trace~ - Request trace mode on the language server.
    - ~lsp-enable-semantic-highlighting~ - Enable experimental semantic highlighting support
-   - ~lsp-enable-imenu~ - If non-nil, automatically enable imenu integration when server provides ~textDocument/symbols~.
+   - ~lsp-enable-imenu~ - If non-nil, automatically enable imenu integration when server provides ~textDocument/documentSymbol~.
 ** Screenshots
    - RUST Completion with company-lsp
      [[file:examples/completion.png]]
