@@ -4656,10 +4656,10 @@ textDocument/didOpen for the new file."
 
 (defun lsp--send-no-wait (message proc)
   "Send MESSAGE to PROC without waiting for further output."
-  (when (memq (process-status proc) '(stop exit closed failed nil))
-    (error "%s: Cannot communicate with the process (%s)" (process-name proc)
-           (process-status proc)))
-  (process-send-string proc message))
+  (condition-case err
+      (process-send-string proc message)
+    ('error (lsp--error "Sening to process failed with the following error: %s"
+                        (error-message-string err)))))
 
 (define-error 'lsp-parse-error
   "Error parsing message from language server" 'lsp-error)
@@ -5385,20 +5385,19 @@ returns the command to execute."
         (puthash key new-value table)
       (remhash key table))))
 
-(defun lsp--create-sentinel (workspace)
-  "Create sentinel handler for WORKSPACE."
-  (lambda (process exit-str)
+(defun lsp--process-sentinel (workspace process exit-str)
+  "Create the sentinel for WORKSPACE."
+  (unless (process-live-p process)
     (let* ((status (process-status process))
            (folder->workspaces (lsp-session-folder->servers (lsp-session)))
            (stderr (-> workspace lsp--workspace-proc process-name get-buffer)))
 
-      (when (memq status '(exit signal))
-        (lsp--warn "%s has exited (%s)"
-                   (process-name (lsp--workspace-proc workspace))
-                   (string-trim-right exit-str)))
+      (lsp--warn "%s has exited (%s)"
+                 (process-name (lsp--workspace-proc workspace))
+                 (string-trim-right exit-str))
 
       (with-lsp-workspace workspace
-        ;; clean workspace related data in each of the buffers
+        ;; Clean workspace related data in each of the buffers
         ;; in the workspace.
         (--each (lsp--workspace-buffers workspace)
           (when (buffer-live-p it)
@@ -5408,7 +5407,7 @@ returns the command to execute."
               (lsp--spinner-stop)
               (lsp--remove-cur-overlays))))
 
-        ;; cleanup session from references to the closed workspace.
+        ;; Cleanup session from references to the closed workspace.
         (--each (hash-table-keys folder->workspaces)
           (lsp--update-key folder->workspaces it (apply-partially 'delete workspace)))
 
@@ -5438,7 +5437,7 @@ SESSION is the active session."
                                   (user-error "Client %s is configured incorrectly" client))
                               (lsp--parser-make-filter (lsp--workspace-parser workspace)
                                                        (lsp--client-ignore-regexps client))
-                              (lsp--create-sentinel workspace)
+                              (apply-partially #'lsp--process-sentinel workspace)
                               (format "%s" server-id)))
           (workspace-folders (gethash server-id (lsp-session-server-id->folders session))))
     (setf (lsp--workspace-proc workspace) proc
