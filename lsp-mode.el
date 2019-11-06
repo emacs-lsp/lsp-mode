@@ -712,11 +712,6 @@ must be used for handling a particular message.")
   :group 'lsp-mode
   :type 'boolean)
 
-(defcustom lsp-document-highlight-delay 0.2
-  "Seconds of idle time to wait before showing symbol highlight."
-  :type 'number
-  :group 'lsp-mode)
-
 (defcustom lsp-file-watch-threshold 1000
   "Show warning if the files to watch are more than.
 Set to nil to disable the warning."
@@ -754,9 +749,6 @@ They are added to `markdown-code-lang-modes'")
 (defvar-local lsp--lens-refresh-timer nil
   "Refresh timer for the lenses.")
 
-(defvar-local lsp--lens-idle-timer  nil
-  "Lens idle timer.")
-
 (defvar-local lsp--lens-data nil
   "Pair of points which holds the last window location the lenses were loaded.")
 
@@ -764,11 +756,6 @@ They are added to `markdown-code-lang-modes'")
 
 (defvar-local lsp--buffer-workspaces ()
   "List of the buffer workspaces.")
-
-(defvar-local lsp--link-overlays nil
-  "A list of overlays that display document links.")
-
-(defvar-local lsp--links-idle-timer nil)
 
 (defvar lsp--session nil
   "Contain the `lsp-session' for the current Emacs instance.")
@@ -1774,6 +1761,8 @@ WORKSPACE is the workspace that contains the diagnostics."
 
 ;; lenses support
 
+(defvar-local lsp--lens-modified? nil)
+
 (defun lsp--lens-text-width (from to)
   "Measure the width of the text between FROM and TO.
 Results are meaningful only if FROM and TO are on the same line."
@@ -1820,6 +1809,12 @@ Results are meaningful only if FROM and TO are on the same line."
       (lsp--lens-update ov)
       ov)))
 
+(defun lsp--lens-idle-function (&optional buffer)
+  "Create idle function for buffer BUFFER."
+  (when (and (or (not buffer) (eq (current-buffer) buffer))
+             (not (equal (cons (window-start) (window-end)) lsp--lens-page)))
+    (lsp--lens-schedule-refresh nil)))
+
 (defun lsp--lens-overlay-matches-pos (ov pos)
   "Check if OV is a lens covering POS."
   (and (overlay-get ov 'lsp-lens)
@@ -1830,12 +1825,6 @@ Results are meaningful only if FROM and TO are on the same line."
   "Handler for `after-save-hook' for lens mode."
   (lsp--lens-schedule-refresh t))
 
-(defun lsp--lens-idle-function (&optional buffer)
-  "Create idle function for buffer BUFFER."
-  (when (and (or (not buffer) (eq (current-buffer) buffer))
-             (not (equal (cons (window-start) (window-end)) lsp--lens-page)))
-    (lsp--lens-schedule-refresh nil)))
-
 (defun lsp--lens-schedule-refresh (buffer-modified?)
   "Call each of the backend.
 BUFFER-MODIFIED? determines whether the buffer is modified or not."
@@ -1843,9 +1832,10 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
 
   (setq-local lsp--lens-page (cons (window-start) (window-end)))
   (setq-local lsp--lens-refresh-timer
-              (run-with-timer lsp-lens-debounce-interval nil 'lsp-lens-refresh
-                              buffer-modified?
-                              (current-buffer))))
+              (run-with-timer lsp-lens-debounce-interval
+                              nil
+                              #'lsp-lens-refresh
+                              (or lsp--lens-modified? buffer-modified?))))
 
 (defun lsp--lens-keymap (command)
   (-doto (make-sparse-keymap)
@@ -1869,6 +1859,7 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
   "Show LENSES."
   ;; rerender only if there are lenses which are not processed or if their count
   ;; has changed(e. g. delete lens should trigger redisplay).
+  (setq lsp--lens-modified? nil)
   (when (or (--any? (not (gethash "processed" it)) lenses) (eq (length lenses) lsp--lens-last-count))
     (setq-local lsp--lens-last-count (length lenses))
     (let ((overlays
@@ -1899,19 +1890,16 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
           (delete-overlay it)))
       (setq-local lsp--lens-overlays overlays))))
 
-(defun lsp-lens-refresh (buffer-modified? &optional buffer)
+(defun lsp-lens-refresh (buffer-modified?)
   "Refresh lenses using lenses backend.
 BUFFER-MODIFIED? determines whether the buffer is modified or not."
-  (setq buffer (or buffer (current-buffer)))
-  (when (buffer-live-p buffer)
+  (let ((buffer (current-buffer)))
     (dolist (backend lsp-lens-backends)
       (funcall backend buffer-modified?
                (lambda (lenses version)
                  (when (buffer-live-p buffer)
                    (with-current-buffer buffer
                      (lsp--process-lenses backend lenses version))))))))
-
-(defalias 'lsp--lens-refresh 'lsp-lens-refresh)
 
 (defun lsp--process-lenses (backend lenses version)
   "Process LENSES originated from BACKEND.
@@ -2012,11 +2000,6 @@ CALLBACK - callback for the lenses."
           (funcall callback lsp--lens-backend-cache lsp--cur-version)
         (lsp--lens-backend-fetch-missing lsp--lens-backend-cache callback lsp--cur-version)))))
 
-(defun lsp--lens-stop-timer ()
-  "Stop `lsp--lens-idle-timer'."
-  (-some-> lsp--lens-idle-timer cancel-timer)
-  (setq-local lsp--lens-idle-timer nil))
-
 (define-minor-mode lsp-lens-mode
   "toggle code-lens overlays"
   :group 'lsp-mode
@@ -2025,16 +2008,15 @@ CALLBACK - callback for the lenses."
   :lighter "Lens"
   (cond
    (lsp-lens-mode
-    (setq-local lsp--lens-idle-timer (run-with-idle-timer
-                                      lsp-lens-check-interval t #'lsp--lens-idle-function (current-buffer)))
-    (lsp-lens-refresh t)
-    (add-hook 'kill-buffer-hook #'lsp--lens-stop-timer nil t)
-    (add-hook 'after-save-hook 'lsp--lens-after-save nil t))
+    (add-hook 'lsp-on-idle-hook #'lsp--lens-idle-function nil t)
+    (add-hook 'lsp-on-change-hook (lambda () (lsp--lens-schedule-refresh t)) nil t)
+    (add-hook 'after-save-hook (lambda () (lsp--lens-schedule-refresh t)) nil t)
+    (lsp-lens-refresh t))
    (t
-    (lsp--lens-stop-timer)
     (lsp-lens-hide)
-    (remove-hook 'kill-buffer-hook #'lsp--lens-stop-timer t)
-    (remove-hook 'after-save-hook #'lsp--lens-after-save t)
+    (remove-hook 'lsp-on-idle-hook #'lsp--lens-idle-function t)
+    (remove-hook 'lsp-on-change-hook (lambda () (lsp--lens-schedule-refresh nil)) t)
+    (remove-hook 'after-save-hook (lambda () (lsp--lens-schedule-refresh t)) t)
     (setq-local lsp--lens-last-count nil)
     (setq-local lsp--lens-backend-cache nil))))
 
@@ -2166,10 +2148,6 @@ CALLBACK - callback for the lenses."
 
   ;; ‘buffers’ is a list of buffers associated with this workspace.
   (buffers nil)
-
-  ;; ‘highlight-overlays’ is a hash table mapping buffers to a list of overlays
-  ;; used for highlighting the symbol under point.
-  (highlight-overlays (make-hash-table :test 'eq) :read-only t)
 
   ;; ‘semantic-highlighting-faces' is a vector containing one face for each
   ;; TextMate scope (or set of scopes) supported by the language server. Cf.
@@ -2559,11 +2537,10 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
   "Cleanup buffer state.
 When a workspace is shut down, by request or from just
 disappearing, unset all the variables related to it."
-
   (let ((proc (lsp--workspace-cmd-proc lsp--cur-workspace)))
     (when (process-live-p proc)
       (kill-process proc))
-    (unless (lsp-workspaces)
+    (unless lsp--buffer-workspaces
       (lsp--managed-mode -1))))
 
 (defun lsp--client-capabilities (&optional custom-capabilities)
@@ -2845,8 +2822,6 @@ in that particular folder."
   nil nil nil
   (cond
    (lsp--managed-mode
-
-
     (add-function :before-until (local 'eldoc-documentation-function) #'lsp-eldoc-function)
     (eldoc-mode 1)
     (add-hook 'after-change-functions #'lsp-on-change nil t)
@@ -2860,14 +2835,16 @@ in that particular folder."
       (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t))
     (add-hook 'kill-buffer-hook #'lsp--text-document-did-close nil t)
     (add-hook 'post-self-insert-hook #'lsp--on-self-insert nil t)
-    (add-hook 'post-command-hook #'lsp--highlight nil t)
+    (add-hook 'post-command-hook #'lsp--post-command nil t)
+
+    (lsp--on-idle (current-buffer))
     (when lsp-enable-xref
       (add-hook 'xref-backend-functions #'lsp--xref-backend nil t)))
    (t
     (setq-local indent-region-function nil)
     (remove-function (local 'eldoc-documentation-function) #'lsp-eldoc-function)
 
-    (remove-hook 'post-command-hook #'lsp--highlight t)
+    (remove-hook 'post-command-hook #'lsp--post-command t)
     (remove-hook 'after-change-functions #'lsp-on-change t)
     (remove-hook 'after-revert-hook #'lsp-on-revert t)
     (remove-hook 'after-save-hook #'lsp-on-save t)
@@ -2877,11 +2854,17 @@ in that particular folder."
     (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t)
     (remove-hook 'kill-buffer-hook #'lsp--text-document-did-close t)
     (remove-hook 'post-self-insert-hook #'lsp--on-self-insert t)
-    (lsp--cancel-document-link-timer)
-    (save-restriction
-      (widen)
-      (remove-overlays (point-min) (point-max) 'lsp-sem-highlight t)))
-   (remove-hook 'xref-backend-functions #'lsp--xref-backend t)))
+
+    (when lsp--on-idle-timer
+      (cancel-timer lsp--on-idle-timer)
+      (setq lsp--on-idle-timer nil))
+
+    (lsp--remove-overlays 'lsp-sem-highlight)
+    (lsp--remove-overlays 'lsp-highlight)
+    (lsp--remove-overlays 'lsp-links)
+    (lsp-lens-mode -1)
+
+    (remove-hook 'xref-backend-functions #'lsp--xref-backend t))))
 
 (defun lsp--text-document-did-open ()
   "'document/didOpen event."
@@ -2902,16 +2885,27 @@ in that particular folder."
          (kind (if (hash-table-p sync) (gethash "change" sync) sync)))
     (setq lsp--server-sync-method (or lsp-document-sync-method
                                       (alist-get kind lsp--sync-methods))))
-  (when (and lsp-auto-configure lsp-enable-imenu (lsp--capability "documentSymbolProvider"))
-    (lsp-enable-imenu))
+  (when lsp-auto-configure
+    (when (and lsp-enable-imenu
+               (lsp--capability "documentSymbolProvider"))
+      (lsp-enable-imenu))
 
-  (when (and lsp-auto-configure
-             lsp-enable-indentation
-             (lsp--capability "documentRangeFormattingProvider"))
-    (setq-local indent-region-function #'lsp-format-region))
+    (when (and lsp-enable-indentation
+               (lsp--capability "documentRangeFormattingProvider"))
+      (setq-local indent-region-function #'lsp-format-region))
 
-  (run-hooks 'lsp-after-open-hook)
-  (lsp--set-document-link-timer))
+    (when (and lsp-enable-symbol-highlighting
+               (lsp--capability "documentHighlightProvider"))
+      (add-hook 'lsp-on-idle-hook #'lsp--document-highlight))
+
+    (when (and lsp-enable-links
+               (lsp--capability "documentLinkProvider"))
+      (add-hook 'lsp-on-idle-hook #'lsp--document-links)))
+
+  (lsp--on-change-debounce (current-buffer))
+  (lsp--on-idle (current-buffer))
+
+  (run-hooks 'lsp-after-open-hook))
 
 (defun lsp--text-document-identifier ()
   "Make TextDocumentIdentifier.
@@ -3341,11 +3335,76 @@ Added to `after-change-functions'."
                     ,(lsp--versioned-text-document-identifier)
                     :contentChanges (vector (lsp--full-change-event))))))))))))
 
-  (lsp--set-document-link-timer)
-  (when lsp-lens-mode
-    (lsp--lens-schedule-refresh t))
   ;; force cleanup overlays after each change
-  (lsp-foreach-workspace (lsp--remove-cur-overlays)))
+  (lsp--remove-overlays 'lsp-highlight)
+  (lsp--on-change-debounce (current-buffer)))
+
+
+
+;; facilities for on change hooks. We do not want to make lsp calls on each
+;; change event so we add debounce to avoid flooding the server with events.
+;; Additionally, we want to have a mechanism for stopping the server calls in
+;; particular cases like, e. g. when performing completion.
+
+(defvar lsp-inhibit-lsp-hooks nil
+  "Flag to control.")
+
+(defcustom lsp-on-change-hook nil
+  "Hooks to run when buffer has changed."
+  :type 'hook
+  :group 'lsp-mode)
+
+(defcustom lsp-idle-delay 0.200
+  "Debounce interval for `after-change-functions'. "
+  :type 'number
+  :group 'lsp-mode)
+
+(defcustom lsp-on-idle-hook nil
+  "Hooks to run "
+  :type 'hook
+  :group 'lsp-mode)
+
+(defvar lsp--on-change-timer nil)
+(defvar lsp--on-idle-timer nil)
+
+(defun lsp--idle-reschedule (buffer)
+  (setq-local lsp--on-idle-timer (run-with-idle-timer
+                                  lsp-idle-delay
+                                  nil
+                                  #'lsp--on-idle
+                                  buffer)))
+
+(defun lsp--post-command ()
+  (lsp--cleanup-highlights-if-needed)
+  (lsp--idle-reschedule (current-buffer)))
+
+(defun lsp--on-idle (buffer)
+  "Start post command loop."
+  (when (and (buffer-live-p buffer)
+             (equal buffer (current-buffer))
+             (not lsp-inhibit-lsp-hooks)
+             lsp--managed-mode)
+    (run-hooks 'lsp-on-idle-hook)))
+
+(defun lsp--on-change-debounce (buffer)
+  (when (and (buffer-live-p buffer)
+             (equal buffer (current-buffer))
+             (not lsp-inhibit-lsp-hooks)
+             lsp--managed-mode)
+    (run-hooks 'lsp-on-change-hook)))
+
+(defun lsp--after-change (&rest _)
+  (when lsp--on-change-timer
+    (cancel-timer lsp--on-change-timer))
+
+  (setq-local lsp--on-change-timer (run-with-idle-timer
+                                    lsp-idle-delay
+                                    nil
+                                    #'lsp--on-change-debounce
+                                    (current-buffer)))
+  (lsp--idle-reschedule (current-buffer)))
+
+
 
 (defun lsp--on-self-insert ()
   "Self insert handling.
@@ -3362,49 +3421,26 @@ Applies on type formatting."
                            (lambda (edits)
                              (when (= tick (buffer-chars-modified-tick)) (lsp--apply-text-edits edits))))))))
 
-(defun lsp--set-document-link-timer ()
-  (lsp--cancel-document-link-timer)
-  (when (and lsp-enable-links (lsp--capability "documentLinkProvider"))
-    (setq-local lsp--links-idle-timer (run-with-idle-timer
-                                       lsp-links-check-internal nil
-                                       #'lsp--update-document-links
-                                       (current-buffer)))))
-
-(defun lsp--cancel-document-link-timer ()
-  (when lsp--links-idle-timer
-    (cancel-timer lsp--links-idle-timer)
-    (setq-local lsp--links-idle-timer nil)))
-
-(defun lsp--update-document-links (&optional buffer)
-  (when (or (not buffer) (eq (current-buffer) buffer))
-    (cl-assert (lsp--capability "documentLinkProvider"))
-    (let ((buffer (current-buffer)))
-      (lsp-request-async "textDocument/documentLink"
-                         `(:textDocument ,(lsp--text-document-identifier))
-                         (lambda (links)
-                           (seq-do (lambda (overlay)
-                                     (delete-overlay overlay))
-                                   lsp--link-overlays)
-                           (seq-do
-                            (lambda (link)
-                              (with-current-buffer buffer
-                                (-let* (((&hash "range") link)
-                                        (start (lsp--position-to-point
-                                                (gethash "start" range)))
-                                        (end (lsp--position-to-point
-                                              (gethash "end" range)))
-                                        (button (make-button start end
-                                                             'action (lsp--document-link-keymap link)
-                                                             'keymap (let ((map (make-sparse-keymap)))
-                                                                       (define-key map [M-return] 'push-button)
-                                                                       (define-key map [mouse-2] 'push-button)
-                                                                       map)
-                                                             'help-echo (purecopy "mouse-2, M-RET: Visit this link"))))
-                                  (push button lsp--link-overlays))))
-                            links))
-                         :mode 'alive))
-    (cancel-timer lsp--links-idle-timer)
-    (setq-local lsp--links-idle-timer nil)))
+
+;; links
+(defun lsp--document-links ()
+  (lsp-request-async "textDocument/documentLink"
+                     `(:textDocument ,(lsp--text-document-identifier))
+                     (lambda (links)
+                       (lsp--remove-overlays 'lsp-link)
+                       (seq-do
+                        (-lambda ((link &as &hash "range"))
+                          (-doto (make-button (lsp--position-to-point (gethash "start" range))
+                                              (lsp--position-to-point (gethash "end" range))
+                                              'action (lsp--document-link-keymap link)
+                                              'keymap (let ((map (make-sparse-keymap)))
+                                                        (define-key map [M-return] 'push-button)
+                                                        (define-key map [mouse-2] 'push-button)
+                                                        map)
+                                              'help-echo "mouse-2, M-RET: Visit this link")
+                            (overlay-put 'lsp-link t)))
+                        links))
+                     :mode 'tick))
 
 (defun lsp--document-link-handle-target (url)
   (let* ((parsed-url (url-generic-parse-url (url-unhex-string url)))
@@ -3439,6 +3475,8 @@ Applies on type formatting."
            link
            (-lambda ((&hash "target"))
              (lsp--document-link-handle-target target))))))))
+
+
 
 (defun lsp-buffer-language ()
   "Get language corresponding current buffer."
@@ -3691,10 +3729,9 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
 
 (defun lsp--cancel-request (id)
   "Cancel request with ID in all workspaces."
-  (--each (lsp-workspaces)
-    (with-lsp-workspace it
-      (->> lsp--cur-workspace lsp--workspace-client lsp--client-response-handlers (remhash id))
-      (lsp-notify "$/cancelRequest" `(:id ,id)))))
+  (lsp-foreach-workspace
+   (->> lsp--cur-workspace lsp--workspace-client lsp--client-response-handlers (remhash id))
+   (lsp-notify "$/cancelRequest" `(:id ,id))))
 
 (defun lsp-eldoc-function ()
   "`lsp-mode' eldoc function."
@@ -3707,34 +3744,34 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
      nil))
   eldoc-last-message)
 
-(defvar-local lsp--highlight-bounds nil)
-(defvar-local lsp--highlight-timer nil)
+(defun dash-expand:&lsp-wks (key source)
+  `(,(intern-soft (format "lsp--workspace-%s" (eval key) )) ,source))
 
-(defun lsp--highlight ()
-  (let ((buff (current-buffer)))
-    (with-demoted-errors "Error in ‘lsp--highlight’: %S"
-      (when (and lsp-enable-symbol-highlighting
-                 (lsp--capability "documentHighlightProvider"))
-        (let ((bounds (bounds-of-thing-at-point 'symbol))
-              (last lsp--highlight-bounds)
-              (point (point)))
-          (when (and last (or (< point (car last)) (> point (cdr last))))
-            (setq lsp--highlight-bounds nil)
-            (--each (lsp-workspaces)
-              (with-lsp-workspace it
-                (lsp--remove-cur-overlays))))
-          (when (and bounds (not (equal last bounds)))
-            (and lsp--highlight-timer (cancel-timer lsp--highlight-timer))
-            (setq lsp--highlight-timer
-                  (run-with-idle-timer
-                   lsp-document-highlight-delay nil
-                   (lambda nil
-                     (when (and (eq buff (current-buffer))
-                                lsp-enable-symbol-highlighting
-                                (lsp--capability "documentHighlightProvider"))
-                       (setq lsp--highlight-bounds
-                             (bounds-of-thing-at-point 'symbol))
-                       (lsp--document-highlight)))))))))))
+(defun lsp--point-on-highlight? ()
+  (-some? (lambda (overlay)
+            (overlay-get overlay 'lsp-highlight))
+          (overlays-at (point))))
+
+(defun lsp--cleanup-highlights-if-needed ()
+  (when (and lsp-enable-symbol-highlighting
+             (not (lsp--point-on-highlight?)))
+    (lsp--remove-overlays 'lsp-highlight)))
+
+(defvar-local lsp--last-highlight-request-id nil)
+
+(defun lsp--document-highlight ()
+  (unless (or (looking-at "[[:space:]\n]")
+              (lsp--point-on-highlight?))
+
+    (when lsp--last-highlight-request-id
+      (lsp--cancel-request lsp--last-highlight-request-id))
+
+    (setq lsp--last-highlight-request-id (plist-get (lsp-request-async "textDocument/documentHighlight"
+                                                              (lsp--text-document-position-params)
+                                                              (apply-partially #'lsp--document-highlight-callback
+                                                                               (current-buffer))
+                                                              :mode 'tick)
+                                                    :id))))
 
 (defun lsp-describe-thing-at-point ()
   "Display the type signature and documentation of the thing at
@@ -4095,17 +4132,10 @@ interface DocumentRangeFormattingParams {
     (2 . lsp-face-highlight-read)
     (3 . lsp-face-highlight-write)))
 
-(defun lsp--remove-cur-overlays ()
-  (let ((overlays (lsp--workspace-highlight-overlays lsp--cur-workspace))
-        (buf (current-buffer)))
-    (dolist (overlay (gethash buf overlays))
-      (delete-overlay overlay))
-    (remhash buf overlays)))
-
-(defun lsp--document-highlight ()
-  (lsp-request-async "textDocument/documentHighlight"
-                     (lsp--text-document-position-params)
-                     (lsp--make-document-highlight-callback (current-buffer))))
+(defun lsp--remove-overlays (name)
+  (save-restriction
+    (widen)
+    (remove-overlays (point-min) (point-max) name t)))
 
 (defun lsp-document-highlight ()
   "Highlight all relevant references to the symbol under point."
@@ -4114,50 +4144,34 @@ interface DocumentRangeFormattingParams {
     (signal 'lsp-capability-not-supported (list "documentHighlightProvider")))
   (lsp--document-highlight))
 
-(defun lsp--make-document-highlight-callback (buf)
+(defun lsp--document-highlight-callback (buf highlights)
   "Create a callback to process the reply of a
 'textDocument/documentHighlight' message for the buffer BUF.
 A reference is highlighted only if it is visible in a window."
-  (cl-check-type buf buffer)
-  (lambda (highlights)
-    (with-current-buffer buf
-      (lsp--remove-cur-overlays)
-      (when (/= (seq-length highlights) 0)
-        (let* ((windows-on-buffer (get-buffer-window-list nil nil 'visible))
-               (overlays (lsp--workspace-highlight-overlays lsp--cur-workspace))
-               (buf-overlays (gethash (current-buffer) overlays))
-               wins-visible-pos)
-          (save-restriction
-            (widen)
-            ;; Save visible portions of the buffer
-            (dolist (win windows-on-buffer)
-              (let* ((win-start (window-start win))
-                     (win-end (window-end win)))
-                (push (cons (1- (line-number-at-pos win-start))
-                            (1+ (line-number-at-pos win-end)))
-                      wins-visible-pos)))
-            (seq-doseq (highlight highlights)
-              (let* ((range (gethash "range" highlight nil))
-                     (kind (gethash "kind" highlight 1))
-                     (start (gethash "start" range))
-                     (end (gethash "end" range))
-                     overlay)
-                (dolist (win wins-visible-pos)
-                  (let* ((start-window (car win))
-                         (end-window (cdr win)))
-                    ;; Make the overlay only if the reference is visible
-                    (when (and (> (1+ (gethash "line" start)) start-window)
-                               (< (1+ (gethash "line" end)) end-window)
-                               (not (and lsp-symbol-highlighting-skip-current
-                                         (<= (lsp--position-to-point start)
-                                             (point)
-                                             (lsp--position-to-point end)))))
-                      (setq overlay (make-overlay (lsp--position-to-point start)
-                                                  (lsp--position-to-point end)))
-                      (overlay-put overlay 'face
-                                   (cdr (assq kind lsp--highlight-kind-face)))
-                      (push overlay buf-overlays)
-                      (puthash (current-buffer) buf-overlays overlays))))))))))))
+  (setq lsp--last-highlight-request-id nil)
+  (let* ((wins-visible-pos (-map (lambda (win)
+                                   (cons (1- (line-number-at-pos (window-start win)))
+                                         (1+ (line-number-at-pos (window-end win)))))
+                                 (get-buffer-window-list nil nil 'visible))))
+    (-map
+     (-lambda ((&hash "range" "kind"))
+       (-let* (((start &as &hash "line" start-line) (gethash "start" range))
+               ((end &as &hash "line" end-line) (gethash "end" range)))
+         (-map
+          (-lambda ((start-window . end-window))
+            ;; Make the overlay only if the reference is visible
+            (when (and (> (1+ start-line) start-window)
+                       (< (1+ end-line) end-window)
+                       (not (and lsp-symbol-highlighting-skip-current
+                                 (<= (lsp--position-to-point start)
+                                     (point)
+                                     (lsp--position-to-point end)))))
+              (-doto (make-overlay (lsp--position-to-point start)
+                                   (lsp--position-to-point end))
+                (overlay-put 'face (cdr (assq kind lsp--highlight-kind-face)))
+                (overlay-put 'lsp-highlight t))))
+          wins-visible-pos)))
+     highlights)))
 
 (defface lsp-face-semhl-variable-parameter
   '((t :inherit font-lock-variable-name-face))
@@ -5425,7 +5439,7 @@ returns the command to execute."
               (setq lsp--buffer-workspaces (delete workspace lsp--buffer-workspaces))
               (lsp--uninitialize-workspace)
               (lsp--spinner-stop)
-              (lsp--remove-cur-overlays))))
+              (lsp--remove-overlays 'lsp-highlight))))
 
         ;; Cleanup session from references to the closed workspace.
         (--each (hash-table-keys folder->workspaces)
