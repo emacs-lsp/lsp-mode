@@ -2426,7 +2426,7 @@ If NO-WAIT is non-nil send the request as notification."
                          :mode 'detached)
 
       (while (not (or resp-error resp-result))
-        (accept-process-output nil 0.01)
+        (accept-process-output nil 0.001)
         (when (< expected-time (time-to-seconds (current-time)))
           (error "Timeout while waiting for response. Method: %s." method)))
 
