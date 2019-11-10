@@ -38,12 +38,25 @@
   :risky t
   :type 'file)
 
+(defcustom lsp-erlang-server-connection-type
+  'tcp
+  "Type of connection to use with the Erlang Language Server: tcp or stdio"
+  :group 'lsp-erlang
+  :risky t
+  :type 'string)
+
 (defun lsp-erlang-server-start-fun (port)
   `(,lsp-erlang-server-path
-    ,(number-to-string port)))
+    "--transport" "tcp"
+    "--port" ,(number-to-string port)))
+
+(defun lsp-erlang-server-connection ()
+  (if (eq lsp-erlang-server-connection-type 'tcp)
+      (lsp-tcp-connection 'lsp-erlang-server-start-fun)
+    (lsp-stdio-connection `(,lsp-erlang-server-path "--transport" "stdio"))))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-tcp-connection 'lsp-erlang-server-start-fun)
+ (make-lsp-client :new-connection (lsp-erlang-server-connection)
                   :major-modes '(erlang-mode)
                   :priority -1
                   :server-id 'erlang-ls))
