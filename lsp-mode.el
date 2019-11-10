@@ -4971,22 +4971,15 @@ WORKSPACE is the active workspace."
   (let ((json-encoding-pretty-print t))
     (json-encode (json-read-from-string msg))))
 
-(defun lsp--parser-make-filter (p ignore-regexps)
-  "Make filter for the lsp parser P ignoring IGNORE-REGEXPS."
-  #'(lambda (_proc output)
-      (when (cl-loop for r in ignore-regexps
-                     ;; check if the output is to be ignored or not
-                     ;; TODO: Would this ever result in false positives?
-                     when (string-match r output) return nil
-                     finally return t)
-        (-when-let (messages (condition-case err
-                                 (lsp--parser-read p output)
-                               (error
-                                (let ((chunk (concat (lsp--parser-leftovers p) output)))
-                                  (lsp--parser-reset p)
-                                  (ignore (lsp-warn "Failed to parse the following chunk:\n'''\n%s\n'''\nwith message %s" chunk err))))))
-          (dolist (m messages)
-            (lsp--parser-on-message p m))))))
+(defun lsp--parser-filter (p _proc output)
+  "Make filter for the lsp parser P."
+  (dolist (m (condition-case err
+                 (lsp--parser-read p output)
+               (error
+                (let ((chunk (concat (lsp--parser-leftovers p) output)))
+                  (lsp--parser-reset p)
+                  (ignore (lsp-warn "Failed to parse the following chunk:\n'''\n%s\n'''\nwith message %s" chunk err))))))
+    (lsp--parser-on-message p m)))
 
 (defun lsp--symbol-to-imenu-elem (sym)
   "Convert SYM to imenu element.
@@ -5439,8 +5432,8 @@ SESSION is the active session."
           ((proc . cmd-proc) (funcall
                               (or (plist-get (lsp--client-new-connection client) :connect)
                                   (user-error "Client %s is configured incorrectly" client))
-                              (lsp--parser-make-filter (lsp--workspace-parser workspace)
-                                                       (lsp--client-ignore-regexps client))
+                              (-partial #'lsp--parser-filter
+                                        (lsp--workspace-parser workspace))
                               (apply-partially #'lsp--process-sentinel workspace)
                               (format "%s" server-id)))
           (workspace-folders (gethash server-id (lsp-session-server-id->folders session))))
