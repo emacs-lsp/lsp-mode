@@ -116,7 +116,7 @@
 
 (defcustom lsp-log-io nil
   "If non-nil, log all messages to and from the language server to a *lsp-log* buffer."
-  :group 'lsp-mode
+  :group 'lsp
   :type 'boolean)
 
 (defcustom lsp-print-performance nil
