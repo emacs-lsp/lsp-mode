@@ -2722,33 +2722,34 @@ in that particular folder."
 (defun lsp--send-open-close-p ()
   "Return whether open and close notifications should be sent to the server."
   (let ((sync (gethash "textDocumentSync" (lsp--server-capabilities))))
-    (and (hash-table-p sync)
-         (gethash "openClose" sync))))
+    (or (memq sync '(1 2))
+        (and (hash-table-p sync) (gethash "openClose" sync)))))
 
 (defun lsp--send-will-save-p ()
   "Return whether will save notifications should be sent to the server."
   (let ((sync (gethash "textDocumentSync" (lsp--server-capabilities))))
-    (and (hash-table-p sync)
-         (gethash "willSave" sync))))
+    (or (memq sync '(1 2))
+        (and (hash-table-p sync) (gethash "willSave" sync)))))
 
 (defun lsp--send-will-save-wait-until-p ()
   "Return whether will save wait until notifications should be sent to the server."
   (let ((sync (gethash "textDocumentSync" (lsp--server-capabilities))))
-    (and (hash-table-p sync)
-         (gethash "willSaveWaitUntil" sync))))
+    (or (memq sync '(1 2))
+        (and (hash-table-p sync) (gethash "willSaveWaitUntil" sync)))))
 
 (defun lsp--send-did-save-p ()
   "Return whether did save notifications should be sent to the server."
   (let ((sync (gethash "textDocumentSync" (lsp--server-capabilities))))
-    (and (hash-table-p sync)
-         (gethash "save" sync nil))))
+    (or (memq sync '(1 2))
+        (and (hash-table-p sync) (gethash "save" sync)))))
 
 (defun lsp--save-include-text-p ()
   "Return whether save notifications should include the text document's contents."
   (let ((sync (gethash "textDocumentSync" (lsp--server-capabilities))))
-    (and (hash-table-p sync)
-         (hash-table-p (gethash "save" sync nil))
-         (gethash "includeText" (gethash "save" sync)))))
+    (or (memq sync '(1 2))
+        (and (hash-table-p sync)
+             (hash-table-p (gethash "save" sync nil))
+             (gethash "includeText" (gethash "save" sync))))))
 
 (defun lsp--suggest-project-root ()
   "Get project root."
