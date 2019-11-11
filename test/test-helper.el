@@ -27,7 +27,7 @@
 
 
 (when (require 'undercover nil t)
-  (undercover "*.el" (:report-type :codecov)))
+  (undercover "*.el" (:report-type :coveralls)))
 
 (add-to-list 'load-path
              (file-name-as-directory (f-parent (f-parent (f-this-file)))))
