@@ -1111,18 +1111,14 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
             (point))
         (error (point))))))
 
-(define-inline lsp--position-to-point (params)
+(defun lsp--position-to-point (params)
   "Convert Position object in PARAMS to a point."
-  (inline-letevals (params)
-    (inline-quote
-     (lsp--line-character-to-point (gethash "line" ,params)
-                                   (gethash "character" ,params)))))
+  (lsp--line-character-to-point (gethash "line" params)
+                                (gethash "character" params)))
 
-(define-inline lsp--range-to-region (range)
-  (inline-letevals (range)
-    (inline-quote
-     (cons (lsp--position-to-point (gethash "start" ,range))
-           (lsp--position-to-point (gethash "end" ,range))))))
+(defun lsp--range-to-region (range)
+  (cons (lsp--position-to-point (gethash "start" range))
+        (lsp--position-to-point (gethash "end" range))))
 
 (pcase-defmacro lsp-range (region)
   "Build a `pcase' pattern that matches a LSP Range object.
@@ -1593,10 +1589,9 @@ WORKSPACE is the workspace that contains the diagnostics."
 (defvar-local lsp--cached-folding-ranges nil)
 (defvar-local lsp--cached-nested-folding-ranges nil)
 
-(define-inline lsp--folding-range-width (range)
-  (inline-letevals (range)
-    (inline-quote (- (lsp--folding-range-end ,range)
-                     (lsp--folding-range-beg ,range)))))
+(defun lsp--folding-range-width (range)
+  (- (lsp--folding-range-end range)
+     (lsp--folding-range-beg range)))
 
 (defun lsp--get-folding-ranges ()
   "Get the folding ranges for the current buffer."
@@ -1656,32 +1651,26 @@ WORKSPACE is the workspace that contains the diagnostics."
       (lsp--folding-range-insert-into-trees trees range))
     trees))
 
-(define-inline lsp--range-inside-p (r1 r2)
+(defun lsp--range-inside-p (r1 r2)
   "Return non-nil if folding range R1 lies inside R2"
-  (inline-letevals (r1 r2)
-    (inline-quote
-     (and (>= (lsp--folding-range-beg ,r1) (lsp--folding-range-beg ,r2))
-          (<= (lsp--folding-range-end ,r1) (lsp--folding-range-end ,r2))))))
+  (and (>= (lsp--folding-range-beg r1) (lsp--folding-range-beg r2))
+       (<= (lsp--folding-range-end r1) (lsp--folding-range-end r2))))
 
-(define-inline lsp--range-before-p (r1 r2)
+(defun lsp--range-before-p (r1 r2)
   "Return non-nil if folding range R1 ends before R2"
-  (inline-letevals (r1 r2)
-    (inline-quote
-     ;; Ensure r1 comes before r2
-     (or (< (lsp--folding-range-beg ,r1)
-            (lsp--folding-range-beg ,r2))
-         ;; If beg(r1) == beg(r2), make sure r2 ends first
-         (and (= (lsp--folding-range-beg ,r1)
-                 (lsp--folding-range-beg ,r2))
-              (< (lsp--folding-range-end ,r2)
-                 (lsp--folding-range-end ,r1)))))))
+  ;; Ensure r1 comes before r2
+  (or (< (lsp--folding-range-beg r1)
+         (lsp--folding-range-beg r2))
+      ;; If beg(r1) == beg(r2) make sure r2 ends first
+      (and (= (lsp--folding-range-beg r1)
+              (lsp--folding-range-beg r2))
+           (< (lsp--folding-range-end r2)
+              (lsp--folding-range-end r1)))))
 
-(define-inline lsp--point-inside-range-p (point range)
+(defun lsp--point-inside-range-p (point range)
   "Return non-nil if POINT lies inside folding range RANGE."
-  (inline-letevals (point range)
-    (inline-quote
-     (and (>= ,point (lsp--folding-range-beg ,range))
-          (<= ,point (lsp--folding-range-end ,range))))))
+  (and (>= point (lsp--folding-range-beg range))
+       (<= point (lsp--folding-range-end range))))
 
 (cl-defun lsp--get-current-innermost-folding-range (&optional (point (point)))
   "Return the innermost folding range POINT lies in."
@@ -2245,11 +2234,9 @@ If WORKSPACE is not provided current workspace will be used."
 
 (defalias 'lsp-workspace-get-metadata 'lsp-session-get-metadata)
 
-(define-inline lsp--make-notification (method &optional params)
+(defun lsp--make-notification (method &optional params)
   "Create notification body for method METHOD and parameters PARAMS."
-  (inline-quote
-   (progn (cl-check-type ,method string)
-          (list :jsonrpc "2.0" :method ,method :params ,params))))
+  (list :jsonrpc "2.0" :method method :params params))
 
 (defun lsp--make-request (method &optional params)
   "Create request body for method METHOD and parameters PARAMS."
@@ -2918,13 +2905,13 @@ in that particular folder."
   (run-hooks 'lsp-after-open-hook)
   (lsp--set-document-link-timer))
 
-(define-inline lsp--text-document-identifier ()
+(defun lsp--text-document-identifier ()
   "Make TextDocumentIdentifier.
 
 interface TextDocumentIdentifier {
     uri: string;
 }"
-  (inline-quote (list :uri (lsp--buffer-uri))))
+  (list :uri (lsp--buffer-uri)))
 
 (defun lsp--versioned-text-document-identifier ()
   "Make VersionedTextDocumentIdentifier.
@@ -2934,28 +2921,26 @@ interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
 }"
   (plist-put (lsp--text-document-identifier) :version lsp--cur-version))
 
-(define-inline lsp--position (line char)
+(defun lsp--position (line char)
   "Make a Position object for the given LINE and CHAR.
 
 interface Position {
     line: number;
     character: number;
 }"
-  (inline-letevals (line char)
-    (inline-quote (list :line ,line :character ,char))))
+  (list :line line :character char))
 
-(define-inline lsp--cur-line ()
-  (inline-quote (1- (line-number-at-pos))))
+(defun lsp--cur-line ()
+  (1- (line-number-at-pos)))
 
-(define-inline lsp--cur-column ()
-  (inline-quote (- (point) (line-beginning-position))))
+(defun lsp--cur-column ()
+  (- (point) (line-beginning-position)))
 
-(define-inline lsp--cur-position ()
+(defun lsp--cur-position ()
   "Make a Position object for the current point."
-  (inline-quote
-   (save-restriction
-     (widen)
-     (lsp--position (lsp--cur-line) (lsp--cur-column)))))
+  (save-restriction
+    (widen)
+    (lsp--position (lsp--cur-line) (lsp--cur-column))))
 
 (defun lsp--point-to-position (point)
   "Convert POINT to Position."
@@ -2963,7 +2948,7 @@ interface Position {
     (goto-char point)
     (lsp--cur-position)))
 
-(define-inline lsp--range (start end)
+(defun lsp--range (start end)
   "Make Range body from START and END.
 
 interface Range {
@@ -2971,15 +2956,12 @@ interface Range {
      end: Position;
  }"
   ;; make sure start and end are Position objects
-  (inline-letevals (start end)
-    (inline-quote
-     (list :start ,start :end ,end))))
+  (list :start start :end end))
 
-(define-inline lsp--region-to-range (start end)
+(defun lsp--region-to-range (start end)
   "Make Range object for the current region."
-  (inline-letevals (start end)
-    (inline-quote (lsp--range (lsp--point-to-position ,start)
-                              (lsp--point-to-position ,end)))))
+  (lsp--range (lsp--point-to-position start)
+              (lsp--point-to-position end)))
 
 (defun lsp--region-or-line ()
   "The active region or the current line."
@@ -3499,11 +3481,9 @@ if it's closing the last buffer in the workspace."
            (setf (lsp--workspace-shutdown-action lsp--cur-workspace) 'shutdown)
            (lsp--shutdown-workspace)))))))
 
-(define-inline lsp--will-save-text-document-params (reason)
-  (cl-check-type reason number)
-  (inline-quote
-   (list :textDocument (lsp--text-document-identifier)
-         :reason ,reason)))
+(defun lsp--will-save-text-document-params (reason)
+  (list :textDocument (lsp--text-document-identifier)
+        :reason reason))
 
 (defun lsp--before-save ()
   "Before save handler."
@@ -3535,12 +3515,12 @@ if it's closing the last buffer in the workspace."
                                                (buffer-substring-no-properties (point-min) (point-max)))
                                            nil))))))
 
-(define-inline lsp--text-document-position-params (&optional identifier position)
+(defun lsp--text-document-position-params (&optional identifier position)
   "Make TextDocumentPositionParams for the current point in the current document.
 If IDENTIFIER and POSITION are non-nil, they will be used as the document identifier
 and the position respectively."
-  (inline-quote (list :textDocument (or ,identifier (lsp--text-document-identifier))
-                      :position (or ,position (lsp--cur-position)))))
+  (list :textDocument (or identifier (lsp--text-document-identifier))
+        :position (or position (lsp--cur-position))))
 
 (defun lsp-cur-line-diagnostics ()
   "Return any diagnostics that apply to the current line."
