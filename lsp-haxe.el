@@ -66,13 +66,14 @@
   "Handle processStart notification.  Just logs PARAMS."
   (lsp-log (gethash "title" params)))
 
-(defcustom lsp-haxe-executable "haxe" nil )
+(defcustom lsp-haxe-executable "haxe" nil
+  :type 'file)
 (defcustom lsp-haxe-configurations nil nil :type
   '(repeat string))
 (defcustom lsp-haxe-display-configurations nil nil :type
   '(repeat string))
-(defcustom lsp-haxe-display-server nil nil :type 'nil)
-(defcustom lsp-haxe-display-port "auto" nil :type 'nil)
+(defcustom lsp-haxe-display-server nil nil :type 'string)
+(defcustom lsp-haxe-display-port "auto" nil :type 'number)
 (defcustom lsp-haxe-enable-compilation-server t nil :type 'boolean)
 (defcustom lsp-haxe-task-presentation
   '((echo . t)
@@ -81,7 +82,8 @@
     (panel . "shared")
     (showReuseMessage . t)
     (clear . :json-false))
-  nil :type 'nil)
+  nil
+  :type 'plist)
 (defcustom lsp-haxe-enable-code-lens t nil :type 'boolean)
 (defcustom lsp-haxe-enable-diagnostics t nil :type 'boolean)
 (defcustom lsp-haxe-enable-server-view nil nil :type 'boolean)
@@ -90,13 +92,14 @@
 (defcustom lsp-haxe-diagnostics-path-filter "${workspaceRoot}" nil :type 'string)
 (defcustom lsp-haxe-build-completion-cache t nil :type 'boolean)
 (defcustom lsp-haxe-enable-completion-cache-warning t nil :type 'boolean)
-(defcustom lsp-haxe-code-generation nil nil :type 'nil)
+(defcustom lsp-haxe-code-generation nil nil :type 'string)
 (defcustom lsp-haxe-exclude
   ["zpp_nape"]
   nil :type
   '(repeat string))
 
-(defcustom lsp-haxe-postfix-completion nil nil :type 'nil)
+(defcustom lsp-haxe-postfix-completion nil nil :type 'string)
+
 (lsp-register-custom-settings
  '(("haxe.postfixCompletion" lsp-haxe-postfix-completion)
    ("haxe.exclude" lsp-haxe-exclude)
@@ -128,7 +131,7 @@
                                        (lsp-configuration-section "haxe"))))
                   :priority -1
                   :server-id 'haxe
-                  :initialized-fn (lambda (workspace)
+                  :initialized-fn (lambda (_workspace)
                                     '(("sendMethodResults" . t)
                                      ("haxelibConfig"
                                       ("executable" . "haxelib"))

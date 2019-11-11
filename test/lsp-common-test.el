@@ -51,16 +51,15 @@
 
 (ert-deftest lsp-byte-compilation-test ()
   (let ((byte-compile-error-on-warn t))
-    (cl-assert (byte-compile-file (save-excursion
-                                    (find-library "lsp-mode")
-                                    (buffer-file-name)))
-               t
-               "Failed to byte-compile")
-    (cl-assert (byte-compile-file (save-excursion
-                                    (find-library "lsp-clients")
-                                    (buffer-file-name)))
-               t
-               "Failed to byte-compile")))
+    (seq-doseq (library (-filter
+                         (lambda (file)
+                           (f-ext? file "el"))
+                         (f-files (f-parent (f-dirname (or load-file-name buffer-file-name))))))
+      (cl-assert (byte-compile-file (save-excursion
+                                      (find-library library)
+                                      (buffer-file-name)))
+                 t
+                 "Failed to byte-compile"))))
 
 (ert-deftest lsp--find-session-folder ()
   (cl-assert (string= "/folder/"
