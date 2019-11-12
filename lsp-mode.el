@@ -5620,13 +5620,14 @@ SESSION is the active session."
     (get-buffer-create (format "*lsp-log: %s:%s*" server-id pid))))
 
 (defun lsp--erase-log-buffer ()
-  "Delete the contents of the lsp log buffer belonging to the workspace of the current buffer."
+  "Delete contents of the project's lsp log buffers."
   (interactive)
-  (let* ((workspace (lsp-find-workspace 'rust-analyzer default-directory))
-         (buf (lsp--get-log-buffer-create workspace))
+  (let* ((session (lsp-session))
+         (workspaces (lsp--session-workspaces (lsp-session)))
          (inhibit-read-only t))
-    (with-current-buffer buf
-      (erase-buffer))))
+    (dolist (w workspaces)
+      (with-current-buffer (lsp--get-log-buffer-create w)
+        (erase-buffer)))))
 
 (defun lsp--log-io-next (arg)
   "Move to next log entry."
