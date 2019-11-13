@@ -5591,8 +5591,8 @@ SESSION is the active session."
 
 (defvar lsp-log-io-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "M-n") #'lsp--log-io-next)
-    (define-key map (kbd "M-p") #'lsp--log-io-prev)
+    (define-key map (kbd "M-n") #'lsp-log-io-next)
+    (define-key map (kbd "M-p") #'lsp-log-io-prev)
     (define-key map (kbd "k") #'lsp--erase-log-buffer)
     (define-key map (kbd "K") #'lsp--erase-session-log-buffers)
     map)
