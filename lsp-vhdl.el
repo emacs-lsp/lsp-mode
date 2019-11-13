@@ -70,9 +70,10 @@ HDL Checker: A wrapper for third party tools such as GHDL, ModelSim, Vivado Simu
   :risky t
   :type 'file)
 
+(defvar lsp-vhdl--params nil)
+
 (defun lsp-vhdl--create-connection ()
   "Returns lsp-stdio-connection based on the selected server"
-  (defvar lsp-vhdl--params nil)
   (lsp-vhdl--set-server-path)
   (lsp-vhdl--set-server-args)
   (plist-put
