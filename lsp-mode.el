@@ -5594,6 +5594,7 @@ SESSION is the active session."
     (define-key map (kbd "M-n") #'lsp--log-io-next)
     (define-key map (kbd "M-p") #'lsp--log-io-prev)
     (define-key map (kbd "k") #'lsp--erase-log-buffer)
+    (define-key map (kbd "K") #'lsp--erase-session-log-buffers)
     map)
   "Keymap for lsp log buffer mode.")
 
@@ -5619,14 +5620,23 @@ SESSION is the active session."
         (pid (format "%s" (process-id (lsp--workspace-cmd-proc workspace)))))
     (get-buffer-create (format "*lsp-log: %s:%s*" server-id pid))))
 
-(defun lsp--erase-log-buffer ()
-  "Delete contents of the project's lsp log buffers."
+(defun lsp--erase-log-buffer (&optional all)
+  "Delete contents of current lsp log buffer.
+When ALL is t, erase all log buffers of the running session."
   (interactive)
   (let* ((workspaces (lsp--session-workspaces (lsp-session)))
-         (inhibit-read-only t))
+         (current-log-buffer (current-buffer)))
     (dolist (w workspaces)
-      (with-current-buffer (lsp--get-log-buffer-create w)
-        (erase-buffer)))))
+      (let ((b (lsp--get-log-buffer-create w)))
+        (when (or all (eq b current-log-buffer))
+          (with-current-buffer b
+            (let ((inhibit-read-only t))
+              (erase-buffer))))))))
+
+(defun lsp--erase-session-log-buffers ()
+  "Erase log buffers of the running session."
+  (interactive)
+  (lsp--erase-log-buffer t))
 
 (defun lsp-log-io-next (arg)
   "Move to next log entry."
