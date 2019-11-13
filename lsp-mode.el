@@ -2325,16 +2325,11 @@ TYPE can either be 'incoming or 'outgoing"
 
 (defvar-local lsp--log-io-ewoc nil)
 
-(defun lsp--generate-log-buffer-name (workspace)
-  (let ((server-id (-> workspace lsp--workspace-client lsp--client-server-id symbol-name))
-        (pid (format "%s" (process-id (lsp--workspace-cmd-proc workspace)))))
-    (get-buffer-create (format "*lsp-log: %s:%s*" server-id pid))))
-
 (defun lsp--get-create-io-ewoc (workspace)
   (if (and (lsp--workspace-ewoc workspace)
            (buffer-live-p (ewoc-buffer (lsp--workspace-ewoc workspace))))
       (lsp--workspace-ewoc workspace)
-    (with-current-buffer (lsp--generate-log-buffer-name workspace)
+    (with-current-buffer (lsp--get-log-buffer-create workspace)
       (unless (eq 'lsp-log-io-mode major-mode) (lsp-log-io-mode))
       (setq-local window-point-insertion-type t)
       (setq-local lsp--log-io-ewoc (ewoc-create #'lsp--log-entry-pp nil nil t))
@@ -5640,7 +5635,22 @@ SESSION is the active session."
       (lsp--start-workspace session client project-root (lsp--create-initialization-options session client))
     (lsp--spinner-stop)))
 
+;; lsp-log-io-mode
+
+(defvar lsp-log-io-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "M-n") #'lsp-log-io-next)
+    (define-key map (kbd "M-p") #'lsp-log-io-prev)
+    (define-key map (kbd "k") #'lsp--erase-log-buffer)
+    (define-key map (kbd "K") #'lsp--erase-session-log-buffers)
+    map)
+  "Keymap for lsp log buffer mode.")
+
+(define-derived-mode lsp-log-io-mode special-mode "LspLogIo"
+  "Special mode for viewing IO logs.")
+
 (defun lsp-workspace-show-log (workspace)
+  "Display the log buffer of WORKSPACE."
   (interactive
    (list (if lsp-print-io
              (if (eq (length (lsp-workspaces)) 1)
@@ -5648,27 +5658,43 @@ SESSION is the active session."
                (lsp--completing-read "Workspace: " (lsp-workspaces)
                                      #'lsp--workspace-print nil t))
            (user-error "IO logging is disabled"))))
-  (switch-to-buffer (lsp--generate-log-buffer-name workspace)))
+  (switch-to-buffer (lsp--get-log-buffer-create workspace)))
 
 (defalias 'lsp-switch-to-io-log-buffer 'lsp-workspace-show-log)
 
+(defun lsp--get-log-buffer-create (workspace)
+  "Return the lsp log buffer of WORKSPACE, creating a new one if needed."
+  (let ((server-id (-> workspace lsp--workspace-client lsp--client-server-id symbol-name))
+        (pid (format "%s" (process-id (lsp--workspace-cmd-proc workspace)))))
+    (get-buffer-create (format "*lsp-log: %s:%s*" server-id pid))))
+
+(defun lsp--erase-log-buffer (&optional all)
+  "Delete contents of current lsp log buffer.
+When ALL is t, erase all log buffers of the running session."
+  (interactive)
+  (let* ((workspaces (lsp--session-workspaces (lsp-session)))
+         (current-log-buffer (current-buffer)))
+    (dolist (w workspaces)
+      (let ((b (lsp--get-log-buffer-create w)))
+        (when (or all (eq b current-log-buffer))
+          (with-current-buffer b
+            (let ((inhibit-read-only t))
+              (erase-buffer))))))))
+
+(defun lsp--erase-session-log-buffers ()
+  "Erase log buffers of the running session."
+  (interactive)
+  (lsp--erase-log-buffer t))
+
 (defun lsp-log-io-next (arg)
+  "Move to next log entry."
   (interactive "P")
   (ewoc-goto-next lsp--log-io-ewoc (or arg 1)))
 
 (defun lsp-log-io-prev (arg)
+  "Move to previous log entry."
   (interactive "P")
   (ewoc-goto-prev lsp--log-io-ewoc (or arg 1)))
-
-(define-derived-mode lsp-log-io-mode view-mode "LspLogIo"
-  "Special mode for viewing IO logs.")
-
-(define-key lsp-log-io-mode-map (kbd "M-n") #'lsp-log-io-next)
-(define-key lsp-log-io-mode-map (kbd "M-p")  #'lsp-log-io-prev)
-
-(define-derived-mode lsp-browser-mode special-mode "LspBrowser"
-  "Define mode for displaying lsp sessions."
-  (setq-local display-buffer-base-action '(nil . ((inhibit-same-window . t)))))
 
 (defun lsp--workspace-print (workspace)
   "Visual representation WORKSPACE."
@@ -5715,6 +5741,10 @@ SESSION is the active session."
                                                        (buffer-name it)))))))
                 (tree-widget :tag ,(propertize "Capabilities" 'face 'font-lock-function-name-face)
                              ,@(-> workspace lsp--workspace-server-capabilities lsp--map-tree-widget))))
+
+(define-derived-mode lsp-browser-mode special-mode "LspBrowser"
+  "Define mode for displaying lsp sessions."
+  (setq-local display-buffer-base-action '(nil . ((inhibit-same-window . t)))))
 
 (defun lsp-describe-session ()
   "Describes current `lsp-session'."

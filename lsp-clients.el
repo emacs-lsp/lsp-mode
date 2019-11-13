@@ -27,6 +27,7 @@
 (require 'lsp)
 (require 'dash)
 (require 'dash-functional)
+(require 'rx)
 (require 'lsp-pyls)
 (require 'lsp-rust)
 (require 'lsp-solargraph)
