@@ -335,6 +335,11 @@ PARAMS progress report notification data."
   :type 'boolean
   :package-version '(lsp-mode . "6.2"))
 
+(defcustom lsp-rust-analyzer-max-inlay-hint-length 2
+  ""
+  :type '(choice (const nil) integer)
+  :package-version '(lsp-mode . "6.3"))
+
 (defconst lsp-rust-notification-handlers
   '(("rust-analyzer/publishDecorations" . (lambda (_w _p)))))
 
@@ -414,6 +419,13 @@ PARAMS progress report notification data."
          (result (lsp-send-request (lsp-make-request "rust-analyzer/joinLines" params))))
     (lsp-rust-apply-source-change result)))
 
+(lsp-register-custom-settings
+ '(("rust-analyzer.cargo-watch.command" "clippy")
+   ("rust-analyzer.enableCargoWatchOnStartup" "enabled")
+   ("rust-analyzer.trace.server" "verbose")
+   ("rust-analyzer.trace.cargo-watch" "verbose")
+   ))
+
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection (lambda () lsp-rust-analyzer-server-command))
@@ -422,6 +434,11 @@ PARAMS progress report notification data."
   :notification-handlers (ht<-alist lsp-rust-notification-handlers)
   :action-handlers (ht<-alist lsp-rust-action-handlers)
   :ignore-messages nil
+  ;; :initialization-options '((rust-analyzer.enableCargoWatchOnStartup . "enabled"))
+  :initialized-fn (lambda (workspace)
+                    (with-lsp-workspace workspace
+                      (lsp--set-configuration
+                       (lsp-configuration-section "rust-analyzer"))))
   :server-id 'rust-analyzer))
 
 (defun lsp-rust-switch-server ()
