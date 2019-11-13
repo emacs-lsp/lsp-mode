@@ -5622,19 +5622,18 @@ SESSION is the active session."
 (defun lsp--erase-log-buffer ()
   "Delete contents of the project's lsp log buffers."
   (interactive)
-  (let* ((session (lsp-session))
-         (workspaces (lsp--session-workspaces (lsp-session)))
+  (let* ((workspaces (lsp--session-workspaces (lsp-session)))
          (inhibit-read-only t))
     (dolist (w workspaces)
       (with-current-buffer (lsp--get-log-buffer-create w)
         (erase-buffer)))))
 
-(defun lsp--log-io-next (arg)
+(defun lsp-log-io-next (arg)
   "Move to next log entry."
   (interactive "P")
   (ewoc-goto-next lsp--log-io-ewoc (or arg 1)))
 
-(defun lsp--log-io-prev (arg)
+(defun lsp-log-io-prev (arg)
   "Move to previous log entry."
   (interactive "P")
   (ewoc-goto-prev lsp--log-io-ewoc (or arg 1)))
