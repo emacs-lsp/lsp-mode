@@ -224,6 +224,8 @@ occasionally break as language servers are updated."
   "Unsupported file scheme" 'lsp-error)
 (define-error 'lsp-client-already-exists-error
   "A client with this server-id already exists" 'lsp-error)
+(define-error 'lsp-no-code-actions
+  "No code actions" 'lsp-error)
 
 (defcustom lsp-auto-guess-root nil
   "Automatically guess the project root using projectile/project.
@@ -3964,7 +3966,7 @@ RENDER-ALL - nil if only the signature should be rendered."
 (defun lsp--select-action (actions)
   "Select an action to execute from ACTIONS."
   (cond
-   ((seq-empty-p actions) (user-error "No actions to select from"))
+   ((seq-empty-p actions) (signal 'lsp-no-code-actions nil))
    ((and (eq (seq-length actions) 1) lsp-auto-execute-action)
     (lsp-seq-first actions))
    (t (lsp--completing-read "Select code action: "
@@ -4000,7 +4002,7 @@ RENDER-ALL - nil if only the signature should be rendered."
                                   (and kind (equal command-kind kind))))
                        lsp--select-action))
       (lsp-execute-code-action action)
-    (user-error "No to action")))
+    (signal 'lsp-no-code-actions '(command-kind))))
 
 (defalias 'lsp-get-or-calculate-code-actions 'lsp-code-actions-at-point)
 
@@ -4056,9 +4058,13 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
     (lsp--apply-formatting edits)))
 
 (defun lsp-organize-imports ()
-  "Perform the source.organizeImports code action."
+  "Perform the source.organizeImports code action, if available."
   (interactive)
-  (lsp-execute-code-action-by-kind "source.organizeImports"))
+  (condition-case nil
+      (lsp-execute-code-action-by-kind "source.organizeImports")
+    (lsp-no-code-actions
+     (when (called-interactively-p 'any)
+       (lsp--info "source.organizeImports action not available")))))
 
 (defun lsp--apply-formatting (edits)
   (lsp--with-full-sync (lsp--apply-text-edits edits)))
