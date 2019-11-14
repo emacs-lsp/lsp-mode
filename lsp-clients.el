@@ -733,6 +733,24 @@ responsiveness at the cost of possibile stability issues."
                   :priority -1
                   :server-id 'emmy-lua
                   :notification-handlers (lsp-ht ("emmy/progressReport" #'ignore))))
+
+
+;; R
+(defgroup lsp-r nil
+  "LSP support for R."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/REditorSupport/languageserver"))
+
+(defcustom lsp-clients-r-server-command '("R" "--slave" "-e" "languageserver::run()")
+  "Command to start the R language server."
+  :group 'lsp-r
+  :risky t
+  :type '(repeat string))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-r-server-command)
+                  :major-modes '(ess-r-mode)
+                  :server-id 'lsp-r))
 
 (provide 'lsp-clients)
 ;;; lsp-clients.el ends here
