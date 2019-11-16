@@ -1925,7 +1925,7 @@ version."
   "Delete all lenses."
   (interactive)
   (let ((scroll-preserve-screen-position t))
-    (seq-do 'delete-overlay lsp--lens-overlays)
+    (seq-do #'delete-overlay lsp--lens-overlays)
     (setq-local lsp--lens-overlays nil)))
 
 (defun lsp--lens-backend-not-loaded? (lens)
@@ -1986,7 +1986,8 @@ CALLBACK - callback for the lenses."
                                  (lsp--lens-backend-fetch-missing lsp--lens-backend-cache callback lsp--cur-version)))
                              :error-handler #'ignore
                              :mode 'tick
-                             :no-merge t))
+                             :no-merge t
+                             :cancel-token :lenses))
       (if (-all? #'lsp--lens-backend-present? lsp--lens-backend-cache)
           (funcall callback lsp--lens-backend-cache lsp--cur-version)
         (lsp--lens-backend-fetch-missing lsp--lens-backend-cache callback lsp--cur-version)))))
@@ -2397,26 +2398,27 @@ If NO-WAIT is non-nil send the request as notification."
        ((ht? resp-error) (error (gethash "message" resp-error)))
        (t (error (gethash "message" (cl-first resp-error))))))))
 
-(cl-defun lsp-request-async (method params callback &key mode error-handler no-merge)
+(cl-defun lsp-request-async (method params callback &key mode error-handler no-merge cancel-token)
   "Send request METHOD with PARAMS."
-  (lsp--send-request-async `(:jsonrpc "2.0" :method ,method :params ,params) callback mode error-handler no-merge))
+  (lsp--send-request-async `(:jsonrpc "2.0" :method ,method :params ,params) callback mode error-handler no-merge cancel-token))
 
-(defun lsp--create-async-callback (count callback mode method no-merge)
+(defun lsp--create-async-callback (count callback mode method no-merge cancel-token)
   "Create async handler expecting COUNT results, merge them and call CALLBACK.
 MODE determines when the callback will be called depending on the
 condition of the original buffer. METHOD is the invoked method.
 If NO-MERGE is non-nil, don't merge the results but return alist workspace->result."
   (let ((buf (current-buffer))
         results)
-    (cl-labels ((handle-result () (funcall
-                                   callback
-                                   (if no-merge
+    (cl-labels ((handle-result
+                 ()
+                 (when cancel-token
+                   (remhash cancel-token lsp--cancelable-requests))
+                 (funcall callback (if no-merge
                                        results
                                      (lsp--merge-results (-map #'cl-rest results) method)))))
       (pcase mode
         ('detached (lambda (result)
                      (push (cons lsp--cur-workspace result) results)
-
                      (when (and (eq (length results) count))
                        (handle-result))))
         ('alive (lambda (result)
@@ -2450,7 +2452,16 @@ METHOD is the executed method."
     (lsp--warn "%s" (or (gethash "message" error)
                         (format "%s Request has failed" method)))))
 
-(defun lsp--send-request-async (body callback &optional mode error-callback no-merge)
+(defvar lsp--cancelable-requests (ht))
+
+(defun lsp-cancel-request-by-token (cancel-token)
+  "Cancel request using CANCEL-TOKEN."
+  (-when-let ((request-id . workspaces) (gethash cancel-token lsp--cancelable-requests))
+    (with-lsp-workspaces workspaces
+      (lsp--cancel-request request-id))
+    (remhash cancel-token lsp--cancelable-requests)))
+
+(defun lsp--send-request-async (body callback &optional mode error-callback no-merge cancel-token)
   "Send BODY as a request to the language server.
 Call CALLBACK with the response received from the server
 asynchronously. MODE determines when the callback will be called
@@ -2466,6 +2477,9 @@ ERROR-CALLBACK will be called in case the request has failed.
 If NO-MERGE is non-nil, don't merge the results but return alist workspace->result."
   (lsp--flush-delayed-changes)
 
+  (when cancel-token
+    (lsp-cancel-request-by-token cancel-token))
+
   (if-let ((target-workspaces (lsp--find-workspaces-for body)))
       (let* ((start-time (current-time))
              (method (plist-get body :method))
@@ -2474,33 +2488,38 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
                                                          callback
                                                          mode
                                                          method
-                                                         no-merge))
+                                                         no-merge
+                                                         cancel-token))
              (error-async-callback (lsp--create-async-callback
                                     workspaces-count
                                     (or error-callback
                                         (lsp--create-default-error-handler method))
                                     mode
                                     method
-                                    nil))
+                                    nil
+                                    cancel-token))
              (id (cl-incf lsp-last-id))
              (body (plist-put body :id id)))
-        (--each target-workspaces
-          (with-lsp-workspace it
+        (when cancel-token
+          (puthash cancel-token (cons id target-workspaces) lsp--cancelable-requests))
+        (seq-doseq (workspace target-workspaces)
+          (with-lsp-workspace workspace
             (when lsp-print-io
               (lsp--log-entry-new (lsp--make-log-entry method id
                                                        (plist-get body :params)
                                                        'outgoing-req)
-                                  it))
+                                  workspace))
             (let ((message (lsp--make-message body)))
               (puthash id
                        (list async-callback error-async-callback method start-time (current-time))
                        (-> lsp--cur-workspace
                            lsp--workspace-client
                            lsp--client-response-handlers))
-              (lsp--send-no-wait message (lsp--workspace-proc lsp--cur-workspace)))))
+              (lsp--send-no-wait message (lsp--workspace-proc workspace)))))
         body)
     (error "No workspace could handle %s" (plist-get body :method))))
 
+;; deprecated, use lsp-request-async.
 (defalias 'lsp-send-request-async 'lsp--send-request-async)
 
 ;; Clean up the entire state of lsp mode when Emacs is killed, to get rid of any
@@ -3743,23 +3762,17 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
 (defun lsp--cleanup-highlights-if-needed ()
   (when (and lsp-enable-symbol-highlighting
              (not (lsp--point-on-highlight?)))
-    (lsp--remove-overlays 'lsp-highlight)))
-
-(defvar-local lsp--last-highlight-request-id nil)
+    (lsp--remove-overlays 'lsp-highlight)
+    (lsp-cancel-request-by-token :highlihts)))
 
 (defun lsp--document-highlight ()
   (unless (or (looking-at "[[:space:]\n]")
               (lsp--point-on-highlight?))
-
-    (when lsp--last-highlight-request-id
-      (lsp--cancel-request lsp--last-highlight-request-id))
-
-    (setq lsp--last-highlight-request-id (plist-get (lsp-request-async "textDocument/documentHighlight"
-                                                                       (lsp--text-document-position-params)
-                                                                       (apply-partially #'lsp--document-highlight-callback
-                                                                                        (current-buffer))
-                                                                       :mode 'tick)
-                                                    :id))))
+    (lsp-request-async "textDocument/documentHighlight"
+                       (lsp--text-document-position-params)
+                       #'lsp--document-highlight-callback
+                       :mode 'tick
+                       :cancel-token :highlihts)))
 
 (defun lsp-describe-thing-at-point ()
   "Display the type signature and documentation of the thing at
@@ -4132,11 +4145,10 @@ interface DocumentRangeFormattingParams {
     (signal 'lsp-capability-not-supported (list "documentHighlightProvider")))
   (lsp--document-highlight))
 
-(defun lsp--document-highlight-callback (buf highlights)
+(defun lsp--document-highlight-callback (highlights)
   "Create a callback to process the reply of a
 'textDocument/documentHighlight' message for the buffer BUF.
 A reference is highlighted only if it is visible in a window."
-  (setq lsp--last-highlight-request-id nil)
   (let* ((wins-visible-pos (-map (lambda (win)
                                    (cons (1- (line-number-at-pos (window-start win)))
                                          (1+ (line-number-at-pos (window-end win)))))
