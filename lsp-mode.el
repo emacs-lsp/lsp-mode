@@ -693,7 +693,7 @@ must be used for handling a particular message.")
   :group 'lsp-faces)
 
 (defface lsp-face-highlight-write
-  '((t :inherit highlight :slant italic))
+  '((t :inherit highlight :weight bold))
   "Face used for highlighting symbols being written to."
   :group 'lsp-faces)
 
