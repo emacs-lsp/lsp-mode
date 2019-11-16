@@ -958,15 +958,6 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
                                       def inherit-input-method)))
     (cdr (assoc completion result))))
 
-(cl-defstruct lsp--parser
-  (headers '()) ;; alist of headers
-  (body nil) ;; message body
-  (reading-body nil) ;; If non-nil, reading body
-  (body-length nil) ;; length of current message body
-  (body-received 0) ;; amount of current message body currently stored in 'body'
-  (leftovers nil) ;; Leftover data from previous chunk; to be processed
-  (workspace nil))
-
 ;; A ‘lsp--client’ object describes the client-side behavior of a language
 ;; server.  It is used to start individual server processes, each of which is
 ;; represented by a ‘lsp--workspace’ object.  Client objects are normally
@@ -2105,9 +2096,8 @@ CALLBACK - callback for the lenses."
 
 ;; A ‘lsp--workspace’ object represents exactly one language server process.
 (cl-defstruct lsp--workspace
-  ;; ‘parser’ is a ‘lsp--parser’ object used to parse messages for this
-  ;; workspace.  Parsers are not shared between workspaces.
-  (parser nil :read-only t)
+  ;; the `ewoc' object for displaying I/O to and from the server
+  (ewoc nil)
 
   ;; ‘server-capabilities’ is a hash table of the language server capabilities.
   ;; It is the hash table representation of a LSP ServerCapabilities structure;
@@ -2188,9 +2178,7 @@ CALLBACK - callback for the lenses."
   (shutdown-action)
 
   ;; ‘diagnostics’ a hashmap with workspace diagnostics.
-  (diagnostics (make-hash-table :test 'equal))
-  ;; the `ewoc' object for displaying I/O to and from the server
-  (ewoc nil))
+  (diagnostics (make-hash-table :test 'equal)))
 
 (cl-defstruct lsp-session
   ;; contains the folders that are part of the current session
@@ -3767,10 +3755,10 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
       (lsp--cancel-request lsp--last-highlight-request-id))
 
     (setq lsp--last-highlight-request-id (plist-get (lsp-request-async "textDocument/documentHighlight"
-                                                              (lsp--text-document-position-params)
-                                                              (apply-partially #'lsp--document-highlight-callback
-                                                                               (current-buffer))
-                                                              :mode 'tick)
+                                                                       (lsp--text-document-position-params)
+                                                                       (apply-partially #'lsp--document-highlight-callback
+                                                                                        (current-buffer))
+                                                                       :mode 'tick)
                                                     :id))))
 
 (defun lsp-describe-thing-at-point ()
@@ -4817,16 +4805,6 @@ WORKSPACE is the active workspace."
                  nil (format "Invalid Content-Length value: %s" val)))
     (cons key val)))
 
-(defun lsp--parser-reset (p)
-  "Reset parser P."
-  (setf
-   (lsp--parser-leftovers p) ""
-   (lsp--parser-body-length p) nil
-   (lsp--parser-body-received p) nil
-   (lsp--parser-headers p) '()
-   (lsp--parser-body p) nil
-   (lsp--parser-reading-body p) nil))
-
 (defun lsp--read-json (str)
   "Read json string STR."
   (let* ((use-native-json (and lsp-use-native-json (fboundp 'json-parse-string)))
@@ -4873,13 +4851,12 @@ WORKSPACE is the active workspace."
              (float-time (time-subtract after-parsed-time received-time))
              (float-time (time-subtract after-processed-time before-notification)))))
 
-(defun lsp--parser-on-message (p msg)
+(defun lsp--parser-on-message (json-data workspace)
   "Called when the parser P read a complete MSG from the server."
-  (with-lsp-workspace (lsp--parser-workspace p)
-    (let* ((client (lsp--workspace-client lsp--cur-workspace))
+  (with-lsp-workspace workspace
+    (let* ((client (lsp--workspace-client workspace))
            (received-time (current-time))
            (server-id (lsp--client-server-id client))
-           (json-data (lsp--read-json msg))
            (after-parsed-time (current-time))
            (id (--when-let (gethash "id" json-data)
                  (if (stringp it) (string-to-number it) it)))
@@ -4918,74 +4895,63 @@ WORKSPACE is the active workspace."
             server-id json-data received-time after-parsed-time before-notification (current-time))))
         ('request (lsp--on-request lsp--cur-workspace json-data))))))
 
-(defun lsp--parser-read (p output)
-  "Handle OUTPUT using parser P."
-  (let* ((messages '())
-         (output (with-no-warnings (string-as-unibyte output)))
-         (chunk (concat (lsp--parser-leftovers p) output)))
-    (while (not (string-empty-p chunk))
-      (if (not (lsp--parser-reading-body p))
-          ;; Read headers
-          (let* ((body-sep-pos (string-match-p "\r\n\r\n" chunk)))
-            (if body-sep-pos
-                ;; We've got all the headers, handle them all at once:
-                (let* ((header-raw (substring chunk (or (string-match-p "Content-Length" chunk)
-                                                        (error "Unable to find Content-Length header."))
-                                              body-sep-pos))
-                       (content (substring chunk (+ body-sep-pos 4)))
-                       (headers
-                        (mapcar 'lsp--parse-header
-                                (split-string header-raw "\r\n")))
-                       (body-length (lsp--get-body-length headers)))
-                  (setf
-                   (lsp--parser-headers p) headers
-                   (lsp--parser-reading-body p) t
-                   (lsp--parser-body-length p) body-length
-                   (lsp--parser-body-received p) 0
-                   (lsp--parser-body p) (make-string body-length ?\0)
-                   (lsp--parser-leftovers p) nil)
-                  (setq chunk content))
-
-              ;; Haven't found the end of the headers yet. Save everything
-              ;; for when the next chunk arrives and await further input.
-              (setf (lsp--parser-leftovers p) chunk)
-              (setq chunk "")))
-
-        ;; Read body
-        (let* ((total-body-length (lsp--parser-body-length p))
-               (received-body-length (lsp--parser-body-received p))
-               (chunk-length (string-bytes chunk))
-               (left-to-receive (- total-body-length received-body-length))
-               (this-body
-                (substring chunk 0 (min left-to-receive chunk-length)))
-               (leftovers (substring chunk (string-bytes this-body))))
-          (store-substring (lsp--parser-body p) received-body-length this-body)
-          (setf (lsp--parser-body-received p) (+ (lsp--parser-body-received p)
-                                                 (string-bytes this-body)))
-          (when (>= chunk-length left-to-receive)
-            ;; TODO: keep track of the Content-Type header, if
-            ;; present, and use its value instead of just defaulting
-            ;; to utf-8
-            (push (decode-coding-string (lsp--parser-body p) 'utf-8) messages)
-            (lsp--parser-reset p))
-
-          (setq chunk leftovers))))
-    (nreverse messages)))
-
 (defun lsp--json-pretty-print (msg)
   "Convert json MSG string to pretty printed json string."
   (let ((json-encoding-pretty-print t))
     (json-encode (json-read-from-string msg))))
 
-(defun lsp--parser-filter (p _proc output)
-  "Make filter for the lsp parser P."
-  (dolist (m (condition-case err
-                 (lsp--parser-read p output)
-               (error
-                (let ((chunk (concat (lsp--parser-leftovers p) output)))
-                  (lsp--parser-reset p)
-                  (ignore (lsp-warn "Failed to parse the following chunk:\n'''\n%s\n'''\nwith message %s" chunk err))))))
-    (lsp--parser-on-message p m)))
+(defun lsp--create-filter-function (workspace)
+  "Make filter for the workspace."
+  (let ((body-received 0)
+        leftovers body-length body chunk)
+    (lambda (_proc input)
+      (setf chunk (concat leftovers (with-no-warnings (string-as-unibyte input))))
+      (while (not (string= chunk ""))
+        (if (not body-length)
+            ;; Read headers
+            (if-let (body-sep-pos (string-match-p "\r\n\r\n" chunk))
+                ;; We've got all the headers, handle them all at once:
+                (setf body-length (lsp--get-body-length
+                                   (mapcar #'lsp--parse-header
+                                           (split-string
+                                            (substring chunk
+                                                       (or (string-match-p "Content-Length" chunk)
+                                                           (error "Unable to find Content-Length header."))
+                                                       body-sep-pos)
+                                            "\r\n")))
+                      body-received 0
+                      leftovers nil
+                      chunk (substring chunk (+ body-sep-pos 4)))
+
+              ;; Haven't found the end of the headers yet. Save everything
+              ;; for when the next chunk arrives and await further input.
+              (setf leftovers chunk
+                    chunk ""))
+          (let* ((chunk-length (string-bytes chunk))
+                 (left-to-receive (- body-length body-received))
+                 (this-body (if (< left-to-receive chunk-length)
+                                (prog1 (substring chunk 0 left-to-receive)
+                                  (setf chunk (substring chunk left-to-receive)))
+                              (prog1 chunk
+                                (setf chunk ""))))
+                 (body-bytes (string-bytes this-body)))
+            (push this-body body)
+            (setf body-received (+ body-received body-bytes))
+            (when (>= chunk-length left-to-receive)
+              (lsp--parser-on-message
+               (condition-case err
+                   (let ((parsed-message (nreverse
+                                          (prog1 body
+                                            (setf leftovers nil
+                                                  body-length nil
+                                                  body-received nil
+                                                  body nil)))))
+                     (lsp--read-json (decode-coding-string (apply #'concat parsed-message) 'utf-8)))
+                 (error
+                  (lsp-warn "Failed to parse the following chunk:\n'''\n%s\n'''\nwith message %s"
+                            (concat leftovers input)
+                            err)))
+               workspace))))))))
 
 (defun lsp--symbol-to-imenu-elem (sym)
   "Convert SYM to imenu element.
@@ -5380,15 +5346,12 @@ returns the command to execute."
 
 (defun lsp--make-workspace (client root)
   "Make workspace for the CLIENT and ROOT."
-  (let* ((parser (make-lsp--parser))
-         (workspace (make-lsp--workspace
-                     :parser parser
+  (let* ((workspace (make-lsp--workspace
                      :root root
                      :client client
                      :status 'starting
                      :buffers (list (current-buffer))
                      :host-root (file-remote-p root))))
-    (setf (lsp--parser-workspace parser) workspace)
     workspace))
 
 
@@ -5470,8 +5433,7 @@ SESSION is the active session."
           ((proc . cmd-proc) (funcall
                               (or (plist-get (lsp--client-new-connection client) :connect)
                                   (user-error "Client %s is configured incorrectly" client))
-                              (-partial #'lsp--parser-filter
-                                        (lsp--workspace-parser workspace))
+                              (lsp--create-filter-function workspace)
                               (apply-partially #'lsp--process-sentinel workspace)
                               (format "%s" server-id)
                               environment-fn))
@@ -6154,15 +6116,15 @@ This avoids overloading the server with many files when starting Emacs."
 (defmacro lsp-with-cached-filetrue-name (&rest body)
   "Executes BODY caching the `file-truename' calls."
   `(let ((old-fn (symbol-function 'file-truename)))
-    (unwind-protect
-        (progn
-          (fset 'file-truename
-                (lambda (file-name &optional counter prev-dirs)
-                  (or (gethash file-name lsp-file-truename-cache)
-                      (puthash file-name (apply old-fn (list file-name counter prev-dirs))
-                               lsp-file-truename-cache))))
-          ,@body)
-      (fset 'file-truename old-fn))))
+     (unwind-protect
+         (progn
+           (fset 'file-truename
+                 (lambda (file-name &optional counter prev-dirs)
+                   (or (gethash file-name lsp-file-truename-cache)
+                       (puthash file-name (apply old-fn (list file-name counter prev-dirs))
+                                lsp-file-truename-cache))))
+           ,@body)
+       (fset 'file-truename old-fn))))
 
 
 ;; avy integration

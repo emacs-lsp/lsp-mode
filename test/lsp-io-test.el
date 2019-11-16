@@ -19,13 +19,27 @@
 
 (require 'ert)
 (require 'lsp)
+(require 'cl)
+
+(defvar lsp--test-results nil)
+(defvar lsp--parser-function nil)
 
 (defvar lsp--test-workspace
   (make-lsp--workspace
    :client (make-lsp--client :ignore-messages '("readFile .* requested"))))
 
+(defun lsp--create-process-message ()
+  (let ((fn (lsp--create-filter-function nil)))
+    (lambda (input)
+      (flet ((lsp--parser-on-message (msg _workspace))
+             (lsp--read-json (msg)
+                             (push msg lsp--test-results)))
+        (funcall fn nil input)
+        (prog1 lsp--test-results
+          (setq lsp--test-results nil))))))
+
 (ert-deftest lsp--parser-read--multiple-messages ()
-  (let* ((p (make-lsp--parser :workspace lsp--test-workspace))
+  (let* ((fn (lsp--create-process-message))
          (messages-in '("Content-Length: 2\r\n\r\n{}"
                         "Content-Length: 2\r\n\r\n{}"
                         "Content-Length:2\r\n\r\n{}"
@@ -33,50 +47,49 @@
                         "Content-Length:2\r\n\r\n{}"
                         "Content-Length: 2\r\n\r\n{}"
                         "Content-Length: 2\r\n\r\n{}"))
-         (messages (lsp--parser-read p (string-join messages-in))))
+         (messages (funcall fn (string-join messages-in))))
     (should (equal messages '("{}" "{}" "{}" "{}" "{}" "{}" "{}")))))
 
 (ert-deftest lsp--parser-read--multibyte ()
-  (let* ((p (make-lsp--parser :workspace lsp--test-workspace))
+  (let* ((fn (lsp--create-process-message))
          (message-in "Content-Length: 3\r\n\r\n\xe2\x80\x99")
-         (messages (lsp--parser-read p message-in)))
+         (messages (funcall fn message-in)))
     (should (equal messages '("’")))))
 
 (ert-deftest lsp--parser-read--multibyte-nospace ()
-  (let* ((p (make-lsp--parser :workspace lsp--test-workspace))
+  (let* ((fn (lsp--create-process-message))
          (message-in "Content-Length:3\r\n\r\n\xe2\x80\x99")
-         (messages (lsp--parser-read p message-in)))
+         (messages (funcall fn message-in)))
     (should (equal messages '("’")))))
 
 (ert-deftest lsp--parser-read--multibyte-received ()
-  (let* ((p (make-lsp--parser :workspace lsp--test-workspace))
+  (let* ((fn (lsp--create-process-message))
          (message-in "Content-Length: 1152\r\n\r\n{\"jsonrpc\":\"2.0\",\"method\":\"sts/highlight\",\"params\":{\"doc\":{\"version\":0,\"uri\":\"file:///home/kyoncho/Public/Desktop/hellow/hello-world/src/main/java/com/example/helloworld/HelloWorldController.java\"},\"codeLenses\":[{\"range\":{\"start\":{\"line\":9,\"character\":0},\"end\":{\"line\":9,\"character\":11}},\"command\":{\"title\":\"← SampleBean\",\"command\":\"sts.showHoverAtPosition\",\"arguments\":[{\"line\":9,\"character\":0}]},\"data\":\"← SampleBean\"},{\"range\":{\"start\":{\"line\":14,\"character\":4},\"end\":{\"line\":14,\"character\":14}},\"command\":{\"title\":\"← SampleBean\",\"command\":\"sts.showHoverAtPosition\",\"arguments\":[{\"line\":14,\"character\":4}]},\"data\":\"← SampleBean\"},{\"range\":{\"start\":{\"line\":17,\"character\":4},\"end\":{\"line\":17,\"character\":31}},\"command\":{\"title\":\"http://127.0.0.1:8080/hello-world\",\"command\":\"sts.open.url\",\"arguments\":[\"http://127.0.0.1:8080/hello-world\"]},\"data\":\"http://127.0.0.1:8080/hello-world\"},{\"range\":{\"start\":{\"line\":25,\"character\":4},\"end\":{\"line\":25,\"character\":32}},\"command\":{\"title\":\"http://127.0.0.1:8080/hello-world2\",\"command\":\"sts.open.url\",\"arguments\":[\"http://127.0.0.1:8080/hello-world2\"]},\"data\":\"http://127.0.0.1:8080/hello-world2\"}]}}")
-         (messages (lsp--parser-read p message-in)))
+         (messages (funcall fn message-in)))
     (should (equal messages '("{\"jsonrpc\":\"2.0\",\"method\":\"sts/highlight\",\"params\":{\"doc\":{\"version\":0,\"uri\":\"file:///home/kyoncho/Public/Desktop/hellow/hello-world/src/main/java/com/example/helloworld/HelloWorldController.java\"},\"codeLenses\":[{\"range\":{\"start\":{\"line\":9,\"character\":0},\"end\":{\"line\":9,\"character\":11}},\"command\":{\"title\":\"← SampleBean\",\"command\":\"sts.showHoverAtPosition\",\"arguments\":[{\"line\":9,\"character\":0}]},\"data\":\"← SampleBean\"},{\"range\":{\"start\":{\"line\":14,\"character\":4},\"end\":{\"line\":14,\"character\":14}},\"command\":{\"title\":\"← SampleBean\",\"command\":\"sts.showHoverAtPosition\",\"arguments\":[{\"line\":14,\"character\":4}]},\"data\":\"← SampleBean\"},{\"range\":{\"start\":{\"line\":17,\"character\":4},\"end\":{\"line\":17,\"character\":31}},\"command\":{\"title\":\"http://127.0.0.1:8080/hello-world\",\"command\":\"sts.open.url\",\"arguments\":[\"http://127.0.0.1:8080/hello-world\"]},\"data\":\"http://127.0.0.1:8080/hello-world\"},{\"range\":{\"start\":{\"line\":25,\"character\":4},\"end\":{\"line\":25,\"character\":32}},\"command\":{\"title\":\"http://127.0.0.1:8080/hello-world2\",\"command\":\"sts.open.url\",\"arguments\":[\"http://127.0.0.1:8080/hello-world2\"]},\"data\":\"http://127.0.0.1:8080/hello-world2\"}]}}")))))
 
 (ert-deftest lsp--parser-read--multiple-chunks ()
-  (let* ((p (make-lsp--parser :workspace lsp--test-workspace)))
-    (should (equal (lsp--parser-read p "Content-Length: 14\r\n\r\n{") nil))
-    (should (equal (lsp--parser-read p "\"somedata\":1") nil))
-    (should (equal (lsp--parser-read p "}Content-Length: 14\r\n\r\n{")
+  (let* ((fn (lsp--create-process-message)))
+    (should (equal (funcall fn "Content-Length: 14\r\n\r\n{") nil))
+    (should (equal (funcall fn "\"somedata\":1") nil))
+    (should (equal (funcall fn "}Content-Length: 14\r\n\r\n{")
                    '("{\"somedata\":1}")))
-    (should (equal (lsp--parser-read p "\"somedata\":2}")
+    (should (equal (funcall fn "\"somedata\":2}")
                    '("{\"somedata\":2}")))))
 
 (ert-deftest lsp--parser-read--multiple-multibyte-chunks ()
-  (let* ((p (make-lsp--parser :workspace lsp--test-workspace)))
-    (should (equal (lsp--parser-read p "Content-Length: 18\r") nil))
-    (should (equal (lsp--parser-read p "\n\r\n{\"somedata\":\"\xe2\x80") nil))
-    (should (equal (lsp--parser-read p "\x99\"}Content-Length: 14\r\n\r\n{")
+  (let* ((fn (lsp--create-process-message)))
+    (should (equal (funcall fn "Content-Length: 18\r") nil))
+    (should (equal (funcall fn "\n\r\n{\"somedata\":\"\xe2\x80") nil))
+    (should (equal (funcall fn "\x99\"}Content-Length: 14\r\n\r\n{")
                    '("{\"somedata\":\"’\"}")))
-    (should (equal (lsp--parser-read p "\"somedata\":2}")
+    (should (equal (funcall fn "\"somedata\":2}")
                    '("{\"somedata\":2}")))))
 
 (ert-deftest lsp--non-related-content-on-stdout ()
-  (let* ((p (make-lsp--parser :workspace lsp--test-workspace)))
-    (let* ((p (make-lsp--parser :workspace lsp--test-workspace)))
-      (should (equal (lsp--parser-read p "ConentOnStdoutContent-Length: 14\r\n\r\n{\"somedata\":1}")
-                     '("{\"somedata\":1}"))))))
+  (let* ((fn (lsp--create-process-message)))
+    (should (equal (funcall fn "ConentOnStdoutContent-Length: 14\r\n\r\n{\"somedata\":1}")
+                   '("{\"somedata\":1}")))))
 
 (ert-deftest lsp--parser-read--ignored-messages ()
   (lsp--on-notification
