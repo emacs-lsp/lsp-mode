@@ -91,10 +91,33 @@
                   :server-id 'ada-ls))
 
 ;;; Bash
+(defgroup lsp-bash nil
+  "Settings for the Bash Language Server."
+  :group 'tools
+  :tag "Language Server"
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-bash-explainshell-endpoint nil
+  "The endpoint to use explainshell.com to answer 'onHover' queries.
+See instructions at https://marketplace.visualstudio.com/items?itemName=mads-hartmann.bash-ide-vscode"
+  :type 'string
+  :risky t
+  :group 'lsp-bash
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-bash-highlight-parsing-errors nil
+  "Consider parsing errors in scripts as 'problems'."
+  :type 'boolean
+  :group 'lsp-bash
+  :package-version '(lsp-mode . "6.2"))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("bash-language-server" "start"))
                   :major-modes '(sh-mode)
                   :priority -1
+                  :environment-fn (lambda ()
+                                    '(("EXPLAINSHELL_ENDPOINT" . lsp-bash-explainshell-endpoint)
+                                      ("HIGHLIGHT_PARSING_ERRORS" . lsp-bash-highlight-parsing-errors)))
                   :server-id 'bash-ls))
 
 ;;; Groovy

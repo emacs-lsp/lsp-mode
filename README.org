@@ -274,16 +274,16 @@
    [[file:https://graphs.waffle.io/emacs-lsp/lsp-mode/throughput.svg]]
 *** Members
     Here it is a list of the current =lsp-mode= members and what they are primary working on/responsible for.
-    | Member                                                | Responsible for:                   |
-    |-------------------------------------------------------+------------------------------------|
-    | [[https://github.com/TOTBWF][TOTBWF]]                 | =F#=                               |
-    | [[https://github.com/brotzeit][brotzeit]]             | =Rust=                             |
-    | [[https://github.com/dsyzling][dsyzling]]             | =Scala=                            |
-    | [[https://github.com/kurnevsky][kurnevsky]]           | =Scala= & =Rust=                   |
-    | [[https://github.com/seagle0128][seagle0128]]         | =Go= & =MS Python Language Server= |
+    | Member         | Responsible for:                   |
+    |----------------+------------------------------------|
+    | [[https://github.com/TOTBWF][TOTBWF]]         | =F#=                               |
+    | [[https://github.com/brotzeit][brotzeit]]       | =Rust=                             |
+    | [[https://github.com/dsyzling][dsyzling]]       | =Scala=                            |
+    | [[https://github.com/kurnevsky][kurnevsky]]      | =Scala= & =Rust=                   |
+    | [[https://github.com/seagle0128][seagle0128]]     | =Go= & =MS Python Language Server= |
     | [[https://github.com/sebastiansturm][sebastiansturm]] | =lsp-mode= core & =C++=            |
-    | [[https://github.com/vibhavp][vibhavp]]               | =lsp-mode= core                    |
-    | [[https://github.com/yyoncho][yyoncho]]               | =lsp-mode= core and =Java=         |
+    | [[https://github.com/vibhavp][vibhavp]]        | =lsp-mode= core                    |
+    | [[https://github.com/yyoncho][yyoncho]]        | =lsp-mode= core and =Java=         |
 
 ** Troubleshooting
    - set ~lsp-log-io~ to ~t~ to inspect communication between client and the server. Use =lsp-workspace-show-log= to switch to the corresponding log buffer.
@@ -306,6 +306,22 @@
                         :major-modes '(python-mode)
                         :server-id 'pyls))
     #+END_SRC
+
+If the language server supports environment variables to control additional behavior, you can register that by using the ~:environment-fn~ function, like the Bash language client does:
+
+    #+BEGIN_SRC emacs-lisp
+      (lsp-register-client
+       (make-lsp-client :new-connection (lsp-stdio-connection '("bash-language-server" "start"))
+                        :major-modes '(sh-mode)
+                        :priority -1
+                        :environment-fn (lambda ()
+                                          (("EXPLAINSHELL_ENDPOINT" . lsp-bash-explainshell-endpoint)
+                                           ("HIGHLIGHT_PARSING_ERRORS" . lsp-bash-highlight-parsing-errors)))
+                        :server-id 'bash-ls))
+    #+END_SRC
+
+~lsp-bash-explainshell-endpoint~ and ~lsp-bash-highlight-parsing-errors~ are language client ~defcustom~ that expose supported server environment settings in a type-safe way. If you change any of those variables, restart the language server with ~lsp-restart-workspace~ for the changes to be applied.
+
 *** Sections
     ~lsp-mode~ provides tools to bridge emacs ~defcustom~ as a language configuration sections properties(see [[https://microsoft.github.io/language-server-protocol/specification#workspace_configuration][specification workspace/configuration]]). In addition you may use ~lsp-generate-settings~ from [[https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-generate-settings.el][Generate Settings script]] to generate ~defcustom~ from ~package.json~ VScode plugin manifest. Example:
     #+BEGIN_SRC emacs-lisp
