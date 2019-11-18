@@ -290,6 +290,54 @@ at all."
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-pyls-plugins-flake8-enabled nil
+  "Enable or disable the plugin."
+  :type 'boolean
+  :group 'lsp-pyls
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-pyls-plugins-flake8-exclude nil
+  "List of glob patterns to exclude from checks."
+  :type '(repeat string)
+  :group 'lsp-pyls
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-pyls-plugins-flake8-filename nil
+  "List of glob patterns to include for checks."
+  :type '(repeat string)
+  :group 'lsp-pyls
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-pyls-plugins-flake8-hang-closing nil
+  "Toggle whether pycodestyle should enforce matching the indentation of the
+opening bracket’s line. When you specify this, it will prefer that you hang the
+closing bracket rather than match the indentation."
+  :type 'boolean
+  :group 'lsp-pyls
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-pyls-plugins-flake8-ignore nil
+  "A list of codes to ignore."
+  :type '(repeat string)
+  :group 'lsp-pyls
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-pyls-plugins-flake8-max-line-length 80
+  "Set the maximum length that any line (with some exceptions) may be.
+Exceptions include lines that are either strings or comments which are entirely URLs."
+  :type 'integer
+  :group 'lsp-pyls
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-pyls-plugins-flake8-select nil
+  "Specify the list of error codes you wish Flake8 to report. Similarly to
+`lsp-pyls-plugins-flake8-ignore'. You can specify a portion of an error code to
+get all that start with that string. For example, you can use E, E4, E43, and
+E431"
+  :type '(repeat string)
+  :group 'lsp-pyls
+  :package-version '(lsp-mode . "6.2"))
+
 (lsp-register-custom-settings
  '(("pyls.rope.ropeFolder" lsp-pyls-rope-rope-folder)
    ("pyls.rope.extensionModules" lsp-pyls-rope-extension-modules)
@@ -313,6 +361,13 @@ at all."
    ("pyls.plugins.pycodestyle.enabled" lsp-pyls-plugins-pycodestyle-enabled t)
    ("pyls.plugins.pylint.enabled" lsp-pyls-plugins-pylint-enabled t)
    ("pyls.plugins.pylint.args" lsp-pyls-plugins-pylint-args)
+   ("pyls.plugins.flake8.enabled" lsp-pyls-plugins-flake8-enabled)
+   ("pyls.plugins.flake8.exclude" lsp-pyls-plugins-flake8-exclude)
+   ("pyls.plugins.flake8.filename" lsp-pyls-plugins-flake8-filename)
+   ("pyls.plugins.flake8.hangClosing" lsp-pyls-plugins-flake8-hang-closing)
+   ("pyls.plugins.flake8.ignore" lsp-pyls-plugins-flake8-ignore)
+   ("pyls.plugins.flake8.maxLineLength" lsp-pyls-plugins-flake8-max-line-length)
+   ("pyls.plugins.flake8.select" lsp-pyls-plugins-flake8-select)
    ("pyls.plugins.preload.modules" lsp-pyls-plugins-preload-modules)
    ("pyls.plugins.preload.enabled" lsp-pyls-plugins-preload-enabled t)
    ("pyls.plugins.mccabe.threshold" lsp-pyls-plugins-mccabe-threshold)
