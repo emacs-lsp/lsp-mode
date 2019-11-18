@@ -145,7 +145,7 @@ complexity."
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-pyls-plugins-pylint-enabled t
+(defcustom lsp-pyls-plugins-pylint-enabled nil
   "Enable or disable the plugin."
   :type 'boolean
   :group 'lsp-pyls
