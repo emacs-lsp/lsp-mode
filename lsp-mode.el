@@ -1098,7 +1098,15 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   (path->uri-fn nil)
 
   ;; ‘uri->path-fn’ the function to use for uri->path conversion for the client.
-  (uri->path-fn nil))
+  (uri->path-fn nil)
+  ;; Function that returns an environment structure that will be used
+  ;; to set some environment variables when starting the language
+  ;; server process. These environment variables enable some
+  ;; additional features in the language server. The environment
+  ;; structure is an alist of the form (KEY . VALUE), where KEY is a
+  ;; string (regularly in all caps), and VALUE may be a string, a
+  ;; boolean, or a sequence of strings.
+  (environment-fn))
 
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--line-character-to-point (line character)
@@ -5129,6 +5137,30 @@ Return a nested alist keyed by symbol names. e.g.
              (lsp-log "Command \"%s\" is present on the path." (s-join " " final-command))))
       (ignore (lsp-log "Command \"%s\" is not present on the path." (s-join " " final-command)))))
 
+(defun lsp--value-to-string (value)
+  "Convert VALUE to a string that can be set as value in an environment variable."
+  (cond
+   ((stringp value) value)
+   ((booleanp value) (if value
+                            "1"
+                          "0"))
+   ((and (sequencep value)
+         (seq-every-p #'stringp value)) (string-join value ":"))
+   (t (user-error "Only strings, booleans, and sequences of strings are supported as environment variables"))))
+
+(defun lsp--compute-process-environment (environment-fn)
+  "Append a list of KEY=VALUE from the alist ENVIRONMENT to `process-environment'.
+Ignore non-boolean keys whose value is nil."
+  (let ((environment (if environment-fn
+                         (funcall environment-fn)
+                       nil)))
+    (-flatten (cons (cl-loop for (key . value) in environment
+                             if (or value
+                                    (eq (get value 'custom-type) 'boolean))
+                             collect (concat key "=" (lsp--value-to-string
+                                                      (eval value))))
+                    process-environment))))
+
 (defun lsp-stdio-connection (command)
   "Returns a connection property list using COMMAND.
 COMMAND can be:
@@ -5144,9 +5176,11 @@ standard I/O."
                                                (seq-every-p (lambda (el)
                                                               (stringp el))
                                                             l))))))
-  (list :connect (lambda (filter sentinel name)
+  (list :connect (lambda (filter sentinel name environment-fn)
                    (let ((final-command (lsp-resolve-final-function command))
-                         (process-name (generate-new-buffer-name name)))
+                         (process-name (generate-new-buffer-name name))
+                         (process-environment
+                          (lsp--compute-process-environment environment-fn)))
                      (let* ((stderr-buf (format "*%s::stderr*" process-name))
                             (proc (make-process
                                    :name process-name
@@ -5204,13 +5238,15 @@ port number. It should return a command for launches a language server
 process listening for TCP connections on the provided port."
   (cl-check-type command-fn function)
   (list
-   :connect (lambda (filter sentinel name)
+   :connect (lambda (filter sentinel name environment-fn)
               (let* ((host "localhost")
                      (port (lsp--find-available-port host (cl-incf lsp--tcp-port)))
                      (command (funcall command-fn port))
                      (final-command (if (consp command) command (list command)))
                      (_ (unless (executable-find (cl-first final-command))
                           (user-error (format "Couldn't find executable %s" (cl-first final-command)))))
+                     (process-environment
+                      (lsp--compute-process-environment environment-fn))
                      (proc (make-process :name name :connection-type 'pipe :coding 'no-conversion
                                          :command final-command :sentinel sentinel :stderr name :noquery t))
                      (tcp-proc (lsp--open-network-stream host port (concat name "::tcp"))))
@@ -5231,7 +5267,7 @@ to it. COMMAND is function with one parameter(the port) and it
 should return the command to start the LS server."
   (cl-check-type command-fn function)
   (list
-   :connect (lambda (filter sentinel name)
+   :connect (lambda (filter sentinel name environment-fn)
               (let* (tcp-client-connection
                      (tcp-server (make-network-process :name (format "*tcp-server-%s*" name)
                                                        :buffer (format "*tcp-server-%s*" name)
@@ -5243,7 +5279,8 @@ should return the command to start the LS server."
                                                        :server 't))
                      (port (process-contact tcp-server :service))
                      (final-command (funcall command-fn port))
-
+                     (process-environment
+                      (lsp--compute-process-environment environment-fn))
                      (cmd-proc (make-process :name name
                                              :connection-type 'pipe
                                              :coding 'no-conversion
@@ -5275,7 +5312,7 @@ should return the command to start the LS server."
   "Create LSP stdio connection named name.
 LOCAL-COMMAND is either list of strings, string or function which
 returns the command to execute."
-  (list :connect (lambda (filter sentinel name)
+  (list :connect (lambda (filter sentinel name environment-fn)
                    (let* ((final-command (lsp-resolve-final-function local-command))
                           ;; wrap with stty to disable converting \r to \n
                           (process-name (generate-new-buffer-name name))
@@ -5286,7 +5323,9 @@ returns the command to execute."
                                                             (or (when generate-error-file-fn
                                                                   (funcall generate-error-file-fn name))
                                                                 (format "/tmp/%s-%s-stderr" name
-                                                                        (cl-incf lsp--stderr-index))))))))
+                                                                        (cl-incf lsp--stderr-index)))))))
+                          (process-environment
+                           (lsp--compute-process-environment environment-fn)))
                      (let ((proc (apply 'start-file-process-shell-command process-name
                                         (format "*%s*" process-name) wrapped-command)))
                        (set-process-sentinel proc sentinel)
@@ -5411,13 +5450,15 @@ SESSION is the active session."
           (client (copy-lsp--client client-template))
           (workspace (lsp--make-workspace client root))
           (server-id (lsp--client-server-id client))
+          (environment-fn (lsp--client-environment-fn client))
           ((proc . cmd-proc) (funcall
                               (or (plist-get (lsp--client-new-connection client) :connect)
                                   (user-error "Client %s is configured incorrectly" client))
                               (-partial #'lsp--parser-filter
                                         (lsp--workspace-parser workspace))
                               (apply-partially #'lsp--process-sentinel workspace)
-                              (format "%s" server-id)))
+                              (format "%s" server-id)
+                              environment-fn))
           (workspace-folders (gethash server-id (lsp-session-server-id->folders session))))
     (setf (lsp--workspace-proc workspace) proc
           (lsp--workspace-cmd-proc workspace) cmd-proc)
