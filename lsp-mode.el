@@ -1074,14 +1074,6 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   (server-id)
   ;; defines whether the client supports multi root workspaces.
   (multi-root)
-  ;; Function that returns an environment structure that will be used
-  ;; to set some environment variables when starting the language
-  ;; server process. These environment variables enable some
-  ;; additional features in the language server. The environment
-  ;; structure is an alist of the form (KEY . VALUE), where KEY is a
-  ;; string (regularly in all caps), and VALUE may be a string, a
-  ;; boolean, or a sequence of strings.
-  (environment-fn)
   ;; Initialization options or a function that returns initialization options.
   (initialization-options)
   ;; Provides support for registering LSP Server specific capabilities.
@@ -1106,7 +1098,15 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   (path->uri-fn nil)
 
   ;; ‘uri->path-fn’ the function to use for uri->path conversion for the client.
-  (uri->path-fn nil))
+  (uri->path-fn nil)
+  ;; Function that returns an environment structure that will be used
+  ;; to set some environment variables when starting the language
+  ;; server process. These environment variables enable some
+  ;; additional features in the language server. The environment
+  ;; structure is an alist of the form (KEY . VALUE), where KEY is a
+  ;; string (regularly in all caps), and VALUE may be a string, a
+  ;; boolean, or a sequence of strings.
+  (environment-fn))
 
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--line-character-to-point (line character)
