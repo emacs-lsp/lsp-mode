@@ -666,7 +666,7 @@ Changes take effect only when a new session is started."
                       (with-lsp-workspace workspace
                         (let ((table (or (lsp--capability "renameProvider")
                                          (-some-> (lsp--registered-capability "textDocument/rename")
-                                                  (lsp--registered-capability-options)))))
+                                           (lsp--registered-capability-options)))))
                           (and (hash-table-p table)
                                (gethash "prepareProvider" table)))))))
 
@@ -1545,14 +1545,14 @@ WORKSPACE is the workspace that contains the diagnostics."
                                       (setq start (point-at-bol (1+ start-line))
                                             end (point-at-eol (1+ end-line)))))))))
                           (and (fboundp 'flymake-make-diagnostic)
-                           (flymake-make-diagnostic (current-buffer)
-                                                   start
-                                                   end
-                                                   (cl-case severity
-                                                     (1 :error)
-                                                     (2 :warning)
-                                                     (t :note))
-                                                   message)))))
+                               (flymake-make-diagnostic (current-buffer)
+                                                        start
+                                                        end
+                                                        (cl-case severity
+                                                          (1 :error)
+                                                          (2 :warning)
+                                                          (t :note))
+                                                        message)))))
                ;; This :region keyword forces flymake to delete old diagnostics in
                ;; case the buffer hasn't changed since the last call to the report
                ;; function. See https://github.com/joaotavora/eglot/issues/159
@@ -3779,9 +3779,9 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
 point."
   (interactive)
   (let ((contents (-some->> (lsp--text-document-position-params)
-                            (lsp--make-request "textDocument/hover")
-                            (lsp--send-request)
-                            (gethash "contents"))))
+                    (lsp--make-request "textDocument/hover")
+                    (lsp--send-request)
+                    (gethash "contents"))))
     (if (and contents (not (equal contents "")))
         (let ((lsp-help-buf-name "*lsp-help*"))
           (with-current-buffer (get-buffer-create lsp-help-buf-name)
@@ -4027,9 +4027,9 @@ RENDER-ALL - nil if only the signature should be rendered."
 (defun lsp--find-action-handler (command)
   "Find action handler for particular COMMAND."
   (--some (-some->> it
-                    (lsp--workspace-client)
-                    (lsp--client-action-handlers)
-                    (gethash command))
+            (lsp--workspace-client)
+            (lsp--client-action-handlers)
+            (gethash command))
           (lsp-workspaces)))
 
 (defun lsp--text-document-code-action-params ()
@@ -4502,7 +4502,7 @@ perform the request synchronously."
   "Get symbol to rename and placeholder at point."
   (if (let ((rename-provider (or (lsp--capability "renameProvider")
                                  (-some-> (lsp--registered-capability "textDocument/rename")
-                                          (lsp--registered-capability-options)))))
+                                   (lsp--registered-capability-options)))))
         (and (hash-table-p rename-provider)
              (gethash "prepareProvider" rename-provider)))
       (-when-let (response (lsp-request "textDocument/prepareRename"
@@ -4726,10 +4726,10 @@ textDocument/didOpen for the new file."
   "Get section configuration.
 PARAMS are the `workspace/configuration' request params"
   (-some->> params
-            (gethash "items")
-            (-map (-lambda ((&hash "section"))
-                    (gethash section (lsp-configuration-section section))))
-            (apply #'vector)))
+    (gethash "items")
+    (-map (-lambda ((&hash "section"))
+            (gethash section (lsp-configuration-section section))))
+    (apply #'vector)))
 
 (defun lsp--on-request (workspace request)
   "Call the appropriate handler for REQUEST, and send the return value to the server.
@@ -5136,8 +5136,8 @@ Return a nested alist keyed by symbol names. e.g.
   (cond
    ((stringp value) value)
    ((booleanp value) (if value
-                            "1"
-                          "0"))
+                         "1"
+                       "0"))
    ((and (sequencep value)
          (seq-every-p #'stringp value)) (string-join value ":"))
    (t (user-error "Only strings, booleans, and sequences of strings are supported as environment variables"))))
@@ -6001,8 +6001,8 @@ such."
                                                       (-compose 'symbol-name 'lsp--client-server-id) nil t))
                         (lsp--find-clients)))
         (-if-let (project-root (-some-> session
-                                        (lsp--calculate-root (buffer-file-name))
-                                        (lsp-cannonical-file-name)))
+                                 (lsp--calculate-root (buffer-file-name))
+                                 (lsp-cannonical-file-name)))
             (progn
               ;; update project roots if needed and persist the lsp session
               (unless (-contains? (lsp-session-folders session) project-root)
