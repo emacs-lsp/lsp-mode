@@ -1238,8 +1238,10 @@ DELETE when `lsp-mode.el' is deleted.")
 
 (defun lsp--path-to-uri-1 (path)
   (concat lsp--uri-file-prefix
-          (url-hexify-string (expand-file-name (or (file-remote-p path 'localname t) path))
-                             url-path-allowed-chars)))
+          (--> path
+               (expand-file-name it)
+               (or (file-remote-p it 'localname t) it)
+               (url-hexify-string it url-path-allowed-chars))))
 
 (defun lsp--path-to-uri (path)
   "Convert PATH to a uri."
