@@ -2903,11 +2903,11 @@ in that particular folder."
 
     (when (and lsp-enable-symbol-highlighting
                (lsp--capability "documentHighlightProvider"))
-      (add-hook 'lsp-on-idle-hook #'lsp--document-highlight))
+      (add-hook 'lsp-on-idle-hook #'lsp--document-highlight nil t))
 
     (when (and lsp-enable-links
                (lsp--capability "documentLinkProvider"))
-      (add-hook 'lsp-on-idle-hook #'lsp--document-links)))
+      (add-hook 'lsp-on-idle-hook #'lsp--document-links nil t)))
 
   (lsp--on-change-debounce (current-buffer))
   (lsp--on-idle (current-buffer))
