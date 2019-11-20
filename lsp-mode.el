@@ -2867,6 +2867,9 @@ in that particular folder."
       (cancel-timer lsp--on-idle-timer)
       (setq lsp--on-idle-timer nil))
 
+    (remove-hook 'lsp-on-idle-hook #'lsp--document-links t)
+    (remove-hook 'lsp-on-idle-hook #'lsp--document-highlight t)
+
     (lsp--remove-overlays 'lsp-sem-highlight)
     (lsp--remove-overlays 'lsp-highlight)
     (lsp--remove-overlays 'lsp-links)
