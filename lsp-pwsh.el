@@ -274,12 +274,12 @@ Must not nil.")
   ))
 
 ;; Compatibility
-(if (fboundp 'company-lsp)
-    (advice-add 'company-tng--supress-post-completion
-                :after-while
-                (lambda (&rest _)
-                  (not (memq major-mode lsp-pwsh--major-modes)))
-                '((name . --force-post-completion-for-pwsh))))
+(with-eval-after-load 'company-lsp
+  (advice-add 'company-tng--supress-post-completion
+              :after-while
+              (lambda (&rest _)
+                (not (memq major-mode lsp-pwsh--major-modes)))
+              '((name . --force-post-completion-for-pwsh))))
 
 ;;; Utils
 (defconst lsp-pwsh-unzip-script "%s -noprofile -noninteractive -nologo -ex bypass -command Expand-Archive -Path '%s' -DestinationPath '%s'"
