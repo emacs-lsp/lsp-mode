@@ -456,7 +456,7 @@ PARAMS progress report notification data."
 
 (defun lsp-rust-analyzer-initialized? ()
   (when-let ((workspace (lsp-find-workspace 'rust-analyzer (buffer-file-name))))
-   (eq 'initialized (lsp--workspace-status workspace))))
+    (eq 'initialized (lsp--workspace-status workspace))))
 
 (defun lsp-rust-analyzer-inlay-hints-change-handler (&rest _rest)
   (when lsp-rust-analyzer-inlay-hints-timer
@@ -479,8 +479,8 @@ PARAMS progress report notification data."
 
 ;; activate `lsp-rust-analyzer-inlay-hints-mode'
 (when lsp-rust-analyzer-server-display-inlay-hints
- (add-hook 'rustic-mode-hook (lambda () (lsp-rust-analyzer-inlay-hints-mode)))
- (add-hook 'rust-mode-hook (lambda () (lsp-rust-analyzer-inlay-hints-mode))))
+  (add-hook 'rustic-mode-hook (lambda () (lsp-rust-analyzer-inlay-hints-mode)))
+  (add-hook 'rust-mode-hook (lambda () (lsp-rust-analyzer-inlay-hints-mode))))
 
 (provide 'lsp-rust)
 ;;; lsp-rust.el ends here
