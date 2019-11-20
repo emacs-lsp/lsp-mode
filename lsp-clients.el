@@ -46,6 +46,7 @@
 (require 'lsp-vhdl)
 (require 'lsp-yaml)
 (require 'lsp-terraform)
+(require 'lsp-pwsh)
 
 ;;; Ada
 (defgroup lsp-ada nil

@@ -615,6 +615,7 @@ Changes take effect only when a new session is started."
                                         (haskell-mode . "haskell")
                                         (hack-mode . "hack")
                                         (php-mode . "php")
+                                        (powershell-mode . "powershell")
                                         (json-mode . "json")
                                         (rjsx-mode . "javascript")
                                         (js2-mode . "javascript")
