@@ -133,17 +133,17 @@
                   :server-id 'haxe
                   :initialized-fn (lambda (_workspace)
                                     '(("sendMethodResults" . t)
-                                     ("haxelibConfig"
-                                      ("executable" . "haxelib"))
-                                     ("displayServerConfig"
-                                      ("print"
-                                       ("reusing" . :json-false)
-                                       ("completion" . :json-false))
-                                      ("arguments" .
-                                       [])
-                                      ("env")
-                                      ("path" . "haxe"))
-                                     ("displayArguments" . ["build.hxml"])))
+                                      ("haxelibConfig"
+                                       ("executable" . "haxelib"))
+                                      ("displayServerConfig"
+                                       ("print"
+                                        ("reusing" . :json-false)
+                                        ("completion" . :json-false))
+                                       ("arguments" .
+                                        [])
+                                       ("env")
+                                       ("path" . "haxe"))
+                                      ("displayArguments" . ["build.hxml"])))
                   :notification-handlers (lsp-ht ("haxe/progressStart" 'lsp-clients--haxe-processStart)
                                                  ("haxe/progressStop" 'ignore)
                                                  ("haxe/didDetectOldPreview" 'ignore)
