@@ -693,7 +693,7 @@ must be used for handling a particular message.")
   :group 'lsp-faces)
 
 (defface lsp-face-highlight-write
-  '((t :inherit highlight :slant italic))
+  '((t :inherit highlight :weight bold))
   "Face used for highlighting symbols being written to."
   :group 'lsp-faces)
 
@@ -711,11 +711,6 @@ must be used for handling a particular message.")
   "If non-nil skip current symbol when setting symbol highlights."
   :group 'lsp-mode
   :type 'boolean)
-
-(defcustom lsp-document-highlight-delay 0.2
-  "Seconds of idle time to wait before showing symbol highlight."
-  :type 'number
-  :group 'lsp-mode)
 
 (defcustom lsp-file-watch-threshold 1000
   "Show warning if the files to watch are more than.
@@ -754,9 +749,6 @@ They are added to `markdown-code-lang-modes'")
 (defvar-local lsp--lens-refresh-timer nil
   "Refresh timer for the lenses.")
 
-(defvar-local lsp--lens-idle-timer  nil
-  "Lens idle timer.")
-
 (defvar-local lsp--lens-data nil
   "Pair of points which holds the last window location the lenses were loaded.")
 
@@ -764,11 +756,6 @@ They are added to `markdown-code-lang-modes'")
 
 (defvar-local lsp--buffer-workspaces ()
   "List of the buffer workspaces.")
-
-(defvar-local lsp--link-overlays nil
-  "A list of overlays that display document links.")
-
-(defvar-local lsp--links-idle-timer nil)
 
 (defvar lsp--session nil
   "Contain the `lsp-session' for the current Emacs instance.")
@@ -970,15 +957,6 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
                                       predicate require-match initial-input hist
                                       def inherit-input-method)))
     (cdr (assoc completion result))))
-
-(cl-defstruct lsp--parser
-  (headers '()) ;; alist of headers
-  (body nil) ;; message body
-  (reading-body nil) ;; If non-nil, reading body
-  (body-length nil) ;; length of current message body
-  (body-received 0) ;; amount of current message body currently stored in 'body'
-  (leftovers nil) ;; Leftover data from previous chunk; to be processed
-  (workspace nil))
 
 ;; A ‘lsp--client’ object describes the client-side behavior of a language
 ;; server.  It is used to start individual server processes, each of which is
@@ -1774,6 +1752,8 @@ WORKSPACE is the workspace that contains the diagnostics."
 
 ;; lenses support
 
+(defvar-local lsp--lens-modified? nil)
+
 (defun lsp--lens-text-width (from to)
   "Measure the width of the text between FROM and TO.
 Results are meaningful only if FROM and TO are on the same line."
@@ -1820,6 +1800,12 @@ Results are meaningful only if FROM and TO are on the same line."
       (lsp--lens-update ov)
       ov)))
 
+(defun lsp--lens-idle-function (&optional buffer)
+  "Create idle function for buffer BUFFER."
+  (when (and (or (not buffer) (eq (current-buffer) buffer))
+             (not (equal (cons (window-start) (window-end)) lsp--lens-page)))
+    (lsp--lens-schedule-refresh nil)))
+
 (defun lsp--lens-overlay-matches-pos (ov pos)
   "Check if OV is a lens covering POS."
   (and (overlay-get ov 'lsp-lens)
@@ -1830,12 +1816,6 @@ Results are meaningful only if FROM and TO are on the same line."
   "Handler for `after-save-hook' for lens mode."
   (lsp--lens-schedule-refresh t))
 
-(defun lsp--lens-idle-function (&optional buffer)
-  "Create idle function for buffer BUFFER."
-  (when (and (or (not buffer) (eq (current-buffer) buffer))
-             (not (equal (cons (window-start) (window-end)) lsp--lens-page)))
-    (lsp--lens-schedule-refresh nil)))
-
 (defun lsp--lens-schedule-refresh (buffer-modified?)
   "Call each of the backend.
 BUFFER-MODIFIED? determines whether the buffer is modified or not."
@@ -1843,9 +1823,10 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
 
   (setq-local lsp--lens-page (cons (window-start) (window-end)))
   (setq-local lsp--lens-refresh-timer
-              (run-with-timer lsp-lens-debounce-interval nil 'lsp-lens-refresh
-                              buffer-modified?
-                              (current-buffer))))
+              (run-with-timer lsp-lens-debounce-interval
+                              nil
+                              #'lsp-lens-refresh
+                              (or lsp--lens-modified? buffer-modified?))))
 
 (defun lsp--lens-keymap (command)
   (-doto (make-sparse-keymap)
@@ -1869,6 +1850,7 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
   "Show LENSES."
   ;; rerender only if there are lenses which are not processed or if their count
   ;; has changed(e. g. delete lens should trigger redisplay).
+  (setq lsp--lens-modified? nil)
   (when (or (--any? (not (gethash "processed" it)) lenses) (eq (length lenses) lsp--lens-last-count))
     (setq-local lsp--lens-last-count (length lenses))
     (let ((overlays
@@ -1899,19 +1881,16 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
           (delete-overlay it)))
       (setq-local lsp--lens-overlays overlays))))
 
-(defun lsp-lens-refresh (buffer-modified? &optional buffer)
+(defun lsp-lens-refresh (buffer-modified?)
   "Refresh lenses using lenses backend.
 BUFFER-MODIFIED? determines whether the buffer is modified or not."
-  (setq buffer (or buffer (current-buffer)))
-  (when (buffer-live-p buffer)
+  (let ((buffer (current-buffer)))
     (dolist (backend lsp-lens-backends)
       (funcall backend buffer-modified?
                (lambda (lenses version)
                  (when (buffer-live-p buffer)
                    (with-current-buffer buffer
                      (lsp--process-lenses backend lenses version))))))))
-
-(defalias 'lsp--lens-refresh 'lsp-lens-refresh)
 
 (defun lsp--process-lenses (backend lenses version)
   "Process LENSES originated from BACKEND.
@@ -1946,7 +1925,7 @@ version."
   "Delete all lenses."
   (interactive)
   (let ((scroll-preserve-screen-position t))
-    (seq-do 'delete-overlay lsp--lens-overlays)
+    (seq-do #'delete-overlay lsp--lens-overlays)
     (setq-local lsp--lens-overlays nil)))
 
 (defun lsp--lens-backend-not-loaded? (lens)
@@ -2007,15 +1986,11 @@ CALLBACK - callback for the lenses."
                                  (lsp--lens-backend-fetch-missing lsp--lens-backend-cache callback lsp--cur-version)))
                              :error-handler #'ignore
                              :mode 'tick
-                             :no-merge t))
+                             :no-merge t
+                             :cancel-token :lenses))
       (if (-all? #'lsp--lens-backend-present? lsp--lens-backend-cache)
           (funcall callback lsp--lens-backend-cache lsp--cur-version)
         (lsp--lens-backend-fetch-missing lsp--lens-backend-cache callback lsp--cur-version)))))
-
-(defun lsp--lens-stop-timer ()
-  "Stop `lsp--lens-idle-timer'."
-  (-some-> lsp--lens-idle-timer cancel-timer)
-  (setq-local lsp--lens-idle-timer nil))
 
 (define-minor-mode lsp-lens-mode
   "toggle code-lens overlays"
@@ -2025,16 +2000,15 @@ CALLBACK - callback for the lenses."
   :lighter "Lens"
   (cond
    (lsp-lens-mode
-    (setq-local lsp--lens-idle-timer (run-with-idle-timer
-                                      lsp-lens-check-interval t #'lsp--lens-idle-function (current-buffer)))
-    (lsp-lens-refresh t)
-    (add-hook 'kill-buffer-hook #'lsp--lens-stop-timer nil t)
-    (add-hook 'after-save-hook 'lsp--lens-after-save nil t))
+    (add-hook 'lsp-on-idle-hook #'lsp--lens-idle-function nil t)
+    (add-hook 'lsp-on-change-hook (lambda () (lsp--lens-schedule-refresh t)) nil t)
+    (add-hook 'after-save-hook (lambda () (lsp--lens-schedule-refresh t)) nil t)
+    (lsp-lens-refresh t))
    (t
-    (lsp--lens-stop-timer)
     (lsp-lens-hide)
-    (remove-hook 'kill-buffer-hook #'lsp--lens-stop-timer t)
-    (remove-hook 'after-save-hook #'lsp--lens-after-save t)
+    (remove-hook 'lsp-on-idle-hook #'lsp--lens-idle-function t)
+    (remove-hook 'lsp-on-change-hook (lambda () (lsp--lens-schedule-refresh nil)) t)
+    (remove-hook 'after-save-hook (lambda () (lsp--lens-schedule-refresh t)) t)
     (setq-local lsp--lens-last-count nil)
     (setq-local lsp--lens-backend-cache nil))))
 
@@ -2123,9 +2097,8 @@ CALLBACK - callback for the lenses."
 
 ;; A ‘lsp--workspace’ object represents exactly one language server process.
 (cl-defstruct lsp--workspace
-  ;; ‘parser’ is a ‘lsp--parser’ object used to parse messages for this
-  ;; workspace.  Parsers are not shared between workspaces.
-  (parser nil :read-only t)
+  ;; the `ewoc' object for displaying I/O to and from the server
+  (ewoc nil)
 
   ;; ‘server-capabilities’ is a hash table of the language server capabilities.
   ;; It is the hash table representation of a LSP ServerCapabilities structure;
@@ -2167,10 +2140,6 @@ CALLBACK - callback for the lenses."
   ;; ‘buffers’ is a list of buffers associated with this workspace.
   (buffers nil)
 
-  ;; ‘highlight-overlays’ is a hash table mapping buffers to a list of overlays
-  ;; used for highlighting the symbol under point.
-  (highlight-overlays (make-hash-table :test 'eq) :read-only t)
-
   ;; ‘semantic-highlighting-faces' is a vector containing one face for each
   ;; TextMate scope (or set of scopes) supported by the language server. Cf.
   ;; ‘lsp-semantic-highlighting-faces' if you wish to change the default
@@ -2210,9 +2179,7 @@ CALLBACK - callback for the lenses."
   (shutdown-action)
 
   ;; ‘diagnostics’ a hashmap with workspace diagnostics.
-  (diagnostics (make-hash-table :test 'equal))
-  ;; the `ewoc' object for displaying I/O to and from the server
-  (ewoc nil))
+  (diagnostics (make-hash-table :test 'equal)))
 
 (cl-defstruct lsp-session
   ;; contains the folders that are part of the current session
@@ -2431,26 +2398,27 @@ If NO-WAIT is non-nil send the request as notification."
        ((ht? resp-error) (error (gethash "message" resp-error)))
        (t (error (gethash "message" (cl-first resp-error))))))))
 
-(cl-defun lsp-request-async (method params callback &key mode error-handler no-merge)
+(cl-defun lsp-request-async (method params callback &key mode error-handler no-merge cancel-token)
   "Send request METHOD with PARAMS."
-  (lsp--send-request-async `(:jsonrpc "2.0" :method ,method :params ,params) callback mode error-handler no-merge))
+  (lsp--send-request-async `(:jsonrpc "2.0" :method ,method :params ,params) callback mode error-handler no-merge cancel-token))
 
-(defun lsp--create-async-callback (count callback mode method no-merge)
+(defun lsp--create-async-callback (count callback mode method no-merge cancel-token)
   "Create async handler expecting COUNT results, merge them and call CALLBACK.
 MODE determines when the callback will be called depending on the
 condition of the original buffer. METHOD is the invoked method.
 If NO-MERGE is non-nil, don't merge the results but return alist workspace->result."
   (let ((buf (current-buffer))
         results)
-    (cl-labels ((handle-result () (funcall
-                                   callback
-                                   (if no-merge
+    (cl-labels ((handle-result
+                 ()
+                 (when cancel-token
+                   (remhash cancel-token lsp--cancelable-requests))
+                 (funcall callback (if no-merge
                                        results
                                      (lsp--merge-results (-map #'cl-rest results) method)))))
       (pcase mode
         ('detached (lambda (result)
                      (push (cons lsp--cur-workspace result) results)
-
                      (when (and (eq (length results) count))
                        (handle-result))))
         ('alive (lambda (result)
@@ -2484,7 +2452,16 @@ METHOD is the executed method."
     (lsp--warn "%s" (or (gethash "message" error)
                         (format "%s Request has failed" method)))))
 
-(defun lsp--send-request-async (body callback &optional mode error-callback no-merge)
+(defvar lsp--cancelable-requests (ht))
+
+(defun lsp-cancel-request-by-token (cancel-token)
+  "Cancel request using CANCEL-TOKEN."
+  (-when-let ((request-id . workspaces) (gethash cancel-token lsp--cancelable-requests))
+    (with-lsp-workspaces workspaces
+      (lsp--cancel-request request-id))
+    (remhash cancel-token lsp--cancelable-requests)))
+
+(defun lsp--send-request-async (body callback &optional mode error-callback no-merge cancel-token)
   "Send BODY as a request to the language server.
 Call CALLBACK with the response received from the server
 asynchronously. MODE determines when the callback will be called
@@ -2500,6 +2477,9 @@ ERROR-CALLBACK will be called in case the request has failed.
 If NO-MERGE is non-nil, don't merge the results but return alist workspace->result."
   (lsp--flush-delayed-changes)
 
+  (when cancel-token
+    (lsp-cancel-request-by-token cancel-token))
+
   (if-let ((target-workspaces (lsp--find-workspaces-for body)))
       (let* ((start-time (current-time))
              (method (plist-get body :method))
@@ -2508,33 +2488,38 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
                                                          callback
                                                          mode
                                                          method
-                                                         no-merge))
+                                                         no-merge
+                                                         cancel-token))
              (error-async-callback (lsp--create-async-callback
                                     workspaces-count
                                     (or error-callback
                                         (lsp--create-default-error-handler method))
                                     mode
                                     method
-                                    nil))
+                                    nil
+                                    cancel-token))
              (id (cl-incf lsp-last-id))
              (body (plist-put body :id id)))
-        (--each target-workspaces
-          (with-lsp-workspace it
+        (when cancel-token
+          (puthash cancel-token (cons id target-workspaces) lsp--cancelable-requests))
+        (seq-doseq (workspace target-workspaces)
+          (with-lsp-workspace workspace
             (when lsp-print-io
               (lsp--log-entry-new (lsp--make-log-entry method id
                                                        (plist-get body :params)
                                                        'outgoing-req)
-                                  it))
+                                  workspace))
             (let ((message (lsp--make-message body)))
               (puthash id
                        (list async-callback error-async-callback method start-time (current-time))
                        (-> lsp--cur-workspace
                            lsp--workspace-client
                            lsp--client-response-handlers))
-              (lsp--send-no-wait message (lsp--workspace-proc lsp--cur-workspace)))))
+              (lsp--send-no-wait message (lsp--workspace-proc workspace)))))
         body)
     (error "No workspace could handle %s" (plist-get body :method))))
 
+;; deprecated, use lsp-request-async.
 (defalias 'lsp-send-request-async 'lsp--send-request-async)
 
 ;; Clean up the entire state of lsp mode when Emacs is killed, to get rid of any
@@ -2559,11 +2544,10 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
   "Cleanup buffer state.
 When a workspace is shut down, by request or from just
 disappearing, unset all the variables related to it."
-
   (let ((proc (lsp--workspace-cmd-proc lsp--cur-workspace)))
     (when (process-live-p proc)
       (kill-process proc))
-    (unless (lsp-workspaces)
+    (unless lsp--buffer-workspaces
       (lsp--managed-mode -1))))
 
 (defun lsp--client-capabilities (&optional custom-capabilities)
@@ -2845,8 +2829,6 @@ in that particular folder."
   nil nil nil
   (cond
    (lsp--managed-mode
-
-
     (add-function :before-until (local 'eldoc-documentation-function) #'lsp-eldoc-function)
     (eldoc-mode 1)
     (add-hook 'after-change-functions #'lsp-on-change nil t)
@@ -2860,14 +2842,16 @@ in that particular folder."
       (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t))
     (add-hook 'kill-buffer-hook #'lsp--text-document-did-close nil t)
     (add-hook 'post-self-insert-hook #'lsp--on-self-insert nil t)
-    (add-hook 'post-command-hook #'lsp--highlight nil t)
+    (add-hook 'post-command-hook #'lsp--post-command nil t)
+
+    (lsp--on-idle (current-buffer))
     (when lsp-enable-xref
       (add-hook 'xref-backend-functions #'lsp--xref-backend nil t)))
    (t
     (setq-local indent-region-function nil)
     (remove-function (local 'eldoc-documentation-function) #'lsp-eldoc-function)
 
-    (remove-hook 'post-command-hook #'lsp--highlight t)
+    (remove-hook 'post-command-hook #'lsp--post-command t)
     (remove-hook 'after-change-functions #'lsp-on-change t)
     (remove-hook 'after-revert-hook #'lsp-on-revert t)
     (remove-hook 'after-save-hook #'lsp-on-save t)
@@ -2877,11 +2861,17 @@ in that particular folder."
     (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t)
     (remove-hook 'kill-buffer-hook #'lsp--text-document-did-close t)
     (remove-hook 'post-self-insert-hook #'lsp--on-self-insert t)
-    (lsp--cancel-document-link-timer)
-    (save-restriction
-      (widen)
-      (remove-overlays (point-min) (point-max) 'lsp-sem-highlight t)))
-   (remove-hook 'xref-backend-functions #'lsp--xref-backend t)))
+
+    (when lsp--on-idle-timer
+      (cancel-timer lsp--on-idle-timer)
+      (setq lsp--on-idle-timer nil))
+
+    (lsp--remove-overlays 'lsp-sem-highlight)
+    (lsp--remove-overlays 'lsp-highlight)
+    (lsp--remove-overlays 'lsp-links)
+    (lsp-lens-mode -1)
+
+    (remove-hook 'xref-backend-functions #'lsp--xref-backend t))))
 
 (defun lsp--text-document-did-open ()
   "'document/didOpen event."
@@ -2902,16 +2892,27 @@ in that particular folder."
          (kind (if (hash-table-p sync) (gethash "change" sync) sync)))
     (setq lsp--server-sync-method (or lsp-document-sync-method
                                       (alist-get kind lsp--sync-methods))))
-  (when (and lsp-auto-configure lsp-enable-imenu (lsp--capability "documentSymbolProvider"))
-    (lsp-enable-imenu))
+  (when lsp-auto-configure
+    (when (and lsp-enable-imenu
+               (lsp--capability "documentSymbolProvider"))
+      (lsp-enable-imenu))
 
-  (when (and lsp-auto-configure
-             lsp-enable-indentation
-             (lsp--capability "documentRangeFormattingProvider"))
-    (setq-local indent-region-function #'lsp-format-region))
+    (when (and lsp-enable-indentation
+               (lsp--capability "documentRangeFormattingProvider"))
+      (setq-local indent-region-function #'lsp-format-region))
 
-  (run-hooks 'lsp-after-open-hook)
-  (lsp--set-document-link-timer))
+    (when (and lsp-enable-symbol-highlighting
+               (lsp--capability "documentHighlightProvider"))
+      (add-hook 'lsp-on-idle-hook #'lsp--document-highlight))
+
+    (when (and lsp-enable-links
+               (lsp--capability "documentLinkProvider"))
+      (add-hook 'lsp-on-idle-hook #'lsp--document-links)))
+
+  (lsp--on-change-debounce (current-buffer))
+  (lsp--on-idle (current-buffer))
+
+  (run-hooks 'lsp-after-open-hook))
 
 (defun lsp--text-document-identifier ()
   "Make TextDocumentIdentifier.
@@ -3341,11 +3342,76 @@ Added to `after-change-functions'."
                     ,(lsp--versioned-text-document-identifier)
                     :contentChanges (vector (lsp--full-change-event))))))))))))
 
-  (lsp--set-document-link-timer)
-  (when lsp-lens-mode
-    (lsp--lens-schedule-refresh t))
   ;; force cleanup overlays after each change
-  (lsp-foreach-workspace (lsp--remove-cur-overlays)))
+  (lsp--remove-overlays 'lsp-highlight)
+  (lsp--on-change-debounce (current-buffer)))
+
+
+
+;; facilities for on change hooks. We do not want to make lsp calls on each
+;; change event so we add debounce to avoid flooding the server with events.
+;; Additionally, we want to have a mechanism for stopping the server calls in
+;; particular cases like, e. g. when performing completion.
+
+(defvar lsp-inhibit-lsp-hooks nil
+  "Flag to control.")
+
+(defcustom lsp-on-change-hook nil
+  "Hooks to run when buffer has changed."
+  :type 'hook
+  :group 'lsp-mode)
+
+(defcustom lsp-idle-delay 0.200
+  "Debounce interval for `after-change-functions'. "
+  :type 'number
+  :group 'lsp-mode)
+
+(defcustom lsp-on-idle-hook nil
+  "Hooks to run "
+  :type 'hook
+  :group 'lsp-mode)
+
+(defvar lsp--on-change-timer nil)
+(defvar lsp--on-idle-timer nil)
+
+(defun lsp--idle-reschedule (buffer)
+  (setq-local lsp--on-idle-timer (run-with-idle-timer
+                                  lsp-idle-delay
+                                  nil
+                                  #'lsp--on-idle
+                                  buffer)))
+
+(defun lsp--post-command ()
+  (lsp--cleanup-highlights-if-needed)
+  (lsp--idle-reschedule (current-buffer)))
+
+(defun lsp--on-idle (buffer)
+  "Start post command loop."
+  (when (and (buffer-live-p buffer)
+             (equal buffer (current-buffer))
+             (not lsp-inhibit-lsp-hooks)
+             lsp--managed-mode)
+    (run-hooks 'lsp-on-idle-hook)))
+
+(defun lsp--on-change-debounce (buffer)
+  (when (and (buffer-live-p buffer)
+             (equal buffer (current-buffer))
+             (not lsp-inhibit-lsp-hooks)
+             lsp--managed-mode)
+    (run-hooks 'lsp-on-change-hook)))
+
+(defun lsp--after-change (&rest _)
+  (when lsp--on-change-timer
+    (cancel-timer lsp--on-change-timer))
+
+  (setq-local lsp--on-change-timer (run-with-idle-timer
+                                    lsp-idle-delay
+                                    nil
+                                    #'lsp--on-change-debounce
+                                    (current-buffer)))
+  (lsp--idle-reschedule (current-buffer)))
+
+
 
 (defun lsp--on-self-insert ()
   "Self insert handling.
@@ -3362,49 +3428,26 @@ Applies on type formatting."
                            (lambda (edits)
                              (when (= tick (buffer-chars-modified-tick)) (lsp--apply-text-edits edits))))))))
 
-(defun lsp--set-document-link-timer ()
-  (lsp--cancel-document-link-timer)
-  (when (and lsp-enable-links (lsp--capability "documentLinkProvider"))
-    (setq-local lsp--links-idle-timer (run-with-idle-timer
-                                       lsp-links-check-internal nil
-                                       #'lsp--update-document-links
-                                       (current-buffer)))))
-
-(defun lsp--cancel-document-link-timer ()
-  (when lsp--links-idle-timer
-    (cancel-timer lsp--links-idle-timer)
-    (setq-local lsp--links-idle-timer nil)))
-
-(defun lsp--update-document-links (&optional buffer)
-  (when (or (not buffer) (eq (current-buffer) buffer))
-    (cl-assert (lsp--capability "documentLinkProvider"))
-    (let ((buffer (current-buffer)))
-      (lsp-request-async "textDocument/documentLink"
-                         `(:textDocument ,(lsp--text-document-identifier))
-                         (lambda (links)
-                           (seq-do (lambda (overlay)
-                                     (delete-overlay overlay))
-                                   lsp--link-overlays)
-                           (seq-do
-                            (lambda (link)
-                              (with-current-buffer buffer
-                                (-let* (((&hash "range") link)
-                                        (start (lsp--position-to-point
-                                                (gethash "start" range)))
-                                        (end (lsp--position-to-point
-                                              (gethash "end" range)))
-                                        (button (make-button start end
-                                                             'action (lsp--document-link-keymap link)
-                                                             'keymap (let ((map (make-sparse-keymap)))
-                                                                       (define-key map [M-return] 'push-button)
-                                                                       (define-key map [mouse-2] 'push-button)
-                                                                       map)
-                                                             'help-echo (purecopy "mouse-2, M-RET: Visit this link"))))
-                                  (push button lsp--link-overlays))))
-                            links))
-                         :mode 'alive))
-    (cancel-timer lsp--links-idle-timer)
-    (setq-local lsp--links-idle-timer nil)))
+
+;; links
+(defun lsp--document-links ()
+  (lsp-request-async "textDocument/documentLink"
+                     `(:textDocument ,(lsp--text-document-identifier))
+                     (lambda (links)
+                       (lsp--remove-overlays 'lsp-link)
+                       (seq-do
+                        (-lambda ((link &as &hash "range"))
+                          (-doto (make-button (lsp--position-to-point (gethash "start" range))
+                                              (lsp--position-to-point (gethash "end" range))
+                                              'action (lsp--document-link-keymap link)
+                                              'keymap (let ((map (make-sparse-keymap)))
+                                                        (define-key map [M-return] 'push-button)
+                                                        (define-key map [mouse-2] 'push-button)
+                                                        map)
+                                              'help-echo "mouse-2, M-RET: Visit this link")
+                            (overlay-put 'lsp-link t)))
+                        links))
+                     :mode 'tick))
 
 (defun lsp--document-link-handle-target (url)
   (let* ((parsed-url (url-generic-parse-url (url-unhex-string url)))
@@ -3439,6 +3482,8 @@ Applies on type formatting."
            link
            (-lambda ((&hash "target"))
              (lsp--document-link-handle-target target))))))))
+
+
 
 (defun lsp-buffer-language ()
   "Get language corresponding current buffer."
@@ -3691,10 +3736,9 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
 
 (defun lsp--cancel-request (id)
   "Cancel request with ID in all workspaces."
-  (--each (lsp-workspaces)
-    (with-lsp-workspace it
-      (->> lsp--cur-workspace lsp--workspace-client lsp--client-response-handlers (remhash id))
-      (lsp-notify "$/cancelRequest" `(:id ,id)))))
+  (lsp-foreach-workspace
+   (->> lsp--cur-workspace lsp--workspace-client lsp--client-response-handlers (remhash id))
+   (lsp-notify "$/cancelRequest" `(:id ,id))))
 
 (defun lsp-eldoc-function ()
   "`lsp-mode' eldoc function."
@@ -3707,34 +3751,28 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
      nil))
   eldoc-last-message)
 
-(defvar-local lsp--highlight-bounds nil)
-(defvar-local lsp--highlight-timer nil)
+(defun dash-expand:&lsp-wks (key source)
+  `(,(intern-soft (format "lsp--workspace-%s" (eval key) )) ,source))
 
-(defun lsp--highlight ()
-  (let ((buff (current-buffer)))
-    (with-demoted-errors "Error in ‘lsp--highlight’: %S"
-      (when (and lsp-enable-symbol-highlighting
-                 (lsp--capability "documentHighlightProvider"))
-        (let ((bounds (bounds-of-thing-at-point 'symbol))
-              (last lsp--highlight-bounds)
-              (point (point)))
-          (when (and last (or (< point (car last)) (> point (cdr last))))
-            (setq lsp--highlight-bounds nil)
-            (--each (lsp-workspaces)
-              (with-lsp-workspace it
-                (lsp--remove-cur-overlays))))
-          (when (and bounds (not (equal last bounds)))
-            (and lsp--highlight-timer (cancel-timer lsp--highlight-timer))
-            (setq lsp--highlight-timer
-                  (run-with-idle-timer
-                   lsp-document-highlight-delay nil
-                   (lambda nil
-                     (when (and (eq buff (current-buffer))
-                                lsp-enable-symbol-highlighting
-                                (lsp--capability "documentHighlightProvider"))
-                       (setq lsp--highlight-bounds
-                             (bounds-of-thing-at-point 'symbol))
-                       (lsp--document-highlight)))))))))))
+(defun lsp--point-on-highlight? ()
+  (-some? (lambda (overlay)
+            (overlay-get overlay 'lsp-highlight))
+          (overlays-at (point))))
+
+(defun lsp--cleanup-highlights-if-needed ()
+  (when (and lsp-enable-symbol-highlighting
+             (not (lsp--point-on-highlight?)))
+    (lsp--remove-overlays 'lsp-highlight)
+    (lsp-cancel-request-by-token :highlihts)))
+
+(defun lsp--document-highlight ()
+  (unless (or (looking-at "[[:space:]\n]")
+              (lsp--point-on-highlight?))
+    (lsp-request-async "textDocument/documentHighlight"
+                       (lsp--text-document-position-params)
+                       #'lsp--document-highlight-callback
+                       :mode 'tick
+                       :cancel-token :highlihts)))
 
 (defun lsp-describe-thing-at-point ()
   "Display the type signature and documentation of the thing at
@@ -4095,17 +4133,10 @@ interface DocumentRangeFormattingParams {
     (2 . lsp-face-highlight-read)
     (3 . lsp-face-highlight-write)))
 
-(defun lsp--remove-cur-overlays ()
-  (let ((overlays (lsp--workspace-highlight-overlays lsp--cur-workspace))
-        (buf (current-buffer)))
-    (dolist (overlay (gethash buf overlays))
-      (delete-overlay overlay))
-    (remhash buf overlays)))
-
-(defun lsp--document-highlight ()
-  (lsp-request-async "textDocument/documentHighlight"
-                     (lsp--text-document-position-params)
-                     (lsp--make-document-highlight-callback (current-buffer))))
+(defun lsp--remove-overlays (name)
+  (save-restriction
+    (widen)
+    (remove-overlays (point-min) (point-max) name t)))
 
 (defun lsp-document-highlight ()
   "Highlight all relevant references to the symbol under point."
@@ -4114,50 +4145,33 @@ interface DocumentRangeFormattingParams {
     (signal 'lsp-capability-not-supported (list "documentHighlightProvider")))
   (lsp--document-highlight))
 
-(defun lsp--make-document-highlight-callback (buf)
+(defun lsp--document-highlight-callback (highlights)
   "Create a callback to process the reply of a
 'textDocument/documentHighlight' message for the buffer BUF.
 A reference is highlighted only if it is visible in a window."
-  (cl-check-type buf buffer)
-  (lambda (highlights)
-    (with-current-buffer buf
-      (lsp--remove-cur-overlays)
-      (when (/= (seq-length highlights) 0)
-        (let* ((windows-on-buffer (get-buffer-window-list nil nil 'visible))
-               (overlays (lsp--workspace-highlight-overlays lsp--cur-workspace))
-               (buf-overlays (gethash (current-buffer) overlays))
-               wins-visible-pos)
-          (save-restriction
-            (widen)
-            ;; Save visible portions of the buffer
-            (dolist (win windows-on-buffer)
-              (let* ((win-start (window-start win))
-                     (win-end (window-end win)))
-                (push (cons (1- (line-number-at-pos win-start))
-                            (1+ (line-number-at-pos win-end)))
-                      wins-visible-pos)))
-            (seq-doseq (highlight highlights)
-              (let* ((range (gethash "range" highlight nil))
-                     (kind (gethash "kind" highlight 1))
-                     (start (gethash "start" range))
-                     (end (gethash "end" range))
-                     overlay)
-                (dolist (win wins-visible-pos)
-                  (let* ((start-window (car win))
-                         (end-window (cdr win)))
-                    ;; Make the overlay only if the reference is visible
-                    (when (and (> (1+ (gethash "line" start)) start-window)
-                               (< (1+ (gethash "line" end)) end-window)
-                               (not (and lsp-symbol-highlighting-skip-current
-                                         (<= (lsp--position-to-point start)
-                                             (point)
-                                             (lsp--position-to-point end)))))
-                      (setq overlay (make-overlay (lsp--position-to-point start)
-                                                  (lsp--position-to-point end)))
-                      (overlay-put overlay 'face
-                                   (cdr (assq kind lsp--highlight-kind-face)))
-                      (push overlay buf-overlays)
-                      (puthash (current-buffer) buf-overlays overlays))))))))))))
+  (let* ((wins-visible-pos (-map (lambda (win)
+                                   (cons (1- (line-number-at-pos (window-start win)))
+                                         (1+ (line-number-at-pos (window-end win)))))
+                                 (get-buffer-window-list nil nil 'visible))))
+    (-map
+     (-lambda ((&hash "range" "kind"))
+       (-let* (((start &as &hash "line" start-line) (gethash "start" range))
+               ((end &as &hash "line" end-line) (gethash "end" range)))
+         (-map
+          (-lambda ((start-window . end-window))
+            ;; Make the overlay only if the reference is visible
+            (when (and (> (1+ start-line) start-window)
+                       (< (1+ end-line) end-window)
+                       (not (and lsp-symbol-highlighting-skip-current
+                                 (<= (lsp--position-to-point start)
+                                     (point)
+                                     (lsp--position-to-point end)))))
+              (-doto (make-overlay (lsp--position-to-point start)
+                                   (lsp--position-to-point end))
+                (overlay-put 'face (cdr (assq kind lsp--highlight-kind-face)))
+                (overlay-put 'lsp-highlight t))))
+          wins-visible-pos)))
+     highlights)))
 
 (defface lsp-face-semhl-variable-parameter
   '((t :inherit font-lock-variable-name-face))
@@ -4803,16 +4817,6 @@ WORKSPACE is the active workspace."
                  nil (format "Invalid Content-Length value: %s" val)))
     (cons key val)))
 
-(defun lsp--parser-reset (p)
-  "Reset parser P."
-  (setf
-   (lsp--parser-leftovers p) ""
-   (lsp--parser-body-length p) nil
-   (lsp--parser-body-received p) nil
-   (lsp--parser-headers p) '()
-   (lsp--parser-body p) nil
-   (lsp--parser-reading-body p) nil))
-
 (defun lsp--read-json (str)
   "Read json string STR."
   (let* ((use-native-json (and lsp-use-native-json (fboundp 'json-parse-string)))
@@ -4859,13 +4863,12 @@ WORKSPACE is the active workspace."
              (float-time (time-subtract after-parsed-time received-time))
              (float-time (time-subtract after-processed-time before-notification)))))
 
-(defun lsp--parser-on-message (p msg)
+(defun lsp--parser-on-message (json-data workspace)
   "Called when the parser P read a complete MSG from the server."
-  (with-lsp-workspace (lsp--parser-workspace p)
-    (let* ((client (lsp--workspace-client lsp--cur-workspace))
+  (with-lsp-workspace workspace
+    (let* ((client (lsp--workspace-client workspace))
            (received-time (current-time))
            (server-id (lsp--client-server-id client))
-           (json-data (lsp--read-json msg))
            (after-parsed-time (current-time))
            (id (--when-let (gethash "id" json-data)
                  (if (stringp it) (string-to-number it) it)))
@@ -4904,74 +4907,63 @@ WORKSPACE is the active workspace."
             server-id json-data received-time after-parsed-time before-notification (current-time))))
         ('request (lsp--on-request lsp--cur-workspace json-data))))))
 
-(defun lsp--parser-read (p output)
-  "Handle OUTPUT using parser P."
-  (let* ((messages '())
-         (output (with-no-warnings (string-as-unibyte output)))
-         (chunk (concat (lsp--parser-leftovers p) output)))
-    (while (not (string-empty-p chunk))
-      (if (not (lsp--parser-reading-body p))
-          ;; Read headers
-          (let* ((body-sep-pos (string-match-p "\r\n\r\n" chunk)))
-            (if body-sep-pos
-                ;; We've got all the headers, handle them all at once:
-                (let* ((header-raw (substring chunk (or (string-match-p "Content-Length" chunk)
-                                                        (error "Unable to find Content-Length header."))
-                                              body-sep-pos))
-                       (content (substring chunk (+ body-sep-pos 4)))
-                       (headers
-                        (mapcar 'lsp--parse-header
-                                (split-string header-raw "\r\n")))
-                       (body-length (lsp--get-body-length headers)))
-                  (setf
-                   (lsp--parser-headers p) headers
-                   (lsp--parser-reading-body p) t
-                   (lsp--parser-body-length p) body-length
-                   (lsp--parser-body-received p) 0
-                   (lsp--parser-body p) (make-string body-length ?\0)
-                   (lsp--parser-leftovers p) nil)
-                  (setq chunk content))
-
-              ;; Haven't found the end of the headers yet. Save everything
-              ;; for when the next chunk arrives and await further input.
-              (setf (lsp--parser-leftovers p) chunk)
-              (setq chunk "")))
-
-        ;; Read body
-        (let* ((total-body-length (lsp--parser-body-length p))
-               (received-body-length (lsp--parser-body-received p))
-               (chunk-length (string-bytes chunk))
-               (left-to-receive (- total-body-length received-body-length))
-               (this-body
-                (substring chunk 0 (min left-to-receive chunk-length)))
-               (leftovers (substring chunk (string-bytes this-body))))
-          (store-substring (lsp--parser-body p) received-body-length this-body)
-          (setf (lsp--parser-body-received p) (+ (lsp--parser-body-received p)
-                                                 (string-bytes this-body)))
-          (when (>= chunk-length left-to-receive)
-            ;; TODO: keep track of the Content-Type header, if
-            ;; present, and use its value instead of just defaulting
-            ;; to utf-8
-            (push (decode-coding-string (lsp--parser-body p) 'utf-8) messages)
-            (lsp--parser-reset p))
-
-          (setq chunk leftovers))))
-    (nreverse messages)))
-
 (defun lsp--json-pretty-print (msg)
   "Convert json MSG string to pretty printed json string."
   (let ((json-encoding-pretty-print t))
     (json-encode (json-read-from-string msg))))
 
-(defun lsp--parser-filter (p _proc output)
-  "Make filter for the lsp parser P."
-  (dolist (m (condition-case err
-                 (lsp--parser-read p output)
-               (error
-                (let ((chunk (concat (lsp--parser-leftovers p) output)))
-                  (lsp--parser-reset p)
-                  (ignore (lsp-warn "Failed to parse the following chunk:\n'''\n%s\n'''\nwith message %s" chunk err))))))
-    (lsp--parser-on-message p m)))
+(defun lsp--create-filter-function (workspace)
+  "Make filter for the workspace."
+  (let ((body-received 0)
+        leftovers body-length body chunk)
+    (lambda (_proc input)
+      (setf chunk (concat leftovers (with-no-warnings (string-as-unibyte input))))
+      (while (not (string= chunk ""))
+        (if (not body-length)
+            ;; Read headers
+            (if-let (body-sep-pos (string-match-p "\r\n\r\n" chunk))
+                ;; We've got all the headers, handle them all at once:
+                (setf body-length (lsp--get-body-length
+                                   (mapcar #'lsp--parse-header
+                                           (split-string
+                                            (substring chunk
+                                                       (or (string-match-p "Content-Length" chunk)
+                                                           (error "Unable to find Content-Length header."))
+                                                       body-sep-pos)
+                                            "\r\n")))
+                      body-received 0
+                      leftovers nil
+                      chunk (substring chunk (+ body-sep-pos 4)))
+
+              ;; Haven't found the end of the headers yet. Save everything
+              ;; for when the next chunk arrives and await further input.
+              (setf leftovers chunk
+                    chunk ""))
+          (let* ((chunk-length (string-bytes chunk))
+                 (left-to-receive (- body-length body-received))
+                 (this-body (if (< left-to-receive chunk-length)
+                                (prog1 (substring chunk 0 left-to-receive)
+                                  (setf chunk (substring chunk left-to-receive)))
+                              (prog1 chunk
+                                (setf chunk ""))))
+                 (body-bytes (string-bytes this-body)))
+            (push this-body body)
+            (setf body-received (+ body-received body-bytes))
+            (when (>= chunk-length left-to-receive)
+              (lsp--parser-on-message
+               (condition-case err
+                   (let ((parsed-message (nreverse
+                                          (prog1 body
+                                            (setf leftovers nil
+                                                  body-length nil
+                                                  body-received nil
+                                                  body nil)))))
+                     (lsp--read-json (decode-coding-string (apply #'concat parsed-message) 'utf-8)))
+                 (error
+                  (lsp-warn "Failed to parse the following chunk:\n'''\n%s\n'''\nwith message %s"
+                            (concat leftovers input)
+                            err)))
+               workspace))))))))
 
 (defun lsp--symbol-to-imenu-elem (sym)
   "Convert SYM to imenu element.
@@ -5366,15 +5358,12 @@ returns the command to execute."
 
 (defun lsp--make-workspace (client root)
   "Make workspace for the CLIENT and ROOT."
-  (let* ((parser (make-lsp--parser))
-         (workspace (make-lsp--workspace
-                     :parser parser
+  (let* ((workspace (make-lsp--workspace
                      :root root
                      :client client
                      :status 'starting
                      :buffers (list (current-buffer))
                      :host-root (file-remote-p root))))
-    (setf (lsp--parser-workspace parser) workspace)
     workspace))
 
 
@@ -5425,7 +5414,7 @@ returns the command to execute."
               (setq lsp--buffer-workspaces (delete workspace lsp--buffer-workspaces))
               (lsp--uninitialize-workspace)
               (lsp--spinner-stop)
-              (lsp--remove-cur-overlays))))
+              (lsp--remove-overlays 'lsp-highlight))))
 
         ;; Cleanup session from references to the closed workspace.
         (--each (hash-table-keys folder->workspaces)
@@ -5456,8 +5445,7 @@ SESSION is the active session."
           ((proc . cmd-proc) (funcall
                               (or (plist-get (lsp--client-new-connection client) :connect)
                                   (user-error "Client %s is configured incorrectly" client))
-                              (-partial #'lsp--parser-filter
-                                        (lsp--workspace-parser workspace))
+                              (lsp--create-filter-function workspace)
                               (apply-partially #'lsp--process-sentinel workspace)
                               (format "%s" server-id)
                               environment-fn))
@@ -6140,15 +6128,15 @@ This avoids overloading the server with many files when starting Emacs."
 (defmacro lsp-with-cached-filetrue-name (&rest body)
   "Executes BODY caching the `file-truename' calls."
   `(let ((old-fn (symbol-function 'file-truename)))
-    (unwind-protect
-        (progn
-          (fset 'file-truename
-                (lambda (file-name &optional counter prev-dirs)
-                  (or (gethash file-name lsp-file-truename-cache)
-                      (puthash file-name (apply old-fn (list file-name counter prev-dirs))
-                               lsp-file-truename-cache))))
-          ,@body)
-      (fset 'file-truename old-fn))))
+     (unwind-protect
+         (progn
+           (fset 'file-truename
+                 (lambda (file-name &optional counter prev-dirs)
+                   (or (gethash file-name lsp-file-truename-cache)
+                       (puthash file-name (apply old-fn (list file-name counter prev-dirs))
+                                lsp-file-truename-cache))))
+           ,@body)
+       (fset 'file-truename old-fn))))
 
 
 ;; avy integration
