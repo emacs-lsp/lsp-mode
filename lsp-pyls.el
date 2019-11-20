@@ -322,7 +322,7 @@ closing bracket rather than match the indentation."
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.2"))
 
-(defcustom lsp-pyls-plugins-flake8-max-line-length 80
+(defcustom lsp-pyls-plugins-flake8-max-line-length nil
   "Set the maximum length that any line (with some exceptions) may be.
 Exceptions include lines that are either strings or comments which are entirely URLs."
   :type 'integer
@@ -337,6 +337,15 @@ E431"
   :type '(repeat string)
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-pyls-plugins-flake8-config nil
+  "A path to a config file that will be the only config file read and
+used. This will cause Flake8 to ignore all other config files that exist.
+NOTE: other parameters as `lsp-pyls-plugins-flake8-max-line-length' take precedence over
+parameters referenced in config."
+  :type 'string
+  :group 'lsp-pyls
+  :package-version '(lsp-mode . "6.3"))
 
 (lsp-register-custom-settings
  '(("pyls.rope.ropeFolder" lsp-pyls-rope-rope-folder)
@@ -368,6 +377,7 @@ E431"
    ("pyls.plugins.flake8.ignore" lsp-pyls-plugins-flake8-ignore)
    ("pyls.plugins.flake8.maxLineLength" lsp-pyls-plugins-flake8-max-line-length)
    ("pyls.plugins.flake8.select" lsp-pyls-plugins-flake8-select)
+   ("pyls.plugins.flake8.config" lsp-pyls-plugins-flake8-config)
    ("pyls.plugins.preload.modules" lsp-pyls-plugins-preload-modules)
    ("pyls.plugins.preload.enabled" lsp-pyls-plugins-preload-enabled t)
    ("pyls.plugins.mccabe.threshold" lsp-pyls-plugins-mccabe-threshold)
