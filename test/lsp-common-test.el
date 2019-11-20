@@ -39,8 +39,8 @@
     (should (equal (lsp--uri-to-path "custom://file-path") "file-path"))))
 
 (ert-deftest lsp-common-test--unexpected-scheme ()
-  (should-error (lsp--uri-to-path "will-fail://file-path")
-                :type 'lsp-file-scheme-not-supported))
+  (should (equal (lsp--uri-to-path "will-fail://file-path")
+                 "will-fail://file-path")))
 
 (ert-deftest lsp--uri-to-path--handle-utf8 ()
   (let ((lsp--uri-file-prefix "file:///")

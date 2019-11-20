@@ -1215,7 +1215,7 @@ On other systems, returns path without change."
          (file-name (if (and type (not (string= type "file")))
                         (if-let ((handler (lsp--get-uri-handler type)))
                             (funcall handler uri)
-                          (signal 'lsp-file-scheme-not-supported (list uri)))
+                          uri)
                       ;; `url-generic-parse-url' is buggy on windows:
                       ;; https://github.com/emacs-lsp/lsp-mode/pull/265
                       (or (and (eq system-type 'windows-nt)
@@ -1238,8 +1238,10 @@ DELETE when `lsp-mode.el' is deleted.")
 
 (defun lsp--path-to-uri-1 (path)
   (concat lsp--uri-file-prefix
-          (url-hexify-string (expand-file-name (or (file-remote-p path 'localname t) path))
-                             url-path-allowed-chars)))
+          (--> path
+               (expand-file-name it)
+               (or (file-remote-p it 'localname t) it)
+               (url-hexify-string it url-path-allowed-chars))))
 
 (defun lsp--path-to-uri (path)
   "Convert PATH to a uri."
