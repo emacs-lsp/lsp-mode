@@ -204,7 +204,7 @@ finding the executable with variable `exec-path'."
   :type '(repeat string))
 
 (defcustom lsp-clients-typescript-log-verbosity "info"
-  "The server log verbocity."
+  "The server log verbosity."
   :group 'lsp-typescript
   :type 'string)
 
