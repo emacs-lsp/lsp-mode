@@ -105,8 +105,8 @@ imported into the current file. Defaults to true"
                   :major-modes '(dart-mode)
                   :priority -1
                   :initialization-options
-                  '((onlyAnalyzeProjectsWithOpenFiles . lsp-dart-analysis-only-analyze-projects-with-open-files)
-                    (suggestFromUnimportedLibraries . lsp-dart-analysis-suggest-from-unimported-libraries))
+                  `((onlyAnalyzeProjectsWithOpenFiles . ,lsp-dart-analysis-only-analyze-projects-with-open-files)
+                    (suggestFromUnimportedLibraries . ,lsp-dart-analysis-suggest-from-unimported-libraries))
                   :server-id 'dart_analysis_server))
 
 (provide 'lsp-dart)
