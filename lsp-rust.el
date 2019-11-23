@@ -479,8 +479,9 @@ PARAMS progress report notification data."
 
 ;; activate `lsp-rust-analyzer-inlay-hints-mode'
 (when lsp-rust-analyzer-server-display-inlay-hints
-  (add-hook 'rustic-mode-hook (lambda () (lsp-rust-analyzer-inlay-hints-mode)))
-  (add-hook 'rust-mode-hook (lambda () (lsp-rust-analyzer-inlay-hints-mode))))
+  (add-hook 'lsp-after-open-hook (lambda ()
+                                   (when (lsp-find-workspace 'rust-analyzer nil)
+                                     (lsp-rust-analyzer-inlay-hints-mode)))))
 
 (provide 'lsp-rust)
 ;;; lsp-rust.el ends here
