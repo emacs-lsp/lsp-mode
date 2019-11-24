@@ -32,8 +32,8 @@
   (let ((fn (lsp--create-filter-function nil)))
     (lambda (input)
       (flet ((lsp--parser-on-message (msg _workspace))
-             (lsp--read-json (msg)
-                             (push msg lsp--test-results)))
+             (json-read-from-string (msg)
+                                    (push msg lsp--test-results)))
         (funcall fn nil input)
         (prog1 lsp--test-results
           (setq lsp--test-results nil))))))

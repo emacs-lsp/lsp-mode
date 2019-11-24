@@ -202,6 +202,10 @@
    - ~lsp-lens-hide~ - Hide lenses in the current file
    - ~lsp-lens-mode~  - Turn on/off lenses in the current file.
    - ~lsp-avy-lens~ - Click lens using ~avy~
+   - ~lsp-signature-activate~ - activate signature help. Bound to ~C-M-SPC~ by default.
+   - ~lsp-signature-next~ - show next signature. Bound to ~M-n~ when signature help is activated.
+   - ~lsp-signature-previous~ - show previous signature. Bound to ~M-p~ when signature help is activated.
+   - ~lsp-signature-stop~ - cancel signature help. Bound to ~C-c C-k~ when signature help is activated.
 ** Settings
    - ~lsp-log-io~ - If non-nil, print all messages to and from the language server to ~*lsp-log*~.
    - ~lsp-print-performance~ - If non-nil, print performance info. to ~*lsp-log*~.
@@ -216,7 +220,6 @@
    - ~lsp-document-sync-method~ - How to sync the document with the language server.
    - ~lsp-auto-execute-action~ - Auto-execute single action.
    - ~lsp-eldoc-render-all~ - Display all of the info returned by ~document/onHover~. If this is nil, ~eldoc~ will show only the symbol information.
-   - ~lsp-signature-render-all~ - Display all of the info returned by ~textDocument/signatureHelp~. If this is nil, ~eldoc~ will show only the active signature.
    - ~lsp-enable-completion-at-point~ - Enable ~completion-at-point~ integration.
    - ~lsp-enable-xref~ - Enable xref integration.
    - ~lsp-prefer-flymake~ - If you prefer flycheck and ~lsp-ui-flycheck~ is available, ~(setq lsp-prefer-flymake nil)~. If set to ~:none~ neither of two will be enabled.
@@ -231,6 +234,8 @@
    - ~lsp-server-trace~ - Request trace mode on the language server.
    - ~lsp-enable-semantic-highlighting~ - Enable experimental semantic highlighting support
    - ~lsp-enable-imenu~ - If non-nil, automatically enable imenu integration when server provides ~textDocument/documentSymbol~.
+   - ~lsp-signature-auto-activate~ - Auto activate signature when trigger char is pressed.
+   - ~lsp-signature-render-documentation~ - Include signature documentation in signature help.
 ** Screenshots
    - RUST Completion with company-lsp
      [[file:examples/completion.png]]
