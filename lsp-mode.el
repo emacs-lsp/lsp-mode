@@ -4171,7 +4171,7 @@ A reference is highlighted only if it is visible in a window."
                                      (lsp--position-to-point end)))))
               (-doto (make-overlay (lsp--position-to-point start)
                                    (lsp--position-to-point end))
-                (overlay-put 'face (cdr (assq kind lsp--highlight-kind-face)))
+                (overlay-put 'face (cdr (assq (or kind 1) lsp--highlight-kind-face)))
                 (overlay-put 'lsp-highlight t))))
           wins-visible-pos)))
      highlights)))
