@@ -1,5 +1,29 @@
+* Release 6.2
+  * Support dynamic rename registration
+  * Add basic support for style semantic highlighting
+  * Added Haxe language server integration
+  * Add C#-support via Roslyn.
+  * Add emmy lua support
+  * Enable plugins in typescript language server.
+  * 1079 Provide support for Ada Language server
+  * Implement right click support in =lsp-mode= buffers.
+  * Added built-in support for =Rust Analyzer=.
+  * Added support for HDL Checker server to lsp-vhdl
+  * Added support for Terraform language server.
+  * Added support for R language server (#1182)
+  * Added support for passing environment variables to language servers (#1184)
+  * Speedup lsp-mode's JSONRPC processing (~2 times)
+  * Add cancel-token to lsp-request-async
+  * Implement unified way to handle recurring lsp features
+  * Added support for powershell language server.
+  * Implemented inlay hints for =Rust Analyzer= (thanks to =brotzeit=).
+  * Implemented automatic installation for C# language server.
+  * Reimplemented =textDocument/signatureHelp= - now the signature is displayed in =lv= buffer.
+  * Cancel sync requests when presssing =C-g= during the request.
+  * Use =c-basic-offset= when in =cc-mode=.
+  * Add support for Crystal via scry (#1218).
+  * Implement =textDocument/documentColor= support.
 * Release 6.1
-
 ** Support for new languages/language servers:
    * [[https://github.com/fwcd/KotlinLanguageServer][Kotlin Language Server]] (Thanks to Jon Carr)
    * [[https://github.com/golang/go/wiki/gopls][gopls]] Language Server for Go
