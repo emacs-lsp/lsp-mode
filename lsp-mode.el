@@ -2714,8 +2714,7 @@ in that particular folder."
 (defun lsp--send-will-save-wait-until-p ()
   "Return whether will save wait until notifications should be sent to the server."
   (let ((sync (gethash "textDocumentSync" (lsp--server-capabilities))))
-    (or (memq sync '(1 2))
-        (and (hash-table-p sync) (gethash "willSaveWaitUntil" sync)))))
+    (and (hash-table-p sync) (gethash "willSaveWaitUntil" sync))))
 
 (defun lsp--send-did-save-p ()
   "Return whether did save notifications should be sent to the server."
