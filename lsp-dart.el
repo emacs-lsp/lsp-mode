@@ -81,14 +81,14 @@
 rather than the root workspace folder. Defaults to t"
   :type 'boolean
   :group 'lsp-dart-analysis
-  :package-version '(lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-dart-analysis-suggest-from-unimported-libraries t
   "When set to nil, completion will not include synbols that are not already
 imported into the current file. Defaults to true"
   :type 'boolean
   :group 'lsp-dart-analysis
-  :package-version '(lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.2"))
 
 (defun lsp-dart--analysis-server-command ()
   "Generate LSP startup command."
