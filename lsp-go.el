@@ -124,11 +124,11 @@ completing function calls."
    ("gopls.buildFlags" lsp-gopls-build-flags)
    ("gopls.env" lsp-gopls-env)
    ("gopls.experimentalDisabledAnalyses" lsp-gopls-experimental-disabled-analyses)
-   ("gopls.staticcheck" lsp-gopls-staticcheck)
-   ("gopls.completionDocumentation" lsp-gopls-complete-unimported)
-   ("gopls.completeUnimported" lsp-gopls-complete-unimported)
-   ("gopls.deepCompletion" lsp-gopls-deep-completion)
-   ("gopls.fuzzyMatching" lsp-gopls-fuzzy-matching)))
+   ("gopls.staticcheck" lsp-gopls-staticcheck t)
+   ("gopls.completionDocumentation" lsp-gopls-complete-unimported t)
+   ("gopls.completeUnimported" lsp-gopls-complete-unimported t)
+   ("gopls.deepCompletion" lsp-gopls-deep-completion t)
+   ("gopls.fuzzyMatching" lsp-gopls-fuzzy-matching t)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
