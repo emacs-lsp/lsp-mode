@@ -101,45 +101,14 @@ for auto installation."
   (if (and reinstall (f-exists-p filename))
       (f-delete filename))
 
-  (unless (f-exists-p filename)
-    (message (format "lsp-csharp: downloading server binary from \"%s\"..." url))
-    (let ((gnutls-algorithm-priority
-	   (if (and (not gnutls-algorithm-priority)
-		    (boundp 'libgnutls-version)
-		    (>= libgnutls-version 30603)
-		    (version<= emacs-version "26.2"))
-	       "NORMAL:-VERS-TLS1.3"
-	     gnutls-algorithm-priority)))
-      (url-copy-file url filename t)))
+  (lsp-csharp--download url filename)
 
   (let ((target-dir (f-dirname filename)))
-    (message (format "lsp-csharp: extracting \"%s\" into \"%s\""
+    (message (format "lsp-csharp: extracting \"%s\" to \"%s\""
                      (f-filename filename)
                      target-dir))
 
-    (cond
-     ((eq system-type 'windows-nt)
-      ;; on windows, we attempt to use powershell v5+, available on Windows 10+
-      (let ((powershell-version (substring
-                                 (shell-command-to-string "powershell -command \"(Get-Host).Version.Major\"")
-                                 0 -1)))
-        (if (>= (string-to-number powershell-version) 5)
-            (call-process "powershell"
-                          nil
-                          nil
-                          nil
-                          "-command"
-                          (concat "add-type -assembly system.io.compression.filesystem;"
-                                  "[io.compression.zipfile]::ExtractToDirectory(\"" filename "\", \"" target-dir "\")"))
-
-          (message (concat "lsp-csharp: for automatic server installation procedure"
-                           " to work on Windows you need to have powershell v5+ installed")))))
-
-     ((or (eq system-type 'gnu/linux)
-          (eq system-type 'darwin))
-      (call-process "tar" nil nil t "xf" filename "-C" target-dir))
-
-     (t (signal "lsp-csharp auto server installation procedure does not support platform %s (yet)" system-type)))))
+    (lsp-csharp--extract filename target-dir)))
 
 (defun lsp-csharp--get-or-install-server ()
   "Resolves path to server binary installed, otherwise, if not found
@@ -167,6 +136,47 @@ Returns location of script or a binary to use to start the server."
 
             installed-bin)
         (error "Server binary is required for LSP C# to work.")))))
+
+(defun lsp-csharp--download (url filename)
+  "Downloads file from URL as FILENAME. Will not do anything should
+the file exist already."
+  (unless (f-exists-p filename)
+    (message (format "lsp-csharp: downloading from \"%s\"..." url))
+    (let ((gnutls-algorithm-priority
+	         (if (and (not gnutls-algorithm-priority)
+		                (boundp 'libgnutls-version)
+		                (>= libgnutls-version 30603)
+		                (version<= emacs-version "26.2"))
+	             "NORMAL:-VERS-TLS1.3"
+	           gnutls-algorithm-priority)))
+      (url-copy-file url filename nil))))
+
+(defun lsp-csharp--extract (filename target-dir)
+  "Extracts FILENAME which is a downloaded omnisharp-roslyn server
+tarball or a zip file (based on a current platform) to TARGET-DIR."
+  (cond
+   ((eq system-type 'windows-nt)
+    ;; on windows, we attempt to use powershell v5+, available on Windows 10+
+    (let ((powershell-version (substring
+                               (shell-command-to-string "powershell -command \"(Get-Host).Version.Major\"")
+                               0 -1)))
+      (if (>= (string-to-number powershell-version) 5)
+          (call-process "powershell"
+                        nil
+                        nil
+                        nil
+                        "-command"
+                        (concat "add-type -assembly system.io.compression.filesystem;"
+                                "[io.compression.zipfile]::ExtractToDirectory(\"" filename "\", \"" target-dir "\")"))
+
+        (message (concat "lsp-csharp: for automatic server installation procedure"
+                         " to work on Windows you need to have powershell v5+ installed")))))
+
+   ((or (eq system-type 'gnu/linux)
+        (eq system-type 'darwin))
+    (call-process "tar" nil nil t "xf" filename "-C" target-dir))
+
+   (t (signal "lsp-csharp cannot extract \"%s\" on platform %s (yet)" filename system-type))))
 
 (defun lsp-csharp--language-server-command ()
   "Resolves path and arguments to use to start the server.
