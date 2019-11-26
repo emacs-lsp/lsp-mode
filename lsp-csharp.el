@@ -63,7 +63,9 @@ Set this if you have the binary installed or have it built yourself."
 (defun lsp-csharp--installed-server-bin ()
   "The location of OmniSharp executable/script for the installed server
 to use to start the server."
-  (f-join (lsp-csharp--installed-server-dir) "run"))
+  (f-join (lsp-csharp--installed-server-dir)
+          (cond ((eq system-type 'windows-nt) "OmniSharp.exe")
+                (t "run"))))
 
 (defun lsp-csharp--server-package-filename ()
   "Returns name of tgz/zip file to be used for downloading the server
