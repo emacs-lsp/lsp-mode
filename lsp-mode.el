@@ -2353,21 +2353,25 @@ If NO-WAIT is non-nil send the request as notification."
            ;; max time by which we must get a response
            (expected-time (+ send-time lsp-response-timeout))
            resp-result resp-error)
-      (lsp-request-async method params (lambda (res) (setf resp-result (or res :finished)))
-                         :error-handler (lambda (err) (setf resp-error err))
-                         :no-merge no-merge
-                         :mode 'detached)
+      (unwind-protect
+          (progn
+            (lsp-request-async method params (lambda (res) (setf resp-result (or res :finished)))
+                               :error-handler (lambda (err) (setf resp-error err))
+                               :no-merge no-merge
+                               :mode 'detached
+                               :cancel-token :sync-request)
 
-      (while (not (or resp-error resp-result))
-        (accept-process-output nil 0.001)
-        (when (< expected-time (time-to-seconds (current-time)))
-          (error "Timeout while waiting for response. Method: %s." method)))
+            (while (not (or resp-error resp-result))
+              (accept-process-output nil 0.001)
+              (when (< expected-time (time-to-seconds (current-time)))
+                (error "Timeout while waiting for response. Method: %s." method)))
 
-      (cond
-       ((eq resp-result :finished) nil)
-       (resp-result resp-result)
-       ((ht? resp-error) (error (gethash "message" resp-error)))
-       (t (error (gethash "message" (cl-first resp-error))))))))
+            (cond
+             ((eq resp-result :finished) nil)
+             (resp-result resp-result)
+             ((ht? resp-error) (error (gethash "message" resp-error)))
+             (t (error (gethash "message" (cl-first resp-error))))))
+        (lsp-cancel-request-by-token :sync-request)))))
 
 (cl-defun lsp-request-async (method params callback &key mode error-handler no-merge cancel-token)
   "Send request METHOD with PARAMS."
