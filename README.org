@@ -269,9 +269,6 @@
 ** Contributions
    Contributions are very much welcome.
 
-   Here is a throughput graph of the repository for the last few weeks:
-
-   [[file:https://graphs.waffle.io/emacs-lsp/lsp-mode/throughput.svg]]
 *** Members
     Here it is a list of the current =lsp-mode= members and what they are primary working on/responsible for.
     | Member         | Responsible for:                   |
