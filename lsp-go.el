@@ -78,57 +78,11 @@ completing function calls."
   :risky t
   :package-version '(lsp-mode "6.2"))
 
-(defcustom lsp-gopls-experimental-disabled-analyses []
-  "A list of the names of analysis passes that should be disabled. You can use
- this to turn off analyses that you feel are not useful in the editor."
-  :type 'lsp-string-vector
-  :group 'lsp-gopls
-  :package-version '(lsp-mode "6.2"))
-
-(defcustom lsp-gopls-staticcheck nil
-  "If non-nil, enables the use of staticcheck.io analyzers."
-  :type 'boolean
-  :group 'lsp-gopls
-  :package-version '(lsp-mode "6.2"))
-
-(defcustom lsp-gopls-completion-documentation t
-  "If nil, indicates that the user does not want documentation with completion
- results."
-  :type 'boolean
-  :group 'lsp-gopls
-  :package-version '(lsp-mode "6.2"))
-
-(defcustom lsp-gopls-complete-unimported nil
-  "If true, the completion engine is allowed to make suggestions for packages
- that you do not currently import."
-  :type 'boolean
-  :group 'lsp-gopls
-  :package-version '(lsp-mode "6.2"))
-
-(defcustom lsp-gopls-deep-completion t
-  "If true, this turns on the ability to return completions from deep inside
- relevant entities, rather than just the locally accessible ones."
-  :type 'boolean
-  :group 'lsp-gopls
-  :package-version '(lsp-mode "6.2"))
-
-(defcustom lsp-gopls-fuzzy-matching t
-  "If true, this enables server side fuzzy matching of completion candidates."
-  :type 'boolean
-  :group 'lsp-gopls
-  :package-version '(lsp-mode "6.2"))
-
 (lsp-register-custom-settings
  '(("gopls.usePlaceholders" lsp-gopls-use-placeholders t)
    ("gopls.hoverKind" lsp-gopls-hover-kind)
    ("gopls.buildFlags" lsp-gopls-build-flags)
-   ("gopls.env" lsp-gopls-env)
-   ("gopls.experimentalDisabledAnalyses" lsp-gopls-experimental-disabled-analyses)
-   ("gopls.staticcheck" lsp-gopls-staticcheck)
-   ("gopls.completionDocumentation" lsp-gopls-complete-unimported)
-   ("gopls.completeUnimported" lsp-gopls-complete-unimported)
-   ("gopls.deepCompletion" lsp-gopls-deep-completion)
-   ("gopls.fuzzyMatching" lsp-gopls-fuzzy-matching)))
+   ("gopls.env" lsp-gopls-env)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection

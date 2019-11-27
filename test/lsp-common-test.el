@@ -50,11 +50,11 @@
     (should (equal (lsp--uri-to-path "/root/%E4%BD%A0%E5%A5%BD/%E8%B0%A2%E8%B0%A2") "/root/你好/谢谢"))))
 
 (ert-deftest lsp-byte-compilation-test ()
-  (let ((byte-compile-error-on-warn t))
-    (seq-doseq (library (-filter
-                         (lambda (file)
-                           (f-ext? file "el"))
-                         (f-files (f-parent (f-dirname (or load-file-name buffer-file-name))))))
+  (seq-doseq (library (-filter
+                       (lambda (file)
+                         (f-ext? file "el"))
+                       (f-files (f-parent (f-dirname (or load-file-name buffer-file-name))))))
+    (let ((byte-compile-error-on-warn t))
       (cl-assert (byte-compile-file (save-excursion
                                       (find-library library)
                                       (buffer-file-name)))
@@ -80,8 +80,6 @@
                     "/foo"))
              t
              "Should not find any root."))
-
-
 
 (defun lsp-ht->alist (table)
   (ht-amap (cons key (if (ht? value)

@@ -176,7 +176,7 @@ tarball or a zip file (based on a current platform) to TARGET-DIR."
         (eq system-type 'darwin))
     (call-process "tar" nil nil t "xf" filename "-C" target-dir))
 
-   (t (signal "lsp-csharp cannot extract \"%s\" on platform %s (yet)" filename system-type))))
+   (t (error "lsp-csharp cannot extract \"%s\" on platform %s (yet)" filename system-type))))
 
 (defun lsp-csharp--language-server-command ()
   "Resolves path and arguments to use to start the server.
