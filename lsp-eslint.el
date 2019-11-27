@@ -198,16 +198,14 @@
   (interactive)
   (lsp-send-execute-command "eslint.applyAllFixes" (vector (lsp--versioned-text-document-identifier))))
 
-
-
 (lsp-register-client
  (make-lsp-client
   :new-connection
-  (plist-put (lsp-stdio-connection
-              (lambda () lsp-eslint-server-command))
-             :test? (lambda ()
-                      (and (cl-second lsp-eslint-server-command)
-                           (file-exists-p (cl-second lsp-eslint-server-command)))))
+  (lsp-stdio-connection
+   (lambda () lsp-eslint-server-command)
+   (lambda ()
+     (and (cl-second lsp-eslint-server-command)
+          (file-exists-p (cl-second lsp-eslint-server-command)))))
   :activation-fn (lambda (filename &optional _)
                    (or (string-match-p (rx (one-or-more anything) "."
                                            (or "ts" "js" "jsx" "tsx" "html" "vue"))

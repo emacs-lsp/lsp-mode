@@ -76,9 +76,9 @@ HDL Checker: A wrapper for third party tools such as GHDL, ModelSim, Vivado Simu
   "Returns lsp-stdio-connection based on the selected server"
   (lsp-vhdl--set-server-path)
   (lsp-vhdl--set-server-args)
-  (plist-put
-   (lsp-stdio-connection (lambda () (list (plist-get lsp-vhdl--params 'server-path) (plist-get lsp-vhdl--params 'server-args))))
-   :test? (lambda () (f-executable? (plist-get lsp-vhdl--params 'server-path)))))
+  (lsp-stdio-connection
+    (lambda () (list (plist-get lsp-vhdl--params 'server-path) (plist-get lsp-vhdl--params 'server-args)))
+    (lambda () (f-executable? (plist-get lsp-vhdl--params 'server-path)))))
 
 (defun lsp-vhdl--set-server-path()
   "Set path to server binary based on selection in lsp-vhdl-server."

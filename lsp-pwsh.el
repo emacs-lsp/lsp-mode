@@ -209,8 +209,7 @@ Valid values are 'Diagnostic', 'Verbose', 'Normal', 'Warning', and 'Error'"
    ("powershell.helpCompletion" lsp-pwsh-help-completion)))
 
 ;; lsp-pwsh custom variables
-(defcustom lsp-pwsh-ext-path (expand-file-name ".extension/pwsh"
-                                               user-emacs-directory)
+(defcustom lsp-pwsh-ext-path (f-join lsp-server-install-dir "pwsh")
   "The path to powershell vscode extension."
   :type 'string
   :group 'lsp-pwsh
@@ -236,11 +235,7 @@ Must not nil.")
 
 (defun lsp-pwsh--command ()
   "Return the command to start server."
-  (unless (and lsp-pwsh-exe (file-executable-p lsp-pwsh-exe))
-    (user-error "Use `lsp-pwsh-exe' with the value of `%s' is not a valid powershell binary"
-                lsp-pwsh-exe))
-  ;; Download extension
-  (lsp-pwsh-setup)
+
   `(,lsp-pwsh-exe "-NoProfile" "-NonInteractive" "-NoLogo"
                   ,@(if (eq system-type 'windows-nt) '("-ExecutionPolicy" "Bypass"))
                   "-OutputFormat" "Text"
@@ -256,8 +251,7 @@ Must not nil.")
                   ;; "-AdditionalModules" "@('PowerShellEditorServices.VSCode')"
                   "-Stdio"
                   "-BundledModulesPath" ,lsp-pwsh-dir
-                  "-FeatureFlags" "@()"
-                  ))
+                  "-FeatureFlags" "@()"))
 
 (defun lsp-pwsh--extra-init-params ()
   "Return form describing parameters for language server.")
@@ -292,18 +286,20 @@ Must not nil.")
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection #'lsp-pwsh--command)
+  :new-connection (lsp-stdio-connection #'lsp-pwsh--command
+                                        (lambda ()
+                                          (f-exists? lsp-pwsh-dir)))
   :major-modes lsp-pwsh--major-modes
   :server-id 'pwsh-ls
   :priority -1
   :multi-root t
   :initialization-options #'lsp-pwsh--extra-init-params
-  :notification-handlers (lsp-ht ("powerShell/executionStatusChanged" #'ignore)
-                                 ("output" #'ignore))
-  :action-handlers (lsp-ht ("PowerShell.ApplyCodeActionEdits"
-                            #'lsp-pwsh--apply-code-action-edits)
-                           ("PowerShell.ShowCodeActionDocumentation"
-                            #'lsp-pwsh--show-code-action-document))
+  :notification-handlers (ht ("powerShell/executionStatusChanged" #'ignore)
+                             ("output" #'ignore))
+  :action-handlers (ht ("PowerShell.ApplyCodeActionEdits"
+                        #'lsp-pwsh--apply-code-action-edits)
+                       ("PowerShell.ShowCodeActionDocumentation"
+                        #'lsp-pwsh--show-code-action-document))
   :initialized-fn (lambda (w)
                     (with-lsp-workspace w
                       (lsp--set-configuration
@@ -311,7 +307,7 @@ Must not nil.")
                     (let ((caps (lsp--workspace-server-capabilities w)))
                       (ht-set caps "documentRangeFormattingProvider" t)
                       (ht-set caps "documentFormattingProvider" t)))
-  ))
+  :download-server-fn #'lsp-pwsh-setup))
 
 ;; Compatibility
 (with-eval-after-load 'company-lsp
@@ -321,13 +317,6 @@ Must not nil.")
                 (not (memq major-mode lsp-pwsh--major-modes)))
               '((name . --force-post-completion-for-pwsh))))
 
-;;; Utils
-(defconst lsp-pwsh-unzip-script "\"%s\" -noprofile -noninteractive -nologo -ex bypass -command Expand-Archive -Path '%s' -DestinationPath '%s'"
-  "Powershell script to unzip vscode extension package file.")
-
-(defconst lsp-pwsh-editor-svcs-dl-script "\"%s\" -noprofile -noninteractive -nologo -ex bypass -command Invoke-WebRequest -UseBasicParsing -uri '%s' -outfile '%s'"
-  "Command executed via `shell-command' to download the latest PowerShellEditorServices release.")
-
 (defcustom lsp-pwsh-github-asset-url
   "https://github.com/%s/%s/releases/latest/download/%s"
   "GitHub latest asset template url."
@@ -335,26 +324,34 @@ Must not nil.")
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
 
-(defun lsp-pwsh--get-extension (url dest)
-  "Get extension from URL and extract to DEST."
-  (let ((temp-file (make-temp-file "ext" nil ".zip")))
-    ;; since we know it's installed, use powershell to download the file
-    ;; (and avoid url.el bugginess or additional libraries)
-    (shell-command (format lsp-pwsh-editor-svcs-dl-script lsp-pwsh-exe url temp-file))
-    (message "lsp-pwsh: Downloading done!")
-    (if (file-exists-p dest) (delete-directory dest 'recursive))
-    (shell-command (format lsp-pwsh-unzip-script lsp-pwsh-exe temp-file dest))
-    (message "lsp-pwsh: Finish unzip!")))
-
-(defun lsp-pwsh-setup (&optional forced)
+(defun lsp-pwsh-setup (_client callback error-callback update)
   "Downloading PowerShellEditorServices to `lsp-pwsh-dir'.
 FORCED if specified with prefix argument."
-  (interactive "P")
-  (let ((parent-dir (file-name-directory lsp-pwsh-dir)))
-    (unless (and (not forced) (file-exists-p parent-dir))
-      (lsp-pwsh--get-extension
-       (format lsp-pwsh-github-asset-url "PowerShell" "PowerShellEditorServices" "PowerShellEditorServices.zip")
-       parent-dir))))
+
+  (unless (and lsp-pwsh-exe (file-executable-p lsp-pwsh-exe))
+    (user-error "Use `lsp-pwsh-exe' with the value of `%s' is not a valid powershell binary"
+                lsp-pwsh-exe))
+
+  (let ((url (format lsp-pwsh-github-asset-url "PowerShell"
+                     "PowerShellEditorServices" "PowerShellEditorServices.zip"))
+        (temp-file (make-temp-file "ext" nil ".zip")))
+    (unless (and (not update) (file-exists-p lsp-pwsh-dir))
+      ;; since we know it's installed, use powershell to download the file
+      ;; (and avoid url.el bugginess or additional libraries)
+      (lsp-async-start-process
+       (lambda ()
+         (lsp--info "lsp-pwsh: Downloading done!")
+         (when (file-exists-p lsp-pwsh-dir) (delete-directory lsp-pwsh-dir 'recursive))
+         (lsp-async-start-process
+          callback
+          error-callback
+          lsp-pwsh-exe "-noprofile" "-noninteractive" "-nologo"
+          "-ex" "bypass" "-command" "Expand-Archive"
+          "-Path" temp-file "-DestinationPath" (file-name-directory lsp-pwsh-dir)))
+       error-callback
+       lsp-pwsh-exe
+       "-noprofile" "-noninteractive" "-nologo" "-ex" "bypass" "-command"
+       "Invoke-WebRequest" "-UseBasicParsing" "-uri" url "-outfile" temp-file))))
 
 (provide 'lsp-pwsh)
 ;;; lsp-pwsh.el ends here
