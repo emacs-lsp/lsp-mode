@@ -75,10 +75,10 @@ On Windows we're trying to avoid a crash starting 64bit .NET PE binaries in
 Emacs by using x86 version of omnisharp-roslyn on older (<= 26.4) versions
 of Emacs. See https://lists.nongnu.org/archive/html/bug-gnu-emacs/2017-06/msg00893.html"
   (cond ((eq system-type 'windows-nt)
-         (if (or (not (null (string-match "^i386-.*" system-configuration)))
-                 (version<= "26.4" emacs-version))
-             "omnisharp-win-x86.zip"
-           "omnisharp-win-x64.zip"))
+         (if (and (string-match "^x86_64-.*" system-configuration)
+                  (version<= "26.4" emacs-version))
+             "omnisharp-win-x64.zip"
+           "omnisharp-win-x86.zip"))
         ((eq system-type 'darwin)
          "omnisharp-osx.tar.gz")
         ((and (eq system-type 'gnu/linux)
