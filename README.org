@@ -202,7 +202,7 @@
    - ~lsp-lens-hide~ - Hide lenses in the current file
    - ~lsp-lens-mode~  - Turn on/off lenses in the current file.
    - ~lsp-avy-lens~ - Click lens using ~avy~
-   - ~lsp-signature-activate~ - activate signature help. Bound to ~C-M-SPC~ by default.
+   - ~lsp-signature-activate~ - activate signature help. Bound to ~C-S-SPC~ by default.
    - ~lsp-signature-next~ - show next signature. Bound to ~M-n~ when signature help is activated.
    - ~lsp-signature-previous~ - show previous signature. Bound to ~M-p~ when signature help is activated.
    - ~lsp-signature-stop~ - cancel signature help. Bound to ~C-c C-k~ when signature help is activated.
