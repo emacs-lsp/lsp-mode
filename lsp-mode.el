@@ -4159,8 +4159,10 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
 (defun lsp--make-document-formatting-params ()
   "Create document formatting params."
   `(:textDocument ,(lsp--text-document-identifier)
-                  :options (:tabSize ,tab-width :insertSpaces
-                                     ,(if indent-tabs-mode :json-false t))))
+                  :options (:tabSize ,(if (bound-and-true-p c-buffer-is-cc-mode)
+                                          c-basic-offset
+                                        tab-width)
+                                     :insertSpaces ,(if indent-tabs-mode :json-false t))))
 
 (defun lsp-format-buffer ()
   "Ask the server to format this document."
