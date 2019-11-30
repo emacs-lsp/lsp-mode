@@ -618,6 +618,11 @@ Changes take effect only when a new session is started."
                                         (crystal-mode . "crystal"))
   "Language id configuration.")
 
+(defvar lsp--last-active-workspaces nil
+  "Keep track of last active workspace.
+We want to try the last workspace first when jumping into a library
+directory")
+
 (defvar lsp-method-requirements
   '(("textDocument/onTypeFormatting" :capability "documentOnTypeFormattingProvider")
     ("workspace/executeCommand"
@@ -2490,6 +2495,7 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
                                     cancel-token))
              (id (cl-incf lsp-last-id))
              (body (plist-put body :id id)))
+        (setq lsp--last-active-workspaces target-workspaces)
         (when cancel-token
           (puthash cancel-token (cons id target-workspaces) lsp--cancelable-requests))
         (seq-doseq (workspace target-workspaces)
@@ -6125,8 +6131,13 @@ Returns nil if the project should not be added to the current SESSION."
 (defun lsp--try-open-in-library-workspace ()
   "Try opening current file as library file in any of the active workspace.
 The library folders are defined by each client for each of the active workspace."
+
   (when-let (workspace (->> (lsp-session)
                             (lsp--session-workspaces)
+                            ;; Sort the last active workspaces first as they are more likely to be
+                            ;; the correct ones, especially when jumping to a definition.
+                            (-sort (lambda (a b)
+                                     (-contains? lsp--last-active-workspaces a)))
                             (--first
                              (and (-contains? (-> it lsp--workspace-client lsp--client-major-modes)
                                               major-mode)
