@@ -3593,20 +3593,6 @@ and the position respectively."
 
 (defalias 'lsp--cur-line-diagnotics 'lsp-cur-line-diagnostics)
 
-(defun lsp--gethash (key table &optional dflt)
-  "Look up KEY in TABLE and return its associated value,
-unless KEY not found or its value is false, when it returns DFLT.
-DFLT defaults to nil.
-
-Needed for completion request fallback behavior for the fields
-'sortText', 'filterText', and 'insertText' as described here:
-
-https://microsoft.github.io/language-server-protocol/specification#textDocument_completion"
-  (let ((result (gethash key table dflt)))
-    (when (member result '(nil "" 0 :json-false))
-      (setq result dflt))
-    result))
-
 (defun lsp--make-completion-item (item)
   (propertize (or (gethash "insertText" item)
                   (gethash "label" item ""))
