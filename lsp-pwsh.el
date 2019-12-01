@@ -266,7 +266,8 @@ Must not nil.")
   :server-id 'pwsh-ls
   :priority 1
   :initialization-options #'lsp-pwsh--extra-init-params
-  :notification-handlers (lsp-ht ("powerShell/executionStatusChanged" 'ignore))
+  :notification-handlers (lsp-ht ("powerShell/executionStatusChanged" #'ignore)
+                                 ("output" #'ignore))
   :initialized-fn (lambda (w)
                     (with-lsp-workspace w
                       (lsp--set-configuration
