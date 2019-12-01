@@ -234,6 +234,9 @@ Must not nil.")
 
 (defun lsp-pwsh--command ()
   "Return the command to start server."
+  (unless (and lsp-pwsh-exe (file-executable-p lsp-pwsh-exe))
+    (user-error "Use `lsp-pwsh-exe' with the value of `%s' is not a valid powershell binary"
+                lsp-pwsh-exe))
   ;; Download extension
   (lsp-pwsh-setup)
   `(,lsp-pwsh-exe "-NoProfile" "-NonInteractive" "-NoLogo"
