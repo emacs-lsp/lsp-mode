@@ -282,10 +282,10 @@ Must not nil.")
               '((name . --force-post-completion-for-pwsh))))
 
 ;;; Utils
-(defconst lsp-pwsh-unzip-script "%s -noprofile -noninteractive -nologo -ex bypass -command Expand-Archive -Path '%s' -DestinationPath '%s'"
+(defconst lsp-pwsh-unzip-script "\"%s\" -noprofile -noninteractive -nologo -ex bypass -command Expand-Archive -Path '%s' -DestinationPath '%s'"
   "Powershell script to unzip vscode extension package file.")
 
-(defconst lsp-pwsh-editor-svcs-dl-script "%s -noprofile -noninteractive -nologo -ex bypass -command Invoke-WebRequest -UseBasicParsing -uri '%s' -outfile '%s'"
+(defconst lsp-pwsh-editor-svcs-dl-script "\"%s\" -noprofile -noninteractive -nologo -ex bypass -command Invoke-WebRequest -UseBasicParsing -uri '%s' -outfile '%s'"
   "Command executed via `shell-command' to download the latest PowerShellEditorServices release.")
 
 (defcustom lsp-pwsh-github-asset-url
