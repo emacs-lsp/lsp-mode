@@ -752,8 +752,11 @@ They are added to `markdown-code-lang-modes'")
 
 (defun lsp-elt (sequence n)
   "Return Nth element of SEQUENCE or nil if N is out of range."
-  (if (listp sequence) (elt sequence n)
-    (and (> (length sequence) n) (elt sequence n))))
+  (cond
+   ((listp sequence) (elt sequence n))
+   ((arrayp sequence) 
+    (and (> (length sequence) n) (aref sequence n)))
+   (t (and (> (length sequence) n) (elt sequence n)))))
 
 ;; define seq-first and seq-rest for older emacs
 (defun lsp-seq-first (sequence)
