@@ -752,8 +752,11 @@ They are added to `markdown-code-lang-modes'")
 
 (defun lsp-elt (sequence n)
   "Return Nth element of SEQUENCE or nil if N is out of range."
-  (if (listp sequence) (elt sequence n)
-    (and (> (length sequence) n) (elt sequence n))))
+  (cond
+   ((listp sequence) (elt sequence n))
+   ((arrayp sequence) 
+    (and (> (length sequence) n) (aref sequence n)))
+   (t (and (> (length sequence) n) (elt sequence n)))))
 
 ;; define seq-first and seq-rest for older emacs
 (defun lsp-seq-first (sequence)
@@ -1496,7 +1499,7 @@ WORKSPACE is the workspace that contains the diagnostics."
       "Report new diagnostics to flymake."
       (funcall lsp--flymake-report-fn
                (-some->> (lsp-diagnostics)
-                 (gethash buffer-file-name)
+                 (gethash (lsp--fix-path-casing buffer-file-name))
                  (--map (-let* (((&hash "message" "severity" "range") (lsp-diagnostic-original it))
                                 ((start . end) (lsp--range-to-region range)))
                           (when (= start end)
@@ -3584,7 +3587,8 @@ and the position respectively."
                            (lambda (diag)
                              (let ((line (lsp-diagnostic-line diag)))
                                (and (>= line start) (<= line end))))
-                           (gethash buffer-file-name (lsp-diagnostics) nil))))
+                           (gethash (lsp--fix-path-casing buffer-file-name)
+                                    (lsp-diagnostics) nil))))
     (cl-coerce (seq-map #'lsp-diagnostic-original diags-in-range) 'vector)))
 
 (defalias 'lsp--cur-line-diagnotics 'lsp-cur-line-diagnostics)
