@@ -3129,6 +3129,8 @@ The method uses `replace-buffer-contents'."
                                     beg (+ beg (length newText))
                                     length)))))))))
 
+(defvar-local lsp--filter-cr? t)
+
 (defun lsp--apply-text-edits (edits)
   "Apply the edits described in the TextEdit[] object."
   (unless (seq-empty-p edits)
@@ -3146,6 +3148,11 @@ The method uses `replace-buffer-contents'."
                            'lsp--apply-text-edit)))
         (unwind-protect
             (->> edits
+                 (mapc (lambda (edit)
+                         (when lsp--filter-cr?
+                           ;; filter \r out of text since it's mostly useless
+                           (ht-set edit "newText"
+                                   (s-replace "\r" "" (ht-get edit "newText" ""))))))
                  (nreverse)
                  (seq-sort #'lsp--text-edit-sort-predicate)
                  (mapc (lambda (edit)

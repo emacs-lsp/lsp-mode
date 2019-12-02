@@ -307,7 +307,10 @@ Must not nil.")
   :initialized-fn (lambda (w)
                     (with-lsp-workspace w
                       (lsp--set-configuration
-                       (lsp-configuration-section "powershell"))))
+                       (lsp-configuration-section "powershell")))
+                    (let ((caps (lsp--workspace-server-capabilities w)))
+                      (ht-set caps "documentRangeFormattingProvider" t)
+                      (ht-set caps "documentFormattingProvider" t)))
   ))
 
 ;; Compatibility
