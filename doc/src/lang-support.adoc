@@ -34,6 +34,12 @@
 |https://github.com/snoe/clojure-lsp[clojure-lsp]
 |
 
+|Crystal
+|https://github.com/crystal-lang-tools/scry[scry]
+|<<lsp-crystal,Built-in>>
+|https://github.com/crystal-lang-tools/scry[scry]
+|
+
 |CSS/LessCSS/SASS/SCSS
 |https://github.com/vscode-langservers/vscode-css-languageserver-bin[css]
 |<<lsp-css,Built-in>>
