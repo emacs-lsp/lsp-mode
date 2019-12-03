@@ -6029,7 +6029,7 @@ Returns nil if the project should not be added to the current SESSION."
          (--max-by (> (length it)
                       (length other))))))
 
-(defun lsp-find-workspace (server-id file-name)
+(defun lsp-find-workspace (server-id &optional file-name)
   "Find workspace for SERVER-ID for FILE-NAME."
   (-when-let* ((session (lsp-session))
                (folder->servers (lsp-session-folder->servers session))
