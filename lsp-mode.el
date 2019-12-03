@@ -1057,7 +1057,10 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   ;; structure is an alist of the form (KEY . VALUE), where KEY is a
   ;; string (regularly in all caps), and VALUE may be a string, a
   ;; boolean, or a sequence of strings.
-  (environment-fn))
+  (environment-fn)
+
+  ;; ‘after-open-fn’ workspace after open specific hooks.
+  (after-open-fn nil))
 
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--line-character-to-point (line character)
@@ -2918,7 +2921,11 @@ in that particular folder."
   (lsp--on-change-debounce (current-buffer))
   (lsp--on-idle (current-buffer))
 
-  (run-hooks 'lsp-after-open-hook))
+  (run-hooks 'lsp-after-open-hook)
+  (-some-> lsp--cur-workspace
+    (lsp--workspace-client)
+    (lsp--client-after-open-fn)
+    (funcall)))
 
 (defun lsp--text-document-identifier ()
   "Make TextDocumentIdentifier.
