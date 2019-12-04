@@ -609,7 +609,8 @@ Changes take effect only when a new session is started."
                                         (latex-mode . "latex")
                                         (vhdl-mode . "vhdl")
                                         (terraform-mode . "terraform")
-                                        (ess-r-mode . "r"))
+                                        (ess-r-mode . "r")
+                                        (crystal-mode . "crystal"))
   "Language id configuration.")
 
 (defvar lsp-method-requirements
