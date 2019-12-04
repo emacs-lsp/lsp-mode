@@ -755,7 +755,7 @@ They are added to `markdown-code-lang-modes'")
   "Return Nth element of SEQUENCE or nil if N is out of range."
   (cond
    ((listp sequence) (elt sequence n))
-   ((arrayp sequence) 
+   ((arrayp sequence)
     (and (> (length sequence) n) (aref sequence n)))
    (t (and (> (length sequence) n) (elt sequence n)))))
 
@@ -4049,15 +4049,15 @@ RENDER-ALL - nil if only the signature should be rendered."
                              (when (s-present? docs)
                                (concat
                                 (propertize (concat "\n"
-                                                    (s-repeat prefix-length " ")
-                                                    "├─────────────────────────────────────────────────")
+                                                    (s-repeat prefix-length "─")
+                                                    "┴─────────────────────────────────────────────────")
                                             'face 'shadow)
                                 "\n"
-                                (->> docs
-                                     s-lines
-                                     (--map (concat (propertize (concat (s-repeat prefix-length " ") "│ ")
-                                                                'face 'shadow) it))
-                                     (s-join "\n"))))))))
+                                docs
+                                (propertize (concat "\n"
+                                                    (s-repeat prefix-length "─")
+                                                    "──────────────────────────────────────────────────")
+                                            'face 'shadow)))))))
       (when (and active-parameter (not (seq-empty-p parameters)))
         (-when-let* ((param (when (and (< -1 active-parameter (length parameters)))
                               (seq-elt parameters active-parameter)))
