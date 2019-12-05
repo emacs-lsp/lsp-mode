@@ -35,6 +35,7 @@ A minimal `use-package` configuration for `lsp-mode` might look like this:
 ----
 (use-package lsp-mode
   :commands lsp
+  :hook (XXX-mode . lsp)
   :init
   (setq ...))
 ----
@@ -49,5 +50,16 @@ http://develop.spacemacs.org/layers/+tools/lsp/README.html[here].
 
 `lsp-mode` is included in the `lsp` module. Documentation for it is available
 https://github.com/hlissner/doom-emacs/blob/develop/modules/tools/lsp/README.org[here].
+
+=== Deferred startup
+To defer `lsp` startup (server initialization, `didOpen` notifications, etc) until the
+buffer is visible, you can use `lsp-deferred` instead of `lsp`:
+[source,elisp]
+----
+(add-hook 'java-mode-hook 'lsp-deferred)
+----
+
+=== Docker
+To run `lsp-mode` in a docker container, refer to the https://github.com/emacs-lsp/lsp-docker/[lsp-docker] README.
 
 include::lsp-mode-vars.adoc[]
