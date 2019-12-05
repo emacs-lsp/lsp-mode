@@ -5,6 +5,18 @@
 |===
 |Language |Language Server |Support |Installation command |Debugger
 
+|Ada
+|https://github.com/AdaCore/ada_language_server[ada_language_server]
+|<<lsp-ada,Built-in>>
+|https://github.com/AdaCore/ada_language_server#install[ada_language_server]
+|
+
+|Angular
+|https://github.com/angular/vscode-ng-language-service/[vscode-ng-language-service]
+|Built-in
+|https://github.com/angular/vscode-ng-language-service/[vscode-ng-language-service]
+|
+
 |Bash
 |https://github.com/mads-hartmann/bash-language-server[bash-language-server]
 |Built-in
@@ -23,10 +35,17 @@
 |https://clang.llvm.org/extra/clangd.html[clangd]
 |Yes (gdb or lldb)
 
-|C++ |https://github.com/cquery-project/cquery[cquery]
+|C++
+|https://github.com/cquery-project/cquery[cquery]
 |https://github.com/cquery-project/emacs-cquery[emacs-cquery]
 |https://github.com/cquery-project/cquery[cquery]
 |Yes (gdb or lldb)
+
+|C#
+|https://github.com/OmniSharp/omnisharp-roslyn[omnisharp-roslyn]
+|<<lsp-csharp,Built-in>>
+|https://github.com/OmniSharp/omnisharp-roslyn[omnisharp-roslyn]
+|
 
 |Clojure
 |https://github.com/snoe/clojure-lsp[clojure-lsp]
@@ -85,7 +104,7 @@
 |Go
 |https://golang.org/x/tools/cmd/gopls[gopls]
 |Built-in
-|`go get -u golang.org/x/tools/cmd/gopls`
+|https://github.com/golang/tools/blob/master/gopls/doc/user.md#installation[gopls documentation]
 |Yes
 
 |Go
@@ -110,6 +129,12 @@
 |https://github.com/vscode-langservers/vscode-html-languageserver[html]
 |<<lsp-html,Built-in>>
 |`npm install -g vscode-html-languageserver-bin`
+|
+
+|Lua
+|https://github.com/EmmyLua/EmmyLua-LanguageServer[EmmyLua]
+|<<Built-in>>
+|https://github.com/emacs-lsp/lsp-mode/wiki/Install-EmmyLua-Language-server[Instructions]
 |
 
 |Haskell
@@ -161,6 +186,12 @@
 |https://github.com/freebroccolo/ocaml-language-server[ocaml-language-server]
 |
 
+|Ocaml
+|https://github.com/ocaml/merlin[merlin]
+|Built in
+|https://github.com/ocaml/merlin[merlin]
+|
+
 |PHP(recommended)
 |https://github.com/bmewburn/vscode-intelephense[intelephense]
 |<<lsp-intelephense,Built-in>>
@@ -203,6 +234,12 @@
 |https://github.com/rust-lang-nursery/rls[rls]
 |Yes
 
+|Rust
+|https://github.com/rust-analyzer/rust-analyzer[rust-analyzer]
+|Built-in
+|https://github.com/rust-analyzer/rust-analyzer[rust-analyzer]
+|
+
 |Scala
 |https://scalameta.org/metals/[Metals]
 |<<lsp-metals,Built-in>>
@@ -215,11 +252,35 @@
 |https://github.com/apple/sourcekit-lsp[sourcekit-LSP]
 |Yes (via llvm debug adapter)
 
+|Terraform
+|https://github.com/juliosueiras/terraform-lsp[terraform-lsp]
+|Built-in
+|https://github.com/juliosueiras/terraform-lsp[terraform-lsp]
+|
+
+|TeX,LaTeX,etc
+|https://github.com/astoff/digestif[Digestif]
+|Built-in
+|https://github.com/astoff/digestif[Digestif]
+|
+
+|VHDL
+|http://www.vhdltool.com/[VHDL Tool]
+|<<Built-in,lsp-vhdl>>
+|http://www.vhdltool.com/download[Download]
+|
+
 |Vue
 |https://github.com/vuejs/vetur/tree/master/server[vue-language-server]
 |<<lsp-vetur,Built-in>>
 |`npm install -g vue-language-server`
 |Yes (Firefox/Chrome)
+
+|Vimscript
+|https://github.com/iamcco/vim-language-server[vim-language-server]
+|Built-in
+|`npm install -g vim-language-server`
+|
 
 |XML
 |https://github.com/angelozerr/lsp4xml[lsp4xml]
