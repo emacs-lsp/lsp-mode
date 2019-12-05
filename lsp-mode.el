@@ -435,6 +435,11 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
+(defcustom lsp-enable-text-document-color t
+  "Enable `textDocument/documentColor' integration."
+  :type 'boolean
+  :group 'lsp-mode)
+
 (defcustom lsp-before-save-edits t
   "If non-nil, `lsp-mode' will apply edits suggested by the language server before saving a document."
   :type 'boolean
@@ -2812,7 +2817,6 @@ in that particular folder."
   (let ((ch last-command-event))
     (when (cl-find ch trigger-characters :key #'string-to-char)
       (lsp-signature-activate))))
-
 (define-minor-mode lsp-managed-mode
   "Mode for source buffers managed by lsp-mode."
   nil nil nil
@@ -2846,12 +2850,12 @@ in that particular folder."
         (add-hook 'post-self-insert-hook on-type-formatting-handler nil t))
       (when signature-help-handler
         (add-hook 'post-self-insert-hook signature-help-handler nil t))
-
       (add-hook 'post-command-hook #'lsp--post-command nil t)
-
       (lsp--on-idle (current-buffer))
       (when lsp-enable-xref
-        (add-hook 'xref-backend-functions #'lsp--xref-backend nil t)))
+        (add-hook 'xref-backend-functions #'lsp--xref-backend nil t))
+      (when (and lsp-enable-text-document-color (lsp--capability "colorProvider"))
+        (add-hook 'lsp-on-change-hook #'lsp--document-color nil t)))
      (t
       (setq-local indent-region-function nil)
       (remove-function (local 'eldoc-documentation-function) #'lsp-eldoc-function)
@@ -2878,9 +2882,11 @@ in that particular folder."
       (lsp--remove-overlays 'lsp-sem-highlight)
       (lsp--remove-overlays 'lsp-highlight)
       (lsp--remove-overlays 'lsp-links)
+      (lsp--remove-overlays 'lsp-color)
       (lsp-lens-mode -1)
 
-      (remove-hook 'xref-backend-functions #'lsp--xref-backend t)))))
+      (remove-hook 'xref-backend-functions #'lsp--xref-backend t)
+      (remove-hook 'lsp-on-change-hook #'lsp--document-color t)))))
 
 (defun lsp--text-document-did-open ()
   "'document/didOpen event."
@@ -4080,6 +4086,65 @@ RENDER-ALL - nil if only the signature should be rendered."
                      :cancel-token :signature))
 
 
+;; color presentation
+(defun lsp--color-create-interactive-command (color range)
+  (lambda ()
+    (interactive)
+    (-let [(&hash? "textEdit" text-edit
+                   "additionalTextEdits" additional-text-edits)
+           (lsp--completing-read
+            "Select color presentation: "
+            (lsp-request
+             "textDocument/colorPresentation"
+             `(:textDocument ,(lsp--text-document-identifier)
+                             :color ,color
+                             :range ,range))
+            (-lambda ((&hash "label")) label)
+            nil
+            t)]
+      (lsp--apply-text-edit text-edit)
+      (lsp--apply-text-edits additional-text-edits))))
+
+(defun lsp--number->color (number)
+  (let ((result (format "%x"
+                        (round (* (or number 0) 255.0)))))
+    (if (= 1 (length result))
+        (concat "0" result)
+      result)))
+
+(defun lsp--document-color ()
+  "Document color handler."
+  (lsp-request-async
+   "textDocument/documentColor"
+   `(:textDocument ,(lsp--text-document-identifier))
+   (lambda (result)
+     (lsp--remove-overlays 'lsp-color)
+     (seq-do
+      (-lambda ((&hash "color" (color &as &hash "red" "green" "blue")
+                       "range"))
+        (-let* (((beg . end) (lsp--range-to-region range))
+                (overlay (make-overlay beg end))
+                (command (lsp--color-create-interactive-command color range)))
+          (overlay-put overlay 'lsp-color t)
+          (overlay-put overlay 'evaporate t)
+          (overlay-put overlay
+                       'before-string
+                       (propertize
+               	        "⬛"
+                        'face `((:foreground ,(format "#%s%s%s"
+                                                      (lsp--number->color red)
+                                                      (lsp--number->color green)
+                                                      (lsp--number->color blue))))
+                        'action command
+                        'mouse-face 'lsp-lens-mouse-face
+                        'local-map (-doto (make-sparse-keymap)
+                                     (define-key [mouse-1] command))))))
+      result))
+   :mode 'tick
+   :cancel-token :document-color-token))
+
+
+
 ;; hover
 
 (defvar-local lsp--hover-saved-bounds nil)

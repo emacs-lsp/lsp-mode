@@ -237,6 +237,7 @@
    - ~lsp-enable-imenu~ - If non-nil, automatically enable imenu integration when server provides ~textDocument/documentSymbol~.
    - ~lsp-signature-auto-activate~ - Auto activate signature when trigger char is pressed.
    - ~lsp-signature-render-documentation~ - Include signature documentation in signature help.
+   - ~lsp-enable-text-document-color~ - Enable ~textDocument/documentColor~ when server supports it.
 ** Screenshots
    - RUST Completion with company-lsp
      [[file:examples/completion.png]]
