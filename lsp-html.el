@@ -172,6 +172,7 @@ styles."
                                    (lambda () lsp-html-server-command))
                   :major-modes '(html-mode sgml-mode mhtml-mode web-mode)
                   :priority -4
+                  :completion-in-comments? t
                   :server-id 'html-ls
                   :initialized-fn (lambda (w)
                                     (with-lsp-workspace w
