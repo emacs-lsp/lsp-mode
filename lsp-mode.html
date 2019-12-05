@@ -465,6 +465,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_use_package">use-package</a></li>
 <li><a href="#_spacemacs">Spacemacs</a></li>
 <li><a href="#_doom_emacs">Doom Emacs</a></li>
+<li><a href="#_deferred_startup">Deferred startup</a></li>
+<li><a href="#_docker">Docker</a></li>
 </ul>
 </li>
 <li><a href="#_using_lsp_mode">Using <code>lsp-mode</code></a>
@@ -692,6 +694,7 @@ languages.</p>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="elisp">(use-package lsp-mode
   :commands lsp
+  :hook (XXX-mode . lsp)
   :init
   (setq ...))</code></pre>
 </div>
@@ -710,6 +713,24 @@ languages.</p>
 <div class="paragraph">
 <p><code>lsp-mode</code> is included in the <code>lsp</code> module. Documentation for it is available
 <a href="https://github.com/hlissner/doom-emacs/blob/develop/modules/tools/lsp/README.org">here</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_deferred_startup">Deferred startup</h3>
+<div class="paragraph">
+<p>To defer <code>lsp</code> startup (server initialization, <code>didOpen</code> notifications, etc) until the
+buffer is visible, you can use <code>lsp-deferred</code> instead of <code>lsp</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="elisp">(add-hook 'java-mode-hook 'lsp-deferred)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_docker">Docker</h3>
+<div class="paragraph">
+<p>To run <code>lsp-mode</code> in a docker container, refer to the <a href="https://github.com/emacs-lsp/lsp-docker/">lsp-docker</a> README.</p>
 </div>
 <div class="sect3">
 <h4 id="lsp-mode-vars"><code>lsp-mode</code> settings</h4>
@@ -2177,6 +2198,20 @@ sent from the server to the editor:</p>
 </thead>
 <tbody>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ada</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/AdaCore/ada_language_server">ada_language_server</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#lsp-ada">Built-in</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/AdaCore/ada_language_server#install">ada_language_server</a></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Angular</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/angular/vscode-ng-language-service/">vscode-ng-language-service</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Built-in</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/angular/vscode-ng-language-service/">vscode-ng-language-service</a></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Bash</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/mads-hartmann/bash-language-server">bash-language-server</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Built-in</p></td>
@@ -2203,6 +2238,13 @@ sent from the server to the editor:</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/cquery-project/emacs-cquery">emacs-cquery</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/cquery-project/cquery">cquery</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes (gdb or lldb)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">C#</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/OmniSharp/omnisharp-roslyn">omnisharp-roslyn</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#lsp-csharp">Built-in</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/OmniSharp/omnisharp-roslyn">omnisharp-roslyn</a></p></td>
+<td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Clojure</p></td>
@@ -2271,7 +2313,7 @@ sent from the server to the editor:</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Go</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://golang.org/x/tools/cmd/gopls">gopls</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Built-in</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>go get -u golang.org/x/tools/cmd/gopls</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/golang/tools/blob/master/gopls/doc/user.md#installation">gopls documentation</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
 </tr>
 <tr>
@@ -2300,6 +2342,13 @@ sent from the server to the editor:</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/vscode-langservers/vscode-html-languageserver">html</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#lsp-html">Built-in</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>npm install -g vscode-html-languageserver-bin</code></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Lua</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/EmmyLua/EmmyLua-LanguageServer">EmmyLua</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#Built-in">[Built-in]</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/emacs-lsp/lsp-mode/wiki/Install-EmmyLua-Language-server">Instructions</a></p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
@@ -2360,6 +2409,13 @@ sent from the server to the editor:</p>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ocaml</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/ocaml/merlin">merlin</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Built in</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/ocaml/merlin">merlin</a></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">PHP(recommended)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/bmewburn/vscode-intelephense">intelephense</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#lsp-intelephense">Built-in</a></p></td>
@@ -2409,6 +2465,13 @@ sent from the server to the editor:</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Rust</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/rust-analyzer/rust-analyzer">rust-analyzer</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Built-in</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/rust-analyzer/rust-analyzer">rust-analyzer</a></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Scala</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://scalameta.org/metals/">Metals</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#lsp-metals">Built-in</a></p></td>
@@ -2423,11 +2486,39 @@ sent from the server to the editor:</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes (via llvm debug adapter)</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Terraform</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/juliosueiras/terraform-lsp">terraform-lsp</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Built-in</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/juliosueiras/terraform-lsp">terraform-lsp</a></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TeX,LaTeX,etc</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/astoff/digestif">Digestif</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Built-in</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/astoff/digestif">Digestif</a></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VHDL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://www.vhdltool.com/">VHDL Tool</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#Built-in">lsp-vhdl</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://www.vhdltool.com/download">Download</a></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Vue</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/vuejs/vetur/tree/master/server">vue-language-server</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#lsp-vetur">Built-in</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>npm install -g vue-language-server</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes (Firefox/Chrome)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vimscript</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/iamcco/vim-language-server">vim-language-server</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Built-in</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>npm install -g vim-language-server</code></p></td>
+<td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">XML</p></td>
@@ -10438,7 +10529,7 @@ Example: <code>(setq lsp-yaml-custom-tags '("!Scalar-example scalar" "!Seq-examp
 <div id="footer">
 <div id="footer-text">
 Version 6.1<br>
-Last updated 2019-12-05 07:39:37 UTC
+Last updated 2019-12-05 11:22:38 UTC
 </div>
 </div>
 </body>
