@@ -192,7 +192,7 @@
    - ~lsp-symbol-highlight~ - Highlight all relevant references to the symbol under point.
    - ~lsp-workspace-folders-add~ - Add workspace folder
    - ~lsp-workspace-folders-remove~ - Remove workspace folder
-   - ~lsp-workspace-folders-switch~ - Switch workspace folder
+   - ~lsp-workspace-folders-open~ - Open a project directory in dired
    - ~imenu~ or ~helm-imenu~ - display document structure.
    - ~completion-at-point~ - display completion using built-in emacs ~completion-at-point~ framework.
    - ~lsp-find-definition~ - to find the definition for the symbol under point.

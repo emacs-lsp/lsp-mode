@@ -54,7 +54,7 @@ If called interactively, it will ask the user to select a directory, and
 import it as a project root. All files located under the directory will be
 treated as belonging to the project rooted at this directory.
 
-[id="lsp-workspace-folders-switch"]
+[id="lsp-workspace-folders-open"]
 ===== Function: `lsp-workspace-folders-open PROJECT-ROOT`
 If called interactively, it asks the user to choose from a list of imported
 project roots, and opens the selected directory in `dired`.
