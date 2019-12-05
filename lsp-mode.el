@@ -2060,7 +2060,7 @@ CALLBACK - callback for the lenses."
      ("Workspace Folders"
       ["Add" lsp-workspace-folders-add]
       ["Remove" lsp-workspace-folders-remove]
-      ["Switch" lsp-workspace-folders-switch])
+      ["Open" lsp-workspace-folders-open])
      ["Toggle Lenses" lsp-lens-mode]))
   "Menu for lsp-mode.")
 
