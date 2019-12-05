@@ -5308,7 +5308,7 @@ Ignore non-boolean keys whose value is nil."
                          (funcall environment-fn)
                        nil)))
     (-flatten (cons (cl-loop for (key . value) in environment
-                             if (or value
+                             if (or (eval value)
                                     (eq (get value 'custom-type) 'boolean))
                              collect (concat key "=" (lsp--value-to-string
                                                       (eval value))))
