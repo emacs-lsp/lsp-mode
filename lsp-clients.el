@@ -437,13 +437,6 @@ finding the executable with `exec-path'."
                   :priority -1
                   :server-id 'clangd))
 
-(defun lsp-clients-register-clangd ()
-  (warn "This call is no longer needed. clangd is now automatically registered. Delete lsp-clients-register-clangd call from your config."))
-
-(make-obsolete 'lsp-clients-register-clangd
-               "This function is no longer needed, as clangd is now automatically registered."
-               "lsp-mode 6.1")
-
 ;; Elixir
 (defgroup lsp-elixir nil
   "LSP support for Elixir, using elixir-ls."
