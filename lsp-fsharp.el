@@ -208,7 +208,7 @@ disable if `--backgorund-service-enabled' is not used"
 
 (defun lsp-fsharp--make-launch-cmd ()
   "Build the command required to launch fsautocomplete."
-  (append (list (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-locate) "--mode" "lsp" "--background-service-enabled")
+  (append (list (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-locate) "--background-service-enabled")
           lsp-fsharp-server-args))
 
 (defun lsp-fsharp--project-list ()
