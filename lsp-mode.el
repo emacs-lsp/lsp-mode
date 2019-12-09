@@ -66,6 +66,7 @@
 (declare-function lsp-ui-flycheck-enable "ext:lsp-ui-flycheck")
 (declare-function evil-set-command-property "ext:evil-common")
 (declare-function projectile-project-root "ext:projectile")
+(declare-function yas-expand-snippet "ext:yasnippet")
 
 (defvar c-basic-offset)
 
@@ -534,6 +535,12 @@ If set to `:none' neither of two will be enabled."
                  (const :tag "Use neither flymake nor lsp-ui" :none))
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
+
+(defcustom lsp-prefer-capf nil
+  "Prefer capf."
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-server-trace nil
   "Request tracing on the server side.
@@ -2392,7 +2399,6 @@ If NO-WAIT is non-nil send the request as notification."
                                :no-merge no-merge
                                :mode 'detached
                                :cancel-token :sync-request)
-
             (while (not (or resp-error resp-result))
               (accept-process-output nil 0.001)
               (when (< expected-time (time-to-seconds (current-time)))
@@ -2404,6 +2410,30 @@ If NO-WAIT is non-nil send the request as notification."
              ((ht? resp-error) (error (gethash "message" resp-error)))
              (t (error (gethash "message" (cl-first resp-error))))))
         (lsp-cancel-request-by-token :sync-request)))))
+
+(cl-defun lsp-request-while-no-input (method params)
+  "Send request METHOD with PARAMS and waits until there is no input."
+  (let* (resp-result resp-error)
+    (unwind-protect
+        (progn
+          (lsp-request-async
+           method
+           params
+           (lambda (res) (setf resp-result (or res :finished)))
+           :error-handler (lambda (err) (setf resp-error err))
+           :mode 'detached
+           :cancel-token :sync-request)
+
+          (while (and (not (or resp-error resp-result))
+                      (not (input-pending-p)))
+            (accept-process-output nil 0.001))
+          (cond
+           ((eq resp-result :finished) nil)
+           (resp-result resp-result)
+           ((ht? resp-error) (error (gethash "message" resp-error)))
+           ((input-pending-p) nil)
+           (t (error (gethash "message" (cl-first resp-error))))))
+      (lsp-cancel-request-by-token :sync-request))))
 
 (cl-defun lsp-request-async (method params callback &key mode error-handler no-merge cancel-token)
   "Send request METHOD with PARAMS."
@@ -2589,14 +2619,14 @@ disappearing, unset all the variables related to it."
                                                                                                   "refactor.rewrite"
                                                                                                   "source"
                                                                                                   "source.organizeImports"])))))))
-                      (completion . ((completionItem . ((snippetSupport . ,(if lsp-enable-snippet
-                                                                               (or
-                                                                                (featurep 'yasnippet)
-                                                                                (warn (concat
-                                                                                       "Yasnippet is not installed, but `lsp-enable-snippet' is set to `t'. "
-                                                                                       "You must either install yasnippet, or disable snippet support."))
-                                                                                t)
-                                                                             :json-false))
+                      (completion . ((completionItem . ((snippetSupport . ,(cond
+                                                                            ((and lsp-enable-snippet (not (featurep 'yasnippet)) t)
+                                                                             (lsp--warn (concat
+                                                                                         "Yasnippet is not installed, but `lsp-enable-snippet' is set to `t'. "
+                                                                                         "You must either install yasnippet, or disable snippet support."))
+                                                                             :json-false)
+                                                                            (lsp-enable-snippet t)
+                                                                            (t :json-false)))
                                                         (documentationFormat . ["markdown"])))
                                      (contextSupport . t)))
                       (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))))
@@ -2835,6 +2865,7 @@ in that particular folder."
   (let ((ch last-command-event))
     (when (cl-find ch trigger-characters :key #'string-to-char)
       (lsp-signature-activate))))
+
 (define-minor-mode lsp-managed-mode
   "Mode for source buffers managed by lsp-mode."
   nil nil nil
@@ -3124,10 +3155,9 @@ interface TextDocumentEdit {
   ;; edits with the same position is preserved.
   (-let* (((&hash "newText" "range") text-edit)
           ((start . end) (lsp--range-to-region range)))
-    (save-excursion
-      (goto-char start)
-      (delete-region start end)
-      (insert newText))))
+    (goto-char start)
+    (delete-region start end)
+    (insert newText)))
 
 (defun lsp--apply-text-edit-replace-buffer-contents (text-edit)
   "Apply the edits described in the TextEdit object in TEXT-EDIT.
@@ -3633,44 +3663,106 @@ and the position respectively."
 (defalias 'lsp--cur-line-diagnotics 'lsp-cur-line-diagnostics)
 
 (defun lsp--make-completion-item (item)
-  (propertize (or (gethash "insertText" item)
-                  (gethash "label" item ""))
+  (propertize (or (gethash "label" item)
+                  (gethash "insertText" item))
               'lsp-completion-item
               item))
 
 (defun lsp--annotate (item)
   "Annotate ITEM detail."
-  (-let (((&hash "detail" "kind") (plist-get (text-properties-at 0 item) 'lsp-completion-item)))
-    (concat (when detail (concat " " detail))
-            (when-let (kind-name (and kind (aref lsp--completion-item-kind kind)))
-              (format " (%s)" kind-name)))))
+  (-let (((&hash "detail") (plist-get (text-properties-at 0 item) 'lsp-completion-item)))
+    (concat (when detail (concat " " detail)))))
 
-(defun lsp--default-prefix-function ()
-  "Default prefix function."
-  (bounds-of-thing-at-point 'symbol))
+(defun lsp--looking-back-trigger-characters-p (trigger-characters)
+  "Return non-nil if text before point matches any of the trigger characters."
+  (looking-back (regexp-opt (cl-coerce trigger-characters 'list)) (line-beginning-position)))
 
-(defun lsp--get-completions ()
+(defun lsp-completion-at-point ()
   "Get lsp completions."
-  (with-demoted-errors "Error in ‘lsp--get-completions’: %S"
-    (let* ((prefix-function (or (lsp--client-prefix-function
-                                 (lsp--workspace-client (cl-first (lsp-workspaces))))
-                                #'lsp--default-prefix-function))
-           (bounds (funcall prefix-function)))
-      (list
-       (if bounds (car bounds) (point))
-       (if bounds (cdr bounds) (point))
-       (completion-table-dynamic
-        #'(lambda (_)
-            ;; *we* don't need to know the string being completed
-            ;; the language server does all the work by itself
-            (let* ((resp (lsp-request "textDocument/completion"
-                                      (plist-put (lsp--text-document-position-params)
-                                                 :context (ht ("triggerKind" 1)))))
-                   (items (cond
-                           ((seqp resp) resp)
-                           ((hash-table-p resp) (gethash "items" resp nil)))))
-              (seq-into (seq-map #'lsp--make-completion-item items) 'list))))
-       :annotation-function #'lsp--annotate))))
+  (let* ((bounds (bounds-of-thing-at-point 'word-strictly))
+         (trigger-chars (->> (lsp--server-capabilities)
+                             (gethash "completionProvider")
+                             (gethash "triggerCharacters")))
+         start-point result done?)
+    (list
+     (if bounds (car bounds) (point))
+     (point)
+     (lambda (probe pred action)
+       (cond
+        ((eq action 'metadata)
+         `(metadata . ((display-sort-function . (lambda (candidates)
+                                                  (--sort (string-lessp (get-text-property 0 'lsp-sort-text it)
+                                                                        (get-text-property 0 'lsp-sort-text other))
+                                                          candidates)))
+                       (category . lsp-substring))))
+        ((eq (car-safe action) 'boundaries) nil)
+        (t (if done?
+               result
+             (setf start-point (point))
+             (let* ((resp (lsp-request-while-no-input "textDocument/completion"
+                                                      (plist-put (lsp--text-document-position-params)
+                                                                 :context (ht ("triggerKind" 1)))))
+                    (items (lsp--sort-completions (cond
+                                                   ((seqp resp) resp)
+                                                   ((hash-table-p resp) (gethash "items" resp))))))
+               (setf done? (or (seqp resp)
+                               (not (gethash "isIncomplete" resp)))
+                     result (seq-into (seq-map (-lambda ((item &as &hash "label"
+                                                               "insertText" insert-text
+                                                               "sortText" sort-text))
+                                                 (propertize (or label insert-text)
+                                                             'lsp-completion-item item
+                                                             'lsp-sort-text sort-text))
+                                               items)
+                                      'list)))))))
+
+     :annotation-function #'lsp--annotate
+     :company-require-match 'never
+     :company-prefix-length (point)
+     :exit-function
+     (lambda (candidate _status)
+       (-let [(&hash "insertText" insert-text
+                     "textEdit" text-edit
+                     "insertTextFormat" insert-text-format
+                     "additionalTextEdits" additional-text-edits)
+              (lsp--resolve-completion (plist-get (text-properties-at 0 candidate) 'lsp-completion-item))]
+         (cond
+          (text-edit
+           (delete-region start-point (point))
+           (lsp--apply-text-edit text-edit))
+          (insert-text
+           (delete-region (- (point) (length candidate)) (point))
+           (insert insert-text)))
+
+         (when (eq insert-text-format 2)
+           (yas-expand-snippet (buffer-substring start-point (point))
+                               start-point
+                               (point)))
+         (when additional-text-edits
+           (lsp--apply-text-edits additional-text-edits)))
+
+       (when lsp-signature-auto-activate
+         (lsp-signature-activate))
+
+       (when (lsp--looking-back-trigger-characters-p trigger-chars)
+         (setq this-command 'self-insert-command))))))
+
+(defun lsp--to-yasnippet-snippet (text)
+  "Convert VS code snippet TEXT to yasnippet snippet."
+  ;; VS code snippet doesn't esscape "{", but yasnippet requires escaping it.
+  (let (parts
+        (start 0))
+    (dolist (range (s-matched-positions-all (regexp-quote "{") text))
+      (let ((match-start (car range)))
+        (unless (and (> match-start 0) (= (aref text (1- match-start)) ?$))
+          ;; Not a start of field. Escape it.
+          (when (< start match-start)
+            (push (substring text start match-start) parts))
+          (push "\\{" parts)
+          (setq start (1+ match-start)))))
+    (when (< start (length text))
+      (push (substring text start) parts))
+    (apply #'concat (reverse parts))))
 
 (defun lsp--sort-completions (completions)
   "Sort COMPLETIONS."
@@ -3875,7 +3967,7 @@ Stolen from `org-copy-visible'."
       (replace-match ""))
 
     (goto-char (point-min))
-    (while (re-search-forward 
+    (while (re-search-forward
             (rx (and "\\" (group (or "\\" "`" "*" "_"
                                      "{" "}" "[" "]" "(" ")"
                                      "#" "+" "-" "." "!" "|"))))
@@ -4152,7 +4244,7 @@ RENDER-ALL - nil if only the signature should be rendered."
           (overlay-put overlay
                        'before-string
                        (propertize
-               	        "⬛"
+                        "⬛"
                         'face `((:foreground ,(format "#%s%s%s"
                                                       (lsp--number->color red)
                                                       (lsp--number->color green)
@@ -4824,7 +4916,7 @@ REFERENCES? t when METHOD returns references."
 (defalias 'lsp-send-execute-command #'lsp--send-execute-command)
 (defalias 'lsp-on-open #'lsp--text-document-did-open)
 (defalias 'lsp-on-save #'lsp--text-document-did-save)
-(defalias 'lsp-completion-at-point #'lsp--get-completions)
+
 
 (defun lsp--set-configuration (settings)
   "Set the SETTINGS for the lsp server."
@@ -5537,27 +5629,11 @@ returns the command to execute."
       (lsp-ui-flycheck-enable t)
       (flycheck-mode 1)))
 
-    (when (functionp 'company-lsp)
+    (when (and (functionp 'company-lsp)
+               (not lsp-prefer-capf))
       (company-mode 1)
       (add-to-list 'company-backends 'company-lsp)
-
-      ;; make sure that company-capf is disabled since it is not indented to be
-      ;; used in combination with lsp-mode (see #884)
-      (setq-local company-backends (remove 'company-capf company-backends))
-
-      (when (functionp 'yas-minor-mode)
-        (yas-minor-mode t)))))
-
-(defun lsp--make-workspace (client root)
-  "Make workspace for the CLIENT and ROOT."
-  (let* ((workspace (make-lsp--workspace
-                     :root root
-                     :client client
-                     :status 'starting
-                     :buffers (list (current-buffer))
-                     :host-root (file-remote-p root))))
-    workspace))
-
+      (setq-local company-backends (remove 'company-capf company-backends)))))
 
 (defvar-local lsp--buffer-deferred nil
   "Whether buffer was loaded via `lsp-deferred'.")
@@ -5631,7 +5707,12 @@ SESSION is the active session."
   (lsp--spinner-start)
   (-let* ((default-directory root)
           (client (copy-lsp--client client-template))
-          (workspace (lsp--make-workspace client root))
+          (workspace (make-lsp--workspace
+                      :root root
+                      :client client
+                      :status 'starting
+                      :buffers (list (current-buffer))
+                      :host-root (file-remote-p root)))
           (server-id (lsp--client-server-id client))
           (environment-fn (lsp--client-environment-fn client))
           ((proc . cmd-proc) (funcall
