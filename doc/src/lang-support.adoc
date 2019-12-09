@@ -218,8 +218,8 @@
 
 |Python(Microsoft)
 |https://github.com/Microsoft/python-language-server[Microsoft Python Language Server]
-|https://github.com/andrew-christianson/lsp-python-ms/[lsp-python-ms]
-|https://github.com/andrew-christianson/lsp-python-ms/[lsp-python-ms]
+|https://github.com/emacs-lsp/lsp-python-ms[lsp-python-ms]
+|https://github.com/emacs-lsp/lsp-python-ms[lsp-python-ms]
 |Yes
 
 |Ruby
@@ -229,9 +229,9 @@
 |Yes
 
 |Rust
-|https://github.com/rust-lang-nursery/rls[rls]
+|https://github.com/rust-lang/rls[rls]
 |<<lsp-rust,Built-in>>
-|https://github.com/rust-lang-nursery/rls[rls]
+|https://github.com/rust-lang/rls[rls]
 |Yes
 
 |Rust
