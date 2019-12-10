@@ -48,6 +48,7 @@
 (require 'lsp-terraform)
 (require 'lsp-pwsh)
 (require 'lsp-csharp)
+(require 'lsp-json)
 
 ;;; Ada
 (defgroup lsp-ada nil

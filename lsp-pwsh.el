@@ -2,9 +2,8 @@
 
 ;; Copyright (C) 2019  Kien Nguyen
 
-;; Author: kien.n.quang@gmail.com
-;; URL: https://github.com/kiennq/lsp-powershell
-;; Keywords: languages
+;; Author: kien.n.quang at gmail.com
+;; Keywords: lsp
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -296,7 +295,7 @@ Must not nil.")
   :new-connection (lsp-stdio-connection #'lsp-pwsh--command)
   :major-modes lsp-pwsh--major-modes
   :server-id 'pwsh-ls
-  :priority 1
+  :priority -1
   :initialization-options #'lsp-pwsh--extra-init-params
   :notification-handlers (lsp-ht ("powerShell/executionStatusChanged" #'ignore)
                                  ("output" #'ignore))
