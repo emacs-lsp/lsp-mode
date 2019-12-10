@@ -5498,9 +5498,6 @@ returns the command to execute."
   "Autoconfigure `lsp-ui', `company-lsp' if they are installed."
 
   (with-no-warnings
-    (when (functionp 'lsp-ui-mode)
-      (lsp-ui-mode))
-
     (cond
      ((eq :none lsp-prefer-flymake))
      ((and (not (version< emacs-version "26.1")) lsp-prefer-flymake)

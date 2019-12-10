@@ -50,6 +50,7 @@
    - 🚀 *Easy to configure* - works out of the box and automatically upgrades if additional packages are present
    - 🌟 *Flexible* - could be configured as full-blown IDE with flashy UI or minimal distraction free
 ** Overview
+   _Configuration change: starting from v6.2.1 [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] won't be enabled by default. Refer to configuration section on how to enable it._
    Client for [[https://github.com/Microsoft/language-server-protocol/][Language Server Protocol]] (v3.14). [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] aims to provide IDE-like experience by providing optional integration with the most popular Emacs packages like ~company~, ~flycheck~ and ~projectile~.
 
    - Non-blocking asynchronous calls
@@ -86,15 +87,26 @@
      #+BEGIN_SRC emacs-lisp
        (require 'lsp-mode)
        (add-hook 'XXX-mode-hook #'lsp)
+
+       ;; to enable lsp-ui
+       (add-hook 'lsp-mode-hook #'lsp-ui-mode)
      #+END_SRC
      where ~XXX~ could be major mode like ~python~, ~java~, ~c++~. Alternatively, if you want to minimize you configuration you may use ~prog-mode-hook~. In case you do that, ~lsp~ will try to start for each programming mode and echo a message when there is no client registered for the current mode or if the corresponding server is not present. In addition, ~lsp-mode~ will automatically detect and configure [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] and [[https://github.com/tigersoldier/company-lsp][company-lsp]]. To turn off that behavior you could set ~lsp-auto-configure~ to ~nil~.
 
      To defer LSP server startup (and DidOpen notifications) until the buffer is visible you can use ~lsp-deferred~ instead of ~lsp~:
      #+BEGIN_SRC emacs-lisp
        (add-hook 'XXX-mode-hook #'lsp-deferred)
+
+       ;; to enable lsp-ui
+       (add-hook 'lsp-mode-hook #'lsp-ui-mode)
      #+END_SRC
 **** Spacemacs
      [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] is included in spacemacs develop branch. Add ~lsp~ to ~dotspacemacs-configuration-layers~ and configure the language that you want to use to be backed by ~lsp~ backend.
+     To enable [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] add the following lines into =dotspacemacs/user-config=.
+     #+BEGIN_SRC emacs-lisp
+       (with-eval-after-load 'lsp-mode
+         (add-hook 'lsp-mode-hook #'lsp-ui-mode))
+     #+END_SRC
 **** use-package
      Replace ~(require 'lsp-mode)~ with the following if you use use-package.
      #+BEGIN_SRC emacs-lisp
@@ -102,12 +114,22 @@
          :hook (XXX-mode . lsp)
          :commands lsp)
 
-       ;; optionally
+       ;; optionally if you want to use flycheck and/or fancy GUI.
        (use-package lsp-ui :commands lsp-ui-mode)
+
+       ;; company integration
        (use-package company-lsp :commands company-lsp)
+
+       ;; helm integration for interactive alternative of `xref-apropos'
        (use-package helm-lsp :commands helm-lsp-workspace-symbol)
+
+       ;; same as `helm-lsp' but use `ivy'
+       (use-package lsp-ivy :commands ivy-lsp-workspace-symbol)
+
+       ;; `treemacs' integration
        (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
-       ;; optionally if you want to use debugger
+
+       ;; optionally if you want to use visual debugger
        (use-package dap-mode)
        ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
      #+END_SRC
