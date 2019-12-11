@@ -590,6 +590,7 @@ Changes take effect only when a new session is started."
                                         (php-mode . "php")
                                         (powershell-mode . "powershell")
                                         (json-mode . "json")
+                                        (jsonc-mode . "jsonc")
                                         (rjsx-mode . "javascript")
                                         (js2-mode . "javascript")
                                         (js-mode . "javascript")
