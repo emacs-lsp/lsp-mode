@@ -66,6 +66,8 @@
 (declare-function evil-set-command-property "ext:evil-common")
 (declare-function projectile-project-root "ext:projectile")
 
+(defvar c-basic-offset)
+
 (defconst lsp--message-type-face
   `((1 . ,compilation-error-face)
     (2 . ,compilation-warning-face)
@@ -1072,7 +1074,15 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   (environment-fn)
 
   ;; ‘after-open-fn’ workspace after open specific hooks.
-  (after-open-fn nil))
+  (after-open-fn nil)
+
+  ;; ‘async-request-handlers’ is a hash table mapping request method names
+  ;; (strings) to functions handling the respective requests that may take
+  ;; time to finish.  Upon receiving a request, ‘lsp-mode’ will call the
+  ;; associated handler function passing three arguments, the ‘lsp--workspace’
+  ;; object, the deserialized request parameters and the callback which accept
+  ;; result as its parameter.
+  (async-request-handlers (make-hash-table :test 'equal) :read-only t))
 
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--line-character-to-point (line character)
@@ -4895,51 +4905,13 @@ PARAMS are the `workspace/configuration' request params"
             (gethash section (lsp-configuration-section section))))
     (apply #'vector)))
 
-(defun lsp--on-request (workspace request)
-  "Call the appropriate handler for REQUEST, and send the return value to the server.
-WORKSPACE is the active workspace."
-  (-let* ((recv-time (current-time))
-          ((&hash "params" "method" "id") request)
+(defun lsp--send-request-response (workspace recv-time request response)
+  "Send the RESPONE for REQUEST in WORKSPACE and log if needed."
+  (-let* (((&hash "params" "method" "id") request)
+          (process (lsp--workspace-proc workspace))
+          (response (lsp--make-response request response))
           (req-entry (and lsp-print-io
                           (lsp--make-log-entry method id params 'incoming-req)))
-          (client (lsp--workspace-client workspace))
-          (process (lsp--workspace-proc workspace))
-          (empty-response (lsp--make-response request nil))
-          (response (pcase method
-                      ("client/registerCapability"
-                       (seq-doseq (reg (gethash "registrations" params))
-                         (lsp--server-register-capability reg))
-                       empty-response)
-                      ("window/showMessageRequest"
-                       (let ((choice (lsp--window-log-message-request params)))
-                         (lsp--make-response request `(:title ,choice))))
-                      ("client/unregisterCapability"
-                       (seq-doseq (unreg (gethash "unregisterations" params))
-                         (lsp--server-unregister-capability unreg))
-                       empty-response)
-                      ("workspace/applyEdit"
-                       (lsp--apply-workspace-edit (gethash "edit" params))
-                       empty-response)
-                      ("workspace/configuration"
-                       (lsp--make-response request (lsp--build-workspace-configuration-response params)))
-                      ("workspace/workspaceFolders"
-                       (lsp--make-response
-                        request
-                        (let ((folders (or (-> workspace
-                                               (lsp--workspace-client)
-                                               (lsp--client-server-id)
-                                               (gethash (lsp-session-server-id->folders (lsp-session))))
-                                           (lsp-session-folders (lsp-session)))))
-                          (->> folders
-                               (-distinct)
-                               (-map (lambda (folder)
-                                       (list :uri (lsp--path-to-uri folder))))
-                               (apply #'vector)))))
-                      (other
-                       (-if-let (handler (gethash other (lsp--client-request-handlers client) nil))
-                           (lsp--make-response request (funcall handler workspace params))
-                         (lsp-warn "Unknown request method: %s" other)
-                         empty-response))))
           (resp-entry (and lsp-print-io
                            (lsp--make-log-entry method id response 'outgoing-resp
                                                 (/ (nth 2 (time-since recv-time)) 1000)))))
@@ -4948,6 +4920,55 @@ WORKSPACE is the active workspace."
       (lsp--log-entry-new req-entry workspace)
       (lsp--log-entry-new resp-entry workspace))
     (lsp--send-no-wait (lsp--make-message response) process)))
+
+(defun lsp--on-request (workspace request)
+  "Call the appropriate handler for REQUEST, and send the return value to the server.
+WORKSPACE is the active workspace."
+  (-let* ((recv-time (current-time))
+          ((&hash "params" "method") request)
+          (client (lsp--workspace-client workspace))
+          (response (pcase method
+                      ("client/registerCapability"
+                       (seq-doseq (reg (gethash "registrations" params))
+                         (lsp--server-register-capability reg))
+                       nil)
+                      ("window/showMessageRequest"
+                       (let ((choice (lsp--window-log-message-request params)))
+                         `(:title ,choice)))
+                      ("client/unregisterCapability"
+                       (seq-doseq (unreg (gethash "unregisterations" params))
+                         (lsp--server-unregister-capability unreg))
+                       nil)
+                      ("workspace/applyEdit"
+                       (lsp--apply-workspace-edit (gethash "edit" params))
+                       nil)
+                      ("workspace/configuration"
+                       (lsp--build-workspace-configuration-response params))
+                      ("workspace/workspaceFolders"
+                       (let ((folders (or (-> workspace
+                                              (lsp--workspace-client)
+                                              (lsp--client-server-id)
+                                              (gethash (lsp-session-server-id->folders (lsp-session))))
+                                          (lsp-session-folders (lsp-session)))))
+                         (->> folders
+                              (-distinct)
+                              (-map (lambda (folder)
+                                      (list :uri (lsp--path-to-uri folder))))
+                              (apply #'vector))))
+                      (other
+                       (-if-let (handler (gethash other (lsp--client-request-handlers client) nil))
+                           (funcall handler workspace params)
+                         (-if-let (handler (gethash other (lsp--client-async-request-handlers client) nil))
+                             (progn
+                               (funcall handler workspace params
+                                        (-partial #'lsp--send-request-response
+                                                  workspace recv-time request))
+                               'delay-response)
+                           (lsp-warn "Unknown request method: %s" other)
+                           nil))))))
+    ;; Send response to the server.
+    (unless (eq response 'delay-response)
+      (lsp--send-request-response workspace recv-time request response))))
 
 (defun lsp--error-string (err)
   "Format ERR as a user friendly string."
@@ -6137,7 +6158,7 @@ The library folders are defined by each client for each of the active workspace.
                             (lsp--session-workspaces)
                             ;; Sort the last active workspaces first as they are more likely to be
                             ;; the correct ones, especially when jumping to a definition.
-                            (-sort (lambda (a b)
+                            (-sort (lambda (a _b)
                                      (-contains? lsp--last-active-workspaces a)))
                             (--first
                              (and (-contains? (-> it lsp--workspace-client lsp--client-major-modes)
