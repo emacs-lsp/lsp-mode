@@ -337,10 +337,9 @@ the server has requested that."
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
 
-(defvar lsp--sync-methods
-  '((0 . none)
-    (1 . full)
-    (2 . incremental)))
+(defconst lsp--sync-none 0)
+(defconst lsp--sync-full 1)
+(defconst lsp--sync-incremental 2)
 
 (defcustom lsp-debounce-full-sync-notifications t
   "If non-nil debounce full sync events.
@@ -360,9 +359,6 @@ This flag affects only server which do not support incremental update."
 (defvar lsp--delayed-requests nil)
 (defvar lsp--delay-timer nil)
 
-(defvar-local lsp--server-sync-method nil
-  "Sync method recommended by the server.")
-
 (defgroup lsp-mode nil
   "Language Server Protocol client."
   :group 'tools
@@ -375,9 +371,9 @@ This flag affects only server which do not support incremental update."
 
 (defcustom lsp-document-sync-method nil
   "How to sync the document with the language server."
-  :type '(choice (const :tag "Documents should not be synced at all." 'none)
-                 (const :tag "Documents are synced by always sending the full content of the document." 'full)
-                 (const :tag "Documents are synced by always sending incremental changes to the document." 'incremental)
+  :type '(choice (const :tag "Documents should not be synced at all." nil)
+                 (const :tag "Documents are synced by always sending the full content of the document." lsp--sync-full)
+                 (const :tag "Documents are synced by always sending incremental changes to the document." lsp--sync-incremental)
                  (const :tag "Use the method recommended by the language server." nil))
   :group 'lsp-mode)
 
@@ -564,6 +560,7 @@ Changes take effect only when a new session is started."
                                         (".*\\.hx$" . "haxe")
                                         (".*\\.lua$" . "lua")
                                         (".*\\.sql$" . "sql")
+                                        (".*\\.html$" . "html")
                                         (ada-mode . "ada")
                                         (sql-mode . "sql")
                                         (vimrc-mode . "vim")
@@ -1388,13 +1385,9 @@ already have been created."
   "Execute BODY with lsp--server-sync-method set to 'full."
   (declare (debug (form body))
            (indent 1))
-  `(let ((no-flush-needed (eq 'lsp--server-sync-method 'full))
-         (lsp--server-sync-method 'full))
+  `(let ((lsp-document-sync-method lsp--sync-full))
      ,@body
-     ;; the next didChange message to be sent out in incremental mode might
-     ;; overtake the changes caused by BODY due to sync debouncing, so we need
-     ;; to flush before switching back to 'incremental
-     (unless no-flush-needed (lsp--flush-delayed-changes))))
+     (lsp--flush-delayed-changes)))
 
 (defun lsp-cannonical-file-name  (file-name)
   "Return the cannonical FILE-NAME."
@@ -2952,10 +2945,6 @@ in that particular folder."
 
   (lsp-managed-mode 1)
 
-  (let* ((sync (gethash "textDocumentSync" (lsp--server-capabilities)))
-         (kind (if (hash-table-p sync) (gethash "change" sync) sync)))
-    (setq lsp--server-sync-method (or lsp-document-sync-method
-                                      (alist-get kind lsp--sync-methods))))
   (when lsp-auto-configure
     (when (and lsp-enable-imenu
                (lsp--capability "documentSymbolProvider"))
@@ -3364,6 +3353,10 @@ Added to `before-change-functions'."
              ,(lsp--versioned-text-document-identifier)
              :contentChanges ,(vector (lsp--full-change-event)))))))))
 
+(defun lsp--workspace-sync-method (workspace)
+  (let* ((sync (gethash "textDocumentSync" (lsp--workspace-server-capabilities workspace))))
+    (if (hash-table-p sync) (gethash "change" sync) sync)))
+
 (defun lsp-on-change (start end length)
   "Executed when a file is changed.
 Added to `after-change-functions'."
@@ -3383,28 +3376,32 @@ Added to `after-change-functions'."
   ;; So (47 47 7) means delete 7 chars starting at pos 47
   ;; (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length)
   ;; (message "lsp-on-change:(lsp--before-change-vals)=%s" lsp--before-change-vals)
-  (when (not revert-buffer-in-progress-p)
-    (if lsp--cur-version
-        (cl-incf lsp--cur-version)
-      ;; buffer has been reset - start from scratch.
-      (setq lsp--cur-version 0))
-    (--each (lsp-workspaces)
-      (with-lsp-workspace it
-        (with-demoted-errors "Error in ‘lsp-on-change’: %S"
-          (save-match-data
-            ;; A (revert-buffer) call with the 'preserve-modes parameter (eg, as done
-            ;; by auto-revert-mode) will cause this handler to get called with a nil
-            ;; buffer-file-name. We need the buffer-file-name to send notifications;
-            ;; so we skip handling revert-buffer-caused changes and instead handle
-            ;; reverts separately in lsp-on-revert
-            (pcase lsp--server-sync-method
-              ('incremental (lsp-notify
-                             "textDocument/didChange"
-                             `(:textDocument
-                               ,(lsp--versioned-text-document-identifier)
-                               :contentChanges ,(vector (lsp--text-document-content-change-event
-                                                         start end length)))))
-              ('full
+  (let (inhibit-quit)
+    (when (not revert-buffer-in-progress-p)
+      (if lsp--cur-version
+          (cl-incf lsp--cur-version)
+        ;; buffer has been reset - start from scratch.
+        (setq lsp--cur-version 0))
+      (lsp-foreach-workspace
+       (with-demoted-errors "Error in ‘lsp-on-change’: %S"
+         (save-match-data
+           ;; A (revert-buffer) call with the 'preserve-modes parameter (eg, as done
+           ;; by auto-revert-mode) will cause this handler to get called with a nil
+           ;; buffer-file-name. We need the buffer-file-name to send notifications;
+           ;; so we skip handling revert-buffer-caused changes and instead handle
+           ;; reverts separately in lsp-on-revert
+
+           (let ((sync-kind  (or lsp-document-sync-method
+                                 (lsp--workspace-sync-method lsp--cur-workspace))))
+             (cond
+              ((eq lsp--sync-incremental sync-kind)
+               (lsp-notify
+                "textDocument/didChange"
+                `(:textDocument
+                  ,(lsp--versioned-text-document-identifier)
+                  :contentChanges ,(vector (lsp--text-document-content-change-event
+                                            start end length)))))
+              ((eq lsp--sync-full sync-kind)
                (if lsp-debounce-full-sync-notifications
                    (progn
                      (-some-> lsp--delay-timer cancel-timer)
@@ -3421,7 +3418,7 @@ Added to `after-change-functions'."
                   "textDocument/didChange"
                   `(:textDocument
                     ,(lsp--versioned-text-document-identifier)
-                    :contentChanges (vector (lsp--full-change-event))))))))))))
+                    :contentChanges ,(vector (lsp--full-change-event)))))))))))))
 
   ;; force cleanup overlays after each change
   (lsp--remove-overlays 'lsp-highlight)

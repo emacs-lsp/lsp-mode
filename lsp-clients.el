@@ -624,13 +624,25 @@ responsiveness at the cost of possibile stability issues."
 
 ;;; Angular
 (defcustom lsp-clients-angular-language-server-command
-  `("node"  ,(expand-file-name "~/.angular/extension/server/server.js") "--stdio")
+  '("node"
+    "/usr/lib/node_modules/@angular/language-server"
+    "--ngProbeLocations"
+    "/usr/lib/node_modules"
+    "--tsProbeLocations"
+    "/usr/lib/node_modules"
+    "--stdio")
   "The command that starts the angular language server."
   :group 'lsp-clients-angular
   :type '(choice
           (string :tag "Single string value")
           (repeat :tag "List of string values"
                   string)))
+
+(defun lsp-client--angular-start-loading (workspace params)
+  (lsp--info "Started loading project %s" params))
+
+(defun lsp-client--angular-finished-loading (workspace params)
+  (lsp--info "Finished loading project %s" params))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
@@ -640,6 +652,8 @@ responsiveness at the cost of possibile stability issues."
                                         (lsp-workspace-root)
                                         (file-exists-p (f-join (lsp-workspace-root) "angular.json"))))
                   :priority -1
+                  :notification-handlers (ht ("angular-language-service/projectLoadingStart" #'lsp-client--angular-start-loading)
+                                             ("angular-language-service/projectLoadingFinish" #'lsp-client--angular-finished-loading))
                   :add-on? t
                   :server-id 'angular-ls))
 
