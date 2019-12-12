@@ -376,6 +376,8 @@ If the language server supports environment variables to control additional beha
    - I am getting "Package ‘spinner-1.7.3’ is unavailable" when trying to install =lsp-mode=.
      - This is caused by GPG keys used by the ELPA package manager not being up
       to date. You may fix by installing: [[https://elpa.gnu.org/packages/gnu-elpa-keyring-update.html][gnu-elpa-keyring-update]]
+   - Json completion doesn't seem working?
+     - The latest [[https://www.npmjs.com/package/vscode-json-languageserver/v/1.2.2][vscode-json-languageserver]] is broken. You will need to install the earlier version of it ~npm i vscode-json-languageserver@1.2.1~
 ** See also
    - [[https://github.com/emacs-lsp/lsp-docker/][lsp-docker]] - provide docker image with preconfigured language servers with corresponding emacs configuration.
    - [[https://github.com/sebastiencs/company-box/][company-box]] - =company= frontend with icons.
