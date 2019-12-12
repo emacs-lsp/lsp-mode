@@ -130,4 +130,13 @@
 (ert-deftest lsp--boolean-property ()
   (cl-assert (equal (lsp-ht->alist  (lsp-configuration-section "section4"))
                     '(("section4" ("prop1" . "value"))))))
+
+
+(lsp-register-custom-settings '((".prop1" "banana")))
+
+(ert-deftest lsp--top-level-prop ()
+  (cl-assert (equal (lsp-ht->alist  (lsp-configuration-section ""))
+                    '(("" ("prop1" . "banana"))))))
+
+
 ;;; lsp-common-test.el ends here

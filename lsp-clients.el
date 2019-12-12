@@ -50,6 +50,7 @@
 (require 'lsp-csharp)
 (require 'lsp-json)
 (require 'lsp-verilog)
+(require 'lsp-eslint)
 
 ;;; Ada
 (defgroup lsp-ada nil
@@ -182,6 +183,7 @@ finding the executable with variable `exec-path'."
                                                                 lsp-clients-typescript-javascript-server-args)))
                   :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
                   :priority -3
+                  :completion-in-comments? t
                   :ignore-messages '("readFile .*? requested by TypeScript but content not available")
                   :server-id 'jsts-ls))
 
@@ -237,7 +239,8 @@ directory containing the package. Example:
                   :completion-in-comments? t
                   :initialization-options (lambda ()
                                             (list :plugins lsp-clients-typescript-plugins
-                                                  :logVerbosity lsp-clients-typescript-log-verbosity))
+                                                  :logVerbosity lsp-clients-typescript-log-verbosity
+                                                  :tsserverPath "/usr/share/code/resources/app/extensions/node_modules/typescript/lib/tsserver.js"))
                   :ignore-messages '("readFile .*? requested by TypeScript but content not available")
                   :server-id 'ts-ls))
 
@@ -638,10 +641,10 @@ responsiveness at the cost of possibile stability issues."
           (repeat :tag "List of string values"
                   string)))
 
-(defun lsp-client--angular-start-loading (workspace params)
+(defun lsp-client--angular-start-loading (_workspace params)
   (lsp--info "Started loading project %s" params))
 
-(defun lsp-client--angular-finished-loading (workspace params)
+(defun lsp-client--angular-finished-loading (_workspace params)
   (lsp--info "Finished loading project %s" params))
 
 (lsp-register-client
