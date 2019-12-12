@@ -2901,7 +2901,6 @@ in that particular folder."
       (when signature-help-handler
         (add-hook 'post-self-insert-hook signature-help-handler nil t))
       (add-hook 'post-command-hook #'lsp--post-command nil t)
-      (lsp--on-idle (current-buffer))
       (when lsp-enable-xref
         (add-hook 'xref-backend-functions #'lsp--xref-backend nil t))
       (when (and lsp-enable-text-document-color (lsp--capability "colorProvider"))
@@ -2975,8 +2974,14 @@ in that particular folder."
                (lsp--capability "documentLinkProvider"))
       (add-hook 'lsp-on-idle-hook #'lsp--document-links nil t)))
 
-  (lsp--on-change-debounce (current-buffer))
-  (lsp--on-idle (current-buffer))
+  (let ((buffer (current-buffer)))
+    (run-with-idle-timer
+     0.0 nil
+     (lambda ()
+       (when (buffer-live-p buffer)
+         (with-current-buffer buffer
+           (lsp--on-change-debounce buffer)
+           (lsp--on-idle buffer))))))
 
   (run-hooks 'lsp-after-open-hook)
   (-some-> lsp--cur-workspace
