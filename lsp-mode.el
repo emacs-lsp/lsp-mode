@@ -31,6 +31,7 @@
   (require 'project)
   (require 'flymake))
 
+(require 'rx)
 (require 'bindat)
 (require 'cl-lib)
 (require 'compile)
@@ -3874,8 +3875,12 @@ Stolen from `org-copy-visible'."
       (replace-match ""))
 
     (goto-char (point-min))
-    (while (re-search-forward "\\\\\_" nil t)
-      (replace-match "\_"))
+    (while (re-search-forward 
+            (rx (and "\\" (group (or "\\" "`" "*" "_"
+                                     "{" "}" "[" "]" "(" ")"
+                                     "#" "+" "-" "." "!" "|"))))
+            nil t)
+      (replace-match (rx (backref 1))))
 
     ;; markdown-mode v2.3 does not yet provide gfm-view-mode
     (if (fboundp 'gfm-view-mode)

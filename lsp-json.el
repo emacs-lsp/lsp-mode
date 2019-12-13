@@ -125,6 +125,7 @@
   :major-modes lsp-json--major-modes
   :server-id 'json-ls
   :priority -1
+  :multi-root t
   :completion-in-comments? t
   :initialization-options lsp-json--extra-init-params
   :async-request-handlers (ht ("vscode/content" #'lsp-json--get-content))
