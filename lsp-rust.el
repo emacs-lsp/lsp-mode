@@ -451,7 +451,8 @@ PARAMS progress report notification data."
                                (overlay-put overlay 'lsp-rust-analyzer-inlay-hint t)
                                (overlay-put overlay 'evaporate t)
                                (overlay-put overlay 'after-string (propertize (concat ": " label)
-                                                                              'font-lock-face 'font-lock-comment-face)))))))
+                                                                              'font-lock-face 'font-lock-comment-face)))))
+                         :mode 'tick))
   nil)
 
 (defun lsp-rust-analyzer-initialized? ()
