@@ -24,39 +24,6 @@
 
 ;;; Code:
 
-(defgroup lsp-dart nil
-  "LSP support for Dart, using dart_language_server."
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/natebosch/dart_language_server"))
-
-(defcustom lsp-clients-dart-server-command
-  (expand-file-name (if (equal system-type 'windows-nt)
-                        "~/Pub/Cache/bin/dart_language_server"
-                      "~/.pub-cache/bin/dart_language_server"))
-  "The dart_language_server executable to use."
-  :group 'lsp-dart
-  :type 'file)
-
-(defun lsp-dart--lsp-command ()
-  "Generate LSP startup command."
-  (let ((dls lsp-clients-dart-server-command)
-        (pub (executable-find "pub")))
-    (if pub
-        (if (executable-find dls)
-            dls
-          (message "Installing dart_language_server...")
-          (shell-command (concat pub " global activate dart_language_server"))
-          (message "Installed dart_language_server")
-          dls)
-      (error "Please ensure /path/to/dart-sdk/bin is on system path"))))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection
-                                   'lsp-dart--lsp-command)
-                  :major-modes '(dart-mode)
-                  :priority -2
-                  :server-id 'dart_language_server))
-
 (defgroup lsp-dart-analysis nil
   "LSP support for Dart, using dart analysis server."
   :group 'lsp-mode
