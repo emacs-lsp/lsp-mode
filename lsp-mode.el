@@ -617,6 +617,7 @@ Changes take effect only when a new session is started."
                                         (plain-tex-mode . "plaintex")
                                         (latex-mode . "latex")
                                         (vhdl-mode . "vhdl")
+                                        (verilog-mode . "verilog")
                                         (terraform-mode . "terraform")
                                         (ess-r-mode . "r")
                                         (crystal-mode . "crystal"))

@@ -49,6 +49,7 @@
 (require 'lsp-pwsh)
 (require 'lsp-csharp)
 (require 'lsp-json)
+(require 'lsp-verilog)
 
 ;;; Ada
 (defgroup lsp-ada nil
