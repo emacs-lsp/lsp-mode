@@ -3678,6 +3678,8 @@ and the position respectively."
   "Return non-nil if text before point matches any of the trigger characters."
   (looking-back (regexp-opt (cl-coerce trigger-characters 'list)) (line-beginning-position)))
 
+(add-to-list 'completion-category-defaults '(lsp-substring (styles . (substring))))
+
 (defun lsp-completion-at-point ()
   "Get lsp completions."
   (let* ((bounds (bounds-of-thing-at-point 'word-strictly))
