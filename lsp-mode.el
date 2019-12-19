@@ -4205,6 +4205,11 @@ RENDER-ALL - nil if only the signature should be rendered."
                      :cancel-token :signature))
 
 
+(defcustom lsp-overlay-document-color-char "■"
+  "Display the char represent the document color in overlay"
+  :type 'string
+  :group 'lsp-mode)
+
 ;; color presentation
 (defun lsp--color-create-interactive-command (color range)
   (lambda ()
@@ -4249,7 +4254,7 @@ RENDER-ALL - nil if only the signature should be rendered."
           (overlay-put overlay
                        'before-string
                        (propertize
-                        "■"
+                        lsp-overlay-document-color-char
                         'face `((:foreground ,(format "#%s%s%s"
                                                       (lsp--number->color red)
                                                       (lsp--number->color green)
