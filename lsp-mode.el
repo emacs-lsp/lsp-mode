@@ -634,21 +634,18 @@ directory")
 
 (defvar lsp-method-requirements
   '(("textDocument/onTypeFormatting" :capability "documentOnTypeFormattingProvider")
-    ("workspace/executeCommand"
-     :capability "executeCommandProvider"
-     :registered-capability "workspace/executeCommand")
+    ("workspace/executeCommand" :capability "executeCommandProvider")
     ("textDocument/hover" :capability "hoverProvider")
     ("textDocument/documentSymbol" :capability "documentSymbolProvider")
     ("textDocument/documentHighlight" :capability "documentHighlightProvider")
     ("textDocument/references" :capability "referencesProvider")
     ("textDocument/definition" :capability "definitionProvider")
     ("textDocument/implementation" :capability "implementationProvider")
+    ("textDocument/callHierarchy" :capability "callHierarchyProvider")
     ("textDocument/declaration" :capability "declarationProvider")
     ("textDocument/typeDefinition" :capability "typeDefinitionProvider")
     ("workspace/symbol" :capability "workspaceSymbolProvider")
-    ("textDocument/codeLens"
-     :capability "codeLensProvider"
-     :registered-capability "textDocument/codeLens")
+    ("textDocument/codeLens" :capability "codeLensProvider")
     ("textDocument/selectionRange" :capability "selectionRangeProvider")
     ("textDocument/prepareRename"
      :check-command (lambda (workspace)
@@ -2629,7 +2626,8 @@ disappearing, unset all the variables related to it."
                       (foldingRange . ,(when lsp-enable-folding
                                          `((dynamicRegistration . t)
                                            (rangeLimit . ,lsp-folding-range-limit)
-                                           (lineFoldingOnly . ,(or lsp-folding-line-folding-only :json-false))))))))
+                                           (lineFoldingOnly . ,(or lsp-folding-line-folding-only :json-false)))))
+                      (callHierarchy . ((dynamicRegistration . :json-false))))))
    custom-capabilities))
 
 (defun lsp-find-roots-for-workspace (workspace session)
@@ -4891,23 +4889,20 @@ REFERENCES? t when METHOD returns references."
 
 (defun lsp--find-workspaces-for (msg-or-method)
   "Find all workspaces in the current that can handle MSG."
-  (-if-let (reqs (cdr (assoc (if (stringp msg-or-method)
-                                 msg-or-method
-                               (plist-get msg-or-method :method))
-                             lsp-method-requirements)))
-      (-let (((&plist :capability :registered-capability :check-command) reqs))
-        (--filter
-         (with-lsp-workspace it
-           (or
-            (when check-command (funcall check-command it))
-            (when capability (lsp--capability capability))
-            (when registered-capability
-              (lsp--registered-capability registered-capability))
-            (and (not capability)
-                 (not registered-capability)
-                 (not check-command))))
-         (lsp-workspaces)))
-    (lsp-workspaces)))
+  (let ((method (if (stringp msg-or-method)
+                    msg-or-method
+                  (plist-get msg-or-method :method))))
+    (-if-let (reqs (cdr (assoc method lsp-method-requirements)))
+        (-let (((&plist :capability :check-command) reqs))
+          (--filter
+           (with-lsp-workspace it
+             (or
+              (when check-command (funcall check-command it))
+              (when capability (lsp--capability capability))
+              (lsp--registered-capability method)
+              (and (not capability) (not check-command))))
+           (lsp-workspaces)))
+      (lsp-workspaces))))
 
 (cl-defmethod lsp-execute-command (_server command arguments)
   "Execute COMMAND on SERVER with `workspace/executeCommand'."
