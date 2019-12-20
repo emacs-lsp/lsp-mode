@@ -2602,7 +2602,7 @@ disappearing, unset all the variables related to it."
                                          (hierarchicalDocumentSymbolSupport . t)))
                       (formatting . ((dynamicRegistration . t)))
                       (rangeFormatting . ((dynamicRegistration . t)))
-                      (rename . ((dynamicRegistration . t)))
+                      (rename . ((dynamicRegistration . t) (prepareSupport . t)))
                       (semanticHighlightingCapabilities . ((semanticHighlighting . ,lsp-enable-semantic-highlighting)))
                       (codeAction . ((dynamicRegistration . t)
                                      (codeActionLiteralSupport . ((codeActionKind . ((valueSet . [""
