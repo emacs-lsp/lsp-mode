@@ -36,8 +36,8 @@
 
 (defcustom lsp-rust-server 'rls
   "Choose LSP server."
-  :type '(choice (symbol :tag 'rls "rls")
-                 (symbol :tag 'rust-analyzer "rust-analyzer"))
+  :type '(choice (symbol :tag "rls" rls)
+                 (symbol :tag "rust-analyzer" rust-analyzer))
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.2"))
 
