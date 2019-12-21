@@ -388,6 +388,7 @@ particular FILE-NAME and MODE."
   "LSP support for OCaml, using ocaml-lsp-server."
   :group 'lsp-mode
   :link '(url-link "https://github.com/ocaml/ocaml-lsp"))
+(define-obsolete-variable-alias 'lsp-merlin 'lsp-ocaml-lsp-server)
 
 (defcustom lsp-ocaml-lsp-server-command
   '("ocaml-lsp-server")
@@ -397,6 +398,7 @@ particular FILE-NAME and MODE."
           (string :tag "Single string value")
           (repeat :tag "List of string values"
                   string)))
+(define-obsolete-variable-alias 'lsp-merlin-command 'lsp-ocaml-lsp-server-command)
 
 (lsp-register-client
  (make-lsp-client
