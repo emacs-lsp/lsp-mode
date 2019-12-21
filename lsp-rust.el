@@ -38,7 +38,7 @@
   "Choose LSP server."
   :type '(choice (symbol :tag "rls" rls)
                  (symbol :tag "rust-analyzer" rust-analyzer))
-  :group 'lsp-mode
+  :group 'lsp-rust
   :package-version '(lsp-mode . "6.2"))
 
 ;; RLS
