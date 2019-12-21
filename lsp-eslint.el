@@ -36,7 +36,7 @@
   :link '(url-link "https://github.com/Microsoft/vscode-eslint"))
 
 (defcustom lsp-eslint-server-command `("node"
-                                       ,(cl-first (f-glob "~/.vscode/extensions/dbaeumer.vscode-eslint-*/server/out/eslintServer.js"))
+                                       "~/server/out/eslintServer.js"
                                        "--stdio")
   "Command to start eslint server."
   :risky t
@@ -200,8 +200,11 @@
 (lsp-register-client
  (make-lsp-client
   :new-connection
-  (lsp-stdio-connection
-   (lambda () lsp-eslint-server-command))
+  (plist-put (lsp-stdio-connection
+              (lambda () lsp-eslint-server-command))
+             :test? (lambda ()
+                      (and (cl-second lsp-eslint-server-command)
+                           (file-exists-p (cl-second lsp-eslint-server-command)))))
   :activation-fn (lambda (filename &optional _)
                    (or (string-match-p (rx (one-or-more anything) "."
                                            (or "ts" "js" "jsx" "tsx" "html" "vue"))
