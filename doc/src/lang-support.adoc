@@ -187,9 +187,9 @@
 |
 
 |Ocaml
-|https://github.com/ocaml/merlin[merlin]
+|https://github.com/ocaml/ocaml-lsp[ocaml-lsp-server]
 |Built in
-|https://github.com/ocaml/merlin[merlin]
+|https://github.com/ocaml/ocaml-lsp[ocaml-lsp-server]
 |
 
 |PHP(recommended)
