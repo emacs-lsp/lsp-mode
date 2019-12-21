@@ -35,7 +35,7 @@ Version 1.34.3 minimum is required."
   :link '(url-link "https://github.com/OmniSharp/omnisharp-roslyn"))
 
 (defcustom lsp-csharp-server-version
-  "v1.34.8"
+  "v1.34.9"
   "OmniSharp Roslyn server version to use
 Will use this value to download server binaries from the
 https://github.com/OmniSharp/omnisharp-roslyn/releases page."
