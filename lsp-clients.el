@@ -239,8 +239,7 @@ directory containing the package. Example:
                   :completion-in-comments? t
                   :initialization-options (lambda ()
                                             (list :plugins lsp-clients-typescript-plugins
-                                                  :logVerbosity lsp-clients-typescript-log-verbosity
-                                                  :tsserverPath "/usr/share/code/resources/app/extensions/node_modules/typescript/lib/tsserver.js"))
+                                                  :logVerbosity lsp-clients-typescript-log-verbosity))
                   :ignore-messages '("readFile .*? requested by TypeScript but content not available")
                   :server-id 'ts-ls))
 
