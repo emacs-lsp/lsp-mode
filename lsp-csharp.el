@@ -131,6 +131,8 @@ for installation."
     (lsp-csharp--extract filename target-dir)))
 
 (defun lsp-csharp-update-server ()
+  "Checks if the currently installed version (if any) is lower than then one
+available on github and if so, downloads and installs a newer version."
   (interactive)
   (let ((latest-version (lsp-csharp--latest-available-version))
         (installed-version (lsp-csharp--latest-installed-version)))
@@ -147,8 +149,7 @@ for installation."
       (message "lsp-csharp-update-server: cannot retrieve latest version info"""))))
 
 (defun lsp-csharp--install-server (update-version ask-confirmation)
-  "Checks if the currently installed version (if any) is lower than then one
-available on github and if so, downloads and installs a newer version."
+  "Installs (or updates to UPDATE-VERSION) server binary unless it is already installed."
   (let ((installed-version (lsp-csharp--latest-installed-version))
         (target-version (or update-version (lsp-csharp--latest-available-version))))
     (if (and target-version
