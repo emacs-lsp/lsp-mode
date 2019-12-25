@@ -335,6 +335,11 @@ PARAMS progress report notification data."
   :type 'boolean
   :package-version '(lsp-mode . "6.2"))
 
+(defcustom lsp-rust-analyzer-macro-expansion-method 'lsp-rust-analyzer-macro-expansion-default
+  "Use a different function if you want formatted macro expansion results and syntax highlighting."
+  :type 'function
+  :package-version '(lsp-mode . "6.2.2"))
+
 (defconst lsp-rust-notification-handlers
   '(("rust-analyzer/publishDecorations" . (lambda (_w _p)))))
 
@@ -483,6 +488,32 @@ PARAMS progress report notification data."
   (add-hook 'lsp-after-open-hook (lambda ()
                                    (when (lsp-find-workspace 'rust-analyzer nil)
                                      (lsp-rust-analyzer-inlay-hints-mode)))))
+
+(defun lsp-rust-analyzer-expand-macro ()
+  "Expands the macro call at point recursively."
+  (interactive)
+  (-if-let ((workspace (lsp-find-workspace 'rust-analyzer default-directory)))
+      (-if-let* ((params (list :textDocument (lsp--text-document-identifier)
+                               :position (lsp--cur-position)))
+                 (response (with-lsp-workspace workspace
+                             (lsp-send-request (lsp-make-request
+                                                "rust-analyzer/expandMacro"
+                                                params))))
+                 (result (ht-get response "expansion")))
+          (funcall lsp-rust-analyzer-macro-expansion-method result)
+        (message "No macro found at point, or it could not be expanded."))
+    (message "rust-analyzer not running.")))
+
+(defun lsp-rust-analyzer-macro-expansion-default (result)
+  "Default method for displaying macro expansion."
+  (let* ((root (lsp-workspace-root default-directory))
+         (buf (get-buffer-create (get-buffer-create (format "*rust-analyzer macro expansion %s*" root)))))
+    (with-current-buffer buf
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (insert result)
+        (special-mode)))
+    (display-buffer buf)))
 
 (provide 'lsp-rust)
 ;;; lsp-rust.el ends here
