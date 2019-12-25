@@ -393,7 +393,7 @@ particular FILE-NAME and MODE."
 (define-obsolete-variable-alias 'lsp-merlin 'lsp-ocaml-lsp-server)
 
 (defcustom lsp-ocaml-lsp-server-command
-  '("ocaml-lsp-server")
+  '("ocamllsp")
   "Command to start ocaml-language-server."
   :group 'lsp-ocaml
   :type '(choice
