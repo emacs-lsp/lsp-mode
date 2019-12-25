@@ -52,7 +52,7 @@ Set this if you have the binary installed or have it built yourself."
                  (lambda (x) (substring x 1))
                  (lambda (a b) (not (version<= a b)))
                  lst)))
-    (when sorted (seq-first sorted))))
+    (when sorted (lsp-seq-first sorted))))
 
 (defun lsp-csharp--latest-installed-version ()
   "Returns latest version of the server installed on the machine (if any)."
