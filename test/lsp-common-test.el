@@ -20,6 +20,10 @@
 (require 'ert)
 (require 'lsp)
 
+(defgroup lsp-test nil
+  ""
+  :group 'lsp-mode)
+
 (ert-deftest lsp--path-to-uri ()
   (let ((lsp--uri-file-prefix "file:///"))
     (should (equal (lsp--path-to-uri "c:/Users/?/") "file:///c:/Users/%3F/")))
@@ -52,14 +56,15 @@
 (ert-deftest lsp-byte-compilation-test ()
   (seq-doseq (library (-filter
                        (lambda (file)
-                         (f-ext? file "el"))
-                       (f-files (f-parent (f-dirname (or load-file-name buffer-file-name))))))
+                         (and (f-ext? file "el")
+                              (not (s-contains? "test" file))))
+                       (append (f-files (f-parent (f-dirname (or load-file-name buffer-file-name))))
+                               (f-files default-directory))))
     (let ((byte-compile-error-on-warn t))
-      (cl-assert (byte-compile-file (save-excursion
-                                      (find-library library)
-                                      (buffer-file-name)))
-                 t
-                 "Failed to byte-compile"))))
+      (message "Testing file %s" library)
+      (should (byte-compile-file (save-excursion
+                                   (find-library library)
+                                   (buffer-file-name)))))))
 
 (ert-deftest lsp--find-session-folder ()
   (cl-assert (string= "/folder/"
@@ -90,6 +95,7 @@
 (defcustom lsp-prop1 "10"
   "docs"
   :group 'lsp-python
+  :type 'string
   :risky t
   :type 'list)
 
@@ -117,7 +123,8 @@
 (defcustom lsp-prop3 nil
   "docs"
   :group 'lsp-python
-  :risky t)
+  :risky t
+  :type 'string)
 
 (lsp-register-custom-settings '(("section3.prop1" lsp-prop3 t)))
 

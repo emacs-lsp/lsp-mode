@@ -66,10 +66,12 @@
 (defcustom lsp-eslint-options nil
   "The eslint options object to provide args normally passed to
   eslint when executed from a command line (see
-  http://eslint.org/docs/developer-guide/nodejs-api#cliengine).")
+  http://eslint.org/docs/developer-guide/nodejs-api#cliengine)."
+  :type 'alist)
 
 (defcustom lsp-eslint-trace-server "off"
-  "Traces the communication between VSCode and the eslint linter service.")
+  "Traces the communication between VSCode and the eslint linter service."
+  :type 'string)
 
 (defcustom lsp-eslint-run "onType"
   "Run the linter on save (onSave) or on type (onType)"
@@ -122,7 +124,8 @@
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-code-action-show-documentation '((enable . t))
-  "")
+  ""
+  :type 'alist)
 
 (defcustom lsp-eslint-experimental-incremental-sync t
   "Controls whether the new incremental text document synchronization should be used."
@@ -131,7 +134,7 @@
 
 (defun lsp--find-eslint ()
   (or
-   (when-let (workspace-folder (lsp-find-session-folder (lsp-session)))
+   (when-let (workspace-folder (lsp-find-session-folder (lsp-session) default-directory))
      (let ((eslint-local-path (f-join workspace-folder "node_modules" ".bin"
                                       (if (eq system-type 'windows-nt) "eslint.cmd" "eslint"))))
        (when (f-exists? eslint-local-path)
@@ -161,7 +164,7 @@
                            ((eq (gethash "state" params) lsp-eslint-status-warn) 'warn)
                            (t 'success)))))
 
-(defun lsp-eslint--configuration (workspace params)
+(defun lsp-eslint--configuration (_workspace params)
   (->> params
        (gethash "items")
        (seq-map (-lambda ((&hash "scopeUri" uri))

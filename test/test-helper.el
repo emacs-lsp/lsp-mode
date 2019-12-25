@@ -26,8 +26,8 @@
       '((flycheck-disabled-checkers emacs-lisp-checkdoc)))
 
 
-(when (require 'undercover nil t)
-  (undercover "*.el" (:report-type :codecov)))
+;; (when (require 'undercover nil t)
+;;   (undercover "*.el" (:report-type :codecov)))
 
 (add-to-list 'load-path
              (file-name-as-directory (f-parent (f-parent (f-this-file)))))

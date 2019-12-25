@@ -48,11 +48,10 @@ Set this if you have the binary installed or have it built yourself."
   :type '(string :tag "Single string value or nil"))
 
 (defun lsp-csharp--version-list-latest (lst)
-  (let ((sorted (seq-sort-by
-                 (lambda (x) (substring x 1))
-                 (lambda (a b) (not (version<= a b)))
-                 lst)))
-    (when sorted (lsp-seq-first sorted))))
+  (->> lst
+       (-sort (lambda (a b) (not (version<= (substring a 1)
+                                            (substring b 1)))))
+       cl-first))
 
 (defun lsp-csharp--latest-installed-version ()
   "Returns latest version of the server installed on the machine (if any)."
@@ -146,7 +145,7 @@ available on github and if so, downloads and installs a newer version."
           (message "lsp-csharp-update-server: latest installed version is %s; latest available is %s"
                    (lsp-csharp--latest-installed-version)
                    latest-version))
-      (message "lsp-csharp-update-server: cannot retrieve latest version info"""))))
+      (message "lsp-csharp-update-server: cannot retrieve latest version info"))))
 
 (defun lsp-csharp--install-server (update-version ask-confirmation)
   "Installs (or updates to UPDATE-VERSION) server binary unless it is already installed."
