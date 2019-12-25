@@ -2604,7 +2604,7 @@ disappearing, unset all the variables related to it."
                       (formatting . ((dynamicRegistration . t)))
                       (rangeFormatting . ((dynamicRegistration . t)))
                       (rename . ((dynamicRegistration . t) (prepareSupport . t)))
-                      (semanticHighlightingCapabilities . ((semanticHighlighting . ,lsp-enable-semantic-highlighting)))
+                      (semanticHighlightingCapabilities . ((semanticHighlighting . ,(lsp-json-bool lsp-enable-semantic-highlighting))))
                       (codeAction . ((dynamicRegistration . t)
                                      (isPreferredSupport . t)
                                      (codeActionLiteralSupport . ((codeActionKind . ((valueSet . [""
