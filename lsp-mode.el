@@ -4822,11 +4822,11 @@ perform the request synchronously."
   (unless (region-active-p) (push-mark nil t))
   (if (boundp 'xref-show-definitions-function)
       (with-no-warnings
+        (xref-push-marker-stack)
         (funcall (if references? xref-show-xrefs-function xref-show-definitions-function)
                  (-const xrefs)
                  `((window . ,(selected-window))
                    (display-action . ,display-action))))
-    (xref-push-marker-stack)
     (xref--show-xrefs xrefs display-action)))
 
 (cl-defun lsp-find-locations (method &optional extra &key display-action references?)
