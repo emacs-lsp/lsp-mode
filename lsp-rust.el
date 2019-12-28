@@ -492,7 +492,7 @@ PARAMS progress report notification data."
 (defun lsp-rust-analyzer-expand-macro ()
   "Expands the macro call at point recursively."
   (interactive)
-  (-if-let ((workspace (lsp-find-workspace 'rust-analyzer default-directory)))
+  (-if-let (workspace (lsp-find-workspace 'rust-analyzer default-directory))
       (-if-let* ((params (list :textDocument (lsp--text-document-identifier)
                                :position (lsp--cur-position)))
                  (response (with-lsp-workspace workspace
