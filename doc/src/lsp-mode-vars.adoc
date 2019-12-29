@@ -211,15 +211,15 @@ List of regexps matching directory paths which won’t be monitored when creatin
 NOTE: Introduced in `lsp-mode` 6.1
 
 ____
-[id="lsp-after-uninitialized-hook"]
-- `lsp-after-uninitialized-hook`
+[id="lsp-after-uninitialized-functions"]
+- `lsp-after-uninitialized-functions`
 ____
 Default value: `pass:[(doom-modeline-update-lsp)
 ]`
 
 List of functions to be called after a Language Server has been uninitialized.
 
-NOTE: Introduced in `lsp-mode` 6.1
+NOTE: Introduced in `lsp-mode` 6.3
 
 ____
 [id="lsp-debounce-full-sync-notifications"]
@@ -365,8 +365,8 @@ Default value: `pass:[nil]`
 
 Hooks to run after diagnostics are received.
 ____
-[id="lsp-workspace-folders-changed-hook"]
-- `lsp-workspace-folders-changed-hook`
+[id="lsp-workspace-folders-changed-functions"]
+- `lsp-workspace-folders-changed-functions`
 ____
 Default value: `pass:[nil]`
 

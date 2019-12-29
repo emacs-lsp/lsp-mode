@@ -331,11 +331,11 @@ the server has requested that."
 ;; Allow lsp-file-watch-ignored as a file or directory-local variable
 (put 'lsp-file-watch-ignored 'safe-local-variable 'lsp--string-listp)
 
-(defcustom lsp-after-uninitialized-hook nil
+(defcustom lsp-after-uninitialized-functions nil
   "List of functions to be called after a Language Server has been uninitialized."
   :type 'hook
   :group 'lsp-mode
-  :package-version '(lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.3"))
 
 (defconst lsp--sync-none 0)
 (defconst lsp--sync-full 1)
@@ -458,11 +458,14 @@ diagnostics have changed."
   :type 'hook
   :group 'lsp-mode)
 
-(defcustom lsp-workspace-folders-changed-hook nil
+(defcustom lsp-workspace-folders-changed-functions nil
   "Hooks to run after the folders has changed.
 The hook will receive two parameters list of added and removed folders."
   :type 'hook
   :group 'lsp-mode)
+
+(define-obsolete-variable-alias 'lsp-workspace-folders-changed-hook
+  'lsp-workspace-folders-changed-functions "lsp-mode 6.3")
 
 (defcustom lsp-eldoc-hook '(lsp-hover)
   "Hooks to run for eldoc."
@@ -2794,7 +2797,7 @@ in that particular folder."
               (lsp-session-folders (lsp-session)) :test 'equal)
   (lsp--persist-session (lsp-session))
 
-  (run-hook-with-args 'lsp-workspace-folders-changed-hook (list project-root) nil))
+  (run-hook-with-args 'lsp-workspace-folders-changed-functions (list project-root) nil))
 
 (defun lsp-workspace-folders-remove (project-root)
   "Remove PROJECT-ROOT from the list of workspace folders."
@@ -2838,7 +2841,7 @@ in that particular folder."
               server-id->folders)
     (lsp--persist-session (lsp-session)))
 
-  (run-hook-with-args 'lsp-workspace-folders-changed-hook nil (list project-root)))
+  (run-hook-with-args 'lsp-workspace-folders-changed-functions nil (list project-root)))
 
 (defun lsp-workspace-blacklist-remove (project-root)
   "Remove PROJECT-ROOT from the workspace blacklist."
@@ -5709,7 +5712,7 @@ returns the command to execute."
         (when (and (eq status 'exit) (zerop (process-exit-status process)) (buffer-live-p stderr))
           (kill-buffer stderr)))
 
-      (run-hook-with-args 'lsp-after-uninitialized-hook workspace)
+      (run-hook-with-args 'lsp-after-uninitialized-functions workspace)
 
       (if (eq (lsp--workspace-shutdown-action workspace) 'shutdown)
           (lsp--info "Workspace %s shutdown." (lsp--workspace-print workspace))
@@ -5960,7 +5963,7 @@ SESSION is the active session."
   (when (lsp--client-multi-root client)
     (cl-pushnew project-root (gethash (lsp--client-server-id client)
                                       (lsp-session-server-id->folders session))))
-  (run-hook-with-args 'lsp-workspace-folders-changed-hook (list project-root) nil)
+  (run-hook-with-args 'lsp-workspace-folders-changed-functions (list project-root) nil)
 
   (unwind-protect
       (lsp--start-workspace session client project-root (lsp--create-initialization-options session client))
