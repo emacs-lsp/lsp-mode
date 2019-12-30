@@ -5080,6 +5080,10 @@ WORKSPACE is the active workspace."
                              (-map (lambda (folder)
                                      (list :uri (lsp--path-to-uri folder))))
                              (apply #'vector))))
+                     ((string= method "window/workDoneProgress/create")
+                      ;; Ignoring for now
+                      nil
+                      )
                      (t (lsp-warn "Unknown request method: %s" method) nil))))
     ;; Send response to the server.
     (unless (eq response 'delay-response)
