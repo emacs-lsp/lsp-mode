@@ -3702,77 +3702,105 @@ and the position respectively."
   "Return non-nil if text before point matches any of the trigger characters."
   (looking-back (regexp-opt (cl-coerce trigger-characters 'list)) (line-beginning-position)))
 
-(add-to-list 'completion-category-defaults '(lsp-substring (styles . (substring))))
-
 (defun lsp-completion-at-point ()
   "Get lsp completions."
-  (let* ((bounds (bounds-of-thing-at-point 'word-strictly))
-         (trigger-chars (->> (lsp--server-capabilities)
-                             (gethash "completionProvider")
-                             (gethash "triggerCharacters")))
-         start-point result done?)
-    (list
-     (if bounds (car bounds) (point))
-     (point)
-     (lambda (_probe _pred action)
-       (cond
-        ((eq action 'metadata)
-         `(metadata . ((display-sort-function . (lambda (candidates)
-                                                  (--sort (string-lessp (get-text-property 0 'lsp-sort-text it)
-                                                                        (get-text-property 0 'lsp-sort-text other))
-                                                          candidates)))
-                       (category . lsp-substring))))
-        ((eq (car-safe action) 'boundaries) nil)
-        (t (if done?
-               result
-             (setf start-point (point))
-             (let* ((resp (lsp-request-while-no-input "textDocument/completion"
-                                                      (plist-put (lsp--text-document-position-params)
-                                                                 :context (ht ("triggerKind" 1)))))
-                    (items (lsp--sort-completions (cond
-                                                   ((seqp resp) resp)
-                                                   ((hash-table-p resp) (gethash "items" resp))))))
-               (setf done? (or (seqp resp)
-                               (not (gethash "isIncomplete" resp)))
-                     result (seq-into (seq-map (-lambda ((item &as &hash "label"
-                                                               "insertText" insert-text
-                                                               "sortText" sort-text))
-                                                 (propertize (or label insert-text)
-                                                             'lsp-completion-item item
-                                                             'lsp-sort-text sort-text))
-                                               items)
-                                      'list)))))))
-
-     :annotation-function #'lsp--annotate
-     :company-require-match 'never
-     :company-prefix-length (point)
-     :exit-function
-     (lambda (candidate _status)
-       (-let [(&hash "insertText" insert-text
-                     "textEdit" text-edit
-                     "insertTextFormat" insert-text-format
-                     "additionalTextEdits" additional-text-edits)
-              (lsp--resolve-completion (plist-get (text-properties-at 0 candidate) 'lsp-completion-item))]
+  (when (or (--some (lsp--client-completion-in-comments? (lsp--workspace-client it))
+                    (lsp-workspaces))
+            (not (nth 4 (syntax-ppss))))
+    (let* ((bounds (bounds-of-thing-at-point 'symbol))
+           (trigger-chars (->> (lsp--server-capabilities)
+                               (gethash "completionProvider")
+                               (gethash "triggerCharacters")))
+           start-point result done?)
+      (list
+       (if bounds (car bounds) (point))
+       (point)
+       (lambda (_probe pred action)
          (cond
-          (text-edit
-           (delete-region start-point (point))
-           (lsp--apply-text-edit text-edit))
-          (insert-text
-           (delete-region (- (point) (length candidate)) (point))
-           (insert insert-text)))
+          ((eq action 'metadata)
+           `(metadata . ((display-sort-function
+                          . (lambda (candidates)
+                              (--sort (string-lessp
+                                       (get-text-property 0 'lsp-sort-text it)
+                                       (get-text-property 0 'lsp-sort-text other))
+                                      candidates))))))
+          ((eq (car-safe action) 'boundaries) nil)
+          (t (if done?
+                 result
+               (setf start-point (point))
+               (let* ((resp (lsp-request-while-no-input "textDocument/completion"
+                                                        (plist-put (lsp--text-document-position-params)
+                                                                   :context (ht ("triggerKind" 1)))))
+                      (items (lsp--sort-completions (cond
+                                                     ((seqp resp) resp)
+                                                     ((hash-table-p resp) (gethash "items" resp)))))
+                      (probe
+                       (-if-let ((start . end)
+                                 (or (-some-> (lsp-elt items 0)
+                                       (lsp--ht-get "textEdit" "range")
+                                       lsp--range-to-region)
+                                     bounds))
+                           (buffer-substring-no-properties start end)
+                         "")))
+                 (setf done? (or (seqp resp)
+                                 (not (gethash "isIncomplete" resp)))
+                       result (-some--> items
+                                (-map (-lambda ((item &as &hash
+                                                      "label"
+                                                      "filterText" filter-text))
+                                        (propertize (or filter-text label)
+                                                    'lsp-completion-item item))
+                                      it)
+                                (seq-into it 'list)
+                                (completion-all-completions probe it pred (length probe))
+                                ;; completion-all-completions may return a list in form (a b . x)
+                                ;; the last cdr is not important and need to be removed
+                                (let ((tail (last it)))
+                                  (if (consp tail) (setcdr tail nil))
+                                  it)
+                                (-map (-partial #'get-text-property 0 'lsp-completion-item) it)
+                                (-map (-lambda ((item &as &hash
+                                                      "label"
+                                                      "insertText" insert-text
+                                                      "sortText" sort-text))
+                                        (propertize (or label insert-text)
+                                                    'lsp-completion-item item
+                                                    'lsp-sort-text sort-text))
+                                      it))))))))
 
-         (when (eq insert-text-format 2)
-           (yas-expand-snippet (buffer-substring start-point (point))
-                               start-point
-                               (point)))
-         (when additional-text-edits
-           (lsp--apply-text-edits additional-text-edits)))
+       :annotation-function #'lsp--annotate
+       :company-require-match 'never
+       :company-prefix-length
+       (save-excursion
+         (when (car bounds) (goto-char (car bounds)))
+         (lsp--looking-back-trigger-characters-p trigger-chars))
+       :exit-function
+       (lambda (candidate _status)
+         (-let [(&hash "insertText" insert-text
+                       "textEdit" text-edit
+                       "insertTextFormat" insert-text-format
+                       "additionalTextEdits" additional-text-edits)
+                (lsp--resolve-completion (plist-get (text-properties-at 0 candidate) 'lsp-completion-item))]
+           (cond
+            (text-edit
+             (delete-region start-point (point))
+             (lsp--apply-text-edit text-edit))
+            (insert-text
+             (delete-region (- (point) (length candidate)) (point))
+             (insert insert-text)))
 
-       (when lsp-signature-auto-activate
-         (lsp-signature-activate))
+           (when (eq insert-text-format 2)
+             (yas-expand-snippet (buffer-substring start-point (point))
+                                 start-point
+                                 (point)))
+           (when additional-text-edits
+             (lsp--apply-text-edits additional-text-edits)))
 
-       (when (lsp--looking-back-trigger-characters-p trigger-chars)
-         (setq this-command 'self-insert-command))))))
+         (when lsp-signature-auto-activate
+           (lsp-signature-activate))
+
+         (when (lsp--looking-back-trigger-characters-p trigger-chars)
+           (setq this-command 'self-insert-command)))))))
 
 (defun lsp--to-yasnippet-snippet (text)
   "Convert VS code snippet TEXT to yasnippet snippet."
