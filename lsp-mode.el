@@ -3680,8 +3680,10 @@ and the position respectively."
 
 (defun lsp--annotate (item)
   "Annotate ITEM detail."
-  (-let (((&hash "detail") (plist-get (text-properties-at 0 item) 'lsp-completion-item)))
-    (concat (when detail (concat " " detail)))))
+  (-let (((&hash "detail" "kind") (plist-get (text-properties-at 0 item) 'lsp-completion-item)))
+    (concat (when detail (concat " " detail))
+            (when-let (kind-name (and kind (aref lsp--completion-item-kind kind)))
+              (format " (%s)" kind-name)))))
 
 (defun lsp--looking-back-trigger-characters-p (trigger-characters)
   "Return non-nil if text before point matches any of the trigger characters."
