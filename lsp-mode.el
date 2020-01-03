@@ -3428,13 +3428,12 @@ Added to `after-change-functions'."
                      `(:textDocument
                        ,(lsp--versioned-text-document-identifier)
                        :contentChanges ,(vector (lsp--full-change-event))))))))))))
-       (lsp-workspaces))))
-
-  ;; force cleanup overlays after each change
-  (lsp--remove-overlays 'lsp-highlight)
-  (lsp--on-change-debounce (current-buffer))
-  (setq lsp--last-signature-index nil)
-  (setq lsp--last-signature nil))
+       (lsp-workspaces))
+      ;; force cleanup overlays after each change
+      (lsp--remove-overlays 'lsp-highlight)
+      (lsp--on-change-debounce (current-buffer))
+      (setq lsp--last-signature-index nil)
+      (setq lsp--last-signature nil))))
 
 
 
