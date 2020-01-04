@@ -43,14 +43,9 @@
 (defvar vhdl-tool-bin-name "vhdl-tool"
   "Name of the VHDL Tool binary.")
 
-(defvar vhdl-tool-disp-name "lsp-vhdl-tool"
-  "Display name for VHDL-tool.")
-
 (defvar hdl-checker-bin-name "hdl_checker"
   "Name of HDL Checker binary.")
 
-(defvar hdl-checker-disp-name "lsp-hdl-checker"
-  "Display name for HDL Checker.")
 
 (defgroup lsp-vhdl nil
   "LSP support for VHDL. Set lsp-vhdl-server to select server. The default is to use VHDL-tool."
