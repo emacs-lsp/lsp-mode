@@ -98,7 +98,7 @@ HDL Checker: A wrapper for third party tools such as GHDL, ModelSim, Vivado Simu
  (make-lsp-client :new-connection (lsp-vhdl--create-connection)
                   :major-modes '(vhdl-mode)
                   :language-id "VHDL"
-		          :priority -1
+                  :priority -1
                   :server-id 'lsp-vhdl))
 
 (provide 'lsp-vhdl)
