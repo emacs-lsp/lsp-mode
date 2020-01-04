@@ -24,14 +24,14 @@
 ;; LSP support for VHDL using using an external language server. Currently
 ;; the supported servers are:
 ;;
-;; VHDL-tool from http://www.vhdltool.com/download
-;; The server requires a project file list called vhdltool-config.yaml which must
-;; be placed the the project root. An example file can be found here:
-;; http://www.vhdltool.com/configuration
+;; VHDL-tool. See http://www.vhdltool.com/configuration for setting up the
+;; project file.
 ;;
-;; HDL Checker from https://github.com/suoto/hdl_checker.
-;; This server requires a config file described here
-;; https://github.com/suoto/hdl_checker/wiki/setting-up-a-project
+;; HDL Checker. See https://github.com/suoto/hdl_checker/wiki/setting-up-a-project
+;; for setting up the project file.
+;;
+;; VHDL LS. See https://github.com/kraigher/rust_hdl#configuration for setting
+;; up the project file.
 ;;
 ;; Set the symbol lsp-vhdl-server to select the language server and set
 ;; lsp-vhdl-server-path if the binary is not in the user PATH.
@@ -43,14 +43,11 @@
 (defvar vhdl-tool-bin-name "vhdl-tool"
   "Name of the VHDL Tool binary.")
 
-(defvar vhdl-tool-disp-name "lsp-vhdl-tool"
-  "Display name for VHDL-tool.")
-
 (defvar hdl-checker-bin-name "hdl_checker"
   "Name of HDL Checker binary.")
 
-(defvar hdl-checker-disp-name "lsp-hdl-checker"
-  "Display name for HDL Checker.")
+(defvar vhdl-ls-bin-name "vhdl_ls"
+  "Name of the VHDL LS binary.")
 
 (defgroup lsp-vhdl nil
   "LSP support for VHDL. Set lsp-vhdl-server to select server. The default is to use VHDL-tool."
@@ -59,9 +56,11 @@
 (defcustom lsp-vhdl-server 'vhdl-tool
   "Select which server to use:
 VHDL-tool: A syntax checking, type checking and linting tool (http://vhdltool.com).
-HDL Checker: A wrapper for third party tools such as GHDL, ModelSim, Vivado Simulator (https://github.com/suoto/hdl_checker)."
+HDL Checker: A wrapper for third party tools such as GHDL, ModelSim, Vivado Simulator (https://github.com/suoto/hdl_checker).
+VHDL LS: A complete VHDL language server protocol implementation with diagnostics, navigate to symbol, find all references etc. (https://github.com/kraigher/rust_hdl)."
   :type '(choice (const :tag "VHDL-tool" vhdl-tool)
-                 (const :tag "HDL Checker" hdl-checker))
+                 (const :tag "HDL Checker" hdl-checker)
+                 (const :tag "VHDL LS" vhdl-ls))
   :group 'lsp-vhdl)
 
 (defcustom lsp-vhdl-server-path nil
@@ -87,18 +86,22 @@ HDL Checker: A wrapper for third party tools such as GHDL, ModelSim, Vivado Simu
                                              (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path lsp-vhdl-server-path))))
         ((eq lsp-vhdl-server 'vhdl-tool) (if (eq lsp-vhdl-server-path nil)
                                              (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path vhdl-tool-bin-name))
-                                           (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path lsp-vhdl-server-path))))))
+                                           (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path lsp-vhdl-server-path))))
+        ((eq lsp-vhdl-server 'vhdl-ls) (if (eq lsp-vhdl-server-path nil)
+                                            (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path vhdl-ls-bin-name))
+                                          (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path lsp-vhdl-server-path))))))
 
 (defun lsp-vhdl--set-server-args()
   "Set server arguments based on server selection."
   (cond ((eq lsp-vhdl-server 'hdl-checker) (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-args "--lsp")))
-        ((eq lsp-vhdl-server 'vhdl-tool) (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-args "lsp")))))
+        ((eq lsp-vhdl-server 'vhdl-tool) (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-args "lsp")))
+        ((eq lsp-vhdl-server 'vhdl-ls) (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-args "")))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-vhdl--create-connection)
                   :major-modes '(vhdl-mode)
                   :language-id "VHDL"
-		          :priority -1
+                  :priority -1
                   :server-id 'lsp-vhdl))
 
 (provide 'lsp-vhdl)
