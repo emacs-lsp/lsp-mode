@@ -627,7 +627,8 @@ Changes take effect only when a new session is started."
                                         (verilog-mode . "verilog")
                                         (terraform-mode . "terraform")
                                         (ess-r-mode . "r")
-                                        (crystal-mode . "crystal"))
+                                        (crystal-mode . "crystal")
+                                        (nim-mode . "nim"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
