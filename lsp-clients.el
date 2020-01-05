@@ -173,7 +173,8 @@ This directory shoud contain a file matching groovy-language-server-*.jar"
 (defun lsp-typescript-javascript-tsx-jsx-activate-p (filename &optional _)
   "Check if the javascript-typescript language server should be enabled based on FILENAME."
   (or (string-match-p (rx (one-or-more anything) "." (or "ts" "js") (opt "x") string-end) filename)
-      (derived-mode-p 'js-mode 'js2-mode 'typescript-mode)))
+      (and (derived-mode-p 'js-mode 'js2-mode 'typescript-mode)
+           (not (derived-mode-p 'json-mode)))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
