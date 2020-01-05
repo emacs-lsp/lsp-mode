@@ -381,6 +381,15 @@ If the language server supports environment variables to control additional beha
       to date. You may fix by installing: [[https://elpa.gnu.org/packages/gnu-elpa-keyring-update.html][gnu-elpa-keyring-update]]
    - Json completion doesn't seem working?
      - The latest [[https://www.npmjs.com/package/vscode-json-languageserver/v/1.2.2][vscode-json-languageserver]] is broken. You will need to install the earlier version of it ~npm i vscode-json-languageserver@1.2.1~
+   - The flycheck does not work in =typescript=, =html= and =javascript= blocks in =vue-mode=. How to fix that?
+     - This is caused by the fact that =vue-mode= uses multiple major modes in
+       single file and the =lsp-ui= checker may not associated with the major mode
+       at point. You could fix that by adding the following lines to your config.
+       #+begin_src elisp
+         (with-eval-after-load 'lsp-ui-flycheck
+           (mapc 'lsp-ui-flycheck-add-mode '(typescript-mode js-mode css-mode vue-html-mode)))
+       #+end_src
+
 ** See also
    - [[https://github.com/emacs-lsp/lsp-docker/][lsp-docker]] - provide docker image with preconfigured language servers with corresponding emacs configuration.
    - [[https://github.com/sebastiencs/company-box/][company-box]] - =company= frontend with icons.
