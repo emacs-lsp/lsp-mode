@@ -40,7 +40,7 @@
                  (const :tag "Use .Net Framework" net-framework))
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-fsharp-server-install-dir (locate-user-emacs-file "fsautocomplete/")
+(defcustom lsp-fsharp-server-install-dir (f-join lsp-server-install-dir "fsautocomplete/")
   "Install directory for fsautocomplete server.
 The slash is expected at the end."
   :group 'lsp-fsharp
@@ -179,16 +179,7 @@ disable if `--backgorund-service-enabled' is not used"
                     ".exe")))
     (expand-file-name (concat "fsautocomplete" file-ext) lsp-fsharp-server-install-dir)))
 
-(defun lsp-fsharp--fsac-locate ()
-  "Return the location of the fsautocomplete langauge server."
-  (let ((fsac (lsp-fsharp--fsac-cmd)))
-    (unless (file-exists-p fsac)
-      (if (yes-or-no-p "Server is not installed. Do you want to install it?")
-          (lsp-fsharp--fsac-install)
-        (error "LSP F# cannot be started without FsAutoComplete Server")))
-    fsac))
-
-(defun lsp-fsharp--fsac-install ()
+(defun lsp-fsharp--fsac-install (_client callback _error-callback _update?)
   "Download the latest version of fsautocomplete and extract it to `lsp-fsharp-server-install-dir'."
   (let* ((temp-file (make-temp-file "fsautocomplete" nil ".zip"))
          (install-dir-full (expand-file-name lsp-fsharp-server-install-dir))
@@ -197,18 +188,19 @@ disable if `--backgorund-service-enabled' is not used"
                              (t (user-error (format "Unable to unzip server - file %s cannot be extracted, please extract it manually" temp-file))))))
     (url-copy-file lsp-fsharp-server-download-url temp-file t)
     (shell-command unzip-script)
-    (shell-command (format "%s %s --version" (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-cmd)))))
+    (shell-command (format "%s %s --version" (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-cmd)))
+    (funcall callback)))
 
 (defun lsp-fsharp-update-fsac ()
   "Update fsautocomplete to the latest version."
   (interactive)
   (-let [install-dir (f-expand lsp-fsharp-server-install-dir)]
     (f-delete install-dir t)
-    (lsp-fsharp--fsac-install)))
+    (lsp-fsharp--fsac-install nil #'ignore #'lsp--error t)))
 
 (defun lsp-fsharp--make-launch-cmd ()
   "Build the command required to launch fsautocomplete."
-  (append (list (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-locate) "--background-service-enabled")
+  (append (list (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-cmd) "--background-service-enabled")
           lsp-fsharp-server-args))
 
 (defun lsp-fsharp--project-list ()
@@ -260,7 +252,9 @@ disable if `--backgorund-service-enabled' is not used"
    ("FSharp.EnableReferenceCodeLens" lsp-fsharp-enable-reference-code-lens t)))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-fsharp--make-launch-cmd)
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   #'lsp-fsharp--make-launch-cmd
+                                   (lambda () (f-exists? (lsp-fsharp--fsac-cmd))))
                   :major-modes '(fsharp-mode)
                   :notification-handlers (ht ("fsharp/notifyCancel" #'ignore)
                                              ("fsharp/notifyWorkspace" #'ignore)
@@ -275,7 +269,8 @@ disable if `--backgorund-service-enabled' is not used"
                                          (lsp-configuration-section "fsharp"))
                                         (lsp-fsharp--workspace-load
                                          (lsp-fsharp--project-list)))))
-                  :server-id 'fsac))
+                  :server-id 'fsac
+                  :download-server-fn #'lsp-fsharp--fsac-install))
 
 (provide 'lsp-fsharp)
 ;;; lsp-fsharp.el ends here

@@ -35,7 +35,7 @@ Version 1.34.3 minimum is required."
   :link '(url-link "https://github.com/OmniSharp/omnisharp-roslyn"))
 
 (defcustom lsp-csharp-server-install-dir
-  (locate-user-emacs-file ".cache/omnisharp-roslyn/")
+  (f-join lsp-server-install-dir "omnisharp-roslyn/")
   "Installation directory for OmniSharp Roslyn server."
   :group 'lsp-csharp
   :type 'directory)
@@ -77,7 +77,7 @@ Set this if you have the binary installed or have it built yourself."
 (defun lsp-csharp--server-dir (version)
   "The location of the installed OmniSharp server for VERSION."
   (when version
-      (f-join (expand-file-name lsp-csharp-server-install-dir) version)))
+    (f-join (expand-file-name lsp-csharp-server-install-dir) version)))
 
 (defun lsp-csharp--server-bin (version)
   "The location of OmniSharp executable/script to use to start the server."
@@ -101,8 +101,8 @@ of Emacs. See https://lists.nongnu.org/archive/html/bug-gnu-emacs/2017-06/msg008
         ((eq system-type 'darwin)
          "omnisharp-osx.tar.gz")
         ((and (eq system-type 'gnu/linux)
-	            (or (eq (string-match "^x86_64" system-configuration) 0)
-	                (eq (string-match "^i[3-6]86" system-configuration) 0)))
+              (or (eq (string-match "^x86_64" system-configuration) 0)
+                  (eq (string-match "^i[3-6]86" system-configuration) 0)))
          "omnisharp-linux-x64.tar.gz")
         (t "omnisharp-mono.tar.gz")))
 
@@ -159,18 +159,16 @@ available on github and if so, downloads and installs a newer version."
                    target-version)
           (if (or (not ask-confirmation)
                   (yes-or-no-p (format "OmniSharp Roslyn Server %s. Do you want to download and install %s now?"
-                               (if installed-version
-                                   (format "can be updated, currently installed version is %s" installed-version)
-                                 "is not installed")
-                               target-version)))
-              (let ((cache-dir (expand-file-name (locate-user-emacs-file ".cache/")))
-                    (o-r-dir (expand-file-name (locate-user-emacs-file ".cache/omnisharp-roslyn/")))
-                    (new-server-dir (lsp-csharp--server-dir target-version))
+                                       (if installed-version
+                                           (format "can be updated, currently installed version is %s" installed-version)
+                                         "is not installed")
+                                       target-version)))
+              (let ((new-server-dir (lsp-csharp--server-dir target-version))
                     (new-server-bin (lsp-csharp--server-bin target-version))
                     (package-filename (lsp-csharp--server-package-filename))
                     (package-url (lsp-csharp--server-package-url target-version)))
 
-                (f-mkdir cache-dir o-r-dir new-server-dir)
+                (mkdir new-server-dir t)
 
                 (lsp-csharp--extract-server package-url
                                             (f-join new-server-dir package-filename)
@@ -201,12 +199,12 @@ the file exist already."
   (unless (f-exists-p filename)
     (message (format "lsp-csharp: downloading from \"%s\"..." url))
     (let ((gnutls-algorithm-priority
-	         (if (and (not gnutls-algorithm-priority)
-		                (boundp 'libgnutls-version)
-		                (>= libgnutls-version 30603)
-		                (version<= emacs-version "26.2"))
-	             "NORMAL:-VERS-TLS1.3"
-	           gnutls-algorithm-priority)))
+           (if (and (not gnutls-algorithm-priority)
+                    (boundp 'libgnutls-version)
+                    (>= libgnutls-version 30603)
+                    (version<= emacs-version "26.2"))
+               "NORMAL:-VERS-TLS1.3"
+             gnutls-algorithm-priority)))
       (url-copy-file url filename nil))))
 
 (defun lsp-csharp--extract (filename target-dir)
@@ -242,13 +240,24 @@ Will attempt to install the server if it is not installed already for the
 current platform."
   (if lsp-csharp-server-path
       (list lsp-csharp-server-path "-lsp")
-    (list (lsp-csharp--get-or-install-server) "-lsp")))
+    (list (lsp-csharp--server-bin (lsp-csharp--latest-installed-version)) "-lsp")))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
-                                   #'lsp-csharp--language-server-command)
+                                   #'lsp-csharp--language-server-command
+                                   (lambda ()
+                                     (when-let (binary (lsp-csharp--server-bin (lsp-csharp--latest-installed-version)))
+                                       (f-exists? binary))))
+
                   :major-modes '(csharp-mode)
-                  :server-id 'csharp))
+                  :server-id 'csharp
+                  :download-server-fn
+                  (lambda (_client callback error-callback _update?)
+                    (condition-case err
+                        (progn
+                          (lsp-csharp--install-server nil nil)
+                          (funcall callback))
+                      (error (funcall error-callback (error-message-string err)))))))
 
 (provide 'lsp-csharp)
 ;;; lsp-csharp.el ends here
