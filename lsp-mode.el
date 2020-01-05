@@ -5898,7 +5898,8 @@ SESSION is the active session."
                (if success?
                    (lsp--info "Server %s downloaded, auto-starting in %s buffers." server-id
                               (length buffers))
-                 (lsp--error "Server %s install process failed with the following error message: %s. Check  *lsp-install* buffer."
+                 (lsp--error "Server %s install process failed with the following error message: %s.
+Check `*lsp-install*' and `*lsp-log*' buffer."
                              server-id
                              error-message))
                (seq-do
@@ -5907,19 +5908,18 @@ SESSION is the active session."
                     (with-current-buffer buffer
                       (setq global-mode-string (-remove-item '(t (:eval (lsp--download-status)))
                                                              global-mode-string))
-                      (lsp))))
+                      (when success? (lsp)))))
                 buffers)
                (unless (lsp--filter-clients #'lsp--client-download-in-progress?)
                  (setq global-mode-string (-remove-item '(t (:eval (lsp--download-status)))
                                                         global-mode-string))))))
+    (lsp--info "Download %s started." (lsp--client-server-id client))
     (funcall
      (lsp--client-download-server-fn client)
      client
      (lambda () (done t))
      (lambda (msg) (done nil msg))
-     t))
-
-  (lsp--info "Download %s started." (lsp--client-server-id client)))
+     t)))
 
 (defun lsp-install-server ()
   (interactive)
@@ -5971,12 +5971,13 @@ SESSION is the active session."
 
 (defun lsp-package-ensure (dependency callback error-callback)
   "Asynchronously ensure a package."
-  (-first (-lambda ((provider . rest))
-            (-some-> lsp-deps-providers
-              (plist-get provider)
-              (plist-get :install)
-              (apply (cl-list* callback error-callback rest))))
-          (gethash dependency lsp--dependencies)))
+  (or (-first (-lambda ((provider . rest))
+                (-some-> lsp-deps-providers
+                  (plist-get provider)
+                  (plist-get :install)
+                  (apply (cl-list* callback error-callback rest))))
+              (gethash dependency lsp--dependencies))
+      (funcall error-callback (format "Unable to find a way to install %s" dependency))))
 
 
 ;; npm handling
@@ -5989,15 +5990,15 @@ SESSION is the active session."
 
 (cl-defun lsp--npm-dependency-download  (callback error-callback &key package &allow-other-keys)
   (if-let (npm-binary (executable-find "npm"))
-      (lsp-async-start-process
-       callback
-       error-callback
-       npm-binary
-       "--prefix"
-       (f-join lsp-server-install-dir "npm" package)
-       "install"
-       package)
-    (funcall callback nil "Make sure you have npm installed and on the path.")))
+      (lsp-async-start-process callback
+                               error-callback
+                               npm-binary
+                               "--prefix"
+                               (f-join lsp-server-install-dir "npm" package)
+                               "install"
+                               package)
+    (lsp-log "Unable to install %s via `npm' because it is not present" package)
+    nil))
 
 
 (defun lsp--matching-clients? (client)
