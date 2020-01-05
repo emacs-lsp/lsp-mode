@@ -1102,14 +1102,16 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   "Return the point for character CHARACTER on line LINE."
   (save-excursion
     (save-restriction
-      (condition-case _err
-          (progn
-            (widen)
-            (goto-char (point-min))
-            (forward-line line)
-            (forward-char character)
-            (point))
-        (error (point))))))
+      (widen)
+      (goto-char (point-min))
+      (forward-line line)
+      ;; server may send character position beyond the current line and we
+      ;; should fallback to line end.
+      (let ((line-end (line-end-position)))
+        (if (> character (- line-end (point)))
+            line-end
+          (forward-char character)
+          (point))))))
 
 (defun lsp--position-to-point (params)
   "Convert Position object in PARAMS to a point."
