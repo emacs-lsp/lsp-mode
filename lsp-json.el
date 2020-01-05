@@ -65,7 +65,7 @@
    ("http.proxy" lsp-http-proxy)
    ("http.proxyStrictSSL" lsp-http-proxyStrictSSL)))
 
-(defcustom lsp-json-server "vscode-json-languageserver"
+(defcustom lsp-json-server "json-languageserver"
   "Json language server executable."
   :type 'string
   :group 'lsp-json
