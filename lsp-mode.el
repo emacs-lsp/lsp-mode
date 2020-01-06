@@ -5982,10 +5982,14 @@ Check `*lsp-install*' and `*lsp-log*' buffer."
 
 ;; npm handling
 
+;; https://docs.npmjs.com/files/folders#executables
 (cl-defun lsp--npm-dependency-path (&key package path &allow-other-keys)
-  (let ((path (f-join lsp-server-install-dir "npm" package "node_modules" path)))
+  (let ((path (f-join lsp-server-install-dir "npm" package
+                      (cond ((eq system-type 'windows-nt) "")
+                            (t "bin"))
+                      path)))
     (unless (f-exists? path)
-      (error "The package %s is not installed. Unable to find %s." package path))
+      (error "The package %s is not installed.  Unable to find %s" package path))
     path))
 
 (cl-defun lsp--npm-dependency-download  (callback error-callback &key package &allow-other-keys)
@@ -5993,6 +5997,7 @@ Check `*lsp-install*' and `*lsp-log*' buffer."
       (lsp-async-start-process callback
                                error-callback
                                npm-binary
+                               "-g"
                                "--prefix"
                                (f-join lsp-server-install-dir "npm" package)
                                "install"
