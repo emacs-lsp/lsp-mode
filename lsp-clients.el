@@ -157,7 +157,7 @@ This directory shoud contain a file matching groovy-language-server-*.jar"
 (lsp-dependency javascript-typescript-langserver
   (:system "javascript-typescript-stdio")
   (:npm :package "javascript-typescript-langserver"
-        :path ".bin/javascript-typescript-stdio"))
+        :path "javascript-typescript-stdio"))
 
 (defgroup lsp-typescript-javascript nil
   "Support for TypeScript/JavaScript, using Sourcegraph's JavaScript/TypeScript language server."
@@ -228,12 +228,12 @@ directory containing the package. Example:
 (lsp-dependency typescript-language-server
   (:system "typescript-language-server")
   (:npm :package "typescript-language-server"
-        :path ".bin/typescript-language-server"))
+        :path "typescript-language-server"))
 
 (lsp-dependency typescript
   (:system "tsserver")
   (:npm :package "typescript"
-        :path ".bin/tsserver"))
+        :path "tsserver"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()

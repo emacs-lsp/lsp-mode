@@ -104,7 +104,7 @@
 (lsp-dependency vscode-json-languageserver
   (:system "vscode-json-languageserver")
   (:npm :package "vscode-json-languageserver"
-        :path ".bin/vscode-json-languageserver"))
+        :path "vscode-json-languageserver"))
 
 (lsp-register-client
  (make-lsp-client
