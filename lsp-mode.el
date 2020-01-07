@@ -3711,7 +3711,7 @@ and the position respectively."
            (trigger-chars (->> (lsp--server-capabilities)
                                (gethash "completionProvider")
                                (gethash "triggerCharacters")))
-           start-point result done?)
+           start-point result done? prefix-line)
       (list
        (if bounds (car bounds) (point))
        (point)
@@ -3727,7 +3727,8 @@ and the position respectively."
           ((eq (car-safe action) 'boundaries) nil)
           (t (if done?
                  result
-               (setf start-point (point))
+               (setf start-point (point)
+                     prefix-line (buffer-substring-no-properties (point-at-bol) start-point))
                (let* ((resp (lsp-request-while-no-input "textDocument/completion"
                                                         (plist-put (lsp--text-document-position-params)
                                                                    :context (ht ("triggerKind" 1)))))
@@ -3783,7 +3784,8 @@ and the position respectively."
                 (lsp--resolve-completion (plist-get (text-properties-at 0 candidate) 'lsp-completion-item))]
            (cond
             (text-edit
-             (delete-region start-point (point))
+             (delete-region (point-at-bol) (point))
+             (insert prefix-line)
              (lsp--apply-text-edit text-edit))
             (insert-text
              (delete-region (- (point) (length candidate)) (point))
