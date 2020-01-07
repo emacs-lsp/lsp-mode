@@ -3727,23 +3727,24 @@ and the position respectively."
           ((eq (car-safe action) 'boundaries) nil)
           (t (if done?
                  result
-               (setf start-point (point)
-                     prefix-line (buffer-substring-no-properties (point-at-bol) start-point))
-               (let* ((resp (lsp-request-while-no-input "textDocument/completion"
-                                                        (plist-put (lsp--text-document-position-params)
-                                                                   :context (ht ("triggerKind" 1)))))
-                      (items (lsp--sort-completions (cond
-                                                     ((seqp resp) resp)
-                                                     ((hash-table-p resp) (gethash "items" resp)))))
-                      (probe
-                       (-if-let ((start . end)
-                                 (or (-some-> (lsp-elt items 0)
-                                       (lsp--ht-get "textEdit" "range")
-                                       lsp--range-to-region)
-                                     bounds))
-                           (buffer-substring-no-properties start end)
-                         "")))
-                 (setf done? (or (seqp resp)
+               (-let* ((resp (lsp-request-while-no-input "textDocument/completion"
+                                                         (plist-put (lsp--text-document-position-params)
+                                                                    :context (ht ("triggerKind" 1)))))
+                       (items (lsp--sort-completions (cond
+                                                      ((seqp resp) resp)
+                                                      ((hash-table-p resp) (gethash "items" resp)))))
+                       ((start . _)
+                        (or (-some-> (lsp-elt items 0)
+                              (lsp--ht-get "textEdit" "range")
+                              lsp--range-to-region)
+                            bounds))
+                       (probe
+                        (if start
+                            (buffer-substring-no-properties start (point))
+                          "")))
+                 (setf start-point (or start (point))
+                       prefix-line (buffer-substring-no-properties (point-at-bol) start-point)
+                       done? (or (seqp resp)
                                  (not (gethash "isIncomplete" resp)))
                        result (-some--> items
                                 (-map (-lambda ((item &as &hash

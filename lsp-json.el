@@ -92,14 +92,15 @@
 
 (defun lsp-json--get-content (_workspace uri callback)
   "Get content from URI."
-  (url-retrieve uri (lambda (_status callback)
-                      (goto-char (point-min))
-                      (re-search-forward "\n\n" nil 'noerror)
-                      (funcall
-                       callback
-                       (decode-coding-string (buffer-substring (point) (point-max))
-                                             'utf-8-unix)))
-                (list callback)))
+  (ignore-errors
+    (url-retrieve uri (lambda (_status callback)
+                        (goto-char (point-min))
+                        (re-search-forward "\n\n" nil 'noerror)
+                        (funcall
+                         callback
+                         (decode-coding-string (buffer-substring (point) (point-max))
+                                               'utf-8-unix)))
+                  (list callback))))
 
 (lsp-dependency vscode-json-languageserver
   (:system "vscode-json-languageserver")
