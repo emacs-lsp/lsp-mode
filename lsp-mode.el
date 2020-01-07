@@ -5917,7 +5917,7 @@ SESSION is the active session."
                                        (switch-to-buffer (get-buffer-create  " *lsp-install*"))))
                 'mouse-face 'highlight)))
 
-(defun lsp--install-server-internal (client)
+(defun lsp--install-server-internal (client &optional update?)
   (setf (lsp--client-download-in-progress? client) t)
   (add-to-list 'global-mode-string '(t (:eval (lsp--download-status))))
   (cl-flet ((done
@@ -5949,17 +5949,20 @@ Check `*lsp-install*' and `*lsp-log*' buffer."
      client
      (lambda () (done t))
      (lambda (msg) (done nil msg))
-     t)))
+     update?)))
 
-(defun lsp-install-server ()
-  (interactive)
+(defun lsp-install-server (update?)
+  (interactive "P")
+  "Interactively install server.
+When UPDATE? is t force installation even if the server is present."
   (lsp--install-server-internal
    (lsp--completing-read
     "Select server to install: "
     (or (->> lsp-clients
              (ht-values)
              (-filter (-andfn
-                       (-not #'lsp--server-binary-present?)
+                       (-orfn (-not #'lsp--server-binary-present?)
+                              (-const update?))
                        (-not #'lsp--client-download-in-progress?)
                        #'lsp--client-download-server-fn)))
         (user-error "There are no servers with automatic installation."))
