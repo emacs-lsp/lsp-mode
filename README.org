@@ -2,6 +2,7 @@
 [[https://stable.melpa.org/#/lsp-mode][file:https://stable.melpa.org/packages/lsp-mode-badge.svg]]
 [[https://gitter.im/emacs-lsp/lsp-mode][file:https://badges.gitter.im/emacs-lsp/lsp-mode.svg]]
 [[https://travis-ci.org/emacs-lsp/lsp-mode][file:https://travis-ci.org/emacs-lsp/lsp-mode.svg?branch=master]]
+[[https://coveralls.io/github/emacs-lsp/lsp-mode][https://coveralls.io/repos/github/emacs-lsp/lsp-mode/badge.svg]]
 
 #+ATTR_HTML: align="center"; margin-right="auto"; margin-left="auto"
 [[examples/logo.png]]
