@@ -6012,11 +6012,13 @@ Check `*lsp-install*' and `*lsp-log*' buffer."
 
 ;; https://docs.npmjs.com/files/folders#executables
 (cl-defun lsp--npm-dependency-path (&key package path &allow-other-keys)
-  (let ((path (f-join lsp-server-install-dir "npm" package
-                      (cond ((eq system-type 'windows-nt) "")
-                            (t "bin"))
-                      path)))
-    (unless (f-exists? path)
+  "Return npm dependency PATH for PACKAGE."
+  (let ((path (executable-find
+               (f-join lsp-server-install-dir "npm" package
+                       (cond ((eq system-type 'windows-nt) "")
+                             (t "bin"))
+                       path))))
+    (unless (and path (f-exists? path))
       (error "The package %s is not installed.  Unable to find %s" package path))
     path))
 

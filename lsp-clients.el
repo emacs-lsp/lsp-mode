@@ -237,8 +237,10 @@ directory containing the package. Example:
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
-                                                          (cons (lsp-package-path 'typescript-language-server)
-                                                                lsp-clients-typescript-server-args)))
+                                                          `(,(lsp-package-path 'typescript-language-server)
+                                                            "--tsserver-path"
+                                                            ,(lsp-package-path 'typescript)
+                                                            ,@lsp-clients-typescript-server-args)))
                   :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
                   :priority -2
                   :completion-in-comments? t
