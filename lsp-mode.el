@@ -6394,7 +6394,7 @@ Returns nil if the project should not be added to the current SESSION."
 
 %s==>Import project root %s.
 %s==>Import project by selecting root directory interactively.
-%s==>Do not ask again for the current project by adding %s to lsp-session-folder-blacklist.
+%s==>Do not ask again for the current project by adding %s to lsp-session-folders-blacklist.
 %s==>Do not ask again for the current project by selecting ignore path interactively.
 %s==>Do nothing: ask again when opening other files from the current project."
                                 (propertize (buffer-name) 'face 'bold)
