@@ -2560,7 +2560,7 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
   "Unload working workspaces."
   (lsp-foreach-workspace (lsp--shutdown-workspace)))
 
-(defun lsp--shutdown-workspace ()
+(defun lsp--shutdown-workspace (&optional restart)
   "Shut down the language server process for ‘lsp--cur-workspace’."
   (with-demoted-errors "LSP error: %S"
     (let ((lsp-response-timeout 0.5))
@@ -2568,6 +2568,7 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
           (lsp-request "shutdown" (make-hash-table))
         (error (lsp--error "Timeout while sending shutdown request."))))
     (lsp-notify "exit" nil))
+  (setf (lsp--workspace-shutdown-action lsp--cur-workspace) (or (and restart 'restart) 'shutdown))
   (lsp--uninitialize-workspace))
 
 (defun lsp--uninitialize-workspace ()
@@ -2823,7 +2824,6 @@ in that particular folder."
       (when (--none? (-contains? it workspace) (ht-values folder->servers))
         (lsp--info "Shutdown %s since folder %s is removed..."
                    (lsp--workspace-print workspace) project-root)
-        (setf (lsp--workspace-shutdown-action workspace) 'shutdown)
         (with-lsp-workspace workspace (lsp--shutdown-workspace))))
 
     (setf (lsp-session-folders session)
@@ -3617,7 +3617,6 @@ if it's closing the last buffer in the workspace."
          (when (and (not lsp-keep-workspace-alive)
                     (not keep-workspace-alive)
                     (not (lsp--workspace-buffers lsp--cur-workspace)))
-           (setf (lsp--workspace-shutdown-action lsp--cur-workspace) 'shutdown)
            (lsp--shutdown-workspace)))))))
 
 (defun lsp--will-save-text-document-params (reason)
@@ -6549,7 +6548,6 @@ such."
                                            (lsp-workspaces)
                                            'lsp--workspace-print nil t)))
   (lsp--warn "Stopping %s" (lsp--workspace-print workspace))
-  (setf (lsp--workspace-shutdown-action workspace) 'shutdown)
   (with-lsp-workspace workspace (lsp--shutdown-workspace)))
 
 (defun lsp-disconnect ()
@@ -6580,8 +6578,7 @@ such."
                                            (lsp-workspaces)
                                            'lsp--workspace-print nil t)))
   (lsp--warn "Restarting %s" (lsp--workspace-print workspace))
-  (setf (lsp--workspace-shutdown-action workspace) 'restart)
-  (with-lsp-workspace workspace (lsp--shutdown-workspace)))
+  (with-lsp-workspace workspace (lsp--shutdown-workspace t)))
 
 ;;;###autoload
 (defun lsp (&optional arg)
