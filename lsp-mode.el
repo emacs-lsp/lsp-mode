@@ -3384,17 +3384,17 @@ Added to `after-change-functions'."
   ;; So (47 47 7) means delete 7 chars starting at pos 47
   ;; (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length)
   ;; (message "lsp-on-change:(lsp--before-change-vals)=%s" lsp--before-change-vals)
-  (let (inhibit-quit)
-    (when (not revert-buffer-in-progress-p)
-      (if lsp--cur-version
-          (cl-incf lsp--cur-version)
-        ;; buffer has been reset - start from scratch.
-        (setq lsp--cur-version 0))
-      (mapc
-       (lambda (it)
-         (with-lsp-workspace it
-           (with-demoted-errors "Error in ‘lsp-on-change’: %S"
-             (save-match-data
+  (save-match-data
+    (let (inhibit-quit)
+      (when (not revert-buffer-in-progress-p)
+        (if lsp--cur-version
+            (cl-incf lsp--cur-version)
+          ;; buffer has been reset - start from scratch.
+          (setq lsp--cur-version 0))
+        (mapc
+         (lambda (it)
+           (with-lsp-workspace it
+             (with-demoted-errors "Error in ‘lsp-on-change’: %S"
                ;; A (revert-buffer) call with the 'preserve-modes parameter (eg, as done
                ;; by auto-revert-mode) will cause this handler to get called with a nil
                ;; buffer-file-name. We need the buffer-file-name to send notifications;
@@ -3427,13 +3427,13 @@ Added to `after-change-functions'."
                       "textDocument/didChange"
                       `(:textDocument
                         ,(lsp--versioned-text-document-identifier)
-                        :contentChanges ,(vector (lsp--full-change-event))))))))))))
-       (lsp-workspaces))
-      ;; force cleanup overlays after each change
-      (lsp--remove-overlays 'lsp-highlight)
-      (lsp--on-change-debounce (current-buffer))
-      (setq lsp--last-signature-index nil)
-      (setq lsp--last-signature nil))))
+                        :contentChanges ,(vector (lsp--full-change-event)))))))))))
+         (lsp-workspaces))
+        ;; force cleanup overlays after each change
+        (lsp--remove-overlays 'lsp-highlight)
+        (lsp--on-change-debounce (current-buffer))
+        (setq lsp--last-signature-index nil)
+        (setq lsp--last-signature nil)))))
 
 
 
