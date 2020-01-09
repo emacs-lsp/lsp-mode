@@ -389,7 +389,7 @@ PARAMS progress report notification data."
 
 (defun lsp-rust-analyzer--make-init-options ()
   "Init options for rust-analyzer"
-  (let ((feature-flags (--map (cons it t) lsp-rust-analyzer-enabled-feature-flags)))
+  (let ((feature-flags (--map (cons (intern it) t) lsp-rust-analyzer-enabled-feature-flags)))
     `(:lruCapacity ,lsp-rust-analyzer-lru-capacity
       :maxInlayHintLength ,lsp-rust-analyzer-max-inlay-hint-length
       :cargoWatchEnable ,(lsp-json-bool lsp-rust-analyzer-cargo-watch-enable)
