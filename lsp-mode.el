@@ -3721,17 +3721,18 @@ and the position respectively."
                        (items (lsp--sort-completions (cond
                                                       ((seqp resp) resp)
                                                       ((hash-table-p resp) (gethash "items" resp)))))
-                       ((start . _)
-                        (or (-some-> (lsp-elt items 0)
-                              (lsp--ht-get "textEdit" "range")
-                              lsp--range-to-region)
-                            bounds))
+                       (start
+                        (cl-first
+                         (or (-some-> (lsp-elt items 0)
+                               (lsp--ht-get "textEdit" "range")
+                               lsp--range-to-region)
+                             bounds)))
                        (probe
                         (if start
                             (buffer-substring-no-properties start (point))
                           "")))
                  (setf start-point (or start (point))
-                       prefix-line (buffer-substring-no-properties (point-at-bol) start-point)
+                       prefix-line (buffer-substring-no-properties (point-at-bol) (point))
                        done? (or (seqp resp)
                                  (not (gethash "isIncomplete" resp)))
                        result (--> items
