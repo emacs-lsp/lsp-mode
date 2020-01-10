@@ -147,7 +147,7 @@ defaults to half of your CPU cores."
   :type 'boolean
   :group 'lsp-clients-go)
 
-(defcustom lsp-clients-go-library-directories '("/usr/lib" "usr/local/lib")
+(defcustom lsp-clients-go-library-directories '("/usr")
   "List of directories which will be considered to be libraries."
   :group 'lsp-clients-go
   :risky t
