@@ -6641,7 +6641,8 @@ The server(s) will be started in the buffer when it has finished."
                         (lsp--filter-clients (-andfn #'lsp--matching-clients?
                                                      (-not #'lsp--server-binary-present?)))))
         (when (y-or-n-p (format "The following servers support current file but do not have automatic installation configuration: %s
-You may find the installation instructions at https://github.com/emacs-lsp/lsp-mode/#supported-languages. Do you want open it?"
+You may find the installation instructions at https://github.com/emacs-lsp/lsp-mode/#supported-languages. Do you want open it?
+(If you have already installed the server check *lsp-log*)."
                                 (mapconcat (lambda (client)
                                              (symbol-name (lsp--client-server-id client)))
                                            clients
