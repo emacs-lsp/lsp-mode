@@ -6492,6 +6492,7 @@ The library folders are defined by each client for each of the active workspace.
                                             (funcall library-folders-fn it)))))))
     (lsp--open-in-workspace workspace)
     (view-mode t)
+    (lsp--info "Opening read-only library file %s." (buffer-file-name))
     (list workspace)))
 
 (defun lsp--persist-session (session)
@@ -6601,7 +6602,10 @@ argument ask the user to select which language server to start. "
       (cond
        (matching-clients
         (when (setq-local lsp--buffer-workspaces
-                          (or (lsp--try-open-in-library-workspace)
+                          (or (and
+                               ;; Don't open as library file if file is part of a project.
+                               (not (lsp-find-session-folder (lsp-session) (buffer-file-name)))
+                               (lsp--try-open-in-library-workspace))
                               (lsp--try-project-root-workspaces (equal arg '(4))
                                                                 (and arg (not (equal arg 1))))))
           (lsp-mode 1)
