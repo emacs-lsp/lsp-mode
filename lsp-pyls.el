@@ -347,6 +347,21 @@ parameters referenced in config."
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.3"))
 
+(defcustom lsp-pyls-plugins-mypy-enabled t
+  "Enable or disable the plugin."
+  :type 'boolean
+  :group 'lsp-pyls
+  :package-version '(lsp-mode . "6.3"))
+
+(defcustom lsp-pyls-plugins-mypy-live-mode-enabled nil
+  "Enable or disable the mypy live-mode. live_mode provides type checking as you type,
+but have some limitation, 1) Imports cannot be followed correctly.
+2) Stub files are not validated correctly. Turning off live_mode means you must save
+your changes for mypy diagnostics to update correctly."
+  :type 'boolean
+  :group 'lsp-pyls
+  :package-version '(lsp-mode . "6.3"))
+
 (lsp-register-custom-settings
  '(("pyls.rope.ropeFolder" lsp-pyls-rope-rope-folder)
    ("pyls.rope.extensionModules" lsp-pyls-rope-extension-modules)
@@ -392,6 +407,8 @@ parameters referenced in config."
    ("pyls.plugins.jedi_definition.enabled" lsp-pyls-plugins-jedi-definition-enabled t)
    ("pyls.plugins.jedi_completion.include_params" lsp-pyls-plugins-jedi-completion-include-params t)
    ("pyls.plugins.jedi_completion.enabled" lsp-pyls-plugins-jedi-completion-enabled t)
+   ("pyls.plugins.pyls_mypy.enabled" lsp-pyls-plugins-mypy-enabled t)
+   ("pyls.plugins.pyls_mypy.live_mode" lsp-pyls-plugins-mypy-live-mode-enabled nil)
    ("pyls.configurationSources" lsp-pyls-configuration-sources)))
 
 (lsp-register-client
