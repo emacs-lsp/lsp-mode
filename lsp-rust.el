@@ -345,7 +345,7 @@ PARAMS progress report notification data."
   :type 'integer
   :package-version '(lsp-mode . "6.2.2"))
 
-(defcustom lsp-rust-analyzer-cargo-watch-enable nil
+(defcustom lsp-rust-analyzer-cargo-watch-enable t
   "Enable Cargo watch."
   :type 'boolean
   :package-version '(lsp-mode . "6.2.2"))
