@@ -4134,6 +4134,7 @@ RENDER-ALL - nil if only the signature should be rendered."
   (-doto (make-sparse-keymap)
     (define-key (kbd "M-n") #'lsp-signature-next)
     (define-key (kbd "M-p") #'lsp-signature-previous)
+    (define-key (kbd "M-a") #'lsp-signature-toggle-full-docs)
     (define-key (kbd "C-c C-k") #'lsp-signature-stop))
   "Keymap for `lsp-signature-mode-map'")
 
@@ -4154,6 +4155,12 @@ RENDER-ALL - nil if only the signature should be rendered."
   :type 'boolean
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-signature-doc-lines 20
+  "If number, limit the number of lines to show in the docs."
+  :type 'number
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.3"))
 
 (defun lsp-signature-stop ()
   (interactive)
@@ -4205,6 +4212,16 @@ RENDER-ALL - nil if only the signature should be rendered."
     (setq-local lsp--last-signature-index (1- lsp--last-signature-index))
     (lsp--lv-message (lsp--signature->message lsp--last-signature))))
 
+(defun lsp-signature-toggle-full-docs ()
+  "Toggle full/partial signature documentation."
+  (interactive)
+  (let ((all? (not (numberp lsp-signature-doc-lines))))
+    (setq lsp-signature-doc-lines (if all?
+                                      (or (car-safe lsp-signature-doc-lines)
+                                          20)
+                                    (list lsp-signature-doc-lines))))
+  (lsp-signature-activate))
+
 (defun lsp--signature->message (signature-help)
   "Generate eldoc message from SIGNATURE-HELP response."
   (setq lsp--last-signature signature-help)
@@ -4232,7 +4249,11 @@ RENDER-ALL - nil if only the signature should be rendered."
                                                     "┴─────────────────────────────────────────────────")
                                             'face 'shadow)
                                 "\n"
-                                docs
+                                (if (and (numberp lsp-signature-doc-lines)
+                                         (> (length (s-lines docs)) lsp-signature-doc-lines))
+                                    (concat (s-join "\n" (-take lsp-signature-doc-lines (s-lines docs)))
+                                            (propertize "\nTruncated..." 'face 'highlight))
+                                  docs)
                                 (propertize (concat "\n"
                                                     (s-repeat prefix-length "─")
                                                     "──────────────────────────────────────────────────")
