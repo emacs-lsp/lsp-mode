@@ -693,7 +693,13 @@ must be used for handling a particular message.")
 (defcustom lsp-lens-check-interval 0.1
   "The interval for checking for changes in the buffer state."
   :group 'lsp-mode
-  :type 'boolean)
+  :type 'number)
+
+(defcustom lsp-lens-auto-enable nil
+  "Auto lenses if server there is server support."
+  :group 'lsp-mode
+  :type 'boolean
+  :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-lens-debounce-interval 0.2
   "Debounce interval for loading lenses."
@@ -2901,6 +2907,9 @@ in that particular folder."
         (add-hook 'xref-backend-functions #'lsp--xref-backend nil t))
       (when (and lsp-enable-text-document-color (lsp--capability "colorProvider"))
         (add-hook 'lsp-on-change-hook #'lsp--document-color nil t))
+
+      (when (and lsp-lens-auto-enable (lsp--capability "codeLensProvider"))
+        (lsp-lens-mode 1))
 
       (setq-local global-mode-string (if (-contains? global-mode-string status)
                                          global-mode-string
