@@ -129,22 +129,18 @@ See instructions at https://marketplace.visualstudio.com/items?itemName=mads-har
 (defgroup lsp-groovy nil
   "LSP support for Groovy, using groovy-language-server"
   :group 'lsp-mode
-  :link '(url-link "https://github.com/palantir/language-servers"))
+  :link '(url-link "https://github.com/prominic/groovy-language-server"))
 
-(defcustom lsp-groovy-server-install-dir
-  (locate-user-emacs-file "groovy-language-server/")
-  "Install directory for groovy-language-server.
-A slash is expected at the end.
-This directory shoud contain a file matching groovy-language-server-*.jar"
+(defcustom lsp-groovy-server-file
+  (locate-user-emacs-file "groovy-language-server/groovy-language-server-all.jar")
+  "JAR file path for groovy-language-server-all.jar."
   :group 'lsp-groovy
   :risky t
-  :type 'directory)
+  :type 'file)
 
 (defun lsp-groovy--lsp-command ()
   "Generate LSP startup command."
-  `("java"
-    "-cp" ,(concat (file-truename lsp-groovy-server-install-dir) "*")
-    "com.palantir.ls.groovy.GroovyLanguageServer"))
+  `("java" "-jar" ,(expand-file-name lsp-groovy-server-file)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-groovy--lsp-command)

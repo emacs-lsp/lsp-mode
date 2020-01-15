@@ -576,6 +576,7 @@ Changes take effect only when a new session is started."
                                         (clojurec-mode . "clojure")
                                         (clojurescript-mode . "clojurescript")
                                         (java-mode . "java")
+                                        (groovy-mode . "groovy")
                                         (python-mode . "python")
                                         (lsp--render-markdown . "markdown")
                                         (rust-mode . "rust")
