@@ -335,10 +335,73 @@ PARAMS progress report notification data."
   :type 'boolean
   :package-version '(lsp-mode . "6.2"))
 
+(defcustom lsp-rust-analyzer-max-inlay-hint-length nil
+  "Max inlay hint length."
+  :type 'integer
+  :package-version '(lsp-mode . "6.2.2"))
+
+(defcustom lsp-rust-analyzer-lru-capacity nil
+  "LRU capacity."
+  :type 'integer
+  :package-version '(lsp-mode . "6.2.2"))
+
+(defcustom lsp-rust-analyzer-cargo-watch-enable t
+  "Enable Cargo watch."
+  :type 'boolean
+  :package-version '(lsp-mode . "6.2.2"))
+
+(defcustom lsp-rust-analyzer-cargo-watch-command "check"
+  "Cargo watch command."
+  :type 'string
+  :package-version '(lsp-mode . "6.2.2"))
+
+(defcustom lsp-rust-analyzer-cargo-watch-args []
+  "Cargo watch args."
+  :type 'lsp-string-vector
+  :package-version '(lsp-mode . "6.2.2"))
+
+(defcustom lsp-rust-analyzer-cargo-all-targets nil
+  "Cargo watch all targets or not."
+  :type 'boolean
+  :package-version '(lsp-mode . "6.2.2"))
+
+(defcustom lsp-rust-analyzer-use-client-watching t
+  "Use client watching"
+  :type 'boolean
+  :package-version '(lsp-mode . "6.2.2"))
+
+(defcustom lsp-rust-analyzer-exclude-globs []
+  "Exclude globs"
+  :type 'lsp-string-vector
+  :package-version '(lsp-mode . "6.2.2"))
+
+(defcustom lsp-rust-analyzer-enabled-feature-flags ["completion.insertion.add-call-parenthesis"
+                                                    "completion.enable-postfix"
+                                                    "notifications.workspace-loaded"]
+  "Feature flags to set."
+  :type 'lsp-string-vector
+  :package-version '(lsp-mode . "6.2.2"))
+
 (defcustom lsp-rust-analyzer-macro-expansion-method 'lsp-rust-analyzer-macro-expansion-default
   "Use a different function if you want formatted macro expansion results and syntax highlighting."
   :type 'function
   :package-version '(lsp-mode . "6.2.2"))
+
+(defun lsp-rust-analyzer--make-init-options ()
+  "Init options for rust-analyzer"
+  (let ((feature-flags (--map (cons (intern it) t) lsp-rust-analyzer-enabled-feature-flags)))
+    `(:lruCapacity ,lsp-rust-analyzer-lru-capacity
+      :maxInlayHintLength ,lsp-rust-analyzer-max-inlay-hint-length
+      :cargoWatchEnable ,(lsp-json-bool lsp-rust-analyzer-cargo-watch-enable)
+      :cargoWatchCommand ,lsp-rust-analyzer-cargo-watch-command
+      :cargoWatchArgs ,lsp-rust-analyzer-cargo-watch-args
+      :cargoWatchAllTargets ,(lsp-json-bool lsp-rust-analyzer-cargo-all-targets)
+      :excludeGlobs ,lsp-rust-analyzer-exclude-globs
+      :useClientWatching ,(lsp-json-bool lsp-rust-analyzer-use-client-watching)
+      :featureFlags ,feature-flags
+      :cargoFeatures (:allFeatures ,(lsp-json-bool lsp-rust-all-features)
+                      :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
+                      :features ,lsp-rust-features))))
 
 (defconst lsp-rust-notification-handlers
   '(("rust-analyzer/publishDecorations" . (lambda (_w _p)))))
@@ -424,8 +487,10 @@ PARAMS progress report notification data."
   :new-connection (lsp-stdio-connection (lambda () lsp-rust-analyzer-server-command))
   :major-modes '(rust-mode rustic-mode)
   :priority (if (eq lsp-rust-server 'rust-analyzer) 1 -1)
+  :initialization-options 'lsp-rust-analyzer--make-init-options
   :notification-handlers (ht<-alist lsp-rust-notification-handlers)
   :action-handlers (ht<-alist lsp-rust-action-handlers)
+  :library-folders-fn (lambda (_workspace) lsp-rust-library-directories)
   :ignore-messages nil
   :server-id 'rust-analyzer))
 
