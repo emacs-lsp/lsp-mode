@@ -269,6 +269,12 @@ dot."
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-pyls-plugins-autopep8-enabled t
+  "Enable or disable the plugin."
+  :type 'boolean
+  :group 'lsp-pyls
+  :package-version '(lsp-mode . "6.2"))
+
 (defcustom lsp-pyls-plugins-yapf-enabled t
   "Enable or disable the plugin."
   :type 'boolean
@@ -350,6 +356,7 @@ parameters referenced in config."
 (lsp-register-custom-settings
  '(("pyls.rope.ropeFolder" lsp-pyls-rope-rope-folder)
    ("pyls.rope.extensionModules" lsp-pyls-rope-extension-modules)
+   ("pyls.plugins.autopep8.enabled" lsp-pyls-plugins-autopep8-enabled t)
    ("pyls.plugins.yapf.enabled" lsp-pyls-plugins-yapf-enabled t)
    ("pyls.plugins.rope_completion.enabled" lsp-pyls-plugins-rope-completion-enabled t)
    ("pyls.plugins.pyflakes.enabled" lsp-pyls-plugins-pyflakes-enabled t)
