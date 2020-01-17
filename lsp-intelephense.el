@@ -187,6 +187,7 @@ language server."
                                             (list :storagePath lsp-intelephense-storage-path
                                                   :clearCache lsp-intelephense-clear-cache))
                   :multi-root t
+                  :completion-in-comments? t
                   :server-id 'iph))
 
 (provide 'lsp-intelephense)
