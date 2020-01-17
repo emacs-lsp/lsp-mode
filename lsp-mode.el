@@ -556,7 +556,6 @@ Changes take effect only when a new session is started."
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
 
-
 (defvar-local lsp--flymake-report-fn nil)
 
 (defvar lsp-language-id-configuration '((".*\\.vue$" . "vue")
@@ -642,22 +641,21 @@ We want to try the last workspace first when jumping into a library
 directory")
 
 (defvar lsp-method-requirements
-  '(("textDocument/onTypeFormatting" :capability "documentOnTypeFormattingProvider")
-    ("workspace/executeCommand" :capability "executeCommandProvider")
-    ("textDocument/hover" :capability "hoverProvider")
-    ("textDocument/documentSymbol" :capability "documentSymbolProvider")
-    ("textDocument/documentHighlight" :capability "documentHighlightProvider")
-    ("textDocument/references" :capability "referencesProvider")
-    ("textDocument/completion" :capability "completionProvider")
-    ("textDocument/definition" :capability "definitionProvider")
-    ("textDocument/implementation" :capability "implementationProvider")
+  '(("textDocument/callHierarchy" :capability "callHierarchyProvider")
     ("textDocument/codeAction" :capability "codeActionProvider")
-    ("textDocument/callHierarchy" :capability "callHierarchyProvider")
-    ("textDocument/declaration" :capability "declarationProvider")
-    ("textDocument/typeDefinition" :capability "typeDefinitionProvider")
-    ("workspace/symbol" :capability "workspaceSymbolProvider")
     ("textDocument/codeLens" :capability "codeLensProvider")
-    ("textDocument/selectionRange" :capability "selectionRangeProvider")
+    ("textDocument/completion" :capability "completionProvider")
+    ("textDocument/declaration" :capability "declarationProvider")
+    ("textDocument/definition" :capability "definitionProvider")
+    ("textDocument/documentColor" :capability "colorProvider")
+    ("textDocument/documentLink" :capability "documentLinkProvider")
+    ("textDocument/documentHighlight" :capability "documentHighlightProvider")
+    ("textDocument/documentSymbol" :capability "documentSymbolProvider")
+    ("textDocument/foldingRange" :capability "foldingRangeProvider")
+    ("textDocument/formatting" "documentFormattingProvider")
+    ("textDocument/hover" :capability "hoverProvider")
+    ("textDocument/implementation" :capability "implementationProvider")
+    ("textDocument/onTypeFormatting" :capability "documentOnTypeFormattingProvider")
     ("textDocument/prepareRename"
      :check-command (lambda (workspace)
                       (with-lsp-workspace workspace
@@ -665,7 +663,14 @@ directory")
                                          (-some-> (lsp--registered-capability "textDocument/rename")
                                            (lsp--registered-capability-options)))))
                           (and (hash-table-p table)
-                               (gethash "prepareProvider" table)))))))
+                               (gethash "prepareProvider" table))))))
+    ("textDocument/rangeFormatting" "documentRangeFormattingProvider")
+    ("textDocument/references" :capability "referencesProvider")
+    ("textDocument/selectionRange" :capability "selectionRangeProvider")
+    ("textDocument/signatureHelp" "signatureHelpProvider")
+    ("textDocument/typeDefinition" :capability "typeDefinitionProvider")
+    ("workspace/executeCommand" :capability "executeCommandProvider")
+    ("workspace/symbol" :capability "workspaceSymbolProvider"))
 
   "Contain method to requirements mapping.
 It is used by send request functions to determine which server
@@ -1601,9 +1606,6 @@ WORKSPACE is the workspace that contains the diagnostics."
 
 (defun lsp--get-folding-ranges ()
   "Get the folding ranges for the current buffer."
-  (unless (or (lsp--capability "foldingRangeProvider")
-              (lsp--registered-capability "textDocument/foldingRange"))
-    (signal 'lsp-capability-not-supported (list "foldingRangeProvider")))
   (-let [(tick . ranges) lsp--cached-folding-ranges]
     (if (eq tick (buffer-chars-modified-tick))
         ranges
@@ -2010,7 +2012,7 @@ CALLBACK - callback for the lenses."
         (lsp--lens-backend-fetch-missing lsp--lens-backend-cache callback lsp--cur-version)))))
 
 (define-minor-mode lsp-lens-mode
-  "toggle code-lens overlays"
+  "Toggle code-lens overlays."
   :group 'lsp-mode
   :global nil
   :init-value nil
@@ -2028,6 +2030,223 @@ CALLBACK - callback for the lenses."
     (remove-hook 'after-save-hook (lambda () (lsp--lens-schedule-refresh t)) t)
     (setq-local lsp--lens-last-count nil)
     (setq-local lsp--lens-backend-cache nil))))
+
+
+;; toggles
+
+(defun lsp-toggle-trace-io ()
+  "Toggle client-server protocol logging."
+  (interactive)
+  (setq lsp-print-io (not lsp-print-io))
+  (lsp--info "Server logging %s." (if lsp-print-io "enabled" "disabled")))
+
+(defun lsp-toggle-signature-auto-activate ()
+  "Toggle signature auto activate."
+  (interactive)
+  (setq lsp-signature-auto-activate (not lsp-signature-auto-activate))
+  (lsp--info "Signature autoactivate %s." (if lsp-signature-auto-activate "enabled" "disabled"))
+  (lsp--update-signature-help-hook))
+
+(defun lsp-toggle-on-type-formatting ()
+  "Toggle on type formatting."
+  (interactive)
+  (setq lsp-enable-on-type-formatting (not lsp-enable-on-type-formatting))
+  (lsp--info "On type formatting is %s." (if lsp-enable-on-type-formatting "enabled" "disabled"))
+  (lsp--update-on-type-formatting-hook))
+
+(defun lsp-toggle-symbol-highlight ()
+  "Toggle symbol highlighting."
+  (interactive)
+  (setq lsp-enable-symbol-highlighting (not lsp-enable-symbol-highlighting))
+
+  (cond
+   ((and lsp-enable-symbol-highlighting
+         (lsp-feature? "textDocument/documentHighlight"))
+    (add-hook 'lsp-on-idle-hook #'lsp--document-highlight nil t)
+    (lsp--info "Symbol highlighting enabled in current buffer."))
+   ((not lsp-enable-symbol-highlighting)
+    (remove-hook 'lsp-on-idle-hook #'lsp--document-highlight t)
+    (lsp--remove-overlays 'lsp-highlight)
+    (lsp--info "Symbol highlighting disabled in current buffer."))))
+
+
+;; keybindings
+
+(defmacro lsp-define-conditional-key (keymap key def cond &rest bindings)
+  "In KEYMAP, define key sequence KEY as DEF conditionally.
+This is like `define-key', except the definition disappears
+whenever COND evaluates to nil.
+BINDINGS is a list of (key def cond)."
+  (declare (indent defun)
+           (debug (form form form form &rest sexp)))
+  (->> (cl-list* key def cond bindings)
+       (-partition 3)
+       (-map (-lambda ((key def cond))
+               `(define-key ,keymap ,key
+                  '(menu-item
+                    ,(format "maybe-%s" def)
+                    ,def
+                    :filter (lambda (item)
+                              (when (with-current-buffer lsp--describe-buffer
+                                      ,cond)
+                                item))))))
+       macroexp-progn))
+
+(defvar lsp--describe-buffer nil)
+
+(defun lsp-describe-buffer-bindings-advice (buffer &optional _prefix _menus)
+  (setq lsp--describe-buffer buffer))
+
+(advice-add 'describe-buffer-bindings
+            :before
+            #'lsp-describe-buffer-bindings-advice)
+
+(defcustom lsp-keymap-prefix "s-l"
+  "lsp-mode keymap prefix."
+  :group 'lsp-mode
+  :type 'string
+  :package-version '(lsp-mode . "6.3"))
+
+(defun lsp--prepend-prefix (mappings)
+  (->> mappings
+       (-partition 2)
+       (-mapcat (-lambda ((key description))
+                  (list (concat lsp-keymap-prefix " " key)
+                        description)))))
+
+(defvar lsp-command-map
+  (-doto (make-sparse-keymap)
+    (lsp-define-conditional-key
+      ;; sessions
+      "sr" lsp-workspace-restart (lsp-workspaces)
+      "ss" lsp t
+      "sq" lsp-workspace-shutdown (lsp-workspaces)
+      "sd" lsp-describe-session t
+      "sD" lsp-disconnect (lsp-workspaces)
+
+      ;; formatting
+      "==" lsp-format-buffer (or (lsp-feature? "textDocument/rangeFormatting")
+                                 (lsp-feature? "textDocument/formatting"))
+      "=r" lsp-format-region (lsp-feature? "textDocument/rangeFormatting")
+
+      ;; folders
+      "Fa" lsp-workspace-folders-add t
+      "Fr" lsp-workspace-folders-remove t
+      "Fb" lsp-workspace-blacklist-remove t
+
+      ;; toggles
+      "Tl" lsp-lens-mode (lsp-feature? "textDocument/codeLens")
+      "TL" lsp-toggle-trace-io t
+      "Th" lsp-toggle-symbol-highlight (lsp-feature? "textDocument/documentHighlight")
+      "TS" lsp-ui-sideline-mode (featurep 'lsp-ui-sideline)
+      "Td" lsp-ui-doc-mode (featurep 'lsp-ui-doc)
+      "Ts" lsp-toggle-signature-auto-activate (lsp-feature? "textDocument/signatureHelp")
+      "Tf" lsp-toggle-on-type-formatting (lsp-feature? "textDocument/onTypeFormatting")
+      "TT" lsp-treemacs-sync-mode (featurep 'lsp-treemacs)
+
+      ;; goto
+      "gg" lsp-find-definition (lsp-feature? "textDocument/definition")
+      "gr" lsp-find-references (lsp-feature? "textDocument/references")
+      "gi" lsp-find-implementation (lsp-feature? "textDocument/implementation")
+      "gt" lsp-find-type-definition (lsp-feature? "textDocument/typeDefinition")
+      "gd" lsp-find-declaration (lsp-feature? "textDocument/declaration")
+      "gh" lsp-treemacs-call-hierarchy (and (lsp-feature? "callHierarchy/incomingCalls")
+                                            (fboundp 'lsp-treemacs-call-hierarchy))
+      "ga" xref-find-apropos (lsp-feature? "workspace/symbol")
+
+      ;; help
+      "hh" lsp-describe-thing-at-point (lsp-feature? "textDocument/hover")
+      "hs" lsp-signature-activate (lsp-feature? "textDocument/signatureHelp")
+      "hg" lsp-ui-doc-glance (and (featurep 'lsp-ui-doc)
+                                  (lsp-feature? "textDocument/hover"))
+
+      ;; refactoring
+      "rr" lsp-rename (lsp-feature? "textDocument/rename")
+      "ro" lsp-organize-imports (lsp-feature? "textDocument/rename")
+
+
+      ;; actions
+      "aa" lsp-execute-code-action (lsp-feature? "textDocument/codeAction")
+      "al" lsp-avy-lens (and lsp-lens-mode (featurep 'avy))
+      "ah" lsp-document-highlight (lsp-feature? "textDocument/documentHighlight")
+
+      ;; peeks
+      "Gg" lsp-ui-peek-find-definitions (and (lsp-feature? "textDocument/definition")
+                                             (fboundp 'lsp-ui-peek-find-definitions))
+      "Gr" lsp-ui-peek-find-references (and (fboundp 'lsp-ui-peek-find-references)
+                                            (lsp-feature? "textDocument/references"))
+      "Gi" lsp-ui-peek-find-implementation (and (fboundp 'lsp-ui-peek-find-implementation)
+                                                (lsp-feature? "textDocument/implementation"))
+      "Gs" lsp-ui-peek-find-workspace-symbol (and (fboundp 'lsp-ui-peek-find-workspace-symbol)
+                                                  (lsp-feature? "workspace/symbol")))))
+
+
+;; which-key integration
+
+(declare-function which-key-add-major-mode-key-based-replacements "ext:which-key")
+
+(defun lsp-enable-which-key-integration ()
+  (apply
+   #'which-key-add-major-mode-key-based-replacements
+   major-mode
+   (lsp--prepend-prefix
+    (list
+     ""    "lsp"
+     "s"   "sessions"
+     "s s" "start server"
+     "s r" "restart server"
+     "s q" "shutdown server"
+     "s d" "describe session"
+     "s D" "disconnect"
+
+     "F"   "folders"
+     "F a" "add folder"
+     "F r" "remove folder"
+     "F b" "un-blacklist folder"
+
+     "="   "formatting"
+     "= r" "format region"
+     "= =" "format buffer"
+
+     "T"   "toggle"
+     "T l" "toggle lenses"
+     "T h" "toggle highlighting"
+     "T L" "toggle log io"
+     "T s" "toggle signature"
+     "T S" "toggle sideline"
+     "T d" "toggle documentation popup"
+     "T p" "toggle signature help"
+     "T f" "toggle on type formatting"
+     "T T" "toggle treemacs integration"
+
+     "g"   "goto"
+     "g g" "find definitions"
+     "g r" "find references"
+     "g i" "find implementations"
+     "g d" "find declarations"
+     "g t" "find type definition"
+     "g h" "call hierarchy"
+     "g a" "find symbol in workspace"
+     "g A" "find symbol in all workspaces"
+
+     "h"   "help"
+     "h h" "describe symbol at point"
+     "h s" "signature help"
+
+     "r"   "refactor"
+     "r r" "rename"
+     "r o" "organize imports"
+
+     "a"   "code actions"
+     "a a" "code actions"
+     "a l" "lens"
+     "a h" "highlight symbol"
+
+     "G"   "peek"
+     "G g" "peek definitions"
+     "G r" "peek references"
+     "G i" "peek implementations"
+     "G s" "peek workspace symbol"))))
 
 
 
@@ -2056,6 +2275,8 @@ CALLBACK - callback for the lenses."
     (define-key map (kbd "C-<mouse-1>") #'ignore)
     (define-key map (kbd "<mouse-3>") #'lsp-mouse-click)
     (define-key map (kbd "C-S-SPC") #'lsp-signature-activate)
+    (when lsp-keymap-prefix
+      (define-key map (kbd lsp-keymap-prefix) lsp-command-map))
     map)
   "Keymap for `lsp-mode'.")
 
@@ -2560,7 +2781,9 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
                            lsp--client-response-handlers))
               (lsp--send-no-wait message (lsp--workspace-proc workspace)))))
         body)
-    (error "No workspace could handle %s" (plist-get body :method))))
+    (error "The connected server(s) does not support method %s
+To find out what capabilities support your server use `M-x lsp-describe-session' and expand the capabilities section."
+           (plist-get body :method))))
 
 ;; deprecated, use lsp-request-async.
 (defalias 'lsp-send-request-async 'lsp--send-request-async)
@@ -2875,47 +3098,69 @@ in that particular folder."
     (when (cl-find ch trigger-characters :key #'string-to-char)
       (lsp-signature-activate))))
 
+(defun lsp--update-on-type-formatting-hook (&optional cleanup?)
+  (let ((on-type-formatting-handler
+         (when-let (provider (lsp--capability "documentOnTypeFormattingProvider"))
+           (-let [(&hash "moreTriggerCharacter" more-trigger-characters
+                         "firstTriggerCharacter" first-trigger-characters) provider]
+             (lambda ()
+               (lsp--on-type-formatting first-trigger-characters
+                                        more-trigger-characters))))))
+    (cond
+     ((and lsp-enable-on-type-formatting on-type-formatting-handler)
+      (add-hook 'post-self-insert-hook on-type-formatting-handler t))
+
+     ((or cleanup?
+          (not lsp-enable-on-type-formatting))
+      (remove-hook 'post-self-insert-hook on-type-formatting-handler t)))))
+
+(defun lsp--update-signature-help-hook (&optional cleanup?)
+  (let ((signature-help-handler
+         (-when-let ((&hash? "triggerCharacters" trigger-characters)
+                     (lsp--capability "signatureHelpProvider"))
+           (lambda ()
+             (lsp--maybe-enable-signature-help trigger-characters)))))
+    (cond
+     ((and lsp-signature-auto-activate signature-help-handler)
+      (add-hook 'post-self-insert-hook signature-help-handler nil t))
+
+     ((or cleanup?
+          (not lsp-signature-auto-activate))
+      (remove-hook 'post-self-insert-hook signature-help-handler t)))))
+
 (define-minor-mode lsp-managed-mode
   "Mode for source buffers managed by lsp-mode."
   nil nil nil
-  (let ((on-type-formatting-handler (when-let (provider (and lsp-enable-on-type-formatting
-                                                             (lsp--capability "documentOnTypeFormattingProvider")))
-                                      (-let [(&hash "moreTriggerCharacter" more-trigger-characters
-                                                    "firstTriggerCharacter" first-trigger-characters) provider]
-                                        (lambda ()
-                                          (lsp--on-type-formatting first-trigger-characters
-                                                                   more-trigger-characters)))))
-        (signature-help-handler (-when-let ((&hash? "triggerCharacters" trigger-characters)
-                                            (and lsp-signature-auto-activate
-                                                 (lsp--capability "signatureHelpProvider")))
-                                  (lambda ()
-                                    (lsp--maybe-enable-signature-help trigger-characters))))
-        (status '(t (:eval (-keep #'lsp--workspace-status-string (lsp-workspaces))))))
+  (let ((status '(t (:eval (-keep #'lsp--workspace-status-string (lsp-workspaces))))))
     (cond
      (lsp-managed-mode
-      (add-function :before-until (local 'eldoc-documentation-function) #'lsp-eldoc-function)
-      (eldoc-mode 1)
+      (when (lsp-feature? "textDocument/hover")
+        (add-function :before-until (local 'eldoc-documentation-function) #'lsp-eldoc-function)
+        (eldoc-mode 1))
+
       (add-hook 'after-change-functions #'lsp-on-change nil t)
       (add-hook 'after-revert-hook #'lsp-on-revert nil t)
       (add-hook 'after-save-hook #'lsp-on-save nil t)
       (add-hook 'auto-save-hook #'lsp--on-auto-save nil t)
       (add-hook 'before-change-functions #'lsp-before-change nil t)
       (add-hook 'before-save-hook #'lsp--before-save nil t)
-      (when (and lsp-enable-completion-at-point (lsp--capability "completionProvider"))
+      (when (and lsp-enable-completion-at-point
+                 (lsp-feature? "textDocument/completion"))
         (setq-local completion-at-point-functions nil)
         (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t))
       (add-hook 'kill-buffer-hook #'lsp--text-document-did-close nil t)
-      (when on-type-formatting-handler
-        (add-hook 'post-self-insert-hook on-type-formatting-handler nil t))
-      (when signature-help-handler
-        (add-hook 'post-self-insert-hook signature-help-handler nil t))
+
+      (lsp--update-on-type-formatting-hook)
+      (lsp--update-signature-help-hook)
+
       (add-hook 'post-command-hook #'lsp--post-command nil t)
       (when lsp-enable-xref
         (add-hook 'xref-backend-functions #'lsp--xref-backend nil t))
-      (when (and lsp-enable-text-document-color (lsp--capability "colorProvider"))
+      (when (and lsp-enable-text-document-color
+                 (lsp-feature? "textDocument/documentColor"))
         (add-hook 'lsp-on-change-hook #'lsp--document-color nil t))
 
-      (when (and lsp-lens-auto-enable (lsp--capability "codeLensProvider"))
+      (when (and lsp-lens-auto-enable (lsp-feature? "textDocument/codeLens"))
         (lsp-lens-mode 1))
 
       (setq-local global-mode-string (if (-contains? global-mode-string status)
@@ -2934,8 +3179,9 @@ in that particular folder."
       (remove-hook 'before-save-hook #'lsp--before-save t)
       (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t)
       (remove-hook 'kill-buffer-hook #'lsp--text-document-did-close t)
-      (remove-hook 'post-self-insert-hook on-type-formatting-handler t)
-      (remove-hook 'post-self-insert-hook signature-help-handler t)
+
+      (lsp--update-on-type-formatting-hook :cleanup)
+      (lsp--update-signature-help-hook :cleanup)
 
       (when lsp--on-idle-timer
         (cancel-timer lsp--on-idle-timer)
@@ -2970,21 +3216,19 @@ in that particular folder."
   (lsp-managed-mode 1)
 
   (when lsp-auto-configure
-    (when (and lsp-enable-imenu
-               (lsp--capability "documentSymbolProvider"))
+    (when (and lsp-enable-imenu (lsp-feature? "textDocument/documentSymbol"))
       (lsp-enable-imenu))
 
     (when (and lsp-enable-indentation
-               (or (lsp--capability "documentRangeFormattingProvider")
-                   (lsp--registered-capability "textDocument/rangeFormatting")))
+               (lsp-feature? "textDocument/rangeFormatting"))
       (setq-local indent-region-function #'lsp-format-region))
 
     (when (and lsp-enable-symbol-highlighting
-               (lsp--capability "documentHighlightProvider"))
+               (lsp-feature? "textDocument/documentHighlight"))
       (add-hook 'lsp-on-idle-hook #'lsp--document-highlight nil t))
 
     (when (and lsp-enable-links
-               (lsp--capability "documentLinkProvider"))
+               (lsp-feature? "textDocument/documentLink"))
       (add-hook 'lsp-on-idle-hook #'lsp--document-links nil t)))
 
   (let ((buffer (current-buffer)))
@@ -2995,7 +3239,6 @@ in that particular folder."
          (with-current-buffer buffer
            (lsp--on-change-debounce buffer)
            (lsp--on-idle buffer))))))
-
   (run-hooks 'lsp-after-open-hook)
   (-some-> lsp--cur-workspace
     (lsp--workspace-client)
@@ -3003,28 +3246,15 @@ in that particular folder."
     (funcall)))
 
 (defun lsp--text-document-identifier ()
-  "Make TextDocumentIdentifier.
-
-interface TextDocumentIdentifier {
-    uri: string;
-}"
+  "Make TextDocumentIdentifier."
   (list :uri (lsp--buffer-uri)))
 
 (defun lsp--versioned-text-document-identifier ()
-  "Make VersionedTextDocumentIdentifier.
-
-interface VersionedTextDocumentIdentifier extends TextDocumentIdentifier {
-    version: number;
-}"
+  "Make VersionedTextDocumentIdentifier."
   (plist-put (lsp--text-document-identifier) :version lsp--cur-version))
 
 (defun lsp--position (line char)
-  "Make a Position object for the given LINE and CHAR.
-
-interface Position {
-    line: number;
-    character: number;
-}"
+  "Make a Position object for the given LINE and CHAR."
   (list :line line :character char))
 
 (defun lsp--cur-line ()
@@ -3046,12 +3276,7 @@ interface Position {
     (lsp--cur-position)))
 
 (defun lsp--range (start end)
-  "Make Range body from START and END.
-
-interface Range {
-     start: Position;
-     end: Position;
- }"
+  "Make Range body from START and END."
   ;; make sure start and end are Position objects
   (list :start start :end end))
 
@@ -3132,13 +3357,15 @@ interface TextDocumentEdit {
                   (with-current-buffer buf
                     (save-buffer)
                     (lsp--text-document-did-close)))
-                (rename-file old-file-name new-file-name (and options (gethash "override" options)))
+                (rename-file old-file-name new-file-name
+                             (and options (gethash "override" options)))
                 (when buf
                   (with-current-buffer buf
                     (set-buffer-modified-p nil)
                     (set-visited-file-name new-file-name)
                     (lsp)))))
-    (_ (with-current-buffer (find-file-noselect (lsp--uri-to-path (lsp--ht-get edit "textDocument" "uri")))
+    (_ (with-current-buffer (find-file-noselect
+                             (lsp--uri-to-path (lsp--ht-get edit "textDocument" "uri")))
          (lsp--apply-text-edits (gethash "edits" edit))))))
 
 (defun lsp--position-compare (left right)
@@ -3533,23 +3760,24 @@ Applies on type formatting."
 
 ;; links
 (defun lsp--document-links ()
-  (lsp-request-async "textDocument/documentLink"
-                     `(:textDocument ,(lsp--text-document-identifier))
-                     (lambda (links)
-                       (lsp--remove-overlays 'lsp-link)
-                       (seq-do
-                        (-lambda ((link &as &hash "range"))
-                          (-doto (make-button (lsp--position-to-point (gethash "start" range))
-                                              (lsp--position-to-point (gethash "end" range))
-                                              'action (lsp--document-link-keymap link)
-                                              'keymap (let ((map (make-sparse-keymap)))
-                                                        (define-key map [M-return] 'push-button)
-                                                        (define-key map [mouse-2] 'push-button)
-                                                        map)
-                                              'help-echo "mouse-2, M-RET: Visit this link")
-                            (overlay-put 'lsp-link t)))
-                        links))
-                     :mode 'tick))
+  (lsp-request-async
+   "textDocument/documentLink"
+   `(:textDocument ,(lsp--text-document-identifier))
+   (lambda (links)
+     (lsp--remove-overlays 'lsp-link)
+     (seq-do
+      (-lambda ((link &as &hash "range"))
+        (-doto (make-button (lsp--position-to-point (gethash "start" range))
+                            (lsp--position-to-point (gethash "end" range))
+                            'action (lsp--document-link-keymap link)
+                            'keymap (let ((map (make-sparse-keymap)))
+                                      (define-key map [M-return] 'push-button)
+                                      (define-key map [mouse-2] 'push-button)
+                                      map)
+                            'help-echo "mouse-2, M-RET: Visit this link")
+          (overlay-put 'lsp-link t)))
+      links))
+   :mode 'tick))
 
 (defun lsp--document-link-handle-target (url)
   (let* ((parsed-url (url-generic-parse-url (url-unhex-string url)))
@@ -3828,7 +4056,7 @@ PLIST is the additional data to attach to each candidate."
                  (setq matches (nconc matches `((,start . ,label-pos))))
                  (setq start nil)))
              (cl-incf label-pos))
-           (when start (setq matches (nconc matches `((,start . ,label-pos))))) 
+           (when start (setq matches (nconc matches `((,start . ,label-pos)))))
            matches))
        :exit-function
        (lambda (candidate _status)
@@ -4007,7 +4235,8 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
 
 (defun lsp--document-highlight ()
   (unless (or (looking-at "[[:space:]\n]")
-              (lsp--point-on-highlight?))
+              (lsp--point-on-highlight?)
+              (not lsp-enable-symbol-highlighting))
     (lsp-request-async "textDocument/documentHighlight"
                        (lsp--text-document-position-params)
                        #'lsp--document-highlight-callback
@@ -4251,6 +4480,8 @@ RENDER-ALL - nil if only the signature should be rendered."
     (lsp-signature-stop)))
 
 (defun lsp-signature-activate ()
+  "Activate signature help.
+It will show up only if current point has signature help."
   (interactive)
   (setq-local lsp--last-signature nil)
   (setq-local lsp--last-signature-index nil)
@@ -4502,13 +4733,11 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
 (defun lsp-format-buffer ()
   "Ask the server to format this document."
   (interactive "*")
-  (cond ((or (lsp--capability "documentFormattingProvider")
-             (lsp--registered-capability "textDocument/formatting"))
+  (cond ((lsp-feature? "textDocument/formatting")
          (let ((edits (lsp-request "textDocument/formatting"
                                    (lsp--make-document-formatting-params))))
            (lsp--apply-formatting edits)))
-        ((or (lsp--capability "documentRangeFormattingProvider")
-             (lsp--registered-capability "textDocument/rangeFormatting"))
+        ((lsp-feature? "textDocument/rangeFormatting")
          (save-restriction
            (widen)
            (lsp-format-region (point-min) (point-max))))
@@ -4517,9 +4746,6 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
 (defun lsp-format-region (s e)
   "Ask the server to format the region, or if none is selected, the current line."
   (interactive "r")
-  (unless (or (lsp--capability "documentRangeFormattingProvider")
-              (lsp--registered-capability "textDocument/rangeFormatting"))
-    (signal 'lsp-capability-not-supported (list "documentRangeFormattingProvider")))
   (let ((edits (lsp-request "textDocument/rangeFormatting"
                             (lsp--make-document-range-formatting-params s e))))
     (lsp--apply-formatting edits)))
@@ -4559,8 +4785,6 @@ interface DocumentRangeFormattingParams {
 (defun lsp-document-highlight ()
   "Highlight all relevant references to the symbol under point."
   (interactive)
-  (unless (lsp--capability "documentHighlightProvider")
-    (signal 'lsp-capability-not-supported (list "documentHighlightProvider")))
   (lsp--remove-overlays 'lsp-highlight) ;; clear any previous highlights
   (lsp--document-highlight))
 
@@ -4944,10 +5168,6 @@ perform the request synchronously."
                        (read-string (format "Rename %s to: " symbol) placeholder nil symbol))))
   (unless newname
     (user-error "A rename is not valid at this position"))
-  (lsp--cur-workspace-check)
-  (unless (or (lsp--capability "renameProvider")
-              (lsp--registered-capability "textDocument/rename"))
-    (signal 'lsp-capability-not-supported (list "renameProvider")))
   (let ((edits (lsp-request "textDocument/rename"
                             `(:textDocument ,(lsp--text-document-identifier)
                                             :position ,(lsp--cur-position)
@@ -4983,8 +5203,6 @@ REFERENCES? t when METHOD returns references."
 (cl-defun lsp-find-definition (&key display-action)
   "Find definitions of the symbol under point."
   (interactive)
-  (unless (lsp--capability "definitionProvider")
-    (signal 'lsp-capability-not-supported (list "definitionProvider")))
   (lsp-find-locations "textDocument/definition" nil :display-action display-action))
 
 (defun lsp-find-definition-mouse (click)
@@ -5000,15 +5218,11 @@ REFERENCES? t when METHOD returns references."
 (cl-defun lsp-find-implementation (&key display-action)
   "Find implementations of the symbol under point."
   (interactive)
-  (unless (lsp--capability "implementationProvider")
-    (signal 'lsp-capability-not-supported (list "implementationProvider")))
   (lsp-find-locations "textDocument/implementation" nil :display-action display-action))
 
 (cl-defun lsp-find-references (&optional include-declaration &key display-action)
   "Find references of the symbol under point."
   (interactive)
-  (unless (lsp--capability "referencesProvider")
-    (signal 'lsp-capability-not-supported (list "referencesProvider")))
   (lsp-find-locations "textDocument/references"
                       (list :context `(:includeDeclaration ,(or include-declaration json-false)))
                       :display-action display-action
@@ -5017,8 +5231,6 @@ REFERENCES? t when METHOD returns references."
 (cl-defun lsp-find-type-definition (&key display-action)
   "Find type definitions of the symbol under point."
   (interactive)
-  (unless (lsp--capability "typeDefinitionProvider")
-    (signal 'lsp-capability-not-supported (list "typeDefinitionProvider")))
   (lsp-find-locations "textDocument/typeDefinition" nil :display-action display-action))
 
 (defalias 'lsp-find-custom #'lsp-find-locations)
@@ -5047,6 +5259,8 @@ REFERENCES? t when METHOD returns references."
               (and (not capability) (not check-command))))
            (lsp-workspaces)))
       (lsp-workspaces))))
+
+(defalias 'lsp-feature? 'lsp--find-workspaces-for)
 
 (cl-defmethod lsp-execute-command (_server command arguments)
   "Execute COMMAND on SERVER with `workspace/executeCommand'."
@@ -5791,11 +6005,17 @@ returns the command to execute."
       (lsp-ui-flycheck-enable t)
       (flycheck-mode 1)))
 
-    (when (and (functionp 'company-lsp)
-               (not lsp-prefer-capf))
+    (cond
+     ((and (functionp 'company-lsp)
+           (not lsp-prefer-capf))
+      (progn
+        (company-mode 1)
+        (add-to-list 'company-backends 'company-lsp)
+        (setq-local company-backends (remove 'company-capf company-backends))))
+
+     ((and (fboundp 'company-mode))
       (company-mode 1)
-      (add-to-list 'company-backends 'company-lsp)
-      (setq-local company-backends (remove 'company-capf company-backends)))))
+      (add-to-list 'company-backends 'company-capf)))))
 
 (defvar-local lsp--buffer-deferred nil
   "Whether buffer was loaded via `lsp-deferred'.")
@@ -6092,6 +6312,7 @@ When UPDATE? is t force installation even if the server is present."
    :stdout " *lsp-install*"
    :buffer " *lsp-install*"
    :noquery t))
+
 
 (defvar lsp-deps-providers
   (list :npm (list :path #'lsp--npm-dependency-path
@@ -6841,37 +7062,39 @@ This avoids overloading the server with many files when starting Emacs."
   (if (not lsp-lens-mode)
       (message "lsp-lens-mode not active")
     (let* ((avy-action 'identity)
-           (action (cl-third (avy-process
-                              (-mapcat (lambda (overlay)
-                                         (-map-indexed
-                                          (lambda (index lens-token)
-                                            (list overlay index (get-text-property 0 'action lens-token)))
-                                          (overlay-get overlay 'lsp--metadata)))
-                                       lsp--lens-overlays)
-                              (-lambda (path ((ov index) . _win))
-                                (let* ((path (mapcar #'avy--key-to-char path))
-                                       (str (propertize (string (car (last path)))
-                                                        'face 'avy-lead-face))
-                                       (old-str (overlay-get ov 'before-string))
-                                       (old-str-tokens (s-split "\|" old-str))
-                                       (old-token (seq-elt old-str-tokens index))
-                                       (tokens `(,@(-take index old-str-tokens)
-                                                 ,(-if-let ((_ prefix suffix) (s-match "\\(^[[:space:]]+\\)\\(.*\\)" old-token))
-                                                      (concat prefix str suffix)
-                                                    (concat str old-token))
-                                                 ,@(-drop (1+ index) old-str-tokens)))
-                                       (new-str (s-join (propertize "|" 'face 'lsp-lens-face) tokens))
-                                       (new-str (if (s-ends-with? "\n" new-str)
-                                                    new-str
-                                                  (concat new-str "\n"))))
-                                  (overlay-put ov 'before-string new-str)))
-                              (lambda ()
-                                (--map (overlay-put it 'before-string
-                                                    (overlay-get it 'lsp-original))
-                                       lsp--lens-overlays))))))
+           (action (cl-third
+                    (avy-process
+                     (-mapcat
+                      (lambda (overlay)
+                        (-map-indexed
+                         (lambda (index lens-token)
+                           (list overlay index
+                                 (get-text-property 0 'action lens-token)))
+                         (overlay-get overlay 'lsp--metadata)))
+                      lsp--lens-overlays)
+                     (-lambda (path ((ov index) . _win))
+                       (let* ((path (mapcar #'avy--key-to-char path))
+                              (str (propertize (string (car (last path)))
+                                               'face 'avy-lead-face))
+                              (old-str (overlay-get ov 'before-string))
+                              (old-str-tokens (s-split "\|" old-str))
+                              (old-token (seq-elt old-str-tokens index))
+                              (tokens `(,@(-take index old-str-tokens)
+                                        ,(-if-let ((_ prefix suffix)
+                                                   (s-match "\\(^[[:space:]]+\\)\\(.*\\)" old-token))
+                                             (concat prefix str suffix)
+                                           (concat str old-token))
+                                        ,@(-drop (1+ index) old-str-tokens)))
+                              (new-str (s-join (propertize "|" 'face 'lsp-lens-face) tokens))
+                              (new-str (if (s-ends-with? "\n" new-str)
+                                           new-str
+                                         (concat new-str "\n"))))
+                         (overlay-put ov 'before-string new-str)))
+                     (lambda ()
+                       (--map (overlay-put it 'before-string
+                                           (overlay-get it 'lsp-original))
+                              lsp--lens-overlays))))))
       (funcall-interactively action))))
-
-
 
 (provide 'lsp-mode)
 ;;; lsp-mode.el ends here

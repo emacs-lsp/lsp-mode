@@ -27,6 +27,7 @@
     - [[#how-does-it-work][How does it work?]]
   - [[#supported-languages][Supported languages]]
   - [[#commands][Commands]]
+    - [[#which-key-integration][which-key integration]]
   - [[#settings][Settings]]
   - [[#screenshots][Screenshots]]
   - [[#extensions][Extensions]]
@@ -61,13 +62,15 @@
    - Code outline - using builtin [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html][imenu]] or ~helm-imenu~
    - Code navigation - using builtin [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Xref.html][xref]]
    - Code lens (references/implementations) - using builtin [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Xref.html][xref]]
-   - Highlights
+   - Symbol highlights
    - Formatting
+   - Semantic highlighting (as currently implemented by JDT LS and unreleased builds of clangd, cf. [[https://github.com/microsoft/vscode-languageserver-node/pull/367][Semantic highlighting spec]])
    - Debugger - [[https://github.com/yyoncho/dap-mode/][dap-mode]]
    - Helm integration - [[https://github.com/emacs-lsp/helm-lsp/][helm-lsp]]
    - Ivy integration - [[https://github.com/emacs-lsp/lsp-ivy/][lsp-ivy]]
    - Treemacs integration - [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]]
    - Semantic highlighting (as currently implemented by JDT LS and unreleased builds of clangd, cf. [[https://github.com/microsoft/vscode-languageserver-node/pull/367][Semantic highlighting spec]])
+   - [[https://github.com/justbur/emacs-which-key/][which-key]] integration for better discovery
 ** Installation
 *** Install via melpa
     The recommended way to install ~lsp-mode~ is via ~package.el~ - the built-in package manager in Emacs. ~lsp-mode~ is available on the two major ~package.el~ community maintained repos - [[http://stable.melpa.org][MELPA Stable]] and [[http://melpa.org][MELPA]].
@@ -81,10 +84,14 @@
      You could go minimal and use ~lsp-mode~ as it is without external packages with the built-in ~flymake~ and ~completion-at-point~ or you could install the following extensions for better experience:
      - install [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] for [[https://github.com/flycheck/flycheck][flycheck]] integration and higher level UI modules.
      - install [[https://github.com/tigersoldier/company-lsp][company-lsp]] if you want to use ~company-mode~ for completion.
-     - install [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]] for project wide error overview.
-     - install [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] provides on type completion for =xref-apropos=.
+     - install [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]] for various three based UI controls (symbols, errors overview, call hierarchy, etc.)
+     - install [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] provides on type completion afternative of =xref-apropos= using =helm=.
+     - install [[https://github.com/emacs-lsp/lsp-ivy][lsp-ivy]] provides on type completion afternative of =xref-apropos= using =helm=.
      - install [[https://github.com/emacs-lsp/dap-mode][dap-mode]] if your language is supported by the debugger.
      #+BEGIN_SRC emacs-lisp
+       ;; if you want to change prefix for lsp-mode keybindings.
+       (setq lsp-keymap-prefix "s-l")
+
        (require 'lsp-mode)
        (add-hook 'XXX-mode-hook #'lsp)
      #+END_SRC
@@ -100,17 +107,32 @@
      Replace ~(require 'lsp-mode)~ with the following if you use use-package.
      #+BEGIN_SRC emacs-lisp
        (use-package lsp-mode
-         :hook (XXX-mode . lsp)
+         ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+         :init (setq lsp-keymap-prefix "s-l")
+         :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+                (XXX-mode . lsp)
+                ;; if you want which-key integration
+                (lsp-mode . lsp-enable-which-key-integration))
          :commands lsp)
 
        ;; optionally
        (use-package lsp-ui :commands lsp-ui-mode)
        (use-package company-lsp :commands company-lsp)
+       ;; if you are helm user
        (use-package helm-lsp :commands helm-lsp-workspace-symbol)
+       ;; if you are ivy user
+       (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
        (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
        ;; optionally if you want to use debugger
        (use-package dap-mode)
        ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+
+       ;; optional if you want which-key integration
+       (use-package which-key
+         :config
+         (which-key-mode)
+
      #+END_SRC
 
      To defer LSP server startup (and DidOpen notifications) until the buffer is visible you can use ~lsp-deferred~ instead of ~lsp~:
@@ -137,7 +159,7 @@
    | C++                   | [[https://clang.llvm.org/extra/clangd.html][clangd]]                                    | Yes           | [[https://clang.llvm.org/extra/clangd.html][clangd]]                                                                                                  | Yes (gdb or lldb)            |
    | C++                   | [[https://github.com/cquery-project/cquery][cquery]]                                    | [[https://github.com/cquery-project/emacs-cquery][emacs-cquery]]  | [[https://github.com/cquery-project/cquery][cquery]]                                                                                                  | Yes (gdb or lldb)            |
    | C#                    | [[https://github.com/OmniSharp/omnisharp-roslyn][OmniSharp-Roslyn]]                          | Yes           | [[https://github.com/OmniSharp/omnisharp-roslyn][OmniSharp-Roslyn]]                                                                                        | No                           |
-   | Clojure               | [[https://github.com/snoe/clojure-lsp][clojure-lsp]]                               | Yes           | [[https://github.com/snoe/clojure-lsp][clojure-lsp]]                                                                                            |                              |
+   | Clojure               | [[https://github.com/snoe/clojure-lsp][clojure-lsp]]                               | Yes           | [[https://github.com/snoe/clojure-lsp][clojure-lsp]]                                                                                             |                              |
    | Crystal               | [[https://github.com/crystal-lang-tools/scry][scry]]                                      | Yes           | [[https://github.com/crystal-lang-tools/scry][scry]]                                                                                                    |                              |
    | CSS/LessCSS/SASS/SCSS | [[https://github.com/vscode-langservers/vscode-css-languageserver-bin][css]]                                       | Yes           | npm install -g vscode-css-languageserver-bin                                                            |                              |
    | Dart                  | [[https://github.com/dart-lang/sdk/blob/master/pkg/analysis_server/tool/lsp_spec/README.md][dart_analysis_server]]                      | Yes           | built into dart-sdk                                                                                     |                              |
@@ -163,9 +185,9 @@
    | Json                  | [[https://github.com/vscode-langservers/vscode-json-languageserver][vscode-json-languageserver]]                | Yes           | Automatic or manual by ~npm i -g vscode-json-languageserver~                                            |                              |
    | Julia                 | [[https://github.com/non-Jedi/lsp-julia][lsp-julia]]                                 | [[https://github.com/non-Jedi/lsp-julia][lsp-julia]]     | [[https://github.com/JuliaEditorSupport/LanguageServer.jl][LanguageServer.jl]]                                                                                       |                              |
    | Kotlin                | [[https://github.com/fwcd/KotlinLanguageServer][kotlin-language-server]]                    | Yes           | [[https://github.com/fwcd/KotlinLanguageServer][kotlin-language-server]]                                                                                  |                              |
-   | Nim                   | [[https://github.com/PMunch/nimlsp][nimlsp]]                                                | Yes           | ~nimble install nimlsp~                                                                                                                                   | No |
+   | Nim                   | [[https://github.com/PMunch/nimlsp][nimlsp]]                                    | Yes           | ~nimble install nimlsp~                                                                                 | No                           |
    | OCaml                 | [[https://github.com/ocaml-lsp/ocaml-language-server][ocaml-language-server]]                     | Yes           | [[https://github.com/ocaml-lsp/ocaml-language-server][ocaml-language-server]]                                                                                   |                              |
-   | OCaml                 | [[https://github.com/ocaml/ocaml-lsp][ocaml-lsp-server]]                          | Yes           | [[https://github.com/ocaml/ocaml-lsp][ocaml-lsp-server]]                                                                                                  |                              |
+   | OCaml                 | [[https://github.com/ocaml/ocaml-lsp][ocaml-lsp-server]]                          | Yes           | [[https://github.com/ocaml/ocaml-lsp][ocaml-lsp-server]]                                                                                        |                              |
    | PHP(recommended)      | [[https://github.com/bmewburn/vscode-intelephense][intelephense]]                              | Yes           | npm i intelephense -g                                                                                   | Yes                          |
    | PHP                   | [[https://github.com/felixfbecker/php-language-server][php-language-server]]                       | Yes           | [[https://github.com/felixfbecker/php-language-server][php-language-server]]                                                                                     | Yes                          |
    | Powershell            | [[https://github.com/PowerShell/PowerShellEditorServices][PowerShellEditorServices]]                  | Yes           | Automatic                                                                                               | Yes                          |
@@ -185,33 +207,60 @@
    | Vue                   | [[https://github.com/vuejs/vetur/tree/master/server][vue-language-server]]                       | Yes           | npm install -g vue-language-server                                                                      | Yes (Firefox/Chrome)         |
    | XML                   | [[https://github.com/angelozerr/lsp4xml][lsp4xml]]                                   | Yes           | Download from [[https://github.com/angelozerr/lsp4xml/releases][lsp4xml releases]]                                                                          |                              |
    | YAML                  | [[https://github.com/redhat-developer/yaml-language-server][yaml]]                                      | Yes           | npm install -g yaml-language-server                                                                     |                              |
+
 ** Commands
-   - ~lsp-describe-session~ - Display session folders and running servers.
-   - ~lsp-describe-thing-at-point~ - Display help for the thing at point.
-   - ~lsp-execute-code-action~ - Execute code action
-   - ~lsp-format-buffer~ - Format current buffer
-   - ~lsp-organize-imports~ - Organize library imports
-   - ~lsp-goto-implementation~ - Go to implementation
-   - ~lsp-goto-type-definition~ - Go to type definition
-   - ~lsp-rename~ - Rename symbol at point
-   - ~lsp-restart-workspace~ - Restart project
-   - ~lsp-symbol-highlight~ - Highlight all relevant references to the symbol under point.
-   - ~lsp-workspace-folders-add~ - Add workspace folder
-   - ~lsp-workspace-folders-remove~ - Remove workspace folder
-   - ~lsp-workspace-folders-open~ - Open a project directory in dired
-   - ~imenu~ or ~helm-imenu~ - display document structure.
-   - ~completion-at-point~ - display completion using built-in emacs ~completion-at-point~ framework.
-   - ~lsp-find-definition~ - to find the definition for the symbol under point.
-   - ~lsp-find-references~ - Find references for the symbol under point.
-   - ~lsp-disconnect~ - Disconnect the buffer from the language server.
-   - ~lsp-lens-show~ - Show lenses in the current file
-   - ~lsp-lens-hide~ - Hide lenses in the current file
-   - ~lsp-lens-mode~  - Turn on/off lenses in the current file.
-   - ~lsp-avy-lens~ - Click lens using ~avy~
-   - ~lsp-signature-activate~ - activate signature help. Bound to ~C-S-SPC~ by default.
-   - ~lsp-signature-next~ - show next signature. Bound to ~M-n~ when signature help is activated.
-   - ~lsp-signature-previous~ - show previous signature. Bound to ~M-p~ when signature help is activated.
-   - ~lsp-signature-stop~ - cancel signature help. Bound to ~C-c C-k~ when signature help is activated.
+   When using ~lsp-mode~ most of the features depend on server capabilities.
+   ~lsp-mode~ provides default bindings which are dynamically enabled/disabled
+   based on the server functionality. All the commands are configured
+   ~lsp-command-map~ which is bound to ~lsp-keymap-prefix~ (default ~s-l~).
+
+   | Keybinding | Description                                                                                                                |
+   |------------+----------------------------------------------------------------------------------------------------------------------------|
+   | ~s-l s s~  | Entry point for the server startup.                                                                                        |
+   | ~s-l s r~  | Restart language server                                                                                                    |
+   | ~s-l s q~  | Shutdown language server                                                                                                   |
+   | ~s-l s d~  | Describes current dession                                                                                                  |
+   | ~s-l s D~  | Disconnect the buffer from the language server keeping the server running.                                                 |
+   | ~s-l = =~  | Ask the server to format this document.                                                                                    |
+   | ~s-l = r~  | Ask the server to format the region, or if none is selected, the current line.                                             |
+   | ~s-l F a~  | Add new project root to the list of workspace folders.                                                                     |
+   | ~s-l F r~  | Remove project root from the list of workspace folders.                                                                    |
+   | ~s-l F b~  | Remove project root from the workspace blacklist.                                                                          |
+   | ~s-l T l~  | Toggle code-lens overlays.                                                                                                 |
+   | ~s-l T L~  | Toggle client-server protocol logging.                                                                                     |
+   | ~s-l T h~  | Toggle symbol highlighting.                                                                                                |
+   | ~s-l T S~  | Toggle minor mode for showing information for current line in sideline. (requires ~lsp-ui~)                                |
+   | ~s-l T d~  | Toggle minor mode for showing hover information in child frame. (requires ~lsp-ui~)                                        |
+   | ~s-l T s~  | Toggle signature auto activate.                                                                                            |
+   | ~s-l T f~  | Toggle on type formatting.                                                                                                 |
+   | ~s-l T T~  | Toggle global minor mode for synchronizing ~lsp-mode~ workspace folders and ~treemacs~ projects. (requires ~lsp-treemacs~) |
+   | ~s-l g g~  | Find definitions of the symbol under point.                                                                                |
+   | ~s-l g r~  | Find references of the symbol under point.                                                                                 |
+   | ~s-l g i~  | Find implementations of the symbol under point.                                                                            |
+   | ~s-l g t~  | Find type definitions of the symbol under point.                                                                           |
+   | ~s-l g d~  | Find declarations of the symbol under point.                                                                               |
+   | ~s-l g h~  | Show the incoming call hierarchy for the symbol at point. (requires ~lsp-treemacs~)                                        |
+   | ~s-l g a~  | Find all meaningful symbols that match pattern.                                                                            |
+   | ~s-l h h~  | Display the type signature and documentation of the thing at                                                               |
+   | ~s-l h s~  | Activate signature help.                                                                                                   |
+   | ~s-l h g~  | Trigger display hover information popup and hide it on next typing.                                                        |
+   | ~s-l r r~  | Rename the symbol (and all references to it).                                                                              |
+   | ~s-l r o~  | Perform the source.organizeImports code action, if available.                                                              |
+   | ~s-l a a~  | Execute code action action.                                                                                                |
+   | ~s-l a l~  | Click lsp lens using ‘avy’ package.                                                                                        |
+   | ~s-l a h~  | Highlight symbol at point.                                                                                                 |
+   | ~s-l G g~  | Peek definitions to the identifier at point. (requires ~lsp-ui~)                                                           |
+   | ~s-l G r~  | Peek references to the identifier at point. (requires ~lsp-ui~)                                                            |
+   | ~s-l G i~  | Peek implementation locations of the symbol at point. (requires ~lsp-ui~)                                                  |
+   | ~s-l G s~  | Peek symbols in the worskpace. (requires ~lsp-ui~)                                                                         |
+*** which-key integration
+     To enable [[https://github.com/justbur/emacs-which-key/][which-key]] integration put that in your config.
+
+     #+BEGIN_SRC emacs-lisp
+       (with-eval-after-load 'lsp-mode
+         (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
+     #+END_SRC
+  [[file:examples/which-key.png]]
 ** Settings
    - ~lsp-log-io~ - If non-nil, print all messages to and from the language server to ~*lsp-log*~.
    - ~lsp-print-performance~ - If non-nil, print performance info. to ~*lsp-log*~.
@@ -256,7 +305,6 @@
      [[file:examples/metals-doctor.png]]
    - Semantic highlighting as provided by clangd (built from unreleased 10.0 branch). In this screenshot, all other font-locking has been disabled (hence no syntax highlighting of comments or basic keywords such as ~auto~)
      [[file:examples/clangd_semantic_highlighting.png]]
-
 ** Extensions
 *** TRAMP
     LSP mode has support for tramp buffers with the following requirements:
@@ -274,7 +322,7 @@
                          :server-id 'pyls-remote))
      #+END_SRC
 **** Dealing with stderr
-    With TRAMP, Emacs does not have an easy way to distinguish stdout and stderr, so when the underlying LSP process writes to stderr, it breaks the ~lsp-mode~ parser. As a workaround, ~lsp-mode~ is redirecting stderr to ~/tmp/<process-name>-<id>~stderr~.
+     With TRAMP, Emacs does not have an easy way to distinguish stdout and stderr, so when the underlying LSP process writes to stderr, it breaks the ~lsp-mode~ parser. As a workaround, ~lsp-mode~ is redirecting stderr to ~/tmp/<process-name>-<id>~stderr~.
 ** Limitations
 *** File watches
     When some of the workspaces that are active in the current project requests file notifications via ~workspace/didChangeWatchedFiles~ ~lsp-mode~ will start monitoring each of the folders in the workspace for changes. In case your project contains a lot of files you might want to disable file monitoring via ~lsp-enable-file-watchers~ (you may use dir-locals).
@@ -305,8 +353,8 @@
     #+BEGIN_SRC emacs-lisp
       (defvar lsp-language-id-configuration
         '(...
-         (python-mode . "python")
-         ...))
+          (python-mode . "python")
+          ...))
       ;; if you are adding the support for your language server in separate repo use
       ;; (add-to-list 'lsp-language-id-configuration '(python-mode . "python"))
 
@@ -316,7 +364,7 @@
                         :server-id 'pyls))
     #+END_SRC
 
-If the language server supports environment variables to control additional behavior, you can register that by using the ~:environment-fn~ function, like the Bash language client does:
+    If the language server supports environment variables to control additional behavior, you can register that by using the ~:environment-fn~ function, like the Bash language client does:
 
     #+BEGIN_SRC emacs-lisp
       (lsp-register-client
@@ -329,7 +377,7 @@ If the language server supports environment variables to control additional beha
                         :server-id 'bash-ls))
     #+END_SRC
 
-~lsp-bash-explainshell-endpoint~ and ~lsp-bash-highlight-parsing-errors~ are language client ~defcustom~ that expose supported server environment settings in a type-safe way. If you change any of those variables, restart the language server with ~lsp-restart-workspace~ for the changes to be applied.
+    ~lsp-bash-explainshell-endpoint~ and ~lsp-bash-highlight-parsing-errors~ are language client ~defcustom~ that expose supported server environment settings in a type-safe way. If you change any of those variables, restart the language server with ~lsp-restart-workspace~ for the changes to be applied.
 
 *** Sections
     ~lsp-mode~ provides tools to bridge emacs ~defcustom~ as a language configuration sections properties(see [[https://microsoft.github.io/language-server-protocol/specification#workspace_configuration][specification workspace/configuration]]). In addition you may use ~lsp-generate-settings~ from [[https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-generate-settings.el][Generate Settings script]] to generate ~defcustom~ from ~package.json~ VScode plugin manifest. Example:
@@ -379,7 +427,7 @@ If the language server supports environment variables to control additional beha
      #+end_src
    - I am getting "Package ‘spinner-1.7.3’ is unavailable" when trying to install =lsp-mode=.
      - This is caused by GPG keys used by the ELPA package manager not being up
-      to date. You may fix by installing: [[https://elpa.gnu.org/packages/gnu-elpa-keyring-update.html][gnu-elpa-keyring-update]]
+       to date. You may fix by installing: [[https://elpa.gnu.org/packages/gnu-elpa-keyring-update.html][gnu-elpa-keyring-update]]
    - Json completion doesn't seem working?
      - The latest [[https://www.npmjs.com/package/vscode-json-languageserver/v/1.2.2][vscode-json-languageserver]] is broken. You will need to install the earlier version of it ~npm i vscode-json-languageserver@1.2.1~
    - The flycheck does not work in =typescript=, =html= and =javascript= blocks in =vue-mode=. How to fix that?
@@ -396,3 +444,5 @@ If the language server supports environment variables to control additional beha
    - [[https://github.com/sebastiencs/company-box/][company-box]] - =company= frontend with icons.
    - [[https://github.com/emacs-lsp/dap-mode][dap-mode]] - Debugger integration for ~lsp-mode~.
    - [[https://github.com/joaotavora/eglot][eglot]] - An alternative minimal LSP implementation.
+   - [[https://github.com/justbur/emacs-which-key/][which-key]] - Emacs package that displays available keybindings in popup
+   - [[https://github.com/bbatsov/projectile/][projectile]] - Project Interaction Library for Emacs
