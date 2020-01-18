@@ -3772,6 +3772,29 @@ and the position respectively."
        (save-excursion
          (when (car bounds) (goto-char (car bounds)))
          (lsp--looking-back-trigger-characters-p trigger-chars))
+       :company-match
+       (lambda (candidate)
+         (let* ((prefix (buffer-substring-no-properties
+                         (plist-get (text-properties-at 0 candidate) 'lsp-completion-start-point)
+                         (point)))
+                (prefix-len (length prefix))
+                (prefix-pos 0)
+                (label (downcase candidate))
+                (label-len (length label))
+                (label-pos 0)
+                matches start)
+           (while (and (< prefix-pos prefix-len)
+                       (< label-pos label-len))
+             (if (equal (aref prefix prefix-pos) (aref label label-pos))
+                 (progn
+                   (unless start (setq start label-pos))
+                   (cl-incf prefix-pos))
+               (when start
+                 (setq matches (nconc matches `((,start . ,label-pos))))
+                 (setq start nil)))
+             (cl-incf label-pos))
+           (when start (setq matches (nconc matches `((,start . ,label-pos))))) 
+           matches))
        :exit-function
        (lambda (candidate _status)
          (-let* (((&plist 'lsp-completion-item item
