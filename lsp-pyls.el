@@ -275,7 +275,7 @@ dot."
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.2"))
 
-(defcustom lsp-pyls-plugins-yapf-enabled t
+(defcustom lsp-pyls-plugins-yapf-enabled nil
   "Enable or disable the plugin."
   :type 'boolean
   :group 'lsp-pyls
