@@ -3709,9 +3709,9 @@ and the position respectively."
            (trigger-chars (->> (lsp--server-capabilities)
                                (gethash "completionProvider")
                                (gethash "triggerCharacters")))
-           start-point result done? prefix-line)
+           result done?)
       (list
-       (if bounds (car bounds) (point))
+       (or (car bounds) (point))
        (point)
        (lambda (_probe pred action)
          (cond
@@ -3731,19 +3731,15 @@ and the position respectively."
                        (items (lsp--sort-completions (cond
                                                       ((seqp resp) resp)
                                                       ((hash-table-p resp) (gethash "items" resp)))))
-                       (start
-                        (cl-first
-                         (or (-some-> (lsp-elt items 0)
-                               (lsp--ht-get "textEdit" "range")
-                               lsp--range-to-region)
-                             bounds)))
-                       (probe
-                        (if start
-                            (buffer-substring-no-properties start (point))
-                          "")))
-                 (setf start-point (or start (point))
-                       prefix-line (buffer-substring-no-properties (point-at-bol) (point))
-                       done? (or (seqp resp)
+                       (start (or (car
+                                   (or (-some-> (lsp-elt items 0)
+                                         (lsp--ht-get "textEdit" "range")
+                                         lsp--range-to-region)
+                                       bounds))
+                                  (point)))
+                       (probe (buffer-substring-no-properties start (point)))
+                       (prefix-line (buffer-substring-no-properties (point-at-bol) (point))))
+                 (setf done? (or (seqp resp)
                                  (not (gethash "isIncomplete" resp)))
                        result (--> items
                                 (-map (-lambda ((item &as &hash
@@ -3766,9 +3762,10 @@ and the position respectively."
                                                       "sortText" sort-text))
                                         (propertize (or label insert-text)
                                                     'lsp-completion-item item
+                                                    'lsp-completion-start-point start
+                                                    'lsp-completion-prefix-line prefix-line
                                                     'lsp-sort-text sort-text))
                                       it))))))))
-
        :annotation-function #'lsp--annotate
        :company-require-match 'never
        :company-prefix-length
@@ -3777,11 +3774,15 @@ and the position respectively."
          (lsp--looking-back-trigger-characters-p trigger-chars))
        :exit-function
        (lambda (candidate _status)
-         (-let [(&hash "insertText" insert-text
-                       "textEdit" text-edit
-                       "insertTextFormat" insert-text-format
-                       "additionalTextEdits" additional-text-edits)
-                (lsp--resolve-completion (plist-get (text-properties-at 0 candidate) 'lsp-completion-item))]
+         (-let* (((&plist 'lsp-completion-item item
+                          'lsp-completion-start-point start-point
+                          'lsp-completion-prefix-line prefix-line)
+                  (text-properties-at 0 candidate))
+                 ((&hash "insertText" insert-text
+                         "textEdit" text-edit
+                         "insertTextFormat" insert-text-format
+                         "additionalTextEdits" additional-text-edits)
+                 (lsp--resolve-completion item)))
            (cond
             (text-edit
              (delete-region (point-at-bol) (point))
