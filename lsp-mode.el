@@ -1912,9 +1912,11 @@ version."
   (puthash backend (cons version (append lenses nil)) lsp--lens-data)
 
   (-let [backend-data (->> lsp--lens-data ht-values (-filter #'cl-rest))]
-    (when (seq-every-p (-lambda ((version))
-                         (or (not version) (eq version lsp--cur-version)))
-                       backend-data)
+    (when (and
+           (= (length lsp-lens-backends) (length backend-data))
+           (seq-every-p (-lambda ((version))
+                          (or (not version) (eq version lsp--cur-version)))
+                        backend-data))
       ;; display the data only when the backends have reported data for the
       ;; current version of the file
       (lsp--lens-display (-flatten (-map 'cl-rest backend-data)))))
