@@ -58,7 +58,8 @@
                        (lambda (file)
                          (and (f-ext? file "el")
                               (not (s-contains? "test" file))))
-                       (append (f-files (f-parent (f-dirname (or load-file-name buffer-file-name))))
+                       (append (when load-file-name
+                                 (f-files (f-parent (f-dirname (or load-file-name buffer-file-name)))))
                                (f-files default-directory))))
     (let ((byte-compile-error-on-warn t))
       (message "Testing file %s" library)
