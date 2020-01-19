@@ -3747,13 +3747,13 @@ PLIST is the additional data to attach to each candidate."
   (when (or (--some (lsp--client-completion-in-comments? (lsp--workspace-client it))
                     (lsp-workspaces))
             (not (nth 4 (syntax-ppss))))
-    (let* ((bounds (bounds-of-thing-at-point 'symbol))
+    (let* ((bounds-start (or (car (bounds-of-thing-at-point 'symbol)) (point)))
            (trigger-chars (->> (lsp--server-capabilities)
                                (gethash "completionProvider")
                                (gethash "triggerCharacters")))
            result done?)
       (list
-       (or (car bounds) (point))
+       bounds-start
        (point)
        (lambda (_probe pred action)
          (cond
@@ -3768,9 +3768,8 @@ PLIST is the additional data to attach to each candidate."
           ;; retrieve candidates
           (done? result)
           ((and lsp--capf-cache
-                (car bounds)
                 (s-prefix? (car lsp--capf-cache)
-                           (buffer-substring-no-properties (car bounds) (point))))
+                           (buffer-substring-no-properties bounds-start (point))))
            (-let [(&plist :start-point) (cddr lsp--capf-cache)]
              (unless (and start-point (> start-point (point-max)))
                (apply #'lsp--capf-filter-candidates
@@ -3779,34 +3778,32 @@ PLIST is the additional data to attach to each candidate."
                       (cdr lsp--capf-cache)))))
           (t
            (-let* ((resp (lsp-request-while-no-input "textDocument/completion"
-                                                    (plist-put (lsp--text-document-position-params)
-                                                               :context (ht ("triggerKind" 1)))))
-                  (items (lsp--sort-completions (cond
-                                                 ((seqp resp) resp)
-                                                 ((hash-table-p resp) (gethash "items" resp)))))
-                  (start (or (car
-                              (or (-some-> (lsp-elt items 0)
-                                    (lsp--ht-get "textEdit" "range")
-                                    lsp--range-to-region)
-                                  bounds))
-                             (point)))
-                  (prefix (buffer-substring-no-properties start (point)))
-                  (prefix-line (buffer-substring-no-properties (point-at-bol) (point))))
-            (setf done? (or (seqp resp)
-                            (not (gethash "isIncomplete" resp)))
-                  lsp--capf-cache (when (and done? (car bounds))
-                                    (list (buffer-substring-no-properties (car bounds) (point))
-                                          items
-                                          :start-point start
-                                          :prefix-line prefix-line))
-                  result (lsp--capf-filter-candidates pred prefix items
-                                                      :start-point start
-                                                      :prefix-line prefix-line))))))
+                                                     (plist-put (lsp--text-document-position-params)
+                                                                :context (ht ("triggerKind" 1)))))
+                   (items (lsp--sort-completions (cond
+                                                  ((seqp resp) resp)
+                                                  ((hash-table-p resp) (gethash "items" resp)))))
+                   (start (or (car (-some-> (lsp-elt items 0)
+                                     (lsp--ht-get "textEdit" "range")
+                                     lsp--range-to-region))
+                              bounds-start))
+                   (prefix (buffer-substring-no-properties start (point)))
+                   (prefix-line (buffer-substring-no-properties (point-at-bol) (point))))
+             (setf done? (or (seqp resp)
+                             (not (gethash "isIncomplete" resp)))
+                   lsp--capf-cache (when (and done? (not (seq-empty-p items)))
+                                     (list (buffer-substring-no-properties bounds-start (point))
+                                           items
+                                           :start-point start
+                                           :prefix-line prefix-line))
+                   result (lsp--capf-filter-candidates pred prefix items
+                                                       :start-point start
+                                                       :prefix-line prefix-line))))))
        :annotation-function #'lsp--annotate
        :company-require-match 'never
        :company-prefix-length
        (save-excursion
-         (when (car bounds) (goto-char (car bounds)))
+         (goto-char bounds-start)
          (lsp--looking-back-trigger-characters-p trigger-chars))
        :company-match
        (lambda (candidate)
@@ -3842,7 +3839,7 @@ PLIST is the additional data to attach to each candidate."
                          "textEdit" text-edit
                          "insertTextFormat" insert-text-format
                          "additionalTextEdits" additional-text-edits)
-                 (lsp--resolve-completion item)))
+                  (lsp--resolve-completion item)))
            (cond
             (text-edit
              (delete-region (point-at-bol) (point))
@@ -3865,8 +3862,7 @@ PLIST is the additional data to attach to each candidate."
            (setq this-command 'self-insert-command)))))))
 
 (with-eval-after-load 'company
-  (add-hook 'company-completion-finished-hook #'lsp--capf-clear-cache)
-  (add-hook 'company-completion-cancelled-hook #'lsp--capf-clear-cache))
+  (add-hook 'company-after-completion-hook #'lsp--capf-clear-cache))
 
 (advice-add #'completion-at-point :before #'lsp--capf-clear-cache)
 
