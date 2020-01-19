@@ -3969,7 +3969,7 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
   (when (and lsp-enable-symbol-highlighting
              (not (lsp--point-on-highlight?)))
     (lsp--remove-overlays 'lsp-highlight)
-    (lsp-cancel-request-by-token :highlihts)))
+    (lsp-cancel-request-by-token :highlights)))
 
 (defun lsp--document-highlight ()
   (unless (or (looking-at "[[:space:]\n]")
@@ -3978,7 +3978,7 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
                        (lsp--text-document-position-params)
                        #'lsp--document-highlight-callback
                        :mode 'tick
-                       :cancel-token :highlihts)))
+                       :cancel-token :highlights)))
 
 (defun lsp-describe-thing-at-point ()
   "Display the type signature and documentation of the thing at
@@ -5050,7 +5050,7 @@ textDocument/didOpen for the new file."
   "Send MESSAGE to PROC without waiting for further output."
   (condition-case err
       (process-send-string proc message)
-    ('error (lsp--error "Sening to process failed with the following error: %s"
+    ('error (lsp--error "Sending to process failed with the following error: %s"
                         (error-message-string err)))))
 
 (define-error 'lsp-parse-error
@@ -5114,7 +5114,7 @@ PARAMS are the `workspace/configuration' request params"
     (apply #'vector)))
 
 (defun lsp--send-request-response (workspace recv-time request response)
-  "Send the RESPONE for REQUEST in WORKSPACE and log if needed."
+  "Send the RESPONSE for REQUEST in WORKSPACE and log if needed."
   (-let* (((&hash "params" "method" "id") request)
           (process (lsp--workspace-proc workspace))
           (response (lsp--make-response request response))
@@ -5592,6 +5592,9 @@ returned by COMMAND is available via `executable-find'"
                                    :noquery t)))
                        (set-process-query-on-exit-flag proc nil)
                        (set-process-query-on-exit-flag (get-buffer-process stderr-buf) nil)
+                       (with-current-buffer (get-buffer stderr-buf)
+                         ;; Make the *NAME::stderr* buffer buffer-read-only, q to bury, etc.
+                         (special-mode))
                        (cons proc proc))))
         :test? (or
                 test-command
@@ -5939,6 +5942,27 @@ SESSION is the active session."
   :type 'directory
   :package-version '(lsp-mode . "6.3"))
 
+(defcustom lsp-server-locations nil
+  "List of server PACKAGE / LOCATION pairs of pre-installed
+server package names and their corresponding executable path
+locations.  The calls to `lsp-dependency' define the PACKAGE name
+key you can use and the corresponding string value should
+location of the executable. For example, if you install the 
+Typescript/JavaScript language servers in a team shared read-only
+Unix location, you can instruct lsp-mode to use the by adding
+the adding two pairs:
+
+ key                         string
+ ---                         ---------
+ typescript-language-server  /net/lsp/typescript-language-server/bin/typescript-language-server
+ typescript                  /net/lsp/typescript//lib/node_modules/typescript/lib/tsserver.js
+
+Note, the typescript compiler is invoked by the typescript-language-server and thus we pass
+the path to the tsserver.js file to ensure it works when spawned on Windows."
+  :risky t
+  :type '(alist :value-type (group string))
+  :package-version '(lsp-mode . "6.3"))
+
 (defvar lsp--dependencies (ht))
 
 (defmacro lsp-dependency (name &rest definitions)
@@ -6065,17 +6089,34 @@ When UPDATE? is t force installation even if the server is present."
 
 ;; npm handling
 
+(defvar lsp--npm-dependency-path-cache nil
+  "Cache of server packages to the executable paths")
+
 ;; https://docs.npmjs.com/files/folders#executables
-(cl-defun lsp--npm-dependency-path (&key package path &allow-other-keys)
-  "Return npm dependency PATH for PACKAGE."
-  (let ((path (executable-find
-               (f-join lsp-server-install-dir "npm" package
-                       (cond ((eq system-type 'windows-nt) "")
-                             (t "bin"))
-                       path))))
-    (unless (and path (f-exists? path))
-      (error "The package %s is not installed.  Unable to find %s" package path))
-    path))
+(cl-defun lsp--npm-dependency-path (&key package exe-name &allow-other-keys)
+  "Return npm dependency executable path for EXE-NAME for node server PACKAGE."
+  ;; Load lsp--npm-dependency-path-cache, a run-time cache of exe-path's for package's
+  (when (not lsp--npm-dependency-path-cache)
+    (setq lsp--npm-dependency-path-cache (make-hash-table :test 'equal))
+    (when lsp-server-locations
+      (let ((locations lsp-server-locations))
+        (while locations
+          (let ((pair (car locations)))
+            (puthash (symbol-name (car pair)) (car (cdr pair)) lsp--npm-dependency-path-cache)
+            (setq locations (cdr locations)))))))
+  ;; Use exe-path from the run-time cache if possible
+  (let ((exe-path (gethash package lsp--npm-dependency-path-cache)))
+    (when (not exe-path)
+      ;; See if exe-name was already downloaded
+      (setq exe-path (executable-find
+                      (f-join lsp-server-install-dir "npm" package
+                              (cond ((eq system-type 'windows-nt) "")
+                                    (t "bin"))
+                              exe-name))))
+    (if (and exe-path (f-exists? exe-path))
+        (puthash package exe-path lsp--npm-dependency-path-cache)
+      (error "The package %s is not installed.  Unable to find %s" package exe-name))
+    exe-path))
 
 (cl-defun lsp--npm-dependency-download  (callback error-callback &key package &allow-other-keys)
   (if-let (npm-binary (executable-find "npm"))
