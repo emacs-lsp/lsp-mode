@@ -3709,6 +3709,10 @@ and the position respectively."
   "Cached candidates for completion at point function.
 In the form of (prefix items args).")
 
+(defun lsp--capf-clear-cache (&rest _)
+  "Clear completion caches."
+  (setq lsp--capf-cache nil))
+
 (defun lsp--capf-filter-candidates (pred string items &rest plist)
   "List the possible completion of STRING in candidates ITEMS.
 Only the elements that satisfy predicate PRED are considered.
@@ -3854,15 +3858,17 @@ PLIST is the additional data to attach to each candidate."
                                  (point)))
            (when additional-text-edits
              (lsp--apply-text-edits additional-text-edits)))
-         (setq lsp--capf-cache nil)
+         (lsp--capf-clear-cache)
          (when lsp-signature-auto-activate
            (lsp-signature-activate))
          (when (lsp--looking-back-trigger-characters-p trigger-chars)
            (setq this-command 'self-insert-command)))))))
 
 (with-eval-after-load 'company
-  (add-hook 'company-completion-finished-hook (lambda (&rest _) (setq lsp--capf-cache nil)))
-  (add-hook 'company-completion-cancelled-hook (lambda (&rest _) (setq lsp--capf-cache nil))))
+  (add-hook 'company-completion-finished-hook #'lsp--capf-clear-cache)
+  (add-hook 'company-completion-cancelled-hook #'lsp--capf-clear-cache))
+
+(advice-add #'completion-at-point :before #'lsp--capf-clear-cache)
 
 (defun lsp--to-yasnippet-snippet (text)
   "Convert VS code snippet TEXT to yasnippet snippet."
