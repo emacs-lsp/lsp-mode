@@ -5943,27 +5943,6 @@ SESSION is the active session."
   :type 'directory
   :package-version '(lsp-mode . "6.3"))
 
-(defcustom lsp-server-locations nil
-  "List of server PACKAGE / LOCATION pairs of pre-installed
-server package names and their corresponding executable path
-locations.  The calls to `lsp-dependency' define the PACKAGE name
-key you can use and the corresponding string value should
-location of the executable. For example, if you install the 
-Typescript/JavaScript language servers in a team shared read-only
-Unix location, you can instruct lsp-mode to use the by adding
-the adding two pairs:
-
- key                         string
- ---                         ---------
- typescript-language-server  /net/lsp/typescript-language-server/bin/typescript-language-server
- typescript                  /net/lsp/typescript//lib/node_modules/typescript/lib/tsserver.js
-
-Note, the typescript compiler is invoked by the typescript-language-server and thus we pass
-the path to the tsserver.js file to ensure it works when spawned on Windows."
-  :risky t
-  :type '(alist :value-type (group string))
-  :package-version '(lsp-mode . "6.3"))
-
 (defvar lsp--dependencies (ht))
 
 (defmacro lsp-dependency (name &rest definitions)
