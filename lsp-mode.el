@@ -4527,6 +4527,7 @@ interface DocumentRangeFormattingParams {
   (interactive)
   (unless (lsp--capability "documentHighlightProvider")
     (signal 'lsp-capability-not-supported (list "documentHighlightProvider")))
+  (lsp--remove-overlays 'lsp-highlight) ;; clear any previous highlights
   (lsp--document-highlight))
 
 (defun lsp--document-highlight-callback (highlights)
@@ -6095,19 +6096,10 @@ When UPDATE? is t force installation even if the server is present."
 ;; https://docs.npmjs.com/files/folders#executables
 (cl-defun lsp--npm-dependency-path (&key package exe-name &allow-other-keys)
   "Return npm dependency executable path for EXE-NAME for node server PACKAGE."
-  ;; Load lsp--npm-dependency-path-cache, a run-time cache of exe-path's for package's
-  (when (not lsp--npm-dependency-path-cache)
-    (setq lsp--npm-dependency-path-cache (make-hash-table :test 'equal))
-    (when lsp-server-locations
-      (let ((locations lsp-server-locations))
-        (while locations
-          (let ((pair (car locations)))
-            (puthash (symbol-name (car pair)) (car (cdr pair)) lsp--npm-dependency-path-cache)
-            (setq locations (cdr locations)))))))
-  ;; Use exe-path from the run-time cache if possible
+  ;; Did we already load exe-path? If so use it, otherwise see if it has been installed into
+  ;; `lsp-server-install-dir'.
   (let ((exe-path (gethash package lsp--npm-dependency-path-cache)))
     (when (not exe-path)
-      ;; See if exe-name was already downloaded
       (setq exe-path (executable-find
                       (f-join lsp-server-install-dir "npm" package
                               (cond ((eq system-type 'windows-nt) "")
