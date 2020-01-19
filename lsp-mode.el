@@ -329,6 +329,9 @@ the server has requested that."
   :type '(repeat string)
   :package-version '(lsp-mode . "6.1"))
 
+(defun lsp-file-watch-ignored ()
+  lsp-file-watch-ignored)
+
 ;; Allow lsp-file-watch-ignored as a file or directory-local variable
 (put 'lsp-file-watch-ignored 'safe-local-variable 'lsp--string-listp)
 
@@ -1263,7 +1266,7 @@ DELETE when `lsp-mode.el' is deleted.")
     (cond
      ((and (file-directory-p file-name)
            (equal 'created event-type)
-           (not (lsp--string-match-any lsp-file-watch-ignored file-name)))
+           (not (lsp--string-match-any (lsp-file-watch-ignored) file-name)))
 
       (lsp-watch-root-folder (file-truename file-name) callback watch)
 
@@ -1289,7 +1292,7 @@ DELETE when `lsp-mode.el' is deleted.")
                         'string<))
       (unless (member file '("./" "../"))
         (if (and (directory-name-p file)
-                 (not (lsp--string-match-any lsp-file-watch-ignored (f-join dir (f-filename file)))))
+                 (not (lsp--string-match-any (lsp-file-watch-ignored) (f-join dir (f-filename file)))))
             (let* ((leaf (substring file 0 (1- (length file))))
                    (full-file (concat dir "/" leaf)))
               ;; Don't follow symlinks to other directories.
@@ -1358,7 +1361,7 @@ already have been created."
                                                   (file-truename f)
                                                 f)
                                               (lsp-watch-descriptors watch)))
-                                (not (lsp--string-match-any lsp-file-watch-ignored f))
+                                (not (lsp--string-match-any (lsp-file-watch-ignored) f))
                                 (not (-contains? '("." "..") (f-filename f)))))
                          (directory-files dir t))))
         (error (lsp-log "Failed to create a watch for %s: message" (error-message-string err)))
