@@ -5087,7 +5087,7 @@ textDocument/didOpen for the new file."
   "Send MESSAGE to PROC without waiting for further output."
   (condition-case err
       (process-send-string proc message)
-    ('error (lsp--error "Sening to process failed with the following error: %s"
+    ('error (lsp--error "Sending to process failed with the following error: %s"
                         (error-message-string err)))))
 
 (define-error 'lsp-parse-error
