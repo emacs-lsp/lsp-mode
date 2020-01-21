@@ -5969,8 +5969,11 @@ SESSION is the active session."
 
 ;; download server
 
-(defcustom lsp-server-install-dir (expand-file-name
-                                   (locate-user-emacs-file (f-join ".cache" "lsp")))
+(defcustom lsp-server-install-dir (expand-file-name "lsp"
+                                     ;; Using xdg-cache-home for variable name occured package-lint error
+                                     (or (if-let (xdg-cache-home-dir (getenv "XDG_CACHE_HOME"))
+                                             (concat xdg-cache-home-dir "/emacs"))
+                                         (locate-user-emacs-file ".cache")))
   "Directory in which the servers will be installed."
   :risky t
   :type 'directory
