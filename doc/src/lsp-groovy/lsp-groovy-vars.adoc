@@ -1,12 +1,9 @@
 [id="lsp-groovy-vars"]
 ==== `lsp-groovy` settings
 
-[id="lsp-groovy-server-install-dir"]
-- `lsp-groovy-server-install-dir`
+[id="lsp-groovy-server-file"]
+- `lsp-groovy-server-file`
 ____
-Default value: `pass:["~/.emacs.d/groovy-language-server/"]`
+Default value: `pass:["~/.emacs.d/groovy-language-server/groovy-language-server-all.jar"]`
 
-Install directory for groovy-language-server.
-A slash is expected at the end.
-This directory shoud contain a file matching groovy-language-server-*.jar
 ____
