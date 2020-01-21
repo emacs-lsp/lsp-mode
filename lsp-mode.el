@@ -5971,7 +5971,7 @@ SESSION is the active session."
 
 (defcustom lsp-server-install-dir (expand-file-name "lsp"
                                      ;; Using xdg-cache-home for variable name occured package-lint error
-                                     (or (if-let (xdg-cache-home-dir (getenv "XDG_CACHE_HOME"))
+                                     (or (when-let (xdg-cache-home-dir (getenv "XDG_CACHE_HOME"))
                                              (concat xdg-cache-home-dir "/emacs"))
                                          (locate-user-emacs-file ".cache")))
   "Directory in which the servers will be installed."
