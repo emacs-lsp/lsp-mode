@@ -102,10 +102,10 @@
                                                'utf-8-unix)))
                   (list callback))))
 
-(lsp-dependency vscode-json-languageserver
-  (:system "vscode-json-languageserver")
-  (:npm :package "vscode-json-languageserver"
-        :path "vscode-json-languageserver"))
+(lsp-dependency 'vscode-json-languageserver
+                '(:system "vscode-json-languageserver")
+                '(:npm :package "vscode-json-languageserver"
+                       :path "vscode-json-languageserver"))
 
 (lsp-register-client
  (make-lsp-client
