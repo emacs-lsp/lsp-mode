@@ -1408,8 +1408,8 @@ already have been created."
      ,@body
      (lsp--flush-delayed-changes)))
 
-(defun lsp-cannonical-file-name  (file-name)
-  "Return the cannonical FILE-NAME."
+(defun lsp-canonical-file-name  (file-name)
+  "Return the canonical FILE-NAME."
   (f-canonical (directory-file-name (f-expand file-name))))
 
 (defun lsp--window-show-message (_workspace params)
@@ -2800,7 +2800,7 @@ in that particular folder."
   (interactive
    (list (read-directory-name "Select folder to add: "
                               (or (lsp--suggest-project-root) default-directory) nil t)))
-  (cl-pushnew (lsp-cannonical-file-name project-root)
+  (cl-pushnew (lsp-canonical-file-name project-root)
               (lsp-session-folders (lsp-session)) :test 'equal)
   (lsp--persist-session (lsp-session))
 
@@ -2812,7 +2812,7 @@ in that particular folder."
                                       (lsp-session-folders (lsp-session)) nil t
                                       (lsp-find-session-folder (lsp-session) default-directory))))
 
-  (setq project-root (lsp-cannonical-file-name project-root))
+  (setq project-root (lsp-canonical-file-name project-root))
 
   ;; send remove folder to each multiroot workspace associated with the folder
   (dolist (wks (->> (lsp-session)
@@ -3599,7 +3599,7 @@ Applies on type formatting."
 (defun lsp-workspace-root (&optional path)
   "Find the workspace root for the current file or PATH."
   (-when-let* ((file-name (or path (buffer-file-name)))
-               (file-name (lsp-cannonical-file-name file-name)))
+               (file-name (lsp-canonical-file-name file-name)))
     (->> (lsp-session)
          (lsp-session-folders)
          (--first (and (lsp--files-same-host it file-name)
@@ -3868,7 +3868,7 @@ PLIST is the additional data to attach to each candidate."
 
 (defun lsp--to-yasnippet-snippet (text)
   "Convert VS code snippet TEXT to yasnippet snippet."
-  ;; VS code snippet doesn't esscape "{", but yasnippet requires escaping it.
+  ;; VS code snippet doesn't escape "{", but yasnippet requires escaping it.
   (let (parts
         (start 0))
     (dolist (range (s-matched-positions-all (regexp-quote "{") text))
@@ -4002,7 +4002,7 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
   (when (and lsp-enable-symbol-highlighting
              (not (lsp--point-on-highlight?)))
     (lsp--remove-overlays 'lsp-highlight)
-    (lsp-cancel-request-by-token :highlihts)))
+    (lsp-cancel-request-by-token :highlights)))
 
 (defun lsp--document-highlight ()
   (unless (or (looking-at "[[:space:]\n]")
@@ -4011,7 +4011,7 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
                        (lsp--text-document-position-params)
                        #'lsp--document-highlight-callback
                        :mode 'tick
-                       :cancel-token :highlihts)))
+                       :cancel-token :highlights)))
 
 (defun lsp-describe-thing-at-point ()
   "Display the type signature and documentation of the thing at
@@ -4560,6 +4560,7 @@ interface DocumentRangeFormattingParams {
   (interactive)
   (unless (lsp--capability "documentHighlightProvider")
     (signal 'lsp-capability-not-supported (list "documentHighlightProvider")))
+  (lsp--remove-overlays 'lsp-highlight) ;; clear any previous highlights
   (lsp--document-highlight))
 
 (defun lsp--document-highlight-callback (highlights)
@@ -5147,7 +5148,7 @@ PARAMS are the `workspace/configuration' request params"
     (apply #'vector)))
 
 (defun lsp--send-request-response (workspace recv-time request response)
-  "Send the RESPONE for REQUEST in WORKSPACE and log if needed."
+  "Send the RESPONSE for REQUEST in WORKSPACE and log if needed."
   (-let* (((&hash "params" "method" "id") request)
           (process (lsp--workspace-proc workspace))
           (response (lsp--make-response request response))
@@ -5625,6 +5626,9 @@ returned by COMMAND is available via `executable-find'"
                                    :noquery t)))
                        (set-process-query-on-exit-flag proc nil)
                        (set-process-query-on-exit-flag (get-buffer-process stderr-buf) nil)
+                       (with-current-buffer (get-buffer stderr-buf)
+                         ;; Make the *NAME::stderr* buffer buffer-read-only, q to bury, etc.
+                         (special-mode))
                        (cons proc proc))))
         :test? (or
                 test-command
@@ -5974,10 +5978,27 @@ SESSION is the active session."
 
 (defvar lsp--dependencies (ht))
 
-(defmacro lsp-dependency (name &rest definitions)
-  (declare (debug (form body))
-           (indent 1))
-  `(puthash (quote ,name) (quote ,definitions) lsp--dependencies))
+(defun lsp-dependency (name &rest definitions)
+  "Used to specify a language server DEPENDENCY, the server
+executable or other required file path. Typically, the
+DEPENDENCY is found by locating it on the system path using
+`executable-find'.
+
+You can explicitly call lsp-dependency in your environment to
+specify the absolute path to the DEPENDENCY. For example, the
+typescript-language-server requires both the server and the
+typescript compiler. If you've installed them in a team shared
+read-only location, you can instruct lsp-mode to use them via
+
+  (eval-after-load 'lsp-clients
+    '(progn
+       (lsp-dependency 'typescript-language-server `(:system ,tls-exe))
+       (lsp-dependency 'typescript `(:system ,ts-js))))
+
+where tls-exe is the absolute path to the typescript-language-server
+executable and ts-js is the absolute path to the typescript compiler
+JavaScript file, tsserver.js (the *.js is required for Windows)."
+  (ht-set lsp--dependencies name definitions))
 
 (defun lsp--server-binary-present? (client)
   (unless (equal (lsp--client-server-id client) 'lsp-pwsh)
@@ -6072,7 +6093,24 @@ When UPDATE? is t force installation even if the server is present."
 (defvar lsp-deps-providers
   (list :npm (list :path #'lsp--npm-dependency-path
                    :install #'lsp--npm-dependency-download)
-        :system (list :path #'executable-find)))
+        :system (list :path #'lsp--system-path)))
+
+(defun lsp--system-path (path)
+  "If PATH is absolute and exists return it as is. Otherwise,
+return the absolute path to the executable defined by PATH or
+nil."
+  ;; For node.js 'sub-packages' PATH may point to a *.js file. Consider the
+  ;; typescript-language-server. When lsp invokes the server, lsp needs to
+  ;; supply the path to the typescript compiler, tsserver.js, as an argument. To
+  ;; make code platform independent, one must pass the absolute path to the
+  ;; tsserver.js file (Windows requires a *.js file - see help on the JavaScript
+  ;; child process spawn command that is invoked by the
+  ;; typescript-language-server). This is why we check for existence and not
+  ;; that the path is executable.
+  (if (and (f-absolute? path)
+           (f-exists? path))
+      path
+    (executable-find path)))
 
 (defun lsp-package-path (dependency)
   "Path to the DEPENDENCY each of the registered providers."
@@ -6529,7 +6567,7 @@ Returns nil if the project should not be added to the current SESSION."
 
 (defun lsp-find-session-folder (session file-name)
   "Look in the current SESSION for folder containing FILE-NAME."
-  (let ((file-name-canonical (lsp-cannonical-file-name file-name)))
+  (let ((file-name-canonical (lsp-canonical-file-name file-name)))
     (->> session
          (lsp-session-folders)
          (--filter (and (lsp--files-same-host it file-name-canonical)
@@ -6610,7 +6648,7 @@ such."
                         (lsp--find-clients)))
         (-if-let (project-root (-some-> session
                                  (lsp--calculate-root (buffer-file-name))
-                                 (lsp-cannonical-file-name)))
+                                 (lsp-canonical-file-name)))
             (progn
               ;; update project roots if needed and persist the lsp session
               (unless (-contains? (lsp-session-folders session) project-root)

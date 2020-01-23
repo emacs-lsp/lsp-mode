@@ -150,10 +150,10 @@ See instructions at https://marketplace.visualstudio.com/items?itemName=mads-har
 
 ;;; TypeScript/JavaScript
 
-(lsp-dependency javascript-typescript-langserver
-  (:system "javascript-typescript-stdio")
-  (:npm :package "javascript-typescript-langserver"
-        :path "javascript-typescript-stdio"))
+(lsp-dependency 'javascript-typescript-langserver
+                '(:system "javascript-typescript-stdio")
+                '(:npm :package "javascript-typescript-langserver"
+                       :path "javascript-typescript-stdio"))
 
 (defgroup lsp-typescript-javascript nil
   "Support for TypeScript/JavaScript, using Sourcegraph's JavaScript/TypeScript language server."
@@ -221,15 +221,15 @@ directory containing the package. Example:
                                                   (and name location))
                                                 xs)))))
 
-(lsp-dependency typescript-language-server
-  (:system "typescript-language-server")
-  (:npm :package "typescript-language-server"
-        :path "typescript-language-server"))
+(lsp-dependency 'typescript-language-server
+                '(:system "typescript-language-server")
+                '(:npm :package "typescript-language-server"
+                       :path "typescript-language-server"))
 
-(lsp-dependency typescript
-  (:system "tsserver")
-  (:npm :package "typescript"
-        :path "tsserver"))
+(lsp-dependency 'typescript
+                '(:system "tsserver")
+                '  (:npm :package "typescript"
+                         :path "tsserver"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
@@ -542,7 +542,7 @@ finding the executable with `exec-path'."
 
 (defcustom lsp-kotlin-linting-debounce-time 250
   "[DEBUG] Specifies the debounce time limit. Lower to increase
-responsiveness at the cost of possibile stability issues."
+responsiveness at the cost of possible stability issues."
   :type 'number
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))
