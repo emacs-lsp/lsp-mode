@@ -6074,10 +6074,10 @@ nil."
   ;; child process spawn command that is invoked by the
   ;; typescript-language-server). This is why we check for existence and not
   ;; that the path is executable.
-  (or (and (f-absolute? path)
-           (f-exists? path)
-           path)
-      (executable-find path)))
+  (if (and (f-absolute? path)
+           (f-exists? path))
+      path
+    (executable-find path))
 
 (defun lsp-package-path (dependency)
   "Path to the DEPENDENCY each of the registered providers."
@@ -6103,25 +6103,17 @@ nil."
 
 ;; npm handling
 
-(defvar lsp--npm-dependency-path-cache nil
-  "Cache of server packages to the executable paths")
-
 ;; https://docs.npmjs.com/files/folders#executables
-(cl-defun lsp--npm-dependency-path (&key package exe-name &allow-other-keys)
-  "Return npm dependency executable path for EXE-NAME for node server PACKAGE."
-  ;; Did we already load exe-path? If so use it, otherwise see if it has been installed into
-  ;; `lsp-server-install-dir'.
-  (let ((exe-path (gethash package lsp--npm-dependency-path-cache)))
-    (when (not exe-path)
-      (setq exe-path (executable-find
-                      (f-join lsp-server-install-dir "npm" package
-                              (cond ((eq system-type 'windows-nt) "")
-                                    (t "bin"))
-                              exe-name))))
-    (if (and exe-path (f-exists? exe-path))
-        (puthash package exe-path lsp--npm-dependency-path-cache)
-      (error "The package %s is not installed.  Unable to find %s" package exe-name))
-    exe-path))
+(cl-defun lsp--npm-dependency-path (&key package path &allow-other-keys)
+  "Return npm dependency PATH for PACKAGE."
+  (let ((path (executable-find
+               (f-join lsp-server-install-dir "npm" package
+                       (cond ((eq system-type 'windows-nt) "")
+                             (t "bin"))
+                       path))))
+    (unless (and path (f-exists? path))
+      (error "The package %s is not installed.  Unable to find %s" package path))
+    path))
 
 (cl-defun lsp--npm-dependency-download  (callback error-callback &key package &allow-other-keys)
   (if-let (npm-binary (executable-find "npm"))
