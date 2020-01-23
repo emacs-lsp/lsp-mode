@@ -6077,7 +6077,7 @@ nil."
   (if (and (f-absolute? path)
            (f-exists? path))
       path
-    (executable-find path))
+    (executable-find path)))
 
 (defun lsp-package-path (dependency)
   "Path to the DEPENDENCY each of the registered providers."
