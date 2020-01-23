@@ -76,7 +76,7 @@ VHDL LS: A complete VHDL language server protocol implementation with diagnostic
   (lsp-vhdl--set-server-path)
   (lsp-vhdl--set-server-args)
   (lsp-stdio-connection
-    (lambda () (list (plist-get lsp-vhdl--params 'server-path) (plist-get lsp-vhdl--params 'server-args)))
+    (lambda () (cons (plist-get lsp-vhdl--params 'server-path) (plist-get lsp-vhdl--params 'server-args)))
     (lambda () (f-executable? (plist-get lsp-vhdl--params 'server-path)))))
 
 (defun lsp-vhdl--set-server-path()
@@ -93,9 +93,9 @@ VHDL LS: A complete VHDL language server protocol implementation with diagnostic
 
 (defun lsp-vhdl--set-server-args()
   "Set server arguments based on server selection."
-  (cond ((eq lsp-vhdl-server 'hdl-checker) (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-args "--lsp")))
-        ((eq lsp-vhdl-server 'vhdl-tool) (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-args "lsp")))
-        ((eq lsp-vhdl-server 'vhdl-ls) (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-args "")))))
+  (cond ((eq lsp-vhdl-server 'hdl-checker) (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-args '("--lsp"))))
+        ((eq lsp-vhdl-server 'vhdl-tool) (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-args '("lsp"))))
+        ((eq lsp-vhdl-server 'vhdl-ls) (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-args '())))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-vhdl--create-connection)
