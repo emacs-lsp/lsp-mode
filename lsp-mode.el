@@ -4882,8 +4882,10 @@ perform the request synchronously."
 
 (defun lsp--xref-elements-index (symbols path)
   (-mapcat
-   (-lambda ((&hash "name" "children" "selectionRange" (&hash? "start") "location"))
-     (cons (cons (concat path name) (lsp--position-to-point (or start location)))
+   (-lambda ((&hash "name" "children" "selectionRange" (&hash? "start")
+                    "location" (&hash? "range")))
+     (cons (cons (concat path name)
+                 (lsp--position-to-point (or start (gethash "start" range))))
            (lsp--xref-elements-index children (concat path name " / "))))
    symbols))
 
