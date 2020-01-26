@@ -6774,14 +6774,13 @@ The server(s) will be started in the buffer when it has finished."
        ((setq clients (unless matching-clients
                         (lsp--filter-clients (-andfn #'lsp--matching-clients?
                                                      (-not #'lsp--server-binary-present?)))))
-        (when (y-or-n-p (format "The following servers support current file but do not have automatic installation configuration: %s
-You may find the installation instructions at https://github.com/emacs-lsp/lsp-mode/#supported-languages. Do you want open it?
+        (lsp--warn "The following servers support current file but do not have automatic installation configuration: %s
+You may find the installation instructions at https://github.com/emacs-lsp/lsp-mode/#supported-languages.
 (If you have already installed the server check *lsp-log*)."
-                                (mapconcat (lambda (client)
-                                             (symbol-name (lsp--client-server-id client)))
-                                           clients
-                                           " ")))
-          (browse-url "https://github.com/emacs-lsp/lsp-mode/#supported-languages")))
+                   (mapconcat (lambda (client)
+                                (symbol-name (lsp--client-server-id client)))
+                              clients
+                              " ")))
        ;; no matches
        ((-> #'lsp--matching-clients? lsp--filter-clients not)
         (lsp--error "There are no language servers supporting current mode %s registered with `lsp-mode'."
