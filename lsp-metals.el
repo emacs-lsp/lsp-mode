@@ -183,6 +183,15 @@ Should be ignored if there is no open doctor window."
                         (c (ignore (lsp-warn "Unknown metals client command: %s" c))))))
     (apply command (append (list workspace) (ht-get params "arguments") nil))))
 
+(defvar lsp-metals--current-buffer nil
+  "Current buffer used to send `metals/didFocusTextDocument' notification.")
+
+(defun lsp-metals--did-focus ()
+  "Send `metals/didFocusTextDocument' when current buffer changes."
+  (unless (eq lsp-metals--current-buffer (current-buffer))
+    (setq lsp-metals--current-buffer (current-buffer))
+    (lsp-notify "metals/didFocusTextDocument" (lsp--buffer-uri))))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-metals--server-command)
                   :major-modes '(scala-mode)
@@ -195,7 +204,9 @@ Should be ignored if there is no open doctor window."
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
-                                       (lsp-configuration-section "metals"))))))
+                                       (lsp-configuration-section "metals"))))
+                  :after-open-fn (lambda ()
+                                   (add-hook 'lsp-on-idle-hook #'lsp-metals--did-focus nil t))))
 
 (provide 'lsp-metals)
 ;;; lsp-metals.el ends here
