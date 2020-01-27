@@ -180,6 +180,7 @@ Should be ignored if there is no open doctor window."
                         (`"metals-doctor-reload" #'lsp-metals--doctor-reload)
                         (`"metals-goto-location" #'lsp-metals--goto-location)
                         (`"metals-echo-command" #'lsp-metals--echo-command)
+                        (`"metals-model-refresh" #'lsp-metals--model-refresh)
                         (c (ignore (lsp-warn "Unknown metals client command: %s" c))))))
     (apply command (append (list workspace) (ht-get params "arguments") nil))))
 
@@ -192,15 +193,46 @@ Should be ignored if there is no open doctor window."
     (setq lsp-metals--current-buffer (current-buffer))
     (lsp-notify "metals/didFocusTextDocument" (lsp--buffer-uri))))
 
+(declare-function dap-debug "ext:dap-mode" (conf))
+(declare-function dap-register-debug-provider "ext:dap-mode" (name conf))
+
+(defun lsp-metals--debug-start (no-debug params)
+  (dap-register-debug-provider "scala" #'identity)
+  (-let [session-params (lsp-send-execute-command
+                         "debug-adapter-start"
+                         (gethash "arguments" params))]
+    (dap-debug
+     (list :debugServer (-> (gethash "uri" session-params)
+                            (split-string ":")
+                            cl-third
+                            string-to-number)
+           :type "scala"
+           :name (gethash "name" session-params)
+           :host "localhost"
+           :request "launch"
+           :noDebug no-debug))))
+
+(defun lsp-metals--model-refresh (workspace)
+  (->> workspace
+       (lsp--workspace-buffers)
+       (mapc (lambda (buffer)
+               (with-current-buffer buffer
+                 (lsp--lens-schedule-refresh t))))))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-metals--server-command)
                   :major-modes '(scala-mode)
                   :priority -1
-                  :custom-capabilities '((experimental (decorationProvider . t)))
+                  :custom-capabilities `((experimental (decorationProvider . t)
+                                                       (debuggingProvider . ,(fboundp 'dap-mode))))
                   :notification-handlers (ht ("metals/executeClientCommand" #'lsp-metals--execute-client-command)
                                              ("metals/publishDecorations" #'lsp-metals--publish-decorations)
-                                             ("metals/treeViewDidChange" #'ignore))
-		  :server-id 'metals
+                                             ("metals/treeViewDidChange" #'ignore)
+                                             ("metals-model-refresh" #'lsp-metals--model-refresh)
+                                             ("metals/status" #'ignore))
+                  :action-handlers (ht ("metals-debug-session-start" (-partial #'lsp-metals--debug-start :json-false))
+                                       ("metals-run-session-start" (-partial #'lsp-metals--debug-start t)))
+                  :server-id 'metals
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
