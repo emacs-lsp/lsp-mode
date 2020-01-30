@@ -217,7 +217,8 @@ Should be ignored if there is no open doctor window."
        (lsp--workspace-buffers)
        (mapc (lambda (buffer)
                (with-current-buffer buffer
-                 (lsp--lens-schedule-refresh t))))))
+                 (when (bound-and-true-p lsp-lens-mode)
+                   (lsp--lens-schedule-refresh t)))))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-metals--server-command)
