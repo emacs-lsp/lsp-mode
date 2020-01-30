@@ -58,7 +58,7 @@
                        (lambda (file)
                          (and (f-ext? file "el")
                               (not (s-contains? "test" file))))
-                       (append (when load-file-name
+                       (append (when (or load-file-name buffer-file-name)
                                  (f-files (f-parent (f-dirname (or load-file-name buffer-file-name)))))
                                (f-files default-directory))))
     (let ((byte-compile-error-on-warn t))

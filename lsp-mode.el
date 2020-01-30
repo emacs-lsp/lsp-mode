@@ -1920,7 +1920,7 @@ version."
 
   (-let [backend-data (->> lsp--lens-data ht-values (-filter #'cl-rest))]
     (when (and
-           (= (length lsp-lens-backends) (length backend-data))
+           (= (length lsp-lens-backends) (ht-size lsp--lens-data))
            (seq-every-p (-lambda ((version))
                           (or (not version) (eq version lsp--cur-version)))
                         backend-data))
@@ -5264,9 +5264,9 @@ REFERENCES? t when METHOD returns references."
 (defalias 'lsp-feature? 'lsp--find-workspaces-for)
 
 (cl-defmethod lsp-execute-command (_server command arguments)
-  "Execute COMMAND on SERVER with `workspace/executeCommand'."
-  (lsp-request "workspace/executeCommand"
-               `(:command ,(format "%s" command) :arguments ,arguments)))
+  "Dispatch COMMAND execution."
+  (lsp--execute-command (ht ("command" (symbol-name command))
+                            ("arguments" arguments))))
 
 (defun lsp--send-execute-command (command &optional args)
   "Create and send a 'workspace/executeCommand' message having command COMMAND and optional ARGS."
