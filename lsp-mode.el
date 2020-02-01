@@ -1649,9 +1649,7 @@ WORKSPACE is the workspace that contains the diagnostics."
           (when (lsp--range-inside-p range tree-node)
             (-if-let (children (lsp--folding-range-children tree-node))
               (lsp--folding-range-insert-into-trees children range)
-              (setf (lsp--folding-range-children tree-node)
-                (nconc (lsp--folding-range-children tree-node)
-                  (list range))))
+              (setf (lsp--folding-range-children tree-node) (list range)))
             (cl-return-from top t))))
     (nconc trees (list range))))
 
