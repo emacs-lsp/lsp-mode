@@ -5646,10 +5646,9 @@ an alist
   (let* ((start-point (lsp--symbol-get-start-point sym))
          (name (gethash "name" sym)))
     (if (seq-empty-p (gethash "children" sym))
-        (cons (format "%s (%s)" name (lsp--get-symbol-type sym)) start-point)
+        (cons name start-point)
       (cons name
-            (cons (cons (format "(%s)" (lsp--get-symbol-type sym)) start-point)
-                  (lsp--imenu-create-hierarchical-index (gethash "children" sym)))))))
+            (lsp--imenu-create-hierarchical-index (gethash "children" sym))))))
 
 (defun lsp--symbol-get-start-point (sym)
   "Get the start point of the name of SYM.
@@ -5698,7 +5697,7 @@ SYM can be either DocumentSymbol or SymbolInformation."
 
 (defun lsp--imenu-hierarchical-p (symbols)
   "Determine whether any element in SYMBOLS has children."
-  (seq-some (-partial 'gethash "children") symbols))
+  (seq-some (-partial #'gethash "children") symbols))
 
 (defun lsp--imenu-create-hierarchical-index (symbols)
   "Create imenu index for hierarchical SYMBOLS.
