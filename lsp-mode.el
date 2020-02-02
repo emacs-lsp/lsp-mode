@@ -27,10 +27,6 @@
 
 ;;; Code:
 
-(unless (version< emacs-version "26")
-  (require 'project)
-  (require 'flymake))
-
 (require 'bindat)
 (require 'cl-generic)
 (require 'cl-lib)
@@ -63,12 +59,11 @@
 (require 'yasnippet nil t)
 
 (declare-function company-mode "ext:company")
-(declare-function flycheck-mode "ext:flycheck")
-(declare-function lsp-ui-flycheck-enable "ext:lsp-ui-flycheck")
 (declare-function evil-set-command-property "ext:evil-common")
 (declare-function projectile-project-root "ext:projectile")
 (declare-function yas-expand-snippet "ext:yasnippet")
 
+(defvar company-backends)
 (defvar c-basic-offset)
 
 (defconst lsp--message-type-face
@@ -243,9 +238,12 @@ following `projectile'/`project.el' conventions."
 
 (defcustom lsp-auto-configure t
   "Auto configure `lsp-mode'.
-When set to t `lsp-mode' will auto-configure `lsp-ui' and `company-lsp'."
+When set to t `lsp-mode' will auto-configure `company',
+`flycheck', `flymake', `imenu', symbol highlighting, lenses,
+links, and so on. For finer granularity you may use `lsp-enable-*' properties."
   :group 'lsp-mode
-  :type 'boolean)
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-disabled-clients nil
   "A list of disabled/blacklisted clients.
@@ -530,14 +528,20 @@ returns a negative number, 0, or a positive number indicating
 whether the first parameter is less than, equal to, or greater
 than the second parameter.")
 
-(defcustom lsp-prefer-flymake t
-  "Auto-configure to prefer `flymake' over `lsp-ui' if both are present.
-If set to `:none' neither of two will be enabled."
-  :type '(choice (const :tag "Prefer flymake" t)
-                 (const :tag "Prefer lsp-ui" nil)
-                 (const :tag "Use neither flymake nor lsp-ui" :none))
+(defcustom lsp-diagnostic-package :auto
+  "`lsp-mode' diagnostics auto-configuration."
+  :type
+  '(choice
+    (const :tag "Pick flycheck if present and fallback to flymake" :auto)
+    (const :tag "Pick flycheck" :flycheck)
+    (const :tag "Pick flymake" :flymake)
+    (const :tag "Use neither flymake nor lsp" :none)
+    (const :tag "Prefer flymake" t)
+    (const :tag "Prefer flycheck" nil))
   :group 'lsp-mode
-  :package-version '(lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.3"))
+
+(make-obsolete-variable 'lsp-prefer-flymake 'lsp-diagnostic-package "lsp-mode 6.2")
 
 (defcustom lsp-prefer-capf nil
   "Prefer capf."
@@ -5993,32 +5997,43 @@ returns the command to execute."
         :test? (lambda () (-> local-command lsp-resolve-final-function lsp-server-present?))))
 
 (defun lsp--auto-configure ()
-  "Autoconfigure `lsp-ui', `company-lsp' if they are installed."
+  "Autoconfigure `company', `flycheck', `lsp-ui',  if they are installed."
 
-  (with-no-warnings
-    (when (functionp 'lsp-ui-mode)
-      (lsp-ui-mode))
+  (when (functionp 'lsp-ui-mode)
+    (lsp-ui-mode))
 
-    (cond
-     ((eq :none lsp-prefer-flymake))
-     ((and (not (version< emacs-version "26.1")) lsp-prefer-flymake)
-      (lsp--flymake-setup))
-     ((and (functionp 'lsp-ui-mode) (featurep 'flycheck))
-      (require 'lsp-ui-flycheck)
-      (lsp-ui-flycheck-enable t)
-      (flycheck-mode 1)))
+  (cond
+   ((or
+     (and (eq lsp-diagnostic-package :auto)
+          (functionp 'flycheck-mode))
+     (and (eq lsp-diagnostic-package :flycheck)
+          (or (functionp 'flycheck-mode)
+              (user-error
+               "lsp-diagnostic-package is set to :flycheck but flycheck is not installed?")))
+     ;; legacy
+     (null lsp-diagnostic-package))
+    (lsp-flycheck-enable))
+   ((and (not (version< emacs-version "26.1"))
+         (or (eq lsp-diagnostic-package :auto)
+             (eq lsp-diagnostic-package :flymake)
+             (eq lsp-diagnostic-package t)))
+    (with-no-warnings
+      (require 'flymake)
+      (lsp--flymake-setup)))
+   ((not (eq lsp-diagnostic-package :none))
+    (lsp--warn "Unable to autoconfigure flycheck/flymake. The diagnostics won't be rendered.")))
 
-    (cond
-     ((and (functionp 'company-lsp)
-           (not lsp-prefer-capf))
-      (progn
-        (company-mode 1)
-        (add-to-list 'company-backends 'company-lsp)
-        (setq-local company-backends (remove 'company-capf company-backends))))
-
-     ((and (fboundp 'company-mode))
+  (cond
+   ((and (functionp 'company-lsp)
+         (not lsp-prefer-capf))
+    (progn
       (company-mode 1)
-      (add-to-list 'company-backends 'company-capf)))))
+      (add-to-list 'company-backends 'company-lsp)
+      (setq-local company-backends (remove 'company-capf company-backends))))
+
+   ((and (fboundp 'company-mode))
+    (company-mode 1)
+    (add-to-list 'company-backends 'company-capf))))
 
 (defvar-local lsp--buffer-deferred nil
   "Whether buffer was loaded via `lsp-deferred'.")
@@ -7051,6 +7066,96 @@ This avoids overloading the server with many files when starting Emacs."
                                 lsp-file-truename-cache))))
            ,@body)
        (fset 'file-truename old-fn))))
+
+;; flycheck
+
+(declare-function flycheck-define-generic-checker
+                  "ext:flycheck" (symbol docstring &rest properties))
+(declare-function flycheck-error-message "ext:flycheck" (err))
+(declare-function flycheck-mode "ext:flycheck")
+(declare-function flycheck-checker-supports-major-mode-p "ext:flycheck")
+(declare-function flycheck-error-new "ext:flycheck")
+(declare-function flycheck-buffer "ext:flycheck")
+(declare-function flycheck-add-mode "ext-flycheck")
+
+(defvar flycheck-check-syntax-automatically)
+(defvar flycheck-checker)
+(defvar flycheck-checkers)
+
+(defcustom lsp-flycheck-live-reporting t
+  "If non-nil, diagnostics in buffer will be reported as soon as possible.
+Typically, on every keystroke. If nil, diagnostics will be
+reported according to `flycheck-check-syntax-automatically'."
+  :type 'boolean
+  :group 'lsp-mode)
+
+(defun lsp--flycheck-start (checker callback)
+  "Start an LSP syntax check with CHECKER.
+
+CALLBACK is the status callback passed by Flycheck."
+  (->> (or (gethash (lsp--fix-path-casing buffer-file-name)
+                    (lsp-diagnostics))
+           (gethash (lsp--fix-path-casing (file-truename buffer-file-name))
+                    (lsp-diagnostics)))
+       (-map (-lambda (diag)
+               (flycheck-error-new
+                :buffer (current-buffer)
+                :checker checker
+                :filename buffer-file-name
+                :line (1+ (lsp-diagnostic-line diag))
+                :column (lsp-diagnostic-column diag)
+                :message (lsp-diagnostic-message diag)
+                :level (pcase (lsp-diagnostic-severity diag)
+                         (1 'error)
+                         (2 'warning)
+                         (_ 'info))
+                :id (lsp-diagnostic-code diag)
+                ;; see https://github.com/flycheck/flycheck/pull/1674
+                ;; :end-column (-> diag
+                ;;                 lsp-diagnostic-range
+                ;;                 (plist-get :end)
+                ;;                 (plist-get :column))
+                ;; :end-line (-> diag
+                ;;               lsp-diagnostic-range
+                ;;               (plist-get :end)
+                ;;               (plist-get :line)
+                ;;               (1+))
+                )))
+       (funcall callback 'finished)))
+
+(defun lsp--flycheck-report ()
+  "This callback is invoked when new diagnostics are received
+from the language server. Invoke flycheck-buffer to update the
+display of errors if flycheck-mode is on and we are live
+reporting or we are in save-mode and the buffer is not modified."
+  (and (or lsp-flycheck-live-reporting
+           (and (memq 'save flycheck-check-syntax-automatically)
+                (not (buffer-modified-p))))
+       (flycheck-buffer)))
+
+(with-eval-after-load 'flycheck
+  (flycheck-define-generic-checker 'lsp
+    "A syntax checker using the Language Server Protocol (LSP)
+provided by lsp-mode.
+See https://github.com/emacs-lsp/lsp-mode."
+    :start #'lsp--flycheck-start
+    :modes '(python-mode)
+    :predicate (lambda () lsp-mode)
+    :error-explainer #'flycheck-error-message))
+
+(defun lsp-flycheck-add-mode (mode)
+  "Register flycheck support for MODE."
+  (unless (flycheck-checker-supports-major-mode-p 'lsp mode)
+    (flycheck-add-mode 'lsp mode)))
+
+(defun lsp-flycheck-enable (&rest _)
+  "Enable flycheck integration for the current buffer."
+  (flycheck-mode 1)
+  (setq-local flycheck-check-syntax-automatically nil)
+  (setq-local flycheck-checker 'lsp)
+  (lsp-flycheck-add-mode major-mode)
+  (add-to-list 'flycheck-checkers 'lsp)
+  (add-hook 'lsp-after-diagnostics-hook #'lsp--flycheck-report nil t))
 
 
 ;; avy integration
@@ -7063,7 +7168,7 @@ This avoids overloading the server with many files when starting Emacs."
   "Click lsp lens using `avy' package."
   (interactive)
   (if (not lsp-lens-mode)
-      (message "lsp-lens-mode not active")
+      (lsp--info "lsp-lens-mode not active")
     (let* ((avy-action 'identity)
            (action (cl-third
                     (avy-process
