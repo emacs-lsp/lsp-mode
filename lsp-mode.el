@@ -1844,7 +1844,8 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
               (run-with-timer lsp-lens-debounce-interval
                               nil
                               #'lsp-lens-refresh
-                              (or lsp--lens-modified? buffer-modified?))))
+                              (or lsp--lens-modified? buffer-modified?)
+                              (current-buffer))))
 
 (defun lsp--lens-keymap (command)
   (-doto (make-sparse-keymap)
@@ -1899,16 +1900,17 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
           (delete-overlay it)))
       (setq-local lsp--lens-overlays overlays))))
 
-(defun lsp-lens-refresh (buffer-modified?)
+(defun lsp-lens-refresh (buffer-modified? &optional buffer)
   "Refresh lenses using lenses backend.
 BUFFER-MODIFIED? determines whether the buffer is modified or not."
-  (let ((buffer (current-buffer)))
-    (dolist (backend lsp-lens-backends)
-      (funcall backend buffer-modified?
-               (lambda (lenses version)
-                 (when (buffer-live-p buffer)
-                   (with-current-buffer buffer
-                     (lsp--process-lenses backend lenses version))))))))
+  (let ((buffer (or buffer (current-buffer))))
+    (with-current-buffer buffer
+      (dolist (backend lsp-lens-backends)
+        (funcall backend buffer-modified?
+                 (lambda (lenses version)
+                   (when (buffer-live-p buffer)
+                     (with-current-buffer buffer
+                       (lsp--process-lenses backend lenses version)))))))))
 
 (defun lsp--process-lenses (backend lenses version)
   "Process LENSES originated from BACKEND.
