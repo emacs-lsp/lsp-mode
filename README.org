@@ -86,7 +86,7 @@
      - install [[https://github.com/tigersoldier/company-lsp][company-lsp]] if you want to use ~company-mode~ for completion.
      - install [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]] for various three based UI controls (symbols, errors overview, call hierarchy, etc.)
      - install [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] provides on type completion afternative of =xref-apropos= using =helm=.
-     - install [[https://github.com/emacs-lsp/lsp-ivy][lsp-ivy]] provides on type completion afternative of =xref-apropos= using =helm=.
+     - install [[https://github.com/emacs-lsp/lsp-ivy][lsp-ivy]] provides on type completion afternative of =xref-apropos= using =ivy=.
      - install [[https://github.com/emacs-lsp/dap-mode][dap-mode]] if your language is supported by the debugger.
      #+BEGIN_SRC emacs-lisp
        ;; if you want to change prefix for lsp-mode keybindings.
