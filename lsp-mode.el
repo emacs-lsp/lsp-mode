@@ -3112,7 +3112,7 @@ in that particular folder."
                                         more-trigger-characters))))))
     (cond
      ((and lsp-enable-on-type-formatting on-type-formatting-handler)
-      (add-hook 'post-self-insert-hook on-type-formatting-handler t))
+      (add-hook 'post-self-insert-hook on-type-formatting-handler nil t))
 
      ((or cleanup?
           (not lsp-enable-on-type-formatting))
