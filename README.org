@@ -318,7 +318,7 @@
      Here it is example how you can configure python language server to work when using ~TRAMP~. Note that if you are trying to convert existing language server configuration you should copy all of it's properties(e. g. ~:request-handlers~, ~activation-fn~, etc).
      #+BEGIN_SRC emacs-lisp
        (lsp-register-client
-        (make-lsp-client :new-connection (lsp-tramp-connection "binary-or-full-path")
+        (make-lsp-client :new-connection (lsp-tramp-connection "<insert your LS's binary name or path here>")
                          :major-modes '(python-mode)
                          :remote? t
                          :server-id 'pyls-remote))
