@@ -408,10 +408,12 @@ PARAMS progress report notification data."
 
 (defconst lsp-rust-action-handlers
   '(("rust-analyzer.applySourceChange" .
-     (lambda (p) (lsp-rust-apply-source-change-command p)))))
+     (lambda (p) (lsp-rust-apply-source-change-command p)))
+    ("rust-analyzer.selectAndApplySourceChange" .
+     (lambda (p) (lsp-rust-select-and-apply-source-change-command p)))))
 
 (defun lsp-rust-apply-source-change-command (p)
-  (let ((data (lsp-seq-first (ht-get p "arguments"))))
+  (let ((data (-> p (ht-get "arguments") (lsp-seq-first))))
     (lsp-rust-apply-source-change data)))
 
 (defun lsp-rust-uri-filename (text-document)
@@ -425,6 +427,12 @@ PARAMS progress report notification data."
           (position (ht-get cursor-position "position")))
       (find-file filename)
       (goto-char (lsp--position-to-point position)))))
+
+(defun lsp-rust-select-and-apply-source-change-command (p)
+  (let* ((options (-> p (ht-get "arguments") (lsp-seq-first)))
+         (chosen-option (lsp--completing-read "Select option:" options
+                                              (-lambda ((&hash "label")) label))))
+    (lsp-rust-apply-source-change chosen-option)))
 
 (define-derived-mode lsp-rust-analyzer-syntax-tree-mode special-mode "Rust-Analyzer-Syntax-Tree"
   "Mode for the rust-analyzer syntax tree buffer.")
