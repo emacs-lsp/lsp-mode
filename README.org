@@ -24,6 +24,8 @@
       - [[#spacemacs][Spacemacs]]
       - [[#use-package][use-package]]
       - [[#docker][Docker]]
+    - [[#performance][Performance]]
+      - [[#reporting-performance-problems][Reporting performance problems]]
     - [[#how-does-it-work][How does it work?]]
   - [[#supported-languages][Supported languages]]
   - [[#commands][Commands]]
@@ -142,6 +144,67 @@
      #+END_SRC
 **** Docker
      Refer to [[https://github.com/emacs-lsp/lsp-docker/][lsp-docker]] README which provide a guide how you can run =lsp-mode= in =docker= container.
+*** Performance
+    When configured properly =lsp-mode='s performance is on par with mainstream
+    LSP clients (e. g. =VScode=, =Theia=, etc). Here are steps to achieve
+    optimal results.
+    - Use Emacs 27+ with native json support. In order to validate that you
+      match this criteria do =M-: (functionp 'json-serialize) RET=. Benchmarks
+      show that Emacs 27 is =~15 times= faster than Emacs when using Elisp json
+      parser implementation.
+    - Adjust =gc-cons-threshold=. The default setting is too low for
+      =lsp-mode='s needs due to the fact that client/server communication
+      generates a lot of memory/garbage. You have two options:
+      - Set it to big number(100mb) like most of the popular starter kits like
+        Spacemacs/Doom/Prelude, etc do:
+      #+BEGIN_SRC elisp
+        (setq gc-cons-threshold 100000000)
+      #+END_SRC
+      - Follow the method recommended by Gnu Emacs Maintainer Eli Zaretskii:
+        "My suggestion is to repeatedly multiply gc-cons-threshold by 2 until
+        you stop seeing significant improvements in responsiveness, and in any
+        case not to increase by a factor larger than 100 or somesuch. If even a
+        100-fold increase doesn't help, there's some deeper problem with the
+        Lisp code which produces so much garbage, or maybe GC is not the reason
+        for slowdown."
+        Source: https://www.reddit.com/r/emacs/comments/brc05y/is_lspmode_too_slow_to_use_for_anyone_else/eofulix/
+    - Increase the amount of data which Emacs reads from the process. Again the
+      emacs default is too low 4k considering that the some of the language
+      server responses are in 800k - 3M range.
+    #+BEGIN_SRC emacs-lisp
+      (setq read-process-output-max (* 1024 1024)) ;; 1mb
+    #+END_SRC
+    - Optional: use =company-capf= . Although =company-lsp= also supports
+      caching =lsp-mode='s =company-capf= does that by default. To achieve that
+      uninstall =company-lsp= or put these lines in your config:
+    #+BEGIN_SRC emacs-lisp
+      (setq lsp-prefer-capf t)
+    #+END_SRC
+      /Note:/ - to verify which =company= backend implementation you are using
+      do =M-x company-diag= when performing auto-completion.
+    - Optional: Disable =lsp-ui=. Normally, =lsp-ui= is very fast but in some
+      systems (especially when using =Windows=) =lsp-ui= overlays and popups might
+      slow down emacs.
+    - Optional: fine tune =lsp-idle-delay=. This variable determines how often
+      lsp-mode will refresh the highlights, lenses, links, etc while you type.
+    #+BEGIN_SRC emacs-lisp
+      (setq lsp-idle-delay 500)
+    #+END_SRC
+**** Reporting performance problems
+     If you have tried all of the non-optional steps from the list and =emacs= is
+     still not very responsive please open a PR with the following information:
+     - Collect *lsp-log* data after setting =lsp-print-performance= to =t=.
+     #+BEGIN_SRC emacs-lisp
+       (setq lsp-print-performance t)
+     #+END_SRC
+     - Include emacs performance report. Use the following step to collect it:
+       - =M-x profiler-start= and select =CPU=
+       - Reproduce the slow behavior.
+       - =M-x profiler-stop=
+       - In the profiler report expand all nodes by doing =C-u TAB=.
+      /Note:/ - =lsp-mode= is just a frontend and the performance depends on
+      server as well. Some servers (e. g. Palatir's Python Language Server)
+      might be slow when performing auto-completion.
 *** How does it work?
     ~lsp-mode~ has predefined list of server configurations (loaded in ~lsp-clients.el~) containing a mapping from ~major-mode~ to the server configuration or by using activation function. In addition to the default server configuration located in ~lsp-clients.el~ there are few languages servers which require separate package(check [[#supported-languages][Supported languages]]). When you open a file from a particular project ~lsp-mode~ and call ~lsp~ command ~lsp-mode~ will look for server registrations able to handle current file. If there is such client ~lsp-mode~ will look for the project root. If you open a file from the project for the first time you will be prompted to define the current project root. Once the project root is selected it is saved in ~lsp-session~ file and it will be loaded the next time you start Emacs so you no longer will be asked for a project root when you open a file from that project. Later if you want to change the project root you may use ~lsp-workspace-folder-remove~ to remove the project and call ~lsp-workspace-folder-add~ to add the root. If you want to force starting a particular language server in a file you may use ~C-u~ ~M-x~ ~lsp~ which will prompt you to select language server to start.
 ** Supported languages
