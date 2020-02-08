@@ -5418,7 +5418,7 @@ WORKSPACE is the active workspace."
                                         (lsp--error "Failed to apply edits with message %s" (error-message-string err))
                                         :json-false))))
                      ((string= method "workspace/configuration")
-                      (lsp--build-workspace-configuration-response params))
+                      (with-lsp-workspace workspace (lsp--build-workspace-configuration-response params)))
                      ((string= method "workspace/workspaceFolders")
                       (let ((folders (or (-> workspace
                                              (lsp--workspace-client)
@@ -6490,10 +6490,11 @@ changing the value of `foo'."
 
 (defun lsp-register-custom-settings (props)
   "Register PROPS.
-PROPS is list of triple (path value boolean?) where PATH is the
+PROPS is list of triple (path value boolean? ignore-on-nil?) where PATH is the
 path to the property, VALUE is either a literal value or symbol
-used to retrieve the value, and BOOLEAN? is an optional flag that
-should be non-nil for boolean settings."
+used to retrieve the value, BOOLEAN? is an optional flag that should be non-nil
+for boolean settings, and IGNORE-ON-NIL? is an optional flag that ignores the
+setting if its evaluated value is nil."
   (let ((-compare-fn #'lsp--compare-setting-path))
     (setq lsp-client-settings (-uniq (append props lsp-client-settings)))))
 
@@ -6516,15 +6517,17 @@ TBL - a hash table, PATHS is the path to the nested VALUE."
 (defun lsp-configuration-section (section)
   "Get settings for SECTION."
   (let ((ret (ht-create)))
-    (mapc (-lambda ((path variable boolean?))
+    (mapc (-lambda ((path variable boolean? ignore-on-nil?))
             (when (s-matches? (concat section "\\..*") path)
               (let* ((symbol-value (if (symbolp variable)
                                        (symbol-value variable)
-                                     variable))
+                                     (if (functionp variable)
+                                         (funcall variable) variable)))
                      (value (if (and boolean? (not symbol-value))
                                 :json-false
                               symbol-value)))
-                (lsp-ht-set ret (s-split "\\." path) value))))
+                (unless (and ignore-on-nil? (not value))
+                  (lsp-ht-set ret (s-split "\\." path) value)))))
           lsp-client-settings)
     ret))
 
