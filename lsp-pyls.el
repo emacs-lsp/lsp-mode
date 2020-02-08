@@ -419,26 +419,24 @@ should be the python executable. This option will be prioritized over
            ("pyls.plugins.jedi_definition.enabled" lsp-pyls-plugins-jedi-definition-enabled t)
            ("pyls.plugins.jedi_completion.include_params" lsp-pyls-plugins-jedi-completion-include-params t)
            ("pyls.plugins.jedi_completion.enabled" lsp-pyls-plugins-jedi-completion-enabled t)
-           ("pyls.configurationSources" lsp-pyls-configuration-sources)))
-
-(lsp-register-custom-settings
- '(("pyls.plugins.jedi.environment"
-    (lambda ()
-      (if lsp-pyls-plugins-jedi-environment
-          lsp-pyls-plugins-jedi-environment
-        (when lsp-pyls-plugins-jedi-use-pyenv-environment
-          (let ((pyenv-version (getenv "PYENV_VERSION"))
-                (root (lsp-seq-first (lsp-find-roots-for-workspace lsp--cur-workspace (lsp-session)))))
-            (when root
-              (setenv "PYENV_VERSION" nil)
-              (let ((python-env (f-parent
-                                 (f-parent
-                                  (shell-command-to-string
-                                   (format "PYENV_DIR='%s' %s which python"
-                                           root lsp-pyls-pyenv-command-path))))))
-                (lsp--info "Configure pyls with environment: %s" python-env)
-                (setenv "PYENV_VERSION" pyenv-version)
-                python-env)))))))))
+           ("pyls.configurationSources" lsp-pyls-configuration-sources)
+           ("pyls.plugins.jedi.environment"
+            (lambda ()
+              (if lsp-pyls-plugins-jedi-environment
+                  lsp-pyls-plugins-jedi-environment
+                (when lsp-pyls-plugins-jedi-use-pyenv-environment
+                  (let ((pyenv-version (getenv "PYENV_VERSION"))
+                        (root (lsp-seq-first (lsp-find-roots-for-workspace lsp--cur-workspace (lsp-session)))))
+                    (when root
+                      (setenv "PYENV_VERSION" nil)
+                      (let ((python-env (f-parent
+                                         (f-parent
+                                          (shell-command-to-string
+                                           (format "PYENV_DIR='%s' %s which python"
+                                                   root lsp-pyls-pyenv-command-path))))))
+                        (lsp--info "Configure pyls with environment: %s" python-env)
+                        (setenv "PYENV_VERSION" pyenv-version)
+                        python-env)))))))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
