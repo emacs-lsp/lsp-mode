@@ -611,7 +611,7 @@ PARAMS progress report notification data."
    "Select runnable:"
    (if lsp-rust-analyzer--last-runnable
        (cons lsp-rust-analyzer--last-runnable (lsp-rust-analyzer--runnables))
-       (lsp-rust-analyzer--runnables))
+     (lsp-rust-analyzer--runnables))
    (-lambda ((&hash "label")) label)))
 
 (defun lsp-rust-analyzer-run (runnable)
