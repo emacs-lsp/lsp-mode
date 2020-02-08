@@ -6490,11 +6490,11 @@ changing the value of `foo'."
 
 (defun lsp-register-custom-settings (props)
   "Register PROPS.
-PROPS is list of triple (path value boolean? ignore-on-nil?) where PATH is the
-path to the property, VALUE is either a literal value or symbol
-used to retrieve the value, BOOLEAN? is an optional flag that should be non-nil
-for boolean settings, and IGNORE-ON-NIL? is an optional flag that ignores the
-setting if its evaluated value is nil."
+PROPS is list of triple (path value boolean?) where PATH is the path to the
+property; VALUE can be a literal value, symbol to be evaluated, or lambda
+function to be called; BOOLEAN? is an optional flag that should be non-nil for
+boolean settings, when it is nil the property will be ignored if the VALUE is
+nil."
   (let ((-compare-fn #'lsp--compare-setting-path))
     (setq lsp-client-settings (-uniq (append props lsp-client-settings)))))
 
@@ -6517,7 +6517,7 @@ TBL - a hash table, PATHS is the path to the nested VALUE."
 (defun lsp-configuration-section (section)
   "Get settings for SECTION."
   (let ((ret (ht-create)))
-    (mapc (-lambda ((path variable boolean? ignore-on-nil?))
+    (mapc (-lambda ((path variable boolean?))
             (when (s-matches? (concat section "\\..*") path)
               (let* ((symbol-value (if (symbolp variable)
                                        (symbol-value variable)
@@ -6526,7 +6526,7 @@ TBL - a hash table, PATHS is the path to the nested VALUE."
                      (value (if (and boolean? (not symbol-value))
                                 :json-false
                               symbol-value)))
-                (unless (and ignore-on-nil? (not value))
+                (when (or boolean? value)
                   (lsp-ht-set ret (s-split "\\." path) value)))))
           lsp-client-settings)
     ret))

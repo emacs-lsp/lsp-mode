@@ -365,8 +365,16 @@ parameters referenced in config."
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.3"))
 
+(defcustom lsp-pyls-plugins-jedi-environment nil
+  "Specify the environment that jedi runs on where <environmeent>/bin/python
+should be the python executable. This option will be prioritized over
+`lsp-pyls-plugins-jedi-use-pyenv-environment'."
+  :type 'string
+  :group 'lsp-pyls
+  :package-version '(lsp-mode . "6.3"))
+
 (lsp-register-custom-settings
- (append '(("pyls.rope.ropeFolder" lsp-pyls-rope-rope-folder)
+ '(("pyls.rope.ropeFolder" lsp-pyls-rope-rope-folder)
            ("pyls.rope.extensionModules" lsp-pyls-rope-extension-modules)
            ("pyls.plugins.autopep8.enabled" lsp-pyls-plugins-autopep8-enabled t)
            ("pyls.plugins.yapf.enabled" lsp-pyls-plugins-yapf-enabled t)
@@ -411,25 +419,26 @@ parameters referenced in config."
            ("pyls.plugins.jedi_definition.enabled" lsp-pyls-plugins-jedi-definition-enabled t)
            ("pyls.plugins.jedi_completion.include_params" lsp-pyls-plugins-jedi-completion-include-params t)
            ("pyls.plugins.jedi_completion.enabled" lsp-pyls-plugins-jedi-completion-enabled t)
-           ("pyls.configurationSources" lsp-pyls-configuration-sources))
-         (when lsp-pyls-plugins-jedi-use-pyenv-environment
-           (let ((pyenv-get-python-executable
-                  (lambda ()
-                    (let* ((pyenv-version (getenv "PYENV_VERSION"))
-                           (root (nth 0 (lsp-find-roots-for-workspace lsp--cur-workspace (lsp-session)))))
-                      (when root
-                        (setenv "PYENV_VERSION" nil)
-                        (let ((python-env (f-parent
-                                           (f-parent
-                                            (shell-command-to-string
-                                             (format "PYENV_DIR='%s' %s which python"
-                                                     root lsp-pyls-pyenv-command-path))))))
-                          (message (format "Configure pyls with environment: %s" python-env))
-                          (setenv "PYENV_VERSION" pyenv-version)
-                          python-env)
-                        )))))
-             `(("pyls.plugins.jedi.environment" ,pyenv-get-python-executable nil t))
-             ))))
+           ("pyls.configurationSources" lsp-pyls-configuration-sources)))
+
+(lsp-register-custom-settings
+ '(("pyls.plugins.jedi.environment"
+    (lambda ()
+      (if lsp-pyls-plugins-jedi-environment
+          lsp-pyls-plugins-jedi-environment
+        (when lsp-pyls-plugins-jedi-use-pyenv-environment
+          (let ((pyenv-version (getenv "PYENV_VERSION"))
+                (root (lsp-seq-first (lsp-find-roots-for-workspace lsp--cur-workspace (lsp-session)))))
+            (when root
+              (setenv "PYENV_VERSION" nil)
+              (let ((python-env (f-parent
+                                 (f-parent
+                                  (shell-command-to-string
+                                   (format "PYENV_DIR='%s' %s which python"
+                                           root lsp-pyls-pyenv-command-path))))))
+                (lsp--info "Configure pyls with environment: %s" python-env)
+                (setenv "PYENV_VERSION" pyenv-version)
+                python-env)))))))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
