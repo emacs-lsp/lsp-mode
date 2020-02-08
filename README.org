@@ -131,7 +131,7 @@
        ;; optional if you want which-key integration
        (use-package which-key
          :config
-         (which-key-mode)
+         (which-key-mode))
 
      #+END_SRC
 
