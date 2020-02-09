@@ -6142,8 +6142,8 @@ SESSION is the active session."
        (append
         (list :processId (emacs-pid)
               :rootPath (lsp-file-local-name (expand-file-name root))
-              :clientInfo (list :name "vscode"
-                                :version "1.41.1")
+              :clientInfo (list :name "emacs"
+                                :version (emacs-version))
               :rootUri (lsp--path-to-uri root)
               :capabilities (lsp--client-capabilities
                              (lsp--client-custom-capabilities client))
