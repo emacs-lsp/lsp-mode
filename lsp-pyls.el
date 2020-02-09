@@ -353,7 +353,7 @@ parameters referenced in config."
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.3"))
 
-(defcustom lsp-pyls-plugins-jedi-use-pyenv-environment t
+(defcustom lsp-pyls-plugins-jedi-use-pyenv-environment nil
   "If enabled, pass the environment got by pyenv to jedi"
   :type 'boolean
   :group 'lsp-pyls
@@ -378,12 +378,17 @@ should be the python executable. This option will be prioritized over
         (when root
           (setenv "PYENV_VERSION" nil)
           (let* ((pyenv-command-path (executable-find "pyenv"))
-                 (python-env (f-parent
-                              (f-parent
-                               (shell-command-to-string
-                                (format "PYENV_DIR='%s' %s which python"
-                                        root pyenv-command-path))))))
-            (lsp--info "Configure pyls with environment: %s" python-env)
+                 (python-env (when pyenv-command-path
+                               (f-parent
+                                (f-parent
+                                 (shell-command-to-string
+                                  (format "PYENV_DIR='%s' %s which python"
+                                          root pyenv-command-path)))))))
+            (if python-env (lsp--info "Configure pyls with environment: %s" python-env)
+              (lsp--warn "Can't find the python environment for
+              %s even if
+              `lsp-pyls-plugins-jedi-use-pyenv-environment` is
+              enabled") root)
             (setenv "PYENV_VERSION" pyenv-version)
             python-env))))))
 
