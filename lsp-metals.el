@@ -149,9 +149,6 @@ Should be ignored if there is no open doctor window."
   (with-lsp-workspace workspace
     (lsp-send-execute-command command)))
 
-(defvar-local lsp-metals--decorations nil
-  "Overlays used by `metals/publishDecorations' handler.")
-
 (defun lsp-metals--publish-decorations (workspace params)
   "Handle the metals/publishDecorations extension notification."
   (with-lsp-workspace workspace
@@ -159,8 +156,7 @@ Should be ignored if there is no open doctor window."
             (buffer (lsp--buffer-for-file file)))
       (when buffer
         (with-current-buffer buffer
-          (mapc #'delete-overlay lsp-metals--decorations)
-          (setq lsp-metals--decorations nil)
+          (lsp--remove-overlays 'metals-decoration)
           (mapc #'lsp-metals--make-overlay (ht-get params "options")))))))
 
 (defun lsp-metals--make-overlay (decoration)
@@ -171,7 +167,7 @@ Should be ignored if there is no open doctor window."
           (ov (make-overlay (car region) (cdr region) nil t t)))
     (overlay-put ov 'after-string (propertize content 'cursor t 'font-lock-face 'font-lock-comment-face))
     (overlay-put ov 'help-echo hover)
-    (push ov lsp-metals--decorations)))
+    (overlay-put ov 'metals-decoration t)))
 
 (defun lsp-metals--logs-toggle (_workspace)
   "Focus or remove focus on the output logs reported by the
