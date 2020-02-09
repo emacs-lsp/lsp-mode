@@ -282,20 +282,15 @@ is often the type local variable declaration."
    ("rust.target" lsp-rust-target)
    ("rust.sysroot" lsp-rust-sysroot)))
 
-(defvar lsp-clients-rust-progress-string ""
-  "Rust progress status as reported by the RLS server.")
-
-(put 'lsp-rust-progress-string 'risky-local-variable t)
-(add-to-list 'global-mode-string (list '(t lsp-clients-rust-progress-string)))
-
-(defun lsp-clients--rust-window-progress (_workspace params)
+(defun lsp-clients--rust-window-progress (workspace params)
   "Progress report handling.
 PARAMS progress report notification data."
   (-let (((&hash "done" "message" "title") params))
     (if (or done (s-blank-str? message))
-        (setq lsp-clients-rust-progress-string nil)
-      (setq lsp-clients-rust-progress-string (format "%s - %s" title (or message "")))
-      (lsp-log lsp-clients-rust-progress-string))))
+        (lsp-workspace-status nil workspace)
+      (let ((status-string (format "%s - %s" title (or message ""))))
+        (lsp-workspace-status status-string workspace)
+        (lsp-log status-string)))))
 
 (cl-defmethod lsp-execute-command
   (_server (_command (eql rls.run)) params)
