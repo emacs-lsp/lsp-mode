@@ -53,18 +53,16 @@
    - 🌟 *Flexible* - could be configured as full-blown IDE with flashy UI or minimal distraction free
 ** Overview
    Client for [[https://github.com/Microsoft/language-server-protocol/][Language Server Protocol]] (v3.14). [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] aims to provide IDE-like experience by providing optional integration with the most popular Emacs packages like ~company~, ~flycheck~ and ~projectile~.
-
    - Non-blocking asynchronous calls
-   - Real-time Diagnostics/linting (via builtin ~flymake~ when Emacs > 26, requires flymake>=1.0.5 or [[https://github.com/flycheck/flycheck][flycheck]]/[[https://github.com/emacs-lsp/lsp-ui][lsp-ui]])
-   - Code completion - using [[https://github.com/tigersoldier/company-lsp][company-lsp]] or builtin ~completion-at-point~
+   - Real-time Diagnostics/linting (via ~flymake~ when Emacs > 26, requires flymake>=1.0.5 or builtin [[https://github.com/flycheck/flycheck][flycheck]])
+   - Code completion - ~completion-at-point~ or external [[https://github.com/tigersoldier/company-lsp][company-lsp]]. If you want to use experimental ~company-capf~ integration you may force it by setting ~company-capf~ to ~t~.
    - Hovers - using [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]]
-   - Code actions - using ~lsp-execute-code-action~ or [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]]
+   - Code actions - using ~lsp-execute-code-action~ or [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] sideline.
    - Code outline - using builtin [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html][imenu]] or ~helm-imenu~
    - Code navigation - using builtin [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Xref.html][xref]]
-   - Code lens (references/implementations) - using builtin [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Xref.html][xref]]
+   - Code lens (references/implementations) - using builtin [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Xref.html][xref]] or fancy tree rendering via [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]].
    - Symbol highlights
    - Formatting
-   - Semantic highlighting (as currently implemented by JDT LS and unreleased builds of clangd, cf. [[https://github.com/microsoft/vscode-languageserver-node/pull/367][Semantic highlighting spec]])
    - Debugger - [[https://github.com/yyoncho/dap-mode/][dap-mode]]
    - Helm integration - [[https://github.com/emacs-lsp/helm-lsp/][helm-lsp]]
    - Ivy integration - [[https://github.com/emacs-lsp/lsp-ivy/][lsp-ivy]]
@@ -82,8 +80,9 @@
 *** Configure lsp-mode
 **** Vanilla Emacs
      You could go minimal and use ~lsp-mode~ as it is without external packages with the built-in ~flymake~ and ~completion-at-point~ or you could install the following extensions for better experience:
-     - install [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] for [[https://github.com/flycheck/flycheck][flycheck]] integration and higher level UI modules.
-     - install [[https://github.com/tigersoldier/company-lsp][company-lsp]] if you want to use ~company-mode~ for completion.
+     - install [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] for fancy sideline, popup documentation, VScode-like peek UI, etc.
+     - install [[https://github.com/flycheck/flycheck][flycheck]] if you prefer the more popular ~flycheck~ over renewed ~flymake~. ~lsp-mode~ will automatically pick it up.
+     - install [[https://github.com/tigersoldier/company-lsp][company-lsp]] if you want to use ~company-mode~ for completion(optional, if not installed ~lsp-mode~ will integrate with ~company~ via ~company-capf~).
      - install [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]] for various three based UI controls (symbols, errors overview, call hierarchy, etc.)
      - install [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] provides on type completion afternative of =xref-apropos= using =helm=.
      - install [[https://github.com/emacs-lsp/lsp-ivy][lsp-ivy]] provides on type completion afternative of =xref-apropos= using =ivy=.
@@ -279,7 +278,7 @@
    - ~lsp-eldoc-render-all~ - Display all of the info returned by ~document/onHover~. If this is nil, ~eldoc~ will show only the symbol information.
    - ~lsp-enable-completion-at-point~ - Enable ~completion-at-point~ integration.
    - ~lsp-enable-xref~ - Enable xref integration.
-   - ~lsp-prefer-flymake~ - If you prefer flycheck and ~lsp-ui-flycheck~ is available, ~(setq lsp-prefer-flymake nil)~. If set to ~:none~ neither of two will be enabled.
+   - ~lsp-diagnostics-package~ - Specifies which package to use for diagnostics. Choose from ~:auto~, ~:flycheck~, ~:flymake~ and ~:none~. Default is ~:auto~ which means use ~:flycheck~ if present.
    - ~lsp-enable-indentation~ - Indent regions using the file formatting functionality provided by the language server.
    - ~lsp-enable-on-type-formatting~ - Enable ~textDocument/onTypeFormatting~ integration.
    - ~lsp-before-save-edits~ - If non-nil, ~lsp-mode~ will apply edits suggested by the language server before saving a document.
@@ -437,8 +436,8 @@
        single file and the =lsp-ui= checker may not associated with the major mode
        at point. You could fix that by adding the following lines to your config.
        #+begin_src elisp
-         (with-eval-after-load 'lsp-ui-flycheck
-           (mapc 'lsp-ui-flycheck-add-mode '(typescript-mode js-mode css-mode vue-html-mode)))
+         (with-eval-after-load 'lsp-mode
+           (mapc #'lsp-flycheck-add-mode '(typescript-mode js-mode css-mode vue-html-mode)))
        #+end_src
 
 ** See also
