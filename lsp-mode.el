@@ -6491,10 +6491,10 @@ changing the value of `foo'."
 (defun lsp-register-custom-settings (props)
   "Register PROPS.
 PROPS is list of triple (path value boolean?) where PATH is the path to the
-property; VALUE can be a literal value, symbol to be evaluated, or lambda
-function to be called; BOOLEAN? is an optional flag that should be non-nil for
-boolean settings, when it is nil the property will be ignored if the VALUE is
-nil."
+property; VALUE can be a literal value, symbol to be evaluated, or either a
+function or lambda function to be called without arguments; BOOLEAN? is an
+optional flag that should be non-nil for boolean settings, when it is nil the
+property will be ignored if the VALUE is nil."
   (let ((-compare-fn #'lsp--compare-setting-path))
     (setq lsp-client-settings (-uniq (append props lsp-client-settings)))))
 
@@ -6520,7 +6520,9 @@ TBL - a hash table, PATHS is the path to the nested VALUE."
     (mapc (-lambda ((path variable boolean?))
             (when (s-matches? (concat section "\\..*") path)
               (let* ((symbol-value (if (symbolp variable)
-                                       (symbol-value variable)
+                                       (if (fboundp variable)
+                                           (funcall variable)
+                                         (symbol-value variable))
                                      (if (functionp variable)
                                          (funcall variable) variable)))
                      (value (if (and boolean? (not symbol-value))

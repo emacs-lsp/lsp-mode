@@ -57,12 +57,6 @@
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-pyls-pyenv-command-path "pyenv"
-  "Executable path to pyenv"
-  :type 'string
-  :group 'lsp-pyls
-  :package-version '(lsp-mode . "6.3"))
-
 (defcustom lsp-pyls-plugins-jedi-completion-enabled t
   "Enable or disable the plugin."
   :type 'boolean
@@ -373,6 +367,26 @@ should be the python executable. This option will be prioritized over
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.3"))
 
+(defun lsp-pyls-get-pyenv-environment ()
+  "Get the pyenv-managed environment for current workspace, where
+<ENV>/bin/python is the corresponding Python executable"
+  (if lsp-pyls-plugins-jedi-environment
+      lsp-pyls-plugins-jedi-environment
+    (when lsp-pyls-plugins-jedi-use-pyenv-environment
+      (let ((pyenv-version (getenv "PYENV_VERSION"))
+            (root (lsp-seq-first (lsp-find-roots-for-workspace lsp--cur-workspace (lsp-session)))))
+        (when root
+          (setenv "PYENV_VERSION" nil)
+          (let* ((pyenv-command-path (executable-find "pyenv"))
+                 (python-env (f-parent
+                              (f-parent
+                               (shell-command-to-string
+                                (format "PYENV_DIR='%s' %s which python"
+                                        root pyenv-command-path))))))
+            (lsp--info "Configure pyls with environment: %s" python-env)
+            (setenv "PYENV_VERSION" pyenv-version)
+            python-env))))))
+
 (lsp-register-custom-settings
  '(("pyls.rope.ropeFolder" lsp-pyls-rope-rope-folder)
            ("pyls.rope.extensionModules" lsp-pyls-rope-extension-modules)
@@ -420,23 +434,7 @@ should be the python executable. This option will be prioritized over
            ("pyls.plugins.jedi_completion.include_params" lsp-pyls-plugins-jedi-completion-include-params t)
            ("pyls.plugins.jedi_completion.enabled" lsp-pyls-plugins-jedi-completion-enabled t)
            ("pyls.configurationSources" lsp-pyls-configuration-sources)
-           ("pyls.plugins.jedi.environment"
-            (lambda ()
-              (if lsp-pyls-plugins-jedi-environment
-                  lsp-pyls-plugins-jedi-environment
-                (when lsp-pyls-plugins-jedi-use-pyenv-environment
-                  (let ((pyenv-version (getenv "PYENV_VERSION"))
-                        (root (lsp-seq-first (lsp-find-roots-for-workspace lsp--cur-workspace (lsp-session)))))
-                    (when root
-                      (setenv "PYENV_VERSION" nil)
-                      (let ((python-env (f-parent
-                                         (f-parent
-                                          (shell-command-to-string
-                                           (format "PYENV_DIR='%s' %s which python"
-                                                   root lsp-pyls-pyenv-command-path))))))
-                        (lsp--info "Configure pyls with environment: %s" python-env)
-                        (setenv "PYENV_VERSION" pyenv-version)
-                        python-env)))))))))
+           ("pyls.plugins.jedi.environment" lsp-pyls-get-pyenv-environment)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
