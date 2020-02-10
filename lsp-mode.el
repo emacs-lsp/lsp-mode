@@ -7103,7 +7103,7 @@ CALLBACK is the status callback passed by Flycheck."
                 :checker checker
                 :filename buffer-file-name
                 :line (1+ (lsp-diagnostic-line diag))
-                :column (lsp-diagnostic-column diag)
+                :column (1+ (lsp-diagnostic-column diag))
                 :message (lsp-diagnostic-message diag)
                 :level (pcase (lsp-diagnostic-severity diag)
                          (1 'error)
