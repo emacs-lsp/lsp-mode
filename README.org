@@ -188,7 +188,7 @@
     - Optional: fine tune =lsp-idle-delay=. This variable determines how often
       lsp-mode will refresh the highlights, lenses, links, etc while you type.
     #+BEGIN_SRC emacs-lisp
-      (setq lsp-idle-delay 500)
+      (setq lsp-idle-delay 0.500)
     #+END_SRC
 **** Reporting performance problems
      If you have tried all of the non-optional steps from the list and =emacs= is
