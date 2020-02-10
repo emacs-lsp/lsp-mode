@@ -290,7 +290,7 @@ imported and inspected by rope."
 
 (defcustom lsp-pyls-rope-rope-folder nil
   "The name of the folder in which rope stores project
-configurations and data. Pass `null` for not using such a folder
+configurations and data. Pass `nil` for not using such a folder
 at all."
   :type '(repeat string)
   :group 'lsp-pyls
