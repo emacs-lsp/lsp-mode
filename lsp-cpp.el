@@ -1,4 +1,4 @@
-;;; lsp-cpp.el --- Specific fuctionality for C++ language servers -*- lexical-binding: t; -*-
+;;; lsp-cpp.el --- Specific functionality for C++ language servers -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020 Daniel Martín
 ;; URL: https://github.com/emacs-lsp/lsp-mode
