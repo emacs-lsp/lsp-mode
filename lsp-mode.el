@@ -7139,6 +7139,8 @@ reporting or we are in save-mode and the buffer is not modified."
                 (not (buffer-modified-p))))
        (flycheck-buffer)))
 
+(declare-function lsp-cpp-flycheck-clang-tidy-error-explainer "lsp-cpp")
+
 (with-eval-after-load 'flycheck
   (flycheck-define-generic-checker 'lsp
     "A syntax checker using the Language Server Protocol (LSP)
