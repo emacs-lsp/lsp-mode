@@ -34,6 +34,10 @@
 ;;; Code:
 
 (require 'dom)
+(require 'subr-x)
+
+(defvar flycheck-explain-error-buffer)
+(declare-function flycheck-error-id "ext:flycheck" (err))
 
 (defun lsp-cpp-flycheck-clang-tidy--skip-http-headers ()
   "Position point just after HTTP headers."
