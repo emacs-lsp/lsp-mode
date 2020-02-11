@@ -34,7 +34,7 @@
 ;;; Code:
 
 (require 'dom)
-(require 'subr-x)
+(eval-when-compile (require 'subr-x))
 
 (defvar flycheck-explain-error-buffer)
 (declare-function flycheck-error-id "ext:flycheck" (err))
