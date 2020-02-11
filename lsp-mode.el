@@ -7147,7 +7147,10 @@ See https://github.com/emacs-lsp/lsp-mode."
     :start #'lsp--flycheck-start
     :modes '(python-mode)
     :predicate (lambda () lsp-mode)
-    :error-explainer #'flycheck-error-message))
+    :error-explainer (lambda (e)
+                     (cond ((string-prefix-p "clang-tidy" (flycheck-error-message e))
+                            (lsp-cpp-flycheck-clang-tidy-error-explainer e))
+                           (t (flycheck-error-message e))))))
 
 (defun lsp-flycheck-add-mode (mode)
   "Register flycheck support for MODE."
