@@ -369,6 +369,8 @@
      [[file:examples/metals-doctor.png]]
    - Semantic highlighting as provided by clangd (built from unreleased 10.0 branch). In this screenshot, all other font-locking has been disabled (hence no syntax highlighting of comments or basic keywords such as ~auto~)
      [[file:examples/clangd_semantic_highlighting.png]]
+   - clang-tidy error explanations (from the clangd language server)
+     [[file:examples/clangd-clang-tidy-integration.png]]
 ** Extensions
 *** TRAMP
     LSP mode has support for tramp buffers with the following requirements:
