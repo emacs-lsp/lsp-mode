@@ -4495,6 +4495,7 @@ It will show up only if current point has signature help."
   (interactive)
   (setq-local lsp--last-signature nil)
   (setq-local lsp--last-signature-index nil)
+  (setq-local lsp--last-signature-buffer nil)
   (add-hook 'lsp-on-idle-hook #'lsp-signature nil t)
   (add-hook 'post-command-hook #'lsp-signature-maybe-stop)
   (lsp-signature-mode t))
