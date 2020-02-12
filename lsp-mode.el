@@ -6101,7 +6101,6 @@ returns the command to execute."
         (lsp--restart-if-needed workspace))
       (lsp--cleanup-hanging-watches))))
 
-(defvar lsp-send-process-id nil "Send null as process id if nil. Otherwise sends emacs pid")
 (defun lsp--start-workspace (session client-template root &optional initialization-options)
   "Create new workspace for CLIENT-TEMPLATE with project root ROOT.
 INITIALIZATION-OPTIONS are passed to initialize function.
@@ -6142,7 +6141,7 @@ SESSION is the active session."
       (lsp-request-async
        "initialize"
        (append
-        (list :processId (if lsp-send-process-id (emacs-pid) nil)
+        (list :processId nil
               :rootPath (lsp-file-local-name (expand-file-name root))
               :clientInfo (list :name "emacs"
                                 :version (emacs-version))
