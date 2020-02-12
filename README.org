@@ -207,6 +207,8 @@
       might be slow when performing auto-completion.
 *** How does it work?
     ~lsp-mode~ has predefined list of server configurations (loaded in ~lsp-clients.el~) containing a mapping from ~major-mode~ to the server configuration or by using activation function. In addition to the default server configuration located in ~lsp-clients.el~ there are few languages servers which require separate package(check [[#supported-languages][Supported languages]]). When you open a file from a particular project ~lsp-mode~ and call ~lsp~ command ~lsp-mode~ will look for server registrations able to handle current file. If there is such client ~lsp-mode~ will look for the project root. If you open a file from the project for the first time you will be prompted to define the current project root. Once the project root is selected it is saved in ~lsp-session~ file and it will be loaded the next time you start Emacs so you no longer will be asked for a project root when you open a file from that project. Later if you want to change the project root you may use ~lsp-workspace-folder-remove~ to remove the project and call ~lsp-workspace-folder-add~ to add the root. If you want to force starting a particular language server in a file you may use ~C-u~ ~M-x~ ~lsp~ which will prompt you to select language server to start.
+*** Send emacs pid
+    To send the emacs pid to your language server add ~(setq-default lsp-send-process-id t)~ to your configuration.
 ** Supported languages
    Some of the servers are directly supported by ~lsp-mode~ by requiring
    ~lsp-clients.el~ while others require installing additional packages which provide
