@@ -7164,7 +7164,8 @@ See https://github.com/emacs-lsp/lsp-mode."
 (defun lsp-flycheck-enable (&rest _)
   "Enable flycheck integration for the current buffer."
   (flycheck-mode 1)
-  (setq-local flycheck-check-syntax-automatically nil)
+  (when lsp-flycheck-live-reporting
+    (setq-local flycheck-check-syntax-automatically nil))
   (setq-local flycheck-checker 'lsp)
   (lsp-flycheck-add-mode major-mode)
   (add-to-list 'flycheck-checkers 'lsp)
