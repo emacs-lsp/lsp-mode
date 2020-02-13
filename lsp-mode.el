@@ -2447,7 +2447,8 @@ BINDINGS is a list of (key def cond)."
 (defun lsp-workspace-status (status-string &optional workspace)
   "Set current workspace status to STATUS-STRING.
 If WORKSPACE is not specified defaults to lsp--cur-workspace."
-  (setf (lsp--workspace-status-string (or workspace lsp--cur-workspace)) status-string))
+  (let ((status-string (when status-string (replace-regexp-in-string "%" "%%" status-string))))
+    (setf (lsp--workspace-status-string (or workspace lsp--cur-workspace)) status-string)))
 
 (defun lsp-session-set-metadata (key value &optional _workspace)
   "Associate KEY with VALUE in the WORKSPACE metadata.
