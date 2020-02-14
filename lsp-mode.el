@@ -6301,9 +6301,9 @@ Check `*lsp-install*' and `*lsp-log*' buffer."
      update?)))
 
 (defun lsp-install-server (update?)
-  (interactive "P")
   "Interactively install server.
 When UPDATE? is t force installation even if the server is present."
+  (interactive "P")
   (lsp--install-server-internal
    (lsp--completing-read
     "Select server to install: "
@@ -6314,7 +6314,7 @@ When UPDATE? is t force installation even if the server is present."
                               (-const update?))
                        (-not #'lsp--client-download-in-progress?)
                        #'lsp--client-download-server-fn)))
-        (user-error "There are no servers with automatic installation."))
+        (user-error "There are no servers with automatic installation"))
     (-compose #'symbol-name #'lsp--client-server-id)
     nil
     t)))
