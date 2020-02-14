@@ -288,9 +288,7 @@ PARAMS progress report notification data."
   (-let (((&hash "done" "message" "title") params))
     (if (or done (s-blank-str? message))
         (lsp-workspace-status nil workspace)
-      (let ((status-string (format "%s - %s" title (or message ""))))
-        (lsp-workspace-status status-string workspace)
-        (lsp-log status-string)))))
+      (lsp-workspace-status (format "%s - %s" title (or message "")) workspace))))
 
 (cl-defmethod lsp-execute-command
   (_server (_command (eql rls.run)) params)

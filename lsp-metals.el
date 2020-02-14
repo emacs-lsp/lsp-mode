@@ -248,8 +248,7 @@ server via `window/logMessage'."
       (lsp-workspace-status (propertize text
                               'help-echo tooltip
                               'local-map (lsp-metals--status-string-keymap workspace command))
-        workspace)
-      (lsp-log text))))
+        workspace))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-metals--server-command)
