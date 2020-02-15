@@ -6307,7 +6307,7 @@ Check `*lsp-install*' and `*lsp-log*' buffer."
 
 (defun lsp-install-server (update?)
   "Interactively install server.
-When UPDATE? is t force installation even if the server is present."
+When prefix UPDATE? is t force installation even if the server is present."
   (interactive "P")
   (lsp--install-server-internal
    (lsp--completing-read
@@ -6322,7 +6322,8 @@ When UPDATE? is t force installation even if the server is present."
         (user-error "There are no servers with automatic installation"))
     (-compose #'symbol-name #'lsp--client-server-id)
     nil
-    t)))
+    t)
+   update?))
 
 (defun lsp-async-start-process (callback error-callback &rest command)
   (make-process
