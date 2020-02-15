@@ -166,17 +166,17 @@ See instructions at https://marketplace.visualstudio.com/items?itemName=mads-har
   :risky t
   :type '(repeat string))
 
-(defun lsp-typescript-javascript-tsx-jsx-activate-p (filename &optional _)
+(defun lsp-typescript-javascript-jsx-activate-p (filename &optional _)
   "Check if the javascript-typescript language server should be enabled based on FILENAME."
-  (or (string-match-p (rx (one-or-more anything) "." (or "ts" "js") (opt "x") string-end) filename)
-      (and (derived-mode-p 'js-mode 'js2-mode 'typescript-mode)
+  (or (string-match-p ".*\.jsx?$" filename)
+      (and (derived-mode-p 'js-mode 'js2-mode)
            (not (derived-mode-p 'json-mode)))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
                                                           (cons (lsp-package-path 'javascript-typescript-langserver)
                                                                 lsp-clients-typescript-javascript-server-args)))
-                  :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
+                  :activation-fn 'lsp-typescript-javascript-jsx-activate-p
                   :priority -3
                   :completion-in-comments? t
                   :server-id 'jsts-ls
@@ -231,13 +231,19 @@ directory containing the package. Example:
                 '  (:npm :package "typescript"
                          :path "tsserver"))
 
+(defun lsp-typescript-javascript-tsx-activate-p (filename &optional _)
+  "Check if the javascript-typescript language server should be enabled based on FILENAME."
+  (or (string-match-p ".*\.tsx?$" filename)
+      (and (derived-mode-p 'typescript-mode)
+           (not (derived-mode-p 'json-mode)))))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
                                                           `(,(lsp-package-path 'typescript-language-server)
                                                             "--tsserver-path"
                                                             ,(lsp-package-path 'typescript)
                                                             ,@lsp-clients-typescript-server-args)))
-                  :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
+                  :activation-fn 'lsp-typescript-javascript-tsx-activate-p
                   :priority -2
                   :completion-in-comments? t
                   :initialization-options (lambda ()
