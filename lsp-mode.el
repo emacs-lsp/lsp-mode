@@ -6985,9 +6985,11 @@ argument ask the user to select which language server to start. "
   (interactive "P")
 
   (when (and lsp-auto-configure)
-    (seq-do (lambda (package) (require package nil t))
-            lsp-client-packages))
-  (run-hooks 'lsp-after-client-packages-hook)
+    (seq-do (lambda (package)
+	      (require package nil t))
+            lsp-client-packages)
+    (run-hooks 'lsp-after-client-packages-hook))
+  
 
   (when (buffer-file-name)
     (let (clients
