@@ -185,10 +185,15 @@ occasionally break as language servers are updated."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-auto-require-clients t
-  "Auto require lsp-clients."
+(defcustom lsp-client-packages
+  '(ccls cquery lsp-clients lsp-clojure lsp-csharp lsp-css lsp-dart lsp-elm
+    lsp-erlang lsp-eslint lsp-fsharp lsp-go lsp-haskell lsp-haxe
+    lsp-intelephense lsp-java lsp-json lsp-metals lsp-pwsh lsp-pyls
+    lsp-python-ms lsp-rust lsp-solargraph lsp-terraform lsp-verilog lsp-vetur
+    lsp-vhdl lsp-xml lsp-yaml)
+  "List of the clients to be automatically required."
   :group 'lsp-mode
-  :type 'boolean)
+  :type '(repeat symbol))
 
 (defvar-local lsp--cur-workspace nil)
 
@@ -1654,7 +1659,7 @@ WORKSPACE is the workspace that contains the diagnostics."
         (dolist (tree-node (reverse trees))
           (when (lsp--range-inside-p range tree-node)
             (-if-let (children (lsp--folding-range-children tree-node))
-              (lsp--folding-range-insert-into-trees children range)
+                (lsp--folding-range-insert-into-trees children range)
               (setf (lsp--folding-range-children tree-node) (list range)))
             (cl-return-from top t))))
     (nconc trees (list range))))
@@ -6974,8 +6979,9 @@ server if there is such. When `lsp' is called with prefix
 argument ask the user to select which language server to start. "
   (interactive "P")
 
-  (when (and lsp-auto-configure lsp-auto-require-clients)
-    (require 'lsp-clients))
+  (when (and lsp-auto-configure)
+    (seq-do (lambda (package) (require package nil t))
+            lsp-client-packages))
 
   (when (buffer-file-name)
     (let (clients
