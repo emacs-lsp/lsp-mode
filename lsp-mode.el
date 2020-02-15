@@ -296,6 +296,11 @@ When nil, all registered clients are considered candidates.")
   :type 'hook
   :group 'lsp-mode)
 
+(defcustom lsp-after-client-packages-hook nil
+  "List of functions to be called after client packages are opened."
+  :type 'hook
+  :group 'lsp-mode)
+
 (defcustom lsp-enable-file-watchers t
   "If non-nil lsp-mode will watch the files in the workspace if
 the server has requested that."
@@ -6982,6 +6987,7 @@ argument ask the user to select which language server to start. "
   (when (and lsp-auto-configure)
     (seq-do (lambda (package) (require package nil t))
             lsp-client-packages))
+  (run-hooks 'lsp-after-client-packages-hook)
 
   (when (buffer-file-name)
     (let (clients
