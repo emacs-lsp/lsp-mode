@@ -1554,10 +1554,8 @@ WORKSPACE is the workspace that contains the diagnostics."
 
     (defun lsp--flymake-backend (report-fn &rest _args)
       "Flymake backend."
-      (let ((first-run (null lsp--flymake-report-fn)))
-        (setq lsp--flymake-report-fn report-fn)
-        (when first-run
-          (lsp--flymake-update-diagnostics))))
+      (setq lsp--flymake-report-fn report-fn)
+      (lsp--flymake-update-diagnostics))
 
     (defun lsp--flymake-update-diagnostics ()
       "Report new diagnostics to flymake."
