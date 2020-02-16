@@ -7109,15 +7109,13 @@ reported according to `flycheck-check-syntax-automatically'."
   "Start an LSP syntax check with CHECKER.
 
 CALLBACK is the status callback passed by Flycheck."
-  (->> (or (gethash (lsp--fix-path-casing buffer-file-name)
-                    (lsp-diagnostics))
-           (gethash (lsp--fix-path-casing (file-truename buffer-file-name))
-                    (lsp-diagnostics)))
-       (-map (-lambda (diag)
+  (cl-labels ((make-flycheck-error
+               (file diag)
+               ;; when FILE is nil, use the current buffer
                (flycheck-error-new
-                :buffer (current-buffer)
+                :buffer (if file (find-file-noselect file) (current-buffer))
                 :checker checker
-                :filename buffer-file-name
+                :filename (or file buffer-file-name)
                 :line (1+ (lsp-diagnostic-line diag))
                 :column (1+ (lsp-diagnostic-column diag))
                 :message (lsp-diagnostic-message diag)
@@ -7137,7 +7135,27 @@ CALLBACK is the status callback passed by Flycheck."
                 ;;               (plist-get :line)
                 ;;               (1+))
                 )))
-       (funcall callback 'finished)))
+    (->> (or
+          (let ((current-buffer-diagnostics
+                 (or (gethash (lsp--fix-path-casing buffer-file-name)
+                              (lsp-diagnostics))
+                     (gethash (lsp--fix-path-casing (file-truename buffer-file-name))
+                              (lsp-diagnostics)))))
+            (-map (-partial #'make-flycheck-error nil) current-buffer-diagnostics))
+
+          ;; If there are no errors in the current buffer, it might be because
+          ;; a dependent file/buffer contains errors. Instead of not showing
+          ;; any errors, show errors (but not warnings/info) from other files.
+          (let (errors)
+            (dolist (workspace (lsp--session-workspaces (lsp-session)))
+              (maphash (lambda (file diags)
+                         (dolist (diag diags)
+                           (when (= (lsp-diagnostic-severity diag) 1)
+                             (push (make-flycheck-error file diag) errors))))
+                       (lsp--workspace-diagnostics workspace)))
+            (nreverse errors)))
+
+         (funcall callback 'finished))))
 
 (defun lsp--flycheck-report ()
   "This callback is invoked when new diagnostics are received
