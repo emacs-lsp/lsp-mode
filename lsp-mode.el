@@ -1184,8 +1184,8 @@ to the beginning and ending points in the range correspondingly."
                      "textDocument/selectionRange"
                      (list :textDocument (lsp--text-document-identifier)
                            :positions (vector (lsp--cur-position)))))))
-     (setq-local lsp--document-selection-range-cache
-                 (cons response (buffer-modified-tick)))
+     (setq lsp--document-selection-range-cache
+           (cons response (buffer-modified-tick)))
      response)))
 
 (defun lsp-extend-selection ()
@@ -1850,13 +1850,13 @@ Results are meaningful only if FROM and TO are on the same line."
 BUFFER-MODIFIED? determines whether the buffer is modified or not."
   (-some-> lsp--lens-refresh-timer cancel-timer)
 
-  (setq-local lsp--lens-page (cons (window-start) (window-end)))
-  (setq-local lsp--lens-refresh-timer
-              (run-with-timer lsp-lens-debounce-interval
-                              nil
-                              #'lsp-lens-refresh
-                              (or lsp--lens-modified? buffer-modified?)
-                              (current-buffer))))
+  (setq lsp--lens-page (cons (window-start) (window-end)))
+  (setq lsp--lens-refresh-timer
+        (run-with-timer lsp-lens-debounce-interval
+                        nil
+                        #'lsp-lens-refresh
+                        (or lsp--lens-modified? buffer-modified?)
+                        (current-buffer))))
 
 (defun lsp--lens-keymap (command)
   (-doto (make-sparse-keymap)
@@ -1882,7 +1882,7 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
   ;; has changed(e. g. delete lens should trigger redisplay).
   (setq lsp--lens-modified? nil)
   (when (or (--any? (not (gethash "processed" it)) lenses) (eq (length lenses) lsp--lens-last-count))
-    (setq-local lsp--lens-last-count (length lenses))
+    (setq lsp--lens-last-count (length lenses))
     (let ((overlays
            (->> lenses
                 (--filter (gethash "command" it))
@@ -1909,7 +1909,7 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
       (--each lsp--lens-overlays
         (unless (-contains? overlays it)
           (delete-overlay it)))
-      (setq-local lsp--lens-overlays overlays))))
+      (setq lsp--lens-overlays overlays))))
 
 (defun lsp-lens-refresh (buffer-modified? &optional buffer)
   "Refresh lenses using lenses backend.
@@ -1928,7 +1928,7 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
 VERSION is the version of the file. The lenses has to be
 refreshed only when all backends have reported for the same
 version."
-  (setq-local lsp--lens-data (or lsp--lens-data (make-hash-table)))
+  (setq lsp--lens-data (or lsp--lens-data (make-hash-table)))
   (puthash backend (cons version (append lenses nil)) lsp--lens-data)
 
   (-let [backend-data (->> lsp--lens-data ht-values (-filter #'cl-rest))]
@@ -1959,7 +1959,7 @@ version."
   (interactive)
   (let ((scroll-preserve-screen-position t))
     (seq-do #'delete-overlay lsp--lens-overlays)
-    (setq-local lsp--lens-overlays nil)))
+    (setq lsp--lens-overlays nil)))
 
 (defun lsp--lens-backend-not-loaded? (lens)
   "Return t if LENS has to be loaded."
@@ -2003,17 +2003,17 @@ CALLBACK - callback for the lenses."
   (when (lsp--find-workspaces-for "textDocument/codeLens")
     (if modified?
         (progn
-          (setq-local lsp--lens-backend-cache nil)
+          (setq lsp--lens-backend-cache nil)
           (lsp-request-async "textDocument/codeLens"
                              `(:textDocument (:uri ,(lsp--buffer-uri)))
                              (lambda (lenses)
-                               (setq-local lsp--lens-backend-cache
-                                           (seq-mapcat
-                                            (-lambda ((workspace . workspace-lenses))
-                                              ;; preserve the original workspace so we can later use it to resolve the lens
-                                              (seq-do (-partial 'puthash "workspace" workspace) workspace-lenses)
-                                              workspace-lenses)
-                                            lenses))
+                               (setq lsp--lens-backend-cache
+                                     (seq-mapcat
+                                      (-lambda ((workspace . workspace-lenses))
+                                        ;; preserve the original workspace so we can later use it to resolve the lens
+                                        (seq-do (-partial 'puthash "workspace" workspace) workspace-lenses)
+                                        workspace-lenses)
+                                      lenses))
                                (if (--every? (gethash "command" it) lsp--lens-backend-cache)
                                    (funcall callback lsp--lens-backend-cache lsp--cur-version)
                                  (lsp--lens-backend-fetch-missing lsp--lens-backend-cache callback lsp--cur-version)))
@@ -2042,8 +2042,8 @@ CALLBACK - callback for the lenses."
     (remove-hook 'lsp-on-idle-hook #'lsp--lens-idle-function t)
     (remove-hook 'lsp-on-change-hook (lambda () (lsp--lens-schedule-refresh nil)) t)
     (remove-hook 'after-save-hook (lambda () (lsp--lens-schedule-refresh t)) t)
-    (setq-local lsp--lens-last-count nil)
-    (setq-local lsp--lens-backend-cache nil))))
+    (setq lsp--lens-last-count nil)
+    (setq lsp--lens-backend-cache nil))))
 
 
 ;; toggles
@@ -2564,7 +2564,7 @@ TYPE can either be 'incoming or 'outgoing"
     (with-current-buffer (lsp--get-log-buffer-create workspace)
       (unless (eq 'lsp-log-io-mode major-mode) (lsp-log-io-mode))
       (setq-local window-point-insertion-type t)
-      (setq-local lsp--log-io-ewoc (ewoc-create #'lsp--log-entry-pp nil nil t))
+      (setq lsp--log-io-ewoc (ewoc-create #'lsp--log-entry-pp nil nil t))
       (setf (lsp--workspace-ewoc workspace) lsp--log-io-ewoc))
     (lsp--workspace-ewoc workspace)))
 
@@ -3219,7 +3219,7 @@ in that particular folder."
 (defun lsp--text-document-did-open ()
   "'document/didOpen event."
   (run-hooks 'lsp-before-open-hook)
-  (setq-local lsp--cur-version (or lsp--cur-version 0))
+  (setq lsp--cur-version (or lsp--cur-version 0))
   (cl-pushnew (current-buffer) (lsp--workspace-buffers lsp--cur-workspace))
   (lsp-notify
    "textDocument/didOpen"
@@ -3723,11 +3723,11 @@ Added to `after-change-functions'."
 (defvar lsp--on-idle-timer nil)
 
 (defun lsp--idle-reschedule (buffer)
-  (setq-local lsp--on-idle-timer (run-with-idle-timer
-                                  lsp-idle-delay
-                                  nil
-                                  #'lsp--on-idle
-                                  buffer)))
+  (setq lsp--on-idle-timer (run-with-idle-timer
+                            lsp-idle-delay
+                            nil
+                            #'lsp--on-idle
+                            buffer)))
 
 (defun lsp--post-command ()
   (lsp--cleanup-highlights-if-needed)
@@ -3752,11 +3752,11 @@ Added to `after-change-functions'."
   (when lsp--on-change-timer
     (cancel-timer lsp--on-change-timer))
 
-  (setq-local lsp--on-change-timer (run-with-idle-timer
-                                    lsp-idle-delay
-                                    nil
-                                    #'lsp--on-change-debounce
-                                    (current-buffer)))
+  (setq lsp--on-change-timer (run-with-idle-timer
+                              lsp-idle-delay
+                              nil
+                              #'lsp--on-change-debounce
+                              (current-buffer)))
   (lsp--idle-reschedule (current-buffer)))
 
 
@@ -4514,7 +4514,7 @@ It will show up only if current point has signature help."
   (when (and lsp--signature-last-index
              lsp--signature-last
              (< (1+ lsp--signature-last-index) (length (gethash "signatures" lsp--signature-last))))
-    (setq-local lsp--signature-last-index (1+ lsp--signature-last-index))
+    (setq lsp--signature-last-index (1+ lsp--signature-last-index))
     (lsp--lv-message (lsp--signature->message lsp--signature-last))))
 
 (defun lsp-signature-previous ()
@@ -4523,7 +4523,7 @@ It will show up only if current point has signature help."
   (when (and lsp--signature-last-index
              lsp--signature-last
              (not (zerop lsp--signature-last-index)))
-    (setq-local lsp--signature-last-index (1- lsp--signature-last-index))
+    (setq lsp--signature-last-index (1- lsp--signature-last-index))
     (lsp--lv-message (lsp--signature->message lsp--signature-last))))
 
 (defun lsp-signature-toggle-full-docs ()
@@ -5138,8 +5138,8 @@ perform the request synchronously."
 (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql xref-lsp)))
   (if (lsp--find-workspaces-for "textDocument/documentSymbol")
       (progn
-        (setq-local lsp--symbols-cache (lsp--xref-elements-index
-                                        (lsp--get-document-symbols) nil))
+        (setq lsp--symbols-cache (lsp--xref-elements-index
+                                  (lsp--get-document-symbols) nil))
         lsp--symbols-cache)
     (list (propertize (or (thing-at-point 'symbol) "")
                       'identifier-at-point t))))
@@ -6949,7 +6949,7 @@ such."
   (lsp--text-document-did-close t)
   (lsp-managed-mode -1)
   (lsp-mode -1)
-  (setq-local lsp--buffer-workspaces nil)
+  (setq lsp--buffer-workspaces nil)
   (lsp--info "Disconnected"))
 
 (defun lsp-restart-workspace ()
@@ -6992,16 +6992,16 @@ argument ask the user to select which language server to start. "
                                                          #'lsp--server-binary-present?))))
       (cond
        (matching-clients
-        (when (setq-local lsp--buffer-workspaces
-                          (or (and
-                               ;; Don't open as library file if file is part of a project.
-                               (not (lsp-find-session-folder (lsp-session) (buffer-file-name)))
-                               (lsp--try-open-in-library-workspace))
-                              (lsp--try-project-root-workspaces (equal arg '(4))
-                                                                (and arg (not (equal arg 1))))))
+        (when (setq lsp--buffer-workspaces
+                    (or (and
+                         ;; Don't open as library file if file is part of a project.
+                         (not (lsp-find-session-folder (lsp-session) (buffer-file-name)))
+                         (lsp--try-open-in-library-workspace))
+                        (lsp--try-project-root-workspaces (equal arg '(4))
+                                                          (and arg (not (equal arg 1))))))
           (lsp-mode 1)
           (when lsp-auto-configure (lsp--auto-configure))
-          (setq-local lsp-buffer-uri (lsp--buffer-uri))
+          (setq lsp-buffer-uri (lsp--buffer-uri))
           (lsp--info "Connected to %s."
                      (apply 'concat (--map (format "[%s]" (lsp--workspace-print it))
                                            lsp--buffer-workspaces)))))
@@ -7155,16 +7155,16 @@ reporting or we are in save-mode and the buffer is not modified."
 
 (with-eval-after-load 'flycheck
   (flycheck-define-generic-checker 'lsp
-    "A syntax checker using the Language Server Protocol (LSP)
+   "A syntax checker using the Language Server Protocol (LSP)
 provided by lsp-mode.
 See https://github.com/emacs-lsp/lsp-mode."
     :start #'lsp--flycheck-start
     :modes '(python-mode)
     :predicate (lambda () lsp-mode)
     :error-explainer (lambda (e)
-                     (cond ((string-prefix-p "clang-tidy" (flycheck-error-message e))
-                            (lsp-cpp-flycheck-clang-tidy-error-explainer e))
-                           (t (flycheck-error-message e))))))
+                       (cond ((string-prefix-p "clang-tidy" (flycheck-error-message e))
+                              (lsp-cpp-flycheck-clang-tidy-error-explainer e))
+                             (t (flycheck-error-message e))))))
 
 (defun lsp-flycheck-add-mode (mode)
   "Register flycheck support for MODE."
