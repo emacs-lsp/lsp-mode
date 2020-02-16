@@ -3691,8 +3691,8 @@ Added to `after-change-functions'."
         ;; force cleanup overlays after each change
         (lsp--remove-overlays 'lsp-highlight)
         (lsp--on-change-debounce (current-buffer))
-        (setq lsp--last-signature-index nil)
-        (setq lsp--last-signature nil)))))
+        (setq lsp--signature-last-index nil)
+        (setq lsp--signature-last nil)))))
 
 
 
@@ -4435,9 +4435,9 @@ RENDER-ALL - nil if only the signature should be rendered."
 
 
 
-(defvar-local lsp--last-signature nil)
-(defvar-local lsp--last-signature-index nil)
-(defvar lsp--last-signature-buffer nil)
+(defvar-local lsp--signature-last nil)
+(defvar-local lsp--signature-last-index nil)
+(defvar lsp--signature-last-buffer nil)
 
 (defvar lsp-signature-mode-map
   (-doto (make-sparse-keymap)
@@ -4472,15 +4472,17 @@ RENDER-ALL - nil if only the signature should be rendered."
   :package-version '(lsp-mode . "6.3"))
 
 (defun lsp-signature-stop ()
+  "Stop showing current signature help."
   (interactive)
   (lsp-cancel-request-by-token :signature)
-  (remove-hook 'lsp-on-idle-hook #'lsp-signature t)
-  (remove-hook 'post-command-hook #'lsp-signature-maybe-stop)
+  (with-current-buffer (or lsp--signature-last-buffer (current-buffer))
+    (remove-hook 'lsp-on-idle-hook #'lsp-signature t))
+  (remove-hook 'post-command-hook #'lsp--signature-maybe-stop)
   (lv-delete-window)
   (lsp-signature-mode -1))
 
 (defun lsp--lv-message (message)
-  (setq lsp--last-signature-buffer (current-buffer))
+  (setq lsp--signature-last-buffer (current-buffer))
   (let ((lv-force-update t))
     (lv-message message)))
 
@@ -4490,39 +4492,39 @@ RENDER-ALL - nil if only the signature should be rendered."
         (lsp--lv-message message)
       (lsp-signature-stop))))
 
-(defun lsp-signature-maybe-stop ()
-  (when (and lsp--last-signature-buffer
-             (not (equal (current-buffer) lsp--last-signature-buffer)))
+(defun lsp--signature-maybe-stop ()
+  (when (and lsp--signature-last-buffer
+             (not (equal (current-buffer) lsp--signature-last-buffer)))
     (lsp-signature-stop)))
 
 (defun lsp-signature-activate ()
   "Activate signature help.
 It will show up only if current point has signature help."
   (interactive)
-  (setq-local lsp--last-signature nil)
-  (setq-local lsp--last-signature-index nil)
-  (setq-local lsp--last-signature-buffer nil)
+  (setq lsp--signature-last nil)
+  (setq lsp--signature-last-index nil)
+  (setq lsp--signature-last-buffer nil)
   (add-hook 'lsp-on-idle-hook #'lsp-signature nil t)
-  (add-hook 'post-command-hook #'lsp-signature-maybe-stop)
+  (add-hook 'post-command-hook #'lsp--signature-maybe-stop)
   (lsp-signature-mode t))
 
 (defun lsp-signature-next ()
   "Show next signature."
   (interactive)
-  (when (and lsp--last-signature-index
-             lsp--last-signature
-             (< (1+ lsp--last-signature-index) (length (gethash "signatures" lsp--last-signature))))
-    (setq-local lsp--last-signature-index (1+ lsp--last-signature-index))
-    (lsp--lv-message (lsp--signature->message lsp--last-signature))))
+  (when (and lsp--signature-last-index
+             lsp--signature-last
+             (< (1+ lsp--signature-last-index) (length (gethash "signatures" lsp--signature-last))))
+    (setq-local lsp--signature-last-index (1+ lsp--signature-last-index))
+    (lsp--lv-message (lsp--signature->message lsp--signature-last))))
 
 (defun lsp-signature-previous ()
   "Next signature."
   (interactive)
-  (when (and lsp--last-signature-index
-             lsp--last-signature
-             (not (zerop lsp--last-signature-index)))
-    (setq-local lsp--last-signature-index (1- lsp--last-signature-index))
-    (lsp--lv-message (lsp--signature->message lsp--last-signature))))
+  (when (and lsp--signature-last-index
+             lsp--signature-last
+             (not (zerop lsp--signature-last-index)))
+    (setq-local lsp--signature-last-index (1- lsp--signature-last-index))
+    (lsp--lv-message (lsp--signature->message lsp--signature-last))))
 
 (defun lsp-signature-toggle-full-docs ()
   "Toggle full/partial signature documentation."
@@ -4536,14 +4538,14 @@ It will show up only if current point has signature help."
 
 (defun lsp--signature->message (signature-help)
   "Generate eldoc message from SIGNATURE-HELP response."
-  (setq lsp--last-signature signature-help)
+  (setq lsp--signature-last signature-help)
 
   (when (and signature-help (not (seq-empty-p (gethash "signatures" signature-help))))
     (-let* (((&hash "activeSignature" active-index
                     "activeParameter" active-parameter
                     "signatures")     signature-help)
-            (active-index (or lsp--last-signature-index active-index 0))
-            (_ (setq lsp--last-signature-index active-index))
+            (active-index (or lsp--signature-last-index active-index 0))
+            (_ (setq lsp--signature-last-index active-index))
             ((signature &as &hash? "label" "parameters") (seq-elt signatures active-index))
             (prefix (format "%s/%s%s"
                             (1+ active-index)
