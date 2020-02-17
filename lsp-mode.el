@@ -197,7 +197,7 @@ occasionally break as language servers are updated."
 
 (defvar-local lsp--cur-workspace nil)
 
-(defvar-local lsp--cur-version nil)
+(defvar-local lsp--cur-version 0)
 
 (defvar lsp--uri-file-prefix (pcase system-type
                                (`windows-nt "file:///")
@@ -1417,14 +1417,6 @@ already have been created."
   (declare (debug (form body))
            (indent 1))
   `(when-let (lsp--cur-workspace ,workspace) ,@body))
-
-(defmacro lsp--with-full-sync (&rest body)
-  "Execute BODY with lsp--server-sync-method set to 'full."
-  (declare (debug (form body))
-           (indent 1))
-  `(let ((lsp-document-sync-method lsp--sync-full))
-     ,@body
-     (lsp--flush-delayed-changes)))
 
 (defun lsp-canonical-file-name  (file-name)
   "Return the canonical FILE-NAME."
@@ -3181,7 +3173,9 @@ in that particular folder."
 
       (setq-local global-mode-string (if (-contains? global-mode-string status)
                                          global-mode-string
-                                       (cons status global-mode-string))))
+                                       (cons status global-mode-string)))
+      (when (bound-and-true-p company-mode)
+        (lsp--setup-company)))
      (t
       (setq-local indent-region-function nil)
       (remove-function (local 'eldoc-documentation-function) #'lsp-eldoc-function)
@@ -3609,16 +3603,17 @@ Added to `before-change-functions'."
                 :end-pos (lsp--point-to-position end)))))
 
 (defun lsp--flush-delayed-changes ()
-  (-each (prog1 lsp--delayed-requests
-           (setq lsp--delayed-requests nil))
-    (-lambda ((workspace . buffer))
-      (with-current-buffer buffer
-        (with-lsp-workspace workspace
-          (lsp-notify
-           "textDocument/didChange"
-           `(:textDocument
-             ,(lsp--versioned-text-document-identifier)
-             :contentChanges ,(vector (lsp--full-change-event)))))))))
+  (let ((inhibit-quit t))
+    (when lsp--delay-timer
+      (cancel-timer lsp--delay-timer))
+    (mapc (-lambda ((workspace buffer document change))
+            (with-current-buffer buffer
+              (with-lsp-workspace workspace
+                (lsp-notify "textDocument/didChange"
+                            (list :textDocument document
+                                  :contentChanges (vector change))))))
+          (prog1 (nreverse lsp--delayed-requests)
+            (setq lsp--delayed-requests nil)))))
 
 (defun lsp--workspace-sync-method (workspace)
   (let* ((sync (gethash "textDocumentSync" (lsp--workspace-server-capabilities workspace))))
@@ -3644,53 +3639,37 @@ Added to `after-change-functions'."
   ;; (message "lsp-on-change:(start,end,length)=(%s,%s,%s)" start end length)
   ;; (message "lsp-on-change:(lsp--before-change-vals)=%s" lsp--before-change-vals)
   (save-match-data
-    (let (inhibit-quit)
+    (let ((inhibit-quit t))
+      ;; A (revert-buffer) call with the 'preserve-modes parameter (eg, as done
+      ;; by auto-revert-mode) will cause this handler to get called with a nil
+      ;; buffer-file-name. We need the buffer-file-name to send notifications;
+      ;; so we skip handling revert-buffer-caused changes and instead handle
+      ;; reverts separately in lsp-on-revert
       (when (not revert-buffer-in-progress-p)
-        (if lsp--cur-version
-            (cl-incf lsp--cur-version)
-          ;; buffer has been reset - start from scratch.
-          (setq lsp--cur-version 0))
+        (cl-incf lsp--cur-version)
         (mapc
-         (lambda (it)
-           (with-lsp-workspace it
-             (with-demoted-errors "Error in ‘lsp-on-change’: %S"
-               ;; A (revert-buffer) call with the 'preserve-modes parameter (eg, as done
-               ;; by auto-revert-mode) will cause this handler to get called with a nil
-               ;; buffer-file-name. We need the buffer-file-name to send notifications;
-               ;; so we skip handling revert-buffer-caused changes and instead handle
-               ;; reverts separately in lsp-on-revert
-               (let ((sync-kind  (or lsp-document-sync-method
-                                     (lsp--workspace-sync-method lsp--cur-workspace))))
-                 (cond
-                  ((eq lsp--sync-incremental sync-kind)
-                   (lsp-notify
-                    "textDocument/didChange"
-                    `(:textDocument
-                      ,(lsp--versioned-text-document-identifier)
-                      :contentChanges ,(vector (lsp--text-document-content-change-event
-                                                start end length)))))
-                  ((eq lsp--sync-full sync-kind)
-                   (if lsp-debounce-full-sync-notifications
-                       (progn
-                         (-some-> lsp--delay-timer cancel-timer)
-                         (cl-pushnew (cons lsp--cur-workspace (current-buffer))
-                                     lsp--delayed-requests
-                                     :test 'equal)
-                         (setq lsp--delay-timer (run-with-idle-timer
-                                                 lsp-debounce-full-sync-notifications-interval
-                                                 nil
-                                                 (lambda ()
-                                                   (setq lsp--delay-timer nil)
-                                                   (lsp--flush-delayed-changes)))))
-                     (lsp-notify
-                      "textDocument/didChange"
-                      `(:textDocument
-                        ,(lsp--versioned-text-document-identifier)
-                        :contentChanges ,(vector (lsp--full-change-event)))))))))))
+         (lambda (workspace)
+           (when-let (change
+                      (pcase (or lsp-document-sync-method
+                                 (lsp--workspace-sync-method workspace))
+                        (1 (lsp--full-change-event))
+                        (2 (lsp--text-document-content-change-event
+                            start end length))))
+             (cl-pushnew (list lsp--cur-workspace
+                               (current-buffer)
+                               (lsp--versioned-text-document-identifier)
+                               change)
+                         lsp--delayed-requests
+                         :test 'equal)
+             (when lsp--delay-timer (cancel-timer lsp--delay-timer))
+             (setq lsp--delay-timer (run-with-idle-timer
+                                     lsp-debounce-full-sync-notifications-interval
+                                     nil
+                                     #'lsp--flush-delayed-changes))))
          (lsp-workspaces))
         ;; force cleanup overlays after each change
         (lsp--remove-overlays 'lsp-highlight)
-        (lsp--on-change-debounce (current-buffer))
+        (lsp--after-change  (current-buffer))
         (setq lsp--signature-last-index nil)
         (setq lsp--signature-last nil)))))
 
@@ -4103,11 +4082,11 @@ PLIST is the additional data to attach to each candidate."
          (lsp--capf-clear-cache)
          (when lsp-signature-auto-activate
            (lsp-signature-activate))
+
+         (setq-local lsp-inhibit-lsp-hooks nil)
+
          (when (lsp--looking-back-trigger-characters-p trigger-chars)
            (setq this-command 'self-insert-command)))))))
-
-(with-eval-after-load 'company
-  (add-hook 'company-after-completion-hook #'lsp--capf-clear-cache))
 
 (advice-add #'completion-at-point :before #'lsp--capf-clear-cache)
 
@@ -4755,7 +4734,7 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
   (cond ((lsp-feature? "textDocument/formatting")
          (let ((edits (lsp-request "textDocument/formatting"
                                    (lsp--make-document-formatting-params))))
-           (lsp--apply-formatting edits)))
+           (lsp--apply-text-edits edits)))
         ((lsp-feature? "textDocument/rangeFormatting")
          (save-restriction
            (widen)
@@ -4765,9 +4744,9 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
 (defun lsp-format-region (s e)
   "Ask the server to format the region, or if none is selected, the current line."
   (interactive "r")
-  (let ((edits (lsp-request "textDocument/rangeFormatting"
-                            (lsp--make-document-range-formatting-params s e))))
-    (lsp--apply-formatting edits)))
+  (lsp--apply-text-edits (lsp-request
+                          "textDocument/rangeFormatting"
+                          (lsp--make-document-range-formatting-params s e))))
 
 (defun lsp-organize-imports ()
   "Perform the source.organizeImports code action, if available."
@@ -4777,9 +4756,6 @@ If ACTION is not set it will be selected from `lsp-code-actions'."
     (lsp-no-code-actions
      (when (called-interactively-p 'any)
        (lsp--info "source.organizeImports action not available")))))
-
-(defun lsp--apply-formatting (edits)
-  (lsp--with-full-sync (lsp--apply-text-edits edits)))
 
 (defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region.
@@ -6007,9 +5983,27 @@ returns the command to execute."
                        (cons proc proc))))
         :test? (lambda () (-> local-command lsp-resolve-final-function lsp-server-present?))))
 
+(defun lsp--setup-company ()
+  (add-hook 'company-completion-started-hook
+            (lambda (&rest _)
+              (setq-local lsp-inhibit-lsp-hooks t))
+            nil
+            t)
+  (add-hook 'company-completion-finished-hook
+            (lambda (&rest _)
+              (lsp--capf-clear-cache)
+              (setq-local lsp-inhibit-lsp-hooks nil))
+            nil
+            t)
+  (add-hook 'company-completion-cancelled-hook
+            (lambda (&rest _)
+              (lsp--capf-clear-cache)
+              (setq-local lsp-inhibit-lsp-hooks nil))
+            nil
+            t))
+
 (defun lsp--auto-configure ()
   "Autoconfigure `company', `flycheck', `lsp-ui',  if they are installed."
-
   (when (functionp 'lsp-ui-mode)
     (lsp-ui-mode))
 
@@ -7141,15 +7135,30 @@ CALLBACK is the status callback passed by Flycheck."
                 )))
        (funcall callback 'finished)))
 
+(defun lsp--flycheck-buffer ()
+  (remove-hook 'lsp-on-idle-hook #'lsp--flycheck-buffer t)
+  (flycheck-buffer))
+
+(defun lsp--buffer-visible? ()
+  (or (get-buffer-window (current-buffer))
+      (eq (window-buffer (selected-window))
+          (current-buffer))))
+
 (defun lsp--flycheck-report ()
   "This callback is invoked when new diagnostics are received
 from the language server. Invoke flycheck-buffer to update the
 display of errors if flycheck-mode is on and we are live
 reporting or we are in save-mode and the buffer is not modified."
-  (and (or lsp-flycheck-live-reporting
-           (and (memq 'save flycheck-check-syntax-automatically)
-                (not (buffer-modified-p))))
-       (flycheck-buffer)))
+  (cond
+   ;; do nothing
+   ((and (not lsp-flycheck-live-reporting)
+         (not (and (memq 'save flycheck-check-syntax-automatically)
+                   (not (buffer-modified-p))))))
+   ;; visible and not inhibit hooks - refresh right away
+   ((and (not lsp-inhibit-lsp-hooks) (lsp--buffer-visible?))
+    (flycheck-buffer))
+   ;; not visible or inhibit hooks - schedule refresh
+   (t (add-hook 'lsp-on-idle-hook #'lsp--flycheck-buffer nil t))))
 
 (declare-function lsp-cpp-flycheck-clang-tidy-error-explainer "lsp-cpp")
 
