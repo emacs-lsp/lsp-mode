@@ -3649,24 +3649,26 @@ Added to `after-change-functions'."
         (cl-incf lsp--cur-version)
         (mapc
          (lambda (workspace)
-           (when-let (change
-                      (pcase (or lsp-document-sync-method
-                                 (lsp--workspace-sync-method workspace))
-                        (1 (lsp--full-change-event))
-                        (2 (lsp--text-document-content-change-event
-                            start end length))))
-             (cl-pushnew (list lsp--cur-workspace
-                               (current-buffer)
-                               (lsp--versioned-text-document-identifier)
-                               change)
-                         lsp--delayed-requests
-                         :test 'equal)
-             (when lsp--delay-timer (cancel-timer lsp--delay-timer))
-             (setq lsp--delay-timer (run-with-idle-timer
-                                     lsp-debounce-full-sync-notifications-interval
-                                     nil
-                                     #'lsp--flush-delayed-changes))))
+           (pcase (or lsp-document-sync-method
+                      (lsp--workspace-sync-method workspace))
+             (1 (cl-pushnew (list lsp--cur-workspace
+                                  (current-buffer)
+                                  (lsp--versioned-text-document-identifier)
+                                  (lsp--full-change-event))
+                            lsp--delayed-requests
+                            :test 'equal))
+             (2 (push (list lsp--cur-workspace
+                            (current-buffer)
+                            (lsp--versioned-text-document-identifier)
+                            (lsp--text-document-content-change-event
+                             start end length))
+                      lsp--delayed-requests))))
          (lsp-workspaces))
+        (when lsp--delay-timer (cancel-timer lsp--delay-timer))
+        (setq lsp--delay-timer (run-with-idle-timer
+                                lsp-debounce-full-sync-notifications-interval
+                                nil
+                                #'lsp--flush-delayed-changes))
         ;; force cleanup overlays after each change
         (lsp--remove-overlays 'lsp-highlight)
         (lsp--after-change  (current-buffer))
