@@ -795,6 +795,13 @@ They are added to `markdown-code-lang-modes'")
   "The value of `buffer-chars-modified-tick' when document
   symbols were last retrieved.")
 
+(defvar-local lsp--have-document-highlights nil
+  "Set to `t' on symbol highlighting, cleared on
+`lsp--cleanup-highlights-if-needed'. Checking a separately
+defined flag is substantially faster than unconditionally
+calling `remove-overlays', especially when semantic
+highlighting is enabled.")
+
 ;; Buffer local variable for storing number of lines.
 (defvar lsp--log-lines)
 
@@ -4228,8 +4235,10 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
 
 (defun lsp--cleanup-highlights-if-needed ()
   (when (and lsp-enable-symbol-highlighting
+             lsp--have-document-highlights
              (not (lsp--point-on-highlight?)))
     (lsp--remove-overlays 'lsp-highlight)
+    (setq lsp--have-document-highlights nil)
     (lsp-cancel-request-by-token :highlights)))
 
 (defun lsp--document-highlight ()
@@ -4795,6 +4804,7 @@ A reference is highlighted only if it is visible in a window."
                                    (cons (1- (line-number-at-pos (window-start win)))
                                          (1+ (line-number-at-pos (window-end win)))))
                                  (get-buffer-window-list nil nil 'visible))))
+    (setq lsp--have-document-highlights t)
     (-map
      (-lambda ((&hash "range" "kind"))
        (-let* (((start &as &hash "line" start-line) (gethash "start" range))
