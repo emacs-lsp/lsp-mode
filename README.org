@@ -23,6 +23,7 @@
       - [[#vanilla-emacs][Vanilla Emacs]]
       - [[#spacemacs][Spacemacs]]
       - [[#use-package][use-package]]
+      - [[#recomended-settings-for-lsp-mode-related-packages][Recomended settings for lsp-mode related packages]]
       - [[#docker][Docker]]
     - [[#performance][Performance]]
       - [[#reporting-performance-problems][Reporting performance problems]]
@@ -142,6 +143,12 @@
          :hook (XXX-mode . lsp-deferred)
          :commands (lsp lsp-deferred))
      #+END_SRC
+**** Recomended settings for lsp-mode related packages
+***** company
+     #+BEGIN_SRC emacs-lisp
+             (setq company-minimum-prefix-length 1
+                   company-idle-delay 0.0) ;; default is 0.2
+     #+END_SRC
 **** Docker
      Refer to [[https://github.com/emacs-lsp/lsp-docker/][lsp-docker]] README which provide a guide how you can run =lsp-mode= in =docker= container.
 *** Performance
@@ -185,7 +192,7 @@
     - Optional: Disable =lsp-ui=. Normally, =lsp-ui= is very fast but in some
       systems (especially when using =Windows=) =lsp-ui= overlays and popups might
       slow down emacs.
-    - Optional: fine tune =lsp-idle-delay=. This variable determines how often
+    - Optional: fine-tune =lsp-idle-delay=. This variable determines how often
       lsp-mode will refresh the highlights, lenses, links, etc while you type.
     #+BEGIN_SRC emacs-lisp
       (setq lsp-idle-delay 0.500)
@@ -342,7 +349,7 @@
    - ~lsp-eldoc-render-all~ - Display all of the info returned by ~document/onHover~. If this is nil, ~eldoc~ will show only the symbol information.
    - ~lsp-enable-completion-at-point~ - Enable ~completion-at-point~ integration.
    - ~lsp-enable-xref~ - Enable xref integration.
-   - ~lsp-diagnostics-package~ - Specifies which package to use for diagnostics. Choose from ~:auto~, ~:flycheck~, ~:flymake~ and ~:none~. Default is ~:auto~ which means use ~:flycheck~ if present.
+   - ~lsp-diagnostic-package~ - Specifies which package to use for diagnostics. Choose from ~:auto~, ~:flycheck~, ~:flymake~ and ~:none~. Default is ~:auto~ which means use ~:flycheck~ if present.
    - ~lsp-enable-indentation~ - Indent regions using the file formatting functionality provided by the language server.
    - ~lsp-enable-on-type-formatting~ - Enable ~textDocument/onTypeFormatting~ integration.
    - ~lsp-before-save-edits~ - If non-nil, ~lsp-mode~ will apply edits suggested by the language server before saving a document.
@@ -487,11 +494,6 @@
        either disable them by setting =lsp-enable-snippet= to =nil= or you
        should switch to =company-lsp=. Note also that =company-tng= frontend
        does not support snippet expansion(see [[https://github.com/company-mode/company-mode/issues/891][company-mode#891]])
-   - How to automatically follow =lsp-ui-log=?
-     - Go into the log buffer and execute the following snippet(source: [[https://stackoverflow.com/questions/12663061/emacs-auto-scrolling-log-buffer][Emacs auto scrolling log buffer]])
-     #+begin_src elisp
-       (set (make-local-variable 'window-point-insertion-type) t)
-     #+end_src
    - I am getting "Package ‘spinner-1.7.3’ is unavailable" when trying to install =lsp-mode=.
      - This is caused by GPG keys used by the ELPA package manager not being up
        to date. You may fix by installing: [[https://elpa.gnu.org/packages/gnu-elpa-keyring-update.html][gnu-elpa-keyring-update]]
