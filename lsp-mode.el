@@ -4072,9 +4072,7 @@ PLIST is the additional data to attach to each candidate."
                          "textEdit" text-edit
                          "insertTextFormat" insert-text-format
                          "additionalTextEdits" additional-text-edits)
-                  (if (gethash "additionalTextEdits" item)
-                      item
-                    (lsp--resolve-completion item))))
+                  item))
            (cond
             (text-edit
              (delete-region (point-at-bol) (point))
