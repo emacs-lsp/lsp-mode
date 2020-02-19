@@ -2036,14 +2036,14 @@ CALLBACK - callback for the lenses."
     (add-hook 'lsp-on-idle-hook #'lsp--lens-idle-function nil t)
     (add-hook 'lsp-on-change-hook (lambda () (lsp--lens-schedule-refresh t)) nil t)
     (add-hook 'after-save-hook (lambda () (lsp--lens-schedule-refresh t)) nil t)
-    (add-hook 'before-revert-hook (lambda () (lsp-lens-hide)) nil t)
+    (add-hook 'before-revert-hook #'lsp-lens-hide nil t)
     (lsp-lens-refresh t))
    (t
     (lsp-lens-hide)
     (remove-hook 'lsp-on-idle-hook #'lsp--lens-idle-function t)
     (remove-hook 'lsp-on-change-hook (lambda () (lsp--lens-schedule-refresh nil)) t)
     (remove-hook 'after-save-hook (lambda () (lsp--lens-schedule-refresh t)) t)
-    (remove-hook 'before-revert-hook (lambda () (lsp-lens-hide)) nil t)
+    (remove-hook 'before-revert-hook #'lsp-lens-hide t)
     (setq lsp--lens-last-count nil)
     (setq lsp--lens-backend-cache nil))))
 
