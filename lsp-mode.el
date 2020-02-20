@@ -113,6 +113,8 @@
    "Operator"
    "TypeParameter"])
 
+(defconst lsp--empty-ht (make-hash-table))
+
 (define-obsolete-variable-alias 'lsp-print-io 'lsp-log-io "lsp-mode 6.1")
 
 (defcustom lsp-log-io nil
@@ -503,7 +505,7 @@ The hook will receive two parameters list of added and removed folders."
 (defcustom lsp-imenu-sort-methods '(kind name)
   "How to sort the imenu items.
 
-The value is a list of `kind' `name' or `position'. Priorities
+The value is a list of `kind' `name' or `position'.  Priorities
 are determined by the index of the element."
   :type '(repeat (choice (const name)
                          (const position)
@@ -529,7 +531,7 @@ are determined by the index of the element."
 METHOD is one of the symbols accepted by
 `lsp-imenu-sort-methods'.
 
-FUNCTION takes two hash tables representing DocumentSymbol. It
+FUNCTION takes two hash tables representing DocumentSymbol.  It
 returns a negative number, 0, or a positive number indicating
 whether the first parameter is less than, equal to, or greater
 than the second parameter.")
@@ -2816,8 +2818,8 @@ To find out what capabilities support your server use `M-x lsp-describe-session'
   (with-demoted-errors "LSP error: %S"
     (let ((lsp-response-timeout 0.5))
       (condition-case _err
-          (lsp-request "shutdown" (make-hash-table))
-        (error (lsp--error "Timeout while sending shutdown request."))))
+          (lsp-request "shutdown" lsp--empty-ht)
+        (error (lsp--error "Timeout while sending shutdown request"))))
     (lsp-notify "exit" nil))
   (setf (lsp--workspace-shutdown-action lsp--cur-workspace) (or (and restart 'restart) 'shutdown))
   (lsp--uninitialize-workspace))
@@ -3491,7 +3493,7 @@ The method uses `replace-buffer-contents'."
   "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
   (gethash cap (or capabilities
                    (lsp--server-capabilities)
-                   (make-hash-table))))
+                   lsp--empty-ht)))
 
 (defun lsp--registered-capability (method)
   "Check whether there is workspace providing METHOD."
@@ -6184,7 +6186,7 @@ SESSION is the active session."
                (lsp--workspace-status workspace) 'initialized)
 
          (with-lsp-workspace workspace
-           (lsp-notify "initialized" (make-hash-table)))
+           (lsp-notify "initialized" lsp--empty-ht))
 
          (when-let (initialize-fn (lsp--client-initialized-fn client))
            (funcall initialize-fn workspace))
