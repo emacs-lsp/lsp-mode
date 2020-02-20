@@ -2753,7 +2753,6 @@ callback will be executed only if the buffer was not modified.
 
 ERROR-CALLBACK will be called in case the request has failed.
 If NO-MERGE is non-nil, don't merge the results but return alist workspace->result."
-  (lsp--flush-delayed-changes)
 
   (when cancel-token
     (lsp-cancel-request-by-token cancel-token))
@@ -3658,18 +3657,27 @@ Added to `after-change-functions'."
          (lambda (workspace)
            (pcase (or lsp-document-sync-method
                       (lsp--workspace-sync-method workspace))
-             (1 (cl-pushnew (list lsp--cur-workspace
+             (1 (cl-pushnew (list workspace
                                   (current-buffer)
                                   (lsp--versioned-text-document-identifier)
                                   (lsp--full-change-event))
                             lsp--delayed-requests
                             :test 'equal))
-             (2 (push (list lsp--cur-workspace
-                            (current-buffer)
-                            (lsp--versioned-text-document-identifier)
-                            (lsp--text-document-content-change-event
-                             start end length))
-                      lsp--delayed-requests))))
+             (2
+              (with-lsp-workspace workspace
+                (lsp-notify
+                 "textDocument/didChange"
+                 (list :textDocument (lsp--versioned-text-document-identifier)
+                       :contentChanges (vector (lsp--text-document-content-change-event
+                                                start end length)))))
+              ;; TODO investigate why this does not work
+              ;; (push (list workspace
+              ;;             (current-buffer)
+              ;;
+              ;;             (lsp--text-document-content-change-event
+              ;;              start end length))
+              ;;       lsp--delayed-requests)
+              )))
          (lsp-workspaces))
         (when lsp--delay-timer (cancel-timer lsp--delay-timer))
         (setq lsp--delay-timer (run-with-idle-timer
@@ -5304,8 +5312,15 @@ textDocument/didOpen for the new file."
 
 (advice-add 'set-visited-file-name :around #'lsp--on-set-visited-file-name)
 
+(defvar lsp--flushing-delayed-changes nil)
+
 (defun lsp--send-no-wait (message proc)
   "Send MESSAGE to PROC without waiting for further output."
+
+  (unless lsp--flushing-delayed-changes
+    (let ((lsp--flushing-delayed-changes t))
+      (lsp--flush-delayed-changes)))
+
   (condition-case err
       (process-send-string proc message)
     ('error (lsp--error "Sending to process failed with the following error: %s"
