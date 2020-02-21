@@ -681,7 +681,7 @@ directory")
     ("textDocument/rangeFormatting" :capability "documentRangeFormattingProvider")
     ("textDocument/references" :capability "referencesProvider")
     ("textDocument/selectionRange" :capability "selectionRangeProvider")
-    ("textDocument/signatureHelp" "signatureHelpProvider")
+    ("textDocument/signatureHelp" :capability "signatureHelpProvider")
     ("textDocument/typeDefinition" :capability "typeDefinitionProvider")
     ("workspace/executeCommand" :capability "executeCommandProvider")
     ("workspace/symbol" :capability "workspaceSymbolProvider"))
@@ -4099,7 +4099,8 @@ PLIST is the additional data to attach to each candidate."
            (when additional-text-edits
              (lsp--apply-text-edits additional-text-edits)))
          (lsp--capf-clear-cache)
-         (when lsp-signature-auto-activate
+         (when (and lsp-signature-auto-activate
+                    (lsp-feature? "textDocument/signatureHelp"))
            (lsp-signature-activate))
 
          (setq-local lsp-inhibit-lsp-hooks nil)
