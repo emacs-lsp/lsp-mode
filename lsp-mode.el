@@ -1144,7 +1144,7 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
       ;; server may send character position beyond the current line and we
       ;; should fallback to line end.
       (let ((line-end (line-end-position)))
-        (if (and (not (equal nil character)) (> character (- line-end (point))))
+        (if (and character (> character (- line-end (point))))
             line-end
           (forward-char character)
           (point))))))
