@@ -4024,14 +4024,15 @@ PLIST is the additional data to attach to each candidate."
   (when (or (--some (lsp--client-completion-in-comments? (lsp--workspace-client it))
                     (lsp-workspaces))
             (not (nth 4 (syntax-ppss))))
-    (let* ((bounds-start (or (car (bounds-of-thing-at-point 'symbol)) (point)))
-           (trigger-chars (->> (lsp--server-capabilities)
-                               (gethash "completionProvider")
-                               (gethash "triggerCharacters")))
-           result done?)
+    (-let* (((bounds-start . bounds-end) (or (bounds-of-thing-at-point 'symbol)
+                                             (cons (point) (point))))
+            (trigger-chars (->> (lsp--server-capabilities)
+                                (gethash "completionProvider")
+                                (gethash "triggerCharacters")))
+            result done?)
       (list
        bounds-start
-       (point)
+       bounds-end
        (lambda (_probe pred action)
          (cond
           ((eq action 'metadata)
