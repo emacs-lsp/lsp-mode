@@ -318,7 +318,7 @@ PARAMS progress report notification data."
 
 ;; rust-analyzer
 
-(defcustom lsp-rust-analyzer-server-command '("ra_lsp_server")
+(defcustom lsp-rust-analyzer-server-command '("~/.cargo/bin/rust-analyzer")
   "Command to start rust-analyzer."
   :type '(repeat string)
   :package-version '(lsp-mode . "6.2"))
