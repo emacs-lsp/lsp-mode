@@ -4947,6 +4947,12 @@ unless overridden by a more specific face association."
 unless overridden by a more specific face association."
   :group 'lsp-faces)
 
+(defface lsp-face-semhl-disable
+  '((t :inherit font-lock-comment-face))
+  "Face used for semantic highlighting scopes matching meta.disabled,
+unless overridden by a more specific face association."
+  :group 'lsp-faces)
+
 (defface lsp-face-semhl-deprecated
   '((t (:underline (:color "yellow" :style wave))))
   "Face used for semantic highlighting scopes matching storage.type.primitive.*,
@@ -4979,13 +4985,15 @@ unless overridden by a more specific face association."
     ((("entity.name.type.enum")) . lsp-face-semhl-type-enum)
     ((("entity.name.type.typedef")
       ("entity.name.type.dependent")
-      ("entity.name.other.dependent")) . lsp-face-semhl-type-typedef)
+      ("entity.name.other.dependent")
+      ("entity.name.type.concept.cpp")) . lsp-face-semhl-type-typedef)
     ((("entity.name.namespace")) . lsp-face-semhl-namespace)
     ((("entity.name.function.preprocessor")) . lsp-face-semhl-preprocessor)
     ((("entity.name.type.template")) . lsp-face-semhl-type-template)
     ((("storage.type.primitive")) . lsp-face-semhl-type-primitive)
     ((("constant.other.key")) . lsp-face-semhl-constant)
     ((("constant.numeric.decimal")) . lsp-face-semhl-constant)
+    ((("meta.disabled")) . lsp-face-semhl-disabled)
     ((("invalid.deprecated")) .  lsp-face-semhl-deprecated))
   "Each element of this list should be of the form
  ((SCOPES-1 ... SCOPES-N) . FACE), where SCOPES-1, ..., SCOPES-N are lists of
