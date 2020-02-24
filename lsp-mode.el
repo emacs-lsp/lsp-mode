@@ -1463,17 +1463,19 @@ PARAMS - the data sent from WORKSPACE."
         (completing-read (concat message " ") (seq-into choices 'list) nil t)
       (lsp-log message))))
 
-(defun lsp-diagnostics ()
+(defun lsp-diagnostics (&optional current-workspace?)
   "Return the diagnostics from all workspaces."
   (let ((result (make-hash-table :test 'equal)))
-    (-> (lsp-session)
-        (lsp--session-workspaces)
-        (--each (maphash
-                 (lambda (file-name diagnostics)
-                   (puthash file-name
-                            (append (gethash file-name result) diagnostics)
-                            result))
-                 (lsp--workspace-diagnostics it))))
+    (mapc (lambda (workspace)
+            (maphash
+             (lambda (file-name diagnostics)
+               (puthash file-name
+                        (append (gethash file-name result) diagnostics)
+                        result))
+             (lsp--workspace-diagnostics workspace)))
+          (if current-workspace?
+              (lsp-workspaces)
+            (lsp--session-workspaces (lsp-session))))
     result))
 
 (cl-defstruct lsp-diagnostic
@@ -1488,6 +1490,61 @@ PARAMS - the data sent from WORKSPACE."
   (message nil) ;; diagnostics message
   (original nil))
 
+
+;; diagnostic modeline
+(defun lsp--severity-code->severity (severity-code)
+  (cl-case severity-code
+    (1 'error)
+    (2 'warning)
+    (3 'info)
+    (4 'hint)))
+
+(defcustom lsp-diagnostics-modeline-scope :workspace
+  "The scope "
+  :group 'lsp-mode
+  :type '(choice (const :tag "File" :file)
+                 (const :tag "Current workspace" :workspace)
+                 (const :tag "All" :global))
+  :package-version '(lsp-mode . "6.3"))
+
+(defun lsp--diagnostics-modeline-statistics ()
+  "Caculate diagnostics statistics based on `lsp-diagnostics-modeline-scope'"
+  (let ((diagnostics (cond
+                      ((equal :file lsp-diagnostics-modeline-scope)
+                       (lsp--get-buffer-diagnostics))
+                      (t (->> (eq :workspace lsp-diagnostics-modeline-scope)
+                              (lsp-diagnostics)
+                              (ht-values)
+                              (-flatten))))))
+    (->> diagnostics
+         (-group-by #'lsp-diagnostic-severity)
+         (-sort (-lambda ((left) (right))
+                  (> right left)))
+         (-map (-juxt (-compose #'lsp--severity-code->severity #'cl-first)
+                      (-compose #'length #'cl-rest)))
+         (-map (-lambda ((code count))
+                 (propertize (format "%s" count)
+                             'face (cl-case code
+                                     ('error 'error)
+                                     ('warning 'warning)
+                                     ('info 'success)
+                                     ('hint 'success)))))
+         (s-join "/")
+         (format "%s"))))
+
+(define-minor-mode lsp-diagnostics-modeline-mode
+  "Toggle diagnostics modeline."
+  :group 'lsp-mode
+  :global nil
+  :lighter ""
+  (let ((status '(t (:eval (concat " " (lsp--diagnostics-modeline-statistics) " ")))))
+    (setq-local global-mode-string
+                (cond ((and lsp-diagnostics-modeline-mode
+                            (not (-contains? global-mode-string status)))
+                       (cons status global-mode-string))
+                      (t (remove status global-mode-string))))))
+
+
 (defun lsp--make-diag (diag)
   "Make a `lsp-diagnostic' from DIAG."
   (-let* (((&hash "message" "code" "source" "severity"
@@ -1509,7 +1566,6 @@ PARAMS - the data sent from WORKSPACE."
 (defalias 'lsp--buffer-for-file (if (eq system-type 'windows-nt)
                                     #'find-buffer-visiting
                                   #'get-file-buffer))
-
 
 (defun lsp--on-diagnostics (workspace params)
   "Callback for textDocument/publishDiagnostics.
@@ -7147,14 +7203,17 @@ reported according to `flycheck-check-syntax-automatically'."
   :type 'boolean
   :group 'lsp-mode)
 
+(defun lsp--get-buffer-diagnostics ()
+  (or (gethash (lsp--fix-path-casing buffer-file-name)
+               (lsp-diagnostics))
+      (gethash (lsp--fix-path-casing (file-truename buffer-file-name))
+               (lsp-diagnostics))))
+
 (defun lsp--flycheck-start (checker callback)
   "Start an LSP syntax check with CHECKER.
 
 CALLBACK is the status callback passed by Flycheck."
-  (->> (or (gethash (lsp--fix-path-casing buffer-file-name)
-                    (lsp-diagnostics))
-           (gethash (lsp--fix-path-casing (file-truename buffer-file-name))
-                    (lsp-diagnostics)))
+  (->> (lsp--get-buffer-diagnostics)
        (-map (-lambda (diag)
                (flycheck-error-new
                 :buffer (current-buffer)
