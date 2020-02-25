@@ -3962,30 +3962,33 @@ In the form of (prefix items args).")
   "List the possible completion of STRING in candidates ITEMS.
 Only the elements that satisfy predicate PRED are considered.
 PLIST is the additional data to attach to each candidate."
-  (--> items
-       (-map (-lambda ((item &as &hash
-                             "label"
-                             "filterText" filter-text))
-               (propertize (or filter-text label) 'lsp-completion-item item))
-             it)
-       (seq-into it 'list)
-       (completion-all-completions string it pred (length string))
-       ;; completion-all-completions may return a list in form (a b . x)
-       ;; the last cdr is not important and need to be removed
-       (let ((tail (last it)))
-         (if (consp tail) (setcdr tail nil))
-         it)
-       (-map (-partial #'get-text-property 0 'lsp-completion-item) it)
-       (-map (-lambda ((item &as &hash
-                             "label"
-                             "insertText" insert-text
-                             "sortText" sort-text))
-               (propertize (or label insert-text)
-                           'lsp-completion-item item
-                           'lsp-completion-start-point (plist-get plist :start-point)
-                           'lsp-completion-prefix-line (plist-get plist :prefix-line)
-                           'lsp-sort-text sort-text))
-             it)))
+  (let ((filtered-items
+         (if string
+             (--> items
+                  (-map (-lambda ((item &as &hash
+                                        "label"
+                                        "filterText" filter-text))
+                          (propertize (or filter-text label) 'lsp-completion-item item))
+                        it)
+                  (seq-into it 'list)
+                  (completion-all-completions string it pred (length string))
+                  ;; completion-all-completions may return a list in form (a b . x)
+                  ;; the last cdr is not important and need to be removed
+                  (let ((tail (last it)))
+                    (if (consp tail) (setcdr tail nil))
+                    it)
+                  (-map (-partial #'get-text-property 0 'lsp-completion-item) it))
+           items)))
+    (-map (-lambda ((item &as &hash
+                          "label"
+                          "insertText" insert-text
+                          "sortText" sort-text))
+            (propertize (or label insert-text)
+                        'lsp-completion-item item
+                        'lsp-completion-start-point (plist-get plist :start-point)
+                        'lsp-completion-prefix-line (plist-get plist :prefix-line)
+                        'lsp-sort-text sort-text))
+          filtered-items)))
 
 (defun lsp--capf-company-match (candidate)
   "Return highlights of typed prefix inside CANDIDATE."
@@ -4075,7 +4078,7 @@ PLIST is the additional data to attach to each candidate."
                                            items
                                            :start-point start
                                            :prefix-line prefix-line))
-                   result (lsp--capf-filter-candidates pred prefix items
+                   result (lsp--capf-filter-candidates pred (if done? prefix) items
                                                        :start-point start
                                                        :prefix-line prefix-line))))))
        :annotation-function #'lsp--annotate
