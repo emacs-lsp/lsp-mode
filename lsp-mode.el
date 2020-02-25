@@ -4106,9 +4106,10 @@ PLIST is the additional data to attach to each candidate."
              (insert insert-text)))
 
            (when (eq insert-text-format 2)
-             (yas-expand-snippet (buffer-substring start-point (point))
-                                 start-point
-                                 (point)))
+             (yas-expand-snippet
+              (lsp--to-yasnippet-snippet (buffer-substring start-point (point)))
+              start-point
+              (point)))
            (when additional-text-edits
              (lsp--apply-text-edits additional-text-edits)))
          (lsp--capf-clear-cache)
@@ -4124,21 +4125,12 @@ PLIST is the additional data to attach to each candidate."
 (advice-add #'completion-at-point :before #'lsp--capf-clear-cache)
 
 (defun lsp--to-yasnippet-snippet (text)
-  "Convert VS code snippet TEXT to yasnippet snippet."
-  ;; VS code snippet doesn't escape "{", but yasnippet requires escaping it.
-  (let (parts
-        (start 0))
-    (dolist (range (s-matched-positions-all (regexp-quote "{") text))
-      (let ((match-start (car range)))
-        (unless (and (> match-start 0) (= (aref text (1- match-start)) ?$))
-          ;; Not a start of field. Escape it.
-          (when (< start match-start)
-            (push (substring text start match-start) parts))
-          (push "\\{" parts)
-          (setq start (1+ match-start)))))
-    (when (< start (length text))
-      (push (substring text start) parts))
-    (apply #'concat (reverse parts))))
+  "Convert LSP snippet TEXT to yasnippet snippet."
+  ;; LSP snippet doesn't escape "{", but yasnippet requires escaping it.
+  (s-replace-regexp (rx (or bos (not (any "$" "\\"))) (group "{"))
+                    (rx "\\" (backref 1))
+                    text
+                    nil nil 1))
 
 (defun lsp--sort-completions (completions)
   "Sort COMPLETIONS."
