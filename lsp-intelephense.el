@@ -149,6 +149,12 @@ language server."
   :group 'lsp-intelephense
   :package-version '(lsp-mode . "6.2"))
 
+(defcustom lsp-intelephense-multi-root t
+  "Flag to control if the server supports multi-root projects"
+  :type 'boolean
+  :group 'lsp-intelephense
+  :package-version '(lsp-mode . "6.2"))
+
 (lsp-register-custom-settings
  '(("intelephense.trace.server" lsp-intelephense-trace-server)
    ("intelephense.rename.exclude" lsp-intelephense-rename-exclude)
@@ -186,7 +192,7 @@ language server."
                                             (list :storagePath lsp-intelephense-storage-path
                                                   :licenceKey lsp-intelephense-licence-key
                                                   :clearCache lsp-intelephense-clear-cache))
-                  :multi-root t
+                  :multi-root lsp-intelephense-multi-root
                   :completion-in-comments? t
                   :server-id 'iph))
 
