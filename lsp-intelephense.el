@@ -153,7 +153,7 @@ language server."
   "Flag to control if the server supports multi-root projects"
   :type 'boolean
   :group 'lsp-intelephense
-  :package-version '(lsp-mode . "6.2"))
+  :package-version '(lsp-mode . "6.3"))
 
 (lsp-register-custom-settings
  '(("intelephense.trace.server" lsp-intelephense-trace-server)
