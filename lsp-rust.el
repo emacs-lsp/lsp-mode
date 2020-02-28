@@ -519,7 +519,6 @@ PARAMS progress report notification data."
 
 (defvar-local lsp-rust-analyzer-inlay-hints-timer nil)
 
-;; TODO: we should update only if the current buffer has changed
 (defun lsp-rust-analyzer-update-inlay-hints (buffer)
   (if (and (lsp-rust-analyzer-initialized?)
            (eq buffer (current-buffer)))
@@ -561,12 +560,12 @@ PARAMS progress report notification data."
   (cond
    (lsp-rust-analyzer-inlay-hints-mode
     (lsp-rust-analyzer-update-inlay-hints (current-buffer))
-    (add-hook 'lsp-after-initialize-hook #'lsp-rust-analyzer-inlay-hints-change-handler nil t)
-    (add-hook 'after-change-functions #'lsp-rust-analyzer-inlay-hints-change-handler nil t))
+    (add-hook 'lsp-on-idle-hook #'lsp-rust-analyzer-inlay-hints-change-handler nil t)
+    (add-hook 'lsp-on-change-hook #'lsp-rust-analyzer-inlay-hints-change-handler nil t))
    (t
     (remove-overlays (point-min) (point-max) 'lsp-rust-analyzer-inlay-hint t)
-    (remove-hook 'lsp-after-initialize-hook #'lsp-rust-analyzer-inlay-hints-change-handler t)
-    (remove-hook 'after-change-functions #'lsp-rust-analyzer-inlay-hints-change-handler t))))
+    (remove-hook 'lsp-on-idle-hook #'lsp-rust-analyzer-inlay-hints-change-handler t)
+    (remove-hook 'lsp-on-change-hook #'lsp-rust-analyzer-inlay-hints-change-handler t))))
 
 ;; activate `lsp-rust-analyzer-inlay-hints-mode'
 (when lsp-rust-analyzer-server-display-inlay-hints
