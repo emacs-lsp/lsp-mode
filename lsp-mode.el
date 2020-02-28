@@ -3720,12 +3720,14 @@ Added to `after-change-functions'."
          (lambda (workspace)
            (pcase (or lsp-document-sync-method
                       (lsp--workspace-sync-method workspace))
-             (1 (cl-pushnew (list workspace
-                                  (current-buffer)
-                                  (lsp--versioned-text-document-identifier)
-                                  (lsp--full-change-event))
-                            lsp--delayed-requests
-                            :test 'equal))
+             (1
+              (cl-pushnew (list workspace
+                                (current-buffer)
+                                (lsp--versioned-text-document-identifier)
+                                (lsp--full-change-event))
+                          lsp--delayed-requests
+                          :test (-lambda ((_ left) (_ right))
+                                  (equal left right))))
              (2
               (with-lsp-workspace workspace
                 (lsp-notify
