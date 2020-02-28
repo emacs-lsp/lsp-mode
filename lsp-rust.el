@@ -282,20 +282,13 @@ is often the type local variable declaration."
    ("rust.target" lsp-rust-target)
    ("rust.sysroot" lsp-rust-sysroot)))
 
-(defvar lsp-clients-rust-progress-string ""
-  "Rust progress status as reported by the RLS server.")
-
-(put 'lsp-rust-progress-string 'risky-local-variable t)
-(add-to-list 'global-mode-string (list '(t lsp-clients-rust-progress-string)))
-
-(defun lsp-clients--rust-window-progress (_workspace params)
+(defun lsp-clients--rust-window-progress (workspace params)
   "Progress report handling.
 PARAMS progress report notification data."
   (-let (((&hash "done" "message" "title") params))
     (if (or done (s-blank-str? message))
-        (setq lsp-clients-rust-progress-string nil)
-      (setq lsp-clients-rust-progress-string (format "%s - %s" title (or message "")))
-      (lsp-log lsp-clients-rust-progress-string))))
+        (lsp-workspace-status nil workspace)
+      (lsp-workspace-status (format "%s - %s" title (or message "")) workspace))))
 
 (cl-defmethod lsp-execute-command
   (_server (_command (eql rls.run)) params)
@@ -325,7 +318,7 @@ PARAMS progress report notification data."
 
 ;; rust-analyzer
 
-(defcustom lsp-rust-analyzer-server-command '("ra_lsp_server")
+(defcustom lsp-rust-analyzer-server-command '("rust-analyzer")
   "Command to start rust-analyzer."
   :type '(repeat string)
   :package-version '(lsp-mode . "6.2"))
@@ -408,10 +401,12 @@ PARAMS progress report notification data."
 
 (defconst lsp-rust-action-handlers
   '(("rust-analyzer.applySourceChange" .
-     (lambda (p) (lsp-rust-apply-source-change-command p)))))
+     (lambda (p) (lsp-rust-apply-source-change-command p)))
+    ("rust-analyzer.selectAndApplySourceChange" .
+     (lambda (p) (lsp-rust-select-and-apply-source-change-command p)))))
 
 (defun lsp-rust-apply-source-change-command (p)
-  (let ((data (lsp-seq-first (ht-get p "arguments"))))
+  (let ((data (-> p (ht-get "arguments") (lsp-seq-first))))
     (lsp-rust-apply-source-change data)))
 
 (defun lsp-rust-uri-filename (text-document)
@@ -425,6 +420,12 @@ PARAMS progress report notification data."
           (position (ht-get cursor-position "position")))
       (find-file filename)
       (goto-char (lsp--position-to-point position)))))
+
+(defun lsp-rust-select-and-apply-source-change-command (p)
+  (let* ((options (-> p (ht-get "arguments") (lsp-seq-first)))
+         (chosen-option (lsp--completing-read "Select option:" options
+                                              (-lambda ((&hash "label")) label))))
+    (lsp-rust-apply-source-change chosen-option)))
 
 (define-derived-mode lsp-rust-analyzer-syntax-tree-mode special-mode "Rust-Analyzer-Syntax-Tree"
   "Mode for the rust-analyzer syntax tree buffer.")
@@ -510,19 +511,26 @@ PARAMS progress report notification data."
 (defun lsp-rust-analyzer-update-inlay-hints (buffer)
   (if (and (lsp-rust-analyzer-initialized?)
            (eq buffer (current-buffer)))
-      (lsp-request-async "rust-analyzer/inlayHints"
-                         (list :textDocument (lsp--text-document-identifier))
-                         (lambda (res)
-                           (remove-overlays (point-min) (point-max) 'lsp-rust-analyzer-inlay-hint t)
-                           (dolist (hint res)
-                             (-let* (((&hash "range" "label") hint)
-                                     ((beg . end) (lsp--range-to-region range))
-                                     (overlay (make-overlay beg end)))
-                               (overlay-put overlay 'lsp-rust-analyzer-inlay-hint t)
-                               (overlay-put overlay 'evaporate t)
-                               (overlay-put overlay 'after-string (propertize (concat ": " label)
-                                                                              'font-lock-face 'font-lock-comment-face)))))
-                         :mode 'tick))
+      (lsp-request-async
+       "rust-analyzer/inlayHints"
+       (list :textDocument (lsp--text-document-identifier))
+       (lambda (res)
+         (remove-overlays (point-min) (point-max) 'lsp-rust-analyzer-inlay-hint t)
+         (dolist (hint res)
+           (-let* (((&hash "range" "label" "kind") hint)
+                   ((beg . end) (lsp--range-to-region range))
+                   (overlay (make-overlay beg end)))
+             (overlay-put overlay 'lsp-rust-analyzer-inlay-hint t)
+             (overlay-put overlay 'evaporate t)
+             (cond
+              ((string= kind "TypeHint")
+               (overlay-put overlay 'after-string (propertize (concat ": " label)
+                                                              'font-lock-face 'font-lock-comment-face)))
+              ((string= kind "ParameterHint")
+               (overlay-put overlay 'before-string (propertize (concat label ": ")
+                                                               'font-lock-face 'font-lock-comment-face)))
+              ))))
+       :mode 'tick))
   nil)
 
 (defun lsp-rust-analyzer-initialized? ()
@@ -579,6 +587,41 @@ PARAMS progress report notification data."
         (insert result)
         (special-mode)))
     (display-buffer buf)))
+
+;; runnables
+(defvar lsp-rust-analyzer--last-runnable nil)
+
+(defun lsp-rust-analyzer--runnables-params ()
+  (list :textDocument (lsp--text-document-identifier)
+        :position (lsp--cur-position)))
+
+(defun lsp-rust-analyzer--runnables ()
+  (lsp-send-request (lsp-make-request "rust-analyzer/runnables"
+                                      (lsp-rust-analyzer--runnables-params))))
+
+(defun lsp-rust-analyzer--select-runnable ()
+  (lsp--completing-read
+   "Select runnable:"
+   (if lsp-rust-analyzer--last-runnable
+       (cons lsp-rust-analyzer--last-runnable (lsp-rust-analyzer--runnables))
+     (lsp-rust-analyzer--runnables))
+   (-lambda ((&hash "label")) label)))
+
+(defun lsp-rust-analyzer-run (runnable)
+  (interactive (list (lsp-rust-analyzer--select-runnable)))
+  (-let* (((&hash "env" "bin" "args" "label") runnable)
+          (compilation-environment (-map (-lambda ((k v)) (concat k "=" v)) (ht-items env))))
+    (compilation-start
+     (string-join (append (list bin) args '()) " ")
+     ;; cargo-process-mode is nice, but try to work without it...
+     (if (functionp 'cargo-process-mode) 'cargo-process-mode nil)
+     (lambda (_) (concat "*" label "*")))
+    (setq lsp-rust-analyzer--last-runnable runnable)))
+
+(defun lsp-rust-analyzer-rerun (&optional runnable)
+  (interactive (list (or lsp-rust-analyzer--last-runnable
+                         (lsp-rust-analyzer--select-runnable))))
+  (lsp-rust-analyzer-run (or runnable lsp-rust-analyzer--last-runnable)))
 
 (provide 'lsp-rust)
 ;;; lsp-rust.el ends here

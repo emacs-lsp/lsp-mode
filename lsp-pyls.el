@@ -290,7 +290,7 @@ imported and inspected by rope."
 
 (defcustom lsp-pyls-rope-rope-folder nil
   "The name of the folder in which rope stores project
-configurations and data. Pass `null` for not using such a folder
+configurations and data. Pass `nil` for not using such a folder
 at all."
   :type '(repeat string)
   :group 'lsp-pyls
@@ -353,53 +353,93 @@ parameters referenced in config."
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.3"))
 
+(defcustom lsp-pyls-plugins-jedi-use-pyenv-environment nil
+  "If enabled, pass the environment got by pyenv to jedi"
+  :type 'boolean
+  :group 'lsp-pyls
+  :package-version '(lsp-mode . "6.3"))
+
+(defcustom lsp-pyls-plugins-jedi-environment nil
+  "Specify the environment that jedi runs on where <environmeent>/bin/python
+should be the python executable. This option will be prioritized over
+`lsp-pyls-plugins-jedi-use-pyenv-environment'."
+  :type 'string
+  :group 'lsp-pyls
+  :package-version '(lsp-mode . "6.3"))
+
+(defun lsp-pyls-get-pyenv-environment ()
+  "Get the pyenv-managed environment for current workspace, where
+<ENV>/bin/python is the corresponding Python executable"
+  (if lsp-pyls-plugins-jedi-environment
+      lsp-pyls-plugins-jedi-environment
+    (when lsp-pyls-plugins-jedi-use-pyenv-environment
+      (let ((pyenv-version (getenv "PYENV_VERSION"))
+            (root (lsp-seq-first (lsp-find-roots-for-workspace lsp--cur-workspace (lsp-session)))))
+        (when root
+          (setenv "PYENV_VERSION" nil)
+          (let* ((pyenv-command-path (executable-find "pyenv"))
+                 (python-env (when pyenv-command-path
+                               (f-parent
+                                (f-parent
+                                 (shell-command-to-string
+                                  (format "PYENV_DIR='%s' %s which python"
+                                          root pyenv-command-path)))))))
+            (if python-env (lsp--info "Configure pyls with environment: %s" python-env)
+              (lsp--warn "Can't find the python environment for
+              %s even if
+              `lsp-pyls-plugins-jedi-use-pyenv-environment` is
+              enabled") root)
+            (setenv "PYENV_VERSION" pyenv-version)
+            python-env))))))
+
 (lsp-register-custom-settings
  '(("pyls.rope.ropeFolder" lsp-pyls-rope-rope-folder)
-   ("pyls.rope.extensionModules" lsp-pyls-rope-extension-modules)
-   ("pyls.plugins.autopep8.enabled" lsp-pyls-plugins-autopep8-enabled t)
-   ("pyls.plugins.yapf.enabled" lsp-pyls-plugins-yapf-enabled t)
-   ("pyls.plugins.rope_completion.enabled" lsp-pyls-plugins-rope-completion-enabled t)
-   ("pyls.plugins.pyflakes.enabled" lsp-pyls-plugins-pyflakes-enabled t)
-   ("pyls.plugins.pydocstyle.matchDir" lsp-pyls-plugins-pydocstyle-match-dir)
-   ("pyls.plugins.pydocstyle.match" lsp-pyls-plugins-pydocstyle-match)
-   ("pyls.plugins.pydocstyle.select" lsp-pyls-plugins-pydocstyle-select)
-   ("pyls.plugins.pydocstyle.ignore" lsp-pyls-plugins-pydocstyle-ignore)
-   ("pyls.plugins.pydocstyle.addSelect" lsp-pyls-plugins-pydocstyle-add-select)
-   ("pyls.plugins.pydocstyle.addIgnore" lsp-pyls-plugins-pydocstyle-add-ignore)
-   ("pyls.plugins.pydocstyle.convention" lsp-pyls-plugins-pydocstyle-convention)
-   ("pyls.plugins.pydocstyle.enabled" lsp-pyls-plugins-pydocstyle-enabled t)
-   ("pyls.plugins.pycodestyle.maxLineLength" lsp-pyls-plugins-pycodestyle-max-line-length)
-   ("pyls.plugins.pycodestyle.hangClosing" lsp-pyls-plugins-pycodestyle-hang-closing t)
-   ("pyls.plugins.pycodestyle.ignore" lsp-pyls-plugins-pycodestyle-ignore)
-   ("pyls.plugins.pycodestyle.select" lsp-pyls-plugins-pycodestyle-select)
-   ("pyls.plugins.pycodestyle.filename" lsp-pyls-plugins-pycodestyle-filename)
-   ("pyls.plugins.pycodestyle.exclude" lsp-pyls-plugins-pycodestyle-exclude)
-   ("pyls.plugins.pycodestyle.enabled" lsp-pyls-plugins-pycodestyle-enabled t)
-   ("pyls.plugins.pylint.enabled" lsp-pyls-plugins-pylint-enabled t)
-   ("pyls.plugins.pylint.args" lsp-pyls-plugins-pylint-args)
-   ("pyls.plugins.flake8.enabled" lsp-pyls-plugins-flake8-enabled)
-   ("pyls.plugins.flake8.exclude" lsp-pyls-plugins-flake8-exclude)
-   ("pyls.plugins.flake8.filename" lsp-pyls-plugins-flake8-filename)
-   ("pyls.plugins.flake8.hangClosing" lsp-pyls-plugins-flake8-hang-closing)
-   ("pyls.plugins.flake8.ignore" lsp-pyls-plugins-flake8-ignore)
-   ("pyls.plugins.flake8.maxLineLength" lsp-pyls-plugins-flake8-max-line-length)
-   ("pyls.plugins.flake8.select" lsp-pyls-plugins-flake8-select)
-   ("pyls.plugins.flake8.config" lsp-pyls-plugins-flake8-config)
-   ("pyls.plugins.preload.modules" lsp-pyls-plugins-preload-modules)
-   ("pyls.plugins.preload.enabled" lsp-pyls-plugins-preload-enabled t)
-   ("pyls.plugins.mccabe.threshold" lsp-pyls-plugins-mccabe-threshold)
-   ("pyls.plugins.mccabe.enabled" lsp-pyls-plugins-mccabe-enabled t)
-   ("pyls.plugins.jedi_symbols.all_scopes" lsp-pyls-plugins-jedi-symbols-all-scopes t)
-   ("pyls.plugins.jedi_symbols.enabled" lsp-pyls-plugins-jedi-symbols-enabled t)
-   ("pyls.plugins.jedi_signature_help.enabled" lsp-pyls-plugins-jedi-signature-help-enabled t)
-   ("pyls.plugins.jedi_references.enabled" lsp-pyls-plugins-jedi-references-enabled t)
-   ("pyls.plugins.jedi_hover.enabled" lsp-pyls-plugins-jedi-hover-enabled t)
-   ("pyls.plugins.jedi_definition.follow_builtin_imports" lsp-pyls-plugins-jedi-definition-follow-builtin-imports t)
-   ("pyls.plugins.jedi_definition.follow_imports" lsp-pyls-plugins-jedi-definition-follow-imports t)
-   ("pyls.plugins.jedi_definition.enabled" lsp-pyls-plugins-jedi-definition-enabled t)
-   ("pyls.plugins.jedi_completion.include_params" lsp-pyls-plugins-jedi-completion-include-params t)
-   ("pyls.plugins.jedi_completion.enabled" lsp-pyls-plugins-jedi-completion-enabled t)
-   ("pyls.configurationSources" lsp-pyls-configuration-sources)))
+           ("pyls.rope.extensionModules" lsp-pyls-rope-extension-modules)
+           ("pyls.plugins.autopep8.enabled" lsp-pyls-plugins-autopep8-enabled t)
+           ("pyls.plugins.yapf.enabled" lsp-pyls-plugins-yapf-enabled t)
+           ("pyls.plugins.rope_completion.enabled" lsp-pyls-plugins-rope-completion-enabled t)
+           ("pyls.plugins.pyflakes.enabled" lsp-pyls-plugins-pyflakes-enabled t)
+           ("pyls.plugins.pydocstyle.matchDir" lsp-pyls-plugins-pydocstyle-match-dir)
+           ("pyls.plugins.pydocstyle.match" lsp-pyls-plugins-pydocstyle-match)
+           ("pyls.plugins.pydocstyle.select" lsp-pyls-plugins-pydocstyle-select)
+           ("pyls.plugins.pydocstyle.ignore" lsp-pyls-plugins-pydocstyle-ignore)
+           ("pyls.plugins.pydocstyle.addSelect" lsp-pyls-plugins-pydocstyle-add-select)
+           ("pyls.plugins.pydocstyle.addIgnore" lsp-pyls-plugins-pydocstyle-add-ignore)
+           ("pyls.plugins.pydocstyle.convention" lsp-pyls-plugins-pydocstyle-convention)
+           ("pyls.plugins.pydocstyle.enabled" lsp-pyls-plugins-pydocstyle-enabled t)
+           ("pyls.plugins.pycodestyle.maxLineLength" lsp-pyls-plugins-pycodestyle-max-line-length)
+           ("pyls.plugins.pycodestyle.hangClosing" lsp-pyls-plugins-pycodestyle-hang-closing t)
+           ("pyls.plugins.pycodestyle.ignore" lsp-pyls-plugins-pycodestyle-ignore)
+           ("pyls.plugins.pycodestyle.select" lsp-pyls-plugins-pycodestyle-select)
+           ("pyls.plugins.pycodestyle.filename" lsp-pyls-plugins-pycodestyle-filename)
+           ("pyls.plugins.pycodestyle.exclude" lsp-pyls-plugins-pycodestyle-exclude)
+           ("pyls.plugins.pycodestyle.enabled" lsp-pyls-plugins-pycodestyle-enabled t)
+           ("pyls.plugins.pylint.enabled" lsp-pyls-plugins-pylint-enabled t)
+           ("pyls.plugins.pylint.args" lsp-pyls-plugins-pylint-args)
+           ("pyls.plugins.flake8.enabled" lsp-pyls-plugins-flake8-enabled)
+           ("pyls.plugins.flake8.exclude" lsp-pyls-plugins-flake8-exclude)
+           ("pyls.plugins.flake8.filename" lsp-pyls-plugins-flake8-filename)
+           ("pyls.plugins.flake8.hangClosing" lsp-pyls-plugins-flake8-hang-closing)
+           ("pyls.plugins.flake8.ignore" lsp-pyls-plugins-flake8-ignore)
+           ("pyls.plugins.flake8.maxLineLength" lsp-pyls-plugins-flake8-max-line-length)
+           ("pyls.plugins.flake8.select" lsp-pyls-plugins-flake8-select)
+           ("pyls.plugins.flake8.config" lsp-pyls-plugins-flake8-config)
+           ("pyls.plugins.preload.modules" lsp-pyls-plugins-preload-modules)
+           ("pyls.plugins.preload.enabled" lsp-pyls-plugins-preload-enabled t)
+           ("pyls.plugins.mccabe.threshold" lsp-pyls-plugins-mccabe-threshold)
+           ("pyls.plugins.mccabe.enabled" lsp-pyls-plugins-mccabe-enabled t)
+           ("pyls.plugins.jedi_symbols.all_scopes" lsp-pyls-plugins-jedi-symbols-all-scopes t)
+           ("pyls.plugins.jedi_symbols.enabled" lsp-pyls-plugins-jedi-symbols-enabled t)
+           ("pyls.plugins.jedi_signature_help.enabled" lsp-pyls-plugins-jedi-signature-help-enabled t)
+           ("pyls.plugins.jedi_references.enabled" lsp-pyls-plugins-jedi-references-enabled t)
+           ("pyls.plugins.jedi_hover.enabled" lsp-pyls-plugins-jedi-hover-enabled t)
+           ("pyls.plugins.jedi_definition.follow_builtin_imports" lsp-pyls-plugins-jedi-definition-follow-builtin-imports t)
+           ("pyls.plugins.jedi_definition.follow_imports" lsp-pyls-plugins-jedi-definition-follow-imports t)
+           ("pyls.plugins.jedi_definition.enabled" lsp-pyls-plugins-jedi-definition-enabled t)
+           ("pyls.plugins.jedi_completion.include_params" lsp-pyls-plugins-jedi-completion-include-params t)
+           ("pyls.plugins.jedi_completion.enabled" lsp-pyls-plugins-jedi-completion-enabled t)
+           ("pyls.configurationSources" lsp-pyls-configuration-sources)
+           ("pyls.plugins.jedi.environment" lsp-pyls-get-pyenv-environment)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection

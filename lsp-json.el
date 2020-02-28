@@ -41,12 +41,6 @@
   :group 'lsp-json
   :package-version '(lsp-mode . "6.3"))
 
-(defcustom lsp-json-format-enable t
-  "Enable/disable default JSON formatter"
-  :type 'boolean
-  :group 'lsp-json
-  :package-version '(lsp-mode . "6.3"))
-
 (defcustom lsp-http-proxy nil
   "The URL of the proxy server to use when fetching schema."
   :type 'string
@@ -60,13 +54,13 @@
   :package-version '(lsp-mode . "6.3"))
 
 (lsp-register-custom-settings
- '(("json.format.enable" lsp-json-format-enable t)
-   ("json.schemas" lsp-json-schemas)
+ '(("json.schemas" lsp-json-schemas)
    ("http.proxy" lsp-http-proxy)
    ("http.proxyStrictSSL" lsp-http-proxyStrictSSL)))
 
 (defvar lsp-json--extra-init-params
-  `(:handledSchemaProtocols ["file" "http" "https"]))
+  `(:provideFormatter t
+    :handledSchemaProtocols ["file" "http" "https"]))
 
 (defvar lsp-json--major-modes '(json-mode jsonc-mode))
 
@@ -121,7 +115,9 @@
   :async-request-handlers (ht ("vscode/content" #'lsp-json--get-content))
   :initialized-fn (lambda (w)
                     (with-lsp-workspace w
-                      (lsp--set-configuration (lsp-configuration-section "json"))
+                      (lsp--set-configuration
+                       (ht-merge (lsp-configuration-section "json")
+                                 (lsp-configuration-section "http")))
                       (lsp-notify "json/schemaAssociations" lsp-json--schema-associations)))
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'vscode-json-languageserver callback error-callback))))

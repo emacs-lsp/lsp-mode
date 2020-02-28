@@ -149,11 +149,16 @@ language server."
   :group 'lsp-intelephense
   :package-version '(lsp-mode . "6.2"))
 
+(defcustom lsp-intelephense-multi-root t
+  "Flag to control if the server supports multi-root projects"
+  :type 'boolean
+  :group 'lsp-intelephense
+  :package-version '(lsp-mode . "6.3"))
+
 (lsp-register-custom-settings
  '(("intelephense.trace.server" lsp-intelephense-trace-server)
    ("intelephense.rename.exclude" lsp-intelephense-rename-exclude)
    ("intelephense.telemetry.enabled" lsp-intelephense-telemetry-enabled t)
-   ("intelephense.licenceKey" lsp-intelephense-licence-key)
    ("intelephense.format.enable" lsp-intelephense-format-enable t)
    ("intelephense.completion.maxItems" lsp-intelephense-completion-max-items)
    ("intelephense.completion.triggerParameterHints" lsp-intelephense-completion-trigger-parameter-hints t)
@@ -185,8 +190,9 @@ language server."
                                              ("indexingEnded" #'ignore))
                   :initialization-options (lambda ()
                                             (list :storagePath lsp-intelephense-storage-path
+                                                  :licenceKey lsp-intelephense-licence-key
                                                   :clearCache lsp-intelephense-clear-cache))
-                  :multi-root t
+                  :multi-root lsp-intelephense-multi-root
                   :completion-in-comments? t
                   :server-id 'iph))
 

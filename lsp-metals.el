@@ -149,9 +149,6 @@ Should be ignored if there is no open doctor window."
   (with-lsp-workspace workspace
     (lsp-send-execute-command command)))
 
-(defvar-local lsp-metals--decorations nil
-  "Overlays used by `metals/publishDecorations' handler.")
-
 (defun lsp-metals--publish-decorations (workspace params)
   "Handle the metals/publishDecorations extension notification."
   (with-lsp-workspace workspace
@@ -159,8 +156,7 @@ Should be ignored if there is no open doctor window."
             (buffer (lsp--buffer-for-file file)))
       (when buffer
         (with-current-buffer buffer
-          (seq-do #'delete-overlay lsp-metals--decorations)
-          (setq lsp-metals--decorations nil)
+          (lsp--remove-overlays 'metals-decoration)
           (mapc #'lsp-metals--make-overlay (ht-get params "options")))))))
 
 (defun lsp-metals--make-overlay (decoration)
@@ -171,13 +167,28 @@ Should be ignored if there is no open doctor window."
           (ov (make-overlay (car region) (cdr region) nil t t)))
     (overlay-put ov 'after-string (propertize content 'cursor t 'font-lock-face 'font-lock-comment-face))
     (overlay-put ov 'help-echo hover)
-    (push ov lsp-metals--decorations)))
+    (overlay-put ov 'metals-decoration t)))
+
+(defun lsp-metals--logs-toggle (_workspace)
+  "Focus or remove focus on the output logs reported by the
+server via `window/logMessage'."
+  (switch-to-buffer (get-buffer-create "*lsp-log*")))
+
+(defun lsp-metals--diagnostics-focus (_workspace)
+  "Focus on the window that lists all published diagnostics."
+  (defvar flymake-mode)
+  (defvar flycheck-mode)
+  (cond ((fboundp 'flymake-show-diagnostics-buffer) (flymake-show-diagnostics-buffer))
+        ((and flymake-mode (fboundp 'flymake-show-diagnostics-buffer)) (flymake-show-diagnostics-buffer))
+        ((and flycheck-mode (fboundp 'flycheck-list-errors)) (flycheck-list-errors))))
 
 (defun lsp-metals--execute-client-command (workspace params)
   "Handle the metals/executeClientCommand extension notification."
   (when-let ((command (pcase (ht-get params "command")
                         (`"metals-doctor-run" #'lsp-metals--doctor-run)
                         (`"metals-doctor-reload" #'lsp-metals--doctor-reload)
+                        (`"metals-logs-toggle" #'lsp-metals--logs-toggle)
+                        (`"metals-diagnostics-focus" #'lsp-metals--diagnostics-focus)
                         (`"metals-goto-location" #'lsp-metals--goto-location)
                         (`"metals-echo-command" #'lsp-metals--echo-command)
                         (`"metals-model-refresh" #'lsp-metals--model-refresh)
@@ -220,6 +231,25 @@ Should be ignored if there is no open doctor window."
                  (when (bound-and-true-p lsp-lens-mode)
                    (lsp--lens-schedule-refresh t)))))))
 
+(defun lsp-metals--status-string-keymap (workspace command)
+  "Keymap for `metals/status' notification."
+  (when command
+    (-doto (make-sparse-keymap)
+      (define-key [mode-line mouse-1]
+        (lambda ()
+          (interactive)
+          (lsp-metals--execute-client-command workspace (ht ("command" command))))))))
+
+(defun lsp-metals--status-string (workspace params)
+  "Handle `metals/status' notification."
+  (-let (((&hash "text" "hide" "tooltip" "command") params))
+    (if (or hide (s-blank-str? text))
+        (lsp-workspace-status nil workspace)
+      (lsp-workspace-status (propertize text
+                              'help-echo tooltip
+                              'local-map (lsp-metals--status-string-keymap workspace command))
+        workspace))))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-metals--server-command)
                   :major-modes '(scala-mode)
@@ -230,7 +260,7 @@ Should be ignored if there is no open doctor window."
                                              ("metals/publishDecorations" #'lsp-metals--publish-decorations)
                                              ("metals/treeViewDidChange" #'ignore)
                                              ("metals-model-refresh" #'lsp-metals--model-refresh)
-                                             ("metals/status" #'ignore))
+                                             ("metals/status" #'lsp-metals--status-string))
                   :action-handlers (ht ("metals-debug-session-start" (-partial #'lsp-metals--debug-start :json-false))
                                        ("metals-run-session-start" (-partial #'lsp-metals--debug-start t)))
                   :server-id 'metals
