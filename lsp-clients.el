@@ -51,6 +51,7 @@
 (require 'lsp-json)
 (require 'lsp-verilog)
 (require 'lsp-eslint)
+(require 'lsp-gdscript)
 
 ;;; Ada
 (defgroup lsp-ada nil
