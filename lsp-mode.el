@@ -3221,7 +3221,7 @@ in that particular folder."
       (setq-local global-mode-string (remove status global-mode-string))))))
 
 (defun lsp--text-document-did-open ()
-  "'document/didOpen event."
+  "'document/didOpen' event."
   (run-hooks 'lsp-before-open-hook)
   (setq lsp--cur-version (or lsp--cur-version 0))
   (cl-pushnew (current-buffer) (lsp--workspace-buffers lsp--cur-workspace))
@@ -3715,7 +3715,7 @@ Added to `after-change-functions'."
   :group 'lsp-mode)
 
 (defcustom lsp-on-idle-hook nil
-  "Hooks to run "
+  "Hooks to run after `lsp-idle-delay'."
   :type 'hook
   :group 'lsp-mode)
 
