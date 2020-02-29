@@ -2227,6 +2227,7 @@ BINDINGS is a list of (key def cond)."
       "gh" lsp-treemacs-call-hierarchy (and (lsp-feature? "callHierarchy/incomingCalls")
                                             (fboundp 'lsp-treemacs-call-hierarchy))
       "ga" xref-find-apropos (lsp-feature? "workspace/symbol")
+      "ge" lsp-treemacs-errors-list (fboundp 'lsp-treemacs-errors-list)
 
       ;; help
       "hh" lsp-describe-thing-at-point (lsp-feature? "textDocument/hover")
@@ -2302,6 +2303,7 @@ BINDINGS is a list of (key def cond)."
      "g h" "call hierarchy"
      "g a" "find symbol in workspace"
      "g A" "find symbol in all workspaces"
+     "g e" "show errors"
 
      "h"   "help"
      "h h" "describe symbol at point"
