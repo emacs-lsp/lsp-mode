@@ -168,13 +168,34 @@ the buffer when it becomes large."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-enable-semantic-highlighting nil
-  "Enable/disable semantic highlighting as proposed at
+(defcustom lsp-semantic-highlighting nil
+  "When set to `:immediate' or `:deferred', this option enables
+ semantic highlighting as proposed at
  https://github.com/microsoft/vscode-languageserver-node/pull/367.
-This feature is not yet part of the official LSP spec and may
-occasionally break as language servers are updated."
+
+ If `lsp-semantic-highlighting' is set to `:immediate', semantic
+ highlighting information received from the language server is
+ applied immediately, and in full. If `lsp-semantic-highlighting'
+ is set to `:deferred', semantic higlighting will be performed
+ after an idle timeout, and only within a limit region
+ around `(point)' (see
+ `lsp-semantic-highlighting-context-lines'). Compared to
+ `:immediate', `:deferred' has a higher risk of producing stale
+ highlights but may offer significantly better performance.
+
+ Note that semantic highlighting is not yet part of the official
+ LSP spec and may occasionally break as language servers are
+ updated."
   :group 'lsp-mode
-  :type 'boolean)
+  :type '(choice
+          (const :tag "Disable" nil)
+          (const :tag "Immediate" :immediate)
+          (const :tag "Deferred" :deferred)))
+
+(defcustom lsp-semantic-highlighting-context-lines 15
+  "How many lines to fontify above `(window-start)' and below `(window-end)'."
+  :group 'lsp-mode
+  :type 'number)
 
 (defcustom lsp-folding-range-limit nil
   "The maximum number of folding ranges to receive from the language server."
@@ -2960,7 +2981,7 @@ disappearing, unset all the variables related to it."
                       (formatting . ((dynamicRegistration . t)))
                       (rangeFormatting . ((dynamicRegistration . t)))
                       (rename . ((dynamicRegistration . t) (prepareSupport . t)))
-                      (semanticHighlightingCapabilities . ((semanticHighlighting . ,(lsp-json-bool lsp-enable-semantic-highlighting))))
+                      (semanticHighlightingCapabilities . ((semanticHighlighting . ,(lsp-json-bool lsp-semantic-highlighting))))
                       (codeAction . ((dynamicRegistration . t)
                                      (isPreferredSupport . t)
                                      (codeActionLiteralSupport . ((codeActionKind . ((valueSet . [""
@@ -5177,6 +5198,42 @@ unless overridden by a more specific face association."
  Since the list is traversed in order, it should be sorted in order of decreasing
  specificity.")
 
+(defvar-local lsp--semantic-highlighting-current-region nil
+"Denotes the region `(min . max)' most recently fontified via the
+ deferred semantic-highlighting mechanism.
+
+Further fontification calls will be skipped unless new semantic
+highlighting information has been received from the language
+server, `lsp--semantic-highlighting-current-region' is `nil',
+or `(point)' lies outside `lsp--semantic-highlighting-region'.")
+
+(defvar-local lsp--semantic-highlighting-cache nil)
+
+(defvar-local lsp--semantic-highlighting-stale nil)
+
+(defvar lsp--semantic-highlighting-idle-timer nil)
+
+(defun lsp--semantic-highlighting-arm-timer (delay)
+  (when lsp--semantic-highlighting-idle-timer
+    (cancel-timer lsp--semantic-highlighting-idle-timer))
+  (when lsp--semantic-highlighting-cache
+    (setq lsp--semantic-highlighting-idle-timer
+          (run-with-idle-timer delay nil #'lsp--apply-deferred-semantic-highlighting))))
+
+(defun lsp--semantic-highlighting-add-to-cache (lines)
+  (unless lsp--semantic-highlighting-cache
+    ;; first-time setup
+    (setq lsp--semantic-highlighting-cache (make-hash-table :size 5000))
+    (dolist (fns '(window-scroll-functions window-size-change-functions))
+      (make-variable-buffer-local fns)
+      (add-to-list fns (lambda (&rest _) (lsp--semantic-highlighting-arm-timer 0.05)))))
+  (let (line)
+    (cl-loop for entry across-ref lines do
+             (setq line (gethash "line" entry))
+             (puthash line entry lsp--semantic-highlighting-cache)))
+  (setq lsp--semantic-highlighting-stale t)
+  (lsp--semantic-highlighting-arm-timer 0.2))
+
 (defun lsp--semantic-highlighting-find-face (scope-names)
   (let ((maybe-face
          (seq-some (lambda
@@ -5221,6 +5278,63 @@ unless overridden by a more specific face association."
                                                   (bindat-get-field el 'scopeIndex)))
                       (overlay-put ov 'lsp-sem-highlight t)))))))
 
+(defun lsp--apply-deferred-semantic-highlighting ()
+  ;; cache may be nil if we switched buffers between add-to-cache and now.
+  ;; in that case we don't spend time fontifying the old buffer
+  (when (and lsp--semantic-highlighting-cache
+             lsp--buffer-workspaces
+             (or lsp--semantic-highlighting-stale
+                 (not lsp--semantic-highlighting-current-region)
+                 (< (window-start) (car lsp--semantic-highlighting-current-region))
+                 (> (window-end nil t) (cdr lsp--semantic-highlighting-current-region))))
+    (let* ((semantic-highlighting-faces
+            (lsp--workspace-semantic-highlighting-faces
+             (nth 0 lsp--buffer-workspaces)))
+           (fence-min (max (point-min) (- (window-start) (* fill-column lsp-semantic-highlighting-context-lines))))
+           (fence-max (min (point-max) (+ (window-end nil t) (* fill-column lsp-semantic-highlighting-context-lines))))
+           (line-min (1- (line-number-at-pos fence-min)))
+           (line-max (1- (line-number-at-pos fence-max)))
+           raw-str i end el start (cur-line 0) ov tokens is-inactive entry
+           (inhibit-field-text-motion t))
+      (save-excursion
+        (save-restriction
+          (widen)
+          (goto-char 0)
+          (cl-loop for line from line-min to line-max do
+                   (setq entry (gethash line lsp--semantic-highlighting-cache))
+                   (forward-line (- line cur-line))
+                   (setq cur-line line)
+                   (when entry
+                     (remove-overlays (point) (line-end-position) 'lsp-sem-highlight t)
+                     (setq is-inactive (gethash "isInactive" entry)
+                           tokens (gethash "tokens" entry)
+                           i 0)
+                     (cond (is-inactive
+                            (setq ov (make-overlay (point) (line-end-position)))
+                            (overlay-put ov 'face 'lsp-face-semhl-disabled)
+                            (overlay-put ov 'lsp-sem-highlight t))
+                           (tokens
+                            (setq raw-str (base64-decode-string tokens))
+                            (setq end (length raw-str))
+                            (while (< i end)
+                              (setq el
+                                    (bindat-unpack
+                                     '((start u32) (len u16) (scopeIndex u16))
+                                     (substring-no-properties raw-str i (+ 8 i))))
+                              (setq i (+ 8 i))
+                              (setq start (bindat-get-field el 'start))
+                              (setq ov (make-overlay
+                                        (+ (point) start)
+                                        (+ (point) (+ start (bindat-get-field el 'len)))))
+                              (overlay-put ov 'face (aref semantic-highlighting-faces
+                                                          (bindat-get-field el 'scopeIndex)))
+                              (overlay-put ov 'lsp-sem-highlight t))))))))
+      (setq lsp--semantic-highlighting-stale nil
+            ;; at least 5 chars/per line on average should be
+            ;; a relatively safe approximation
+            lsp--semantic-highlighting-current-region
+            (cons fence-min fence-max)))))
+
 (defun lsp--on-semantic-highlighting (workspace params)
   ;; TODO: defer highlighting if buffer's not currently focused?
   (unless (lsp--workspace-semantic-highlighting-faces workspace)
@@ -5237,10 +5351,14 @@ unless overridden by a more specific face association."
          (inhibit-field-text-motion t))
     (when buffer
       (with-current-buffer buffer
-        (save-mark-and-excursion
-          (with-silent-modifications
-            (lsp--apply-semantic-highlighting
-             (lsp--workspace-semantic-highlighting-faces workspace) lines)))))))
+        (if (eq lsp-semantic-highlighting 'immediate)
+            (save-mark-and-excursion
+              (save-restriction
+                (widen)
+                (with-silent-modifications
+                  (lsp--apply-semantic-highlighting
+                   (lsp--workspace-semantic-highlighting-faces workspace) lines))))
+          (lsp--semantic-highlighting-add-to-cache lines))))))
 
 (defconst lsp--symbol-kind
   '((1 . "File")
