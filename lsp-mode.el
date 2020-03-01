@@ -5120,7 +5120,7 @@ unless overridden by a more specific face association."
 unless overridden by a more specific face association."
   :group 'lsp-faces)
 
-(defface lsp-face-semhl-disable
+(defface lsp-face-semhl-disabled
   '((t :inherit font-lock-comment-face))
   "Face used for semantic highlighting scopes matching meta.disabled,
 unless overridden by a more specific face association."
@@ -5190,31 +5190,36 @@ unless overridden by a more specific face association."
     maybe-face))
 
 (defun lsp--apply-semantic-highlighting (semantic-highlighting-faces lines)
-  (let (line raw-str i end el start (cur-line 1) ov tokens)
+  (let (line raw-str i end el start (cur-line 1) ov tokens is-inactive)
     (goto-char 0)
     (cl-loop for entry across-ref lines do
              (setq line (1+ (gethash "line" entry))
+                   is-inactive (gethash "isInactive" entry)
                    tokens (gethash "tokens" entry)
                    i 0)
              (forward-line (- line cur-line))
              (setq cur-line line)
              (remove-overlays (point) (line-end-position) 'lsp-sem-highlight t)
-             (when tokens
-               (setq raw-str (base64-decode-string tokens))
-               (setq end (length raw-str))
-               (while (< i end)
-                 (setq el
-                       (bindat-unpack
-                        '((start u32) (len u16) (scopeIndex u16))
-                        (substring-no-properties raw-str i (+ 8 i))))
-                 (setq i (+ 8 i))
-                 (setq start (bindat-get-field el 'start))
-                 (setq ov (make-overlay
-                           (+ (point) start)
-                           (+ (point) (+ start (bindat-get-field el 'len)))))
-                 (overlay-put ov 'face (aref semantic-highlighting-faces
-                                             (bindat-get-field el 'scopeIndex)))
-                 (overlay-put ov 'lsp-sem-highlight t))))))
+             (cond (is-inactive
+                    (setq ov (make-overlay (point) (line-end-position)))
+                    (overlay-put ov 'face 'lsp-face-semhl-disabled)
+                    (overlay-put ov 'lsp-sem-highlight t))
+                   (tokens
+                    (setq raw-str (base64-decode-string tokens))
+                    (setq end (length raw-str))
+                    (while (< i end)
+                      (setq el
+                            (bindat-unpack
+                             '((start u32) (len u16) (scopeIndex u16))
+                             (substring-no-properties raw-str i (+ 8 i))))
+                      (setq i (+ 8 i))
+                      (setq start (bindat-get-field el 'start))
+                      (setq ov (make-overlay
+                                (+ (point) start)
+                                (+ (point) (+ start (bindat-get-field el 'len)))))
+                      (overlay-put ov 'face (aref semantic-highlighting-faces
+                                                  (bindat-get-field el 'scopeIndex)))
+                      (overlay-put ov 'lsp-sem-highlight t)))))))
 
 (defun lsp--on-semantic-highlighting (workspace params)
   ;; TODO: defer highlighting if buffer's not currently focused?
