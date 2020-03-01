@@ -7248,18 +7248,21 @@ CALLBACK is the status callback passed by Flycheck."
                 :line (1+ (lsp-diagnostic-line diag))
                 :column (1+ (lsp-diagnostic-column diag))
                 :message (lsp-diagnostic-message diag)
-                :level (lsp--flycheck-calculate-level diag)
+                :level (if (string-match "clippy" (lsp-diagnostic-message diag))
+                           'info
+                        (lsp--flycheck-calculate-level diag))
                 :id (lsp-diagnostic-code diag)
-                :end-column (-> diag
-                                lsp-diagnostic-range
-                                (plist-get :end)
-                                (plist-get :column)
-                                (1+))
-                :end-line (-> diag
-                              lsp-diagnostic-range
-                              (plist-get :end)
-                              (plist-get :line)
-                              (1+)))))
+                ;; :end-column (-> diag
+                ;;                 lsp-diagnostic-range
+                ;;                 (plist-get :end)
+                ;;                 (plist-get :column)
+                ;;                 (1+))
+                ;; :end-line (-> diag
+                ;;               lsp-diagnostic-range
+                ;;               (plist-get :end)
+                ;;               (plist-get :line)
+                ;;               (1+))
+                )))
        (funcall callback 'finished)))
 
 (defun lsp--flycheck-buffer ()
