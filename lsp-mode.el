@@ -1150,18 +1150,19 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--line-character-to-point (line character)
   "Return the point for character CHARACTER on line LINE."
-  (save-excursion
-    (save-restriction
-      (widen)
-      (goto-char (point-min))
-      (forward-line line)
-      ;; server may send character position beyond the current line and we
-      ;; should fallback to line end.
-      (let ((line-end (line-end-position)))
-        (if (or (not character) (> character (- line-end (point))))
-            line-end
-          (forward-char character)
-          (point))))))
+  (let* ((inhibit-field-text-motion t))
+    (save-excursion
+      (save-restriction
+        (widen)
+        (goto-char (point-min))
+        (forward-line line)
+        ;; server may send character position beyond the current line and we
+        ;; should fallback to line end.
+        (let ((line-end (line-end-position)))
+          (if (or (not character) (> character (- line-end (point))))
+              line-end
+            (forward-char character)
+            (point)))))))
 
 (defun lsp--position-to-point (params)
   "Convert Position object in PARAMS to a point."
@@ -5225,7 +5226,10 @@ unless overridden by a more specific face association."
             (vconcat (mapcar #'lsp--semantic-highlighting-find-face scopes)))))
   (let* ((file (lsp--uri-to-path (gethash "uri" (gethash "textDocument" params))))
          (lines (gethash "lines" params))
-         (buffer (lsp--buffer-for-file file)))
+         (buffer (lsp--buffer-for-file file))
+         ;; not inhibiting field text motion will greatly slow down the calls to
+         ;; (line-end-position) performed by lsp--apply-semantic-highlighting
+         (inhibit-field-text-motion t))
     (when buffer
       (with-current-buffer buffer
         (save-mark-and-excursion
