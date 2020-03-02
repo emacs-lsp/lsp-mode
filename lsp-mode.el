@@ -189,7 +189,7 @@ occasionally break as language servers are updated."
 
 (defcustom lsp-client-packages
   '(ccls cquery lsp-clients lsp-clojure lsp-csharp lsp-css lsp-dart lsp-elm
-    lsp-erlang lsp-eslint lsp-fsharp lsp-go lsp-haskell lsp-haxe
+    lsp-erlang lsp-eslint lsp-fsharp lsp-gdscript lsp-go lsp-haskell lsp-haxe
     lsp-intelephense lsp-java lsp-json lsp-metals lsp-pwsh lsp-pyls
     lsp-python-ms lsp-rust lsp-solargraph lsp-terraform lsp-verilog lsp-vetur
     lsp-vhdl lsp-xml lsp-yaml)
@@ -646,7 +646,8 @@ Changes take effect only when a new session is started."
                                         (crystal-mode . "crystal")
                                         (nim-mode . "nim")
                                         (dhall-mode . "dhall")
-                                        (cmake-mode . "cmake"))
+                                        (cmake-mode . "cmake")
+                                        (gdscript-mode . "gdscript"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
