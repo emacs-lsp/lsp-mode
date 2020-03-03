@@ -4017,42 +4017,90 @@ and the position respectively."
 
 (defvar lsp--capf-cache nil
   "Cached candidates for completion at point function.
-In the form of (prefix items args).")
+In the form of (prefix items :lsp-items ...).")
 
 (defun lsp--capf-clear-cache (&rest _)
   "Clear completion caches."
   (setq lsp--capf-cache nil))
 
-(defun lsp--capf-filter-candidates (pred string items &rest plist)
-  "List the possible completion of STRING in candidates ITEMS.
-Only the elements that satisfy predicate PRED are considered.
-PLIST is the additional data to attach to each candidate."
+(defun lsp--capf-guess-prefix (item &optional default)
+  "Guess ITEM's prefix start point according to following heuristics:
+- If `textEdit' exists, use insertion range start as prefix start point.
+- Else, find the point before current point that's longest prefix match of
+`insertText' or `label'.
+When the heuristic fails to find the prefix start point, return DEFAULT value."
+  (-let [(&hash "label"
+                "insertText" insert-text
+                "textEdit" text-edit)
+         item]
+    (or (cond
+         (text-edit
+          (car (-some->> text-edit
+                 (gethash "range")
+                 lsp--range-to-region)))
+         ((or insert-text label)
+          (let* ((text (or insert-text label))
+                 (start (max 1 (- (point) (length text))))
+                 start-point)
+            (while (and (< start (point)) (not start-point))
+              (when (s-prefix? (buffer-substring-no-properties start (point)) text)
+                (setq start-point start))
+              (cl-incf start))
+            start-point)))
+        default)))
+
+(defun lsp--capf-cached-items (items)
+  "Convert ITEMS into `lsp--capf-cache-items' form."
+  (--> items
+       (-map (-lambda ((item &as &hash
+                             "label"
+                             "filterText" filter-text
+                             "emacsStartPoint_" start-point))
+               (propertize (or filter-text label)
+                           'lsp-completion-item item
+                           'lsp-completion-start-point start-point))
+             it)
+       (seq-into it 'list)
+       (-group-by (-partial #'get-text-property 0 'lsp-completion-start-point) it)
+       (sort it (-on #'< (lambda (o) (or (car o) most-positive-fixnum))))))
+
+(cl-defun lsp--capf-filter-candidates (items
+                                       &optional
+                                       &rest plist
+                                       &key lsp-items
+                                       &allow-other-keys)
+  "List all possible completions in cached ITEMS with their prefixes.
+We can pass LSP-ITEMS, which will be used when there's no cache.
+Also, additional data to attached to each candidate can be passed via PLIST."
   (let ((filtered-items
-         (if string
-             (--> items
-                  (-map (-lambda ((item &as &hash
-                                        "label"
-                                        "filterText" filter-text))
-                          (propertize (or filter-text label) 'lsp-completion-item item))
-                        it)
-                  (seq-into it 'list)
-                  (completion-all-completions string it pred (length string))
-                  ;; completion-all-completions may return a list in form (a b . x)
-                  ;; the last cdr is not important and need to be removed
-                  (let ((tail (last it)))
-                    (if (consp tail) (setcdr tail nil))
-                    it)
-                  (-map (-partial #'get-text-property 0 'lsp-completion-item) it))
-           items)))
-    (-map (-lambda ((item &as &hash
-                          "label"
-                          "insertText" insert-text
-                          "sortText" sort-text))
-            (propertize (or label insert-text)
-                        'lsp-completion-item item
-                        'lsp-completion-start-point (plist-get plist :start-point)
-                        'lsp-completion-prefix-line (plist-get plist :prefix-line)
-                        'lsp-sort-text sort-text))
+         (if items
+             (->> items
+                  (-map (lambda (item)
+                          (--> (buffer-substring-no-properties (car item) (point))
+                               ;; TODO: roll-out our own matcher if needed.
+                               ;; https://github.com/rustify-emacs/fuz.el seems to be good candidate.
+                               (completion-all-completions it (cdr item) nil (length it))
+                               ;; completion-all-completions may return a list in form (a b . x)
+                               ;; the last cdr is not important and need to be removed
+                               (let ((tail (last it)))
+                                 (if (consp tail) (setcdr tail nil))
+                                 it))))
+                  (-flatten-n 1)
+                  ;; TODO: pass additional function to sort the candidates
+                  (-map (-partial #'get-text-property 0 'lsp-completion-item)))
+           lsp-items)))
+    (-map (lambda (item)
+            (-let (((&hash "label"
+                           "insertText" insert-text
+                           "sortText" sort-text
+                           "emacsStartPoint_" start-point)
+                    item)
+                   ((&plist :prefix-line) plist))
+              (propertize (or label insert-text)
+                          'lsp-completion-item item
+                          'lsp-sort-text sort-text
+                          'lsp-completion-start-point start-point
+                          'lsp-completion-prefix-line prefix-line)))
           filtered-items)))
 
 (defun lsp--capf-company-match (candidate)
@@ -4102,7 +4150,7 @@ PLIST is the additional data to attach to each candidate."
       (list
        bounds-start
        (point)
-       (lambda (_probe pred action)
+       (lambda (_probe _pred action)
          (cond
           ((eq action 'metadata)
            `(metadata . ((display-sort-function
@@ -4117,34 +4165,29 @@ PLIST is the additional data to attach to each candidate."
           ((and lsp--capf-cache
                 (s-prefix? (car lsp--capf-cache)
                            (buffer-substring-no-properties bounds-start (point))))
-           (-let [(&plist :start-point) (cddr lsp--capf-cache)]
-             (unless (and start-point (> start-point (point-max)))
-               (apply #'lsp--capf-filter-candidates
-                      pred
-                      (buffer-substring-no-properties (or start-point (point)) (point))
-                      (cdr lsp--capf-cache)))))
+           (apply #'lsp--capf-filter-candidates (cdr lsp--capf-cache)))
           (t
            (-let* ((resp (lsp-request-while-no-input "textDocument/completion"
                                                      (plist-put (lsp--text-document-position-params)
                                                                 :context (ht ("triggerKind" 1)))))
-                   (items (lsp--sort-completions (cond
-                                                  ((seqp resp) resp)
-                                                  ((hash-table-p resp) (gethash "items" resp)))))
-                   (start (or (car (-some-> (lsp-elt items 0)
-                                     (lsp--ht-get "textEdit" "range")
-                                     lsp--range-to-region))
-                              bounds-start))
-                   (prefix (buffer-substring-no-properties start (point)))
+                   (items (->> (lsp--sort-completions (cond
+                                                       ((seqp resp) resp)
+                                                       ((hash-table-p resp) (gethash "items" resp))))
+                               (-map (lambda (item)
+                                       (puthash "emacsStartPoint_"
+                                                (lsp--capf-guess-prefix item bounds-start)
+                                                item)
+                                       item))))
                    (prefix-line (buffer-substring-no-properties (point-at-bol) (point))))
              (setf done? (or (seqp resp)
                              (not (gethash "isIncomplete" resp)))
                    lsp--capf-cache (when (and done? (not (seq-empty-p items)))
                                      (list (buffer-substring-no-properties bounds-start (point))
-                                           items
-                                           :start-point start
+                                           (lsp--capf-cached-items items)
+                                           :lsp-items nil
                                            :prefix-line prefix-line))
-                   result (lsp--capf-filter-candidates pred (if done? prefix) items
-                                                       :start-point start
+                   result (lsp--capf-filter-candidates (if done? (cadr lsp--capf-cache))
+                                                       :lsp-items items
                                                        :prefix-line prefix-line))))))
        :annotation-function #'lsp--annotate
        :company-require-match 'never
@@ -4159,7 +4202,8 @@ PLIST is the additional data to attach to each candidate."
                           'lsp-completion-start-point start-point
                           'lsp-completion-prefix-line prefix-line)
                   (text-properties-at 0 candidate))
-                 ((&hash "insertText" insert-text
+                 ((&hash "label"
+                         "insertText" insert-text
                          "textEdit" text-edit
                          "insertTextFormat" insert-text-format
                          "additionalTextEdits" additional-text-edits)
@@ -4169,9 +4213,11 @@ PLIST is the additional data to attach to each candidate."
              (delete-region (point-at-bol) (point))
              (insert prefix-line)
              (lsp--apply-text-edit text-edit))
-            (insert-text
-             (delete-region (- (point) (length candidate)) (point))
-             (insert insert-text)))
+            ((or insert-text label)
+             (delete-region (point-at-bol) (point))
+             (insert prefix-line)
+             (delete-region start-point (point))
+             (insert (or insert-text label))))
 
            (when (eq insert-text-format 2)
              (yas-expand-snippet
