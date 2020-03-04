@@ -653,9 +653,16 @@ responsiveness at the cost of possible stability issues."
 
 ;; TeX
 (defgroup lsp-tex nil
-  "LSP support for TeX and friends, using Digestif."
+  "LSP support for TeX and friends, using Digestif and texlab."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/astoff/digestif/"))
+  :link '(url-link "https://github.com/astoff/digestif/")
+  :link '(url-link "https://github.com/latex-lsp/texlab"))
+
+(defcustom lsp-tex-server 'texlab
+  "Choose LSP tex server."
+  :type '(choice (const :tag "texlab" texlab)
+                 (const :tag "digestif" digestif))
+  :group 'lsp-tex)
 
 (defcustom lsp-clients-digestif-executable "digestif"
   "Command to start the Digestif language server."
@@ -666,8 +673,20 @@ responsiveness at the cost of possible stability issues."
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-digestif-executable)
                   :major-modes '(plain-tex-mode latex-mode)
-                  :priority -1
+                  :priority (if (eq lsp-tex-server 'digestif) 1 -1)
                   :server-id 'digestif))
+
+(defcustom lsp-clients-texlab-executable "texlab"
+  "Command to start the texlab language server."
+  :group 'lsp-tex
+  :risky t
+  :type 'file)
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-texlab-executable)
+                  :major-modes '(plain-tex-mode latex-mode)
+                  :priority (if (eq lsp-tex-server 'texlab) 1 -1)
+                  :server-id 'texlab))
 
 
 ;; Vim script
