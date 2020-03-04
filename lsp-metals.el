@@ -117,7 +117,9 @@ more customizations like using environment variables."
   (erase-buffer)
   (insert html)
   (shr-render-region (point-min) (point-max))
-  (setq-local buffer-read-only t))
+  (goto-char (point-min))
+  (view-mode 1)
+  (setq view-exit-action 'kill-buffer))
 
 (defun lsp-metals--generate-doctor-buffer-name (workspace)
   (format "*Metals Doctor: %s*" (process-id (lsp--workspace-cmd-proc workspace))))
