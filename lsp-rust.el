@@ -507,13 +507,17 @@ PARAMS progress report notification data."
   :ignore-messages nil
   :server-id 'rust-analyzer))
 
-(defun lsp-rust-switch-server ()
-  "Switch priorities of lsp servers."
+(defun lsp-rust-switch-server (&optional lsp-server)
+  "Switch priorities of lsp servers, unless LSP-SERVER is already active."
   (interactive)
-  (dolist (server '(rls rust-analyzer))
-    (when (natnump (setf (lsp--client-priority (gethash server lsp-clients))
-                         (* (lsp--client-priority (gethash server lsp-clients)) -1)))
-      (message (format "Switched to server %s." server)))))
+  (let ((current-server (if (> (lsp--client-priority (gethash 'rls lsp-clients)) 0)
+                            'rls
+                          'rust-analyzer)))
+    (unless (eq lsp-server current-server)
+      (dolist (server '(rls rust-analyzer))
+        (when (natnump (setf (lsp--client-priority (gethash server lsp-clients))
+                             (* (lsp--client-priority (gethash server lsp-clients)) -1)))
+          (message (format "Switched to server %s." server)))))))
 
 ;; inlay hints
 
