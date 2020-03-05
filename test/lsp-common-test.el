@@ -18,7 +18,7 @@
 ;;; Code:
 
 (require 'ert)
-(require 'lsp)
+(require 'lsp-mode)
 
 (defgroup lsp-test nil
   ""
