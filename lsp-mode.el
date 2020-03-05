@@ -56,6 +56,7 @@
 (require 'url-util)
 (require 'widget)
 (require 'xref)
+(require 'minibuffer)
 (require 'yasnippet nil t)
 
 (declare-function company-mode "ext:company")
@@ -741,6 +742,13 @@ Set to nil to disable the warning."
   :type 'number
   :group 'lsp-mode)
 ;;;###autoload(put 'lsp-file-watch-threshold 'safe-local-variable (lambda (i) (or (numberp i) (not i))))
+
+(defcustom lsp-completion-styles (if (version<= "27.0" emacs-version)
+                                     `(flex)
+                                   completion-styles)
+  "List of completion styles to use for filtering completion items."
+  :group 'lsp-mode
+  :type completion--styles-type)
 
 (defvar lsp-custom-markup-modes
   '((rust-mode "no_run" "rust,no_run" "rust,ignore" "rust,should_panic"))
@@ -3227,7 +3235,9 @@ in that particular folder."
       (when (and lsp-enable-completion-at-point
                  (lsp-feature? "textDocument/completion"))
         (setq-local completion-at-point-functions nil)
-        (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t))
+        (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t)
+        (setq-local completion-category-defaults
+                    (add-to-list 'completion-category-defaults '(lsp-capf (styles basic)))))
       (add-hook 'kill-buffer-hook #'lsp--text-document-did-close nil t)
 
       (lsp--update-on-type-formatting-hook)
@@ -3260,6 +3270,8 @@ in that particular folder."
       (remove-hook 'before-change-functions #'lsp-before-change t)
       (remove-hook 'before-save-hook #'lsp--before-save t)
       (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t)
+      (setq-local completion-category-defaults
+                  (cl-remove 'lsp-capf completion-category-defaults :key #'car))
       (remove-hook 'kill-buffer-hook #'lsp--text-document-did-close t)
 
       (lsp--update-on-type-formatting-hook :cleanup)
@@ -4079,7 +4091,9 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                           (--> (buffer-substring-no-properties (car item) (point))
                                ;; TODO: roll-out our own matcher if needed.
                                ;; https://github.com/rustify-emacs/fuz.el seems to be good candidate.
-                               (completion-all-completions it (cdr item) nil (length it))
+                               (let ((completion-styles lsp-completion-styles)
+                                     completion-regexp-list)
+                                 (completion-all-completions it (cdr item) nil (length it)))
                                ;; completion-all-completions may return a list in form (a b . x)
                                ;; the last cdr is not important and need to be removed
                                (let ((tail (last it)))
@@ -4153,12 +4167,12 @@ Also, additional data to attached to each candidate can be passed via PLIST."
        (lambda (_probe _pred action)
          (cond
           ((eq action 'metadata)
-           `(metadata . ((display-sort-function
-                          . (lambda (candidates)
-                              (--sort (string-lessp
-                                       (get-text-property 0 'lsp-sort-text it)
-                                       (get-text-property 0 'lsp-sort-text other))
-                                      candidates))))))
+           `(metadata ((category . lsp-capf)
+                       (display-sort-function . (lambda (candidates)
+                                                  (--sort (string-lessp
+                                                           (get-text-property 0 'lsp-sort-text it)
+                                                           (get-text-property 0 'lsp-sort-text other))
+                                                          candidates))))))
           ((eq (car-safe action) 'boundaries) nil)
           ;; retrieve candidates
           (done? result)
