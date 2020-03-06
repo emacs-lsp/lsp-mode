@@ -4168,11 +4168,7 @@ Also, additional data to attached to each candidate can be passed via PLIST."
          (cond
           ((eq action 'metadata)
            `(metadata ((category . lsp-capf)
-                       (display-sort-function . (lambda (candidates)
-                                                  (--sort (string-lessp
-                                                           (get-text-property 0 'lsp-sort-text it)
-                                                           (get-text-property 0 'lsp-sort-text other))
-                                                          candidates))))))
+                       (display-sort-function . #'identity))))
           ((eq (car-safe action) 'boundaries) nil)
           ;; retrieve candidates
           (done? result)
