@@ -304,7 +304,7 @@
    | ~s-l s s~  | Entry point for the server startup.                                                                                        |
    | ~s-l s r~  | Restart language server                                                                                                    |
    | ~s-l s q~  | Shutdown language server                                                                                                   |
-   | ~s-l s d~  | Describes current dession                                                                                                  |
+   | ~s-l s d~  | Describes current session                                                                                                  |
    | ~s-l s D~  | Disconnect the buffer from the language server keeping the server running.                                                 |
    | ~s-l = =~  | Ask the server to format this document.                                                                                    |
    | ~s-l = r~  | Ask the server to format the region, or if none is selected, the current line.                                             |
