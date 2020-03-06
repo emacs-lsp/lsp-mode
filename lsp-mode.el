@@ -1981,13 +1981,14 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
   "Refresh lenses using lenses backend.
 BUFFER-MODIFIED? determines whether the buffer is modified or not."
   (let ((buffer (or buffer (current-buffer))))
-    (with-current-buffer buffer
-      (dolist (backend lsp-lens-backends)
-        (funcall backend buffer-modified?
-                 (lambda (lenses version)
-                   (when (buffer-live-p buffer)
-                     (with-current-buffer buffer
-                       (lsp--process-lenses backend lenses version)))))))))
+    (when (buffer-live-p buffer)
+      (with-current-buffer buffer
+        (dolist (backend lsp-lens-backends)
+          (funcall backend buffer-modified?
+                   (lambda (lenses version)
+                     (when (buffer-live-p buffer)
+                       (with-current-buffer buffer
+                         (lsp--process-lenses backend lenses version))))))))))
 
 (defun lsp--process-lenses (backend lenses version)
   "Process LENSES originated from BACKEND.
