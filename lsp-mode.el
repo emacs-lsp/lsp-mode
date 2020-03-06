@@ -745,7 +745,7 @@ Set to nil to disable the warning."
 
 (defcustom lsp-completion-styles (if (version<= "27.0" emacs-version)
                                      `(flex)
-                                   completion-styles)
+                                   `(substring))
   "List of completion styles to use for filtering completion items."
   :group 'lsp-mode
   :type completion--styles-type)
