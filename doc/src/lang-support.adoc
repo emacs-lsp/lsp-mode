@@ -186,6 +186,12 @@
 |https://github.com/fwcd/KotlinLanguageServer[kotlin-language-server]
 |
 
+|Nim
+|https://github.com/PMunch/nimlsp[nimlsp]
+|Built-in
+|`nimble install nimlsp`
+|No
+
 |Ocaml
 |https://github.com/freebroccolo/ocaml-language-server[ocaml-language-server]
 |<<lsp-ocaml,Built-in>>
