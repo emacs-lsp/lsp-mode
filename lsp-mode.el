@@ -648,7 +648,8 @@ Changes take effect only when a new session is started."
                                         (nim-mode . "nim")
                                         (dhall-mode . "dhall")
                                         (cmake-mode . "cmake")
-                                        (gdscript-mode . "gdscript"))
+                                        (gdscript-mode . "gdscript")
+                                        (d-mode . "d"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
