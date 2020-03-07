@@ -87,7 +87,7 @@ completing function calls."
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda () (cons lsp-gopls-server-path lsp-gopls-server-args)))
-                  :major-modes '(go-mode)
+                  :major-modes '(go-mode go-dot-mod-mode)
                   :priority 0
                   :server-id 'gopls
                   :library-folders-fn 'lsp-clients-go--library-default-directories))
