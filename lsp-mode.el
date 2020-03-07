@@ -190,7 +190,7 @@ occasionally break as language servers are updated."
 
 (defcustom lsp-client-packages
   '(ccls cquery lsp-clients lsp-clojure lsp-csharp lsp-css lsp-dart lsp-elm
-    lsp-erlang lsp-eslint lsp-fsharp lsp-gdscript lsp-go lsp-haskell lsp-haxe
+    lsp-erlang lsp-eslint lsp-fsharp lsp-gdscript lsp-haskell lsp-haxe
     lsp-intelephense lsp-java lsp-json lsp-metals lsp-pwsh lsp-pyls
     lsp-python-ms lsp-rust lsp-solargraph lsp-terraform lsp-verilog lsp-vetur
     lsp-vhdl lsp-xml lsp-yaml)
@@ -611,6 +611,7 @@ Changes take effect only when a new session is started."
                                         (html-mode . "html")
                                         (sgml-mode . "html")
                                         (mhtml-mode . "html")
+                                        (go-dot-mod-mode . "go")
                                         (go-mode . "go")
                                         (haskell-mode . "haskell")
                                         (hack-mode . "hack")
