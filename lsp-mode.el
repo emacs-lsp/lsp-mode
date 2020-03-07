@@ -6494,13 +6494,17 @@ When prefix UPDATE? is t force installation even if the server is present."
    update?))
 
 (defun lsp-async-start-process (callback error-callback &rest command)
+  "Start async process COMMAND with CALLBACK and ERROR-CALLBACK."
   (make-process
    :name (cl-first command)
    :command command
    :sentinel (lambda (proc _)
                (when (eq 'exit (process-status proc))
                  (if (zerop (process-exit-status proc))
-                     (funcall callback)
+                     (condition-case err
+                         (funcall callback)
+                       (error
+                        (funcall error-callback (error-message-string err))))
                    (display-buffer " *lsp-install*")
                    (funcall error-callback
                             (format "Async process '%s' failed with exit code %d"
