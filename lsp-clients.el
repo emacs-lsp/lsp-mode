@@ -828,5 +828,17 @@ responsiveness at the cost of possible stability issues."
                   :priority -1
                   :server-id 'cmakels))
 
+;; D
+(defgroup lsp-d nil
+  "LSP support for D, using dls."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/d-language-server/dls"))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection "~/.dub/packages/.bin/dls-latest/dls")
+                  :major-modes '(d-mode)
+                  :priority -1
+                  :server-id 'dls))
+
 (provide 'lsp-clients)
 ;;; lsp-clients.el ends here
