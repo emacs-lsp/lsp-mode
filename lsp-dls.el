@@ -31,7 +31,7 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/d-language-server/dls"))
 
-(defcustom lsp-dls-path "~/.dub/packages/.bin/dls-latest/dls"
+(defcustom lsp-dls-path "dls"
   "Path to dls server binary."
   :type 'string
   :group 'lsp-dls)
