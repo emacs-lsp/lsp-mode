@@ -189,7 +189,7 @@ occasionally break as language servers are updated."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-client-packages
-  '(ccls cquery lsp-clients lsp-clojure lsp-csharp lsp-css lsp-dart lsp-elm
+  '(ccls cquery lsp-clients lsp-clojure lsp-csharp lsp-css lsp-dart lsp-dls lsp-elm
     lsp-erlang lsp-eslint lsp-fsharp lsp-gdscript lsp-go lsp-haskell lsp-haxe
     lsp-intelephense lsp-java lsp-json lsp-metals lsp-pwsh lsp-pyls
     lsp-python-ms lsp-rust lsp-solargraph lsp-terraform lsp-verilog lsp-vetur
