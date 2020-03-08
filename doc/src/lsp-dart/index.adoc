@@ -1,6 +1,0 @@
-[id="lsp-dart"]
-=== Dart support: `lsp-dart`
-`lsp-dart` provides support for Dart using the
-https://github.com/natebosch/dart_language_server[Dart Language Server].
-
-include::lsp-dart-vars.adoc[]

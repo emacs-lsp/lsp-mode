@@ -72,9 +72,9 @@
 |
 
 |Dart
-|https://github.com/natebosch/dart_language_server[dart_language_server]
+|https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server[dart_analysis_server]
 |<<lsp-dart,Built-in>>
-|`pub global activate dart_language_server`
+|https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server[dart_analysis_server]
 |
 
 |Elixir
