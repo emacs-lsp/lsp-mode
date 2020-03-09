@@ -29,17 +29,20 @@
 (defgroup lsp-dls nil
   "LSP support for D, using https://github.com/d-language-server/dls."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/d-language-server/dls"))
+  :link '(url-link "https://github.com/d-language-server/dls")
+  :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-dls-path "dls"
   "Path to dls server binary."
   :type 'string
-  :group 'lsp-dls)
+  :group 'lsp-dls
+  :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-dls-args nil
   "Add server initialization options for dls."
   :type '(repeat string)
-  :group 'lsp-dls)
+  :group 'lsp-dls
+  :package-version '(lsp-mode . "6.3"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection

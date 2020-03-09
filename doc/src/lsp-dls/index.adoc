@@ -1,0 +1,6 @@
+[id="lsp-dls"]
+=== D support: `lsp-dls`
+`lsp-dls` provides support for D using the
+https://github.com/d-language-server/dls[dls].
+
+include::lsp-dls-vars.adoc[]
