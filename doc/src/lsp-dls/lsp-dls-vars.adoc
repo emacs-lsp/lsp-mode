@@ -1,5 +1,5 @@
 [id="lsp-dls-vars"]
-=== `lsp-dls` settings
+==== `lsp-dls` settings
 
 [id="lsp-dls-path"]
 - `lsp-dls-path`
