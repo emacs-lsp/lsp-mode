@@ -67,7 +67,7 @@
 
 |D
 |https://github.com/d-language-server/dls[dls]
-|Built-in
+|<<lsp-dls,Built-in>>
 |`dub fetch dls; dub run dls:bootstrap`
 |
 
