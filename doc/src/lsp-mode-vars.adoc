@@ -137,7 +137,7 @@ ____
 ____
 Default value: `pass:["~/.emacs.d/.lsp-session-v1"]`
 
-Automatically guess the project root using projectile/project.
+File where session information is stored.
 ____
 [id="lsp-auto-configure"]
 - `lsp-auto-configure`
