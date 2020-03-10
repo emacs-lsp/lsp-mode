@@ -4834,21 +4834,23 @@ It will show up only if current point has signature help."
             (gethash command))
           (lsp-workspaces)))
 
-(defun lsp--text-document-code-action-params ()
+(defun lsp--text-document-code-action-params (&optional kind)
   "Code action params."
   (list :textDocument (lsp--text-document-identifier)
         :range (if (use-region-p)
                    (lsp--region-to-range (region-beginning) (region-end))
                  (lsp--region-to-range (point) (point)))
-        :context (list :diagnostics (lsp-cur-line-diagnostics))))
+        :context (list
+                  :diagnostics (lsp-cur-line-diagnostics)
+                  :only (when kind (vector kind)))))
 
-(defun lsp-code-actions-at-point ()
+(defun lsp-code-actions-at-point (&optional kind)
   "Retrieve the code actions for the active region or the current line."
-  (lsp-request "textDocument/codeAction" (lsp--text-document-code-action-params)))
+  (lsp-request "textDocument/codeAction" (lsp--text-document-code-action-params kind)))
 
 (defun lsp-execute-code-action-by-kind (command-kind)
   "Execute code action by name."
-  (if-let (action (->> (lsp-get-or-calculate-code-actions)
+  (if-let (action (->> (lsp-get-or-calculate-code-actions command-kind)
                        (-filter (-lambda ((&hash "kind"))
                                   (and kind (equal command-kind kind))))
                        lsp--select-action))
