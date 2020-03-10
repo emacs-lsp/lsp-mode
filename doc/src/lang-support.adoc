@@ -276,6 +276,12 @@
 |https://github.com/astoff/digestif[Digestif]
 |
 
+|TeX,LaTeX,etc
+|https://github.com/latex-lsp/texlab[texlab]
+|Built-in
+|cargo install --git https://github.com/latex-lsp/texlab.git
+|
+
 |VHDL
 |http://www.vhdltool.com/[VHDL Tool]
 |<<Built-in,lsp-vhdl>>
