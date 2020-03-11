@@ -6469,12 +6469,15 @@ Check `*lsp-install*' and `*lsp-log*' buffer."
                  (setq global-mode-string (-remove-item '(t (:eval (lsp--download-status)))
                                                         global-mode-string))))))
     (lsp--info "Download %s started." (lsp--client-server-id client))
-    (funcall
-     (lsp--client-download-server-fn client)
-     client
-     (lambda () (done t))
-     (lambda (msg) (done nil msg))
-     update?)))
+    (condition-case err
+        (funcall
+         (lsp--client-download-server-fn client)
+         client
+         (lambda () (done t))
+         (lambda (msg) (done nil msg))
+         update?)
+      (error
+       (done nil (error-message-string err))))))
 
 (defun lsp-install-server (update?)
   "Interactively install server.
