@@ -335,13 +335,15 @@ FORCED if specified with prefix argument."
   (let ((url (format lsp-pwsh-github-asset-url "PowerShell"
                      "PowerShellEditorServices" "PowerShellEditorServices.zip"))
         (temp-file (make-temp-file "ext" nil ".zip")))
-    (unless (and (not update) (file-exists-p lsp-pwsh-dir))
+    (unless (f-exists? lsp-pwsh-log-path)
+      (mkdir lsp-pwsh-log-path 'create-parent))
+    (unless (and (not update) (f-exists? lsp-pwsh-dir))
       ;; since we know it's installed, use powershell to download the file
       ;; (and avoid url.el bugginess or additional libraries)
       (lsp-async-start-process
        (lambda ()
          (lsp--info "lsp-pwsh: Downloading done!")
-         (when (file-exists-p lsp-pwsh-dir) (delete-directory lsp-pwsh-dir 'recursive))
+         (when (f-exists? lsp-pwsh-dir) (delete-directory lsp-pwsh-dir 'recursive))
          (lsp-async-start-process
           callback
           error-callback
