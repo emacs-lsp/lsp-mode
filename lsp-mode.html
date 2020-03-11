@@ -508,8 +508,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#lsp-php">PHP support: <code>lsp-php</code></a></li>
 <li><a href="#lsp-pyls">Python support: <code>lsp-pyls</code></a></li>
 <li><a href="#lsp-rust">Rust support: <code>lsp-rust</code></a></li>
-<li><a href="#lsp-metals">Metals support: <code>lsp-metals</code></a></li>
 <li><a href="#"lsp-solargraph">Ruby support: <code>lsp-solargraph</code></a></li>
+<li><a href="#lsp-metals">Scala support: <code>lsp-metals</code></a></li>
 <li><a href="#lsp-typescript">Typescript support: <code>lsp-typescript</code></a></li>
 <li><a href="#lsp-typescript-javascript">Typescript support: <code>lsp-typescript-javascript</code></a></li>
 <li><a href="#lsp-vetur">Vue support: <code>lsp-vetur</code></a></li>
@@ -6339,200 +6339,6 @@ Introduced in <code>lsp-mode</code> 6.1
 </div>
 </div>
 <div class="sect2">
-<h3 id="lsp-metals">Metals support: <code>lsp-metals</code></h3>
-<div class="paragraph">
-<p><code>lsp-metals</code> provides support for Scala using
-<a href="https://scalameta.org/metals/">Metals</a>.</p>
-</div>
-<div class="sect3">
-<h4 id="lsp-metals-vars"><code>lsp-metals</code> settings</h4>
-<div id="lsp-metals-server-command" class="ulist">
-<ul>
-<li>
-<p><code>lsp-metals-server-command</code></p>
-</li>
-</ul>
-</div>
-<div class="quoteblock">
-<blockquote>
-<div class="paragraph">
-<p>Default value: <code>"metals-emacs"</code></p>
-</div>
-<div class="paragraph">
-<p>The command to launch the Scala language server.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Introduced in <code>lsp-mode</code> 6.1
-</td>
-</tr>
-</table>
-</div>
-</blockquote>
-</div>
-<div id="lsp-metals-server-args" class="ulist">
-<ul>
-<li>
-<p><code>lsp-metals-server-args</code></p>
-</li>
-</ul>
-</div>
-<div class="quoteblock">
-<blockquote>
-<div class="paragraph">
-<p>Default value: <code>nil</code></p>
-</div>
-<div class="paragraph">
-<p>Extra arguments for the Scala language server.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Introduced in <code>lsp-mode</code> 6.1
-</td>
-</tr>
-</table>
-</div>
-</blockquote>
-</div>
-<div id="lsp-metals-java-home" class="ulist">
-<ul>
-<li>
-<p><code>lsp-metals-java-home</code></p>
-</li>
-</ul>
-</div>
-<div class="quoteblock">
-<blockquote>
-<div class="paragraph">
-<p>Default value: <code>""</code></p>
-</div>
-<div class="paragraph">
-<p>The Java Home directory used for indexing JDK sources and locating
-the ‘java‘ binary.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Introduced in <code>lsp-mode</code> 6.1
-</td>
-</tr>
-</table>
-</div>
-</blockquote>
-</div>
-<div id="lsp-metals-scalafmt-config-path" class="ulist">
-<ul>
-<li>
-<p><code>lsp-metals-scalafmt-config-path</code></p>
-</li>
-</ul>
-</div>
-<div class="quoteblock">
-<blockquote>
-<div class="paragraph">
-<p>Default value: <code>""</code></p>
-</div>
-<div class="paragraph">
-<p>Optional custom path to the .scalafmt.conf file. Should be relative
-to the workspace root directory and use forward slashes / for file
-separators (even on Windows).</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Introduced in <code>lsp-mode</code> 6.1
-</td>
-</tr>
-</table>
-</div>
-</blockquote>
-</div>
-<div id="lsp-metals-sbt-script" class="ulist">
-<ul>
-<li>
-<p><code>lsp-metals-sbt-script</code></p>
-</li>
-</ul>
-</div>
-<div class="quoteblock">
-<blockquote>
-<div class="paragraph">
-<p>Default value: <code>""</code></p>
-</div>
-<div class="paragraph">
-<p>Optional absolute path to an ‘sbt‘ executable to use for running
-‘sbt bloopInstall‘. By default, Metals uses ‘java -jar sbt-launch.jar‘
-with an embedded launcher while respecting ‘.jvmopts‘ and ‘.sbtopts‘.
-Update this setting if your ‘sbt‘ script requires more customizations
-like using environment variables.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Introduced in <code>lsp-mode</code> 6.1
-</td>
-</tr>
-</table>
-</div>
-</blockquote>
-</div>
-<div id="lsp-metals-gradle-script" class="ulist">
-<ul>
-<li>
-<p><code>lsp-metals-gradle-script</code></p>
-</li>
-</ul>
-</div>
-<div class="quoteblock">
-<blockquote>
-<div class="paragraph">
-<p>Default value: <code>""</code></p>
-</div>
-<div class="paragraph">
-<p>Optional absolute path to a ‘gradle‘ executable to use for running
-‘gradle bloopInstall‘. By default, Metals uses gradlew with 5.3.1
-gradle version. Update this setting if your ‘gradle‘ script requires
-more customizations like using environment variables.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Introduced in <code>lsp-mode</code> 6.1
-</td>
-</tr>
-</table>
-</div>
-</blockquote>
-</div>
-</div>
-</div>
-<div class="sect2">
 <h3 id=""lsp-solargraph">Ruby support: <code>lsp-solargraph</code></h3>
 <div class="paragraph">
 <p><code>lsp-solargraph</code> provides support for Ruby using
@@ -6844,6 +6650,200 @@ Introduced in <code>lsp-mode</code> 6.1
 </div>
 <div class="paragraph">
 <p>Level of debug info to log. ‘warn‘ is least and ‘debug‘ is most.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Introduced in <code>lsp-mode</code> 6.1
+</td>
+</tr>
+</table>
+</div>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="lsp-metals">Scala support: <code>lsp-metals</code></h3>
+<div class="paragraph">
+<p><code>lsp-metals</code> provides support for Scala using
+<a href="https://scalameta.org/metals/">Metals</a>.</p>
+</div>
+<div class="sect3">
+<h4 id="lsp-metals-vars"><code>lsp-metals</code> settings</h4>
+<div id="lsp-metals-server-command" class="ulist">
+<ul>
+<li>
+<p><code>lsp-metals-server-command</code></p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>"metals-emacs"</code></p>
+</div>
+<div class="paragraph">
+<p>The command to launch the Scala language server.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Introduced in <code>lsp-mode</code> 6.1
+</td>
+</tr>
+</table>
+</div>
+</blockquote>
+</div>
+<div id="lsp-metals-server-args" class="ulist">
+<ul>
+<li>
+<p><code>lsp-metals-server-args</code></p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>nil</code></p>
+</div>
+<div class="paragraph">
+<p>Extra arguments for the Scala language server.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Introduced in <code>lsp-mode</code> 6.1
+</td>
+</tr>
+</table>
+</div>
+</blockquote>
+</div>
+<div id="lsp-metals-java-home" class="ulist">
+<ul>
+<li>
+<p><code>lsp-metals-java-home</code></p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>""</code></p>
+</div>
+<div class="paragraph">
+<p>The Java Home directory used for indexing JDK sources and locating
+the ‘java‘ binary.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Introduced in <code>lsp-mode</code> 6.1
+</td>
+</tr>
+</table>
+</div>
+</blockquote>
+</div>
+<div id="lsp-metals-scalafmt-config-path" class="ulist">
+<ul>
+<li>
+<p><code>lsp-metals-scalafmt-config-path</code></p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>""</code></p>
+</div>
+<div class="paragraph">
+<p>Optional custom path to the .scalafmt.conf file. Should be relative
+to the workspace root directory and use forward slashes / for file
+separators (even on Windows).</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Introduced in <code>lsp-mode</code> 6.1
+</td>
+</tr>
+</table>
+</div>
+</blockquote>
+</div>
+<div id="lsp-metals-sbt-script" class="ulist">
+<ul>
+<li>
+<p><code>lsp-metals-sbt-script</code></p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>""</code></p>
+</div>
+<div class="paragraph">
+<p>Optional absolute path to an ‘sbt‘ executable to use for running
+‘sbt bloopInstall‘. By default, Metals uses ‘java -jar sbt-launch.jar‘
+with an embedded launcher while respecting ‘.jvmopts‘ and ‘.sbtopts‘.
+Update this setting if your ‘sbt‘ script requires more customizations
+like using environment variables.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Introduced in <code>lsp-mode</code> 6.1
+</td>
+</tr>
+</table>
+</div>
+</blockquote>
+</div>
+<div id="lsp-metals-gradle-script" class="ulist">
+<ul>
+<li>
+<p><code>lsp-metals-gradle-script</code></p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>""</code></p>
+</div>
+<div class="paragraph">
+<p>Optional absolute path to a ‘gradle‘ executable to use for running
+‘gradle bloopInstall‘. By default, Metals uses gradlew with 5.3.1
+gradle version. Update this setting if your ‘gradle‘ script requires
+more customizations like using environment variables.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -10660,7 +10660,7 @@ Example: <code>(setq lsp-yaml-custom-tags '("!Scalar-example scalar" "!Seq-examp
 <div id="footer">
 <div id="footer-text">
 Version 6.1<br>
-Last updated 2020-03-11 06:13:00 UTC
+Last updated 2020-03-11 08:33:09 UTC
 </div>
 </div>
 </body>
