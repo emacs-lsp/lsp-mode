@@ -1,0 +1,131 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[margin=1cm]{geometry}
+\pagestyle{empty}
+
+\usepackage{textcomp}
+\usepackage{multicol}
+\usepackage{menukeys}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{xpatch}
+\usepackage{xparse}
+\usepackage{calc}
+\usepackage{tcolorbox}
+
+\colorlet{faded}{lightgray}
+\colorlet{namespace}{black}
+\def\alternateitem\item[#1]{\item[#1]\color{faded}}
+\NewDocumentCommand\ns{g}{\IfValueTF{#1}{\gdef\currentnamespace{#1}\currentnamespace}{\textcolor{namespace}{\currentnamespace}}}
+\renewcommand\section[1]{\bigskip\par\textbf{\large#1}\medskip}
+\renewcommand\subsection[1]{\medskip\par\textbf{#1}\medskip}
+\newcommand\meta[1]{\textlangle\textit{#1}\textrangle}
+\newcommand\keyify[1]{\keys{\ttfamily#1}}
+\newlist{keylist}{description}{1}
+\setlist[keylist]{
+  labelindent = 2ex,
+  itemsep     = -1ex,
+  font        = \keyify,
+  before      = \let\&\alternateitem
+  \xpretocmd{\item}{\color{black}}{}{}
+  \ttfamily
+}
+
+\setlength\parindent{0em}
+\setlength\parsep{0ex}
+\renewcommand\baselinestretch{1.2}
+\newcommand{\prefix}{\meta{s-l}}
+
+\begin{document}
+\begin{center}
+  \Huge
+  lsp-mode Quick-Reference Card
+  \par\bigskip
+\end{center}
+
+\begin{center}
+  \begin{tcolorbox}[title=Getting Help for lsp-mode , center title, fonttitle=\Large\bfseries]
+    \begin{keylist}[labelindent=4ex,before=,labelwidth=\widthof{\keyify{\meta{prefix}
+          C-h}}]
+    \item[\prefix] All lsp commands start by using the prefix command.
+
+    \end{keylist}
+  \end{tcolorbox}
+\end{center}
+\bigskip
+
+\setlength{\columnsep}{1cm}
+
+\begin{multicols}{2}
+
+  \section{Programming}
+  \subsection{Change Server State}
+
+  \begin{keylist}[labelwidth=\widthof{\keyify{C-c C-c}}]
+  \item[\prefix s s] Start server
+  \item[\prefix s r] Restart server
+  \item[\prefix s q] Shutdown server
+  \item[\prefix s d] Describe session
+  \item[\prefix s D] Disconnect buffer from LS
+  \end{keylist}
+
+  \subsection{Toggle Actions}
+  \begin{keylist}[labelwidth=\widthof{\keyify{C-c RET}}]
+  \item[\prefix T l] Toggle lenses
+  \item[\prefix T L] Toggle log I/O
+  \item[\prefix T h] Toggle symbol highlighting
+  \item[\prefix T S] \color{red}{Toggle Sideline}
+  \item[\prefix T d] \color{red}{Toggle Documentation Popup}
+  \item[\prefix T s] Toggle signature
+  \item[\prefix T f] Toggle on Type Formatting
+  \end{keylist}
+
+  \subsection{GoTo}
+  \begin{keylist}[labelwidth=\widthof{\keyify{s-l r r}}]
+  \item[\prefix g g] Find Definitions
+  \item[\prefix g r] Find References
+  \item[\prefix g i] Find Implementations
+  \item[\prefix g t] Find Type Definition
+  \item[\prefix g d] Find Declarations
+  \item[\prefix g h] \color{blue}{Show Call Hierarchy}
+  \item[\prefix g e] \color{blue}{Treemacs Error List}
+  \item[\prefix g a] Find Symbol in Workspace
+  \end{keylist}
+
+  \subsection{Workspace}
+  \begin{keylist}[labelwidth=\widthof{\keyify{C-c M-.}}]
+  \item[\prefix F a] Add folder to workspace
+  \item[\prefix F r] Remove folder from workspaces
+  \item[\prefix F b] Remove folder from the workspace blacklist
+  \end{keylist}
+
+  \columnbreak
+
+  \subsection{Peek}
+  \begin{keylist}[labelwidth=\widthof{\keyify{s-l G s}}]
+  \item[\prefix G g] \color{red}{Peek Definitions}
+  \item[\prefix G r] \color{red}{Peek References}
+  \item[\prefix G i] \color{red}{Peek Implementations}
+  \item[\prefix G s] \color{red}{Peek Workspace Symbols}
+  \end{keylist}
+
+  \subsection{Find Actions}
+  \begin{keylist}[labelwidth=\widthof{\keyify{C-c C-d C-a}}]
+  \item[\prefix h h] Describe Symbol at Point
+  \item[\prefix h s] Signature Help
+  \item[\prefix h g] \color{red}{lsp-ui-doc-glance}
+  \end{keylist}
+
+  \subsection{Refactor}
+  \begin{keylist}[labelwidth=\widthof{\keyify{s-l r r}}]
+  \item[\prefix r r] Rename
+  \item[\prefix r o] Organize Imports
+  \end{keylist}
+
+  \subsection{Code Actions}
+  \begin{keylist}[labelwidth=\widthof{\keyify{s-l r r}}]
+  \item[\prefix a a] Code actions
+  \item[\prefix a h] Highlight Symbol
+  \end{keylist}
+
+\end{multicols}
+\end{document}
