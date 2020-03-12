@@ -30,6 +30,8 @@ include::lsp-kotlin/index.adoc[]
 
 include::lsp-ocaml/index.adoc[]
 
+include::lsp-perl/index.adoc[]
+
 include::lsp-php/index.adoc[]
 
 include::lsp-pyls/index.adoc[]
