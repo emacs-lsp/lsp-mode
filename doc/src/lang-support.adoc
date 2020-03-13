@@ -291,7 +291,7 @@
 |Vue
 |https://github.com/vuejs/vetur/tree/master/server[vue-language-server]
 |<<lsp-vetur,Built-in>>
-|`npm install -g vue-language-server`
+|`npm install -g vls`
 |Yes (Firefox/Chrome)
 
 |Vimscript
