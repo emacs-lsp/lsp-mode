@@ -204,6 +204,12 @@
 |https://github.com/ocaml/ocaml-lsp[ocaml-lsp-server]
 |
 
+|Perl
+|https://github.com/richterger/Perl-LanguageServer[perl-LanguageServer]
+|<<lsp-perl,Built-in>>
+|`cpan Perl::LanguageServer`
+|
+
 |PHP(recommended)
 |https://github.com/bmewburn/vscode-intelephense[intelephense]
 |<<lsp-intelephense,Built-in>>
