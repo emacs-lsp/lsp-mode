@@ -60,6 +60,7 @@
 (require 'yasnippet nil t)
 
 (declare-function company-mode "ext:company")
+(declare-function company-doc-buffer "ext:company")
 (declare-function evil-set-command-property "ext:evil-common")
 (declare-function projectile-project-root "ext:projectile")
 (declare-function yas-expand-snippet "ext:yasnippet")
@@ -4014,11 +4015,19 @@ and the position respectively."
 
 (defalias 'lsp--cur-line-diagnotics 'lsp-cur-line-diagnostics)
 
-(defun lsp--make-completion-item (item)
-  (propertize (or (gethash "label" item)
-                  (gethash "insertText" item))
-              'lsp-completion-item
-              item))
+(defun lsp--make-completion-item (item &rest plist)
+  "Make completion item from lsp ITEM and PLIST."
+  (-let (((&hash "label"
+                 "insertText" insert-text
+                 "sortText" sort-text
+                 "_emacsStartPoint" start-point)
+          item)
+         ((&plist :prefix-line) plist))
+    (propertize (or label insert-text)
+                'lsp-completion-item item
+                'lsp-sort-text sort-text
+                'lsp-completion-start-point start-point
+                'lsp-completion-prefix-line prefix-line)))
 
 (defun lsp--annotate (item)
   "Annotate ITEM detail."
@@ -4071,7 +4080,7 @@ When the heuristic fails to find the prefix start point, return DEFAULT value."
        (-map (-lambda ((item &as &hash
                              "label"
                              "filterText" filter-text
-                             "emacsStartPoint_" start-point))
+                             "_emacsStartPoint" start-point))
                (propertize (or filter-text label)
                            'lsp-completion-item item
                            'lsp-completion-start-point start-point))
@@ -4110,19 +4119,7 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                   ;; TODO: pass additional function to sort the candidates
                   (-map (-partial #'get-text-property 0 'lsp-completion-item)))
            lsp-items)))
-    (-map (lambda (item)
-            (-let (((&hash "label"
-                           "insertText" insert-text
-                           "sortText" sort-text
-                           "emacsStartPoint_" start-point)
-                    item)
-                   ((&plist :prefix-line) plist))
-              (propertize (or label insert-text)
-                          'lsp-completion-item item
-                          'lsp-sort-text sort-text
-                          'lsp-completion-start-point start-point
-                          'lsp-completion-prefix-line prefix-line)))
-          filtered-items)))
+    (-map (apply #'-rpartial #'lsp--make-completion-item plist) filtered-items)))
 
 (defun lsp--capf-company-match (candidate)
   "Return highlights of typed prefix inside CANDIDATE."
@@ -4158,6 +4155,20 @@ Also, additional data to attached to each candidate can be passed via PLIST."
         (setq label-pos 0)))
     matches))
 
+(defun lsp--capf-get-documentation (item)
+  "Get doc comment for completion ITEM."
+  (unless (get-text-property 0 'lsp-completion-resolved item)
+    (let ((resolved-item
+           (-some->> item
+             (get-text-property 0 'lsp-completion-item)
+             (lsp--resolve-completion)))
+          (len (length item)))
+      (put-text-property 0 len 'lsp-completion-item resolved-item item)
+      (put-text-property 0 len 'lsp-completion-resolved t item)))
+  (-some->> item
+    (get-text-property 0 'lsp-completion-item)
+    (gethash "documentation")))
+
 (defun lsp-completion-at-point ()
   "Get lsp completions."
   (when (or (--some (lsp--client-completion-in-comments? (lsp--workspace-client it))
@@ -4191,7 +4202,7 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                                                        ((seqp resp) resp)
                                                        ((hash-table-p resp) (gethash "items" resp))))
                                (-map (lambda (item)
-                                       (puthash "emacsStartPoint_"
+                                       (puthash "_emacsStartPoint"
                                                 (lsp--capf-guess-prefix item bounds-start)
                                                 item)
                                        item))))
@@ -4213,6 +4224,7 @@ Also, additional data to attached to each candidate can be passed via PLIST."
          (goto-char bounds-start)
          (lsp--looking-back-trigger-characters-p trigger-chars))
        :company-match #'lsp--capf-company-match
+       :company-doc-buffer (-compose #'company-doc-buffer #'lsp--capf-get-documentation)
        :exit-function
        (lambda (candidate _status)
          (-let* (((&plist 'lsp-completion-item item
