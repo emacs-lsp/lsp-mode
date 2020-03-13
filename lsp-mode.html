@@ -505,6 +505,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#lsp-intelephense">PHP support: <code>lsp-intelephense</code></a></li>
 <li><a href="#lsp-kotlin">Kotlin support: <code>lsp-kotlin</code></a></li>
 <li><a href="#lsp-ocaml">Ocaml support: <code>lsp-ocaml</code></a></li>
+<li><a href="#lsp-perl">Perl support: <code>lsp-perl</code></a></li>
 <li><a href="#lsp-php">PHP support: <code>lsp-php</code></a></li>
 <li><a href="#lsp-pyls">Python support: <code>lsp-pyls</code></a></li>
 <li><a href="#lsp-rust">Rust support: <code>lsp-rust</code></a></li>
@@ -2431,6 +2432,13 @@ sent from the server to the editor:</p>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Perl</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/richterger/Perl-LanguageServer">perl-LanguageServer</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#lsp-perl">Built-in</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cpan Perl::LanguageServer</code></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">PHP(recommended)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/bmewburn/vscode-intelephense">intelephense</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#lsp-intelephense">Built-in</a></p></td>
@@ -2532,7 +2540,7 @@ sent from the server to the editor:</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Vue</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/vuejs/vetur/tree/master/server">vue-language-server</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#lsp-vetur">Built-in</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>npm install -g vue-language-server</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>npm install -g vls</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes (Firefox/Chrome)</p></td>
 </tr>
 <tr>
@@ -4379,6 +4387,103 @@ Introduced in <code>lsp-mode</code> 6.1
 </div>
 <div class="paragraph">
 <p>Command to start ocaml-language-server.</p>
+</div>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="lsp-perl">Perl support: <code>lsp-perl</code></h3>
+<div class="paragraph">
+<p><code>lsp-perl</code> provides support for Perl using
+<a href="https://github.com/richterger/Perl-LanguageServer">Perl-LanguageServer</a>.</p>
+</div>
+<div class="sect3">
+<h4 id="lsp-perl-vars"><code>lsp-perl</code> settings</h4>
+<div id="lsp-perl-language-server-path" class="ulist">
+<ul>
+<li>
+<p><code>lsp-perl-language-server-path</code></p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>("perl")</code></p>
+</div>
+<div class="paragraph">
+<p>Path to perl interpreter.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+introduced in <code>lsp-mode</code> 6.3
+</td>
+</tr>
+</table>
+</div>
+</blockquote>
+</div>
+<div id="lsp-perl-language-server-port" class="ulist">
+<ul>
+<li>
+<p><code>lsp-perl-language-server-port</code></p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>13603</code></p>
+</div>
+<div class="paragraph">
+<p>Choose listen port.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+introduced in <code>lsp-mode</code> 6.3
+</td>
+</tr>
+</table>
+</div>
+</blockquote>
+</div>
+<div id="lsp-perl-language-server-client-version" class="ulist">
+<ul>
+<li>
+<p><code>lsp-perl-language-server-client-version</code></p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Default value: <code>"2.1.0"</code></p>
+</div>
+<div class="paragraph">
+<p>Choose client version.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+introduced in <code>lsp-mode</code> 6.3
+</td>
+</tr>
+</table>
 </div>
 </blockquote>
 </div>
@@ -10660,7 +10765,7 @@ Example: <code>(setq lsp-yaml-custom-tags '("!Scalar-example scalar" "!Seq-examp
 <div id="footer">
 <div id="footer-text">
 Version 6.1<br>
-Last updated 2020-03-12 05:37:20 UTC
+Last updated 2020-03-13 09:22:02 UTC
 </div>
 </div>
 </body>
