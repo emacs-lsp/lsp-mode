@@ -4167,7 +4167,8 @@ Also, additional data to attached to each candidate can be passed via PLIST."
       (put-text-property 0 len 'lsp-completion-resolved t item)))
   (-some->> item
     (get-text-property 0 'lsp-completion-item)
-    (gethash "documentation")))
+    (gethash "documentation")
+    (lsp--render-element)))
 
 (defun lsp-completion-at-point ()
   "Get lsp completions."
@@ -4225,7 +4226,6 @@ Also, additional data to attached to each candidate can be passed via PLIST."
          (lsp--looking-back-trigger-characters-p trigger-chars))
        :company-match #'lsp--capf-company-match
        :company-doc-buffer (-compose #'company-doc-buffer
-                                     #'lsp--render-element
                                      #'lsp--capf-get-documentation)
        :exit-function
        (lambda (candidate _status)
@@ -4519,7 +4519,7 @@ When language is nil render as markup if `markdown-mode' is loaded."
                            mode))
                        lsp-language-id-configuration))
       (lsp--fontlock-with-mode str mode)
-    str))
+    (if lsp--filter-cr? (s-replace "\r" "" str) str)))
 
 (defun lsp--render-element (content)
   "Render CONTENT element."
@@ -4704,9 +4704,8 @@ It will show up only if current point has signature help."
                             (propertize "│ " 'face 'shadow)))
             (prefix-length (- (length prefix) 2))
             (method-docs (when lsp-signature-render-documentation
-                           (let ((docs (lsp--render-on-hover-content
-                                        (gethash "documentation" signature)
-                                        t)))
+                           (let ((docs (lsp--render-element
+                                        (gethash "documentation" signature))))
                              (when (s-present? docs)
                                (concat
                                 (propertize (concat "\n"
