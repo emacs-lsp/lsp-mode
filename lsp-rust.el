@@ -624,10 +624,10 @@ PARAMS progress report notification data."
 
 (defun lsp-rust-analyzer-run (runnable)
   (interactive (list (lsp-rust-analyzer--select-runnable)))
-  (-let* (((&hash "env" "bin" "args" "label") runnable)
+  (-let* (((&hash "env" "bin" "args" "extraArgs" "label") runnable)
           (compilation-environment (-map (-lambda ((k v)) (concat k "=" v)) (ht-items env))))
     (compilation-start
-     (string-join (append (list bin) args '()) " ")
+     (string-join (append (list bin) args (when extraArgs '("--")) extraArgs '()) " ")
      ;; cargo-process-mode is nice, but try to work without it...
      (if (functionp 'cargo-process-mode) 'cargo-process-mode nil)
      (lambda (_) (concat "*" label "*")))
