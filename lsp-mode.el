@@ -4568,6 +4568,7 @@ When language is nil render as markup if `markdown-mode' is loaded."
        (lsp--render-string value kind)))
     ;; plain string
     ((stringp content) (lsp--render-string content "markdown"))
+    ((null content) "")
     (t (error "Failed to handle %s" content)))
    ""))
 
