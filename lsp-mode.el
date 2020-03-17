@@ -652,7 +652,8 @@ Changes take effect only when a new session is started."
                                         (cmake-mode . "cmake")
                                         (gdscript-mode . "gdscript")
                                         (d-mode . "d")
-                                        (perl-mode . "perl"))
+                                        (perl-mode . "perl")
+                                        (robot-mode . "robot"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil

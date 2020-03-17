@@ -28,6 +28,8 @@
 (require 'dash)
 (require 'dash-functional)
 (require 'rx)
+(require 'cl-lib)
+(require 'em-glob)
 
 ;;; Ada
 (defgroup lsp-ada nil
@@ -827,6 +829,121 @@ responsiveness at the cost of possible stability issues."
                   :major-modes '(cmake-mode)
                   :priority -1
                   :server-id 'cmakels))
+
+;;; Rf
+(defgroup lsp-rf nil
+  "Settings for Robot Framework Language Server."
+  :group 'lsp-mode
+  :tag "Language Server"
+  :link '(url-link "https://github.com/tomi/vscode-rf-language-server.git"))
+
+(defcustom lsp-rf-language-server-main-file "~/.vscode/extensions/tomiturtiainen.rf-intellisense-2.8.0/server/server.js"
+  "Path to the server.js file of the rf-intellisense server. Accepts a string"
+  :type 'string
+  :group 'lsp-rf)
+
+(defcustom lsp-rf-language-server-include-paths []
+  "An array of files that should be included by the parser. Glob patterns as strings are accepted (eg. *.robot between double quotes)"
+  :type 'lsp-string-vector
+  :group 'lsp-rf)
+
+(defcustom lsp-rf-language-server-exclude-paths []
+  "An array of files that should be ignored by the parser. Glob patterns as strings are accepted (eg. *bad.robot between double quotes)"
+  :type 'lsp-string-vector
+  :group 'lsp-rf)
+
+(defcustom lsp-rf-language-server-python-keywords nil
+  "DEPRECATED. Use rfLanguageServer.includePaths instead"
+  :type 'boolean
+  :group 'lsp-rf)
+
+(defcustom lsp-rf-language-server-dir "~/.vscode/extensions/tomiturtiainen.rf-intellisense-2.8.0/server/library-docs/"
+  "Libraries directory for libraries in lsp-rf-language-server-libraries"
+  :type 'string
+  :group 'lsp-rf)
+
+(defcustom lsp-rf-language-server-libraries '("BuiltIn-3.1.1" "Collections-3.0.4")
+  "Libraries whose keywords are suggested with auto-complete"
+  :type '(repeat string)
+  ;; :type 'lsp-string-vector
+  :group 'lsp-rf)
+
+(defcustom lsp-rf-language-server-log-level "debug"
+  "What language server log messages are printed"
+  :type 'string
+  ;; :type '(choice (:tag "off" "errors" "info" "debug"))
+  :group 'lsp-rf)
+
+(defcustom lsp-rf-language-server-trace-server "verbose"
+  "Traces the communication between VSCode and the rfLanguageServer service."
+  :type 'string
+  ;; :type '(choice (:tag "off" "messages" "verbose"))
+  :group 'lsp-rf)
+
+(defun parse-rf-language-server-library-dirs (dirs)
+  "Convert lsp-rf-language-server-libraries list to list with absolute paths"
+  (map 'list
+   (lambda (x)
+     (concat
+      (expand-file-name
+       lsp-rf-language-server-dir)
+      x
+      ".json"))
+   dirs))
+
+(defun parse-rf-language-server-globs-to-regex (vector)
+  "Translates vector of globs to regex (as a group separated by or statements)"
+  (let ((globs (if (eq vector [])
+                        ["*.robot" "*.resource"]
+                      vector)))
+    (concat "\\("(mapconcat 'eshell-glob-regexp globs "\\|") "\\)")))
+
+;; included files are extracted in lsp-register-client function
+;; using the glob-to-regex function above as a third argument in
+;; the directory-files-recursively function
+
+(defun rf-language-server-exclude-paths (seq)
+  "Uses lsp-rf-language-server-exclude-paths vector of globs to
+delete matched files from sequence"
+  (cl-delete-if (lambda (x) (string-match-p
+                             (parse-rf-language-server-globs-to-regex
+                              lsp-rf-language-server-exclude-paths)
+                             x))
+                seq))
+
+(lsp-register-custom-settings
+ '(
+   ("rfLanguageServer.trace.server" lsp-rf-language-server-trace-server)
+   ("rfLanguageServer.logLevel" lsp-rf-language-server-log-level)
+   ("rfLanguageServer.libraries" lsp-rf-language-server-libraries)
+   ("rfLanguageServer.pythonKeywords" lsp-rf-language-server-python-keywords t)
+   ("rfLanguageServer.excludePaths" lsp-rf-language-server-exclude-paths)
+   ("rfLanguageServer.includePaths" lsp-rf-language-server-include-paths)
+   ))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   `("node" ,(expand-file-name
+                                              lsp-rf-language-server-main-file)))
+                  :major-modes '(robot-mode)
+                  :server-id 'rf-intellisense
+                  ;; :library-folders-fn (lambda (_workspace)
+                  ;;                        lsp-rf-language-server-libraries)
+                  :library-folders-fn (lambda (_workspace)
+                                         (parse-rf-language-server-library-dirs
+                                         lsp-rf-language-server-libraries))
+                  :initialized-fn (lambda (workspace)
+                                    (with-lsp-workspace workspace
+                                      (lsp--set-configuration
+                                       (lsp-configuration-section "rfLanguageServer"))
+                                      (lsp-request "buildFromFiles"
+                                                   (list :files
+                                                         (vconcat
+                                                          (rf-language-server-exclude-paths
+                                                           (directory-files-recursively
+                                                            (projectile-project-root)
+                                                            (parse-rf-language-server-globs-to-regex
+                                                             lsp-rf-language-server-include-paths))))))))))
 
 (provide 'lsp-clients)
 ;;; lsp-clients.el ends here
