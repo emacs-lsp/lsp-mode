@@ -1440,9 +1440,9 @@ already have been created."
            (indent 1))
   `(when-let (lsp--cur-workspace ,workspace) ,@body))
 
-(defun lsp-canonical-file-name  (file-name)
-  "Return the canonical FILE-NAME."
-  (f-canonical (directory-file-name (f-expand file-name))))
+(defun lsp-canonical-file-name (file-name)
+  "Return the canonical, without trailing slash FILE-NAME."
+  (directory-file-name (expand-file-name file-name)))
 
 (defun lsp--window-show-message (_workspace params)
   "Send the server's messages to log.
