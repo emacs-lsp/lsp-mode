@@ -936,7 +936,7 @@ responsiveness at the cost of possible stability issues."
                                                          (vconcat
                                                           (parse-rf-language-server-exclude-paths
                                                            (directory-files-recursively
-                                                            (lsp-workspace-root)
+                                                            (lsp--workspace-root workspace)
                                                             (parse-rf-language-server-include-path-regex
                                                              lsp-rf-language-server-include-paths))))))))))
 
