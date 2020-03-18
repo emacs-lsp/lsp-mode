@@ -881,8 +881,7 @@ responsiveness at the cost of possible stability issues."
   :group 'lsp-rf)
 
 (defun parse-rf-language-server-library-dirs (dirs)
-  "Convert lsp-rf-language-server-libraries list to list with absolute paths"
-  (map 'list
+  (mapcar
    (lambda (x)
      (concat
       (expand-file-name
@@ -892,24 +891,25 @@ responsiveness at the cost of possible stability issues."
    dirs))
 
 (defun parse-rf-language-server-globs-to-regex (vector)
-  "Translates vector of globs to regex (as a group separated by or statements)"
+  "Converts vector with globs to regex"
+    (concat "\\("(mapconcat 'eshell-glob-regexp vector "\\|") "\\)"))
+
+(defun parse-rf-language-server-include-path-regex (vector)
+  "Creates regexp to select files from workspace directory"
   (let ((globs (if (eq vector [])
                         ["*.robot" "*.resource"]
                       vector)))
-    (concat "\\("(mapconcat 'eshell-glob-regexp globs "\\|") "\\)")))
+    (parse-rf-language-server-globs-to-regex globs)))
 
-;; included files are extracted in lsp-register-client function
-;; using the glob-to-regex function above as a third argument in
-;; the directory-files-recursively function
-
-(defun rf-language-server-exclude-paths (seq)
-  "Uses lsp-rf-language-server-exclude-paths vector of globs to
-delete matched files from sequence"
+(defun parse-rf-language-server-exclude-paths (seq)
+  "Creates regexp to select files from workspace directory"
+  (if (eq lsp-rf-language-server-exclude-paths [])
+      seq
   (cl-delete-if (lambda (x) (string-match-p
                              (parse-rf-language-server-globs-to-regex
                               lsp-rf-language-server-exclude-paths)
                              x))
-                seq))
+                seq)))
 
 (lsp-register-custom-settings
  '(
@@ -939,10 +939,10 @@ delete matched files from sequence"
                                       (lsp-request "buildFromFiles"
                                                    (list :files
                                                          (vconcat
-                                                          (rf-language-server-exclude-paths
+                                                          (parse-rf-language-server-exclude-paths
                                                            (directory-files-recursively
-                                                            (projectile-project-root)
-                                                            (parse-rf-language-server-globs-to-regex
+                                                            (lsp-workspace-root)
+                                                            (parse-rf-language-server-include-path-regex
                                                              lsp-rf-language-server-include-paths))))))))))
 
 (provide 'lsp-clients)
