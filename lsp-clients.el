@@ -837,9 +837,9 @@ responsiveness at the cost of possible stability issues."
   :tag "Language Server"
   :link '(url-link "https://github.com/tomi/vscode-rf-language-server.git"))
 
-(defcustom lsp-rf-language-server-main-file "~/.vscode/extensions/tomiturtiainen.rf-intellisense-2.8.0/server/server.js"
+(defcustom lsp-rf-language-server-start-command '("~/.nvm/versions/node/v9.11.2/bin/node" "~/.vscode/extensions/tomiturtiainen.rf-intellisense-2.8.0/server/server.js")
   "Path to the server.js file of the rf-intellisense server. Accepts a string"
-  :type 'string
+  :type 'list
   :group 'lsp-rf)
 
 (defcustom lsp-rf-language-server-include-paths []
@@ -852,17 +852,12 @@ responsiveness at the cost of possible stability issues."
   :type 'lsp-string-vector
   :group 'lsp-rf)
 
-(defcustom lsp-rf-language-server-python-keywords nil
-  "DEPRECATED. Use rfLanguageServer.includePaths instead"
-  :type 'boolean
-  :group 'lsp-rf)
-
 (defcustom lsp-rf-language-server-dir "~/.vscode/extensions/tomiturtiainen.rf-intellisense-2.8.0/server/library-docs/"
   "Libraries directory for libraries in lsp-rf-language-server-libraries"
   :type 'string
   :group 'lsp-rf)
 
-(defcustom lsp-rf-language-server-libraries '("BuiltIn-3.1.1" "Collections-3.0.4")
+(defcustom lsp-rf-language-server-libraries ["BuiltIn-3.1.1" "Collections-3.0.4"]
   "Libraries whose keywords are suggested with auto-complete"
   :type '(repeat string)
   ;; :type 'lsp-string-vector
@@ -881,14 +876,17 @@ responsiveness at the cost of possible stability issues."
   :group 'lsp-rf)
 
 (defun parse-rf-language-server-library-dirs (dirs)
-  (mapcar
+  (vconcat (mapcar
    (lambda (x)
      (concat
       (expand-file-name
        lsp-rf-language-server-dir)
       x
       ".json"))
-   dirs))
+   dirs)))
+
+(defun expand-start-command ()
+  (mapcar 'expand-file-name lsp-rf-language-server-start-command))
 
 (defun parse-rf-language-server-globs-to-regex (vector)
   "Converts vector with globs to regex"
@@ -916,15 +914,12 @@ responsiveness at the cost of possible stability issues."
    ("rfLanguageServer.trace.server" lsp-rf-language-server-trace-server)
    ("rfLanguageServer.logLevel" lsp-rf-language-server-log-level)
    ("rfLanguageServer.libraries" lsp-rf-language-server-libraries)
-   ("rfLanguageServer.pythonKeywords" lsp-rf-language-server-python-keywords t)
    ("rfLanguageServer.excludePaths" lsp-rf-language-server-exclude-paths)
-   ("rfLanguageServer.includePaths" lsp-rf-language-server-include-paths)
-   ))
+   ("rfLanguageServer.includePaths" lsp-rf-language-server-include-paths)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
-                                   `("node" ,(expand-file-name
-                                              lsp-rf-language-server-main-file)))
+                                   (expand-start-command))
                   :major-modes '(robot-mode)
                   :server-id 'rf-intellisense
                   ;; :library-folders-fn (lambda (_workspace)
