@@ -275,7 +275,8 @@ server via `window/logMessage'."
                                       (lsp--set-configuration
                                        (lsp-configuration-section "metals"))))
                   :after-open-fn (lambda ()
-                                   (add-hook 'lsp-on-idle-hook #'lsp-metals--did-focus nil t))))
+                                   (add-hook 'lsp-on-idle-hook #'lsp-metals--did-focus nil t))
+                  :completion-in-comments? t))
 
 (provide 'lsp-metals)
 ;;; lsp-metals.el ends here
