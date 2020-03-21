@@ -18,7 +18,7 @@
 ;;; Code:
 
 (require 'ert)
-(require 'lsp)
+(require 'lsp-mode)
 (require 'cl-lib)
 
 (defvar lsp--test-results nil)

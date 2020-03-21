@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(require 'lsp)
+(require 'lsp-mode)
 (require 'dash)
 (require 'dash-functional)
 (require 'rx)
