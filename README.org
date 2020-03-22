@@ -32,6 +32,7 @@
   - [[#supported-languages][Supported languages]]
   - [[#commands][Commands]]
     - [[#which-key-integration][which-key integration]]
+    - [[#modeline-errors][Modeline errors]]
   - [[#settings][Settings]]
   - [[#screenshots][Screenshots]]
   - [[#extensions][Extensions]]
@@ -348,6 +349,17 @@
          (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
      #+END_SRC
   [[file:examples/which-key.png]]
+*** Modeline errors
+    To see all error statistics in the modeline you can enable
+    ~lsp-diagnostics-modeline-mode~. This is especially usefull for languages
+    that compilation might be broken due to errors in other files(e. g. Java/Haskell).
+     #+BEGIN_SRC emacs-lisp
+       (with-eval-after-load 'lsp-mode
+         ;; :project/:workspace/:file
+         (setq lsp-diagnostics-modeline-scope :project)
+         (add-hook 'lsp-managed-mode-hook 'lsp-diagnostics-modeline-mode))
+     #+END_SRC
+     /Tip:/ To find out the global errors you might use ~lsp-treemacs-errors-list~.
 ** Settings
    - ~lsp-log-io~ - If non-nil, print all messages to and from the language server to ~*lsp-log*~.
    - ~lsp-print-performance~ - If non-nil, print performance info. to ~*lsp-log*~.
