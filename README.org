@@ -111,9 +111,10 @@
 **** use-package
      Replace ~(require 'lsp-mode)~ with the following if you use use-package.
      #+BEGIN_SRC emacs-lisp
+       ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+       (setq lsp-keymap-prefix "s-l")
+
        (use-package lsp-mode
-         ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-         :init (setq lsp-keymap-prefix "s-l")
          :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
                 (XXX-mode . lsp)
                 ;; if you want which-key integration
@@ -351,7 +352,7 @@
   [[file:examples/which-key.png]]
 *** Modeline errors
     To see all error statistics in the modeline you can enable
-    ~lsp-diagnostics-modeline-mode~. This is especially usefull for languages
+    ~lsp-diagnostics-modeline-mode~. This is especially useful for languages
     that compilation might be broken due to errors in other files(e. g. Java/Haskell).
      #+BEGIN_SRC emacs-lisp
        (with-eval-after-load 'lsp-mode
