@@ -1952,7 +1952,9 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
   ;; rerender only if there are lenses which are not processed or if their count
   ;; has changed(e. g. delete lens should trigger redisplay).
   (setq lsp--lens-modified? nil)
-  (when (or (--any? (not (gethash "processed" it)) lenses) (eq (length lenses) lsp--lens-last-count))
+  (when (or (--any? (not (gethash "processed" it)) lenses)
+            (eq (length lenses) lsp--lens-last-count)
+            (not lenses))
     (setq lsp--lens-last-count (length lenses))
     (let ((overlays
            (->> lenses
