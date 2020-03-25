@@ -445,7 +445,7 @@ PARAMS progress report notification data."
 (defun lsp-rust-analyzer-syntax-tree ()
   "Display syntax tree for current buffer."
   (interactive)
-  (-if-let* ((workspace (lsp-find-workspace 'rust-analyzer default-directory))
+  (-if-let* ((workspace (lsp-find-workspace 'rust-analyzer))
              (root (lsp-workspace-root default-directory))
              (params (list :textDocument (lsp--text-document-identifier)
                            :range (if (use-region-p)
@@ -471,7 +471,7 @@ PARAMS progress report notification data."
 (defun lsp-rust-analyzer-status ()
   "Displays status information for rust-analyzer."
   (interactive)
-  (-if-let* ((workspace (lsp-find-workspace 'rust-analyzer default-directory))
+  (-if-let* ((workspace (lsp-find-workspace 'rust-analyzer))
              (root (lsp-workspace-root default-directory))
              (results (with-lsp-workspace workspace
                         (lsp-send-request (lsp-make-request
@@ -549,7 +549,7 @@ PARAMS progress report notification data."
   nil)
 
 (defun lsp-rust-analyzer-initialized? ()
-  (when-let ((workspace (lsp-find-workspace 'rust-analyzer (buffer-file-name))))
+  (when-let ((workspace (lsp-find-workspace 'rust-analyzer)))
     (eq 'initialized (lsp--workspace-status workspace))))
 
 (defun lsp-rust-analyzer-inlay-hints-change-handler (&rest _rest)
@@ -580,7 +580,7 @@ PARAMS progress report notification data."
 (defun lsp-rust-analyzer-expand-macro ()
   "Expands the macro call at point recursively."
   (interactive)
-  (-if-let (workspace (lsp-find-workspace 'rust-analyzer default-directory))
+  (-if-let (workspace (lsp-find-workspace 'rust-analyzer))
       (-if-let* ((params (list :textDocument (lsp--text-document-identifier)
                                :position (lsp--cur-position)))
                  (response (with-lsp-workspace workspace
