@@ -4663,6 +4663,14 @@ RENDER-ALL - nil if only the signature should be rendered."
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.3"))
 
+(defcustom lsp-signature-function 'lsp-lv-message
+  "The function used for displaying signature info.
+It will be called with one param - the signature info. When
+called with nil the signature info must be cleared."
+  :type 'function
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.3"))
+
 (defun lsp-signature-stop ()
   "Stop showing current signature help."
   (interactive)
@@ -4670,18 +4678,21 @@ RENDER-ALL - nil if only the signature should be rendered."
   (with-current-buffer (or lsp--signature-last-buffer (current-buffer))
     (remove-hook 'lsp-on-idle-hook #'lsp-signature t))
   (remove-hook 'post-command-hook #'lsp--signature-maybe-stop)
-  (lv-delete-window)
+  (funcall lsp-signature-function nil)
   (lsp-signature-mode -1))
 
-(defun lsp--lv-message (message)
-  (setq lsp--signature-last-buffer (current-buffer))
-  (let ((lv-force-update t))
-    (lv-message message)))
+(defun lsp-lv-message (message)
+  (if message
+      (progn
+        (setq lsp--signature-last-buffer (current-buffer))
+        (let ((lv-force-update t))
+          (lv-message message)))
+    (lv-delete-window)))
 
 (defun lsp--handle-signature-update (signature)
   (let ((message (lsp--signature->message signature)))
     (if (s-present? message)
-        (lsp--lv-message message)
+        (funcall lsp-signature-function message)
       (lsp-signature-stop))))
 
 (defun lsp--signature-maybe-stop ()
@@ -4707,7 +4718,7 @@ It will show up only if current point has signature help."
              lsp--signature-last
              (< (1+ lsp--signature-last-index) (length (gethash "signatures" lsp--signature-last))))
     (setq lsp--signature-last-index (1+ lsp--signature-last-index))
-    (lsp--lv-message (lsp--signature->message lsp--signature-last))))
+    (funcall lsp-signature-function (lsp--signature->message lsp--signature-last))))
 
 (defun lsp-signature-previous ()
   "Next signature."
@@ -4716,7 +4727,7 @@ It will show up only if current point has signature help."
              lsp--signature-last
              (not (zerop lsp--signature-last-index)))
     (setq lsp--signature-last-index (1- lsp--signature-last-index))
-    (lsp--lv-message (lsp--signature->message lsp--signature-last))))
+    (funcall lsp-signature-function (lsp--signature->message lsp--signature-last))))
 
 (defun lsp-signature-toggle-full-docs ()
   "Toggle full/partial signature documentation."
