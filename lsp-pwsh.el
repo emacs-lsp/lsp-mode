@@ -241,7 +241,7 @@ Must not nil.")
                   "-OutputFormat" "Text"
                   "-File"
                   ,(f-join lsp-pwsh-dir "PowerShellEditorServices/Start-EditorServices.ps1")
-                  "-HostName" "'Emacs Host'"
+                  "-HostName" "\"Emacs Host\""
                   "-HostProfileId" "'Emacs.LSP'"
                   "-HostVersion" "0.1"
                   "-LogPath" ,(f-join lsp-pwsh-log-path "emacs-powershell.log")
