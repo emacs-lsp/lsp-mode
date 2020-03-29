@@ -48,14 +48,6 @@ The slash is expected at the end."
   :type 'directory
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-fsharp-server-download-url "https://ci.appveyor.com/api/projects/fsautocomplete/fsautocomplete/artifacts/bin/pkgs/fsautocomplete.netcore.zip?branch=master"
-  "Fsautocomplete download url.
-To use the mono/.Net framework version, set this to \"https://ci.appveyor.com/api/projects/fsautocomplete/fsautocomplete/artifacts/bin/pkgs/fsautocomplete.zip?branch=master\""
-  :group 'lsp-fsharp
-  :risky t
-  :type 'string
-  :package-version '(lsp-mode . "6.1"))
-
 (defcustom lsp-fsharp-server-args nil
   "Extra arguments for the F# language server."
   :type '(repeat string)
@@ -179,14 +171,46 @@ disable if `--backgorund-service-enabled' is not used"
                     ".exe")))
     (expand-file-name (concat "fsautocomplete" file-ext) lsp-fsharp-server-install-dir)))
 
+(defun lsp-fsharp--version-list-latest (lst)
+  "Return latest version from LST (if any)."
+  (->> lst
+       (-map (lambda (x) (car (s-split " " x))))
+       (-filter (lambda (x) (> (length x) 0)))
+       (-sort (lambda (a b) (not (version<= (substring a 1)
+                                            (substring b 1)))))
+       cl-first))
+
+(defun lsp-fsharp--fetch-json (url)
+  "Retrieve and parse JSON from URL."
+  (with-temp-buffer
+    (url-insert-file-contents url)
+    (let ((json-false :false))
+      (json-read))))
+
+(defun lsp-fsharp--latest-version-from-github ()
+  "Return latest version of the server available from github."
+   (lsp-fsharp--version-list-latest
+    (seq-map (lambda (elt) (s-trim (cdr (assq 'name elt))))
+             (lsp-fsharp--fetch-json "https://api.github.com/repos/fsharp/FsAutoComplete/releases"))))
+
+(defun lsp-fsharp--server-download-url (version)
+  "Return url for .zip file to download for given VERSION, depending on lsp-fsharp-server-runtime."
+  (concat "https://github.com/fsharp/FsAutoComplete/releases/download"
+          "/" version
+          "/" (if (eq lsp-fsharp-server-runtime 'net-core)
+                  "fsautocomplete.netcore.zip"
+                "fsautocomplete.zip")))
+
 (defun lsp-fsharp--fsac-install (_client callback _error-callback _update?)
   "Download the latest version of fsautocomplete and extract it to `lsp-fsharp-server-install-dir'."
   (let* ((temp-file (make-temp-file "fsautocomplete" nil ".zip"))
          (install-dir-full (expand-file-name lsp-fsharp-server-install-dir))
          (unzip-script (cond ((executable-find "unzip") (format "mkdir -p %s && unzip -qq %s -d %s" install-dir-full temp-file install-dir-full))
                              ((executable-find "powershell") (format "powershell -noprofile -noninteractive -nologo -ex bypass Expand-Archive -path '%s' -dest '%s'" temp-file install-dir-full))
-                             (t (user-error (format "Unable to unzip server - file %s cannot be extracted, please extract it manually" temp-file))))))
-    (url-copy-file lsp-fsharp-server-download-url temp-file t)
+                             (t (user-error (format "Unable to unzip server - file %s cannot be extracted, please extract it manually" temp-file)))))
+         (latest-version (lsp-fsharp--latest-version-from-github))
+         (server-download-url (lsp-fsharp--server-download-url latest-version)))
+    (url-copy-file server-download-url temp-file t)
     (shell-command unzip-script)
     (shell-command (format "%s %s --version" (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-cmd)))
     (funcall callback)))
