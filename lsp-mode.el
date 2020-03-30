@@ -3938,13 +3938,7 @@ Applies on type formatting."
          (file (decode-coding-string (url-filename parsed-url)
                                      locale-coding-system)))
     (pcase type
-      ("file" (if (and (eq system-type 'windows-nt) (eq (elt file 0) ?\/)
-                       (substring file 1))
-                  (find-file (lsp--fix-path-casing
-                              (concat (-some 'lsp--workspace-host-root
-                                             (lsp-workspaces))
-                                      file)))
-                (find-file file)))
+      ("file" (find-file (lsp--uri-to-path url)))
       ((or "http" "https") (browse-url url))
       (type (if-let ((handler (lsp--get-uri-handler type)))
                 (funcall handler url)
