@@ -378,10 +378,14 @@ PARAMS progress report notification data."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.2.2"))
 
-(defcustom lsp-rust-analyzer-enabled-feature-flags ["completion.insertion.add-call-parenthesis"
-                                                    "completion.enable-postfix"
-                                                    "notifications.workspace-loaded"]
-  "Feature flags to set."
+(defcustom lsp-rust-analyzer-enabled-feature-flags []
+  "Feature flags to enable (all feature flags are currently enabled by default)."
+  :type 'lsp-string-vector
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "6.2.2"))
+
+(defcustom lsp-rust-analyzer-disabled-feature-flags []
+  "Feature flags to disable (all feature flags are currently enabled by default)."
   :type 'lsp-string-vector
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.2.2"))
@@ -394,7 +398,9 @@ PARAMS progress report notification data."
 
 (defun lsp-rust-analyzer--make-init-options ()
   "Init options for rust-analyzer"
-  (let ((feature-flags (--map (cons (intern it) t) lsp-rust-analyzer-enabled-feature-flags)))
+  (let ((feature-flags (or (append (--map (cons (intern it) json-false) lsp-rust-analyzer-disabled-feature-flags)
+                                   (--map (cons (intern it) t) lsp-rust-analyzer-enabled-feature-flags))
+                           (make-hash-table))))
     `(:lruCapacity ,lsp-rust-analyzer-lru-capacity
       :maxInlayHintLength ,lsp-rust-analyzer-max-inlay-hint-length
       :cargoWatchEnable ,(lsp-json-bool lsp-rust-analyzer-cargo-watch-enable)
