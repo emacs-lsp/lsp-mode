@@ -34,7 +34,7 @@
 (defcustom lsp-elm-elm-language-server-path
   "elm-language-server"
   "Path for elm-language-server.
-Can be installed globally with npm -i -g @elm-tooling/elm-language-server,
+Can be installed globally with: npm i -g @elm-tooling/elm-language-server,
 or manually by cloning the repo and following the installing instructions."
   :group 'lsp-elm
   :risky t
