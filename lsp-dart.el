@@ -57,6 +57,27 @@ imported into the current file. Defaults to true"
   :group 'lsp-dart
   :package-version '(lsp-mode . "6.2"))
 
+(defcustom lsp-dart-closing-labels nil
+  "When set to non-nil, dart/textDocument/publishClosingLabel notifications will
+be sent with information to render editor closing labels. Defaults to nil"
+  :type 'boolean
+  :group 'lsp-dart
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-dart-outline nil
+  "When set to non-nil, dart/textDocument/publishOutline notifications will be
+sent with outline information for open files. Defaults to nil"
+  :type 'boolean
+  :group 'lsp-dart
+  :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-dart-flutter-outline nil
+  "When set to non-nil, dart/textDocument/publishFlutterOutline notifications will
+be sent with Flutter outline information for open files. Defaults to nil"
+  :type 'boolean
+  :group 'lsp-dart
+  :package-version '(lsp-mode . "6.2"))
+
 (defun lsp-dart--server-command ()
   "Generate LSP startup command."
   (or
@@ -73,7 +94,10 @@ imported into the current file. Defaults to true"
                   :priority -1
                   :initialization-options
                   `((onlyAnalyzeProjectsWithOpenFiles . ,lsp-dart-only-analyze-projects-with-open-files)
-                    (suggestFromUnimportedLibraries . ,lsp-dart-suggest-from-unimported-libraries))
+                    (suggestFromUnimportedLibraries . ,lsp-dart-suggest-from-unimported-libraries)
+                    (closingLabels . ,lsp-dart-closing-labels)
+                    (outline . ,lsp-dart-outline)
+                    (flutterOutline . ,lsp-dart-flutter-outline))
                   :server-id 'dart_analysis_server))
 
 (provide 'lsp-dart)
