@@ -3934,9 +3934,7 @@ Applies on type formatting."
 
 (defun lsp--document-link-handle-target (url)
   (let* ((parsed-url (url-generic-parse-url (url-unhex-string url)))
-         (type (url-type parsed-url))
-         (file (decode-coding-string (url-filename parsed-url)
-                                     locale-coding-system)))
+         (type (url-type parsed-url)))
     (pcase type
       ("file" (find-file (lsp--uri-to-path url)))
       ((or "http" "https") (browse-url url))
