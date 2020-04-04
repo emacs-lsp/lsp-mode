@@ -4240,7 +4240,8 @@ Also, additional data to attached to each candidate can be passed via PLIST."
           (done? result)
           ((and lsp--capf-cache
                 (s-prefix? (car lsp--capf-cache)
-                           (buffer-substring-no-properties bounds-start (point))))
+                           (buffer-substring-no-properties bounds-start (point)))
+                (< (caar (cadr lsp--capf-cache)) (point)))
            (apply #'lsp--capf-filter-candidates (cdr lsp--capf-cache)))
           (t
            (-let* ((resp (lsp-request-while-no-input "textDocument/completion"
