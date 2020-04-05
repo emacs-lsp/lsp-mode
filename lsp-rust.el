@@ -396,6 +396,15 @@ PARAMS progress report notification data."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.2.2"))
 
+(defcustom lsp-rust-analyzer-server-trace "off"
+  "Trace rust-analyzer server."
+  :type '(choice
+          (const "off")
+          (const "messages")
+          (const "verbose"))
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "6.2.2"))
+
 (defun lsp-rust-analyzer--make-init-options ()
   "Init options for rust-analyzer"
   (let ((feature-flags (or (append (--map (cons (intern it) json-false) lsp-rust-analyzer-disabled-feature-flags)
@@ -412,7 +421,8 @@ PARAMS progress report notification data."
       :featureFlags ,feature-flags
       :cargoFeatures (:allFeatures ,(lsp-json-bool lsp-rust-all-features)
                       :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
-                      :features ,lsp-rust-features))))
+                      :features ,lsp-rust-features)
+      :raTraceServer ,lsp-rust-analyzer-server-trace)))
 
 (defconst lsp-rust-notification-handlers
   '(("rust-analyzer/publishDecorations" . (lambda (_w _p)))))
