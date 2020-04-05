@@ -105,6 +105,7 @@ PARAMS closing labels notification data sent from WORKSPACE."
           (overlay-put overlay 'lsp-dart-closing-labels t)
           (overlay-put overlay 'after-string (propertize (concat lsp-dart-closing-labels-prefix " " label)
                                                          'display `((height ,lsp-dart-closing-labels-size))
+                                                         'cursor t
                                                          'font-lock-face 'font-lock-comment-face)))))))
 
 (lsp-register-client
