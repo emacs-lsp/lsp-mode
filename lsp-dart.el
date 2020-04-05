@@ -92,7 +92,7 @@ Defaults to 0.9"
   "Closing labels notification handling.
 PARAMS closing labels notification data sent from WORKSPACE."
   (-let* (((&hash "uri" "labels") params)
-          (buffer (get-file-buffer (string-remove-prefix "file://" uri))))
+          (buffer (lsp--buffer-for-file (lsp--uri-to-path uri))))
     (remove-overlays (point-min) (point-max) 'lsp-dart-closing-labels t)
     (seq-doseq (label-ht labels)
       (save-excursion
