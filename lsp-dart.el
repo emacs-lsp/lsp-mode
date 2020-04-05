@@ -91,7 +91,8 @@ Defaults to 0.9"
 (defun lsp-dart--handle-closing-labels (_workspace params)
   "Closing labels notification handling.
 PARAMS closing labels notification data sent from WORKSPACE."
-  (-let (((&hash "labels") params))
+  (-let* (((&hash "uri" "labels") params)
+          (buffer (get-file-buffer (string-remove-prefix "file://" uri))))
     (remove-overlays (point-min) (point-max) 'lsp-dart-closing-labels t)
     (seq-doseq (label-ht labels)
       (save-excursion
@@ -101,7 +102,7 @@ PARAMS closing labels notification data sent from WORKSPACE."
                 (end-line (progn
                             (goto-char end)
                             (line-end-position)))
-                (overlay (make-overlay beg end-line)))
+                (overlay (make-overlay beg end-line buffer)))
           (overlay-put overlay 'lsp-dart-closing-labels t)
           (overlay-put overlay 'after-string (propertize (concat lsp-dart-closing-labels-prefix " " label)
                                                          'display `((height ,lsp-dart-closing-labels-size))
