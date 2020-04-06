@@ -23,8 +23,8 @@
 ;; This file is a helper to start a minimal lsp environment.
 ;; To use this, start your Emacs with "emacs -q" and load this file.
 
-;; It will install  `lsp-mode', `lsp-ui' and `company-lsp'
-;; with their depedencies to start a minimal lsp environment.
+;; It will install `lsp-mode', `lsp-ui' with their depedencies to start a
+;; minimal lsp environment.
 
 ;; And it forces Emacs to load `.el' files rather than `.elc' files
 ;; for more readable backtrace.
@@ -41,7 +41,7 @@
        (package-user-dir (expand-file-name (make-temp-name "lsp-tmp-elpa")
                                            user-emacs-directory))
        (custom-file (expand-file-name "custom.el" package-user-dir))
-       (pkg-list '(lsp-mode lsp-ui company-lsp yasnippet lsp-java lsp-python-ms lsp-haskell helm-lsp lsp-treemacs dap-mode lsp-origami)))
+       (pkg-list '(lsp-mode lsp-ui yasnippet lsp-java lsp-python-ms lsp-haskell helm-lsp lsp-treemacs dap-mode lsp-origami)))
 
   (package-initialize)
   (package-refresh-contents)
