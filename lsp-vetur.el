@@ -209,13 +209,13 @@ TypeScript."
   "The vls path for development"
   :type 'string
   :group 'lsp-vetur
-  :package-version '(lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-vetur-dev-vls-port -1
   "The vls port for development"
   :type 'integer
   :group 'lsp-vetur
-  :package-version '(lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-vetur-dev-log-level "INFO"
   "The vls log level for development"
@@ -223,13 +223,13 @@ TypeScript."
           (const "INFO")
           (const "DEBUG"))
   :group 'lsp-vetur
-  :package-version '(lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-vetur-experimental-template-interpolation-service nil
   "Whether to have template interpolation service"
   :type 'boolean
   :group 'lsp-vetur
-  :package-version '(lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-typescript-tsdk nil
   "Specifies the folder path containing the tsserver and
