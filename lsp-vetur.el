@@ -205,6 +205,32 @@ TypeScript."
   :group 'lsp-vetur
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-vetur-dev-vls-path ""
+  "The vls path for development"
+  :type 'string
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.3"))
+
+(defcustom lsp-vetur-dev-vls-port -1
+  "The vls port for development"
+  :type 'integer
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.3"))
+
+(defcustom lsp-vetur-dev-log-level "INFO"
+  "The vls log level for development"
+  :type '(choice
+          (const "INFO")
+          (const "DEBUG"))
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.3"))
+
+(defcustom lsp-vetur-experimental-template-interpolation-service nil
+  "Whether to have template interpolation service"
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "6.3"))
+
 (defcustom lsp-typescript-tsdk nil
   "Specifies the folder path containing the tsserver and
 lib*.d.ts files to use."
@@ -773,6 +799,10 @@ Code's JavaScript and TypeScript support."
    ("vetur.completion.useScaffoldSnippets" lsp-vetur-completion-use-scaffold-snippets t)
    ("vetur.completion.autoImport" lsp-vetur-completion-auto-import t)
    ("vetur.useWorkspaceDependencies" lsp-vetur-use-workspace-dependencies t)
+   ("vetur.dev.vlsPath" lsp-vetur-dev-vls-path)
+   ("vetur.dev.vlsPort" lsp-vetur-dev-vls-port)
+   ("vetur.dev.logLevel" lsp-vetur-dev-log-level)
+   ("vetur.experimental.templateInterpolationService" lsp-vetur-experimental-template-interpolation-service nil)
    ("emmet.showExpandedAbbreviation" lsp-vetur-emmet)))
 
 (define-obsolete-variable-alias
