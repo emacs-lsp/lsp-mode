@@ -65,12 +65,6 @@
 |`npm install -g vscode-css-languageserver-bin`
 |
 
-|D
-|https://github.com/d-language-server/dls[dls]
-|<<lsp-dls,Built-in>>
-|`dub fetch dls; dub run dls:bootstrap`
-|
-
 |Dart
 |https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server[dart_analysis_server]
 |<<lsp-dart,Built-in>>

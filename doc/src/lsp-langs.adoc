@@ -4,8 +4,6 @@ include::lsp-clojure/index.adoc[]
 
 include::lsp-css/index.adoc[]
 
-include::lsp-dls/index.adoc[]
-
 include::lsp-dart-analysis/index.adoc[]
 
 include::lsp-elixir/index.adoc[]

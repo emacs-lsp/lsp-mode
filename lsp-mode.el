@@ -211,7 +211,7 @@ the buffer when it becomes large."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-client-packages
-  '(ccls cquery lsp-clients lsp-clojure lsp-csharp lsp-css lsp-dart lsp-dls lsp-elm
+  '(ccls cquery lsp-clients lsp-clojure lsp-csharp lsp-css lsp-dart lsp-elm
     lsp-erlang lsp-eslint lsp-fsharp lsp-gdscript lsp-go lsp-haskell lsp-haxe
     lsp-intelephense lsp-java lsp-json lsp-metals lsp-perl lsp-pwsh lsp-pyls
     lsp-python-ms lsp-rust lsp-solargraph lsp-terraform lsp-verilog lsp-vetur
@@ -672,7 +672,6 @@ Changes take effect only when a new session is started."
                                         (dhall-mode . "dhall")
                                         (cmake-mode . "cmake")
                                         (gdscript-mode . "gdscript")
-                                        (d-mode . "d")
                                         (perl-mode . "perl")
                                         (robot-mode . "robot"))
   "Language id configuration.")
