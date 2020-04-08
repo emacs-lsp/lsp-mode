@@ -80,14 +80,14 @@ Defaults to 0.9"
   :group 'lsp-dart
   :package-version '(lsp-mode . "6.3"))
 
-(defcustom lsp-dart-outline t
+(defcustom lsp-dart-outline nil
   "When set to non-nil, dart/textDocument/publishOutline notifications will
 be sent with outline information for open files. Defaults to t"
   :type 'boolean
   :group 'lsp-dart
   :package-version '(lsp-mode . "6.3"))
 
-(defcustom lsp-dart-flutter-outline t
+(defcustom lsp-dart-flutter-outline nil
   "When set to non-nil, dart/textDocument/publishFlutterOutline notifications will
 be sent with Flutter outline information for open files. Defaults to t"
   :type 'boolean
