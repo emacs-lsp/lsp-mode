@@ -103,9 +103,8 @@ be sent with Flutter outline information for open files. Defaults to t"
 Defaults to side following treemacs default."
     :type 'list
     :group 'lsp-dart
-    :package-version '(lsp-mode . "6.3")))
+    :package-version '(lsp-mode . "6.3"))
 
-(with-eval-after-load 'lsp-treemacs
   (defcustom lsp-dart-flutter-outline-position-params
     `((side . ,treemacs-position)
       (slot . 2)
