@@ -56,7 +56,7 @@
                                      (list lsp-perl-language-server-path
                                            (format "-MPerl::LanguageServer -e Perl::LanguageServer::run -- --port %o --version %s"
                                                    lsp-perl-language-server-port lsp-perl-language-server-client-version))))
-                  :major-modes '(perl-mode)
+                  :major-modes '(perl-mode cperl-mode)
                   :priority -1
                   :server-id 'perl-language-server))
 
