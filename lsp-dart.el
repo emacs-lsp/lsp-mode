@@ -80,6 +80,103 @@ Defaults to 0.9"
   :group 'lsp-dart
   :package-version '(lsp-mode . "6.3"))
 
+(defcustom lsp-dart-outline t
+  "When set to non-nil, dart/textDocument/publishOutline notifications will
+be sent with outline information for open files. Defaults to t"
+  :type 'boolean
+  :group 'lsp-dart
+  :package-version '(lsp-mode . "6.3"))
+
+(defcustom lsp-dart-outline-position-params
+  `((side . ,treemacs-position)
+    (slot . 2)
+    (window-width . ,treemacs-width))
+  "The outline tree position params.
+Defaults to side following treemacs default."
+  :type 'list
+  :group 'lsp-dart
+  :package-version '(lsp-mode . "6.3"))
+
+(defun lsp-dart--get-current-outline ()
+  "Returns the current outline data on current workspace."
+  (lsp-workspace-get-metadata "current-outline" (first (lsp-workspaces))))
+
+(defun lsp-dart--set-current-outline (workspace current-outline)
+  "Set CURRENT-OUTLINE on WORKSPACE metadata."
+  (lsp-workspace-set-metadata "current-outline" current-outline workspace))
+
+(defun lsp-dart--outline-kind->icon (kind)
+  "Maps an outline KIND to a treemacs icon symbol.
+Kinds from https://github.com/dart-lang/sdk/blob/master/pkg/analysis_server/tool/spec/generated/java/types/ElementKind.java"
+  (pcase kind
+    ("CLASS" 'class)
+    ("CLASS_TYPE_ALIAS" 'class)
+    ("COMPILATION_UNIT" 'document)
+    ("FIELD" 'field)
+    ("METHOD" 'method)
+    ("CONSTRUCTOR" 'namespace)
+    ("CONSTRUCTOR_INVOCATION" 'namespace)
+    ("GETTER" 'property)
+    ("SETTER" 'property)
+    ("TOP_LEVEL_VARIABLE" 'constant)
+    ("FUNCTION" 'method)
+    ("FUNCTION_INVOCATION" 'method)
+    ("FUNCTION_TYPE_ALIAS" 'method)
+    ("LABEL" 'number)
+    ("LIBRARY" 'template)
+    ("EXTENSION" 'interface)
+    ("LOCAL_VARIABLE" 'field)
+    ("MIXIN" 'interface)
+    ("PARAMETER" 'string)
+    ("TYPE_PARAMETER" 'string)
+    ("UNIT_TEST_GROUP" 'structure)
+    ("UNIT_TEST_TEST" 'method)
+    ("ENUM" 'enumerator)
+    ("ENUM_CONSTANT" 'enumitem)))
+
+(defun lsp-dart--outline-tree-ret-action (uri range)
+  "Build the ret action for and item in the outline tree view.
+URI is the source of the item.
+RANGE is the range of positions to where this item should point."
+  (interactive)
+  (lsp-treemacs--open-file-in-mru (lsp--uri-to-path uri))
+  (goto-char (lsp--position-to-point (gethash "start" range)))
+  (run-hooks 'xref-after-jump-hook))
+
+(defun lsp-dart--outline->tree (uri item)
+  "Builds a outline tree.
+URI is the source of the outline.
+ITEM is the outline item data."
+  (seq-map (-lambda ((&hash "children"
+                            "element" (&hash "kind" "name" "parameters" "range")))
+             (let ((label (concat name (when parameters
+                                         (propertize (concat " " parameters)
+                                                     'face 'lsp-lens-face)))))
+               (list :key label
+                     :label label
+                     :icon (lsp-dart--outline-kind->icon kind)
+                     :children (unless (seq-empty-p children)
+                                 (lsp-dart--outline->tree uri children))
+                     :ret-action (lambda (&rest _) (lsp-dart--outline-tree-ret-action uri range)))))
+           item))
+
+(defun lsp-dart--build-outline-tree (uri outline)
+  "Render outline view to a URI with OUTLINE data."
+  (lsp-treemacs-render
+   (lsp-dart--outline->tree uri outline)
+   "Outline"
+   t
+   "*Dart Outline*"))
+
+(defun lsp-dart--show-outline (focus?)
+  "Shows an outline tree and focus on it if FOCUS? is non-null."
+  (-let* (((&hash "uri" "outline" (&hash "children")) (lsp-dart--get-current-outline))
+            (buffer (lsp-dart--build-outline-tree uri children))
+            (window (display-buffer-in-side-window buffer lsp-dart-outline-position-params)))
+      (when (null focus?)
+        (select-window window)
+        (set-window-dedicated-p window t))))
+
 (defun lsp-dart--server-command ()
   "Generate LSP startup command."
   (or
@@ -111,6 +208,14 @@ PARAMS closing labels notification data sent from WORKSPACE."
                                                              'cursor t
                                                              'font-lock-face 'font-lock-comment-face)))))))))
 
+(defun lsp-dart--handle-outline (workspace params)
+  "Outline notification handling.
+PARAMS outline notification data sent from WORKSPACE.
+It updates the outline view if it already exists."
+  (lsp-dart--set-current-outline workspace params)
+  (when (get-buffer "*Dart Outline*")
+    (lsp-dart--show-outline t)))
+
 (lsp-register-client
  (make-lsp-client :new-connection
                   (lsp-stdio-connection
@@ -120,9 +225,18 @@ PARAMS closing labels notification data sent from WORKSPACE."
                   :initialization-options
                   `((onlyAnalyzeProjectsWithOpenFiles . ,lsp-dart-only-analyze-projects-with-open-files)
                     (suggestFromUnimportedLibraries . ,lsp-dart-suggest-from-unimported-libraries)
-                    (closingLabels . ,lsp-dart-closing-labels))
-                  :notification-handlers (ht ("dart/textDocument/publishClosingLabels" 'lsp-dart--handle-closing-labels))
+                    (closingLabels . ,lsp-dart-closing-labels)
+                    (outline . ,lsp-dart-outline))
+                  :notification-handlers (ht ("dart/textDocument/publishClosingLabels" 'lsp-dart--handle-closing-labels)
+                                             ("dart/textDocument/publishOutline" 'lsp-dart--handle-outline))
                   :server-id 'dart_analysis_server))
+
+;;;###autoload
+(with-eval-after-load 'lsp-treemacs
+  (defun lsp-dart-show-outline (focus?)
+    "Shows an outline tree and focus on it if FOCUS? is non-null."
+    (interactive "P")
+    (lsp-dart--show-outline focus?)))
 
 (provide 'lsp-dart)
 
