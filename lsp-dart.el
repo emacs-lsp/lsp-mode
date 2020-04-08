@@ -94,25 +94,27 @@ be sent with Flutter outline information for open files. Defaults to t"
   :group 'lsp-dart
   :package-version '(lsp-mode . "6.3"))
 
-(defcustom lsp-dart-outline-position-params
-  `((side . ,treemacs-position)
-    (slot . 2)
-    (window-width . ,treemacs-width))
-  "The outline tree position params.
+(with-eval-after-load 'lsp-treemacs
+  (defcustom lsp-dart-outline-position-params
+    `((side . ,treemacs-position)
+      (slot . 2)
+      (window-width . ,treemacs-width))
+    "The outline tree position params.
 Defaults to side following treemacs default."
-  :type 'list
-  :group 'lsp-dart
-  :package-version '(lsp-mode . "6.3"))
+    :type 'list
+    :group 'lsp-dart
+    :package-version '(lsp-mode . "6.3")))
 
-(defcustom lsp-dart-flutter-outline-position-params
-  `((side . ,treemacs-position)
-    (slot . 2)
-    (window-width . ,treemacs-width))
-  "The Flutter outline tree position params.
+(with-eval-after-load 'lsp-treemacs
+  (defcustom lsp-dart-flutter-outline-position-params
+    `((side . ,treemacs-position)
+      (slot . 2)
+      (window-width . ,treemacs-width))
+    "The Flutter outline tree position params.
 Defaults to side following treemacs default."
-  :type 'list
-  :group 'lsp-dart
-  :package-version '(lsp-mode . "6.3"))
+    :type 'list
+    :group 'lsp-dart
+    :package-version '(lsp-mode . "6.3")))
 
 (defun lsp-dart--outline-kind->icon (kind)
   "Maps an outline KIND to a treemacs icon symbol.
@@ -165,8 +167,9 @@ ITEMS is the outline items data."
                (list :key label
                      :label label
                      :icon (lsp-dart--outline-kind->icon kind)
-                     :children (unless (seq-empty-p children)
-                                 (lsp-dart--outline->tree uri children))
+                     :children (lambda (&rest _)
+                                 (unless (seq-empty-p children)
+                                   (lsp-dart--outline->tree uri children)))
                      :ret-action (lambda (&rest _) (lsp-dart--outline-tree-ret-action uri range)))))
            items))
 
@@ -185,8 +188,9 @@ ITEMS is the outline items data."
                (list :key label
                      :label label
                      :icon (lsp-dart--outline-kind->icon (if class-name kind (gethash "kind" element)))
-                     :children (unless (seq-empty-p children)
-                                 (lsp-dart--flutter-outline->tree uri children))
+                     :children (lambda (&rest _)
+                                 (unless (seq-empty-p children)
+                                   (lsp-dart--flutter-outline->tree uri children)))
                      :ret-action (lambda (&rest _) (lsp-dart--outline-tree-ret-action uri range)))))
            items))
 
@@ -206,25 +210,25 @@ ITEMS is the outline items data."
    t
    "*Flutter Outline*"))
 
-(defun lsp-dart--show-outline (focus?)
+(defun lsp-dart--show-outline (ignore-focus?)
   "Shows an outline tree.
-Focus on it if FOCUS? is non-null."
+Focus on it if IGNORE-FOCUS? is null."
   (-let* (((&hash "uri" "outline" (&hash "children")) (lsp-workspace-get-metadata "current-outline"
-                                                                                  (first (lsp-workspaces))))
+                                                                                  (lsp-find-workspace 'lsp-find-workspace)))
           (buffer (lsp-dart--build-outline-tree uri children))
           (window (display-buffer-in-side-window buffer lsp-dart-outline-position-params)))
-    (when (null focus?)
+    (unless ignore-focus?
       (select-window window)
       (set-window-dedicated-p window t))))
 
-(defun lsp-dart--show-flutter-outline (focus?)
+(defun lsp-dart--show-flutter-outline (ignore-focus?)
   "Shows an Flutter outline tree.
-Focus on it if FOCUS? is non-null."
+Focus on it if IGNORE-FOCUS? is null."
   (-let* (((&hash "uri" "outline" (&hash "children")) (lsp-workspace-get-metadata "current-flutter-outline"
-                                                                                  (first (lsp-workspaces))))
+                                                                                  (lsp-find-workspace 'lsp-find-workspace)))
           (buffer (lsp-dart--build-flutter-outline-tree uri children))
           (window (display-buffer-in-side-window buffer lsp-dart-flutter-outline-position-params)))
-    (when (null focus?)
+    (unless ignore-focus?
       (select-window window)
       (set-window-dedicated-p window t))))
 
@@ -264,7 +268,7 @@ PARAMS closing labels notification data sent from WORKSPACE."
 PARAMS outline notification data sent from WORKSPACE.
 It updates the outline view if it already exists."
   (lsp-workspace-set-metadata "current-outline" params workspace)
-  (when (get-buffer "*Dart Outline*")
+  (when (get-buffer-window "*Dart Outline*")
     (lsp-dart--show-outline t)))
 
 (defun lsp-dart--handle-flutter-outline (workspace params)
@@ -272,7 +276,7 @@ It updates the outline view if it already exists."
 PARAMS Flutter outline notification data sent from WORKSPACE.
 It updates the Flutter outline view if it already exists."
   (lsp-workspace-set-metadata "current-flutter-outline" params workspace)
-  (when (get-buffer "*Flutter Outline*")
+  (when (get-buffer-window "*Flutter Outline*")
     (lsp-dart--show-flutter-outline t)))
 
 (lsp-register-client
@@ -292,17 +296,16 @@ It updates the Flutter outline view if it already exists."
                                              ("dart/textDocument/publishFlutterOutline" 'lsp-dart--handle-flutter-outline))
                   :server-id 'dart_analysis_server))
 
-;;;###autoload
 (with-eval-after-load 'lsp-treemacs
-  (defun lsp-dart-show-outline (focus?)
-    "Shows an outline tree and focus on it if FOCUS? is non-null."
+  (defun lsp-dart-show-outline (ignore-focus?)
+    "Shows an outline tree and focus on it if IGNORE-FOCUS? is null."
     (interactive "P")
-    (lsp-dart--show-outline focus?))
+    (lsp-dart--show-outline ignore-focus?))
 
-  (defun lsp-dart-show-flutter-outline (focus?)
-    "Shows a Flutter outline tree and focus on it if FOCUS? is non-null."
+  (defun lsp-dart-show-flutter-outline (ignore-focus?)
+    "Shows a Flutter outline tree and focus on it if IGNORE-FOCUS? is null."
     (interactive "P")
-    (lsp-dart--show-flutter-outline focus?)))
+    (lsp-dart--show-flutter-outline ignore-focus?)))
 
 (provide 'lsp-dart)
 
