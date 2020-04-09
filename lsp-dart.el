@@ -150,8 +150,7 @@ Kinds from https://github.com/dart-lang/sdk/blob/master/pkg/analysis_server/tool
     ("UNIT_TEST_GROUP" 'structure)
     ("UNIT_TEST_TEST" 'method)
     ("ENUM" 'enumerator)
-    ("ENUM_CONSTANT" 'enumitem)
-    ("NEW_INSTANCE" 'flutter)))
+    ("ENUM_CONSTANT" 'enumitem)))
 
 (defun lsp-dart--outline-tree-ret-action (uri range)
   "Build the ret action for and item in the outline tree view.
@@ -186,15 +185,20 @@ URI is the source of the outline.
 ITEMS is the outline items data."
   (seq-map (lambda (item)
              (-let* (((&hash "children" "kind"
-                             "dartElement" element "className" class-name "codeRange" range) item)
-                     (label (or class-name
-                                (concat (gethash "name" element)
-                                        (when (gethash "parameters" element)
-                                          (propertize (concat " " (gethash "parameters" element))
-                                                      'face 'lsp-lens-face))))))
+                             "dartElement" element "className" class-name "label" extra-label "codeRange" range) item)
+                     (widget? (not (string= kind "DART_ELEMENT")))
+                     (label (if widget?
+                                (concat class-name " " extra-label)
+                              (concat (gethash "name" element)
+                                      (when (gethash "parameters" element)
+                                        (propertize (concat " " (gethash "parameters" element))
+                                                    'face 'lsp-lens-face)))))
+                     (icon (if widget?
+                               'flutter
+                             (lsp-dart--outline-kind->icon (gethash "kind" element)))))
                (list :key label
                      :label label
-                     :icon (lsp-dart--outline-kind->icon (if class-name kind (gethash "kind" element)))
+                     :icon icon
                      :children (lambda (&rest _)
                                  (unless (seq-empty-p children)
                                    (lsp-dart--flutter-outline->tree uri children)))
