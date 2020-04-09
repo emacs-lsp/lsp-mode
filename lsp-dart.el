@@ -259,11 +259,13 @@ It updates the Flutter outline view if it already exists."
   (when (get-buffer-window "*Flutter Outline*")
     (lsp-dart--show-flutter-outline t)))
 
+;;;###autoload
 (defun lsp-dart-show-outline (ignore-focus?)
   "Shows an outline tree and focus on it if IGNORE-FOCUS? is null."
   (interactive "P")
   (lsp-dart--show-outline ignore-focus?))
 
+;;;###autoload
 (defun lsp-dart-show-flutter-outline (ignore-focus?)
   "Shows a Flutter outline tree and focus on it if IGNORE-FOCUS? is null."
   (interactive "P")
