@@ -151,7 +151,7 @@ Kinds from https://github.com/dart-lang/sdk/blob/master/pkg/analysis_server/tool
     ("UNIT_TEST_TEST" 'method)
     ("ENUM" 'enumerator)
     ("ENUM_CONSTANT" 'enumitem)
-    ("NEW-INSTANCE" 'flutter)))
+    ("NEW_INSTANCE" 'flutter)))
 
 (defun lsp-dart--outline-tree-ret-action (uri range)
   "Build the ret action for and item in the outline tree view.
