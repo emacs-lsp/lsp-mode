@@ -2878,6 +2878,11 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
                                            local))
                                         hooks)))
                               (remhash cancel-token lsp--cancelable-requests)))
+             (callback (pcase mode
+                         ((or 'alive 'tick) (lambda (&rest args)
+                                              (with-current-buffer buf
+                                                (apply callback args))))
+                         (_ callback)))
              (callback (lsp--create-async-callback callback
                                                    method
                                                    no-merge
