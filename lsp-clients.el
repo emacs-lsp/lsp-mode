@@ -693,11 +693,11 @@ responsiveness at the cost of possible stability issues."
 
 ;; Vim script
 (defgroup lsp-vim nil
-  "LSP support for TeX and friends, using Digestif."
+  "LSP support for viml using vim-language-server"
   :group 'lsp-mode)
 
 (defcustom lsp-clients-vim-executable '("vim-language-server" "--stdio")
-  "Command to start the Digestif language server."
+  "Command to start the vim language server."
   :group 'lsp-vim
   :risky t
   :type 'file)
