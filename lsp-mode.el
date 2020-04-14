@@ -3480,9 +3480,8 @@ in that particular folder."
     (when-let (changes (gethash "changes" edit))
       (maphash
        (lambda (uri text-edits)
-         (let ((filename (lsp--uri-to-path uri)))
-           (with-current-buffer (find-file-noselect filename)
-             (lsp--apply-text-edits text-edits))))
+         (with-current-buffer (-> uri lsp--uri-to-path find-file-noselect)
+           (lsp--apply-text-edits text-edits)))
        changes))))
 
 (defun lsp--apply-text-document-edit (edit)
@@ -3563,12 +3562,21 @@ interface TextDocumentEdit {
     (delete-region start end)
     (insert newText)))
 
+
+;; WORKAROUND: typescript-language might send -1 when applying code actions.
+;; see https://github.com/emacs-lsp/lsp-mode/issues/1582
+(defun lsp--fix-point (point)
+  (-let [(&hash "character" "line") point]
+    (ht ("line" (max 0 line))
+        ("character" (max 0 character)))))
+
 (defun lsp--apply-text-edit-replace-buffer-contents (text-edit)
   "Apply the edits described in the TextEdit object in TEXT-EDIT.
 The method uses `replace-buffer-contents'."
-  (-let* (((&hash "newText" "range") text-edit)
+  (-let* (((&hash "newText" "range" (&hash "start" "end")) text-edit)
           (source (current-buffer))
-          ((beg . end) (lsp--range-to-region range)))
+          ((beg . end) (lsp--range-to-region (ht ("start" (lsp--fix-point start))
+                                                 ("end" (lsp--fix-point end))))))
     (with-temp-buffer
       (insert newText)
       (let ((temp (current-buffer)))
@@ -3606,7 +3614,7 @@ The method uses `replace-buffer-contents'."
                              (prepare-change-group)))
              (howmany (length edits))
              (message (format "Applying %s edits to `%s' ..." howmany (current-buffer)))
-             (_ (message message))
+             (_ (lsp--info message))
              (reporter (make-progress-reporter message 0 howmany))
              (done 0)
              (apply-edit (if (functionp 'replace-buffer-contents)
