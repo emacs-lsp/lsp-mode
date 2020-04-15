@@ -67,7 +67,7 @@
 
 |Dart
 |https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server[dart_analysis_server]
-|<<lsp-dart,Built-in>>
+|https://github.com/emacs-lsp/lsp-dart[lsp-dart]
 |https://github.com/dart-lang/sdk/tree/master/pkg/analysis_server[dart_analysis_server]
 |
 
