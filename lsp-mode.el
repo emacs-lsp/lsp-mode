@@ -4956,9 +4956,8 @@ It will show up only if current point has signature help."
         :range (if (use-region-p)
                    (lsp--region-to-range (region-beginning) (region-end))
                  (lsp--region-to-range (point) (point)))
-        :context (list
-                  :diagnostics (lsp-cur-line-diagnostics)
-                  :only (when kind (vector kind)))))
+        :context `(:diagnostics ,(lsp-cur-line-diagnostics)
+                                ,@(when kind (list :only (vector kind))))))
 
 (defun lsp-code-actions-at-point (&optional kind)
   "Retrieve the code actions for the active region or the current line."
