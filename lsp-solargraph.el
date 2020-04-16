@@ -109,6 +109,12 @@
   :group 'lsp-solargraph
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-solargraph-multi-root t
+  "If non nil, `solargraph' will be started in multi-root mode."
+  :type 'boolean
+  :group 'lsp-solargraph
+  :package-version '(lsp-mode . "6.3"))
+
 (lsp-register-custom-settings
  '(("solargraph.logLevel" lsp-solargraph-log-level)
    ("solargraph.folding" lsp-solargraph-folding t)
@@ -133,7 +139,7 @@
                        lsp-command))
     :major-modes '(ruby-mode enh-ruby-mode)
     :priority -1
-    :multi-root t
+    :multi-root lsp-solargraph-multi-root
     :server-id 'ruby-ls
     :initialized-fn (lambda (workspace)
                       (with-lsp-workspace workspace
