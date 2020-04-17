@@ -1299,12 +1299,19 @@ On other systems, returns path without change."
   "Implemented only to make `company-lsp' happy.
 DELETE when `lsp-mode.el' is deleted.")
 
+(defconst url-path-allowed-chars-without-percent
+  (let ((vec (copy-sequence url-path-allowed-chars)))
+    (aset vec ?% nil)
+    vec)
+  "url-path-allowed-chars without percentage sign. Percentage
+  sign breaks gopls.")
+
 (defun lsp--path-to-uri-1 (path)
   (concat lsp--uri-file-prefix
           (--> path
                (expand-file-name it)
                (or (file-remote-p it 'localname t) it)
-               (url-hexify-string it url-path-allowed-chars))))
+               (url-hexify-string it url-path-allowed-chars-without-percent))))
 
 (defun lsp--path-to-uri (path)
   "Convert PATH to a uri."
