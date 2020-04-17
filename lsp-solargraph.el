@@ -115,6 +115,13 @@
   :group 'lsp-solargraph
   :package-version '(lsp-mode . "6.3"))
 
+(defun lsp-solargraph--build-command ()
+  "Build solargraph command"
+  (let ((lsp-command '("solargraph" "stdio")))
+    (if lsp-solargraph-use-bundler
+              (append '("bundle" "exec") lsp-command)
+            lsp-command)))
+
 (lsp-register-custom-settings
  '(("solargraph.logLevel" lsp-solargraph-log-level)
    ("solargraph.folding" lsp-solargraph-folding t)
@@ -131,20 +138,17 @@
 
 ;; Ruby
 (lsp-register-client
- (let ((lsp-command '("solargraph" "stdio")))
-   (make-lsp-client
-    :new-connection (lsp-stdio-connection
-                     (if lsp-solargraph-use-bundler
-                         (append '("bundle" "exec") lsp-command)
-                       lsp-command))
-    :major-modes '(ruby-mode enh-ruby-mode)
-    :priority -1
-    :multi-root lsp-solargraph-multi-root
-    :server-id 'ruby-ls
-    :initialized-fn (lambda (workspace)
-                      (with-lsp-workspace workspace
-                        (lsp--set-configuration
-                         (lsp-configuration-section "solargraph")))))))
+ (make-lsp-client
+  :new-connection (lsp-stdio-connection
+                   #'lsp-solargraph--build-command)
+  :major-modes '(ruby-mode enh-ruby-mode)
+  :priority -1
+  :multi-root lsp-solargraph-multi-root
+  :server-id 'ruby-ls
+  :initialized-fn (lambda (workspace)
+                    (with-lsp-workspace workspace
+                      (lsp--set-configuration
+                       (lsp-configuration-section "solargraph"))))))
 
 (provide 'lsp-solargraph)
 ;;; lsp-solargraph.el ends here
