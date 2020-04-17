@@ -112,6 +112,7 @@
 (defcustom lsp-solargraph-multi-root t
   "If non nil, `solargraph' will be started in multi-root mode."
   :type 'boolean
+  :safe #'booleanp
   :group 'lsp-solargraph
   :package-version '(lsp-mode . "6.3"))
 
