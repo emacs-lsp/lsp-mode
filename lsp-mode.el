@@ -671,6 +671,7 @@ Changes take effect only when a new session is started."
                                         (nim-mode . "nim")
                                         (dhall-mode . "dhall")
                                         (cmake-mode . "cmake")
+                                        (purescript-mode . "purescript")
                                         (gdscript-mode . "gdscript")
                                         (perl-mode . "perl")
                                         (robot-mode . "robot"))
