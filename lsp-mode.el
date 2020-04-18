@@ -1499,6 +1499,73 @@ PARAMS - the data sent from WORKSPACE."
         (completing-read (concat message " ") (seq-into choices 'list) nil t)
       (lsp-log message))))
 
+(defun lsp--on-progress (workspace params)
+  "Callback for $/progress.
+type ProgressToken = number | string;
+interface ProgressParams<T> {
+    token: ProgressToken;
+    value: T;
+}
+PARAMS contains the progress data.
+WORKSPACE is the workspace that contains the progress token."
+   (let* ((token (gethash "token" params))
+          (value (gethash "value" params))
+          (kind (gethash "kind" value)))
+     (lsp-log "progress: %s-%S" token kind)
+     (pcase kind
+
+       ("begin"
+        (let* ((message (gethash "title" value))
+               (cur (gethash "percentage" value 0))
+               (reporter
+                (make-progress-reporter message 0 100 cur)))
+          (lsp-workspace-set-work-done-token token reporter workspace)))
+
+       ("report"
+        (let ((reporter (lsp-workspace-get-work-done-token token workspace)))
+          (progress-reporter-update reporter (gethash "percentage" value 0))))
+
+       ("end"
+        (let ((reporter (lsp-workspace-get-work-done-token token workspace)))
+          (progress-reporter-done reporter)
+          (lsp-workspace-rem-work-done-token token workspace))))))
+
+;; [Trace - 09:56:09 ] Received notification '$/progress'.
+;; Params: {
+;;   "value": {
+;;     "title": "Indexing OTP",
+;;     "percentage": 0,
+;;     "message": "0 / 48",
+;;     "kind": "begin",
+;;     "cancellable": null
+;;   },
+;;   "token": "42ad4130-5233-4c4d-80d0-affd5bb91b8e"
+;; }
+
+;; [Trace - 09:56:09 ] Received notification '$/progress'.
+;; Params: {
+;;   "value": {
+;;     "percentage": 0,
+;;     "message": "0 / 3",
+;;     "kind": "report",
+;;     "cancellable": null
+;;   },
+;;   "token": "316247a1-b8c5-4997-a301-a31c79435fa7"
+;; }
+
+
+;; [Trace - 09:56:09 ] Received notification '$/progress'.
+;; Params: {
+;;   "value": {
+;;     "message": "0 / 0",
+;;     "kind": "end"
+;;   },
+;;   "token": "fb173466-811b-4555-976c-4aedd806babd"
+;; }
+
+
+
+
 (defun lsp-diagnostics (&optional current-workspace?)
   "Return the diagnostics from all workspaces."
   (let ((result (make-hash-table :test 'equal)))
@@ -2533,7 +2600,12 @@ BINDINGS is a list of (key def cond)."
   shutdown-action
 
   ;; ‘diagnostics’ a hashmap with workspace diagnostics.
-  (diagnostics (make-hash-table :test 'equal)))
+  (diagnostics (make-hash-table :test 'equal))
+ 
+  ;; contains all the workDone progress tokens that have been created
+  ;; for the current workspace.
+  (work-done-tokens (make-hash-table :test 'equal)))
+
 
 (cl-defstruct lsp-session
   ;; contains the folders that are part of the current session
@@ -2568,6 +2640,25 @@ If WORKSPACE is not provided current workspace will be used."
   (gethash key (lsp-session-metadata (lsp-session))))
 
 (defalias 'lsp-workspace-get-metadata 'lsp-session-get-metadata)
+
+(defun lsp-workspace-set-work-done-token (token value &optional workspace)
+  "Associate TOKEN with VALUE in the WORKSPACE work-done-tokens.
+If WORKSPACE is not provided current workspace will be used."
+  (puthash token value
+           (lsp--workspace-work-done-tokens (or workspace lsp--cur-workspace))))
+
+(defun lsp-workspace-get-work-done-token (token &optional workspace)
+  "Lookup TOKEN in the WORKSPACE work-done-tokens.
+If WORKSPACE is not provided current workspace will be used."
+  (gethash token
+           (lsp--workspace-work-done-tokens (or workspace lsp--cur-workspace))))
+
+(defun lsp-workspace-rem-work-done-token (token &optional workspace)
+  "Remove TOKEN from the WORKSPACE work-done-tokens.
+If WORKSPACE is not provided current workspace will be used."
+  (remhash token
+           (lsp--workspace-work-done-tokens (or workspace lsp--cur-workspace))))
+
 
 (defun lsp--make-notification (method &optional params)
   "Create notification body for method METHOD and parameters PARAMS."
@@ -5733,7 +5824,8 @@ textDocument/didOpen for the new file."
       ("textDocument/semanticHighlighting" #'lsp--on-semantic-highlighting)
       ("textDocument/diagnosticsEnd" #'ignore)
       ("textDocument/diagnosticsBegin" #'ignore)
-      ("telemetry/event" #'ignore)))
+      ("telemetry/event" #'ignore)
+      ("$/progress" #'lsp--on-progress)))
 
 (defun lsp--on-notification (workspace notification)
   "Call the appropriate handler for NOTIFICATION."
@@ -5820,8 +5912,7 @@ WORKSPACE is the active workspace."
                                      (list :uri (lsp--path-to-uri folder))))
                              (apply #'vector))))
                      ((string= method "window/workDoneProgress/create")
-                      ;; Ignoring for now
-                      nil
+                      nil ;; no specific reply, no processing required
                       )
                      (t (lsp-warn "Unknown request method: %s" method) nil))))
     ;; Send response to the server.
