@@ -1510,8 +1510,7 @@ PARAMS contains the progress data.
 WORKSPACE is the workspace that contains the progress token."
    (let* ((token (gethash "token" params))
           (value (gethash "value" params))
-          (kind (gethash "kind" value))
-          (client (lsp--workspace-client workspace)))
+          (kind (gethash "kind" value)))
      (lsp-log "progress: %s-%S" token kind)
      (pcase kind
 
