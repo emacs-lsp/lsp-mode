@@ -2585,10 +2585,6 @@ BINDINGS is a list of (key def cond)."
   ;; current workspace in format filePath->file notification handle.
   (watches (make-hash-table :test 'equal))
 
-  ;; contains all the workDone progress tokens that have been created
-  ;; for the current workspace.
-  (work-done-tokens (make-hash-table :test 'equal))
-
   ;; list of workspace folders
   (workspace-folders nil)
 
@@ -2604,7 +2600,12 @@ BINDINGS is a list of (key def cond)."
   shutdown-action
 
   ;; ‘diagnostics’ a hashmap with workspace diagnostics.
-  (diagnostics (make-hash-table :test 'equal)))
+  (diagnostics (make-hash-table :test 'equal))
+ 
+  ;; contains all the workDone progress tokens that have been created
+  ;; for the current workspace.
+  (work-done-tokens (make-hash-table :test 'equal)))
+
 
 (cl-defstruct lsp-session
   ;; contains the folders that are part of the current session
@@ -5911,12 +5912,7 @@ WORKSPACE is the active workspace."
                                      (list :uri (lsp--path-to-uri folder))))
                              (apply #'vector))))
                      ((string= method "window/workDoneProgress/create")
-                      ;; Not sure why this request exists, the
-                      ;; notification flow gives everything we need
-                      (with-lsp-workspace workspace
-                        (lsp-workspace-set-work-done-token (gethash "token" params) t)
-                        )
-                      nil ;; no specific reply
+                      nil ;; no specific reply, no processing required
                       )
                      (t (lsp-warn "Unknown request method: %s" method) nil))))
     ;; Send response to the server.
