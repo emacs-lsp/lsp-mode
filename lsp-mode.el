@@ -5862,6 +5862,11 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
                                    token-types))))))
     (setf (lsp--workspace-semantic-highlighting-faces workspace) faces)))
 
+
+(defvar-local lsp--semantic-tokens-cache nil)
+
+(defvar-local lsp--semantic-tokens-teardown nil)
+
 (defun lsp--semantic-tokens-initialize-buffer ()
   (let* ((old-extend-region-functions font-lock-extend-region-functions)
          ;; make sure font-lock always fontifies entire lines (TODO: do we also have
@@ -5871,18 +5876,15 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
               old-extend-region-functions
             (cons 'font-lock-extend-region-wholelines old-extend-region-functions))))
     (setq font-lock-extend-region-functions new-extend-region-functions)
-    (advice-add 'font-lock-fontify-region :around #'lsp--semantic-tokens-fontify)
+    (add-function :around (local 'font-lock-fontify-region-function) #'lsp--semantic-tokens-fontify)
     (add-hook 'lsp-on-change-hook #'lsp--semantic-tokens-request nil t)
     (setq lsp--semantic-tokens-teardown
           (lambda ()
             (setq font-lock-extend-region-functions old-extend-region-functions)
-            (advice-remove 'font-lock-fontify-region #'lsp--semantic-tokens-fontify)))))
+            (remove-function (local 'font-lock-fontify-region-function)
+                             #'lsp--semantic-tokens-fontify)))))
 
-(defvar-local lsp--semantic-tokens-cache nil)
-
-(defvar-local lsp--semantic-tokens-teardown nil)
-
-(defun lsp--semantic-tokens-fontify (old-fontify-region beg end)
+(defun lsp--semantic-tokens-fontify (old-fontify-region beg end &optional loudly)
   ;; TODO: support multiple language servers per buffer?
   (let ((faces (seq-some #'lsp--workspace-semantic-highlighting-faces lsp--buffer-workspaces)))
     (if (or (eq nil lsp--semantic-tokens-cache)
@@ -5890,7 +5892,7 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
             ;; delay fontification until we have fresh tokens
             (not (= lsp--cur-version (gethash "documentVersion" lsp--semantic-tokens-cache))))
         '(jit-lock-bounds 0 . 0)
-      (funcall old-fontify-region beg end)
+      (funcall old-fontify-region beg end loudly)
       (let* ((inhibit-field-text-motion t)
              (max-old-chars 10000)
              (clear-all nil)
@@ -5940,7 +5942,8 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
                (when face
                  (put-text-property (+ line-start-pos column)
                                     (+ line-start-pos (+ column (aref data (+ i 2)))) 'face face))
-               when (> current-line line-max-inclusive) return nil))))))))
+               when (> current-line line-max-inclusive) return nil)))))
+      `(jit-lock-bounds ,beg . ,end))))
 
 (defun lsp--semantic-tokens-request ()
   (let ((cur-version lsp--cur-version))
