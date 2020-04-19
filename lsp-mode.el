@@ -169,6 +169,7 @@ the buffer when it becomes large."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
+;; TODO: update docstring
 (defcustom lsp-semantic-highlighting nil
   "When set to `:immediate' or `:deferred', this option enables
  semantic highlighting as proposed at
@@ -191,7 +192,8 @@ the buffer when it becomes large."
   :type '(choice
           (const :tag "Disable" nil)
           (const :tag "Immediate" :immediate)
-          (const :tag "Deferred" :deferred)))
+          (const :tag "Deferred" :deferred)
+          (const :tag "SemanticTokens" :semantic-tokens)))
 
 (defcustom lsp-semantic-highlighting-context-lines 15
   "How many lines to fontify above `(window-start)' and below `(window-end)'."
@@ -2609,10 +2611,11 @@ active `major-mode', or for all major modes when ALL-MODES is t."
   ;; ‘buffers’ is a list of buffers associated with this workspace.
   (buffers nil)
 
-  ;; ‘semantic-highlighting-faces' is a vector containing one face for each
-  ;; TextMate scope (or set of scopes) supported by the language server. Cf.
-  ;; ‘lsp-semantic-highlighting-faces' if you wish to change the default
-  ;; semantic highlighting faces
+  ;; If old-style (Theia) semantic highlighting is used (i.e., if 'lsp-semantic-highlighting‘
+  ;; is set to :immediate or :deferred), semantic-highlighting-faces' is a vector containing
+  ;; one face for each TextMate scope (or set of scopes) supported by the language server. If
+  ;; semanticTokens are used for highlighting, semantic-highlighting-faces contains one face
+  ;; (or nil) for each token type supported by the language server.
   (semantic-highlighting-faces nil)
 
   ;; Extra client capabilities provided by third-party packages using
@@ -3112,6 +3115,8 @@ disappearing, unset all the variables related to it."
     (unless lsp--buffer-workspaces
       (lsp-managed-mode -1))))
 
+;; TODO: token modifiers
+;; TODO: dynamic registration?
 (defun lsp--client-capabilities (&optional custom-capabilities)
   "Return the client capabilities."
   (append
@@ -3123,51 +3128,57 @@ disappearing, unset all the variables related to it."
                    ,@(when lsp-enable-file-watchers '((didChangeWatchedFiles . ((dynamicRegistration . t)))))
                    (workspaceFolders . t)
                    (configuration . t)))
-     (textDocument . ((declaration . ((linkSupport . t)))
-                      (definition . ((linkSupport . t)))
-                      (implementation . ((linkSupport . t)))
-                      (typeDefinition . ((linkSupport . t)))
-                      (synchronization . ((willSave . t) (didSave . t) (willSaveWaitUntil . t)))
-                      (documentSymbol . ((symbolKind . ((valueSet . ,(apply 'vector (number-sequence 1 26)))))
-                                         (hierarchicalDocumentSymbolSupport . t)))
-                      (formatting . ((dynamicRegistration . t)))
-                      (rangeFormatting . ((dynamicRegistration . t)))
-                      (rename . ((dynamicRegistration . t) (prepareSupport . t)))
-                      (semanticHighlightingCapabilities . ((semanticHighlighting . ,(lsp-json-bool lsp-semantic-highlighting))))
-                      (codeAction . ((dynamicRegistration . t)
-                                     (isPreferredSupport . t)
-                                     (codeActionLiteralSupport . ((codeActionKind . ((valueSet . [""
-                                                                                                  "quickfix"
-                                                                                                  "refactor"
-                                                                                                  "refactor.extract"
-                                                                                                  "refactor.inline"
-                                                                                                  "refactor.rewrite"
-                                                                                                  "source"
-                                                                                                  "source.organizeImports"])))))))
-                      (completion . ((completionItem . ((snippetSupport . ,(cond
-                                                                            ((and lsp-enable-snippet (not (featurep 'yasnippet)) t)
-                                                                             (lsp--warn (concat
-                                                                                         "Yasnippet is not installed, but `lsp-enable-snippet' is set to `t'. "
-                                                                                         "You must either install yasnippet, or disable snippet support."))
-                                                                             :json-false)
-                                                                            (lsp-enable-snippet t)
-                                                                            (t :json-false)))
-                                                        (documentationFormat . ["markdown"])))
-                                     (contextSupport . t)))
-                      (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))))
-                      (documentLink . ((dynamicRegistration . t)
-                                       (tooltipSupport . t)))
-                      (hover . ((contentFormat . ["markdown" "plaintext"])))
-                      (foldingRange . ,(when lsp-enable-folding
-                                         `((dynamicRegistration . t)
-                                           ,@(when lsp-folding-range-limit
-                                               `((rangeLimit . ,lsp-folding-range-limit)))
-                                           ,@(when lsp-folding-line-folding-only
-                                               `((lineFoldingOnly . t))))))
-                      (callHierarchy . ((dynamicRegistration . :json-false)))
-                      (publishDiagnostics . ((relatedInformation . t)
-                                             (tagSupport . ((valueSet . [1 2])))
-                                             (versionSupport . t)))))
+     (textDocument . (append ((declaration . ((linkSupport . t)))
+                              (definition . ((linkSupport . t)))
+                              (implementation . ((linkSupport . t)))
+                              (typeDefinition . ((linkSupport . t)))
+                              (synchronization . ((willSave . t) (didSave . t) (willSaveWaitUntil . t)))
+                              (documentSymbol . ((symbolKind . ((valueSet . ,(apply 'vector (number-sequence 1 26)))))
+                                                 (hierarchicalDocumentSymbolSupport . t)))
+                              (formatting . ((dynamicRegistration . t)))
+                              (rangeFormatting . ((dynamicRegistration . t)))
+                              ,@(pcase lsp-semantic-highlighting
+                                  ((or 'immediate 'deferred) '((semanticHighlighting . t)))
+                                  ('semantic-tokens `((semanticTokens
+                                                       . ((tokenModifiers . [])
+                                                          (tokenTypes . ,(apply 'vector (mapcar #'car lsp-semantic-token-faces)))))))
+                                  (_ '()))
+                              (rename . ((dynamicRegistration . t) (prepareSupport . t)))
+                              (codeAction . ((dynamicRegistration . t)
+                                             (isPreferredSupport . t)
+                                             (codeActionLiteralSupport . ((codeActionKind . ((valueSet . [""
+                                                                                                          "quickfix"
+                                                                                                          "refactor"
+                                                                                                          "refactor.extract"
+                                                                                                          "refactor.inline"
+                                                                                                          "refactor.rewrite"
+                                                                                                          "source"
+                                                                                                          "source.organizeImports"])))))))
+                              (completion . ((completionItem . ((snippetSupport . ,(cond
+                                                                                    ((and lsp-enable-snippet (not (featurep 'yasnippet)) t)
+                                                                                     (lsp--warn (concat
+                                                                                                 "Yasnippet is not installed, but `lsp-enable-snippet' is set to `t'. "
+                                                                                                 "You must either install yasnippet, or disable snippet support."))
+                                                                                     :json-false)
+                                                                                    (lsp-enable-snippet t)
+                                                                                    (t :json-false)))
+                                                                (documentationFormat . ["markdown"])))
+                                             (contextSupport . t)))
+                              (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))))
+                              (documentLink . ((dynamicRegistration . t)
+                                               (tooltipSupport . t)))
+                              (hover . ((contentFormat . ["markdown" "plaintext"])))
+                              (foldingRange . ,(when lsp-enable-folding
+                                                 `((dynamicRegistration . t)
+                                                   ,@(when lsp-folding-range-limit
+                                                       `((rangeLimit . ,lsp-folding-range-limit)))
+                                                   ,@(when lsp-folding-line-folding-only
+                                                       `((lineFoldingOnly . t))))))
+                              (callHierarchy . ((dynamicRegistration . :json-false)))
+                              (publishDiagnostics . ((relatedInformation . t)
+                                                     (tagSupport . ((valueSet . [1 2])))
+                                                     (versionSupport . t))))
+                             ))
      (window . ((workDoneProgress . t))))
    custom-capabilities))
 
@@ -3453,6 +3464,8 @@ in that particular folder."
       (lsp--update-on-type-formatting-hook)
       (lsp--update-signature-help-hook)
 
+      (when (eq lsp-semantic-highlighting 'semantic-tokens)
+        (lsp--semantic-tokens-initialize-buffer))
       (add-hook 'post-command-hook #'lsp--post-command nil t)
       (when lsp-enable-xref
         (add-hook 'xref-backend-functions #'lsp--xref-backend nil t))
@@ -3493,6 +3506,10 @@ in that particular folder."
 
       (remove-hook 'lsp-on-idle-hook #'lsp--document-links t)
       (remove-hook 'lsp-on-idle-hook #'lsp--document-highlight t)
+
+      (when lsp--semantic-tokens-teardown
+        (funcall lsp--semantic-tokens-teardown)
+        (setq lsp--semantic-tokens-teardown nil))
 
       (lsp--remove-overlays 'lsp-sem-highlight)
       (lsp--remove-overlays 'lsp-highlight)
@@ -5541,8 +5558,135 @@ unless overridden by a more specific face association."
  Since the list is traversed in order, it should be sorted in order of decreasing
  specificity.")
 
+(defface lsp-face-semhl-comment
+  '((t (:inherit font-lock-comment-face)))
+  "Face used for comments."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-keyword
+  '((t (:inherit font-lock-keyword-face)))
+  "Face used for keywords."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-string
+  '((t (:inherit font-lock-string-face)))
+  "Face used for keywords."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-number
+  '((t (:inherit font-lock-constant-face)))
+  "Face used for numbers."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-regexp
+  '((t (:inherit font-lock-string-face :slant italic)))
+  "Face used for regexps."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-operator
+  '((t (:inherit font-lock-function-name-face)))
+  "Face used for operators."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-namespace
+  '((t (:inherit font-lock-keyword-face)))
+  "Face used for namespaces."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-type
+  '((t (:inherit font-lock-type-face)))
+  "Face used for types."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-type
+  '((t (:inherit font-lock-type-face)))
+  "Face used for types."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-struct
+  '((t (:inherit font-lock-type-face)))
+  "Face used for structs."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-class
+  '((t (:inherit font-lock-type-face)))
+  "Face used for classes."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-interface
+  '((t (:inherit font-lock-type-face)))
+  "Face used for interfaces."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-enum
+  '((t (:inherit font-lock-variable-name-face)))
+  "Face used for enums."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-type-parameter
+  '((t (:inherit font-lock-type-face)))
+  "Face used for type parameters."
+  :group 'lsp-faces)
+
+;; function face already defined, move here when support
+;; for theia highlighting gets removed
+(defface lsp-face-semhl-member
+  '((t (:inherit font-lock-variable-name-face)))
+  "Face used for members."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-property
+  '((t (:inherit font-lock-variable-name-face)))
+  "Face used for properties."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-macro
+  '((t (:inherit font-lock-preprocessor-face)))
+  "Face used for macros."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-variable
+  '((t (:inherit font-lock-variable-name-face)))
+  "Face used for variables."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-parameter
+  '((t (:inherit font-lock-variable-name-face)))
+  "Face used for parameters."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-label
+  '((t (:inherit font-lock-comment-face)))
+  "Face used for labels."
+  :group 'lsp-faces)
+
+;; TODO: support token modifiers
+
+(defvar lsp-semantic-token-faces
+  '(("comment" . lsp-face-semhl-comment)
+    ("keyword" . lsp-face-semhl-keyword)
+    ("string" . lsp-face-semhl-string)
+    ("number" . lsp-face-semhl-number)
+    ("regexp" . lsp-face-semhl-regexp)
+    ("operator" . lsp-face-semhl-operator)
+    ("namespace" . lsp-face-semhl-namespace)
+    ("type" . lsp-face-semhl-type)
+    ("struct" . lsp-face-semhl-struct)
+    ("class" . lsp-face-semhl-class)
+    ("interface" . lsp-face-semhl-interface)
+    ("enum" . lsp-face-semhl-enum)
+    ("typeParameter" . lsp-face-semhl-type-parameter)
+    ("function" . lsp-face-semhl-function)
+    ("member" . lsp-face-semhl-member)
+    ("property" . lsp-face-semhl-property)
+    ("macro" . lsp-face-semhl-macro)
+    ("variable" . lsp-face-semhl-variable)
+    ("parameter" . lsp-face-semhl-parameter)
+    ("label" . lsp-face-semhl-label))
+  "TODO: docstring")
+
 (defvar-local lsp--semantic-highlighting-current-region nil
-"Denotes the region `(min . max)' most recently fontified via the
+  "Denotes the region `(min . max)' most recently fontified via the
  deferred semantic-highlighting mechanism.
 
 Further fontification calls will be skipped unless new semantic
@@ -5702,6 +5846,113 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
                   (lsp--apply-semantic-highlighting
                    (lsp--workspace-semantic-highlighting-faces workspace) lines))))
           (lsp--semantic-highlighting-add-to-cache lines))))))
+
+(defun lsp--semantic-tokens-initialize-workspace (workspace)
+  (cl-assert workspace)
+  (let* ((capabilities (lsp--workspace-server-capabilities workspace))
+         (maybe-token-capabilities (gethash "semanticTokensProvider" capabilities))
+         (faces (if (not maybe-token-capabilities)
+                    (progn
+                      (lsp-warn "This server does not support semanticToken-based semantic highlighting.
+ If it supports theia-based highlighting, consider changing `lsp-semantic-highlighting' to `:deferred'") [])
+                  (let* ((legend (gethash "legend" maybe-token-capabilities))
+                         (token-types (gethash "tokenTypes" legend)))
+                    (apply 'vector
+                           (mapcar (lambda (token) (cdr (assoc token lsp-semantic-token-faces)))
+                                   token-types))))))
+    (setf (lsp--workspace-semantic-highlighting-faces workspace) faces)))
+
+(defun lsp--semantic-tokens-initialize-buffer ()
+  (let* ((old-extend-region-functions font-lock-extend-region-functions)
+         ;; make sure font-lock always fontifies entire lines (TODO: do we also have
+         ;; to change some jit-lock-...-region functions/variables?)
+         (new-extend-region-functions
+          (if (memq 'font-lock-extend-region-wholelines old-extend-region-functions)
+              old-extend-region-functions
+            (cons 'font-lock-extend-region-wholelines old-extend-region-functions))))
+    (setq font-lock-extend-region-functions new-extend-region-functions)
+    (advice-add 'font-lock-fontify-region :around #'lsp--semantic-tokens-fontify)
+    (add-hook 'lsp-on-change-hook #'lsp--semantic-tokens-request nil t)
+    (setq lsp--semantic-tokens-teardown
+          (lambda ()
+            (setq font-lock-extend-region-functions old-extend-region-functions)
+            (advice-remove 'font-lock-fontify-region #'lsp--semantic-tokens-fontify)))))
+
+(defvar-local lsp--semantic-tokens-cache nil)
+
+(defvar-local lsp--semantic-tokens-teardown nil)
+
+(defun lsp--semantic-tokens-fontify (old-fontify-region beg end)
+  ;; TODO: support multiple language servers per buffer?
+  (let ((faces (seq-some #'lsp--workspace-semantic-highlighting-faces lsp--buffer-workspaces)))
+    (if (or (eq nil lsp--semantic-tokens-cache)
+            (eq nil faces)
+            ;; delay fontification until we have fresh tokens
+            (not (= lsp--cur-version (gethash "documentVersion" lsp--semantic-tokens-cache))))
+        '(jit-lock-bounds 0 . 0)
+      (funcall old-fontify-region beg end)
+      (let* ((inhibit-field-text-motion t)
+             (max-old-chars 10000)
+             (clear-all nil)
+             (data (gethash "data" lsp--semantic-tokens-cache))
+             (i0 0)
+             (i-max (1- (length data)))
+             (current-line 1)
+             (line-delta)
+             (column 0)
+             (face)
+             (ov)
+             (line-start-pos)
+             (final-beg)
+             (final-end)
+             (line-min)
+             (line-max-inclusive))
+        (save-mark-and-excursion
+          (save-restriction
+            (widen)
+            (goto-char beg)
+            (goto-char (line-beginning-position))
+            (setq final-beg (point))
+            (setq line-min (line-number-at-pos))
+            (with-silent-modifications
+              (goto-char end)
+              (goto-char (line-end-position))
+              (setq final-end (point))
+              (setq line-max-inclusive (line-number-at-pos))
+              (forward-line (- line-min line-max-inclusive))
+              (let ((skip-lines (- line-min current-line)))
+                (while (and (< (aref data i0) skip-lines) (<= i0 i-max))
+                  (setq skip-lines (- skip-lines (aref data i0)))
+                  (setq i0 (+ i0 5)))
+                (setq current-line (- line-min skip-lines)))
+              (forward-line (- current-line line-min))
+              (setq line-start-pos (point))
+              (cl-loop
+               for i from i0 to i-max by 5 do
+               (setq line-delta (aref data i))
+               (unless (= line-delta 0)
+                 (forward-line line-delta)
+                 (setq line-start-pos (point))
+                 (setq column 0)
+                 (setq current-line (+ current-line line-delta)))
+               (setq column (+ column (aref data (1+ i))))
+               (setq face (aref faces (aref data (+ i 3))))
+               (when face
+                 (put-text-property (+ line-start-pos column)
+                                    (+ line-start-pos (+ column (aref data (+ i 2)))) 'face face))
+               when (> current-line line-max-inclusive) return nil))))))))
+
+(defun lsp--semantic-tokens-request ()
+  (let ((cur-version lsp--cur-version))
+    (lsp-request-async
+     "textDocument/semanticTokens"
+     `(:textDocument ,(lsp--text-document-identifier))
+     (lambda (response)
+       (setq lsp--semantic-tokens-cache response)
+       (puthash "documentVersion" cur-version lsp--semantic-tokens-cache)
+       (font-lock-flush))
+     :mode 'tick
+     :cancel-token :semantic-tokens)))
 
 (defconst lsp--symbol-kind
   '((1 . "File")
@@ -6918,6 +7169,9 @@ SESSION is the active session."
 
          (setf (lsp--workspace-server-capabilities workspace) (gethash "capabilities" response)
                (lsp--workspace-status workspace) 'initialized)
+
+         (when (eq lsp-semantic-highlighting 'semantic-tokens)
+           (lsp--semantic-tokens-initialize-workspace workspace))
 
          (with-lsp-workspace workspace
            (lsp-notify "initialized" lsp--empty-ht))
