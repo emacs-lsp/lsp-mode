@@ -275,6 +275,13 @@ links, and so on. For finer granularity you may use `lsp-enable-*' properties."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-auto-configure-company-backends t
+  "When auto-configuring `lsp-mode', 
+  `company-lsp' is pushed at the top of the `company-backends'.
+  If that is not desirable, set this variable to nil"
+  :group 'lsp-mode
+  :type 'boolean)
+
 (defcustom lsp-disabled-clients nil
   "A list of disabled/blacklisted clients.
 Each entry in the list can be either:
@@ -6522,7 +6529,8 @@ returns the command to execute."
          (not lsp-prefer-capf))
     (progn
       (company-mode 1)
-      (add-to-list 'company-backends 'company-lsp)
+      (when lsp-auto-configure-company-backends
+        (add-to-list 'company-backends 'company-lsp))
       (setq-local company-backends (remove 'company-capf company-backends))))
 
    ((and (fboundp 'company-mode))
