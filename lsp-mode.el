@@ -3464,8 +3464,9 @@ in that particular folder."
       (lsp--update-on-type-formatting-hook)
       (lsp--update-signature-help-hook)
 
-      (when (eq lsp-semantic-highlighting 'semantic-tokens)
-        (lsp--semantic-tokens-initialize-buffer))
+      (when (and (eq lsp-semantic-highlighting 'semantic-tokens)
+                 (lsp-feature? "textDocument/semanticTokensProvider"))
+              (lsp--semantic-tokens-initialize-buffer))
       (add-hook 'post-command-hook #'lsp--post-command nil t)
       (when lsp-enable-xref
         (add-hook 'xref-backend-functions #'lsp--xref-backend nil t))
@@ -5878,6 +5879,7 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
     (setq font-lock-extend-region-functions new-extend-region-functions)
     (add-function :around (local 'font-lock-fontify-region-function) #'lsp--semantic-tokens-fontify)
     (add-hook 'lsp-on-change-hook #'lsp--semantic-tokens-request nil t)
+    (lsp--semantic-tokens-request)
     (setq lsp--semantic-tokens-teardown
           (lambda ()
             (setq font-lock-extend-region-functions old-extend-region-functions)
