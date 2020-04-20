@@ -61,7 +61,10 @@
    Client for [[https://github.com/Microsoft/language-server-protocol/][Language Server Protocol]] (v3.14). [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] aims to provide IDE-like experience by providing optional integration with the most popular Emacs packages like ~company~, ~flycheck~ and ~projectile~.
    - Non-blocking asynchronous calls
    - Real-time Diagnostics/linting via [[https://github.com/flycheck/flycheck][flycheck]] (recommended) or ~flymake~ when Emacs > 26 (requires flymake>=1.0.5)
-   - Code completion - ~completion-at-point~ or external [[https://github.com/tigersoldier/company-lsp][company-lsp]]. If you want to use experimental ~company-capf~ integration you may force it by setting ~company-capf~ to ~t~.
+   - Code completion - ~completion-at-point~ or external
+     [[https://github.com/tigersoldier/company-lsp][company-lsp]] (note that [[https://github.com/tigersoldier/company-lsp][company-lsp]] is no longer supported and it is recommended to use builtin ~company-capf~). If you want
+     to use experimental ~company-capf~ integration you may force it by setting
+     ~company-capf~ to ~t~.
    - Hovers - using [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]]
    - Code actions - using ~lsp-execute-code-action~ or [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] sideline.
    - Code outline - using builtin [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html][imenu]] or ~helm-imenu~
@@ -88,7 +91,7 @@
      You could go minimal and use ~lsp-mode~ as it is without external packages with the built-in ~flymake~ and ~completion-at-point~ or you could install the following extensions for better experience:
      - install [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] for fancy sideline, popup documentation, VScode-like peek UI, etc.
      - install [[https://github.com/flycheck/flycheck][flycheck]] if you prefer the more popular ~flycheck~ over renewed ~flymake~. ~lsp-mode~ will automatically pick it up.
-     - install [[https://github.com/tigersoldier/company-lsp][company-lsp]] if you want to use ~company-mode~ for completion(optional, if not installed ~lsp-mode~ will integrate with ~company~ via ~company-capf~).
+     - install [[https://github.com/company-mode/company-mode][company-mode]] for completion popups.
      - install [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]] for various three based UI controls (symbols, errors overview, call hierarchy, etc.)
      - install [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] provides on type completion afternative of =xref-apropos= using =helm=.
      - install [[https://github.com/emacs-lsp/lsp-ivy][lsp-ivy]] provides on type completion afternative of =xref-apropos= using =ivy=.
@@ -123,7 +126,6 @@
 
        ;; optionally
        (use-package lsp-ui :commands lsp-ui-mode)
-       (use-package company-lsp :commands company-lsp)
        ;; if you are helm user
        (use-package helm-lsp :commands helm-lsp-workspace-symbol)
        ;; if you are ivy user
@@ -392,7 +394,7 @@
    - ~lsp-signature-render-documentation~ - Include signature documentation in signature help.
    - ~lsp-enable-text-document-color~ - Enable ~textDocument/documentColor~ when server supports it.
 ** Screenshots
-   - RUST Completion with company-lsp
+   - RUST Completion
      [[file:examples/completion.png]]
    - Typescript references using lsp-ui
      [[file:examples/references.png]]
