@@ -1300,12 +1300,17 @@ On other systems, returns path without change."
   "Implemented only to make `company-lsp' happy.
 DELETE when `lsp-mode.el' is deleted.")
 
+(defconst lsp--url-path-allowed-chars
+  (url--allowed-chars (append '(?/) url-unreserved-chars))
+  "`url-unreserved-chars' with additional delim ?/.
+This set of allowed chars is enough for hexifying local file paths.")
+
 (defun lsp--path-to-uri-1 (path)
   (concat lsp--uri-file-prefix
           (--> path
                (expand-file-name it)
                (or (file-remote-p it 'localname t) it)
-               (url-hexify-string it url-path-allowed-chars))))
+               (url-hexify-string it lsp--url-path-allowed-chars))))
 
 (defun lsp--path-to-uri (path)
   "Convert PATH to a uri."
