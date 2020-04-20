@@ -1516,19 +1516,21 @@ WORKSPACE is the workspace that contains the progress token."
    (let* ((token (gethash "token" params))
           (value (gethash "value" params))
           (kind (gethash "kind" value)))
-     (lsp-log "progress: %s-%S" token kind)
      (pcase kind
 
        ("begin"
         (let* ((message (gethash "title" value))
-               (cur (gethash "percentage" value 0))
+               (cur (gethash "percentage" value nil))
                (reporter
-                (make-progress-reporter message 0 100 cur)))
+                (if cur
+                    (make-progress-reporter message 0 100 cur)
+                  ;; Spinner only
+                  (make-progress-reporter message nil nil))))
           (lsp-workspace-set-work-done-token token reporter workspace)))
 
        ("report"
         (let ((reporter (lsp-workspace-get-work-done-token token workspace)))
-          (progress-reporter-update reporter (gethash "percentage" value 0))))
+          (progress-reporter-update reporter (gethash "percentage" value nil))))
 
        ("end"
         (let ((reporter (lsp-workspace-get-work-done-token token workspace)))
