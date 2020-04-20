@@ -742,6 +742,7 @@ directory")
     ("textDocument/rangeFormatting" :capability "documentRangeFormattingProvider")
     ("textDocument/references" :capability "referencesProvider")
     ("textDocument/selectionRange" :capability "selectionRangeProvider")
+    ("textDocument/semanticTokens" :capability "semanticTokensProvider")
     ("textDocument/signatureHelp" :capability "signatureHelpProvider")
     ("textDocument/typeDefinition" :capability "typeDefinitionProvider")
     ("workspace/executeCommand" :capability "executeCommandProvider")
@@ -3465,7 +3466,7 @@ in that particular folder."
       (lsp--update-signature-help-hook)
 
       (when (and (eq lsp-semantic-highlighting 'semantic-tokens)
-                 (lsp-feature? "textDocument/semanticTokensProvider"))
+                 (lsp-feature? "textDocument/semanticTokens"))
               (lsp--semantic-tokens-initialize-buffer))
       (add-hook 'post-command-hook #'lsp--post-command nil t)
       (when lsp-enable-xref
@@ -5850,25 +5851,23 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
 
 (defun lsp--semantic-tokens-initialize-workspace (workspace)
   (cl-assert workspace)
-  (let* ((capabilities (lsp--workspace-server-capabilities workspace))
-         (maybe-token-capabilities (gethash "semanticTokensProvider" capabilities))
-         (faces (if (not maybe-token-capabilities)
-                    (progn
-                      (lsp-warn "This server does not support semanticToken-based semantic highlighting.
- If it supports theia-based highlighting, consider changing `lsp-semantic-highlighting' to `:deferred'") [])
-                  (let* ((legend (gethash "legend" maybe-token-capabilities))
-                         (token-types (gethash "tokenTypes" legend)))
-                    (apply 'vector
-                           (mapcar (lambda (token) (cdr (assoc token lsp-semantic-token-faces)))
-                                   token-types))))))
-    (setf (lsp--workspace-semantic-highlighting-faces workspace) faces)))
-
+  (let* ((token-capabilities (gethash
+                              "semanticTokensProvider"
+                              (lsp--workspace-server-capabilities workspace)))
+         (legend (gethash "legend" token-capabilities))
+         (token-types (gethash "tokenTypes" legend)))
+    (setf (lsp--workspace-semantic-highlighting-faces workspace)
+          (apply 'vector
+                 (mapcar (lambda (token)
+                           (cdr (assoc token lsp-semantic-token-faces)))
+                         token-types)))))
 
 (defvar-local lsp--semantic-tokens-cache nil)
 
 (defvar-local lsp--semantic-tokens-teardown nil)
 
 (defun lsp--semantic-tokens-initialize-buffer ()
+  (message "semantic-tokens-initialize-buffer")
   (let* ((old-extend-region-functions font-lock-extend-region-functions)
          ;; make sure font-lock always fontifies entire lines (TODO: do we also have
          ;; to change some jit-lock-...-region functions/variables?)
@@ -7175,8 +7174,8 @@ SESSION is the active session."
          (setf (lsp--workspace-server-capabilities workspace) (gethash "capabilities" response)
                (lsp--workspace-status workspace) 'initialized)
 
-         (when (eq lsp-semantic-highlighting 'semantic-tokens)
-           (lsp--semantic-tokens-initialize-workspace workspace))
+         (mapc #'lsp--semantic-tokens-initialize-workspace
+               (lsp--find-workspaces-for "textDocument/semanticTokens"))
 
          (with-lsp-workspace workspace
            (lsp-notify "initialized" lsp--empty-ht))
