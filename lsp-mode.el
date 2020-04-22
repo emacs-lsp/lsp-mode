@@ -1530,12 +1530,14 @@ WORKSPACE is the workspace that contains the progress token."
 
        ("report"
         (let ((reporter (lsp-workspace-get-work-done-token token workspace)))
-          (progress-reporter-update reporter (gethash "percentage" value nil))))
+          (when reporter
+            (progress-reporter-update reporter (gethash "percentage" value nil)))))
 
        ("end"
         (let ((reporter (lsp-workspace-get-work-done-token token workspace)))
-          (progress-reporter-done reporter)
-          (lsp-workspace-rem-work-done-token token workspace))))))
+          (when reporter
+            (progn (progress-reporter-done reporter)
+                   (lsp-workspace-rem-work-done-token token workspace))))))))
 
 (defun lsp-diagnostics (&optional current-workspace?)
   "Return the diagnostics from all workspaces."
