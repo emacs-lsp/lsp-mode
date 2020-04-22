@@ -1516,60 +1516,26 @@ WORKSPACE is the workspace that contains the progress token."
    (let* ((token (gethash "token" params))
           (value (gethash "value" params))
           (kind (gethash "kind" value)))
-     (lsp-log "progress: %s-%S" token kind)
      (pcase kind
 
        ("begin"
         (let* ((message (gethash "title" value))
-               (cur (gethash "percentage" value 0))
+               (cur (gethash "percentage" value nil))
                (reporter
-                (make-progress-reporter message 0 100 cur)))
+                (if cur
+                    (make-progress-reporter message 0 100 cur)
+                  ;; Spinner only
+                  (make-progress-reporter message nil nil))))
           (lsp-workspace-set-work-done-token token reporter workspace)))
 
        ("report"
         (let ((reporter (lsp-workspace-get-work-done-token token workspace)))
-          (progress-reporter-update reporter (gethash "percentage" value 0))))
+          (progress-reporter-update reporter (gethash "percentage" value nil))))
 
        ("end"
         (let ((reporter (lsp-workspace-get-work-done-token token workspace)))
           (progress-reporter-done reporter)
           (lsp-workspace-rem-work-done-token token workspace))))))
-
-;; [Trace - 09:56:09 ] Received notification '$/progress'.
-;; Params: {
-;;   "value": {
-;;     "title": "Indexing OTP",
-;;     "percentage": 0,
-;;     "message": "0 / 48",
-;;     "kind": "begin",
-;;     "cancellable": null
-;;   },
-;;   "token": "42ad4130-5233-4c4d-80d0-affd5bb91b8e"
-;; }
-
-;; [Trace - 09:56:09 ] Received notification '$/progress'.
-;; Params: {
-;;   "value": {
-;;     "percentage": 0,
-;;     "message": "0 / 3",
-;;     "kind": "report",
-;;     "cancellable": null
-;;   },
-;;   "token": "316247a1-b8c5-4997-a301-a31c79435fa7"
-;; }
-
-
-;; [Trace - 09:56:09 ] Received notification '$/progress'.
-;; Params: {
-;;   "value": {
-;;     "message": "0 / 0",
-;;     "kind": "end"
-;;   },
-;;   "token": "fb173466-811b-4555-976c-4aedd806babd"
-;; }
-
-
-
 
 (defun lsp-diagnostics (&optional current-workspace?)
   "Return the diagnostics from all workspaces."
