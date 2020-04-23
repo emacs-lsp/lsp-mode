@@ -4715,9 +4715,11 @@ CONTENTS  - MarkedString | MarkedString[] | MarkupContent
 RENDER-ALL - nil if only the signature should be rendered."
   (cond
    ((and (hash-table-p contents) (gethash "kind" contents))
-    ;; MarkupContent, deprecated by LSP but actually very flexible.
-    ;; It tends to be long and is not suitable in echo area.
-    (if render-all (lsp--render-element contents) ""))
+    ;; MarkupContent.
+    ;; It tends to be long and is not suitable to display fully in the echo area.
+    ;; Just display the first line which is typically the signature.
+    (let ((rendered (lsp--render-element contents)))
+      (if render-all rendered (car (s-lines rendered)))))
    ((and (stringp contents) (not (string-match-p "\n" contents)))
     ;; If the contents is a single string containing a single line,
     ;; render it always.
