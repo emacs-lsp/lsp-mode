@@ -4719,7 +4719,7 @@ RENDER-ALL - nil if only the signature should be rendered."
     ;; It tends to be long and is not suitable to display fully in the echo area.
     ;; Just display the first line which is typically the signature.
     (let ((rendered (lsp--render-element contents)))
-      (if render-all rendered (car (split-string rendered "\n")))))
+      (if render-all rendered (car (s-lines rendered)))))
    ((and (stringp contents) (not (string-match-p "\n" contents)))
     ;; If the contents is a single string containing a single line,
     ;; render it always.
