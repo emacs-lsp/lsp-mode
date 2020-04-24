@@ -4096,10 +4096,10 @@ if it's closing the last buffer in the workspace."
       (when (lsp--send-will-save-p)
         (lsp-notify "textDocument/willSave" params))
       (when (and (lsp--send-will-save-wait-until-p) lsp-before-save-edits)
-        (lsp-request-async "textDocument/willSaveWaitUntil"
-                           params
-                           #'lsp--apply-text-edits
-                           :mode 'tick)))))
+        (let ((lsp-response-timeout 0.1))
+          (lsp--apply-text-edits
+           (lsp-request "textDocument/willSaveWaitUntil"
+                        params)))))))
 
 (defun lsp--on-auto-save ()
   "Handler for auto-save."
