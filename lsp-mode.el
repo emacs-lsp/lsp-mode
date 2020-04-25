@@ -4659,7 +4659,7 @@ Stolen from `org-copy-visible'."
 
     (lsp--setup-markdown major-mode)))
 
-(defvar lsp--display-image-alist
+(defvar lsp--display-inline-image-alist
   '((lsp--render-markdown
      (:regexp
       "!\\[.*?\\](data:image/png;base64,\\([A-Za-z0-9+/\n]+?=*?\\)\\(|[^)]+\\)?)"
@@ -4689,10 +4689,10 @@ Inaddition, Each can have property:
                  If omitted, interpreted as index 0.
 ")
 
-(defun lsp--display-image (mode)
+(defun lsp--display-inline-image (mode)
   "Add image property if available."
-  (let ((plist-list (cdr (assq mode lsp--display-image-alist))))
     (when (display-images-p)
+  (let ((plist-list (cdr (assq mode lsp--display-inline-image-alist))))
       (cl-loop
        for plist in plist-list
        with regexp with replaced-index
@@ -4720,7 +4720,7 @@ Inaddition, Each can have property:
         (delay-mode-hooks (funcall mode))
         (cl-flet ((window-body-width () lsp-window-body-width))
           (font-lock-ensure)
-          (lsp--display-image mode))
+          (lsp--display-inline-image mode))
         (lsp--buffer-string-visible))
     (error str)))
 
