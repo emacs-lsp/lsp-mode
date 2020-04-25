@@ -4689,10 +4689,16 @@ Inaddition, Each can have property:
                  If omitted, interpreted as index 0.
 ")
 
+(defcustom lsp-display-inline-image t
+  "Showing inline image or not.
+If nil, inline image are displayed as link."
+  :group 'lsp-mode
+  :type 'boolean)
+
 (defun lsp--display-inline-image (mode)
   "Add image property if available."
-    (when (display-images-p)
   (let ((plist-list (cdr (assq mode lsp--display-inline-image-alist))))
+    (when (and (display-images-p) lsp-display-inline-image)
       (cl-loop
        for plist in plist-list
        with regexp with replaced-index
