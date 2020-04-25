@@ -7685,12 +7685,14 @@ g. `error', `warning') and list of LSP TAGS."
                (category (--doto (intern (format "lsp-%s-category" name))
                            (setf (get it 'face) face
                                  (get it 'priority) 100)))
-               (new-level (intern name)))
+               (new-level (intern name))
+	       (bitmap (or (get flycheck-level 'flycheck-fringe-bitmaps)
+			   (get flycheck-level 'flycheck-fringe-bitmap-double-arrow))))
           (flycheck-define-error-level new-level
             :severity (get flycheck-level 'flycheck-error-severity)
             :compilation-level (get flycheck-level 'flycheck-compilation-level)
             :overlay-category category
-            :fringe-bitmap (get flycheck-level 'flycheck-fringe-bitmap-double-arrow)
+            :fringe-bitmap bitmap
             :fringe-face (get flycheck-level 'flycheck-fringe-face)
             :error-list-face face)
           new-level))))
