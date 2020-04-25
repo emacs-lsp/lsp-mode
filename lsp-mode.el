@@ -4659,6 +4659,59 @@ Stolen from `org-copy-visible'."
 
     (lsp--setup-markdown major-mode)))
 
+(defvar lsp--display-image-alist
+  '((lsp--render-markdown
+     (:regexp
+      "!\\[.*?\\](data:image/png;base64,\\([A-Za-z0-9+/\n]+?=*?\\)\\(|[^)]+\\)?)"
+      :sexp
+      (create-image
+       (base64-decode-string
+        (buffer-substring-no-properties (match-beginning 1) (match-end 1)))
+       nil t))))
+  "Replaced string regexp and function returning image.
+Each element should be:
+(MODE . (PROPERTY-LIST...))
+MODE (car) is function which is defined in `lsp-language-id-configuration'.
+Cdr should be list of PROPERTY-LIST.
+
+Each PROPERTY-LIST should have properties:
+:regexp  Regexp which determines what string is relpaced to image.
+         You should also get infomation of image, by parenthesis constructs.
+         By deafult, all matched string is replaced to image, but you can change
+         index of replaced string by keyword :replaced-index.
+
+:sexp    Return image when evaluated. You can use infomation of regexp
+         by using (match-beggining N), (match-end N) or (match-substring N).
+
+Inaddition, Each can have property:
+:replaced-index  Determine index which is used to replace regexp to image.
+                 The value means first argument of `match-beggining' and `match-end'.
+                 If omitted, interpreted as index 0.
+")
+
+(defun lsp--display-image (mode)
+  "Add image property if available."
+  (let ((plist-list (cdr (assq mode lsp--display-image-alist))))
+    (when (display-images-p)
+      (cl-loop
+       for plist in plist-list
+       with regexp with replaced-index
+       do
+       (setq regexp (plist-get plist :regexp))
+       (setq replaced-index (or (plist-get plist :replaced-index) 0))
+
+       (font-lock-remove-keywords nil (list regexp replaced-index))
+       (let ((inhibit-read-only t))
+         (save-excursion
+           (goto-char (point-min))
+           (while (re-search-forward regexp nil t)
+             (set-text-properties
+              (match-beginning replaced-index) (match-end replaced-index)
+              nil)
+             (add-text-properties
+              (match-beginning replaced-index) (match-end replaced-index)
+              `(display ,(eval (plist-get plist :sexp)))))))))))
+
 (defun lsp--fontlock-with-mode (str mode)
   "Fontlock STR with MODE."
   (condition-case nil
@@ -4666,7 +4719,8 @@ Stolen from `org-copy-visible'."
         (insert str)
         (delay-mode-hooks (funcall mode))
         (cl-flet ((window-body-width () lsp-window-body-width))
-          (font-lock-ensure))
+          (font-lock-ensure)
+          (lsp--display-image mode))
         (lsp--buffer-string-visible))
     (error str)))
 
