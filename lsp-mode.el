@@ -4612,6 +4612,7 @@ MODE is the mode used in the parent frame."
   (push '("&lt;" . ?<) prettify-symbols-alist)
   (push '("&gt;" . ?>) prettify-symbols-alist)
   (push '("&amp;" . ?&) prettify-symbols-alist)
+  (push '("&nbsp;" . ? ) prettify-symbols-alist)
   (setq prettify-symbols-compose-predicate
         (lambda (_start _end _match) t))
   (prettify-symbols-mode 1))
@@ -4646,7 +4647,7 @@ Stolen from `org-copy-visible'."
 
     (goto-char (point-min))
     (while (re-search-forward
-            (rx (and "\\" (group (or "\\" "`" "*" "_"
+            (rx (and "\\" (group (or "\\" "`" "*" "_" ":" "/"
                                      "{" "}" "[" "]" "(" ")"
                                      "#" "+" "-" "." "!" "|"))))
             nil t)
