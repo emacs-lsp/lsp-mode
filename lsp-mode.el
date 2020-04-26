@@ -6895,7 +6895,7 @@ nil."
 
    ;; activation function or major-mode match.
    (if-let (activation-fn (lsp--client-activation-fn client))
-       (funcall activation-fn buffer-file-name major-mode)
+       (funcall activation-fn (buffer-file-name) major-mode)
      (-contains? (lsp--client-major-modes client) major-mode))
 
    ;; check whether it is enabled if `lsp-enabled-clients' is not null
