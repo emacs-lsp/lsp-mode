@@ -4662,7 +4662,7 @@ Stolen from `org-copy-visible'."
 (defvar lsp--display-inline-image-alist
   '((lsp--render-markdown
      (:regexp
-      "!\\[.*?\\](data:image/png;base64,\\([A-Za-z0-9+/\n]+?=*?\\)\\(|[^)]+\\)?)"
+      "!\\[.*?\\](data:image/[a-zA-Z]+;base64,\\([A-Za-z0-9+/\n]+?=*?\\)\\(|[^)]+\\)?)"
       :sexp
       (create-image
        (base64-decode-string
