@@ -23,7 +23,7 @@
       - [[#vanilla-emacs][Vanilla Emacs]]
       - [[#spacemacs][Spacemacs]]
       - [[#use-package][use-package]]
-      - [[#recomended-settings-for-lsp-mode-related-packages][Recomended settings for lsp-mode related packages]]
+      - [[#recomended-settings-for-lsp-mode-related-packages][Recommended settings for lsp-mode related packages]]
       - [[#formatting][Formatting]]
       - [[#docker][Docker]]
     - [[#performance][Performance]]
@@ -82,7 +82,7 @@
     M-x ~package-install~ [RET] ~lsp-mode~ [RET]
 ** Configuration
 *** Install language server
-    Check the table bellow with the list of supported servers and the corresponding instructions on how to install the server.
+    Check the table below with the list of supported servers and the corresponding instructions on how to install the server.
 *** Configure lsp-mode
 **** Vanilla Emacs
      You could go minimal and use ~lsp-mode~ as it is without external packages with the built-in ~flymake~ and ~completion-at-point~ or you could install the following extensions for better experience:
@@ -147,7 +147,7 @@
          :hook (XXX-mode . lsp-deferred)
          :commands (lsp lsp-deferred))
      #+END_SRC
-**** Recomended settings for lsp-mode related packages
+**** Recommended settings for lsp-mode related packages
 ***** company
      #+BEGIN_SRC emacs-lisp
              (setq company-minimum-prefix-length 1

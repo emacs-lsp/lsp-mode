@@ -75,7 +75,7 @@
   - =imenu= support is now handled asynchronously (Thanks to Dario Gjorgjevski).
   - Added option =:none= for =lsp-prefer-flymake=, which disabled both Flymake and
     Flycheck support.
-  - Changed =flymake= to report the errors immediately after they arive instead
+  - Changed =flymake= to report the errors immediately after they arrive instead
     of waiting =flymake= to call =lsp-mode=.
   - Add debounce when server does not support incremental updates.
   - Add hook =lsp-after-uninitialized-hook=, which stores the list of functions

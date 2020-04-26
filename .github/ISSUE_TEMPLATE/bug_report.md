@@ -38,7 +38,7 @@ Which os do you use?
 **Error callstack**
 If there is an error please reproduce the issue with `toggle-debug-on-error` and after setting `lsp-print-io` to t, and then include the callstack and attach the content of `*lsp-log*` buffer and the content of the server log(use `lsp-workspace-show-log`)
 
-If `emacs` hangs plase do `M-x` `toggle-debug-on-quit` and then do `C-g` when emacs hangs and include the callstack as part of the issue report.
+If `emacs` hangs please do `M-x` `toggle-debug-on-quit` and then do `C-g` when emacs hangs and include the callstack as part of the issue report.
 
 ``` emacs-lisp
 (setq lsp-print-io t)
