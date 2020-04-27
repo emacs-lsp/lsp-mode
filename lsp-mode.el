@@ -3928,7 +3928,7 @@ Added to `after-change-functions'."
   :type 'hook
   :group 'lsp-mode)
 
-(defcustom lsp-idle-delay 0.200
+(defcustom lsp-idle-delay 0.500
   "Debounce interval for `after-change-functions'. "
   :type 'number
   :group 'lsp-mode)
