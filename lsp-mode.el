@@ -6744,6 +6744,12 @@ SESSION is the active session."
 
 ;; download server
 
+(defcustom lsp-server-allow-automatic-install t
+  "Whether to allow automatic install of a language server when
+one is not found."
+  :group 'lsp
+  :type 'boolean)
+
 (defcustom lsp-server-install-dir (expand-file-name
                                    (locate-user-emacs-file (f-join ".cache" "lsp")))
   "Directory in which the servers will be installed."
@@ -7547,9 +7553,10 @@ The server(s) will be started in the buffer when it has finished."
                   (cl-pushnew (current-buffer) (lsp--client-buffers client)))
                 clients))
        ;; look for servers to install
-       ((setq clients (lsp--filter-clients (-andfn #'lsp--matching-clients?
-                                                   #'lsp--client-download-server-fn
-                                                   (-not #'lsp--client-download-in-progress?))))
+       ((and lsp-server-allow-automatic-install
+             (setq clients (lsp--filter-clients (-andfn #'lsp--matching-clients?
+                                                        #'lsp--client-download-server-fn
+                                                        (-not #'lsp--client-download-in-progress?)))))
         (let ((client (lsp--completing-read
                        (concat "Unable to find installed server supporting this file. "
                                "The following servers could be installed automatically: ")
@@ -7563,13 +7570,15 @@ The server(s) will be started in the buffer when it has finished."
        ((setq clients (unless matching-clients
                         (lsp--filter-clients (-andfn #'lsp--matching-clients?
                                                      (-not #'lsp--server-binary-present?)))))
-        (lsp--warn "The following servers support current file but do not have automatic installation configuration: %s
+        (if lsp-server-allow-automatic-install
+            (lsp--warn "The following servers support current file but do not have automatic installation configuration: %s
 You may find the installation instructions at https://github.com/emacs-lsp/lsp-mode/#supported-languages.
 (If you have already installed the server check *lsp-log*)."
-                   (mapconcat (lambda (client)
-                                (symbol-name (lsp--client-server-id client)))
-                              clients
-                              " ")))
+                       (mapconcat (lambda (client)
+                                    (symbol-name (lsp--client-server-id client)))
+                                  clients
+                                  " "))
+          (lsp--warn "LSP server is not present and automatic install of LSP servers has been disabled. Check the variable lsp-server-allow-automatic-install.")))
        ;; no matches
        ((-> #'lsp--matching-clients? lsp--filter-clients not)
         (lsp--error "There are no language servers supporting current mode %s registered with `lsp-mode'."
