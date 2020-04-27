@@ -4690,8 +4690,7 @@ In addition, each can have property:
 ")
 
 (defcustom lsp-display-inline-image t
-  "Showing inline image or not.
-If nil, inline image are displayed as link."
+  "Showing inline image or not."
   :group 'lsp-mode
   :type 'boolean)
 
