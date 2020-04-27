@@ -25,7 +25,7 @@ you can install `lsp-mode` using `M-x package-install RET lsp-mode RET`.
 === Installing language servers
 
 Because language servers exist outside of Emacs, they need to be
-installed seperately. A list of language servers is available at
+installed separately. A list of language servers is available at
 https://langserver.org/ and
 https://microsoft.github.io/language-server-protocol/implementors/servers/.
 Additionally, this documentation also provides a

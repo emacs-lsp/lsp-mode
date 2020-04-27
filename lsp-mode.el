@@ -176,7 +176,7 @@ the buffer when it becomes large."
  If `lsp-semantic-highlighting' is set to `:immediate', semantic
  highlighting information received from the language server is
  applied immediately, and in full. If `lsp-semantic-highlighting'
- is set to `:deferred', semantic higlighting will be performed
+ is set to `:deferred', semantic highlighting will be performed
  after an idle timeout, and only within a limit region
  around `(point)' (see
  `lsp-semantic-highlighting-context-lines'). Compared to
@@ -1582,7 +1582,7 @@ WORKSPACE is the workspace that contains the progress token."
   :package-version '(lsp-mode . "6.3"))
 
 (defun lsp--diagnostics-modeline-statistics ()
-  "Caculate diagnostics statistics based on `lsp-diagnostics-modeline-scope'"
+  "Calculate diagnostics statistics based on `lsp-diagnostics-modeline-scope'"
   (let ((diagnostics (cond
                       ((equal :file lsp-diagnostics-modeline-scope)
                        (lsp--get-buffer-diagnostics))
@@ -2911,7 +2911,7 @@ executed is still alive. `current' the callback will be executed
 only if the original buffer is still selected. `tick' - the
 callback will be executed only if the buffer was not modified.
 `unchanged' - the callback will be executed only if the buffer
-hasnt changed and if the buffer is not modified.
+hasn't changed and if the buffer is not modified.
 
 ERROR-CALLBACK will be called in case the request has failed.
 If NO-MERGE is non-nil, don't merge the results but return alist workspace->result.

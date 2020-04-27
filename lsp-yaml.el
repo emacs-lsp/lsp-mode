@@ -52,7 +52,7 @@
 
 (defcustom lsp-yaml-prose-wrap "preserve"
   "Options for prose-wrap.
-   Always: wrap prose if it exeeds the print width.
+   Always: wrap prose if it exceeds the print width.
    Never: never wrap the prose.
    Preserve: wrap prose as-is."
   :type '(choice
