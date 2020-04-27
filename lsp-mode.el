@@ -4683,7 +4683,7 @@ Each PROPERTY-LIST should have properties:
 :sexp    Return image when evaluated. You can use infomation of regexp
          by using (match-beggining N), (match-end N) or (match-substring N).
 
-Inaddition, Each can have property:
+In addition, each can have property:
 :replaced-index  Determine index which is used to replace regexp to image.
                  The value means first argument of `match-beggining' and `match-end'.
                  If omitted, interpreted as index 0.
