@@ -7722,7 +7722,7 @@ reporting or we are in save-mode and the buffer is not modified."
 (declare-function lsp-cpp-flycheck-clang-tidy-error-explainer "lsp-cpp")
 
 (defvar lsp-diagnostics-attributes
-  `((unnecessary :background "dim gray")
+  `((unnecessary :foreground "dim gray")
     (deprecated  :strike-through t) )
   "List containing (tag attributes) where tag is the LSP
   diagnostic tag and attributes is a `plist' containing face
