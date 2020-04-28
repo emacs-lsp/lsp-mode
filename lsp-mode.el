@@ -4808,7 +4808,9 @@ RENDER-ALL - nil if only the signature should be rendered."
          (-andfn 'hash-table-p
                  (-compose #'lsp-get-renderer (-partial 'gethash "language")))
          contents)))
-     "\n"))))
+     (if (bound-and-true-p page-break-lines-mode)
+         "\n\n"
+       "\n")))))
 
 
 
