@@ -2577,7 +2577,7 @@ active `major-mode', or for all major modes when ALL-MODES is t."
 
   ;; ‘diagnostics’ a hashmap with workspace diagnostics.
   (diagnostics (make-hash-table :test 'equal))
- 
+
   ;; contains all the workDone progress tokens that have been created
   ;; for the current workspace.
   (work-done-tokens (make-hash-table :test 'equal)))
@@ -2800,7 +2800,7 @@ If NO-WAIT is non-nil send the request as notification."
     (let* ((send-time (time-to-seconds (current-time)))
            ;; max time by which we must get a response
            (expected-time (+ send-time lsp-response-timeout))
-           resp-result resp-error)
+           resp-result resp-error done?)
       (unwind-protect
           (progn
             (lsp-request-async method params (lambda (res) (setf resp-result (or res :finished)))
@@ -2812,17 +2812,18 @@ If NO-WAIT is non-nil send the request as notification."
               (accept-process-output nil 0.001)
               (when (< expected-time (time-to-seconds (current-time)))
                 (error "Timeout while waiting for response. Method: %s." method)))
-
+            (setq done? t)
             (cond
              ((eq resp-result :finished) nil)
              (resp-result resp-result)
              ((ht? resp-error) (error (gethash "message" resp-error)))
              (t (error (gethash "message" (cl-first resp-error))))))
-        (lsp-cancel-request-by-token :sync-request)))))
+        (unless done?
+          (lsp-cancel-request-by-token :sync-request))))))
 
 (cl-defun lsp-request-while-no-input (method params)
   "Send request METHOD with PARAMS and waits until there is no input."
-  (let* (resp-result resp-error)
+  (let* (resp-result resp-error done?)
     (unwind-protect
         (progn
           (lsp-request-async
@@ -2836,13 +2837,15 @@ If NO-WAIT is non-nil send the request as notification."
           (while (and (not (or resp-error resp-result))
                       (not (input-pending-p)))
             (accept-process-output nil 0.001))
+          (setq done? t)
           (cond
            ((eq resp-result :finished) nil)
            (resp-result resp-result)
            ((ht? resp-error) (error (gethash "message" resp-error)))
            ((input-pending-p) nil)
            (t (error (gethash "message" (cl-first resp-error))))))
-      (lsp-cancel-request-by-token :sync-request))))
+      (unless done?
+        (lsp-cancel-request-by-token :sync-request)))))
 
 (defvar lsp--cancelable-requests (ht))
 
