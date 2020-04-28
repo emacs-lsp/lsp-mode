@@ -95,13 +95,20 @@ See instructions at https://marketplace.visualstudio.com/items?itemName=mads-har
   :group 'lsp-bash
   :package-version '(lsp-mode . "6.2"))
 
+(defcustom lsp-bash-glob-pattern nil
+  "Glob pattern used to find shell script files to parse."
+  :type 'string
+  :group 'lsp-bash
+  :package-version '(lsp-mode . "6.3"))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("bash-language-server" "start"))
                   :major-modes '(sh-mode)
                   :priority -1
                   :environment-fn (lambda ()
                                     '(("EXPLAINSHELL_ENDPOINT" . lsp-bash-explainshell-endpoint)
-                                      ("HIGHLIGHT_PARSING_ERRORS" . lsp-bash-highlight-parsing-errors)))
+                                      ("HIGHLIGHT_PARSING_ERRORS" . lsp-bash-highlight-parsing-errors)
+                                      ("GLOB_PATTERN" . lsp-bash-glob-pattern)))
                   :server-id 'bash-ls))
 
 ;;; Groovy
