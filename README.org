@@ -96,7 +96,7 @@
      - install [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] for fancy sideline, popup documentation, VScode-like peek UI, etc.
      - install [[https://github.com/flycheck/flycheck][flycheck]] if you prefer the more popular ~flycheck~ over renewed ~flymake~. ~lsp-mode~ will automatically pick it up.
      - install [[https://github.com/company-mode/company-mode][company-mode]] for completion popups.
-     - install [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]] for various three based UI controls (symbols, errors overview, call hierarchy, etc.)
+     - install [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]] for various tree based UI controls (symbols, errors overview, call hierarchy, etc.)
      - install [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] provides on type completion afternative of =xref-apropos= using =helm=.
      - install [[https://github.com/emacs-lsp/lsp-ivy][lsp-ivy]] provides on type completion afternative of =xref-apropos= using =ivy=.
      - install [[https://github.com/emacs-lsp/dap-mode][dap-mode]] if your language is supported by the debugger.
