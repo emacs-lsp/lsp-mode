@@ -4176,12 +4176,13 @@ and the position respectively."
 
 (defun lsp--looking-back-trigger-characters-p (trigger-characters)
   "Return trigger character if text before point matches any of the TRIGGER-CHARACTERS."
-  (seq-some
-   (lambda (trigger-char)
-     (and (equal (buffer-substring-no-properties (- (point) (length trigger-char)) (point))
-                 trigger-char)
-          trigger-char))
-   trigger-characters))
+  (unless (= (point) (point-at-bol))
+    (seq-some
+     (lambda (trigger-char)
+       (and (equal (buffer-substring-no-properties (- (point) (length trigger-char)) (point))
+                   trigger-char)
+            trigger-char))
+     trigger-characters)))
 
 (defvar lsp--capf-cache nil
   "Cached candidates for completion at point function.
