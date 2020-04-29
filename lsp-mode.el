@@ -4062,7 +4062,8 @@ Applies on type formatting."
     (->> (lsp-session)
          (lsp-session-folders)
          (--first (and (lsp--files-same-host it file-name)
-                       (f-ancestor-of? it file-name))))))
+                       (or (f-ancestor-of? it file-name)
+                           (string= it file-name)))))))
 
 (defun lsp-on-revert ()
   "Executed when a file is reverted.
