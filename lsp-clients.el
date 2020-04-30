@@ -508,11 +508,17 @@ finding the executable with `exec-path'."
   :group 'lsp-mode
   :link '(url-link "https://github.com/fwcd/KotlinLanguageServer"))
 
-(defcustom lsp-kotlin-language-server-path ""
-  "Optionally a custom path to the language server executable."
+(define-obsolete-variable-alias
+  'lsp-kotlin-language-server-path
+  'lsp-clients-kotlin-server-executable
+  "lsp-mode 6.4")
+
+(defcustom lsp-clients-kotlin-server-executable "kotlin-language-server"
+  "The kotlin-language-server executable to use.
+Leave as just the executable name to use the default behavior of finding the
+executable with `exec-path'."
   :type 'string
-  :group 'lsp-kotlin
-  :package-version '(lsp-mode . "6.1"))
+  :group 'lsp-kotlin)
 
 (defcustom lsp-kotlin-trace-server "off"
   "Traces the communication between VSCode and the Kotlin language server."
@@ -570,11 +576,11 @@ responsiveness at the cost of possible stability issues."
    ("kotlin.linting.debounceTime" lsp-kotlin-linting-debounce-time)
    ("kotlin.compiler.jvm.target" lsp-kotlin-compiler-jvm-target)
    ("kotlin.trace.server" lsp-kotlin-trace-server)
-   ("kotlin.languageServer.path" lsp-kotlin-language-server-path)))
+   ("kotlin.languageServer.path" lsp-clients-kotlin-server-executable)))
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection '("kotlin-language-server"))
+  :new-connection (lsp-stdio-connection lsp-clients-kotlin-server-executable)
   :major-modes '(kotlin-mode)
   :priority -1
   :server-id 'kotlin-ls
