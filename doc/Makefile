@@ -4,7 +4,7 @@ output-dir:
 	mkdir -p output
 
 doc-html: output-dir
-	asciidoctor --safe -b html5 -B ./src/ -D output -o lsp-mode.html ./src/lsp-mode.adoc
+	asciidoctor --safe -b html5 -B ./src/ -D output -o index.html ./src/lsp-mode.adoc
 	cp ./src/output/* ./output/
 
 doc-pdf: output-dir
