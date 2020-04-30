@@ -1,6 +1,0 @@
-[id="lsp-dart"]
-=== Dart support: `lsp-dart-analysis`
-`lsp-dart-analysis` provides support for Dart using the
-https://github.com/dart-lang/sdk/blob/master/pkg/analysis_server/tool/lsp_spec/README.md[Dart Analysis Server].
-
-include::lsp-dart-analysis-vars.adoc[]
