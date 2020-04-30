@@ -50,6 +50,7 @@
     - [[#registering-server][Registering server]]
     - [[#sections][Sections]]
   - [[#faq][FAQ]]
+  - [[#changelog][Changelog]]
   - [[#see-also][See also]]
 
 ** Why?
@@ -558,6 +559,8 @@
        #+end_src
    - I have disabled snippets and ~Rust Analyzer~ server inserts redundant ~$0~ when performing completion?
      - ~Rust Analyzer~ does not support disabling snippets - see https://github.com/rust-analyzer/rust-analyzer/issues/2518
+** Changelog
+   The changelog can be found [[https://github.com/emacs-lsp/lsp-mode/blob/master/doc/changelog.org][here]].
 ** See also
    - [[https://github.com/emacs-lsp/lsp-docker/][lsp-docker]] - provide docker image with preconfigured language servers with corresponding emacs configuration.
    - [[https://github.com/sebastiencs/company-box/][company-box]] - =company= frontend with icons.
