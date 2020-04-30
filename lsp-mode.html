@@ -492,7 +492,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#lsp-clangd">Clangd support: <code>lsp-clangd</code></a></li>
 <li><a href="#lsp-clojure">Clojure support: <code>lsp-clojure</code></a></li>
 <li><a href="#lsp-css">CSS support: <code>lsp-css</code></a></li>
-<li><a href="#lsp-dart">Dart support: <code>lsp-dart-analysis</code></a></li>
+<li><a href="#lsp-dart">Dart support: <code>lsp-dart</code></a></li>
 <li><a href="#lsp-elixir">Elixir support: <code>lsp-elixir</code></a></li>
 <li><a href="#lsp-erlang">Erlang support: <code>lsp-erlang</code></a></li>
 <li><a href="#lsp-flow">Flow support: <code>lsp-flow</code></a></li>
@@ -2607,7 +2607,7 @@ finding the executable with ‘exec-path’.</p>
 <div class="sect2">
 <h3 id="lsp-clojure">Clojure support: <code>lsp-clojure</code></h3>
 <div class="paragraph">
-<p><code>lsp-clangd</code> provides support for Clojure/ClojureScript
+<p><code>lsp-clojure</code> provides support for Clojure/ClojureScript
 <a href="https://github.com/snoe/clojure-lsp">clojure-lsp</a>.</p>
 </div>
 <div class="sect3">
@@ -3060,76 +3060,9 @@ server.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="lsp-dart">Dart support: <code>lsp-dart-analysis</code></h3>
+<h3 id="lsp-dart">Dart support: <code>lsp-dart</code></h3>
 <div class="paragraph">
-<p><code>lsp-dart-analysis</code> provides support for Dart using the
-<a href="https://github.com/dart-lang/sdk/blob/master/pkg/analysis_server/tool/lsp_spec/README.md">Dart Analysis Server</a>.</p>
-</div>
-<div class="sect3">
-<h4 id="lsp-dart-analysis-vars"><code>lsp-dart-analysis</code> settings</h4>
-<div class="quoteblock">
-<blockquote>
-<div id="lsp-dart-analysis-sdk-dir" class="ulist">
-<ul>
-<li>
-<p><code>lsp-dart-analysis-sdk-dir</code></p>
-</li>
-</ul>
-</div>
-</blockquote>
-</div>
-<div class="paragraph">
-<p>Default value: <code>"~/flutter/bin/cache/dart-sdk/"</code></p>
-</div>
-<div class="paragraph">
-<p>Install directory for dart-sdk.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Introduced in <code>lsp-mode</code> 6.1
-</td>
-</tr>
-</table>
-</div>
-<div class="quoteblock">
-<blockquote>
-
-</blockquote>
-</div>
-<div id="lsp-dart-analysis-server-command" class="ulist">
-<ul>
-<li>
-<p><code>lsp-dart-analysis-server-command</code></p>
-</li>
-</ul>
-</div>
-<div class="quoteblock">
-<blockquote>
-<div class="paragraph">
-<p>Default value: <code>nil</code></p>
-</div>
-<div class="paragraph">
-<p>The analysis_server executable to use</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Introduced in <code>lsp-mode</code> 6.1
-</td>
-</tr>
-</table>
-</div>
-</blockquote>
-</div>
+<p>For details on how to use LSP with Dart, refer to the <a href="https://github.com/emacs-lsp/lsp-dart">lsp-dart</a> README.</p>
 </div>
 </div>
 <div class="sect2">
@@ -10689,7 +10622,7 @@ Example: <code>(setq lsp-yaml-custom-tags '("!Scalar-example scalar" "!Seq-examp
 <div id="footer">
 <div id="footer-text">
 Version 6.1<br>
-Last updated 2020-04-30 15:06:31 UTC
+Last updated 2020-04-30 21:03:50 UTC
 </div>
 </div>
 </body>
