@@ -78,8 +78,8 @@
    - Semantic highlighting (as currently implemented by JDT LS and unreleased builds of clangd, cf. [[https://github.com/microsoft/vscode-languageserver-node/pull/367][Semantic highlighting spec]])
    - [[https://github.com/justbur/emacs-which-key/][which-key]] integration for better discovery
 ** Presentations/demos
-   - [[https://github.com/skybert][skybert]]'s emacsconf [[https://media.emacsconf.org/2019/19.html][presenatation]](Java)
-   - [[https://github.com/thatwist][thatwist]]'s ScalaUA Conference [[https://www.youtube.com/watch?v=x7ey0ifcqAg&feature=youtu.be][presenatation]] (Scala)
+   - [[https://github.com/skybert][skybert]]'s emacsconf [[https://media.emacsconf.org/2019/19.html][presentation]] (Java)
+   - [[https://github.com/thatwist][thatwist]]'s ScalaUA Conference [[https://www.youtube.com/watch?v=x7ey0ifcqAg&feature=youtu.be][presentation]] (Scala)
 ** Installation
 *** Install via melpa
     The recommended way to install ~lsp-mode~ is via ~package.el~ - the built-in package manager in Emacs. ~lsp-mode~ is available on the two major ~package.el~ community maintained repos - [[http://stable.melpa.org][MELPA Stable]] and [[http://melpa.org][MELPA]].
