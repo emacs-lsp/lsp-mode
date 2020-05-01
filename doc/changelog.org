@@ -1,3 +1,49 @@
+* Release 6.3
+  * Implemented ~company-capf~ integration. ~company-lsp~ is no longer supported.
+  * Dropped support for dart language server in favour of dart SDK(breaking)
+  * Added verilog support for LSP using hdl-checker
+  * Implemented call hierarchy support (available in ~lsp-treemacs~)
+  * Implemented support for ESLint language server.
+  * ocmalmerlin-lsp moved to ocaml-lsp-server(breaking)
+  * Added New VHDL language server https://github.com/kraigher/rust_hdl#configuration
+  * Add Nim language server integration
+  * Implement automatic downloading facilities and implemented auto-download for ~typescript-language-server~, ~javascript-typescript-stdio~ and ~json-language-server~.
+  * Implement metals decoration protocol
+  * Send metals/didFocusTextDocument notification on buffer change
+  * Add default keybindings and ~which-key~ integration
+  * Add support for Dhall langauge server
+  * Implemented debug adapter protocol support for metals
+  * Add CMake language server integration
+  * Add rust-analyzer runnables support
+  * Implemented rust-analyzer inlay hints
+  * Support pyenv for pyls
+  * Add clang-tidy specific Flycheck error explainer for the lsp checker
+  * Improve lsp-mode completion performance by supressing non completion related features when completion is active.
+  * lsp-json: Enable formatter provider
+  * Accomodate the new :end-column and :end-column from flycheck
+  * Implement status bar for diagnostics ~lsp-diagnostics-modeline-mode~
+  * Auto install of the ~html-language-server~
+  * Flycheck support for diagnostic tags (3.15 spec).
+  * Adding support for GDScript langauge server
+  * used view mode for metals doctor buffer
+  * add texlab as tex LSP server
+  * Started new set of integration tests without using ecukes
+  * Support "only" param when requesting code actions
+  * Add Perl-LanguageServer support
+  * add support robot-framework language server.
+  * Implement deferred semantic highlighting
+  * Change default transport for erlang_ls to stdio
+  * dart language server moved into separate repo https://github.com/emacs-lsp/lsp-dart
+  * Activate flow language server if there is flow tag in file or .flowconfig in project
+  * Add purescript-language-server (#1596)
+  * Process the $/progress messages from LSP 3.15
+  * Display the first line of MarkupContent in eldoc (#1607)
+  * Perform willSaveWaitUntil synchronously and with shorter timeout
+  * Display images when rendering markdown(usefull for latex language servers).
+  * Increase ~lsp-idle-delay~ to 0.5
+  * Support bash language server glob pattern option (#1594)
+  * Use pagebreaks for ~lsp-describe-thing-at-point~
+  * lsp-mode: Eliminate quadratic-time index-building for imenu. (#1616)
 * Release 6.2
   * Support dynamic rename registration
   * Add basic support for style semantic highlighting
