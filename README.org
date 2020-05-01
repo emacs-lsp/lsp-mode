@@ -63,7 +63,7 @@
    Client for [[https://github.com/Microsoft/language-server-protocol/][Language Server Protocol]] (v3.14). [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] aims to provide IDE-like experience by providing optional integration with the most popular Emacs packages like ~company~, ~flycheck~ and ~projectile~.
    - Non-blocking asynchronous calls
    - Real-time Diagnostics/linting via [[https://github.com/flycheck/flycheck][flycheck]] (recommended) or ~flymake~ when Emacs > 26 (requires flymake>=1.0.5)
-   - Code completion - ~company-capf~/~completion-at-point~ (note that [[https://github.com/tigersoldier/company-lsp][company-lsp]] is no longer supported).
+   - Code completion - ~company-capf~ / ~completion-at-point~ (note that [[https://github.com/tigersoldier/company-lsp][company-lsp]] is no longer supported).
    - Hovers - using [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]]
    - Code actions - using ~lsp-execute-code-action~ or [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] sideline.
    - Code outline - using builtin [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html][imenu]] or ~helm-imenu~
