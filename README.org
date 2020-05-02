@@ -539,11 +539,7 @@
        =lsp-enabled-clients=. This will narrow the list of the clients that are
        going to be tested for the project.
    - The completion does not work fine and inserts arguments and placeholders, what I am doing wrong?
-     - Snippet support works only with =company-lsp= so if you are using
-       =completion-at-point= the snippets won't be expanded and you should
-       either disable them by setting =lsp-enable-snippet= to =nil= or you
-       should switch to =company-lsp=. Note also that =company-tng= frontend
-       does not support snippet expansion(see [[https://github.com/company-mode/company-mode/issues/891][company-mode#891]])
+     - make sure you have installed ~yasnippet~ and you have ~yasnippet~ minor mode enabled.
    - I am getting "Package ‘spinner-1.7.3’ is unavailable" when trying to install =lsp-mode=.
      - This is caused by GPG keys used by the ELPA package manager not being up
        to date. You may fix by installing: [[https://elpa.gnu.org/packages/gnu-elpa-keyring-update.html][gnu-elpa-keyring-update]]
