@@ -1,0 +1,27 @@
+name: Docs
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: README -> docs
+        uses: docker://pandoc/core:2.9
+        with:
+          args: -s README.org -t gfm -o docs/README.md
+
+      - name: MkDocs
+        run: |
+          cp -rf examples docs
+          docker run --rm -v ${PWD}:/docs squidfunk/mkdocs-material -- build
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site

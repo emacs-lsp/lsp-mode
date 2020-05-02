@@ -4,8 +4,7 @@
 [[https://travis-ci.org/emacs-lsp/lsp-mode][file:https://travis-ci.org/emacs-lsp/lsp-mode.svg?branch=master]]
 [[https://coveralls.io/github/emacs-lsp/lsp-mode][https://coveralls.io/repos/github/emacs-lsp/lsp-mode/badge.svg]]
 
-#+ATTR_HTML: align="center"; margin-right="auto"; margin-left="auto"
-[[examples/logo.png]]
+#+HTML: <img src="examples/logo.png" width="240" align="right">
 
 * Language Server Protocol Support for Emacs
   #+caption: LSP mode
@@ -98,7 +97,7 @@
      - install [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] provides on type completion afternative of =xref-apropos= using =helm=.
      - install [[https://github.com/emacs-lsp/lsp-ivy][lsp-ivy]] provides on type completion afternative of =xref-apropos= using =ivy=.
      - install [[https://github.com/emacs-lsp/dap-mode][dap-mode]] if your language is supported by the debugger.
-     #+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC elisp
        ;; if you want to change prefix for lsp-mode keybindings.
        (setq lsp-keymap-prefix "s-l")
 
@@ -108,14 +107,14 @@
      where ~XXX~ could be major mode like ~python~, ~java~, ~c++~. Alternatively, if you want to minimize you configuration you may use ~prog-mode-hook~. In case you do that, ~lsp~ will try to start for each programming mode and echo a message when there is no client registered for the current mode or if the corresponding server is not present. In addition, ~lsp-mode~ will automatically detect and configure [[https://github.com/emacs-lsp/lsp-ui][lsp-ui]] and [[https://github.com/tigersoldier/company-lsp][company-lsp]]. To turn off that behavior you could set ~lsp-auto-configure~ to ~nil~.
 
      To defer LSP server startup (and DidOpen notifications) until the buffer is visible you can use ~lsp-deferred~ instead of ~lsp~:
-     #+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC elisp
        (add-hook 'XXX-mode-hook #'lsp-deferred)
      #+END_SRC
 **** Spacemacs
      [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] is included in spacemacs develop branch. Add ~lsp~ to ~dotspacemacs-configuration-layers~ and configure the language that you want to use to be backed by ~lsp~ backend.
 **** use-package
      Replace ~(require 'lsp-mode)~ with the following if you use use-package.
-     #+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC elisp
        ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
        (setq lsp-keymap-prefix "s-l")
 
@@ -146,14 +145,14 @@
      #+END_SRC
 
      To defer LSP server startup (and DidOpen notifications) until the buffer is visible you can use ~lsp-deferred~ instead of ~lsp~:
-     #+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC elisp
        (use-package lsp-mode
          :hook (XXX-mode . lsp-deferred)
          :commands (lsp lsp-deferred))
      #+END_SRC
 **** Recommended settings for lsp-mode related packages
 ***** company
-     #+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC elisp
              (setq company-minimum-prefix-length 1
                    company-idle-delay 0.0) ;; default is 0.2
      #+END_SRC
@@ -196,13 +195,13 @@
     - Increase the amount of data which Emacs reads from the process. Again the
       emacs default is too low 4k considering that the some of the language
       server responses are in 800k - 3M range.
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC elisp
       (setq read-process-output-max (* 1024 1024)) ;; 1mb
     #+END_SRC
     - Optional: use =company-capf= . Although =company-lsp= also supports
       caching =lsp-mode='s =company-capf= does that by default. To achieve that
       uninstall =company-lsp= or put these lines in your config:
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC elisp
       (setq lsp-prefer-capf t)
     #+END_SRC
       /Note:/ - to verify which =company= backend implementation you are using
@@ -212,14 +211,14 @@
       slow down emacs.
     - Optional: fine-tune =lsp-idle-delay=. This variable determines how often
       lsp-mode will refresh the highlights, lenses, links, etc while you type.
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC elisp
       (setq lsp-idle-delay 0.500)
     #+END_SRC
 **** Reporting performance problems
      If you have tried all of the non-optional steps from the list and =emacs= is
      still not very responsive please open a PR with the following information:
      - Collect *lsp-log* data after setting =lsp-print-performance= to =t=.
-     #+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC elisp
        (setq lsp-print-performance t)
      #+END_SRC
      - Include emacs performance report. Use the following step to collect it:
@@ -352,7 +351,7 @@
     you will need to call the ~lsp-enable-which-key-integration~ function. This
     could be done when ~lsp-mode~ starts with the following:
 
-     #+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC elisp
        (with-eval-after-load 'lsp-mode
          (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
      #+END_SRC
@@ -366,7 +365,7 @@
     To see all error statistics in the modeline you can enable
     ~lsp-diagnostics-modeline-mode~. This is especially useful for languages
     that compilation might be broken due to errors in other files(e. g. Java/Haskell).
-     #+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC elisp
        (with-eval-after-load 'lsp-mode
          ;; :project/:workspace/:file
          (setq lsp-diagnostics-modeline-scope :project)
@@ -428,7 +427,7 @@
      ~lsp-mode~ detects whether a particular file is located on remote machine and looks for a client which matches current file and it is marked as ~:remote?~ t. Then ~lsp-mode~ starts the client through tramp.
 **** Sample configuration
      Here it is example how you can configure python language server to work when using ~TRAMP~. Note that if you are trying to convert existing language server configuration you should copy all of it's properties(e. g. ~:request-handlers~, ~activation-fn~, etc).
-     #+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC elisp
        (lsp-register-client
         (make-lsp-client :new-connection (lsp-tramp-connection "<insert your LS's binary name or path here>")
                          :major-modes '(python-mode)
@@ -474,7 +473,7 @@
 ** Adding support for languages
 *** Registering server
     Here it is the minimal configuration that is needed for new language server registration. Refer to the documentation of ~lsp-client.el~ for the additional settings supported on registration time. ~lsp-language-id-configuration~ must be updated to contain the corresponding mode -> language id - in this case ~(python-mode . "python")~
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC elisp
       (defvar lsp-language-id-configuration
         '(...
           (python-mode . "python")
@@ -490,7 +489,7 @@
 
     If the language server supports environment variables to control additional behavior, you can register that by using the ~:environment-fn~ function, like the Bash language client does:
 
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC elisp
       (lsp-register-client
        (make-lsp-client :new-connection (lsp-stdio-connection '("bash-language-server" "start"))
                         :major-modes '(sh-mode)
@@ -505,7 +504,7 @@
 
 *** Sections
     ~lsp-mode~ provides tools to bridge emacs ~defcustom~ as a language configuration sections properties(see [[https://microsoft.github.io/language-server-protocol/specification#workspace_configuration][specification workspace/configuration]]). In addition you may use ~lsp-generate-settings~ from [[https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-generate-settings.el][Generate Settings script]] to generate ~defcustom~ from ~package.json~ VScode plugin manifest. Example:
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC elisp
       (defcustom lsp-foo-language-server-property "bar"
         "Demo property."
         :group 'foo-ls
@@ -525,7 +524,7 @@
        buffer.
    - How to configure a server with local variables?
      - Add ~lsp~ server call to ~hack-local-variables-hook~ which runs right after the local variables are loaded.
-       #+BEGIN_SRC emacs-lisp
+       #+BEGIN_SRC elisp
          (add-hook 'hack-local-variables-hook
                    (lambda () (when (derived-mode-p 'XXX-mode) (lsp))))
        #+END_SRC
