@@ -2,6 +2,7 @@ site_name: LSP Mode
 nav:
   - Home: /
   - LSPs:
+      - Apple Sourcekit: https://github.com/emacs-lsp/lsp-sourcekit
       - Dart: https://emacs-lsp.github.io/lsp-dart
       - Docker: https://github.com/emacs-lsp/lsp-docker
       - Haskell: https://github.com/emacs-lsp/lsp-haskell
