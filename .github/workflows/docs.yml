@@ -9,15 +9,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          persist-credentials: false
 
-      - name: org -> markdown
-        run: make org2markdown
+      - name: README -> docs
+        uses: docker://pandoc/core:2.9
+        with:
+          args: -s README.org -t gfm -o docs/README.md
 
       - name: MkDocs
         run: |
-          cp -rf README.md examples docs
+          cp -rf examples docs
           docker run --rm -v ${PWD}:/docs squidfunk/mkdocs-material -- build
 
       - name: Deploy

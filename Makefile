@@ -1,4 +1,4 @@
-SHELL := /usr/bin/env bash
+SHELL := /bin/bash
 
 all:
 	cask build
@@ -6,10 +6,7 @@ all:
 test: all
 	cask exec ert-runner -t '!no-win'
 
-readme2docs:
-	pandoc -s README.org -t gfm -o docs/README.md
-
 docs:
 	make -C doc/ all
 
-.PHONY: all test readme2docs
+.PHONY: all test
