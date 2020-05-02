@@ -4436,10 +4436,10 @@ Also, additional data to attached to each candidate can be passed via PLIST."
 (defun lsp--to-yasnippet-snippet (text)
   "Convert LSP snippet TEXT to yasnippet snippet."
   ;; LSP snippet doesn't escape "{", but yasnippet requires escaping it.
-  (s-replace-regexp (rx (or bos (not (any "$" "\\"))) (group "{"))
-                    (rx "\\" (backref 1))
-                    text
-                    nil nil 1))
+  (replace-regexp-in-string (rx (or bos (not (any "$" "\\"))) (group "{"))
+                            (rx "\\" (backref 1))
+                            text
+                            nil nil 1))
 
 (defun lsp--sort-completions (completions)
   "Sort COMPLETIONS."
