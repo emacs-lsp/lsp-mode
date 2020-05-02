@@ -10,10 +10,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: README -> docs
+      - name: README.org -> README.md
         uses: docker://pandoc/core:2.9
         with:
           args: -s README.org -t gfm -o docs/README.md
+
+      - name: CHANGELOG.org -> CHANGELOG.md
+        uses: docker://pandoc/core:2.9
+        with:
+          args: -s doc/CHANGELOG.org -t gfm -o docs/CHANGELOG.md
 
       - name: MkDocs
         run: |
