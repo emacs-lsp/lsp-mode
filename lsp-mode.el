@@ -7424,7 +7424,8 @@ Returns nil if the project should not be added to the current SESSION."
          (lsp-session-folders)
          (--filter (and (lsp--files-same-host it file-name-canonical)
                         (or (f-same? it file-name-canonical)
-                            (f-ancestor-of? it file-name-canonical))))
+                            (and (f-dir? it)
+                                 (f-ancestor-of? it file-name-canonical)))))
          (--max-by (> (length it)
                       (length other))))))
 
