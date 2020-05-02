@@ -5,7 +5,7 @@ nav:
       - Dart: https://emacs-lsp.github.io/lsp-dart
       - Docker: https://github.com/emacs-lsp/lsp-docker
       - Haskell: https://github.com/emacs-lsp/lsp-haskell
-      - Java: https://github.com/emacs-lsp/lsp-java
+      - Java: https://emacs-lsp.github.io/lsp-java
       - MSSQL: https://github.com/emacs-lsp/lsp-mssql
       - Python MS: https://github.com/emacs-lsp/lsp-python-ms
   - UI: https://github.com/emacs-lsp/lsp-ui
