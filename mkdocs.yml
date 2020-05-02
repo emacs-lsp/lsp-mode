@@ -1,5 +1,6 @@
 site_name: LSP Mode
 nav:
+  - Home: /
   - LSPs:
       - Dart: https://emacs-lsp.github.io/lsp-dart
 
