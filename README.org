@@ -453,7 +453,8 @@
     | [[https://github.com/seagle0128][seagle0128]]     | =Go= & =MS Python Language Server= |
     | [[https://github.com/sebastiansturm][sebastiansturm]] | =lsp-mode= core & =C++=            |
     | [[https://github.com/vibhavp][vibhavp]]        | =lsp-mode= core                    |
-    | [[https://github.com/yyoncho][yyoncho]]        | =lsp-mode= core and =Java=         |
+    | [[https://github.com/yyoncho][yyoncho]]        | =lsp-mode= core & =Java=         |
+    | [[https://github.com/ericdallo][ericdallo]]    | =Dart= & =Flutter=         |
 
 ** Troubleshooting
    - check ~*lsp-log*~ buffer and verify that =lsp-mode= is able to find the
