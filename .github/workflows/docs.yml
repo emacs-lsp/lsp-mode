@@ -1,0 +1,27 @@
+name: Docs
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: org -> markdown
+        run: make org2markdown
+
+      - name: MkDocs
+        run: |
+          cp -rf README.md examples docs
+          docker run --rm -v ${PWD}:/docs squidfunk/mkdocs-material -- build
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
