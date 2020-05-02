@@ -4773,11 +4773,12 @@ When language is nil render as markup if `markdown-mode' is loaded."
    ((seq-empty-p actions) (signal 'lsp-no-code-actions nil))
    ((and (eq (seq-length actions) 1) lsp-auto-execute-action)
     (lsp-seq-first actions))
-   (t (lsp--completing-read "Select code action: "
-                            (seq-into actions 'list)
-                            (-lambda ((&hash "title" "command"))
-                              (or title command))
-                            nil t))))
+   (t (let ((completion-ignore-case t))
+        (lsp--completing-read "Select code action: "
+                              (seq-into actions 'list)
+                              (-lambda ((&hash "title" "command"))
+                                (or title command))
+                              nil t)))))
 
 (defun lsp--render-on-hover-content (contents render-all)
   "Render the content received from 'document/onHover' request.
