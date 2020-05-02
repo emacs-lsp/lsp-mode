@@ -7,7 +7,13 @@ nav:
       - Haskell: https://github.com/emacs-lsp/lsp-haskell
       - Java: https://github.com/emacs-lsp/lsp-java
       - MSSQL: https://github.com/emacs-lsp/lsp-mssql
+      - Python MS: https://github.com/emacs-lsp/lsp-python-ms
+  - UI: https://github.com/emacs-lsp/lsp-ui
   - Debugging: https://github.com/emacs-lsp/dap-mode
+  - Integrations:
+      Treemacs: https://github.com/emacs-lsp/lsp-treemacs
+      Helm: https://github.com/emacs-lsp/helm-lsp
+      Ivy: https://github.com/emacs-lsp/lsp-ivy
   - Changelog: /CHANGELOG
 
 extra_css:
