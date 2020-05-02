@@ -1,4 +1,7 @@
-site_name: LSP mode
+site_name: LSP Mode
+nav:
+  - LSPs:
+      - Dart: https://emacs-lsp.github.io/lsp-dart
 
 extra_css:
   - stylesheets/extra.css
