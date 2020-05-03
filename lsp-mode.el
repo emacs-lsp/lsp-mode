@@ -7896,6 +7896,40 @@ See https://github.com/emacs-lsp/lsp-mode."
                               lsp--lens-overlays))))))
       (funcall-interactively action))))
 
+
+;; lsp internal validation.
+
+(defmacro lsp--validate (&rest checks)
+  `(-let [buf (current-buffer)]
+     (with-current-buffer (get-buffer-create "*lsp-performance*")
+       (with-help-window (current-buffer)
+         ,@(-map (-lambda ((msg form))
+                   `(insert (format "%s: %s\n" ,msg
+                                    (if (with-current-buffer buf
+                                          ,form)
+                                        (propertize "OK" 'face 'success)
+                                      (propertize "ERROR" 'face 'error)))))
+                 (-partition 2 checks))))))
+
+(defun lsp-diagnose ()
+  "Validate performance settings."
+  (interactive)
+  (lsp--validate
+   "Checking for Native JSON support" (functionp 'json-serialize)
+   "Checking emacs version has `read-process-output-max'" (boundp 'read-process-output-max)
+   "Using company-capf: " (-contains? company-backends 'company-capf)
+   "Check emacs supports `read-process-output-max'" (boundp 'read-process-output-max)
+   "Check `read-process-output-max' default has been changed from 4k"
+   (and (boundp 'read-process-output-max)
+        (> read-process-output-max 4096))
+   "Byte compiled against native json (recompile emacs if failing.)"
+   (condition-case err
+       (progn (lsp--make-message  (list "a" "b"))
+              nil)
+     (error t))
+   "`gc-cons-threshold' increased?" (> gc-cons-threshold 800000)))
+
+
 (provide 'lsp-mode)
 ;;; lsp-mode.el ends here
 
