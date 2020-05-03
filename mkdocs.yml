@@ -10,7 +10,7 @@ nav:
       - Haskell: https://emacs-lsp.github.io/lsp-haskell
       - Java: https://emacs-lsp.github.io/lsp-java
       - MSSQL: https://emacs-lsp.github.io/lsp-mssql
-      - Python MS: https://emacs-lsp/github.io/lsp-python-ms
+      - Python MS: https://emacs-lsp.github.io/lsp-python-ms
       - Rust: lsp-rust.md
   - UI: https://emacs-lsp.github.io/lsp-ui
   - Debugging: https://emacs-lsp.github.io/dap-mode
