@@ -34,7 +34,6 @@
     - [[#which-key-integration][which-key integration]]
     - [[#modeline-errors][Modeline errors]]
   - [[#settings][Settings]]
-  - [[#screenshots][Screenshots]]
   - [[#extensions][Extensions]]
     - [[#tramp][TRAMP]]
       - [[#how-does-it-work-1][How does it work?]]
@@ -407,21 +406,6 @@
    - ~lsp-signature-auto-activate~ - Auto activate signature when trigger char is pressed.
    - ~lsp-signature-render-documentation~ - Include signature documentation in signature help.
    - ~lsp-enable-text-document-color~ - Enable ~textDocument/documentColor~ when server supports it.
-** Screenshots
-   - RUST Completion
-     [[file:examples/completion.png]]
-   - Typescript references using lsp-ui
-     [[file:examples/references.png]]
-   - Debugging Python using dap-mode
-     [[file:examples/python_debugging.png]]
-   - Call hierarchy via ccls
-     [[file:examples/call-hierarchy-ccls.png]]
-   - Metals Doctor
-     [[file:examples/metals-doctor.png]]
-   - Semantic highlighting as provided by clangd (built from unreleased 10.0 branch). In this screenshot, all other font-locking has been disabled (hence no syntax highlighting of comments or basic keywords such as ~auto~)
-     [[file:examples/clangd_semantic_highlighting.png]]
-   - clang-tidy error explanations (from the clangd language server)
-     [[file:examples/clangd-clang-tidy-integration.png]]
 ** Extensions
 *** TRAMP
     LSP mode has support for tramp buffers with the following requirements:
