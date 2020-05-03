@@ -10,7 +10,7 @@ nav:
       - MSSQL: https://github.com/emacs-lsp/lsp-mssql
       - Python MS: https://github.com/emacs-lsp/lsp-python-ms
   - UI: https://github.com/emacs-lsp/lsp-ui
-  - Debugging: https://github.com/emacs-lsp/dap-mode
+  - Debugging: https://emacs-lsp.github.io/dap-mode
   - Integrations:
       Treemacs: https://github.com/emacs-lsp/lsp-treemacs
       Helm: https://github.com/emacs-lsp/helm-lsp
