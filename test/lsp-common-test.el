@@ -68,24 +68,29 @@
                                    (buffer-file-name)))))))
 
 (ert-deftest lsp--find-session-folder ()
-  (cl-assert (string= "/folder/"
-                      (lsp-find-session-folder
-                       (make-lsp-session :folders '("/folder/"))
-                       "/folder/file"))
-             t
-             "failed to find the proper root")
-  (cl-assert (string= "/folder/nested-project"
-                      (lsp-find-session-folder
-                       (make-lsp-session :folders '("/folder/"
-                                                    "/folder/nested-project"))
-                       "/folder/nested-project/file-in-nested-project"))
-             t
-             "failed to find nested project")
-  (cl-assert (null (lsp-find-session-folder
-                    (make-lsp-session :folders '("/folder/"))
-                    "/foo"))
-             t
-             "Should not find any root."))
+  (let* ((project (make-temp-file "foo"))
+         (nested (f-join project "nested-project")))
+
+    (f-delete project)
+    (make-directory nested t)
+
+    (cl-assert (string= project
+                        (lsp-find-session-folder
+                         (make-lsp-session :folders (list project))
+                         (f-join project "file")))
+               t
+               "failed to find the proper root")
+    (cl-assert (string= nested
+                        (lsp-find-session-folder
+                         (make-lsp-session :folders (list project nested))
+                         (f-join nested "foo")))
+               t
+               "failed to find nested project")
+    (cl-assert (null (lsp-find-session-folder
+                      (make-lsp-session :folders (list project nested))
+                      "/foo"))
+               t
+               "Should not find any root.")))
 
 (defun lsp-ht->alist (table)
   (ht-amap (cons key (if (ht? value)

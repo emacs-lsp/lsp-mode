@@ -7923,7 +7923,7 @@ See https://github.com/emacs-lsp/lsp-mode."
    (and (boundp 'read-process-output-max)
         (> read-process-output-max 4096))
    "Byte compiled against native json (recompile emacs if failing.)"
-   (condition-case err
+   (condition-case _err
        (progn (lsp--make-message  (list "a" "b"))
               nil)
      (error t))
