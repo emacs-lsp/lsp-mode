@@ -4,15 +4,15 @@ site_url: https://emacs-lsp.github.io/lsp-mode
 nav:
   - Home: README.md
   - LSPs:
-      - Apple Sourcekit: https://github.com/emacs-lsp/lsp-sourcekit
+      - Apple Sourcekit: https://emacs-lsp.github.io/lsp-sourcekit
       - Dart: https://emacs-lsp.github.io/lsp-dart
       - Docker: https://github.com/emacs-lsp/lsp-docker
-      - Haskell: https://github.com/emacs-lsp/lsp-haskell
+      - Haskell: https://emacs-lsp.github.io/lsp-haskell
       - Java: https://emacs-lsp.github.io/lsp-java
-      - MSSQL: https://github.com/emacs-lsp/lsp-mssql
-      - Python MS: https://github.com/emacs-lsp/lsp-python-ms
+      - MSSQL: https://emacs-lsp.github.io/lsp-mssql
+      - Python MS: https://emacs-lsp/github.io/lsp-python-ms
       - Rust: lsp-rust.md
-  - UI: https://github.com/emacs-lsp/lsp-ui
+  - UI: https://emacs-lsp.github.io/lsp-ui
   - Debugging: https://emacs-lsp.github.io/dap-mode
   - Integrations:
       Treemacs: https://github.com/emacs-lsp/lsp-treemacs
