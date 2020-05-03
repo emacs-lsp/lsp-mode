@@ -1,6 +1,8 @@
 site_name: LSP Mode
+site_url: https://emacs-lsp.github.io/lsp-mode
+
 nav:
-  - Home: ''
+  - Home: './'
   - LSPs:
       - Apple Sourcekit: https://github.com/emacs-lsp/lsp-sourcekit
       - Dart: https://emacs-lsp.github.io/lsp-dart
@@ -15,7 +17,7 @@ nav:
       Treemacs: https://github.com/emacs-lsp/lsp-treemacs
       Helm: https://github.com/emacs-lsp/helm-lsp
       Ivy: https://github.com/emacs-lsp/lsp-ivy
-  - Changelog: CHANGELOG
+  - Changelog: 'CHANGELOG'
 
 extra_css:
   - stylesheets/extra.css
