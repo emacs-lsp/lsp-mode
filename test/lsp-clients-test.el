@@ -93,4 +93,32 @@
   (should (not (lsp-typescript-javascript-tsx-jsx-activate-p "abc.tsxx")))
   (should (not (lsp-typescript-javascript-tsx-jsx-activate-p "abc.jss"))))
 
+(ert-deftest lsp-clients-extract-signature-from-clangd-on-hover ()
+  (should (string= (lsp-clients-extract-signature-on-hover
+                         #s(hash-table size 30 test equal data ("value" "Sample\n ```cpp\n// In Function.hpp\nvoid function(int n);\n```")) 'clangd) "void function(int n);"))
+  (should (string= (lsp-clients-extract-signature-on-hover
+                         #s(hash-table size 30 test equal data ("value" "Sample\n ```cpp\nvoid function(int n);\n```")) 'clangd) "void function(int n);"))
+  (should (string= (lsp-clients-extract-signature-on-hover
+                         #s(hash-table size 30 test equal data ("value" "Sample\n ```cpp\n   void function(int n);\n```")) 'clangd) "void function(int n);"))
+  (should-error (lsp-clients-extract-signature-on-hover
+                 #s(hash-table size 30 test equal data ("value" "Wrong")) 'clangd)))
+
+(ert-deftest lsp-clients-join-region ()
+  (with-temp-buffer
+    (insert "void function(int n);")
+    (should (string= (lsp-join-region (point-min) (point-max)) "void function(int n);"))
+    (erase-buffer)
+    (insert "    void function(int n);")
+    (should (string= (lsp-join-region (point-min) (point-max)) "void function(int n);"))
+    (erase-buffer)
+    (insert "void foo(int n,
+                      int p,
+                      int k);")
+    (should (string= (lsp-join-region (point-min) (point-max)) "void foo(int n, int p, int k);"))
+    (erase-buffer)
+    (insert "void foo(int n,
+                  int p,
+                  int k);")
+    (should (string= (lsp-join-region (point-min) (point-max)) "void foo(int n, int p, int k);"))))
+
 ;;; lsp-clients-test.el ends here

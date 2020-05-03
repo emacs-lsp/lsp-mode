@@ -441,6 +441,28 @@ finding the executable with `exec-path'."
                   :priority -1
                   :server-id 'clangd))
 
+(cl-defmethod lsp-clients-extract-signature-on-hover (contents (_server-id (eql clangd)))
+  "Extract a representative line from clangd's CONTENTS, to show in the echo area.
+This function tries to extract the type signature from CONTENTS,
+or the first line if it cannot do so. A single line is always
+returned to avoid that the echo area grows uncomfortably."
+  (with-temp-buffer
+    (-let [(&hash "value") contents]
+      (insert value)
+      (goto-char (point-min))
+      (if (re-search-forward (rx (seq "```cpp\n"
+                                      (opt (group "//"
+                                                  (zero-or-more nonl)
+                                                  "\n"))
+                                      (group
+                                       (one-or-more
+                                        (not (any "`")))
+                                       "\n")
+                                      "```")) nil t nil)
+          (progn (narrow-to-region (match-beginning 2) (match-end 2))
+                 (lsp--render-element (lsp-join-region (point-min) (point-max))))
+        (car (s-lines (lsp--render-element contents)))))))
+
 ;; Elixir
 (defgroup lsp-elixir nil
   "LSP support for Elixir, using elixir-ls."

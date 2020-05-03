@@ -4779,6 +4779,34 @@ When language is nil render as markup if `markdown-mode' is loaded."
                               (or title command))
                             nil t))))
 
+(defun lsp-join-region (beg end)
+  "Apply join-line from BEG to END.
+This function is useful when an indented function prototype needs
+to be shown in a single line."
+  (save-excursion
+    (let ((end (copy-marker end)))
+      (goto-char beg)
+      (while (< (point) end)
+        (join-line 1)))
+    (s-trim (buffer-string))))
+
+(defun lsp--workspace-server-id (workspace)
+  "Return the server ID of WORKSPACE."
+  (-> workspace lsp--workspace-client lsp--client-server-id))
+
+(defun lsp--handle-rendered-for-echo-area (contents)
+  "Return a single line from RENDERED, appropriate for display in the echo area."
+  (pcase (lsp-workspaces)
+    (`(,workspace)
+     (lsp-clients-extract-signature-on-hover contents (lsp--workspace-server-id workspace)))
+    ;; For projects with multiple active workspaces we also default to
+    ;; render the first line.
+    (_ (lsp-clients-extract-signature-on-hover contents nil))))
+
+(cl-defgeneric lsp-clients-extract-signature-on-hover (contents _server-id)
+  "Extract a representative line from CONTENTS, to show in the echo area."
+  (car (s-lines (lsp--render-element contents))))
+
 (defun lsp--render-on-hover-content (contents render-all)
   "Render the content received from 'document/onHover' request.
 CONTENTS  - MarkedString | MarkedString[] | MarkupContent
@@ -4788,8 +4816,9 @@ RENDER-ALL - nil if only the signature should be rendered."
     ;; MarkupContent.
     ;; It tends to be long and is not suitable to display fully in the echo area.
     ;; Just display the first line which is typically the signature.
-    (let ((rendered (lsp--render-element contents)))
-      (if render-all rendered (car (s-lines rendered)))))
+    (if render-all
+        (lsp--render-element contents)
+      (lsp--handle-rendered-for-echo-area contents)))
    ((and (stringp contents) (not (string-match-p "\n" contents)))
     ;; If the contents is a single string containing a single line,
     ;; render it always.
