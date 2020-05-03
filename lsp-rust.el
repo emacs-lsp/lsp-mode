@@ -397,45 +397,94 @@ The command should include `--message=format=json` or similar option."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.2.2"))
 
-(defcustom lsp-rust-analyzer-enabled-feature-flags []
-  "Feature flags to enable (all feature flags are currently enabled by default)."
-  :type 'lsp-string-vector
-  :group 'lsp-rust
-  :package-version '(lsp-mode . "6.2.2"))
-
-(defcustom lsp-rust-analyzer-disabled-feature-flags []
-  "Feature flags to disable (all feature flags are currently enabled by default)."
-  :type 'lsp-string-vector
-  :group 'lsp-rust
-  :package-version '(lsp-mode . "6.2.2"))
-
 (defcustom lsp-rust-analyzer-macro-expansion-method 'lsp-rust-analyzer-macro-expansion-default
   "Use a different function if you want formatted macro expansion results and syntax highlighting."
   :type 'function
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.2.2"))
 
+(defcustom lsp-rust-analyzer-diagnostics-enable t
+  "Whether to show native rust-analyzer diagnostics."
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "6.3.2"))
+
+(defcustom lsp-rust-analyzer-cargo-load-out-dirs-from-check nil
+  "Whether to run `cargo check` on startup to get the correct value for package OUT_DIRs."
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "6.3.2"))
+
+(defcustom lsp-rust-analyzer-rustfmt-extra-args []
+  "Additional arguments to rustfmt."
+  :type 'lsp-string-vector
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "6.3.2"))
+
+(defcustom lsp-rust-analyzer-rustfmt-override-command []
+  "Advanced option, fully override the command rust-analyzer uses for formatting."
+  :type 'lsp-string-vector
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "6.3.2"))
+
+(defcustom lsp-rust-analyzer-completion-add-call-parenthesis t
+  "Whether to add parenthesis when completing functions."
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "6.3.2"))
+
+(defcustom lsp-rust-analyzer-completion-add-call-argument-snippets t
+  "Whether to add argument snippets when completing functions."
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "6.3.2"))
+
+(defcustom lsp-rust-analyzer-completion-postfix-enable t
+  "Whether to show postfix snippets like `dbg`, `if`, `not`, etc."
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "6.3.2"))
+
+(defcustom lsp-rust-analyzer-call-info-full t
+  "Whether to show function name and docs in parameter hints."
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "6.3.2"))
+
+(defcustom lsp-rust-analyzer-proc-macro-enable nil
+  "Enable Proc macro support; lsp-rust-analyzer-cargo-load-out-dirs-from-check must be enabled."
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "6.3.2"))
+
 (defun lsp-rust-analyzer--make-init-options ()
   "Init options for rust-analyzer"
-  (let ((feature-flags (or (append (--map (cons (intern it) json-false) lsp-rust-analyzer-disabled-feature-flags)
-                                   (--map (cons (intern it) t) lsp-rust-analyzer-enabled-feature-flags))
-                           (make-hash-table))))
-    `(:lruCapacity ,lsp-rust-analyzer-lru-capacity
-      :checkOnSave (:enable ,(lsp-json-bool lsp-rust-analyzer-cargo-watch-enable)
-                    :command ,lsp-rust-analyzer-cargo-watch-command
-                    :extraArgs ,lsp-rust-analyzer-cargo-watch-args
-                    :allTargets ,(lsp-json-bool lsp-rust-analyzer-cargo-all-targets)
-                    :overrideCommand ,lsp-rust-analyzer-cargo-override-command)
-      :excludeGlobs ,lsp-rust-analyzer-exclude-globs
-      :useClientWatching ,(lsp-json-bool lsp-rust-analyzer-use-client-watching)
-      :featureFlags ,feature-flags
-      :cargo (:allFeatures ,(lsp-json-bool lsp-rust-all-features)
-              :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
-              :features ,lsp-rust-features)
-      :inlayHints (:typeHints ,(lsp-json-bool lsp-rust-analyzer-server-display-inlay-hints)
-                   :chainingHints ,(lsp-json-bool lsp-rust-analyzer-display-chaining-hints)
-                   :parameterHints ,(lsp-json-bool lsp-rust-analyzer-display-parameter-hints)
-                   :maxLength ,lsp-rust-analyzer-max-inlay-hint-length))))
+  `(:diagnostics (:enable ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable))
+    :lruCapacity ,lsp-rust-analyzer-lru-capacity
+    :checkOnSave (:enable ,(lsp-json-bool lsp-rust-analyzer-cargo-watch-enable)
+                  :command ,lsp-rust-analyzer-cargo-watch-command
+                  :extraArgs ,lsp-rust-analyzer-cargo-watch-args
+                  :allTargets ,(lsp-json-bool lsp-rust-analyzer-cargo-all-targets)
+                  :overrideCommand ,lsp-rust-analyzer-cargo-override-command)
+    :files (:exclude ,lsp-rust-analyzer-exclude-globs
+                     :watcher ,(lsp-json-bool (if lsp-rust-analyzer-use-client-watching
+                                                  "client"
+                                                "notify")))
+    :cargo (:allFeatures ,(lsp-json-bool lsp-rust-all-features)
+            :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
+            :features ,lsp-rust-features
+            :loadOutDirsFromCheck ,(lsp-json-bool lsp-rust-analyzer-cargo-load-out-dirs-from-check))
+    :rustfmt (:extraArgs ,lsp-rust-analyzer-rustfmt-extra-args
+              :overrideCommand ,lsp-rust-analyzer-rustfmt-override-command)
+    :inlayHints (:typeHints ,(lsp-json-bool lsp-rust-analyzer-server-display-inlay-hints)
+                 :chainingHints ,(lsp-json-bool lsp-rust-analyzer-display-chaining-hints)
+                 :parameterHints ,(lsp-json-bool lsp-rust-analyzer-display-parameter-hints)
+                 :maxLength ,lsp-rust-analyzer-max-inlay-hint-length)
+    :completion (:addCallParenthesis ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-parenthesis)
+                 :addCallArgumentSnippets ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-argument-snippets)
+                 :postfix (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-postfix-enable)))
+    :callInfo (:full ,(lsp-json-bool lsp-rust-analyzer-call-info-full))
+    :procMacro (:enable ,(lsp-json-bool lsp-rust-analyzer-proc-macro-enable))))
 
 (defconst lsp-rust-notification-handlers
   '(("rust-analyzer/publishDecorations" . (lambda (_w _p)))))
