@@ -336,13 +336,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#screenshots" class="md-nav__link">
-    Screenshots
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#extensions" class="md-nav__link">
     Extensions
   </a>
@@ -686,6 +679,18 @@
 
 
   <li class="md-nav__item">
+    <a href="gallery/" title="Gallery" class="md-nav__link">
+      Gallery
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
     <a href="CHANGELOG/" title="Changelog" class="md-nav__link">
       Changelog
     </a>
@@ -836,13 +841,6 @@
         <li class="md-nav__item">
   <a href="#settings" class="md-nav__link">
     Settings
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#screenshots" class="md-nav__link">
-    Screenshots
   </a>
   
 </li>
@@ -2016,20 +2014,6 @@ Java/Haskell).</p>
 <li><code>lsp-enable-text-document-color</code> - Enable
     <code>textDocument/documentColor</code> when server supports it.</li>
 </ul>
-<h2 id="screenshots">Screenshots<a class="headerlink" href="#screenshots" title="Permanent link">#</a></h2>
-<ul>
-<li>RUST Completion <img alt="" src="examples/completion.png" /></li>
-<li>Typescript references using lsp-ui <img alt="" src="examples/references.png" /></li>
-<li>Debugging Python using dap-mode <img alt="" src="examples/python_debugging.png" /></li>
-<li>Call hierarchy via ccls <img alt="" src="examples/call-hierarchy-ccls.png" /></li>
-<li>Metals Doctor <img alt="" src="examples/metals-doctor.png" /></li>
-<li>Semantic highlighting as provided by clangd (built from unreleased
-    10.0 branch). In this screenshot, all other font-locking has been
-    disabled (hence no syntax highlighting of comments or basic keywords
-    such as <code>auto</code>) <img alt="" src="examples/clangd_semantic_highlighting.png" /></li>
-<li>clang-tidy error explanations (from the clangd language server)
-    <img alt="" src="examples/clangd-clang-tidy-integration.png" /></li>
-</ul>
 <h2 id="extensions">Extensions<a class="headerlink" href="#extensions" title="Permanent link">#</a></h2>
 <h3 id="tramp">TRAMP<a class="headerlink" href="#tramp" title="Permanent link">#</a></h3>
 <p>LSP mode has support for tramp buffers with the following requirements:</p>
@@ -2388,7 +2372,7 @@ following lines to your config.</p>
       <script>
         app = initialize({
           base: ".",
-          features: [],
+          features: ["instant"],
           search: Object.assign({
             worker: "assets/javascripts/worker/search.37585f48.min.js"
           }, typeof search !== "undefined" && search)
