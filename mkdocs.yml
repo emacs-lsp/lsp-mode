@@ -33,8 +33,6 @@ theme:
   favicon: examples/logo-mini.png
   icon:
     repo: fontawesome/brands/github
-  features:
-    - instant
 
 extra:
   social:
