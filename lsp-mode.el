@@ -580,6 +580,16 @@ than the second parameter.")
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.3"))
 
+(defcustom lsp-completion-enable-additional-text-edit t
+  "Whether or not to apply additional text edit when performing completion.
+
+If set to non-nil, `lsp-mode' will apply additional text edits
+from the server. Otherwise, the additional text edits are
+ignored."
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.3.2"))
+
 (defcustom lsp-server-trace nil
   "Request tracing on the server side.
 The actual trace output at each level depends on the language server in use.
@@ -4419,7 +4429,7 @@ Also, additional data to attached to each candidate can be passed via PLIST."
               (lsp--to-yasnippet-snippet (buffer-substring start-point (point)))
               start-point
               (point)))
-           (when additional-text-edits
+           (when (and lsp-completion-enable-additional-text-edit additional-text-edits)
              (lsp--apply-text-edits additional-text-edits)))
          (lsp--capf-clear-cache)
          (when (and lsp-signature-auto-activate
