@@ -94,8 +94,8 @@
      - install [[https://github.com/flycheck/flycheck][flycheck]] if you prefer the more popular ~flycheck~ over renewed ~flymake~. ~lsp-mode~ will automatically pick it up.
      - install [[https://github.com/company-mode/company-mode][company-mode]] for completion popups.
      - install [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]] for various tree based UI controls (symbols, errors overview, call hierarchy, etc.)
-     - install [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] provides on type completion afternative of =xref-apropos= using =helm=.
-     - install [[https://github.com/emacs-lsp/lsp-ivy][lsp-ivy]] provides on type completion afternative of =xref-apropos= using =ivy=.
+     - install [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] provides on type completion alternative of =xref-apropos= using =helm=.
+     - install [[https://github.com/emacs-lsp/lsp-ivy][lsp-ivy]] provides on type completion alternative of =xref-apropos= using =ivy=.
      - install [[https://github.com/emacs-lsp/dap-mode][dap-mode]] if your language is supported by the debugger.
      #+BEGIN_SRC elisp
        ;; if you want to change prefix for lsp-mode keybindings.
@@ -165,12 +165,12 @@
        - Use =c-basic-offset= for =cc-mode= derived moves(e. g. java, C++) to
          control the tab size.
        - Use =tab-width= for any other mode to do the same.
-       - Use =indent-tabs-mode= for sellecting tab/spaces.
+       - Use =indent-tabs-mode= for selecting tab/spaces.
 **** Docker
-     Refer to [[https://github.com/emacs-lsp/lsp-docker/][lsp-docker]] README which provide a guide how you can run =lsp-mode= in =docker= container.
+     Refer to [[https://github.com/emacs-lsp/lsp-docker/][lsp-docker]] README which provides a guide on how you can run =lsp-mode= in =docker= container.
 *** Performance
     Use ~M-x lsp-diagnose~ to validate if your ~lsp-mode~ is properly
-    configured. In the section bellow, you could find description for each of
+    configured. In the section below, you could find description for each of
     the checks:
 
     When configured properly =lsp-mode='s performance is on par with mainstream
@@ -343,7 +343,7 @@
    | ~s-l h g~  | Trigger display hover information popup and hide it on next typing.                                                        |
    | ~s-l r r~  | Rename the symbol (and all references to it).                                                                              |
    | ~s-l r o~  | Perform the source.organizeImports code action, if available.                                                              |
-   | ~s-l a a~  | Execute code action action.                                                                                                |
+   | ~s-l a a~  | Execute code action.                                                                                                       |
    | ~s-l a l~  | Click lsp lens using ‘avy’ package.                                                                                        |
    | ~s-l a h~  | Highlight symbol at point.                                                                                                 |
    | ~s-l G g~  | Peek definitions to the identifier at point. (requires ~lsp-ui~)                                                           |
