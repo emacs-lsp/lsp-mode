@@ -585,11 +585,25 @@ than the second parameter.")
   "Whether or not to apply additional text edit when performing completion.
 
 If set to non-nil, `lsp-mode' will apply additional text edits
-from the server. Otherwise, the additional text edits are
+from the server.  Otherwise, the additional text edits are
 ignored."
   :type 'boolean
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.3.2"))
+
+(defcustom lsp-completion-styles (if (version<= "27.0" emacs-version)
+                                     `(flex)
+                                   `(substring))
+  "List of completion styles to use for filtering completion items."
+  :type completion--styles-type
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.3.2"))
+
+(defcustom lsp-completion-show-detail t
+  "Whether or not to show detail of completion candidates."
+  :type 'boolean
+  :group 'lsp-mode)
+
 
 (defcustom lsp-server-trace nil
   "Request tracing on the server side.
@@ -779,13 +793,6 @@ Set to nil to disable the warning."
   :type 'number
   :group 'lsp-mode)
 ;;;###autoload(put 'lsp-file-watch-threshold 'safe-local-variable (lambda (i) (or (numberp i) (not i))))
-
-(defcustom lsp-completion-styles (if (version<= "27.0" emacs-version)
-                                     `(flex)
-                                   `(substring))
-  "List of completion styles to use for filtering completion items."
-  :group 'lsp-mode
-  :type completion--styles-type)
 
 (defvar lsp-custom-markup-modes
   '((rust-mode "no_run" "rust,no_run" "rust,ignore" "rust,should_panic"))
@@ -4181,7 +4188,7 @@ and the position respectively."
 (defun lsp--annotate (item)
   "Annotate ITEM detail."
   (-let (((&hash "detail" "kind") (plist-get (text-properties-at 0 item) 'lsp-completion-item)))
-    (concat (when detail (concat " " detail))
+    (concat (when (and lsp-completion-show-detail detail) (concat " " detail))
             (when-let (kind-name (and kind (aref lsp--completion-item-kind kind)))
               (format " (%s)" kind-name)))))
 
