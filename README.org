@@ -175,8 +175,11 @@
     When configured properly =lsp-mode='s performance is on par with mainstream
     LSP clients (e. g. =VScode=, =Theia=, etc). Here are steps to achieve
     optimal results.
-    - Use Emacs 27+ with native json support. In order to validate that you
-      match this criteria do =M-: (functionp 'json-serialize) RET=. Benchmarks
+    - Use Emacs 27+ with native json support. (Note: this requires that you have
+      [libjansson](http://www.digip.org/jansson/) installed, and that emacs was 
+      compiled with `--with-json` passed to `./configure`.) You can check your 
+      installation for native json support by running do 
+      =M-: (functionp 'json-serialize) RET=. Benchmarks
       show that Emacs 27 is =~15 times= faster than Emacs when using Elisp json
       parser implementation.
     - Adjust =gc-cons-threshold=. The default setting is too low for
