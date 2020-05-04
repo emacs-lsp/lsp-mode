@@ -24,20 +24,18 @@
 
 ;;; Code:
 
-(require 's)
 (require 'f)
+(require 'dash)
 (require 'seq)
+(require 'ht)
 (require 'lsp-clients)
 
-(defconst lsp-doc--clients
-  (sort
-   '(lsp-clojure lsp-css lsp-html lsp-intelephense lsp-pyls lsp-rust
-                 lsp-solargraph lsp-vetur lsp-xml lsp-groovy lsp-typescript-javascript
-                 lsp-typescript lsp-flow lsp-php lsp-ocaml lsp-clangd
-                 lsp-elixir lsp-fortran lsp-kotlin lsp-hack lsp-metals
-                 lsp-fsharp lsp-erlang lsp-yaml)
-   (lambda (s1 s2)
-     (string< (symbol-name s1) (symbol-name s2)))))
+(defun lsp-doc--clients ()
+  "Return a list of hash-map of all clients."
+(let ((json-array-type 'vector)
+      (json-object-type 'hash-table)
+      (json-false nil))
+       (json-read-file "lsp-clients.json")))
 
 (defun lsp-doc--client->variables (client)
   ""
@@ -51,18 +49,21 @@
 
 (defun lsp-doc--generate-for (client)
   ""
-  (let* ((client-name (symbol-name client))
-         (file (concat client-name ".md")))
-    (copy-file "template/lsp-client.md" (concat client-name ".md") t)
+  (-let* (((&hash 'name 'full-name 'server-url 'built-in
+                  'installation 'debugger) client)
+         (file (file-truename (concat name ".md"))))
+    (unless (file-exists-p file)
+      (copy-file "template/lsp-client.md" (concat name ".md")))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
       (while (re-search-forward "{{client}}" nil t)
-        (replace-match client-name)))))
+        (replace-match name))
+      (save-buffer))))
 
 (defun lsp-doc-generate ()
   "."
   (interactive)
-  (let ((client lsp-doc--clients))
+  (seq-doseq (client (lsp-doc--clients))
     (lsp-doc--generate-for client)))
 
 (provide 'lsp-doc)
