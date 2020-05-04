@@ -2249,7 +2249,19 @@ following lines to your config.</p>
   - I have disabled snippets and <code>Rust Analyzer</code> server inserts
     redundant <code>$0</code> when performing completion?
       - <code>Rust Analyzer</code> does not support disabling snippets - see
-<a href="https://github.com/rust-analyzer/rust-analyzer/issues/2518">https://github.com/rust-analyzer/rust-analyzer/issues/2518</a></p>
+<a href="https://github.com/rust-analyzer/rust-analyzer/issues/2518">https://github.com/rust-analyzer/rust-analyzer/issues/2518</a>
+  - How do I get flex completion in when using <code>Emacs 26</code>?
+      - <code>flex</code> filtering has been implemented in <code>Emacs 27+</code> and
+<code>lsp-mode</code> is using it by default and there is no <code>flex</code>
+matching by default. In order to have <code>flex</code> completion by
+default you could either upgrade to <code>Emacs
+        27</code> or try using <code>helm-flex</code> implementation including the
+following snippet in your config:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-completion-styles</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">helm-flex</span><span class="p">))</span>
+</code></pre></div>
+
+<p>See also
+<a href="https://github.com/emacs-lsp/lsp-mode/issues/1652">#1652</a>.</p>
 </li>
 </ul>
 </li>
