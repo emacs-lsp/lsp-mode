@@ -1865,7 +1865,7 @@ WORKSPACE is the workspace that contains the diagnostics."
           (cons (lsp--folding-range-beg range)
                 (lsp--folding-range-end range)))
     nil))
-(put 'lsp-folding-range 'bounds-of-thing-at-point
+(put 'lsp--folding-range 'bounds-of-thing-at-point
      #'lsp--folding-range-at-point-bounds)
 
 (defun lsp--get-nearest-folding-range (&optional backward)
