@@ -47,17 +47,31 @@
                         (eq (cadr p) 'custom-variable)))
                  custom-group))))
 
+(defun lsp-doc--decorate-value (key value)
+  ""
+  (pcase key
+    ("installation" (format "`%s`" value))
+    ("installation-url" (format "For instruction on how to install, check [here](%s)." value))
+    (_ value)))
+
+(defun lsp-doc--replace-placeholders (client)
+  ""
+  (while (re-search-forward "{{\\([][:word:]\\[.-]+\\)}}" nil t)
+    (let* ((key (match-string 1))
+           (value (gethash key client)))
+      (if value
+          (replace-match (lsp-doc--decorate-value key value))
+        (replace-match "")))))
+
 (defun lsp-doc--generate-for (client)
   ""
-  (-let* (((&hash 'name 'full-name 'server-url 'built-in
-                  'installation 'debugger) client)
-         (file (file-truename (concat name ".md"))))
+  (-let* (((&hash "name") client)
+         (file (file-truename (concat "lsp-" name ".md"))))
     (unless (file-exists-p file)
-      (copy-file "template/lsp-client.md" (concat name ".md")))
+      (copy-file "template/lsp-client.md" file))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
-      (while (re-search-forward "{{client}}" nil t)
-        (replace-match name))
+      (lsp-doc--replace-placeholders client)
       (save-buffer))))
 
 (defun lsp-doc-generate ()
@@ -65,6 +79,10 @@
   (interactive)
   (seq-doseq (client (lsp-doc--clients))
     (lsp-doc--generate-for client)))
+
+(lsp-doc--generate-for (seq-first (lsp-doc--clients)))
+
+(lsp-doc-generate)
 
 (provide 'lsp-doc)
 ;;; lsp-doc.el ends here

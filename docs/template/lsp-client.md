@@ -1,10 +1,13 @@
-# {{client}}
+{{full-name}}
+==========
 
 ## Server
-{{server-url}}
+For information about the LSP server, check the [{{server-name}}]({{server-url}}).
 
-## Instalation command
-{{installation-command}}
+## Instalation
+{{installation}}{{installation-url}}
+
+### Debugger: {{debugger}}
 
 ## Available configurations
 {{configurations}}
