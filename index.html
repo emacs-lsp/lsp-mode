@@ -1198,8 +1198,11 @@ the checks:</p>
 mainstream LSP clients (e. g. <code>VScode</code>, <code>Theia</code>, etc). Here are steps to
 achieve optimal results.</p>
 <ul>
-<li>Use Emacs 27+ with native json support. In order to validate that
-    you match this criteria do <code>M-: (functionp 'json-serialize) RET</code>.
+<li>Use Emacs 27+ with native json support. (Note: this requires that
+    you have [libjansson](<a href="http://www.digip.org/jansson/">http://www.digip.org/jansson/</a>) installed,
+    and that emacs was compiled with `–with-json` passed to
+    `./configure`.) You can check your installation for native json
+    support by running do <code>M-: (functionp 'json-serialize) RET</code>.
     Benchmarks show that Emacs 27 is <code>~15 times</code> faster than Emacs when
     using Elisp json parser implementation.</li>
 <li>
