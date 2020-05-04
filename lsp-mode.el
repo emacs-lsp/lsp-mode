@@ -4243,10 +4243,12 @@ When the heuristic fails to find the prefix start point, return DEFAULT value."
        (-map (-lambda ((item &as &hash
                              "label"
                              "filterText" filter-text
-                             "_emacsStartPoint" start-point))
+                             "_emacsStartPoint" start-point
+                             "score"))
                (propertize (or filter-text label)
                            'lsp-completion-item item
-                           'lsp-completion-start-point start-point))
+                           'lsp-completion-start-point start-point
+                           'lsp-completion-score score))
              it)
        (seq-into it 'list)
        (-group-by (-partial #'get-text-property 0 'lsp-completion-start-point) it)
@@ -4277,8 +4279,13 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                                  it))))
                   (-flatten-n 1)
                   (-sort (-on #'> (lambda (o)
-                                    (or (get-text-property 0 'completion-score o)
-                                        0))))
+                                    (or (get-text-property 0 'sort-score o)
+                                        (let* ((score (* (or (get-text-property 0 'completion-score o)
+                                                             0.001)
+                                                         (or (get-text-property 0 'lsp-completion-score o)
+                                                             0.001))))
+                                          (put-text-property 0 1 'sort-score score o)
+                                          score)))))
                   ;; TODO: pass additional function to sort the candidates
                   (-map (-partial #'get-text-property 0 'lsp-completion-item)))
            lsp-items)))
