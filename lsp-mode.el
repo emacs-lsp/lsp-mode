@@ -67,6 +67,7 @@
 
 (defvar company-backends)
 (defvar c-basic-offset)
+(defvar yas-inhibit-overlay-modification-protection)
 
 (defconst lsp--message-type-face
   `((1 . ,compilation-error-face)
@@ -6669,7 +6670,10 @@ returns the command to execute."
 
    ((and (fboundp 'company-mode))
     (company-mode 1)
-    (add-to-list 'company-backends 'company-capf))))
+    (add-to-list 'company-backends 'company-capf)))
+
+  ;; yas-snippet config
+  (setq-local yas-inhibit-overlay-modification-protection t))
 
 (defvar-local lsp--buffer-deferred nil
   "Whether buffer was loaded via `lsp-deferred'.")
