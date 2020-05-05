@@ -28,7 +28,13 @@
 (require 'dash)
 (require 'seq)
 (require 'ht)
-(require 'lsp-clients)
+(require 'lsp-mode)
+
+(defun lsp-doc--load-all-lsps ()
+  ""
+  (seq-do (lambda (package)
+            (require package nil t))
+          lsp-client-packages))
 
 (defun lsp-doc--clients ()
   "Return a list of hash-map of all clients."
@@ -63,26 +69,67 @@
           (replace-match (lsp-doc--decorate-value key value))
         (replace-match "")))))
 
+(defun lsp-doc--variables (client-name)
+  ""
+  (let* ((group (intern (concat "lsp-" client-name)))
+         (custom-group (get group 'custom-group)))
+    (seq-map
+     (apply-partially #'car)
+     (seq-filter (lambda (p)
+                   (and (consp p)
+                        (eq (cadr p) 'custom-variable)))
+                 custom-group))))
+
+(defun lsp-doc--pretty-default-value (variable)
+  ""
+  (let ((default (default-value variable))
+        (type (get variable 'custom-type)))
+    (if (and (memq type '(file directory))
+             (stringp default))
+        (format "%s" (f-short default))
+      (format "%s" default))))
+
+(defun lsp-doc--variable->value (variable key client)
+  ""
+  (pcase key
+    ("name" (symbol-name variable))
+    ("default" (lsp-doc--pretty-default-value variable))
+    ("documentation" (or (documentation-property variable 'variable-documentation)
+                         ""))
+    (_ "")))
+
+(defun lsp-doc--add-variables (client file)
+  ""
+  (-let* (((&hash "name" client-name) client))
+    (--each (lsp-doc--variables client-name)
+      (with-temp-buffer
+        (insert-file-contents "template/lsp-client-var.md")
+        (while (re-search-forward "{{\\([][:word:]\\[.-]+\\)}}" nil t)
+          (let* ((key (match-string 1))
+                 (value (lsp-doc--variable->value it key client)))
+            (replace-match value t t)))
+        (append-to-file (point-min) (point-max) file)))))
+
 (defun lsp-doc--generate-for (client)
   ""
   (-let* (((&hash "name") client)
          (file (file-truename (concat "lsp-" name ".md"))))
     (unless (file-exists-p file)
-      (copy-file "template/lsp-client.md" file))
-    (with-current-buffer (find-file-noselect file)
-      (goto-char (point-min))
-      (lsp-doc--replace-placeholders client)
-      (save-buffer))))
+      (copy-file "template/lsp-client.md" file)
+      (with-current-buffer (find-file-noselect file)
+        (goto-char (point-min))
+        (lsp-doc--replace-placeholders client)
+        (save-buffer)
+        (lsp-doc--add-variables client file)))))
 
 (defun lsp-doc-generate ()
   "."
   (interactive)
+  (lsp-doc--load-all-lsps)
   (seq-doseq (client (lsp-doc--clients))
     (lsp-doc--generate-for client)))
 
-(lsp-doc--generate-for (seq-first (lsp-doc--clients)))
-
-(lsp-doc-generate)
+;; (lsp-doc--generate-for (seq-first (lsp-doc--clients)))
 
 (provide 'lsp-doc)
 ;;; lsp-doc.el ends here

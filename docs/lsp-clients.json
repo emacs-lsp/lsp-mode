@@ -320,7 +320,7 @@
     "debugger": "Yes"
   },
   {
-    "name": "phsh",
+    "name": "pwsh",
     "full-name": "Powershell",
     "server-name": "PowerShellEditorServices",
     "server-url": "https://github.com/PowerShell/PowerShellEditorServices",

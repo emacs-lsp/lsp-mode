@@ -48,7 +48,7 @@ nav:
       - Perl: lsp-perl.md
       - PHP(recommended): lsp-intelephense.md
       - PHP: lsp-php.md
-      - Powershell: lsp-phsh.md
+      - Powershell: lsp-pwsh.md
       - PureScript: lsp-purescript.md
       - Python: lsp-pyls.md
       - Python(Microsoft): https://emacs-lsp.github.io/lsp-python-ms
