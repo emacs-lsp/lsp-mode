@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/</loc>
+     <lastmod>2020-05-05</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
      <loc>https://emacs-lsp.github.io/lsp-mode/page/languages/</loc>
      <lastmod>2020-05-05</lastmod>
      <changefreq>daily</changefreq>
