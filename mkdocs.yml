@@ -4,80 +4,80 @@ site_url: https://emacs-lsp.github.io/lsp-mode
 nav:
   - Home: README.md
   - Languages:
-    - Ada: lsp-ada.md
+    - page/languages.md
+    - Ada: page/lsp-ada.md
     - Apple Sourcekit: https://emacs-lsp.github.io/lsp-sourcekit
-    - Angular: lsp-angular.md
-    - Bash: lsp-bash.md
-    - C++(ccls): lsp-ccls.md
-    - C++(clangd): lsp-clangd.md
-    - C++(cquery): lsp-cquery.md
-    - C#: lsp-csharp.md
-    - Clojure: lsp-clojure.md
-    - CMake: lsp-cmake.md
-    - Crystal: lsp-crystal.md
-    - CSS/LessCSS/SASS/SCSS: lsp-css.md
+    - Angular: page/lsp-angular.md
+    - Bash: page/lsp-bash.md
+    - C++(ccls): page/lsp-ccls.md
+    - C++(clangd): page/lsp-clangd.md
+    - C++(cquery): page/lsp-cquery.md
+    - C#: page/lsp-csharp.md
+    - Clojure: page/lsp-clojure.md
+    - CMake: page/lsp-cmake.md
+    - Crystal: page/lsp-crystal.md
+    - CSS/LessCSS/SASS/SCSS: page/lsp-css.md
     - Dart: https://emacs-lsp.github.io/lsp-dart
-    - Dhall: lsp-dhall.md
-    - Dockerfile: lsp-dockerfile.md
-    - Elixir(elixir-ls): lsp-elixir.md
-    - Elixir(JakeBecker): lsp-elixir-ls.md
-    - Elm: lsp-elm.md
-    - Erlang: lsp-erlang.md
-    - Eslint: lsp-eslint.md
-    - F#: lsp-fsharp.md
-    - Fortran: lsp-fortran.md
-    - Go(gopls): lsp-gopls.md
-    - Go(bingo): lsp-bingo.md
-    - Groovy: lsp-groovy.md
-    - Hack: lsp-hack.md
-    - HTML: lsp-html.md
+    - Dhall: page/lsp-dhall.md
+    - Dockerfile: page/lsp-dockerfile.md
+    - Elixir(elixir-ls): page/lsp-elixir.md
+    - Elixir(JakeBecker): page/lsp-elixir-ls.md
+    - Elm: page/lsp-elm.md
+    - Erlang: page/lsp-erlang.md
+    - Eslint: page/lsp-eslint.md
+    - F#: page/lsp-fsharp.md
+    - Fortran: page/lsp-fortran.md
+    - Go(gopls): page/lsp-gopls.md
+    - Go(bingo): page/lsp-bingo.md
+    - Groovy: page/lsp-groovy.md
+    - Hack: page/lsp-hack.md
+    - HTML: page/lsp-html.md
     - Haskell: https://emacs-lsp.github.io/lsp-haskell
-    - Lua: lsp-emmy-lua.md
+    - Lua: page/lsp-emmy-lua.md
     - Java: https://emacs-lsp.github.io/lsp-java
-    - JavaScript/TypeScript(sourcegraph): lsp-typescript.md
-    - JavaScript/TypeScript(theia-ide): lsp-typescript-javascript.md
-    - JavaScript Flow: lsp-flow.md
-    - Json: lsp-json.md
-    - Julia: lsp-julia.md
-    - Kotlin: lsp-kotlin.md
+    - JavaScript/TypeScript(sourcegraph): page/lsp-typescript.md
+    - JavaScript/TypeScript(theia-ide): page/lsp-typescript-javascript.md
+    - JavaScript Flow: page/lsp-flow.md
+    - Json: page/lsp-json.md
+    - Julia: page/lsp-julia.md
+    - Kotlin: page/lsp-kotlin.md
     - MSSQL: https://emacs-lsp.github.io/lsp-mssql
-    - Nim: lsp-nim.md
-    - OCaml(ocaml): lsp-ocaml.md
-    - OCaml(icaml-lsp): lsp-ocalm-lsp-server.md
-    - Pascal/Object Pascal: lsp-pascal.md
-    - Perl: lsp-perl.md
-    - PHP(intelephense): lsp-intelephense.md
-    - PHP(felixbecker): lsp-php.md
-    - Powershell: lsp-pwsh.md
-    - PureScript: lsp-purescript.md
-    - Python: lsp-pyls.md
+    - Nim: page/lsp-nim.md
+    - OCaml(ocaml): page/lsp-ocaml.md
+    - OCaml(icaml-lsp): page/lsp-ocalm-lsp-server.md
+    - Pascal/Object Pascal: page/lsp-pascal.md
+    - Perl: page/lsp-perl.md
+    - PHP(intelephense): page/lsp-intelephense.md
+    - PHP(felixbecker): page/lsp-php.md
+    - Powershell: page/lsp-pwsh.md
+    - PureScript: page/lsp-purescript.md
+    - Python: page/lsp-pyls.md
     - Python(Microsoft): https://emacs-lsp.github.io/lsp-python-ms
-    - R: lsp-r.md
-    - Ruby: lsp-solargraph.md
-    - Rust(rls): lsp-rust.md
-    - Rust(rust-analyzer): lsp-rust-analyzer.md
-    - Scala: lsp-metals.md
-    - Terraform: lsp-terraform.md
-    - TeX, LaTeX, etc (digestif): lsp-tex.md
-    - TeX, LaTeX, etc (texlab): lsp-texlab.md
-    - TeX, LaTeX, etc (latex): lsp-latex.md
-    - Verilog/SystemVerilog: lsp-verilog.md
-    - VHDL: lsp-vhdl.md
-    - Vimscript: lsp-vim.md
-    - Vue: lsp-vetur.md
-    - XML: lsp-xml.md
-    - YAML: lsp-yaml.md
+    - R: page/lsp-r.md
+    - Ruby: page/lsp-solargraph.md
+    - Rust: page/lsp-rust.md
+    - Scala: page/lsp-metals.md
+    - Terraform: page/lsp-terraform.md
+    - TeX, LaTeX, etc (digestif): page/lsp-tex.md
+    - TeX, LaTeX, etc (texlab): page/lsp-texlab.md
+    - TeX, LaTeX, etc (latex): page/lsp-latex.md
+    - Verilog/SystemVerilog: page/lsp-verilog.md
+    - VHDL: page/lsp-vhdl.md
+    - Vimscript: page/lsp-vim.md
+    - Vue: page/lsp-vetur.md
+    - XML: page/lsp-xml.md
+    - YAML: page/lsp-yaml.md
   - Features:
-    - features.md
+    - page/features.md
     - Debugging: https://emacs-lsp.github.io/dap-mode
     - UI: https://emacs-lsp.github.io/lsp-ui
     - Treemacs: https://github.com/emacs-lsp/lsp-treemacs
     - Helm: https://github.com/emacs-lsp/helm-lsp
     - Ivy: https://github.com/emacs-lsp/lsp-ivy
   - Gallery:
-      - gallery.md
+      - page/gallery.md
   - Changelog:
-      - CHANGELOG.md
+      - page/CHANGELOG.md
 
 extra_css:
   - stylesheets/extra.css
