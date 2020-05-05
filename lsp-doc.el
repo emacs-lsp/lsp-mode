@@ -103,7 +103,7 @@
   (-let* (((&hash "name" client-name) client))
     (--each (lsp-doc--variables client-name)
       (with-temp-buffer
-        (insert-file-contents "template/lsp-client-var.md")
+        (insert-file-contents "../template/lsp-client-var.md")
         (while (re-search-forward "{{\\([][:word:]\\[.-]+\\)}}" nil t)
           (let* ((key (match-string 1))
                  (value (lsp-doc--variable->value it key client)))
@@ -113,7 +113,7 @@
 (defun lsp-doc--generate-for (client)
   "Generate documentation for CLIENT."
   (-let* (((&hash "name") client)
-         (file (file-truename (concat "lsp-" name ".md"))))
+         (file (file-truename (concat "page/lsp-" name ".md"))))
     (unless (file-exists-p file)
       (copy-file "template/lsp-client.md" file)
       (with-current-buffer (find-file-noselect file)
