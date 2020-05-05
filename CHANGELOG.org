@@ -1,4 +1,5 @@
-* Release 6.3
+* Changelog
+** Release 6.3
   * Implemented ~company-capf~ integration. ~company-lsp~ is no longer supported.
   * Dropped support for dart language server in favour of dart SDK(breaking)
   * Added verilog support for LSP using hdl-checker
@@ -44,7 +45,7 @@
   * Support bash language server glob pattern option (#1594)
   * Use pagebreaks for ~lsp-describe-thing-at-point~
   * lsp-mode: Eliminate quadratic-time index-building for imenu. (#1616)
-* Release 6.2
+** Release 6.2
   * Support dynamic rename registration
   * Add basic support for style semantic highlighting
   * Added Haxe language server integration
@@ -69,8 +70,8 @@
   * Use =c-basic-offset= when in =cc-mode=.
   * Add support for Crystal via scry (#1218).
   * Implement =textDocument/documentColor= support.
-* Release 6.1
-** Support for new languages/language servers:
+** Release 6.1
+*** Support for new languages/language servers:
    * [[https://github.com/fwcd/KotlinLanguageServer][Kotlin Language Server]] (Thanks to Jon Carr)
    * [[https://github.com/golang/go/wiki/gopls][gopls]] Language Server for Go
    * [[https://github.com/angelozerr/lsp4xml][XML Language Server (lsp4xml)]]
@@ -81,7 +82,7 @@
    * [[https://github.com/fsharp/FsAutoComplete][FsAutoComplete]] for F# (Thanks to Reed Mullanix)
    * Added =Erlang= support via [[https://github.com/erlang-ls/erlang_ls][erlang_ls]]
    * Added =Dockerfile= support via [[https://github.com/rcjsuen/dockerfile-language-server-nodejs][dockerfile-language-server-nodejs]]
-** New logging options
+*** New logging options
    - =lsp-mode= now logs to buffer =*lsp-log*=, instead of =*Messages*=. This
      can be controlled with the variable =lsp-log-max= (Thanks to Thomas Fini Hansen).
    - If =lsp-print-performance= is non-nil, =lsp-mode= will log a corresponding
@@ -91,7 +92,7 @@
      project root. These logs can be saved to a file and viewed using the
      [[https://microsoft.github.io/language-server-protocol/inspector/][LSP Inspector]].
 
-** LSP Methods
+*** LSP Methods
    - Add support for [[https://microsoft.github.io/language-server-protocol/specification#textDocument_prepareRename][textDocument/prepareRename]]. If supported by the language
      server, all renaming operations will be tested for validity.
    - Add support for [[https://microsoft.github.io/language-server-protocol/specification#workspace_didChangeWatchedFiles][file watches]].
@@ -107,7 +108,7 @@
    - Added =lsp-find-definition-mouse= and bound to =C-<down-mouse-1>=
    - Added =lsp-extend-selection= as a frontend of new LSP method =textDocument/extendSelection=
 
-** Other changes
+*** Other changes
   - Add project logo (thanks to Jon Carr).
   - Created an integration test suite for =lsp-mode= (See directory =features=).
   - If available, using the native JSON API introduced in Emacs 27.1.
@@ -141,7 +142,7 @@
   - Added Emacs 26.x to CI
   - Fixed handling of stderr when running over =TRAMP=.
   - Implemented support for running the language server in =Docker= container over local files.
-* Release 6.0
+** Release 6.0
   - ~lsp-mode~ now have single entry point ~lsp~ for all language and based on the major mode starts the corresponding language servers.
   - Added ~flymake~ integration.
   - ~lsp~ automatically enables and configures ~company-lsp~, ~lsp-ui~, ~yasnippet~, or ~flymake~ if they are present so no additional configuration is needed except installing the packages. That behavior could be disabled by setting ~lsp-auto-configure~ to ~nil~.
