@@ -4798,11 +4798,12 @@ When language is nil render as markup if `markdown-mode' is loaded."
    ((seq-empty-p actions) (signal 'lsp-no-code-actions nil))
    ((and (eq (seq-length actions) 1) lsp-auto-execute-action)
     (lsp-seq-first actions))
-   (t (lsp--completing-read "Select code action: "
-                            (seq-into actions 'list)
-                            (-lambda ((&hash "title" "command"))
-                              (or title command))
-                            nil t))))
+   (t (let ((completion-ignore-case t))
+        (lsp--completing-read "Select code action: "
+                              (seq-into actions 'list)
+                              (-lambda ((&hash "title" "command"))
+                                (or title command))
+                              nil t)))))
 
 (defun lsp-join-region (beg end)
   "Apply join-line from BEG to END.
