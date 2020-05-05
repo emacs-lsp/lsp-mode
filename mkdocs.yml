@@ -3,6 +3,10 @@ site_url: https://emacs-lsp.github.io/lsp-mode
 
 nav:
   - Home: README.md
+  - Installation: page/installation.md
+  - Keybindings: page/keybindings.md
+  - FAQ: page/faq.md
+  - Adding new language: page/adding-new-language.md
   - Languages:
     - page/languages.md
     - Ada: page/lsp-ada.md
