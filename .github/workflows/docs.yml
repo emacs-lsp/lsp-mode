@@ -18,7 +18,7 @@ jobs:
       - name: CHANGELOG.org -> CHANGELOG.md
         uses: docker://pandoc/core:2.9
         with:
-          args: -s doc/CHANGELOG.org -t gfm -o docs/CHANGELOG.md
+          args: -s CHANGELOG.org -t gfm -o docs/CHANGELOG.md
 
       - uses: purcell/setup-emacs@master
         with:
