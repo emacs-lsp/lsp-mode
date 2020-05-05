@@ -1,6 +1,0 @@
-[id="lsp-perl"]
-=== Perl support: `lsp-perl`
-`lsp-perl` provides support for Perl using
-https://github.com/richterger/Perl-LanguageServer[Perl-LanguageServer].
-
-include::lsp-perl-vars.adoc[]

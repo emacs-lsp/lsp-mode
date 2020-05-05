@@ -1,6 +1,0 @@
-[id="lsp-clangd"]
-=== Clangd support: `lsp-clangd`
-`lsp-clangd` provides support for C-like languages (C, C++, Objective-C/++)
-using https://clang.llvm.org/extra/clangd/[clangd].
-
-include::lsp-clangd-vars.adoc[]

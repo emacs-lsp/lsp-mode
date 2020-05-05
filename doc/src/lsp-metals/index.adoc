@@ -1,6 +1,0 @@
-[id="lsp-metals"]
-=== Scala support: `lsp-metals`
-`lsp-metals` provides support for Scala using
-https://scalameta.org/metals/[Metals].
-
-include::lsp-metals-vars.adoc[]

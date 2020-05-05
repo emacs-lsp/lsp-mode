@@ -1,5 +1,0 @@
-[id="lsp-intelephense"]
-=== PHP support: `lsp-intelephense`
-`lsp-php` provides support for PHP using http://intelephense.net/[Intelephense].
-
-include::lsp-intelephense-vars.adoc[]

@@ -1,6 +1,0 @@
-[id="lsp-css"]
-=== CSS support: `lsp-css`
-`lsp-css` provides support for CSS using
-https://github.com/vscode-langservers/vscode-css-languageserver-bin[vscode-css-languageserver].
-
-include::lsp-css-vars.adoc[]
