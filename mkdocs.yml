@@ -8,9 +8,9 @@ nav:
       - Apple Sourcekit: https://emacs-lsp.github.io/lsp-sourcekit
       - Angular: lsp-angular.md
       - Bash: lsp-bash.md
-      - C++: lsp-ccls.md
-      - C++: lsp-clangd.md
-      - C++: lsp-cquery.md
+      - C++(ccls): lsp-ccls.md
+      - C++(clangd): lsp-clangd.md
+      - C++(cquery): lsp-cquery.md
       - C#: lsp-csharp.md
       - Clojure: lsp-clojure.md
       - CMake: lsp-cmake.md
@@ -19,48 +19,48 @@ nav:
       - Dart: https://emacs-lsp.github.io/lsp-dart
       - Dhall: lsp-dhall.md
       - Dockerfile: lsp-dockerfile.md
-      - Elixir: lsp-elixir.md
-      - Elixir: lsp-elixir-ls.md
+      - Elixir(elixir-ls): lsp-elixir.md
+      - Elixir(JakeBecker): lsp-elixir-ls.md
       - Elm: lsp-elm.md
       - Erlang: lsp-erlang.md
       - Eslint: lsp-eslint.md
       - F#: lsp-fsharp.md
       - Fortran: lsp-fortran.md
-      - Go: lsp-gopls.md
-      - Go: lsp-bingo.md
+      - Go(gopls): lsp-gopls.md
+      - Go(bingo): lsp-bingo.md
       - Groovy: lsp-groovy.md
       - Hack: lsp-hack.md
       - HTML: lsp-html.md
       - Haskell: https://emacs-lsp.github.io/lsp-haskell
       - Lua: lsp-emmy-lua.md
       - Java: https://emacs-lsp.github.io/lsp-java
-      - JavaScript/TypeScript: lsp-typescript-javascript.md
-      - JavaScript/TypeScript: lsp-typescript.md
+      - JavaScript/TypeScript(sourcegraph): lsp-typescript.md
+      - JavaScript/TypeScript(theia-ide): lsp-typescript-javascript.md
       - JavaScript Flow: lsp-flow.md
       - Json: lsp-json.md
       - Julia: lsp-julia.md
       - Kotlin: lsp-kotlin.md
       - MSSQL: https://emacs-lsp.github.io/lsp-mssql
       - Nim: lsp-nim.md
-      - OCaml: lsp-ocaml.md
-      - OCaml: lsp-ocalm-lsp-server.md
+      - OCaml(ocaml): lsp-ocaml.md
+      - OCaml(icaml-lsp): lsp-ocalm-lsp-server.md
       - Pascal/Object Pascal: lsp-pascal.md
       - Perl: lsp-perl.md
-      - PHP(recommended): lsp-intelephense.md
-      - PHP: lsp-php.md
+      - PHP(intelephense): lsp-intelephense.md
+      - PHP(felixbecker): lsp-php.md
       - Powershell: lsp-pwsh.md
       - PureScript: lsp-purescript.md
       - Python: lsp-pyls.md
       - Python(Microsoft): https://emacs-lsp.github.io/lsp-python-ms
       - R: lsp-r.md
       - Ruby: lsp-solargraph.md
-      - Rust: lsp-rust.md
-      - Rust: lsp-rust-analyzer.md
+      - Rust(rls): lsp-rust.md
+      - Rust(rust-analyzer): lsp-rust-analyzer.md
       - Scala: lsp-metals.md
       - Terraform: lsp-terraform.md
-      - TeX, LaTeX, etc.: lsp-tex.md
-      - TeX, LaTeX, etc.: lsp-texlab.md
-      - TeX, LaTeX, etc.: lsp-latex.md
+      - TeX, LaTeX, etc (digestif): lsp-tex.md
+      - TeX, LaTeX, etc (texlab): lsp-texlab.md
+      - TeX, LaTeX, etc (latex): lsp-latex.md
       - Verilog/SystemVerilog: lsp-verilog.md
       - VHDL: lsp-vhdl.md
       - Vimscript: lsp-vim.md
