@@ -246,8 +246,9 @@ $GOPATH/pkg/mod along with the value of
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda () (cons lsp-gopls-server-path lsp-gopls-server-args)))
+                                   (lambda () (cons lsp-go-gopls-server-path lsp-go-gopls-server-args)))
                   :major-modes '(go-mode)
+                  :language-id "go"
                   :priority 0
                   :server-id 'gopls
                   :library-folders-fn #'lsp-go--library-default-directories))
