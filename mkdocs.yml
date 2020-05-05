@@ -115,7 +115,7 @@ markdown_extensions:
   - codehilite
   - toc:
       permalink: '#'
- - pymdownx.emoji:
+  - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
 
