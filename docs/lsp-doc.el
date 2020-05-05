@@ -119,7 +119,7 @@
       (with-current-buffer (find-file-noselect file)
         (goto-char (point-min))
         (lsp-doc--replace-placeholders client)
-        (save-buffer)
+        (save-buffer 0)
         (lsp-doc--add-variables client file)))))
 
 (defun lsp-doc-generate ()
