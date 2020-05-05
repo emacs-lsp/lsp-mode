@@ -1,5 +1,0 @@
-[id="lsp-yaml"]
-=== YAML support: `lsp-yaml`
-`lsp-yaml` provides support for YAML using https://github.com/redhat-developer/yaml-language-server[yaml-language-server]
-
-include::lsp-yaml-vars.adoc[]

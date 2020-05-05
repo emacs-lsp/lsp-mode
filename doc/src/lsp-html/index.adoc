@@ -1,6 +1,0 @@
-[id="lsp-html"]
-=== HTML support: `lsp-html`
-`lsp-html` provides support for HTML using
-https://github.com/vscode-langservers/vscode-html-languageserver-bin[vscode-html-languageserver].
-
-include::lsp-html-vars.adoc[]

@@ -1,6 +1,0 @@
-[id="lsp-solargraph]
-=== Ruby support: `lsp-solargraph`
-`lsp-solargraph` provides support for Ruby using
-https://github.com/castwide/solargraph[Solargraph].
-
-include::lsp-solargraph-vars.adoc[]

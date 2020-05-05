@@ -1,3 +1,0 @@
-[id="lsp-dart"]
-=== Dart support: `lsp-dart`
-For details on how to use LSP with Dart, refer to the https://github.com/emacs-lsp/lsp-dart[lsp-dart] README.

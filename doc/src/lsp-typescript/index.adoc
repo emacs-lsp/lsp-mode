@@ -1,6 +1,0 @@
-[id="lsp-typescript"]
-=== Typescript support: `lsp-typescript`
-`lsp-typescript` provides support for TypeScript, using
-https://github.com/theia-ide/typescript-language-server[Theia/Typefox's TypeScript Language Server]
-
-include::lsp-typescript-vars.adoc[]

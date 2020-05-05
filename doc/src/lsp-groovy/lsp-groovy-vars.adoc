@@ -1,9 +1,0 @@
-[id="lsp-groovy-vars"]
-==== `lsp-groovy` settings
-
-[id="lsp-groovy-server-file"]
-- `lsp-groovy-server-file`
-____
-Default value: `pass:["~/.emacs.d/groovy-language-server/groovy-language-server-all.jar"]`
-
-____

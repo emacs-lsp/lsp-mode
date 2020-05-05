@@ -18,7 +18,18 @@ jobs:
       - name: CHANGELOG.org -> CHANGELOG.md
         uses: docker://pandoc/core:2.9
         with:
-          args: -s doc/CHANGELOG.org -t gfm -o docs/CHANGELOG.md
+          args: -s CHANGELOG.org -t gfm -o docs/CHANGELOG.md
+
+      - uses: purcell/setup-emacs@master
+        with:
+          version: 26.3
+
+      - uses: conao3/setup-cask@master
+        with:
+          version: 0.8.4
+
+      - name: Generate LSPs docs
+        run: 'make docs'
 
       - name: MkDocs
         run: |

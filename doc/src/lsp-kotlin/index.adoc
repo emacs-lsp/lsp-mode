@@ -1,6 +1,0 @@
-[id="lsp-kotlin"]
-=== Kotlin support: `lsp-kotlin`
-`lsp-kotlin` provides support for Kotlin using
-https://github.com/fwcd/KotlinLanguageServer[KotlinLanguageServer].
-
-include::lsp-kotlin-vars.adoc[]

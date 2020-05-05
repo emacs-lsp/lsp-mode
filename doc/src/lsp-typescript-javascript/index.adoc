@@ -1,6 +1,0 @@
-[id="lsp-typescript-javascript"]
-=== Typescript support: `lsp-typescript-javascript`
-`lsp-javascript-typescript` provides support for Javascript and TypeScript, using
-https://github.com/sourcegraph/javascript-typescript-langserver[Sourcegraph's JavaScript/TypeScript language server]
-
-include::lsp-typescript-javascript-vars.adoc[]

@@ -1,6 +1,0 @@
-[id="lsp-groovy"]
-=== Groovy support: `lsp-groovy`
-`lsp-groovy` provides support for Groovy using prominic's
-https://github.com/prominic/groovy-language-server[groovy-language-server].
-
-include::lsp-groovy-vars.adoc[]
