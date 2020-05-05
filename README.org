@@ -176,7 +176,7 @@
     LSP clients (e. g. =VScode=, =Theia=, etc). Here are steps to achieve
     optimal results.
     - Use Emacs 27+ with native json support. (Note: this requires that you have
-      [libjansson](http://www.digip.org/jansson/) installed, and that emacs was
+      [[http://www.digip.org/jansson/][libjansson]] installed, and that emacs was
       compiled with `--with-json` passed to `./configure`.) You can check your
       installation for native json support by running do
       =M-: (functionp 'json-serialize) RET=. Benchmarks
