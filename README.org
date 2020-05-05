@@ -242,7 +242,7 @@
    ~lsp-clients.el~ while others require installing additional packages which provide
    server specific functionality.
 
-   For more details of all supported languages, check the [[https://emacs-lsp.github.io/lsp-mode/languages][Languages documentation page]].
+   For more details of all supported languages, check the [[https://emacs-lsp.github.io/lsp-mode/page/languages][Languages documentation page]].
 
 ** Commands
    When using ~lsp-mode~ most of the features depend on server capabilities.
