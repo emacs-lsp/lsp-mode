@@ -2,7 +2,7 @@ site_name: LSP Mode
 site_url: https://emacs-lsp.github.io/lsp-mode
 
 nav:
-  - Home: page/README.md
+  - Home: README.md
   - Languages:
     - page/languages.md
     - Ada: page/lsp-ada.md
