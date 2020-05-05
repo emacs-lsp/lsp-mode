@@ -22,7 +22,6 @@ before_install:
   - wget 'https://raw.githubusercontent.com/flycheck/emacs-travis/master/emacs-travis.mk'
   - make -f emacs-travis.mk install_gnutls install_emacs
   - make -f emacs-travis.mk install_cask
-  - docker pull asciidoctor/docker-asciidoctor
   - |
     case $EMACS_VERSION in
     25.*) EMACS_GNUPGHOME=.cask/$EMACS_VERSION/elpa/gnupg ;;
@@ -43,10 +42,8 @@ script:
     if (( ${EMACS_VERSION:0:2} < 26 )); then
         cask exec ecukes
     fi
-  - docker run -v $TRAVIS_BUILD_DIR:/src/ asciidoctor/docker-asciidoctor make -C /src/ docs
 after_success:
   - bash <(curl -s https://codecov.io/bash
-  - cp -R doc/output/ output/
 notifications:
   webhooks:
     urls:
@@ -54,13 +51,3 @@ notifications:
     on_success: change
     on_failure: always
     on_start: never
-deploy:
-  provider: pages
-  skip_cleanup: true
-  github_token: $GH_TOKEN
-  keep_history: true
-  on:
-    branch: master
-    condition: $EMACS_VERSION = 25.3
-  target_branch: gh-pages
-  local_dir: output
