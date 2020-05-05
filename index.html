@@ -9,19 +9,19 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/">
       
       
-      <link rel="shortcut icon" href="../examples/logo-mini.png">
+      <link rel="shortcut icon" href="examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.1, mkdocs-material-5.1.5">
     
     
       
-        <title>Index - LSP Mode</title>
+        <title>LSP Mode</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.df84b5fe.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.df84b5fe.min.css">
       
       
     
@@ -35,7 +35,7 @@
     
     
     
-      <link rel="stylesheet" href="../stylesheets/extra.css">
+      <link rel="stylesheet" href="stylesheets/extra.css">
     
     
       
@@ -65,7 +65,7 @@
   <nav class="md-header-nav md-grid" aria-label="Header">
     <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode" class="md-header-nav__button md-logo" aria-label="LSP Mode">
       
-  <img src="../examples/logo-mini.png" alt="logo">
+  <img src="examples/logo-mini.png" alt="logo">
 
     </a>
     <label class="md-header-nav__button md-icon" for="__drawer">
@@ -79,7 +79,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              Index
+              Home
             
           </span>
         </div>
@@ -146,13 +146,21 @@
     <ul class="md-tabs__list">
       
         
+  <li class="md-tabs__item">
+    
+      <a href="." class="md-tabs__link md-tabs__link--active">
+        Home
+      </a>
+    
+  </li>
+
       
         
   
   
     <li class="md-tabs__item">
       
-        <a href="languages/" class="md-tabs__link">
+        <a href="page/languages/" class="md-tabs__link">
           Languages
         </a>
       
@@ -165,7 +173,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="features/" class="md-tabs__link">
+        <a href="page/features/" class="md-tabs__link">
           Features
         </a>
       
@@ -178,7 +186,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="gallery/" class="md-tabs__link">
+        <a href="page/gallery/" class="md-tabs__link">
           Gallery
         </a>
       
@@ -191,7 +199,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="CHANGELOG/" class="md-tabs__link">
+        <a href="page/CHANGELOG/" class="md-tabs__link">
           Changelog
         </a>
       
@@ -215,7 +223,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode" class="md-nav__button md-logo" aria-label="LSP Mode">
       
-  <img src="../examples/logo-mini.png" alt="logo">
+  <img src="examples/logo-mini.png" alt="logo">
 
     </a>
     LSP Mode
@@ -240,11 +248,284 @@
       
       
 
+  
 
-  <li class="md-nav__item">
-    <a href="../README.md" title="Home" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Home
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="." title="Home" class="md-nav__link md-nav__link--active">
       Home
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why" class="md-nav__link">
+    Why?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#presentationsdemos" class="md-nav__link">
+    Presentations/demos
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-via-melpa" class="md-nav__link">
+    Install via melpa
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install-language-server" class="md-nav__link">
+    Install language server
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-lsp-mode" class="md-nav__link">
+    Configure lsp-mode
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    Performance
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-does-it-work" class="md-nav__link">
+    How does it work?
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-languages" class="md-nav__link">
+    Supported languages
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commands" class="md-nav__link">
+    Commands
+  </a>
+  
+    <nav class="md-nav" aria-label="Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#which-key-integration" class="md-nav__link">
+    which-key integration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modeline-errors" class="md-nav__link">
+    Modeline errors
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    Settings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extensions" class="md-nav__link">
+    Extensions
+  </a>
+  
+    <nav class="md-nav" aria-label="Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tramp" class="md-nav__link">
+    TRAMP
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    Limitations
+  </a>
+  
+    <nav class="md-nav" aria-label="Limitations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#file-watches" class="md-nav__link">
+    File watches
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributions" class="md-nav__link">
+    Contributions
+  </a>
+  
+    <nav class="md-nav" aria-label="Contributions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#members" class="md-nav__link">
+    Members
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    Troubleshooting
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-support-for-languages" class="md-nav__link">
+    Adding support for languages
+  </a>
+  
+    <nav class="md-nav" aria-label="Adding support for languages">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#registering-server" class="md-nav__link">
+    Registering server
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sections" class="md-nav__link">
+    Sections
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq" class="md-nav__link">
+    FAQ
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changelog" class="md-nav__link">
+    Changelog
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    See also
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
     
@@ -279,7 +560,7 @@
 
 
   <li class="md-nav__item">
-    <a href="languages/" title="Languages" class="md-nav__link">
+    <a href="page/languages/" title="Languages" class="md-nav__link">
       Languages
     </a>
   </li>
@@ -291,7 +572,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-ada/" title="Ada" class="md-nav__link">
+    <a href="page/lsp-ada/" title="Ada" class="md-nav__link">
       Ada
     </a>
   </li>
@@ -315,7 +596,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-angular/" title="Angular" class="md-nav__link">
+    <a href="page/lsp-angular/" title="Angular" class="md-nav__link">
       Angular
     </a>
   </li>
@@ -327,7 +608,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-bash/" title="Bash" class="md-nav__link">
+    <a href="page/lsp-bash/" title="Bash" class="md-nav__link">
       Bash
     </a>
   </li>
@@ -339,7 +620,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-ccls/" title="C++(ccls)" class="md-nav__link">
+    <a href="page/lsp-ccls/" title="C++(ccls)" class="md-nav__link">
       C++(ccls)
     </a>
   </li>
@@ -351,7 +632,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-clangd/" title="C++(clangd)" class="md-nav__link">
+    <a href="page/lsp-clangd/" title="C++(clangd)" class="md-nav__link">
       C++(clangd)
     </a>
   </li>
@@ -363,7 +644,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-cquery/" title="C++(cquery)" class="md-nav__link">
+    <a href="page/lsp-cquery/" title="C++(cquery)" class="md-nav__link">
       C++(cquery)
     </a>
   </li>
@@ -375,7 +656,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-csharp/" title="C#" class="md-nav__link">
+    <a href="page/lsp-csharp/" title="C#" class="md-nav__link">
       C#
     </a>
   </li>
@@ -387,7 +668,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-clojure/" title="Clojure" class="md-nav__link">
+    <a href="page/lsp-clojure/" title="Clojure" class="md-nav__link">
       Clojure
     </a>
   </li>
@@ -399,7 +680,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-cmake/" title="CMake" class="md-nav__link">
+    <a href="page/lsp-cmake/" title="CMake" class="md-nav__link">
       CMake
     </a>
   </li>
@@ -411,7 +692,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-crystal/" title="Crystal" class="md-nav__link">
+    <a href="page/lsp-crystal/" title="Crystal" class="md-nav__link">
       Crystal
     </a>
   </li>
@@ -423,7 +704,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-css/" title="CSS/LessCSS/SASS/SCSS" class="md-nav__link">
+    <a href="page/lsp-css/" title="CSS/LessCSS/SASS/SCSS" class="md-nav__link">
       CSS/LessCSS/SASS/SCSS
     </a>
   </li>
@@ -447,7 +728,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-dhall/" title="Dhall" class="md-nav__link">
+    <a href="page/lsp-dhall/" title="Dhall" class="md-nav__link">
       Dhall
     </a>
   </li>
@@ -459,7 +740,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-dockerfile/" title="Dockerfile" class="md-nav__link">
+    <a href="page/lsp-dockerfile/" title="Dockerfile" class="md-nav__link">
       Dockerfile
     </a>
   </li>
@@ -471,7 +752,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-elixir/" title="Elixir(elixir-ls)" class="md-nav__link">
+    <a href="page/lsp-elixir/" title="Elixir(elixir-ls)" class="md-nav__link">
       Elixir(elixir-ls)
     </a>
   </li>
@@ -483,7 +764,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-elixir-ls/" title="Elixir(JakeBecker)" class="md-nav__link">
+    <a href="page/lsp-elixir-ls/" title="Elixir(JakeBecker)" class="md-nav__link">
       Elixir(JakeBecker)
     </a>
   </li>
@@ -495,7 +776,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-elm/" title="Elm" class="md-nav__link">
+    <a href="page/lsp-elm/" title="Elm" class="md-nav__link">
       Elm
     </a>
   </li>
@@ -507,7 +788,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-erlang/" title="Erlang" class="md-nav__link">
+    <a href="page/lsp-erlang/" title="Erlang" class="md-nav__link">
       Erlang
     </a>
   </li>
@@ -519,7 +800,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-eslint/" title="Eslint" class="md-nav__link">
+    <a href="page/lsp-eslint/" title="Eslint" class="md-nav__link">
       Eslint
     </a>
   </li>
@@ -531,7 +812,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-fsharp/" title="F#" class="md-nav__link">
+    <a href="page/lsp-fsharp/" title="F#" class="md-nav__link">
       F#
     </a>
   </li>
@@ -543,7 +824,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-fortran/" title="Fortran" class="md-nav__link">
+    <a href="page/lsp-fortran/" title="Fortran" class="md-nav__link">
       Fortran
     </a>
   </li>
@@ -555,7 +836,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-gopls/" title="Go(gopls)" class="md-nav__link">
+    <a href="page/lsp-gopls/" title="Go(gopls)" class="md-nav__link">
       Go(gopls)
     </a>
   </li>
@@ -567,7 +848,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-bingo/" title="Go(bingo)" class="md-nav__link">
+    <a href="page/lsp-bingo/" title="Go(bingo)" class="md-nav__link">
       Go(bingo)
     </a>
   </li>
@@ -579,7 +860,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-groovy/" title="Groovy" class="md-nav__link">
+    <a href="page/lsp-groovy/" title="Groovy" class="md-nav__link">
       Groovy
     </a>
   </li>
@@ -591,7 +872,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-hack/" title="Hack" class="md-nav__link">
+    <a href="page/lsp-hack/" title="Hack" class="md-nav__link">
       Hack
     </a>
   </li>
@@ -603,7 +884,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-html/" title="HTML" class="md-nav__link">
+    <a href="page/lsp-html/" title="HTML" class="md-nav__link">
       HTML
     </a>
   </li>
@@ -627,7 +908,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-emmy-lua/" title="Lua" class="md-nav__link">
+    <a href="page/lsp-emmy-lua/" title="Lua" class="md-nav__link">
       Lua
     </a>
   </li>
@@ -651,7 +932,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-typescript/" title="JavaScript/TypeScript(sourcegraph)" class="md-nav__link">
+    <a href="page/lsp-typescript/" title="JavaScript/TypeScript(sourcegraph)" class="md-nav__link">
       JavaScript/TypeScript(sourcegraph)
     </a>
   </li>
@@ -663,7 +944,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-typescript-javascript/" title="JavaScript/TypeScript(theia-ide)" class="md-nav__link">
+    <a href="page/lsp-typescript-javascript/" title="JavaScript/TypeScript(theia-ide)" class="md-nav__link">
       JavaScript/TypeScript(theia-ide)
     </a>
   </li>
@@ -675,7 +956,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-flow/" title="JavaScript Flow" class="md-nav__link">
+    <a href="page/lsp-flow/" title="JavaScript Flow" class="md-nav__link">
       JavaScript Flow
     </a>
   </li>
@@ -687,7 +968,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-json/" title="Json" class="md-nav__link">
+    <a href="page/lsp-json/" title="Json" class="md-nav__link">
       Json
     </a>
   </li>
@@ -699,7 +980,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-julia/" title="Julia" class="md-nav__link">
+    <a href="page/lsp-julia/" title="Julia" class="md-nav__link">
       Julia
     </a>
   </li>
@@ -711,7 +992,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-kotlin/" title="Kotlin" class="md-nav__link">
+    <a href="page/lsp-kotlin/" title="Kotlin" class="md-nav__link">
       Kotlin
     </a>
   </li>
@@ -735,7 +1016,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-nim/" title="Nim" class="md-nav__link">
+    <a href="page/lsp-nim/" title="Nim" class="md-nav__link">
       Nim
     </a>
   </li>
@@ -747,7 +1028,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-ocaml/" title="OCaml(ocaml)" class="md-nav__link">
+    <a href="page/lsp-ocaml/" title="OCaml(ocaml)" class="md-nav__link">
       OCaml(ocaml)
     </a>
   </li>
@@ -759,7 +1040,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-ocalm-lsp-server/" title="OCaml(icaml-lsp)" class="md-nav__link">
+    <a href="page/lsp-ocalm-lsp-server/" title="OCaml(icaml-lsp)" class="md-nav__link">
       OCaml(icaml-lsp)
     </a>
   </li>
@@ -771,7 +1052,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-pascal/" title="Pascal/Object Pascal" class="md-nav__link">
+    <a href="page/lsp-pascal/" title="Pascal/Object Pascal" class="md-nav__link">
       Pascal/Object Pascal
     </a>
   </li>
@@ -783,7 +1064,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-perl/" title="Perl" class="md-nav__link">
+    <a href="page/lsp-perl/" title="Perl" class="md-nav__link">
       Perl
     </a>
   </li>
@@ -795,7 +1076,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-intelephense/" title="PHP(intelephense)" class="md-nav__link">
+    <a href="page/lsp-intelephense/" title="PHP(intelephense)" class="md-nav__link">
       PHP(intelephense)
     </a>
   </li>
@@ -807,7 +1088,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-php/" title="PHP(felixbecker)" class="md-nav__link">
+    <a href="page/lsp-php/" title="PHP(felixbecker)" class="md-nav__link">
       PHP(felixbecker)
     </a>
   </li>
@@ -819,7 +1100,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-pwsh/" title="Powershell" class="md-nav__link">
+    <a href="page/lsp-pwsh/" title="Powershell" class="md-nav__link">
       Powershell
     </a>
   </li>
@@ -831,7 +1112,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-purescript/" title="PureScript" class="md-nav__link">
+    <a href="page/lsp-purescript/" title="PureScript" class="md-nav__link">
       PureScript
     </a>
   </li>
@@ -843,7 +1124,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-pyls/" title="Python" class="md-nav__link">
+    <a href="page/lsp-pyls/" title="Python" class="md-nav__link">
       Python
     </a>
   </li>
@@ -867,7 +1148,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-r/" title="R" class="md-nav__link">
+    <a href="page/lsp-r/" title="R" class="md-nav__link">
       R
     </a>
   </li>
@@ -879,7 +1160,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-solargraph/" title="Ruby" class="md-nav__link">
+    <a href="page/lsp-solargraph/" title="Ruby" class="md-nav__link">
       Ruby
     </a>
   </li>
@@ -891,7 +1172,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-rust/" title="Rust" class="md-nav__link">
+    <a href="page/lsp-rust/" title="Rust" class="md-nav__link">
       Rust
     </a>
   </li>
@@ -903,7 +1184,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-metals/" title="Scala" class="md-nav__link">
+    <a href="page/lsp-metals/" title="Scala" class="md-nav__link">
       Scala
     </a>
   </li>
@@ -915,7 +1196,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-terraform/" title="Terraform" class="md-nav__link">
+    <a href="page/lsp-terraform/" title="Terraform" class="md-nav__link">
       Terraform
     </a>
   </li>
@@ -927,7 +1208,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-tex/" title="TeX, LaTeX, etc (digestif)" class="md-nav__link">
+    <a href="page/lsp-tex/" title="TeX, LaTeX, etc (digestif)" class="md-nav__link">
       TeX, LaTeX, etc (digestif)
     </a>
   </li>
@@ -939,7 +1220,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-texlab/" title="TeX, LaTeX, etc (texlab)" class="md-nav__link">
+    <a href="page/lsp-texlab/" title="TeX, LaTeX, etc (texlab)" class="md-nav__link">
       TeX, LaTeX, etc (texlab)
     </a>
   </li>
@@ -951,7 +1232,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-latex/" title="TeX, LaTeX, etc (latex)" class="md-nav__link">
+    <a href="page/lsp-latex/" title="TeX, LaTeX, etc (latex)" class="md-nav__link">
       TeX, LaTeX, etc (latex)
     </a>
   </li>
@@ -963,7 +1244,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-verilog/" title="Verilog/SystemVerilog" class="md-nav__link">
+    <a href="page/lsp-verilog/" title="Verilog/SystemVerilog" class="md-nav__link">
       Verilog/SystemVerilog
     </a>
   </li>
@@ -975,7 +1256,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-vhdl/" title="VHDL" class="md-nav__link">
+    <a href="page/lsp-vhdl/" title="VHDL" class="md-nav__link">
       VHDL
     </a>
   </li>
@@ -987,7 +1268,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-vim/" title="Vimscript" class="md-nav__link">
+    <a href="page/lsp-vim/" title="Vimscript" class="md-nav__link">
       Vimscript
     </a>
   </li>
@@ -999,7 +1280,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-vetur/" title="Vue" class="md-nav__link">
+    <a href="page/lsp-vetur/" title="Vue" class="md-nav__link">
       Vue
     </a>
   </li>
@@ -1011,7 +1292,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-xml/" title="XML" class="md-nav__link">
+    <a href="page/lsp-xml/" title="XML" class="md-nav__link">
       XML
     </a>
   </li>
@@ -1023,7 +1304,7 @@
 
 
   <li class="md-nav__item">
-    <a href="lsp-yaml/" title="YAML" class="md-nav__link">
+    <a href="page/lsp-yaml/" title="YAML" class="md-nav__link">
       YAML
     </a>
   </li>
@@ -1065,7 +1346,7 @@
 
 
   <li class="md-nav__item">
-    <a href="features/" title="Features" class="md-nav__link">
+    <a href="page/features/" title="Features" class="md-nav__link">
       Features
     </a>
   </li>
@@ -1167,7 +1448,7 @@
 
 
   <li class="md-nav__item">
-    <a href="gallery/" title="Gallery" class="md-nav__link">
+    <a href="page/gallery/" title="Gallery" class="md-nav__link">
       Gallery
     </a>
   </li>
@@ -1209,7 +1490,7 @@
 
 
   <li class="md-nav__item">
-    <a href="CHANGELOG/" title="Changelog" class="md-nav__link">
+    <a href="page/CHANGELOG/" title="Changelog" class="md-nav__link">
       Changelog
     </a>
   </li>
@@ -1495,7 +1776,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/README.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/README.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
@@ -2391,6 +2672,27 @@ following snippet in your config:</p>
         
 <footer class="md-footer">
   
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+        
+          <a href="page/languages/" title="Languages" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Languages
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
       <div class="md-footer-copyright">
@@ -2438,20 +2740,20 @@ following snippet in your config:</p>
       
     </div>
     
-      <script src="../assets/javascripts/vendor.83fe6e3c.min.js"></script>
-      <script src="../assets/javascripts/bundle.7e1cb91c.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      <script src="assets/javascripts/vendor.83fe6e3c.min.js"></script>
+      <script src="assets/javascripts/bundle.7e1cb91c.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
       
       <script>
         app = initialize({
-          base: "..",
+          base: ".",
           features: ["tabs"],
           search: Object.assign({
-            worker: "../assets/javascripts/worker/search.37585f48.min.js"
+            worker: "assets/javascripts/worker/search.37585f48.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>
       
-        <script src="../js/expanded_nav.js"></script>
+        <script src="js/expanded_nav.js"></script>
       
     
   </body>
