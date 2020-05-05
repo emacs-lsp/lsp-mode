@@ -13,7 +13,7 @@ jobs:
       - name: README.org -> README.md
         uses: docker://pandoc/core:2.9
         with:
-          args: -s README.org -t gfm -o docs/page/README.md
+          args: -s README.org -t gfm -o docs/README.md
 
       - name: CHANGELOG.org -> CHANGELOG.md
         uses: docker://pandoc/core:2.9
