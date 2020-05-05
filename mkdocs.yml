@@ -92,7 +92,6 @@ theme:
   icon:
     repo: fontawesome/brands/github
   features:
-    - instant
     - tabs
 
 extra:
