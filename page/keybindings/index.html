@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-hack/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/keybindings/">
       
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
@@ -17,7 +17,7 @@
     
     
       
-        <title>Hack - LSP Mode</title>
+        <title>Keybindings - LSP Mode</title>
       
     
     
@@ -52,7 +52,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#hack" class="md-skip">
+        <a href="#keybindings" class="md-skip">
           Skip to content
         </a>
       
@@ -79,7 +79,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              Hack
+              Keybindings
             
           </span>
         </div>
@@ -141,16 +141,14 @@
         
           
 
-  
-
-<nav class="md-tabs md-tabs--active" aria-label="Tabs" data-md-component="tabs">
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
   <div class="md-tabs__inner md-grid">
     <ul class="md-tabs__list">
       
         
   <li class="md-tabs__item">
     
-      <a href="../.." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link md-tabs__link--active">
         Home
       </a>
     
@@ -170,7 +168,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="../languages/" class="md-tabs__link md-tabs__link--active">
+        <a href="../languages/" class="md-tabs__link">
           Languages
         </a>
       
@@ -282,11 +280,53 @@
       
       
 
+  
 
-  <li class="md-nav__item">
-    <a href="../keybindings/" title="Keybindings" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Keybindings
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="Keybindings" class="md-nav__link md-nav__link--active">
       Keybindings
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#which-key-integration" class="md-nav__link">
+    which-key integration
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
     
@@ -318,12 +358,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6" checked>
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
     
     <label class="md-nav__link" for="nav-6">
       Languages
@@ -657,80 +695,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Hack
-        <span class="md-nav__icon md-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
-        </span>
-      </label>
-    
-    <a href="./" title="Hack" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../lsp-hack/" title="Hack" class="md-nav__link">
       Hack
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-      </span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#instalation" class="md-nav__link">
-    Instalation
-  </a>
-  
-    <nav class="md-nav" aria-label="Instalation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-not-available" class="md-nav__link">
-    Debugger: Not available
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -1383,35 +1352,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#instalation" class="md-nav__link">
-    Instalation
-  </a>
-  
-    <nav class="md-nav" aria-label="Instalation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-not-available" class="md-nav__link">
-    Debugger: Not available
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
+  <a href="#which-key-integration" class="md-nav__link">
+    which-key integration
   </a>
   
 </li>
@@ -1428,7 +1370,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/lsp-hack.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/keybindings.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
@@ -1436,17 +1378,183 @@
                   
                 
                 
-                <h1 id="hack">Hack<a class="headerlink" href="#hack" title="Permanent link">#</a></h1>
-<h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For information about the LSP server, check the <a href="https://docs.hhvm.com/hhvm/">hhvm</a>.</p>
-<h2 id="instalation">Instalation<a class="headerlink" href="#instalation" title="Permanent link">#</a></h2>
-<p>For instruction on how to install, check <a href="https://docs.hhvm.com/hhvm/installation/introduction">here</a>.</p>
-<h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
-<h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<p><strong><code>lsp-clients-hack-command</code></strong></p>
-<p><em>Default: <code>(hh_client lsp --from emacs)</code></em></p>
-<p>Command to start hh_client.</p>
-<hr />
+                <h1 id="keybindings">Keybindings<a class="headerlink" href="#keybindings" title="Permanent link">#</a></h1>
+<p>When using <code>lsp-mode</code> most of the features depend on server
+capabilities. <code>lsp-mode</code> provides default bindings which are dynamically
+enabled/disabled based on the server functionality. All the commands are
+configured <code>lsp-command-map</code> which is bound to <code>lsp-keymap-prefix</code>
+(default <code>s-l</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Keybinding</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>s-l s s</code></td>
+<td>Entry point for the server startup.</td>
+</tr>
+<tr>
+<td><code>s-l s r</code></td>
+<td>Restart language server</td>
+</tr>
+<tr>
+<td><code>s-l s q</code></td>
+<td>Shutdown language server</td>
+</tr>
+<tr>
+<td><code>s-l s d</code></td>
+<td>Describes current session</td>
+</tr>
+<tr>
+<td><code>s-l s D</code></td>
+<td>Disconnect the buffer from the language server keeping the server running.</td>
+</tr>
+<tr>
+<td><code>s-l = =</code></td>
+<td>Ask the server to format this document.</td>
+</tr>
+<tr>
+<td><code>s-l = r</code></td>
+<td>Ask the server to format the region, or if none is selected, the current line.</td>
+</tr>
+<tr>
+<td><code>s-l F a</code></td>
+<td>Add new project root to the list of workspace folders.</td>
+</tr>
+<tr>
+<td><code>s-l F r</code></td>
+<td>Remove project root from the list of workspace folders.</td>
+</tr>
+<tr>
+<td><code>s-l F b</code></td>
+<td>Remove project root from the workspace blacklist.</td>
+</tr>
+<tr>
+<td><code>s-l T l</code></td>
+<td>Toggle code-lens overlays.</td>
+</tr>
+<tr>
+<td><code>s-l T L</code></td>
+<td>Toggle client-server protocol logging.</td>
+</tr>
+<tr>
+<td><code>s-l T h</code></td>
+<td>Toggle symbol highlighting.</td>
+</tr>
+<tr>
+<td><code>s-l T S</code></td>
+<td>Toggle minor mode for showing information for current line in sideline. (requires <code>lsp-ui</code>)</td>
+</tr>
+<tr>
+<td><code>s-l T d</code></td>
+<td>Toggle minor mode for showing hover information in child frame. (requires <code>lsp-ui</code>)</td>
+</tr>
+<tr>
+<td><code>s-l T s</code></td>
+<td>Toggle signature auto activate.</td>
+</tr>
+<tr>
+<td><code>s-l T f</code></td>
+<td>Toggle on type formatting.</td>
+</tr>
+<tr>
+<td><code>s-l T T</code></td>
+<td>Toggle global minor mode for synchronizing <code>lsp-mode</code> workspace folders and <code>treemacs</code> projects. (requires <code>lsp-treemacs</code>)</td>
+</tr>
+<tr>
+<td><code>s-l g g</code></td>
+<td>Find definitions of the symbol under point.</td>
+</tr>
+<tr>
+<td><code>s-l g r</code></td>
+<td>Find references of the symbol under point.</td>
+</tr>
+<tr>
+<td><code>s-l g i</code></td>
+<td>Find implementations of the symbol under point.</td>
+</tr>
+<tr>
+<td><code>s-l g t</code></td>
+<td>Find type definitions of the symbol under point.</td>
+</tr>
+<tr>
+<td><code>s-l g d</code></td>
+<td>Find declarations of the symbol under point.</td>
+</tr>
+<tr>
+<td><code>s-l g h</code></td>
+<td>Show the incoming call hierarchy for the symbol at point. (requires <code>lsp-treemacs</code>)</td>
+</tr>
+<tr>
+<td><code>s-l g a</code></td>
+<td>Find all meaningful symbols that match pattern.</td>
+</tr>
+<tr>
+<td><code>s-l h h</code></td>
+<td>Display the type signature and documentation of the thing at</td>
+</tr>
+<tr>
+<td><code>s-l h s</code></td>
+<td>Activate signature help.</td>
+</tr>
+<tr>
+<td><code>s-l h g</code></td>
+<td>Trigger display hover information popup and hide it on next typing.</td>
+</tr>
+<tr>
+<td><code>s-l r r</code></td>
+<td>Rename the symbol (and all references to it).</td>
+</tr>
+<tr>
+<td><code>s-l r o</code></td>
+<td>Perform the source.organizeImports code action, if available.</td>
+</tr>
+<tr>
+<td><code>s-l a a</code></td>
+<td>Execute code action.</td>
+</tr>
+<tr>
+<td><code>s-l a l</code></td>
+<td>Click lsp lens using ‘avy’ package.</td>
+</tr>
+<tr>
+<td><code>s-l a h</code></td>
+<td>Highlight symbol at point.</td>
+</tr>
+<tr>
+<td><code>s-l G g</code></td>
+<td>Peek definitions to the identifier at point. (requires <code>lsp-ui</code>)</td>
+</tr>
+<tr>
+<td><code>s-l G r</code></td>
+<td>Peek references to the identifier at point. (requires <code>lsp-ui</code>)</td>
+</tr>
+<tr>
+<td><code>s-l G i</code></td>
+<td>Peek implementation locations of the symbol at point. (requires <code>lsp-ui</code>)</td>
+</tr>
+<tr>
+<td><code>s-l G s</code></td>
+<td>Peek symbols in the worskpace. (requires <code>lsp-ui</code>)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="which-key-integration">which-key integration<a class="headerlink" href="#which-key-integration" title="Permanent link">#</a></h2>
+<p>To enable <a href="https://github.com/justbur/emacs-which-key/">which-key</a>
+integration in the active major mode for <code>lsp-mode-map</code> you will need to
+call the <code>lsp-enable-which-key-integration</code> function. This could be done
+when <code>lsp-mode</code> starts with the following:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-mode</span>
+  <span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;lsp-mode-hook</span> <span class="nf">#&#39;</span><span class="nv">lsp-enable-which-key-integration</span><span class="p">))</span>
+</code></pre></div>
+
+<p>You can also enable which-key integration for all major modes by passing
+<code>t</code> as a parameter. This is useful for buffers that can use multiple
+major modes like those using <code>vue-mode</code>.</p>
+<p><img alt="" src="../../examples/which-key.png" /></p>
                 
                   
                     
@@ -1478,7 +1586,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../lsp-groovy/" title="Groovy" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../installation/" title="Installation" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -1487,19 +1595,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Groovy
+                Installation
               </div>
             </div>
           </a>
         
         
-          <a href="../lsp-html/" title="HTML" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../faq/" title="FAQ" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                HTML
+                FAQ
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
