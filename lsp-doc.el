@@ -31,7 +31,7 @@
 (require 'lsp-mode)
 
 (defun lsp-doc--load-all-lsps ()
-  ""
+  "Load all supported LSPs from lsp-mode."
   (seq-do (lambda (package)
             (require package nil t))
           lsp-client-packages))
@@ -44,7 +44,7 @@
        (json-read-file "lsp-clients.json")))
 
 (defun lsp-doc--client->variables (client)
-  ""
+  "Return all available custom variables from a CLIENT."
   (let ((custom-group (get client 'custom-group)))
     (seq-map
      (apply-partially #'car)
@@ -54,14 +54,14 @@
                  custom-group))))
 
 (defun lsp-doc--decorate-value (key value)
-  ""
+  "For a given KEY return a decorated VALUE."
   (pcase key
     ("installation" (format "`%s`" value))
     ("installation-url" (format "For instruction on how to install, check [here](%s)." value))
     (_ value)))
 
 (defun lsp-doc--replace-placeholders (client)
-  ""
+  "Replace found placeholders for a CLIENT."
   (while (re-search-forward "{{\\([][:word:]\\[.-]+\\)}}" nil t)
     (let* ((key (match-string 1))
            (value (gethash key client)))
@@ -70,7 +70,7 @@
         (replace-match "")))))
 
 (defun lsp-doc--variables (client-name)
-  ""
+  "Return all custom variables for a CLIENT-NAME."
   (let* ((group (intern (concat "lsp-" client-name)))
          (custom-group (get group 'custom-group)))
     (seq-map
@@ -81,7 +81,7 @@
                  custom-group))))
 
 (defun lsp-doc--pretty-default-value (variable)
-  ""
+  "Return default value for a VARIABLE formatted."
   (let ((default (default-value variable))
         (type (get variable 'custom-type)))
     (if (and (memq type '(file directory))
@@ -90,7 +90,7 @@
       (format "%s" default))))
 
 (defun lsp-doc--variable->value (variable key client)
-  ""
+  "Return a decorated value for a VARIABLE, KEY and a CLIENT."
   (pcase key
     ("name" (symbol-name variable))
     ("default" (lsp-doc--pretty-default-value variable))
@@ -99,7 +99,7 @@
     (_ "")))
 
 (defun lsp-doc--add-variables (client file)
-  ""
+  "Add CLIENT variables to FILE."
   (-let* (((&hash "name" client-name) client))
     (--each (lsp-doc--variables client-name)
       (with-temp-buffer
@@ -111,7 +111,7 @@
         (append-to-file (point-min) (point-max) file)))))
 
 (defun lsp-doc--generate-for (client)
-  ""
+  "Generate documentation for CLIENT."
   (-let* (((&hash "name") client)
          (file (file-truename (concat "lsp-" name ".md"))))
     (unless (file-exists-p file)
@@ -123,13 +123,11 @@
         (lsp-doc--add-variables client file)))))
 
 (defun lsp-doc-generate ()
-  "."
+  "Generate documentation for all supported LSPs."
   (interactive)
   (lsp-doc--load-all-lsps)
   (seq-doseq (client (lsp-doc--clients))
     (lsp-doc--generate-for client)))
-
-;; (lsp-doc--generate-for (seq-first (lsp-doc--clients)))
 
 (provide 'lsp-doc)
 ;;; lsp-doc.el ends here
