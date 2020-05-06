@@ -4192,7 +4192,7 @@ and the position respectively."
             (when-let (kind-name (and kind (aref lsp--completion-item-kind kind)))
               (format " (%s)" kind-name)))))
 
-(defun lsp--looking-back-trigger-characters-p (trigger-characters)
+(defun lsp--looking-back-trigger-characterp (trigger-characters)
   "Return trigger character if text before point matches any of the TRIGGER-CHARACTERS."
   (unless (= (point) (point-at-bol))
     (seq-some
@@ -4344,7 +4344,7 @@ Also, additional data to attached to each candidate can be passed via PLIST."
   "Get completion context with provided TRIGGER-CHARACTERS."
   (let* (trigger-char
          (trigger-kind (cond
-                        ((setq trigger-char (lsp--looking-back-trigger-characters-p
+                        ((setq trigger-char (lsp--looking-back-trigger-characterp
                                              trigger-characters))
                          'character)
                         ((equal lsp--capf-cache 'incomplete) 'incomplete)
@@ -4359,10 +4359,15 @@ Also, additional data to attached to each candidate can be passed via PLIST."
   (when (or (--some (lsp--client-completion-in-comments? (lsp--workspace-client it))
                     (lsp-workspaces))
             (not (nth 4 (syntax-ppss))))
-    (let* ((bounds-start (or (car (bounds-of-thing-at-point 'symbol)) (point)))
-           (trigger-chars (->> (lsp--server-capabilities)
+    (let* ((trigger-chars (->> (lsp--server-capabilities)
                                (gethash "completionProvider")
                                (gethash "triggerCharacters")))
+           (bounds-start (--> (or (car (bounds-of-thing-at-point 'symbol)) (point))
+                              (save-excursion
+                                (goto-char it)
+                                (if (lsp--looking-back-trigger-characterp trigger-chars)
+                                    (- it 1)
+                                  it))))
            result done?)
       (list
        bounds-start
@@ -4416,9 +4421,9 @@ Also, additional data to attached to each candidate can be passed via PLIST."
        :annotation-function #'lsp--annotate
        :company-require-match 'never
        :company-prefix-length
-       (save-excursion
-         (goto-char bounds-start)
-         (and (lsp--looking-back-trigger-characters-p trigger-chars) t))
+       (when (or lsp--capf-cache
+                 (lsp--looking-back-trigger-characterp trigger-chars))
+         t)
        :company-match #'lsp--capf-company-match
        :company-doc-buffer (-compose #'company-doc-buffer
                                      #'lsp--capf-get-documentation)
@@ -4459,7 +4464,7 @@ Also, additional data to attached to each candidate can be passed via PLIST."
 
          (setq-local lsp-inhibit-lsp-hooks nil)
 
-         (when (lsp--looking-back-trigger-characters-p trigger-chars)
+         (when (lsp--looking-back-trigger-characterp trigger-chars)
            (setq this-command 'self-insert-command)))))))
 
 (advice-add #'completion-at-point :before #'lsp--capf-clear-cache)
