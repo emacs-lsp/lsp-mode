@@ -4386,17 +4386,23 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                           "textDocument/completion"
                           (plist-put (lsp--text-document-position-params)
                                      :context (lsp--capf-get-context trigger-chars))))
-                   (items (->> (lsp--sort-completions (cond
-                                                       ((seqp resp) resp)
-                                                       ((hash-table-p resp) (gethash "items" resp))))
+                   (completed (or (seqp resp)
+                                  (not (gethash "isIncomplete" resp))))
+                   (items (--> (cond
+                                ((seqp resp) resp)
+                                ((hash-table-p resp) (gethash "items" resp)))
+                               (if (or completed
+                                       (seq-some (-rpartial #'lsp--ht-get "sortText") it))
+                                   (lsp--sort-completions it)
+                                 it)
                                (-map (lambda (item)
                                        (puthash "_emacsStartPoint"
                                                 (lsp--capf-guess-prefix item bounds-start)
                                                 item)
-                                       item))))
+                                       item)
+                                     it)))
                    (prefix-line (buffer-substring-no-properties (point-at-bol) (point))))
-             (setf done? (or (seqp resp)
-                             (not (gethash "isIncomplete" resp)))
+             (setf done? completed
                    lsp--capf-cache (cond
                                     ((and done? (not (seq-empty-p items)))
                                      (list (buffer-substring-no-properties bounds-start (point))
