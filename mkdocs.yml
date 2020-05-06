@@ -15,7 +15,6 @@ nav:
     - Bash: page/lsp-bash.md
     - C++(ccls): page/lsp-ccls.md
     - C++(clangd): page/lsp-clangd.md
-    - C++(cquery): page/lsp-cquery.md
     - C#: page/lsp-csharp.md
     - Clojure: page/lsp-clojure.md
     - CMake: page/lsp-cmake.md
