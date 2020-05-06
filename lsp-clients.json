@@ -50,16 +50,6 @@
     "debugger": "Yes (gdb or lldb)"
   },
   {
-    "name": "cquery",
-    "full-name": "C++",
-    "server-name": "cquery",
-    "server-url": "https://github.com/cquery-project/cquery",
-    "client-url": "https://github.com/cquery-project/emacs-cquery",
-    "client-name": "emacs-cquery",
-    "installation-url": "https://github.com/cquery-project/cquery",
-    "debugger": "Yes (gdb or lldb)"
-  },
-  {
     "name": "clojure",
     "full-name": "Clojure",
     "server-name": "clojure-lsp",

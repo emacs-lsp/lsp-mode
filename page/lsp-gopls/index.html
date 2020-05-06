@@ -436,18 +436,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../lsp-cquery/" title="C++(cquery)" class="md-nav__link">
-      C++(cquery)
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../lsp-csharp/" title="C#" class="md-nav__link">
       C#
     </a>
@@ -1448,6 +1436,37 @@
 <p>For instruction on how to install, check <a href="https://github.com/golang/tools/blob/master/gopls/doc/user.md#installation">here</a>.</p>
 <h3 id="debugger-yes">Debugger: Yes<a class="headerlink" href="#debugger-yes" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
+<p><strong><code>lsp-gopls-use-placeholders</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Cause gopls to provide placeholder parameter snippets when
+completing function calls.</p>
+<hr />
+<p><strong><code>lsp-gopls-server-path</code></strong></p>
+<p><em>Default: <code>gopls</code></em></p>
+<p>Path to gopls server binary.</p>
+<hr />
+<p><strong><code>lsp-gopls-server-args</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Extra CLI arguments for gopls.</p>
+<hr />
+<p><strong><code>lsp-gopls-build-flags</code></strong></p>
+<p><em>Default: <code>[]</code></em></p>
+<p>A vector of flags passed on to the build system when invoked,
+  applied to queries like ‘go list’.</p>
+<hr />
+<p><strong><code>lsp-gopls-env</code></strong></p>
+<p><em>Default: <code>#s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8125 data ())</code></em></p>
+<p>‘gopls’ has the unusual ability to set environment variables,
+  intended to affect the behavior of commands invoked by ‘gopls’
+  on the user’s behalf. This variable takes a hash table of env
+  var names to desired values.</p>
+<hr />
+<p><strong><code>lsp-gopls-hover-kind</code></strong></p>
+<p><em>Default: <code>SynopsisDocumentation</code></em></p>
+<p>‘gopls’ allows the end user to select the desired amount of
+  documentation returned during e.g. hover and thing-at-point
+  operations.</p>
+<hr />
                 
                   
                     
