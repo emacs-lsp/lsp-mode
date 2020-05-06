@@ -9,19 +9,19 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/installation/">
       
       
-      <link rel="shortcut icon" href="examples/logo-mini.png">
+      <link rel="shortcut icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.1, mkdocs-material-5.1.5">
     
     
       
-        <title>LSP Mode</title>
+        <title>Installation - LSP Mode</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.df84b5fe.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.df84b5fe.min.css">
       
       
     
@@ -35,7 +35,7 @@
     
     
     
-      <link rel="stylesheet" href="stylesheets/extra.css">
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
     
     
       
@@ -57,7 +57,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#language-server-protocol-support-for-emacs" class="md-skip">
+        <a href="#installation" class="md-skip">
           Skip to content
         </a>
       
@@ -70,7 +70,7 @@
   <nav class="md-header-nav md-grid" aria-label="Header">
     <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode" class="md-header-nav__button md-logo" aria-label="LSP Mode">
       
-  <img src="examples/logo-mini.png" alt="logo">
+  <img src="../../examples/logo-mini.png" alt="logo">
 
     </a>
     <label class="md-header-nav__button md-icon" for="__drawer">
@@ -84,7 +84,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              Home
+              Installation
             
           </span>
         </div>
@@ -153,7 +153,7 @@
         
   <li class="md-tabs__item">
     
-      <a href="." class="md-tabs__link md-tabs__link--active">
+      <a href="../.." class="md-tabs__link md-tabs__link--active">
         Home
       </a>
     
@@ -173,7 +173,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="page/languages/" class="md-tabs__link">
+        <a href="../languages/" class="md-tabs__link">
           Languages
         </a>
       
@@ -186,7 +186,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="page/features/" class="md-tabs__link">
+        <a href="../features/" class="md-tabs__link">
           Features
         </a>
       
@@ -199,7 +199,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="page/gallery/" class="md-tabs__link">
+        <a href="../gallery/" class="md-tabs__link">
           Gallery
         </a>
       
@@ -212,7 +212,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="page/CHANGELOG/" class="md-tabs__link">
+        <a href="../CHANGELOG/" class="md-tabs__link">
           Changelog
         </a>
       
@@ -236,7 +236,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode" class="md-nav__button md-logo" aria-label="LSP Mode">
       
-  <img src="examples/logo-mini.png" alt="logo">
+  <img src="../../examples/logo-mini.png" alt="logo">
 
     </a>
     LSP Mode
@@ -261,6 +261,18 @@
       
       
 
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
   
 
 
@@ -272,14 +284,14 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Home
+        Installation
         <span class="md-nav__icon md-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
         </span>
       </label>
     
-    <a href="." title="Home" class="md-nav__link md-nav__link--active">
-      Home
+    <a href="./" title="Installation" class="md-nav__link md-nav__link--active">
+      Installation
     </a>
     
       
@@ -298,153 +310,50 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why" class="md-nav__link">
-    Why?
+  <a href="#install-via-melpa" class="md-nav__link">
+    Install via melpa
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    Overview
+  <a href="#configuration" class="md-nav__link">
+    Configuration
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#presentationsdemos" class="md-nav__link">
-    Presentations/demos
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#supported-languages" class="md-nav__link">
-    Supported languages
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#keybindings" class="md-nav__link">
-    Keybindings
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#checking-errors" class="md-nav__link">
-    Checking Errors
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#settings" class="md-nav__link">
-    Settings
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#extensions" class="md-nav__link">
-    Extensions
-  </a>
-  
-    <nav class="md-nav" aria-label="Extensions">
+    <nav class="md-nav" aria-label="Configuration">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#tramp" class="md-nav__link">
-    TRAMP
+  <a href="#install-language-server" class="md-nav__link">
+    Install language server
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-lsp-mode" class="md-nav__link">
+    Configure lsp-mode
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    Performance
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-does-it-work" class="md-nav__link">
+    How does it work?
   </a>
   
 </li>
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#limitations" class="md-nav__link">
-    Limitations
-  </a>
-  
-    <nav class="md-nav" aria-label="Limitations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#file-watches" class="md-nav__link">
-    File watches
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributions" class="md-nav__link">
-    Contributions
-  </a>
-  
-    <nav class="md-nav" aria-label="Contributions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#members" class="md-nav__link">
-    Members
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
-    Troubleshooting
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#adding-support-for-languages" class="md-nav__link">
-    Adding support for languages
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#faq" class="md-nav__link">
-    FAQ
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#changelog" class="md-nav__link">
-    Changelog
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#see-also" class="md-nav__link">
-    See also
-  </a>
   
 </li>
       
@@ -461,19 +370,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/installation/" title="Installation" class="md-nav__link">
-      Installation
-    </a>
-  </li>
-
-    
-      
-      
-      
-
-
-  <li class="md-nav__item">
-    <a href="page/keybindings/" title="Keybindings" class="md-nav__link">
+    <a href="../keybindings/" title="Keybindings" class="md-nav__link">
       Keybindings
     </a>
   </li>
@@ -485,7 +382,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/faq/" title="FAQ" class="md-nav__link">
+    <a href="../faq/" title="FAQ" class="md-nav__link">
       FAQ
     </a>
   </li>
@@ -497,7 +394,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/adding-new-language/" title="Adding new language" class="md-nav__link">
+    <a href="../adding-new-language/" title="Adding new language" class="md-nav__link">
       Adding new language
     </a>
   </li>
@@ -534,7 +431,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/languages/" title="Languages" class="md-nav__link">
+    <a href="../languages/" title="Languages" class="md-nav__link">
       Languages
     </a>
   </li>
@@ -546,7 +443,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-ada/" title="Ada" class="md-nav__link">
+    <a href="../lsp-ada/" title="Ada" class="md-nav__link">
       Ada
     </a>
   </li>
@@ -570,7 +467,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-angular/" title="Angular" class="md-nav__link">
+    <a href="../lsp-angular/" title="Angular" class="md-nav__link">
       Angular
     </a>
   </li>
@@ -582,7 +479,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-bash/" title="Bash" class="md-nav__link">
+    <a href="../lsp-bash/" title="Bash" class="md-nav__link">
       Bash
     </a>
   </li>
@@ -594,7 +491,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-ccls/" title="C++(ccls)" class="md-nav__link">
+    <a href="../lsp-ccls/" title="C++(ccls)" class="md-nav__link">
       C++(ccls)
     </a>
   </li>
@@ -606,7 +503,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-clangd/" title="C++(clangd)" class="md-nav__link">
+    <a href="../lsp-clangd/" title="C++(clangd)" class="md-nav__link">
       C++(clangd)
     </a>
   </li>
@@ -618,7 +515,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-cquery/" title="C++(cquery)" class="md-nav__link">
+    <a href="../lsp-cquery/" title="C++(cquery)" class="md-nav__link">
       C++(cquery)
     </a>
   </li>
@@ -630,7 +527,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-csharp/" title="C#" class="md-nav__link">
+    <a href="../lsp-csharp/" title="C#" class="md-nav__link">
       C#
     </a>
   </li>
@@ -642,7 +539,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-clojure/" title="Clojure" class="md-nav__link">
+    <a href="../lsp-clojure/" title="Clojure" class="md-nav__link">
       Clojure
     </a>
   </li>
@@ -654,7 +551,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-cmake/" title="CMake" class="md-nav__link">
+    <a href="../lsp-cmake/" title="CMake" class="md-nav__link">
       CMake
     </a>
   </li>
@@ -666,7 +563,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-crystal/" title="Crystal" class="md-nav__link">
+    <a href="../lsp-crystal/" title="Crystal" class="md-nav__link">
       Crystal
     </a>
   </li>
@@ -678,7 +575,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-css/" title="CSS/LessCSS/SASS/SCSS" class="md-nav__link">
+    <a href="../lsp-css/" title="CSS/LessCSS/SASS/SCSS" class="md-nav__link">
       CSS/LessCSS/SASS/SCSS
     </a>
   </li>
@@ -702,7 +599,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-dhall/" title="Dhall" class="md-nav__link">
+    <a href="../lsp-dhall/" title="Dhall" class="md-nav__link">
       Dhall
     </a>
   </li>
@@ -714,7 +611,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-dockerfile/" title="Dockerfile" class="md-nav__link">
+    <a href="../lsp-dockerfile/" title="Dockerfile" class="md-nav__link">
       Dockerfile
     </a>
   </li>
@@ -726,7 +623,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-elixir/" title="Elixir(elixir-ls)" class="md-nav__link">
+    <a href="../lsp-elixir/" title="Elixir(elixir-ls)" class="md-nav__link">
       Elixir(elixir-ls)
     </a>
   </li>
@@ -738,7 +635,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-elixir-ls/" title="Elixir(JakeBecker)" class="md-nav__link">
+    <a href="../lsp-elixir-ls/" title="Elixir(JakeBecker)" class="md-nav__link">
       Elixir(JakeBecker)
     </a>
   </li>
@@ -750,7 +647,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-elm/" title="Elm" class="md-nav__link">
+    <a href="../lsp-elm/" title="Elm" class="md-nav__link">
       Elm
     </a>
   </li>
@@ -762,7 +659,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-erlang/" title="Erlang" class="md-nav__link">
+    <a href="../lsp-erlang/" title="Erlang" class="md-nav__link">
       Erlang
     </a>
   </li>
@@ -774,7 +671,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-eslint/" title="Eslint" class="md-nav__link">
+    <a href="../lsp-eslint/" title="Eslint" class="md-nav__link">
       Eslint
     </a>
   </li>
@@ -786,7 +683,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-fsharp/" title="F#" class="md-nav__link">
+    <a href="../lsp-fsharp/" title="F#" class="md-nav__link">
       F#
     </a>
   </li>
@@ -798,7 +695,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-fortran/" title="Fortran" class="md-nav__link">
+    <a href="../lsp-fortran/" title="Fortran" class="md-nav__link">
       Fortran
     </a>
   </li>
@@ -810,7 +707,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-gopls/" title="Go(gopls)" class="md-nav__link">
+    <a href="../lsp-gopls/" title="Go(gopls)" class="md-nav__link">
       Go(gopls)
     </a>
   </li>
@@ -822,7 +719,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-bingo/" title="Go(bingo)" class="md-nav__link">
+    <a href="../lsp-bingo/" title="Go(bingo)" class="md-nav__link">
       Go(bingo)
     </a>
   </li>
@@ -834,7 +731,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-groovy/" title="Groovy" class="md-nav__link">
+    <a href="../lsp-groovy/" title="Groovy" class="md-nav__link">
       Groovy
     </a>
   </li>
@@ -846,7 +743,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-hack/" title="Hack" class="md-nav__link">
+    <a href="../lsp-hack/" title="Hack" class="md-nav__link">
       Hack
     </a>
   </li>
@@ -858,7 +755,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-html/" title="HTML" class="md-nav__link">
+    <a href="../lsp-html/" title="HTML" class="md-nav__link">
       HTML
     </a>
   </li>
@@ -882,7 +779,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-emmy-lua/" title="Lua" class="md-nav__link">
+    <a href="../lsp-emmy-lua/" title="Lua" class="md-nav__link">
       Lua
     </a>
   </li>
@@ -906,7 +803,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-typescript/" title="JavaScript/TypeScript(sourcegraph)" class="md-nav__link">
+    <a href="../lsp-typescript/" title="JavaScript/TypeScript(sourcegraph)" class="md-nav__link">
       JavaScript/TypeScript(sourcegraph)
     </a>
   </li>
@@ -918,7 +815,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-typescript-javascript/" title="JavaScript/TypeScript(theia-ide)" class="md-nav__link">
+    <a href="../lsp-typescript-javascript/" title="JavaScript/TypeScript(theia-ide)" class="md-nav__link">
       JavaScript/TypeScript(theia-ide)
     </a>
   </li>
@@ -930,7 +827,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-flow/" title="JavaScript Flow" class="md-nav__link">
+    <a href="../lsp-flow/" title="JavaScript Flow" class="md-nav__link">
       JavaScript Flow
     </a>
   </li>
@@ -942,7 +839,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-json/" title="Json" class="md-nav__link">
+    <a href="../lsp-json/" title="Json" class="md-nav__link">
       Json
     </a>
   </li>
@@ -954,7 +851,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-julia/" title="Julia" class="md-nav__link">
+    <a href="../lsp-julia/" title="Julia" class="md-nav__link">
       Julia
     </a>
   </li>
@@ -966,7 +863,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-kotlin/" title="Kotlin" class="md-nav__link">
+    <a href="../lsp-kotlin/" title="Kotlin" class="md-nav__link">
       Kotlin
     </a>
   </li>
@@ -990,7 +887,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-nim/" title="Nim" class="md-nav__link">
+    <a href="../lsp-nim/" title="Nim" class="md-nav__link">
       Nim
     </a>
   </li>
@@ -1002,7 +899,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-ocaml/" title="OCaml(ocaml)" class="md-nav__link">
+    <a href="../lsp-ocaml/" title="OCaml(ocaml)" class="md-nav__link">
       OCaml(ocaml)
     </a>
   </li>
@@ -1014,7 +911,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-ocalm-lsp-server/" title="OCaml(icaml-lsp)" class="md-nav__link">
+    <a href="../lsp-ocalm-lsp-server/" title="OCaml(icaml-lsp)" class="md-nav__link">
       OCaml(icaml-lsp)
     </a>
   </li>
@@ -1026,7 +923,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-pascal/" title="Pascal/Object Pascal" class="md-nav__link">
+    <a href="../lsp-pascal/" title="Pascal/Object Pascal" class="md-nav__link">
       Pascal/Object Pascal
     </a>
   </li>
@@ -1038,7 +935,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-perl/" title="Perl" class="md-nav__link">
+    <a href="../lsp-perl/" title="Perl" class="md-nav__link">
       Perl
     </a>
   </li>
@@ -1050,7 +947,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-intelephense/" title="PHP(intelephense)" class="md-nav__link">
+    <a href="../lsp-intelephense/" title="PHP(intelephense)" class="md-nav__link">
       PHP(intelephense)
     </a>
   </li>
@@ -1062,7 +959,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-php/" title="PHP(felixbecker)" class="md-nav__link">
+    <a href="../lsp-php/" title="PHP(felixbecker)" class="md-nav__link">
       PHP(felixbecker)
     </a>
   </li>
@@ -1074,7 +971,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-pwsh/" title="Powershell" class="md-nav__link">
+    <a href="../lsp-pwsh/" title="Powershell" class="md-nav__link">
       Powershell
     </a>
   </li>
@@ -1086,7 +983,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-purescript/" title="PureScript" class="md-nav__link">
+    <a href="../lsp-purescript/" title="PureScript" class="md-nav__link">
       PureScript
     </a>
   </li>
@@ -1098,7 +995,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-pyls/" title="Python" class="md-nav__link">
+    <a href="../lsp-pyls/" title="Python" class="md-nav__link">
       Python
     </a>
   </li>
@@ -1122,7 +1019,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-r/" title="R" class="md-nav__link">
+    <a href="../lsp-r/" title="R" class="md-nav__link">
       R
     </a>
   </li>
@@ -1134,7 +1031,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-solargraph/" title="Ruby" class="md-nav__link">
+    <a href="../lsp-solargraph/" title="Ruby" class="md-nav__link">
       Ruby
     </a>
   </li>
@@ -1146,7 +1043,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-rust/" title="Rust" class="md-nav__link">
+    <a href="../lsp-rust/" title="Rust" class="md-nav__link">
       Rust
     </a>
   </li>
@@ -1158,7 +1055,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-metals/" title="Scala" class="md-nav__link">
+    <a href="../lsp-metals/" title="Scala" class="md-nav__link">
       Scala
     </a>
   </li>
@@ -1170,7 +1067,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-terraform/" title="Terraform" class="md-nav__link">
+    <a href="../lsp-terraform/" title="Terraform" class="md-nav__link">
       Terraform
     </a>
   </li>
@@ -1182,7 +1079,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-tex/" title="TeX, LaTeX, etc (digestif)" class="md-nav__link">
+    <a href="../lsp-tex/" title="TeX, LaTeX, etc (digestif)" class="md-nav__link">
       TeX, LaTeX, etc (digestif)
     </a>
   </li>
@@ -1194,7 +1091,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-texlab/" title="TeX, LaTeX, etc (texlab)" class="md-nav__link">
+    <a href="../lsp-texlab/" title="TeX, LaTeX, etc (texlab)" class="md-nav__link">
       TeX, LaTeX, etc (texlab)
     </a>
   </li>
@@ -1206,7 +1103,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-latex/" title="TeX, LaTeX, etc (latex)" class="md-nav__link">
+    <a href="../lsp-latex/" title="TeX, LaTeX, etc (latex)" class="md-nav__link">
       TeX, LaTeX, etc (latex)
     </a>
   </li>
@@ -1218,7 +1115,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-verilog/" title="Verilog/SystemVerilog" class="md-nav__link">
+    <a href="../lsp-verilog/" title="Verilog/SystemVerilog" class="md-nav__link">
       Verilog/SystemVerilog
     </a>
   </li>
@@ -1230,7 +1127,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-vhdl/" title="VHDL" class="md-nav__link">
+    <a href="../lsp-vhdl/" title="VHDL" class="md-nav__link">
       VHDL
     </a>
   </li>
@@ -1242,7 +1139,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-vim/" title="Vimscript" class="md-nav__link">
+    <a href="../lsp-vim/" title="Vimscript" class="md-nav__link">
       Vimscript
     </a>
   </li>
@@ -1254,7 +1151,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-vetur/" title="Vue" class="md-nav__link">
+    <a href="../lsp-vetur/" title="Vue" class="md-nav__link">
       Vue
     </a>
   </li>
@@ -1266,7 +1163,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-xml/" title="XML" class="md-nav__link">
+    <a href="../lsp-xml/" title="XML" class="md-nav__link">
       XML
     </a>
   </li>
@@ -1278,7 +1175,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/lsp-yaml/" title="YAML" class="md-nav__link">
+    <a href="../lsp-yaml/" title="YAML" class="md-nav__link">
       YAML
     </a>
   </li>
@@ -1320,7 +1217,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/features/" title="Features" class="md-nav__link">
+    <a href="../features/" title="Features" class="md-nav__link">
       Features
     </a>
   </li>
@@ -1422,7 +1319,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/gallery/" title="Gallery" class="md-nav__link">
+    <a href="../gallery/" title="Gallery" class="md-nav__link">
       Gallery
     </a>
   </li>
@@ -1464,7 +1361,7 @@
 
 
   <li class="md-nav__item">
-    <a href="page/CHANGELOG/" title="Changelog" class="md-nav__link">
+    <a href="../CHANGELOG/" title="Changelog" class="md-nav__link">
       Changelog
     </a>
   </li>
@@ -1501,153 +1398,50 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why" class="md-nav__link">
-    Why?
+  <a href="#install-via-melpa" class="md-nav__link">
+    Install via melpa
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    Overview
+  <a href="#configuration" class="md-nav__link">
+    Configuration
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#presentationsdemos" class="md-nav__link">
-    Presentations/demos
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#supported-languages" class="md-nav__link">
-    Supported languages
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#keybindings" class="md-nav__link">
-    Keybindings
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#checking-errors" class="md-nav__link">
-    Checking Errors
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#settings" class="md-nav__link">
-    Settings
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#extensions" class="md-nav__link">
-    Extensions
-  </a>
-  
-    <nav class="md-nav" aria-label="Extensions">
+    <nav class="md-nav" aria-label="Configuration">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#tramp" class="md-nav__link">
-    TRAMP
+  <a href="#install-language-server" class="md-nav__link">
+    Install language server
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-lsp-mode" class="md-nav__link">
+    Configure lsp-mode
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    Performance
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-does-it-work" class="md-nav__link">
+    How does it work?
   </a>
   
 </li>
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#limitations" class="md-nav__link">
-    Limitations
-  </a>
-  
-    <nav class="md-nav" aria-label="Limitations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#file-watches" class="md-nav__link">
-    File watches
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributions" class="md-nav__link">
-    Contributions
-  </a>
-  
-    <nav class="md-nav" aria-label="Contributions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#members" class="md-nav__link">
-    Members
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
-    Troubleshooting
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#adding-support-for-languages" class="md-nav__link">
-    Adding support for languages
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#faq" class="md-nav__link">
-    FAQ
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#changelog" class="md-nav__link">
-    Changelog
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#see-also" class="md-nav__link">
-    See also
-  </a>
   
 </li>
       
@@ -1663,7 +1457,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/README.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/installation.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
@@ -1671,293 +1465,275 @@
                   
                 
                 
-                <p><a href="https://melpa.org/#/lsp-mode"><img alt="" src="https://melpa.org/packages/lsp-mode-badge.svg" /></a>
-<a href="https://stable.melpa.org/#/lsp-mode"><img alt="" src="https://stable.melpa.org/packages/lsp-mode-badge.svg" /></a>
-<a href="https://gitter.im/emacs-lsp/lsp-mode"><img alt="" src="https://badges.gitter.im/emacs-lsp/lsp-mode.svg" /></a>
-<a href="https://travis-ci.org/emacs-lsp/lsp-mode"><file:https://travis-ci.org/emacs-lsp/lsp-mode.svg?branch=master></a>
-<a href="https://coveralls.io/github/emacs-lsp/lsp-mode"><img alt="" src="https://coveralls.io/repos/github/emacs-lsp/lsp-mode/badge.svg" /></a></p>
-<p><img src="examples/logo.png" width="240" align="right"></p>
-<h1 id="language-server-protocol-support-for-emacs">Language Server Protocol Support for Emacs<a class="headerlink" href="#language-server-protocol-support-for-emacs" title="Permanent link">#</a></h1>
-<p><img alt="LSP mode" src="examples/head.png" /></p>
-<h2 id="why">Why?<a class="headerlink" href="#why" title="Permanent link">#</a></h2>
+                <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h1>
+<h2 id="install-via-melpa">Install via melpa<a class="headerlink" href="#install-via-melpa" title="Permanent link">#</a></h2>
+<p>The recommended way to install <code>lsp-mode</code> is via <code>package.el</code> - the
+built-in package manager in Emacs. <code>lsp-mode</code> is available on the two
+major <code>package.el</code> community maintained repos - <a href="http://stable.melpa.org">MELPA
+Stable</a> and <a href="http://melpa.org">MELPA</a>.</p>
+<p><kbd>M-x</kbd> <code>package-install</code> <kbd>RET</kbd> <code>lsp-mode</code> <kbd>RET</kbd></p>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">#</a></h2>
+<h3 id="install-language-server">Install language server<a class="headerlink" href="#install-language-server" title="Permanent link">#</a></h3>
+<p>Check the table below with the list of supported servers and the
+corresponding instructions on how to install the server.</p>
+<h3 id="configure-lsp-mode">Configure lsp-mode<a class="headerlink" href="#configure-lsp-mode" title="Permanent link">#</a></h3>
+<ol>
+<li>
+<p>Vanilla Emacs</p>
+<p>You could go minimal and use <code>lsp-mode</code> as it is without external
+packages with the built-in <code>flymake</code> and <code>completion-at-point</code> or
+you could install the following extensions for better experience:</p>
 <ul>
-<li><img alt="❤" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/2764.svg" title=":heart:" /> <strong>Community Driven</strong></li>
-<li><img alt="💎" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f48e.svg" title=":gem:" /> <strong>Fully featured</strong> - supports <strong>all</strong> features in Language
-    Server Protocol v3.14.</li>
-<li><img alt="🚀" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f680.svg" title=":rocket:" /> <strong>Fast</strong> - see <a href="#performance">performance section</a></li>
-<li><img alt="🌟" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/1f31f.svg" title=":star2:" /> <strong>Flexible</strong> - choose between full-blown IDE with flashy UI
-    or minimal distraction free</li>
-<li><img alt="⚙" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/2699.svg" title=":gear:" /> <strong>Easy to configure</strong> - works out of the box and
-    automatically upgrades if additional packages are present</li>
-</ul>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">#</a></h2>
-<p>Client for <a href="https://github.com/Microsoft/language-server-protocol/">Language Server
-Protocol</a>
-(v3.14). <a href="https://github.com/emacs-lsp/lsp-mode">lsp-mode</a> aims to
-provide IDE-like experience by providing optional integration with the
-most popular Emacs packages like <code>company</code>, <code>flycheck</code> and <code>projectile</code>.</p>
-<ul>
-<li>Non-blocking asynchronous calls</li>
-<li>Real-time Diagnostics/linting via
-    <a href="https://github.com/flycheck/flycheck">flycheck</a> (recommended) or
-    <code>flymake</code> when Emacs > 26 (requires flymake>=1.0.5)</li>
-<li>Code completion - <code>company-capf</code> / <code>completion-at-point</code> (note that
-    <a href="https://github.com/tigersoldier/company-lsp">company-lsp</a> is no
-    longer supported).</li>
-<li>Hovers - using <a href="https://github.com/emacs-lsp/lsp-ui">lsp-ui</a></li>
-<li>Code actions - using <code>lsp-execute-code-action</code> or
-    <a href="https://github.com/emacs-lsp/lsp-ui">lsp-ui</a> sideline.</li>
-<li>Code outline - using builtin
-    <a href="https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html">imenu</a>
-    or <code>helm-imenu</code></li>
-<li>Code navigation - using builtin
-    <a href="https://www.gnu.org/software/emacs/manual/html_node/emacs/Xref.html">xref</a>,
-    <a href="https://github.com/emacs-lsp/lsp-treemacs">lsp-treemacs</a> tree views
-    or <a href="https://github.com/emacs-lsp/lsp-ui">lsp-ui</a> peek functions.</li>
-<li>Code lens</li>
-<li>Symbol highlights</li>
-<li>Formatting</li>
-<li>Debugger - <a href="https://github.com/yyoncho/dap-mode/">dap-mode</a></li>
-<li>Helm integration -
-    <a href="https://github.com/emacs-lsp/helm-lsp/">helm-lsp</a></li>
-<li>Ivy integration - <a href="https://github.com/emacs-lsp/lsp-ivy/">lsp-ivy</a></li>
-<li>Treemacs integration -
-    <a href="https://github.com/emacs-lsp/lsp-treemacs">lsp-treemacs</a></li>
-<li>Semantic highlighting (as currently implemented by JDT LS and
-    unreleased builds of clangd, cf. <a href="https://github.com/microsoft/vscode-languageserver-node/pull/367">Semantic highlighting
-    spec</a>)</li>
-<li><a href="https://github.com/justbur/emacs-which-key/">which-key</a> integration
-    for better discovery</li>
-</ul>
-<h2 id="presentationsdemos">Presentations/demos<a class="headerlink" href="#presentationsdemos" title="Permanent link">#</a></h2>
-<ul>
-<li><a href="https://github.com/skybert">skybert</a>'s emacsconf
-    <a href="https://media.emacsconf.org/2019/19.html">presentation</a> (Java)</li>
-<li><a href="https://github.com/thatwist">thatwist</a>'s ScalaUA Conference
-    <a href="https://www.youtube.com/watch?v=x7ey0ifcqAg&amp;feature=youtu.be">presentation</a>
-    (Scala)</li>
-</ul>
-<h2 id="installation"><a href="https://emacs-lsp.github.io/lsp-mode/page/installation">Installation</a><a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
-<h2 id="supported-languages"><a href="https://emacs-lsp.github.io/lsp-mode/page/languages">Supported languages</a><a class="headerlink" href="#supported-languages" title="Permanent link">#</a></h2>
-<h2 id="keybindings"><a href="https://emacs-lsp.github.io/lsp-mode/page/keybindings">Keybindings</a><a class="headerlink" href="#keybindings" title="Permanent link">#</a></h2>
-<h2 id="checking-errors">Checking Errors<a class="headerlink" href="#checking-errors" title="Permanent link">#</a></h2>
-<p>To see all error statistics in the modeline you can enable
-<code>lsp-diagnostics-modeline-mode</code>. This is especially useful for languages
-that compilation might be broken due to errors in other files(e. g.
-Java/Haskell).</p>
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-mode</span>
-  <span class="c1">;; :project/:workspace/:file</span>
-  <span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-diagnostics-modeline-scope</span> <span class="nb">:project</span><span class="p">)</span>
-  <span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;lsp-managed-mode-hook</span> <span class="ss">&#39;lsp-diagnostics-modeline-mode</span><span class="p">))</span>
-</code></pre></div>
-
-<p>/<Tip:/> To find out the global errors you might use
-<code>lsp-treemacs-errors-list</code>.</p>
-<h2 id="settings">Settings<a class="headerlink" href="#settings" title="Permanent link">#</a></h2>
-<ul>
-<li><code>lsp-log-io</code> - If non-nil, print all messages to and from the
-    language server to <code>*lsp-log*</code>.</li>
-<li><code>lsp-print-performance</code> - If non-nil, print performance info. to
-    <code>*lsp-log*</code>.</li>
-<li><code>lsp-inhibit-message</code> - If non-nil, inhibit the message echo via
-    <code>inhibit-message</code>.</li>
-<li><code>lsp-report-if-no-buffer</code> - If non nil the errors will be reported
-    even when the file is not open.</li>
-<li><code>lsp-keep-workspace-alive</code> - If non nil keep workspace alive when
-    the last workspace buffer is closed.</li>
-<li><code>lsp-enable-snippet</code> - Enable/disable snippet completion support.</li>
-<li><code>lsp-auto-guess-root</code> - Automatically guess the project root using
-    projectile/project. Do <strong>not</strong> use this setting unless you are
-    familiar with <code>lsp-mode</code> internals and you are sure that all of your
-    projects are following <code>projectile=/=project.el</code> conventions.</li>
-<li><code>lsp-restart</code> - Defines how server exited event must be handled.</li>
-<li><code>lsp-session-file</code> - File where session information is stored.</li>
-<li><code>lsp-auto-configure</code> - Auto configure <code>lsp-mode</code>. When set to t
-    <code>lsp-mode</code> will auto-configure <code>lsp-ui</code> and <code>company-lsp</code>.</li>
-<li><code>lsp-document-sync-method</code> - How to sync the document with the
-    language server.</li>
-<li><code>lsp-auto-execute-action</code> - Auto-execute single action.</li>
-<li><code>lsp-eldoc-render-all</code> - Display all of the info returned by
-    <code>document/onHover</code>. If this is nil, <code>eldoc</code> will show only the
-    symbol information.</li>
-<li><code>lsp-enable-completion-at-point</code> - Enable <code>completion-at-point</code>
-    integration.</li>
-<li><code>lsp-enable-xref</code> - Enable xref integration.</li>
-<li><code>lsp-diagnostic-package</code> - Specifies which package to use for
-    diagnostics. Choose from <code>:auto</code>, <code>:flycheck</code>, <code>:flymake</code> and
-    <code>:none</code>. Default is <code>:auto</code> which means use <code>:flycheck</code> if present.</li>
-<li><code>lsp-enable-indentation</code> - Indent regions using the file formatting
-    functionality provided by the language server.</li>
-<li><code>lsp-enable-on-type-formatting</code> - Enable
-    <code>textDocument/onTypeFormatting</code> integration.</li>
-<li><code>lsp-before-save-edits</code> - If non-nil, <code>lsp-mode</code> will apply edits
-    suggested by the language server before saving a document.</li>
-<li><code>lsp-imenu-show-container-name</code> - Display the symbol's container
-    name in an imenu entry.</li>
-<li><code>lsp-imenu-container-name-separator</code> - Separator string to use to
-    separate the container name from the symbol while displaying imenu
-    entries.</li>
-<li><code>lsp-imenu-sort-methods</code> - How to sort the imenu items. The value is
-    a list of <code>kind</code>, <code>name</code> or <code>position</code>. Priorities are determined by
-    the index of the element.</li>
-<li><code>lsp-response-timeout</code> - Number of seconds to wait for a response
-    from the language server before timing out.</li>
-<li><code>lsp-enable-file-watchers</code> - If non-nil lsp-mode will watch the
-    files in the workspace if the server has requested that.</li>
-<li><code>lsp-server-trace</code> - Request trace mode on the language server.</li>
-<li><code>lsp-semantic-highlighting</code> - Enable experimental semantic
-    highlighting support</li>
-<li><code>lsp-enable-imenu</code> - If non-nil, automatically enable imenu
-    integration when server provides <code>textDocument/documentSymbol</code>.</li>
-<li><code>lsp-signature-auto-activate</code> - Auto activate signature when trigger
-    char is pressed.</li>
-<li><code>lsp-signature-render-documentation</code> - Include signature
-    documentation in signature help.</li>
-<li><code>lsp-enable-text-document-color</code> - Enable
-    <code>textDocument/documentColor</code> when server supports it.</li>
-</ul>
-<h2 id="extensions">Extensions<a class="headerlink" href="#extensions" title="Permanent link">#</a></h2>
-<h3 id="tramp">TRAMP<a class="headerlink" href="#tramp" title="Permanent link">#</a></h3>
-<p>LSP mode has support for tramp buffers with the following requirements:</p>
-<ul>
-<li>The language server has to be present on the remote server.</li>
-<li>Having multi folder language server (like <a href="https://github.com/eclipse/eclipse.jdt.ls">Eclipse JDT
-    LS</a>) cannot have local
-    and remote workspace folders.</li>
+<li>install <a href="https://github.com/emacs-lsp/lsp-ui">lsp-ui</a> for fancy
+    sideline, popup documentation, VScode-like peek UI, etc.</li>
+<li>install <a href="https://github.com/flycheck/flycheck">flycheck</a> if you
+    prefer the more popular <code>flycheck</code> over renewed <code>flymake</code>.
+    <code>lsp-mode</code> will automatically pick it up.</li>
+<li>install
+    <a href="https://github.com/company-mode/company-mode">company-mode</a> for
+    completion popups.</li>
+<li>install
+    <a href="https://github.com/emacs-lsp/lsp-treemacs">lsp-treemacs</a> for
+    various tree based UI controls (symbols, errors overview, call
+    hierarchy, etc.)</li>
+<li>install <a href="https://github.com/emacs-lsp/helm-lsp">helm-lsp</a>
+    provides on type completion alternative of <code>xref-apropos</code> using
+    <code>helm</code>.</li>
+<li>install <a href="https://github.com/emacs-lsp/lsp-ivy">lsp-ivy</a> provides
+    on type completion alternative of <code>xref-apropos</code> using <code>ivy</code>.</li>
+<li>install <a href="https://github.com/emacs-lsp/dap-mode">dap-mode</a> if
+    your language is supported by the debugger.</li>
 </ul>
 <!-- end list -->
 
-<ol>
-<li>
-<p>How does it work?</p>
-<p><code>lsp-mode</code> detects whether a particular file is located on remote
-machine and looks for a client which matches current file and it is
-marked as <code>:remote?</code> t. Then <code>lsp-mode</code> starts the client through
-tramp.</p>
-</li>
-<li>
-<p>Sample configuration</p>
-<p>Here it is example how you can configure python language server to
-work when using <code>TRAMP</code>. Note that if you are trying to convert
-existing language server configuration you should copy all of it's
-properties(e. g. <code>:request-handlers</code>, <code>activation-fn</code>, etc).</p>
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">lsp-register-client</span>
- <span class="p">(</span><span class="nv">make-lsp-client</span> <span class="nb">:new-connection</span> <span class="p">(</span><span class="nv">lsp-tramp-connection</span> <span class="s">&quot;&lt;insert your LS&#39;s binary name or path here&gt;&quot;</span><span class="p">)</span>
-                  <span class="nb">:major-modes</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">python-mode</span><span class="p">)</span>
-                  <span class="nb">:remote?</span> <span class="no">t</span>
-                  <span class="nb">:server-id</span> <span class="ss">&#39;pyls-remote</span><span class="p">))</span>
+<div class="highlight"><pre><span></span><code><span class="c1">;; if you want to change prefix for lsp-mode keybindings.</span>
+<span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-keymap-prefix</span> <span class="s">&quot;s-l&quot;</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;lsp-mode</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;XXX-mode-hook</span> <span class="nf">#&#39;</span><span class="nv">lsp</span><span class="p">)</span>
+</code></pre></div>
+
+<p>where <code>XXX</code> could be major mode like <code>python</code>, <code>java</code>, <code>c++</code>.
+Alternatively, if you want to minimize you configuration you may use
+<code>prog-mode-hook</code>. In case you do that, <code>lsp</code> will try to start for
+each programming mode and echo a message when there is no client
+registered for the current mode or if the corresponding server is
+not present. In addition, <code>lsp-mode</code> will automatically detect and
+configure <a href="https://github.com/emacs-lsp/lsp-ui">lsp-ui</a> and
+<a href="https://github.com/tigersoldier/company-lsp">company-lsp</a>. To turn
+off that behavior you could set <code>lsp-auto-configure</code> to <code>nil</code>.</p>
+<p>To defer LSP server startup (and DidOpen notifications) until the
+buffer is visible you can use <code>lsp-deferred</code> instead of <code>lsp</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;XXX-mode-hook</span> <span class="nf">#&#39;</span><span class="nv">lsp-deferred</span><span class="p">)</span>
 </code></pre></div>
 
 </li>
 <li>
-<p>Dealing with stderr</p>
-<p>With TRAMP, Emacs does not have an easy way to distinguish stdout
-and stderr, so when the underlying LSP process writes to stderr, it
-breaks the <code>lsp-mode</code> parser. As a workaround, <code>lsp-mode</code> is
-redirecting stderr to <code>/tmp/&lt;process-name&gt;-&lt;id&gt;~stderr</code>.</p>
+<p>Spacemacs</p>
+<p><a href="https://github.com/emacs-lsp/lsp-mode">lsp-mode</a> is included in
+spacemacs develop branch. Add <code>lsp</code> to
+<code>dotspacemacs-configuration-layers</code> and configure the language that
+you want to use to be backed by <code>lsp</code> backend.</p>
+</li>
+<li>
+<p>use-package</p>
+<p>Replace <code>(require 'lsp-mode)</code> with the following if you use
+use-package.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">;; set prefix for lsp-command-keymap (few alternatives - &quot;C-l&quot;, &quot;C-c l&quot;)</span>
+<span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-keymap-prefix</span> <span class="s">&quot;s-l&quot;</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-mode</span>
+  <span class="nb">:hook</span> <span class="p">(</span><span class="c1">;; replace XXX-mode with concrete major-mode(e. g. python-mode)</span>
+         <span class="p">(</span><span class="nv">XXX-mode</span> <span class="o">.</span> <span class="nv">lsp</span><span class="p">)</span>
+         <span class="c1">;; if you want which-key integration</span>
+         <span class="p">(</span><span class="nv">lsp-mode</span> <span class="o">.</span> <span class="nv">lsp-enable-which-key-integration</span><span class="p">))</span>
+  <span class="nb">:commands</span> <span class="nv">lsp</span><span class="p">)</span>
+
+<span class="c1">;; optionally</span>
+<span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-ui</span> <span class="nb">:commands</span> <span class="nv">lsp-ui-mode</span><span class="p">)</span>
+<span class="c1">;; if you are helm user</span>
+<span class="p">(</span><span class="nb">use-package</span> <span class="nv">helm-lsp</span> <span class="nb">:commands</span> <span class="nv">helm-lsp-workspace-symbol</span><span class="p">)</span>
+<span class="c1">;; if you are ivy user</span>
+<span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-ivy</span> <span class="nb">:commands</span> <span class="nv">lsp-ivy-workspace-symbol</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-treemacs</span> <span class="nb">:commands</span> <span class="nv">lsp-treemacs-errors-list</span><span class="p">)</span>
+
+<span class="c1">;; optionally if you want to use debugger</span>
+<span class="p">(</span><span class="nb">use-package</span> <span class="nv">dap-mode</span><span class="p">)</span>
+<span class="c1">;; (use-package dap-LANGUAGE) to load the dap adapter for your language</span>
+
+<span class="c1">;; optional if you want which-key integration</span>
+<span class="p">(</span><span class="nb">use-package</span> <span class="nv">which-key</span>
+  <span class="nb">:config</span>
+  <span class="p">(</span><span class="nv">which-key-mode</span><span class="p">))</span>
+</code></pre></div>
+
+<p>To defer LSP server startup (and DidOpen notifications) until the
+buffer is visible you can use <code>lsp-deferred</code> instead of <code>lsp</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-mode</span>
+  <span class="nb">:hook</span> <span class="p">(</span><span class="nv">XXX-mode</span> <span class="o">.</span> <span class="nv">lsp-deferred</span><span class="p">)</span>
+  <span class="nb">:commands</span> <span class="p">(</span><span class="nv">lsp</span> <span class="nv">lsp-deferred</span><span class="p">))</span>
+</code></pre></div>
+
+</li>
+<li>
+<p>Recommended settings for lsp-mode related packages</p>
+<ol>
+<li>
+<p>company</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">company-minimum-prefix-length</span> <span class="mi">1</span>
+      <span class="nv">company-idle-delay</span> <span class="mf">0.0</span><span class="p">)</span> <span class="c1">;; default is 0.2</span>
+</code></pre></div>
+
 </li>
 </ol>
-<h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">#</a></h2>
-<h3 id="file-watches">File watches<a class="headerlink" href="#file-watches" title="Permanent link">#</a></h3>
-<p>When some of the workspaces that are active in the current project
-requests file notifications via <code>workspace/didChangeWatchedFiles</code>
-<code>lsp-mode</code> will start monitoring each of the folders in the workspace
-for changes. In case your project contains a lot of files you might want
-to disable file monitoring via <code>lsp-enable-file-watchers</code> (you may use
-dir-locals).</p>
-<h2 id="contributions">Contributions<a class="headerlink" href="#contributions" title="Permanent link">#</a></h2>
-<p>Contributions are very much welcome.</p>
-<h3 id="members">Members<a class="headerlink" href="#members" title="Permanent link">#</a></h3>
-<p>Here it is a list of the current <code>lsp-mode</code> members and what they are
-primary working on/responsible for.</p>
-<table>
-<thead>
-<tr>
-<th>Member</th>
-<th>Responsible for:</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="https://github.com/TOTBWF">TOTBWF</a></td>
-<td><code>F#</code></td>
-</tr>
-<tr>
-<td><a href="https://github.com/brotzeit">brotzeit</a></td>
-<td><code>Rust</code></td>
-</tr>
-<tr>
-<td><a href="https://github.com/dsyzling">dsyzling</a></td>
-<td><code>Scala</code></td>
-</tr>
-<tr>
-<td><a href="https://github.com/kurnevsky">kurnevsky</a></td>
-<td><code>Scala</code> &amp; <code>Rust</code></td>
-</tr>
-<tr>
-<td><a href="https://github.com/seagle0128">seagle0128</a></td>
-<td><code>Go</code> &amp; <code>MS Python Language Server</code></td>
-</tr>
-<tr>
-<td><a href="https://github.com/sebastiansturm">sebastiansturm</a></td>
-<td><code>lsp-mode</code> core &amp; <code>C++</code></td>
-</tr>
-<tr>
-<td><a href="https://github.com/vibhavp">vibhavp</a></td>
-<td><code>lsp-mode</code> core</td>
-</tr>
-<tr>
-<td><a href="https://github.com/yyoncho">yyoncho</a></td>
-<td><code>lsp-mode</code> core &amp; <code>Java</code></td>
-</tr>
-<tr>
-<td><a href="https://github.com/ericdallo">ericdallo</a></td>
-<td><code>Dart</code> &amp; <code>Flutter</code></td>
-</tr>
-</tbody>
-</table>
-<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">#</a></h2>
+</li>
+<li>
+<p>Formatting</p>
+<p>In general the formatter settings are language server specific(e. g.
+<code>JDT
+                    LS</code> uses eclipse formatter file and <code>lsp-java-format-settings-url</code>
+to configure it while clangd uses <code>clangd-format</code>). The only
+settings that are controlled on <code>lsp-mode</code> level are indent size and
+whether the server should use tabs or spaces.</p>
 <ul>
-<li>check <code>*lsp-log*</code> buffer and verify that <code>lsp-mode</code> is able to find
-    the server. If <code>lsp-mode</code> is unable to find the binary but it is on
-    the path it is probably caused by the fact that emacs is running
-    with different path. You may check the current path by executing
-    <code>M-: (getenv "PATH")</code>. If this is the case, you have several options
-    to fix the issue.<ul>
-<li>make sure that emacs is using the proper path by running emacs
-    from terminal</li>
-<li>Modify the path using <code>setpath</code></li>
-<li>Look for <code>lsp-mode</code> variable to customize server path. Usually,
-    you may find the variable by doing <code>M-x customize-group RET
-            lsp-LANGUAGE-SERVER-ID</code>.</li>
+<li>Use <code>c-basic-offset</code> for <code>cc-mode</code> derived moves(e. g. java,
+    C++) to control the tab size.</li>
+<li>Use <code>tab-width</code> for any other mode to do the same.</li>
+<li>Use <code>indent-tabs-mode</code> for selecting tab/spaces.</li>
 </ul>
 </li>
-<li>set <code>lsp-log-io</code> to <code>t</code> to inspect communication between client and
-    the server. Use <code>lsp-workspace-show-log</code> to switch to the
-    corresponding log buffer.</li>
-<li><code>lsp-describe-session</code> will show the current projects roots + the
-    started severs and allows inspecting the server capabilities.</li>
-</ul>
-<p><img alt="Describe session" src="examples/describe.png" /></p>
-<h2 id="adding-support-for-languages"><a href="https://emacs-lsp.github.io/lsp-mode/page/adding-new-language/">Adding support for languages</a><a class="headerlink" href="#adding-support-for-languages" title="Permanent link">#</a></h2>
-<h2 id="faq"><a href="https://emacs-lsp.github.io/lsp-mode/page/faq/">FAQ</a><a class="headerlink" href="#faq" title="Permanent link">#</a></h2>
-<h2 id="changelog"><a href="https://emacs-lsp.github.io/lsp-mode/page/CHANGELOG/">Changelog</a><a class="headerlink" href="#changelog" title="Permanent link">#</a></h2>
-<h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">#</a></h2>
+<li>
+<p>Docker</p>
+<p>Refer to <a href="https://github.com/emacs-lsp/lsp-docker/">lsp-docker</a>
+README which provides a guide on how you can run <code>lsp-mode</code> in
+<code>docker</code> container.</p>
+</li>
+</ol>
+<h3 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">#</a></h3>
+<p>Use <code>M-x lsp-diagnose</code> to validate if your <code>lsp-mode</code> is properly
+configured. In the section below, you could find description for each of
+the checks:</p>
+<p>When configured properly <code>lsp-mode</code>'s performance is on par with
+mainstream LSP clients (e. g. <code>VScode</code>, <code>Theia</code>, etc). Here are steps to
+achieve optimal results.</p>
 <ul>
-<li><a href="https://github.com/emacs-lsp/lsp-docker/">lsp-docker</a> - provide
-    docker image with preconfigured language servers with corresponding
-    emacs configuration.</li>
-<li><a href="https://github.com/sebastiencs/company-box/">company-box</a> -
-    <code>company</code> frontend with icons.</li>
-<li><a href="https://github.com/emacs-lsp/dap-mode">dap-mode</a> - Debugger
-    integration for <code>lsp-mode</code>.</li>
-<li><a href="https://github.com/joaotavora/eglot">eglot</a> - An alternative
-    minimal LSP implementation.</li>
-<li><a href="https://github.com/justbur/emacs-which-key/">which-key</a> - Emacs
-    package that displays available keybindings in popup</li>
-<li><a href="https://github.com/bbatsov/projectile/">projectile</a> - Project
-    Interaction Library for Emacs</li>
+<li>Use Emacs 27+ with native json support. (Note: this requires that
+    you have <a href="http://www.digip.org/jansson/">libjansson</a> installed, and
+    that emacs was compiled with `–with-json` passed to
+    `./configure`.) You can check your installation for native json
+    support by running do <kbd>M-:</kbd> <code>(functionp 'json-serialize)</code> <kbd>RET</kbd>.
+    Benchmarks show that Emacs 27 is <code>~15 times</code> faster than Emacs when
+    using Elisp json parser implementation.</li>
+<li>
+<p>Adjust <code>gc-cons-threshold</code>. The default setting is too low for
+    <code>lsp-mode</code>'s needs due to the fact that client/server communication
+    generates a lot of memory/garbage. You have two options:</p>
+<ul>
+<li>
+<p>Set it to big number(100mb) like most of the popular starter
+    kits like Spacemacs/Doom/Prelude, etc do:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">gc-cons-threshold</span> <span class="mi">100000000</span><span class="p">)</span>
+</code></pre></div>
+
+</li>
+<li>
+<p>Follow the method recommended by Gnu Emacs Maintainer Eli
+    Zaretskii: "My suggestion is to repeatedly multiply
+    gc-cons-threshold by 2 until you stop seeing significant
+    improvements in responsiveness, and in any case not to increase
+    by a factor larger than 100 or somesuch. If even a 100-fold
+    increase doesn't help, there's some deeper problem with the Lisp
+    code which produces so much garbage, or maybe GC is not the
+    reason for slowdown." Source:
+    <a href="https://www.reddit.com/r/emacs/comments/brc05y/is_lspmode_too_slow_to_use_for_anyone_else/eofulix/">https://www.reddit.com/r/emacs/comments/brc05y/is_lspmode_too_slow_to_use_for_anyone_else/eofulix/</a></p>
+</li>
+<li>Increase the amount of data which Emacs reads from the process.
+Again the emacs default is too low 4k considering that the some of
+the language server responses are in 800k - 3M range.</li>
 </ul>
+</li>
+</ul>
+<!-- end list -->
+
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">read-process-output-max</span> <span class="p">(</span><span class="nf">*</span> <span class="mi">1024</span> <span class="mi">1024</span><span class="p">))</span> <span class="c1">;; 1mb</span>
+</code></pre></div>
+
+<ul>
+<li>Optional: use <code>company-capf</code> . Although <code>company-lsp</code> also supports
+    caching <code>lsp-mode</code>'s <code>company-capf</code> does that by default. To achieve
+    that uninstall <code>company-lsp</code> or put these lines in your config:</li>
+</ul>
+<!-- end list -->
+
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-prefer-capf</span> <span class="no">t</span><span class="p">)</span>
+</code></pre></div>
+
+<p><em>Note:</em> - to verify which <code>company</code> backend implementation you are using
+do <code>M-x company-diag</code> when performing auto-completion.</p>
+<ul>
+<li>Optional: Disable <code>lsp-ui</code>. Normally, <code>lsp-ui</code> is very fast but in
+    some systems (especially when using <code>Windows</code>) <code>lsp-ui</code> overlays and
+    popups might slow down emacs.</li>
+<li>Optional: fine-tune <code>lsp-idle-delay</code>. This variable determines how
+    often lsp-mode will refresh the highlights, lenses, links, etc while
+    you type.</li>
+</ul>
+<!-- end list -->
+
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-idle-delay</span> <span class="mf">0.500</span><span class="p">)</span>
+</code></pre></div>
+
+<ol>
+<li>
+<p>Reporting performance problems</p>
+<p>If you have tried all of the non-optional steps from the list and
+<code>emacs</code> is still not very responsive please open a PR with the
+following information:</p>
+<ul>
+<li>Collect <strong>lsp-log</strong> data after setting <code>lsp-print-performance</code>
+    to <code>t</code>.</li>
+</ul>
+<!-- end list -->
+
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-print-performance</span> <span class="no">t</span><span class="p">)</span>
+</code></pre></div>
+
+<ul>
+<li>Include emacs performance report. Use the following step to
+    collect it:<ul>
+<li><code>M-x profiler-start</code> and select <code>CPU</code></li>
+<li>Reproduce the slow behavior.</li>
+<li><code>M-x profiler-stop</code></li>
+<li>In the profiler report expand all nodes by doing <code>C-u TAB</code>.
+<em>Note:</em> - <code>lsp-mode</code> is just a frontend and the performance
+depends on server as well. Some servers (e. g. Palantir's Python
+Language Server) might be slow when performing auto-completion.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="how-does-it-work">How does it work?<a class="headerlink" href="#how-does-it-work" title="Permanent link">#</a></h3>
+<p><code>lsp-mode</code> has predefined list of server configurations (loaded in
+<code>lsp-clients.el</code>) containing a mapping from <code>major-mode</code> to the server
+configuration or by using activation function. In addition to the
+default server configuration located in <code>lsp-clients.el</code> there are few
+languages servers which require separate package(check <a href="https://emacs-lsp.github.io/lsp-mode/page/languages/">Supported
+languages</a>). </p>
+<p>When you open a file from a
+particular project <code>lsp-mode</code> and call <code>lsp</code> command <code>lsp-mode</code> will
+look for server registrations able to handle current file. If there is
+such client <code>lsp-mode</code> will look for the project root. If you open a
+file from the project for the first time you will be prompted to define
+the current project root. Once the project root is selected it is saved
+in <code>lsp-session</code> file and it will be loaded the next time you start
+Emacs so you no longer will be asked for a project root when you open a
+file from that project. 
+Later if you want to change the project root you
+may use <code>lsp-workspace-folder-remove</code> to remove the project and call
+<code>lsp-workspace-folder-add</code> to add the root. If you want to force
+starting a particular language server in a file you may use <kbd>C-u</kbd> <kbd>M-x</kbd>
+<code>lsp</code> which will prompt you to select language server to start.</p>
                 
                   
                     
@@ -1966,7 +1742,7 @@ primary working on/responsible for.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: May 6, 2020
+      Last update: May 5, 2020
     
   </small>
 </div>
@@ -1989,14 +1765,28 @@ primary working on/responsible for.</p>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
+          <a href="../.." title="Home" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Home
+              </div>
+            </div>
+          </a>
         
-          <a href="page/installation/" title="Installation" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+        
+          <a href="../keybindings/" title="Keybindings" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Installation
+                Keybindings
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
@@ -2054,20 +1844,20 @@ primary working on/responsible for.</p>
       
     </div>
     
-      <script src="assets/javascripts/vendor.83fe6e3c.min.js"></script>
-      <script src="assets/javascripts/bundle.7e1cb91c.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      <script src="../../assets/javascripts/vendor.83fe6e3c.min.js"></script>
+      <script src="../../assets/javascripts/bundle.7e1cb91c.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
       
       <script>
         app = initialize({
-          base: ".",
+          base: "../..",
           features: ["tabs"],
           search: Object.assign({
-            worker: "assets/javascripts/worker/search.37585f48.min.js"
+            worker: "../../assets/javascripts/worker/search.37585f48.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>
       
-        <script src="js/expanded_nav.js"></script>
+        <script src="../../js/expanded_nav.js"></script>
       
     
   </body>

@@ -1,0 +1,2042 @@
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-vetur/">
+      
+      
+      <link rel="shortcut icon" href="../../examples/logo-mini.png">
+      <meta name="generator" content="mkdocs-1.1, mkdocs-material-5.1.5">
+    
+    
+      
+        <title>Vue - LSP Mode</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.df84b5fe.min.css">
+      
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    
+      
+        
+<link rel="preconnect dns-prefetch" href="https://www.google-analytics.com">
+<script>window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-165661257-1","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){if(this.value){var e=document.location.pathname;ga("send","pageview",e+"?q="+this.value)}})}),document.addEventListener("DOMContentSwitch",function(){ga("send","pageview")})</script>
+<script async src="https://www.google-analytics.com/analytics.js"></script>
+      
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#vue" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode" class="md-header-nav__button md-logo" aria-label="LSP Mode">
+      
+  <img src="../../examples/logo-mini.png" alt="logo">
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            LSP Mode
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              Vue
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header-nav__source">
+        
+<a href="https://github.com/emacs-lsp/lsp-mode/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    emacs-lsp/lsp-mode
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+          
+
+  
+
+<nav class="md-tabs md-tabs--active" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href="../.." class="md-tabs__link">
+        Home
+      </a>
+    
+  </li>
+
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../languages/" class="md-tabs__link md-tabs__link--active">
+          Languages
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../features/" class="md-tabs__link">
+          Features
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../gallery/" class="md-tabs__link">
+          Gallery
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../CHANGELOG/" class="md-tabs__link">
+          Changelog
+        </a>
+      
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode" class="md-nav__button md-logo" aria-label="LSP Mode">
+      
+  <img src="../../examples/logo-mini.png" alt="logo">
+
+    </a>
+    LSP Mode
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/emacs-lsp/lsp-mode/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    emacs-lsp/lsp-mode
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../installation/" title="Installation" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../keybindings/" title="Keybindings" class="md-nav__link">
+      Keybindings
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../faq/" title="FAQ" class="md-nav__link">
+      FAQ
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../adding-new-language/" title="Adding new language" class="md-nav__link">
+      Adding new language
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6" checked>
+    
+    <label class="md-nav__link" for="nav-6">
+      Languages
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="Languages" data-md-level="1">
+      <label class="md-nav__title" for="nav-6">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        Languages
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../languages/" title="Languages" class="md-nav__link">
+      Languages
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-ada/" title="Ada" class="md-nav__link">
+      Ada
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/lsp-sourcekit" title="Apple Sourcekit" class="md-nav__link">
+      Apple Sourcekit
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-angular/" title="Angular" class="md-nav__link">
+      Angular
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-bash/" title="Bash" class="md-nav__link">
+      Bash
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-ccls/" title="C++(ccls)" class="md-nav__link">
+      C++(ccls)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-clangd/" title="C++(clangd)" class="md-nav__link">
+      C++(clangd)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-cquery/" title="C++(cquery)" class="md-nav__link">
+      C++(cquery)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-csharp/" title="C#" class="md-nav__link">
+      C#
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-clojure/" title="Clojure" class="md-nav__link">
+      Clojure
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-cmake/" title="CMake" class="md-nav__link">
+      CMake
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-crystal/" title="Crystal" class="md-nav__link">
+      Crystal
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-css/" title="CSS/LessCSS/SASS/SCSS" class="md-nav__link">
+      CSS/LessCSS/SASS/SCSS
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/lsp-dart" title="Dart" class="md-nav__link">
+      Dart
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-dhall/" title="Dhall" class="md-nav__link">
+      Dhall
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-dockerfile/" title="Dockerfile" class="md-nav__link">
+      Dockerfile
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-elixir/" title="Elixir(elixir-ls)" class="md-nav__link">
+      Elixir(elixir-ls)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-elixir-ls/" title="Elixir(JakeBecker)" class="md-nav__link">
+      Elixir(JakeBecker)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-elm/" title="Elm" class="md-nav__link">
+      Elm
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-erlang/" title="Erlang" class="md-nav__link">
+      Erlang
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-eslint/" title="Eslint" class="md-nav__link">
+      Eslint
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-fsharp/" title="F#" class="md-nav__link">
+      F#
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-fortran/" title="Fortran" class="md-nav__link">
+      Fortran
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-gopls/" title="Go(gopls)" class="md-nav__link">
+      Go(gopls)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-bingo/" title="Go(bingo)" class="md-nav__link">
+      Go(bingo)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-groovy/" title="Groovy" class="md-nav__link">
+      Groovy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-hack/" title="Hack" class="md-nav__link">
+      Hack
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-html/" title="HTML" class="md-nav__link">
+      HTML
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/lsp-haskell" title="Haskell" class="md-nav__link">
+      Haskell
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-emmy-lua/" title="Lua" class="md-nav__link">
+      Lua
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/lsp-java" title="Java" class="md-nav__link">
+      Java
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-typescript/" title="JavaScript/TypeScript(sourcegraph)" class="md-nav__link">
+      JavaScript/TypeScript(sourcegraph)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-typescript-javascript/" title="JavaScript/TypeScript(theia-ide)" class="md-nav__link">
+      JavaScript/TypeScript(theia-ide)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-flow/" title="JavaScript Flow" class="md-nav__link">
+      JavaScript Flow
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-json/" title="Json" class="md-nav__link">
+      Json
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-julia/" title="Julia" class="md-nav__link">
+      Julia
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-kotlin/" title="Kotlin" class="md-nav__link">
+      Kotlin
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/lsp-mssql" title="MSSQL" class="md-nav__link">
+      MSSQL
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-nim/" title="Nim" class="md-nav__link">
+      Nim
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-ocaml/" title="OCaml(ocaml)" class="md-nav__link">
+      OCaml(ocaml)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-ocalm-lsp-server/" title="OCaml(icaml-lsp)" class="md-nav__link">
+      OCaml(icaml-lsp)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-pascal/" title="Pascal/Object Pascal" class="md-nav__link">
+      Pascal/Object Pascal
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-perl/" title="Perl" class="md-nav__link">
+      Perl
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-intelephense/" title="PHP(intelephense)" class="md-nav__link">
+      PHP(intelephense)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-php/" title="PHP(felixbecker)" class="md-nav__link">
+      PHP(felixbecker)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-pwsh/" title="Powershell" class="md-nav__link">
+      Powershell
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-purescript/" title="PureScript" class="md-nav__link">
+      PureScript
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-pyls/" title="Python" class="md-nav__link">
+      Python
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/lsp-python-ms" title="Python(Microsoft)" class="md-nav__link">
+      Python(Microsoft)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-r/" title="R" class="md-nav__link">
+      R
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-solargraph/" title="Ruby" class="md-nav__link">
+      Ruby
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-rust/" title="Rust" class="md-nav__link">
+      Rust
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-metals/" title="Scala" class="md-nav__link">
+      Scala
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-terraform/" title="Terraform" class="md-nav__link">
+      Terraform
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-tex/" title="TeX, LaTeX, etc (digestif)" class="md-nav__link">
+      TeX, LaTeX, etc (digestif)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-texlab/" title="TeX, LaTeX, etc (texlab)" class="md-nav__link">
+      TeX, LaTeX, etc (texlab)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-latex/" title="TeX, LaTeX, etc (latex)" class="md-nav__link">
+      TeX, LaTeX, etc (latex)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-verilog/" title="Verilog/SystemVerilog" class="md-nav__link">
+      Verilog/SystemVerilog
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-vhdl/" title="VHDL" class="md-nav__link">
+      VHDL
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-vim/" title="Vimscript" class="md-nav__link">
+      Vimscript
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Vue
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="Vue" class="md-nav__link md-nav__link--active">
+      Vue
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#server" class="md-nav__link">
+    Server
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instalation" class="md-nav__link">
+    Instalation
+  </a>
+  
+    <nav class="md-nav" aria-label="Instalation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugger-yes-firefoxchrome" class="md-nav__link">
+    Debugger: Yes (Firefox/Chrome)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-configurations" class="md-nav__link">
+    Available configurations
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-xml/" title="XML" class="md-nav__link">
+      XML
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lsp-yaml/" title="YAML" class="md-nav__link">
+      YAML
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
+    
+    <label class="md-nav__link" for="nav-7">
+      Features
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="Features" data-md-level="1">
+      <label class="md-nav__title" for="nav-7">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        Features
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../features/" title="Features" class="md-nav__link">
+      Features
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/dap-mode" title="Debugging" class="md-nav__link">
+      Debugging
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/lsp-ui" title="UI" class="md-nav__link">
+      UI
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/emacs-lsp/lsp-treemacs" title="Treemacs" class="md-nav__link">
+      Treemacs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/emacs-lsp/helm-lsp" title="Helm" class="md-nav__link">
+      Helm
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/emacs-lsp/lsp-ivy" title="Ivy" class="md-nav__link">
+      Ivy
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8" type="checkbox" id="nav-8">
+    
+    <label class="md-nav__link" for="nav-8">
+      Gallery
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="Gallery" data-md-level="1">
+      <label class="md-nav__title" for="nav-8">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        Gallery
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../gallery/" title="Gallery" class="md-nav__link">
+      Gallery
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-9" type="checkbox" id="nav-9">
+    
+    <label class="md-nav__link" for="nav-9">
+      Changelog
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="Changelog" data-md-level="1">
+      <label class="md-nav__title" for="nav-9">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        Changelog
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../CHANGELOG/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#server" class="md-nav__link">
+    Server
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instalation" class="md-nav__link">
+    Instalation
+  </a>
+  
+    <nav class="md-nav" aria-label="Instalation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugger-yes-firefoxchrome" class="md-nav__link">
+    Debugger: Yes (Firefox/Chrome)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-configurations" class="md-nav__link">
+    Available configurations
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/lsp-vetur.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                  
+                
+                
+                <h1 id="vue">Vue<a class="headerlink" href="#vue" title="Permanent link">#</a></h1>
+<h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
+<p>For information about the LSP server, check the <a href="https://github.com/vuejs/vetur/tree/master/server">vue-language-server</a>.</p>
+<h2 id="instalation">Instalation<a class="headerlink" href="#instalation" title="Permanent link">#</a></h2>
+<p><code>npm install -g vls</code></p>
+<h3 id="debugger-yes-firefoxchrome">Debugger: Yes (Firefox/Chrome)<a class="headerlink" href="#debugger-yes-firefoxchrome" title="Permanent link">#</a></h3>
+<h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
+<p><strong><code>lsp-vetur-use-workspace-dependencies</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Use dependencies from workspace. Currently only for
+TypeScript.</p>
+<hr />
+<p><strong><code>lsp-vetur-completion-auto-import</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Include completion for module export and auto import them</p>
+<hr />
+<p><strong><code>lsp-vetur-completion-use-scaffold-snippets</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable Vetur’s built-in scaffolding snippets</p>
+<hr />
+<p><strong><code>lsp-vetur-completion-tag-casing</code></strong></p>
+<p><em>Default: <code>kebab</code></em></p>
+<p>Casing conversion for tag completion</p>
+<hr />
+<p><strong><code>lsp-vetur-grammar-custom-blocks</code></strong></p>
+<p><em>Default: <code>((docs . md) (i18n . json))</code></em></p>
+<p>Mapping from custom block tag name to language name. Used for
+ generating grammar to support syntax highlighting for custom
+ blocks.</p>
+<hr />
+<p><strong><code>lsp-vetur-validation-template</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Validate vue-html in <template> using eslint-plugin-vue</p>
+<hr />
+<p><strong><code>lsp-vetur-validation-style</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Validate css/scss/less/postcss in <style></p>
+<hr />
+<p><strong><code>lsp-vetur-validation-script</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Validate js/ts in <script></p>
+<hr />
+<p><strong><code>lsp-vetur-format-enable</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable the Vetur document formatter.</p>
+<hr />
+<p><strong><code>lsp-vetur-format-options-tab-size</code></strong></p>
+<p><em>Default: <code>2</code></em></p>
+<p>Number of spaces per indentation level. Inherited by all formatters.</p>
+<hr />
+<p><strong><code>lsp-vetur-format-options-use-tabs</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Use tabs for indentation. Inherited by all formatters.</p>
+<hr />
+<p><strong><code>lsp-vetur-format-default-formatter-html</code></strong></p>
+<p><em>Default: <code>prettyhtml</code></em></p>
+<p>Default formatter for <template> region</p>
+<hr />
+<p><strong><code>lsp-vetur-format-default-formatter-css</code></strong></p>
+<p><em>Default: <code>prettier</code></em></p>
+<p>Default formatter for <style> region</p>
+<hr />
+<p><strong><code>lsp-vetur-format-default-formatter-postcss</code></strong></p>
+<p><em>Default: <code>prettier</code></em></p>
+<p>Default formatter for <style lang=’postcss’> region</p>
+<hr />
+<p><strong><code>lsp-vetur-format-default-formatter-scss</code></strong></p>
+<p><em>Default: <code>prettier</code></em></p>
+<p>Default formatter for <style lang=’scss’> region</p>
+<hr />
+<p><strong><code>lsp-vetur-format-default-formatter-less</code></strong></p>
+<p><em>Default: <code>prettier</code></em></p>
+<p>Default formatter for <style lang=’less’> region</p>
+<hr />
+<p><strong><code>lsp-vetur-format-default-formatter-stylus</code></strong></p>
+<p><em>Default: <code>stylus-supremacy</code></em></p>
+<p>Default formatter for <style lang=’stylus’> region</p>
+<hr />
+<p><strong><code>lsp-vetur-format-default-formatter-js</code></strong></p>
+<p><em>Default: <code>prettier</code></em></p>
+<p>Default formatter for <script> region</p>
+<hr />
+<p><strong><code>lsp-vetur-format-default-formatter-ts</code></strong></p>
+<p><em>Default: <code>prettier</code></em></p>
+<p>Default formatter for <script> region</p>
+<hr />
+<p><strong><code>lsp-vetur-format-default-formatter-options</code></strong></p>
+<p><em>Default: <code>((js-beautify-html (wrap_attributes . force-expand-multiline)) (prettyhtml (printWidth . 100) (singleQuote . :json-false) (wrapAttributes . :json-false) (sortAttributes . :json-false)))</code></em></p>
+<p>Options for all default formatters</p>
+<hr />
+<p><strong><code>lsp-vetur-format-style-initial-indent</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Whether to have initial indent for <style> region</p>
+<hr />
+<p><strong><code>lsp-vetur-format-script-initial-indent</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Whether to have initial indent for <script> region</p>
+<hr />
+<p><strong><code>lsp-vetur-trace-server</code></strong></p>
+<p><em>Default: <code>off</code></em></p>
+<p>Traces the communication between VS Code and Vue Language Server.</p>
+<hr />
+<p><strong><code>lsp-vetur-dev-vls-path</code></strong></p>
+<p><em>Default: ``</em></p>
+<p>The vls path for development</p>
+<hr />
+<p><strong><code>lsp-vetur-dev-vls-port</code></strong></p>
+<p><em>Default: <code>-1</code></em></p>
+<p>The vls port for development</p>
+<hr />
+<p><strong><code>lsp-vetur-dev-log-level</code></strong></p>
+<p><em>Default: <code>INFO</code></em></p>
+<p>The vls log level for development</p>
+<hr />
+<p><strong><code>lsp-vetur-experimental-template-interpolation-service</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Whether to have template interpolation service</p>
+<hr />
+<p><strong><code>lsp-typescript-tsdk</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Specifies the folder path containing the tsserver and
+lib*.d.ts files to use.</p>
+<hr />
+<p><strong><code>lsp-typescript-disable-automatic-type-acquisition</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Disables automatic type acquisition. Automatic type
+acquisition fetches ‘@types‘ packages from npm to improve
+IntelliSense for external libraries.</p>
+<hr />
+<p><strong><code>lsp-typescript-npm</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Specifies the path to the NPM executable used for Automatic
+Type Acquisition. Requires using TypeScript 2.3.4 or newer in the
+workspace.</p>
+<hr />
+<p><strong><code>lsp-typescript-check-npm-is-installed</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Check if NPM is installed for Automatic Type Acquisition.</p>
+<hr />
+<p><strong><code>lsp-javascript-references-code-lens-enabled</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Enable/disable references CodeLens in JavaScript files.</p>
+<hr />
+<p><strong><code>lsp-typescript-references-code-lens-enabled</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Enable/disable references CodeLens in TypeScript files.</p>
+<hr />
+<p><strong><code>lsp-typescript-implementations-code-lens-enabled</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Enable/disable implementations CodeLens. This CodeLens shows
+the implementers of an interface.</p>
+<hr />
+<p><strong><code>lsp-typescript-tsserver-log</code></strong></p>
+<p><em>Default: <code>off</code></em></p>
+<p>Enables logging of the TS server to a file. This log can be
+used to diagnose TS Server issues. The log may contain file
+paths, source code, and other potentially sensitive information
+from your project.</p>
+<hr />
+<p><strong><code>lsp-typescript-tsserver-plugin-paths</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Additional paths to discover Typescript Language Service
+plugins. Requires using TypeScript 2.3.0 or newer in the
+workspace.</p>
+<hr />
+<p><strong><code>lsp-typescript-tsserver-trace</code></strong></p>
+<p><em>Default: <code>off</code></em></p>
+<p>Enables tracing of messages sent to the TS server. This trace
+can be used to diagnose TS Server issues. The trace may contain
+file paths, source code, and other potentially sensitive
+information from your project.</p>
+<hr />
+<p><strong><code>lsp-javascript-suggest-complete-function-calls</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Complete functions with their parameter signature.</p>
+<hr />
+<p><strong><code>lsp-typescript-suggest-complete-function-calls</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Complete functions with their parameter signature.</p>
+<hr />
+<p><strong><code>lsp-typescript-report-style-checks-as-warnings</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Report style checks as warnings.</p>
+<hr />
+<p><strong><code>lsp-typescript-validate-enable</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable TypeScript validation.</p>
+<hr />
+<p><strong><code>lsp-typescript-format-enable</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable default TypeScript formatter.</p>
+<hr />
+<p><strong><code>lsp-typescript-format-insert-space-after-comma-delimiter</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Defines space handling after a comma delimiter.</p>
+<hr />
+<p><strong><code>lsp-typescript-format-insert-space-after-constructor</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Defines space handling after the constructor keyword. Requires
+using TypeScript 2.3.0 or newer in the workspace.</p>
+<hr />
+<p><strong><code>lsp-typescript-format-insert-space-after-semicolon-in-for-statements</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Defines space handling after a semicolon in a for statement.</p>
+<hr />
+<p><strong><code>lsp-typescript-format-insert-space-before-and-after-binary-operators</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Defines space handling after a binary operator.</p>
+<hr />
+<p><strong><code>lsp-typescript-format-insert-space-after-keywords-in-control-flow-statements</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Defines space handling after keywords in a control flow
+statement.</p>
+<hr />
+<p><strong><code>lsp-typescript-format-insert-space-after-function-keyword-for-anonymous-functions</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Defines space handling after function keyword for anonymous
+functions.</p>
+<hr />
+<p><strong><code>lsp-typescript-format-insert-space-before-function-parenthesis</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Defines space handling before function argument parentheses.</p>
+<hr />
+<p><strong><code>lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-parenthesis</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Defines space handling after opening and before closing
+non-empty parenthesis.</p>
+<hr />
+<p><strong><code>lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-brackets</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Defines space handling after opening and before closing
+non-empty brackets.</p>
+<hr />
+<p><strong><code>lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-braces</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Defines space handling after opening and before closing
+non-empty braces. Requires using TypeScript 2.3.0 or newer in the
+workspace.</p>
+<hr />
+<p><strong><code>lsp-typescript-format-insert-space-after-opening-and-before-closing-template-string-braces</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Defines space handling after opening and before closing
+template string braces.</p>
+<hr />
+<p><strong><code>lsp-typescript-format-insert-space-after-opening-and-before-closing-jsx-expression-braces</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Defines space handling after opening and before closing JSX
+expression braces.</p>
+<hr />
+<p><strong><code>lsp-typescript-format-insert-space-after-type-assertion</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Defines space handling after type assertions in TypeScript.
+Requires using TypeScript 2.4 or newer in the workspace.</p>
+<hr />
+<p><strong><code>lsp-typescript-format-place-open-brace-on-new-line-for-functions</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Defines whether an open brace is put onto a new line for
+functions or not.</p>
+<hr />
+<p><strong><code>lsp-typescript-format-place-open-brace-on-new-line-for-control-blocks</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Defines whether an open brace is put onto a new line for
+control blocks or not.</p>
+<hr />
+<p><strong><code>lsp-javascript-validate-enable</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable JavaScript validation.</p>
+<hr />
+<p><strong><code>lsp-javascript-format-enable</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable default JavaScript formatter.</p>
+<hr />
+<p><strong><code>lsp-javascript-format-insert-space-after-comma-delimiter</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Defines space handling after a comma delimiter.</p>
+<hr />
+<p><strong><code>lsp-javascript-format-insert-space-after-constructor</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Defines space handling after the constructor keyword. Requires
+using TypeScript 2.3.0 or newer in the workspace.</p>
+<hr />
+<p><strong><code>lsp-javascript-format-insert-space-after-semicolon-in-for-statements</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Defines space handling after a semicolon in a for statement.</p>
+<hr />
+<p><strong><code>lsp-javascript-format-insert-space-before-and-after-binary-operators</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Defines space handling after a binary operator.</p>
+<hr />
+<p><strong><code>lsp-javascript-format-insert-space-after-keywords-in-control-flow-statements</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Defines space handling after keywords in a control flow
+statement.</p>
+<hr />
+<p><strong><code>lsp-javascript-format-insert-space-after-function-keyword-for-anonymous-functions</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Defines space handling after function keyword for anonymous
+functions.</p>
+<hr />
+<p><strong><code>lsp-javascript-format-insert-space-before-function-parenthesis</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Defines space handling before function argument parentheses.</p>
+<hr />
+<p><strong><code>lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-parenthesis</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Defines space handling after opening and before closing
+non-empty parenthesis.</p>
+<hr />
+<p><strong><code>lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-brackets</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Defines space handling after opening and before closing
+non-empty brackets.</p>
+<hr />
+<p><strong><code>lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-braces</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Defines space handling after opening and before closing
+non-empty braces. Requires using TypeScript 2.3.0 or newer in the
+workspace.</p>
+<hr />
+<p><strong><code>lsp-javascript-format-insert-space-after-opening-and-before-closing-template-string-braces</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Defines space handling after opening and before closing
+template string braces.</p>
+<hr />
+<p><strong><code>lsp-javascript-format-insert-space-after-opening-and-before-closing-jsx-expression-braces</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Defines space handling after opening and before closing JSX
+expression braces.</p>
+<hr />
+<p><strong><code>lsp-javascript-format-place-open-brace-on-new-line-for-functions</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Defines whether an open brace is put onto a new line for
+functions or not.</p>
+<hr />
+<p><strong><code>lsp-javascript-format-place-open-brace-on-new-line-for-control-blocks</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Defines whether an open brace is put onto a new line for
+control blocks or not.</p>
+<hr />
+<p><strong><code>lsp-javascript-implicit-project-config-check-js</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<p>Enable/disable semantic checking of JavaScript files. Existing
+jsconfig.json or tsconfig.json files override this setting.
+Requires using TypeScript 2.3.1 or newer in the workspace.</p>
+<hr />
+<p><strong><code>lsp-javascript-implicit-project-config-experimental-decorators</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<hr />
+<p><strong><code>lsp-javascript-suggest-names</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable including unique names from the file in
+JavaScript suggestions.</p>
+<hr />
+<p><strong><code>lsp-typescript-tsc-auto-detect</code></strong></p>
+<p><em>Default: <code>on</code></em></p>
+<p>Controls auto detection of tsc tasks.</p>
+<hr />
+<p><strong><code>lsp-javascript-suggest-paths</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable suggestions for paths in import statements and
+require calls.</p>
+<hr />
+<p><strong><code>lsp-typescript-suggest-paths</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable suggestions for paths in import statements and
+require calls.</p>
+<hr />
+<p><strong><code>lsp-javascript-suggest-auto-imports</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable auto import suggestions. Requires using
+TypeScript 2.6.1 or newer in the workspace.</p>
+<hr />
+<p><strong><code>lsp-typescript-suggest-auto-imports</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable auto import suggestions. Requires using
+TypeScript 2.6.1 or newer in the workspace.</p>
+<hr />
+<p><strong><code>lsp-javascript-suggest-complete-js-docs</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable suggestion to complete JSDoc comments.</p>
+<hr />
+<p><strong><code>lsp-typescript-suggest-complete-js-docs</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable suggestion to complete JSDoc comments.</p>
+<hr />
+<p><strong><code>lsp-typescript-locale</code></strong></p>
+<p><em>Default: <code>nil</code></em></p>
+<hr />
+<p><strong><code>lsp-javascript-suggestion-actions-enabled</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable suggestion diagnostics for JavaScript files in
+the editor. Requires using TypeScript 2.8 or newer in the
+workspace.</p>
+<hr />
+<p><strong><code>lsp-typescript-suggestion-actions-enabled</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable suggestion diagnostics for TypeScript files in
+the editor. Requires using TypeScript 2.8 or newer in the
+workspace.</p>
+<hr />
+<p><strong><code>lsp-javascript-preferences-quote-style</code></strong></p>
+<p><em>Default: <code>auto</code></em></p>
+<hr />
+<p><strong><code>lsp-typescript-preferences-quote-style</code></strong></p>
+<p><em>Default: <code>auto</code></em></p>
+<hr />
+<p><strong><code>lsp-javascript-preferences-import-module-specifier</code></strong></p>
+<p><em>Default: <code>auto</code></em></p>
+<p>Preferred path style for auto imports.</p>
+<hr />
+<p><strong><code>lsp-typescript-preferences-import-module-specifier</code></strong></p>
+<p><em>Default: <code>auto</code></em></p>
+<p>Infer the shortest path type.</p>
+<hr />
+<p><strong><code>lsp-javascript-preferences-rename-shorthand-properties</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable introducing aliases for object shorthand
+properties during renames. Requires using TypeScript 3.4 or newer
+in the workspace.</p>
+<hr />
+<p><strong><code>lsp-typescript-preferences-rename-shorthand-properties</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable introducing aliases for object shorthand
+properties during renames. Requires using TypeScript 3.4 or newer
+in the workspace.</p>
+<hr />
+<p><strong><code>lsp-typescript-update-imports-on-file-move-enabled</code></strong></p>
+<p><em>Default: <code>prompt</code></em></p>
+<p>Enable/disable automatic updating of import paths when you
+rename or move a file in VS Code. Requires using TypeScript 2.9
+or newer in the workspace.</p>
+<hr />
+<p><strong><code>lsp-javascript-update-imports-on-file-move-enabled</code></strong></p>
+<p><em>Default: <code>prompt</code></em></p>
+<p>Prompt on each rename.</p>
+<hr />
+<p><strong><code>lsp-typescript-auto-closing-tags</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable automatic closing of JSX tags. Requires using
+TypeScript 3.0 or newer in the workspace.</p>
+<hr />
+<p><strong><code>lsp-javascript-auto-closing-tags</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enable/disable automatic closing of JSX tags. Requires using
+TypeScript 3.0 or newer in the workspace.</p>
+<hr />
+<p><strong><code>lsp-javascript-suggest-enabled</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enabled/disable autocomplete suggestions.</p>
+<hr />
+<p><strong><code>lsp-typescript-suggest-enabled</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enabled/disable autocomplete suggestions.</p>
+<hr />
+<p><strong><code>lsp-typescript-surveys-enabled</code></strong></p>
+<p><em>Default: <code>t</code></em></p>
+<p>Enabled/disable occasional surveys that help us improve VS
+Code’s JavaScript and TypeScript support.</p>
+<hr />
+<p><strong><code>lsp-vetur-emmet</code></strong></p>
+<p><em>Default: <code>never</code></em></p>
+<p>Controls the Emmet suggestions that show up in the suggestion/completion list.</p>
+<hr />
+<p><strong><code>lsp-vetur-global-snippets-dir</code></strong></p>
+<p><em>Default: <code>~/.emacs.d/.snippets/vetur</code></em></p>
+<p>Path to snippets dir.</p>
+<hr />
+<p><strong><code>lsp-vetur-server-command</code></strong></p>
+<p><em>Default: <code>(vls)</code></em></p>
+<p>Command to start vetur.</p>
+<hr />
+                
+                  
+                    
+
+<hr>
+<div class="md-source-date">
+  <small>
+    
+      Last update: May 6, 2020
+    
+  </small>
+</div>
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../lsp-vim/" title="Vimscript" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Vimscript
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../lsp-xml/" title="XML" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                XML
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+  <div class="md-footer-social">
+    
+      
+      
+        
+        
+      
+      <a href="https://github.com/emacs-lsp/lsp-mode" target="_blank" rel="noopener" title="github.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://twitter.com/yonchovski" target="_blank" rel="noopener" title="twitter.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://gitter.im/emacs-lsp/lsp-mode" target="_blank" rel="noopener" title="gitter.im" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M66.4 322.5H16V0h50.4v322.5zM166.9 76.1h-50.4V512h50.4V76.1zm100.6 0h-50.4V512h50.4V76.1zM368 76h-50.4v247H368V76z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/vendor.83fe6e3c.min.js"></script>
+      <script src="../../assets/javascripts/bundle.7e1cb91c.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../..",
+          features: ["tabs"],
+          search: Object.assign({
+            worker: "../../assets/javascripts/worker/search.37585f48.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+        <script src="../../js/expanded_nav.js"></script>
+      
+    
+  </body>
+</html>
