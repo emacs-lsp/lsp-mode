@@ -62,5 +62,5 @@ You can also enable which-key integration for all major modes by passing
 `t` as a parameter. This is useful for buffers that can use multiple
 major modes like those using `vue-mode`.
 
-![](../examples/which-key.png)
+![](/examples/which-key.png)
 
