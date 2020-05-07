@@ -1,9 +1,9 @@
-;;; lsp-clojure.el --- Clojure Client settings             -*- lexical-binding: t; -*-
+;;; lsp-clojure.el --- Clojure Client settings -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Benedek Fazekas
 
 ;; Author: Benedek Fazekas <benedek.fazekas@gmail.com>
-;; Keywords:
+;; Keywords: languages,tools
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -42,7 +42,8 @@
 ;; Refactorings
 
 (defun lsp-clojure--refactoring-call (refactor-name &rest additional-args)
-  "Send an executeCommand request for REFACTOR-NAME with ADDITIONAL-ARGS if there are more arguments expected after the line and column numbers."
+  "Send an executeCommand request for REFACTOR-NAME with ADDITIONAL-ARGS.
+If there are more arguments expected after the line and column numbers."
   (lsp--cur-workspace-check)
   (lsp--send-execute-command refactor-name
                              (apply #'vector
@@ -80,6 +81,11 @@
   "Move form at point into a new function named FUNCTION-NAME."
   (interactive "MFunction name: ") ;; Name of the function
   (lsp-clojure--refactoring-call "extract-function" function-name))
+
+(defun lsp-clojure-inline-symbol ()
+  "Apply inline-symbol refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "inline-symbol"))
 
 (defun lsp-clojure-introduce-let (binding-name)
   "Move form at point into a new let binding as BINDING-NAME."
@@ -121,14 +127,19 @@
   (interactive)
   (lsp-clojure--refactoring-call "unwind-thread"))
 
-(defun lsp-clj--file-in-jar (uri)
+(defun lsp-clojure--library-folders (_workspace)
+  "Return the library folders path to analyze for WORKSPACE."
+  (when (string-match-p ".m2/repository" (buffer-file-name))
+    (list (file-name-directory (buffer-file-name)))))
+
+(defun lsp-clojure--file-in-jar (uri)
+  "Check URI for a valid jar and include it in workspace."
   (string-match "^\\(jar\\|zip\\):\\(file:.+\\)!/\\(.+\\)" uri)
   (-when-let* ((entry (match-string 3 uri))
                (path (lsp--uri-to-path (match-string 2 uri)))
                (name (format "%s:%s" path entry))
                (content (lsp-send-request (lsp-make-request "clojure/dependencyContents" (list :uri uri)))))
-    (if (find-buffer-visiting name)
-        (message "buffer %s exists" name)
+    (unless (find-buffer-visiting name)
       (with-current-buffer (generate-new-buffer name)
         (insert content)
         (set-visited-file-name name)
@@ -142,8 +153,10 @@
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda () lsp-clojure-server-command))
                   :major-modes '(clojure-mode clojurec-mode clojurescript-mode)
-                  :uri-handlers (lsp-ht ("jar" #'lsp-clj--file-in-jar))
+                  :library-folders-fn #'lsp-clojure--library-folders
+                  :uri-handlers (lsp-ht ("jar" #'lsp-clojure--file-in-jar))
                   :initialization-options '(:dependency-scheme "jar")
                   :server-id 'clojure-lsp))
 
 (provide 'lsp-clojure)
+;;; lsp-clojure.el ends here
