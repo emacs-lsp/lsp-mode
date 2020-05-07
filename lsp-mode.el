@@ -4178,12 +4178,12 @@ and the position respectively."
                  "sortText" sort-text
                  "_emacsStartPoint" start-point)
           item)
-         ((&plist :prefix-line) plist))
+         ((&plist :markers) plist))
     (propertize (or label insert-text)
                 'lsp-completion-item item
                 'lsp-sort-text sort-text
                 'lsp-completion-start-point start-point
-                'lsp-completion-prefix-line prefix-line)))
+                'lsp-completion-markers markers)))
 
 (defun lsp--annotate (item)
   "Annotate ITEM detail."
@@ -4209,6 +4209,11 @@ When the completion is incomplete, cache contains value of `incomplete'.")
 
 (defun lsp--capf-clear-cache (&rest _)
   "Clear completion caches."
+  (-some-> (and (listp lsp--capf-cache) lsp--capf-cache)
+    (cddr)
+    (plist-get :markers)
+    (cadr)
+    (set-marker nil))
   (setq lsp--capf-cache nil))
 
 (defun lsp--capf-guess-prefix (item &optional default)
@@ -4407,18 +4412,18 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                                                 item)
                                        item)
                                      it)))
-                   (prefix-line (buffer-substring-no-properties (point-at-bol) (point))))
+                   (markers (list (point) (copy-marker (point) t))))
              (setf done? completed
                    lsp--capf-cache (cond
                                     ((and done? (not (seq-empty-p items)))
                                      (list (buffer-substring-no-properties bounds-start (point))
                                            (lsp--capf-cached-items items)
                                            :lsp-items nil
-                                           :prefix-line prefix-line))
+                                           :markers markers))
                                     ((not done?) 'incomplete))
                    result (lsp--capf-filter-candidates (if done? (cadr lsp--capf-cache))
                                                        :lsp-items items
-                                                       :prefix-line prefix-line))))))
+                                                       :markers markers))))))
        :annotation-function #'lsp--annotate
        :company-require-match 'never
        :company-prefix-length
@@ -4429,44 +4434,50 @@ Also, additional data to attached to each candidate can be passed via PLIST."
        :company-doc-buffer (-compose #'company-doc-buffer
                                      #'lsp--capf-get-documentation)
        :exit-function
-       (lambda (candidate _status)
-         (-let* (((&plist 'lsp-completion-item item
-                          'lsp-completion-start-point start-point
-                          'lsp-completion-prefix-line prefix-line)
-                  (text-properties-at 0 candidate))
-                 ((&hash "label"
-                         "insertText" insert-text
-                         "textEdit" text-edit
-                         "insertTextFormat" insert-text-format
-                         "additionalTextEdits" additional-text-edits)
-                  item))
-           (cond
-            (text-edit
-             (delete-region (point-at-bol) (point))
-             (insert prefix-line)
-             (lsp--apply-text-edit text-edit))
-            ((or insert-text label)
-             (delete-region (point-at-bol) (point))
-             (insert prefix-line)
-             (delete-region start-point (point))
-             (insert (or insert-text label))))
+       (-rpartial #'lsp--capf-exit-fn trigger-chars)))))
 
-           (when (eq insert-text-format 2)
-             (yas-expand-snippet
-              (lsp--to-yasnippet-snippet (buffer-substring start-point (point)))
-              start-point
-              (point)))
-           (when (and lsp-completion-enable-additional-text-edit additional-text-edits)
-             (lsp--apply-text-edits additional-text-edits)))
-         (lsp--capf-clear-cache)
-         (when (and lsp-signature-auto-activate
-                    (lsp-feature? "textDocument/signatureHelp"))
-           (lsp-signature-activate))
+(defun lsp--capf-exit-fn (candidate _status &optional trigger-chars)
+  "Exit function of `completion-at-point'.
+CANDIDATE is the selected completion item.
+Others: TRIGGER-CHARS"
+  (-let* (((&plist 'lsp-completion-item item
+                   'lsp-completion-start-point start-point
+                   'lsp-completion-markers markers)
+           (text-properties-at 0 candidate))
+          ((&hash "label"
+                  "insertText" insert-text
+                  "textEdit" text-edit
+                  "insertTextFormat" insert-text-format
+                  "additionalTextEdits" additional-text-edits)
+           item))
+    (cond
+     (text-edit
+      (apply #'delete-region markers)
+      (lsp--apply-text-edit text-edit))
+     ((or insert-text label)
+      (apply #'delete-region markers)
+      (delete-region start-point (point))
+      (insert (or insert-text label))))
 
-         (setq-local lsp-inhibit-lsp-hooks nil)
+    (when (eq insert-text-format 2)
+      (yas-expand-snippet
+       (lsp--to-yasnippet-snippet (buffer-substring start-point (point)))
+       start-point
+       (point)))
 
-         (when (lsp--looking-back-trigger-characterp trigger-chars)
-           (setq this-command 'self-insert-command)))))))
+    (when (and lsp-completion-enable-additional-text-edit additional-text-edits)
+      (lsp--apply-text-edits additional-text-edits)))
+
+  (lsp--capf-clear-cache)
+
+  (when (and lsp-signature-auto-activate
+             (lsp-feature? "textDocument/signatureHelp"))
+    (lsp-signature-activate))
+
+  (setq-local lsp-inhibit-lsp-hooks nil)
+
+  (when (lsp--looking-back-trigger-characterp trigger-chars)
+    (setq this-command 'self-insert-command)))
 
 (advice-add #'completion-at-point :before #'lsp--capf-clear-cache)
 
@@ -6648,13 +6659,7 @@ returns the command to execute."
               (setq-local lsp-inhibit-lsp-hooks t))
             nil
             t)
-  (add-hook 'company-completion-finished-hook
-            (lambda (&rest _)
-              (lsp--capf-clear-cache)
-              (setq-local lsp-inhibit-lsp-hooks nil))
-            nil
-            t)
-  (add-hook 'company-completion-cancelled-hook
+  (add-hook 'company-after-completion-hook
             (lambda (&rest _)
               (lsp--capf-clear-cache)
               (setq-local lsp-inhibit-lsp-hooks nil))
