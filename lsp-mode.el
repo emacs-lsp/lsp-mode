@@ -766,11 +766,6 @@ must be used for handling a particular message.")
   "Face used for highlighting symbols being written to."
   :group 'lsp-faces)
 
-(defcustom lsp-lens-check-interval 0.1
-  "The interval for checking for changes in the buffer state."
-  :group 'lsp-mode
-  :type 'number)
-
 (defcustom lsp-lens-auto-enable nil
   "Auto lenses if server there is server support."
   :group 'lsp-mode
