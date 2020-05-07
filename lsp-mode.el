@@ -4362,12 +4362,13 @@ Also, additional data to attached to each candidate can be passed via PLIST."
     (let* ((trigger-chars (->> (lsp--server-capabilities)
                                (gethash "completionProvider")
                                (gethash "triggerCharacters")))
-           (bounds-start (--> (or (car (bounds-of-thing-at-point 'symbol)) (point))
-                              (save-excursion
-                                (goto-char it)
-                                (if (lsp--looking-back-trigger-characterp trigger-chars)
-                                    (- it 1)
-                                  it))))
+           (bounds-start (or (-some--> (car (bounds-of-thing-at-point 'symbol))
+                               (save-excursion
+                                 (goto-char (+ it 1))
+                                 (if (lsp--looking-back-trigger-characterp trigger-chars)
+                                     (+ it 1)
+                                   it)))
+                             (point)))
            result done?)
       (list
        bounds-start
