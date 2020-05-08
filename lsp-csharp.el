@@ -234,19 +234,21 @@ tarball or a zip file (based on a current platform) to TARGET-DIR."
 
    (t (error "lsp-csharp cannot extract \"%s\" on platform %s (yet)" filename system-type))))
 
-(defun lsp-csharp--language-server-command ()
-  "Resolves path and arguments to use to start the server.
-Will attempt to install the server if it is not installed already for the
-current platform."
+(defun lsp-csharp--language-server-path ()
+  "Resolves path to use to start the server."
   (if lsp-csharp-server-path
-      (list lsp-csharp-server-path "-lsp")
-    (list (lsp-csharp--server-bin (lsp-csharp--latest-installed-version)) "-lsp")))
+      lsp-csharp-server-path
+    (lsp-csharp--server-bin (lsp-csharp--latest-installed-version))))
+
+(defun lsp-csharp--language-server-command ()
+  "Resolves path and arguments to use to start the server."
+  (list (lsp-csharp--language-server-path) "-lsp"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    #'lsp-csharp--language-server-command
                                    (lambda ()
-                                     (when-let (binary (lsp-csharp--server-bin (lsp-csharp--latest-installed-version)))
+                                     (when-let (binary (lsp-csharp--language-server-path))
                                        (f-exists? binary))))
 
                   :major-modes '(csharp-mode)
