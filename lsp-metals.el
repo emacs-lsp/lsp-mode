@@ -47,7 +47,7 @@
 
 (defcustom lsp-metals-java-home ""
   "The Java Home directory used for indexing JDK sources and locating
-the `java` binary."
+the `java' binary."
   :type '(string)
   :group 'lsp-metals
   :package-version '(lsp-mode . "6.1"))
@@ -61,30 +61,109 @@ separators (even on Windows)."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-metals-sbt-script ""
-  "Optional absolute path to an `sbt` executable to use for running
-`sbt bloopInstall`. By default, Metals uses `java -jar sbt-launch.jar`
-with an embedded launcher while respecting `.jvmopts` and `.sbtopts`.
-Update this setting if your `sbt` script requires more customizations
+  "Optional absolute path to an `sbt' executable to use for running
+`sbt bloopInstall'. By default, Metals uses `java -jar sbt-launch.jar'
+with an embedded launcher while respecting `.jvmopts' and `.sbtopts'.
+Update this setting if your `sbt' script requires more customizations
 like using environment variables."
   :type '(string)
   :group 'lsp-metals
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-metals-gradle-script ""
-  "Optional absolute path to a `gradle` executable to use for running
-`gradle bloopInstall`. By default, Metals uses gradlew with 5.3.1
-gradle version. Update this setting if your `gradle` script requires
+  "Optional absolute path to a `gradle' executable to use for running
+`gradle bloopInstall'. By default, Metals uses gradlew with 5.3.1
+gradle version. Update this setting if your `gradle' script requires
 more customizations like using environment variables."
   :type '(string)
   :group 'lsp-metals
   :package-version '(lsp-mode . "6.1"))
+
+(defcustom lsp-metals-maven-script ""
+  "Optional absolute path to a `maven' executable to use for
+generating bloop config. By default, Metals uses mvnw maven wrapper
+with 3.6.1 maven version. Update this setting if your `maven' script
+requires more customizations."
+  :type '(string)
+  :group 'lsp-metals
+  :package-version '(lsp-mode . "6.4"))
+
+(defcustom lsp-metals-mill-script ""
+  "Optional absolute path to a `mill' executable to use for running
+`mill mill.contrib.Bloop/install'. By default, Metals uses mill
+wrapper script with 0.5.0 mill version. Update this setting if your
+mill script requires more customizations like using environment
+variables."
+  :type '(string)
+  :group 'lsp-metals
+  :package-version '(lsp-mode . "6.4"))
+
+(defcustom lsp-metals-scalafmt-config-path ".scalafmt.conf"
+  "Optional custom path to the .scalafmt.conf file. Should be relative
+to the workspace root directory and use forward slashes / for file
+separators (even on Windows)."
+  :type '(string)
+  :group 'lsp-metals
+  :package-version '(lsp-mode . "6.4"))
+
+(defcustom lsp-metals-pants-targets ""
+  "Space separated list of Pants targets to export, for example
+`src/main/scala:: src/main/java::'. Syntax such as `src/{main,test}::'
+is not supported."
+  :type '(string)
+  :group 'lsp-metals
+  :package-version '(lsp-mode . "6.4"))
+
+(defcustom lsp-metals-bloop-sbt-already-installed nil
+  "If true, Metals will not generate a `project/metals.sbt' file under
+the assumption that sbt-bloop is already manually installed in the sbt
+build. Build import will fail with a 'not valid command bloopInstall`
+error in case Bloop is not manually installed in the build when using
+this option."
+  :type 'boolean
+  :group 'lsp-metals
+  :package-version '(lsp-mode . "6.4"))
+
+(defcustom lsp-metals-bloop-version nil
+  "This version will be used for the Bloop build tool plugin, for any
+supported build tool, while importing in Metals as well as for running
+the embedded server."
+  :type '(choice
+          (const :tag "Default" nil)
+          (string :tag "Version"))
+  :group 'lsp-metals
+  :package-version '(lsp-mode . "6.4"))
+
+(defcustom lsp-metals-super-method-lenses-enabled nil
+  "Super method lenses are visible above methods definition that
+override another methods. Clicking on a lens jumps to super method
+definition. Disabled lenses are not calculated for opened documents
+which might speed up document processing."
+  :type 'boolean
+  :group 'lsp-metals
+  :package-version '(lsp-mode . "6.4"))
+
+(defcustom lsp-metals-remote-language-server ""
+  "A URL pointing to an endpoint that implements a remote language
+server."
+  :type '(string)
+  :group 'lsp-metals
+  :package-version '(lsp-mode . "6.4"))
 
 
 (lsp-register-custom-settings
  '(("metals.java-home" lsp-metals-java-home)
    ("metals.scalafmt-config-path" lsp-metals-scalafmt-config-path)
    ("metals.sbt-script" lsp-metals-sbt-script)
-   ("metals.gradle-script" lsp-metals-gradle-script)))
+   ("metals.gradle-script" lsp-metals-gradle-script)
+   ("metals.maven-script" lsp-metals-maven-script)
+   ("metals.mill-script" lsp-metals-mill-script)
+   ("metals.scalafmt-config-path" lsp-metals-scalafmt-config-path)
+   ("metals.pants-targets" lsp-metals-pants-targets)
+   ("metals.bloop-sbt-already-installed" lsp-metals-bloop-sbt-already-installed t)
+   ("metals.bloop-version" lsp-metals-bloop-version)
+   ("metals.super-method-lenses-enabled" lsp-metals-super-method-lenses-enabled t)
+   ("metals.remote-language-server" lsp-metals-remote-language-server)))
 
 (defun lsp-metals--server-command ()
   "Generate the Scala language server startup command."
