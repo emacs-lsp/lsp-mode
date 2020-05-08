@@ -642,11 +642,9 @@ The command should include `--message=format=json` or similar option."
   (cond
    (lsp-rust-analyzer-inlay-hints-mode
     (lsp-rust-analyzer-update-inlay-hints (current-buffer))
-    (add-hook 'lsp-on-idle-hook #'lsp-rust-analyzer-inlay-hints-change-handler nil t)
     (add-hook 'lsp-on-change-hook #'lsp-rust-analyzer-inlay-hints-change-handler nil t))
    (t
     (remove-overlays (point-min) (point-max) 'lsp-rust-analyzer-inlay-hint t)
-    (remove-hook 'lsp-on-idle-hook #'lsp-rust-analyzer-inlay-hints-change-handler t)
     (remove-hook 'lsp-on-change-hook #'lsp-rust-analyzer-inlay-hints-change-handler t))))
 
 ;; activate `lsp-rust-analyzer-inlay-hints-mode'
