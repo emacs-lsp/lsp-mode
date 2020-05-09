@@ -61,6 +61,11 @@
   :risky t
   :type '(repeat string))
 
+;; The build spec for the project.
+(defcustom lsp-haxe-hxml "build.hxml"
+  "The compile file for the haxe project."
+  :type 'file)
+
 ;; https://github.com/emacs-lsp/lsp-mode/blob/150a933694349df960dc8fd7a15e04f5727e6433/lsp-rust.el#L251
 (defun lsp-clients--haxe-processStart (_workspace params)
   "Handle processStart notification.  Just logs PARAMS."
@@ -131,8 +136,8 @@
                                        (lsp-configuration-section "haxe"))))
                   :priority -1
                   :server-id 'haxe
-                  :initialized-fn (lambda (_workspace)
-                                    '(("sendMethodResults" . t)
+                  :initialization-options (lambda ()
+                                    `(("sendMethodResults" . t)
                                       ("haxelibConfig"
                                        ("executable" . "haxelib"))
                                       ("displayServerConfig"
@@ -143,7 +148,7 @@
                                         [])
                                        ("env")
                                        ("path" . "haxe"))
-                                      ("displayArguments" . ["build.hxml"])))
+                                      ("displayArguments" . [,lsp-haxe-hxml])))
                   :notification-handlers (lsp-ht ("haxe/progressStart" 'lsp-clients--haxe-processStart)
                                                  ("haxe/progressStop" 'ignore)
                                                  ("haxe/didDetectOldPreview" 'ignore)
