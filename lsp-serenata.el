@@ -41,7 +41,7 @@ It can be downloaded from https://gitlab.com/Serenata/Serenata/-/releases."
 
 (defun lsp-serenata-server-start-fun (port)
   "Define serenata start function, it requires a PORT."
-  `(, lsp-serenata-server-path
+  `(,lsp-serenata-server-path
     "-u" ,(number-to-string port)))
 
 
