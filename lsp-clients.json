@@ -352,6 +352,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "serenata",
+    "full-name": "PHP (Serenata)",
+    "server-name": "Serenata",
+    "server-url": "https://gitlab.com/Serenata/Serenata",
+    "installation-url": "https://gitlab.com/Serenata/Serenata/-/releases",
+    "debugger": "Yes"
+  },
+  {
     "name": "solargraph",
     "full-name": "Ruby",
     "server-name": "solargraph",
