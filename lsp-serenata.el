@@ -31,7 +31,6 @@
   :group 'lsp-mode
   :link '(url-link "https://gitlab.com/Serenata/Serenata"))
 
-
 (defcustom lsp-serenata-server-path
   "serenata.phar"
   "Path to the Serenata Language Server phar file.
