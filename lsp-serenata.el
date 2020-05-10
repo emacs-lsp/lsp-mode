@@ -29,7 +29,8 @@
 (defgroup lsp-serenata nil
   "LSP support for the PHP programming language, using serenata"
   :group 'lsp-mode
-  :link '(url-link "https://gitlab.com/Serenata/Serenata"))
+  :link '(url-link "https://gitlab.com/Serenata/Serenata")
+  :package-version '(lsp-mode . "6.4"))
 
 (defcustom lsp-serenata-server-path
   "serenata.phar"
