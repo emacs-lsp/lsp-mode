@@ -38,8 +38,7 @@
 ** Why?
    - :heart: *Community Driven*
    - :gem: *Fully featured* - supports *all* features in Language Server Protocol v3.14.
-   - :rocket: *Fast* - see [[https://emacs-lsp.github.io/lsp-mode/page/installation/#performance
-][performance section]]
+   - :rocket: *Fast* - see [[https://emacs-lsp.github.io/lsp-mode/page/installation/#performance][performance section]]
    - :star2: *Flexible* - choose between full-blown IDE with flashy UI or minimal distraction free
    - :gear: *Easy to configure* - works out of the box and automatically upgrades if additional packages are present
 ** Overview
