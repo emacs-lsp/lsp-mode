@@ -1335,69 +1335,50 @@
                 
                 <h1 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">#</a></h1>
 <ul>
-<li>How do I troubleshoot <code>"Server FOO-LS:pid exited with status signal.
-    Do you want to restart it? (y or n)"</code>?<ul>
-<li>This message indicates that the language server has crashed for
-    some reason. You may check the server stderr which is
-    <code>*FOO-LS::stderr*</code>. If you get this message on startup you may
-    try to run the exact command that <code>lsp-mode</code> is running in the
-    terminal. You may find it in <code>*lsp-log*</code> buffer.</li>
+<li>How do I troubleshoot <code>"Server FOO-LS:pid exited with status signal. Do you want to restart it? (y or n)"</code>?<ul>
+<li>This message indicates that the language server has crashed for some reason. You may check the server stderr which is <code>*FOO-LS::stderr*</code>. If you get this try to run the exact command that <code>lsp-mode</code> is running in the terminal. You may find it in <code>*lsp-log*</code> buffer.</li>
 </ul>
 </li>
 <li>How to configure a server with local variables?<ul>
-<li>
-<p>Add <code>lsp</code> server call to <code>hack-local-variables-hook</code> which runs
-    right after the local variables are loaded.</p>
-<p><div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;hack-local-variables-hook</span>
+<li>Add <code>lsp</code> server call to <code>hack-local-variables-hook</code> which runs right after the local variables are loaded.
+    <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;hack-local-variables-hook</span>
           <span class="p">(</span><span class="nb">lambda</span> <span class="p">()</span> <span class="p">(</span><span class="nb">when</span> <span class="p">(</span><span class="nv">derived-mode-p</span> <span class="ss">&#39;XXX-mode</span><span class="p">)</span> <span class="p">(</span><span class="nv">lsp</span><span class="p">))))</span>
-</code></pre></div>
-  - I have multiple language servers registered for language FOO. Which
-    one will be used when opening a project?
-      - The one with highest priority wins. <code>lsp-clients.el</code> predefined
-servers have priority -1, lower than external packages (priority
-0 if unspecified). If a server is registered with <code>:add-on?</code>
-flag set to <code>t</code> it will be started in parallel to the other
-servers that are registered for the current mode.
-  - I have multiple language servers for language <code>FOO</code> and I want to
-    select the server per project, what can I do?
-      - You may create <code>dir-local</code> for each of the projects and specify
-list of <code>lsp-enabled-clients</code>. This will narrow the list of the
-clients that are going to be tested for the project.
-  - The completion does not work fine and inserts arguments and
-    placeholders, what I am doing wrong?
-      - make sure you have installed <code>yasnippet</code> and you have
-<code>yasnippet</code> minor mode enabled.
-  - I am getting "Package ‘spinner-1.7.3’ is unavailable" when trying to
-    install <code>lsp-mode</code>.
-      - This is caused by GPG keys used by the ELPA package manager not
-being up to date. You may fix by installing:
-<a href="https://elpa.gnu.org/packages/gnu-elpa-keyring-update.html">gnu-elpa-keyring-update</a>
-  - The flycheck does not work in <code>typescript</code>, <code>html</code> and <code>javascript</code>
-    blocks in <code>vue-mode</code>. How to fix that?
-      - This is caused by the fact that <code>vue-mode</code> uses multiple major
-modes in single file and the <code>lsp-ui</code> checker may not associated
-with the major mode at point. You could fix that by adding the
-following lines to your config.</p>
-<p><div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-mode</span>
-  <span class="p">(</span><span class="nf">mapc</span> <span class="nf">#&#39;</span><span class="nv">lsp-flycheck-add-mode</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">typescript-mode</span> <span class="nv">js-mode</span> <span class="nv">css-mode</span> <span class="nv">vue-html-mode</span><span class="p">)))</span>
-</code></pre></div>
-  - I have disabled snippets and <code>Rust Analyzer</code> server inserts
-    redundant <code>$0</code> when performing completion?
-      - <code>Rust Analyzer</code> does not support disabling snippets - see
-<a href="https://github.com/rust-analyzer/rust-analyzer/issues/2518">https://github.com/rust-analyzer/rust-analyzer/issues/2518</a>
-  - How do I get flex completion in when using <code>Emacs 26</code>?
-      - <code>flex</code> filtering has been implemented in <code>Emacs 27+</code> and
-<code>lsp-mode</code> is using it by default and there is no <code>flex</code>
-matching by default. In order to have <code>flex</code> completion by
-default you could either upgrade to <code>Emacs
-        27</code> or try using <code>helm-flex</code> implementation including the
-following snippet in your config:</p>
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-completion-styles</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">helm-flex</span><span class="p">))</span>
-</code></pre></div>
-
-<p>See also
-<a href="https://github.com/emacs-lsp/lsp-mode/issues/1652">#1652</a>.</p>
+</code></pre></div></li>
+</ul>
 </li>
+<li>I have multiple language servers registered for language FOO. Which one will be used when opening a project?<ul>
+<li>The one with highest priority wins. <code>lsp-clients.el</code> predefined servers have priority -1, lower than external packages (priority 0 if unspecified). If a server is registered with <code>:add-on?</code> flag set to <code>t</code> it will be started in parallel to the other servers that are registered for the current mode.</li>
+</ul>
+</li>
+<li>I have multiple language servers for language <code>FOO</code> and I want to select the server per project, what can I do?<ul>
+<li>You may create <code>dir-local</code> for each of the projects and specify list of <code>lsp-enabled-clients</code>. This will narrow the list of the clients that are going to be tested for the project.</li>
+</ul>
+</li>
+<li>The completion does not work fine and inserts arguments and placeholders, what I am doing wrong?<ul>
+<li>make sure you have installed <code>yasnippet</code> and you have <code>yasnippet</code> minor mode enabled.</li>
+</ul>
+</li>
+<li>I am getting "Package ‘spinner-1.7.3’ is unavailable" when trying to install <code>lsp-mode</code>.<ul>
+<li>This is caused by GPG keys used by the ELPA package manager not being up to date. You may fix by installing: <a href="https://elpa.gnu.org/packages/gnu-elpa-keyring-update.html">gnu-elpa-keyring-update</a></li>
+</ul>
+</li>
+<li>The flycheck does not work in <code>typescript</code>, <code>html</code> and <code>javascript</code> blocks in <code>vue-mode</code>. How to fix that?<ul>
+<li>This is caused by the fact that <code>vue-mode</code> uses multiple major modes in single file and the <code>lsp-ui</code> checker may not associated with the major mode at point. You could fix that by adding the following lines to your config.
+    <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-mode</span>
+  <span class="p">(</span><span class="nf">mapc</span> <span class="nf">#&#39;</span><span class="nv">lsp-flycheck-add-mode</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">typescript-mode</span> <span class="nv">js-mode</span> <span class="nv">css-mode</span> <span class="nv">vue-html-mode</span><span class="p">)))</span>
+</code></pre></div></li>
+</ul>
+</li>
+<li>I have disabled snippets and <code>Rust Analyzer</code> server inserts redundant <code>$0</code> when performing completion?<ul>
+<li><code>Rust Analyzer</code> does not support disabling snippets - see <a href="https://github.com/rust-analyzer/rust-analyzer/issues/2518">https://github.com/rust-analyzer/rust-analyzer/issues/2518</a></li>
+</ul>
+</li>
+<li>How do I get flex completion in when using <code>Emacs 26</code>?<ul>
+<li><code>flex</code> filtering has been implemented in <code>Emacs 27+</code> and <code>lsp-mode</code> is using it by default and there is no <code>flex</code> matching by default. In order to have <code>flex</code> completion by default you could either upgrade to <code>Emacs 27</code> or try using <code>helm-flex</code> implementation including the following snippet in your config:
+    <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-completion-styles</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">helm-flex</span><span class="p">))</span>
+</code></pre></div>
+    See also
+    <a href="https://github.com/emacs-lsp/lsp-mode/issues/1652">#1652</a>.</li>
 </ul>
 </li>
 </ul>
