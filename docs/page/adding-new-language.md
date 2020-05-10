@@ -68,11 +68,6 @@ Example:
 
 ## Documentation
 
-  - Add the new language server to the
-    [lsp-clients.json](https://github.com/emacs-lsp/lsp-mode/blob/master/docs/lsp-clients.json)
-    file.
-  - Create a new navigation entry in
-    [mkdocs.yml](https://github.com/emacs-lsp/lsp-mode/blob/master/mkdocs.yml#L4)
-    file.
-
+  - Add the new language server to the [lsp-clients.json](https://github.com/emacs-lsp/lsp-mode/blob/master/docs/lsp-clients.json) file sorted by the `full-name` key alphabetically.
+  - Create a new navigation entry in [mkdocs.yml](https://github.com/emacs-lsp/lsp-mode/blob/master/mkdocs.yml#L4) file.
 

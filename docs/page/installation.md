@@ -24,7 +24,7 @@ corresponding instructions on how to install the server.
     packages with the built-in `flymake` and `completion-at-point` or
     you could install the following extensions for better experience:
     
-      - install [lsp-ui](https://github.com/emacs-lsp/lsp-ui) for fancy
+      - install [lsp-ui](https://emacs-lsp.github.io/lsp-ui/#intro) for fancy
         sideline, popup documentation, VScode-like peek UI, etc.
       - install [flycheck](https://github.com/flycheck/flycheck) if you
         prefer the more popular `flycheck` over renewed `flymake`.
@@ -41,7 +41,7 @@ corresponding instructions on how to install the server.
         `helm`.
       - install [lsp-ivy](https://github.com/emacs-lsp/lsp-ivy) provides
         on type completion alternative of `xref-apropos` using `ivy`.
-      - install [dap-mode](https://github.com/emacs-lsp/dap-mode) if
+      - install [dap-mode](https://emacs-lsp.github.io/dap-mode) if
         your language is supported by the debugger.
     
     <!-- end list -->
@@ -60,7 +60,7 @@ corresponding instructions on how to install the server.
     each programming mode and echo a message when there is no client
     registered for the current mode or if the corresponding server is
     not present. In addition, `lsp-mode` will automatically detect and
-    configure [lsp-ui](https://github.com/emacs-lsp/lsp-ui) and
+    configure [lsp-ui](https://emacs-lsp.github.io/lsp-ui) and
     [company-lsp](https://github.com/tigersoldier/company-lsp). To turn
     off that behavior you could set `lsp-auto-configure` to `nil`.
     
@@ -73,7 +73,7 @@ corresponding instructions on how to install the server.
 
 2.  Spacemacs
     
-    [lsp-mode](https://github.com/emacs-lsp/lsp-mode) is included in
+    [lsp-mode](https://emacs-lsp.github.io/lsp-mode) is included in
     spacemacs develop branch. Add `lsp` to
     `dotspacemacs-configuration-layers` and configure the language that
     you want to use to be backed by `lsp` backend.
@@ -257,10 +257,9 @@ default server configuration located in `lsp-clients.el` there are few
 languages servers which require separate package(check [Supported
 languages](https://emacs-lsp.github.io/lsp-mode/page/languages/)). 
 
-When you open a file from a
-particular project `lsp-mode` and call `lsp` command `lsp-mode` will
-look for server registrations able to handle current file. If there is
-such client `lsp-mode` will look for the project root. If you open a
+When you open a file from a particular project and call `lsp` 
+command, `lsp-mode` will look for server registrations able to handle the current file.
+If there is such client, `lsp-mode` will look for the project root. If you open a
 file from the project for the first time you will be prompted to define
 the current project root. Once the project root is selected it is saved
 in `lsp-session` file and it will be loaded the next time you start
@@ -268,6 +267,7 @@ Emacs so you no longer will be asked for a project root when you open a
 file from that project. 
 Later if you want to change the project root you
 may use `lsp-workspace-folder-remove` to remove the project and call
-`lsp-workspace-folder-add` to add the root. If you want to force
+`lsp-workspace-folder-add` to add the root. 
+If you want to force
 starting a particular language server in a file you may use <kbd>C-u</kbd> <kbd>M-x</kbd>
 `lsp` which will prompt you to select language server to start.
