@@ -398,7 +398,7 @@
     "server-url": "https://github.com/latex-lsp/texlab",
     "client-name": "lsp-latex",
     "client-url": "https://github.com/ROCKTAKEY/lsp-latex",
-    "installation": "cargo install –git https://github.com/latex-lsp/texlab.git",
+    "installation": "cargo install --git https://github.com/latex-lsp/texlab.git",
     "debugger": "Not available"
   },
   {
@@ -414,7 +414,7 @@
     "full-name": "TeX, LaTeX, etc.",
     "server-name": "texlab",
     "server-url": "https://github.com/latex-lsp/texlab",
-    "installation": "cargo install –git https://github.com/latex-lsp/texlab.git",
+    "installation": "cargo install --git https://github.com/latex-lsp/texlab.git",
     "debugger": "Not available"
   },
   {
@@ -422,7 +422,7 @@
     "full-name": "Verilog/SystemVerilog",
     "server-name": "hdl_checker",
     "server-url": "https://github.com/suoto/hdl_checker",
-    "installation": "pip install hdl-checker –upgrade",
+    "installation": "pip install hdl-checker --upgrade",
     "debugger": "Not available"
   },
   {
