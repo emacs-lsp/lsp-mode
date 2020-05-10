@@ -78,14 +78,93 @@
 
 *** Members
     Here it is a list of the current =lsp-mode= members and what they are primary working on/responsible for.
-    | Member         | Responsible for:                   |
-    |----------------+------------------------------------|
-    | [[https://github.com/TOTBWF][TOTBWF]]         | =F#=                               |
-    | [[https://github.com/brotzeit][brotzeit]]       | =Rust=                             |
-    | [[https://github.com/dsyzling][dsyzling]]       | =Scala=                            |
-    | [[https://github.com/kurnevsky][kurnevsky]]      | =Scala= & =Rust=                   |
-    | [[https://github.com/seagle0128][seagle0128]]     | =Go= & =MS Python Language Server= |
-    | [[https://github.com/sebastiansturm][sebastiansturm]] | =lsp-mode= core & =C++=            |
-    | [[https://github.com/vibhavp][vibhavp]]        | =lsp-mode= core                    |
-    | [[https://github.com/yyoncho][yyoncho]]        | =lsp-mode= core & =Java=           |
-    | [[https://github.com/ericdallo][ericdallo]]      | =Dart= & =Flutter=                 |
+
+#+begin_export html
+<table>
+<tr>
+    <td align="center">
+        <a href="https://github.com/totbwf">
+            <img src="https://github.com/totbwf.png" width="100px;" style="border-radius: 50%;" alt="totbwf"/>
+            <br/>
+            <sub><b>totbwf</b></sub>
+        </a>
+        <br/>
+        F#
+    </td>
+    <td align="center">
+        <a href="https://github.com/brotzeit">
+            <img src="https://github.com/brotzeit.png" width="100px;" style="border-radius: 50%;" alt="brotzeit"/>
+            <br/>
+            <sub><b>brotzeit</b></sub>
+        </a>
+        <br/>
+        Rust
+    </td>
+    <td align="center">
+        <a href="https://github.com/dsyzling">
+            <img src="https://github.com/dsyzling.png" width="100px;" style="border-radius: 50%;" alt="dsyzling"/>
+            <br/>
+            <sub><b>dsyzling</b></sub>
+        </a>
+        <br/>
+        Scala
+    </td>
+    <td align="center">
+        <a href="https://github.com/kurnevsky">
+            <img src="https://github.com/kurnevsky.png" width="100px;" style="border-radius: 50%;" alt="kurnevsky"/>
+            <br/>
+            <sub><b>kurnevsky</b></sub>
+        </a>
+        <br/>
+        Scala | Rust
+    </td>
+    <td align="center">
+        <a href="https://github.com/seagle0128">
+            <img src="https://github.com/seagle0128.png" width="100px;" style="border-radius: 50%;" alt="seagle0128"/>
+            <br/>
+            <sub><b>seagle0128</b></sub>
+        </a>
+        <br/>
+        Go | Python MS
+    </td>
+</tr>
+<tr>
+    <td align="center">
+        <a href="https://github.com/sebastiansturm">
+            <img src="https://github.com/sebastiansturm.png" width="100px;" style="border-radius: 50%;" alt="sebastiansturm"/>
+            <br/>
+            <sub><b>sebastiansturm</b></sub>
+        </a>
+        <br/>
+        lsp-mode core | C++
+    </td>
+    <td align="center">
+        <a href="https://github.com/vibhavp">
+            <img src="https://github.com/vibhavp.png" width="100px;" style="border-radius: 50%;" alt="vibhavp"/>
+            <br/>
+            <sub><b>vibhavp</b></sub>
+        </a>
+        <br/>
+        lsp-mode core
+    </td>
+    <td align="center">
+        <a href="https://github.com/yyoncho">
+            <img src="https://github.com/yyoncho.png" width="100px;" style="border-radius: 50%;" alt="yyoncho"/>
+            <br/>
+            <sub><b>yyoncho</b></sub>
+        </a>
+        <br/>
+        lsp-mode core | Java
+    </td>
+    <td align="center">
+        <a href="https://github.com/ericdallo">
+            <img src="https://github.com/ericdallo.png" width="100px;" style="border-radius: 50%;" alt="ericdallo"/>
+            <br/>
+            <sub><b>ericdallo</b></sub>
+        </a>
+        <br/>
+        Dart | Flutter | docs
+    </td>
+</tr>
+</table>
+#+end_export
