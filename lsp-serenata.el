@@ -36,7 +36,7 @@
   "serenata.phar"
   "Path to the Serenata Language Server phar file.
 It can be downloaded from https://gitlab.com/Serenata/Serenata/-/releases."
-  :group 'lsp-erlang
+  :group 'lsp-serenata
   :risky t
   :type 'file)
 
