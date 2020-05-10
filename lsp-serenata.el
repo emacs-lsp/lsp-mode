@@ -50,7 +50,7 @@ It can be downloaded from https://gitlab.com/Serenata/Serenata/-/releases."
  (make-lsp-client
   :new-connection (lsp-tcp-connection 'lsp-serenata-server-start-fun)
   :major-modes '(php-mode)
-  :priority -1
+  :priority -3
   :server-id 'serenata
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
