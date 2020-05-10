@@ -44,7 +44,6 @@ It can be downloaded from https://gitlab.com/Serenata/Serenata/-/releases."
   `(,lsp-serenata-server-path
     "-u" ,(number-to-string port)))
 
-
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-tcp-connection 'lsp-serenata-server-start-fun)
