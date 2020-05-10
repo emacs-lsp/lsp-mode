@@ -51,6 +51,7 @@ nav:
     - Pascal/Object Pascal: page/lsp-pascal.md
     - Perl: page/lsp-perl.md
     - PHP(intelephense): page/lsp-intelephense.md
+    - PHP(Serenata): page/lsp-serenata.md
     - PHP(felixbecker): page/lsp-php.md
     - Powershell: page/lsp-pwsh.md
     - PureScript: page/lsp-purescript.md
