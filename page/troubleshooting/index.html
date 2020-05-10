@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-rust/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/troubleshooting/">
       
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
@@ -17,7 +17,7 @@
     
     
       
-        <title>Rust - LSP Mode</title>
+        <title>Troubleshooting - LSP Mode</title>
       
     
     
@@ -57,7 +57,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#lsp-rust" class="md-skip">
+        <a href="#troubleshooting" class="md-skip">
           Skip to content
         </a>
       
@@ -84,7 +84,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              Rust
+              Troubleshooting
             
           </span>
         </div>
@@ -146,16 +146,14 @@
         
           
 
-  
-
-<nav class="md-tabs md-tabs--active" aria-label="Tabs" data-md-component="tabs">
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
   <div class="md-tabs__inner md-grid">
     <ul class="md-tabs__list">
       
         
   <li class="md-tabs__item">
     
-      <a href="../.." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link md-tabs__link--active">
         Home
       </a>
     
@@ -183,7 +181,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="../languages/" class="md-tabs__link md-tabs__link--active">
+        <a href="../languages/" class="md-tabs__link">
           Languages
         </a>
       
@@ -355,11 +353,20 @@
       
       
 
+  
 
-  <li class="md-nav__item">
-    <a href="../troubleshooting/" title="Troubleshooting" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+    <a href="./" title="Troubleshooting" class="md-nav__link md-nav__link--active">
       Troubleshooting
     </a>
+    
   </li>
 
     
@@ -379,12 +386,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-10" type="checkbox" id="nav-10" checked>
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-10" type="checkbox" id="nav-10">
     
     <label class="md-nav__link" for="nav-10">
       Languages
@@ -1018,148 +1023,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Rust
-        <span class="md-nav__icon md-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
-        </span>
-      </label>
-    
-    <a href="./" title="Rust" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../lsp-rust/" title="Rust" class="md-nav__link">
       Rust
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-      </span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#rls" class="md-nav__link">
-    RLS
-  </a>
-  
-    <nav class="md-nav" aria-label="RLS">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#customization" class="md-nav__link">
-    Customization
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#rust-analyzer" class="md-nav__link">
-    rust-analyzer
-  </a>
-  
-    <nav class="md-nav" aria-label="rust-analyzer">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#customization_1" class="md-nav__link">
-    Customization
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#commands" class="md-nav__link">
-    Commands
-  </a>
-  
-    <nav class="md-nav" aria-label="Commands">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-syntax-tree" class="md-nav__link">
-    lsp-rust-analyzer-syntax-tree
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-status" class="md-nav__link">
-    lsp-rust-analyzer-status
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-join-lines" class="md-nav__link">
-    lsp-rust-analyzer-join-lines
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#inlay-hints" class="md-nav__link">
-    inlay-hints
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#macro-expansion" class="md-nav__link">
-    Macro expansion
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#auto-import" class="md-nav__link">
-    auto-import
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#caveats" class="md-nav__link">
-    Caveats
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -1503,118 +1371,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-      </span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#rls" class="md-nav__link">
-    RLS
-  </a>
-  
-    <nav class="md-nav" aria-label="RLS">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#customization" class="md-nav__link">
-    Customization
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#rust-analyzer" class="md-nav__link">
-    rust-analyzer
-  </a>
-  
-    <nav class="md-nav" aria-label="rust-analyzer">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#customization_1" class="md-nav__link">
-    Customization
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#commands" class="md-nav__link">
-    Commands
-  </a>
-  
-    <nav class="md-nav" aria-label="Commands">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-syntax-tree" class="md-nav__link">
-    lsp-rust-analyzer-syntax-tree
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-status" class="md-nav__link">
-    lsp-rust-analyzer-status
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-join-lines" class="md-nav__link">
-    lsp-rust-analyzer-join-lines
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#inlay-hints" class="md-nav__link">
-    inlay-hints
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#macro-expansion" class="md-nav__link">
-    Macro expansion
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#auto-import" class="md-nav__link">
-    auto-import
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#caveats" class="md-nav__link">
-    Caveats
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1625,7 +1381,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/lsp-rust.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/troubleshooting.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
@@ -1633,70 +1389,18 @@
                   
                 
                 
-                <h1 id="lsp-rust">LSP Rust<a class="headerlink" href="#lsp-rust" title="Permanent link">#</a></h1>
+                <h1 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">#</a></h1>
 <ul>
+<li>Check <code>*lsp-log*</code> buffer and verify that <code>lsp-mode</code> is able to find the server. If <code>lsp-mode</code> is unable to find the binary but it is on the path it is probably caused by the fact that emacs is running with different path. You may check the current path by executing <kbd>M-:</kbd> <code>(getenv "PATH")</code>. If this is the case, you have several options to fix the issue.</li>
+<li>make sure that emacs is using the proper path by running emacs from terminal.</li>
+<li>Modify the path using <code>setpath</code>.</li>
+<li>Look for <code>lsp-mode</code> variable to customize server path. Usually, you may find the variable by doing:
+      <kbd>M-x</kbd> <code>customize-group</code> <kbd>RET</kbd> <code>lsp-LANGUAGE-SERVER-ID</code>.</li>
+<li>Set <code>lsp-log-io</code> to <code>t</code> to inspect communication between client and the server. Use <code>lsp-workspace-show-log</code> to switch to the corresponding log buffer.</li>
 <li>
-<p><code>lsp-rust-server</code> Choose LSP server (default is RLS)</p>
+<p><code>lsp-describe-session</code> will show the current projects roots + the started severs and allows inspecting the server capabilities:</p>
+<p><img alt="Describe session" src="../../examples/describe.png" /></p>
 </li>
-<li>
-<p><code>lsp-rust-switch-server</code> Switch priorities of lsp servers</p>
-</li>
-</ul>
-<h2 id="rls">RLS<a class="headerlink" href="#rls" title="Permanent link">#</a></h2>
-<h3 id="customization">Customization<a class="headerlink" href="#customization" title="Permanent link">#</a></h3>
-<p>This is an incomplete list of the available options</p>
-<ul>
-<li>
-<p><code>lsp-rust-rls-server-command</code> change command to start RLS</p>
-</li>
-<li>
-<p><code>lsp-rust-show-hover-context</code> turn off hover tooltips</p>
-</li>
-</ul>
-<h2 id="rust-analyzer">rust-analyzer<a class="headerlink" href="#rust-analyzer" title="Permanent link">#</a></h2>
-<h3 id="customization_1">Customization<a class="headerlink" href="#customization_1" title="Permanent link">#</a></h3>
-<p><code>lsp-rust-analyzer-server-command</code> change command to start rust-analyzer</p>
-<p><code>lsp-rust-analyzer-server-display-inlay-hints</code> toggle inlay hints</p>
-<p><code>lsp-rust-analyzer-display-chaining-hints</code> show inlay type hints for method chains</p>
-<p><code>lsp-rust-analyzer-display-parameter-hints</code> show function parameter name inlay hints at the call site</p>
-<p><code>lsp-rust-analyzer-max-inlay-hint-length</code> max inlay hint length</p>
-<p><code>lsp-rust-analyzer-cargo-watch-enable</code> toggle cargo watch</p>
-<p><code>lsp-rust-analyzer-cargo-watch-command</code> cargo watch command, e.g. <code>check</code> or <code>clippy</code></p>
-<p><code>lsp-rust-analyzer-cargo-watch-args</code> extra args passed to cargo watch command, should be specified as a vector of strings</p>
-<p><code>lsp-rust-analyzer-use-client-watching</code> toggle client side watching</p>
-<p><code>lsp-rust-analyzer-cargo-all-targets</code> should run cargo watch for all targets or not</p>
-<p><code>lsp-rust-analyzer-exclude-globs</code> a list of glob patterns for Cargo package exclusion</p>
-<p><code>lsp-rust-analyzer-enabled-feature-flags</code> a list of feature flags that should be enabled</p>
-<p><code>lsp-rust-analyzer-lru-capacity</code> Number of syntax trees rust-analyzer keeps in memory</p>
-<p><code>lsp-rust-analyzer-cargo-override-command</code> Advanced option, fully override the command rust-analyzer uses for checking. The command should include <code>--message=format=json</code> or similar option</p>
-<h3 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">#</a></h3>
-<h4 id="lsp-rust-analyzer-syntax-tree"><code>lsp-rust-analyzer-syntax-tree</code><a class="headerlink" href="#lsp-rust-analyzer-syntax-tree" title="Permanent link">#</a></h4>
-<p>Display syntax tree for current buffer</p>
-<p><img alt="" src="../../examples/lsp-rust-analyzer-syntax-tree.png" /></p>
-<h4 id="lsp-rust-analyzer-status"><code>lsp-rust-analyzer-status</code><a class="headerlink" href="#lsp-rust-analyzer-status" title="Permanent link">#</a></h4>
-<p>Display status information for rust-analyzer</p>
-<p><img alt="" src="../../examples/lsp-rust-analyzer-status.png" /></p>
-<h4 id="lsp-rust-analyzer-join-lines"><code>lsp-rust-analyzer-join-lines</code><a class="headerlink" href="#lsp-rust-analyzer-join-lines" title="Permanent link">#</a></h4>
-<p>Join selected lines into one, smartly fixing up whitespace and trailing commas</p>
-<p>before:</p>
-<p><img alt="" src="../../examples/lsp-rust-join-lines-before.png" /></p>
-<p>after:</p>
-<p><img alt="" src="../../examples/lsp-rust-join-lines-after.png" /></p>
-<h3 id="inlay-hints">inlay-hints<a class="headerlink" href="#inlay-hints" title="Permanent link">#</a></h3>
-<p><code>lsp-rust-analyzer-inlay-hints-mode</code> enables displaying of inlay hints</p>
-<p>NOTE: the inlay hints interact badly with the lsp-ui sideline, because it doesn't seem to consider the overlays in its width calculation, which often leads to lines wrapping around.</p>
-<p><img alt="" src="../../examples/lsp-rust-analyzer-inlay-hints.png" /></p>
-<h3 id="macro-expansion">Macro expansion<a class="headerlink" href="#macro-expansion" title="Permanent link">#</a></h3>
-<p><code>lsp-rust-analyzer-expand-macro</code> expand macro call at point recursively</p>
-<p>Use your own function for displaying macro expansion by customizing <code>lsp-rust-analyzer-macro-expansion-method</code></p>
-<p>Formatted and highlighted result with the default function of rustic.</p>
-<p><img alt="" src="../../examples/lsp-rust-macro-expansion.png" /></p>
-<h3 id="auto-import">auto-import<a class="headerlink" href="#auto-import" title="Permanent link">#</a></h3>
-<p>Get a list of possible auto import candidates with <code>lsp-execute-code-action</code></p>
-<p><img alt="" src="../../examples/lsp-rust-analyzer-auto-import.png" /></p>
-<h3 id="caveats">Caveats<a class="headerlink" href="#caveats" title="Permanent link">#</a></h3>
-<ul>
-<li>Rust Analyzer does not support disabling snippets - https://github.com/rust-analyzer/rust-analyzer/issues/2518</li>
 </ul>
                 
                   
@@ -1729,7 +1433,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../lsp-solargraph/" title="Ruby" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../faq/" title="FAQ" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -1738,19 +1442,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Ruby
+                FAQ
               </div>
             </div>
           </a>
         
         
-          <a href="../lsp-metals/" title="Scala" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../adding-new-language/" title="Adding new language" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Scala
+                Adding new language
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
