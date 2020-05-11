@@ -61,6 +61,12 @@
   :risky t
   :type '(repeat string))
 
+;; The build spec for the project.
+(defcustom lsp-haxe-hxml "build.hxml"
+  "The compile file for the haxe project."
+  :type 'file
+  :package-version '(lsp-mode . "6.4"))
+
 ;; https://github.com/emacs-lsp/lsp-mode/blob/150a933694349df960dc8fd7a15e04f5727e6433/lsp-rust.el#L251
 (defun lsp-clients--haxe-processStart (_workspace params)
   "Handle processStart notification.  Just logs PARAMS."
@@ -101,7 +107,8 @@
 (defcustom lsp-haxe-postfix-completion nil nil :type 'string)
 
 (lsp-register-custom-settings
- '(("haxe.postfixCompletion" lsp-haxe-postfix-completion)
+ '(("haxe.hxml" lsp-haxe-hxml)
+   ("haxe.postfixCompletion" lsp-haxe-postfix-completion)
    ("haxe.exclude" lsp-haxe-exclude)
    ("haxe.codeGeneration" lsp-haxe-code-generation)
    ("haxe.enableCompletionCacheWarning" lsp-haxe-enable-completion-cache-warning t)
@@ -131,8 +138,8 @@
                                        (lsp-configuration-section "haxe"))))
                   :priority -1
                   :server-id 'haxe
-                  :initialized-fn (lambda (_workspace)
-                                    '(("sendMethodResults" . t)
+                  :initialization-options (lambda ()
+                                    `(("sendMethodResults" . t)
                                       ("haxelibConfig"
                                        ("executable" . "haxelib"))
                                       ("displayServerConfig"
@@ -143,11 +150,14 @@
                                         [])
                                        ("env")
                                        ("path" . "haxe"))
-                                      ("displayArguments" . ["build.hxml"])))
+                                      ("displayArguments" . [,lsp-haxe-hxml])))
                   :notification-handlers (lsp-ht ("haxe/progressStart" 'lsp-clients--haxe-processStart)
                                                  ("haxe/progressStop" 'ignore)
                                                  ("haxe/didDetectOldPreview" 'ignore)
-                                                 ("haxe/didChangeDisplayPort" 'ignore))))
+                                                 ("haxe/didChangeDisplayPort" 'ignore)
+                                                 ("haxe/didRunHaxeMethod" 'ignore)
+                                                 ("haxe/didChangeRequestQueue" 'ignore)
+                                                 ("haxe/cacheBuildFailed" 'ignore))))
 
 (provide 'lsp-haxe)
 ;;; lsp-haxe.el ends here
