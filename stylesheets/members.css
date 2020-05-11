@@ -1,0 +1,13 @@
+/* We use id to not override mkdocs classes */
+
+#emacs-lsp-members {
+    overflow: hidden;
+}
+
+#emacs-lsp-members tr td div{
+    transition: transform .2s;
+}
+
+#emacs-lsp-members tr td div:hover {
+    transform: scale(1.15);
+}
