@@ -10,6 +10,19 @@
 
 ![LSP mode](examples/head.png)
 
+<hr>
+<p align="center">
+  <a href="https://emacs-lsp.github.io/lsp-mode"><strong>homepage</strong></a> |
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/installation"><strong>installation</strong></a> |
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/languages"><strong>languages</strong></a> |
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/settings"><strong>settings</strong></a> |
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/extensions"><strong>extensions</strong></a> |
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/troubleshooting"><strong>troubleshooting</strong></a> |
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/gallery"><strong>screenshots</strong></a> |
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/faq"><strong>FAQ</strong></a> 
+</p>
+<hr>
+
 ## Why?
 
   - :heart: **Community Driven**
@@ -69,26 +82,6 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
   - [thatwist](https://github.com/thatwist)'s ScalaUA Conference
     [presentation](https://www.youtube.com/watch?v=x7ey0ifcqAg&feature=youtu.be)
     (Scala)
-
-## [Installation](https://emacs-lsp.github.io/lsp-mode/page/installation)
-
-## [Supported languages](https://emacs-lsp.github.io/lsp-mode/page/languages)
-
-## [Settings](https://emacs-lsp.github.io/lsp-mode/page/settings)
-
-## [Keybindings](https://emacs-lsp.github.io/lsp-mode/page/keybindings)
-
-## [Extensions](https://emacs-lsp.github.io/lsp-mode/page/extensions/)
-
-## [Limitations](https://emacs-lsp.github.io/lsp-mode/page/limitations/)
-
-## [FAQ](https://emacs-lsp.github.io/lsp-mode/page/faq/)
-
-## [Troubleshooting](https://emacs-lsp.github.io/lsp-mode/page/troubleshooting/)
-
-## [Adding support for languages](https://emacs-lsp.github.io/lsp-mode/page/adding-new-language/)
-
-## [Changelog](https://emacs-lsp.github.io/lsp-mode/page/CHANGELOG/)
 
 ## See also
 
