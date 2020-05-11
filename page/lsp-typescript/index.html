@@ -17,7 +17,7 @@
     
     
       
-        <title>JavaScript/TypeScript (sourcegraph) - LSP Mode</title>
+        <title>JavaScript/TypeScript (sourcegraph) - LSP Mode - Language Server Protocol Support for Emacs</title>
       
     
     
@@ -70,7 +70,7 @@
     
       <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode" class="md-header-nav__button md-logo" aria-label="LSP Mode">
+    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - Language Server Protocol Support for Emacs" class="md-header-nav__button md-logo" aria-label="LSP Mode - Language Server Protocol Support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
@@ -82,7 +82,7 @@
       
         <div class="md-header-nav__ellipsis">
           <span class="md-header-nav__topic md-ellipsis">
-            LSP Mode
+            LSP Mode - Language Server Protocol Support for Emacs
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
@@ -246,12 +246,12 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode" class="md-nav__button md-logo" aria-label="LSP Mode">
+    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - Language Server Protocol Support for Emacs" class="md-nav__button md-logo" aria-label="LSP Mode - Language Server Protocol Support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
     </a>
-    LSP Mode
+    LSP Mode - Language Server Protocol Support for Emacs
   </label>
   
     <div class="md-nav__source">
@@ -823,6 +823,33 @@
   <a href="#available-configurations" class="md-nav__link">
     Available configurations
   </a>
+  
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-server-args" class="md-nav__link">
+    lsp-clients-typescript-server-args
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-log-verbosity" class="md-nav__link">
+    lsp-clients-typescript-log-verbosity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-plugins" class="md-nav__link">
+    lsp-clients-typescript-plugins
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1477,6 +1504,33 @@
     Available configurations
   </a>
   
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-server-args" class="md-nav__link">
+    lsp-clients-typescript-server-args
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-log-verbosity" class="md-nav__link">
+    lsp-clients-typescript-log-verbosity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-plugins" class="md-nav__link">
+    lsp-clients-typescript-plugins
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1506,15 +1560,15 @@
 <p><code>npm i -g javascript-typescript-langserver</code></p>
 <h3 id="debugger-yes-firefoxchrome">Debugger: Yes (Firefox/Chrome)<a class="headerlink" href="#debugger-yes-firefoxchrome" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<p><strong><code>lsp-clients-typescript-server-args</code></strong></p>
+<h3 id="lsp-clients-typescript-server-args"><code>lsp-clients-typescript-server-args</code><a class="headerlink" href="#lsp-clients-typescript-server-args" title="Permanent link">#</a></h3>
 <p><em>Default: <code>(--stdio)</code></em></p>
 <p>Extra arguments for the typescript-language-server language server.</p>
 <hr />
-<p><strong><code>lsp-clients-typescript-log-verbosity</code></strong></p>
+<h3 id="lsp-clients-typescript-log-verbosity"><code>lsp-clients-typescript-log-verbosity</code><a class="headerlink" href="#lsp-clients-typescript-log-verbosity" title="Permanent link">#</a></h3>
 <p><em>Default: <code>info</code></em></p>
 <p>The server log verbosity.</p>
 <hr />
-<p><strong><code>lsp-clients-typescript-plugins</code></strong></p>
+<h3 id="lsp-clients-typescript-plugins"><code>lsp-clients-typescript-plugins</code><a class="headerlink" href="#lsp-clients-typescript-plugins" title="Permanent link">#</a></h3>
 <p><em>Default: <code>[]</code></em></p>
 <p>The list of plugins to load.
 It should be a vector of plist with keys ‘:location’ and ‘:name’

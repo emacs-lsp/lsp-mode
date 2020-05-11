@@ -17,7 +17,7 @@
     
     
       
-        <title>YAML - LSP Mode</title>
+        <title>YAML - LSP Mode - Language Server Protocol Support for Emacs</title>
       
     
     
@@ -70,7 +70,7 @@
     
       <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode" class="md-header-nav__button md-logo" aria-label="LSP Mode">
+    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - Language Server Protocol Support for Emacs" class="md-header-nav__button md-logo" aria-label="LSP Mode - Language Server Protocol Support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
@@ -82,7 +82,7 @@
       
         <div class="md-header-nav__ellipsis">
           <span class="md-header-nav__topic md-ellipsis">
-            LSP Mode
+            LSP Mode - Language Server Protocol Support for Emacs
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
@@ -246,12 +246,12 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode" class="md-nav__button md-logo" aria-label="LSP Mode">
+    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - Language Server Protocol Support for Emacs" class="md-nav__button md-logo" aria-label="LSP Mode - Language Server Protocol Support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
     </a>
-    LSP Mode
+    LSP Mode - Language Server Protocol Support for Emacs
   </label>
   
     <div class="md-nav__source">
@@ -1220,6 +1220,96 @@
     Available configurations
   </a>
   
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-format-enable" class="md-nav__link">
+    lsp-yaml-format-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-single-quote" class="md-nav__link">
+    lsp-yaml-single-quote
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-bracket-spacing" class="md-nav__link">
+    lsp-yaml-bracket-spacing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-prose-wrap" class="md-nav__link">
+    lsp-yaml-prose-wrap
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-print-width" class="md-nav__link">
+    lsp-yaml-print-width
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-validate" class="md-nav__link">
+    lsp-yaml-validate
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-hover" class="md-nav__link">
+    lsp-yaml-hover
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-completion" class="md-nav__link">
+    lsp-yaml-completion
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-schemas" class="md-nav__link">
+    lsp-yaml-schemas
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-schema-store-enable" class="md-nav__link">
+    lsp-yaml-schema-store-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-custom-tags" class="md-nav__link">
+    lsp-yaml-custom-tags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-server-command" class="md-nav__link">
+    lsp-yaml-server-command
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1477,6 +1567,96 @@
     Available configurations
   </a>
   
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-format-enable" class="md-nav__link">
+    lsp-yaml-format-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-single-quote" class="md-nav__link">
+    lsp-yaml-single-quote
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-bracket-spacing" class="md-nav__link">
+    lsp-yaml-bracket-spacing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-prose-wrap" class="md-nav__link">
+    lsp-yaml-prose-wrap
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-print-width" class="md-nav__link">
+    lsp-yaml-print-width
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-validate" class="md-nav__link">
+    lsp-yaml-validate
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-hover" class="md-nav__link">
+    lsp-yaml-hover
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-completion" class="md-nav__link">
+    lsp-yaml-completion
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-schemas" class="md-nav__link">
+    lsp-yaml-schemas
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-schema-store-enable" class="md-nav__link">
+    lsp-yaml-schema-store-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-custom-tags" class="md-nav__link">
+    lsp-yaml-custom-tags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-yaml-server-command" class="md-nav__link">
+    lsp-yaml-server-command
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1506,55 +1686,55 @@
 <p><code>npm install -g yaml-language-server</code></p>
 <h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<p><strong><code>lsp-yaml-format-enable</code></strong></p>
+<h3 id="lsp-yaml-format-enable"><code>lsp-yaml-format-enable</code><a class="headerlink" href="#lsp-yaml-format-enable" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Enable/disable default YAML formatter.</p>
 <hr />
-<p><strong><code>lsp-yaml-single-quote</code></strong></p>
+<h3 id="lsp-yaml-single-quote"><code>lsp-yaml-single-quote</code><a class="headerlink" href="#lsp-yaml-single-quote" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
 <p>Use single quote instead of double quotes.</p>
 <hr />
-<p><strong><code>lsp-yaml-bracket-spacing</code></strong></p>
+<h3 id="lsp-yaml-bracket-spacing"><code>lsp-yaml-bracket-spacing</code><a class="headerlink" href="#lsp-yaml-bracket-spacing" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Print spaces between brackets in objects.</p>
 <hr />
-<p><strong><code>lsp-yaml-prose-wrap</code></strong></p>
+<h3 id="lsp-yaml-prose-wrap"><code>lsp-yaml-prose-wrap</code><a class="headerlink" href="#lsp-yaml-prose-wrap" title="Permanent link">#</a></h3>
 <p><em>Default: <code>preserve</code></em></p>
 <p>Options for prose-wrap.
    Always: wrap prose if it exceeds the print width.
    Never: never wrap the prose.
    Preserve: wrap prose as-is.</p>
 <hr />
-<p><strong><code>lsp-yaml-print-width</code></strong></p>
+<h3 id="lsp-yaml-print-width"><code>lsp-yaml-print-width</code><a class="headerlink" href="#lsp-yaml-print-width" title="Permanent link">#</a></h3>
 <p><em>Default: <code>80</code></em></p>
 <p>Specify the line length that the printer will wrap on.</p>
 <hr />
-<p><strong><code>lsp-yaml-validate</code></strong></p>
+<h3 id="lsp-yaml-validate"><code>lsp-yaml-validate</code><a class="headerlink" href="#lsp-yaml-validate" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Enable/disable validation feature.</p>
 <hr />
-<p><strong><code>lsp-yaml-hover</code></strong></p>
+<h3 id="lsp-yaml-hover"><code>lsp-yaml-hover</code><a class="headerlink" href="#lsp-yaml-hover" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Enable/disable hover feature.</p>
 <hr />
-<p><strong><code>lsp-yaml-completion</code></strong></p>
+<h3 id="lsp-yaml-completion"><code>lsp-yaml-completion</code><a class="headerlink" href="#lsp-yaml-completion" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Enable/disable completion feature.</p>
 <hr />
-<p><strong><code>lsp-yaml-schemas</code></strong></p>
+<h3 id="lsp-yaml-schemas"><code>lsp-yaml-schemas</code><a class="headerlink" href="#lsp-yaml-schemas" title="Permanent link">#</a></h3>
 <p><em>Default: <code>#s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8125 data ())</code></em></p>
 <p>Associate schemas to YAML files in a glob pattern.</p>
 <hr />
-<p><strong><code>lsp-yaml-schema-store-enable</code></strong></p>
+<h3 id="lsp-yaml-schema-store-enable"><code>lsp-yaml-schema-store-enable</code><a class="headerlink" href="#lsp-yaml-schema-store-enable" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Enable/disable JSON Schema store. When set to true, available YAML
    schemas will be automatically pulled from the store.</p>
 <hr />
-<p><strong><code>lsp-yaml-custom-tags</code></strong></p>
+<h3 id="lsp-yaml-custom-tags"><code>lsp-yaml-custom-tags</code><a class="headerlink" href="#lsp-yaml-custom-tags" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
 <p>Custom tags for the parser to use.</p>
 <hr />
-<p><strong><code>lsp-yaml-server-command</code></strong></p>
+<h3 id="lsp-yaml-server-command"><code>lsp-yaml-server-command</code><a class="headerlink" href="#lsp-yaml-server-command" title="Permanent link">#</a></h3>
 <p><em>Default: <code>(yaml-language-server --stdio)</code></em></p>
 <p>Command to start yaml-languageserver.</p>
 <hr />

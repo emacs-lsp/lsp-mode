@@ -17,7 +17,7 @@
     
     
       
-        <title>XML - LSP Mode</title>
+        <title>XML - LSP Mode - Language Server Protocol Support for Emacs</title>
       
     
     
@@ -70,7 +70,7 @@
     
       <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode" class="md-header-nav__button md-logo" aria-label="LSP Mode">
+    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - Language Server Protocol Support for Emacs" class="md-header-nav__button md-logo" aria-label="LSP Mode - Language Server Protocol Support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
@@ -82,7 +82,7 @@
       
         <div class="md-header-nav__ellipsis">
           <span class="md-header-nav__topic md-ellipsis">
-            LSP Mode
+            LSP Mode - Language Server Protocol Support for Emacs
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
@@ -246,12 +246,12 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode" class="md-nav__button md-logo" aria-label="LSP Mode">
+    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - Language Server Protocol Support for Emacs" class="md-nav__button md-logo" aria-label="LSP Mode - Language Server Protocol Support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
     </a>
-    LSP Mode
+    LSP Mode - Language Server Protocol Support for Emacs
   </label>
   
     <div class="md-nav__source">
@@ -1208,6 +1208,152 @@
     Available configurations
   </a>
   
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-trace-server" class="md-nav__link">
+    lsp-xml-trace-server
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-catalogs" class="md-nav__link">
+    lsp-xml-catalogs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-logs-client" class="md-nav__link">
+    lsp-xml-logs-client
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-format-split-attributes" class="md-nav__link">
+    lsp-xml-format-split-attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-format-join-cdata-lines" class="md-nav__link">
+    lsp-xml-format-join-cdata-lines
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-format-join-comment-lines" class="md-nav__link">
+    lsp-xml-format-join-comment-lines
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-format-space-before-empty-close-tag" class="md-nav__link">
+    lsp-xml-format-space-before-empty-close-tag
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-format-join-content-lines" class="md-nav__link">
+    lsp-xml-format-join-content-lines
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-format-preserve-empty-content" class="md-nav__link">
+    lsp-xml-format-preserve-empty-content
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-format-enabled" class="md-nav__link">
+    lsp-xml-format-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-format-quotations" class="md-nav__link">
+    lsp-xml-format-quotations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-file-associations" class="md-nav__link">
+    lsp-xml-file-associations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-completion-auto-close-tags" class="md-nav__link">
+    lsp-xml-completion-auto-close-tags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-server-vmargs" class="md-nav__link">
+    lsp-xml-server-vmargs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-server-work-dir" class="md-nav__link">
+    lsp-xml-server-work-dir
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-validation-no-grammar" class="md-nav__link">
+    lsp-xml-validation-no-grammar
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-validation-enabled" class="md-nav__link">
+    lsp-xml-validation-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-validation-schema" class="md-nav__link">
+    lsp-xml-validation-schema
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-jar-file" class="md-nav__link">
+    lsp-xml-jar-file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-server-command" class="md-nav__link">
+    lsp-xml-server-command
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1477,6 +1623,152 @@
     Available configurations
   </a>
   
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-trace-server" class="md-nav__link">
+    lsp-xml-trace-server
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-catalogs" class="md-nav__link">
+    lsp-xml-catalogs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-logs-client" class="md-nav__link">
+    lsp-xml-logs-client
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-format-split-attributes" class="md-nav__link">
+    lsp-xml-format-split-attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-format-join-cdata-lines" class="md-nav__link">
+    lsp-xml-format-join-cdata-lines
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-format-join-comment-lines" class="md-nav__link">
+    lsp-xml-format-join-comment-lines
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-format-space-before-empty-close-tag" class="md-nav__link">
+    lsp-xml-format-space-before-empty-close-tag
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-format-join-content-lines" class="md-nav__link">
+    lsp-xml-format-join-content-lines
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-format-preserve-empty-content" class="md-nav__link">
+    lsp-xml-format-preserve-empty-content
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-format-enabled" class="md-nav__link">
+    lsp-xml-format-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-format-quotations" class="md-nav__link">
+    lsp-xml-format-quotations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-file-associations" class="md-nav__link">
+    lsp-xml-file-associations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-completion-auto-close-tags" class="md-nav__link">
+    lsp-xml-completion-auto-close-tags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-server-vmargs" class="md-nav__link">
+    lsp-xml-server-vmargs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-server-work-dir" class="md-nav__link">
+    lsp-xml-server-work-dir
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-validation-no-grammar" class="md-nav__link">
+    lsp-xml-validation-no-grammar
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-validation-enabled" class="md-nav__link">
+    lsp-xml-validation-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-validation-schema" class="md-nav__link">
+    lsp-xml-validation-schema
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-jar-file" class="md-nav__link">
+    lsp-xml-jar-file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-xml-server-command" class="md-nav__link">
+    lsp-xml-server-command
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1506,54 +1798,54 @@
 <p><code>Download from lsp4xml releases</code></p>
 <h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<p><strong><code>lsp-xml-trace-server</code></strong></p>
+<h3 id="lsp-xml-trace-server"><code>lsp-xml-trace-server</code><a class="headerlink" href="#lsp-xml-trace-server" title="Permanent link">#</a></h3>
 <p><em>Default: <code>off</code></em></p>
 <p>Traces the communication between VS Code and the XML language server.</p>
 <hr />
-<p><strong><code>lsp-xml-catalogs</code></strong></p>
+<h3 id="lsp-xml-catalogs"><code>lsp-xml-catalogs</code><a class="headerlink" href="#lsp-xml-catalogs" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
 <p>Array of XML Catalogs</p>
 <hr />
-<p><strong><code>lsp-xml-logs-client</code></strong></p>
+<h3 id="lsp-xml-logs-client"><code>lsp-xml-logs-client</code><a class="headerlink" href="#lsp-xml-logs-client" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Should the server log to client output</p>
 <hr />
-<p><strong><code>lsp-xml-format-split-attributes</code></strong></p>
+<h3 id="lsp-xml-format-split-attributes"><code>lsp-xml-format-split-attributes</code><a class="headerlink" href="#lsp-xml-format-split-attributes" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
 <p>Split multiple attributes each onto a new line</p>
 <hr />
-<p><strong><code>lsp-xml-format-join-cdata-lines</code></strong></p>
+<h3 id="lsp-xml-format-join-cdata-lines"><code>lsp-xml-format-join-cdata-lines</code><a class="headerlink" href="#lsp-xml-format-join-cdata-lines" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
 <p>Join lines in a CDATA tag’s content</p>
 <hr />
-<p><strong><code>lsp-xml-format-join-comment-lines</code></strong></p>
+<h3 id="lsp-xml-format-join-comment-lines"><code>lsp-xml-format-join-comment-lines</code><a class="headerlink" href="#lsp-xml-format-join-comment-lines" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
 <p>Join comment content on format</p>
 <hr />
-<p><strong><code>lsp-xml-format-space-before-empty-close-tag</code></strong></p>
+<h3 id="lsp-xml-format-space-before-empty-close-tag"><code>lsp-xml-format-space-before-empty-close-tag</code><a class="headerlink" href="#lsp-xml-format-space-before-empty-close-tag" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Insert space before end of self closing tag.
 Example: <tag/> -&gt; <tag /></p>
 <hr />
-<p><strong><code>lsp-xml-format-join-content-lines</code></strong></p>
+<h3 id="lsp-xml-format-join-content-lines"><code>lsp-xml-format-join-content-lines</code><a class="headerlink" href="#lsp-xml-format-join-content-lines" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
 <p>Normalize the whitespace of content inside an element.
 Newlines and excess whitespace are removed.</p>
 <hr />
-<p><strong><code>lsp-xml-format-preserve-empty-content</code></strong></p>
+<h3 id="lsp-xml-format-preserve-empty-content"><code>lsp-xml-format-preserve-empty-content</code><a class="headerlink" href="#lsp-xml-format-preserve-empty-content" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
 <p>Preserve empty content/whitespace in a tag.</p>
 <hr />
-<p><strong><code>lsp-xml-format-enabled</code></strong></p>
+<h3 id="lsp-xml-format-enabled"><code>lsp-xml-format-enabled</code><a class="headerlink" href="#lsp-xml-format-enabled" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Enable/disable ability to format document</p>
 <hr />
-<p><strong><code>lsp-xml-format-quotations</code></strong></p>
+<h3 id="lsp-xml-format-quotations"><code>lsp-xml-format-quotations</code><a class="headerlink" href="#lsp-xml-format-quotations" title="Permanent link">#</a></h3>
 <p><em>Default: <code>doubleQuotes</code></em></p>
 <p>Which type of quotes to use for attribute values when
   formatting.</p>
 <hr />
-<p><strong><code>lsp-xml-file-associations</code></strong></p>
+<h3 id="lsp-xml-file-associations"><code>lsp-xml-file-associations</code><a class="headerlink" href="#lsp-xml-file-associations" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
 <p>Allows XML schemas to be associated to file name patterns.
   Example: [{ "systemId":"path/to/file.xsd","pattern":
@@ -1561,12 +1853,12 @@ Newlines and excess whitespace are removed.</p>
   "http://www.w3.org/2001/XMLSchema.xsd","pattern":
   "*<em>/</em>.xsd" }]</p>
 <hr />
-<p><strong><code>lsp-xml-completion-auto-close-tags</code></strong></p>
+<h3 id="lsp-xml-completion-auto-close-tags"><code>lsp-xml-completion-auto-close-tags</code><a class="headerlink" href="#lsp-xml-completion-auto-close-tags" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Enable/disable autoclosing of XML tags. IMPORTANT: Turn off
   editor.autoClosingTags for this to work</p>
 <hr />
-<p><strong><code>lsp-xml-server-vmargs</code></strong></p>
+<h3 id="lsp-xml-server-vmargs"><code>lsp-xml-server-vmargs</code><a class="headerlink" href="#lsp-xml-server-vmargs" title="Permanent link">#</a></h3>
 <p><em>Default: <code>-noverify -Xmx64M
   -XX:+UseG1GC -XX:+UseStringDeduplication</code></em></p>
 <p>Specifies extra VM
@@ -1575,31 +1867,31 @@ Newlines and excess whitespace are removed.</p>
   bypass class verification, increase the heap size to 1GB and
   enable String deduplication with the G1 Garbage collector</p>
 <hr />
-<p><strong><code>lsp-xml-server-work-dir</code></strong></p>
+<h3 id="lsp-xml-server-work-dir"><code>lsp-xml-server-work-dir</code><a class="headerlink" href="#lsp-xml-server-work-dir" title="Permanent link">#</a></h3>
 <p><em>Default: <code>~/.lsp4xml</code></em></p>
 <p>Set a custom folder path for cached XML Schemas. An absolute
   path is expected, although the ~ prefix (for the user home
   directory) is supported.</p>
 <hr />
-<p><strong><code>lsp-xml-validation-no-grammar</code></strong></p>
+<h3 id="lsp-xml-validation-no-grammar"><code>lsp-xml-validation-no-grammar</code><a class="headerlink" href="#lsp-xml-validation-no-grammar" title="Permanent link">#</a></h3>
 <p><em>Default: <code>hint</code></em></p>
 <p>The message severity when a document has no associated
   grammar.</p>
 <hr />
-<p><strong><code>lsp-xml-validation-enabled</code></strong></p>
+<h3 id="lsp-xml-validation-enabled"><code>lsp-xml-validation-enabled</code><a class="headerlink" href="#lsp-xml-validation-enabled" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Enable/disable all validation.</p>
 <hr />
-<p><strong><code>lsp-xml-validation-schema</code></strong></p>
+<h3 id="lsp-xml-validation-schema"><code>lsp-xml-validation-schema</code><a class="headerlink" href="#lsp-xml-validation-schema" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Enable/disable schema based validation. Ignored if
   "xml.validation.enabled": false.</p>
 <hr />
-<p><strong><code>lsp-xml-jar-file</code></strong></p>
+<h3 id="lsp-xml-jar-file"><code>lsp-xml-jar-file</code><a class="headerlink" href="#lsp-xml-jar-file" title="Permanent link">#</a></h3>
 <p><em>Default: <code>~/.emacs.d/org.eclipse.lsp4xml-0.3.0-uber.jar</code></em></p>
 <p>Xml server jar command.</p>
 <hr />
-<p><strong><code>lsp-xml-server-command</code></strong></p>
+<h3 id="lsp-xml-server-command"><code>lsp-xml-server-command</code><a class="headerlink" href="#lsp-xml-server-command" title="Permanent link">#</a></h3>
 <p><em>Default: <code>(java -jar /home/runner/.emacs.d/org.eclipse.lsp4xml-0.3.0-uber.jar)</code></em></p>
 <p>Xml server command.</p>
 <hr />

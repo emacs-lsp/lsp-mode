@@ -17,7 +17,7 @@
     
     
       
-        <title>Powershell - LSP Mode</title>
+        <title>Powershell - LSP Mode - Language Server Protocol Support for Emacs</title>
       
     
     
@@ -70,7 +70,7 @@
     
       <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode" class="md-header-nav__button md-logo" aria-label="LSP Mode">
+    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - Language Server Protocol Support for Emacs" class="md-header-nav__button md-logo" aria-label="LSP Mode - Language Server Protocol Support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
@@ -82,7 +82,7 @@
       
         <div class="md-header-nav__ellipsis">
           <span class="md-header-nav__topic md-ellipsis">
-            LSP Mode
+            LSP Mode - Language Server Protocol Support for Emacs
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
@@ -246,12 +246,12 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode" class="md-nav__button md-logo" aria-label="LSP Mode">
+    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - Language Server Protocol Support for Emacs" class="md-nav__button md-logo" aria-label="LSP Mode - Language Server Protocol Support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
     </a>
-    LSP Mode
+    LSP Mode - Language Server Protocol Support for Emacs
   </label>
   
     <div class="md-nav__source">
@@ -1004,6 +1004,194 @@
     Available configurations
   </a>
   
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-help-completion" class="md-nav__link">
+    lsp-pwsh-help-completion
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-script-analysis-enable" class="md-nav__link">
+    lsp-pwsh-script-analysis-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-script-analysis-settings-path" class="md-nav__link">
+    lsp-pwsh-script-analysis-settings-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-folding-enable" class="md-nav__link">
+    lsp-pwsh-code-folding-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-folding-show-last-line" class="md-nav__link">
+    lsp-pwsh-code-folding-show-last-line
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-preset" class="md-nav__link">
+    lsp-pwsh-code-formatting-preset
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-open-brace-on-same-line" class="md-nav__link">
+    lsp-pwsh-code-formatting-open-brace-on-same-line
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-new-line-after-open-brace" class="md-nav__link">
+    lsp-pwsh-code-formatting-new-line-after-open-brace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-new-line-after-close-brace" class="md-nav__link">
+    lsp-pwsh-code-formatting-new-line-after-close-brace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-pipeline-indentation-style" class="md-nav__link">
+    lsp-pwsh-code-formatting-pipeline-indentation-style
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-whitespace-before-open-brace" class="md-nav__link">
+    lsp-pwsh-code-formatting-whitespace-before-open-brace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-whitespace-before-open-paren" class="md-nav__link">
+    lsp-pwsh-code-formatting-whitespace-before-open-paren
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-whitespace-around-operator" class="md-nav__link">
+    lsp-pwsh-code-formatting-whitespace-around-operator
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-whitespace-after-separator" class="md-nav__link">
+    lsp-pwsh-code-formatting-whitespace-after-separator
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-whitespace-inside-brace" class="md-nav__link">
+    lsp-pwsh-code-formatting-whitespace-inside-brace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-whitespace-around-pipe" class="md-nav__link">
+    lsp-pwsh-code-formatting-whitespace-around-pipe
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-ignore-one-line-block" class="md-nav__link">
+    lsp-pwsh-code-formatting-ignore-one-line-block
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-align-property-value-pairs" class="md-nav__link">
+    lsp-pwsh-code-formatting-align-property-value-pairs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-use-correct-casing" class="md-nav__link">
+    lsp-pwsh-code-formatting-use-correct-casing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-developer-editor-services-log-level" class="md-nav__link">
+    lsp-pwsh-developer-editor-services-log-level
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-developer-editor-services-wait-for-debugger" class="md-nav__link">
+    lsp-pwsh-developer-editor-services-wait-for-debugger
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-developer-feature-flags" class="md-nav__link">
+    lsp-pwsh-developer-feature-flags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-ext-path" class="md-nav__link">
+    lsp-pwsh-ext-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-exe" class="md-nav__link">
+    lsp-pwsh-exe
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-dir" class="md-nav__link">
+    lsp-pwsh-dir
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-github-asset-url" class="md-nav__link">
+    lsp-pwsh-github-asset-url
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1477,6 +1665,194 @@
     Available configurations
   </a>
   
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-help-completion" class="md-nav__link">
+    lsp-pwsh-help-completion
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-script-analysis-enable" class="md-nav__link">
+    lsp-pwsh-script-analysis-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-script-analysis-settings-path" class="md-nav__link">
+    lsp-pwsh-script-analysis-settings-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-folding-enable" class="md-nav__link">
+    lsp-pwsh-code-folding-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-folding-show-last-line" class="md-nav__link">
+    lsp-pwsh-code-folding-show-last-line
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-preset" class="md-nav__link">
+    lsp-pwsh-code-formatting-preset
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-open-brace-on-same-line" class="md-nav__link">
+    lsp-pwsh-code-formatting-open-brace-on-same-line
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-new-line-after-open-brace" class="md-nav__link">
+    lsp-pwsh-code-formatting-new-line-after-open-brace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-new-line-after-close-brace" class="md-nav__link">
+    lsp-pwsh-code-formatting-new-line-after-close-brace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-pipeline-indentation-style" class="md-nav__link">
+    lsp-pwsh-code-formatting-pipeline-indentation-style
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-whitespace-before-open-brace" class="md-nav__link">
+    lsp-pwsh-code-formatting-whitespace-before-open-brace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-whitespace-before-open-paren" class="md-nav__link">
+    lsp-pwsh-code-formatting-whitespace-before-open-paren
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-whitespace-around-operator" class="md-nav__link">
+    lsp-pwsh-code-formatting-whitespace-around-operator
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-whitespace-after-separator" class="md-nav__link">
+    lsp-pwsh-code-formatting-whitespace-after-separator
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-whitespace-inside-brace" class="md-nav__link">
+    lsp-pwsh-code-formatting-whitespace-inside-brace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-whitespace-around-pipe" class="md-nav__link">
+    lsp-pwsh-code-formatting-whitespace-around-pipe
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-ignore-one-line-block" class="md-nav__link">
+    lsp-pwsh-code-formatting-ignore-one-line-block
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-align-property-value-pairs" class="md-nav__link">
+    lsp-pwsh-code-formatting-align-property-value-pairs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-code-formatting-use-correct-casing" class="md-nav__link">
+    lsp-pwsh-code-formatting-use-correct-casing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-developer-editor-services-log-level" class="md-nav__link">
+    lsp-pwsh-developer-editor-services-log-level
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-developer-editor-services-wait-for-debugger" class="md-nav__link">
+    lsp-pwsh-developer-editor-services-wait-for-debugger
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-developer-feature-flags" class="md-nav__link">
+    lsp-pwsh-developer-feature-flags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-ext-path" class="md-nav__link">
+    lsp-pwsh-ext-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-exe" class="md-nav__link">
+    lsp-pwsh-exe
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-dir" class="md-nav__link">
+    lsp-pwsh-dir
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pwsh-github-asset-url" class="md-nav__link">
+    lsp-pwsh-github-asset-url
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1506,115 +1882,115 @@
 <p><code>Automatic</code></p>
 <h3 id="debugger-yes">Debugger: Yes<a class="headerlink" href="#debugger-yes" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<p><strong><code>lsp-pwsh-help-completion</code></strong></p>
+<h3 id="lsp-pwsh-help-completion"><code>lsp-pwsh-help-completion</code><a class="headerlink" href="#lsp-pwsh-help-completion" title="Permanent link">#</a></h3>
 <p><em>Default: <code>BlockComment</code></em></p>
 <p>Controls the comment-based help completion behavior triggered by typing ’##’.
 Set the generated help style with ’BlockComment’ or ’LineComment’.
 Disable the feature with ’Disabled’.</p>
 <hr />
-<p><strong><code>lsp-pwsh-script-analysis-enable</code></strong></p>
+<h3 id="lsp-pwsh-script-analysis-enable"><code>lsp-pwsh-script-analysis-enable</code><a class="headerlink" href="#lsp-pwsh-script-analysis-enable" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Enables real-time script analysis from PowerShell Script Analyzer.
 Uses the newest installed version of the PSScriptAnalyzer module or the version bundled with this extension, if it is newer.</p>
 <hr />
-<p><strong><code>lsp-pwsh-script-analysis-settings-path</code></strong></p>
+<h3 id="lsp-pwsh-script-analysis-settings-path"><code>lsp-pwsh-script-analysis-settings-path</code><a class="headerlink" href="#lsp-pwsh-script-analysis-settings-path" title="Permanent link">#</a></h3>
 <p><em>Default: ``</em></p>
 <p>Specifies the path to a PowerShell Script Analyzer settings file.
 To override the default settings for all projects, enter an absolute path, or enter a path relative to your workspace.</p>
 <hr />
-<p><strong><code>lsp-pwsh-code-folding-enable</code></strong></p>
+<h3 id="lsp-pwsh-code-folding-enable"><code>lsp-pwsh-code-folding-enable</code><a class="headerlink" href="#lsp-pwsh-code-folding-enable" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Enables syntax based code folding.
 When disabled, the default indentation based code folding is used.</p>
 <hr />
-<p><strong><code>lsp-pwsh-code-folding-show-last-line</code></strong></p>
+<h3 id="lsp-pwsh-code-folding-show-last-line"><code>lsp-pwsh-code-folding-show-last-line</code><a class="headerlink" href="#lsp-pwsh-code-folding-show-last-line" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Shows the last line of a folded section similar to the default VSCode folding style.
 When disabled, the entire folded region is hidden.</p>
 <hr />
-<p><strong><code>lsp-pwsh-code-formatting-preset</code></strong></p>
+<h3 id="lsp-pwsh-code-formatting-preset"><code>lsp-pwsh-code-formatting-preset</code><a class="headerlink" href="#lsp-pwsh-code-formatting-preset" title="Permanent link">#</a></h3>
 <p><em>Default: <code>Custom</code></em></p>
 <p>Sets the codeformatting options to follow the given indent style in a way that is compatible with PowerShell syntax.
 For more information about the brace styles please refer to https://github.com/PoshCode/PowerShellPracticeAndStyle/issues/81.</p>
 <hr />
-<p><strong><code>lsp-pwsh-code-formatting-open-brace-on-same-line</code></strong></p>
+<h3 id="lsp-pwsh-code-formatting-open-brace-on-same-line"><code>lsp-pwsh-code-formatting-open-brace-on-same-line</code><a class="headerlink" href="#lsp-pwsh-code-formatting-open-brace-on-same-line" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Places open brace on the same line as its associated statement.</p>
 <hr />
-<p><strong><code>lsp-pwsh-code-formatting-new-line-after-open-brace</code></strong></p>
+<h3 id="lsp-pwsh-code-formatting-new-line-after-open-brace"><code>lsp-pwsh-code-formatting-new-line-after-open-brace</code><a class="headerlink" href="#lsp-pwsh-code-formatting-new-line-after-open-brace" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Adds a newline (line break) after an open brace.</p>
 <hr />
-<p><strong><code>lsp-pwsh-code-formatting-new-line-after-close-brace</code></strong></p>
+<h3 id="lsp-pwsh-code-formatting-new-line-after-close-brace"><code>lsp-pwsh-code-formatting-new-line-after-close-brace</code><a class="headerlink" href="#lsp-pwsh-code-formatting-new-line-after-close-brace" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Adds a newline (line break) after a closing brace.</p>
 <hr />
-<p><strong><code>lsp-pwsh-code-formatting-pipeline-indentation-style</code></strong></p>
+<h3 id="lsp-pwsh-code-formatting-pipeline-indentation-style"><code>lsp-pwsh-code-formatting-pipeline-indentation-style</code><a class="headerlink" href="#lsp-pwsh-code-formatting-pipeline-indentation-style" title="Permanent link">#</a></h3>
 <p><em>Default: <code>NoIndentation</code></em></p>
 <p>Multi-line pipeline style settings.</p>
 <hr />
-<p><strong><code>lsp-pwsh-code-formatting-whitespace-before-open-brace</code></strong></p>
+<h3 id="lsp-pwsh-code-formatting-whitespace-before-open-brace"><code>lsp-pwsh-code-formatting-whitespace-before-open-brace</code><a class="headerlink" href="#lsp-pwsh-code-formatting-whitespace-before-open-brace" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Adds a space between a keyword and its associated scriptblock expression.</p>
 <hr />
-<p><strong><code>lsp-pwsh-code-formatting-whitespace-before-open-paren</code></strong></p>
+<h3 id="lsp-pwsh-code-formatting-whitespace-before-open-paren"><code>lsp-pwsh-code-formatting-whitespace-before-open-paren</code><a class="headerlink" href="#lsp-pwsh-code-formatting-whitespace-before-open-paren" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Adds a space between a keyword (if, elseif, while, switch, etc) and its associated conditional expression.</p>
 <hr />
-<p><strong><code>lsp-pwsh-code-formatting-whitespace-around-operator</code></strong></p>
+<h3 id="lsp-pwsh-code-formatting-whitespace-around-operator"><code>lsp-pwsh-code-formatting-whitespace-around-operator</code><a class="headerlink" href="#lsp-pwsh-code-formatting-whitespace-around-operator" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Adds spaces before and after an operator (’=’, ’+’, ’-’, etc.).</p>
 <hr />
-<p><strong><code>lsp-pwsh-code-formatting-whitespace-after-separator</code></strong></p>
+<h3 id="lsp-pwsh-code-formatting-whitespace-after-separator"><code>lsp-pwsh-code-formatting-whitespace-after-separator</code><a class="headerlink" href="#lsp-pwsh-code-formatting-whitespace-after-separator" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Adds a space after a separator (’,’ and ’;’).</p>
 <hr />
-<p><strong><code>lsp-pwsh-code-formatting-whitespace-inside-brace</code></strong></p>
+<h3 id="lsp-pwsh-code-formatting-whitespace-inside-brace"><code>lsp-pwsh-code-formatting-whitespace-inside-brace</code><a class="headerlink" href="#lsp-pwsh-code-formatting-whitespace-inside-brace" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Adds a space after an opening brace (’{’) and before a closing brace (’}’).</p>
 <hr />
-<p><strong><code>lsp-pwsh-code-formatting-whitespace-around-pipe</code></strong></p>
+<h3 id="lsp-pwsh-code-formatting-whitespace-around-pipe"><code>lsp-pwsh-code-formatting-whitespace-around-pipe</code><a class="headerlink" href="#lsp-pwsh-code-formatting-whitespace-around-pipe" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Adds a space before and after the pipeline operator (’|’).</p>
 <hr />
-<p><strong><code>lsp-pwsh-code-formatting-ignore-one-line-block</code></strong></p>
+<h3 id="lsp-pwsh-code-formatting-ignore-one-line-block"><code>lsp-pwsh-code-formatting-ignore-one-line-block</code><a class="headerlink" href="#lsp-pwsh-code-formatting-ignore-one-line-block" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Does not reformat one-line code blocks, such as "if (...) {...} else {...}".</p>
 <hr />
-<p><strong><code>lsp-pwsh-code-formatting-align-property-value-pairs</code></strong></p>
+<h3 id="lsp-pwsh-code-formatting-align-property-value-pairs"><code>lsp-pwsh-code-formatting-align-property-value-pairs</code><a class="headerlink" href="#lsp-pwsh-code-formatting-align-property-value-pairs" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
 <p>Align assignment statements in a hashtable or a DSC Configuration.</p>
 <hr />
-<p><strong><code>lsp-pwsh-code-formatting-use-correct-casing</code></strong></p>
+<h3 id="lsp-pwsh-code-formatting-use-correct-casing"><code>lsp-pwsh-code-formatting-use-correct-casing</code><a class="headerlink" href="#lsp-pwsh-code-formatting-use-correct-casing" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
 <p>Use correct casing for cmdlets.</p>
 <hr />
-<p><strong><code>lsp-pwsh-developer-editor-services-log-level</code></strong></p>
+<h3 id="lsp-pwsh-developer-editor-services-log-level"><code>lsp-pwsh-developer-editor-services-log-level</code><a class="headerlink" href="#lsp-pwsh-developer-editor-services-log-level" title="Permanent link">#</a></h3>
 <p><em>Default: <code>Normal</code></em></p>
 <p>Sets the logging verbosity level for the PowerShell Editor Services host executable.
 Valid values are ’Diagnostic’, ’Verbose’, ’Normal’, ’Warning’, and ’Error’</p>
 <hr />
-<p><strong><code>lsp-pwsh-developer-editor-services-wait-for-debugger</code></strong></p>
+<h3 id="lsp-pwsh-developer-editor-services-wait-for-debugger"><code>lsp-pwsh-developer-editor-services-wait-for-debugger</code><a class="headerlink" href="#lsp-pwsh-developer-editor-services-wait-for-debugger" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
 <p>Launches the language service with the /waitForDebugger flag to force it to wait for a .NET debugger to attach before proceeding.</p>
 <hr />
-<p><strong><code>lsp-pwsh-developer-feature-flags</code></strong></p>
+<h3 id="lsp-pwsh-developer-feature-flags"><code>lsp-pwsh-developer-feature-flags</code><a class="headerlink" href="#lsp-pwsh-developer-feature-flags" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
 <p>An array of strings that enable experimental features in the PowerShell extension.</p>
 <hr />
-<p><strong><code>lsp-pwsh-ext-path</code></strong></p>
+<h3 id="lsp-pwsh-ext-path"><code>lsp-pwsh-ext-path</code><a class="headerlink" href="#lsp-pwsh-ext-path" title="Permanent link">#</a></h3>
 <p><em>Default: <code>/home/runner/.emacs.d/.cache/lsp/pwsh</code></em></p>
 <p>The path to powershell vscode extension.</p>
 <hr />
-<p><strong><code>lsp-pwsh-exe</code></strong></p>
+<h3 id="lsp-pwsh-exe"><code>lsp-pwsh-exe</code><a class="headerlink" href="#lsp-pwsh-exe" title="Permanent link">#</a></h3>
 <p><em>Default: <code>/usr/bin/pwsh</code></em></p>
 <p>PowerShell executable.</p>
 <hr />
-<p><strong><code>lsp-pwsh-dir</code></strong></p>
+<h3 id="lsp-pwsh-dir"><code>lsp-pwsh-dir</code><a class="headerlink" href="#lsp-pwsh-dir" title="Permanent link">#</a></h3>
 <p><em>Default: <code>/home/runner/.emacs.d/.cache/lsp/pwsh/PowerShellEditorServices</code></em></p>
 <p>Path to PowerShellEditorServices without last slash.</p>
 <hr />
-<p><strong><code>lsp-pwsh-github-asset-url</code></strong></p>
+<h3 id="lsp-pwsh-github-asset-url"><code>lsp-pwsh-github-asset-url</code><a class="headerlink" href="#lsp-pwsh-github-asset-url" title="Permanent link">#</a></h3>
 <p><em>Default: <code>https://github.com/%s/%s/releases/latest/download/%s</code></em></p>
 <p>GitHub latest asset template url.</p>
 <hr />
