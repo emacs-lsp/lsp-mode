@@ -64,7 +64,8 @@
 ;; The build spec for the project.
 (defcustom lsp-haxe-hxml "build.hxml"
   "The compile file for the haxe project."
-  :type 'file)
+  :type 'file
+  :package-version '(lsp-mode . "6.4"))
 
 ;; https://github.com/emacs-lsp/lsp-mode/blob/150a933694349df960dc8fd7a15e04f5727e6433/lsp-rust.el#L251
 (defun lsp-clients--haxe-processStart (_workspace params)
@@ -152,7 +153,9 @@
                   :notification-handlers (lsp-ht ("haxe/progressStart" 'lsp-clients--haxe-processStart)
                                                  ("haxe/progressStop" 'ignore)
                                                  ("haxe/didDetectOldPreview" 'ignore)
-                                                 ("haxe/didChangeDisplayPort" 'ignore))))
+                                                 ("haxe/didChangeDisplayPort" 'ignore)
+                                                 ("haxe/didRunHaxeMethod" 'ignore)
+                                                 ("haxe/didChangeRequestQueue" 'ignore))))
 
 (provide 'lsp-haxe)
 ;;; lsp-haxe.el ends here
