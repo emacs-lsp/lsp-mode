@@ -1,4 +1,4 @@
-site_name: LSP Mode
+site_name: LSP Mode - Language Server Protocol Support for Emacs
 site_url: https://emacs-lsp.github.io/lsp-mode
 
 nav:

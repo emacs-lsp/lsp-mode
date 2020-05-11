@@ -1,4 +1,4 @@
-**`{{name}}`**
+### `{{name}}`
 
 _Default: `{{default}}`_
 
