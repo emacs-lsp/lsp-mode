@@ -10,11 +10,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: README.org -> README.md
-        uses: docker://pandoc/core:2.9
-        with:
-          args: -s README.org -t gfm -o docs/README.md
-
       - name: CHANGELOG.org -> CHANGELOG.md
         uses: docker://pandoc/core:2.9
         with:
@@ -33,7 +28,7 @@ jobs:
 
       - name: MkDocs
         run: |
-          cp -rf examples docs
+          cp -rf README.md examples docs
           docker run --rm -v ${PWD}:/docs squidfunk/mkdocs-material -- build
 
       - name: Deploy
