@@ -691,6 +691,7 @@ Changes take effect only when a new session is started."
                                         (vhdl-mode . "vhdl")
                                         (verilog-mode . "verilog")
                                         (terraform-mode . "terraform")
+                                        (ess-julia-mode . "julia")
                                         (ess-r-mode . "r")
                                         (crystal-mode . "crystal")
                                         (nim-mode . "nim")
