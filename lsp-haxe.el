@@ -156,7 +156,8 @@
                                                  ("haxe/didDetectOldPreview" 'ignore)
                                                  ("haxe/didChangeDisplayPort" 'ignore)
                                                  ("haxe/didRunHaxeMethod" 'ignore)
-                                                 ("haxe/didChangeRequestQueue" 'ignore))))
+                                                 ("haxe/didChangeRequestQueue" 'ignore)
+                                                 ("haxe/cacheBuildFailed" 'ignore))))
 
 (provide 'lsp-haxe)
 ;;; lsp-haxe.el ends here
