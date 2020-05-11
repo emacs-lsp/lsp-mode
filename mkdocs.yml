@@ -14,11 +14,10 @@ nav:
   - Languages:
     - page/languages.md
     - Ada: page/lsp-ada.md
-    - Apple Sourcekit: https://emacs-lsp.github.io/lsp-sourcekit
     - Angular: page/lsp-angular.md
     - Bash: page/lsp-bash.md
-    - C++(ccls): page/lsp-ccls.md
-    - C++(clangd): page/lsp-clangd.md
+    - C++ (ccls): page/lsp-ccls.md
+    - C++ (clangd): page/lsp-clangd.md
     - C#: page/lsp-csharp.md
     - Clojure: page/lsp-clojure.md
     - CMake: page/lsp-cmake.md
@@ -27,44 +26,45 @@ nav:
     - Dart: https://emacs-lsp.github.io/lsp-dart
     - Dhall: page/lsp-dhall.md
     - Dockerfile: page/lsp-dockerfile.md
-    - Elixir(elixir-ls): page/lsp-elixir.md
-    - Elixir(JakeBecker): page/lsp-elixir-ls.md
+    - Elixir (elixir-ls): page/lsp-elixir.md
+    - Elixir (JakeBecker): page/lsp-elixir-ls.md
     - Elm: page/lsp-elm.md
     - Erlang: page/lsp-erlang.md
     - Eslint: page/lsp-eslint.md
     - F#: page/lsp-fsharp.md
     - Fortran: page/lsp-fortran.md
-    - Go(gopls): page/lsp-gopls.md
-    - Go(bingo): page/lsp-bingo.md
+    - Go (gopls): page/lsp-gopls.md
+    - Go (bingo): page/lsp-bingo.md
     - Groovy: page/lsp-groovy.md
     - Hack: page/lsp-hack.md
     - HTML: page/lsp-html.md
     - Haskell: https://emacs-lsp.github.io/lsp-haskell
     - Lua: page/lsp-emmy-lua.md
     - Java: https://emacs-lsp.github.io/lsp-java
-    - JavaScript/TypeScript(sourcegraph): page/lsp-typescript.md
-    - JavaScript/TypeScript(theia-ide): page/lsp-typescript-javascript.md
+    - JavaScript/TypeScript (sourcegraph): page/lsp-typescript.md
+    - JavaScript/TypeScript (theia-ide): page/lsp-typescript-javascript.md
     - JavaScript Flow: page/lsp-flow.md
     - Json: page/lsp-json.md
     - Julia: page/lsp-julia.md
     - Kotlin: page/lsp-kotlin.md
     - MSSQL: https://emacs-lsp.github.io/lsp-mssql
     - Nim: page/lsp-nim.md
-    - OCaml(ocaml): page/lsp-ocaml.md
-    - OCaml(icaml-lsp): page/lsp-ocalm-lsp-server.md
+    - OCaml (ocaml): page/lsp-ocaml.md
+    - OCaml (icaml-lsp): page/lsp-ocalm-lsp-server.md
     - Pascal/Object Pascal: page/lsp-pascal.md
     - Perl: page/lsp-perl.md
-    - PHP(intelephense): page/lsp-intelephense.md
-    - PHP(Serenata): page/lsp-serenata.md
-    - PHP(felixbecker): page/lsp-php.md
+    - PHP (intelephense): page/lsp-intelephense.md
+    - PHP (Serenata): page/lsp-serenata.md
+    - PHP (felixbecker): page/lsp-php.md
     - Powershell: page/lsp-pwsh.md
     - PureScript: page/lsp-purescript.md
     - Python: page/lsp-pyls.md
-    - Python(Microsoft): https://emacs-lsp.github.io/lsp-python-ms
+    - Python (Microsoft): https://emacs-lsp.github.io/lsp-python-ms
     - R: page/lsp-r.md
     - Ruby: page/lsp-solargraph.md
     - Rust: page/lsp-rust.md
     - Scala: page/lsp-metals.md
+    - Swift: https://emacs-lsp.github.io/lsp-sourcekit
     - Terraform: page/lsp-terraform.md
     - TeX, LaTeX, etc (digestif): page/lsp-tex.md
     - TeX, LaTeX, etc (texlab): page/lsp-texlab.md
