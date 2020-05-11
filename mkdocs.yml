@@ -89,6 +89,7 @@ nav:
 
 extra_css:
   - stylesheets/extra.css
+  - stylesheets/members.css
 
 extra_javascript:
   - js/expanded_nav.js

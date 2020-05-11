@@ -108,90 +108,109 @@ Contributions are very much welcome.
 Here it is a list of the current `lsp-mode` members and what they are
 primary working on/responsible for.
 
-<table>
+<table id="emacs-lsp-members">
   <tr>
     <td align="center">
-      <a href="https://github.com/totbwf">
-        <img src="https://github.com/totbwf.png" width="100px;" style="border-radius: 50%;" alt="totbwf"/>
+      <div>
+        <a href="https://github.com/totbwf">
+          <img src="https://github.com/totbwf.png" width="100px;" style="border-radius: 50%;" alt="totbwf"/>
+          <br/>
+          <sub><b>totbwf</b></sub>
+        </a>
         <br/>
-        <sub><b>totbwf</b></sub>
-      </a>
-      <br/>
-      F#
+        F#
+      </div>
     </td>
     <td align="center">
-      <a href="https://github.com/brotzeit">
-        <img src="https://github.com/brotzeit.png" width="100px;" style="border-radius: 50%;" alt="brotzeit"/>
+      <div>
+        <a href="https://github.com/brotzeit">
+          <img src="https://github.com/brotzeit.png" width="100px;" style="border-radius: 50%;" alt="brotzeit"/>
+          <br/>
+          <sub><b>brotzeit</b></sub>
+        </a>
         <br/>
-        <sub><b>brotzeit</b></sub>
-      </a>
-      <br/>
-      Rust
+        Rust
+      </div>
     </td>
     <td align="center">
-      <a href="https://github.com/dsyzling">
-        <img src="https://github.com/dsyzling.png" width="100px;" style="border-radius: 50%;" alt="dsyzling"/>
+      <div>
+        <a href="https://github.com/dsyzling">
+          <img src="https://github.com/dsyzling.png" width="100px;" style="border-radius: 50%;" alt="dsyzling"/>
+          <br/>
+          <sub><b>dsyzling</b></sub>
+        </a>
         <br/>
-        <sub><b>dsyzling</b></sub>
-      </a>
-      <br/>
-      Scala
+        Scala
+      </div>
     </td>
     <td align="center">
-      <a href="https://github.com/kurnevsky">
-        <img src="https://github.com/kurnevsky.png" width="100px;" style="border-radius: 50%;" alt="kurnevsky"/>
+      <div>
+        <a href="https://github.com/kurnevsky">
+          <img src="https://github.com/kurnevsky.png" width="100px;" style="border-radius: 50%;" alt="kurnevsky"/>
+          <br/>
+          <sub><b>kurnevsky</b></sub>
+        </a>
         <br/>
-        <sub><b>kurnevsky</b></sub>
-      </a>
-      <br/>
-      Scala | Rust
+        Scala | Rust
+      </div>
     </td>
     <td align="center">
-      <a href="https://github.com/seagle0128">
-        <img src="https://github.com/seagle0128.png" width="100px;" style="border-radius: 50%;" alt="seagle0128"/>
+      <div>
+        <a href="https://github.com/seagle0128">
+          <img src="https://github.com/seagle0128.png" width="100px;" style="border-radius: 50%;" alt="seagle0128"/>
+          <br/>
+          <sub><b>seagle0128</b></sub>
+        </a>
         <br/>
-        <sub><b>seagle0128</b></sub>
-      </a>
-      <br/>
-      Go | Python MS
+        Go | Python MS
+      </div>
     </td>
   </tr>
   <tr>
     <td align="center">
-      <a href="https://github.com/sebastiansturm">
-        <img src="https://github.com/sebastiansturm.png" width="100px;" style="border-radius: 50%;" alt="sebastiansturm"/>
+      <div>
+        <a href="https://github.com/sebastiansturm">
+          <img src="https://github.com/sebastiansturm.png" width="100px;" style="border-radius: 50%;" alt="sebastiansturm"/>
+          <br/>
+          <sub><b>sebastiansturm</b></sub>
+        </a>
         <br/>
-        <sub><b>sebastiansturm</b></sub>
-      </a>
-      <br/>
-      lsp-mode core | C++
+        lsp-mode core | C++
+      </div>
     </td>
     <td align="center">
-      <a href="https://github.com/vibhavp">
-        <img src="https://github.com/vibhavp.png" width="100px;" style="border-radius: 50%;" alt="vibhavp"/>
+      <div>
+        <a href="https://github.com/vibhavp">
+          <img src="https://github.com/vibhavp.png" width="100px;" style="border-radius: 50%;" alt="vibhavp"/>
+          <br/>
+          <sub><b>vibhavp</b></sub>
+        </a>
         <br/>
-        <sub><b>vibhavp</b></sub>
-      </a>
-      <br/>
-      lsp-mode core
+        lsp-mode core
+      </div>
     </td>
     <td align="center">
-      <a href="https://github.com/yyoncho">
-        <img src="https://github.com/yyoncho.png" width="100px;" style="border-radius: 50%;" alt="yyoncho"/>
+      <div>
+        <a href="https://github.com/yyoncho">
+          <img src="https://github.com/yyoncho.png" width="100px;" style="border-radius: 50%;" alt="yyoncho"/>
+          <br/>
+          <sub><b>yyoncho</b></sub>
+        </a>
         <br/>
-        <sub><b>yyoncho</b></sub>
-      </a>
-      <br/>
-      lsp-mode core | Java
+        lsp-mode core | Java
+        </div>
     </td>
     <td align="center">
-      <a href="https://github.com/ericdallo">
-        <img src="https://github.com/ericdallo.png" width="100px;" style="border-radius: 50%;" alt="ericdallo"/>
+      <div>
+        <a href="https://github.com/ericdallo">
+          <img src="https://github.com/ericdallo.png" width="100px;" style="border-radius: 50%;" alt="ericdallo"/>
+          <br/>
+          <sub><b>ericdallo</b></sub>
+        </a>
         <br/>
-        <sub><b>ericdallo</b></sub>
-      </a>
-      <br/>
-      Dart | Flutter | docs
+        Dart | Flutter | docs
+      </div>
     </td>
+    <td></td>
   </tr>
 </table>
