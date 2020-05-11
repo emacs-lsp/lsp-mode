@@ -107,7 +107,8 @@
 (defcustom lsp-haxe-postfix-completion nil nil :type 'string)
 
 (lsp-register-custom-settings
- '(("haxe.postfixCompletion" lsp-haxe-postfix-completion)
+ '(("haxe.hxml" lsp-haxe-hxml)
+   ("haxe.postfixCompletion" lsp-haxe-postfix-completion)
    ("haxe.exclude" lsp-haxe-exclude)
    ("haxe.codeGeneration" lsp-haxe-code-generation)
    ("haxe.enableCompletionCacheWarning" lsp-haxe-enable-completion-cache-warning t)
