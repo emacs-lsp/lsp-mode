@@ -408,6 +408,26 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    Limitations
+  </a>
+  
+    <nav class="md-nav" aria-label="Limitations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#file-watches" class="md-nav__link">
+    File watches
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -513,18 +533,6 @@
   <li class="md-nav__item">
     <a href="../remote/" title="Remote" class="md-nav__link">
       Remote
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../limitations/" title="Limitations" class="md-nav__link">
-      Limitations
     </a>
   </li>
 
@@ -1514,6 +1522,26 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    Limitations
+  </a>
+  
+    <nav class="md-nav" aria-label="Limitations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#file-watches" class="md-nav__link">
+    File watches
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1577,6 +1605,9 @@
 </code></pre></div>
 
 <p><em>Tip:</em> To find out the global errors you might use <code>lsp-treemacs-errors-list</code>.</p>
+<h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">#</a></h2>
+<h3 id="file-watches">File watches<a class="headerlink" href="#file-watches" title="Permanent link">#</a></h3>
+<p>When some of the workspaces that are active in the current project requests file notifications via <code>workspace/didChangeWatchedFiles</code>, <code>lsp-mode</code> will start monitoring each of the folders in the workspace for changes. In case your project contains a lot of files you might want to disable file monitoring via <code>lsp-enable-file-watchers</code> (you may use dir-locals).</p>
                 
                   
                     
@@ -1585,7 +1616,7 @@
 <div class="md-source-date">
   <small>
     
-      Last update: May 11, 2020
+      Last update: May 12, 2020
     
   </small>
 </div>

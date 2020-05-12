@@ -479,18 +479,6 @@
           
           
 
-
-  <li class="md-nav__item">
-    <a href="../limitations/" title="Limitations" class="md-nav__link">
-      Limitations
-    </a>
-  </li>
-
-        
-          
-          
-          
-
   
 
 
@@ -1492,7 +1480,7 @@
 </li>
 <li>How to configure a server with local variables?<ul>
 <li>Add <code>lsp</code> server call to <code>hack-local-variables-hook</code> which runs right after the local variables are loaded.
-    <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;hack-local-variables-hook</span>
+  <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;hack-local-variables-hook</span>
           <span class="p">(</span><span class="nb">lambda</span> <span class="p">()</span> <span class="p">(</span><span class="nb">when</span> <span class="p">(</span><span class="nv">derived-mode-p</span> <span class="ss">&#39;XXX-mode</span><span class="p">)</span> <span class="p">(</span><span class="nv">lsp</span><span class="p">))))</span>
 </code></pre></div></li>
 </ul>
@@ -1515,7 +1503,7 @@
 </li>
 <li>The flycheck does not work in <code>typescript</code>, <code>html</code> and <code>javascript</code> blocks in <code>vue-mode</code>. How to fix that?<ul>
 <li>This is caused by the fact that <code>vue-mode</code> uses multiple major modes in single file and the <code>lsp-ui</code> checker may not associated with the major mode at point. You could fix that by adding the following lines to your config.
-    <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-mode</span>
+  <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-mode</span>
   <span class="p">(</span><span class="nf">mapc</span> <span class="nf">#&#39;</span><span class="nv">lsp-flycheck-add-mode</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">typescript-mode</span> <span class="nv">js-mode</span> <span class="nv">css-mode</span> <span class="nv">vue-html-mode</span><span class="p">)))</span>
 </code></pre></div></li>
 </ul>
@@ -1526,10 +1514,10 @@
 </li>
 <li>How do I get flex completion in when using <code>Emacs 26</code>?<ul>
 <li><code>flex</code> filtering has been implemented in <code>Emacs 27+</code> and <code>lsp-mode</code> is using it by default and there is no <code>flex</code> matching by default. In order to have <code>flex</code> completion by default you could either upgrade to <code>Emacs 27</code> or try using <code>helm-flex</code> implementation including the following snippet in your config:
-    <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-completion-styles</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">helm-flex</span><span class="p">))</span>
+  <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-completion-styles</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">helm-flex</span><span class="p">))</span>
 </code></pre></div>
-    See also
-    <a href="https://github.com/emacs-lsp/lsp-mode/issues/1652">#1652</a>.</li>
+  See also
+  <a href="https://github.com/emacs-lsp/lsp-mode/issues/1652">#1652</a>.</li>
 </ul>
 </li>
 </ul>
@@ -1541,7 +1529,7 @@
 <div class="md-source-date">
   <small>
     
-      Last update: May 11, 2020
+      Last update: May 12, 2020
     
   </small>
 </div>
@@ -1564,7 +1552,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../limitations/" title="Limitations" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../remote/" title="Remote" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -1573,7 +1561,7 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Limitations
+                Remote
               </div>
             </div>
           </a>
