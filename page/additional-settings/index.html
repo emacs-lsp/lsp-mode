@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-kotlin/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/additional-settings/">
       
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
@@ -17,7 +17,7 @@
     
     
       
-        <title>Kotlin - LSP Mode - Language Server Protocol Support for Emacs</title>
+        <title>Additional settings - LSP Mode - Language Server Protocol Support for Emacs</title>
       
     
     
@@ -59,7 +59,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#kotlin" class="md-skip">
+        <a href="#additional-settings" class="md-skip">
           Skip to content
         </a>
       
@@ -86,7 +86,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              Kotlin
+              Additional settings
             
           </span>
         </div>
@@ -159,7 +159,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="../.." class="md-tabs__link">
+        <a href="../.." class="md-tabs__link md-tabs__link--active">
           Home
         </a>
       
@@ -172,7 +172,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="../languages/" class="md-tabs__link md-tabs__link--active">
+        <a href="../languages/" class="md-tabs__link">
           Languages
         </a>
       
@@ -260,10 +260,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" checked>
     
     <label class="md-nav__link" for="nav-1">
       Home
@@ -297,10 +299,12 @@
           
           
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1-2" type="checkbox" id="nav-1-2">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1-2" type="checkbox" id="nav-1-2" checked>
     
     <label class="md-nav__link" for="nav-1-2">
       Setup
@@ -346,11 +350,80 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../additional-settings/" title="Additional settings" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Additional settings
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="Additional settings" class="md-nav__link md-nav__link--active">
       Additional settings
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-settings-for-related-packages" class="md-nav__link">
+    Recommended settings for related packages
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended settings for related packages">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#company-autocomplete" class="md-nav__link">
+    Company (autocomplete)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#formatting" class="md-nav__link">
+    Formatting
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    Docker
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -530,12 +603,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
     
     <label class="md-nav__link" for="nav-2">
       Languages
@@ -965,149 +1036,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Kotlin
-        <span class="md-nav__icon md-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
-        </span>
-      </label>
-    
-    <a href="./" title="Kotlin" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../lsp-kotlin/" title="Kotlin" class="md-nav__link">
       Kotlin
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-      </span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#instalation" class="md-nav__link">
-    Instalation
-  </a>
-  
-    <nav class="md-nav" aria-label="Instalation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-not-available" class="md-nav__link">
-    Debugger: Not available
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-kotlin-server-executable" class="md-nav__link">
-    lsp-clients-kotlin-server-executable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-kotlin-trace-server" class="md-nav__link">
-    lsp-kotlin-trace-server
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-kotlin-compiler-jvm-target" class="md-nav__link">
-    lsp-kotlin-compiler-jvm-target
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-kotlin-linting-debounce-time" class="md-nav__link">
-    lsp-kotlin-linting-debounce-time
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-kotlin-completion-snippets-enabled" class="md-nav__link">
-    lsp-kotlin-completion-snippets-enabled
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-kotlin-debug-adapter-enabled" class="md-nav__link">
-    lsp-kotlin-debug-adapter-enabled
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-kotlin-debug-adapter-path" class="md-nav__link">
-    lsp-kotlin-debug-adapter-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-kotlin-external-sources-use-kls-scheme" class="md-nav__link">
-    lsp-kotlin-external-sources-use-kls-scheme
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-kotlin-external-sources-auto-convert-to-kotlin" class="md-nav__link">
-    lsp-kotlin-external-sources-auto-convert-to-kotlin
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -1604,23 +1537,16 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
+  <a href="#recommended-settings-for-related-packages" class="md-nav__link">
+    Recommended settings for related packages
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#instalation" class="md-nav__link">
-    Instalation
-  </a>
-  
-    <nav class="md-nav" aria-label="Instalation">
+    <nav class="md-nav" aria-label="Recommended settings for related packages">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#debugger-not-available" class="md-nav__link">
-    Debugger: Not available
+  <a href="#company-autocomplete" class="md-nav__link">
+    Company (autocomplete)
   </a>
   
 </li>
@@ -1631,78 +1557,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-clients-kotlin-server-executable" class="md-nav__link">
-    lsp-clients-kotlin-server-executable
+  <a href="#formatting" class="md-nav__link">
+    Formatting
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-kotlin-trace-server" class="md-nav__link">
-    lsp-kotlin-trace-server
+      
+        <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    Docker
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-kotlin-compiler-jvm-target" class="md-nav__link">
-    lsp-kotlin-compiler-jvm-target
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-kotlin-linting-debounce-time" class="md-nav__link">
-    lsp-kotlin-linting-debounce-time
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-kotlin-completion-snippets-enabled" class="md-nav__link">
-    lsp-kotlin-completion-snippets-enabled
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-kotlin-debug-adapter-enabled" class="md-nav__link">
-    lsp-kotlin-debug-adapter-enabled
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-kotlin-debug-adapter-path" class="md-nav__link">
-    lsp-kotlin-debug-adapter-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-kotlin-external-sources-use-kls-scheme" class="md-nav__link">
-    lsp-kotlin-external-sources-use-kls-scheme
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-kotlin-external-sources-auto-convert-to-kotlin" class="md-nav__link">
-    lsp-kotlin-external-sources-auto-convert-to-kotlin
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1718,7 +1582,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/lsp-kotlin.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/additional-settings.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
@@ -1726,52 +1590,22 @@
                   
                 
                 
-                <h1 id="kotlin">Kotlin<a class="headerlink" href="#kotlin" title="Permanent link">#</a></h1>
-<h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For information about the LSP server, check the <a href="https://github.com/fwcd/KotlinLanguageServer">kotlin-language-server</a>.</p>
-<h2 id="instalation">Instalation<a class="headerlink" href="#instalation" title="Permanent link">#</a></h2>
-<p>For instruction on how to install, check <a href="https://github.com/fwcd/KotlinLanguageServer">here</a>.</p>
-<h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
-<h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<h3 id="lsp-clients-kotlin-server-executable"><code>lsp-clients-kotlin-server-executable</code><a class="headerlink" href="#lsp-clients-kotlin-server-executable" title="Permanent link">#</a></h3>
-<p><em>Default: <code>kotlin-language-server</code></em></p>
-<p>The kotlin-language-server executable to use.
-Leave as just the executable name to use the default behavior of finding the
-executable with ‘exec-path’.</p>
-<hr />
-<h3 id="lsp-kotlin-trace-server"><code>lsp-kotlin-trace-server</code><a class="headerlink" href="#lsp-kotlin-trace-server" title="Permanent link">#</a></h3>
-<p><em>Default: <code>off</code></em></p>
-<p>Traces the communication between VSCode and the Kotlin language server.</p>
-<hr />
-<h3 id="lsp-kotlin-compiler-jvm-target"><code>lsp-kotlin-compiler-jvm-target</code><a class="headerlink" href="#lsp-kotlin-compiler-jvm-target" title="Permanent link">#</a></h3>
-<p><em>Default: <code>1.8</code></em></p>
-<p>Specifies the JVM target, e.g. "1.6" or "1.8"</p>
-<hr />
-<h3 id="lsp-kotlin-linting-debounce-time"><code>lsp-kotlin-linting-debounce-time</code><a class="headerlink" href="#lsp-kotlin-linting-debounce-time" title="Permanent link">#</a></h3>
-<p><em>Default: <code>250</code></em></p>
-<p>[DEBUG] Specifies the debounce time limit. Lower to increase
-responsiveness at the cost of possible stability issues.</p>
-<hr />
-<h3 id="lsp-kotlin-completion-snippets-enabled"><code>lsp-kotlin-completion-snippets-enabled</code><a class="headerlink" href="#lsp-kotlin-completion-snippets-enabled" title="Permanent link">#</a></h3>
-<p><em>Default: <code>t</code></em></p>
-<p>Specifies whether code completion should provide snippets (true) or plain-text items (false).</p>
-<hr />
-<h3 id="lsp-kotlin-debug-adapter-enabled"><code>lsp-kotlin-debug-adapter-enabled</code><a class="headerlink" href="#lsp-kotlin-debug-adapter-enabled" title="Permanent link">#</a></h3>
-<p><em>Default: <code>t</code></em></p>
-<p>[Recommended] Specifies whether the debug adapter should be used. When enabled a debugger for Kotlin will be available.</p>
-<hr />
-<h3 id="lsp-kotlin-debug-adapter-path"><code>lsp-kotlin-debug-adapter-path</code><a class="headerlink" href="#lsp-kotlin-debug-adapter-path" title="Permanent link">#</a></h3>
-<p><em>Default: ``</em></p>
-<p>Optionally a custom path to the debug adapter executable.</p>
-<hr />
-<h3 id="lsp-kotlin-external-sources-use-kls-scheme"><code>lsp-kotlin-external-sources-use-kls-scheme</code><a class="headerlink" href="#lsp-kotlin-external-sources-use-kls-scheme" title="Permanent link">#</a></h3>
-<p><em>Default: <code>t</code></em></p>
-<p>[Recommended] Specifies whether URIs inside JARs should be represented using the ’kls’-scheme.</p>
-<hr />
-<h3 id="lsp-kotlin-external-sources-auto-convert-to-kotlin"><code>lsp-kotlin-external-sources-auto-convert-to-kotlin</code><a class="headerlink" href="#lsp-kotlin-external-sources-auto-convert-to-kotlin" title="Permanent link">#</a></h3>
-<p><em>Default: <code>t</code></em></p>
-<p>Specifies whether decompiled/external classes should be auto-converted to Kotlin.</p>
-<hr />
+                <h1 id="additional-settings">Additional settings<a class="headerlink" href="#additional-settings" title="Permanent link">#</a></h1>
+<h2 id="recommended-settings-for-related-packages">Recommended settings for related packages<a class="headerlink" href="#recommended-settings-for-related-packages" title="Permanent link">#</a></h2>
+<h3 id="company-autocomplete">Company (autocomplete)<a class="headerlink" href="#company-autocomplete" title="Permanent link">#</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">company-minimum-prefix-length</span> <span class="mi">1</span>
+      <span class="nv">company-idle-delay</span> <span class="mf">0.0</span><span class="p">)</span> <span class="c1">;; default is 0.2</span>
+</code></pre></div>
+
+<h2 id="formatting">Formatting<a class="headerlink" href="#formatting" title="Permanent link">#</a></h2>
+<p>In general the formatter settings are language server specific(e. g. <code>JDT LS</code> uses eclipse formatter file and <code>lsp-java-format-settings-url</code> to configure it while clangd uses <code>clangd-format</code>). The only settings that are controlled on <code>lsp-mode</code> level are indent size and whether the server should use tabs or spaces.</p>
+<ul>
+<li>Use <code>c-basic-offset</code> for <code>cc-mode</code> derived moves(e. g. java, C++) to control the tab size.</li>
+<li>Use <code>tab-width</code> for any other mode to do the same.</li>
+<li>Use <code>indent-tabs-mode</code> for selecting tab/spaces.</li>
+</ul>
+<h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
+<p>Refer to <a href="https://github.com/emacs-lsp/lsp-docker/">lsp-docker</a> README which provides a guide on how you can run <code>lsp-mode</code> in <code>docker</code> container.</p>
                 
                   
                     
@@ -1803,7 +1637,7 @@ responsiveness at the cost of possible stability issues.</p>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../lsp-julia/" title="Julia" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../configuration/" title="Configuration" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -1812,19 +1646,19 @@ responsiveness at the cost of possible stability issues.</p>
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Julia
+                Configuration
               </div>
             </div>
           </a>
         
         
-          <a href="../lsp-nim/" title="Nim" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../settings/" title="Settings" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Nim
+                Settings
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">

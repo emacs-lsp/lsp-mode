@@ -8,6 +8,14 @@
      <lastmod>2020-05-12</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/configuration/</loc>
+     <lastmod>2020-05-12</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/additional-settings/</loc>
+     <lastmod>2020-05-12</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
      <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/</loc>
      <lastmod>2020-05-12</lastmod>
      <changefreq>daily</changefreq>
@@ -16,7 +24,7 @@
      <lastmod>2020-05-12</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
-     <loc>https://emacs-lsp.github.io/lsp-mode/page/extensions/</loc>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/remote/</loc>
      <lastmod>2020-05-12</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
@@ -261,10 +269,6 @@
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-yaml/</loc>
-     <lastmod>2020-05-12</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>https://emacs-lsp.github.io/lsp-mode/page/features/</loc>
      <lastmod>2020-05-12</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
