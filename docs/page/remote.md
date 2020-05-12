@@ -26,3 +26,8 @@ Here it is example how you can configure python language server to work when usi
 ### Dealing with stderr
     
 With TRAMP, Emacs does not have an easy way to distinguish stdout and stderr, so when the underlying LSP process writes to stderr, it breaks the `lsp-mode` parser. As a workaround, `lsp-mode` is redirecting stderr to `/tmp/<process-name>-<id>~stderr`.
+
+
+## Docker
+
+Refer to [lsp-docker](https://github.com/emacs-lsp/lsp-docker/) README which provides a guide on how you can run `lsp-mode` in `docker` container.

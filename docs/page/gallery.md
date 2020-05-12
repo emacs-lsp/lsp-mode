@@ -21,6 +21,10 @@ Gallery
 
 ![](../examples/metals-doctor.png)
 
+## Flutter debugging
+
+![](../examples/lsp-dart-flutter-debug.gif)
+
 ## Semantic highlighting
 
 As provided by clangd, built from unreleased 10.0 branch, in this screenshot, all other font-locking has been disabled (hence no syntax highlighting of comments or basic keywords such as ~auto~):

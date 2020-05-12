@@ -46,3 +46,9 @@ To see all error statistics in the modeline you can enable `lsp-diagnostics-mode
 ```
 
 _Tip:_ To find out the global errors you might use `lsp-treemacs-errors-list`.
+
+## Limitations
+
+### File watches
+
+When some of the workspaces that are active in the current project requests file notifications via `workspace/didChangeWatchedFiles`, `lsp-mode` will start monitoring each of the folders in the workspace for changes. In case your project contains a lot of files you might want to disable file monitoring via `lsp-enable-file-watchers` (you may use dir-locals).

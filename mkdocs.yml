@@ -16,7 +16,6 @@ nav:
         - Helm: https://github.com/emacs-lsp/helm-lsp
         - Ivy: https://github.com/emacs-lsp/lsp-ivy
     - Remote: page/remote.md
-    - Limitations: page/limitations.md
     - FAQ: page/faq.md
     - Troubleshooting: page/troubleshooting.md
     - Adding new language: page/adding-new-language.md
