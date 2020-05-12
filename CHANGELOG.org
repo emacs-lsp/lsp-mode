@@ -12,20 +12,20 @@
   * Implement metals decoration protocol
   * Send metals/didFocusTextDocument notification on buffer change
   * Add default keybindings and ~which-key~ integration
-  * Add support for Dhall langauge server
+  * Add support for Dhall language server
   * Implemented debug adapter protocol support for metals
   * Add CMake language server integration
   * Add rust-analyzer runnables support
   * Implemented rust-analyzer inlay hints
   * Support pyenv for pyls
   * Add clang-tidy specific Flycheck error explainer for the lsp checker
-  * Improve lsp-mode completion performance by supressing non completion related features when completion is active.
+  * Improve lsp-mode completion performance by suppressing non completion related features when completion is active.
   * lsp-json: Enable formatter provider
-  * Accomodate the new :end-column and :end-column from flycheck
+  * Accommodate the new :end-column and :end-column from flycheck
   * Implement status bar for diagnostics ~lsp-diagnostics-modeline-mode~
   * Auto install of the ~html-language-server~
   * Flycheck support for diagnostic tags (3.15 spec).
-  * Adding support for GDScript langauge server
+  * Adding support for GDScript language server
   * used view mode for metals doctor buffer
   * add texlab as tex LSP server
   * Started new set of integration tests without using ecukes
@@ -40,7 +40,7 @@
   * Process the $/progress messages from LSP 3.15
   * Display the first line of MarkupContent in eldoc (#1607)
   * Perform willSaveWaitUntil synchronously and with shorter timeout
-  * Display images when rendering markdown(usefull for latex language servers).
+  * Display images when rendering markdown(useful for latex language servers).
   * Increase ~lsp-idle-delay~ to 0.5
   * Support bash language server glob pattern option (#1594)
   * Use pagebreaks for ~lsp-describe-thing-at-point~
@@ -114,7 +114,7 @@
   - If available, using the native JSON API introduced in Emacs 27.1.
   - Tramp implementation now uses TRAMP process instead of TCP sockets (Thanks to
     Karsten Patzwaldt).
-  - LSP autoconfiguration adds =company-lsp= to the list of comapny backends
+  - LSP autoconfiguration adds =company-lsp= to the list of company backends
     instead of overriding it.
   - Add =lsp-mode-map=.
   - Add menu bar entries for =lsp-mode=.
