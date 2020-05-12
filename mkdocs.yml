@@ -2,15 +2,24 @@ site_name: LSP Mode - Language Server Protocol Support for Emacs
 site_url: https://emacs-lsp.github.io/lsp-mode
 
 nav:
-  - Home: README.md
-  - Installation: page/installation.md
-  - Settings: page/settings.md
-  - Keybindings: page/keybindings.md
-  - Extensions: page/extensions.md
-  - Limitations: page/limitations.md
-  - FAQ: page/faq.md
-  - Troubleshooting: page/troubleshooting.md
-  - Adding new language: page/adding-new-language.md
+  - Home:
+    - Overview: README.md
+    - Setup:
+        - Installation: page/installation.md
+        - Configuration: page/configuration.md
+        - Additional settings: page/additional-settings.md
+    - Settings: page/settings.md
+    - Keybindings: page/keybindings.md
+    - Extensions:
+        - UI: https://emacs-lsp.github.io/lsp-ui
+        - Treemacs: https://github.com/emacs-lsp/lsp-treemacs
+        - Helm: https://github.com/emacs-lsp/helm-lsp
+        - Ivy: https://github.com/emacs-lsp/lsp-ivy
+    - Remote: page/remote.md
+    - Limitations: page/limitations.md
+    - FAQ: page/faq.md
+    - Troubleshooting: page/troubleshooting.md
+    - Adding new language: page/adding-new-language.md
   - Languages:
     - page/languages.md
     - Ada: page/lsp-ada.md
@@ -75,13 +84,8 @@ nav:
     - Vue: page/lsp-vetur.md
     - XML: page/lsp-xml.md
     - YAML: page/lsp-yaml.md
-  - Features:
-    - page/features.md
-    - Debugging: https://emacs-lsp.github.io/dap-mode
-    - UI: https://emacs-lsp.github.io/lsp-ui
-    - Treemacs: https://github.com/emacs-lsp/lsp-treemacs
-    - Helm: https://github.com/emacs-lsp/helm-lsp
-    - Ivy: https://github.com/emacs-lsp/lsp-ivy
+  - Debugging:
+      - https://emacs-lsp.github.io/dap-mode
   - Gallery:
       - page/gallery.md
   - Changelog:

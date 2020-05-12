@@ -1,0 +1,234 @@
+# Changelog
+
+## Release 6.3
+
+  - Implemented `company-capf` integration. `company-lsp` is no longer
+    supported.
+  - Dropped support for dart language server in favour of dart
+    SDK(breaking)
+  - Added verilog support for LSP using hdl-checker
+  - Implemented call hierarchy support (available in `lsp-treemacs`)
+  - Implemented support for ESLint language server.
+  - ocmalmerlin-lsp moved to ocaml-lsp-server(breaking)
+  - Added New VHDL language server
+    <https://github.com/kraigher/rust_hdl#configuration>
+  - Add Nim language server integration
+  - Implement automatic downloading facilities and implemented
+    auto-download for `typescript-language-server`,
+    `javascript-typescript-stdio` and `json-language-server`.
+  - Implement metals decoration protocol
+  - Send metals/didFocusTextDocument notification on buffer change
+  - Add default keybindings and `which-key` integration
+  - Add support for Dhall langauge server
+  - Implemented debug adapter protocol support for metals
+  - Add CMake language server integration
+  - Add rust-analyzer runnables support
+  - Implemented rust-analyzer inlay hints
+  - Support pyenv for pyls
+  - Add clang-tidy specific Flycheck error explainer for the lsp checker
+  - Improve lsp-mode completion performance by supressing non completion
+    related features when completion is active.
+  - lsp-json: Enable formatter provider
+  - Accomodate the new :end-column and :end-column from flycheck
+  - Implement status bar for diagnostics `lsp-diagnostics-modeline-mode`
+  - Auto install of the `html-language-server`
+  - Flycheck support for diagnostic tags (3.15 spec).
+  - Adding support for GDScript langauge server
+  - used view mode for metals doctor buffer
+  - add texlab as tex LSP server
+  - Started new set of integration tests without using ecukes
+  - Support "only" param when requesting code actions
+  - Add Perl-LanguageServer support
+  - add support robot-framework language server.
+  - Implement deferred semantic highlighting
+  - Change default transport for erlang<sub>ls</sub> to stdio
+  - dart language server moved into separate repo
+    <https://github.com/emacs-lsp/lsp-dart>
+  - Activate flow language server if there is flow tag in file or
+    .flowconfig in project
+  - Add purescript-language-server (\#1596)
+  - Process the $/progress messages from LSP 3.15
+  - Display the first line of MarkupContent in eldoc (\#1607)
+  - Perform willSaveWaitUntil synchronously and with shorter timeout
+  - Display images when rendering markdown(usefull for latex language
+    servers).
+  - Increase `lsp-idle-delay` to 0.5
+  - Support bash language server glob pattern option (\#1594)
+  - Use pagebreaks for `lsp-describe-thing-at-point`
+  - lsp-mode: Eliminate quadratic-time index-building for imenu.
+    (\#1616)
+
+## Release 6.2
+
+  - Support dynamic rename registration
+  - Add basic support for style semantic highlighting
+  - Added Haxe language server integration
+  - Add C\#-support via Roslyn.
+  - Add emmy lua support
+  - Enable plugins in typescript language server.
+  - 1079 Provide support for Ada Language server
+  - Implement right click support in `lsp-mode` buffers.
+  - Added built-in support for `Rust Analyzer`.
+  - Added support for HDL Checker server to lsp-vhdl
+  - Added support for Terraform language server.
+  - Added support for R language server (\#1182)
+  - Added support for passing environment variables to language servers
+    (\#1184)
+  - Speedup lsp-mode's JSONRPC processing (\~2 times)
+  - Add cancel-token to lsp-request-async
+  - Implement unified way to handle recurring lsp features
+  - Added support for powershell language server.
+  - Implemented inlay hints for `Rust Analyzer` (thanks to `brotzeit`).
+  - Implemented automatic installation for C\# language server.
+  - Reimplemented `textDocument/signatureHelp` - now the signature is
+    displayed in `lv` buffer.
+  - Cancel sync requests when presssing `C-g` during the request.
+  - Use `c-basic-offset` when in `cc-mode`.
+  - Add support for Crystal via scry (\#1218).
+  - Implement `textDocument/documentColor` support.
+
+## Release 6.1
+
+### Support for new languages/language servers:
+
+  - [Kotlin Language
+    Server](https://github.com/fwcd/KotlinLanguageServer) (Thanks to Jon
+    Carr)
+  - [gopls](https://github.com/golang/go/wiki/gopls) Language Server for
+    Go
+  - [XML Language Server
+    (lsp4xml)](https://github.com/angelozerr/lsp4xml)
+  - Hack (using [HHVM](https://docs.hhvm.com/hhvm/))
+  - [Intelephense](http://intelephense.net/) for PHP
+  - [clojure-lsp](https://github.com/snoe/clojure-lsp) for
+    Clojure/ClojureScipt (Thanks to Dario Benedek Fazekas)
+  - [elmLS](https://github.com/elm-tooling/elm-language-server) for Elm
+    (Thanks to Daniel-V)
+  - [FsAutoComplete](https://github.com/fsharp/FsAutoComplete) for F\#
+    (Thanks to Reed Mullanix)
+  - Added `Erlang` support via
+    [erlang<sub>ls</sub>](https://github.com/erlang-ls/erlang_ls)
+  - Added `Dockerfile` support via
+    [dockerfile-language-server-nodejs](https://github.com/rcjsuen/dockerfile-language-server-nodejs)
+
+### New logging options
+
+  - `lsp-mode` now logs to buffer `*lsp-log*`, instead of `*Messages*`.
+    This can be controlled with the variable `lsp-log-max` (Thanks to
+    Thomas Fini Hansen).
+  - If `lsp-print-performance` is non-nil, `lsp-mode` will log a
+    corresponding performance trace to `*lsp-log*` for every message to
+    and from the server.
+  - The variable `lsp-print-io`, when non-nil will cause `lsp-mode` to
+    log all messages to and from the server to a unique `*lsp-io*`
+    buffer for every project root. These logs can be saved to a file and
+    viewed using the [LSP
+    Inspector](https://microsoft.github.io/language-server-protocol/inspector/).
+
+### LSP Methods
+
+  - Add support for
+    [textDocument/prepareRename](https://microsoft.github.io/language-server-protocol/specification#textDocument_prepareRename).
+    If supported by the language server, all renaming operations will be
+    tested for validity.
+  - Add support for [file
+    watches](https://microsoft.github.io/language-server-protocol/specification#workspace_didChangeWatchedFiles).
+  - Add support for [CodeAction
+    literals](https://microsoft.github.io/language-server-protocol/specification#textDocument_codeAction).
+  - Add API level support for [folding
+    ranges](https://microsoft.github.io/language-server-protocol/specification#textDocument_foldingRange).
+    Folding support for
+    [origami.el](https://github.com/gregsexton/origami.el) support is
+    implemented by package
+    [lsp-origami](https://github.com/emacs-lsp/lsp-origami).
+  - Support [document
+    links](https://microsoft.github.io/language-server-protocol/specification#textDocument_documentLink).
+    This can be controlled using the variable `lsp-enable-links`.
+  - Support resource operations (edits sent from the language server can
+    now create/modify/remove files and directories).
+  - Add support for
+    [workspace/configuration](https://microsoft.github.io/language-server-protocol/specification#workspace_configuration).
+  - Add new function `lsp-disconnect`.
+  - Added `lsp-find-definition-mouse` and bound to `C-<down-mouse-1>`
+  - Added `lsp-extend-selection` as a frontend of new LSP method
+    `textDocument/extendSelection`
+
+### Other changes
+
+  - Add project logo (thanks to Jon Carr).
+  - Created an integration test suite for `lsp-mode` (See directory
+    `features`).
+  - If available, using the native JSON API introduced in Emacs 27.1.
+  - Tramp implementation now uses TRAMP process instead of TCP sockets
+    (Thanks to Karsten Patzwaldt).
+  - LSP autoconfiguration adds `company-lsp` to the list of comapny
+    backends instead of overriding it.
+  - Add `lsp-mode-map`.
+  - Add menu bar entries for `lsp-mode`.
+  - Perform <span class="underline">before save</span> operations
+    ([textDocument/willSaveWaitUntil](https://microsoft.github.io/language-server-protocol/specification#textDocument_willSaveWaitUntil))
+    asynchronously.
+  - `imenu` support is now handled asynchronously (Thanks to Dario
+    Gjorgjevski).
+  - Added option `:none` for `lsp-prefer-flymake`, which disabled both
+    Flymake and Flycheck support.
+  - Changed `flymake` to report the errors immediately after they arrive
+    instead of waiting `flymake` to call `lsp-mode`.
+  - Add debounce when server does not support incremental updates.
+  - Add hook `lsp-after-uninitialized-hook`, which stores the list of
+    functions called after a language server has been uninitialized.
+  - Add variable `lsp-symbol-highlighting-skip-current`, which lets the
+    user skip the current symbol when a given symbol is being
+    highlighted.
+  - Add variable `lsp-enabled-clients`, which lets users set which
+    defined clients are allowed to be used.
+  - Support multiple signatures while displaying eldoc text. Add
+    variable `lsp-signature-render-all`, which when non-nil forces
+    `lsp-mode` to only show the current active signature.
+  - Expose configuration settings for various language servers.
+  - Language servers can now be disabled with the variable
+    `lsp-disabled-clients`.
+  - Improved applying changes speed.
+  - Fixed `xref` support for emacs 27+
+  - Implemented automatic installation for F\# language server.
+  - Added Emacs 26.x to CI
+  - Fixed handling of stderr when running over `TRAMP`.
+  - Implemented support for running the language server in `Docker`
+    container over local files.
+
+## Release 6.0
+
+  - `lsp-mode` now have single entry point `lsp` for all language and
+    based on the major mode starts the corresponding language servers.
+  - Added `flymake` integration.
+  - `lsp` automatically enables and configures `company-lsp`, `lsp-ui`,
+    `yasnippet`, or `flymake` if they are present so no additional
+    configuration is needed except installing the packages. That
+    behavior could be disabled by setting `lsp-auto-configure` to `nil`.
+  - `lsp-mode` ships with several predefined servers located in
+    `lsp-clients.el` which does not require additional package. For the
+    more complex Language Servers like `Eclipse JDT`, `ccls`, `cquery`
+    and `haskell` we still require separate package due to relatively
+    high code base.
+  - `lsp-mode` handles automatically server failures by asking the user
+    whether he/she wants to restart the server.
+  - introduced new command `lsp-describe-session` which replaces the
+    existing one `lsp-capabilities`. The command lists the folders that
+    are part of the workspace and the servers that are associated with
+    the corresponding folder.
+  - `lsp-mode` displays information about the running server and it's
+    status in the modeline.
+  - `lsp-define-stdio-client` and `lsp-define-tcp-client` are replaced
+    with `lsp-register-client`
+  - `lsp` rely on `projectile` or `project.el` now only for suggesting
+    project root. Once you open new file in a project and start `lsp` it
+    will provide several options(import project, blacklist project,
+    select other directory root). Once you select a root it will be
+    persisted and used for the next sessions.
+  - support for multiple language servers per single file and workspace.
+  - changed `lsp-mode` settings to more sensible defaults.
+  - Removed all synchronous calls from the server startup.
+  - Improved multi-folder support.
+  - added backends for: Bash, C++, CSS, Dart, Elixir, Fortran, Go,
+    Groovy, HTML, Javascript/Typescript, Javascript/Typescript, Ocaml,
+    PHP, Python, Ruby, Rust, Vue, Flow

@@ -1,5 +1,4 @@
-Extensions
-==========
+# Remote
 
 ## TRAMP
 
