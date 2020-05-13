@@ -2251,7 +2251,8 @@ BINDINGS is a list of (key def cond)."
                     ,(format "maybe-%s" def)
                     ,def
                     :filter (lambda (item)
-                              (when (with-current-buffer (or lsp--describe-buffer
+                              (when (with-current-buffer (or (when (buffer-live-p lsp--describe-buffer)
+                                                               lsp--describe-buffer)
                                                              (current-buffer))
                                       ,cond)
                                 item))))))
