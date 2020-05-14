@@ -5018,7 +5018,9 @@ It will show up only if current point has signature help."
                             (length signatures)
                             (propertize "│ " 'face 'shadow)))
             (prefix-length (- (length prefix) 2))
-            (method-docs (when lsp-signature-render-documentation
+            (method-docs (when
+                             (and lsp-signature-render-documentation
+                                  (or (not (numberp lsp-signature-doc-lines)) (< 0 lsp-signature-doc-lines)))
                            (let ((docs (lsp--render-element
                                         (gethash "documentation" signature))))
                              (when (s-present? docs)
