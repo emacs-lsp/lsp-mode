@@ -1,0 +1,3339 @@
+{
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$defs": {
+        "CallHierarchyCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "CallHierarchyItem": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string"
+                },
+                "kind": {
+                    "$ref": "#/$defs/SymbolKind"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "range": {
+                    "$ref": "#/$defs/Range"
+                },
+                "selectionRange": {
+                    "$ref": "#/$defs/Range"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/SymbolTag"
+                    }
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["kind", "name", "range", "selectionRange", "uri"]
+        },
+        "ClientCapabilities": {
+            "type": "object",
+            "properties": {
+                "experimental": {},
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentClientCapabilities"
+                },
+                "workspace": {
+                    "$ref": "#/$defs/WorkspaceClientCapabilities"
+                }
+            }
+        },
+        "ClientInfo": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            },
+            "required": ["name"]
+        },
+        "CodeActionCapabilities": {
+            "type": "object",
+            "properties": {
+                "codeActionLiteralSupport": {
+                    "$ref": "#/$defs/CodeActionLiteralSupportCapabilities"
+                },
+                "dynamicRegistration": {
+                    "type": "boolean"
+                },
+                "isPreferredSupport": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "CodeActionContext": {
+            "type": "object",
+            "properties": {
+                "diagnostics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Diagnostic"
+                    }
+                },
+                "only": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": ["diagnostics"]
+        },
+        "CodeActionKindCapabilities": {
+            "type": "object",
+            "properties": {
+                "valueSet": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": ["valueSet"]
+        },
+        "CodeActionLiteralSupportCapabilities": {
+            "type": "object",
+            "properties": {
+                "codeActionKind": {
+                    "$ref": "#/$defs/CodeActionKindCapabilities"
+                }
+            }
+        },
+        "CodeActionOptions": {
+            "type": "object",
+            "properties": {
+                "codeActionKinds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "CodeLensCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "CodeLensOptions": {
+            "type": "object",
+            "properties": {
+                "resolveProvider": {
+                    "type": "boolean"
+                }
+            },
+            "required": ["resolveProvider"]
+        },
+        "Color": {
+            "type": "object",
+            "properties": {
+                "alpha": {
+                    "type": "number"
+                },
+                "blue": {
+                    "type": "number"
+                },
+                "green": {
+                    "type": "number"
+                },
+                "red": {
+                    "type": "number"
+                }
+            },
+            "required": ["red", "green", "blue", "alpha"]
+        },
+        "ColorProviderCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "ColorProviderOptions": {
+            "type": "object",
+            "properties": {
+                "documentSelector": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DocumentFilter"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "ColoringInformation": {
+            "type": "object",
+            "properties": {
+                "range": {
+                    "$ref": "#/$defs/Range"
+                },
+                "styles": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "required": ["range", "styles"]
+        },
+        "Command": {
+            "type": "object",
+            "properties": {
+                "arguments": {
+                    "type": "array",
+                    "items": {}
+                },
+                "command": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            },
+            "required": ["title", "command"]
+        },
+        "CompletionCapabilities": {
+            "type": "object",
+            "properties": {
+                "completionItem": {
+                    "$ref": "#/$defs/CompletionItemCapabilities"
+                },
+                "completionItemKind": {
+                    "$ref": "#/$defs/CompletionItemKindCapabilities"
+                },
+                "contextSupport": {
+                    "type": "boolean"
+                },
+                "dynamicRegistration": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "CompletionContext": {
+            "type": "object",
+            "properties": {
+                "triggerCharacter": {
+                    "type": "string"
+                },
+                "triggerKind": {
+                    "$ref": "#/$defs/CompletionTriggerKind"
+                }
+            },
+            "required": ["triggerKind"]
+        },
+        "CompletionItem": {
+            "type": "object",
+            "properties": {
+                "additionalTextEdits": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/TextEdit"
+                    }
+                },
+                "command": {
+                    "$ref": "#/$defs/Command"
+                },
+                "commitCharacters": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "data": {},
+                "deprecated": {
+                    "type": "boolean"
+                },
+                "detail": {
+                    "type": "string"
+                },
+                "documentation": {
+                    "$ref": "#/$defs/Either(String,MarkupContent)"
+                },
+                "filterText": {
+                    "type": "string"
+                },
+                "insertText": {
+                    "type": "string"
+                },
+                "insertTextFormat": {
+                    "$ref": "#/$defs/InsertTextFormat"
+                },
+                "kind": {
+                    "$ref": "#/$defs/CompletionItemKind"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "preselect": {
+                    "type": "boolean"
+                },
+                "sortText": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/CompletionItemTag"
+                    }
+                },
+                "textEdit": {
+                    "$ref": "#/$defs/TextEdit"
+                }
+            },
+            "required": ["label"]
+        },
+        "CompletionItemCapabilities": {
+            "type": "object",
+            "properties": {
+                "commitCharactersSupport": {
+                    "type": "boolean"
+                },
+                "deprecatedSupport": {
+                    "type": "boolean"
+                },
+                "documentationFormat": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "preselectSupport": {
+                    "type": "boolean"
+                },
+                "snippetSupport": {
+                    "type": "boolean"
+                },
+                "tagSupport": {
+                    "$ref": "#/$defs/CompletionItemTagSupportCapabilities"
+                }
+            }
+        },
+        "CompletionItemKind": {
+            "type": "string",
+            "enum": ["Text", "Method", "Function", "Constructor", "Field", "Variable", "Class", "Interface", "Module", "Property", "Unit", "Value", "Enum", "Keyword", "Snippet", "Color", "File", "Reference", "Folder", "EnumMember", "Constant", "Struct", "Event", "Operator", "TypeParameter"]
+        },
+        "CompletionItemKindCapabilities": {
+            "type": "object",
+            "properties": {
+                "valueSet": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/CompletionItemKind"
+                    }
+                }
+            }
+        },
+        "CompletionItemTag": {
+            "type": "string",
+            "const": "Deprecated"
+        },
+        "CompletionItemTagSupportCapabilities": {
+            "type": "object",
+            "properties": {
+                "valueSet": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/CompletionItemTag"
+                    }
+                }
+            },
+            "required": ["valueSet"]
+        },
+        "CompletionOptions": {
+            "type": "object",
+            "properties": {
+                "resolveProvider": {
+                    "type": "boolean"
+                },
+                "triggerCharacters": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "CompletionTriggerKind": {
+            "type": "string",
+            "enum": ["Invoked", "TriggerCharacter", "TriggerForIncompleteCompletions"]
+        },
+        "ConfigurationItem": {
+            "type": "object",
+            "properties": {
+                "scopeUri": {
+                    "type": "string"
+                },
+                "section": {
+                    "type": "string"
+                }
+            }
+        },
+        "CreateFileOptions": {
+            "type": "object",
+            "properties": {
+                "ignoreIfExists": {
+                    "type": "boolean"
+                },
+                "overwrite": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "DeclarationCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                },
+                "linkSupport": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "DefinitionCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                },
+                "linkSupport": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "DeleteFileOptions": {
+            "type": "object",
+            "properties": {
+                "ignoreIfNotExists": {
+                    "type": "boolean"
+                },
+                "recursive": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "Diagnostic": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "object",
+                    "properties": {
+                        "left": {
+                            "type": "string"
+                        },
+                        "right": {
+                            "type": "number"
+                        }
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "range": {
+                    "$ref": "#/$defs/Range"
+                },
+                "relatedInformation": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DiagnosticRelatedInformation"
+                    }
+                },
+                "severity": {
+                    "$ref": "#/$defs/DiagnosticSeverity"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DiagnosticTag"
+                    }
+                }
+            },
+            "required": ["range", "message"]
+        },
+        "DiagnosticRelatedInformation": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "$ref": "#/$defs/Location"
+                },
+                "message": {
+                    "type": "string"
+                }
+            },
+            "required": ["location", "message"]
+        },
+        "DiagnosticSeverity": {
+            "type": "string",
+            "enum": ["Error", "Warning", "Information", "Hint"]
+        },
+        "DiagnosticTag": {
+            "type": "string",
+            "enum": ["Unnecessary", "Deprecated"]
+        },
+        "DiagnosticsTagSupport": {
+            "type": "object",
+            "properties": {
+                "valueSet": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DiagnosticTag"
+                    }
+                }
+            },
+            "required": ["valueSet"]
+        },
+        "DidChangeConfigurationCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "DidChangeWatchedFilesCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "DocumentFilter": {
+            "type": "object",
+            "properties": {
+                "language": {
+                    "type": "string"
+                },
+                "pattern": {
+                    "type": "string"
+                },
+                "scheme": {
+                    "type": "string"
+                }
+            }
+        },
+        "DocumentHighlightCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "DocumentHighlightKind": {
+            "type": "string",
+            "enum": ["Text", "Read", "Write"]
+        },
+        "DocumentLinkCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                },
+                "tooltipSupport": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "DocumentLinkOptions": {
+            "type": "object",
+            "properties": {
+                "resolveProvider": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "DocumentOnTypeFormattingOptions": {
+            "type": "object",
+            "properties": {
+                "firstTriggerCharacter": {
+                    "type": "string"
+                },
+                "moreTriggerCharacter": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": ["firstTriggerCharacter"]
+        },
+        "DocumentSymbol": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DocumentSymbol"
+                    }
+                },
+                "deprecated": {
+                    "type": "boolean"
+                },
+                "detail": {
+                    "type": "string"
+                },
+                "kind": {
+                    "$ref": "#/$defs/SymbolKind"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "range": {
+                    "$ref": "#/$defs/Range"
+                },
+                "selectionRange": {
+                    "$ref": "#/$defs/Range"
+                }
+            },
+            "required": ["kind", "name", "range", "selectionRange"]
+        },
+        "DocumentSymbolCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                },
+                "hierarchicalDocumentSymbolSupport": {
+                    "type": "boolean"
+                },
+                "symbolKind": {
+                    "$ref": "#/$defs/SymbolKindCapabilities"
+                }
+            }
+        },
+        "Either(Boolean,StaticRegistrationOptions)": {
+            "type": "object",
+            "properties": {
+                "left": {
+                    "type": "boolean"
+                },
+                "right": {
+                    "$ref": "#/$defs/StaticRegistrationOptions"
+                }
+            }
+        },
+        "Either(String,MarkupContent)": {
+            "type": "object",
+            "properties": {
+                "left": {
+                    "type": "string"
+                },
+                "right": {
+                    "$ref": "#/$defs/MarkupContent"
+                }
+            }
+        },
+        "ExecuteCommandCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "ExecuteCommandOptions": {
+            "type": "object",
+            "properties": {
+                "commands": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": ["commands"]
+        },
+        "FileChangeType": {
+            "type": "string",
+            "enum": ["Created", "Changed", "Deleted"]
+        },
+        "FileEvent": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "$ref": "#/$defs/FileChangeType"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["type", "uri"]
+        },
+        "FileSystemWatcher": {
+            "type": "object",
+            "properties": {
+                "globPattern": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "integer"
+                }
+            },
+            "required": ["globPattern"]
+        },
+        "FoldingRangeCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                },
+                "lineFoldingOnly": {
+                    "type": "boolean"
+                },
+                "rangeLimit": {
+                    "type": "integer"
+                }
+            }
+        },
+        "FoldingRangeProviderOptions": {
+            "type": "object",
+            "properties": {
+                "documentSelector": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DocumentFilter"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "FormattingCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "FormattingOptions": {
+            "type": "object",
+            "properties": {
+                "accessOrder": {
+                    "type": "boolean"
+                },
+                "loadFactor": {
+                    "type": "number"
+                },
+                "threshold": {
+                    "type": "integer"
+                }
+            },
+            "required": ["loadFactor", "threshold", "accessOrder"]
+        },
+        "HoverCapabilities": {
+            "type": "object",
+            "properties": {
+                "contentFormat": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "dynamicRegistration": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "ImplementationCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                },
+                "linkSupport": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "InsertTextFormat": {
+            "type": "string",
+            "enum": ["PlainText", "Snippet"]
+        },
+        "Location": {
+            "type": "object",
+            "properties": {
+                "range": {
+                    "$ref": "#/$defs/Range"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["range", "uri"]
+        },
+        "MarkedString": {
+            "type": "object",
+            "properties": {
+                "language": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            },
+            "required": ["language", "value"]
+        },
+        "MarkupContent": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            },
+            "required": ["kind", "value"]
+        },
+        "MessageActionItem": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string"
+                }
+            },
+            "required": ["title"]
+        },
+        "MessageType": {
+            "type": "string",
+            "enum": ["Error", "Warning", "Info", "Log"]
+        },
+        "OnTypeFormattingCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "ParameterInformation": {
+            "type": "object",
+            "properties": {
+                "documentation": {
+                    "$ref": "#/$defs/Either(String,MarkupContent)"
+                },
+                "label": {
+                    "type": "object",
+                    "properties": {
+                        "left": {
+                            "type": "string"
+                        },
+                        "right": {
+                            "type": "object",
+                            "properties": {
+                                "first": {
+                                    "type": "integer"
+                                },
+                                "second": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "required": ["label"]
+        },
+        "ParameterInformationCapabilities": {
+            "type": "object",
+            "properties": {
+                "labelOffsetSupport": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "Position": {
+            "type": "object",
+            "properties": {
+                "character": {
+                    "type": "integer"
+                },
+                "line": {
+                    "type": "integer"
+                }
+            },
+            "required": ["character", "line"]
+        },
+        "PublishDiagnosticsCapabilities": {
+            "type": "object",
+            "properties": {
+                "relatedInformation": {
+                    "type": "boolean"
+                },
+                "tagSupport": {
+                    "type": "object",
+                    "properties": {
+                        "left": {
+                            "type": "boolean"
+                        },
+                        "right": {
+                            "$ref": "#/$defs/DiagnosticsTagSupport"
+                        }
+                    }
+                },
+                "versionSupport": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "Range": {
+            "type": "object",
+            "properties": {
+                "end": {
+                    "$ref": "#/$defs/Position"
+                },
+                "start": {
+                    "$ref": "#/$defs/Position"
+                }
+            },
+            "required": ["start", "end"]
+        },
+        "RangeFormattingCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "ReferenceContext": {
+            "type": "object",
+            "properties": {
+                "includeDeclaration": {
+                    "type": "boolean"
+                }
+            },
+            "required": ["includeDeclaration"]
+        },
+        "ReferencesCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "Registration": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "registerOptions": {}
+            },
+            "required": ["method", "id"]
+        },
+        "RenameCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                },
+                "prepareSupport": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "RenameFileOptions": {
+            "type": "object",
+            "properties": {
+                "ignoreIfExists": {
+                    "type": "boolean"
+                },
+                "overwrite": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "RenameOptions": {
+            "type": "object",
+            "properties": {
+                "documentSelector": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DocumentFilter"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "prepareProvider": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "ResourceChange": {
+            "type": "object",
+            "properties": {
+                "current": {
+                    "type": "string"
+                },
+                "newUri": {
+                    "type": "string"
+                }
+            }
+        },
+        "ResourceOperation": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "type": "string"
+                }
+            },
+            "required": ["kind"]
+        },
+        "SaveOptions": {
+            "type": "object",
+            "properties": {
+                "includeText": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "SelectionRange": {
+            "type": "object",
+            "properties": {
+                "parent": {
+                    "$ref": "#/$defs/SelectionRange"
+                },
+                "range": {
+                    "$ref": "#/$defs/Range"
+                }
+            },
+            "required": ["range"]
+        },
+        "SelectionRangeCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "SemanticHighlightingCapabilities": {
+            "type": "object",
+            "properties": {
+                "semanticHighlighting": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "SemanticHighlightingInformation": {
+            "type": "object",
+            "properties": {
+                "line": {
+                    "type": "integer"
+                },
+                "tokens": {
+                    "type": "string"
+                }
+            },
+            "required": ["line"]
+        },
+        "SemanticHighlightingServerCapabilities": {
+            "type": "object",
+            "properties": {
+                "scopes": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "ServerCapabilities": {
+            "type": "object",
+            "properties": {
+                "callHierarchyProvider": {
+                    "$ref": "#/$defs/Either(Boolean,StaticRegistrationOptions)"
+                },
+                "codeActionProvider": {
+                    "type": "object",
+                    "properties": {
+                        "left": {
+                            "type": "boolean"
+                        },
+                        "right": {
+                            "$ref": "#/$defs/CodeActionOptions"
+                        }
+                    }
+                },
+                "codeLensProvider": {
+                    "$ref": "#/$defs/CodeLensOptions"
+                },
+                "colorProvider": {
+                    "type": "object",
+                    "properties": {
+                        "left": {
+                            "type": "boolean"
+                        },
+                        "right": {
+                            "$ref": "#/$defs/ColorProviderOptions"
+                        }
+                    }
+                },
+                "completionProvider": {
+                    "$ref": "#/$defs/CompletionOptions"
+                },
+                "declarationProvider": {
+                    "$ref": "#/$defs/Either(Boolean,StaticRegistrationOptions)"
+                },
+                "definitionProvider": {
+                    "type": "boolean"
+                },
+                "documentFormattingProvider": {
+                    "type": "boolean"
+                },
+                "documentHighlightProvider": {
+                    "type": "boolean"
+                },
+                "documentLinkProvider": {
+                    "$ref": "#/$defs/DocumentLinkOptions"
+                },
+                "documentOnTypeFormattingProvider": {
+                    "$ref": "#/$defs/DocumentOnTypeFormattingOptions"
+                },
+                "documentRangeFormattingProvider": {
+                    "type": "boolean"
+                },
+                "documentSymbolProvider": {
+                    "type": "boolean"
+                },
+                "executeCommandProvider": {
+                    "$ref": "#/$defs/ExecuteCommandOptions"
+                },
+                "experimental": {},
+                "foldingRangeProvider": {
+                    "type": "object",
+                    "properties": {
+                        "left": {
+                            "type": "boolean"
+                        },
+                        "right": {
+                            "$ref": "#/$defs/FoldingRangeProviderOptions"
+                        }
+                    }
+                },
+                "hoverProvider": {
+                    "type": "boolean"
+                },
+                "implementationProvider": {
+                    "$ref": "#/$defs/Either(Boolean,StaticRegistrationOptions)"
+                },
+                "referencesProvider": {
+                    "type": "boolean"
+                },
+                "renameProvider": {
+                    "type": "object",
+                    "properties": {
+                        "left": {
+                            "type": "boolean"
+                        },
+                        "right": {
+                            "$ref": "#/$defs/RenameOptions"
+                        }
+                    }
+                },
+                "selectionRangeProvider": {
+                    "$ref": "#/$defs/Either(Boolean,StaticRegistrationOptions)"
+                },
+                "semanticHighlighting": {
+                    "$ref": "#/$defs/SemanticHighlightingServerCapabilities"
+                },
+                "signatureHelpProvider": {
+                    "$ref": "#/$defs/SignatureHelpOptions"
+                },
+                "textDocumentSync": {
+                    "type": "object",
+                    "properties": {
+                        "left": {
+                            "$ref": "#/$defs/TextDocumentSyncKind"
+                        },
+                        "right": {
+                            "$ref": "#/$defs/TextDocumentSyncOptions"
+                        }
+                    }
+                },
+                "typeDefinitionProvider": {
+                    "$ref": "#/$defs/Either(Boolean,StaticRegistrationOptions)"
+                },
+                "typeHierarchyProvider": {
+                    "$ref": "#/$defs/Either(Boolean,StaticRegistrationOptions)"
+                },
+                "workspace": {
+                    "$ref": "#/$defs/WorkspaceServerCapabilities"
+                },
+                "workspaceSymbolProvider": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "ServerInfo": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            },
+            "required": ["name"]
+        },
+        "SignatureHelp": {
+            "type": "object",
+            "properties": {
+                "activeParameter": {
+                    "type": "integer"
+                },
+                "activeSignature": {
+                    "type": "integer"
+                },
+                "signatures": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/SignatureInformation"
+                    }
+                }
+            },
+            "required": ["signatures"]
+        },
+        "SignatureHelpCapabilities": {
+            "type": "object",
+            "properties": {
+                "contextSupport": {
+                    "type": "boolean"
+                },
+                "dynamicRegistration": {
+                    "type": "boolean"
+                },
+                "signatureInformation": {
+                    "$ref": "#/$defs/SignatureInformationCapabilities"
+                }
+            }
+        },
+        "SignatureHelpContext": {
+            "type": "object",
+            "properties": {
+                "activeSignatureHelp": {
+                    "$ref": "#/$defs/SignatureHelp"
+                },
+                "isRetrigger": {
+                    "type": "boolean"
+                },
+                "triggerCharacter": {
+                    "type": "string"
+                },
+                "triggerKind": {
+                    "$ref": "#/$defs/SignatureHelpTriggerKind"
+                }
+            },
+            "required": ["triggerKind", "isRetrigger"]
+        },
+        "SignatureHelpOptions": {
+            "type": "object",
+            "properties": {
+                "retriggerCharacters": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "triggerCharacters": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "SignatureHelpTriggerKind": {
+            "type": "string",
+            "enum": ["Invoked", "TriggerCharacter", "ContentChange"]
+        },
+        "SignatureInformation": {
+            "type": "object",
+            "properties": {
+                "documentation": {
+                    "$ref": "#/$defs/Either(String,MarkupContent)"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "parameters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/ParameterInformation"
+                    }
+                }
+            },
+            "required": ["label"]
+        },
+        "SignatureInformationCapabilities": {
+            "type": "object",
+            "properties": {
+                "documentationFormat": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "parameterInformation": {
+                    "$ref": "#/$defs/ParameterInformationCapabilities"
+                }
+            }
+        },
+        "StaticRegistrationOptions": {
+            "type": "object",
+            "properties": {
+                "documentSelector": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DocumentFilter"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "SymbolCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                },
+                "symbolKind": {
+                    "$ref": "#/$defs/SymbolKindCapabilities"
+                }
+            }
+        },
+        "SymbolKind": {
+            "type": "string",
+            "enum": ["File", "Module", "Namespace", "Package", "Class", "Method", "Property", "Field", "Constructor", "Enum", "Interface", "Function", "Variable", "Constant", "String", "Number", "Boolean", "Array", "Object", "Key", "Null", "EnumMember", "Struct", "Event", "Operator", "TypeParameter"]
+        },
+        "SymbolKindCapabilities": {
+            "type": "object",
+            "properties": {
+                "valueSet": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/SymbolKind"
+                    }
+                }
+            }
+        },
+        "SymbolTag": {
+            "type": "string",
+            "const": "Deprecated"
+        },
+        "SynchronizationCapabilities": {
+            "type": "object",
+            "properties": {
+                "didSave": {
+                    "type": "boolean"
+                },
+                "dynamicRegistration": {
+                    "type": "boolean"
+                },
+                "willSave": {
+                    "type": "boolean"
+                },
+                "willSaveWaitUntil": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "TextDocumentClientCapabilities": {
+            "type": "object",
+            "properties": {
+                "callHierarchy": {
+                    "$ref": "#/$defs/CallHierarchyCapabilities"
+                },
+                "codeAction": {
+                    "$ref": "#/$defs/CodeActionCapabilities"
+                },
+                "codeLens": {
+                    "$ref": "#/$defs/CodeLensCapabilities"
+                },
+                "colorProvider": {
+                    "$ref": "#/$defs/ColorProviderCapabilities"
+                },
+                "completion": {
+                    "$ref": "#/$defs/CompletionCapabilities"
+                },
+                "declaration": {
+                    "$ref": "#/$defs/DeclarationCapabilities"
+                },
+                "definition": {
+                    "$ref": "#/$defs/DefinitionCapabilities"
+                },
+                "documentHighlight": {
+                    "$ref": "#/$defs/DocumentHighlightCapabilities"
+                },
+                "documentLink": {
+                    "$ref": "#/$defs/DocumentLinkCapabilities"
+                },
+                "documentSymbol": {
+                    "$ref": "#/$defs/DocumentSymbolCapabilities"
+                },
+                "foldingRange": {
+                    "$ref": "#/$defs/FoldingRangeCapabilities"
+                },
+                "formatting": {
+                    "$ref": "#/$defs/FormattingCapabilities"
+                },
+                "hover": {
+                    "$ref": "#/$defs/HoverCapabilities"
+                },
+                "implementation": {
+                    "$ref": "#/$defs/ImplementationCapabilities"
+                },
+                "onTypeFormatting": {
+                    "$ref": "#/$defs/OnTypeFormattingCapabilities"
+                },
+                "publishDiagnostics": {
+                    "$ref": "#/$defs/PublishDiagnosticsCapabilities"
+                },
+                "rangeFormatting": {
+                    "$ref": "#/$defs/RangeFormattingCapabilities"
+                },
+                "references": {
+                    "$ref": "#/$defs/ReferencesCapabilities"
+                },
+                "rename": {
+                    "$ref": "#/$defs/RenameCapabilities"
+                },
+                "selectionRange": {
+                    "$ref": "#/$defs/SelectionRangeCapabilities"
+                },
+                "semanticHighlightingCapabilities": {
+                    "$ref": "#/$defs/SemanticHighlightingCapabilities"
+                },
+                "signatureHelp": {
+                    "$ref": "#/$defs/SignatureHelpCapabilities"
+                },
+                "synchronization": {
+                    "$ref": "#/$defs/SynchronizationCapabilities"
+                },
+                "typeDefinition": {
+                    "$ref": "#/$defs/TypeDefinitionCapabilities"
+                },
+                "typeHierarchyCapabilities": {
+                    "$ref": "#/$defs/TypeHierarchyCapabilities"
+                }
+            }
+        },
+        "TextDocumentContentChangeEvent": {
+            "type": "object",
+            "properties": {
+                "range": {
+                    "$ref": "#/$defs/Range"
+                },
+                "rangeLength": {
+                    "type": "integer"
+                },
+                "text": {
+                    "type": "string"
+                }
+            },
+            "required": ["text"]
+        },
+        "TextDocumentEdit": {
+            "type": "object",
+            "properties": {
+                "edits": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/TextEdit"
+                    }
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/VersionedTextDocumentIdentifier"
+                }
+            },
+            "required": ["textDocument", "edits"]
+        },
+        "TextDocumentIdentifier": {
+            "type": "object",
+            "properties": {
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["uri"]
+        },
+        "TextDocumentItem": {
+            "type": "object",
+            "properties": {
+                "languageId": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "uri": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "integer"
+                }
+            },
+            "required": ["languageId", "text", "uri", "version"]
+        },
+        "TextDocumentSaveReason": {
+            "type": "string",
+            "enum": ["Manual", "AfterDelay", "FocusOut"]
+        },
+        "TextDocumentSyncKind": {
+            "type": "string",
+            "enum": ["None", "Full", "Incremental"]
+        },
+        "TextDocumentSyncOptions": {
+            "type": "object",
+            "properties": {
+                "change": {
+                    "$ref": "#/$defs/TextDocumentSyncKind"
+                },
+                "openClose": {
+                    "type": "boolean"
+                },
+                "save": {
+                    "$ref": "#/$defs/SaveOptions"
+                },
+                "willSave": {
+                    "type": "boolean"
+                },
+                "willSaveWaitUntil": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "TextEdit": {
+            "type": "object",
+            "properties": {
+                "newText": {
+                    "type": "string"
+                },
+                "range": {
+                    "$ref": "#/$defs/Range"
+                }
+            },
+            "required": ["newText", "range"]
+        },
+        "TypeDefinitionCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                },
+                "linkSupport": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "TypeHierarchyCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "TypeHierarchyDirection": {
+            "type": "string",
+            "enum": ["Children", "Parents", "Both"]
+        },
+        "TypeHierarchyItem": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/TypeHierarchyItem"
+                    }
+                },
+                "data": {},
+                "deprecated": {
+                    "type": "boolean"
+                },
+                "detail": {
+                    "type": "string"
+                },
+                "kind": {
+                    "$ref": "#/$defs/SymbolKind"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/TypeHierarchyItem"
+                    }
+                },
+                "range": {
+                    "$ref": "#/$defs/Range"
+                },
+                "selectionRange": {
+                    "$ref": "#/$defs/Range"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["kind", "name", "range", "selectionRange", "uri"]
+        },
+        "Unregistration": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "method": {
+                    "type": "string"
+                }
+            },
+            "required": ["method", "id"]
+        },
+        "VersionedTextDocumentIdentifier": {
+            "type": "object",
+            "properties": {
+                "uri": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "integer"
+                }
+            },
+            "required": ["uri"]
+        },
+        "WorkspaceClientCapabilities": {
+            "type": "object",
+            "properties": {
+                "applyEdit": {
+                    "type": "boolean"
+                },
+                "configuration": {
+                    "type": "boolean"
+                },
+                "didChangeConfiguration": {
+                    "$ref": "#/$defs/DidChangeConfigurationCapabilities"
+                },
+                "didChangeWatchedFiles": {
+                    "$ref": "#/$defs/DidChangeWatchedFilesCapabilities"
+                },
+                "executeCommand": {
+                    "$ref": "#/$defs/ExecuteCommandCapabilities"
+                },
+                "symbol": {
+                    "$ref": "#/$defs/SymbolCapabilities"
+                },
+                "workspaceEdit": {
+                    "$ref": "#/$defs/WorkspaceEditCapabilities"
+                },
+                "workspaceFolders": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "WorkspaceEdit": {
+            "type": "object",
+            "properties": {
+                "changes": {
+                    "type": "object"
+                },
+                "documentChanges": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "left": {
+                                "$ref": "#/$defs/TextDocumentEdit"
+                            },
+                            "right": {
+                                "$ref": "#/$defs/ResourceOperation"
+                            }
+                        }
+                    }
+                },
+                "resourceChanges": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "left": {
+                                "$ref": "#/$defs/ResourceChange"
+                            },
+                            "right": {
+                                "$ref": "#/$defs/TextDocumentEdit"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "WorkspaceEditCapabilities": {
+            "type": "object",
+            "properties": {
+                "documentChanges": {
+                    "type": "boolean"
+                },
+                "failureHandling": {
+                    "type": "string"
+                },
+                "resourceChanges": {
+                    "type": "boolean"
+                },
+                "resourceOperations": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "WorkspaceFolder": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["uri"]
+        },
+        "WorkspaceFoldersChangeEvent": {
+            "type": "object",
+            "properties": {
+                "added": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/WorkspaceFolder"
+                    }
+                },
+                "removed": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/WorkspaceFolder"
+                    }
+                }
+            },
+            "required": ["removed", "added"]
+        },
+        "WorkspaceFoldersOptions": {
+            "type": "object",
+            "properties": {
+                "changeNotifications": {
+                    "type": "object",
+                    "properties": {
+                        "left": {
+                            "type": "string"
+                        },
+                        "right": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "supported": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "WorkspaceServerCapabilities": {
+            "type": "object",
+            "properties": {
+                "workspaceFolders": {
+                    "$ref": "#/$defs/WorkspaceFoldersOptions"
+                }
+            }
+        }
+    },
+    "type": "object",
+    "properties": {
+        "ApplyWorkspaceEditParams": {
+            "type": "object",
+            "properties": {
+                "edit": {
+                    "$ref": "#/$defs/WorkspaceEdit"
+                },
+                "label": {
+                    "type": "string"
+                }
+            },
+            "required": ["edit"]
+        },
+        "ApplyWorkspaceEditResponse": {
+            "type": "object",
+            "properties": {
+                "applied": {
+                    "type": "boolean"
+                }
+            },
+            "required": ["applied"]
+        },
+        "CallHierarchyCapabilities": {
+            "$ref": "#/$defs/CallHierarchyCapabilities"
+        },
+        "CallHierarchyDirection": {
+            "type": "string",
+            "enum": ["CallsFrom", "CallsTo"]
+        },
+        "CallHierarchyIncomingCall": {
+            "type": "object",
+            "properties": {
+                "from": {
+                    "$ref": "#/$defs/CallHierarchyItem"
+                },
+                "fromRanges": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Range"
+                    }
+                }
+            },
+            "required": ["from", "fromRanges"]
+        },
+        "CallHierarchyIncomingCallsParams": {
+            "type": "object",
+            "properties": {
+                "item": {
+                    "$ref": "#/$defs/CallHierarchyItem"
+                }
+            },
+            "required": ["item"]
+        },
+        "CallHierarchyItem": {
+            "$ref": "#/$defs/CallHierarchyItem"
+        },
+        "CallHierarchyOutgoingCall": {
+            "type": "object",
+            "properties": {
+                "fromRanges": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Range"
+                    }
+                },
+                "to": {
+                    "$ref": "#/$defs/CallHierarchyItem"
+                }
+            },
+            "required": ["to", "fromRanges"]
+        },
+        "CallHierarchyOutgoingCallsParams": {
+            "type": "object",
+            "properties": {
+                "item": {
+                    "$ref": "#/$defs/CallHierarchyItem"
+                }
+            },
+            "required": ["item"]
+        },
+        "CallHierarchyPrepareParams": {
+            "type": "object",
+            "properties": {
+                "position": {
+                    "$ref": "#/$defs/Position"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["textDocument", "position"]
+        },
+        "ClientCapabilities": {
+            "$ref": "#/$defs/ClientCapabilities"
+        },
+        "ClientInfo": {
+            "$ref": "#/$defs/ClientInfo"
+        },
+        "CodeAction": {
+            "type": "object",
+            "properties": {
+                "command": {
+                    "$ref": "#/$defs/Command"
+                },
+                "diagnostics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Diagnostic"
+                    }
+                },
+                "edit": {
+                    "$ref": "#/$defs/WorkspaceEdit"
+                },
+                "isPreferred": {
+                    "type": "boolean"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            },
+            "required": ["title"]
+        },
+        "CodeActionCapabilities": {
+            "$ref": "#/$defs/CodeActionCapabilities"
+        },
+        "CodeActionContext": {
+            "$ref": "#/$defs/CodeActionContext"
+        },
+        "CodeActionKind": {
+            "type": "object"
+        },
+        "CodeActionKindCapabilities": {
+            "$ref": "#/$defs/CodeActionKindCapabilities"
+        },
+        "CodeActionLiteralSupportCapabilities": {
+            "$ref": "#/$defs/CodeActionLiteralSupportCapabilities"
+        },
+        "CodeActionOptions": {
+            "$ref": "#/$defs/CodeActionOptions"
+        },
+        "CodeActionParams": {
+            "type": "object",
+            "properties": {
+                "context": {
+                    "$ref": "#/$defs/CodeActionContext"
+                },
+                "range": {
+                    "$ref": "#/$defs/Range"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                }
+            },
+            "required": ["textDocument", "context", "range"]
+        },
+        "CodeLens": {
+            "type": "object",
+            "properties": {
+                "command": {
+                    "$ref": "#/$defs/Command"
+                },
+                "data": {},
+                "range": {
+                    "$ref": "#/$defs/Range"
+                }
+            },
+            "required": ["range"]
+        },
+        "CodeLensCapabilities": {
+            "$ref": "#/$defs/CodeLensCapabilities"
+        },
+        "CodeLensOptions": {
+            "$ref": "#/$defs/CodeLensOptions"
+        },
+        "CodeLensParams": {
+            "type": "object",
+            "properties": {
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                }
+            },
+            "required": ["textDocument"]
+        },
+        "CodeLensRegistrationOptions": {
+            "type": "object",
+            "properties": {
+                "documentSelector": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DocumentFilter"
+                    }
+                },
+                "resolveProvider": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "Color": {
+            "$ref": "#/$defs/Color"
+        },
+        "ColorInformation": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "$ref": "#/$defs/Color"
+                },
+                "range": {
+                    "$ref": "#/$defs/Range"
+                }
+            },
+            "required": ["color", "range"]
+        },
+        "ColorPresentation": {
+            "type": "object",
+            "properties": {
+                "additionalTextEdits": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/TextEdit"
+                    }
+                },
+                "label": {
+                    "type": "string"
+                },
+                "textEdit": {
+                    "$ref": "#/$defs/TextEdit"
+                }
+            },
+            "required": ["label"]
+        },
+        "ColorPresentationParams": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "$ref": "#/$defs/Color"
+                },
+                "range": {
+                    "$ref": "#/$defs/Range"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                }
+            },
+            "required": ["color", "textDocument", "range"]
+        },
+        "ColorProviderCapabilities": {
+            "$ref": "#/$defs/ColorProviderCapabilities"
+        },
+        "ColorProviderOptions": {
+            "$ref": "#/$defs/ColorProviderOptions"
+        },
+        "ColoringInformation": {
+            "$ref": "#/$defs/ColoringInformation"
+        },
+        "ColoringParams": {
+            "type": "object",
+            "properties": {
+                "infos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/ColoringInformation"
+                    }
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["uri", "infos"]
+        },
+        "ColoringStyle": {
+            "type": "object"
+        },
+        "Command": {
+            "$ref": "#/$defs/Command"
+        },
+        "CompletionCapabilities": {
+            "$ref": "#/$defs/CompletionCapabilities"
+        },
+        "CompletionContext": {
+            "$ref": "#/$defs/CompletionContext"
+        },
+        "CompletionItem": {
+            "$ref": "#/$defs/CompletionItem"
+        },
+        "CompletionItemCapabilities": {
+            "$ref": "#/$defs/CompletionItemCapabilities"
+        },
+        "CompletionItemKind": {
+            "$ref": "#/$defs/CompletionItemKind"
+        },
+        "CompletionItemKindCapabilities": {
+            "$ref": "#/$defs/CompletionItemKindCapabilities"
+        },
+        "CompletionItemTag": {
+            "$ref": "#/$defs/CompletionItemTag"
+        },
+        "CompletionItemTagSupportCapabilities": {
+            "$ref": "#/$defs/CompletionItemTagSupportCapabilities"
+        },
+        "CompletionList": {
+            "type": "object",
+            "properties": {
+                "isIncomplete": {
+                    "type": "boolean"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/CompletionItem"
+                    }
+                }
+            },
+            "required": ["items", "isIncomplete"]
+        },
+        "CompletionOptions": {
+            "$ref": "#/$defs/CompletionOptions"
+        },
+        "CompletionParams": {
+            "type": "object",
+            "properties": {
+                "context": {
+                    "$ref": "#/$defs/CompletionContext"
+                },
+                "position": {
+                    "$ref": "#/$defs/Position"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["textDocument", "position"]
+        },
+        "CompletionRegistrationOptions": {
+            "type": "object",
+            "properties": {
+                "documentSelector": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DocumentFilter"
+                    }
+                },
+                "resolveProvider": {
+                    "type": "boolean"
+                },
+                "triggerCharacters": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "CompletionTriggerKind": {
+            "$ref": "#/$defs/CompletionTriggerKind"
+        },
+        "ConfigurationItem": {
+            "$ref": "#/$defs/ConfigurationItem"
+        },
+        "ConfigurationParams": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/ConfigurationItem"
+                    }
+                }
+            },
+            "required": ["items"]
+        },
+        "CreateFile": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "type": "string"
+                },
+                "options": {
+                    "$ref": "#/$defs/CreateFileOptions"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["kind", "uri"]
+        },
+        "CreateFileOptions": {
+            "$ref": "#/$defs/CreateFileOptions"
+        },
+        "DeclarationCapabilities": {
+            "$ref": "#/$defs/DeclarationCapabilities"
+        },
+        "DeclarationParams": {
+            "type": "object",
+            "properties": {
+                "position": {
+                    "$ref": "#/$defs/Position"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["textDocument", "position"]
+        },
+        "DefinitionCapabilities": {
+            "$ref": "#/$defs/DefinitionCapabilities"
+        },
+        "DefinitionParams": {
+            "type": "object",
+            "properties": {
+                "position": {
+                    "$ref": "#/$defs/Position"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["textDocument", "position"]
+        },
+        "DeleteFile": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "type": "string"
+                },
+                "options": {
+                    "$ref": "#/$defs/DeleteFileOptions"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["kind", "uri"]
+        },
+        "DeleteFileOptions": {
+            "$ref": "#/$defs/DeleteFileOptions"
+        },
+        "Diagnostic": {
+            "$ref": "#/$defs/Diagnostic"
+        },
+        "DiagnosticRelatedInformation": {
+            "$ref": "#/$defs/DiagnosticRelatedInformation"
+        },
+        "DiagnosticSeverity": {
+            "$ref": "#/$defs/DiagnosticSeverity"
+        },
+        "DiagnosticTag": {
+            "$ref": "#/$defs/DiagnosticTag"
+        },
+        "DiagnosticsTagSupport": {
+            "$ref": "#/$defs/DiagnosticsTagSupport"
+        },
+        "DidChangeConfigurationCapabilities": {
+            "$ref": "#/$defs/DidChangeConfigurationCapabilities"
+        },
+        "DidChangeConfigurationParams": {
+            "type": "object",
+            "properties": {
+                "settings": {}
+            },
+            "required": ["settings"]
+        },
+        "DidChangeTextDocumentParams": {
+            "type": "object",
+            "properties": {
+                "contentChanges": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/TextDocumentContentChangeEvent"
+                    }
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/VersionedTextDocumentIdentifier"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["contentChanges", "textDocument"]
+        },
+        "DidChangeWatchedFilesCapabilities": {
+            "$ref": "#/$defs/DidChangeWatchedFilesCapabilities"
+        },
+        "DidChangeWatchedFilesParams": {
+            "type": "object",
+            "properties": {
+                "changes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/FileEvent"
+                    }
+                }
+            },
+            "required": ["changes"]
+        },
+        "DidChangeWatchedFilesRegistrationOptions": {
+            "type": "object",
+            "properties": {
+                "watchers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/FileSystemWatcher"
+                    }
+                }
+            },
+            "required": ["watchers"]
+        },
+        "DidChangeWorkspaceFoldersParams": {
+            "type": "object",
+            "properties": {
+                "event": {
+                    "$ref": "#/$defs/WorkspaceFoldersChangeEvent"
+                }
+            },
+            "required": ["event"]
+        },
+        "DidCloseTextDocumentParams": {
+            "type": "object",
+            "properties": {
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                }
+            },
+            "required": ["textDocument"]
+        },
+        "DidOpenTextDocumentParams": {
+            "type": "object",
+            "properties": {
+                "text": {
+                    "type": "string"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentItem"
+                }
+            },
+            "required": ["textDocument"]
+        },
+        "DidSaveTextDocumentParams": {
+            "type": "object",
+            "properties": {
+                "text": {
+                    "type": "string"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                }
+            },
+            "required": ["textDocument"]
+        },
+        "DocumentColorParams": {
+            "type": "object",
+            "properties": {
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                }
+            },
+            "required": ["textDocument"]
+        },
+        "DocumentFilter": {
+            "$ref": "#/$defs/DocumentFilter"
+        },
+        "DocumentFormattingParams": {
+            "type": "object",
+            "properties": {
+                "options": {
+                    "$ref": "#/$defs/FormattingOptions"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                }
+            },
+            "required": ["textDocument", "options"]
+        },
+        "DocumentHighlight": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "$ref": "#/$defs/DocumentHighlightKind"
+                },
+                "range": {
+                    "$ref": "#/$defs/Range"
+                }
+            },
+            "required": ["range"]
+        },
+        "DocumentHighlightCapabilities": {
+            "$ref": "#/$defs/DocumentHighlightCapabilities"
+        },
+        "DocumentHighlightKind": {
+            "$ref": "#/$defs/DocumentHighlightKind"
+        },
+        "DocumentHighlightParams": {
+            "type": "object",
+            "properties": {
+                "position": {
+                    "$ref": "#/$defs/Position"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["textDocument", "position"]
+        },
+        "DocumentLink": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "range": {
+                    "$ref": "#/$defs/Range"
+                },
+                "target": {
+                    "type": "string"
+                },
+                "tooltip": {
+                    "type": "string"
+                }
+            },
+            "required": ["range"]
+        },
+        "DocumentLinkCapabilities": {
+            "$ref": "#/$defs/DocumentLinkCapabilities"
+        },
+        "DocumentLinkOptions": {
+            "$ref": "#/$defs/DocumentLinkOptions"
+        },
+        "DocumentLinkParams": {
+            "type": "object",
+            "properties": {
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                }
+            },
+            "required": ["textDocument"]
+        },
+        "DocumentLinkRegistrationOptions": {
+            "type": "object",
+            "properties": {
+                "documentSelector": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DocumentFilter"
+                    }
+                },
+                "resolveProvider": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "DocumentOnTypeFormattingOptions": {
+            "$ref": "#/$defs/DocumentOnTypeFormattingOptions"
+        },
+        "DocumentOnTypeFormattingParams": {
+            "type": "object",
+            "properties": {
+                "ch": {
+                    "type": "string"
+                },
+                "options": {
+                    "$ref": "#/$defs/FormattingOptions"
+                },
+                "position": {
+                    "$ref": "#/$defs/Position"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                }
+            },
+            "required": ["ch", "textDocument", "options", "position"]
+        },
+        "DocumentOnTypeFormattingRegistrationOptions": {
+            "type": "object",
+            "properties": {
+                "documentSelector": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DocumentFilter"
+                    }
+                },
+                "firstTriggerCharacter": {
+                    "type": "string"
+                },
+                "moreTriggerCharacter": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": ["firstTriggerCharacter"]
+        },
+        "DocumentRangeFormattingParams": {
+            "type": "object",
+            "properties": {
+                "options": {
+                    "$ref": "#/$defs/FormattingOptions"
+                },
+                "range": {
+                    "$ref": "#/$defs/Range"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                }
+            },
+            "required": ["textDocument", "options", "range"]
+        },
+        "DocumentSymbol": {
+            "$ref": "#/$defs/DocumentSymbol"
+        },
+        "DocumentSymbolCapabilities": {
+            "$ref": "#/$defs/DocumentSymbolCapabilities"
+        },
+        "DocumentSymbolParams": {
+            "type": "object",
+            "properties": {
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                }
+            },
+            "required": ["textDocument"]
+        },
+        "DynamicRegistrationCapabilities": {
+            "type": "object",
+            "properties": {
+                "dynamicRegistration": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "ExecuteCommandCapabilities": {
+            "$ref": "#/$defs/ExecuteCommandCapabilities"
+        },
+        "ExecuteCommandOptions": {
+            "$ref": "#/$defs/ExecuteCommandOptions"
+        },
+        "ExecuteCommandParams": {
+            "type": "object",
+            "properties": {
+                "arguments": {
+                    "type": "array",
+                    "items": {}
+                },
+                "command": {
+                    "type": "string"
+                }
+            },
+            "required": ["command"]
+        },
+        "ExecuteCommandRegistrationOptions": {
+            "type": "object",
+            "properties": {
+                "commands": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": ["commands"]
+        },
+        "FailureHandlingKind": {
+            "type": "object"
+        },
+        "FileChangeType": {
+            "$ref": "#/$defs/FileChangeType"
+        },
+        "FileEvent": {
+            "$ref": "#/$defs/FileEvent"
+        },
+        "FileSystemWatcher": {
+            "$ref": "#/$defs/FileSystemWatcher"
+        },
+        "FoldingRange": {
+            "type": "object",
+            "properties": {
+                "endCharacter": {
+                    "type": "integer"
+                },
+                "endLine": {
+                    "type": "integer"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "startCharacter": {
+                    "type": "integer"
+                },
+                "startLine": {
+                    "type": "integer"
+                }
+            },
+            "required": ["endLine", "startLine"]
+        },
+        "FoldingRangeCapabilities": {
+            "$ref": "#/$defs/FoldingRangeCapabilities"
+        },
+        "FoldingRangeKind": {
+            "type": "object"
+        },
+        "FoldingRangeProviderOptions": {
+            "$ref": "#/$defs/FoldingRangeProviderOptions"
+        },
+        "FoldingRangeRequestParams": {
+            "type": "object",
+            "properties": {
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                }
+            },
+            "required": ["textDocument"]
+        },
+        "FormattingCapabilities": {
+            "$ref": "#/$defs/FormattingCapabilities"
+        },
+        "FormattingOptions": {
+            "$ref": "#/$defs/FormattingOptions"
+        },
+        "Hover": {
+            "type": "object",
+            "properties": {
+                "contents": {
+                    "type": "object",
+                    "properties": {
+                        "left": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "left": {
+                                        "type": "string"
+                                    },
+                                    "right": {
+                                        "$ref": "#/$defs/MarkedString"
+                                    }
+                                }
+                            }
+                        },
+                        "right": {
+                            "$ref": "#/$defs/MarkupContent"
+                        }
+                    }
+                },
+                "range": {
+                    "$ref": "#/$defs/Range"
+                }
+            },
+            "required": ["contents"]
+        },
+        "HoverCapabilities": {
+            "$ref": "#/$defs/HoverCapabilities"
+        },
+        "HoverParams": {
+            "type": "object",
+            "properties": {
+                "position": {
+                    "$ref": "#/$defs/Position"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["textDocument", "position"]
+        },
+        "ImplementationCapabilities": {
+            "$ref": "#/$defs/ImplementationCapabilities"
+        },
+        "ImplementationParams": {
+            "type": "object",
+            "properties": {
+                "position": {
+                    "$ref": "#/$defs/Position"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["textDocument", "position"]
+        },
+        "InitializeError": {
+            "type": "object",
+            "properties": {
+                "retry": {
+                    "type": "boolean"
+                }
+            },
+            "required": ["retry"]
+        },
+        "InitializeErrorCode": {
+            "type": "object"
+        },
+        "InitializeParams": {
+            "type": "object",
+            "properties": {
+                "capabilities": {
+                    "$ref": "#/$defs/ClientCapabilities"
+                },
+                "clientInfo": {
+                    "$ref": "#/$defs/ClientInfo"
+                },
+                "clientName": {
+                    "type": "string"
+                },
+                "initializationOptions": {},
+                "processId": {
+                    "type": "integer"
+                },
+                "rootPath": {
+                    "type": "string"
+                },
+                "rootUri": {
+                    "type": "string"
+                },
+                "trace": {
+                    "type": "string"
+                },
+                "workspaceFolders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/WorkspaceFolder"
+                    }
+                }
+            }
+        },
+        "InitializeResult": {
+            "type": "object",
+            "properties": {
+                "capabilities": {
+                    "$ref": "#/$defs/ServerCapabilities"
+                },
+                "serverInfo": {
+                    "$ref": "#/$defs/ServerInfo"
+                }
+            },
+            "required": ["capabilities"]
+        },
+        "InitializedParams": {
+            "type": "object"
+        },
+        "InsertTextFormat": {
+            "$ref": "#/$defs/InsertTextFormat"
+        },
+        "Location": {
+            "$ref": "#/$defs/Location"
+        },
+        "LocationLink": {
+            "type": "object",
+            "properties": {
+                "originSelectionRange": {
+                    "$ref": "#/$defs/Range"
+                },
+                "targetRange": {
+                    "$ref": "#/$defs/Range"
+                },
+                "targetSelectionRange": {
+                    "$ref": "#/$defs/Range"
+                },
+                "targetUri": {
+                    "type": "string"
+                }
+            },
+            "required": ["targetSelectionRange", "targetUri", "targetRange"]
+        },
+        "MarkedString": {
+            "$ref": "#/$defs/MarkedString"
+        },
+        "MarkupContent": {
+            "$ref": "#/$defs/MarkupContent"
+        },
+        "MarkupKind": {
+            "type": "object"
+        },
+        "MessageActionItem": {
+            "$ref": "#/$defs/MessageActionItem"
+        },
+        "MessageParams": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/$defs/MessageType"
+                }
+            },
+            "required": ["type", "message"]
+        },
+        "MessageType": {
+            "$ref": "#/$defs/MessageType"
+        },
+        "OnTypeFormattingCapabilities": {
+            "$ref": "#/$defs/OnTypeFormattingCapabilities"
+        },
+        "ParameterInformation": {
+            "$ref": "#/$defs/ParameterInformation"
+        },
+        "ParameterInformationCapabilities": {
+            "$ref": "#/$defs/ParameterInformationCapabilities"
+        },
+        "Position": {
+            "$ref": "#/$defs/Position"
+        },
+        "PrepareRenameParams": {
+            "type": "object",
+            "properties": {
+                "position": {
+                    "$ref": "#/$defs/Position"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["textDocument", "position"]
+        },
+        "PrepareRenameResult": {
+            "type": "object",
+            "properties": {
+                "placeholder": {
+                    "type": "string"
+                },
+                "range": {
+                    "$ref": "#/$defs/Range"
+                }
+            },
+            "required": ["range", "placeholder"]
+        },
+        "PublishDiagnosticsCapabilities": {
+            "$ref": "#/$defs/PublishDiagnosticsCapabilities"
+        },
+        "PublishDiagnosticsParams": {
+            "type": "object",
+            "properties": {
+                "diagnostics": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Diagnostic"
+                    }
+                },
+                "uri": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "integer"
+                }
+            },
+            "required": ["diagnostics", "uri"]
+        },
+        "Range": {
+            "$ref": "#/$defs/Range"
+        },
+        "RangeFormattingCapabilities": {
+            "$ref": "#/$defs/RangeFormattingCapabilities"
+        },
+        "ReferenceContext": {
+            "$ref": "#/$defs/ReferenceContext"
+        },
+        "ReferenceParams": {
+            "type": "object",
+            "properties": {
+                "context": {
+                    "$ref": "#/$defs/ReferenceContext"
+                },
+                "position": {
+                    "$ref": "#/$defs/Position"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["textDocument", "context", "position"]
+        },
+        "ReferencesCapabilities": {
+            "$ref": "#/$defs/ReferencesCapabilities"
+        },
+        "Registration": {
+            "$ref": "#/$defs/Registration"
+        },
+        "RegistrationParams": {
+            "type": "object",
+            "properties": {
+                "registrations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Registration"
+                    }
+                }
+            },
+            "required": ["registrations"]
+        },
+        "RenameCapabilities": {
+            "$ref": "#/$defs/RenameCapabilities"
+        },
+        "RenameFile": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "type": "string"
+                },
+                "newUri": {
+                    "type": "string"
+                },
+                "oldUri": {
+                    "type": "string"
+                },
+                "options": {
+                    "$ref": "#/$defs/RenameFileOptions"
+                }
+            },
+            "required": ["kind", "newUri", "oldUri"]
+        },
+        "RenameFileOptions": {
+            "$ref": "#/$defs/RenameFileOptions"
+        },
+        "RenameOptions": {
+            "$ref": "#/$defs/RenameOptions"
+        },
+        "RenameParams": {
+            "type": "object",
+            "properties": {
+                "newName": {
+                    "type": "string"
+                },
+                "position": {
+                    "$ref": "#/$defs/Position"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["newName", "textDocument", "position"]
+        },
+        "ResolveTypeHierarchyItemParams": {
+            "type": "object",
+            "properties": {
+                "direction": {
+                    "$ref": "#/$defs/TypeHierarchyDirection"
+                },
+                "item": {
+                    "$ref": "#/$defs/TypeHierarchyItem"
+                },
+                "resolve": {
+                    "type": "integer"
+                }
+            },
+            "required": ["item", "resolve", "direction"]
+        },
+        "ResourceChange": {
+            "$ref": "#/$defs/ResourceChange"
+        },
+        "ResourceOperation": {
+            "$ref": "#/$defs/ResourceOperation"
+        },
+        "ResourceOperationKind": {
+            "type": "object"
+        },
+        "ResponseErrorCode": {
+            "type": "string",
+            "enum": ["ParseError", "InvalidRequest", "MethodNotFound", "InvalidParams", "InternalError", "serverErrorStart", "serverErrorEnd"]
+        },
+        "SaveOptions": {
+            "$ref": "#/$defs/SaveOptions"
+        },
+        "SelectionRange": {
+            "$ref": "#/$defs/SelectionRange"
+        },
+        "SelectionRangeCapabilities": {
+            "$ref": "#/$defs/SelectionRangeCapabilities"
+        },
+        "SelectionRangeParams": {
+            "type": "object",
+            "properties": {
+                "positions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Position"
+                    }
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                }
+            },
+            "required": ["textDocument", "positions"]
+        },
+        "SemanticHighlightingCapabilities": {
+            "$ref": "#/$defs/SemanticHighlightingCapabilities"
+        },
+        "SemanticHighlightingInformation": {
+            "$ref": "#/$defs/SemanticHighlightingInformation"
+        },
+        "SemanticHighlightingParams": {
+            "type": "object",
+            "properties": {
+                "lines": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/SemanticHighlightingInformation"
+                    }
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/VersionedTextDocumentIdentifier"
+                }
+            },
+            "required": ["textDocument", "lines"]
+        },
+        "SemanticHighlightingServerCapabilities": {
+            "$ref": "#/$defs/SemanticHighlightingServerCapabilities"
+        },
+        "ServerCapabilities": {
+            "$ref": "#/$defs/ServerCapabilities"
+        },
+        "ServerInfo": {
+            "$ref": "#/$defs/ServerInfo"
+        },
+        "ShowMessageRequestParams": {
+            "type": "object",
+            "properties": {
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/MessageActionItem"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/$defs/MessageType"
+                }
+            },
+            "required": ["type", "message"]
+        },
+        "SignatureHelp": {
+            "$ref": "#/$defs/SignatureHelp"
+        },
+        "SignatureHelpCapabilities": {
+            "$ref": "#/$defs/SignatureHelpCapabilities"
+        },
+        "SignatureHelpContext": {
+            "$ref": "#/$defs/SignatureHelpContext"
+        },
+        "SignatureHelpOptions": {
+            "$ref": "#/$defs/SignatureHelpOptions"
+        },
+        "SignatureHelpParams": {
+            "type": "object",
+            "properties": {
+                "context": {
+                    "$ref": "#/$defs/SignatureHelpContext"
+                },
+                "position": {
+                    "$ref": "#/$defs/Position"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["textDocument", "position"]
+        },
+        "SignatureHelpRegistrationOptions": {
+            "type": "object",
+            "properties": {
+                "documentSelector": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DocumentFilter"
+                    }
+                },
+                "triggerCharacters": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "SignatureHelpTriggerKind": {
+            "$ref": "#/$defs/SignatureHelpTriggerKind"
+        },
+        "SignatureInformation": {
+            "$ref": "#/$defs/SignatureInformation"
+        },
+        "SignatureInformationCapabilities": {
+            "$ref": "#/$defs/SignatureInformationCapabilities"
+        },
+        "StaticRegistrationOptions": {
+            "$ref": "#/$defs/StaticRegistrationOptions"
+        },
+        "SymbolCapabilities": {
+            "$ref": "#/$defs/SymbolCapabilities"
+        },
+        "SymbolInformation": {
+            "type": "object",
+            "properties": {
+                "containerName": {
+                    "type": "string"
+                },
+                "deprecated": {
+                    "type": "boolean"
+                },
+                "kind": {
+                    "$ref": "#/$defs/SymbolKind"
+                },
+                "location": {
+                    "$ref": "#/$defs/Location"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": ["kind", "name", "location"]
+        },
+        "SymbolKind": {
+            "$ref": "#/$defs/SymbolKind"
+        },
+        "SymbolKindCapabilities": {
+            "$ref": "#/$defs/SymbolKindCapabilities"
+        },
+        "SymbolTag": {
+            "$ref": "#/$defs/SymbolTag"
+        },
+        "SynchronizationCapabilities": {
+            "$ref": "#/$defs/SynchronizationCapabilities"
+        },
+        "TextDocumentChangeRegistrationOptions": {
+            "type": "object",
+            "properties": {
+                "documentSelector": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DocumentFilter"
+                    }
+                },
+                "syncKind": {
+                    "$ref": "#/$defs/TextDocumentSyncKind"
+                }
+            },
+            "required": ["syncKind"]
+        },
+        "TextDocumentClientCapabilities": {
+            "$ref": "#/$defs/TextDocumentClientCapabilities"
+        },
+        "TextDocumentContentChangeEvent": {
+            "$ref": "#/$defs/TextDocumentContentChangeEvent"
+        },
+        "TextDocumentEdit": {
+            "$ref": "#/$defs/TextDocumentEdit"
+        },
+        "TextDocumentIdentifier": {
+            "$ref": "#/$defs/TextDocumentIdentifier"
+        },
+        "TextDocumentItem": {
+            "$ref": "#/$defs/TextDocumentItem"
+        },
+        "TextDocumentPositionParams": {
+            "type": "object",
+            "properties": {
+                "position": {
+                    "$ref": "#/$defs/Position"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["textDocument", "position"]
+        },
+        "TextDocumentRegistrationOptions": {
+            "type": "object",
+            "properties": {
+                "documentSelector": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DocumentFilter"
+                    }
+                }
+            }
+        },
+        "TextDocumentSaveReason": {
+            "$ref": "#/$defs/TextDocumentSaveReason"
+        },
+        "TextDocumentSaveRegistrationOptions": {
+            "type": "object",
+            "properties": {
+                "documentSelector": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DocumentFilter"
+                    }
+                },
+                "includeText": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "TextDocumentSyncKind": {
+            "$ref": "#/$defs/TextDocumentSyncKind"
+        },
+        "TextDocumentSyncOptions": {
+            "$ref": "#/$defs/TextDocumentSyncOptions"
+        },
+        "TextEdit": {
+            "$ref": "#/$defs/TextEdit"
+        },
+        "TypeDefinitionCapabilities": {
+            "$ref": "#/$defs/TypeDefinitionCapabilities"
+        },
+        "TypeDefinitionParams": {
+            "type": "object",
+            "properties": {
+                "position": {
+                    "$ref": "#/$defs/Position"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["textDocument", "position"]
+        },
+        "TypeHierarchyCapabilities": {
+            "$ref": "#/$defs/TypeHierarchyCapabilities"
+        },
+        "TypeHierarchyDirection": {
+            "$ref": "#/$defs/TypeHierarchyDirection"
+        },
+        "TypeHierarchyItem": {
+            "$ref": "#/$defs/TypeHierarchyItem"
+        },
+        "TypeHierarchyParams": {
+            "type": "object",
+            "properties": {
+                "direction": {
+                    "$ref": "#/$defs/TypeHierarchyDirection"
+                },
+                "position": {
+                    "$ref": "#/$defs/Position"
+                },
+                "resolve": {
+                    "type": "integer"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            },
+            "required": ["resolve", "textDocument", "position"]
+        },
+        "Unregistration": {
+            "$ref": "#/$defs/Unregistration"
+        },
+        "UnregistrationParams": {
+            "type": "object",
+            "properties": {
+                "unregisterations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Unregistration"
+                    }
+                }
+            },
+            "required": ["unregisterations"]
+        },
+        "VersionedTextDocumentIdentifier": {
+            "$ref": "#/$defs/VersionedTextDocumentIdentifier"
+        },
+        "WatchKind": {
+            "type": "object"
+        },
+        "WillSaveTextDocumentParams": {
+            "type": "object",
+            "properties": {
+                "reason": {
+                    "$ref": "#/$defs/TextDocumentSaveReason"
+                },
+                "textDocument": {
+                    "$ref": "#/$defs/TextDocumentIdentifier"
+                }
+            },
+            "required": ["reason", "textDocument"]
+        },
+        "WorkspaceClientCapabilities": {
+            "$ref": "#/$defs/WorkspaceClientCapabilities"
+        },
+        "WorkspaceEdit": {
+            "$ref": "#/$defs/WorkspaceEdit"
+        },
+        "WorkspaceEditCapabilities": {
+            "$ref": "#/$defs/WorkspaceEditCapabilities"
+        },
+        "WorkspaceFolder": {
+            "$ref": "#/$defs/WorkspaceFolder"
+        },
+        "WorkspaceFoldersChangeEvent": {
+            "$ref": "#/$defs/WorkspaceFoldersChangeEvent"
+        },
+        "WorkspaceFoldersOptions": {
+            "$ref": "#/$defs/WorkspaceFoldersOptions"
+        },
+        "WorkspaceServerCapabilities": {
+            "$ref": "#/$defs/WorkspaceServerCapabilities"
+        },
+        "WorkspaceSymbolParams": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string"
+                }
+            },
+            "required": ["query"]
+        }
+    }
+}
