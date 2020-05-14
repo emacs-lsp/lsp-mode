@@ -3974,8 +3974,7 @@ in that particular folder."
       (add-hook 'lsp-on-idle-hook #'lsp--document-links nil t))
 
     (when (and lsp-enable-dap-auto-configure
-               (fboundp 'dap-mode)
-               (not (bound-and-true-p dap-mode)))
+               (featurep 'dap-mode))
       (dap-auto-configure-mode 1)))
 
   (let ((buffer (current-buffer)))
