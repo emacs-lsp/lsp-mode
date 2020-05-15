@@ -3218,8 +3218,7 @@ in that particular folder."
 (defun lsp--send-will-save-p ()
   "Return whether will save notifications should be sent to the server."
   (let ((sync (gethash "textDocumentSync" (lsp--server-capabilities))))
-    (or (memq sync '(1 2))
-        (and (hash-table-p sync) (gethash "willSave" sync)))))
+    (and (hash-table-p sync) (gethash "willSave" sync))))
 
 (defun lsp--send-will-save-wait-until-p ()
   "Return whether will save wait until notifications should be sent to the server."
@@ -3235,10 +3234,9 @@ in that particular folder."
 (defun lsp--save-include-text-p ()
   "Return whether save notifications should include the text document's contents."
   (let ((sync (gethash "textDocumentSync" (lsp--server-capabilities))))
-    (or (memq sync '(1 2))
-        (and (hash-table-p sync)
-             (hash-table-p (gethash "save" sync nil))
-             (gethash "includeText" (gethash "save" sync))))))
+    (and (hash-table-p sync)
+         (hash-table-p (gethash "save" sync nil))
+         (gethash "includeText" (gethash "save" sync)))))
 
 (defun lsp--suggest-project-root ()
   "Get project root."
