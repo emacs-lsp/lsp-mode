@@ -4183,7 +4183,9 @@ and the position respectively."
 (defun lsp--annotate (item)
   "Annotate ITEM detail."
   (-let (((&hash "detail" "kind") (plist-get (text-properties-at 0 item) 'lsp-completion-item)))
-    (concat (when (and lsp-completion-show-detail detail) (concat " " detail))
+    (concat (when (and lsp-completion-show-detail detail)
+              (concat " " (if lsp--filter-cr? (s-replace "\r" "" detail)
+                            detail)))
             (when-let (kind-name (and kind (aref lsp--completion-item-kind kind)))
               (format " (%s)" kind-name)))))
 
@@ -4255,7 +4257,6 @@ When the heuristic fails to find the prefix start point, return DEFAULT value."
        (sort it (-on #'< (lambda (o) (or (car o) most-positive-fixnum))))))
 
 (cl-defun lsp--capf-filter-candidates (items
-                                       &optional
                                        &rest plist
                                        &key lsp-items
                                        &allow-other-keys)
@@ -4369,56 +4370,66 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                                      (+ it 1)
                                    it)))
                              (point)))
-           result done?)
+           result done?
+           (all-completions
+            (lambda ()
+              (cond
+                (done? result)
+                ((and lsp--capf-cache
+                      (listp lsp--capf-cache)
+                      (s-prefix? (car lsp--capf-cache)
+                                 (buffer-substring-no-properties bounds-start (point)))
+                      (< (caar (cadr lsp--capf-cache)) (point)))
+                 (apply #'lsp--capf-filter-candidates (cdr lsp--capf-cache)))
+                (t
+                 (-let* ((resp (lsp-request-while-no-input
+                                "textDocument/completion"
+                                (plist-put (lsp--text-document-position-params)
+                                           :context (lsp--capf-get-context trigger-chars))))
+                         (completed (or (seqp resp)
+                                        (not (gethash "isIncomplete" resp))))
+                         (items (--> (cond
+                                       ((seqp resp) resp)
+                                       ((hash-table-p resp) (gethash "items" resp)))
+                                     (if (or completed
+                                             (seq-some (-rpartial #'lsp--ht-get "sortText") it))
+                                         (lsp--sort-completions it)
+                                       it)
+                                     (-map (lambda (item)
+                                             (puthash "_emacsStartPoint"
+                                                      (lsp--capf-guess-prefix item bounds-start)
+                                                      item)
+                                             item)
+                                           it)))
+                         (markers (list (point) (copy-marker (point) t))))
+                   (setf done? completed
+                         lsp--capf-cache (cond
+                                           ((and done? (not (seq-empty-p items)))
+                                            (list (buffer-substring-no-properties bounds-start (point))
+                                                  (lsp--capf-cached-items items)
+                                                  :lsp-items nil
+                                                  :markers markers))
+                                           ((not done?) 'incomplete))
+                         result (lsp--capf-filter-candidates (if done? (cadr lsp--capf-cache))
+                                                             :lsp-items items
+                                                             :markers markers))))))))
       (list
        bounds-start
        (point)
-       (lambda (_probe _pred action)
+       (lambda (probe _pred action)
          (cond
-          ((eq action 'metadata)
-           `(metadata (category . lsp-capf)
-                      (display-sort-function . identity)))
-          ((eq (car-safe action) 'boundaries) nil)
-          ;; retrieve candidates
-          (done? result)
-          ((and lsp--capf-cache
-                (listp lsp--capf-cache)
-                (s-prefix? (car lsp--capf-cache)
-                           (buffer-substring-no-properties bounds-start (point)))
-                (< (caar (cadr lsp--capf-cache)) (point)))
-           (apply #'lsp--capf-filter-candidates (cdr lsp--capf-cache)))
-          (t
-           (-let* ((resp (lsp-request-while-no-input
-                          "textDocument/completion"
-                          (plist-put (lsp--text-document-position-params)
-                                     :context (lsp--capf-get-context trigger-chars))))
-                   (completed (or (seqp resp)
-                                  (not (gethash "isIncomplete" resp))))
-                   (items (--> (cond
-                                ((seqp resp) resp)
-                                ((hash-table-p resp) (gethash "items" resp)))
-                               (if (or completed
-                                       (seq-some (-rpartial #'lsp--ht-get "sortText") it))
-                                   (lsp--sort-completions it)
-                                 it)
-                               (-map (lambda (item)
-                                       (puthash "_emacsStartPoint"
-                                                (lsp--capf-guess-prefix item bounds-start)
-                                                item)
-                                       item)
-                                     it)))
-                   (markers (list (point) (copy-marker (point) t))))
-             (setf done? completed
-                   lsp--capf-cache (cond
-                                    ((and done? (not (seq-empty-p items)))
-                                     (list (buffer-substring-no-properties bounds-start (point))
-                                           (lsp--capf-cached-items items)
-                                           :lsp-items nil
-                                           :markers markers))
-                                    ((not done?) 'incomplete))
-                   result (lsp--capf-filter-candidates (if done? (cadr lsp--capf-cache))
-                                                       :lsp-items items
-                                                       :markers markers))))))
+           ;; metadata
+           ((equal action 'metadata)
+            `(metadata (category . lsp-capf)
+                       (display-sort-function . identity)))
+           ;; boundaries
+           ((equal (car-safe action) 'boundaries) nil)
+           ;; try-completion
+           ((null action) (and (member probe (funcall all-completions)) t))
+           ;; test-completion
+           ((equal action 'lambda) (member probe (funcall all-completions)))
+           ;; retrieve candidates
+           (t (funcall all-completions))))
        :annotation-function #'lsp--annotate
        :company-require-match 'never
        :company-prefix-length
@@ -4444,15 +4455,15 @@ Others: TRIGGER-CHARS"
                   "textEdit" text-edit
                   "insertTextFormat" insert-text-format
                   "additionalTextEdits" additional-text-edits)
-           item))
+           (or item lsp--empty-ht)))
     (cond
-     (text-edit
-      (apply #'delete-region markers)
-      (lsp--apply-text-edit text-edit))
-     ((or insert-text label)
-      (apply #'delete-region markers)
-      (delete-region start-point (point))
-      (insert (or insert-text label))))
+      (text-edit
+       (apply #'delete-region markers)
+       (lsp--apply-text-edit text-edit))
+      ((or insert-text label)
+       (apply #'delete-region markers)
+       (delete-region start-point (point))
+       (insert (or insert-text label))))
 
     (when (eq insert-text-format 2)
       (yas-expand-snippet
