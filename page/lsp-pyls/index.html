@@ -1518,6 +1518,20 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#lsp-pyls-plugins-jedi-completion-fuzzy" class="md-nav__link">
+    lsp-pyls-plugins-jedi-completion-fuzzy
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pyls-rename-backend" class="md-nav__link">
+    lsp-pyls-rename-backend
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2263,6 +2277,20 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#lsp-pyls-plugins-jedi-completion-fuzzy" class="md-nav__link">
+    lsp-pyls-plugins-jedi-completion-fuzzy
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-pyls-rename-backend" class="md-nav__link">
+    lsp-pyls-rename-backend
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2521,6 +2549,17 @@ parameters referenced in config.</p>
 <p>Specify the environment that jedi runs on where <environmeent>/bin/python
 should be the python executable. This option will be prioritized over
 ‘lsp-pyls-plugins-jedi-use-pyenv-environment’.</p>
+<hr />
+<h3 id="lsp-pyls-plugins-jedi-completion-fuzzy"><code>lsp-pyls-plugins-jedi-completion-fuzzy</code><a class="headerlink" href="#lsp-pyls-plugins-jedi-completion-fuzzy" title="Permanent link">#</a></h3>
+<p><em>Default: <code>nil</code></em></p>
+<p>If enabled, uses fuzzy completion in jedi. Requires pyls &gt;= 0.32.0
+Can hit performance, as well as lsp-mode implements its own fuzzy search on completion items.</p>
+<hr />
+<h3 id="lsp-pyls-rename-backend"><code>lsp-pyls-rename-backend</code><a class="headerlink" href="#lsp-pyls-rename-backend" title="Permanent link">#</a></h3>
+<p><em>Default: <code>jedi</code></em></p>
+<p>Choose renaming backend. Jedi is preferred but only works for python &gt;= 3.6 and pyls &gt;= 0.32.0
+Beware that Jedi is lazy and doesn’t scan the whole project.
+So it will rename only references it can find.</p>
 <hr />
                 
                   
