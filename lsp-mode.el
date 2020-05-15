@@ -1290,7 +1290,7 @@ On other systems, returns path without change."
          (type (url-type url))
          (encoding (or locale-coding-system 'utf-8))
          (file (decode-coding-string (url-filename url) encoding))
-         (file-name (if (and type (not (string= type "file")))
+         (file-name (if (and type (not (equal type "file")))
                         (if-let ((handler (lsp--get-uri-handler type)))
                             (funcall handler uri)
                           uri)
@@ -3139,8 +3139,8 @@ disappearing, unset all the variables related to it."
                       (-any?
                        (lambda (capability)
                          (and
-                          (string= (lsp--registered-capability-method capability)
-                                   "workspace/didChangeWatchedFiles")
+                          (equal (lsp--registered-capability-method capability)
+                                 "workspace/didChangeWatchedFiles")
                           (->>
                            capability
                            lsp--registered-capability-options
@@ -3161,7 +3161,7 @@ disappearing, unset all the variables related to it."
   (-let (((&hash "method" "id" "registerOptions") reg)
          (session (lsp-session)))
     (when (and lsp-enable-file-watchers
-               (string= method "workspace/didChangeWatchedFiles"))
+               (equal method "workspace/didChangeWatchedFiles"))
       (-let* ((created-watches (lsp-session-watches session))
               (root-folders (cl-set-difference
                              (lsp-find-roots-for-workspace lsp--cur-workspace session)
@@ -3199,7 +3199,7 @@ in that particular folder."
     (setf (lsp--workspace-registered-server-capabilities lsp--cur-workspace)
           (seq-remove (lambda (e) (equal (lsp--registered-capability-id e) id))
                       (lsp--workspace-registered-server-capabilities lsp--cur-workspace)))
-    (when (string= method "workspace/didChangeWatchedFiles")
+    (when (equal method "workspace/didChangeWatchedFiles")
       (lsp--cleanup-hanging-watches))))
 
 (defun lsp--server-capabilities ()
@@ -3557,11 +3557,11 @@ in that particular folder."
         (lsp--check-document-changes-version document-changes)
         (->> document-changes
              (seq-filter (-lambda ((&hash "kind"))
-                           (or (not kind) (string= kind "edit"))))
+                           (or (not kind) (equal kind "edit"))))
              (seq-do #'lsp--apply-text-document-edit))
         (->> document-changes
              (seq-filter (-lambda ((&hash "kind"))
-                           (not (or (not kind) (string= kind "edit")))))
+                           (not (or (not kind) (equal kind "edit")))))
              (seq-do #'lsp--apply-text-document-edit)))
     (when-let (changes (gethash "changes" edit))
       (maphash
@@ -4076,7 +4076,7 @@ Applies on type formatting."
          (lsp-session-folders)
          (--first (and (lsp--files-same-host it file-name)
                        (or (f-ancestor-of? it file-name)
-                           (string= it file-name)))))))
+                           (equal it file-name)))))))
 
 (defun lsp-on-revert ()
   "Executed when a file is reverted.
@@ -4488,7 +4488,7 @@ Others: TRIGGER-CHARS"
   "Sort COMPLETIONS."
   (--sort (let ((left (gethash "sortText" it))
                 (right (gethash "sortText" other)))
-            (if (string= left right)
+            (if (equal left right)
                 (string-lessp (gethash "label" it) (gethash "label" other))
               (string-lessp left right)))
           completions))
@@ -5926,7 +5926,7 @@ textDocument/didOpen for the new file."
 ;;   .    x     notification
 (defun lsp--get-message-type (json-data)
   "Get the message type from JSON-DATA."
-  (when (not (string= (gethash "jsonrpc" json-data "") "2.0"))
+  (when (not (equal (gethash "jsonrpc" json-data "") "2.0"))
     (signal 'lsp-unknown-json-rpc-version (list (gethash "jsonrpc" json-data))))
   (if (gethash "id" json-data nil)
       (if (gethash "error" json-data nil)
@@ -6001,27 +6001,27 @@ WORKSPACE is the active workspace."
                                (-partial #'lsp--send-request-response
                                          workspace recv-time request))
                       'delay-response)
-                     ((string= method "client/registerCapability")
+                     ((equal method "client/registerCapability")
                       (seq-doseq (reg (gethash "registrations" params))
                         (lsp--server-register-capability reg))
                       nil)
-                     ((string= method "window/showMessageRequest")
+                     ((equal method "window/showMessageRequest")
                       (let ((choice (lsp--window-log-message-request params)))
                         `(:title ,choice)))
-                     ((string= method "client/unregisterCapability")
+                     ((equal method "client/unregisterCapability")
                       (seq-doseq (unreg (gethash "unregisterations" params))
                         (lsp--server-unregister-capability unreg))
                       nil)
-                     ((string= method "workspace/applyEdit")
+                     ((equal method "workspace/applyEdit")
                       (list :applied (condition-case err
                                          (prog1 t
                                            (lsp--apply-workspace-edit (gethash "edit" params)))
                                        (error
                                         (lsp--error "Failed to apply edits with message %s" (error-message-string err))
                                         :json-false))))
-                     ((string= method "workspace/configuration")
+                     ((equal method "workspace/configuration")
                       (with-lsp-workspace workspace (lsp--build-workspace-configuration-response params)))
-                     ((string= method "workspace/workspaceFolders")
+                     ((equal method "workspace/workspaceFolders")
                       (let ((folders (or (-> workspace
                                              (lsp--workspace-client)
                                              (lsp--client-server-id)
@@ -6032,7 +6032,7 @@ WORKSPACE is the active workspace."
                              (-map (lambda (folder)
                                      (list :uri (lsp--path-to-uri folder))))
                              (apply #'vector))))
-                     ((string= method "window/workDoneProgress/create")
+                     ((equal method "window/workDoneProgress/create")
                       nil ;; no specific reply, no processing required
                       )
                      (t (lsp-warn "Unknown request method: %s" method) nil))))
@@ -6065,7 +6065,7 @@ WORKSPACE is the active workspace."
       (signal 'lsp-invalid-header-name (list s)))
     (setq key (substring s 0 pos)
           val (s-trim-left (substring s (+ 1 pos))))
-    (when (string-equal key "Content-Length")
+    (when (equal key "Content-Length")
       (cl-assert (cl-loop for c across val
                           when (or (> c ?9) (< c ?0)) return nil
                           finally return t)
@@ -6172,8 +6172,8 @@ WORKSPACE is the active workspace."
   (let ((body-received 0)
         leftovers body-length body chunk)
     (lambda (_proc input)
-      (setf chunk (concat leftovers (with-no-warnings (string-as-unibyte input))))
-      (while (not (string= chunk ""))
+      (setf chunk (concat leftovers (encode-coding-string input 'utf-8 'nocopy)))
+      (while (not (equal chunk ""))
         (if (not body-length)
             ;; Read headers
             (if-let (body-sep-pos (string-match-p "\r\n\r\n" chunk))
@@ -7485,8 +7485,8 @@ Returns nil if the project should not be added to the current SESSION."
       (and (file-remote-p f1)
            (file-remote-p f2)
            (progn (require 'tramp)
-                  (string-equal (tramp-file-name-host (tramp-dissect-file-name f1))
-                                (tramp-file-name-host (tramp-dissect-file-name f2)))))))
+                  (equal (tramp-file-name-host (tramp-dissect-file-name f1))
+                         (tramp-file-name-host (tramp-dissect-file-name f2)))))))
 
 (defun lsp-find-session-folder (session file-name)
   "Look in the current SESSION for folder containing FILE-NAME."
