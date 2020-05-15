@@ -967,6 +967,28 @@ FORMAT and ARGS i the same as for `message'."
       "Return the local name component of FILE."
       (or (file-remote-p file 'localname) file))))
 
+(defun lsp-f-canonical (file-name)
+  "Return the canonical, without trailing slash FILE-NAME."
+  (directory-file-name (expand-file-name file-name)))
+
+(defalias 'lsp-canonical-file-name 'lsp-f-canonical)
+
+(defun lsp-f-same? (path-a path-b)
+  "Return t if PATH-A and PATH-B are references to same file.
+Symlinks are not followed."
+  (when (and (f-exists? path-a)
+             (f-exists? path-b))
+    (equal
+     (lsp-f-canonical (directory-file-name (f-expand path-a)))
+     (lsp-f-canonical (directory-file-name (f-expand path-b))))))
+
+(defun lsp-f-ancestor-of? (path-a path-b)
+  "Return t if PATH-A is ancestor of PATH-B.
+Symlinks are not followed."
+  (unless (lsp-f-same? path-a path-b)
+    (s-prefix? (lsp-f-canonical path-a)
+               (lsp-f-canonical path-b))))
+
 (defun lsp--merge-results (results method)
   "Merge RESULTS by filtering the empty hash-tables and merging the lists.
 METHOD is the executed method so the results could be merged
@@ -1481,10 +1503,6 @@ already have been created."
   (declare (debug (form body))
            (indent 1))
   `(when-let (lsp--cur-workspace ,workspace) ,@body))
-
-(defun lsp-canonical-file-name (file-name)
-  "Return the canonical, without trailing slash FILE-NAME."
-  (directory-file-name (expand-file-name file-name)))
 
 (defun lsp--window-show-message (_workspace params)
   "Send the server's messages to log.
@@ -3262,7 +3280,7 @@ in that particular folder."
   (interactive
    (list (read-directory-name "Select folder to add: "
                               (or (lsp--suggest-project-root) default-directory) nil t)))
-  (cl-pushnew (lsp-canonical-file-name project-root)
+  (cl-pushnew (lsp-f-canonical project-root)
               (lsp-session-folders (lsp-session)) :test 'equal)
   (lsp--persist-session (lsp-session))
 
@@ -3274,7 +3292,7 @@ in that particular folder."
                                       (lsp-session-folders (lsp-session)) nil t
                                       (lsp-find-session-folder (lsp-session) default-directory))))
 
-  (setq project-root (lsp-canonical-file-name project-root))
+  (setq project-root (lsp-f-canonical project-root))
 
   ;; send remove folder to each multiroot workspace associated with the folder
   (dolist (wks (->> (lsp-session)
@@ -4071,11 +4089,11 @@ Applies on type formatting."
 (defun lsp-workspace-root (&optional path)
   "Find the workspace root for the current file or PATH."
   (-when-let* ((file-name (or path (buffer-file-name)))
-               (file-name (lsp-canonical-file-name file-name)))
+               (file-name (lsp-f-canonical file-name)))
     (->> (lsp-session)
          (lsp-session-folders)
          (--first (and (lsp--files-same-host it file-name)
-                       (or (f-ancestor-of? it file-name)
+                       (or (lsp-f-ancestor-of? it file-name)
                            (equal it file-name)))))))
 
 (defun lsp-on-revert ()
@@ -7501,13 +7519,13 @@ Returns nil if the project should not be added to the current SESSION."
 
 (defun lsp-find-session-folder (session file-name)
   "Look in the current SESSION for folder containing FILE-NAME."
-  (let ((file-name-canonical (lsp-canonical-file-name file-name)))
+  (let ((file-name-canonical (lsp-f-canonical file-name)))
     (->> session
          (lsp-session-folders)
          (--filter (and (lsp--files-same-host it file-name-canonical)
-                        (or (f-same? it file-name-canonical)
+                        (or (lsp-f-same? it file-name-canonical)
                             (and (f-dir? it)
-                                 (f-ancestor-of? it file-name-canonical)))))
+                                 (lsp-f-ancestor-of? it file-name-canonical)))))
          (--max-by (> (length it)
                       (length other))))))
 
@@ -7527,7 +7545,7 @@ Returns nil if the project should not be added to the current SESSION."
    (->> session
         (lsp-session-folders-blacklist)
         (--first (and (lsp--files-same-host it file-name)
-                      (f-ancestor-of? it file-name)
+                      (lsp-f-ancestor-of? it file-name)
                       (prog1 t
                         (lsp--info "File %s is in blacklisted directory %s" file-name it))))
         not)
@@ -7554,7 +7572,7 @@ The library folders are defined by each client for each of the active workspace.
                                   (when-let (library-folders-fn
                                              (-> it lsp--workspace-client lsp--client-library-folders-fn))
                                     (-first (lambda (library-folder)
-                                              (f-ancestor-of? library-folder (buffer-file-name)))
+                                              (lsp-f-ancestor-of? library-folder (buffer-file-name)))
                                             (funcall library-folders-fn it)))))))
     (lsp--open-in-workspace workspace)
     (view-mode t)
@@ -7583,7 +7601,7 @@ such."
                         (lsp--find-clients)))
         (-if-let (project-root (-some-> session
                                  (lsp--calculate-root (buffer-file-name))
-                                 (lsp-canonical-file-name)))
+                                 (lsp-f-canonical)))
             (progn
               ;; update project roots if needed and persist the lsp session
               (unless (-contains? (lsp-session-folders session) project-root)
@@ -7666,8 +7684,9 @@ argument ask the user to select which language server to start. "
 
   (when (buffer-file-name)
     (let (clients
-          (matching-clients (lsp--filter-clients (-andfn #'lsp--matching-clients?
-                                                         #'lsp--server-binary-present?))))
+          (matching-clients (lsp--filter-clients
+                             (-andfn #'lsp--matching-clients?
+                                     #'lsp--server-binary-present?))))
       (cond
        (matching-clients
         (when (setq lsp--buffer-workspaces
@@ -7892,15 +7911,15 @@ g. `error', `warning') and list of LSP TAGS."
                            (setf (get it 'face) face
                                  (get it 'priority) 100)))
                (new-level (intern name))
-	       (bitmap (or (get flycheck-level 'flycheck-fringe-bitmaps)
-			   (get flycheck-level 'flycheck-fringe-bitmap-double-arrow))))
+               (bitmap (or (get flycheck-level 'flycheck-fringe-bitmaps)
+                           (get flycheck-level 'flycheck-fringe-bitmap-double-arrow))))
           (flycheck-define-error-level new-level
-            :severity (get flycheck-level 'flycheck-error-severity)
-            :compilation-level (get flycheck-level 'flycheck-compilation-level)
-            :overlay-category category
-            :fringe-bitmap bitmap
-            :fringe-face (get flycheck-level 'flycheck-fringe-face)
-            :error-list-face face)
+                                       :severity (get flycheck-level 'flycheck-error-severity)
+                                       :compilation-level (get flycheck-level 'flycheck-compilation-level)
+                                       :overlay-category category
+                                       :fringe-bitmap bitmap
+                                       :fringe-face (get flycheck-level 'flycheck-fringe-face)
+                                       :error-list-face face)
           new-level))))
 
 (with-eval-after-load 'flycheck
