@@ -4809,6 +4809,7 @@ In addition, each can have property:
 (defun lsp--render-string (str language)
   "Render STR using `major-mode' corresponding to LANGUAGE.
 When language is nil render as markup if `markdown-mode' is loaded."
+  (setq str (or str ""))
   (if-let (mode (-some (-lambda ((mode . lang))
                          (when (and (equal lang language) (functionp mode))
                            mode))
