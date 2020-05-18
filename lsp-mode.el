@@ -2904,10 +2904,12 @@ MODE determines when the callback will be called depending on the
 condition of the original buffer. METHOD is the invoked method.
 If NO-MERGE is non-nil, don't merge the results but return alist workspace->result.
 ID is the request id. "
-  (let (results)
+  (let (results errors)
     (lambda (result)
-      (push (cons lsp--cur-workspace result) results)
-      (when (eq (length results) (length workspaces))
+      (push (cons lsp--cur-workspace result)
+            (if (eq result :error) errors results))
+      (when (and (not (eq (length errors) (length workspaces)))
+                 (eq (+ (length errors) (length results)) (length workspaces)))
         (funcall callback
                  (if no-merge
                      results
@@ -3001,6 +3003,7 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
                               nil
                               target-workspaces))
              (error-callback (lambda (error)
+                               (funcall callback :error)
                                (lsp--request-cleanup-hooks id)
                                (funcall error-callback error)))
              (body (plist-put body :id id)))
