@@ -8141,13 +8141,6 @@ This avoids overloading the server with many files when starting Emacs."
 (defvar flycheck-checker)
 (defvar flycheck-checkers)
 
-(defcustom lsp-flycheck-live-reporting t
-  "If non-nil, diagnostics in buffer will be reported as soon as possible.
-Typically, on every keystroke. If nil, diagnostics will be
-reported according to `flycheck-check-syntax-automatically'."
-  :type 'boolean
-  :group 'lsp-mode)
-
 (defcustom lsp-flycheck-default-level 'error
   "Error level to use when the server does not report back a diagnostic level."
   :type '(choice (const error)
@@ -8180,10 +8173,13 @@ reported according to `flycheck-check-syntax-automatically'."
         (lsp--flycheck-level level tags)
       level)))
 
+(defvar-local lsp--diagnostics-modified? nil)
+
 (defun lsp--flycheck-start (checker callback)
   "Start an LSP syntax check with CHECKER.
 
 CALLBACK is the status callback passed by Flycheck."
+  (setq lsp--diagnostics-modified? nil)
   (->> (lsp--get-buffer-diagnostics)
        (-map (-lambda (diag)
                (flycheck-error-new
@@ -8209,7 +8205,8 @@ CALLBACK is the status callback passed by Flycheck."
 
 (defun lsp--flycheck-buffer ()
   (remove-hook 'lsp-on-idle-hook #'lsp--flycheck-buffer t)
-  (flycheck-buffer))
+  (when lsp--diagnostics-modified?
+    (flycheck-buffer)))
 
 (defun lsp--buffer-visible? ()
   (or (get-buffer-window (current-buffer))
@@ -8218,19 +8215,13 @@ CALLBACK is the status callback passed by Flycheck."
 
 (defun lsp--flycheck-report ()
   "This callback is invoked when new diagnostics are received
-from the language server. Invoke flycheck-buffer to update the
-display of errors if flycheck-mode is on and we are live
-reporting or we are in save-mode and the buffer is not modified."
-  (cond
-   ;; do nothing
-   ((and (not lsp-flycheck-live-reporting)
-         (not (and (memq 'save flycheck-check-syntax-automatically)
-                   (not (buffer-modified-p))))))
-   ;; visible and not inhibit hooks - refresh right away
-   ((and (not lsp-inhibit-lsp-hooks) (lsp--buffer-visible?))
-    (flycheck-buffer))
-   ;; not visible or inhibit hooks - schedule refresh
-   (t (add-hook 'lsp-on-idle-hook #'lsp--flycheck-buffer nil t))))
+from the language server."
+  (when (not lsp--diagnostics-modified?)
+    (setq lsp--diagnostics-modified? t)
+    (when (memq 'idle-change flycheck-check-syntax-automatically)
+      ;; make sure diagnostics are published even if the diagnostics
+      ;; have been received after idle-change has been triggered
+      (add-hook 'lsp-on-idle-hook #'lsp--flycheck-buffer nil t))))
 
 (declare-function lsp-cpp-flycheck-clang-tidy-error-explainer "lsp-cpp")
 
@@ -8294,8 +8285,6 @@ See https://github.com/emacs-lsp/lsp-mode."
 (defun lsp-flycheck-enable (&rest _)
   "Enable flycheck integration for the current buffer."
   (flycheck-mode 1)
-  (when lsp-flycheck-live-reporting
-    (setq-local flycheck-check-syntax-automatically nil))
   (setq-local flycheck-checker 'lsp)
   (lsp-flycheck-add-mode major-mode)
   (add-to-list 'flycheck-checkers 'lsp)
