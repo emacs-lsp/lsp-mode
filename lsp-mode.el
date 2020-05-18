@@ -2907,8 +2907,9 @@ ID is the request id. "
   (let (results errors)
     (lambda (result)
       (push (cons lsp--cur-workspace result)
-            (if result results errors))
-      (when (eq (+ (length errors) (length results)) (length workspaces))
+            (if (eq result :error) errors results))
+      (when (and (not (eq (length errors) (length workspaces)))
+                 (eq (+ (length errors) (length results)) (length workspaces)))
         (funcall callback
                  (if no-merge
                      results
@@ -3002,7 +3003,7 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
                               nil
                               target-workspaces))
              (error-callback (lambda (error)
-                               (funcall callback nil)
+                               (funcall callback :error)
                                (lsp--request-cleanup-hooks id)
                                (funcall error-callback error)))
              (body (plist-put body :id id)))
