@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-elm/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/performance/">
       
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
@@ -17,7 +17,7 @@
     
     
       
-        <title>Elm - LSP Mode - Language Server Protocol Support for Emacs</title>
+        <title>Perfomance - LSP Mode - Language Server Protocol Support for Emacs</title>
       
     
     
@@ -59,7 +59,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#elm" class="md-skip">
+        <a href="#performance" class="md-skip">
           Skip to content
         </a>
       
@@ -86,7 +86,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              Elm
+              Perfomance
             
           </span>
         </div>
@@ -159,7 +159,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="../.." class="md-tabs__link">
+        <a href="../.." class="md-tabs__link md-tabs__link--active">
           Home
         </a>
       
@@ -172,7 +172,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="../languages/" class="md-tabs__link md-tabs__link--active">
+        <a href="../languages/" class="md-tabs__link">
           Languages
         </a>
       
@@ -260,10 +260,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" checked>
     
     <label class="md-nav__link" for="nav-1">
       Home
@@ -297,10 +299,12 @@
           
           
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1-2" type="checkbox" id="nav-1-2">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1-2" type="checkbox" id="nav-1-2" checked>
     
     <label class="md-nav__link" for="nav-1-2">
       Setup
@@ -346,11 +350,60 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../performance/" title="Perfomance" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Perfomance
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="Perfomance" class="md-nav__link md-nav__link--active">
       Perfomance
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tuning" class="md-nav__link">
+    Tuning
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reporting-performance-problems" class="md-nav__link">
+    Reporting performance problems
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -530,12 +583,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
     
     <label class="md-nav__link" for="nav-2">
       Languages
@@ -749,135 +800,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Elm
-        <span class="md-nav__icon md-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
-        </span>
-      </label>
-    
-    <a href="./" title="Elm" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../lsp-elm/" title="Elm" class="md-nav__link">
       Elm
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-      </span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-    <nav class="md-nav" aria-label="Installation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-not-available" class="md-nav__link">
-    Debugger: Not available
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elm-elm-language-server-path" class="md-nav__link">
-    lsp-elm-elm-language-server-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elm-trace-server" class="md-nav__link">
-    lsp-elm-trace-server
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elm-elm-path" class="md-nav__link">
-    lsp-elm-elm-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elm-elm-format-path" class="md-nav__link">
-    lsp-elm-elm-format-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elm-elm-test-path" class="md-nav__link">
-    lsp-elm-elm-test-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elm-elm-analyse-trigger" class="md-nav__link">
-    lsp-elm-elm-analyse-trigger
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elm-server-args" class="md-nav__link">
-    lsp-elm-server-args
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -1590,91 +1517,16 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
+  <a href="#tuning" class="md-nav__link">
+    Tuning
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
+  <a href="#reporting-performance-problems" class="md-nav__link">
+    Reporting performance problems
   </a>
-  
-    <nav class="md-nav" aria-label="Installation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-not-available" class="md-nav__link">
-    Debugger: Not available
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elm-elm-language-server-path" class="md-nav__link">
-    lsp-elm-elm-language-server-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elm-trace-server" class="md-nav__link">
-    lsp-elm-trace-server
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elm-elm-path" class="md-nav__link">
-    lsp-elm-elm-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elm-elm-format-path" class="md-nav__link">
-    lsp-elm-elm-format-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elm-elm-test-path" class="md-nav__link">
-    lsp-elm-elm-test-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elm-elm-analyse-trigger" class="md-nav__link">
-    lsp-elm-elm-analyse-trigger
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elm-server-args" class="md-nav__link">
-    lsp-elm-server-args
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1690,7 +1542,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/lsp-elm.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/performance.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
@@ -1698,43 +1550,64 @@
                   
                 
                 
-                <h1 id="elm">Elm<a class="headerlink" href="#elm" title="Permanent link">#</a></h1>
-<h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For information about the LSP server, check the <a href="https://github.com/elm-tooling/elm-language-server">elmLS</a>.</p>
-<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
-<p><code>npm i -g @elm-tooling/elm-language-server, or clone the repository and follow installation instructions</code></p>
-<h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
-<h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<h3 id="lsp-elm-elm-language-server-path"><code>lsp-elm-elm-language-server-path</code><a class="headerlink" href="#lsp-elm-elm-language-server-path" title="Permanent link">#</a></h3>
-<p><em>Default: <code>elm-language-server</code></em></p>
-<p>Path for elm-language-server.
-Can be installed globally with: npm i -g @elm-tooling/elm-language-server,
-or manually by cloning the repo and following the installing instructions.</p>
-<hr />
-<h3 id="lsp-elm-trace-server"><code>lsp-elm-trace-server</code><a class="headerlink" href="#lsp-elm-trace-server" title="Permanent link">#</a></h3>
-<p><em>Default: <code>nil</code></em></p>
-<p>Enable/disable trace logging of client and server communication.</p>
-<hr />
-<h3 id="lsp-elm-elm-path"><code>lsp-elm-elm-path</code><a class="headerlink" href="#lsp-elm-elm-path" title="Permanent link">#</a></h3>
-<p><em>Default: ``</em></p>
-<p>The path to your elm executable.  Should be empty by default, in that case it will assume the name and try to first get it from a local npm installation or a global one.  If you set it manually it will not try to load from the npm folder.</p>
-<hr />
-<h3 id="lsp-elm-elm-format-path"><code>lsp-elm-elm-format-path</code><a class="headerlink" href="#lsp-elm-elm-format-path" title="Permanent link">#</a></h3>
-<p><em>Default: ``</em></p>
-<p>The path to your elm-format executable.  Should be empty by default, in that case it will assume the name and try to first get it from a local npm installation or a global one.  If you set it manually it will not try to load from the npm folder.</p>
-<hr />
-<h3 id="lsp-elm-elm-test-path"><code>lsp-elm-elm-test-path</code><a class="headerlink" href="#lsp-elm-elm-test-path" title="Permanent link">#</a></h3>
-<p><em>Default: ``</em></p>
-<p>The path to your elm-test executable.  Should be empty by default, in that case it will assume the name and try to first get it from a local npm installation or a global one.  If you set it manually it will not try to load from the npm folder.</p>
-<hr />
-<h3 id="lsp-elm-elm-analyse-trigger"><code>lsp-elm-elm-analyse-trigger</code><a class="headerlink" href="#lsp-elm-elm-analyse-trigger" title="Permanent link">#</a></h3>
-<p><em>Default: <code>change</code></em></p>
-<p>Elm-analyse executed on ’change’, ’save’ or ’never’ (default: ’change’).</p>
-<hr />
-<h3 id="lsp-elm-server-args"><code>lsp-elm-server-args</code><a class="headerlink" href="#lsp-elm-server-args" title="Permanent link">#</a></h3>
-<p><em>Default: <code>(--stdio)</code></em></p>
-<p>Arguments to pass to the server.</p>
-<hr />
+                <h1 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">#</a></h1>
+<h2 id="tuning">Tuning<a class="headerlink" href="#tuning" title="Permanent link">#</a></h2>
+<p>Use <code>M-x lsp-diagnose</code> to validate if your <code>lsp-mode</code> is properly configured. In the section below, you could find description for each of the checks:</p>
+<p>When configured properly <code>lsp-mode</code>'s performance is on par with mainstream LSP clients (e. g. <code>VScode</code>, <code>Theia</code>, etc). Here are steps to achieve optimal results.</p>
+<ul>
+<li>
+<p>Use Emacs 27+ with native json support. (Note: this requires that you have <a href="http://www.digip.org/jansson/">libjansson</a> installed, and that emacs was compiled with `–with-json` passed to `./configure`.) You can check your installation for native json support by running do <kbd>M-:</kbd> <code>(functionp 'json-serialize)</code> <kbd>RET</kbd>. 
+Benchmarks show that Emacs 27 is <code>~15 times</code> faster than Emacs when using Elisp json parser implementation.</p>
+</li>
+<li>
+<p>Adjust <code>gc-cons-threshold</code>. The default setting is too low for <code>lsp-mode</code>'s needs due to the fact that client/server communication generates a lot of memory/garbage. You have two options:</p>
+<ul>
+<li>Set it to big number(100mb) like most of the popular starter kits like Spacemacs/Doom/Prelude, etc do:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">gc-cons-threshold</span> <span class="mi">100000000</span><span class="p">)</span>
+</code></pre></div>
+
+<ul>
+<li>Follow the method recommended by Gnu Emacs Maintainer Eli Zaretskii: "My suggestion is to repeatedly multiply gc-cons-threshold by 2 until you stop seeing significant improvements in responsiveness, and in any case not to increase by a factor larger than 100 or somesuch. If even a 100-fold increase doesn't help, there's some deeper problem with the Lisp code which produces so much garbage, or maybe GC is not the reason for slowdown." Source: <a href="https://www.reddit.com/r/emacs/comments/brc05y/is_lspmode_too_slow_to_use_for_anyone_else/eofulix/">https://www.reddit.com/r/emacs/comments/brc05y/is_lspmode_too_slow_to_use_for_anyone_else/eofulix/</a></li>
+</ul>
+</li>
+<li>
+<p>Increase the amount of data which Emacs reads from the process. Again the emacs default is too low 4k considering that the some of the language server responses are in 800k - 3M range.</p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">read-process-output-max</span> <span class="p">(</span><span class="nf">*</span> <span class="mi">1024</span> <span class="mi">1024</span><span class="p">))</span> <span class="c1">;; 1mb</span>
+</code></pre></div>
+
+<ul>
+<li>Optional: use <code>company-capf</code> . Although <code>company-lsp</code> also supports caching <code>lsp-mode</code>'s <code>company-capf</code> does that by default. To achieve that uninstall <code>company-lsp</code> or put these lines in your config:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-prefer-capf</span> <span class="no">t</span><span class="p">)</span>
+</code></pre></div>
+
+<p><em>Note:</em> - to verify which <code>company</code> backend implementation you are using do <code>M-x company-diag</code> when performing auto-completion.</p>
+<ul>
+<li>Optional: Disable <code>lsp-ui</code>. Normally, <code>lsp-ui</code> is very fast but in some systems (especially when using <code>Windows</code>) <code>lsp-ui</code> overlays and popups might slow down emacs.</li>
+<li>Optional: fine-tune <code>lsp-idle-delay</code>. This variable determines how often lsp-mode will refresh the highlights, lenses, links, etc while you type.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-idle-delay</span> <span class="mf">0.500</span><span class="p">)</span>
+</code></pre></div>
+
+<h2 id="reporting-performance-problems">Reporting performance problems<a class="headerlink" href="#reporting-performance-problems" title="Permanent link">#</a></h2>
+<p>If you have tried all of the non-optional steps from the list and <code>emacs</code> is still not very responsive please open a PR with the following information:</p>
+<ul>
+<li>Collect <strong>lsp-log</strong> data after setting <code>lsp-print-performance</code> to <code>t</code>.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-print-performance</span> <span class="no">t</span><span class="p">)</span>
+</code></pre></div>
+
+<ul>
+<li>Include emacs performance report. Use the following step to collect it:</li>
+<li><code>M-x profiler-start</code> and select <code>CPU</code></li>
+<li>Reproduce the slow behavior.</li>
+<li><code>M-x profiler-stop</code></li>
+<li>In the profiler report expand all nodes by doing <code>C-u TAB</code>.</li>
+</ul>
+<p><em>Note:</em> - <code>lsp-mode</code> is just a frontend and the performance depends on server as well. Some servers (e. g. Palantir's Python Language Server) might be slow when performing auto-completion.</p>
                 
                   
                     
@@ -1766,7 +1639,7 @@ or manually by cloning the repo and following the installing instructions.</p>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../lsp-elixir-ls/" title="Elixir (JakeBecker)" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../configuration/" title="Configuration" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -1775,19 +1648,19 @@ or manually by cloning the repo and following the installing instructions.</p>
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Elixir (JakeBecker)
+                Configuration
               </div>
             </div>
           </a>
         
         
-          <a href="../lsp-erlang/" title="Erlang" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../additional-settings/" title="Additional settings" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Erlang
+                Additional settings
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
