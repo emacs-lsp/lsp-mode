@@ -4454,9 +4454,9 @@ Also, additional data to attached to each candidate can be passed via PLIST."
        :annotation-function #'lsp--annotate
        :company-require-match 'never
        :company-prefix-length
-       (when (or lsp--capf-cache
-                 (lsp--looking-back-trigger-characterp trigger-chars))
-         t)
+       (save-excursion
+         (goto-char bounds-start)
+         (and (lsp--looking-back-trigger-characterp trigger-chars) t))
        :company-match #'lsp--capf-company-match
        :company-doc-buffer (-compose #'company-doc-buffer
                                      #'lsp--capf-get-documentation)
