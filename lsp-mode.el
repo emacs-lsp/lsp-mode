@@ -4194,12 +4194,13 @@ and the position respectively."
                  "sortText" sort-text
                  "_emacsStartPoint" start-point)
           item)
-         ((&plist :markers) plist))
+         ((&plist :markers :prefix) plist))
     (propertize (or label insert-text)
                 'lsp-completion-item item
                 'lsp-sort-text sort-text
                 'lsp-completion-start-point start-point
-                'lsp-completion-markers markers)))
+                'lsp-completion-markers markers
+                'lsp-completion-prefix prefix)))
 
 (defun lsp--annotate (item)
   "Annotate ITEM detail."
@@ -4386,9 +4387,11 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                                (gethash "triggerCharacters")))
            (bounds-start (or (-some--> (car (bounds-of-thing-at-point 'symbol))
                                (save-excursion
-                                 (goto-char (+ it 1))
-                                 (if (lsp--looking-back-trigger-characterp trigger-chars)
-                                     (+ it 1)
+                                 (ignore-errors
+                                   (goto-char (+ it 1))
+                                   (while (lsp--looking-back-trigger-characterp trigger-chars)
+                                     (cl-incf it)
+                                     (forward-char))
                                    it)))
                              (point)))
            result done?
@@ -4422,18 +4425,21 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                                                       item)
                                              item)
                                            it)))
-                         (markers (list (point) (copy-marker (point) t))))
+                         (markers (list bounds-start (copy-marker (point) t)))
+                         (prefix (buffer-substring-no-properties bounds-start (point))))
                    (setf done? completed
                          lsp--capf-cache (cond
                                            ((and done? (not (seq-empty-p items)))
                                             (list (buffer-substring-no-properties bounds-start (point))
                                                   (lsp--capf-cached-items items)
                                                   :lsp-items nil
-                                                  :markers markers))
+                                                  :markers markers
+                                                  :prefix prefix))
                                            ((not done?) 'incomplete))
                          result (lsp--capf-filter-candidates (if done? (cadr lsp--capf-cache))
                                                              :lsp-items items
-                                                             :markers markers))))))))
+                                                             :markers markers
+                                                             :prefix prefix))))))))
       (list
        bounds-start
        (point)
@@ -4469,7 +4475,8 @@ CANDIDATE is the selected completion item.
 Others: TRIGGER-CHARS"
   (-let* (((&plist 'lsp-completion-item item
                    'lsp-completion-start-point start-point
-                   'lsp-completion-markers markers)
+                   'lsp-completion-markers markers
+                   'lsp-completion-prefix prefix)
            (text-properties-at 0 candidate))
           ((&hash "label"
                   "insertText" insert-text
@@ -4480,9 +4487,11 @@ Others: TRIGGER-CHARS"
     (cond
       (text-edit
        (apply #'delete-region markers)
+       (insert prefix)
        (lsp--apply-text-edit text-edit))
       ((or insert-text label)
        (apply #'delete-region markers)
+       (insert prefix)
        (delete-region start-point (point))
        (insert (or insert-text label))))
 
