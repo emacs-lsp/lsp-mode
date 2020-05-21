@@ -50,8 +50,8 @@ nav:
     - Haskell: https://emacs-lsp.github.io/lsp-haskell
     - Lua: page/lsp-emmy-lua.md
     - Java: https://emacs-lsp.github.io/lsp-java
-    - JavaScript/TypeScript (sourcegraph): page/lsp-typescript.md
-    - JavaScript/TypeScript (theia-ide): page/lsp-typescript-javascript.md
+    - JavaScript/TypeScript (sourcegraph): page/lsp-typescript-javascript.md
+    - JavaScript/TypeScript (theia-ide): page/lsp-typescript.md
     - JavaScript Flow: page/lsp-flow.md
     - Json: page/lsp-json.md
     - Julia: page/lsp-julia.md
