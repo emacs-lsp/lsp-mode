@@ -467,7 +467,7 @@ returned to avoid that the echo area grows uncomfortably."
 (defgroup lsp-elixir nil
   "LSP support for Elixir, using elixir-ls."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/JakeBecker/elixir-ls"))
+  :link '(url-link "https://github.com/elixir-lsp/elixir-ls"))
 
 (defcustom lsp-clients-elixir-server-executable
   (if (equal system-type 'windows-nt)
