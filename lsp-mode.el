@@ -1793,32 +1793,37 @@ WORKSPACE is the workspace that contains the diagnostics."
                                        (-let [(&hash "startLine" start-line
                                                      "startCharacter" start-character
                                                      "endLine" end-line
-                                                     "endCharacter" end-character
-                                                     "kind" _kind)
+                                                     "endCharacter" end-character)
                                               range]
                                          (list (cons start-line start-character)
                                                (cons end-line end-character))))
                                      ranges))))
-           (line-col-to-point-map (lsp--convert-line-col-to-points-batch sorted-line-col-pairs)))
+           (line-col-to-point-map (lsp--convert-line-col-to-points-batch
+                                   sorted-line-col-pairs)))
       (setq lsp--cached-folding-ranges
             (cons (buffer-chars-modified-tick)
-                  (delete-dups
-                   (seq-into
-                    (seq-map
-                     (lambda (range)
-                       (-let [(&hash "startLine" start-line
-                                     "startCharacter" start-character
-                                     "endLine" end-line
-                                     "endCharacter" end-character
-                                     "kind" kind)
-                              range]
-                         (make-lsp--folding-range
-                          :beg (ht-get line-col-to-point-map (cons start-line start-character))
-                          :end (ht-get line-col-to-point-map (cons end-line end-character))
-                          :kind kind
-                          :orig-folding-range range)))
-                     ranges)
-                    'list))))))
+                  (seq-filter (lambda (folding-range)
+                                (< (lsp--folding-range-beg folding-range)
+                                   (lsp--folding-range-end folding-range)))
+                              (delete-dups
+                               (seq-into
+                                (seq-map
+                                 (lambda (range)
+                                   (-let [(&hash "startLine" start-line
+                                                 "startCharacter" start-character
+                                                 "endLine" end-line
+                                                 "endCharacter" end-character
+                                                 "kind" kind)
+                                          range]
+                                     (make-lsp--folding-range
+                                      :beg (ht-get line-col-to-point-map
+                                                   (cons start-line start-character))
+                                      :end (ht-get line-col-to-point-map
+                                                   (cons end-line end-character))
+                                      :kind kind
+                                      :orig-folding-range range)))
+                                 ranges)
+                                'list)))))))
   (cdr lsp--cached-folding-ranges))
 
 (defun lsp--get-nested-folding-ranges ()
