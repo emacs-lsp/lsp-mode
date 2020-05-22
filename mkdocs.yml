@@ -35,7 +35,7 @@ nav:
     - Dart: https://emacs-lsp.github.io/lsp-dart
     - Dhall: page/lsp-dhall.md
     - Dockerfile: page/lsp-dockerfile.md
-    - Elixir (elixir-ls): page/lsp-elixir.md
+    - Elixir: page/lsp-elixir.md
     - Elm: page/lsp-elm.md
     - Erlang: page/lsp-erlang.md
     - Eslint: page/lsp-eslint.md
