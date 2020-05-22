@@ -6336,15 +6336,15 @@ an alist
       (let ((sym (pop stack)))
         (push (lsp--get-line-and-col sym) line-col-list)
         (unless (seq-empty-p (gethash "children" sym))
-          (setf stack (append (lsp--imenu-filter-symbols (gethash "children" sym)) stack)))))
+          (setf stack (nconc (lsp--imenu-filter-symbols (gethash "children" sym)) stack)))))
     (-sort #'lsp--line-col-comparator line-col-list)))
 
 (defun lsp--convert-line-col-to-points-batch (line-col-list)
   "Convert a sorted list of positions from line-column
 representation to point representation."
-  (let* ((line-col-to-point-map (ht-create))
-         (inhibit-field-text-motion t)
-         (curr-line 0))
+  (let ((line-col-to-point-map (ht-create))
+        (inhibit-field-text-motion t)
+        (curr-line 0))
     (save-excursion
       (save-restriction
         (widen)
