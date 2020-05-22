@@ -36,7 +36,6 @@ nav:
     - Dhall: page/lsp-dhall.md
     - Dockerfile: page/lsp-dockerfile.md
     - Elixir (elixir-ls): page/lsp-elixir.md
-    - Elixir (JakeBecker): page/lsp-elixir-ls.md
     - Elm: page/lsp-elm.md
     - Erlang: page/lsp-erlang.md
     - Eslint: page/lsp-eslint.md
