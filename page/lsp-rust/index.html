@@ -13,7 +13,7 @@
       
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.2.0">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.2.1">
     
     
       
@@ -21,7 +21,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.18ac144a.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.71dfd922.min.css">
       
       
     
@@ -727,20 +727,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../lsp-elixir/" title="Elixir (elixir-ls)" class="md-nav__link">
-      Elixir (elixir-ls)
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../lsp-elixir-ls/" title="Elixir (JakeBecker)" class="md-nav__link">
-      Elixir (JakeBecker)
+    <a href="../lsp-elixir/" title="Elixir" class="md-nav__link">
+      Elixir
     </a>
   </li>
 
@@ -1214,6 +1202,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#rustfmt" class="md-nav__link">
+    rustfmt
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rust-analyzer" class="md-nav__link">
     rust-analyzer
   </a>
@@ -1623,6 +1618,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#rustfmt" class="md-nav__link">
+    rustfmt
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rust-analyzer" class="md-nav__link">
     rust-analyzer
   </a>
@@ -1744,6 +1746,14 @@
 <p><code>lsp-rust-show-hover-context</code> turn off hover tooltips</p>
 </li>
 </ul>
+<h2 id="rustfmt">rustfmt<a class="headerlink" href="#rustfmt" title="Permanent link">#</a></h2>
+<p>Code formatting with <a href="https://github.com/rust-lang/rustfmt">rustfmt</a> can be configured with:</p>
+<p><code>lsp-rust-rustfmt-path</code> change default path for rustfmt executable</p>
+<p>To enable automatic code format on save, add this to your <code>init.el</code> (<code>rust-mode</code> is assumed to be installed):</p>
+<div class="highlight"><pre><span></span><code>(add-hook &#39;before-save-hook (lambda () (when (eq &#39;rust-mode major-mode)
+                                           (lsp-format-buffer))))
+</code></pre></div>
+
 <h2 id="rust-analyzer">rust-analyzer<a class="headerlink" href="#rust-analyzer" title="Permanent link">#</a></h2>
 <h3 id="customization_1">Customization<a class="headerlink" href="#customization_1" title="Permanent link">#</a></h3>
 <p><code>lsp-rust-analyzer-server-command</code> change command to start rust-analyzer</p>
@@ -1797,7 +1807,7 @@
 <div class="md-source-date">
   <small>
     
-      Last update: May 22, 2020
+      Last update: May 23, 2020
     
   </small>
 </div>

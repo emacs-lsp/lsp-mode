@@ -106,14 +106,6 @@
     "debugger": "Yes"
   },
   {
-    "name": "elixir-ls",
-    "full-name": "Elixir",
-    "server-name": "elixir-ls",
-    "server-url": "https://github.com/JakeBecker/elixir-ls",
-    "installation-url": "https://github.com/JakeBecker/elixir-ls",
-    "debugger": "Yes"
-  },
-  {
     "name": "elm",
     "full-name": "Elm",
     "server-name": "elmLS",
