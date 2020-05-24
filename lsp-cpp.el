@@ -93,6 +93,27 @@ buffer."
       (apply explanation args)
       (goto-char (point-min)))))
 
+(defun lsp-cpp-flycheck-clang-tidy--show-loading-status ()
+  "Show a loading string while clang-tidy documentation is fetched from llvm.org.
+Recent versions of `flycheck' call `display-message-or-buffer' to
+display error explanations. `display-message-or-buffer' displays
+the documentation string either in the echo area or in a separate
+window, depending on the string's height. This function forces to
+always display it in a separate window by appending the required
+number of newlines."
+  (let* ((num-lines-threshold
+          (round (if resize-mini-windows
+                     (cond ((floatp max-mini-window-height)
+                            (* (frame-height)
+                               max-mini-window-height))
+                           ((integerp max-mini-window-height)
+                            max-mini-window-height)
+                           (t
+                            1))
+                   1)))
+         (extra-new-lines (make-string num-lines-threshold ?\n)))
+    (concat "Loading documentation..." extra-new-lines)))
+
 (defun lsp-cpp-flycheck-clang-tidy--show-documentation (error-id)
   "Show clang-tidy documentation about ERROR-ID.
 
@@ -110,7 +131,7 @@ Information comes from the clang.llvm.org website."
                            (lsp-cpp-flycheck-clang-tidy--extract-relevant-doc-section)))
                       (lsp-cpp-flycheck-clang-tidy--explain-error
                        #'shr-insert-document doc-contents)))))
-  "Loading documentation...")
+  (lsp-cpp-flycheck-clang-tidy--show-loading-status))
 
 ;;;###autoload
 (defun lsp-cpp-flycheck-clang-tidy-error-explainer (error)
