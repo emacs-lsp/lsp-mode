@@ -221,6 +221,11 @@ the buffer when it becomes large."
   :group 'lsp-mode
   :type '(repeat symbol))
 
+(defcustom lsp-progress-via-spinner t
+  "If non-nil, display LSP $/progress reports via a spinner in the modeline."
+  :group 'lsp
+  :type 'boolean)
+
 (defvar-local lsp--cur-workspace nil)
 
 (defvar-local lsp--cur-version 0)
@@ -1554,19 +1559,34 @@ WORKSPACE is the workspace that contains the progress token."
         (let* ((message (gethash "title" value))
                (cur (gethash "percentage" value nil))
                (reporter
-                (if cur
-                    (make-progress-reporter message 0 100 cur)
-                  ;; Spinner only
-                  (make-progress-reporter message nil nil))))
+                (if lsp-progress-via-spinner
+                    ;; The progress relates to the server as a whole,
+                    ;; display it on all buffers.
+                    (mapcar (lambda (buffer)
+                              (with-current-buffer buffer
+                                (spinner-start 'progress-bar))
+                              buffer)
+                            (lsp--workspace-buffers workspace))
+                  (if cur
+                      (make-progress-reporter message 0 100 cur)
+                    ;; No percentage, just progress
+                    (make-progress-reporter message nil nil)))))
           (lsp-workspace-set-work-done-token token reporter workspace)))
 
        ("report"
         (when-let ((reporter (lsp-workspace-get-work-done-token token workspace)))
-            (progress-reporter-update reporter (gethash "percentage" value nil))))
+          (when (not lsp-progress-via-spinner)
+            (progress-reporter-update reporter (gethash "percentage" value nil)))))
 
        ("end"
         (when-let ((reporter (lsp-workspace-get-work-done-token token workspace)))
-            (progress-reporter-done reporter)
+          (if lsp-progress-via-spinner
+              (mapc (lambda (buffer)
+                      (when (buffer-live-p buffer)
+                        (with-current-buffer buffer
+                          (spinner-stop))))
+                    reporter)
+            (progress-reporter-done reporter))
             (lsp-workspace-rem-work-done-token token workspace))))))
 
 (defun lsp-diagnostics (&optional current-workspace?)
