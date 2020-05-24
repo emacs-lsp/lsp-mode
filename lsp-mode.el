@@ -1560,7 +1560,13 @@ WORKSPACE is the workspace that contains the progress token."
                (cur (gethash "percentage" value nil))
                (reporter
                 (if lsp-progress-via-spinner
-                    (spinner-start 'progress-bar)
+                    ;; The progress relates to the server as a whole,
+                    ;; display it on all buffers.
+                    (mapcar (lambda (buffer)
+                              (with-current-buffer buffer
+                                (spinner-start 'progress-bar))
+                              buffer)
+                            (lsp--workspace-buffers workspace))
                   (if cur
                       (make-progress-reporter message 0 100 cur)
                     ;; No percentage, just progress
@@ -1575,7 +1581,11 @@ WORKSPACE is the workspace that contains the progress token."
        ("end"
         (when-let ((reporter (lsp-workspace-get-work-done-token token workspace)))
           (if lsp-progress-via-spinner
-              (spinner-stop)
+              (mapc (lambda (buffer)
+                      (when (buffer-live-p buffer)
+                        (with-current-buffer buffer
+                          (spinner-stop))))
+                    reporter)
             (progress-reporter-done reporter))
             (lsp-workspace-rem-work-done-token token workspace))))))
 
