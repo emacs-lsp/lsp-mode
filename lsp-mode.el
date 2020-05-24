@@ -5692,7 +5692,10 @@ unless overridden by a more specific face association."
     ("macro" . lsp-face-semhl-macro)
     ("variable" . lsp-face-semhl-variable)
     ("parameter" . lsp-face-semhl-parameter)
-    ("label" . lsp-face-semhl-label))
+    ("label" . lsp-face-semhl-label)
+    ("enumConstant" . lsp-face-semhl-constant)
+    ("dependent" . lsp-face-semhl-type)
+    ("concept" . lsp-face-semhl-interface))
   "Faces to use for semantic highlighting if
 `lsp-semantic-highlighting' is set to :semantic-tokens.")
 
