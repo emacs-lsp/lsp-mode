@@ -3138,58 +3138,57 @@ disappearing, unset all the variables related to it."
                    ,@(when lsp-enable-file-watchers '((didChangeWatchedFiles . ((dynamicRegistration . t)))))
                    (workspaceFolders . t)
                    (configuration . t)))
-     (textDocument . (append ((declaration . ((linkSupport . t)))
-                              (definition . ((linkSupport . t)))
-                              (implementation . ((linkSupport . t)))
-                              (typeDefinition . ((linkSupport . t)))
-                              (synchronization . ((willSave . t) (didSave . t) (willSaveWaitUntil . t)))
-                              (documentSymbol . ((symbolKind . ((valueSet . ,(apply 'vector (number-sequence 1 26)))))
-                                                 (hierarchicalDocumentSymbolSupport . t)))
-                              (formatting . ((dynamicRegistration . t)))
-                              (rangeFormatting . ((dynamicRegistration . t)))
-                              ,@(pcase lsp-semantic-highlighting
-                                  ((or 'immediate 'deferred) '((semanticHighlighting . t)))
-                                  ('semantic-tokens `((semanticTokens
-                                                       . ((tokenModifiers . ,(if lsp-semantic-tokens-apply-modifiers
-                                                                                 (apply 'vector (mapcar #'car lsp-semantic-token-modifier-faces)) []))
-                                                          (tokenTypes . ,(apply 'vector (mapcar #'car lsp-semantic-token-faces)))))))
-                                  (_ '()))
-                              (rename . ((dynamicRegistration . t) (prepareSupport . t)))
-                              (codeAction . ((dynamicRegistration . t)
-                                             (isPreferredSupport . t)
-                                             (codeActionLiteralSupport . ((codeActionKind . ((valueSet . [""
-                                                                                                          "quickfix"
-                                                                                                          "refactor"
-                                                                                                          "refactor.extract"
-                                                                                                          "refactor.inline"
-                                                                                                          "refactor.rewrite"
-                                                                                                          "source"
-                                                                                                          "source.organizeImports"])))))))
-                              (completion . ((completionItem . ((snippetSupport . ,(cond
-                                                                                    ((and lsp-enable-snippet (not (featurep 'yasnippet)) t)
-                                                                                     (lsp--warn (concat
-                                                                                                 "Yasnippet is not installed, but `lsp-enable-snippet' is set to `t'. "
-                                                                                                 "You must either install yasnippet, or disable snippet support."))
-                                                                                     :json-false)
-                                                                                    (lsp-enable-snippet t)
-                                                                                    (t :json-false)))
-                                                                (documentationFormat . ["markdown"])))
-                                             (contextSupport . t)))
-                              (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))))
-                              (documentLink . ((dynamicRegistration . t)
-                                               (tooltipSupport . t)))
-                              (hover . ((contentFormat . ["markdown" "plaintext"])))
-                              (foldingRange . ,(when lsp-enable-folding
-                                                 `((dynamicRegistration . t)
-                                                   ,@(when lsp-folding-range-limit
-                                                       `((rangeLimit . ,lsp-folding-range-limit)))
-                                                   ,@(when lsp-folding-line-folding-only
-                                                       `((lineFoldingOnly . t))))))
-                              (callHierarchy . ((dynamicRegistration . :json-false)))
-                              (publishDiagnostics . ((relatedInformation . t)
-                                                     (tagSupport . ((valueSet . [1 2])))
-                                                     (versionSupport . t))))
-                             ))
+     (textDocument . ((declaration . ((linkSupport . t)))
+                      (definition . ((linkSupport . t)))
+                      (implementation . ((linkSupport . t)))
+                      (typeDefinition . ((linkSupport . t)))
+                      (synchronization . ((willSave . t) (didSave . t) (willSaveWaitUntil . t)))
+                      (documentSymbol . ((symbolKind . ((valueSet . ,(apply 'vector (number-sequence 1 26)))))
+                                         (hierarchicalDocumentSymbolSupport . t)))
+                      (formatting . ((dynamicRegistration . t)))
+                      (rangeFormatting . ((dynamicRegistration . t)))
+                      ,@(pcase lsp-semantic-highlighting
+                          ((or 'immediate 'deferred) '((semanticHighlighting . t)))
+                          ('semantic-tokens `((semanticTokens
+                                               . ((tokenModifiers . ,(if lsp-semantic-tokens-apply-modifiers
+                                                                         (apply 'vector (mapcar #'car lsp-semantic-token-modifier-faces)) []))
+                                                  (tokenTypes . ,(apply 'vector (mapcar #'car lsp-semantic-token-faces)))))))
+                          (_ '()))
+                      (rename . ((dynamicRegistration . t) (prepareSupport . t)))
+                      (codeAction . ((dynamicRegistration . t)
+                                     (isPreferredSupport . t)
+                                     (codeActionLiteralSupport . ((codeActionKind . ((valueSet . [""
+                                                                                                  "quickfix"
+                                                                                                  "refactor"
+                                                                                                  "refactor.extract"
+                                                                                                  "refactor.inline"
+                                                                                                  "refactor.rewrite"
+                                                                                                  "source"
+                                                                                                  "source.organizeImports"])))))))
+                      (completion . ((completionItem . ((snippetSupport . ,(cond
+                                                                            ((and lsp-enable-snippet (not (featurep 'yasnippet)) t)
+                                                                             (lsp--warn (concat
+                                                                                         "Yasnippet is not installed, but `lsp-enable-snippet' is set to `t'. "
+                                                                                         "You must either install yasnippet, or disable snippet support."))
+                                                                             :json-false)
+                                                                            (lsp-enable-snippet t)
+                                                                            (t :json-false)))
+                                                        (documentationFormat . ["markdown"])))
+                                     (contextSupport . t)))
+                      (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))))
+                      (documentLink . ((dynamicRegistration . t)
+                                       (tooltipSupport . t)))
+                      (hover . ((contentFormat . ["markdown" "plaintext"])))
+                      (foldingRange . ,(when lsp-enable-folding
+                                         `((dynamicRegistration . t)
+                                           ,@(when lsp-folding-range-limit
+                                               `((rangeLimit . ,lsp-folding-range-limit)))
+                                           ,@(when lsp-folding-line-folding-only
+                                               `((lineFoldingOnly . t))))))
+                      (callHierarchy . ((dynamicRegistration . :json-false)))
+                      (publishDiagnostics . ((relatedInformation . t)
+                                             (tagSupport . ((valueSet . [1 2])))
+                                             (versionSupport . t)))))
      (window . ((workDoneProgress . t))))
    custom-capabilities))
 
