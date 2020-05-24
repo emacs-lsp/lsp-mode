@@ -189,6 +189,19 @@ producing stale highlights."
           (const :tag "Deferred" :deferred)
           (const :tag "SemanticTokens" :semantic-tokens)))
 
+(defcustom lsp-semantic-highlighting-warn-on-missing-face nil
+  "When non-nil, this option will emit a warning any time a token
+or modifier type returned by a language server has no face associated with it."
+  :group 'lsp-mode
+  :type 'boolean)
+
+(defcustom lsp-semantic-tokens-apply-modifiers nil
+  "Determines whether semantic highlighting should take token
+modifiers into account. Only applies if
+`lsp-semantic-highlighting' is set to `:semantic-tokens'."
+  :group 'lsp-mode
+  :type 'boolean)
+
 (defcustom lsp-semantic-highlighting-context-lines 15
   "How many lines to fontify above `(window-start)' and below `(window-end)'."
   :group 'lsp-mode
@@ -2613,6 +2626,10 @@ active `major-mode', or for all major modes when ALL-MODES is t."
   ;; (or nil) for each token type supported by the language server.
   (semantic-highlighting-faces nil)
 
+  ;; If semanticTokens are used for highlighting, semantic-highlighting-modifier-faces contains
+  ;; one face (or nil) for each modifier type supported by the language server
+  (semantic-highlighting-modifier-faces nil)
+
   ;; Extra client capabilities provided by third-party packages using
   ;; `lsp-register-client-capabilities'. It's value is an alist of (PACKAGE-NAME
   ;; . CAPS), where PACKAGE-NAME is a symbol of the third-party package name,
@@ -3110,8 +3127,6 @@ disappearing, unset all the variables related to it."
     (unless lsp--buffer-workspaces
       (lsp-managed-mode -1))))
 
-;; TODO: token modifiers
-;; TODO: dynamic registration?
 (defun lsp--client-capabilities (&optional custom-capabilities)
   "Return the client capabilities."
   (append
@@ -3135,7 +3150,8 @@ disappearing, unset all the variables related to it."
                               ,@(pcase lsp-semantic-highlighting
                                   ((or 'immediate 'deferred) '((semanticHighlighting . t)))
                                   ('semantic-tokens `((semanticTokens
-                                                       . ((tokenModifiers . [])
+                                                       . ((tokenModifiers . ,(if lsp-semantic-tokens-apply-modifiers
+                                                                                 (apply 'vector (mapcar #'car lsp-semantic-token-modifier-faces)) []))
                                                           (tokenTypes . ,(apply 'vector (mapcar #'car lsp-semantic-token-faces)))))))
                                   (_ '()))
                               (rename . ((dynamicRegistration . t) (prepareSupport . t)))
@@ -5656,8 +5672,6 @@ unless overridden by a more specific face association."
   "Face used for labels."
   :group 'lsp-faces)
 
-;; TODO: support token modifiers
-
 (defvar lsp-semantic-token-faces
   '(("comment" . lsp-face-semhl-comment)
     ("keyword" . lsp-face-semhl-keyword)
@@ -5681,6 +5695,14 @@ unless overridden by a more specific face association."
     ("label" . lsp-face-semhl-label))
   "Faces to use for semantic highlighting if
 `lsp-semantic-highlighting' is set to :semantic-tokens.")
+
+(defvar lsp-semantic-token-modifier-faces
+  ;; TODO: add default definitions
+  '(("declaration" . lsp-face-semhl-interface)
+    ("readonly" . lsp-face-semhl-constant))
+  "Faces to use for semantic token modifiers if
+`lsp-semantic-highlighting' is set to `:semantic-tokens' and
+`lsp-semantic-tokens-apply-modifiers' is non-nil.")
 
 (defvar-local lsp--semantic-highlighting-current-region nil
   "Denotes the region `(min . max)' most recently fontified via the
@@ -5844,18 +5866,31 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
                    (lsp--workspace-semantic-highlighting-faces workspace) lines))))
           (lsp--semantic-highlighting-add-to-cache lines))))))
 
+(defun lsp--build-face-map (identifiers faces category varname)
+  (apply 'vector
+         (mapcar (lambda (id)
+                   (let ((maybe-face (cdr (assoc id lsp-semantic-token-faces))))
+                     (when (and lsp-semantic-highlighting-warn-on-missing-face
+                                (not maybe-face))
+                       (lsp-warn "No face has been associated to the %s '%s': consider adding a corresponding definition to %s"
+                                 category id varname)) maybe-face)) identifiers)))
+
 (defun lsp--semantic-tokens-initialize-workspace (workspace)
   (cl-assert workspace)
   (let* ((token-capabilities (gethash
                               "semanticTokensProvider"
                               (lsp--workspace-server-capabilities workspace)))
-         (legend (gethash "legend" token-capabilities))
-         (token-types (gethash "tokenTypes" legend)))
+         (legend (gethash "legend" token-capabilities)))
     (setf (lsp--workspace-semantic-highlighting-faces workspace)
-          (apply 'vector
-                 (mapcar (lambda (token)
-                           (cdr (assoc token lsp-semantic-token-faces)))
-                         token-types)))))
+          (lsp--build-face-map (gethash "tokenTypes" legend)
+                               lsp-semantic-token-faces
+                               "semantic token"
+                               "lsp-semantic-token-faces"))
+    (setf (lsp--workspace-semantic-highlighting-modifier-faces workspace)
+          (lsp--build-face-map (gethash "tokenModifiers" legend)
+                               lsp-semantic-token-modifier-faces
+                               "semantic token modifier"
+                               "lsp-semantic-token-modifier-faces"))))
 
 (defvar-local lsp--semantic-tokens-cache nil)
 
@@ -5882,7 +5917,10 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
 
 (defun lsp--semantic-tokens-fontify (old-fontify-region beg end &optional loudly)
   ;; TODO: support multiple language servers per buffer?
-  (let ((faces (seq-some #'lsp--workspace-semantic-highlighting-faces lsp--buffer-workspaces)))
+  (let ((faces (seq-some #'lsp--workspace-semantic-highlighting-faces lsp--buffer-workspaces))
+        (modifier-faces
+         (when lsp-semantic-tokens-apply-modifiers
+           (seq-some #'lsp--workspace-semantic-highlighting-modifier-faces lsp--buffer-workspaces))))
     (if (or (eq nil lsp--semantic-tokens-cache)
             (eq nil faces)
             ;; delay fontification until we have fresh tokens
@@ -5904,7 +5942,12 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
              (final-beg)
              (final-end)
              (line-min)
-             (line-max-inclusive))
+             (line-max-inclusive)
+             (modifier-bitmask)
+             (modifier-index)
+             (modifier-cur-bit)
+             (text-property-beg)
+             (text-property-end))
         (save-mark-and-excursion
           (save-restriction
             (widen)
@@ -5935,9 +5978,14 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
                  (setq current-line (+ current-line line-delta)))
                (setq column (+ column (aref data (1+ i))))
                (setq face (aref faces (aref data (+ i 3))))
-               (when face
-                 (put-text-property (+ line-start-pos column)
-                                    (+ line-start-pos (+ column (aref data (+ i 2)))) 'face face))
+               (setq text-property-beg (+ line-start-pos column))
+               (setq text-property-end (+ text-property-beg (aref data (+ i 2))))
+               (when face (put-text-property text-property-beg text-property-end 'face face))
+               (cl-loop for i from 0 to (1- (length modifier-faces)) do
+                        (when (and (aref modifier-faces i)
+                                   (> 0 (logand (aref data (+ i 4)) (lsh 1 i))))
+                          (add-face-text-property text-property-beg text-property-end
+                                                  (aref modifier-faces i))))
                when (> current-line line-max-inclusive) return nil)))))
       `(jit-lock-bounds ,beg . ,end))))
 
