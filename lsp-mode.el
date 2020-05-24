@@ -169,25 +169,19 @@ the buffer when it becomes large."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
-;; TODO: update docstring
 (defcustom lsp-semantic-highlighting nil
-  "When set to `:immediate' or `:deferred', this option enables
- semantic highlighting as proposed at
- https://github.com/microsoft/vscode-languageserver-node/pull/367.
+  "When set to `:semantic-tokens', this option enables support
+for semantic highlighting as defined by the Language Server
+Protocol 3.16.
 
- If `lsp-semantic-highlighting' is set to `:immediate', semantic
- highlighting information received from the language server is
- applied immediately, and in full. If `lsp-semantic-highlighting'
- is set to `:deferred', semantic highlighting will be performed
- after an idle timeout, and only within a limit region
- around `(point)' (see
- `lsp-semantic-highlighting-context-lines'). Compared to
- `:immediate', `:deferred' has a higher risk of producing stale
- highlights but may offer significantly better performance.
-
- Note that semantic highlighting is not yet part of the official
- LSP spec and may occasionally break as language servers are
- updated."
+Some older language servers may not conform to the semantic
+tokens protocol yet, but implement the theia semantic
+highlighting protocol, see
+https://github.com/microsoft/vscode-languageserver-node/pull/367.
+To use theia highlighting, set `lsp-semantic-highlighting' to
+`:immediate' or `:deferred', where `:deferred' should offer
+better performance than `:immediate' but has a higher risk of
+producing stale highlights."
   :group 'lsp-mode
   :type '(choice
           (const :tag "Disable" nil)
@@ -5685,7 +5679,8 @@ unless overridden by a more specific face association."
     ("variable" . lsp-face-semhl-variable)
     ("parameter" . lsp-face-semhl-parameter)
     ("label" . lsp-face-semhl-label))
-  "TODO: docstring")
+  "Faces to use for semantic highlighting if
+`lsp-semantic-highlighting' is set to :semantic-tokens.")
 
 (defvar-local lsp--semantic-highlighting-current-region nil
   "Denotes the region `(min . max)' most recently fontified via the
