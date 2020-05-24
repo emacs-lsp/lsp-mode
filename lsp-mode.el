@@ -3148,8 +3148,8 @@ disappearing, unset all the variables related to it."
                       (formatting . ((dynamicRegistration . t)))
                       (rangeFormatting . ((dynamicRegistration . t)))
                       ,@(pcase lsp-semantic-highlighting
-                          ((or 'immediate 'deferred) '((semanticHighlighting . t)))
-                          ('semantic-tokens `((semanticTokens
+                          ((or :immediate :deferred) '((semanticHighlightingCapabilities . ((semanticHighlighting . t)))))
+                          (:semantic-tokens `((semanticTokens
                                                . ((tokenModifiers . ,(if lsp-semantic-tokens-apply-modifiers
                                                                          (apply 'vector (mapcar #'car lsp-semantic-token-modifier-faces)) []))
                                                   (tokenTypes . ,(apply 'vector (mapcar #'car lsp-semantic-token-faces)))))))
@@ -3474,7 +3474,7 @@ in that particular folder."
       (lsp--update-on-type-formatting-hook)
       (lsp--update-signature-help-hook)
 
-      (when (and (eq lsp-semantic-highlighting 'semantic-tokens)
+      (when (and (eq lsp-semantic-highlighting :semantic-tokens)
                  (lsp-feature? "textDocument/semanticTokens"))
               (lsp--semantic-tokens-initialize-buffer))
       (add-hook 'post-command-hook #'lsp--post-command nil t)
@@ -5859,7 +5859,7 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
          (inhibit-field-text-motion t))
     (when buffer
       (with-current-buffer buffer
-        (if (eq lsp-semantic-highlighting 'immediate)
+        (if (eq lsp-semantic-highlighting :immediate)
             (save-mark-and-excursion
               (save-restriction
                 (widen)
@@ -5898,7 +5898,6 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
 (defvar-local lsp--semantic-tokens-teardown nil)
 
 (defun lsp--semantic-tokens-initialize-buffer ()
-  (message "semantic-tokens-initialize-buffer")
   (let* ((old-extend-region-functions font-lock-extend-region-functions)
          ;; make sure font-lock always fontifies entire lines (TODO: do we also have
          ;; to change some jit-lock-...-region functions/variables?)
@@ -5990,7 +5989,7 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
        (puthash "documentVersion" cur-version lsp--semantic-tokens-cache)
        (font-lock-flush))
      :mode 'tick
-     :cancel-token :semantic-tokens)))
+     :cancel-token (format "semantic-tokens-%s" (lsp--buffer-uri)))))
 
 (defconst lsp--symbol-kind
   '((1 . "File")
