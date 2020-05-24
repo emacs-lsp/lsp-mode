@@ -19,7 +19,7 @@
   <a href="https://emacs-lsp.github.io/lsp-mode/page/extensions"><strong>extensions</strong></a> |
   <a href="https://emacs-lsp.github.io/lsp-mode/page/troubleshooting"><strong>troubleshooting</strong></a> |
   <a href="https://emacs-lsp.github.io/lsp-mode/page/gallery"><strong>screenshots</strong></a> |
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/faq"><strong>FAQ</strong></a> 
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/faq"><strong>FAQ</strong></a>
 </p>
 <hr>
 
@@ -211,6 +211,16 @@ primary working on/responsible for.
         Dart | Flutter | docs
       </div>
     </td>
-    <td></td>
+    <td align="center">
+      <div>
+        <a href="https://github.com/danielmartin">
+          <img src="https://github.com/danielmartin.png" width="100px;" style="border-radius: 50%;" alt="danielmartin"/>
+          <br/>
+          <sub><b>danielmartin</b></sub>
+        </a>
+        <br/>
+        C++ | Swift
+      </div>
+    </td>
   </tr>
 </table>
