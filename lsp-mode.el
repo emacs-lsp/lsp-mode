@@ -1857,23 +1857,18 @@ WORKSPACE is the workspace that contains the diagnostics."
       (setq lsp--cached-nested-folding-ranges
             (lsp--folding-range-build-trees (lsp--get-folding-ranges))))))
 
-(defun lsp--folding-range-insert-into-trees (trees range)
-  (unless
-      (cl-block top
-        (dolist (tree-node (reverse trees))
-          (when (lsp--range-inside-p range tree-node)
-            (-if-let (children (lsp--folding-range-children tree-node))
-                (lsp--folding-range-insert-into-trees children range)
-              (setf (lsp--folding-range-children tree-node) (list range)))
-            (cl-return-from top t))))
-    (nconc trees (list range))))
-
 (defun lsp--folding-range-build-trees (ranges)
   (setq ranges (seq-sort #'lsp--range-before-p ranges))
-  (let ((trees (list (lsp-seq-first ranges))))
-    (dolist (range (lsp-seq-rest ranges))
-      (lsp--folding-range-insert-into-trees trees range))
-    trees))
+  (let* ((dummy-node (make-lsp--folding-range
+                      :beg most-negative-fixnum
+                      :end most-positive-fixnum))
+         (stack (list dummy-node)))
+    (dolist (range ranges)
+      (while (not (lsp--range-inside-p range (car stack)))
+        (pop stack))
+      (push range (lsp--folding-range-children (car stack)))
+      (push range stack))
+    (lsp--folding-range-children dummy-node)))
 
 (defun lsp--range-inside-p (r1 r2)
   "Return non-nil if folding range R1 lies inside R2"
