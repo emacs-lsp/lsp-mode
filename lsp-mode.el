@@ -7867,6 +7867,13 @@ reported according to `flycheck-check-syntax-automatically'."
   :type 'boolean
   :group 'lsp-mode)
 
+(defcustom lsp-flycheck-default-level 'error
+  "Error level to use when the server does not report back a diagnostic level."
+  :type '(choice (const error)
+                 (const warning)
+                 (const info))
+  :group lsp-mode)
+
 (defun lsp--get-buffer-diagnostics ()
   (or (gethash (lsp--fix-path-casing buffer-file-name)
                (lsp-diagnostics))
@@ -7878,7 +7885,8 @@ reported according to `flycheck-check-syntax-automatically'."
                  (1 'error)
                  (2 'warning)
                  (3 'info)
-                 (4 'info)))
+                 (4 'info)
+                 (_ lsp-flycheck-default-level)))
         ;; materialize only first tag.
         (tags (->> diag
                    (lsp-diagnostic-original)
