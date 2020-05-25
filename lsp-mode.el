@@ -1810,46 +1810,42 @@ WORKSPACE is the workspace that contains the diagnostics."
   (unless (eq (buffer-chars-modified-tick) (car lsp--cached-folding-ranges))
     (let* ((ranges (lsp-request "textDocument/foldingRange"
                                 `(:textDocument ,(lsp--text-document-identifier))))
-           (sorted-line-col-pairs (-sort
-                                   #'lsp--line-col-comparator
-                                   (apply
-                                    #'nconc
-                                    (seq-map
-                                     (lambda (range)
-                                       (-let [(&hash "startLine" start-line
-                                                     "startCharacter" start-character
-                                                     "endLine" end-line
-                                                     "endCharacter" end-character)
-                                              range]
-                                         (list (cons start-line start-character)
-                                               (cons end-line end-character))))
-                                     ranges))))
+           (sorted-line-col-pairs (->> ranges
+                                       (cl-mapcan (lambda (range)
+                                                    (-let [(&hash "startLine" start-line
+                                                                  "startCharacter" start-character
+                                                                  "endLine" end-line
+                                                                  "endCharacter" end-character)
+                                                           range]
+                                                      (list (cons start-line start-character)
+                                                            (cons end-line end-character)))))
+                                       (-sort #'lsp--line-col-comparator)))
            (line-col-to-point-map (lsp--convert-line-col-to-points-batch
                                    sorted-line-col-pairs)))
       (setq lsp--cached-folding-ranges
             (cons (buffer-chars-modified-tick)
-                  (seq-filter (lambda (folding-range)
-                                (< (lsp--folding-range-beg folding-range)
-                                   (lsp--folding-range-end folding-range)))
-                              (delete-dups
-                               (seq-into
-                                (seq-map
-                                 (lambda (range)
-                                   (-let [(&hash "startLine" start-line
-                                                 "startCharacter" start-character
-                                                 "endLine" end-line
-                                                 "endCharacter" end-character
-                                                 "kind" kind)
-                                          range]
-                                     (make-lsp--folding-range
-                                      :beg (ht-get line-col-to-point-map
-                                                   (cons start-line start-character))
-                                      :end (ht-get line-col-to-point-map
-                                                   (cons end-line end-character))
-                                      :kind kind
-                                      :orig-folding-range range)))
-                                 ranges)
-                                'list)))))))
+                  (--> ranges
+                       (seq-map (lambda (range)
+                                  (-let [(&hash "startLine" start-line
+                                                "startCharacter" start-character
+                                                "endLine" end-line
+                                                "endCharacter" end-character
+                                                "kind" kind)
+                                         range]
+                                    (make-lsp--folding-range
+                                     :beg (ht-get line-col-to-point-map
+                                                  (cons start-line start-character))
+                                     :end (ht-get line-col-to-point-map
+                                                  (cons end-line end-character))
+                                     :kind kind
+                                     :orig-folding-range range)))
+                                it)
+                       (seq-filter (lambda (folding-range)
+                                     (< (lsp--folding-range-beg folding-range)
+                                        (lsp--folding-range-end folding-range)))
+                                   it)
+                       (seq-into it 'list)
+                       (delete-dups it))))))
   (cdr lsp--cached-folding-ranges))
 
 (defun lsp--get-nested-folding-ranges ()
@@ -1861,23 +1857,18 @@ WORKSPACE is the workspace that contains the diagnostics."
       (setq lsp--cached-nested-folding-ranges
             (lsp--folding-range-build-trees (lsp--get-folding-ranges))))))
 
-(defun lsp--folding-range-insert-into-trees (trees range)
-  (unless
-      (cl-block top
-        (dolist (tree-node (reverse trees))
-          (when (lsp--range-inside-p range tree-node)
-            (-if-let (children (lsp--folding-range-children tree-node))
-                (lsp--folding-range-insert-into-trees children range)
-              (setf (lsp--folding-range-children tree-node) (list range)))
-            (cl-return-from top t))))
-    (nconc trees (list range))))
-
 (defun lsp--folding-range-build-trees (ranges)
   (setq ranges (seq-sort #'lsp--range-before-p ranges))
-  (let ((trees (list (lsp-seq-first ranges))))
-    (dolist (range (lsp-seq-rest ranges))
-      (lsp--folding-range-insert-into-trees trees range))
-    trees))
+  (let* ((dummy-node (make-lsp--folding-range
+                      :beg most-negative-fixnum
+                      :end most-positive-fixnum))
+         (stack (list dummy-node)))
+    (dolist (range ranges)
+      (while (not (lsp--range-inside-p range (car stack)))
+        (pop stack))
+      (push range (lsp--folding-range-children (car stack)))
+      (push range stack))
+    (lsp--folding-range-children dummy-node)))
 
 (defun lsp--range-inside-p (r1 r2)
   "Return non-nil if folding range R1 lies inside R2"
@@ -6411,8 +6402,7 @@ representation to point representation."
       (and (= l1 l2)
            (cond ((and c1 c2)
                   (< c1 c2))
-                 (c1 t)
-                 (c2 nil)))))
+                 (c1 t)))))
 
 (defun lsp--imenu-create-index ()
   "Create imenu index from document symbols."
