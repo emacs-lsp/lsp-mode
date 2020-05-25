@@ -1526,6 +1526,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-pyls-plugins-jedi-completion-include-class-objects" class="md-nav__link">
+    lsp-pyls-plugins-jedi-completion-include-class-objects
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-pyls-rename-backend" class="md-nav__link">
     lsp-pyls-rename-backend
   </a>
@@ -2285,6 +2292,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-pyls-plugins-jedi-completion-include-class-objects" class="md-nav__link">
+    lsp-pyls-plugins-jedi-completion-include-class-objects
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-pyls-rename-backend" class="md-nav__link">
     lsp-pyls-rename-backend
   </a>
@@ -2554,6 +2568,11 @@ should be the python executable. This option will be prioritized over
 <p><em>Default: <code>nil</code></em></p>
 <p>If enabled, uses fuzzy completion in jedi. Requires pyls &gt;= 0.32.0
 Can hit performance, as well as lsp-mode implements its own fuzzy search on completion items.</p>
+<hr />
+<h3 id="lsp-pyls-plugins-jedi-completion-include-class-objects"><code>lsp-pyls-plugins-jedi-completion-include-class-objects</code><a class="headerlink" href="#lsp-pyls-plugins-jedi-completion-include-class-objects" title="Permanent link">#</a></h3>
+<p><em>Default: <code>t</code></em></p>
+<p>If enabled, adds class objects to completion in order to avoid snippet with init args.
+Has no effect if ‘lsp-pyls-plugins-jedi-completion-include-params’ is disabled. Requires pyls &gt;= 0.33.0</p>
 <hr />
 <h3 id="lsp-pyls-rename-backend"><code>lsp-pyls-rename-backend</code><a class="headerlink" href="#lsp-pyls-rename-backend" title="Permanent link">#</a></h3>
 <p><em>Default: <code>jedi</code></em></p>
