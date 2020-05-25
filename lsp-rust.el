@@ -612,7 +612,7 @@ The command should include `--message=format=json` or similar option."
          (dolist (hint res)
            (-let* (((&hash "range" "label" "kind") hint)
                    ((beg . end) (lsp--range-to-region range))
-                   (overlay (make-overlay beg end)))
+                   (overlay (make-overlay beg end nil 'front-advance 'end-advance)))
              (overlay-put overlay 'lsp-rust-analyzer-inlay-hint t)
              (overlay-put overlay 'evaporate t)
              (cond
