@@ -374,6 +374,13 @@ Can hit performance, as well as lsp-mode implements its own fuzzy search on comp
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.4"))
 
+(defcustom lsp-pyls-plugins-jedi-completion-include-class-objects t
+  "If enabled, adds class objects to completion in order to avoid snippet with init args.
+Has no effect if `lsp-pyls-plugins-jedi-completion-include-params' is disabled. Requires pyls >= 0.33.0"
+  :type 'boolean
+  :group 'lsp-pyls
+  :package-version '(lsp-mode . "6.4"))
+
 (defcustom lsp-pyls-rename-backend 'jedi
   "Choose renaming backend. Jedi is preferred but only works for python >= 3.6 and pyls >= 0.32.0
 Beware that Jedi is lazy and doesn't scan the whole project.
@@ -456,6 +463,7 @@ So it will rename only references it can find."
    ("pyls.plugins.jedi_definition.enabled" lsp-pyls-plugins-jedi-definition-enabled t)
    ("pyls.plugins.jedi_completion.include_params" lsp-pyls-plugins-jedi-completion-include-params t)
    ("pyls.plugins.jedi_completion.enabled" lsp-pyls-plugins-jedi-completion-enabled t)
+   ("pyls.plugins.jedi_completion.include_class_objects" lsp-pyls-plugins-jedi-completion-include-class-objects t)
    ("pyls.plugins.jedi.environment" lsp-pyls-get-pyenv-environment)
    ("pyls.plugins.jedi_completion.fuzzy" lsp-pyls-plugins-jedi-completion-fuzzy t)
    ("pyls.plugins.jedi_rename.enabled" (lambda () (eq lsp-pyls-rename-backend 'jedi)) t)
