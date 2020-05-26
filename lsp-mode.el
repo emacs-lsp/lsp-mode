@@ -7862,7 +7862,7 @@ reported according to `flycheck-check-syntax-automatically'."
   :type '(choice (const error)
                  (const warning)
                  (const info))
-  :group lsp-mode)
+  :group 'lsp-mode)
 
 (defun lsp--get-buffer-diagnostics ()
   (or (gethash (lsp--fix-path-casing buffer-file-name)
