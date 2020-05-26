@@ -4601,34 +4601,53 @@ Others: TRIGGER-CHARS"
                 (error)))
       item))
 
-(defun lsp--extract-line-from-buffer (pos)
-  "Return the line pointed to by POS (a Position object) in the current buffer."
-  (let* ((point (lsp--position-to-point pos))
-         (inhibit-field-text-motion t))
+(defun lsp--xref-make-items (filename ranges)
+  "Return a list of `xref-item's from a list of corresponding RANGES in FILENAME."
+  (let ((inhibit-field-text-motion t)
+        (ranges (-sort (lambda (range-a range-b)
+                         (-let* ((pos-start-a (gethash "start" range-a))
+                                 (line-num-a (gethash "line" pos-start-a))
+                                 (col-num-a (gethash "character" pos-start-a))
+                                 (pos-start-b (gethash "start" range-b))
+                                 (line-num-b (gethash "line" pos-start-b))
+                                 (col-num-b (gethash "character" pos-start-b)))
+                           (lsp--line-col-comparator (cons line-num-a col-num-a)
+                                                     (cons line-num-b col-num-b))))
+                       ranges))
+        (curr-line 0)
+        accum)
     (save-excursion
-      (goto-char point)
-      (buffer-substring-no-properties (line-beginning-position)
-                                      (line-end-position)))))
-
-(defun lsp--xref-make-item (filename range)
-  "Return a xref-item from a RANGE in FILENAME."
-  (let* ((pos-start (gethash "start" range))
-         (pos-end (gethash "end" range))
-         (line (lsp--extract-line-from-buffer pos-start))
-         (start (gethash "character" pos-start))
-         (end (gethash "character" pos-end))
-         (len (length line)))
-    (add-face-text-property (max (min start len) 0)
-                            (max (min end len) 0)
-                            'highlight t line)
-    ;; LINE is nil when FILENAME is not being current visited by any buffer.
-    (xref-make (or line filename)
-               (xref-make-file-location filename
-                                        (1+ (gethash "line" pos-start))
-                                        (gethash "character" pos-start)))))
+      (save-restriction
+        (widen)
+        (goto-char (point-min))
+        (dolist (range ranges)
+          (let* ((pos-start (gethash "start" range))
+                 (pos-end (gethash "end" range))
+                 (start-line-num (gethash "line" pos-start))
+                 (start-col-num (gethash "character" pos-start))
+                 (end-col-num (gethash "character" pos-end)))
+            (forward-line (- start-line-num curr-line))
+            (setq curr-line start-line-num)
+            (let* ((line-text (buffer-substring-no-properties
+                               (line-beginning-position)
+                               (line-end-position)))
+                   (len (length line-text)))
+              (add-face-text-property (max (min start-col-num len) 0)
+                                      (max (min end-col-num len) 0)
+                                      'highlight
+                                      t
+                                      line-text)
+              (push (xref-make (or line-text
+                                   filename)
+                               (xref-make-file-location
+                                filename
+                                (1+ start-line-num)
+                                start-col-num))
+                    accum))))))
+    (nreverse accum)))
 
 (defun lsp--locations-to-xref-items (locations)
-  "Return a list of `xref-item' from Location[] or LocationLink[]."
+  "Return a list of `xref-item's from Location[] or LocationLink[]."
   (setq locations (if (sequencep locations) locations (list locations)))
 
   (unless (seq-empty-p locations)
@@ -4637,34 +4656,31 @@ Others: TRIGGER-CHARS"
                  (let ((filename (lsp-seq-first file-locs)))
                    (condition-case err
                        (let ((visiting (lsp--buffer-for-file filename))
-                             (fn (lambda (loc)
-                                   (lsp--xref-make-item filename
-                                                        (if location-link (or (gethash "targetSelectionRange" loc)
-                                                                              (gethash "targetRange" loc))
-                                                          (gethash "range" loc))))))
-                         (if visiting
-                             (with-current-buffer visiting
-                               (seq-map fn (cdr file-locs)))
-                           (when (file-readable-p filename)
-                             (with-temp-buffer
-                               (insert-file-contents-literally filename)
-                               (seq-map fn (cdr file-locs))))))
+                             (ranges (seq-map (lambda (loc)
+                                                (if location-link
+                                                    (or (gethash "targetSelectionRange" loc)
+                                                        (gethash "targetRange" loc))
+                                                  (gethash "range" loc)))
+                                              (cdr file-locs))))
+                         (cond (visiting
+                                (with-current-buffer visiting
+                                  (lsp--xref-make-items filename ranges)))
+                               ((file-readable-p filename)
+                                (with-temp-buffer
+                                  (insert-file-contents-literally filename)
+                                  (lsp--xref-make-items filename ranges)))))
                      (error (ignore
                              (lsp-warn "Failed to process xref entry for filename '%s': %s" filename (error-message-string err))))
                      (file-error (ignore
                                   (lsp-warn "Failed to process xref entry, file-error, '%s': %s" filename (error-message-string err))))))))
-      (apply #'append
-             (if (gethash "uri" (lsp-seq-first locations))
-                 (seq-map
-                  (-rpartial #'get-xrefs-in-file nil)
-                  (seq-group-by
-                   (-compose #'lsp--uri-to-path (-partial 'gethash "uri"))
-                   locations))
-               (seq-map
-                (-rpartial #'get-xrefs-in-file t)
-                (seq-group-by
-                 (-compose #'lsp--uri-to-path (-partial 'gethash "targetUri"))
-                 locations)))))))
+      (-let (((location-link? . key) (if (gethash "uri" (lsp-seq-first locations))
+                                         (cons nil "uri")
+                                       (cons t "targetUri"))))
+        (cl-mapcan
+         (-rpartial #'get-xrefs-in-file location-link?)
+         (seq-group-by
+          (-compose #'lsp--uri-to-path (-partial 'gethash key))
+          locations))))))
 
 (defun lsp--make-reference-params (&optional td-position include-declaration)
   "Make a ReferenceParam object.
