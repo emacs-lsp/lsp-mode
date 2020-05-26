@@ -154,6 +154,14 @@
     "debugger": "Yes"
   },
   {
+    "name": "gdscript",
+    "full-name": "GDScript",
+    "server-name": "godot",
+    "server-url": "https://github.com/godotengine/godot",
+    "installation-url": "https://github.com/godotengine/godot",
+    "debugger": "Not available"
+  },
+  {
     "name": "gopls",
     "full-name": "Go",
     "server-name": "gopls",

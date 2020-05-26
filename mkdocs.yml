@@ -41,6 +41,7 @@ nav:
     - Eslint: page/lsp-eslint.md
     - F#: page/lsp-fsharp.md
     - Fortran: page/lsp-fortran.md
+    - GDScript: page/lsp-gdscript.md
     - Go (gopls): page/lsp-gopls.md
     - Go (bingo): page/lsp-bingo.md
     - Groovy: page/lsp-groovy.md
