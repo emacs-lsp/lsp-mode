@@ -50,7 +50,10 @@
 
 (defcustom lsp-eslint-package-manager "npm"
   "The package manager you use to install node modules."
-  :type '(choice (:tag "npm" "yarn" "pnpm"))
+  :type '(choice (const :tag "npm" "npm")
+                 (const :tag "yarn" "yarn")
+                 (const :tag "pnpm" "pnpm")
+                 (string :tag "other"))
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-format t
@@ -75,7 +78,8 @@
 
 (defcustom lsp-eslint-run "onType"
   "Run the linter on save (onSave) or on type (onType)"
-  :type '(choice (:tag "onSave" "onType"))
+  :type '(choice (const :tag "onSave" "onSave")
+                 (const :tag "onType" "onType"))
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-auto-fix-on-save nil
