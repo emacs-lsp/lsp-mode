@@ -636,7 +636,6 @@ Changes take effect only when a new session is started."
                                         (sql-mode . "sql")
                                         (vimrc-mode . "vim")
                                         (sh-mode . "shellscript")
-                                        (sh-mode . "lua")
                                         (scala-mode . "scala")
                                         (julia-mode . "julia")
                                         (clojure-mode . "clojure")
