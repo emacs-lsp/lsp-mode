@@ -64,9 +64,7 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
   - Ivy integration - [lsp-ivy](https://github.com/emacs-lsp/lsp-ivy/)
   - Treemacs integration -
     [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs)
-  - Semantic highlighting (as currently implemented by JDT LS and
-    unreleased builds of clangd, cf. [Semantic highlighting
-    spec](https://github.com/microsoft/vscode-languageserver-node/pull/367))
+  - Semantic highlighting (using either the theia semantic highlighting protocol as implemented by JDT LS and some versions of clangd, or the semantic tokens protocol defined by LSP 3.16)
   - [which-key](https://github.com/justbur/emacs-which-key/) integration
     for better discovery
 
