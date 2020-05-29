@@ -148,11 +148,6 @@ the buffer when it becomes large."
                  (integer :tag "Messages"))
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-report-if-no-buffer t
-  "If non nil the errors will be reported even when the file is not open."
-  :type 'boolean
-  :group 'lsp-mode)
-
 (defcustom lsp-keep-workspace-alive t
   "If non nil keep workspace alive when the last workspace buffer is closed."
   :group 'lsp-mode
@@ -500,6 +495,9 @@ Note: it runs only if the receiving buffer is open. Use
 diagnostics have changed."
   :type 'hook
   :group 'lsp-mode)
+
+(define-obsolete-variable-alias 'lsp-after-diagnostics-hook
+  'lsp-diagnostics-updated-hook  "lsp-mode 6.4")
 
 (defcustom lsp-diagnostics-updated-hook nil
   "Hooks to run after diagnostics are received."
@@ -1719,20 +1717,14 @@ PARAMS contains the diagnostics data.
 WORKSPACE is the workspace that contains the diagnostics."
   (let* ((file (lsp--uri-to-path (gethash "uri" params)))
          (diagnostics (gethash "diagnostics" params))
-         (buffer (lsp--buffer-for-file file))
          (workspace-diagnostics (lsp--workspace-diagnostics workspace)))
 
     (if (seq-empty-p diagnostics)
         (remhash file workspace-diagnostics)
-      (when (or lsp-report-if-no-buffer buffer)
-        (puthash file (seq-map #'lsp--make-diag diagnostics) workspace-diagnostics)))
+      (puthash file (seq-map #'lsp--make-diag diagnostics) workspace-diagnostics))
 
     (run-hooks 'lsp-diagnostics-updated-hook)
-
-    (when buffer
-      (save-mark-and-excursion
-        (with-current-buffer buffer
-          (run-hooks 'lsp-after-diagnostics-hook))))))
+    (lsp--idle-reschedule (current-buffer))))
 
 (with-no-warnings
   (unless (version< emacs-version "26")
