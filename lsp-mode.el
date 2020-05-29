@@ -122,7 +122,7 @@
 
 (defcustom lsp-log-io nil
   "If non-nil, log all messages to and from the language server to a *lsp-log* buffer."
-  :group 'lsp
+  :group 'lsp-mode
   :type 'boolean)
 
 (defcustom lsp-print-performance nil
@@ -227,7 +227,7 @@ modifiers into account. Only applies if
 
 (defcustom lsp-progress-via-spinner t
   "If non-nil, display LSP $/progress reports via a spinner in the modeline."
-  :group 'lsp
+  :group 'lsp-mode
   :type 'boolean)
 
 (defvar-local lsp--cur-workspace nil)
