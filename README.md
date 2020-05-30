@@ -1,3 +1,8 @@
+---
+title: LSP Mode - Language Server Protocol support for Emacs
+description: Language Server Protocol support with multiples languages support for Emacs
+---
+
 [![](https://melpa.org/packages/lsp-mode-badge.svg)](https://melpa.org/#/lsp-mode)
 [![](https://stable.melpa.org/packages/lsp-mode-badge.svg)](https://stable.melpa.org/#/lsp-mode)
 [![](https://badges.gitter.im/emacs-lsp/lsp-mode.svg)](https://gitter.im/emacs-lsp/lsp-mode)
@@ -5,7 +10,8 @@
 
 <img src="examples/logo.png" width="240" align="right">
 
-# Language Server Protocol Support for Emacs
+Language Server Protocol Support for Emacs
+=========================================
 
 ![LSP mode](examples/head.png)
 

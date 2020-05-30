@@ -1,4 +1,4 @@
-site_name: LSP Mode - Language Server Protocol Support for Emacs
+site_name: LSP Mode - LSP support for Emacs
 site_url: https://emacs-lsp.github.io/lsp-mode
 
 nav:
@@ -122,6 +122,7 @@ repo_url: https://github.com/emacs-lsp/lsp-mode
 markdown_extensions:
   - pymdownx.superfences
   - codehilite
+  - meta
   - toc:
       permalink: '#'
   - pymdownx.emoji:
