@@ -8165,13 +8165,13 @@ This avoids overloading the server with many files when starting Emacs."
         (lsp--flycheck-level level tags)
       level)))
 
-(defvar-local lsp--diagnostics-modified? nil)
-
 (defun lsp--flycheck-start (checker callback)
   "Start an LSP syntax check with CHECKER.
 
 CALLBACK is the status callback passed by Flycheck."
-  (setq lsp--diagnostics-modified? nil)
+  ;; avoid double diag check
+  (remove-hook 'lsp-on-idle-hook #'lsp--flycheck-buffer t)
+
   (->> (lsp--get-buffer-diagnostics)
        (-map (-lambda (diag)
                (flycheck-error-new
@@ -8197,8 +8197,7 @@ CALLBACK is the status callback passed by Flycheck."
 
 (defun lsp--flycheck-buffer ()
   (remove-hook 'lsp-on-idle-hook #'lsp--flycheck-buffer t)
-  (when lsp--diagnostics-modified?
-    (flycheck-buffer)))
+  (flycheck-buffer))
 
 (defun lsp--buffer-visible? ()
   (or (get-buffer-window (current-buffer))
@@ -8208,12 +8207,16 @@ CALLBACK is the status callback passed by Flycheck."
 (defun lsp--flycheck-report ()
   "This callback is invoked when new diagnostics are received
 from the language server."
-  (when (not lsp--diagnostics-modified?)
-    (setq lsp--diagnostics-modified? t)
-    (when (memq 'idle-change flycheck-check-syntax-automatically)
-      ;; make sure diagnostics are published even if the diagnostics
-      ;; have been received after idle-change has been triggered
-      (add-hook 'lsp-on-idle-hook #'lsp--flycheck-buffer nil t))))
+  (when (and (memq 'idle-change flycheck-check-syntax-automatically)
+             lsp--cur-workspace)
+    ;; make sure diagnostics are published even if the diagnostics
+    ;; have been received after idle-change has been triggered
+    (-some->> lsp--cur-workspace
+      (lsp--workspace-buffers)
+      (mapc (lambda (buffer)
+              (when (buffer-live-p buffer)
+                (with-current-buffer buffer
+                  (add-hook 'lsp-on-idle-hook #'lsp--flycheck-buffer nil t))))))))
 
 (declare-function lsp-cpp-flycheck-clang-tidy-error-explainer "lsp-cpp")
 
