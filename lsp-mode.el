@@ -68,6 +68,7 @@
 (defvar company-backends)
 (defvar c-basic-offset)
 (defvar yas-inhibit-overlay-modification-protection)
+(defvar yas-indent-line)
 
 (defconst lsp--message-type-face
   `((1 . ,compilation-error-face)
@@ -4552,10 +4553,11 @@ Others: TRIGGER-CHARS"
       (insert (or insert-text label))))
 
     (when (eq insert-text-format 2)
-      (yas-expand-snippet
-       (lsp--to-yasnippet-snippet (buffer-substring start-point (point)))
-       start-point
-       (point)))
+      (let (yas-indent-line)
+        (yas-expand-snippet
+         (lsp--to-yasnippet-snippet (buffer-substring start-point (point)))
+         start-point
+         (point))))
 
     (when (and lsp-completion-enable-additional-text-edit additional-text-edits)
       (lsp--apply-text-edits additional-text-edits)))
