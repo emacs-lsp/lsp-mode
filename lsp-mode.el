@@ -1236,19 +1236,15 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
             (forward-char character)
             (point)))))))
 
-(defun lsp--position-to-point (params)
-  "Convert Position object in PARAMS to a point."
-  (lsp--line-character-to-point (gethash "line" params)
-                                (gethash "character" params)))
+(lsp-defun lsp--position-to-point ((&Position :line :character))
+  "Convert `Position' object in PARAMS to a point."
+  (lsp--line-character-to-point line character))
 
-(defun lsp--range-to-region (range)
-  (cons (lsp--position-to-point (gethash "start" range))
-        (lsp--position-to-point (gethash "end" range))))
+(lsp-defun lsp--range-to-region ((&Range :start :end))
+  (cons (lsp--position-to-point start) (lsp--position-to-point end)))
 
-
-(defun lsp--find-wrapping-range (current-selection-range)
-  (-let* (((&hash "parent" "range") current-selection-range)
-          ((start . end) (lsp--range-to-region range)))
+(lsp-defun lsp--find-wrapping-range ((&SelectionRange :parent? :range))
+  (-let* (((start . end) (lsp--range-to-region range)))
     (cond
      ((and
        (region-active-p)
@@ -1260,7 +1256,7 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
      ((and (<= start (point) end)
            (not (region-active-p)))
       (cons start end))
-     (parent (lsp--find-wrapping-range parent)))))
+     (parent? (lsp--find-wrapping-range parent?)))))
 
 (defun lsp--get-selection-range ()
   (or
