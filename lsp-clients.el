@@ -352,7 +352,7 @@ particular FILE-NAME and MODE."
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-php--create-connection)
                   :major-modes '(php-mode)
-                  :priority -2
+                  :priority -3
                   :server-id 'php-ls))
 
 
