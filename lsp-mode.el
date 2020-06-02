@@ -5597,11 +5597,6 @@ unless overridden by a more specific face association."
   "Face used for types."
   :group 'lsp-faces)
 
-(defface lsp-face-semhl-type
-  '((t (:inherit font-lock-type-face)))
-  "Face used for types."
-  :group 'lsp-faces)
-
 (defface lsp-face-semhl-struct
   '((t (:inherit font-lock-type-face)))
   "Face used for structs."
