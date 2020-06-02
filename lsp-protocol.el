@@ -31,6 +31,15 @@
 (require 'ht)
 (require 's)
 
+(defun lsp-keyword->symbol (keyword)
+  (intern (substring (symbol-name keyword) 1)))
+
+(defun lsp-keyword->string (keyword)
+  (substring (symbol-name keyword) 1))
+
+(defun lsp-use-plists ()
+  t)
+
 (defmacro lsp-interface (&rest interfaces)
   "Generate LSP bindings from INTERFACES triplet.
 
@@ -55,20 +64,34 @@ Example usage with `dash`.
                                     required))))
                  (cl-list*
                   `(defun ,(intern (format "dash-expand:&%s" interface)) (key source)
-                     (unless (member key ',(-map #'cl-first params))
+                     (unless (or (member key ',(-map #'cl-first params))
+                                 (s-starts-with? ":_" (symbol-name key)))
                        (error "Unknown key: %s. Available keys: %s" key ',(-map #'cl-first params)))
-                     `(gethash ,(substring (symbol-name
-                                            (cl-rest (assoc key ',params)))
-                                           1)
-                               ,source))
+                     (if (lsp-use-plists)
+                         `(plist-get ,source
+                                     ,(if (s-starts-with? ":_" (symbol-name key))
+                                          key
+                                        (cl-rest (assoc key ',params))))
+                       `(gethash ,(if (s-starts-with? ":_" (symbol-name key))
+                                      (substring (symbol-name key) 1)
+                                    (substring (symbol-name
+                                                (cl-rest (assoc key ',params)))
+                                               1))
+                                 ,source)))
                   `(defun ,(intern (format "dash-expand:&%s?" interface)) (key source)
                      (unless (member key ',(-map #'cl-first params))
                        (error "Unknown key: %s. Available keys: %s" key ',(-map #'cl-first params)))
-                     `(when ,source
-                        (gethash ,(substring (symbol-name
-                                              (cl-rest (assoc key ',params)))
-                                             1)
-                                 ,source)))
+                     (if (lsp-use-plists)
+                         `(plist-get ,source
+                                     ,(if (s-starts-with? ":_" (symbol-name key))
+                                          key
+                                        (cl-rest (assoc key ',params))))
+                       `(when ,source
+                          (gethash ,(substring (symbol-name
+                                                (cl-rest (assoc key ',params)))
+                                               1)
+                                   ,source))))
+
                   `(defun ,(intern (format "lsp-%s?" (s-dashed-words (symbol-name interface)))) (object)
                      (if (ht? object)
                          (-all? (lambda (prop)
@@ -79,22 +102,51 @@ Example usage with `dash`.
                        (-all? (lambda (prop)
                                 (plist-get object prop))
                               ',required)))
+                  `(cl-defun ,(intern (format "lsp-make-%s" (s-dashed-words (symbol-name interface))))
+                       (&key ,@(-map (-lambda ((key))
+                                       (intern (substring (symbol-name key) 1))) params))
+
+                     ,(if (lsp-use-plists)
+                          `(let ($$result)
+                             ,@(-map (-lambda ((name . key))
+                                       `(when ,(lsp-keyword->symbol name)
+                                          (setq $$result (plist-put $$result ,(lsp-keyword->string key) ,(lsp-keyword->symbol name)))))
+                                     params)
+                             $$result)
+                        `(let (($$result (ht)))
+                           ,@(-map (-lambda ((name . key))
+                                     `(when ,(lsp-keyword->symbol name)
+                                        (puthash ,(lsp-keyword->string key) ,(lsp-keyword->symbol name) $$result)))
+                                   params)
+                           $$result)))
                   (-mapcat (-lambda ((label . name))
                              (list
                               `(defun ,(intern (format "lsp:%s-%s"
                                                        (s-dashed-words (symbol-name interface))
                                                        (substring (symbol-name label) 1)))
                                    (object)
-                                 (gethash ,(substring (symbol-name name) 1) object))
+                                 (plist-get object ,name))
                               `(defun ,(intern (format "lsp:set-%s-%s"
                                                        (s-dashed-words (symbol-name interface))
                                                        (substring (symbol-name label) 1)))
                                    (object value)
-                                 (puthash ,(substring (symbol-name name) 1) value object))))
+                                 (plist-put ,name value object))))
                            params)))))
        (apply #'append)
        (cl-list* 'progn)))
 
+(if (lsp-use-plists)
+    (progn
+      (defun lsp-get (from key)
+        (plist-get from key))
+      (defun lsp-put (where key value)
+        (plist-put where key value)))
+  (defun lsp-get (from key)
+    (when from
+      (gethash (lsp-keyword->string key) from)))
+  (defun lsp-put (where key value)
+    (prog1 where
+      (puthash (lsp-keyword->string key) value where))))
 
 (defmacro lsp-defun (name match-form &rest body)
   "Define NAME as a function which destructures its input as MATCH-FORM and executes BODY.
@@ -151,8 +203,26 @@ See `-let' for a description of the destructuring mechanism."
 
 
 
+
 ;; manually defined interfaces
-(lsp-interface (RpcRequestResponse (:params :id :method) nil))
+(lsp-interface (JSONResponse (:params :id :method :result) nil)
+               (JSONResponseError (:error) nil)
+               (JSONMessage nil (:params :id :method :result :error))
+               (JSONResult nil (:params :id :method))
+               (JSONNotification (:params :method) nil)
+               (JSONRequest (:params :method) nil)
+               (JSONError (:message :code) nil)
+               (ProgressParams (:token :value) nil)
+               (Edit (:kind) nil)
+               (WorkDoneProgress (:kind) nil)
+               (WorkDoneProgressBegin  (:kind :title) (:cancellable :message :percentage))
+               (WorkDoneProgressReport  (:kind) (:cancellable :message :percentage))
+               (WorkDoneProgressEnd  (:kind) (:message)))
+
+(defun dash-expand:&RangeToPoint (key source)
+  `(lsp--position-to-point
+    (gethash ,(substring (symbol-name key) 1)
+             ,source)))
 
 (lsp-interface (haxe:ProcessStartNotification (:title) nil))
 
@@ -275,7 +345,7 @@ See `-let' for a description of the destructuring mechanism."
  (Command (:title :command) (:arguments))
  (CompletionCapabilities nil (:completionItem :completionItemKind :contextSupport :dynamicRegistration))
  (CompletionContext (:triggerKind) (:triggerCharacter))
- (CompletionItem (:label) (:additionalTextEdits :command :commitCharacters :data :deprecated :detail :documentation :filterText :insertText :insertTextFormat :kind :preselect :sortText :tags :textEdit))
+ (CompletionItem (:label) (:additionalTextEdits :command :commitCharacters :data :deprecated :detail :documentation :filterText :insertText :insertTextFormat :kind :preselect :sortText :tags :textEdit :score))
  (CompletionItemCapabilities nil (:commitCharactersSupport :deprecatedSupport :documentationFormat :preselectSupport :snippetSupport :tagSupport))
  (CompletionItemKindCapabilities nil (:valueSet))
  (CompletionItemTagSupportCapabilities (:valueSet) nil)
