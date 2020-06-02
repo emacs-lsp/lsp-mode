@@ -1245,15 +1245,6 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   (cons (lsp--position-to-point (gethash "start" range))
         (lsp--position-to-point (gethash "end" range))))
 
-(pcase-defmacro lsp-range (region)
-  "Build a `pcase' pattern that matches a LSP Range object.
-Elements should be of the form (START . END), where START and END are bound
-to the beginning and ending points in the range correspondingly."
-  `(and (pred hash-table-p)
-        (app (lambda (range) (lsp--position-to-point (gethash "start" range)))
-             ,(car region))
-        (app (lambda (range) (lsp--position-to-point (gethash "end" range)))
-             ,(cdr region))))
 
 (defun lsp--find-wrapping-range (current-selection-range)
   (-let* (((&hash "parent" "range") current-selection-range)
