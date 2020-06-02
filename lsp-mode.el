@@ -1632,8 +1632,8 @@ WORKSPACE is the workspace that contains the progress token."
   "The scope "
   :group 'lsp-mode
   :type '(choice (const :tag "File" :file)
-                 (const :tag "Current workspace" :workspace)
-                 (const :tag "All" :global))
+                 (const :tag "Project" :workspace)
+                 (const :tag "All Projects" :global))
   :package-version '(lsp-mode . "6.3"))
 
 (defun lsp--diagnostics-modeline-statistics ()
