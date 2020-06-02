@@ -159,5 +159,545 @@
        (deferred::nextc (should (equal result :timeout)))
        (deferred:sync!))))
 
+(ert-deftest lsp-org-position-translation-test ()
+  :tags '(org)
+  (with-current-buffer (find-file-noselect "test/fixtures/org-mode/demo.org")
+    (org-mode)
+    (goto-char (point-min))
+
+    (search-forward "def external_function(s):")
+    (lsp-workspace-folders-add (f-expand "fixtures/org-mode"))
+    (lsp-org)
+    (deferred:sync!
+      (-> (lsp-test-wait
+           (eq 'initialized (lsp--workspace-status
+                             (cl-first (lsp-workspaces)))))
+          (deferred::nextc
+            (should (equal (lsp--buffer-content)
+                           (f-read-text "org_demo_file_2.py"))))
+          (deferred::nextc
+            (search-backward "def")
+
+            (should (equal (lsp--point-to-position (point))
+                           '(:line 0 :character 0)))
+
+            (should (equal (lsp--position-to-point (ht ("line" 0)
+                                                       ("character" 0)))
+                           (point))))
+          (deferred:try
+            :finally (lambda (&rest _)
+                       (lsp-virtual-buffer-disconnect lsp--virtual-buffer)))))))
+
+(defun lsp-notify-wrapper (params)
+  (let ((lsp--virtual-buffer-mappings (ht)))
+    (pcase (plist-get params :method)
+      (`"textDocument/didChange"
+       (setq my/params params)
+       (-let [(&plist :params
+                      (&plist :textDocument (&plist :uri :version)
+                              :contentChanges [(&plist :range (&plist :start :end )
+                                                       :text)]))
+              params]
+         (with-current-buffer (get-buffer-create (format "*%s*" (f-filename (lsp--uri-to-path uri))))
+           (let ((start-point (if start
+                                  (lsp--position-to-point (ht ("line" (plist-get start :line))
+                                                              ("character" (plist-get start :character))))
+                                (point-min)))
+                 (end-point (if end
+                                (lsp--position-to-point (ht ("line" (plist-get end :line))
+                                                            ("character" (plist-get end :character))))
+                              (point-max))))
+             (display-buffer-in-side-window (current-buffer) ())
+             (delete-region start-point end-point)
+             (goto-char start-point)
+             (insert text)))))
+      (`"textDocument/didOpen"
+       (-let [(&plist :params (&plist :textDocument
+                                      (&plist :uri
+                                              :version
+                                              :text)))
+              params]
+         (with-current-buffer (get-buffer-create (format "*%s*" (f-filename (lsp--uri-to-path uri))))
+           (display-buffer-in-side-window (current-buffer) ())
+
+           (delete-region (point-min) (point-max))
+           (insert (or text ""))))))))
+
+(ert-deftest lsp-virtual-position-to-point ()
+  :tags '(org)
+  (with-current-buffer (find-file-noselect "fixtures/org-mode/demo.org")
+    (goto-char (point-min))
+    (search-forward "def external_function(s):")
+    (lsp-workspace-folders-add (f-expand "fixtures/org-mode"))
+    (lsp-org)
+    (deferred:sync!
+      (-> (lsp-test-wait
+           (eq 'initialized (lsp--workspace-status
+                             (cl-first (lsp-workspaces)))))
+          (deferred::nextc
+            (should (equal (lsp--buffer-content)
+                           (f-read-text "org_demo_file_2.py"))))
+          (deferred::nextc
+            (search-backward "def")
+
+            (should (equal (lsp--point-to-position (point))
+                           '(:line 0 :character 0)))
+
+            (should (equal (lsp--position-to-point (ht ("line" 0)
+                                                       ("character" 0)))
+                           (point)))
+
+            (forward-line 1))
+          (deferred:try
+            :finally (lambda (&rest _)
+                       (lsp-virtual-buffer-disconnect lsp--virtual-buffer)))))))
+
+(ert-deftest lsp-transformation-of-did-change-events ()
+  :tags '(org)
+  (with-current-buffer (find-file-noselect "fixtures/org-mode/demo.org")
+    (advice-add 'lsp--send-notification :before 'lsp-notify-wrapper)
+    (goto-char (point-min))
+    (search-forward "def external_function(s):")
+    (lsp-workspace-folders-add (f-expand "fixtures/org-mode"))
+    (lsp-org)
+
+    (setq lsp-diagnostic-package nil)
+
+    (-> (lsp-test-wait
+         (eq 'initialized (lsp--workspace-status
+                           (cl-first (lsp-workspaces)))))
+
+        (deferred::nextc
+
+
+
+
+          )
+        (deferred:try
+          :finally (lambda (&rest _)
+                     (lsp-virtual-buffer-disconnect lsp--virtual-buffer)))
+        (deferred:sync!))
+    (advice-remove 'lsp--send-notification 'lsp-notify-wrapper)))
+
+(ert-deftest lsp-org-transformation-of-did-change-events-1 ()
+  :tags '(org)
+  (with-current-buffer (find-file-noselect "fixtures/org-mode/demo.org")
+    (advice-add 'lsp--send-notification :before 'lsp-notify-wrapper)
+    (goto-char (point-min))
+    (search-forward "def external_function(s):")
+    (lsp-workspace-folders-add (f-expand "fixtures/org-mode"))
+    (lsp-org)
+
+    (setq lsp-diagnostic-package nil)
+
+    (-> (lsp-test-wait
+         (eq 'initialized (lsp--workspace-status
+                           (cl-first (lsp-workspaces)))))
+        (deferred::nextc
+          (save-excursion
+            (unwind-protect
+                (progn
+                  (goto-char (point-at-eol))
+                  (forward-line 2)
+                  (forward-line)
+                  (insert "\n")
+                  (should (equal (lsp--buffer-content)
+                                 (with-current-buffer "*org_demo_file_2.py*"
+                                   (buffer-string)))))
+              (delete-region (point) (- (point) 1))
+              (should (equal (lsp--buffer-content)
+                             (with-current-buffer "*org_demo_file_2.py*"
+                               (buffer-string))))))
+
+          ;;         (save-excursion
+          ;;             (unwind-protect
+          ;;                 (progn
+          ;;                   (goto-char (point-at-eol))
+          ;;                   (insert "
+          ;;                       boo
+          ;;           ")
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;               (delete-region (point) (- (point) (length "
+          ;;                       boo
+          ;;           ")))
+          ;;               (should (equal (lsp--buffer-content)
+          ;;                              (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                (buffer-string))))))
+
+          ;;           (unwind-protect
+          ;;               (progn
+          ;;                 (goto-char (point-at-eol))
+          ;;                 (let ((start-point (point)))
+          ;;                   (forward-line 3)
+          ;;                   (goto-char (point-at-bol))
+          ;;                   (forward-char 4)
+          ;;                   (kill-region start-point (point))
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;                 (should (equal (lsp--buffer-content)
+          ;;                                (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                  (buffer-string)))))
+          ;;             (yank)
+          ;;             (should (equal (lsp--buffer-content)
+          ;;                            (with-current-buffer "*org_demo_file_2.py*"
+          ;;                              (buffer-string)))))
+
+          ;;           (save-excursion
+          ;;             (unwind-protect
+          ;;                 (progn
+          ;;                   (forward-line 2)
+          ;;                   (insert "r
+          ;; ")
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;               (delete-region (point) (- (point) (length "r
+          ;; ")))
+          ;;               (should (equal (lsp--buffer-content)
+          ;;                              (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                (buffer-string))))))
+
+          ;;           (save-excursion
+          ;;             (unwind-protect
+          ;;                 (progn
+          ;;                   (goto-char (point-at-eol))
+          ;;                   (let ((start-point (point)))
+          ;;                     (forward-line 3)
+          ;;                     (goto-char (point-at-bol))
+          ;;                     (forward-char 4)
+          ;;                     (kill-region start-point (point))
+          ;;                     (should (equal (lsp--buffer-content)
+          ;;                                    (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                      (buffer-string)))))
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;               (yank)
+          ;;               (should (equal (lsp--buffer-content)
+          ;;                              (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                (buffer-string))))))
+
+          ;;           (save-excursion
+          ;;             (unwind-protect
+          ;;                 (progn
+          ;;                   (forward-line 2)
+          ;;                   (insert "  ")
+          ;;                   (insert " ")
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;               (delete-region (point) (- (point) 3))
+          ;;               (should (equal (lsp--buffer-content)
+          ;;                              (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                (buffer-string))))))
+
+          ;;           (save-excursion
+          ;;             (unwind-protect
+          ;;                 (progn
+          ;;                   (goto-char (+ (point-at-bol) 4))
+          ;;                   (delete-region (point) (1+ (point)))
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;               (insert "e")
+          ;;               (should (equal (lsp--buffer-content)
+          ;;                              (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                (buffer-string))))))
+
+          ;;           (save-excursion
+          ;;             (unwind-protect
+          ;;                 (progn
+          ;;                   (goto-char (point-at-eol))
+          ;;                   (insert "
+          ;;            ")
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;               (delete-region (point) (- (point) (length "
+          ;;            ")))
+          ;;               (should (equal (lsp--buffer-content)
+          ;;                              (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                (buffer-string))))))
+
+          ;;           (save-excursion
+          ;;             (unwind-protect
+          ;;                 (progn
+          ;;                   (goto-char (point-at-eol))
+          ;;                   (insert "
+          ;;                      boo
+          ;;                    ")
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;               (delete-region (point) (- (point) (length "
+          ;;                      boo
+          ;;                    ")))
+          ;;               (should (equal (lsp--buffer-content)
+          ;;                              (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                (buffer-string))))))
+
+          ;;           (save-excursion
+          ;;             (unwind-protect
+          ;;                 (progn
+          ;;                   (goto-char (point-at-eol))
+          ;;                   (forward-line 2)
+          ;;                   (forward-line)
+          ;;                   (insert " ")
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;               (delete-region (point) (1+ (point)))
+          ;;               (should (equal (lsp--buffer-content)
+          ;;                              (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                (buffer-string))))))
+          ;;           (save-excursion
+          ;;             (unwind-protect
+          ;;                 (progn
+          ;;                   (goto-char (point-at-eol))
+          ;;                   (forward-line 2)
+          ;;                   (forward-line)
+          ;;                   (goto-char (point-at-bol))
+          ;;                   (insert "   x")
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;               (delete-region (point) (- (point) 4))
+          ;;               (should (equal (lsp--buffer-content)
+          ;;                              (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                (buffer-string))))))
+
+          ;;           (save-excursion
+          ;;             (unwind-protect
+          ;;                 (progn
+          ;;                   (goto-char (point-at-eol))
+          ;;                   (forward-line 2)
+          ;;                   (forward-line)
+          ;;                   (insert "  ")
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;               (delete-region (point) (- (point) 2))
+          ;;               (should (equal (lsp--buffer-content)
+          ;;                              (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                (buffer-string))))))
+          ;;           (save-excursion
+          ;;             (unwind-protect
+          ;;                 (progn
+          ;;                   (goto-char (point-at-eol))
+          ;;                   (forward-line 2)
+          ;;                   (forward-line)
+          ;;                   (insert "   ")
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;               (delete-region (point) (- (point) 3))
+          ;;               (should (equal (lsp--buffer-content)
+          ;;                              (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                (buffer-string))))))
+          ;;           (save-excursion
+          ;;             (unwind-protect
+          ;;                 (progn
+          ;;                   (goto-char (point-at-eol))
+          ;;                   (forward-line 2)
+          ;;                   (forward-line)
+          ;;                   (insert "    ")
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;               (delete-region (point) (- (point) 4))
+          ;;               (should (equal (lsp--buffer-content)
+          ;;                              (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                (buffer-string))))))
+          ;;           (save-excursion
+          ;;             (unwind-protect
+          ;;                 (progn
+          ;;                   (goto-char (point-at-eol))
+          ;;                   (insert "
+          ;;           ")
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;               (delete-region (point) (- (point) (length "
+          ;;           ")))
+          ;;               (should (equal (lsp--buffer-content)
+          ;;                              (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                (buffer-string))))))
+          ;;           (save-excursion
+          ;;             (unwind-protect
+          ;;                 (progn
+          ;;                   (goto-char (point-at-eol))
+          ;;                   (insert "\n")
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;               (delete-region (point) (1- (point)))
+          ;;               (should (equal (lsp--buffer-content)
+          ;;                              (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                (buffer-string))))))
+
+          ;;           (unwind-protect
+          ;;               (progn
+          ;;                 (goto-char (+ (point-at-bol) 3))
+          ;;                 (delete-region (point) (1+ (point)))
+          ;;                 (should (equal (lsp--buffer-content)
+          ;;                                (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                  (buffer-string)))))
+          ;;             (insert "d")
+          ;;             (should (equal (lsp--buffer-content)
+          ;;                            (with-current-buffer "*org_demo_file_2.py*"
+          ;;                              (buffer-string)))))
+
+
+          ;;           ;; delete identation + from the original buffer
+          ;;           (unwind-protect
+          ;;               (progn
+          ;;                 (goto-char (+ (point-at-bol) 2))
+          ;;                 (delete-region (point) (+ (point) 2))
+          ;;                 (should (equal (lsp--buffer-content)
+          ;;                                (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                  (buffer-string)))))
+          ;;             (insert " d")
+          ;;             (should (equal (lsp--buffer-content)
+          ;;                            (with-current-buffer "*org_demo_file_2.py*"
+          ;;                              (buffer-string)))))
+
+
+          ;;           ;; delete identation
+
+          ;;           (unwind-protect
+          ;;               (progn
+          ;;                 (goto-char (point-at-bol))
+          ;;                 (delete-region (point) (1+ (point)))
+
+          ;;                 (should (equal (lsp--buffer-content)
+          ;;                                (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                  (buffer-string)))))
+          ;;             (insert " ")
+          ;;             (should (equal (lsp--buffer-content)
+          ;;                            (with-current-buffer "*org_demo_file_2.py*"
+          ;;                              (buffer-string)))))
+
+
+
+          ;;           ;; delete 2 chars from identation
+          ;;           (unwind-protect
+          ;;               (progn
+          ;;                 (goto-char (point-at-bol))
+          ;;                 (delete-region (point) (+ (point) 2))
+
+          ;;                 (should (equal (lsp--buffer-content)
+          ;;                                (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                  (buffer-string)))))
+          ;;             (insert "  ")
+          ;;             (should (equal (lsp--buffer-content)
+          ;;                            (with-current-buffer "*org_demo_file_2.py*"
+          ;;                              (buffer-string)))))
+
+          ;;           (save-excursion
+          ;;             (unwind-protect
+          ;;                 (progn
+          ;;                   (goto-char (point-at-bol))
+          ;;                   (delete-region (point) (+ (point) 2))
+
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;               (insert "  ")))
+          ;;           (save-excursion
+          ;;             (unwind-protect
+          ;;                 (progn
+          ;;                   (goto-char (point-at-bol))
+          ;;                   (insert "  ")
+
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;               (goto-char (point-at-bol))
+          ;;               (delete-region (point) (+ (point) 2)))
+          ;;             )
+          ;;           (save-excursion
+          ;;             (unwind-protect
+          ;;                 (progn
+          ;;                   (goto-char (+ (point-at-bol) 4))
+          ;;                   (delete-region (point) (1+ (point)))
+          ;;                   (should (equal (lsp--buffer-content)
+          ;;                                  (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                    (buffer-string)))))
+          ;;               (insert "e")
+          ;;               (should (equal (lsp--buffer-content)
+          ;;                              (with-current-buffer "*org_demo_file_2.py*"
+          ;;                                (buffer-string))))))
+          )
+        (deferred:try
+          :finally (lambda (&rest _)
+                     (lsp-virtual-buffer-disconnect lsp--virtual-buffer)
+                     (advice-remove 'lsp--send-notification 'lsp-notify-wrapper)))
+        (deferred:sync!))))
+
+(ert-deftest lsp-org-transformation-of-did-change-events-2 ()
+  :tags '(org)
+  (with-current-buffer (find-file-noselect "fixtures/org-mode/demo.org")
+    (advice-add 'lsp--send-notification :before 'lsp-notify-wrapper)
+    (goto-char (point-min))
+    (search-forward "def external_function(s):")
+    (lsp-workspace-folders-add (f-expand "fixtures/org-mode"))
+    (lsp-org)
+
+    (setq lsp-diagnostic-package nil)
+
+    (-> (lsp-test-wait
+         (eq 'initialized (lsp--workspace-status
+                           (cl-first (lsp-workspaces)))))
+
+        (deferred::nextc
+          (unwind-protect
+              (progn
+                (delete-char 1)
+                (should (equal (lsp--buffer-content)
+                               (with-current-buffer "*org_demo_file_2.py*"
+                                 (buffer-string)))))
+            (insert "\n")
+            (should (equal (lsp--buffer-content)
+                           (with-current-buffer "*org_demo_file_2.py*"
+                             (buffer-string))))))
+
+        (deferred:try
+          :finally (lambda (&rest _)
+                     (lsp-virtual-buffer-disconnect lsp--virtual-buffer)))
+        (deferred:sync!))
+    (advice-remove 'lsp--send-notification 'lsp-notify-wrapper)))
+
+(ert-deftest lsp-org-test-current-org-mode-content ()
+  :tags '(no-win)
+  (with-current-buffer (find-file-noselect "fixtures/org-mode/demo.org")
+    (goto-char (point-min))
+    (search-forward "import org_demo_file_2")
+    (lsp-workspace-folders-add (f-expand "fixtures/org-mode"))
+    (lsp-org)
+    (-> (lsp-test-wait
+         (eq 'initialized (lsp--workspace-status
+                           (cl-first (lsp-workspaces)))))
+        (deferred::nextc
+          (should (equal (lsp--buffer-content)
+                         (f-read-text "org_demo_file.py"))))
+        (deferred::nextc
+          (search-forward "foobar = 10")
+
+          (goto-char (point-at-bol))
+          (save-excursion
+            (lsp-rename "barfoo"))
+
+          (should (equal (lsp--buffer-content)
+                         (s-replace "foobar"
+                                    "barfoo"
+                                    (f-read-text "org_demo_file.py"))))
+          (goto-char (point-min))
+          (while (search-forward "barfoo" nil t)
+            (replace-match "foobar")))
+        (deferred:sync!))))
+
 (provide 'lsp-integration-test)
 ;;; lsp-integration-test.el ends here

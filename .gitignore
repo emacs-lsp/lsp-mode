@@ -47,3 +47,9 @@ flycheck_*.el
 /*-autoloads.el
 /*-pkg.el
 /.ecukes-failing-scenarios
+
+# java stuff
+target
+.classpath
+.project
+.settings

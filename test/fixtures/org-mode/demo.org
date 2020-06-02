@@ -1,0 +1,63 @@
+#+BEGIN_SRC python :tangle "org_demo_file.py"
+import org_demo_file_2
+
+org_demo_file_2.external_function("call2")
+
+foobar = 10
+
+
+def foo():
+    org_demo_file_2.external_function("call2")
+#+END_SRC
+
+* LSP/DAP interactive features <-> org-mode (preview)
+** Python
+   #+BEGIN_SRC python :tangle "org_demo_file_2.py"
+   def external_function(s):
+       print s
+
+   external_function("test")
+   #+END_SRC
+
+** Java
+   #+BEGIN_SRC java :tangle java-project/src/test/java/temp/AppTest.java
+   package temp;
+
+   import org.junit.Test;
+
+   public class AppTest {
+       @Test
+       public void testA() {
+           System.out.println("Entering testA...");
+           App.demo();
+           fo();
+    }
+
+
+    private void fo() {
+        System.out.println("Foo called.");
+    }
+
+    private void foo2() {
+        System.out.println("Foo called.");
+    }
+
+    @Test
+    public void testB() {
+        System.out.println("Entering testB...\n");
+        fo();
+       }
+
+   }
+   #+END_SRC
+
+** C++
+   #+BEGIN_SRC c :tangle "demo2.cpp"
+   int fo(int fo) { return fo; };
+   int fo(int fo, int fo2) { return fo; };
+
+   int main(int a, char *argv[]) {
+     fo(a);
+     fo(a);
+   }
+   #+END_SRC
