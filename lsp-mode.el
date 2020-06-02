@@ -58,6 +58,7 @@
 (require 'xref)
 (require 'minibuffer)
 (require 'yasnippet nil t)
+(require 'lsp-protocol)
 
 (declare-function company-mode "ext:company")
 (declare-function company-doc-buffer "ext:company")

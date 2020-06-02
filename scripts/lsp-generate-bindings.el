@@ -20,22 +20,17 @@
 
 ;;; Commentary:
 
-;;
+;; script for generating elisp bindings from json schema.
 
 ;;; Code:
-
-
-
-
 
 (with-temp-buffer
   (insert-file-contents-literally "generated.protocol.schema.json")
 
-  (let* ((json-object-type 'plist)
-         (defs (plist-get (json-read-from-string (buffer-string))
-                          :$defs)))
+  (-let* ((json-object-type 'plist)
+          ((&plist :$defs defs :properties) (json-read-from-string (buffer-string))))
     `(progn
-       ,@(->> defs
+       ,@(->> (append defs properties)
               (-partition 2)
               (-filter (-lambda ((_ (&plist :type)))
                          (not (string= type "object"))))
@@ -49,7 +44,7 @@
                                        enum)))
               (apply #'nconc))
 
-       ,(->> defs
+       ,(->> (append defs properties)
              (-partition 2)
              (-filter (-lambda ((_ (&plist :type)))
                         (string= type "object")))
@@ -64,14 +59,6 @@
                        (list key required params))))
 
              (cl-list* 'lsp-interface)))))
-
-;; (lsp-interface CallHierarchyCapabilities nil (:dynamicRegistration))
-
-;; (-let [(&CallHierarchyCapabilities :failure-reason?) (ht ("failureReason" "..."))]
-;;   failure-reason?)
-
-;; (-let [(&CallHierarchyCapabilities :dynamic-registration?) (ht ("dynamicRegistration" "..."))]
-;;   dynamic-registration?)
 
 
 (provide 'lsp-generate-bindings)
