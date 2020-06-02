@@ -27,15 +27,20 @@
 
 ;;; Code:
 
+(require 'dash)
+(require 'ht)
+(require 's)
 
 (defmacro lsp-interface (&rest interfaces)
-  "Generates LSP bindings from (Inteface name, Required Fields, Optional Fields) triplet.
+  "Generate LSP bindings from INTERFACES triplet.
 
-Example usage with `dash'.
+Example usage with `dash`.
 
-(-let [(&ApplyWorkspaceEditResponse
+\(-let [(&ApplyWorkspaceEditResponse
   :failure-reason?) (ht (\"failureReason\" \"...\"))]
-  failure-reason?) "
+  failure-reason?)
+
+\(fn (INTERFACE-NAME-1 REQUIRED-FIELDS-1 OPTIONAL-FIELDS-1) (INTERFACE-NAME-2 REQUIRED-FIELDS-2 OPTIONAL-FIELDS-2) ...)"
   (->> interfaces
        (-map (-lambda ((interface required optional))
                (let ((params (nconc
