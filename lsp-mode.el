@@ -5895,14 +5895,14 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
     (setq lsp--semantic-tokens-use-ranged-requests is-range-provider)
     (setq font-lock-extend-region-functions new-extend-region-functions)
     (add-function :around (local 'font-lock-fontify-region-function) #'lsp--semantic-tokens-fontify)
-    (add-hook 'lsp-on-change-hook #'lsp--semantic-tokens-request-update)
+    (add-hook 'lsp-on-change-hook #'lsp--semantic-tokens-request-update nil t)
     (lsp--semantic-tokens-request-update)
     (setq lsp--semantic-tokens-teardown
           (lambda ()
             (setq font-lock-extend-region-functions old-extend-region-functions)
             (remove-function (local 'font-lock-fontify-region-function)
                              #'lsp--semantic-tokens-fontify)
-            (remove-hook 'lsp-on-change-hook #'lsp--semantic-tokens-request-update)))))
+            (remove-hook 'lsp-on-change-hook #'lsp--semantic-tokens-request-update t)))))
 
 (defun lsp--semantic-tokens-fontify (old-fontify-region beg end &optional loudly)
   ;; TODO: support multiple language servers per buffer?
