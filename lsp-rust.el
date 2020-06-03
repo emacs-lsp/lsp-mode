@@ -27,6 +27,7 @@
 (require 'lsp-mode)
 (require 'ht)
 (require 'dash)
+(require 's)
 
 (defgroup lsp-rust nil
   "LSP support for Rust, using Rust Language Server or rust-analyzer."
@@ -716,6 +717,18 @@ The command should include `--message=format=json` or similar option."
   (interactive (list (or lsp-rust-analyzer--last-runnable
                          (lsp-rust-analyzer--select-runnable))))
   (lsp-rust-analyzer-run (or runnable lsp-rust-analyzer--last-runnable)))
+
+(cl-defmethod lsp-clients-extract-signature-on-hover (contents (_server-id (eql rust-analyzer)))
+  (-let* (((&hash "value") contents)
+          (groups (--partition-by (s-blank? it) (s-lines value)))
+          (sig_group (if (s-equals? "```rust" (car (-third-item groups)))
+                         (-third-item groups)
+                       (car groups)))
+          (sig (--> sig_group
+                    (--drop-while (s-equals? "```rust" it) it)
+                    (--take-while (not (s-equals? "```" it)) it)
+                    (s-join "" it))))
+    (lsp--render-element (concat "```rust\n" sig "\n```"))))
 
 (provide 'lsp-rust)
 ;;; lsp-rust.el ends here
