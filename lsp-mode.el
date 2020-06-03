@@ -5880,6 +5880,8 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
 
 (defvar-local lsp--semantic-tokens-teardown nil)
 
+(defvar-local lsp--semantic-tokens-use-ranged-requests nil)
+
 (defun lsp--semantic-tokens-request-update ()
   (lsp--semantic-tokens-request
    (when lsp--semantic-tokens-use-ranged-requests (cons (window-start) (window-end))) t))
