@@ -605,19 +605,10 @@ ignored."
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.3.2"))
 
-(defcustom lsp-completion-styles (if (version<= "27.0" emacs-version)
-                                     `(flex)
-                                   `(substring))
-  "List of completion styles to use for filtering completion items."
-  :type completion--styles-type
-  :group 'lsp-mode
-  :package-version '(lsp-mode . "6.3.2"))
-
 (defcustom lsp-completion-show-detail t
   "Whether or not to show detail of completion candidates."
   :type 'boolean
   :group 'lsp-mode)
-
 
 (defcustom lsp-server-trace nil
   "Request tracing on the server side.
@@ -4316,37 +4307,39 @@ When the heuristic fails to find the prefix start point, return DEFAULT value."
                              "filterText" filter-text
                              "_emacsStartPoint" start-point
                              "score"))
-               (propertize (or filter-text label)
-                           'lsp-completion-item item
-                           'lsp-completion-start-point start-point
-                           'lsp-completion-score score))
+                 (propertize (or filter-text label)
+                  'lsp-completion-item item
+                  'lsp-completion-start-point start-point
+                  'lsp-completion-score score))
              it)
-       (seq-into it 'list)
        (-group-by (-partial #'get-text-property 0 'lsp-completion-start-point) it)
        (sort it (-on #'< (lambda (o) (or (car o) most-positive-fixnum))))))
 
 (cl-defun lsp--capf-filter-candidates (items
                                        &rest plist
                                        &key lsp-items
-                                       &allow-other-keys)
+                                         &allow-other-keys)
   "List all possible completions in cached ITEMS with their prefixes.
 We can pass LSP-ITEMS, which will be used when there's no cache.
 Also, additional data to attached to each candidate can be passed via PLIST."
   (let ((filtered-items
          (if items
              (->> items
-                  (-map (lambda (item)
-                          (--> (buffer-substring-no-properties (car item) (point))
-                               ;; TODO: roll-out our own matcher if needed.
-                               ;; https://github.com/rustify-emacs/fuz.el seems to be good candidate.
-                               (let ((completion-styles lsp-completion-styles)
-                                     completion-regexp-list)
-                                 (completion-all-completions it (cdr item) nil (length it)))
-                               ;; completion-all-completions may return a list in form (a b . x)
-                               ;; the last cdr is not important and need to be removed
-                               (let ((tail (last it)))
-                                 (if (consp tail) (setcdr tail nil))
-                                 it))))
+                  (-map (-lambda ((start-point . candidates))
+                          (let ((query (buffer-substring-no-properties start-point (point))))
+                            (--> (lsp--regex-fuzzy query)
+                                 (-keep (lambda (cand)
+                                          (when (string-match it cand)
+                                            (setq cand (copy-sequence cand))
+                                            (put-text-property 0 1 'match-data (match-data) cand)
+                                            cand))
+                                  candidates)
+                                 (-map (lambda (cand)
+                                         (put-text-property
+                                          0 1
+                                          'completion-score (lsp--fuzzy-score query cand) cand)
+                                         cand)
+                                       it)))))
                   (-flatten-n 1)
                   (-sort (-on #'> (lambda (o)
                                     (or (get-text-property 0 'sort-score o)
@@ -4572,6 +4565,92 @@ Others: TRIGGER-CHARS"
                             (rx "\\" (backref 1))
                             text
                             nil nil 1))
+
+(defun lsp--regex-fuzzy (str)
+  "Build a regex sequence from STR. Insert .* between each char."
+  (apply #'concat
+         (cl-mapcar
+          #'concat
+          (cons "" (cdr (seq-map (lambda (c) (format "[^%c]*" c)) str)))
+          (seq-map (lambda (c)
+                     (format "\\(%s\\)" (regexp-quote (char-to-string c))))
+                   str))))
+
+(defvar lsp--fuzzy-score-case-sensitiveness 20
+  "Case sensitiveness, can be in range of [0, inf).")
+
+(defun lsp--fuzzy-score (query str)
+  "Calculate fuzzy score for STR with query QUERY."
+  (-when-let* ((md (cddr (or (get-text-property 0 'match-data str)
+                             (let ((re (lsp--regex-fuzzy query)))
+                               (when (string-match re str)
+                                 (match-data))))))
+               (start (pop md))
+               (len (length str))
+               ;; To understand how this works, consider these bad
+               ;; ascii(tm) diagrams showing how the pattern "foo"
+               ;; flex-matches "fabrobazo", "fbarbazoo" and
+               ;; "barfoobaz":
+
+               ;;      f abr o baz o
+               ;;      + --- + --- +
+
+               ;;      f barbaz oo
+               ;;      + ------ ++
+
+               ;;      bar foo baz
+               ;;          +++
+
+               ;; "+" indicates parts where the pattern matched.  A
+               ;; "hole" in the middle of the string is indicated by
+               ;; "-".  Note that there are no "holes" near the edges
+               ;; of the string.  The completion score is a number
+               ;; bound by ]0..1]: the higher the better and only a
+               ;; perfect match (pattern equals string) will have
+               ;; score 1.  The formula takes the form of a quotient.
+               ;; For the numerator, we use the number of +, i.e. the
+               ;; length of the pattern.  For the denominator, it
+               ;; first computes
+               ;;
+               ;;     hole_i_contrib = 1 + (Li-1)^(1/tightness)
+               ;;
+               ;; , for each hole "i" of length "Li", where tightness
+               ;; is given by `flex-score-match-tightness'.  The
+               ;; final value for the denominator is then given by:
+               ;;
+               ;;    (SUM_across_i(hole_i_contrib) + 1) * len
+               ;;
+               ;; , where "len" is the string's length.
+               (score-numerator 0)
+               (score-denominator 0)
+               (last-b 0)
+               (q-ind 0)
+               (update-score
+                (lambda (a b)
+                  "Update score variables given match range (A B)."
+                  (setq score-numerator (+ score-numerator (- b a)))
+                  (unless (= a len)
+                    (setq score-denominator
+                          (+ score-denominator
+                             (if (= a last-b) 0
+                               (+ 1
+                                  (if (zerop last-b)
+                                      (- 0 (expt 0.8 (- a last-b)))
+                                    (expt (- a last-b 1)
+                                          0.25))))
+                             (if (equal (aref query q-ind) (aref str a))
+                                 0
+                               lsp--fuzzy-score-case-sensitiveness))))
+                  (setq last-b b))))
+    (funcall update-score start start)
+    (while md
+      (funcall update-score start (car md))
+      (pop md)
+      (setq start (pop md))
+      (cl-incf q-ind))
+    (funcall update-score len len)
+    (unless (zerop len)
+      (/ score-numerator (* len (1+ score-denominator)) 1.0))))
 
 (defun lsp--sort-completions (completions)
   "Sort COMPLETIONS."
