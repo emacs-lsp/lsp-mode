@@ -17,13 +17,13 @@ Language Server Protocol Support for Emacs
 
 <hr>
 <p align="center">
-  <a href="https://emacs-lsp.github.io/lsp-mode"><strong>homepage</strong></a> |
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/installation"><strong>installation</strong></a> |
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/languages"><strong>languages</strong></a> |
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/settings"><strong>settings</strong></a> |
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/extensions"><strong>extensions</strong></a> |
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/troubleshooting"><strong>troubleshooting</strong></a> |
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/gallery"><strong>screenshots</strong></a> |
+  <a href="https://emacs-lsp.github.io/lsp-mode"><strong>homepage</strong></a> • 
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/installation"><strong>installation</strong></a> • 
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/languages"><strong>languages</strong></a> • 
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/settings"><strong>settings</strong></a> • 
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/extensions"><strong>extensions</strong></a> • 
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/troubleshooting"><strong>troubleshooting</strong></a> • 
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/gallery"><strong>screenshots</strong></a> • 
   <a href="https://emacs-lsp.github.io/lsp-mode/page/faq"><strong>FAQ</strong></a>
 </p>
 <hr>
