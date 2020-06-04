@@ -367,6 +367,26 @@
     Install lsp-mode via MELPA
   </a>
   
+    <nav class="md-nav" aria-label="Install lsp-mode via MELPA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#doom-emacs" class="md-nav__link">
+    Doom Emacs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spacemacs" class="md-nav__link">
+    Spacemacs
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1521,6 +1541,26 @@
     Install lsp-mode via MELPA
   </a>
   
+    <nav class="md-nav" aria-label="Install lsp-mode via MELPA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#doom-emacs" class="md-nav__link">
+    Doom Emacs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spacemacs" class="md-nav__link">
+    Spacemacs
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1552,14 +1592,24 @@
                 
                 <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h1>
 <h2 id="install-lsp-mode-via-melpa">Install lsp-mode via MELPA<a class="headerlink" href="#install-lsp-mode-via-melpa" title="Permanent link">#</a></h2>
-<p>The recommended way to install <code>lsp-mode</code> is via <code>package.el</code> - the
-built-in package manager in Emacs. <code>lsp-mode</code> is available on the two
-major <code>package.el</code> community maintained repos - <a href="http://stable.melpa.org">MELPA
-Stable</a> and <a href="http://melpa.org">MELPA</a>.</p>
+<p>The recommended way to install <code>lsp-mode</code> is via <code>package.el</code> - the built-in package manager in Emacs. <code>lsp-mode</code> is available on the two major <code>package.el</code> community maintained repos - <a href="http://stable.melpa.org">MELPA Stable</a> and <a href="http://melpa.org">MELPA</a>.</p>
 <p><kbd>M-x</kbd> <code>package-install</code> <kbd>RET</kbd> <code>lsp-mode</code> <kbd>RET</kbd></p>
+<h3 id="doom-emacs">Doom Emacs<a class="headerlink" href="#doom-emacs" title="Permanent link">#</a></h3>
+<p><a href="https://github.com/hlissner/doom-emacs">Doom Emacs</a> has a module to install and configure <code>lsp-mode</code> automatically, you just need to add <code>lsp</code> below <code>:tools</code> in your <code>init.el</code>.</p>
+<p>To add <code>lsp-mode</code> support to some language, you can add the <code>+lsp</code> flag to the language you want. Example:</p>
+<p><code>init.el</code>
+<div class="highlight"><pre><span></span><code><span class="o">...</span>
+<span class="nb">:lang</span>
+<span class="p">(</span><span class="nv">clojure</span> <span class="nv">+lsp</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">dart</span> <span class="nv">+lsp</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">java</span> <span class="nv">+lsp</span><span class="p">)</span>
+<span class="o">...</span>
+</code></pre></div></p>
+<p>For Doom Emacs module flags and more information, check the <a href="https://github.com/hlissner/doom-emacs/tree/develop/modules/tools/lsp">doom-emacs lsp module documentation</a>.</p>
+<h3 id="spacemacs">Spacemacs<a class="headerlink" href="#spacemacs" title="Permanent link">#</a></h3>
+<p>//TODO</p>
 <h2 id="install-a-language-server">Install a language server<a class="headerlink" href="#install-a-language-server" title="Permanent link">#</a></h2>
-<p>Check the <a href="../languages/">available supported servers</a> and the
-corresponding instructions on how to install the server.</p>
+<p>For instructions on how to install a server for your language, check the <a href="../languages/">available supported servers</a>.</p>
                 
                   
                     
