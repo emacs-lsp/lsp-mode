@@ -741,6 +741,12 @@ directory")
     ("textDocument/references" :capability "referencesProvider")
     ("textDocument/selectionRange" :capability "selectionRangeProvider")
     ("textDocument/semanticTokens" :capability "semanticTokensProvider")
+    ("textDocument/semanticTokensRangeProvider"
+     :check-command (lambda (workspace)
+                      (with-lsp-workspace workspace
+                        (let ((table (lsp--capability "semanticTokensProvider")))
+                          (and (hash-table-p table)
+                               (gethash "rangeProvider" table))))))
     ("textDocument/signatureHelp" :capability "signatureHelpProvider")
     ("textDocument/typeDefinition" :capability "typeDefinitionProvider")
     ("workspace/executeCommand" :capability "executeCommandProvider")
@@ -3445,7 +3451,8 @@ in that particular folder."
 
       (when (and (eq lsp-semantic-highlighting :semantic-tokens)
                  (lsp-feature? "textDocument/semanticTokens"))
-        (lsp--semantic-tokens-initialize-buffer))
+        (lsp--semantic-tokens-initialize-buffer
+         (lsp-feature? "textDocument/semanticTokensRangeProvider")))
       (add-hook 'post-command-hook #'lsp--post-command nil t)
       (when lsp-enable-xref
         (add-hook 'xref-backend-functions #'lsp--xref-backend nil t))
@@ -5669,11 +5676,6 @@ unless overridden by a more specific face association."
   "Face used for types."
   :group 'lsp-faces)
 
-(defface lsp-face-semhl-type
-  '((t (:inherit font-lock-type-face)))
-  "Face used for types."
-  :group 'lsp-faces)
-
 (defface lsp-face-semhl-struct
   '((t (:inherit font-lock-type-face)))
   "Face used for structs."
@@ -5957,7 +5959,13 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
 
 (defvar-local lsp--semantic-tokens-teardown nil)
 
-(defun lsp--semantic-tokens-initialize-buffer ()
+(defvar-local lsp--semantic-tokens-use-ranged-requests nil)
+
+(defun lsp--semantic-tokens-request-update ()
+  (lsp--semantic-tokens-request
+   (when lsp--semantic-tokens-use-ranged-requests (cons (window-start) (window-end))) t))
+
+(defun lsp--semantic-tokens-initialize-buffer (is-range-provider)
   (let* ((old-extend-region-functions font-lock-extend-region-functions)
          ;; make sure font-lock always fontifies entire lines (TODO: do we also have
          ;; to change some jit-lock-...-region functions/variables?)
@@ -5965,15 +5973,17 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
           (if (memq 'font-lock-extend-region-wholelines old-extend-region-functions)
               old-extend-region-functions
             (cons 'font-lock-extend-region-wholelines old-extend-region-functions))))
+    (setq lsp--semantic-tokens-use-ranged-requests is-range-provider)
     (setq font-lock-extend-region-functions new-extend-region-functions)
     (add-function :around (local 'font-lock-fontify-region-function) #'lsp--semantic-tokens-fontify)
-    (add-hook 'lsp-on-change-hook #'lsp--semantic-tokens-request nil t)
-    (lsp--semantic-tokens-request)
+    (add-hook 'lsp-on-change-hook #'lsp--semantic-tokens-request-update nil t)
+    (lsp--semantic-tokens-request-update)
     (setq lsp--semantic-tokens-teardown
           (lambda ()
             (setq font-lock-extend-region-functions old-extend-region-functions)
             (remove-function (local 'font-lock-fontify-region-function)
-                             #'lsp--semantic-tokens-fontify)))))
+                             #'lsp--semantic-tokens-fontify)
+            (remove-hook 'lsp-on-change-hook #'lsp--semantic-tokens-request-update t)))))
 
 (defun lsp--semantic-tokens-fontify (old-fontify-region beg end &optional loudly)
   ;; TODO: support multiple language servers per buffer?
@@ -6037,17 +6047,37 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
                           (add-face-text-property text-property-beg text-property-end
                                                   (aref modifier-faces i))))
                when (> current-line line-max-inclusive) return nil)))))
-      `(jit-lock-bounds ,beg . ,end))))
+      (let ((token-region (gethash "region" lsp--semantic-tokens-cache)))
+        (if token-region
+            `(jit-lock-bounds ,(max beg (car token-region)) . ,(min end (cdr token-region)))
+          `(jit-lock-bounds ,beg . ,end))))))
 
-(defun lsp--semantic-tokens-request ()
-  (let ((cur-version lsp--cur-version))
+(defun lsp--semantic-tokens-request (region fontify-immediately)
+  (let ((request-full-token-set
+         (lambda (fontify-immediately)
+           ;; TODO: rename to lsp--semantic-tokens-idle-timer when we remove Theia
+           ;; highlighting support
+           (when lsp--semantic-highlighting-idle-timer
+             (cancel-timer lsp--semantic-highlighting-idle-timer))
+           (setq lsp--semantic-highlighting-idle-timer
+                 (run-with-idle-timer
+                  lsp-idle-delay
+                  nil
+                  (lambda () (lsp--semantic-tokens-request nil fontify-immediately)))))))
+    (when lsp--semantic-highlighting-idle-timer
+      (cancel-timer lsp--semantic-highlighting-idle-timer))
     (lsp-request-async
-     "textDocument/semanticTokens"
-     `(:textDocument ,(lsp--text-document-identifier))
+     (if region "textDocument/semanticTokens/range" "textDocument/semanticTokens")
+     `(:textDocument ,(lsp--text-document-identifier)
+       ,@(if region (list :range (lsp--region-to-range (car region) (cdr region))) '()))
      (lambda (response)
        (setq lsp--semantic-tokens-cache response)
-       (puthash "documentVersion" cur-version lsp--semantic-tokens-cache)
-       (font-lock-flush))
+       (puthash "documentVersion" lsp--cur-version lsp--semantic-tokens-cache)
+       (puthash "region" region lsp--semantic-tokens-cache)
+       (when fontify-immediately (font-lock-flush))
+       ;; request full token set to improve fontification speed when scrolling
+       (when region (funcall request-full-token-set nil)))
+     :error-handler (lambda (&rest _) (funcall request-full-token-set t))
      :mode 'tick
      :cancel-token (format "semantic-tokens-%s" (lsp--buffer-uri)))))
 
