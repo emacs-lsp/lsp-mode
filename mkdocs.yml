@@ -92,7 +92,7 @@ nav:
       - page/CHANGELOG.md
 
 extra_css:
-  - stylesheets/extra.css
+  - stylesheets/layout.css
   - stylesheets/members.css
 
 extra_javascript:

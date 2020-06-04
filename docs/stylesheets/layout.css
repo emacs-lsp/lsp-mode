@@ -6,6 +6,7 @@
 
 .md-footer {
   --md-default-fg-color: #573688;
+  background-color: var(--md-default-fg-color);
 }
 
 .md-grid {
@@ -13,5 +14,5 @@
 }
 
 .md-typeset a {
-    color: #7B58B0;
+  color: #7B58B0;
 }
