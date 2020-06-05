@@ -363,12 +363,19 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#install-lsp-mode-via-melpa" class="md-nav__link">
-    Install lsp-mode via MELPA
+  <a href="#client" class="md-nav__link">
+    Client
   </a>
   
-    <nav class="md-nav" aria-label="Install lsp-mode via MELPA">
+    <nav class="md-nav" aria-label="Client">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manually-via-melpa" class="md-nav__link">
+    Manually via MELPA
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#doom-emacs" class="md-nav__link">
@@ -381,6 +388,26 @@
   <a href="#spacemacs" class="md-nav__link">
     Spacemacs
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vanilla-emacs" class="md-nav__link">
+    Vanilla Emacs
+  </a>
+  
+    <nav class="md-nav" aria-label="Vanilla Emacs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-package" class="md-nav__link">
+    use-package
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -400,18 +427,6 @@
   
 </nav>
     
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../configuration/" title="Configuration" class="md-nav__link">
-      Configuration
-    </a>
   </li>
 
         
@@ -1537,12 +1552,19 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#install-lsp-mode-via-melpa" class="md-nav__link">
-    Install lsp-mode via MELPA
+  <a href="#client" class="md-nav__link">
+    Client
   </a>
   
-    <nav class="md-nav" aria-label="Install lsp-mode via MELPA">
+    <nav class="md-nav" aria-label="Client">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manually-via-melpa" class="md-nav__link">
+    Manually via MELPA
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#doom-emacs" class="md-nav__link">
@@ -1555,6 +1577,26 @@
   <a href="#spacemacs" class="md-nav__link">
     Spacemacs
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vanilla-emacs" class="md-nav__link">
+    Vanilla Emacs
+  </a>
+  
+    <nav class="md-nav" aria-label="Vanilla Emacs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-package" class="md-nav__link">
+    use-package
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1591,7 +1633,11 @@
                 
                 
                 <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h1>
-<h2 id="install-lsp-mode-via-melpa">Install lsp-mode via MELPA<a class="headerlink" href="#install-lsp-mode-via-melpa" title="Permanent link">#</a></h2>
+<p>You need first <code>lsp-mode</code>, that is a Emacs client for an LSP server.
+Then you need to install the specific LSP server for your language.</p>
+<h2 id="client">Client<a class="headerlink" href="#client" title="Permanent link">#</a></h2>
+<p><code>lsp-mode</code> has multiple ways to install it.</p>
+<h3 id="manually-via-melpa">Manually via MELPA<a class="headerlink" href="#manually-via-melpa" title="Permanent link">#</a></h3>
 <p>The recommended way to install <code>lsp-mode</code> is via <code>package.el</code> - the built-in package manager in Emacs. <code>lsp-mode</code> is available on the two major <code>package.el</code> community maintained repos - <a href="http://stable.melpa.org">MELPA Stable</a> and <a href="http://melpa.org">MELPA</a>.</p>
 <p><kbd>M-x</kbd> <code>package-install</code> <kbd>RET</kbd> <code>lsp-mode</code> <kbd>RET</kbd></p>
 <h3 id="doom-emacs">Doom Emacs<a class="headerlink" href="#doom-emacs" title="Permanent link">#</a></h3>
@@ -1607,7 +1653,66 @@
 </code></pre></div></p>
 <p>For Doom Emacs module flags and more information, check the <a href="https://github.com/hlissner/doom-emacs/tree/develop/modules/tools/lsp">doom-emacs lsp module documentation</a>.</p>
 <h3 id="spacemacs">Spacemacs<a class="headerlink" href="#spacemacs" title="Permanent link">#</a></h3>
-<p>//TODO</p>
+<p><a href="https://emacs-lsp.github.io/lsp-mode">lsp-mode</a> is included in spacemacs develop branch. Add <code>lsp</code> to <code>dotspacemacs-configuration-layers</code> and configure the language that you want to use to be backed by <code>lsp</code> backend.</p>
+<h3 id="vanilla-emacs">Vanilla Emacs<a class="headerlink" href="#vanilla-emacs" title="Permanent link">#</a></h3>
+<p>You could go minimal and use <code>lsp-mode</code> as it is without external packages with the built-in <code>flymake</code> and <code>completion-at-point</code> or you could install the following extensions for better experience:</p>
+<ul>
+<li><a href="https://emacs-lsp.github.io/lsp-ui/#intro">lsp-ui</a> for fancy sideline, popup documentation, VScode-like peek UI, etc.</li>
+<li><a href="https://github.com/flycheck/flycheck">flycheck</a> if you prefer the more popular <code>flycheck</code> over renewed <code>flymake</code>. <code>lsp-mode</code> will automatically pick it up.</li>
+<li><a href="https://github.com/company-mode/company-mode">company-mode</a> for completion popups.</li>
+<li><a href="https://github.com/emacs-lsp/lsp-treemacs">lsp-treemacs</a> for various tree based UI controls (symbols, errors overview, call hierarchy, etc.)</li>
+<li><a href="https://github.com/emacs-lsp/helm-lsp">helm-lsp</a> provides on type completion alternative of <code>xref-apropos</code> using <code>helm</code>.</li>
+<li><a href="https://github.com/emacs-lsp/lsp-ivy">lsp-ivy</a> provides on type completion alternative of <code>xref-apropos</code> using <code>ivy</code>.</li>
+<li><a href="https://emacs-lsp.github.io/dap-mode">dap-mode</a> if your language is supported by the debugger.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1">;; if you want to change prefix for lsp-mode keybindings.</span>
+<span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-keymap-prefix</span> <span class="s">&quot;s-l&quot;</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;lsp-mode</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;XXX-mode-hook</span> <span class="nf">#&#39;</span><span class="nv">lsp</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Where <code>XXX</code> could be major mode like <code>python</code>, <code>java</code>, <code>c++</code>. Alternatively, if you want to minimize you configuration you may use <code>prog-mode-hook</code>. In case you do that, <code>lsp</code> will try to start for each programming mode and echo a message when there is no client registered for the current mode or if the corresponding server is not present. In addition, <code>lsp-mode</code> will automatically detect and configure <a href="https://emacs-lsp.github.io/lsp-ui">lsp-ui</a> and <a href="https://github.com/tigersoldier/company-lsp">company-lsp</a>. To turn off that behavior you could set <code>lsp-auto-configure</code> to <code>nil</code>.</p>
+<p>To defer LSP server startup (and DidOpen notifications) until the buffer is visible you can use <code>lsp-deferred</code> instead of <code>lsp</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;XXX-mode-hook</span> <span class="nf">#&#39;</span><span class="nv">lsp-deferred</span><span class="p">)</span>
+</code></pre></div>
+
+<h4 id="use-package">use-package<a class="headerlink" href="#use-package" title="Permanent link">#</a></h4>
+<p>Replace <code>(require 'lsp-mode)</code> with the following if you use use-package.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">;; set prefix for lsp-command-keymap (few alternatives - &quot;C-l&quot;, &quot;C-c l&quot;)</span>
+<span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-keymap-prefix</span> <span class="s">&quot;s-l&quot;</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-mode</span>
+    <span class="nb">:hook</span> <span class="p">(</span><span class="c1">;; replace XXX-mode with concrete major-mode(e. g. python-mode)</span>
+            <span class="p">(</span><span class="nv">XXX-mode</span> <span class="o">.</span> <span class="nv">lsp</span><span class="p">)</span>
+            <span class="c1">;; if you want which-key integration</span>
+            <span class="p">(</span><span class="nv">lsp-mode</span> <span class="o">.</span> <span class="nv">lsp-enable-which-key-integration</span><span class="p">))</span>
+    <span class="nb">:commands</span> <span class="nv">lsp</span><span class="p">)</span>
+
+<span class="c1">;; optionally</span>
+<span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-ui</span> <span class="nb">:commands</span> <span class="nv">lsp-ui-mode</span><span class="p">)</span>
+<span class="c1">;; if you are helm user</span>
+<span class="p">(</span><span class="nb">use-package</span> <span class="nv">helm-lsp</span> <span class="nb">:commands</span> <span class="nv">helm-lsp-workspace-symbol</span><span class="p">)</span>
+<span class="c1">;; if you are ivy user</span>
+<span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-ivy</span> <span class="nb">:commands</span> <span class="nv">lsp-ivy-workspace-symbol</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-treemacs</span> <span class="nb">:commands</span> <span class="nv">lsp-treemacs-errors-list</span><span class="p">)</span>
+
+<span class="c1">;; optionally if you want to use debugger</span>
+<span class="p">(</span><span class="nb">use-package</span> <span class="nv">dap-mode</span><span class="p">)</span>
+<span class="c1">;; (use-package dap-LANGUAGE) to load the dap adapter for your language</span>
+
+<span class="c1">;; optional if you want which-key integration</span>
+<span class="p">(</span><span class="nb">use-package</span> <span class="nv">which-key</span>
+    <span class="nb">:config</span>
+    <span class="p">(</span><span class="nv">which-key-mode</span><span class="p">))</span>
+</code></pre></div>
+
+<p>To defer LSP server startup (and DidOpen notifications) until the buffer is visible you can use <code>lsp-deferred</code> instead of <code>lsp</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-mode</span>
+    <span class="nb">:hook</span> <span class="p">(</span><span class="nv">XXX-mode</span> <span class="o">.</span> <span class="nv">lsp-deferred</span><span class="p">)</span>
+    <span class="nb">:commands</span> <span class="p">(</span><span class="nv">lsp</span> <span class="nv">lsp-deferred</span><span class="p">))</span>
+</code></pre></div>
+
 <h2 id="install-a-language-server">Install a language server<a class="headerlink" href="#install-a-language-server" title="Permanent link">#</a></h2>
 <p>For instructions on how to install a server for your language, check the <a href="../languages/">available supported servers</a>.</p>
                 
@@ -1618,7 +1723,7 @@
 <div class="md-source-date">
   <small>
     
-      Last update: June 4, 2020
+      Last update: June 5, 2020
     
   </small>
 </div>
@@ -1656,13 +1761,13 @@
           </a>
         
         
-          <a href="../configuration/" title="Configuration" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../performance/" title="Perfomance" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Configuration
+                Perfomance
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
