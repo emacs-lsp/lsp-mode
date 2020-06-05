@@ -6,7 +6,6 @@ nav:
     - Overview: README.md
     - Setup:
         - Installation: page/installation.md
-        - Configuration: page/configuration.md
         - Perfomance: page/performance.md
         - Additional settings: page/additional-settings.md
     - Settings: page/settings.md
