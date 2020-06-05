@@ -692,6 +692,12 @@ The command should include `--message=format=json` or similar option."
                          (lsp-rust-analyzer--select-runnable))))
   (lsp-rust-analyzer-run (or runnable lsp-rust-analyzer--last-runnable)))
 
+;; goto parent module
+(cl-defun lsp-rust-find-parent-module (&key display-action)
+  "Find parent module of current module."
+  (interactive)
+  (lsp-find-locations "experimental/parentModule" nil :display-action display-action))
+
 (provide 'lsp-rust)
 ;;; lsp-rust.el ends here
 
