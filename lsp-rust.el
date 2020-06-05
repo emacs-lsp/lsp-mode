@@ -567,11 +567,11 @@ The command should include `--message=format=json` or similar option."
   "Join selected lines into one, smartly fixing up whitespace and trailing commas."
   (interactive)
   (let* ((params (list :textDocument (lsp--text-document-identifier)
-                       :range (if (use-region-p)
-                                  (lsp--region-to-range (region-beginning) (region-end))
-                                (lsp--region-to-range (point) (point)))))
-         (result (lsp-send-request (lsp-make-request "rust-analyzer/joinLines" params))))
-    (lsp-rust-apply-source-change result)))
+                       :ranges (vector (if (use-region-p)
+                                           (lsp--region-to-range (region-beginning) (region-end))
+                                         (lsp--region-to-range (point) (point))))))
+         (result (lsp-send-request (lsp-make-request "experimental/joinLines" params))))
+    (lsp--apply-text-edits result)))
 
 (lsp-register-client
  (make-lsp-client
