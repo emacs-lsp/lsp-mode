@@ -3380,7 +3380,7 @@ in that particular folder."
       (remove-hook 'post-self-insert-hook signature-help-handler t)))))
 
 (defun lsp--semantic-highlighting-warn-about-deprecated-setting ()
-  (when (boundp lsp-semantic-highlighting)
+  (when (boundp 'lsp-semantic-highlighting)
     (pcase lsp-semantic-highlighting
       (:semantic-tokens
        (lsp-warn "It seems you wish to use semanticTokens-based
