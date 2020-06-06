@@ -166,25 +166,11 @@ the buffer when it becomes large."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-semantic-highlighting nil
-  "When set to `:semantic-tokens', this option enables support
-for semantic highlighting as defined by the Language Server
-Protocol 3.16.
-
-Some older language servers may not conform to the semantic
-tokens protocol yet, but implement the theia semantic
-highlighting protocol, see
-https://github.com/microsoft/vscode-languageserver-node/pull/367.
-To use theia highlighting, set `lsp-semantic-highlighting' to
-`:immediate' or `:deferred', where `:deferred' should offer
-better performance than `:immediate' but has a higher risk of
-producing stale highlights."
+(defcustom lsp-enable-semantic-highlighting nil
+  "Enable/disable support for semantic highlighting as defined by
+the Language Server Protocol 3.16."
   :group 'lsp-mode
-  :type '(choice
-          (const :tag "Disable" nil)
-          (const :tag "Immediate" :immediate)
-          (const :tag "Deferred" :deferred)
-          (const :tag "SemanticTokens" :semantic-tokens)))
+  :type 'boolean)
 
 (defcustom lsp-semantic-highlighting-warn-on-missing-face nil
   "When non-nil, this option will emit a warning any time a token
@@ -194,15 +180,9 @@ or modifier type returned by a language server has no face associated with it."
 
 (defcustom lsp-semantic-tokens-apply-modifiers nil
   "Determines whether semantic highlighting should take token
-modifiers into account. Only applies if
-`lsp-semantic-highlighting' is set to `:semantic-tokens'."
+modifiers into account."
   :group 'lsp-mode
   :type 'boolean)
-
-(defcustom lsp-semantic-highlighting-context-lines 15
-  "How many lines to fontify above `(window-start)' and below `(window-end)'."
-  :group 'lsp-mode
-  :type 'number)
 
 (defcustom lsp-folding-range-limit nil
   "The maximum number of folding ranges to receive from the language server."
@@ -865,8 +845,7 @@ They are added to `markdown-code-lang-modes'")
   "Set to `t' on symbol highlighting, cleared on
 `lsp--cleanup-highlights-if-needed'. Checking a separately
 defined flag is substantially faster than unconditionally
-calling `remove-overlays', especially when semantic
-highlighting is enabled.")
+calling `remove-overlays'.")
 
 ;; Buffer local variable for storing number of lines.
 (defvar lsp--log-lines)
@@ -2578,15 +2557,13 @@ active `major-mode', or for all major modes when ALL-MODES is t."
   ;; ‘buffers’ is a list of buffers associated with this workspace.
   (buffers nil)
 
-  ;; If old-style (Theia) semantic highlighting is used (i.e., if 'lsp-semantic-highlighting‘
-  ;; is set to :immediate or :deferred), semantic-highlighting-faces' is a vector containing
-  ;; one face for each TextMate scope (or set of scopes) supported by the language server. If
-  ;; semanticTokens are used for highlighting, semantic-highlighting-faces contains one face
-  ;; (or nil) for each token type supported by the language server.
+  ;; if semantic highlighting is enabled, `semantic-highlighting-faces' contains
+  ;; one face (or nil) for each token type supported by the language server.
   (semantic-highlighting-faces nil)
 
-  ;; If semanticTokens are used for highlighting, semantic-highlighting-modifier-faces contains
-  ;; one face (or nil) for each modifier type supported by the language server
+  ;; If semantic highlighting is enabled, `semantic-highlighting-modifier-faces'
+  ;; contains one face (or nil) for each modifier type supported by the language
+  ;; server
   (semantic-highlighting-modifier-faces nil)
 
   ;; Extra client capabilities provided by third-party packages using
@@ -3103,13 +3080,12 @@ disappearing, unset all the variables related to it."
                                          (hierarchicalDocumentSymbolSupport . t)))
                       (formatting . ((dynamicRegistration . t)))
                       (rangeFormatting . ((dynamicRegistration . t)))
-                      ,@(pcase lsp-semantic-highlighting
-                          ((or :immediate :deferred) '((semanticHighlightingCapabilities . ((semanticHighlighting . t)))))
-                          (:semantic-tokens `((semanticTokens
-                                               . ((tokenModifiers . ,(if lsp-semantic-tokens-apply-modifiers
-                                                                         (apply 'vector (mapcar #'car lsp-semantic-token-modifier-faces)) []))
-                                                  (tokenTypes . ,(apply 'vector (mapcar #'car lsp-semantic-token-faces)))))))
-                          (_ '()))
+                      ,@(if lsp-enable-semantic-highlighting
+                            `((semanticTokens
+                               . ((tokenModifiers . ,(if lsp-semantic-tokens-apply-modifiers
+                                                         (apply 'vector (mapcar #'car lsp-semantic-token-modifier-faces)) []))
+                                  (tokenTypes . ,(apply 'vector (mapcar #'car lsp-semantic-token-faces))))))
+                          '())
                       (rename . ((dynamicRegistration . t) (prepareSupport . t)))
                       (codeAction . ((dynamicRegistration . t)
                                      (isPreferredSupport . t)
@@ -3403,6 +3379,24 @@ in that particular folder."
           (not lsp-signature-auto-activate))
       (remove-hook 'post-self-insert-hook signature-help-handler t)))))
 
+(defun lsp--semantic-highlighting-warn-about-deprecated-setting ()
+  (when (boundp lsp-semantic-highlighting)
+    (pcase lsp-semantic-highlighting
+      (:semantic-tokens
+       (lsp-warn "It seems you wish to use semanticTokens-based
+ highlighting. To do so, please remove any references to the
+ deprecated variable `lsp-semantic-highlighting' from your
+ configuration and set `lsp-enable-semantic-highlighting' to `t'
+ instead.")
+       (setq lsp-enable-semantic-highlighting t))
+      ((or :immediate :deferred)
+       (lsp-warn "It seems you wish to use Theia-based semantic
+ highlighting. This protocol has been superseded by the
+ semanticTokens protocol specified by LSP v3.16 and is no longer
+ supported by lsp-mode. If your language server provides
+ semanticToken support, please set
+ `lsp-enable-semantic-highlighting' to `t' to use it.")))))
+
 (define-minor-mode lsp-managed-mode
   "Mode for source buffers managed by lsp-mode."
   nil nil nil
@@ -3430,7 +3424,9 @@ in that particular folder."
       (lsp--update-on-type-formatting-hook)
       (lsp--update-signature-help-hook)
 
-      (when (and (eq lsp-semantic-highlighting :semantic-tokens)
+      (lsp--semantic-highlighting-warn-about-deprecated-setting)
+     
+      (when (and lsp-enable-semantic-highlighting
                  (lsp-feature? "textDocument/semanticTokens"))
         (lsp--semantic-tokens-initialize-buffer
          (lsp-feature? "textDocument/semanticTokensRangeProvider")))
@@ -5472,36 +5468,6 @@ A reference is highlighted only if it is visible in a window."
           wins-visible-pos)))
      highlights)))
 
-(defface lsp-face-semhl-variable-parameter
-  '((t :inherit font-lock-variable-name-face))
-  "Face used for semantic highlighting scopes matching variable.parameter.*,
-unless overridden by a more specific face association."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-variable-local
-  '((t :inherit font-lock-variable-name-face))
-  "Face used for semantic highlighting scopes matching variable.other.local.*,
-unless overridden by a more specific face association."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-field
-  '((t :inherit font-lock-variable-name-face))
-  "Face used for semantic highlighting scopes matching variable.other.field.*,
-unless overridden by a more specific face association."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-field-static
-  '((t :inherit lsp-face-semhl-field :slant italic))
-  "Face used for semantic highlighting scopes matching variable.other.field.static.*,
-unless overridden by a more specific face association."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-enummember
-  '((t :inherit font-lock-constant-face))
-  "Face used for semantic highlighting scopes matching variable.other.enummember.*,
-unless overridden by a more specific face association."
-  :group 'lsp-faces)
-
 (defface lsp-face-semhl-constant
   '((t :inherit font-lock-constant-face))
   "Face used for semantic highlighting scopes matching constant scopes."
@@ -5525,64 +5491,9 @@ unless overridden by a more specific face association."
 unless overridden by a more specific face association."
   :group 'lsp-faces)
 
-(defface lsp-face-semhl-static-method
-  '((t :inherit lsp-face-semhl-function :slant italic))
-  "Face used for semantic highlighting scopes matching entity.name.function.method.static.*,
-unless overridden by a more specific face association."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-type-class
-  '((t :inherit font-lock-type-face))
-  "Face used for semantic highlighting scopes matching entity.name.type.class.*,
-unless overridden by a more specific face association."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-type-enum
-  '((t :inherit font-lock-type-face))
-  "Face used for semantic highlighting scopes matching entity.name.type.enum.*,
-unless overridden by a more specific face association."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-type-typedef
-  '((t :inherit font-lock-type-face :slant italic))
-  "Face used for semantic highlighting scopes matching
- entity.name.type.typedef.*, unless overridden by a more
- specific face association."
-  :group 'lsp-faces)
-
 (defface lsp-face-semhl-namespace
   '((t :inherit font-lock-type-face :weight bold))
   "Face used for semantic highlighting scopes matching entity.name.namespace.*,
-unless overridden by a more specific face association."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-preprocessor
-  '((t :inherit font-lock-preprocessor-face))
-  "Face used for semantic highlighting scopes matching entity.name.function.preprocessor.*,
-unless overridden by a more specific face association."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-type-template
-  '((t :inherit font-lock-type-face :slant italic))
-  "Face used for semantic highlighting scopes matching entity.name.type.template.*,
-unless overridden by a more specific face association."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-type-primitive
-  '((t :inherit font-lock-type-face :slant italic))
-  "Face used for semantic highlighting scopes matching storage.type.primitive.*,
-unless overridden by a more specific face association."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-disabled
-  '((t :inherit font-lock-comment-face))
-  "Face used for semantic highlighting scopes matching meta.disabled,
-unless overridden by a more specific face association."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-deprecated
-  '((t (:underline (:color "yellow" :style wave))))
-  "Face used for semantic highlighting scopes matching storage.type.primitive.*,
 unless overridden by a more specific face association."
   :group 'lsp-faces)
 
@@ -5595,41 +5506,6 @@ unless overridden by a more specific face association."
                       (seq-some (lambda (s) (s-matches-p re s)) scopes)))
                   or-matchspec))
          matchspec))
-
-(defvar lsp-semantic-highlighting-faces
-  '(((("variable.parameter")) . lsp-face-semhl-variable-parameter)
-    ((("variable.other.local")) . lsp-face-semhl-variable-local)
-    ((("variable.other.field.static")
-      ("storage.modifier.static" "variable.other")) . lsp-face-semhl-field-static)
-    ((("variable.other.field")) . lsp-face-semhl-field)
-    ((("variable.other.enummember")) . lsp-face-semhl-enummember)
-    ((("variable.other")) . lsp-face-semhl-variable)
-    ((("entity.name.function.method.static")
-      ("storage.modifier.static" "entity.name.function")) . lsp-face-semhl-static-method)
-    ((("entity.name.function.method")) . lsp-face-semhl-method)
-    ((("entity.name.function")) . lsp-face-semhl-function)
-    ((("entity.name.type.class")) . lsp-face-semhl-type-class)
-    ((("entity.name.type.enum")) . lsp-face-semhl-type-enum)
-    ((("entity.name.type.typedef")
-      ("entity.name.type.dependent")
-      ("entity.name.other.dependent")
-      ("entity.name.type.concept.cpp")) . lsp-face-semhl-type-typedef)
-    ((("entity.name.namespace")) . lsp-face-semhl-namespace)
-    ((("entity.name.function.preprocessor")) . lsp-face-semhl-preprocessor)
-    ((("entity.name.type.template")) . lsp-face-semhl-type-template)
-    ((("storage.type.primitive")) . lsp-face-semhl-type-primitive)
-    ((("constant.other.key")) . lsp-face-semhl-constant)
-    ((("constant.numeric.decimal")) . lsp-face-semhl-constant)
-    ((("meta.disabled")) . lsp-face-semhl-disabled)
-    ((("invalid.deprecated")) .  lsp-face-semhl-deprecated))
-  "Each element of this list should be of the form
- ((SCOPES-1 ... SCOPES-N) . FACE), where SCOPES-1, ..., SCOPES-N are lists of
- strings. Given a list SCOPES of scopes sent by the language server, a match
- will be declared if and only if for at least one of the
- SCOPES-1, ..., SCOPES-N, every string within SCOPES-i is identical to, or a
- prefix of, some element of SCOPES.
- Since the list is traversed in order, it should be sorted in order of decreasing
- specificity.")
 
 (defface lsp-face-semhl-comment
   '((t (:inherit font-lock-comment-face)))
@@ -5752,178 +5628,14 @@ unless overridden by a more specific face association."
     ("enumConstant" . lsp-face-semhl-constant)
     ("dependent" . lsp-face-semhl-type)
     ("concept" . lsp-face-semhl-interface))
-  "Faces to use for semantic highlighting if
-`lsp-semantic-highlighting' is set to :semantic-tokens.")
+  "Faces to use for semantic highlighting.")
 
 (defvar lsp-semantic-token-modifier-faces
   ;; TODO: add default definitions
   '(("declaration" . lsp-face-semhl-interface)
     ("readonly" . lsp-face-semhl-constant))
   "Faces to use for semantic token modifiers if
-`lsp-semantic-highlighting' is set to `:semantic-tokens' and
 `lsp-semantic-tokens-apply-modifiers' is non-nil.")
-
-(defvar-local lsp--semantic-highlighting-current-region nil
-  "Denotes the region `(min . max)' most recently fontified via the
- deferred semantic-highlighting mechanism.
-
-Further fontification calls will be skipped unless new semantic
-highlighting information has been received from the language
-server, `lsp--semantic-highlighting-current-region' is `nil',
-or `(point)' lies outside `lsp--semantic-highlighting-region'.")
-
-(defvar-local lsp--semantic-highlighting-cache nil)
-
-(defvar-local lsp--semantic-highlighting-stale nil)
-
-(defvar lsp--semantic-highlighting-idle-timer nil)
-
-(defun lsp--semantic-highlighting-arm-timer (delay)
-  (when lsp--semantic-highlighting-idle-timer
-    (cancel-timer lsp--semantic-highlighting-idle-timer))
-  (when lsp--semantic-highlighting-cache
-    (setq lsp--semantic-highlighting-idle-timer
-          (run-with-idle-timer delay nil #'lsp--apply-deferred-semantic-highlighting))))
-
-(defun lsp--semantic-highlighting-add-to-cache (lines)
-  (unless lsp--semantic-highlighting-cache
-    ;; first-time setup
-    (setq lsp--semantic-highlighting-cache (make-hash-table :size 5000))
-    (dolist (fns '(window-scroll-functions window-size-change-functions))
-      (make-variable-buffer-local fns)
-      (add-to-list fns (lambda (&rest _) (lsp--semantic-highlighting-arm-timer 0.05)))))
-  (let (line)
-    (cl-loop for entry across-ref lines do
-             (setq line (gethash "line" entry))
-             (puthash line entry lsp--semantic-highlighting-cache)))
-  (setq lsp--semantic-highlighting-stale t)
-  (lsp--semantic-highlighting-arm-timer 0.2))
-
-(defun lsp--semantic-highlighting-find-face (scope-names)
-  (let ((maybe-face
-         (seq-some (lambda
-                     (matchspec-and-face)
-                     (when (lsp--semhl-scope-matchp (car matchspec-and-face) scope-names)
-                       (cdr matchspec-and-face)))
-                   lsp-semantic-highlighting-faces)))
-    (unless maybe-face
-      (lsp--warn "Unknown scopes [%s], please amend lsp-semantic-highlighting-faces"
-                 (s-join ", " scope-names)))
-    maybe-face))
-
-(defun lsp--apply-semantic-highlighting (semantic-highlighting-faces lines)
-  (let (line raw-str i end el start (cur-line 1) ov tokens is-inactive)
-    (goto-char 0)
-    (cl-loop for entry across-ref lines do
-             (setq line (1+ (gethash "line" entry))
-                   is-inactive (gethash "isInactive" entry)
-                   tokens (gethash "tokens" entry)
-                   i 0)
-             (forward-line (- line cur-line))
-             (setq cur-line line)
-             (remove-overlays (point) (line-end-position) 'lsp-sem-highlight t)
-             (cond (is-inactive
-                    (setq ov (make-overlay (point) (line-end-position)))
-                    (overlay-put ov 'face 'lsp-face-semhl-disabled)
-                    (overlay-put ov 'lsp-sem-highlight t))
-                   (tokens
-                    (setq raw-str (base64-decode-string tokens))
-                    (setq end (length raw-str))
-                    (while (< i end)
-                      (setq el
-                            (bindat-unpack
-                             '((start u32) (len u16) (scopeIndex u16))
-                             (substring-no-properties raw-str i (+ 8 i))))
-                      (setq i (+ 8 i))
-                      (setq start (bindat-get-field el 'start))
-                      (setq ov (make-overlay
-                                (+ (point) start)
-                                (+ (point) (+ start (bindat-get-field el 'len)))))
-                      (overlay-put ov 'face (aref semantic-highlighting-faces
-                                                  (bindat-get-field el 'scopeIndex)))
-                      (overlay-put ov 'lsp-sem-highlight t)))))))
-
-(defun lsp--apply-deferred-semantic-highlighting ()
-  ;; cache may be nil if we switched buffers between add-to-cache and now.
-  ;; in that case we don't spend time fontifying the old buffer
-  (when (and lsp--semantic-highlighting-cache
-             lsp--buffer-workspaces
-             (or lsp--semantic-highlighting-stale
-                 (not lsp--semantic-highlighting-current-region)
-                 (< (window-start) (car lsp--semantic-highlighting-current-region))
-                 (> (window-end nil t) (cdr lsp--semantic-highlighting-current-region))))
-    (let* ((semantic-highlighting-faces
-            (lsp--workspace-semantic-highlighting-faces
-             (nth 0 lsp--buffer-workspaces)))
-           (fence-min (max (point-min) (- (window-start) (* fill-column lsp-semantic-highlighting-context-lines))))
-           (fence-max (min (point-max) (+ (window-end nil t) (* fill-column lsp-semantic-highlighting-context-lines))))
-           (line-min (1- (line-number-at-pos fence-min)))
-           (line-max (1- (line-number-at-pos fence-max)))
-           raw-str i end el start (cur-line 0) ov tokens is-inactive entry
-           (inhibit-field-text-motion t))
-      (save-excursion
-        (save-restriction
-          (widen)
-          (goto-char 0)
-          (cl-loop for line from line-min to line-max do
-                   (setq entry (gethash line lsp--semantic-highlighting-cache))
-                   (forward-line (- line cur-line))
-                   (setq cur-line line)
-                   (when entry
-                     (remove-overlays (point) (line-end-position) 'lsp-sem-highlight t)
-                     (setq is-inactive (gethash "isInactive" entry)
-                           tokens (gethash "tokens" entry)
-                           i 0)
-                     (cond (is-inactive
-                            (setq ov (make-overlay (point) (line-end-position)))
-                            (overlay-put ov 'face 'lsp-face-semhl-disabled)
-                            (overlay-put ov 'lsp-sem-highlight t))
-                           (tokens
-                            (setq raw-str (base64-decode-string tokens))
-                            (setq end (length raw-str))
-                            (while (< i end)
-                              (setq el
-                                    (bindat-unpack
-                                     '((start u32) (len u16) (scopeIndex u16))
-                                     (substring-no-properties raw-str i (+ 8 i))))
-                              (setq i (+ 8 i))
-                              (setq start (bindat-get-field el 'start))
-                              (setq ov (make-overlay
-                                        (+ (point) start)
-                                        (+ (point) (+ start (bindat-get-field el 'len)))))
-                              (overlay-put ov 'face (aref semantic-highlighting-faces
-                                                          (bindat-get-field el 'scopeIndex)))
-                              (overlay-put ov 'lsp-sem-highlight t))))))))
-      (setq lsp--semantic-highlighting-stale nil
-            ;; at least 5 chars/per line on average should be
-            ;; a relatively safe approximation
-            lsp--semantic-highlighting-current-region
-            (cons fence-min fence-max)))))
-
-(defun lsp--on-semantic-highlighting (workspace params)
-  ;; TODO: defer highlighting if buffer's not currently focused?
-  (unless (lsp--workspace-semantic-highlighting-faces workspace)
-    (let* ((capabilities (lsp--workspace-server-capabilities workspace))
-           (semanticHighlighting (gethash "semanticHighlighting" capabilities))
-           (scopes (or (gethash "scopes" semanticHighlighting) [])))
-      (setf (lsp--workspace-semantic-highlighting-faces workspace)
-            (vconcat (mapcar #'lsp--semantic-highlighting-find-face scopes)))))
-  (let* ((file (lsp--uri-to-path (gethash "uri" (gethash "textDocument" params))))
-         (lines (gethash "lines" params))
-         (buffer (lsp--buffer-for-file file))
-         ;; not inhibiting field text motion will greatly slow down the calls to
-         ;; (line-end-position) performed by lsp--apply-semantic-highlighting
-         (inhibit-field-text-motion t))
-    (when buffer
-      (with-current-buffer buffer
-        (if (eq lsp-semantic-highlighting :immediate)
-            (save-mark-and-excursion
-              (save-restriction
-                (widen)
-                (with-silent-modifications
-                  (lsp--apply-semantic-highlighting
-                   (lsp--workspace-semantic-highlighting-faces workspace) lines))))
-          (lsp--semantic-highlighting-add-to-cache lines))))))
 
 (defun lsp--build-face-map (identifiers faces category varname)
   (apply 'vector
@@ -5950,6 +5662,8 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
                                "semantic token modifier"
                                "lsp-semantic-token-modifier-faces"))))
 
+(defvar lsp--semantic-tokens-idle-timer nil)
+
 (defvar-local lsp--semantic-tokens-cache nil)
 
 (defvar-local lsp--semantic-tokens-teardown nil)
@@ -5968,6 +5682,7 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
           (if (memq 'font-lock-extend-region-wholelines old-extend-region-functions)
               old-extend-region-functions
             (cons 'font-lock-extend-region-wholelines old-extend-region-functions))))
+    (lsp--semantic-highlighting-warn-about-deprecated-setting)
     (setq lsp--semantic-tokens-use-ranged-requests is-range-provider)
     (setq font-lock-extend-region-functions new-extend-region-functions)
     (add-function :around (local 'font-lock-fontify-region-function) #'lsp--semantic-tokens-fontify)
@@ -6050,17 +5765,15 @@ or `(point)' lies outside `lsp--semantic-highlighting-region'.")
 (defun lsp--semantic-tokens-request (region fontify-immediately)
   (let ((request-full-token-set
          (lambda (fontify-immediately)
-           ;; TODO: rename to lsp--semantic-tokens-idle-timer when we remove Theia
-           ;; highlighting support
-           (when lsp--semantic-highlighting-idle-timer
-             (cancel-timer lsp--semantic-highlighting-idle-timer))
-           (setq lsp--semantic-highlighting-idle-timer
+           (when lsp--semantic-tokens-idle-timer
+             (cancel-timer lsp--semantic-tokens-idle-timer))
+           (setq lsp--semantic-tokens-idle-timer
                  (run-with-idle-timer
                   lsp-idle-delay
                   nil
                   (lambda () (lsp--semantic-tokens-request nil fontify-immediately)))))))
-    (when lsp--semantic-highlighting-idle-timer
-      (cancel-timer lsp--semantic-highlighting-idle-timer))
+    (when lsp--semantic-tokens-idle-timer
+      (cancel-timer lsp--semantic-tokens-idle-timer))
     (lsp-request-async
      (if region "textDocument/semanticTokens/range" "textDocument/semanticTokens")
      `(:textDocument ,(lsp--text-document-identifier)
@@ -6413,7 +6126,6 @@ textDocument/didOpen for the new file."
   (ht ("window/showMessage" #'lsp--window-show-message)
       ("window/logMessage" #'lsp--window-log-message)
       ("textDocument/publishDiagnostics" #'lsp--on-diagnostics)
-      ("textDocument/semanticHighlighting" #'lsp--on-semantic-highlighting)
       ("textDocument/diagnosticsEnd" #'ignore)
       ("textDocument/diagnosticsBegin" #'ignore)
       ("telemetry/event" #'ignore)
