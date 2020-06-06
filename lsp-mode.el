@@ -5682,7 +5682,6 @@ unless overridden by a more specific face association."
           (if (memq 'font-lock-extend-region-wholelines old-extend-region-functions)
               old-extend-region-functions
             (cons 'font-lock-extend-region-wholelines old-extend-region-functions))))
-    (lsp--semantic-highlighting-warn-about-deprecated-setting)
     (setq lsp--semantic-tokens-use-ranged-requests is-range-provider)
     (setq font-lock-extend-region-functions new-extend-region-functions)
     (add-function :around (local 'font-lock-fontify-region-function) #'lsp--semantic-tokens-fontify)
