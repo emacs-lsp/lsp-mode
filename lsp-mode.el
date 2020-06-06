@@ -4863,9 +4863,16 @@ Stolen from `org-copy-visible'."
   "Render markdown."
 
   (let((markdown-enable-math nil))
-    ;; temporary patch --- since the symbol is not rendered fine in lsp-ui
+    ;; Temporary patch --- since the symbol is not rendered fine in lsp-ui
+    ;; Anything that renders full-width disturbs the width calculation
+    ;; of the resulting hover window.
+    ;; See https://github.com/emacs-lsp/lsp-ui/issues/442
     (goto-char (point-min))
-    (while (re-search-forward "^[-]+$" nil t)
+    (while (re-search-forward
+            (rx (or
+                 (seq bol (+ "-") eol)
+                 (seq "\* \* \*" eol)))
+            nil t)
       (replace-match ""))
 
     (goto-char (point-min))
