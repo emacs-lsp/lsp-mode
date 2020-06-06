@@ -37,7 +37,7 @@ install:
 script:
   - cask build
   - cask clean-elc
-  - cask exec ert-runner -t '!no-win'
+  - cask exec ert-runner -t '!no-win' -t '!org'
   - |
     if (( ${EMACS_VERSION:0:2} < 26 )); then
         cask exec ecukes
