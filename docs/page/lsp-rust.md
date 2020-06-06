@@ -1,6 +1,8 @@
 LSP Rust
 ========
 
+NOTE: If you are using `rustic-mode`, you have to change `rustic-lsp-server` instead of `lsp-rust-server`, since it also supports eglot as a lightweight alternative to lsp-mode.
+
 - `lsp-rust-server` Choose LSP server (default is RLS)
 
 - `lsp-rust-switch-server` Switch priorities of lsp servers
