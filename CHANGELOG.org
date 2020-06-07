@@ -1,4 +1,6 @@
 * Changelog
+** Master branch
+  * Support for Theia-based semantic highlighting has been removed in favor of the semanticTokens protocol specified by LSP 3.16. To enable it, set ~lsp-enable-semantic-highlighting~ to ~t~.
 ** Release 6.3
   * Implemented ~company-capf~ integration. ~company-lsp~ is no longer supported.
   * Dropped support for dart language server in favour of dart SDK(breaking)
