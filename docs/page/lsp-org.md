@@ -1,12 +1,13 @@
 # Literate programming using LSP and org-mode(alpha)
 `lsp-mode` provides **experimental** support for running the language servers
-inside of [org-mode](https://orgmode.org/) source blocks. `lsp-mode` is doing
-that by obtaining the information about the source block and then translating
-the point to the LSP positions back and forth so the server is which so the
-server actually thinks that Emacs has opened the original file. In order that to
-work the files has to be present on the disk as well because the server expects
-to find them.
+inside of [org-mode](https://orgmode.org/) source blocks. `lsp-mode` is
+achieving this by obtaining the information about the source block from the
+source block header(language + `:tangle`) then translating the point to the LSP
+positions back and forth so the language server thinks that Emacs has opened the
+original file. In order that to work the files has to be present on the disk as
+well because the server expects to find them.
 
+Here it is a sample source block:
 
 ``` org
 #+BEGIN_SRC python :tangle "python.py"
@@ -14,8 +15,12 @@ print "Hello!"
 #+END_SRC
 ```
 
+## Demo
+![Demo](../../examples/org-mode.gif )
+
 ## Commands
-* `lsp-org` start `lsp-mode` in source buffer.
+* `lsp-org` start `lsp-mode` in source buffer. Must be executed with cursor
+  being source block.
 * `lsp-virtual-buffer-disconnect` turn off `lsp-mode`.
 
 ## What works
