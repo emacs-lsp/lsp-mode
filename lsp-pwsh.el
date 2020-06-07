@@ -260,11 +260,11 @@ Must not nil.")
 (defun lsp-pwsh--extra-init-params ()
   "Return form describing parameters for language server.")
 
-(lsp-defun lsp-pwsh--apply-code-action-edits ((&pwsh:ApplyCodeActionEdits :command :arguments))
+(lsp-defun lsp-pwsh--apply-code-action-edits ((&Command :command :arguments?))
   "Handle ACTION for PowerShell.ApplyCodeActionEdits."
-  (-if-let* (((&pwsh:ApplyCodeActionEditsArguments :start-line-number :end-line-number
-                                                   :start-column-number :end-column-number :text)
-              (lsp-seq-first arguments))
+  (-if-let* (((&pwsh:ApplyCodeActionEdits :start-line-number :end-line-number
+                                          :start-column-number :end-column-number :text)
+              (lsp-seq-first arguments?))
              (edits `[,(ht ("range" (ht ("start"
                                          (ht ("line" (- start-line-number 1))
                                              ("character" (- start-column-number 1))))
@@ -273,11 +273,11 @@ Must not nil.")
                                              ("character" (- end-column-number 1))))))
                            ("newText" text))]))
       (lsp--apply-text-edits edits)
-    (lsp-send-execute-command command arguments)))
+    (lsp-send-execute-command command arguments?)))
 
-(lsp-defun lsp-pwsh--show-code-action-document ((&pwsh:ShowCodeActionDocumentation :arguments))
+(lsp-defun lsp-pwsh--show-code-action-document ((&Command :arguments?))
   "Handle ACTION for PowerShell.ShowCodeActionDocumentation."
-  (-if-let* ((rule-raw (lsp-seq-first arguments))
+  (-if-let* ((rule-raw (lsp-seq-first arguments?))
              (rule-id (if (s-prefix-p "PS" rule-raw) (substring rule-raw 2) rule-raw)))
       (browse-url
        (concat "https://github.com/PowerShell/PSScriptAnalyzer/blob/master/RuleDocumentation/"
