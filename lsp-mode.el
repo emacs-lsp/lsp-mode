@@ -184,6 +184,183 @@ modifiers into account."
   :group 'lsp-mode
   :type 'boolean)
 
+(defface lsp-face-semhl-constant
+  '((t :inherit font-lock-constant-face))
+  "Face used for semantic highlighting scopes matching constant scopes."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-variable
+  '((t :inherit font-lock-variable-name-face))
+  "Face used for semantic highlighting scopes matching variable.*,
+unless overridden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-function
+  '((t :inherit font-lock-function-name-face))
+  "Face used for semantic highlighting scopes matching entity.name.function.*,
+unless overridden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-method
+  '((t :inherit lsp-face-semhl-function))
+  "Face used for semantic highlighting scopes matching entity.name.function.method.*,
+unless overridden by a more specific face association."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-namespace
+  '((t :inherit font-lock-type-face :weight bold))
+  "Face used for semantic highlighting scopes matching entity.name.namespace.*,
+unless overridden by a more specific face association."
+  :group 'lsp-faces)
+
+(defun lsp--semhl-scope-matchp (matchspec scopes)
+  "Returns t iff there is an element M in MATCHSPEC s.t. every N in M
+ is a prefix of, or identical to, one of the scopes contained in SCOPES"
+  (-any? (lambda (or-matchspec)
+           (-all? (lambda (and-matchspec)
+                    (let ((re (format "^%s\\(\\..*\\)?$" (regexp-quote and-matchspec))))
+                      (seq-some (lambda (s) (s-matches-p re s)) scopes)))
+                  or-matchspec))
+         matchspec))
+
+(defface lsp-face-semhl-comment
+  '((t (:inherit font-lock-comment-face)))
+  "Face used for comments."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-keyword
+  '((t (:inherit font-lock-keyword-face)))
+  "Face used for keywords."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-string
+  '((t (:inherit font-lock-string-face)))
+  "Face used for keywords."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-number
+  '((t (:inherit font-lock-constant-face)))
+  "Face used for numbers."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-regexp
+  '((t (:inherit font-lock-string-face :slant italic)))
+  "Face used for regexps."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-operator
+  '((t (:inherit font-lock-function-name-face)))
+  "Face used for operators."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-namespace
+  '((t (:inherit font-lock-keyword-face)))
+  "Face used for namespaces."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-type
+  '((t (:inherit font-lock-type-face)))
+  "Face used for types."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-struct
+  '((t (:inherit font-lock-type-face)))
+  "Face used for structs."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-class
+  '((t (:inherit font-lock-type-face)))
+  "Face used for classes."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-interface
+  '((t (:inherit font-lock-type-face)))
+  "Face used for interfaces."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-enum
+  '((t (:inherit font-lock-variable-name-face)))
+  "Face used for enums."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-type-parameter
+  '((t (:inherit font-lock-type-face)))
+  "Face used for type parameters."
+  :group 'lsp-faces)
+
+;; function face already defined, move here when support
+;; for theia highlighting gets removed
+(defface lsp-face-semhl-member
+  '((t (:inherit font-lock-variable-name-face)))
+  "Face used for members."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-property
+  '((t (:inherit font-lock-variable-name-face)))
+  "Face used for properties."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-macro
+  '((t (:inherit font-lock-preprocessor-face)))
+  "Face used for macros."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-variable
+  '((t (:inherit font-lock-variable-name-face)))
+  "Face used for variables."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-parameter
+  '((t (:inherit font-lock-variable-name-face)))
+  "Face used for parameters."
+  :group 'lsp-faces)
+
+(defface lsp-face-semhl-label
+  '((t (:inherit font-lock-comment-face)))
+  "Face used for labels."
+  :group 'lsp-faces)
+
+(defvar lsp-semantic-token-faces
+  '(("comment" . lsp-face-semhl-comment)
+    ("keyword" . lsp-face-semhl-keyword)
+    ("string" . lsp-face-semhl-string)
+    ("number" . lsp-face-semhl-number)
+    ("regexp" . lsp-face-semhl-regexp)
+    ("operator" . lsp-face-semhl-operator)
+    ("namespace" . lsp-face-semhl-namespace)
+    ("type" . lsp-face-semhl-type)
+    ("struct" . lsp-face-semhl-struct)
+    ("class" . lsp-face-semhl-class)
+    ("interface" . lsp-face-semhl-interface)
+    ("enum" . lsp-face-semhl-enum)
+    ("typeParameter" . lsp-face-semhl-type-parameter)
+    ("function" . lsp-face-semhl-function)
+    ("member" . lsp-face-semhl-member)
+    ("property" . lsp-face-semhl-property)
+    ("macro" . lsp-face-semhl-macro)
+    ("variable" . lsp-face-semhl-variable)
+    ("parameter" . lsp-face-semhl-parameter)
+    ("label" . lsp-face-semhl-label)
+    ("enumConstant" . lsp-face-semhl-constant)
+    ("dependent" . lsp-face-semhl-type)
+    ("concept" . lsp-face-semhl-interface))
+  "Faces to use for semantic highlighting.")
+
+(defvar lsp-semantic-token-modifier-faces
+  ;; TODO: add default definitions
+  '(("declaration" . lsp-face-semhl-interface)
+    ("readonly" . lsp-face-semhl-constant))
+  "Faces to use for semantic token modifiers if
+`lsp-semantic-tokens-apply-modifiers' is non-nil.")
+
+(defvar lsp--semantic-tokens-idle-timer nil)
+
+(defvar-local lsp--semantic-tokens-cache nil)
+
+(defvar-local lsp--semantic-tokens-teardown nil)
+
+(defvar-local lsp--semantic-tokens-use-ranged-requests nil)
+
 (defcustom lsp-folding-range-limit nil
   "The maximum number of folding ranges to receive from the language server."
   :group 'lsp-mode
@@ -5467,175 +5644,6 @@ A reference is highlighted only if it is visible in a window."
           wins-visible-pos)))
      highlights)))
 
-(defface lsp-face-semhl-constant
-  '((t :inherit font-lock-constant-face))
-  "Face used for semantic highlighting scopes matching constant scopes."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-variable
-  '((t :inherit font-lock-variable-name-face))
-  "Face used for semantic highlighting scopes matching variable.*,
-unless overridden by a more specific face association."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-function
-  '((t :inherit font-lock-function-name-face))
-  "Face used for semantic highlighting scopes matching entity.name.function.*,
-unless overridden by a more specific face association."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-method
-  '((t :inherit lsp-face-semhl-function))
-  "Face used for semantic highlighting scopes matching entity.name.function.method.*,
-unless overridden by a more specific face association."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-namespace
-  '((t :inherit font-lock-type-face :weight bold))
-  "Face used for semantic highlighting scopes matching entity.name.namespace.*,
-unless overridden by a more specific face association."
-  :group 'lsp-faces)
-
-(defun lsp--semhl-scope-matchp (matchspec scopes)
-  "Returns t iff there is an element M in MATCHSPEC s.t. every N in M
- is a prefix of, or identical to, one of the scopes contained in SCOPES"
-  (-any? (lambda (or-matchspec)
-           (-all? (lambda (and-matchspec)
-                    (let ((re (format "^%s\\(\\..*\\)?$" (regexp-quote and-matchspec))))
-                      (seq-some (lambda (s) (s-matches-p re s)) scopes)))
-                  or-matchspec))
-         matchspec))
-
-(defface lsp-face-semhl-comment
-  '((t (:inherit font-lock-comment-face)))
-  "Face used for comments."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-keyword
-  '((t (:inherit font-lock-keyword-face)))
-  "Face used for keywords."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-string
-  '((t (:inherit font-lock-string-face)))
-  "Face used for keywords."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-number
-  '((t (:inherit font-lock-constant-face)))
-  "Face used for numbers."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-regexp
-  '((t (:inherit font-lock-string-face :slant italic)))
-  "Face used for regexps."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-operator
-  '((t (:inherit font-lock-function-name-face)))
-  "Face used for operators."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-namespace
-  '((t (:inherit font-lock-keyword-face)))
-  "Face used for namespaces."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-type
-  '((t (:inherit font-lock-type-face)))
-  "Face used for types."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-struct
-  '((t (:inherit font-lock-type-face)))
-  "Face used for structs."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-class
-  '((t (:inherit font-lock-type-face)))
-  "Face used for classes."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-interface
-  '((t (:inherit font-lock-type-face)))
-  "Face used for interfaces."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-enum
-  '((t (:inherit font-lock-variable-name-face)))
-  "Face used for enums."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-type-parameter
-  '((t (:inherit font-lock-type-face)))
-  "Face used for type parameters."
-  :group 'lsp-faces)
-
-;; function face already defined, move here when support
-;; for theia highlighting gets removed
-(defface lsp-face-semhl-member
-  '((t (:inherit font-lock-variable-name-face)))
-  "Face used for members."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-property
-  '((t (:inherit font-lock-variable-name-face)))
-  "Face used for properties."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-macro
-  '((t (:inherit font-lock-preprocessor-face)))
-  "Face used for macros."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-variable
-  '((t (:inherit font-lock-variable-name-face)))
-  "Face used for variables."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-parameter
-  '((t (:inherit font-lock-variable-name-face)))
-  "Face used for parameters."
-  :group 'lsp-faces)
-
-(defface lsp-face-semhl-label
-  '((t (:inherit font-lock-comment-face)))
-  "Face used for labels."
-  :group 'lsp-faces)
-
-(defvar lsp-semantic-token-faces
-  '(("comment" . lsp-face-semhl-comment)
-    ("keyword" . lsp-face-semhl-keyword)
-    ("string" . lsp-face-semhl-string)
-    ("number" . lsp-face-semhl-number)
-    ("regexp" . lsp-face-semhl-regexp)
-    ("operator" . lsp-face-semhl-operator)
-    ("namespace" . lsp-face-semhl-namespace)
-    ("type" . lsp-face-semhl-type)
-    ("struct" . lsp-face-semhl-struct)
-    ("class" . lsp-face-semhl-class)
-    ("interface" . lsp-face-semhl-interface)
-    ("enum" . lsp-face-semhl-enum)
-    ("typeParameter" . lsp-face-semhl-type-parameter)
-    ("function" . lsp-face-semhl-function)
-    ("member" . lsp-face-semhl-member)
-    ("property" . lsp-face-semhl-property)
-    ("macro" . lsp-face-semhl-macro)
-    ("variable" . lsp-face-semhl-variable)
-    ("parameter" . lsp-face-semhl-parameter)
-    ("label" . lsp-face-semhl-label)
-    ("enumConstant" . lsp-face-semhl-constant)
-    ("dependent" . lsp-face-semhl-type)
-    ("concept" . lsp-face-semhl-interface))
-  "Faces to use for semantic highlighting.")
-
-(defvar lsp-semantic-token-modifier-faces
-  ;; TODO: add default definitions
-  '(("declaration" . lsp-face-semhl-interface)
-    ("readonly" . lsp-face-semhl-constant))
-  "Faces to use for semantic token modifiers if
-`lsp-semantic-tokens-apply-modifiers' is non-nil.")
-
 (defun lsp--build-face-map (identifiers faces category varname)
   (apply 'vector
          (mapcar (lambda (id)
@@ -5660,14 +5668,6 @@ unless overridden by a more specific face association."
                                lsp-semantic-token-modifier-faces
                                "semantic token modifier"
                                "lsp-semantic-token-modifier-faces"))))
-
-(defvar lsp--semantic-tokens-idle-timer nil)
-
-(defvar-local lsp--semantic-tokens-cache nil)
-
-(defvar-local lsp--semantic-tokens-teardown nil)
-
-(defvar-local lsp--semantic-tokens-use-ranged-requests nil)
 
 (defun lsp--semantic-tokens-request-update ()
   (lsp--semantic-tokens-request
