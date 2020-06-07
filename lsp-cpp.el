@@ -37,7 +37,7 @@
 (eval-when-compile (require 'subr-x))
 
 (defvar flycheck-explain-error-buffer)
-(declare-function flycheck-error-id "ext:flycheck" (err))
+(declare-function flycheck-error-id "ext:flycheck" (err) t)
 
 (defun lsp-cpp-flycheck-clang-tidy--skip-http-headers ()
   "Position point just after HTTP headers."

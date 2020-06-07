@@ -7670,8 +7670,8 @@ Returns nil if the project should not be added to the current SESSION."
           (t nil)))
     ('quit)))
 
-(declare-function tramp-file-name-host "tramp" (file))
-(declare-function tramp-dissect-file-name "tramp" (file))
+(declare-function tramp-file-name-host "ext:tramp" (file) t)
+(declare-function tramp-dissect-file-name "ext:tramp" (file &optional nodefault))
 
 (defun lsp--files-same-host (f1 f2)
   "Predicate on whether or not two files are on the same host."
@@ -7951,13 +7951,13 @@ This avoids overloading the server with many files when starting Emacs."
 
 (declare-function flycheck-define-generic-checker
                   "ext:flycheck" (symbol docstring &rest properties))
-(declare-function flycheck-error-message "ext:flycheck" (err))
+(declare-function flycheck-error-message "ext:flycheck" (err) t)
 (declare-function flycheck-define-error-level "ext:flycheck" (level &rest properties))
 (declare-function flycheck-mode "ext:flycheck")
 (declare-function flycheck-checker-supports-major-mode-p "ext:flycheck")
-(declare-function flycheck-error-new "ext:flycheck")
+(declare-function flycheck-error-new "ext:flycheck" t t)
 (declare-function flycheck-buffer "ext:flycheck")
-(declare-function flycheck-add-mode "ext-flycheck")
+(declare-function flycheck-add-mode "ext:flycheck")
 
 (defvar flycheck-check-syntax-automatically)
 (defvar flycheck-checker)
@@ -8139,7 +8139,7 @@ See https://github.com/emacs-lsp/lsp-mode."
 
 ;; avy integration
 
-(declare-function avy-process "ext:avy" (candidates overlay-fn cleanup-fn))
+(declare-function avy-process "ext:avy" (candidates &optional overlay-fn cleanup-fn))
 (declare-function avy--key-to-char "ext:avy" (c))
 (defvar avy-action)
 
@@ -8219,10 +8219,10 @@ See https://github.com/emacs-lsp/lsp-mode."
 
 ;; org-mode/virtual-buffer
 
-(declare-function org-babel-get-src-block-info "ob-core")
-(declare-function org-do-remove-indentation "org-macs")
-(declare-function org-src-get-lang-mode "org-src")
-(declare-function org-element-context "org-element")
+(declare-function org-babel-get-src-block-info "ext:ob-core")
+(declare-function org-do-remove-indentation "ext:org-macs")
+(declare-function org-src-get-lang-mode "ext:org-src")
+(declare-function org-element-context "ext:org-element")
 
 (defun lsp--virtual-buffer-update-position ()
   (-if-let (virtual-buffer (-first (-lambda ((&plist :in-range))
