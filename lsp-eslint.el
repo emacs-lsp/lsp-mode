@@ -24,6 +24,7 @@
 
 ;;; Code:
 
+(require 'lsp-protocol)
 (require 'lsp-mode)
 
 (defconst lsp-eslint-status-ok 1)
@@ -160,19 +161,18 @@
     (folders (let ((default-directory (completing-read "Select project folder: " folders nil t)))
                (async-shell-command (format "%s --init" (lsp--find-eslint)))))))
 
-(defun lsp-eslint-status-handler (workspace params)
+(lsp-defun lsp-eslint-status-handler (workspace (&eslint:StatusNotification :state))
   (setf (lsp--workspace-status-string workspace)
         (propertize "ESLint"
                     'face (cond
-                           ((eq (gethash "state" params) lsp-eslint-status-error) 'error)
-                           ((eq (gethash "state" params) lsp-eslint-status-warn) 'warn)
+                           ((eq state lsp-eslint-status-error) 'error)
+                           ((eq state lsp-eslint-status-warn) 'warn)
                            (t 'success)))))
 
-(defun lsp-eslint--configuration (_workspace params)
-  (->> params
-       (gethash "items")
-       (seq-map (-lambda ((&hash "scopeUri" uri))
-                  (-when-let* ((file (lsp--uri-to-path uri))
+(lsp-defun lsp-eslint--configuration (_workspace (&eslint:WorkspaceConfigurationReqHandler :items))
+  (->> items
+       (seq-map (-lambda ((&eslint:WorkspaceConfiguration :scope-uri))
+                  (-when-let* ((file (lsp--uri-to-path scope-uri))
                                (buffer (find-buffer-visiting file))
                                (workspace-folder (lsp-find-session-folder (lsp-session) file)))
                     (with-current-buffer buffer
@@ -194,8 +194,9 @@
                                          :showDocumentation (or lsp-eslint-code-action-show-documentation (list :enable t)) ))))))
        (apply #'vector)))
 
-(defun lsp-eslint--open-doc (_workspace params)
-  (browse-url (gethash "url" params)))
+(lsp-defun lsp-eslint--open-doc (_workspace (&eslint:OpenDoc :url))
+  "Open doccumentation."
+  (browse-url url))
 
 (defun lsp-eslint-apply-all-fixes ()
   "Apply all autofixes in the current buffer."
