@@ -8509,10 +8509,10 @@ See https://github.com/emacs-lsp/lsp-mode."
 
 ;; org-mode/virtual-buffer
 
-(declare-function org-babel-get-src-block-info "ext:org")
-(declare-function org-do-remove-indentation "ext:org")
-(declare-function org-src-get-lang-mode "ext:org")
-(declare-function org-element-context "ext:org")
+(declare-function org-babel-get-src-block-info "ob-core")
+(declare-function org-do-remove-indentation "org-macs")
+(declare-function org-src-get-lang-mode "org-src")
+(declare-function org-element-context "org-element")
 
 (defun lsp--virtual-buffer-update-position ()
   (-if-let (virtual-buffer (-first (-lambda ((&plist :in-range))
