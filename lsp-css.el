@@ -24,6 +24,7 @@
 
 ;;; Code:
 
+(require 'lsp-protocol)
 (require 'lsp-mode)
 
 (defgroup lsp-css nil
@@ -224,9 +225,9 @@ server."
    ("css.experimental.customData" lsp-css-experimental-custom-data)))
 
 ;;; CSS
-(defun lsp-clients-css--apply-code-action (action)
+(lsp-defun lsp-clients-css--apply-code-action ((&css:ApplyCodeAction :arguments))
   "Apply ACTION as workspace edit command."
-  (lsp--apply-text-edits (cl-caddr (gethash "arguments" action))))
+  (lsp--apply-text-edits (cl-caddr arguments)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("css-languageserver" "--stdio"))
