@@ -3080,12 +3080,11 @@ disappearing, unset all the variables related to it."
                                          (hierarchicalDocumentSymbolSupport . t)))
                       (formatting . ((dynamicRegistration . t)))
                       (rangeFormatting . ((dynamicRegistration . t)))
-                      ,@(if lsp-enable-semantic-highlighting
+                      ,@(when lsp-enable-semantic-highlighting
                             `((semanticTokens
                                . ((tokenModifiers . ,(if lsp-semantic-tokens-apply-modifiers
                                                          (apply 'vector (mapcar #'car lsp-semantic-token-modifier-faces)) []))
-                                  (tokenTypes . ,(apply 'vector (mapcar #'car lsp-semantic-token-faces))))))
-                          '())
+                                  (tokenTypes . ,(apply 'vector (mapcar #'car lsp-semantic-token-faces)))))))
                       (rename . ((dynamicRegistration . t) (prepareSupport . t)))
                       (codeAction . ((dynamicRegistration . t)
                                      (isPreferredSupport . t)
