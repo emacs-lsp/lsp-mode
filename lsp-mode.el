@@ -26,7 +26,7 @@
 ;; Emacs client/library for the Language Server Protocol
 
 ;;; Code:
-(setq lsp-plists t)
+(setq lsp-plists nil)
 
 (require 'bindat)
 (require 'cl-generic)
