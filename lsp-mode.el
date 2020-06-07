@@ -4681,9 +4681,10 @@ Others: TRIGGER-CHARS"
   (declare (indent 0) (debug t))
   `(if lsp--already-widened
        (save-excursion ,@form)
-     (widen)
      (-let [lsp--already-widened t]
-       (save-restriction (save-excursion ,@form)))))
+       (save-restriction
+         (widen)
+         (save-excursion ,@form)))))
 
 (defmacro lsp-with-filename (file &rest body)
   "Execute BODY with FILE as a context.
