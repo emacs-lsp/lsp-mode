@@ -71,7 +71,7 @@ nav:
     - R: page/lsp-r.md
     - Ruby: page/lsp-solargraph.md
     - Rust: page/lsp-rust.md
-    - Scala: page/lsp-metals.md
+    - Scala: https://emacs-lsp.github.io/lsp-metals
     - Swift: https://emacs-lsp.github.io/lsp-sourcekit
     - Terraform: page/lsp-terraform.md
     - TeX, LaTeX, etc (digestif): page/lsp-tex.md
