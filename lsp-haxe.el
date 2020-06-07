@@ -26,6 +26,7 @@
 
 
 ;; adapted from clangd configuration in lsp-clients.el
+(require 'lsp-protocol)
 (require 'lsp-mode)
 
 (defgroup lsp-haxe nil
@@ -68,9 +69,9 @@
   :package-version '(lsp-mode . "6.4"))
 
 ;; https://github.com/emacs-lsp/lsp-mode/blob/150a933694349df960dc8fd7a15e04f5727e6433/lsp-rust.el#L251
-(defun lsp-clients--haxe-processStart (_workspace params)
+(lsp-defun lsp-clients--haxe-processStart (_workspace (&haxe:ProcessStartNotification :title))
   "Handle processStart notification.  Just logs PARAMS."
-  (lsp-log (gethash "title" params)))
+  (lsp-log title))
 
 (defcustom lsp-haxe-executable "haxe" nil
   :type 'file)
