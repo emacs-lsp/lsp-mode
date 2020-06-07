@@ -221,8 +221,7 @@ See `-let' for a description of the destructuring mechanism."
 
 (defun dash-expand:&RangeToPoint (key source)
   `(lsp--position-to-point
-    (gethash ,(substring (symbol-name key) 1)
-             ,source)))
+    (lsp-get ,source ,key)))
 
 (lsp-interface (haxe:ProcessStartNotification (:title) nil))
 
