@@ -86,9 +86,11 @@
   :group 'lsp-yaml
   :package-version '(lsp-mode . "6.2"))
 
-(defcustom lsp-yaml-schemas (make-hash-table)
+(defcustom lsp-yaml-schemas '()
   "Associate schemas to YAML files in a glob pattern."
-  :type '(restricted-sexp :match-alternatives (hash-table-p))
+  :type '(repeat (cons (string :tag "schema") (string :tag "files (glob)")))
+  :set 'lsp--defcustom-set-hashtable-from-set
+  :get 'lsp--defcustom-get-set-from-hashtable
   :group 'lsp-yaml
   :package-version '(lsp-mode . "6.2"))
 

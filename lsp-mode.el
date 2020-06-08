@@ -8441,6 +8441,41 @@ See https://github.com/emacs-lsp/lsp-mode."
         (lsp--info "Disconnected from buffer %s" file-name))
     (lsp--error "Nothing to disconnect from?")))
 
+(defun lsp--defcustom-set-hashtable-from-set (symbol value)
+  "Funtion to set SYMBOL's value to VALUE after transforming
+it from a defcustom set to a hash table. "
+  (set-default symbol (lsp--set-to-hash-table value)))
+
+(defun lsp--defcustom-get-set-from-hashtable (symbol)
+  "Funtion to get SYMBOL's value after transforming its value
+from a hash table to a defcustom set."
+  (lsp--hash-table-to-set (default-value symbol)))
+
+(defun lsp--set-to-hash-table (list)
+  "Transforms a LIST to a `hash-table' suitable to be jsonified.
+
+With an input LIST setting a to true and b to false:
+  ((a . t) (b) (c . 'other))
+And will output:
+  #s(hash-table data ((a t b :json-false c 'other))
+"
+  (let ((hash (make-hash-table :size (length list))))
+	(dolist (v list)
+	  (puthash (car v) (if (null (cdr v)) :json-false (cdr v)) hash) list)
+	hash))
+
+(defun lsp--hash-table-to-set (hash)
+  "Transforms a HASH table suitable to be jsonified to a `list'.
+
+The input HASH is of the form:
+  #s(hash-table data ((a t b :json-false c 'other))
+And will output a list setting a to true and b to false:
+  ((a . t) (b) (c . 'other))
+"
+  (let ((list '()))
+	(maphash (lambda (k v) (push (cons k (if (eq v :json-false) nil v)) list)) hash)
+	list))
+
 
 
 (provide 'lsp-mode)

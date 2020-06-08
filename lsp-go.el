@@ -55,12 +55,14 @@ completing function calls."
   :risky t
   :package-version '(lsp-mode "6.2"))
 
-(defcustom lsp-gopls-env (make-hash-table)
+(defcustom lsp-gopls-env '()
   "`gopls' has the unusual ability to set environment variables,
   intended to affect the behavior of commands invoked by `gopls'
   on the user's behalf. This variable takes a hash table of env
   var names to desired values."
-  :type '(restricted-sexp :match-alternatives (hash-table-p))
+  :type '(repeat (cons (string :tag "env var name") (string :tag "value")))
+  :set 'lsp--defcustom-set-hashtable-from-set
+  :get 'lsp--defcustom-get-set-from-hashtable
   :group 'lsp-gopls
   :risky t
   :package-version '(lsp-mode "6.2"))
