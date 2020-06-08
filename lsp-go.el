@@ -80,11 +80,32 @@ completing function calls."
   :risky t
   :package-version '(lsp-mode "6.2"))
 
+(defvar lsp-gopls-available-codelens
+  '(("generate" . "Run `go generate` for a directory")
+	("test" . "Run `go test` for a specific test function")
+	("tidy" . "Run `go mod tidy` for a module")
+	("upgrade_dependency" . "Upgrade a dependency")
+	("regenerate_cgo" . "Regenerate cgo definitions"))
+  "Available codelens that can be further enabled or disabled
+  through `lsp-gopls-codelens'.")
+
+(defcustom lsp-gopls-codelens '(("generate" . t) ("test" . t))
+  "Select what codelens should be enabled or not.
+
+The codelens can be found at https://github.com/golang/tools/blob/4d5ea46c79fe3bbb57dd00de9c167e93d94f4710/internal/lsp/source/options.go#L102-L108."
+  :type (lsp--defcustom-available-as-hash-table-type lsp-gopls-available-codelens)
+  :group 'lsp-gopls
+  :set 'lsp--defcustom-set-hashtable-from-set
+  :get 'lsp--defcustom-get-set-from-hashtable
+  :risky t
+  :package-version '(lsp-mode "6.4"))
+
 (lsp-register-custom-settings
  '(("gopls.usePlaceholders" lsp-gopls-use-placeholders t)
    ("gopls.hoverKind" lsp-gopls-hover-kind)
    ("gopls.buildFlags" lsp-gopls-build-flags)
-   ("gopls.env" lsp-gopls-env)))
+   ("gopls.env" lsp-gopls-env)
+   ("gopls.codelens" lsp-gopls-codelens)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection

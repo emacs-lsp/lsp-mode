@@ -8441,6 +8441,26 @@ See https://github.com/emacs-lsp/lsp-mode."
         (lsp--info "Disconnected from buffer %s" file-name))
     (lsp--error "Nothing to disconnect from?")))
 
+(defun lsp--defcustom-available-as-hash-table-type (alist)
+  "Returns a list suitable for the `:type' field in a `defcustom' used to populate a hash table.
+
+The input ALIST has the form `((\"name\" . \"documentation sentence\") [...])'
+
+The returned type provides a tri-state that either:
+  - does not include the element in the hash-table
+  - sets element to false (actually, nil)
+  - sets element to true (actually, t)
+"
+  (let ((list '()))
+	(dolist (v alist)
+	  (push `(cons
+			  :tag ,(cdr v)
+			  (const :format "" ,(car v))
+			  (choice (const :tag "Enable" t) (const :tag "Disable" nil)))
+			list))
+	(push 'set list)
+	list))
+
 (defun lsp--defcustom-set-hashtable-from-set (symbol value)
   "Funtion to set SYMBOL's value to VALUE after transforming
 it from a defcustom set to a hash table. "
