@@ -384,14 +384,6 @@
     "debugger": "Not available"
   },
   {
-    "name": "metals",
-    "full-name": "Scala",
-    "server-name": "Metals",
-    "server-url": "https://scalameta.org/metals",
-    "installation-url": "https://scalameta.org/metals/docs/editors/emacs.html",
-    "debugger": "Not available"
-  },
-  {
     "name": "terraform",
     "full-name": "Terraform",
     "server-name": "terraform-lsp",
