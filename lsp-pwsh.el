@@ -168,7 +168,7 @@ For more information about the brace styles please refer to https://github.com/P
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-pwsh-developer-editor-services-log-level "Normal"
-  "Sets the logging verbosity level for the PWSH Editor Services host exe.
+  "Sets the logging verbosity level for the PowerShell Editor Services host exe.
 Valid values are 'Diagnostic', 'Verbose', 'Normal', 'Warning', and 'Error'"
   :type
   '(choice
