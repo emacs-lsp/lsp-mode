@@ -3839,6 +3839,23 @@ in that particular folder."
            (lsp--apply-text-edits text-edits)))
        changes))))
 
+(defmacro lsp-with-current-buffer (buffer-id &rest body)
+  (declare (indent 1) (debug t))
+  `(if-let (wcb (plist-get ,buffer-id :with-current-buffer))
+       (with-lsp-workspaces (plist-get ,buffer-id :workspaces)
+         (funcall wcb (lambda () ,@body)))
+     (with-current-buffer ,buffer-id
+       ,@body)))
+
+(defmacro lsp-with-filename (file &rest body)
+  "Execute BODY with FILE as a context.
+Need to handle the case when FILE indicates virtual buffer."
+  (declare (indent 1) (debug t))
+  `(if-let (lsp--virtual-buffer (get-text-property 0 'lsp-virtual-buffer ,file))
+       (lsp-with-current-buffer lsp--virtual-buffer
+         ,@body)
+     ,@body))
+
 (defun lsp--apply-text-document-edit (edit)
   "Apply the TextDocumentEdit object EDIT.
 If the file is not being visited by any buffer, it is opened with
@@ -4892,15 +4909,6 @@ Others: TRIGGER-CHARS"
                 filename
                 (lsp-translate-line (1+ (gethash "line" pos-start)))
                 (lsp-translate-column (gethash "character" pos-start))))))
-
-(defmacro lsp-with-filename (file &rest body)
-  "Execute BODY with FILE as a context.
-Need to handle the case when FILE indicates virtual buffer."
-  (declare (indent 1) (debug t))
-  `(if-let (lsp--virtual-buffer (get-text-property 0 'lsp-virtual-buffer ,file))
-       (lsp-with-current-buffer lsp--virtual-buffer
-         ,@body)
-     ,@body))
 
 (defun lsp--locations-to-xref-items (locations)
   "Return a list of `xref-item' from Location[] or LocationLink[]."
@@ -6056,14 +6064,6 @@ REFERENCES? t when METHOD returns references."
 (defun lsp-current-buffer ()
   (or lsp--virtual-buffer
       (current-buffer)))
-
-(defmacro lsp-with-current-buffer (buffer-id &rest body)
-  (declare (indent 1) (debug t))
-  `(if-let (wcb (plist-get ,buffer-id :with-current-buffer))
-       (with-lsp-workspaces (plist-get ,buffer-id :workspaces)
-         (funcall wcb (lambda () ,@body)))
-     (with-current-buffer ,buffer-id
-       ,@body)))
 
 (defun lsp-buffer-live-p (buffer-id)
   (if-let (buffer-live (plist-get buffer-id :buffer-live?))
