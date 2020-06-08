@@ -262,8 +262,8 @@ Must not nil.")
 
 (lsp-defun lsp-pwsh--apply-code-action-edits ((&Command :command :arguments?))
   "Handle ACTION for PowerShell.ApplyCodeActionEdits."
-  (-if-let* (((&pwsh:ApplyCodeActionEdits :start-line-number :end-line-number
-                                          :start-column-number :end-column-number :text)
+  (-if-let* (((&pwsh:ScriptRegion :start-line-number :end-line-number
+                                  :start-column-number :end-column-number :text)
               (lsp-seq-first arguments?))
              (edits `[,(ht ("range" (ht ("start"
                                          (ht ("line" (- start-line-number 1))
