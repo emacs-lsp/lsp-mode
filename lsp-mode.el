@@ -1375,6 +1375,17 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   download-in-progress?
   buffers)
 
+(defvar lsp--already-widened nil)
+
+(defmacro lsp-save-restriction-and-excursion (&rest form)
+  (declare (indent 0) (debug t))
+  `(if lsp--already-widened
+       (save-excursion ,@form)
+     (-let [lsp--already-widened t]
+       (save-restriction
+         (widen)
+         (save-excursion ,@form)))))
+
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--line-character-to-point (line character)
   "Return the point for character CHARACTER on line LINE."
@@ -3601,7 +3612,7 @@ in that particular folder."
       (lsp--update-signature-help-hook)
 
       (lsp--semantic-highlighting-warn-about-deprecated-setting)
-     
+
       (when (and lsp-enable-semantic-highlighting
                  (lsp-feature? "textDocument/semanticTokens"))
         (lsp--semantic-tokens-initialize-buffer
@@ -4846,17 +4857,6 @@ Others: TRIGGER-CHARS"
                 filename
                 (lsp-translate-line (1+ (gethash "line" pos-start)))
                 (lsp-translate-column (gethash "character" pos-start))))))
-
-(defvar lsp--already-widened nil)
-
-(defmacro lsp-save-restriction-and-excursion (&rest form)
-  (declare (indent 0) (debug t))
-  `(if lsp--already-widened
-       (save-excursion ,@form)
-     (-let [lsp--already-widened t]
-       (save-restriction
-         (widen)
-         (save-excursion ,@form)))))
 
 (defmacro lsp-with-filename (file &rest body)
   "Execute BODY with FILE as a context.
