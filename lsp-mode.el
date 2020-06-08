@@ -4927,11 +4927,12 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
   (run-hooks 'lsp-eldoc-hook)
   eldoc-last-message)
 
-(defun dash-expand:&lsp-wks (key source)
-  `(,(intern-soft (format "lsp--workspace-%s" (eval key) )) ,source))
+(eval-when-compile
+  (defun dash-expand:&lsp-wks (key source)
+    `(,(intern-soft (format "lsp--workspace-%s" (eval key) )) ,source))
 
-(defun dash-expand:&lsp-cln (key source)
-  `(,(intern-soft (format "lsp--client-%s" (eval key) )) ,source))
+  (defun dash-expand:&lsp-cln (key source)
+    `(,(intern-soft (format "lsp--client-%s" (eval key) )) ,source)))
 
 (defun lsp--point-on-highlight? ()
   (-some? (lambda (overlay)
