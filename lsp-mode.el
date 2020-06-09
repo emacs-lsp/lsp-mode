@@ -3814,12 +3814,11 @@ in that particular folder."
              (seq-filter (-lambda ((&CreateFile :kind))
                            (not (or (not kind) (equal kind "edit")))))
              (seq-do #'lsp--apply-text-document-edit)))
-    (when changes?
-      (maphash
-       (lambda (uri text-edits)
-         (with-current-buffer (-> uri lsp--uri-to-path find-file-noselect)
-           (lsp--apply-text-edits text-edits)))
-       changes?))))
+    (lsp-map
+     (lambda (uri text-edits)
+       (with-current-buffer (-> uri lsp--uri-to-path find-file-noselect)
+         (lsp--apply-text-edits text-edits)))
+     changes?)))
 
 (defmacro lsp-with-current-buffer (buffer-id &rest body)
   (declare (indent 1) (debug t))
@@ -4118,9 +4117,9 @@ Added to `before-change-functions'."
             (setq lsp--delayed-requests nil)))))
 
 (defun lsp--workspace-sync-method (workspace)
-  (let* ((sync (->> workspace
-                    (lsp--workspace-server-capabilities)
-                    (lsp:server-capabilities-text-document-sync?))))
+  (let* ((sync (-> workspace
+                   (lsp--workspace-server-capabilities)
+                   (lsp:server-capabilities-text-document-sync?))))
     (if (lsp-text-document-sync-options? sync)
         (lsp:text-document-sync-options-change? sync)
       sync)))
@@ -6233,7 +6232,9 @@ WORKSPACE is the active workspace."
         (require 'json)
         (fboundp 'json-parse-string))
       `(json-parse-string ,str
-                          :object-type 'plist
+                          :object-type (if (lsp-use-plists)
+                                           'plist
+                                         'hash-table)
                           :null-object nil
                           :false-object nil)
     `(let ((json-array-type 'vector)

@@ -200,12 +200,12 @@
               params]
          (with-current-buffer (get-buffer-create (format "*%s*" (f-filename (lsp--uri-to-path uri))))
            (let ((start-point (if start
-                                  (lsp--position-to-point (ht ("line" (plist-get start :line))
-                                                              ("character" (plist-get start :character))))
+                                  (lsp--position-to-point (lsp-make-position :line (plist-get start :line)
+                                                                             :character (plist-get start :character)))
                                 (point-min)))
                  (end-point (if end
-                                (lsp--position-to-point (ht ("line" (plist-get end :line))
-                                                            ("character" (plist-get end :character))))
+                                (lsp--position-to-point (lsp-make-position :line (plist-get end :line)
+                                                                           :character (plist-get end :character)))
                               (point-max))))
              (display-buffer-in-side-window (current-buffer) ())
              (delete-region start-point end-point)
