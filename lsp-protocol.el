@@ -93,15 +93,16 @@ Example usage with `dash`.
                                    ,source))))
 
                   `(defun ,(intern (format "lsp-%s?" (s-dashed-words (symbol-name interface)))) (object)
-                     (if (ht? object)
-                         (-all? (lambda (prop)
-                                  (ht-get object prop))
-                                ',(-map (lambda (field-name)
-                                          (substring (symbol-name field-name) 1))
-                                        required))
+                     (cond
+                      ((ht? object)
                        (-all? (lambda (prop)
-                                (plist-get object prop))
-                              ',required)))
+                                (ht-get object prop))
+                              ',(-map (lambda (field-name)
+                                        (substring (symbol-name field-name) 1))
+                                      required)))
+                      ((listp object) (-all? (lambda (prop)
+                                               (plist-get object prop))
+                                             ',required))))
                   `(cl-defun ,(intern (format "lsp-make-%s" (s-dashed-words (symbol-name interface))))
                        (&key ,@(-map (-lambda ((key))
                                        (intern (substring (symbol-name key) 1))) params))
@@ -140,13 +141,20 @@ Example usage with `dash`.
       (defun lsp-get (from key)
         (plist-get from key))
       (defun lsp-put (where key value)
-        (plist-put where key value)))
+        (plist-put where key value))
+      (defun lsp-map (fn value)
+        (-map (-lambda ((k v))
+                (funcall fn (lsp-keyword->string k) v))
+              (-partition 2 value ))))
   (defun lsp-get (from key)
     (when from
       (gethash (lsp-keyword->string key) from)))
   (defun lsp-put (where key value)
     (prog1 where
-      (puthash (lsp-keyword->string key) value where))))
+      (puthash (lsp-keyword->string key) value where)))
+  (defun lsp-map (fn value)
+    (when value
+      (maphash fn value))))
 
 (defmacro lsp-defun (name match-form &rest body)
   "Define NAME as a function which destructures its input as MATCH-FORM and executes BODY.
