@@ -4848,8 +4848,8 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                         (completed (or (seqp resp)
                                        (not (lsp:completion-list-is-incomplete resp))))
                         (items (--> (cond
-                                     ((vectorp resp) resp)
-                                     (t (lsp:completion-list-items resp)))
+                                     ((lsp-completion-list? resp) (lsp:completion-list-items resp))
+                                     (t resp))
                                     (if (or completed
                                             (seq-some #'lsp:completion-item-sort-text? it))
                                         (lsp--sort-completions it)
