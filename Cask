@@ -1,7 +1,7 @@
 (source gnu)
 (source melpa)
 (package-file "lsp-mode.el")
-(files "*.el")
+(files "lsp-protocol.el" "lsp-mode.el" "*.el")
 
 (development
  (depends-on "ert-runner")
