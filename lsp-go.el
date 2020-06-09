@@ -61,8 +61,8 @@ completing function calls."
   on the user's behalf. This variable takes a hash table of env
   var names to desired values."
   :type '(repeat (cons (string :tag "env var name") (string :tag "value")))
-  :set 'lsp--defcustom-set-hashtable-from-set
-  :get 'lsp--defcustom-get-set-from-hashtable
+  :set 'lsp--defcustom-set-json-alist
+  :get 'lsp--defcustom-get-json-alist
   :group 'lsp-gopls
   :risky t
   :package-version '(lsp-mode "6.2"))
@@ -93,10 +93,10 @@ completing function calls."
   "Select what codelens should be enabled or not.
 
 The codelens can be found at https://github.com/golang/tools/blob/4d5ea46c79fe3bbb57dd00de9c167e93d94f4710/internal/lsp/source/options.go#L102-L108."
-  :type (lsp--defcustom-available-as-hash-table-type lsp-gopls-available-codelens)
+  :type (lsp--defcustom-available-as-alist-type lsp-gopls-available-codelens)
   :group 'lsp-gopls
-  :set 'lsp--defcustom-set-hashtable-from-set
-  :get 'lsp--defcustom-get-set-from-hashtable
+  :set 'lsp--defcustom-set-json-alist
+  :get 'lsp--defcustom-get-json-alist
   :risky t
   :package-version '(lsp-mode "6.4"))
 

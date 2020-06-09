@@ -2,6 +2,8 @@
 ** Master branch
   * Support for Theia-based semantic highlighting has been removed in favor of the semanticTokens protocol specified by LSP 3.16. To enable it, set ~lsp-enable-semantic-highlighting~ to ~t~.
   * ~lsp-metals~ moved into a separate repo https://github.com/emacs-lsp/lsp-metals
+  * Breaking change: use alist instead of hast-tables for =lsp-gopls-env= and =lsp-yaml-schemas=.
+  * Add =lsp-gopls-codelens= defcustom to configure codelenses used for golang.
 ** Release 6.3
   * Implemented ~company-capf~ integration. ~company-lsp~ is no longer supported.
   * Dropped support for dart language server in favour of dart SDK(breaking)

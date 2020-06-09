@@ -3601,7 +3601,7 @@ in that particular folder."
       (lsp--update-signature-help-hook)
 
       (lsp--semantic-highlighting-warn-about-deprecated-setting)
-     
+
       (when (and lsp-enable-semantic-highlighting
                  (lsp-feature? "textDocument/semanticTokens"))
         (lsp--semantic-tokens-initialize-buffer
@@ -8441,14 +8441,15 @@ See https://github.com/emacs-lsp/lsp-mode."
         (lsp--info "Disconnected from buffer %s" file-name))
     (lsp--error "Nothing to disconnect from?")))
 
-(defun lsp--defcustom-available-as-hash-table-type (alist)
-  "Returns a list suitable for the `:type' field in a `defcustom' used to populate a hash table.
+
+(defun lsp--defcustom-available-as-alist-type (alist)
+  "Returns a list suitable for the `:type' field in a `defcustom' used to populate an alist.
 
 The input ALIST has the form `((\"name\" . \"documentation sentence\") [...])'
 
 The returned type provides a tri-state that either:
-  - does not include the element in the hash-table
-  - sets element to false (actually, nil)
+  - does not include the element in the alist
+  - sets element to false (actually, :json-false)
   - sets element to true (actually, t)
 "
   (let ((list '()))
@@ -8461,40 +8462,41 @@ The returned type provides a tri-state that either:
 	(push 'set list)
 	list))
 
-(defun lsp--defcustom-set-hashtable-from-set (symbol value)
-  "Funtion to set SYMBOL's value to VALUE after transforming
-it from a defcustom set to a hash table. "
-  (set-default symbol (lsp--set-to-hash-table value)))
 
-(defun lsp--defcustom-get-set-from-hashtable (symbol)
-  "Funtion to get SYMBOL's value after transforming its value
-from a hash table to a defcustom set."
-  (lsp--hash-table-to-set (default-value symbol)))
+(defun lsp--defcustom-get-json-alist (symbol)
+  "Funtion to get SYMBOL's value to a json alist."
+  (lsp--alist-replace-json-false-with-nil (default-value symbol)))
 
-(defun lsp--set-to-hash-table (list)
-  "Transforms a LIST to a `hash-table' suitable to be jsonified.
+(defun lsp--defcustom-set-json-alist (symbol value)
+  "Funtion to set SYMBOL's VALUE to json alist."
+  (set-default symbol (lsp--alist-replace-nil-with-json-false value)))
 
-With an input LIST setting a to true and b to false:
+
+(defun lsp--alist-map-on-cdr (f list)
+  "Transforms the cdr of LIST using F."
+  (mapcar (lambda (v) (cons (car v) (funcall f (cdr v)))) list))
+
+(defun lsp--alist-replace-nil-with-json-false (list)
+  "Transforms nil values in the given LIST to `:json-false'.
+
+With an input LIST:
   ((a . t) (b) (c . 'other))
-And will output:
-  #s(hash-table data ((a t b :json-false c 'other))
+It will output:
+  ((a . t) (b . :json-false) (c . 'other))
 "
-  (let ((hash (make-hash-table :size (length list))))
-	(dolist (v list)
-	  (puthash (car v) (if (null (cdr v)) :json-false (cdr v)) hash) list)
-	hash))
+  (lsp--alist-map-on-cdr (lambda (v) (if (null v) :json-false v)) list))
 
-(defun lsp--hash-table-to-set (hash)
-  "Transforms a HASH table suitable to be jsonified to a `list'.
+(defun lsp--alist-replace-json-false-with-nil (list)
+  "Transforms nil values in the given LIST to `:json-false'.
 
-The input HASH is of the form:
-  #s(hash-table data ((a t b :json-false c 'other))
-And will output a list setting a to true and b to false:
+With an input LIST:
+  ((a . t) (b . :json-false) (c . 'other))
+It will output:
+  ((a . t) (b . nil) (c . 'other))
+Which is equivalent to:
   ((a . t) (b) (c . 'other))
 "
-  (let ((list '()))
-	(maphash (lambda (k v) (push (cons k (if (eq v :json-false) nil v)) list)) hash)
-	list))
+  (lsp--alist-map-on-cdr (lambda (v) (if (eq v :json-false) nil v)) list))
 
 
 
