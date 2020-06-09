@@ -5312,7 +5312,10 @@ RENDER-ALL - nil if only the signature should be rendered."
     (lv-delete-window)))
 
 (defun lsp--handle-signature-update (signature)
-  (let ((message (lsp--signature->message signature)))
+  (let ((message
+         (if (string= 'cons (type-of signature))
+             (mapconcat 'lsp--signature->message signature "\n")
+           (lsp--signature->message signature))))
     (if (s-present? message)
         (funcall lsp-signature-function message)
       (lsp-signature-stop))))
