@@ -909,6 +909,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#lsp-gopls-codelens" class="md-nav__link">
+    lsp-gopls-codelens
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1646,6 +1653,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#lsp-gopls-codelens" class="md-nav__link">
+    lsp-gopls-codelens
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1697,7 +1711,7 @@ completing function calls.</p>
   applied to queries like ‘go list’.</p>
 <hr />
 <h3 id="lsp-gopls-env"><code>lsp-gopls-env</code><a class="headerlink" href="#lsp-gopls-env" title="Permanent link">#</a></h3>
-<p><em>Default: <code>#s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8125 data ())</code></em></p>
+<p><em>Default: <code>nil</code></em></p>
 <p>‘gopls’ has the unusual ability to set environment variables,
   intended to affect the behavior of commands invoked by ‘gopls’
   on the user’s behalf. This variable takes a hash table of env
@@ -1708,6 +1722,11 @@ completing function calls.</p>
 <p>‘gopls’ allows the end user to select the desired amount of
   documentation returned during e.g. hover and thing-at-point
   operations.</p>
+<hr />
+<h3 id="lsp-gopls-codelens"><code>lsp-gopls-codelens</code><a class="headerlink" href="#lsp-gopls-codelens" title="Permanent link">#</a></h3>
+<p><em>Default: <code>((generate . t) (test . t))</code></em></p>
+<p>Select what codelens should be enabled or not.</p>
+<p>The codelens can be found at https://github.com/golang/tools/blob/4d5ea46c79fe3bbb57dd00de9c167e93d94f4710/internal/lsp/source/options.go#L102-L108.</p>
 <hr />
                 
                   
