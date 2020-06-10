@@ -55,12 +55,12 @@ completing function calls."
   :risky t
   :package-version '(lsp-mode "6.2"))
 
-(defcustom lsp-gopls-env (make-hash-table)
+(defcustom lsp-gopls-env '()
   "`gopls' has the unusual ability to set environment variables,
   intended to affect the behavior of commands invoked by `gopls'
   on the user's behalf. This variable takes a hash table of env
   var names to desired values."
-  :type '(restricted-sexp :match-alternatives (hash-table-p))
+  :type '(alist :key-type (string :tag "env var name") :value-type (string :tag "value"))
   :group 'lsp-gopls
   :risky t
   :package-version '(lsp-mode "6.2"))
@@ -78,11 +78,50 @@ completing function calls."
   :risky t
   :package-version '(lsp-mode "6.2"))
 
+(defvar lsp-gopls-available-codelens
+  '(("generate" . "Run `go generate` for a directory")
+	("test" . "Run `go test` for a specific test function")
+	("tidy" . "Run `go mod tidy` for a module")
+	("upgrade_dependency" . "Upgrade a dependency")
+	("regenerate_cgo" . "Regenerate cgo definitions"))
+  "Available codelens that can be further enabled or disabled
+  through `lsp-gopls-codelens'.")
+
+(defun lsp-gopls--defcustom-available-as-alist-type (alist)
+  "Returns a list suitable for the `:type' field in a `defcustom' used to populate an alist.
+
+The input ALIST has the form `((\"name\" . \"documentation sentence\") [...])'
+
+The returned type provides a tri-state that either:
+  - does not include the element in the alist
+  - sets element to false (actually, :json-false)
+  - sets element to true (actually, t)
+"
+  (let ((list '()))
+	(dolist (v alist)
+	  (push `(cons
+			  :tag ,(cdr v)
+			  (const :format "" ,(car v))
+			  (choice (const :tag "Enable" t) (const :tag "Disable" :json-false)))
+			list))
+	(push 'set list)
+	list))
+
+(defcustom lsp-gopls-codelens '(("generate" . t) ("test" . t))
+  "Select what codelens should be enabled or not.
+
+The codelens can be found at https://github.com/golang/tools/blob/4d5ea46c79fe3bbb57dd00de9c167e93d94f4710/internal/lsp/source/options.go#L102-L108."
+  :type (lsp-gopls--defcustom-available-as-alist-type lsp-gopls-available-codelens)
+  :group 'lsp-gopls
+  :risky t
+  :package-version '(lsp-mode "6.4"))
+
 (lsp-register-custom-settings
  '(("gopls.usePlaceholders" lsp-gopls-use-placeholders t)
    ("gopls.hoverKind" lsp-gopls-hover-kind)
    ("gopls.buildFlags" lsp-gopls-build-flags)
-   ("gopls.env" lsp-gopls-env)))
+   ("gopls.env" lsp-gopls-env)
+   ("gopls.codelens" lsp-gopls-codelens)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
