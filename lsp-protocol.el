@@ -37,8 +37,7 @@
 (defun lsp-keyword->string (keyword)
   (substring (symbol-name keyword) 1))
 
-(defun lsp-use-plists ()
-  t)
+(defvar lsp-use-plists nil)
 
 (defmacro lsp-interface (&rest interfaces)
   "Generate LSP bindings from INTERFACES triplet.
@@ -67,30 +66,30 @@ Example usage with `dash`.
                      (unless (or (member key ',(-map #'cl-first params))
                                  (s-starts-with? ":_" (symbol-name key)))
                        (error "Unknown key: %s. Available keys: %s" key ',(-map #'cl-first params)))
-                     (if (lsp-use-plists)
-                         `(plist-get ,source
-                                     ,(if (s-starts-with? ":_" (symbol-name key))
-                                          key
-                                        (cl-rest (assoc key ',params))))
-                       `(gethash ,(if (s-starts-with? ":_" (symbol-name key))
-                                      (substring (symbol-name key) 1)
-                                    (substring (symbol-name
-                                                (cl-rest (assoc key ',params)))
-                                               1))
-                                 ,source)))
+                     ,(if lsp-use-plists
+                          ``(plist-get ,source
+                                       ,(if (s-starts-with? ":_" (symbol-name key))
+                                            key
+                                          (cl-rest (assoc key ',params))))
+                        ``(gethash ,(if (s-starts-with? ":_" (symbol-name key))
+                                        (substring (symbol-name key) 1)
+                                      (substring (symbol-name
+                                                  (cl-rest (assoc key ',params)))
+                                                 1))
+                                   ,source)))
                   `(defun ,(intern (format "dash-expand:&%s?" interface)) (key source)
                      (unless (member key ',(-map #'cl-first params))
                        (error "Unknown key: %s. Available keys: %s" key ',(-map #'cl-first params)))
-                     (if (lsp-use-plists)
-                         `(plist-get ,source
-                                     ,(if (s-starts-with? ":_" (symbol-name key))
-                                          key
-                                        (cl-rest (assoc key ',params))))
-                       `(when ,source
-                          (gethash ,(substring (symbol-name
-                                                (cl-rest (assoc key ',params)))
-                                               1)
-                                   ,source))))
+                     ,(if lsp-use-plists
+                          ``(plist-member ,source
+                                          ,(if (s-starts-with? ":_" (symbol-name key))
+                                               key
+                                             (cl-rest (assoc key ',params))))
+                        ``(when ,source
+                            (gethash ,(substring (symbol-name
+                                                  (cl-rest (assoc key ',params)))
+                                                 1)
+                                     ,source))))
 
                   `(defun ,(intern (format "lsp-%s?" (s-dashed-words (symbol-name interface)))) (object)
                      (cond
@@ -107,7 +106,7 @@ Example usage with `dash`.
                        (&key ,@(-map (-lambda ((key))
                                        (intern (substring (symbol-name key) 1))) params))
 
-                     ,(if (lsp-use-plists)
+                     ,(if lsp-use-plists
                           `(let ($$result)
                              ,@(-map (-lambda ((name . key))
                                        `(when ,(lsp-keyword->symbol name)
@@ -126,39 +125,38 @@ Example usage with `dash`.
                                                        (s-dashed-words (symbol-name interface))
                                                        (substring (symbol-name label) 1)))
                                    (object)
-                                 ,(if (lsp-use-plists)
+                                 ,(if lsp-use-plists
                                       `(plist-get object ,name)
                                     `(when object (gethash ,(lsp-keyword->string name) object))))
                               `(defun ,(intern (format "lsp:set-%s-%s"
                                                        (s-dashed-words (symbol-name interface))
                                                        (substring (symbol-name label) 1)))
                                    (object value)
-                                 ,(if (lsp-use-plists)
+                                 ,(if lsp-use-plists
                                       `(plist-put object ,name value)
                                     `(puthash ,(lsp-keyword->string name) value object)))))
                            params)))))
        (apply #'append)
-       (cl-list* 'progn)))
-
-(if (lsp-use-plists)
-    (progn
-      (defun lsp-get (from key)
-        (plist-get from key))
-      (defun lsp-put (where key value)
-        (plist-put where key value))
-      (defun lsp-map (fn value)
-        (-map (-lambda ((k v))
-                (funcall fn (lsp-keyword->string k) v))
-              (-partition 2 value ))))
-  (defun lsp-get (from key)
-    (when from
-      (gethash (lsp-keyword->string key) from)))
-  (defun lsp-put (where key value)
-    (prog1 where
-      (puthash (lsp-keyword->string key) value where)))
-  (defun lsp-map (fn value)
-    (when value
-      (maphash fn value))))
+       (cl-list* 'progn (if lsp-use-plists
+                            `(progn
+                               (defun lsp-get (from key)
+                                 (plist-get from key))
+                               (defun lsp-put (where key value)
+                                 (plist-put where key value))
+                               (defun lsp-map (fn value)
+                                 (-map (-lambda ((k v))
+                                         (funcall fn (lsp-keyword->string k) v))
+                                       (-partition 2 value ))))
+                          '(progn
+                             (defun lsp-get (from key)
+                               (when from
+                                 (gethash (lsp-keyword->string key) from)))
+                             (defun lsp-put (where key value)
+                               (prog1 where
+                                 (puthash (lsp-keyword->string key) value where)))
+                             (defun lsp-map (fn value)
+                               (when value
+                                 (maphash fn value))))))))
 
 (defmacro lsp-defun (name match-form &rest body)
   "Define NAME as a function which destructures its input as MATCH-FORM and executes BODY.
