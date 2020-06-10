@@ -4067,7 +4067,7 @@ The method uses `replace-buffer-contents'."
                :rangeLength 0
                :text ,(buffer-substring-no-properties start end))
 
-    (if (= start end)
+    (if (eq start end)
         ;; Deleting something only
         (if (lsp--bracketed-change-p start length)
             ;; The before-change value is bracketed, use it
@@ -4091,8 +4091,8 @@ The method uses `replace-buffer-contents'."
   "If the before and after positions are the same, and the length
 is the size of the start range, we are probably good."
   (-let [(&plist :end before-end :start before-start) lsp--before-change-vals]
-    (and (= start before-start)
-         (= length (- before-end before-start)))))
+    (and (eq start before-start)
+         (eq length (- before-end before-start)))))
 
 (defun lsp--full-change-event ()
   `(:text ,(lsp--buffer-content)))
