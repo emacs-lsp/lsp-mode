@@ -227,7 +227,7 @@ private void extracted() {
      (ht ("documentChanges"
           (list (ht ("uri"  (lsp--path-to-uri new-file-name))
                     ("kind" "create")
-                    ("options" (ht ("override" t))))))))
+                    ("options" (lsp-make-create-file-options :overwrite? t)))))))
     (should (equal (f-read-text new-file-name) "")))
   (let ((new-file-name (make-temp-file "should not be overridden")))
     (f-write-text "text" nil new-file-name)
@@ -235,7 +235,7 @@ private void extracted() {
      (ht ("documentChanges"
           (list (ht ("uri"  (lsp--path-to-uri new-file-name))
                     ("kind" "create")
-                    ("options" (ht ("override" nil))))))))
+                    ("options" (lsp-make-create-file-options :overwrite? nil)))))))
     (should (equal (f-read-text new-file-name) "text"))))
 
 (ert-deftest lsp-delete-test ()
@@ -271,6 +271,6 @@ private void extracted() {
           (list (ht ("oldUri"  (lsp--path-to-uri old-file-name))
                     ("newUri"  (lsp--path-to-uri new-file-name))
                     ("kind" "rename")
-                    ("options" (ht ("override" t))))))))
+                    ("options" (lsp-make-rename-file-options :overwrite? t)))))))
     (should-not (f-exists? old-file-name))
     (should (f-exists? new-file-name))))
