@@ -65,7 +65,7 @@ Example usage with `dash`.
                   `(defun ,(intern (format "dash-expand:&%s" interface)) (key source)
                      (unless (or (member key ',(-map #'cl-first params))
                                  (s-starts-with? ":_" (symbol-name key)))
-                       (error "Unknown key: %s. Available keys: %s" key ',(-map #'cl-first params)))
+                       (error "Unknown key: %s.  Available keys: %s" key ',(-map #'cl-first params)))
                      ,(if lsp-use-plists
                           ``(plist-get ,source
                                        ,(if (s-starts-with? ":_" (symbol-name key))
@@ -79,7 +79,7 @@ Example usage with `dash`.
                                    ,source)))
                   `(defun ,(intern (format "dash-expand:&%s?" interface)) (key source)
                      (unless (member key ',(-map #'cl-first params))
-                       (error "Unknown key: %s. Available keys: %s" key ',(-map #'cl-first params)))
+                       (error "Unknown key: %s.  Available keys: %s" key ',(-map #'cl-first params)))
                      ,(if lsp-use-plists
                           ``(plist-get ,source
                                        ,(if (s-starts-with? ":_" (symbol-name key))
@@ -94,13 +94,14 @@ Example usage with `dash`.
                   `(defun ,(intern (format "lsp-%s?" (s-dashed-words (symbol-name interface)))) (object)
                      (cond
                       ((ht? object)
-                       (-all? (lambda (prop)
-                                (ht-get object prop))
+                       (-all? (let ((keys (ht-keys object)))
+                                (lambda (prop)
+                                  (member prop keys)))
                               ',(-map (lambda (field-name)
                                         (substring (symbol-name field-name) 1))
                                       required)))
                       ((listp object) (-all? (lambda (prop)
-                                               (plist-get object prop))
+                                               (plist-member object prop))
                                              ',required))))
                   `(cl-defun ,(intern (format "lsp-make-%s" (s-dashed-words (symbol-name interface))))
                        (&key ,@(-map (-lambda ((key))
@@ -137,7 +138,7 @@ Example usage with `dash`.
                                     `(puthash ,(lsp-keyword->string name) value object)))))
                            params)))))
        (apply #'append)
-       (cl-list* 'progn )))
+       (cl-list* 'progn)))
 
 (eval-when-compile
   (if lsp-use-plists

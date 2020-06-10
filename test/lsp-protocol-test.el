@@ -33,8 +33,10 @@
 
   (let ((position (lsp-make-my-position :character 1 :line 2)))
     (should (eq 2 (lsp:my-position-line position)))
+
     (-let (((&MyPosition :line) position))
-      (should (eq 2 (lsp:my-position-line position))))
+      (should (eq 2 line)))
+
     (lsp-put position :_external "external")
     (should (string= "external" (lsp-get position :_external)))
     (-let (((&MyPosition :_external ext) position))
@@ -57,8 +59,9 @@
 
 (ert-deftest lsp-test-lsp-interface ()
   (let (lsp-use-plists)
-    (lsp-test-interface))
+    (lsp-test-interface)))
 
+(ert-deftest lsp-test-lsp-interface-plist ()
   (let ((lsp-use-plists t))
     (lsp-test-interface)))
 
