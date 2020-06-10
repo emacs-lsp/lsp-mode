@@ -266,40 +266,41 @@ finding the executable with variable `exec-path'."
 (defun lsp-clients-flow-tag-file-present-p (file-name)
   "Check if the '// @flow' or `/* @flow */' tag is present in
 the contents of FILE-NAME."
-  (with-temp-buffer
-    (insert-file-contents file-name)
-    (lsp-clients-flow-tag-string-present-p (buffer-string))))
+  (if-let (buffer (find-buffer-visiting file-name))
+      (with-current-buffer buffer
+        (lsp-clients-flow-tag-string-present-p))
+    (with-temp-buffer
+      (insert-file-contents file-name)
+      (lsp-clients-flow-tag-string-present-p))))
 
-(defun lsp-clients-flow-tag-string-present-p (file-contents)
+(defun lsp-clients-flow-tag-string-present-p ()
   "Helper for `lsp-clients-flow-tag-file-present-p' that works
 with the file contents."
-  (with-temp-buffer
-    (insert file-contents)
-    (save-excursion
-      (goto-char (point-min))
-      (let (stop found)
-        (while (not stop)
-          (when (not (re-search-forward "[^\n[:space:]]" nil t))
-            (setq stop t))
-          (if (equal (point) (point-min))
-              (setq stop t)
-            (backward-char))
-          (cond ((or (looking-at "//+[ ]*@flow")
-                     (looking-at "/\\**[ ]*@flow")
-                     (looking-at "[ ]*\\*[ ]*@flow"))
-                 (setq found t)
-                 (setq stop t))
-                ((looking-at "//")
-                 (forward-line))
-                ((looking-at "*")
-                 (forward-line))
-                ((looking-at "/\\*")
-                 (save-excursion
-                   (when (not (re-search-forward "*/" nil t))
-                     (setq stop t)))
-                 (forward-line))
-                (t (setq stop t))))
-        found))))
+  (save-excursion
+    (goto-char (point-min))
+    (let (stop found)
+      (while (not stop)
+        (when (not (re-search-forward "[^\n[:space:]]" nil t))
+          (setq stop t))
+        (if (equal (point) (point-min))
+            (setq stop t)
+          (backward-char))
+        (cond ((or (looking-at "//+[ ]*@flow")
+                   (looking-at "/\\**[ ]*@flow")
+                   (looking-at "[ ]*\\*[ ]*@flow"))
+               (setq found t)
+               (setq stop t))
+              ((looking-at "//")
+               (forward-line))
+              ((looking-at "*")
+               (forward-line))
+              ((looking-at "/\\*")
+               (save-excursion
+                 (when (not (re-search-forward "*/" nil t))
+                   (setq stop t)))
+               (forward-line))
+              (t (setq stop t))))
+      found)))
 
 (defun lsp-clients-flow-project-p (file-name)
   "Check if FILE-NAME is part of a Flow project, that is, if
