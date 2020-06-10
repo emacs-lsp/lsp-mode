@@ -81,10 +81,10 @@ Example usage with `dash`.
                      (unless (member key ',(-map #'cl-first params))
                        (error "Unknown key: %s. Available keys: %s" key ',(-map #'cl-first params)))
                      ,(if lsp-use-plists
-                          ``(plist-member ,source
-                                          ,(if (s-starts-with? ":_" (symbol-name key))
-                                               key
-                                             (cl-rest (assoc key ',params))))
+                          ``(plist-get ,source
+                                       ,(if (s-starts-with? ":_" (symbol-name key))
+                                            key
+                                          (cl-rest (assoc key ',params))))
                         ``(when ,source
                             (gethash ,(substring (symbol-name
                                                   (cl-rest (assoc key ',params)))
