@@ -4619,25 +4619,29 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                                           (when (string-match it cand)
                                             (setq cand (copy-sequence cand))
                                             (put-text-property 0 1 'match-data (match-data) cand)
+                                            (put-text-property
+                                             0 1
+                                             'completion-score (lsp--fuzzy-score query cand) cand)
                                             cand))
-                                        candidates)
-                                 (-map (lambda (cand)
-                                         (put-text-property
-                                          0 1
-                                          'completion-score (lsp--fuzzy-score query cand) cand)
-                                         cand)
-                                       it)))))
-                  (-flatten-n 1)
-                  (-sort (-on #'> (lambda (o)
-                                    (or (get-text-property 0 'sort-score o)
-                                        (let* ((score (* (or (get-text-property 0 'completion-score o)
-                                                             0.001)
-                                                         (or (get-text-property 0 'lsp-completion-score o)
-                                                             0.001))))
-                                          (put-text-property 0 1 'sort-score score o)
-                                          score)))))
+                                        candidates)))))
+                  (apply #'append)
+                  (-sort (lambda (left right)
+                           (> (or (get-text-property 0 'sort-score left)
+                                  (let* ((score (* (or (get-text-property 0 'completion-score left)
+                                                       0.001)
+                                                   (or (get-text-property 0 'lsp-completion-score left)
+                                                       0.001))))
+                                    (put-text-property 0 1 'sort-score score left)
+                                    score))
+                              (or (get-text-property 0 'sort-score right)
+                                  (let* ((score (* (or (get-text-property 0 'completion-score right)
+                                                       0.001)
+                                                   (or (get-text-property 0 'lsp-completion-score right)
+                                                       0.001))))
+                                    (put-text-property 0 1 'sort-score score right)
+                                    score)))))
                   ;; TODO: pass additional function to sort the candidates
-                  (-map (-partial #'get-text-property 0 'lsp-completion-item)))
+                  (-map (lambda (cand) (get-text-property 0 'lsp-completion-item cand))))
            lsp-items)))
     (-map (apply #'-rpartial #'lsp--make-completion-item plist) filtered-items)))
 
@@ -6328,7 +6332,7 @@ WORKSPACE is the active workspace."
         (require 'json)
         (fboundp 'json-parse-string))
       `(json-parse-string ,str
-                          :object-type (if (lsp-use-plists)
+                          :object-type (if lsp-use-plists
                                            'plist
                                          'hash-table)
                           :null-object nil
