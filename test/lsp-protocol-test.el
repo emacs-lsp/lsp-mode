@@ -28,9 +28,20 @@
 (require 'lsp-protocol)
 (require 'ert)
 
-(lsp-interface (MyPosition (:line :character :camelCase) (:optional)))
+
+(let (lsp-use-plists)
+  (lsp-test-interface) )
 
 (ert-deftest lsp-test-lsp-interface ()
+  (let (lsp-use-plists)
+    (lsp-test-interface))
+
+  (let ((lsp-use-plists t))
+    (lsp-test-interface)))
+
+(defun lsp-test-interface ()
+  (lsp-interface (MyPosition (:line :character :camelCase) (:optional)))
+
   (let ((position (lsp-make-my-position :character 1 :line 2)))
     (should (eq 2 (lsp:my-position-line position)))
     (-let (((&MyPosition :line) position))
@@ -44,8 +55,16 @@
     (-let (((&MyPosition :optional?) position))
       (should (string= "opt" optional?)))
 
-    (-let (((&MyPosition :optional?) nil))
-      (should (null optional?)))))
+    (-let (((&MyPosition? :optional?) nil))
+      (should (null optional?)))
+
+    (should (not (lsp-my-position? position)))
+    (lsp:set-my-position-camel-case position "camel-case")
+    (should (not (lsp-my-position? "xx")))
+    (should (lsp-my-position? position))
+
+    (-let (((&MyPosition? :line) nil))
+      (should (null line)))))
 
 (provide 'lsp-protocol-test)
 ;;; lsp-protocol-test.el ends here
