@@ -26,7 +26,6 @@
 ;; Emacs client/library for the Language Server Protocol
 
 ;;; Code:
-(setq lsp-plists nil)
 
 (require 'bindat)
 (require 'cl-generic)
@@ -1215,33 +1214,30 @@ Symlinks are not followed."
   "Merge RESULTS by filtering the empty hash-tables and merging the lists.
 METHOD is the executed method so the results could be merged
 depending on it."
-  (pcase (--map (if (vectorp it) (append it nil) it) (-filter 'identity results))
+  (pcase (--map (if (vectorp it)
+                    (append it nil) it)
+                (-filter #'identity results))
     (`() ())
     ;; only one result - simply return it
     (`(,fst) fst)
     ;; multiple results merge it based on strategy
     (results
      (pcase method
-       ("textDocument/hover" (let ((results (seq-filter
-                                             (-compose #'not #'hash-table-empty-p)
-                                             results)))
-                               (if (not (cdr results))
-                                   (car results)
-                                 ;; TODO
-                                 (let ((merged (make-hash-table :test 'equal)))
-                                   (seq-each
-                                    (lambda (it)
-                                      (let ((to-add (lsp:hover-contents it)))
-                                        (lsp-put merged
-                                                 :contents
-                                                 (append
-                                                  (if (and (sequencep to-add)
-                                                           (not (stringp to-add)))
-                                                      to-add
-                                                    (list to-add))
-                                                  (lsp:hover-contents merged)))))
-                                    results)
-                                   merged))))
+       ("textDocument/hover" (pcase (seq-filter
+                                     (-compose #'not #'lsp-empty?)
+                                     results)
+                               (`(,hover) hover)
+                               (hovers (-reduce-from
+                                        (-lambda ((&Hover :contents) result)
+                                          (lsp:set-hover-contents
+                                           result (append
+                                                   (if (and (sequencep contents)
+                                                            (not (stringp contents)))
+                                                       contents
+                                                     (list contents))
+                                                   (lsp:hover-contents result))))
+                                        (lsp-make-hover)
+                                        hovers))))
        ("textDocument/completion"
         (lsp-make-completion-list
          :isIncomplete (seq-some
@@ -3518,8 +3514,7 @@ in that particular folder."
   (->> (lsp-workspaces)
        (-map #'lsp--workspace-server-capabilities)
        (-filter #'identity)
-       ;; TODO FIX
-       (cl-first)))
+       (lsp-merge)))
 
 (defun lsp--send-open-close-p ()
   "Return whether open and close notifications should be sent to the server."

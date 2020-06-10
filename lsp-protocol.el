@@ -137,26 +137,32 @@ Example usage with `dash`.
                                     `(puthash ,(lsp-keyword->string name) value object)))))
                            params)))))
        (apply #'append)
-       (cl-list* 'progn (if lsp-use-plists
-                            `(progn
-                               (defun lsp-get (from key)
-                                 (plist-get from key))
-                               (defun lsp-put (where key value)
-                                 (plist-put where key value))
-                               (defun lsp-map (fn value)
-                                 (-map (-lambda ((k v))
-                                         (funcall fn (lsp-keyword->string k) v))
-                                       (-partition 2 value ))))
-                          '(progn
-                             (defun lsp-get (from key)
-                               (when from
-                                 (gethash (lsp-keyword->string key) from)))
-                             (defun lsp-put (where key value)
-                               (prog1 where
-                                 (puthash (lsp-keyword->string key) value where)))
-                             (defun lsp-map (fn value)
-                               (when value
-                                 (maphash fn value))))))))
+       (cl-list* 'progn )))
+
+(if lsp-use-plists
+    `(progn
+       (defun lsp-get (from key)
+         (plist-get from key))
+       (defun lsp-put (where key value)
+         (plist-put where key value))
+       (defun lsp-map (fn value)
+         (-map (-lambda ((k v))
+                 (funcall fn (lsp-keyword->string k) v))
+               (-partition 2 value )))
+       (defalias 'lsp-merge 'append)
+       (defalias 'lsp-empty? 'null))
+  '(progn
+     (defun lsp-get (from key)
+       (when from
+         (gethash (lsp-keyword->string key) from)))
+     (defun lsp-put (where key value)
+       (prog1 where
+         (puthash (lsp-keyword->string key) value where)))
+     (defun lsp-map (fn value)
+       (when value
+         (maphash fn value)))
+     (defalias 'lsp-merge 'ht-merge)
+     (defalias 'lsp-empty? 'ht-empty?)))
 
 (defmacro lsp-defun (name match-form &rest body)
   "Define NAME as a function which destructures its input as MATCH-FORM and executes BODY.
