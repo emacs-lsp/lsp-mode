@@ -5452,7 +5452,6 @@ It will show up only if current point has signature help."
    :cancel-token :document-color-token))
 
 
-
 ;; hover
 
 (defvar-local lsp--hover-saved-bounds nil)
