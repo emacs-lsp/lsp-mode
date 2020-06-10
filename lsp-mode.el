@@ -8441,63 +8441,6 @@ See https://github.com/emacs-lsp/lsp-mode."
         (lsp--info "Disconnected from buffer %s" file-name))
     (lsp--error "Nothing to disconnect from?")))
 
-
-(defun lsp--defcustom-available-as-alist-type (alist)
-  "Returns a list suitable for the `:type' field in a `defcustom' used to populate an alist.
-
-The input ALIST has the form `((\"name\" . \"documentation sentence\") [...])'
-
-The returned type provides a tri-state that either:
-  - does not include the element in the alist
-  - sets element to false (actually, :json-false)
-  - sets element to true (actually, t)
-"
-  (let ((list '()))
-	(dolist (v alist)
-	  (push `(cons
-			  :tag ,(cdr v)
-			  (const :format "" ,(car v))
-			  (choice (const :tag "Enable" t) (const :tag "Disable" nil)))
-			list))
-	(push 'set list)
-	list))
-
-
-(defun lsp--defcustom-get-json-alist (symbol)
-  "Funtion to get SYMBOL's value to a json alist."
-  (lsp--alist-replace-json-false-with-nil (default-value symbol)))
-
-(defun lsp--defcustom-set-json-alist (symbol value)
-  "Funtion to set SYMBOL's VALUE to json alist."
-  (set-default symbol (lsp--alist-replace-nil-with-json-false value)))
-
-
-(defun lsp--alist-map-on-cdr (f list)
-  "Transforms the cdr of LIST using F."
-  (mapcar (lambda (v) (cons (car v) (funcall f (cdr v)))) list))
-
-(defun lsp--alist-replace-nil-with-json-false (list)
-  "Transforms nil values in the given LIST to `:json-false'.
-
-With an input LIST:
-  ((a . t) (b) (c . 'other))
-It will output:
-  ((a . t) (b . :json-false) (c . 'other))
-"
-  (lsp--alist-map-on-cdr (lambda (v) (if (null v) :json-false v)) list))
-
-(defun lsp--alist-replace-json-false-with-nil (list)
-  "Transforms nil values in the given LIST to `:json-false'.
-
-With an input LIST:
-  ((a . t) (b . :json-false) (c . 'other))
-It will output:
-  ((a . t) (b . nil) (c . 'other))
-Which is equivalent to:
-  ((a . t) (b) (c . 'other))
-"
-  (lsp--alist-map-on-cdr (lambda (v) (if (eq v :json-false) nil v)) list))
-
 
 
 (provide 'lsp-mode)
