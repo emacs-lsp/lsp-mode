@@ -60,7 +60,7 @@ completing function calls."
   intended to affect the behavior of commands invoked by `gopls'
   on the user's behalf. This variable takes a hash table of env
   var names to desired values."
-  :type '(repeat (cons (string :tag "env var name") (string :tag "value")))
+  :type '(alist :key-type (string :tag "env var name") :value-type (string :tag "value"))
   :group 'lsp-gopls
   :risky t
   :package-version '(lsp-mode "6.2"))
