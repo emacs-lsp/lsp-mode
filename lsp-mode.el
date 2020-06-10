@@ -985,7 +985,7 @@ They are added to `markdown-code-lang-modes'")
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-signature-auto-activate t
-  "Auto-activate the documentation when  "
+  "Auto activate signature when trigger char is pressed."
   :type 'boolean
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.2"))
