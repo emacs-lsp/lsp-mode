@@ -2399,7 +2399,7 @@ CALLBACK - callback for the lenses."
                              :error-handler #'ignore
                              :mode 'tick
                              :no-merge t
-                             :cancel-token :lenses))
+                             :cancel-token (concat (buffer-name (current-buffer)) "-lenses")))
       (if (-all? #'lsp--lens-backend-present? lsp--lens-backend-cache)
           (funcall callback lsp--lens-backend-cache lsp--cur-version)
         (lsp--lens-backend-fetch-missing lsp--lens-backend-cache callback lsp--cur-version)))))
