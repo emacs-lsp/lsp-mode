@@ -6448,7 +6448,9 @@ WORKSPACE is the active workspace."
                           :null-object nil
                           :false-object nil)
     `(let ((json-array-type 'vector)
-           (json-object-type 'hash-table)
+           (json-object-type (if lsp-use-plists
+                                 'plist
+                               'hash-table))
            (json-false nil))
        (json-read-from-string ,str))))
 
