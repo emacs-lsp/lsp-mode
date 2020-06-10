@@ -3512,9 +3512,8 @@ in that particular folder."
 (defun lsp--server-capabilities ()
   "Return the capabilities of the language server associated with the buffer."
   (->> (lsp-workspaces)
-       (-map #'lsp--workspace-server-capabilities)
-       (-filter #'identity)
-       (lsp-merge)))
+       (-keep #'lsp--workspace-server-capabilities)
+       (apply #'lsp-merge)))
 
 (defun lsp--send-open-close-p ()
   "Return whether open and close notifications should be sent to the server."
