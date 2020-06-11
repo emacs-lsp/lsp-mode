@@ -308,8 +308,8 @@ Must not nil.")
                       (lsp--set-configuration
                        (lsp-configuration-section "powershell")))
                     (let ((caps (lsp--workspace-server-capabilities w)))
-                      (ht-set caps "documentRangeFormattingProvider" t)
-                      (ht-set caps "documentFormattingProvider" t)))
+                      (lsp:set-server-capabilities-document-range-formatting-provider? caps t)
+                      (lsp:set-server-capabilities-document-formatting-provider? caps t)))
   :download-server-fn #'lsp-pwsh-setup))
 
 ;; Compatibility
