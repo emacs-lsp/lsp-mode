@@ -265,13 +265,13 @@ Must not nil.")
   (-if-let* (((&pwsh:ScriptRegion :start-line-number :end-line-number
                                   :start-column-number :end-column-number :text)
               (lsp-seq-first arguments?))
-             (edits `[,(ht ("range" (ht ("start"
-                                         (ht ("line" (- start-line-number 1))
-                                             ("character" (- start-column-number 1))))
-                                        ("end"
-                                         (ht ("line" (- end-line-number 1))
-                                             ("character" (- end-column-number 1))))))
-                           ("newText" text))]))
+             (start-position (lsp-make-position :line (1- start-line-number)
+                                                :character (1- start-column-number)))
+             (end-position (lsp-make-position :line (1- end-line-number)
+                                              :character (1- end-column-number)))
+             (edits `[,(lsp-make-text-edit :range (lsp-make-range :start start-position
+                                                                  :end end-position)
+                                           :newText text)]))
       (lsp--apply-text-edits edits)
     (lsp-send-execute-command command arguments?)))
 
