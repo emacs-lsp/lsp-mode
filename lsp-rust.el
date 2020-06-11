@@ -285,14 +285,13 @@ is often the type local variable declaration."
 (defun lsp-clients--rust-window-progress (workspace params)
   "Progress report handling.
 PARAMS progress report notification data."
-  (-let (((&hash "done" "message" "title") params))
-    (if (or done (s-blank-str? message))
+  (-let [(&v1:ProgressParams :done? :message? :title) params]
+    (if (or done? (s-blank-str? message?))
         (lsp-workspace-status nil workspace)
-      (lsp-workspace-status (format "%s - %s" title (or message "")) workspace))))
+      (lsp-workspace-status (format "%s - %s" title (or message? "")) workspace))))
 
-(cl-defmethod lsp-execute-command
-  (_server (_command (eql rls.run)) params)
-  (-let* (((&hash "env" "binary" "args" "cwd") (lsp-seq-first params))
+(cl-defmethod lsp-execute-command (_server (_command (eql rls.run)) params)
+  (-let* (((&rls:Cmd :env :binary :args :cwd) (lsp-seq-first params))
           (default-directory (or cwd (lsp-workspace-root) default-directory) ))
     (compile
      (format "%s %s %s"
@@ -500,10 +499,11 @@ The command should include `--message=format=json` or similar option."
   (interactive)
   (-if-let* ((workspace (lsp-find-workspace 'rust-analyzer))
              (root (lsp-workspace-root default-directory))
-             (params (list :textDocument (lsp--text-document-identifier)
-                           :range (if (use-region-p)
-                                      (lsp--region-to-range (region-beginning) (region-end))
-                                    (lsp--region-to-range (point-min) (point-max)))))
+             (params (lsp-make-rust-analyzer-syntax-tree-params
+                      :text-document (lsp--text-document-identifier)
+                      :range? (if (use-region-p)
+                                  (lsp--region-to-range (region-beginning) (region-end))
+                                (lsp--region-to-range (point-min) (point-max)))))
              (results (with-lsp-workspace workspace
                         (lsp-send-request (lsp-make-request
                                            "rust-analyzer/syntaxTree"
@@ -541,10 +541,11 @@ The command should include `--message=format=json` or similar option."
 (defun lsp-rust-analyzer-join-lines ()
   "Join selected lines into one, smartly fixing up whitespace and trailing commas."
   (interactive)
-  (let* ((params (list :textDocument (lsp--text-document-identifier)
-                       :ranges (vector (if (use-region-p)
-                                           (lsp--region-to-range (region-beginning) (region-end))
-                                         (lsp--region-to-range (point) (point))))))
+  (let* ((params (lsp-make-rust-analyzer-join-lines-params
+                  :text-document (lsp--text-document-identifier)
+                  :ranges (vector (if (use-region-p)
+                                      (lsp--region-to-range (region-beginning) (region-end))
+                                    (lsp--region-to-range (point) (point))))))
          (result (lsp-send-request (lsp-make-request "experimental/joinLines" params))))
     (lsp--apply-text-edits result)))
 
@@ -581,26 +582,27 @@ The command should include `--message=format=json` or similar option."
            (eq buffer (current-buffer)))
       (lsp-request-async
        "rust-analyzer/inlayHints"
-       (list :textDocument (lsp--text-document-identifier))
+       (lsp-make-rust-analyzer-inlay-hints-params
+        :text-document (lsp--text-document-identifier))
        (lambda (res)
          (remove-overlays (point-min) (point-max) 'lsp-rust-analyzer-inlay-hint t)
          (dolist (hint res)
-           (-let* (((&hash "range" "label" "kind") hint)
-                   ((beg . end) (lsp--range-to-region range))
-                   (overlay (make-overlay beg end nil 'front-advance 'end-advance)))
+           (-let* (((&rust-analyzer:InlayHint :range :label :kind) hint)
+                   ((&RangeToPoint :start :end) range)
+                   (overlay (make-overlay start end nil 'front-advance 'end-advance)))
              (overlay-put overlay 'lsp-rust-analyzer-inlay-hint t)
              (overlay-put overlay 'evaporate t)
              (cond
-              ((string= kind "TypeHint")
-               (overlay-put overlay 'after-string (propertize (concat ": " label)
-                                                              'font-lock-face 'font-lock-comment-face)))
-              ((string= kind "ParameterHint")
-               (overlay-put overlay 'before-string (propertize (concat label ": ")
+               ((equal kind lsp/rust-analyzer-inlay-hint-kind-type-hint)
+                (overlay-put overlay 'after-string (propertize (concat ": " label)
                                                                'font-lock-face 'font-lock-comment-face)))
-              ((string= kind "ChainingHint")
-               (overlay-put overlay 'after-string (propertize (concat ": " label)
-                                                              'font-lock-face 'font-lock-comment-face)))
-              ))))
+               ((equal kind lsp/rust-analyzer-inlay-hint-kind-param-hint)
+                (overlay-put overlay 'before-string (propertize (concat label ": ")
+                                                                'font-lock-face 'font-lock-comment-face)))
+               ((equal kind lsp/rust-analyzer-inlay-hint-kind-chaining-hint)
+                (overlay-put overlay 'after-string (propertize (concat ": " label)
+                                                               'font-lock-face 'font-lock-comment-face)))
+               ))))
        :mode 'tick))
   nil)
 
@@ -635,14 +637,15 @@ The command should include `--message=format=json` or similar option."
   "Expands the macro call at point recursively."
   (interactive)
   (-if-let (workspace (lsp-find-workspace 'rust-analyzer))
-      (-if-let* ((params (list :textDocument (lsp--text-document-identifier)
-                               :position (lsp--cur-position)))
+      (-if-let* ((params (lsp-make-rust-analyzer-expand-macro-params
+                          :text-document (lsp--text-document-identifier)
+                          :position (lsp--cur-position)))
                  (response (with-lsp-workspace workspace
                              (lsp-send-request (lsp-make-request
                                                 "rust-analyzer/expandMacro"
                                                 params))))
-                 (result (ht-get response "expansion")))
-          (funcall lsp-rust-analyzer-macro-expansion-method result)
+                 ((&rust-analyzer:ExpandedMacro :expansion) response))
+          (funcall lsp-rust-analyzer-macro-expansion-method expansion)
         (message "No macro found at point, or it could not be expanded."))
     (message "rust-analyzer not running.")))
 
@@ -660,13 +663,12 @@ The command should include `--message=format=json` or similar option."
 ;; runnables
 (defvar lsp-rust-analyzer--last-runnable nil)
 
-(defun lsp-rust-analyzer--runnables-params ()
-  (list :textDocument (lsp--text-document-identifier)
-        :position (lsp--cur-position)))
-
 (defun lsp-rust-analyzer--runnables ()
-  (lsp-send-request (lsp-make-request "rust-analyzer/runnables"
-                                      (lsp-rust-analyzer--runnables-params))))
+  (lsp-send-request (lsp-make-request
+                     "rust-analyzer/runnables"
+                     (lsp-make-rust-analyzer-runnables-params
+                      :text-document (lsp--text-document-identifier)
+                      :position? (lsp--cur-position)))))
 
 (defun lsp-rust-analyzer--select-runnable ()
   (lsp--completing-read
@@ -674,14 +676,14 @@ The command should include `--message=format=json` or similar option."
    (if lsp-rust-analyzer--last-runnable
        (cons lsp-rust-analyzer--last-runnable (lsp-rust-analyzer--runnables))
      (lsp-rust-analyzer--runnables))
-   (-lambda ((&hash "label")) label)))
+   (-lambda ((&rust-analyzer:Runnable :label)) label)))
 
 (defun lsp-rust-analyzer-run (runnable)
   (interactive (list (lsp-rust-analyzer--select-runnable)))
-  (-let* (((&hash "env" "bin" "args" "extraArgs" "label") runnable)
-          (compilation-environment (-map (-lambda ((k v)) (concat k "=" v)) (ht-items env))))
+  (-let* (((&rust-analyzer:Runnable :env? :bin? :args :extra-args? :label) runnable)
+          (compilation-environment (lsp-map (lambda (k v) (concat k "=" v)) env?)))
     (compilation-start
-     (string-join (append (list bin) args (when extraArgs '("--")) extraArgs '()) " ")
+     (string-join (append (list bin?) args (when extra-args? '("--")) extra-args? '()) " ")
      ;; cargo-process-mode is nice, but try to work without it...
      (if (functionp 'cargo-process-mode) 'cargo-process-mode nil)
      (lambda (_) (concat "*" label "*")))
