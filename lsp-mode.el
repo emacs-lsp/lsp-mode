@@ -1898,11 +1898,11 @@ WORKSPACE is the workspace that contains the progress token."
 (defvar-local lsp--modeline-code-actions-string nil
   "Holds the current code action string on modeline.")
 
-(declare-function all-the-icons-octicon "ext:all-the-icons")
+(declare-function all-the-icons-octicon "ext:all-the-icons" t t)
 
 (defun lsp--modeline-code-actions-icon ()
   "Build the icon for modeline code actions."
-  (if (featurep 'all-the-icons)
+  (if (require 'all-the-icons nil t)
       (all-the-icons-octicon "light-bulb"
                              :face lsp-modeline-code-actions-face
                              :v-adjust -0.0575)
