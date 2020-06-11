@@ -5628,17 +5628,16 @@ A reference is highlighted only if it is visible in a window."
 
 (defun lsp--semantic-tokens-initialize-workspace (workspace)
   (cl-assert workspace)
-  (let* ((token-capabilities (gethash
-                              "semanticTokensProvider"
-                              (lsp--workspace-server-capabilities workspace)))
-         (legend (gethash "legend" token-capabilities)))
+  (-let* ((token-capabilities (lsp:server-capabilities-semantic-tokens-provider?
+                               (lsp--workspace-server-capabilities workspace)))
+          ((&SemanticTokensOptions :legend) token-capabilities))
     (setf (lsp--workspace-semantic-highlighting-faces workspace)
-          (lsp--build-face-map (gethash "tokenTypes" legend)
+          (lsp--build-face-map (lsp:semantic-tokens-legend-token-types legend)
                                lsp-semantic-token-faces
                                "semantic token"
                                "lsp-semantic-token-faces"))
     (setf (lsp--workspace-semantic-highlighting-modifier-faces workspace)
-          (lsp--build-face-map (gethash "tokenModifiers" legend)
+          (lsp--build-face-map (lsp:semantic-tokens-legend-token-modifiers legend)
                                lsp-semantic-token-modifier-faces
                                "semantic token modifier"
                                "lsp-semantic-token-modifier-faces"))))
@@ -5676,22 +5675,22 @@ A reference is highlighted only if it is visible in a window."
     (if (or (eq nil lsp--semantic-tokens-cache)
             (eq nil faces)
             ;; delay fontification until we have fresh tokens
-            (not (= lsp--cur-version (gethash "documentVersion" lsp--semantic-tokens-cache))))
+            (not (= lsp--cur-version (lsp-get lsp--semantic-tokens-cache :_documentVersion))))
         '(jit-lock-bounds 0 . 0)
       (funcall old-fontify-region beg end loudly)
-      (let* ((inhibit-field-text-motion t)
-             (data (gethash "data" lsp--semantic-tokens-cache))
-             (i0 0)
-             (i-max (1- (length data)))
-             (current-line 1)
-             (line-delta)
-             (column 0)
-             (face)
-             (line-start-pos)
-             (line-min)
-             (line-max-inclusive)
-             (text-property-beg)
-             (text-property-end))
+      (-let* ((inhibit-field-text-motion t)
+              ((&SematicTokensPartialResult :data) lsp--semantic-tokens-cache)
+              (i0 0)
+              (i-max (1- (length data)))
+              (current-line 1)
+              (line-delta)
+              (column 0)
+              (face)
+              (line-start-pos)
+              (line-min)
+              (line-max-inclusive)
+              (text-property-beg)
+              (text-property-end))
         (save-mark-and-excursion
           (save-restriction
             (widen)
@@ -5711,25 +5710,25 @@ A reference is highlighted only if it is visible in a window."
               (forward-line (- current-line line-min))
               (setq line-start-pos (point))
               (cl-loop
-               for i from i0 to i-max by 5 do
-               (setq line-delta (aref data i))
-               (unless (= line-delta 0)
-                 (forward-line line-delta)
-                 (setq line-start-pos (point))
-                 (setq column 0)
-                 (setq current-line (+ current-line line-delta)))
-               (setq column (+ column (aref data (1+ i))))
-               (setq face (aref faces (aref data (+ i 3))))
-               (setq text-property-beg (+ line-start-pos column))
-               (setq text-property-end (+ text-property-beg (aref data (+ i 2))))
-               (when face (put-text-property text-property-beg text-property-end 'face face))
-               (cl-loop for i from 0 to (1- (length modifier-faces)) do
+                 for i from i0 to i-max by 5 do
+                   (setq line-delta (aref data i))
+                   (unless (= line-delta 0)
+                     (forward-line line-delta)
+                     (setq line-start-pos (point))
+                     (setq column 0)
+                     (setq current-line (+ current-line line-delta)))
+                   (setq column (+ column (aref data (1+ i))))
+                   (setq face (aref faces (aref data (+ i 3))))
+                   (setq text-property-beg (+ line-start-pos column))
+                   (setq text-property-end (+ text-property-beg (aref data (+ i 2))))
+                   (when face (put-text-property text-property-beg text-property-end 'face face))
+                   (cl-loop for i from 0 to (1- (length modifier-faces)) do
                         (when (and (aref modifier-faces i)
                                    (> 0 (logand (aref data (+ i 4)) (lsh 1 i))))
                           (add-face-text-property text-property-beg text-property-end
                                                   (aref modifier-faces i))))
-               when (> current-line line-max-inclusive) return nil)))))
-      (let ((token-region (gethash "region" lsp--semantic-tokens-cache)))
+                 when (> current-line line-max-inclusive) return nil)))))
+      (let ((token-region (lsp-get lsp--semantic-tokens-cache :_region)))
         (if token-region
             `(jit-lock-bounds ,(max beg (car token-region)) . ,(min end (cdr token-region)))
           `(jit-lock-bounds ,beg . ,end))))))
@@ -5752,8 +5751,8 @@ A reference is highlighted only if it is visible in a window."
        ,@(if region (list :range (lsp--region-to-range (car region) (cdr region))) '()))
      (lambda (response)
        (setq lsp--semantic-tokens-cache response)
-       (puthash "documentVersion" lsp--cur-version lsp--semantic-tokens-cache)
-       (puthash "region" region lsp--semantic-tokens-cache)
+       (lsp-put lsp--semantic-tokens-cache :_documentVersion lsp--cur-version)
+       (lsp-put lsp--semantic-tokens-cache :_region region)
        (when fontify-immediately (font-lock-flush))
        ;; request full token set to improve fontification speed when scrolling
        (when region (funcall request-full-token-set nil)))
