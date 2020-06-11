@@ -24,11 +24,13 @@
 
 ;;; Code:
 
-(require 'lsp-mode)
 (require 'f)
 (require 'dash)
 (require 's)
 (require 'ht)
+
+(require 'lsp-protocol)
+(require 'lsp-mode)
 
 (defgroup lsp-pwsh nil
   "LSP support for PowerShell, using the PowerShellEditorServices."
@@ -68,14 +70,16 @@ When disabled, the default indentation based code folding is used."
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-pwsh-code-folding-show-last-line t
-  "Shows the last line of a folded section similar to the default VSCode folding style.
+  "Shows the last line of a folded section.
+Similar to the default VSCode folding style.
 When disabled, the entire folded region is hidden."
   :type 'boolean
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-pwsh-code-formatting-preset "Custom"
-  "Sets the codeformatting options to follow the given indent style in a way that is compatible with PowerShell syntax.
+  "Sets the codeformatting options to follow the given indent style.
+Sets in a way that is compatible with PowerShell syntax.
 For more information about the brace styles please refer to https://github.com/PoshCode/PowerShellPracticeAndStyle/issues/81."
   :type
   '(choice
@@ -164,7 +168,7 @@ For more information about the brace styles please refer to https://github.com/P
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-pwsh-developer-editor-services-log-level "Normal"
-  "Sets the logging verbosity level for the PowerShell Editor Services host executable.
+  "Sets the log level for the PowerShell Editor Services host executable.
 Valid values are 'Diagnostic', 'Verbose', 'Normal', 'Warning', and 'Error'"
   :type
   '(choice
@@ -256,25 +260,24 @@ Must not nil.")
 (defun lsp-pwsh--extra-init-params ()
   "Return form describing parameters for language server.")
 
-(defun lsp-pwsh--apply-code-action-edits (action)
+(lsp-defun lsp-pwsh--apply-code-action-edits ((&Command :command :arguments?))
   "Handle ACTION for PowerShell.ApplyCodeActionEdits."
-  (-if-let* ((command (gethash "command" action))
-             ((&hash "StartLineNumber" "EndLineNumber"
-                     "StartColumnNumber" "EndColumnNumber" "Text")
-              (lsp-seq-first (gethash "arguments" action)))
+  (-if-let* (((&pwsh:ScriptRegion :start-line-number :end-line-number
+                                  :start-column-number :end-column-number :text)
+              (lsp-seq-first arguments?))
              (edits `[,(ht ("range" (ht ("start"
-                                         (ht ("line" (- StartLineNumber 1))
-                                             ("character" (- StartColumnNumber 1))))
+                                         (ht ("line" (- start-line-number 1))
+                                             ("character" (- start-column-number 1))))
                                         ("end"
-                                         (ht ("line" (- EndLineNumber 1))
-                                             ("character" (- EndColumnNumber 1))))))
-                           ("newText" Text))]))
+                                         (ht ("line" (- end-line-number 1))
+                                             ("character" (- end-column-number 1))))))
+                           ("newText" text))]))
       (lsp--apply-text-edits edits)
-    (lsp-send-execute-command command (gethash "arguments" action))))
+    (lsp-send-execute-command command arguments?)))
 
-(defun lsp-pwsh--show-code-action-document (action)
+(lsp-defun lsp-pwsh--show-code-action-document ((&Command :arguments?))
   "Handle ACTION for PowerShell.ShowCodeActionDocumentation."
-  (-if-let* ((rule-raw (lsp-seq-first (gethash "arguments" action)))
+  (-if-let* ((rule-raw (lsp-seq-first arguments?))
              (rule-id (if (s-prefix-p "PS" rule-raw) (substring rule-raw 2) rule-raw)))
       (browse-url
        (concat "https://github.com/PowerShell/PSScriptAnalyzer/blob/master/RuleDocumentation/"
@@ -325,7 +328,10 @@ Must not nil.")
   :package-version '(lsp-mode . "6.2"))
 
 (defun lsp-pwsh-setup (_client callback error-callback update)
-  "Downloading PowerShellEditorServices to `lsp-pwsh-dir'.
+  "Downloads PowerShellEditorServices to `lsp-pwsh-dir'.
+CALLBACK is called when the download finish succesfully otherwise
+ERROR-CALLBACK is called.
+UPDATE is non-nil if it is already downloaded.
 FORCED if specified with prefix argument."
 
   (unless (and lsp-pwsh-exe (file-executable-p lsp-pwsh-exe))
