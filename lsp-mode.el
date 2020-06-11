@@ -4662,7 +4662,7 @@ When the completion is incomplete, cache contains value of `incomplete'.")
     (set-marker nil))
   (setq lsp--capf-cache nil))
 
-(lsp-defun lsp--capf-guess-prefix ((&CompletionItem :label :insert-text? :text-edit?) default)
+(lsp-defun lsp--capf-guess-prefix ((item &as &CompletionItem :text-edit?) default)
   "Guess ITEM's prefix start point according to following heuristics:
 - If `textEdit' exists, use insertion range start as prefix start point.
 - Else, find the point before current point that's longest prefix match of
@@ -4670,15 +4670,15 @@ When the completion is incomplete, cache contains value of `incomplete'.")
 When the heuristic fails to find the prefix start point, return DEFAULT value."
   (or (cond
        (text-edit?
-        (car (-some->> text-edit?
-               (lsp:text-edit-range)
-               (lsp--range-to-region))))
-       ((or insert-text? label)
-        (let* ((text (or insert-text? label))
-               (start (max 1 (- (point) (length text))))
-               start-point)
-          (while (and (< start (point)) (not start-point))
-            (when (s-prefix? (buffer-substring-no-properties start (point)) text)
+        (lsp--position-to-point (lsp:range-start (lsp:text-edit-range text-edit?))))
+       (t
+        (-let* (((&CompletionItem :label :insert-text?) item)
+                (text (or insert-text? label))
+                (start (max 1 (- (point) (length text))))
+                (point (point))
+                start-point)
+          (while (and (< start point) (not start-point))
+            (when (string-prefix-p (buffer-substring-no-properties start point) text)
               (setq start-point start))
             (cl-incf start))
           start-point)))
