@@ -4450,15 +4450,16 @@ and the position respectively."
 
 (defvar lsp--capf-cache nil
   "Cached candidates for completion at point function.
-In the form of list (prefix items :lsp-items ...).
+In the form of list (prefix prefix-pos items :lsp-items ...).
 When the completion is incomplete, cache contains value of `incomplete'.")
 
 (defun lsp--capf-clear-cache (&rest _)
   "Clear completion caches."
   (-some-> (and (listp lsp--capf-cache) lsp--capf-cache)
     (cddr)
+    (cdr)
     (plist-get :markers)
-    (cadr)
+    (cl-second)
     (set-marker nil))
   (setq lsp--capf-cache nil))
 
@@ -4496,9 +4497,7 @@ When the heuristic fails to find the prefix start point, return DEFAULT value."
                            'lsp-completion-item item
                            'lsp-completion-start-point start-point
                            'lsp-completion-score score?))
-             it)
-       (-group-by (-partial #'get-text-property 0 'lsp-completion-start-point) it)
-       (sort it (-on #'< (lambda (o) (or (car o) most-positive-fixnum))))))
+             it)))
 
 (cl-defun lsp--capf-filter-candidates (items
                                        &rest plist
@@ -4509,23 +4508,24 @@ We can pass LSP-ITEMS, which will be used when there's no cache.
 Also, additional data to attached to each candidate can be passed via PLIST."
   (let ((filtered-items
          (if items
-             (->> items
-                  (-map (-lambda ((start-point . candidates))
-                          (let ((query (buffer-substring-no-properties start-point (point))))
-                            (--> (lsp--regex-fuzzy query)
-                                 (-keep (lambda (cand)
-                                          (when (string-match it cand)
-                                            (setq cand (copy-sequence cand))
-                                            (put-text-property 0 1 'match-data (match-data) cand)
-                                            cand))
-                                        candidates)
-                                 (-map (lambda (cand)
-                                         (put-text-property
-                                          0 1
-                                          'completion-score (lsp--fuzzy-score query cand) cand)
-                                         cand)
-                                       it)))))
-                  (-flatten-n 1)
+             (->> (let (queries fuz-queries)
+                    (-keep (lambda (cand)
+                             (let* ((start-point (get-text-property 0 'lsp-completion-start-point cand))
+                                    (query (or (plist-get queries start-point)
+                                               (let ((s (buffer-substring-no-properties start-point (point))))
+                                                 (setq queries (plist-put queries start-point s))
+                                                 s)))
+                                    (fuz-query (or (plist-get fuz-queries start-point)
+                                                   (let ((s (lsp--regex-fuzzy query)))
+                                                     (setq fuz-queries
+                                                           (plist-put fuz-queries start-point s))
+                                                     s))))
+                               (when (string-match fuz-query cand)
+                                 (setq cand (copy-sequence cand))
+                                 (put-text-property 0 1 'match-data (match-data) cand)
+                                 (put-text-property 0 1 'completion-score (lsp--fuzzy-score query cand) cand)
+                                 cand)))
+                           items))
                   (-sort (-on #'> (lambda (o)
                                     (or (get-text-property 0 'sort-score o)
                                         (let* ((score (* (or (get-text-property 0 'completion-score o)
@@ -4628,8 +4628,8 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                      (listp lsp--capf-cache)
                      (s-prefix? (car lsp--capf-cache)
                                 (buffer-substring-no-properties bounds-start (point)))
-                     (< (caar (cadr lsp--capf-cache)) (point)))
-                (apply #'lsp--capf-filter-candidates (cl-rest lsp--capf-cache)))
+                     (< (cl-second lsp--capf-cache) (point)))
+                (apply #'lsp--capf-filter-candidates (cddr lsp--capf-cache)))
                (t
                 (-let* ((resp (lsp-request-while-no-input
                                "textDocument/completion"
@@ -4655,12 +4655,13 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                         lsp--capf-cache (cond
                                          ((and done? (not (seq-empty-p items)))
                                           (list (buffer-substring-no-properties bounds-start (point))
+                                                bounds-start
                                                 (lsp--capf-cached-items items)
                                                 :lsp-items nil
                                                 :markers markers
                                                 :prefix prefix))
                                          ((not done?) 'incomplete))
-                        result (lsp--capf-filter-candidates (if done? (cadr lsp--capf-cache))
+                        result (lsp--capf-filter-candidates (if done? (cl-caddr lsp--capf-cache))
                                                             :lsp-items items
                                                             :markers markers
                                                             :prefix prefix))))))))
