@@ -1947,18 +1947,17 @@ WORKSPACE is the workspace that contains the progress token."
       (setq-local global-mode-string (remove '(t (:eval lsp--modeline-code-actions-string)) global-mode-string))
     (progn
       (setq lsp--modeline-code-actions-string (lsp--modeline-build-code-actions-string actions))
-      (add-to-list 'global-mode-string '(t (:eval lsp--modeline-code-actions-string))))))
+      (add-to-list 'global-mode-string '(t (:eval lsp--modeline-code-actions-string)))))
+  (force-mode-line-update))
 
-(defun lsp--modeline-check-code-actions (&optional buffer)
+(defun lsp--modeline-check-code-actions (&rest _)
   "Request code actions to update modeline for given BUFFER."
-  (when (or (not buffer)
-            (eq (current-buffer) buffer))
-    (lsp-request-async
-     "textDocument/codeAction"
-     (lsp--text-document-code-action-params)
-     #'lsp-modeline--update-code-actions
-     :mode 'alive
-     :cancel-token :lsp-modeline-code-actions)))
+  (lsp-request-async
+   "textDocument/codeAction"
+   (lsp--text-document-code-action-params)
+   #'lsp-modeline--update-code-actions
+   :mode 'tick
+   :cancel-token :lsp-modeline-code-actions))
 
 (define-minor-mode lsp-modeline-code-actions-mode
   "Toggle code actions on modeline."
