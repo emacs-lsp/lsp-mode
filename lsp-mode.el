@@ -6889,7 +6889,7 @@ returns the command to execute."
       (add-to-list 'company-backends 'company-lsp)
       (setq-local company-backends (remove 'company-capf company-backends))))
 
-   ((and (fboundp 'company-mode))
+   ((and (fboundp 'company-mode) lsp-enable-completion-at-point)
     (company-mode 1)
     (add-to-list 'company-backends 'company-capf)))
 
