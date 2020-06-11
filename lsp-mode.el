@@ -4409,11 +4409,6 @@ and the position respectively."
 
 (defalias 'lsp--cur-line-diagnotics 'lsp-cur-line-diagnostics)
 
-(defconst lsp--completion-trigger-kinds
-  `((invoked . 1)
-    (character . 2)
-    (incomplete . 3)))
-
 (defun lsp--make-completion-item (item &rest plist)
   "Make completion item from lsp ITEM and PLIST."
   (-let (((&CompletionItem :label
@@ -4592,15 +4587,17 @@ Also, additional data to attached to each candidate can be passed via PLIST."
   "Get completion context with provided TRIGGER-CHARACTERS."
   (let* (trigger-char
          (trigger-kind (cond
-                        ((setq trigger-char (lsp--looking-back-trigger-characterp
-                                             trigger-characters))
-                         'character)
-                        ((equal lsp--capf-cache 'incomplete) 'incomplete)
-                        (t 'invoked))))
-    (ht<-alist
-     (append
-      `(("triggerKind" . ,(alist-get trigger-kind lsp--completion-trigger-kinds)))
-      (when trigger-char `(("triggerCharacter" . ,trigger-char)))))))
+                         ((setq trigger-char (lsp--looking-back-trigger-characterp
+                                              trigger-characters))
+                          lsp/completion-trigger-kind-trigger-character)
+                         ((equal lsp--capf-cache 'incomplete)
+                          lsp/completion-trigger-kind-trigger-for-incomplete-completions)
+                         (t lsp/completion-trigger-kind-invoked))))
+    (apply #'lsp-make-completion-context
+           (nconc
+            `(:trigger-kind ,trigger-kind)
+            (when trigger-char
+              `(:trigger-character? ,trigger-char))))))
 
 (defun lsp-completion-at-point ()
   "Get lsp completions."
