@@ -40,7 +40,7 @@
                                          (list 'defconst (intern (format "lsp/%s-%s"
                                                                          (s-dashed-words (substring (symbol-name type) 1))
                                                                          (s-dashed-words  value)))
-                                               index))
+                                               (1+ index)))
                                        enum)))
               (apply #'nconc))
 
