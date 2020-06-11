@@ -63,7 +63,7 @@
                         (lsp-def-request-async "textDocument/hover"
                                                (lsp--text-document-position-params)) ))
       (deferred:nextc (lambda (contents)
-                        (should (hash-table-p contents))))
+                        (should (lsp-hover? contents))))
       (deferred:sync!))
   (kill-buffer)
   (lsp-workspace-folders-remove (f-join lsp-test-location "fixtures")))
