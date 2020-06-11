@@ -1934,7 +1934,7 @@ WORKSPACE is the workspace that contains the progress token."
                                        (interactive)
                                        (if single-action?
                                            (lsp-execute-code-action (lsp-seq-first actions))
-                                         (call-interactively #'lsp-execute-code-action)))))))
+                                         (lsp-execute-code-action (lsp--select-action actions))))))))
 
 (defun lsp-modeline--update-code-actions (actions)
   "Update modeline with new code ACTIONS."
@@ -1965,7 +1965,6 @@ WORKSPACE is the workspace that contains the progress token."
   :group 'lsp-mode
   :global nil
   :lighter ""
-  :init-value nil
   (cond
    (lsp-modeline-code-actions-mode
     (add-hook 'lsp-on-idle-hook 'lsp--modeline-check-code-actions nil t))
@@ -2630,6 +2629,7 @@ BINDINGS is a list of (key def cond)."
       "Tl" lsp-lens-mode (lsp-feature? "textDocument/codeLens")
       "TL" lsp-toggle-trace-io t
       "Th" lsp-toggle-symbol-highlight (lsp-feature? "textDocument/documentHighlight")
+      "Ta" lsp-modeline-code-actions-mode (lsp-feature? "textDocument/codeAction")
       "TS" lsp-ui-sideline-mode (featurep 'lsp-ui-sideline)
       "Td" lsp-ui-doc-mode (featurep 'lsp-ui-doc)
       "Ts" lsp-toggle-signature-auto-activate (lsp-feature? "textDocument/signatureHelp")
@@ -2711,6 +2711,7 @@ active `major-mode', or for all major modes when ALL-MODES is t."
        "T h" "toggle highlighting"
        "T L" "toggle log io"
        "T s" "toggle signature"
+       "T a" "toggle modeline code actions"
        "T S" "toggle sideline"
        "T d" "toggle documentation popup"
        "T p" "toggle signature help"
@@ -2816,7 +2817,8 @@ active `major-mode', or for all major modes when ALL-MODES is t."
       ["Add" lsp-workspace-folders-add]
       ["Remove" lsp-workspace-folders-remove]
       ["Open" lsp-workspace-folders-open])
-     ["Toggle Lenses" lsp-lens-mode]))
+     ["Toggle Lenses" lsp-lens-mode]
+     ["Toggle modeline code actions" lsp-modeline-code-actions-mode]))
   "Menu for lsp-mode.")
 
 (defun lsp-mode-line ()
@@ -6954,6 +6956,10 @@ returns the command to execute."
   "Autoconfigure `company', `flycheck', `lsp-ui',  if they are installed."
   (when (functionp 'lsp-ui-mode)
     (lsp-ui-mode))
+
+  (when (and lsp-modeline-code-actions-enable
+             (lsp--capability "codeActionProvider"))
+    (lsp-modeline-code-actions-mode 1))
 
   (cond
    ((or
