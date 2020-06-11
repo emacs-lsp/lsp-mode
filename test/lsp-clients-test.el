@@ -95,13 +95,24 @@
 
 (ert-deftest lsp-clients-extract-signature-from-clangd-on-hover ()
   (should (string= (lsp-clients-extract-signature-on-hover
-                         #s(hash-table size 30 test equal data ("value" "Sample\n ```cpp\n// In Function.hpp\nvoid function(int n);\n```")) 'clangd) "void function(int n);"))
+                    (lsp-make-markup-content :kind lsp/markup-kind-markdown
+                                             :value "Sample\n ```cpp\n// In Function.hpp\nvoid function(int n);\n```")
+                    'clangd)
+                   "void function(int n);"))
   (should (string= (lsp-clients-extract-signature-on-hover
-                         #s(hash-table size 30 test equal data ("value" "Sample\n ```cpp\nvoid function(int n);\n```")) 'clangd) "void function(int n);"))
+                    (lsp-make-markup-content :kind lsp/markup-kind-markdown
+                                             :value "Sample\n ```cpp\nvoid function(int n);\n```")
+                    'clangd)
+                   "void function(int n);"))
   (should (string= (lsp-clients-extract-signature-on-hover
-                         #s(hash-table size 30 test equal data ("value" "Sample\n ```cpp\n   void function(int n);\n```")) 'clangd) "void function(int n);"))
+                    (lsp-make-markup-content :kind lsp/markup-kind-markdown
+                                             :value "Sample\n ```cpp\n   void function(int n);\n```")
+                    'clangd)
+                   "void function(int n);"))
   (should-error (lsp-clients-extract-signature-on-hover
-                 #s(hash-table size 30 test equal data ("value" "Wrong")) 'clangd)))
+                 (lsp-make-markup-content :kind nil
+                                          :value "Wrong")
+                 'clangd)))
 
 (ert-deftest lsp-clients-join-region ()
   (with-temp-buffer
