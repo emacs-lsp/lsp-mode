@@ -37,7 +37,7 @@
 (defun lsp-keyword->string (keyword)
   (substring (symbol-name keyword) 1))
 
-(defvar lsp-use-plists nil)
+(defvar lsp-use-plists t)
 
 (defmacro lsp-interface (&rest interfaces)
   "Generate LSP bindings from INTERFACES triplet.
@@ -140,30 +140,29 @@ Example usage with `dash`.
        (apply #'append)
        (cl-list* 'progn)))
 
-(eval-when-compile
-  (if lsp-use-plists
-      (progn
-        (defun lsp-get (from key)
-          (plist-get from key))
-        (defun lsp-put (where key value)
-          (plist-put where key value))
-        (defun lsp-map (fn value)
-          (-map (-lambda ((k v))
-                  (funcall fn (lsp-keyword->string k) v))
-                (-partition 2 value )))
-        (defalias 'lsp-merge 'append)
-        (defalias 'lsp-empty? 'null))
-    (defun lsp-get (from key)
-      (when from
-        (gethash (lsp-keyword->string key) from)))
-    (defun lsp-put (where key value)
-      (prog1 where
-        (puthash (lsp-keyword->string key) value where)))
-    (defun lsp-map (fn value)
-      (when value
-        (maphash fn value)))
-    (defalias 'lsp-merge 'ht-merge)
-    (defalias 'lsp-empty? 'ht-empty?)))
+(if lsp-use-plists
+    (progn
+      (defun lsp-get (from key)
+        (plist-get from key))
+      (defun lsp-put (where key value)
+        (plist-put where key value))
+      (defun lsp-map (fn value)
+        (-map (-lambda ((k v))
+                (funcall fn (lsp-keyword->string k) v))
+              (-partition 2 value )))
+      (defalias 'lsp-merge 'append)
+      (defalias 'lsp-empty? 'null))
+  (defun lsp-get (from key)
+    (when from
+      (gethash (lsp-keyword->string key) from)))
+  (defun lsp-put (where key value)
+    (prog1 where
+      (puthash (lsp-keyword->string key) value where)))
+  (defun lsp-map (fn value)
+    (when value
+      (maphash fn value)))
+  (defalias 'lsp-merge 'ht-merge)
+  (defalias 'lsp-empty? 'ht-empty?))
 
 (defmacro lsp-defun (name match-form &rest body)
   "Define NAME as a function which destructures its input as MATCH-FORM and executes BODY.
@@ -222,6 +221,9 @@ See `-let' for a description of the destructuring mechanism."
 
 
 ;; manually defined interfaces
+(defconst lsp/markup-kind-plain-text "plaintext")
+(defconst lsp/markup-kind-markdown "markdown")
+
 (lsp-interface (JSONResponse (:params :id :method :result) nil)
                (JSONResponseError (:error) nil)
                (JSONMessage nil (:params :id :method :result :error))
