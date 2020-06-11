@@ -4835,13 +4835,13 @@ Others: TRIGGER-CHARS"
 
 (defun lsp--sort-completions (completions)
   "Sort COMPLETIONS."
-  (-sort
+  (sort
+   completions
    (-lambda ((&CompletionItem :sort-text? sort-text-left :label label-left)
              (&CompletionItem :sort-text? sort-text-right :label label-right))
      (if (equal sort-text-left sort-text-right)
          (string-lessp label-left label-right)
-       (string-lessp sort-text-left sort-text-right)))
-   completions))
+       (string-lessp sort-text-left sort-text-right)))))
 
 (defun lsp--resolve-completion (item)
   "Resolve completion ITEM."
