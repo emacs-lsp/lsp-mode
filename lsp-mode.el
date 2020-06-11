@@ -650,6 +650,26 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
+(defcustom lsp-modeline-code-actions-enable nil
+  "Wheter to show code actions on modeline."
+  :type 'boolean
+  :group 'lsp-mode)
+
+(defcustom lsp-modeline-code-actions-delay 0.2
+  "Number of seconds to wait before checking for code actions to show on modeline."
+  :type 'number
+  :group 'lsp-mode)
+
+(defcustom lsp-modeline-code-actions-kind-regex "quickfix.*\\|refactor.*"
+  "Regex for the code actions kinds to show in the modeline."
+  :type 'string
+  :group 'lsp-mode)
+
+(defface lsp-modeline-code-actions-face
+  '((t :foreground "cyan2"))
+  "Face used to highlight code action text on modeline."
+  :group 'lsp-faces)
+
 (defcustom lsp-after-diagnostics-hook nil
   "Hooks to run after diagnostics are received.
 Note: it runs only if the receiving buffer is open. Use
@@ -1876,6 +1896,101 @@ WORKSPACE is the workspace that contains the progress token."
                             (not (-contains? global-mode-string status)))
                        (cons status global-mode-string))
                       (t (remove status global-mode-string))))))
+
+
+;; code actions modeline
+
+(defvar-local lsp--modeline-code-actions-string nil
+  "Holds the current code action string on modeline.")
+
+(declare-function all-the-icons-octicon "ext:all-the-icons")
+
+(defun lsp--modeline-code-actions-icon ()
+  "Build the icon for modeline code actions."
+  (if (featurep 'all-the-icons)
+      (all-the-icons-octicon "light-bulb"
+                             :face 'lsp-modeline-code-actions-face
+                             :v-adjust -0.0575)
+    (propertize "💡" 'face 'lsp-modeline-code-actions-face)))
+
+(defun lsp--modeline-build-code-actions-string (actions)
+  "Build the string to be presented on modeline for code ACTIONS."
+  (-let* ((icon (lsp--modeline-code-actions-icon))
+          (first-action-string (propertize (->> actions
+                                                lsp-seq-first
+                                                (gethash "title")
+                                                (replace-regexp-in-string "[\n\t ]+" " "))
+                                           'face 'lsp-modeline-code-actions-face))
+          (single-action? (= (length actions) 1))
+          (string (if single-action?
+                      (format " %s %s " icon first-action-string)
+                    (format " %s %s %s " icon first-action-string
+                            (propertize (format "(%d more)" (seq-length actions))
+                                        'display `((height 0.9))
+                                        'face 'lsp-modeline-code-actions-face)))))
+    (propertize string
+                'help-echo (concat "Apply code actions (s-l a a)\nmouse-1: "
+                                   (if single-action?
+                                       first-action-string
+                                     "select from multiple code actions"))
+                'mouse-face 'mode-line-highlight
+                'local-map (make-mode-line-mouse-map
+                            'mouse-1 (lambda ()
+                                       (interactive)
+                                       (if single-action?
+                                           (lsp-execute-code-action (lsp-seq-first actions))
+                                         (call-interactively #'lsp-execute-code-action)))))))
+
+(defun lsp-modeline--update-code-actions (actions)
+  "Update modeline with new code ACTIONS."
+  (when lsp-modeline-code-actions-kind-regex
+    (setq actions (seq-filter (-lambda ((&hash "kind"))
+                                (or (not kind)
+                                    (s-match lsp-modeline-code-actions-kind-regex kind)))
+                              actions)))
+  (if (seq-empty-p actions)
+      (setq-local global-mode-string (remove '(t (:eval lsp--modeline-code-actions-string)) global-mode-string))
+    (progn
+      (setq lsp--modeline-code-actions-string (lsp--modeline-build-code-actions-string actions))
+      (add-to-list 'global-mode-string '(t (:eval lsp--modeline-code-actions-string))))))
+
+(defun lsp--modeline-request-code-actions ()
+  "Requests for code actions to update modeline."
+  (lsp-request-async
+   "textDocument/codeAction"
+   (lsp--text-document-code-action-params)
+   #'lsp-modeline--update-code-actions
+   :mode 'alive
+   :cancel-token :lsp-modeline-code-actions))
+
+(defvar-local lsp--modeline-code-actions--timer nil)
+
+(defun lsp--modeline-check-code-actions ()
+  "Check for code actions showing it on modeline."
+  (if t
+      (progn
+        (when lsp--modeline-code-actions--timer
+          (cancel-timer lsp--modeline-code-actions--timer))
+        (let ((buf (current-buffer)))
+          (setq lsp--modeline-code-actions--timer
+                (run-with-idle-timer lsp-modeline-code-actions-delay
+                                     nil
+                                     (lambda ()
+                                       ;; check for code actions only if current-buffer is the same.
+                                       (when (equal buf (current-buffer))
+                                         (lsp--modeline-request-code-actions)))))))))
+
+(define-minor-mode lsp-modeline-code-actions-mode
+  "Toggle code actions on modeline."
+  :group 'lsp-mode
+  :global nil
+  :lighter ""
+  :init-value lsp-modeline-code-actions-enable
+  (cond
+   (lsp-modeline-code-actions-mode
+    (add-hook 'post-command-hook 'lsp--modeline-check-code-actions nil t))
+   (t
+    (remove-hook 'post-command-hook 'lsp--modeline-check-code-actions t))))
 
 
 
@@ -5560,7 +5675,7 @@ It will show up only if current point has signature help."
 
 (lsp-defun lsp-execute-code-action ((action &as &CodeAction :command? :edit?))
   "Execute code action ACTION.
-If ACTION is not set it will be selected from `lsp-code-actions'."
+If ACTION is not set it will be selected from `lsp-code-actions-at-point'."
   (interactive (list (lsp--select-action (lsp-code-actions-at-point))))
   (when edit?
     (lsp--apply-workspace-edit edit?))
