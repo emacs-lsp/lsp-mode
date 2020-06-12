@@ -3662,7 +3662,7 @@ in that particular folder."
 
 (defun lsp--update-signature-help-hook (&optional cleanup?)
   (let ((signature-help-handler
-         (-when-let ((&SignatureHelpOptions :trigger-characters?)
+         (-when-let ((&SignatureHelpOptions? :trigger-characters?)
                      (lsp--capability :signatureHelpProvider))
            (lambda ()
              (lsp--maybe-enable-signature-help trigger-characters?)))))
@@ -4730,7 +4730,7 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                                "textDocument/completion"
                                (plist-put (lsp--text-document-position-params)
                                           :context (lsp--capf-get-context trigger-chars))))
-                        (completed (or (vectorp resp)
+                        (completed (or (and resp (not (lsp-completion-list? resp)))
                                        (not (lsp:completion-list-is-incomplete resp))))
                         (items (--> (cond
                                      ((lsp-completion-list? resp) (lsp:completion-list-items resp))
