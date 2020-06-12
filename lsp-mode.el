@@ -8313,12 +8313,12 @@ See https://github.com/emacs-lsp/lsp-mode."
   (lsp--validate
    "Checking for Native JSON support" (functionp 'json-serialize)
    "Checking emacs version has `read-process-output-max'" (boundp 'read-process-output-max)
-   "Using company-capf: " (-contains? company-backends 'company-capf)
+   "Using company-capf" (-contains? company-backends 'company-capf)
    "Check emacs supports `read-process-output-max'" (boundp 'read-process-output-max)
    "Check `read-process-output-max' default has been changed from 4k"
    (and (boundp 'read-process-output-max)
         (> read-process-output-max 4096))
-   "Byte compiled against native json (recompile emacs if failing.)"
+   "Byte compiled against Native JSON (recompile lsp-mode if failing when Native JSON available)"
    (condition-case _err
        (progn (lsp--make-message  (list "a" "b"))
               nil)
