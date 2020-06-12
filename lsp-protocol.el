@@ -128,7 +128,7 @@ Example usage with `dash`.
                                    (object)
                                  ,(if lsp-use-plists
                                       `(plist-get object ,name)
-                                    `(when object (gethash ,(lsp-keyword->string name) object))))
+                                    `(when (ht? object) (gethash ,(lsp-keyword->string name) object))))
                               `(defun ,(intern (format "lsp:set-%s-%s"
                                                        (s-dashed-words (symbol-name interface))
                                                        (substring (symbol-name label) 1)))
