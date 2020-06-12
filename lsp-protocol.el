@@ -32,9 +32,11 @@
 (require 's)
 
 (defun lsp-keyword->symbol (keyword)
+  "Convert a KEYWORD to symbol."
   (intern (substring (symbol-name keyword) 1)))
 
 (defun lsp-keyword->string (keyword)
+  "Convert a KEYWORD to string."
   (substring (symbol-name keyword) 1))
 
 (defvar lsp-use-plists t)
@@ -165,7 +167,8 @@ Example usage with `dash`.
   (defalias 'lsp-empty? 'ht-empty?))
 
 (defmacro lsp-defun (name match-form &rest body)
-  "Define NAME as a function which destructures its input as MATCH-FORM and executes BODY.
+  "Define a function named NAME.
+The function destructures its input as MATCH-FORM then executes BODY.
 
 Note that you have to enclose the MATCH-FORM in a pair of parens,
 such that:
