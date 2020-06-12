@@ -1914,10 +1914,11 @@ WORKSPACE is the workspace that contains the progress token."
 (defun lsp--modeline-build-code-actions-string (actions)
   "Build the string to be presented on modeline for code ACTIONS."
   (-let* ((icon (lsp--modeline-code-actions-icon))
-          (first-action-string (propertize (->> actions
-                                                lsp-seq-first
-                                                lsp:code-action-title
-                                                (replace-regexp-in-string "[\n\t ]+" " "))
+          (first-action-string (propertize (or (-first #'lsp:code-action-is-preferred? actions)
+                                               (->> actions
+                                                    lsp-seq-first
+                                                    lsp:code-action-title
+                                                    (replace-regexp-in-string "[\n\t ]+" " ")))
                                            'face lsp-modeline-code-actions-face))
           (single-action? (= (length actions) 1))
           (keybinding (-some->> #'lsp-execute-code-action
