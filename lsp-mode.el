@@ -1993,6 +1993,8 @@ WORKSPACE is the workspace that contains the progress token."
   "Holds the current breadcrumb string on headerline.")
 
 (declare-function all-the-icons-material "ext:all-the-icons" t t)
+(declare-function treemacs-get-icon-value "ext:treemacs" t t)
+(declare-function lsp-treemacs-symbol-kind->icon "ext:lsp-treemacs" t t)
 
 (defun lsp--headerline-breadcrumb-arrow-icon ()
   "Build the arrow icon for headerline breadcrumb."
