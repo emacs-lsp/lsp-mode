@@ -6,7 +6,8 @@ description: Language Server Protocol support with multiples languages support f
 [![](https://melpa.org/packages/lsp-mode-badge.svg)](https://melpa.org/#/lsp-mode)
 [![](https://stable.melpa.org/packages/lsp-mode-badge.svg)](https://stable.melpa.org/#/lsp-mode)
 [![](https://badges.gitter.im/emacs-lsp/lsp-mode.svg)](https://gitter.im/emacs-lsp/lsp-mode)
-[![](https://travis-ci.org/emacs-lsp/lsp-mode.svg?branch=master>)](https://travis-ci.org/emacs-lsp/lsp-mode)
+[![](https://github.com/ibizaman/lsp-mode/workflows/CI/badge.svg)](https://github.com/ibizaman/lsp-mode/actions?query=workflow%3ACI)
+
 
 <img src="examples/logo.png" width="240" align="right">
 
