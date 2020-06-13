@@ -5176,7 +5176,9 @@ Stolen from `org-copy-visible'."
     (while (re-search-forward
             (rx (or
                  (seq bol (+ "-") eol)
-                 (seq "\* \* \*" eol)))
+                 (seq "\* \* \*" eol)
+                 (seq "\-\-\-" eol)
+                 (seq "\_\_\_" eol)))
             nil t)
       (replace-match ""))
 
