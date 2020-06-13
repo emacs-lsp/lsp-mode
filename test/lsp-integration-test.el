@@ -72,20 +72,22 @@
   `(deferred:nextc ,d (lambda (result)
                         ,@body)))
 
-(defmacro lsp-with-pyls (&rest body)
-  `(progn
-     (lsp-workspace-folders-add (f-join lsp-test-location "fixtures"))
-     (find-file (f-join lsp-test-location "fixtures/pyls/test.py"))
-     (lsp)
-     ,@body
+(defmacro lsp-with-mode (mode file &rest body)
+  (let ((fullfile (format "fixtures/%s/%s" mode file)))
+	`(progn
+	   (lsp-workspace-folders-add (f-join lsp-test-location "fixtures"))
+	   (find-file (f-join lsp-test-location ,fullfile))
+	   (lsp)
+	   ,@body
 
-     (find-file (f-join lsp-test-location "fixtures/pyls/test.py"))
-     (save-buffer)
-     (kill-buffer)
-     (lsp-workspace-folders-remove (f-join lsp-test-location "fixtures"))))
+	   (find-file (f-join lsp-test-location ,fullfile))
+	   (save-buffer)
+	   (kill-buffer)
+	   (lsp-workspace-folders-remove (f-join lsp-test-location "fixtures")))))
 
-(ert-deftest lsp-text-document-hover-request-tick ()
-  (lsp-with-pyls
+(ert-deftest lsp-pyls-text-document-hover-request-tick ()
+  (lsp-with-mode
+   "pyls" "test.py"
    (-> (lsp-test-wait
         (eq 'initialized (lsp--workspace-status
                           (cl-first (lsp-workspaces)))))
@@ -102,8 +104,9 @@
        (deferred::nextc (should (equal result :timeout)))
        (deferred:sync!))))
 
-(ert-deftest lsp-test-current-buffer-mode ()
-  (lsp-with-pyls
+(ert-deftest lsp-pyls-test-current-buffer-mode ()
+  (lsp-with-mode
+   "pyls" "test.py"
    (-> (lsp-test-wait
         (eq 'initialized (lsp--workspace-status
                           (cl-first (lsp-workspaces)))))
@@ -123,8 +126,9 @@
        (deferred::nextc (should (equal result :timeout)))
        (deferred:sync!))))
 
-(ert-deftest lsp-test-current-buffer-mode ()
-  (lsp-with-pyls
+(ert-deftest lsp-pyls-test-current-buffer-mode ()
+  (lsp-with-mode
+   "pyls" "test.py"
    (-> (lsp-test-wait
         (eq 'initialized (lsp--workspace-status
                           (cl-first (lsp-workspaces)))))
@@ -140,8 +144,9 @@
        (deferred::nextc (should (equal result :timeout)))
        (deferred:sync!))))
 
-(ert-deftest lsp-test-current-buffer-mode ()
-  (lsp-with-pyls
+(ert-deftest lsp-pyls-test-current-buffer-mode ()
+  (lsp-with-mode
+   "pyls" "test.py"
    (-> (lsp-test-wait
         (eq 'initialized (lsp--workspace-status
                           (cl-first (lsp-workspaces)))))
