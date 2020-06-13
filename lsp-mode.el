@@ -665,6 +665,21 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'face
   :group 'lsp-faces)
 
+(defcustom lsp-headerline-breadcrumb-enable t
+  "Wheter to enable breadcrumb on headerline."
+  :type 'boolean
+  :group 'lsp-mode)
+
+(defcustom lsp-headerline-breadcrumb-face 'font-lock-doc-face
+  "Face used on breadcrumb text on modeline."
+  :type 'face
+  :group 'lsp-faces)
+
+(defface lsp-headerline-breadcrumb-deprecated-face '((t :inherit font-lock-doc-face
+                                                        :strike-through t))
+  "Face used on breadcrumb deprecated text on modeline."
+  :group 'lsp-faces)
+
 (defcustom lsp-after-diagnostics-hook nil
   "Hooks to run after diagnostics are received.
 Note: it runs only if the receiving buffer is open. Use
@@ -1983,8 +1998,8 @@ WORKSPACE is the workspace that contains the progress token."
   "Build the arrow icon for headerline breadcrumb."
   (if (require 'all-the-icons nil t)
       (all-the-icons-material "chevron_right"
-                             :face font-lock-doc-face)
-    (propertize "›" 'face 'font-lock-doc-face)))
+                             :face lsp-headerline-breadcrumb-face)
+    (propertize "›" 'face lsp-headerline-breadcrumb-face)))
 
 (lsp-defun lsp--headerline-breadcrumb-symbol-icon ((&DocumentSymbol :kind))
   "Build the SYMBOL icon for headerline breadcrumb."
@@ -1994,9 +2009,13 @@ WORKSPACE is the workspace that contains the progress token."
 (defun lsp--headerline-build-string (symbols-hierarchy)
   "Build the header-line from SYMBOLS-HIERARCHY."
   (seq-reduce (lambda (last-symbol-name symbol-to-append)
-                (let ((symbol2-name (propertize (lsp:document-symbol-name symbol-to-append) 'font-lock-face font-lock-doc-face))
-                      (arrow-icon (lsp--headerline-breadcrumb-arrow-icon))
-                      (symbol2-icon (lsp--headerline-breadcrumb-symbol-icon symbol-to-append)))
+                (let ((symbol2-name (if (lsp:document-symbol-deprecated? symbol-to-append)
+                                        (propertize (lsp:document-symbol-name symbol-to-append)
+                                                    'font-lock-face 'lsp-headerline-breadcrumb-deprecated-face)
+                                      (propertize (lsp:document-symbol-name symbol-to-append)
+                                                  'font-lock-face lsp-headerline-breadcrumb-face)))
+                      (symbol2-icon (lsp--headerline-breadcrumb-symbol-icon symbol-to-append))
+                      (arrow-icon (lsp--headerline-breadcrumb-arrow-icon)))
                   (format "%s %s %s"
                           last-symbol-name
                           arrow-icon
@@ -7046,7 +7065,7 @@ returns the command to execute."
              (lsp--capability "codeActionProvider"))
     (lsp-modeline-code-actions-mode 1))
 
-  (when (and lsp-headerline-breadcrumb-mode
+  (when (and lsp-headerline-breadcrumb-enable
              (lsp--capability "documentSymbolProvider"))
     (lsp-headerline-breadcrumb-mode 1))
 
