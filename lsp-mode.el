@@ -8003,7 +8003,7 @@ The server(s) will be started in the buffer when it has finished."
                         (lsp--filter-clients (-andfn #'lsp--matching-clients?
                                                      (-not #'lsp--server-binary-present?)))))
         (lsp--warn "The following servers support current file but do not have automatic installation configuration: %s
-You may find the installation instructions at https://github.com/emacs-lsp/lsp-mode/#supported-languages.
+You may find the installation instructions at https://emacs-lsp.github.io/lsp-mode/page/languages.
 (If you have already installed the server check *lsp-log*)."
                    (mapconcat (lambda (client)
                                 (symbol-name (lsp--client-server-id client)))
