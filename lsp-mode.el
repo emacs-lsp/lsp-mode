@@ -1292,6 +1292,13 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
                                       def inherit-input-method)))
     (cdr (assoc completion col))))
 
+(defmacro lsp--while-no-input (&rest body)
+  "Run BODY and return value while there's no input.
+If it's interrupt by input, return nil.
+BODY should never return `t' value."
+  `(let ((re (while-no-input ,@body)))
+     (unless (booleanp re) re)))
+
 ;; A ‘lsp--client’ object describes the client-side behavior of a language
 ;; server.  It is used to start individual server processes, each of which is
 ;; represented by a ‘lsp--workspace’ object.  Client objects are normally
@@ -4701,44 +4708,43 @@ When the heuristic fails to find the prefix start point, return DEFAULT value."
 (cl-defun lsp--capf-filter-candidates (items
                                        &rest plist
                                        &key lsp-items
-                                       &allow-other-keys)
+                                         &allow-other-keys)
   "List all possible completions in cached ITEMS with their prefixes.
 We can pass LSP-ITEMS, which will be used when there's no cache.
 Also, additional data to attached to each candidate can be passed via PLIST."
-  (let ((res (while-no-input
-               (->>
-                (if items
-                    (->>
-                     (let (queries fuz-queries)
-                       (-keep (lambda (cand)
-                                (let* ((start-point (get-text-property 0 'lsp-completion-start-point cand))
-                                       (query (or (plist-get queries start-point)
-                                                  (let ((s (buffer-substring-no-properties
-                                                            start-point (point))))
-                                                    (setq queries (plist-put queries start-point s))
-                                                    s)))
-                                       (fuz-query (or (plist-get fuz-queries start-point)
-                                                      (let ((s (lsp--regex-fuzzy query)))
-                                                        (setq fuz-queries
-                                                              (plist-put fuz-queries start-point s))
-                                                        s))))
-                                  (when (string-match fuz-query cand)
-                                    (put-text-property 0 1 'match-data (match-data) cand)
-                                    (put-text-property 0 1 'sort-score
-                                                       (* (or (lsp--fuzzy-score query cand) 0.00001)
-                                                          (or (get-text-property 0 'lsp-completion-score cand)
-                                                              0.001))
-                                                       cand)
-                                    cand)))
-                              items))
-                     (-sort (lambda (o1 o2)
-                              (> (get-text-property 0 'sort-score o1)
-                                 (get-text-property 0 'sort-score o2))))
-                     ;; TODO: pass additional function to sort the candidates
-                     (-map (-partial #'get-text-property 0 'lsp-completion-item)))
-                  lsp-items)
-                (-map (lambda (item) (apply #'lsp--make-completion-item item plist)))))))
-    (unless (booleanp res) res)))
+  (lsp--while-no-input
+   (->>
+    (if items
+        (->>
+         (let (queries fuz-queries)
+           (-keep (lambda (cand)
+                    (let* ((start-point (get-text-property 0 'lsp-completion-start-point cand))
+                           (query (or (plist-get queries start-point)
+                                      (let ((s (buffer-substring-no-properties
+                                                start-point (point))))
+                                        (setq queries (plist-put queries start-point s))
+                                        s)))
+                           (fuz-query (or (plist-get fuz-queries start-point)
+                                          (let ((s (lsp--regex-fuzzy query)))
+                                            (setq fuz-queries
+                                                  (plist-put fuz-queries start-point s))
+                                            s))))
+                      (when (string-match fuz-query cand)
+                        (put-text-property 0 1 'match-data (match-data) cand)
+                        (put-text-property 0 1 'sort-score
+                                           (* (or (lsp--fuzzy-score query cand) 0.00001)
+                                              (or (get-text-property 0 'lsp-completion-score cand)
+                                                  0.001))
+                                           cand)
+                        cand)))
+                  items))
+         (-sort (lambda (o1 o2)
+                  (> (get-text-property 0 'sort-score o1)
+                     (get-text-property 0 'sort-score o2))))
+         ;; TODO: pass additional function to sort the candidates
+         (-map (-partial #'get-text-property 0 'lsp-completion-item)))
+      lsp-items)
+    (-map (lambda (item) (apply #'lsp--make-completion-item item plist))))))
 
 (defun lsp--capf-company-match (candidate)
   "Return highlights of typed prefix inside CANDIDATE."
@@ -4840,18 +4846,19 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                                           :context (lsp--capf-get-context trigger-chars))))
                         (completed (or (and resp (not (lsp-completion-list? resp)))
                                        (not (lsp:completion-list-is-incomplete resp))))
-                        (items (--> (cond
-                                     ((lsp-completion-list? resp) (lsp:completion-list-items resp))
-                                     (t resp))
-                                    (if (or completed
-                                            (seq-some #'lsp:completion-item-sort-text? it))
-                                        (lsp--sort-completions it)
-                                      it)
-                                    (-map (lambda (item)
-                                            (lsp-put item
-                                                     :_emacsStartPoint
-                                                     (lsp--capf-guess-prefix item bounds-start)))
-                                          it)))
+                        (items (lsp--while-no-input
+                                (--> (cond
+                                       ((lsp-completion-list? resp) (lsp:completion-list-items resp))
+                                       (t resp))
+                                     (if (or completed
+                                             (seq-some #'lsp:completion-item-sort-text? it))
+                                         (lsp--sort-completions it)
+                                       it)
+                                     (-map (lambda (item)
+                                             (lsp-put item
+                                                      :_emacsStartPoint
+                                                      (lsp--capf-guess-prefix item bounds-start)))
+                                           it))))
                         (markers (list bounds-start (copy-marker (point) t)))
                         (prefix (buffer-substring-no-properties bounds-start (point))))
                   (setf done? completed
