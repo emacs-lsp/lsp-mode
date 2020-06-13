@@ -87,7 +87,7 @@ Example usage with `dash`.
                                        ,(if (s-starts-with? ":_" (symbol-name key))
                                             key
                                           (cl-rest (assoc key ',params))))
-                        ``(when ,source
+                        ``(when (ht? ,source)
                             (gethash ,(substring (symbol-name
                                                   (cl-rest (assoc key ',params)))
                                                  1)
