@@ -1,10 +1,12 @@
 SHELL := /usr/bin/env bash
 
+CASK ?= cask
+
 all:
-	cask build
+	$(CASK) build
 
 test: all
-	cask exec ert-runner -t '!no-win'
+	$(CASK) exec ert-runner -t '!no-win' -t '!org'
 
 docs:
 	make -C docs/ generate
