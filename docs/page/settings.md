@@ -47,6 +47,18 @@ To see all error statistics in the modeline you can enable `lsp-diagnostics-mode
 
 _Tip:_ To find out the global errors you might use `lsp-treemacs-errors-list`.
 
+## Code actions on modeline
+
+For a UI feedback of the available code actions, you can enable `lsp-modeline-code-actions-mode` which shows available code actions on modeline:
+
+![](../examples/modeline-code-actions.png)
+
+## Breadcrumb on headerline
+
+For a UI feedback on headerline of the document symbol at point, you can enable `lsp-headerline-breadcrumb-mode` which shows a breadcrumb on top of window:
+
+![](../examples/headerline-breadcrumb.png)
+
 ## Limitations
 
 ### File watches
