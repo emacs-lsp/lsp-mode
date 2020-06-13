@@ -1,0 +1,43 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - master
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                emacs-version:
+                    - 25.1
+                    - 25.2
+                    - 25.3
+                    - 26.1
+                    - 26.2
+                    - 26.3
+                    # - 27.1
+                    - snapshot
+
+        steps:
+            - uses: actions/checkout@v1
+
+            - uses: actions/setup-python@v1.1.1
+              with:
+                  python-version: "3.6"
+                  architecture: "x64"
+
+            - uses: purcell/setup-emacs@master
+              with:
+                  version: ${{ matrix.emacs-version }}
+
+            - uses: conao3/setup-cask@master
+              with:
+                  version: 0.8.4
+
+            - name: Run tests
+              run: "make ci"
