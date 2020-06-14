@@ -408,6 +408,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#code-actions-on-modeline" class="md-nav__link">
+    Code actions on modeline
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#breadcrumb-on-headerline" class="md-nav__link">
+    Breadcrumb on headerline
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#limitations" class="md-nav__link">
     Limitations
   </a>
@@ -1522,6 +1536,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#code-actions-on-modeline" class="md-nav__link">
+    Code actions on modeline
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#breadcrumb-on-headerline" class="md-nav__link">
+    Breadcrumb on headerline
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#limitations" class="md-nav__link">
     Limitations
   </a>
@@ -1604,6 +1632,12 @@
 </code></pre></div>
 
 <p><em>Tip:</em> To find out the global errors you might use <code>lsp-treemacs-errors-list</code>.</p>
+<h2 id="code-actions-on-modeline">Code actions on modeline<a class="headerlink" href="#code-actions-on-modeline" title="Permanent link">#</a></h2>
+<p>For a UI feedback of the available code actions, you can enable <code>lsp-modeline-code-actions-mode</code> which shows available code actions on modeline:</p>
+<p><img alt="" src="../../examples/modeline-code-actions.png" /></p>
+<h2 id="breadcrumb-on-headerline">Breadcrumb on headerline<a class="headerlink" href="#breadcrumb-on-headerline" title="Permanent link">#</a></h2>
+<p>For a UI feedback on headerline of the document symbol at point, you can enable <code>lsp-headerline-breadcrumb-mode</code> which shows a breadcrumb on top of window:</p>
+<p><img alt="" src="../../examples/headerline-breadcrumb.png" /></p>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">#</a></h2>
 <h3 id="file-watches">File watches<a class="headerlink" href="#file-watches" title="Permanent link">#</a></h3>
 <p>When some of the workspaces that are active in the current project requests file notifications via <code>workspace/didChangeWatchedFiles</code>, <code>lsp-mode</code> will start monitoring each of the folders in the workspace for changes. In case your project contains a lot of files you might want to disable file monitoring via <code>lsp-enable-file-watchers</code> (you may use dir-locals).</p>
