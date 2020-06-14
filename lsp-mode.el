@@ -2072,7 +2072,7 @@ WORKSPACE is the workspace that contains the progress token."
     (add-hook 'lsp-on-idle-hook 'lsp--headerline-check-breadcrumb nil t))
    (t
     (remove-hook 'lsp-on-idle-hook 'lsp--headerline-check-breadcrumb t)
-    (setq-local header-line-format (remove '(t (:eval lsp--headerline-breadcrumb-string)) header-line-format)))))
+    (setq header-line-format (remove '(t (:eval lsp--headerline-breadcrumb-string)) header-line-format)))))
 
 
 
