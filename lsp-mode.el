@@ -665,7 +665,7 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'face
   :group 'lsp-faces)
 
-(defcustom lsp-headerline-breadcrumb-enable t
+(defcustom lsp-headerline-breadcrumb-enable nil
   "Wheter to enable breadcrumb on headerline."
   :type 'boolean
   :group 'lsp-mode)
@@ -2034,17 +2034,18 @@ WORKSPACE is the workspace that contains the progress token."
                                                                  symbol)))
                                                         document-symbols)))
     (if children?
-        (append (list symbol) (lsp--headerline-document-symbols->symbols-hierarchy children?))
+        (cons symbol (lsp--headerline-document-symbols->symbols-hierarchy children?))
       (when symbol
         (list symbol)))))
 
 (defun lsp--headerline-symbols-informations->symbols-hierarchy (symbols-informations)
   "Convert SYMBOL-INFORMATIONS to symbols hierarchy."
-  (seq-some (-lambda ((symbol &as &SymbolInformation :location (&Location :range)))
-              (-let (((beg . end) (lsp--range-to-region range)))
-                (and (<= beg (point) end)
-                     symbol)))
-            symbols-informations))
+  (->> symbols-informations
+       (seq-some (-lambda ((symbol &as &SymbolInformation :location (&Location :range)))
+                   (-let (((beg . end) (lsp--range-to-region range)))
+                     (and (<= beg (point) end)
+                          symbol))))
+       list))
 
 (defun lsp--headerline-symbols->symbols-hierarchy (symbols)
   "Convert SYMBOLS to symbols-hierarchy."
@@ -2060,7 +2061,8 @@ WORKSPACE is the workspace that contains the progress token."
                (symbols (lsp--get-document-symbols))
                (symbols-hierarchy (lsp--headerline-symbols->symbols-hierarchy symbols)))
         (setq lsp--headerline-breadcrumb-string (lsp--headerline-build-string symbols-hierarchy))
-      (setq lsp--headerline-breadcrumb-string nil))))
+      (setq lsp--headerline-breadcrumb-string nil))
+    (force-mode-line-update)))
 
 (define-minor-mode lsp-headerline-breadcrumb-mode
   "Toggle breadcrumb on headerline."
