@@ -665,6 +665,21 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'face
   :group 'lsp-faces)
 
+(defcustom lsp-headerline-breadcrumb-enable nil
+  "Wheter to enable breadcrumb on headerline."
+  :type 'boolean
+  :group 'lsp-mode)
+
+(defcustom lsp-headerline-breadcrumb-face 'font-lock-doc-face
+  "Face used on breadcrumb text on modeline."
+  :type 'face
+  :group 'lsp-faces)
+
+(defface lsp-headerline-breadcrumb-deprecated-face '((t :inherit font-lock-doc-face
+                                                        :strike-through t))
+  "Face used on breadcrumb deprecated text on modeline."
+  :group 'lsp-faces)
+
 (defcustom lsp-after-diagnostics-hook nil
   "Hooks to run after diagnostics are received.
 Note: it runs only if the receiving buffer is open. Use
@@ -1968,7 +1983,98 @@ WORKSPACE is the workspace that contains the progress token."
    (lsp-modeline-code-actions-mode
     (add-hook 'lsp-on-idle-hook 'lsp--modeline-check-code-actions nil t))
    (t
-    (remove-hook 'lsp-on-idle-hook 'lsp--modeline-check-code-actions t))))
+    (remove-hook 'lsp-on-idle-hook 'lsp--modeline-check-code-actions t)
+    (setq-local global-mode-string (remove '(t (:eval lsp--modeline-code-actions-string)) global-mode-string)))))
+
+
+;; headerline breadcrumb
+
+(defvar-local lsp--headerline-breadcrumb-string nil
+  "Holds the current breadcrumb string on headerline.")
+
+(declare-function all-the-icons-material "ext:all-the-icons" t t)
+(declare-function treemacs-get-icon-value "ext:treemacs" t t)
+(declare-function lsp-treemacs-symbol-kind->icon "ext:lsp-treemacs" t t)
+
+(defun lsp--headerline-breadcrumb-arrow-icon ()
+  "Build the arrow icon for headerline breadcrumb."
+  (if (require 'all-the-icons nil t)
+      (all-the-icons-material "chevron_right"
+                             :face lsp-headerline-breadcrumb-face)
+    (propertize "›" 'face lsp-headerline-breadcrumb-face)))
+
+(lsp-defun lsp--headerline-breadcrumb-symbol-icon ((&DocumentSymbol :kind))
+  "Build the SYMBOL icon for headerline breadcrumb."
+  (when (require 'lsp-treemacs t t)
+    (treemacs-get-icon-value (lsp-treemacs-symbol-kind->icon kind))))
+
+(defun lsp--headerline-build-string (symbols-hierarchy)
+  "Build the header-line from SYMBOLS-HIERARCHY."
+  (seq-reduce (lambda (last-symbol-name symbol-to-append)
+                (let ((symbol2-name (if (lsp:document-symbol-deprecated? symbol-to-append)
+                                        (propertize (lsp:document-symbol-name symbol-to-append)
+                                                    'font-lock-face 'lsp-headerline-breadcrumb-deprecated-face)
+                                      (propertize (lsp:document-symbol-name symbol-to-append)
+                                                  'font-lock-face lsp-headerline-breadcrumb-face)))
+                      (symbol2-icon (lsp--headerline-breadcrumb-symbol-icon symbol-to-append))
+                      (arrow-icon (lsp--headerline-breadcrumb-arrow-icon)))
+                  (format "%s %s %s"
+                          last-symbol-name
+                          arrow-icon
+                          (if symbol2-icon
+                              (concat symbol2-icon symbol2-name)
+                            symbol2-name))))
+              symbols-hierarchy ""))
+
+(defun lsp--headerline-document-symbols->symbols-hierarchy (document-symbols)
+  "Convert DOCUMENT-SYMBOLS to symbols hierarchy."
+  (-let (((symbol &as &DocumentSymbol? :children?) (seq-some (-lambda ((symbol &as &DocumentSymbol :range))
+                                                          (-let (((beg . end) (lsp--range-to-region range)))
+                                                            (and (<= beg (point) end)
+                                                                 symbol)))
+                                                        document-symbols)))
+    (if children?
+        (cons symbol (lsp--headerline-document-symbols->symbols-hierarchy children?))
+      (when symbol
+        (list symbol)))))
+
+(defun lsp--headerline-symbols-informations->symbols-hierarchy (symbols-informations)
+  "Convert SYMBOL-INFORMATIONS to symbols hierarchy."
+  (->> symbols-informations
+       (seq-some (-lambda ((symbol &as &SymbolInformation :location (&Location :range)))
+                   (-let (((beg . end) (lsp--range-to-region range)))
+                     (and (<= beg (point) end)
+                          symbol))))
+       list))
+
+(defun lsp--headerline-symbols->symbols-hierarchy (symbols)
+  "Convert SYMBOLS to symbols-hierarchy."
+  (when-let (first-symbol (lsp-seq-first symbols))
+    (if (lsp-symbol-information? first-symbol)
+        (lsp--headerline-symbols-informations->symbols-hierarchy symbols)
+      (lsp--headerline-document-symbols->symbols-hierarchy symbols))))
+
+(defun lsp--headerline-check-breadcrumb (&rest _)
+  "Request for document symbols to build the breadcrumb."
+  (when (lsp-feature? "textDocument/documentSymbol")
+    (-if-let* ((lsp--document-symbols-request-async t)
+               (symbols (lsp--get-document-symbols))
+               (symbols-hierarchy (lsp--headerline-symbols->symbols-hierarchy symbols)))
+        (setq lsp--headerline-breadcrumb-string (lsp--headerline-build-string symbols-hierarchy))
+      (setq lsp--headerline-breadcrumb-string nil))
+    (force-mode-line-update)))
+
+(define-minor-mode lsp-headerline-breadcrumb-mode
+  "Toggle breadcrumb on headerline."
+  :group 'lsp-mode
+  :global nil
+  (cond
+   (lsp-headerline-breadcrumb-mode
+    (add-to-list 'header-line-format '(t (:eval lsp--headerline-breadcrumb-string)))
+    (add-hook 'lsp-on-idle-hook 'lsp--headerline-check-breadcrumb nil t))
+   (t
+    (remove-hook 'lsp-on-idle-hook 'lsp--headerline-check-breadcrumb t)
+    (setq header-line-format (remove '(t (:eval lsp--headerline-breadcrumb-string)) header-line-format)))))
 
 
 
@@ -2628,6 +2734,7 @@ BINDINGS is a list of (key def cond)."
       "Tl" lsp-lens-mode (lsp-feature? "textDocument/codeLens")
       "TL" lsp-toggle-trace-io t
       "Th" lsp-toggle-symbol-highlight (lsp-feature? "textDocument/documentHighlight")
+      "Tb" lsp-headerline-breadcrumb-mode (lsp-feature? "textDocument/documentSymbol")
       "Ta" lsp-modeline-code-actions-mode (lsp-feature? "textDocument/codeAction")
       "TS" lsp-ui-sideline-mode (featurep 'lsp-ui-sideline)
       "Td" lsp-ui-doc-mode (featurep 'lsp-ui-doc)
@@ -2817,6 +2924,7 @@ active `major-mode', or for all major modes when ALL-MODES is t."
       ["Remove" lsp-workspace-folders-remove]
       ["Open" lsp-workspace-folders-open])
      ["Toggle Lenses" lsp-lens-mode]
+     ["Toggle headerline breadcrumb" lsp-headerline-breadcrumb-mode]
      ["Toggle modeline code actions" lsp-modeline-code-actions-mode]))
   "Menu for lsp-mode.")
 
@@ -6961,6 +7069,10 @@ returns the command to execute."
   (when (and lsp-modeline-code-actions-enable
              (lsp--capability "codeActionProvider"))
     (lsp-modeline-code-actions-mode 1))
+
+  (when (and lsp-headerline-breadcrumb-enable
+             (lsp--capability "documentSymbolProvider"))
+    (lsp-headerline-breadcrumb-mode 1))
 
   (cond
    ((or
