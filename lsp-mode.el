@@ -2059,10 +2059,8 @@ WORKSPACE is the workspace that contains the progress token."
     (-if-let* ((lsp--document-symbols-request-async t)
                (symbols (lsp--get-document-symbols))
                (symbols-hierarchy (lsp--headerline-symbols->symbols-hierarchy symbols)))
-        (progn
-          (setq lsp--headerline-breadcrumb-string (lsp--headerline-build-string symbols-hierarchy))
-          (add-to-list 'header-line-format '(t (:eval lsp--headerline-breadcrumb-string))))
-      (setq-local header-line-format (remove '(t (:eval lsp--headerline-breadcrumb-string)) header-line-format)))))
+        (setq lsp--headerline-breadcrumb-string (lsp--headerline-build-string symbols-hierarchy))
+      (setq lsp--headerline-breadcrumb-string nil))))
 
 (define-minor-mode lsp-headerline-breadcrumb-mode
   "Toggle breadcrumb on headerline."
@@ -2070,6 +2068,7 @@ WORKSPACE is the workspace that contains the progress token."
   :global nil
   (cond
    (lsp-headerline-breadcrumb-mode
+    (add-to-list 'header-line-format '(t (:eval lsp--headerline-breadcrumb-string)))
     (add-hook 'lsp-on-idle-hook 'lsp--headerline-check-breadcrumb nil t))
    (t
     (remove-hook 'lsp-on-idle-hook 'lsp--headerline-check-breadcrumb t)
