@@ -143,4 +143,13 @@
 (ert-deftest lsp--boolean-property ()
   (cl-assert (equal (lsp-ht->alist  (lsp-configuration-section "section4"))
                     '(("section4" ("prop1" . "value"))))))
+
+(ert-deftest lsp--f-ancestor-of? ()
+  (should (lsp-f-ancestor-of? "~/tmp" "~/tmp/test"))
+  (should (lsp-f-ancestor-of? "~/tmp/" "~/tmp/test"))
+  (should (lsp-f-ancestor-of? "~/tmp/" "~/tmp/test/"))
+  (should-not (lsp-f-ancestor-of? "~/tmp/t" "~/tmp/test"))
+  (should-not (lsp-f-ancestor-of? "~/tm" "~/tmp/test"))
+  (should-not (lsp-f-ancestor-of? "~/tm/" "~/tmp/test"))
+  (should-not (lsp-f-ancestor-of? "~/tm/" "~/tmp/test/")))
 ;;; lsp-common-test.el ends here
