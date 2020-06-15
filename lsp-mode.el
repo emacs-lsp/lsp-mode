@@ -737,7 +737,8 @@ The value is a list of `kind' `name' or `position'.  Priorities
 are determined by the index of the element."
   :type '(repeat (choice (const name)
                          (const position)
-                         (const kind))))
+                         (const kind)))
+  :group 'lsp-imenu)
 
 ;; vibhavp: Should we use a lower value (5)?
 (defcustom lsp-response-timeout 10
@@ -7255,7 +7256,8 @@ SESSION is the active session."
   "Directory in which the servers will be installed."
   :risky t
   :type 'directory
-  :package-version '(lsp-mode . "6.3"))
+  :package-version '(lsp-mode . "6.3")
+  :group 'lsp-mode)
 
 (defvar lsp--dependencies (ht))
 
