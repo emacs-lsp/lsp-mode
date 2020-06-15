@@ -64,7 +64,7 @@ testprereq:
 	sudo pip --quiet install python-language-server
 
 test:
-	$(CASK) exec ert-runner -t '!no-win' -t '!org'
+	$(CASK) exec ert-runner --reporter ert+duration -t '!no-win' -t '!org'
 
 docs:
 	make -C docs/ generate
