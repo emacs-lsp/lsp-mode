@@ -2759,8 +2759,7 @@ BINDINGS is a list of (key def cond)."
 
       ;; refactoring
       "rr" lsp-rename (lsp-feature? "textDocument/rename")
-      "ro" lsp-organize-imports (lsp-feature? "textDocument/rename")
-
+      "ro" lsp-organize-imports (lsp-feature? "textDocument/codeAction")
 
       ;; actions
       "aa" lsp-execute-code-action (lsp-feature? "textDocument/codeAction")
