@@ -61,7 +61,7 @@ lint:
 		*.el
 
 testprereq:
-	sudo pip install python-language-server
+	sudo pip --quiet install python-language-server
 
 test:
 	$(CASK) exec ert-runner -t '!no-win' -t '!org'
