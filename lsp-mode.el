@@ -2087,22 +2087,49 @@ The `:global' workspace is global one.")
                                       (lsp-treemacs-symbol-icon kind))))
                            :background (face-attribute 'header-line :background))))))
 
+(lsp-defun lsp--headerline-breadcrumb-go-to-symbol ((&DocumentSymbol :selection-range (&Range :start)))
+  "Go to breadcrumb symbol."
+  (->> start
+       lsp--position-to-point
+       goto-char))
+
+(lsp-defun lsp--headerline-breadcrumb-narrow-to-symbol ((&DocumentSymbol :range (&Range :start :end)))
+  "Narrow to breadcrumb symbol range."
+  (narrow-to-region (lsp--position-to-point start) (lsp--position-to-point end)))
+
+(lsp-defun lsp--headerline-with-action ((symbol &as &DocumentSymbol :name) symbol-string)
+  "Build action for SYMBOL and SYMBOL-STRING."
+  (propertize symbol-string
+              'mouse-face 'header-line-highlight
+              'help-echo (format "mouse-1: go to '%s' symbol\nmouse-2: narrow to '%s' range" name name)
+              'local-map (let ((map (make-sparse-keymap)))
+                           (define-key map [header-line mouse-1]
+                             (lambda ()
+                               (interactive)
+                               (lsp--headerline-breadcrumb-go-to-symbol symbol)))
+                           (define-key map [header-line mouse-2]
+                             (lambda ()
+                               (interactive)
+                               (lsp--headerline-breadcrumb-narrow-to-symbol symbol)))
+                           map)))
+
 (defun lsp--headerline-build-string (symbols-hierarchy)
   "Build the header-line from SYMBOLS-HIERARCHY."
   (seq-reduce (lambda (last-symbol-name symbol-to-append)
-                (let ((symbol2-name (if (lsp:document-symbol-deprecated? symbol-to-append)
-                                        (propertize (lsp:document-symbol-name symbol-to-append)
-                                                    'font-lock-face 'lsp-headerline-breadcrumb-deprecated-face)
-                                      (propertize (lsp:document-symbol-name symbol-to-append)
-                                                  'font-lock-face lsp-headerline-breadcrumb-face)))
-                      (symbol2-icon (lsp--headerline-breadcrumb-symbol-icon symbol-to-append))
-                      (arrow-icon (lsp--headerline-breadcrumb-arrow-icon)))
+                (let* ((symbol2-name (if (lsp:document-symbol-deprecated? symbol-to-append)
+                                         (propertize (lsp:document-symbol-name symbol-to-append)
+                                                     'font-lock-face 'lsp-headerline-breadcrumb-deprecated-face)
+                                       (propertize (lsp:document-symbol-name symbol-to-append)
+                                                   'font-lock-face lsp-headerline-breadcrumb-face)))
+                       (symbol2-icon (lsp--headerline-breadcrumb-symbol-icon symbol-to-append))
+                       (arrow-icon (lsp--headerline-breadcrumb-arrow-icon))
+                       (full-symbol-2 (if symbol2-icon
+                                          (concat symbol2-icon symbol2-name)
+                                        symbol2-name)))
                   (format "%s %s %s"
                           last-symbol-name
                           arrow-icon
-                          (if symbol2-icon
-                              (concat symbol2-icon symbol2-name)
-                            symbol2-name))))
+                          (lsp--headerline-with-action symbol-to-append full-symbol-2))))
               symbols-hierarchy ""))
 
 (defun lsp--document-symbols->symbols-hierarchy (document-symbols)
@@ -2152,6 +2179,34 @@ The `:global' workspace is global one.")
    (t
     (remove-hook 'lsp-on-idle-hook 'lsp--headerline-check-breadcrumb t)
     (setq header-line-format (remove '(t (:eval lsp--headerline-breadcrumb-string)) header-line-format)))))
+
+;;;###autoload
+(defun lsp-breadrumb-go-to-symbol (symbol-position)
+  "TODO"
+  (interactive "P")
+  (if (numberp symbol-position)
+      (if (lsp-feature? "textDocument/documentSymbol")
+          (-if-let* ((lsp--document-symbols-request-async t)
+                     (symbols (lsp--get-document-symbols))
+                     (symbols-hierarchy (lsp-symbols->symbols-hierarchy symbols)))
+              (lsp--headerline-breadcrumb-go-to-symbol (nth (1- symbol-position) symbols-hierarchy))
+            (lsp--info "Symbol not found for position %s" symbol-position))
+        (lsp--info "Server does not support breadcrumb."))
+    (lsp--info "Call this function with a number representing the symbol position on breadcrumb")))
+
+;;;###autoload
+(defun lsp-breadrumb-narrow-to-symbol (symbol-position)
+  "TODO"
+  (interactive "P")
+  (if (numberp symbol-position)
+      (if (lsp-feature? "textDocument/documentSymbol")
+          (-if-let* ((lsp--document-symbols-request-async t)
+                     (symbols (lsp--get-document-symbols))
+                     (symbols-hierarchy (lsp-symbols->symbols-hierarchy symbols)))
+              (lsp--headerline-breadcrumb-narrow-to-symbol (nth (1- symbol-position) symbols-hierarchy))
+            (lsp--info "Symbol not found for position %s" symbol-position))
+        (lsp--info "Server does not support breadcrumb."))
+    (lsp--info "Call this function with a number representing the symbol position on breadcrumb")))
 
 
 
