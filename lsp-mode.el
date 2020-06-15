@@ -214,7 +214,7 @@ unless overridden by a more specific face association."
   :group 'lsp-faces)
 
 (defun lsp--semhl-scope-matchp (matchspec scopes)
-  "Returns t iff there is an element M in MATCHSPEC s.t. every N in M
+  "Returns t if there is an element M in MATCHSPEC s.t. every N in M
  is a prefix of, or identical to, one of the scopes contained in SCOPES"
   (-any? (lambda (or-matchspec)
            (-all? (lambda (and-matchspec)
@@ -1030,6 +1030,12 @@ It will be called with one param - the signature info. When
 called with nil the signature info must be cleared."
   :type 'function
   :group 'lsp-mode
+  :package-version '(lsp-mode . "6.3"))
+
+(defcustom lsp-keymap-prefix "s-l"
+  "lsp-mode keymap prefix."
+  :group 'lsp-mode
+  :type 'string
   :package-version '(lsp-mode . "6.3"))
 
 (defvar-local lsp--lens-overlays nil
@@ -1906,15 +1912,29 @@ WORKSPACE is the workspace that contains the progress token."
                              :v-adjust -0.0575)
     (propertize "💡" 'face lsp-modeline-code-actions-face)))
 
+(defun lsp--modeline-code-action->string (action)
+  "Convert code ACTION to friendly string."
+  (->> action
+       lsp:code-action-title
+       (replace-regexp-in-string "[\n\t ]+" " ")))
+
 (defun lsp--modeline-build-code-actions-string (actions)
   "Build the string to be presented on modeline for code ACTIONS."
   (-let* ((icon (lsp--modeline-code-actions-icon))
-          (first-action-string (propertize (->> actions
-                                                lsp-seq-first
-                                                lsp:code-action-title
-                                                (replace-regexp-in-string "[\n\t ]+" " "))
+          (first-action-string (propertize (or (-some->> actions
+                                                 (-first #'lsp:code-action-is-preferred?)
+                                                 lsp--modeline-code-action->string)
+                                               (->> actions
+                                                    lsp-seq-first
+                                                    lsp--modeline-code-action->string))
                                            'face lsp-modeline-code-actions-face))
           (single-action? (= (length actions) 1))
+          (keybinding (-some->> #'lsp-execute-code-action
+                        where-is-internal
+                        (-find (lambda (o)
+                                 (not (member (aref o 0) '(menu-bar normal-state)))))
+                        key-description
+                        (format "(%s)")))
           (string (if single-action?
                       (format " %s %s " icon first-action-string)
                     (format " %s %s %s " icon first-action-string
@@ -1922,7 +1942,7 @@ WORKSPACE is the workspace that contains the progress token."
                                         'display `((height 0.9))
                                         'face lsp-modeline-code-actions-face)))))
     (propertize string
-                'help-echo (concat "Apply code actions (s-l a a)\nmouse-1: "
+                'help-echo (concat (format "Apply code actions %s\nmouse-1: " keybinding)
                                    (if single-action?
                                        first-action-string
                                      "select from multiple code actions"))
@@ -2680,12 +2700,6 @@ BINDINGS is a list of (key def cond)."
 (advice-add 'describe-buffer-bindings
             :before
             #'lsp-describe-buffer-bindings-advice)
-
-(defcustom lsp-keymap-prefix "s-l"
-  "lsp-mode keymap prefix."
-  :group 'lsp-mode
-  :type 'string
-  :package-version '(lsp-mode . "6.3"))
 
 (defun lsp--prepend-prefix (mappings)
   (->> mappings
