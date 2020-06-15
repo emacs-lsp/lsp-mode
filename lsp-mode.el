@@ -501,6 +501,14 @@ the server has requested that."
   :package-version '(lsp-mode . "6.1"))
 ;;;###autoload(put 'lsp-enable-file-watchers 'safe-local-variable #'booleanp)
 
+(defcustom lsp-watch-folders nil
+  "A list of relative folders to watch rather than watching an
+entire project."
+  :group 'lsp-mode
+  :type '(repeat string)
+  :package-version '(lsp-mode . "6.3.1"))
+;;;###autoload(put 'lsp-watch-folders 'safe-local-variable #'booleanp)
+
 (defcustom lsp-file-watch-ignored '(; SCM tools
                                     "[/\\\\]\\.git$"
                                     "[/\\\\]\\.hg$"
@@ -1620,7 +1628,7 @@ This set of allowed chars is enough for hexifying local file paths.")
            (equal 'created event-type)
            (not (lsp--string-match-any (lsp-file-watch-ignored) file-name)))
 
-      (lsp-watch-root-folder (file-truename file-name) callback watch)
+      (lsp--watch-root-folder (file-truename file-name) callback watch)
 
       ;; process the files that are already present in
       ;; the directory.
@@ -1676,7 +1684,7 @@ Do you want to watch all files in %s? "
      (concat "You can configure this warning with the `lsp-enable-file-watchers' "
              "and `lsp-file-watch-threshold' variables"))))
 
-(defun lsp-watch-root-folder (dir callback &optional watch warn-big-repo?)
+(defun lsp--watch-root-folder (dir callback &optional watch warn-big-repo?)
   "Create recursive file notification watch in DIR.
 CALLBACK will be called when there are changes in any of
 the monitored files. WATCHES is a hash table directory->file
@@ -1706,7 +1714,7 @@ already have been created."
                                       (lsp--folder-watch-callback event callback watch)))
              (lsp-watch-descriptors watch))
             (seq-do
-             (-rpartial #'lsp-watch-root-folder callback watch)
+             (-rpartial #'lsp--watch-root-folder callback watch)
              (seq-filter (lambda (f)
                            (and (file-directory-p f)
                                 (not (gethash (if (f-symlink? f)
@@ -1719,6 +1727,18 @@ already have been created."
         (error (lsp-log "Failed to create a watch for %s: message" (error-message-string err)))
         (file-missing (lsp-log "Failed to create a watch for %s: message" (error-message-string err)))))
     watch))
+
+(defun lsp-watch-root-folder (root watch-sub-dirs callback &optional watch warn-big-repo?)
+  "Create recursive file notification watch in WATCH-SUB-DIRS or ROOT.
+If WATCH-SUB-DIRS is a list of directories watch these
+directories otherwise watch ROOT.  CALLBACK will be called when
+there are changes in any of the monitored files. WATCHES is a
+hash table directory->file notification handle which contains all
+of the watch that already have been created."
+  (if watch-sub-dirs
+      (dolist (sub-dir watch-sub-dirs)
+        (lsp--watch-root-folder sub-dir callback watch warn-big-repo?))
+    (lsp--watch-root-folder root callback watch warn-big-repo?)))
 
 (defun lsp-kill-watch (watch)
   "Delete WATCH."
@@ -3047,6 +3067,9 @@ active `major-mode', or for all major modes when ALL-MODES is t."
   ;; current workspace in format filePath->file notification handle.
   (watches (make-hash-table :test 'equal))
 
+  ;; folders inside project root to watch
+  (watch-folders nil)
+
   ;; list of workspace folders
   (workspace-folders nil)
 
@@ -3638,16 +3661,19 @@ disappearing, unset all the variables related to it."
     (-let* ((created-watches (lsp-session-watches (lsp-session)))
             (root-folders (cl-set-difference
                            (lsp-find-roots-for-workspace lsp--cur-workspace (lsp-session))
-                           (ht-keys created-watches))))
+                           (ht-keys created-watches)))
+            (workspace-root (lsp--workspace-root lsp--cur-workspace))
+            (workspace-sub-folders (lsp--workspace-watch-folders lsp--cur-workspace)))
       ;; create watch for each root folder without such
       (dolist (folder root-folders)
         (let ((watch (make-lsp-watch :root-directory folder)))
           (puthash folder watch created-watches)
           (lsp-watch-root-folder (file-truename folder)
+                                 (when (f-equal? folder workspace-root)
+                                   workspace-sub-folders)
                                  (-partial #'lsp--file-process-event (lsp-session) folder)
                                  watch
                                  t)))))
-
   (push
    (make-lsp--registered-capability :id id :method method :options register-options?)
    (lsp--workspace-registered-server-capabilities lsp--cur-workspace)))
@@ -7191,6 +7217,7 @@ returns the command to execute."
 INITIALIZATION-OPTIONS are passed to initialize function.
 SESSION is the active session."
   (lsp--spinner-start)
+  (hack-local-variables)
   (-let* ((default-directory root)
           (client (copy-lsp--client client-template))
           (workspace (make-lsp--workspace
@@ -7198,6 +7225,13 @@ SESSION is the active session."
                       :client client
                       :status 'starting
                       :buffers (list (lsp-current-buffer))
+                      :watch-folders (when lsp-watch-folders
+                                       (-keep
+                                        (lambda (dir)
+                                          (let ((project-directory (f-join root dir)))
+                                            (when (file-directory-p project-directory)
+                                              project-directory)))
+                                        lsp-watch-folders))
                       :host-root (file-remote-p root)))
           ((&lsp-cln 'server-id 'environment-fn 'new-connection 'custom-capabilities
                      'multi-root 'initialized-fn) client)

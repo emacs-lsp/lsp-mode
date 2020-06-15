@@ -39,6 +39,7 @@
 
     (setq watch (lsp-watch-root-folder
                  temp-directory
+                 nil
                  (lambda (event)
                    (message "received: %s" event)
                    (add-to-list 'events (cdr event)))))
@@ -112,6 +113,7 @@
   :tags '(no-win)
   (lsp-kill-watch (lsp-watch-root-folder
                    "non-existing-directory"
+                   nil
                    #'ignore)))
 
 (ert-deftest lsp-file-watch--relative-path-glob-patterns ()
@@ -130,6 +132,7 @@
 
     (setq watch (lsp-watch-root-folder
                  temp-directory
+                 nil
                  (lambda (event)
                    (message "received: %s" event)
                    (add-to-list 'events (cdr event)))))
@@ -162,6 +165,7 @@
 
     (setq watch (lsp-watch-root-folder
                  temp-directory
+                 nil
                  (lambda (event) (add-to-list 'events (cdr event)))))
 
     (write-region "bla" nil nested-matching-file)
@@ -182,6 +186,7 @@
 
     (setq watch (lsp-watch-root-folder
                  temp-directory
+                 nil
                  (lambda (event)
                    (add-to-list 'events (cdr event)))))
 
@@ -203,7 +208,6 @@
     (should (equal (lsp-find-roots-for-workspace lsp--cur-workspace lsp--session)
                    (list root)))))
 
-
 (defvar lsp--test-events nil)
 
 (defun lsp-notify-collect (_ method params)
@@ -213,7 +217,8 @@
 (ert-deftest lsp-file-notifications-test ()
   :tags '(no-win)
   (let* ((root (make-temp-file "test-root-directory" t))
-         (lsp--cur-workspace (make-lsp--workspace :client (make-lsp-client :server-id 'workspace-1)))
+         (lsp--cur-workspace (make-lsp--workspace :client (make-lsp-client :server-id 'workspace-1)
+                                                  :root root))
          (lsp--session (make-lsp-session
                         :folder->servers (ht (root (list lsp--cur-workspace)))))
          (create-lockfiles nil)
@@ -241,10 +246,42 @@
                      ((workspace-1) "workspace/didChangeWatchedFiles" ((changes . [((type . 1)
                                                                                     (uri . ,(lsp--path-to-uri matching-file)))]))))))))
 
+(ert-deftest lsp-file-notifications-sub-folders-test ()
+  :tags '(no-win)
+  (let* ((root (make-temp-file "test-sub-folders" t))
+         (lsp--cur-workspace (make-lsp--workspace :client (make-lsp-client :server-id 'workspace-1)
+                                                  :watch-folders (list (f-join root "src"))))
+         (lsp--session (make-lsp-session
+                        :folder->servers (ht (root (list lsp--cur-workspace)))))
+         (create-lockfiles nil)
+         (in-src-file (f-join root "src" "in-src-file"))
+         (file-at-root (f-join root "at-root-file")))
+
+    (f-mkdir (f-join root "src"))
+
+    (setq lsp--test-events nil)
+
+    (advice-add 'lsp-notify :around 'lsp-notify-collect)
+
+    (lsp--server-register-capability (ht ("id" "test-id")
+                                         ("method" "workspace/didChangeWatchedFiles")))
+
+    (f-write-text "some-text" 'utf-8 in-src-file)
+
+    (f-write-text "some-text" 'utf-8 file-at-root)
+
+    (sit-for 0.3)
+
+    (advice-remove 'lsp-notify 'lsp-notify-collect)
+
+    (should (equal lsp--test-events
+                   `(((workspace-1) "workspace/didChangeWatchedFiles" ((changes . [((type . 2)
+                                                                                    (uri . ,(lsp--path-to-uri in-src-file)))]))))))))
+
 (ert-deftest lsp-file-watches-cleanup-test ()
   :tags '(no-win)
   (let* ((root (make-temp-file "test-root-directory" t))
-         (lsp--cur-workspace (make-lsp--workspace :client (make-lsp-client :server-id 'workspace-1)))
+         (lsp--cur-workspace (make-lsp--workspace :client (make-lsp-client :server-id 'workspace-1) :root root))
          (lsp--session (make-lsp-session
                         :folder->servers (ht (root (list lsp--cur-workspace)))
                         :folders (list root)))
@@ -273,6 +310,49 @@
     (advice-remove 'lsp-notify 'lsp-notify-collect)
 
     (should (null lsp--test-events))
+    (should (ht-empty? (lsp-session-watches)))))
+
+(ert-deftest lsp-file-watches-cleanup-with-subfolders-test ()
+  :tags '(no-win)
+  (let* ((root (make-temp-file "project1" t))
+         (lsp--cur-workspace (make-lsp--workspace :client (make-lsp-client :server-id 'workspace-1)
+                                                  :root root
+                                                  :watch-folders (list (f-join root "src")
+                                                                       (f-join root "test"))))
+         (lsp--session (make-lsp-session))
+         (create-lockfiles nil)
+         (add-to-session (lambda (workspace)
+                           (let ((root (lsp--workspace-root workspace)))
+                             (->> lsp--session (lsp-session-folder->servers) (gethash root) (cl-pushnew workspace))))))
+    (f-mkdir (f-join root "src") (f-join root "test"))
+
+    (funcall add-to-session lsp--cur-workspace)
+
+    (lsp--server-register-capability (ht ("id" "test-id") ("method" "workspace/didChangeWatchedFiles")))
+
+    (should (= (ht-size (lsp-session-watches)) 1))
+
+    (let* ((root (make-temp-file "project2" t))
+           (lsp--cur-workspace (make-lsp--workspace :client (make-lsp-client :server-id 'workspace-2)
+                                                    :root root
+                                                    :watch-folders (list (f-join root "src")
+                                                                         (f-join root "test"))))
+           (create-lockfiles nil))
+      (funcall add-to-session lsp--cur-workspace)
+      (f-mkdir (f-join root "src") (f-join root "test"))
+
+      (lsp--server-register-capability (ht ("id" "test-id") ("method" "workspace/didChangeWatchedFiles")))
+
+      (should (= (ht-size (lsp-session-watches)) 2))
+
+      (lsp--server-unregister-capability
+       (ht ("id" "test-id") ("method" "workspace/didChangeWatchedFiles")))
+
+      (should (= (ht-size (lsp-session-watches)) 1)))
+
+    (lsp--server-unregister-capability
+     (ht ("id" "test-id") ("method" "workspace/didChangeWatchedFiles")))
+
     (should (ht-empty? (lsp-session-watches)))))
 
 (provide 'lsp-file-watch-test)
