@@ -7390,7 +7390,6 @@ When prefix UPDATE? is t force installation even if the server is present."
                    (funcall error-callback
                             (format "Async process '%s' failed with exit code %d"
                                     (process-name proc) (process-exit-status proc))))))
-   :stdout " *lsp-install*"
    :buffer " *lsp-install*"
    :noquery t))
 
