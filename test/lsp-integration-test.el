@@ -45,6 +45,12 @@
 (defmacro lsp-test-wait (form)
   `(lsp-test--wait-for '(progn ,form)))
 
+(defun lsp-test-wait-init ()
+  (lsp-test-wait
+   (and (cl-first (lsp-workspaces))
+		(eq 'initialized (lsp--workspace-status
+						  (cl-first (lsp-workspaces)))))))
+
 (defun lsp-def-request-async (method params &rest args)
   (--doto (deferred:new #'identity)
     (apply #'lsp-request-async method params (-partial #'deferred:callback-post it)
@@ -75,16 +81,22 @@
 
 (defmacro lsp-with-mode (mode file &rest body)
   (let ((fullfile (format "fixtures/%s/%s" mode file)))
-	`(progn
-	   (lsp-workspace-folders-add (f-join lsp-test-location "fixtures"))
-	   (find-file (f-join lsp-test-location ,fullfile))
-	   (lsp)
-	   ,@body
+	(condition-case err
+		`(progn
+		   (lsp-workspace-folders-add (f-join lsp-test-location "fixtures"))
+		   (find-file (f-join lsp-test-location ,fullfile))
+		   (lsp)
+		   ,@body
 
-	   (find-file (f-join lsp-test-location ,fullfile))
-	   (save-buffer)
-	   (kill-buffer)
-	   (lsp-workspace-folders-remove (f-join lsp-test-location "fixtures")))))
+		   (find-file (f-join lsp-test-location ,fullfile))
+		   (save-buffer)
+		   (kill-buffer)
+		   (lsp-workspace-folders-remove (f-join lsp-test-location "fixtures")))
+	  (error (progn
+			   (message "ERROR: %s\n" err)
+			   (with-current-buffer "*lsp-log*"
+				 (message "*lsp-log*:\n%s\n*lsp-log*\n" (buffer-string)))
+			   (error err))))))
 
 (ert-deftest lsp-pyls-text-document-hover-request-tick ()
   (lsp-with-mode
@@ -166,10 +178,9 @@
        (deferred:sync!))))
 
 (ert-deftest lsp-gopls-text-document-hover-request-tick ()
-  (lsp-with-mode "gopls" "test.go"
-   (-> (lsp-test-wait
-        (eq 'initialized (lsp--workspace-status
-                          (cl-first (lsp-workspaces)))))
+  (lsp-with-mode
+   "gopls" "test.go"
+   (-> (lsp-test-wait-init)
        (deferred::nextc
          (goto-char (point-min))
          (search-forward "fn1")
@@ -184,10 +195,9 @@
        (deferred:sync!))))
 
 (ert-deftest lsp-gopls-test-current-buffer-mode ()
-  (lsp-with-mode "gopls" "test.go"
-   (-> (lsp-test-wait
-        (eq 'initialized (lsp--workspace-status
-                          (cl-first (lsp-workspaces)))))
+  (lsp-with-mode
+   "gopls" "test.go"
+   (-> (lsp-test-wait-init)
        (deferred::nextc
          (goto-char (point-min))
          (search-forward "fn1")

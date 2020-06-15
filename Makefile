@@ -65,7 +65,7 @@ testprereq:
 	go get golang.org/x/tools/gopls
 
 test:
-	$(CASK) exec ert-runner --reporter ert+duration -t '!no-win' -t '!org'
+	$(CASK) exec ert-runner --debug --verbose --reporter ert+duration -t '!no-win' -t '!org'
 
 docs:
 	make -C docs/ generate
