@@ -8,4 +8,5 @@
  (depends-on "espuds")
  (depends-on "ecukes")
  (depends-on "undercover")
- (depends-on "deferred"))
+ (depends-on "deferred")
+ (depends-on "go-mode"))

@@ -62,6 +62,7 @@ lint:
 
 testprereq:
 	sudo pip --quiet install python-language-server
+	go get golang.org/x/tools/gopls
 
 test:
 	$(CASK) exec ert-runner --reporter ert+duration -t '!no-win' -t '!org'

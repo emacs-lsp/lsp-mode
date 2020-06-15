@@ -29,6 +29,7 @@
 (require 'f)
 (require 'deferred)
 (require 'dash)
+(require 'go-mode)
 
 (defconst lsp-test-location (file-name-directory (or load-file-name buffer-file-name)))
 
@@ -159,6 +160,43 @@
                                          :mode 'alive)
                   (deferred::nextc (deferred:wait 1000) :timeout))
            (-> (f-join lsp-test-location "fixtures/pyls/test.py")
+               (find-buffer-visiting)
+               (kill-buffer))))
+       (deferred::nextc (should (equal result :timeout)))
+       (deferred:sync!))))
+
+(ert-deftest lsp-gopls-text-document-hover-request-tick ()
+  (lsp-with-mode "gopls" "test.go"
+   (-> (lsp-test-wait
+        (eq 'initialized (lsp--workspace-status
+                          (cl-first (lsp-workspaces)))))
+       (deferred::nextc
+         (goto-char (point-min))
+         (search-forward "fn1")
+         (prog1 (deferred:earlier
+                  (lsp-def-request-async "textDocument/hover"
+                                         (lsp--text-document-position-params)
+                                         :mode 'tick)
+                  (deferred::nextc (deferred:wait 1000) :timeout))
+           (insert "x")
+           (delete-char -1)))
+       (deferred::nextc (should (equal result :timeout)))
+       (deferred:sync!))))
+
+(ert-deftest lsp-gopls-test-current-buffer-mode ()
+  (lsp-with-mode "gopls" "test.go"
+   (-> (lsp-test-wait
+        (eq 'initialized (lsp--workspace-status
+                          (cl-first (lsp-workspaces)))))
+       (deferred::nextc
+         (goto-char (point-min))
+         (search-forward "fn1")
+         (prog1 (deferred:earlier
+                  (lsp-def-request-async "textDocument/hover"
+                                         (lsp--text-document-position-params)
+                                         :mode 'alive)
+                  (deferred::nextc (deferred:wait 1000) :timeout))
+           (-> (f-join lsp-test-location "fixtures/gopls/test.go")
                (find-buffer-visiting)
                (kill-buffer))))
        (deferred::nextc (should (equal result :timeout)))
