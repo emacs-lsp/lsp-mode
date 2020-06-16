@@ -151,5 +151,9 @@
   (should-not (lsp-f-ancestor-of? "~/tmp/t" "~/tmp/test"))
   (should-not (lsp-f-ancestor-of? "~/tm" "~/tmp/test"))
   (should-not (lsp-f-ancestor-of? "~/tm/" "~/tmp/test"))
-  (should-not (lsp-f-ancestor-of? "~/tm/" "~/tmp/test/")))
+  (should-not (lsp-f-ancestor-of? "~/tm/" "~/tmp/test/"))
+  ;; Windows path
+  (when (equal system-type 'windows-nt)
+    (should (lsp-f-ancestor-of? "test\\tmp" "test/tmp/a"))
+    (should-not (lsp-f-ancestor-of? "test\\tmp" "test\\tmp-a"))))
 ;;; lsp-common-test.el ends here
