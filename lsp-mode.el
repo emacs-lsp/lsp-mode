@@ -5690,7 +5690,7 @@ It will show up only if current point has signature help."
         (lsp-request-async
          "textDocument/hover"
          (lsp--text-document-position-params)
-         (-lambda ((hover &as &Hover :range? :contents))
+         (-lambda ((hover &as &Hover? :range? :contents))
            (when hover
              (when range?
                (setq lsp--hover-saved-bounds (lsp--range-to-region range?)))
