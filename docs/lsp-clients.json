@@ -392,16 +392,6 @@
     "debugger": "Not available"
   },
   {
-    "name": "latex",
-    "full-name": "TeX, LaTeX, etc.",
-    "server-name": "texlab",
-    "server-url": "https://github.com/latex-lsp/texlab",
-    "client-name": "lsp-latex",
-    "client-url": "https://github.com/ROCKTAKEY/lsp-latex",
-    "installation": "cargo install --git https://github.com/latex-lsp/texlab.git",
-    "debugger": "Not available"
-  },
-  {
     "name": "tex",
     "full-name": "TeX, LaTeX, etc.",
     "server-name": "Digestif",
