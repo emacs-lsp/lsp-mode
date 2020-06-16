@@ -1938,7 +1938,7 @@ WORKSPACE is the workspace that contains the progress token."
           (string (if single-action?
                       (format " %s %s " icon first-action-string)
                     (format " %s %s %s " icon first-action-string
-                            (propertize (format "(%d more)" (seq-length actions))
+                            (propertize (format "(%d more)" (1- (seq-length actions)))
                                         'display `((height 0.9))
                                         'face lsp-modeline-code-actions-face)))))
     (propertize string
@@ -1961,11 +1961,9 @@ WORKSPACE is the workspace that contains the progress token."
                                 (or (not kind?)
                                     (s-match lsp-modeline-code-actions-kind-regex kind?)))
                               actions)))
-  (if (seq-empty-p actions)
-      (setq-local global-mode-string (remove '(t (:eval lsp--modeline-code-actions-string)) global-mode-string))
-    (progn
-      (setq lsp--modeline-code-actions-string (lsp--modeline-build-code-actions-string actions))
-      (add-to-list 'global-mode-string '(t (:eval lsp--modeline-code-actions-string)))))
+  (setq lsp--modeline-code-actions-string
+        (if (seq-empty-p actions) ""
+          (lsp--modeline-build-code-actions-string actions)))
   (force-mode-line-update))
 
 (defun lsp--modeline-check-code-actions (&rest _)
@@ -1984,6 +1982,7 @@ WORKSPACE is the workspace that contains the progress token."
   :lighter ""
   (cond
    (lsp-modeline-code-actions-mode
+    (add-to-list 'global-mode-string '(t (:eval lsp--modeline-code-actions-string)))
     (add-hook 'lsp-on-idle-hook 'lsp--modeline-check-code-actions nil t))
    (t
     (remove-hook 'lsp-on-idle-hook 'lsp--modeline-check-code-actions t)
