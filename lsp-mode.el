@@ -1229,7 +1229,7 @@ Symlinks are not followed."
   "Return t if PATH-A is ancestor of PATH-B.
 Symlinks are not followed."
   (unless (lsp-f-same? path-a path-b)
-    (s-prefix? (lsp-f-canonical path-a)
+    (s-prefix? (concat (lsp-f-canonical path-a) (f-path-separator))
                (lsp-f-canonical path-b))))
 
 (defun lsp--merge-results (results method)
@@ -1646,7 +1646,7 @@ This set of allowed chars is enough for hexifying local file paths.")
         (if (and (directory-name-p file)
                  (not (lsp--string-match-any (lsp-file-watch-ignored) (f-join dir (f-filename file)))))
             (let* ((leaf (substring file 0 (1- (length file))))
-                   (full-file (concat dir "/" leaf)))
+                   (full-file (f-join dir leaf)))
               ;; Don't follow symlinks to other directories.
               (unless (file-symlink-p full-file)
                 (setq result
@@ -1656,7 +1656,7 @@ This set of allowed chars is enough for hexifying local file paths.")
                          (string-match regexp leaf))
                 (setq result (nconc result (list full-file)))))
           (when (string-match regexp file)
-            (push (concat dir "/" file) files)))))
+            (push (f-join dir file) files)))))
     (nconc result (nreverse files))))
 
 (defun lsp--ask-about-watching-big-repo (number-of-files dir)
