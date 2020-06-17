@@ -2567,7 +2567,7 @@ FILE-VERSION - the version of the file."
    (lambda (it)
      (with-lsp-workspace (lsp-get it :_workspace)
        (lsp-put it :_pending t)
-       (lsp-put :_workspace it nil)
+       (lsp-put it :_workspace nil)
        (lsp-request-async "codeLens/resolve" it
                           (-lambda ((&CodeLens :command?))
                             (lsp-put it :_pending nil)
