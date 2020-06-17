@@ -155,7 +155,7 @@ Example usage with `dash`.
               (-partition 2 value )))
       (defalias 'lsp-merge 'append)
       (defalias 'lsp-empty? 'null)
-      (defalias 'lsp-copy 'copy-list))
+      (defalias 'lsp-copy 'copy-sequence))
   (defun lsp-get (from key)
     (when from
       (gethash (lsp-keyword->string key) from)))
