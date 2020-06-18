@@ -1894,7 +1894,7 @@ The `:global' workspace is global one.")
 
 (defun lsp--diagnostics-reset-modeline-cache ()
   ""
-  (plist-put lsp--diagnostics-modeline-wks->strings (car (lsp-workspaces)) :global)
+  (plist-put lsp--diagnostics-modeline-wks->strings (car (lsp-workspaces)) nil)
   (plist-put lsp--diagnostics-modeline-wks->strings :global nil)
   (setq lsp--diagnostics-modeline-string nil))
 
