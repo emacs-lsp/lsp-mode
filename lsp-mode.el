@@ -6508,30 +6508,32 @@ WORKSPACE is the active workspace."
         (pcase (lsp--get-message-type json-data)
           ('response
            (cl-assert id)
-           (-let [(callback _ method start-time before-send) (gethash id (lsp--client-response-handlers client))]
-             (when lsp-print-io
-               (lsp--log-entry-new
-                (lsp--make-log-entry method id data 'incoming-resp
-                                     (/ (nth 2 (time-since before-send)) 1000))
-                workspace))
-             (when callback
-               (funcall callback (lsp:json-response-result json-data))
-               (remhash id (lsp--client-response-handlers client))
-               (lsp--log-request-time server-id method id start-time before-send
-                                      received-time after-parsed-time (current-time)))))
+           (when-let ((obj (lsp--client-response-handlers client)))
+             (-let [(callback _ method start-time before-send) (gethash id obj)]
+               (when lsp-print-io
+                 (lsp--log-entry-new
+                  (lsp--make-log-entry method id data 'incoming-resp
+                                       (/ (nth 2 (time-since before-send)) 1000))
+                  workspace))
+               (when callback
+                 (funcall callback (lsp:json-response-result json-data))
+                 (remhash id (lsp--client-response-handlers client))
+                 (lsp--log-request-time server-id method id start-time before-send
+                                        received-time after-parsed-time (current-time))))))
           ('response-error
            (cl-assert id)
-           (-let [(_ callback method start-time before-send) (gethash id (lsp--client-response-handlers client))]
-             (when lsp-print-io
-               (lsp--log-entry-new
-                (lsp--make-log-entry method id data 'incoming-resp
-                                     (/ (nth 2 (time-since before-send)) 1000))
-                workspace))
-             (when callback
-               (funcall callback (lsp:json-response-error-error json-data))
-               (remhash id (lsp--client-response-handlers client))
-               (lsp--log-request-time server-id method id start-time before-send
-                                      received-time after-parsed-time (current-time)))))
+           (when-let ((obj (lsp--client-response-handlers client)))
+             (-let [(_ callback method start-time before-send) (gethash id obj)]
+               (when lsp-print-io
+                 (lsp--log-entry-new
+                  (lsp--make-log-entry method id data 'incoming-resp
+                                       (/ (nth 2 (time-since before-send)) 1000))
+                  workspace))
+               (when callback
+                 (funcall callback (lsp:json-response-error-error json-data))
+                 (remhash id (lsp--client-response-handlers client))
+                 (lsp--log-request-time server-id method id start-time before-send
+                                        received-time after-parsed-time (current-time))))))
           ('notification
            (let ((before-notification (current-time)))
              (lsp--on-notification workspace json-data)
