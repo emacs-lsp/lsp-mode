@@ -4443,8 +4443,20 @@ Added to `after-change-functions'."
         ;; force cleanup overlays after each change
         (lsp--remove-overlays 'lsp-highlight)
         (lsp--after-change  (current-buffer))
-        (setq lsp--signature-last-index nil)
-        (setq lsp--signature-last nil)))))
+        (setq lsp--signature-last-index nil
+              lsp--signature-last nil)
+        ;; cleanup diagnostics
+        (lsp-foreach-workspace
+         (-let [diagnostics (lsp--workspace-diagnostics lsp--cur-workspace)]
+           (pcase system-type
+             (`windows-nt (let ((buffer-name (s-downcase (buffer-file-name))))
+                            (->> diagnostics
+                                 (ht-keys)
+                                 (mapc (lambda (file-name)
+                                         (when (string= (s-downcase file-name)
+                                                        buffer-name)
+                                           (remhash file-name diagnostics)))))))
+             (_ (remhash (buffer-file-name) diagnostics)))))))))
 
 
 
