@@ -79,11 +79,11 @@ completing function calls."
   :package-version '(lsp-mode "6.2"))
 
 (defvar lsp-gopls-available-codelens
-  '(("generate" . "Run `go generate` for a directory")
-	("test" . "Run `go test` for a specific test function")
-	("tidy" . "Run `go mod tidy` for a module")
-	("upgrade_dependency" . "Upgrade a dependency")
-	("regenerate_cgo" . "Regenerate cgo definitions"))
+  '((generate . "Run `go generate` for a directory")
+	  (test . "Run `go test` for a specific test function")
+	  (tidy . "Run `go mod tidy` for a module")
+	  (upgrade_dependency . "Upgrade a dependency")
+	  (regenerate_cgo . "Regenerate cgo definitions"))
   "Available codelens that can be further enabled or disabled
   through `lsp-gopls-codelens'.")
 
@@ -107,7 +107,7 @@ The returned type provides a tri-state that either:
 	(push 'set list)
 	list))
 
-(defcustom lsp-gopls-codelens '(("generate" . t) ("test" . t))
+(defcustom lsp-gopls-codelens '((generate . t) (test . t))
   "Select what codelens should be enabled or not.
 
 The codelens can be found at https://github.com/golang/tools/blob/4d5ea46c79fe3bbb57dd00de9c167e93d94f4710/internal/lsp/source/options.go#L102-L108."
