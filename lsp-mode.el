@@ -3906,7 +3906,15 @@ in that particular folder."
                                          global-mode-string
                                        (cons status global-mode-string)))
       (when (bound-and-true-p company-mode)
-        (lsp--setup-company)))
+        (lsp--setup-company))
+
+      (when (and lsp-modeline-code-actions-enable
+                 (lsp--capability "codeActionProvider"))
+        (lsp-modeline-code-actions-mode 1))
+
+      (when (and lsp-headerline-breadcrumb-enable
+                 (lsp--capability "documentSymbolProvider"))
+        (lsp-headerline-breadcrumb-mode 1)))
      (t
       (setq-local indent-region-function nil)
       (remove-function (local 'eldoc-documentation-function) #'lsp-eldoc-function)
@@ -7078,14 +7086,6 @@ returns the command to execute."
   "Autoconfigure `company', `flycheck', `lsp-ui',  if they are installed."
   (when (functionp 'lsp-ui-mode)
     (lsp-ui-mode))
-
-  (when (and lsp-modeline-code-actions-enable
-             (lsp--capability "codeActionProvider"))
-    (lsp-modeline-code-actions-mode 1))
-
-  (when (and lsp-headerline-breadcrumb-enable
-             (lsp--capability "documentSymbolProvider"))
-    (lsp-headerline-breadcrumb-mode 1))
 
   (cond
    ((or
