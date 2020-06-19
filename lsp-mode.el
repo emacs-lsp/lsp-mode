@@ -1835,22 +1835,15 @@ WORKSPACE is the workspace that contains the progress token."
                                 (->> workspace
                                      (lsp--workspace-diagnostics)
                                      (maphash (lambda (file-name diagnostics)
-                                                (puthash file-name
-                                                         (append (gethash file-name result) diagnostics)
-                                                         result)))))
+                                                (if-let ((cur (gethash file-name result)))
+                                                    (nconc cur diagnostics)
+                                                  (puthash file-name diagnostics result))))))
                               workspaces)
                         result)))
       (ht)))
 
 
 ;; diagnostic modeline
-(defun lsp--severity-code->severity (severity-code)
-  (cl-case severity-code
-    (1 'error)
-    (2 'warning)
-    (3 'info)
-    (4 'hint)))
-
 (defcustom lsp-diagnostics-modeline-scope :workspace
   "The scope "
   :group 'lsp-mode
@@ -1859,42 +1852,88 @@ WORKSPACE is the workspace that contains the progress token."
                  (const :tag "All Projects" :global))
   :package-version '(lsp-mode . "6.3"))
 
+(defvar-local lsp--diagnostics-modeline-string nil
+  "Value of current buffer diagnostics statistics.")
+(defvar lsp--diagnostics-modeline-wks->strings nil
+  "Plist of workspaces to their modeline strings.
+The `:global' workspace is global one.")
+
 (defun lsp--diagnostics-modeline-statistics ()
   "Calculate diagnostics statistics based on `lsp-diagnostics-modeline-scope'"
   (let ((diagnostics (cond
-                      ((equal :file lsp-diagnostics-modeline-scope)
-                       (lsp--get-buffer-diagnostics))
-                      (t (->> (eq :workspace lsp-diagnostics-modeline-scope)
-                              (lsp-diagnostics)
-                              (ht-values)
-                              (-flatten))))))
-    (->> diagnostics
-         (-group-by #'lsp:diagnostic-severity?)
-         (-sort (-lambda ((left) (right))
-                  (> right left)))
-         (-map (-juxt (-compose #'lsp--severity-code->severity #'cl-first)
-                      (-compose #'length #'cl-rest)))
-         (-map (-lambda ((code count))
-                 (propertize (format "%s" count)
-                             'face (cl-case code
-                                     ('error 'error)
-                                     ('warning 'warning)
-                                     ('info 'success)
-                                     ('hint 'success)))))
-         (s-join "/")
-         (format "%s"))))
+                       ((equal :file lsp-diagnostics-modeline-scope)
+                        (list (lsp--get-buffer-diagnostics)))
+                       (t (->> (eq :workspace lsp-diagnostics-modeline-scope)
+                               (lsp-diagnostics)
+                               (ht-values))))))
+    (->> (let ((stats (make-vector lsp/diagnostic-severity-max 0))
+               strs
+               (i 0))
+           (mapc (lambda (buf-diags)
+                   (mapc (lambda (diag)
+                           (-let [(&Diagnostic? :severity?) diag]
+                             (when severity?
+                               (cl-incf (aref stats severity?)))))
+                         buf-diags))
+                 diagnostics)
+           (while (< i lsp/diagnostic-severity-max)
+             (when (> (aref stats i) 0)
+               (setq strs
+                     (nconc strs
+                            `(,(propertize
+                                (format "%s" (aref stats i))
+                                'face
+                                (cond
+                                  ((equal i lsp/diagnostic-severity-error) 'error)
+                                  ((equal i lsp/diagnostic-severity-warning) 'warning)
+                                  ((equal i lsp/diagnostic-severity-information) 'success)
+                                  ((equal i lsp/diagnostic-severity-hint) 'success)))))))
+             (cl-incf i))
+           strs)
+         (s-join "/"))))
+
+(defun lsp--diagnostics-reset-modeline-cache ()
+  ""
+  (plist-put lsp--diagnostics-modeline-wks->strings (car (lsp-workspaces)) nil)
+  (plist-put lsp--diagnostics-modeline-wks->strings :global nil)
+  (setq lsp--diagnostics-modeline-string nil))
+
+(defun lsp--diagnostics-update-modeline ()
+  "Update diagnostics modeline string."
+  (cl-labels ((calc-modeline ()
+                (let ((str (lsp--diagnostics-modeline-statistics)))
+                  (if (string-empty-p str) ""
+                    (concat " " str)))))
+    (setq lsp--diagnostics-modeline-string 
+          (cl-case lsp-diagnostics-modeline-scope
+            (:file (or lsp--diagnostics-modeline-string
+                       (calc-modeline)))
+            (:workspace
+             (let ((wk (car (lsp-workspaces))))
+               (or (plist-get lsp--diagnostics-modeline-wks->strings wk)
+                   (let ((ml (calc-modeline)))
+                     (setq lsp--diagnostics-modeline-wks->strings
+                           (plist-put lsp--diagnostics-modeline-wks->strings wk ml))
+                     ml))))
+            (:global
+             (or (plist-get lsp--diagnostics-modeline-wks->strings :global)
+                 (let ((ml (calc-modeline)))
+                   (setq lsp--diagnostics-modeline-wks->strings
+                         (plist-put lsp--diagnostics-modeline-wks->strings :global ml))
+                   ml)))))))
 
 (define-minor-mode lsp-diagnostics-modeline-mode
   "Toggle diagnostics modeline."
   :group 'lsp-mode
   :global nil
   :lighter ""
-  (let ((status '(t (:eval (concat " " (lsp--diagnostics-modeline-statistics) " ")))))
-    (setq-local global-mode-string
-                (cond ((and lsp-diagnostics-modeline-mode
-                            (not (-contains? global-mode-string status)))
-                       (cons status global-mode-string))
-                      (t (remove status global-mode-string))))))
+  (cond
+    (lsp-diagnostics-modeline-mode
+     (add-to-list 'global-mode-string '(t (:eval (lsp--diagnostics-update-modeline))))
+     (add-hook 'lsp-diagnostics-updated-hook 'lsp--diagnostics-reset-modeline-cache))
+    (t
+     (remove-hook 'lsp-diagnostics-updated-hook 'lsp--diagnostics-reset-modeline-cache)
+     (setq global-mode-string (remove '(t (:eval (lsp--diagnostics-update-modeline))) global-mode-string)))))
 
 
 ;; code actions modeline
@@ -1986,7 +2025,7 @@ WORKSPACE is the workspace that contains the progress token."
     (add-hook 'lsp-on-idle-hook 'lsp--modeline-check-code-actions nil t))
    (t
     (remove-hook 'lsp-on-idle-hook 'lsp--modeline-check-code-actions t)
-    (setq-local global-mode-string (remove '(t (:eval lsp--modeline-code-actions-string)) global-mode-string)))))
+    (setq global-mode-string (remove '(t (:eval lsp--modeline-code-actions-string)) global-mode-string)))))
 
 
 ;; headerline breadcrumb
