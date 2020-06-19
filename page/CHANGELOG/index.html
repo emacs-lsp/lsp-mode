@@ -1650,6 +1650,37 @@
     <code>lsp-gopls-env</code> and <code>lsp-yaml-schemas</code>.</li>
 <li>Add <code>lsp-gopls-codelens</code> defcustom to configure codelenses used for
     golang.</li>
+<li>Added <code>lsp-diagnose</code> to help users verify their performance related
+    settings</li>
+<li>Created new website <a href="https://emacs-lsp.github.io/lsp-mode/">https://emacs-lsp.github.io/lsp-mode/</a> (thanks
+    to @ericdallo)</li>
+<li>Implemented special handling of Clangd echo area.</li>
+<li>Added setting to disable additional text edits
+    (<code>lsp-completion-enable-additional-text-edit</code>).</li>
+<li>Added setting to disable text detail
+    (<code>lsplsp-completion-show-detail</code>).</li>
+<li>Add serenata language server support (thanks to @Sasanidas)</li>
+<li>Various capf improments - better handling of partial results,
+    support for try-completions, improved resposibility, optimized
+    filtering/sorting, etc.</li>
+<li>Remove Elixir JakeBecker support (no longer supported)</li>
+<li>Support semantic tokens protocol (thanks to @sebastiansturm)</li>
+<li>Improved flycheck integration for better performance.</li>
+<li>Implemented client side bindings for the protocol.</li>
+<li><code>Fixup</code> Ignore timeouts from <code>willSaveWaitUntil</code></li>
+<li>Implemented org-mode support (see
+    <a href="https://github.com/emacs-lsp/lsp-mode/blob/master/docs/page/lsp-org.md">https://github.com/emacs-lsp/lsp-mode/blob/master/docs/page/lsp-org.md</a>)</li>
+<li>Removed support for Theia semantic highlighting protocol</li>
+<li>Performed serveral fixes to make sure lsp-mode is working fine with
+    Emacs 28 native compilation.</li>
+<li>Add modeline code actions support (thanks to @ericdallo). Enabled by
+    default, use <code>lsp-modeline-code-actions-enable</code> to disable it.</li>
+<li>Migrated to github actions from travis.</li>
+<li>Add breadcrumb on headerline (thanks to @ericdallo). Disabled by
+    default, can be enabled via <code>lsp-headerline-breadcrumb-enable</code></li>
+<li>Migrated lsp-mode to use plists(thanks to @yyoncho, @kiennq and
+    @ericdallo).</li>
+<li>lsp-diagnostics-modeline: perf improvement (thanks to @kiennq)</li>
 </ul>
 <h2 id="release-63">Release 6.3<a class="headerlink" href="#release-63" title="Permanent link">#</a></h2>
 <ul>
