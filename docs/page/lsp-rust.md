@@ -62,6 +62,8 @@ To enable automatic code format on save, add this to your `init.el` (`rust-mode`
 
 `lsp-rust-analyzer-cargo-override-command` Advanced option, fully override the command rust-analyzer uses for checking. The command should include `--message=format=json` or similar option
 
+`lsp-rust-analyzer-inlay-face` The face to use for the Rust Analyzer inlays
+
 ### Commands
 
 #### `lsp-rust-analyzer-syntax-tree`
@@ -112,5 +114,5 @@ Get a list of possible auto import candidates with `lsp-execute-code-action`
 
 ![](../examples/lsp-rust-analyzer-auto-import.png)
 
-### Caveats 
+### Caveats
 - Rust Analyzer does not support disabling snippets - https://github.com/rust-analyzer/rust-analyzer/issues/2518

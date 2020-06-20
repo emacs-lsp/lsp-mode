@@ -1,5 +1,6 @@
 * Changelog
 ** Master branch
+  * Configurable Rust Analyzer inlay face via ~lsp-rust-analyzer-inlay-face~.
   * Add ~lsp-headerline-breadcrumb-mode~ which shows a breadcrumb with the document symbols on headerline when enabled.
   * Add ~lsp-modeline-code-actions-mode~ which shows code actions on modeline when enabled.
   * Support for Theia-based semantic highlighting has been removed in favor of the semanticTokens protocol specified by LSP 3.16. To enable it, set ~lsp-enable-semantic-highlighting~ to ~t~.

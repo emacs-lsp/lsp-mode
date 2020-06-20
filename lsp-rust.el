@@ -456,6 +456,12 @@ The command should include `--message=format=json` or similar option."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.3.2"))
 
+(defcustom lsp-rust-analyzer-inlay-face 'font-lock-comment-face
+  "The face to use for the Rust Analyzer inlays."
+  :type 'face
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "6.4"))
+
 (defun lsp-rust-analyzer--make-init-options ()
   "Init options for rust-analyzer"
   `(:diagnostics (:enable ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable))
@@ -466,9 +472,9 @@ The command should include `--message=format=json` or similar option."
                   :allTargets ,(lsp-json-bool lsp-rust-analyzer-cargo-all-targets)
                   :overrideCommand ,lsp-rust-analyzer-cargo-override-command)
     :files (:exclude ,lsp-rust-analyzer-exclude-globs
-                     :watcher ,(lsp-json-bool (if lsp-rust-analyzer-use-client-watching
-                                                  "client"
-                                                "notify")))
+            :watcher ,(lsp-json-bool (if lsp-rust-analyzer-use-client-watching
+                                         "client"
+                                       "notify")))
     :cargo (:allFeatures ,(lsp-json-bool lsp-rust-all-features)
             :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
             :features ,lsp-rust-features
@@ -593,16 +599,15 @@ The command should include `--message=format=json` or similar option."
              (overlay-put overlay 'lsp-rust-analyzer-inlay-hint t)
              (overlay-put overlay 'evaporate t)
              (cond
-               ((equal kind lsp/rust-analyzer-inlay-hint-kind-type-hint)
-                (overlay-put overlay 'after-string (propertize (concat ": " label)
-                                                               'font-lock-face 'font-lock-comment-face)))
-               ((equal kind lsp/rust-analyzer-inlay-hint-kind-param-hint)
-                (overlay-put overlay 'before-string (propertize (concat label ": ")
-                                                                'font-lock-face 'font-lock-comment-face)))
-               ((equal kind lsp/rust-analyzer-inlay-hint-kind-chaining-hint)
-                (overlay-put overlay 'after-string (propertize (concat ": " label)
-                                                               'font-lock-face 'font-lock-comment-face)))
-               ))))
+              ((equal kind lsp/rust-analyzer-inlay-hint-kind-type-hint)
+               (overlay-put overlay 'after-string (propertize (concat ": " label)
+                                                              'font-lock-face lsp-rust-analyzer-inlay-face)))
+              ((equal kind lsp/rust-analyzer-inlay-hint-kind-param-hint)
+               (overlay-put overlay 'before-string (propertize (concat label ": ")
+                                                               'font-lock-face lsp-rust-analyzer-inlay-face)))
+              ((equal kind lsp/rust-analyzer-inlay-hint-kind-chaining-hint)
+               (overlay-put overlay 'after-string (propertize (concat ": " label)
+                                                              'font-lock-face lsp-rust-analyzer-inlay-face)))))))
        :mode 'tick))
   nil)
 
