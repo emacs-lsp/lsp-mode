@@ -2034,8 +2034,8 @@ The `:global' workspace is global one.")
   "Holds the current breadcrumb string on headerline.")
 
 (declare-function all-the-icons-material "ext:all-the-icons" t t)
-(declare-function treemacs-get-icon-value "ext:treemacs" t t)
-(declare-function lsp-treemacs-symbol-kind->icon "ext:lsp-treemacs" t t)
+(declare-function treemacs-get-icon-value "ext:treemacs-icons" t t)
+(declare-function lsp-treemacs-symbol-kind->icon "ext:lsp-treemacs" t)
 
 (defun lsp--headerline-breadcrumb-arrow-icon ()
   "Build the arrow icon for headerline breadcrumb."
