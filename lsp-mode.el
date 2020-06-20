@@ -1901,10 +1901,10 @@ The `:global' workspace is global one.")
 (defun lsp--diagnostics-update-modeline ()
   "Update diagnostics modeline string."
   (cl-labels ((calc-modeline ()
-                (let ((str (lsp--diagnostics-modeline-statistics)))
-                  (if (string-empty-p str) ""
-                    (concat " " str)))))
-    (setq lsp--diagnostics-modeline-string 
+                             (let ((str (lsp--diagnostics-modeline-statistics)))
+                               (if (string-empty-p str) ""
+                                 (concat " " str)))))
+    (setq lsp--diagnostics-modeline-string
           (cl-case lsp-diagnostics-modeline-scope
             (:file (or lsp--diagnostics-modeline-string
                        (calc-modeline)))
@@ -2046,7 +2046,7 @@ The `:global' workspace is global one.")
 
 (lsp-defun lsp--headerline-breadcrumb-symbol-icon ((&DocumentSymbol :kind))
   "Build the SYMBOL icon for headerline breadcrumb."
-  (when (require 'lsp-treemacs t t)
+  (when (require 'lsp-treemacs nil t)
     (treemacs-get-icon-value (lsp-treemacs-symbol-kind->icon kind))))
 
 (defun lsp--headerline-build-string (symbols-hierarchy)
@@ -2067,42 +2067,40 @@ The `:global' workspace is global one.")
                             symbol2-name))))
               symbols-hierarchy ""))
 
-(defun lsp--headerline-document-symbols->symbols-hierarchy (document-symbols)
+(defun lsp--document-symbols->symbols-hierarchy (document-symbols)
   "Convert DOCUMENT-SYMBOLS to symbols hierarchy."
-  (-let (((symbol &as &DocumentSymbol? :children?) (seq-some (-lambda ((symbol &as &DocumentSymbol :range))
-                                                          (-let (((beg . end) (lsp--range-to-region range)))
-                                                            (and (<= beg (point) end)
-                                                                 symbol)))
-                                                        document-symbols)))
+  (-let (((symbol &as &DocumentSymbol? :children?)
+          (seq-some (-lambda ((symbol &as &DocumentSymbol :range (&RangeToPoint :start :end)))
+                      (when (<= start (point) end)
+                        symbol))
+                    document-symbols)))
     (if children?
-        (cons symbol (lsp--headerline-document-symbols->symbols-hierarchy children?))
+        (cons symbol (lsp--document-symbols->symbols-hierarchy children?))
       (when symbol
         (list symbol)))))
 
-(defun lsp--headerline-symbols-informations->symbols-hierarchy (symbols-informations)
+(defun lsp--symbols-informations->symbols-hierarchy (symbols-informations)
   "Convert SYMBOL-INFORMATIONS to symbols hierarchy."
-  (->> symbols-informations
-       (seq-some (-lambda ((symbol &as &SymbolInformation :location (&Location :range)))
-                   (-let (((beg . end) (lsp--range-to-region range)))
-                     (and (<= beg (point) end)
-                          symbol))))
-       list))
+  (seq-filter (-lambda ((symbol &as &SymbolInformation :location (&Location :range (&RangeToPoint :start :end))))
+                (when (<= start (point) end)
+                  symbol))
+              symbols-informations))
 
-(defun lsp--headerline-symbols->symbols-hierarchy (symbols)
+(defun lsp-symbols->symbols-hierarchy (symbols)
   "Convert SYMBOLS to symbols-hierarchy."
   (when-let (first-symbol (lsp-seq-first symbols))
     (if (lsp-symbol-information? first-symbol)
-        (lsp--headerline-symbols-informations->symbols-hierarchy symbols)
-      (lsp--headerline-document-symbols->symbols-hierarchy symbols))))
+        (lsp--symbols-informations->symbols-hierarchy symbols)
+      (lsp--document-symbols->symbols-hierarchy symbols))))
 
 (defun lsp--headerline-check-breadcrumb (&rest _)
   "Request for document symbols to build the breadcrumb."
   (when (lsp-feature? "textDocument/documentSymbol")
     (-if-let* ((lsp--document-symbols-request-async t)
                (symbols (lsp--get-document-symbols))
-               (symbols-hierarchy (lsp--headerline-symbols->symbols-hierarchy symbols)))
+               (symbols-hierarchy (lsp-symbols->symbols-hierarchy symbols)))
         (setq lsp--headerline-breadcrumb-string (lsp--headerline-build-string symbols-hierarchy))
-      (setq lsp--headerline-breadcrumb-string nil))
+      (setq lsp--headerline-breadcrumb-string ""))
     (force-mode-line-update)))
 
 (define-minor-mode lsp-headerline-breadcrumb-mode
