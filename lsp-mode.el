@@ -853,7 +853,7 @@ Changes take effect only when a new session is started."
                                         (html-mode . "html")
                                         (sgml-mode . "html")
                                         (mhtml-mode . "html")
-                                        (go-dot-mod-mode . "go")
+                                        (go-dot-mod-mode . "go.mod")
                                         (go-mode . "go")
                                         (haskell-mode . "haskell")
                                         (hack-mode . "hack")
