@@ -55,7 +55,7 @@
                                    (lambda ()
                                      (list lsp-perl-language-server-path
                                            "-MPerl::LanguageServer" "-e" "Perl::LanguageServer::run" "--" 
-                                           (format "--port %o --version %s"
+                                           (format "--port %d --version %s"
                                                    lsp-perl-language-server-port lsp-perl-language-server-client-version))))
                   :major-modes '(perl-mode cperl-mode)
                   :priority -1
