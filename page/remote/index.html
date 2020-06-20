@@ -1596,6 +1596,7 @@
                      <span class="nb">:server-id</span> <span class="ss">&#39;pyls-remote</span><span class="p">))</span>
 </code></pre></div>
 
+<p><em>Note:</em> the path passed to <code>lsp-tramp-connection</code> should be either full path including host name, e. g. <code>/docker:my-image:/usr/bin/rust-analyzer</code> or the binary name (e. g. <code>rust-analyzer</code>) if the binary is on the path.</p>
 <h3 id="dealing-with-stderr">Dealing with stderr<a class="headerlink" href="#dealing-with-stderr" title="Permanent link">#</a></h3>
 <p>With TRAMP, Emacs does not have an easy way to distinguish stdout and stderr, so when the underlying LSP process writes to stderr, it breaks the <code>lsp-mode</code> parser. As a workaround, <code>lsp-mode</code> is redirecting stderr to <code>/tmp/&lt;process-name&gt;-&lt;id&gt;~stderr</code>.</p>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
