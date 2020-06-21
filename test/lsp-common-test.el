@@ -33,7 +33,7 @@
 (ert-deftest lsp--path-to-uri ()
   (let ((lsp--uri-file-prefix "file:///")
         (system-type 'windows-nt))
-    (should (equal (lsp--uri-to-path "file:///c:/Users/%7B%7D/") "c:/users/{}/")))
+    (should (equal (lsp--uri-to-path "file:///c:/Users/%7B%7D/") "c:/Users/{}/")))
   (let ((lsp--uri-file-prefix "file://"))
     (should (equal (lsp--uri-to-path "/root/%5E/%60") "/root/^/`"))))
 
@@ -49,7 +49,7 @@
 (ert-deftest lsp--uri-to-path--handle-utf8 ()
   (let ((lsp--uri-file-prefix "file:///")
         (system-type 'windows-nt))
-    (should (equal (lsp--uri-to-path "file:///c:/Users/%E4%BD%A0%E5%A5%BD/") "c:/users/你好/")))
+    (should (equal (lsp--uri-to-path "file:///c:/Users/%E4%BD%A0%E5%A5%BD/") "c:/Users/你好/")))
   (let ((lsp--uri-file-prefix "file://"))
     (should (equal (lsp--uri-to-path "/root/%E4%BD%A0%E5%A5%BD/%E8%B0%A2%E8%B0%A2") "/root/你好/谢谢"))))
 

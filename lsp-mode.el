@@ -1570,7 +1570,6 @@ On other systems, returns path without change."
                           file))))
     (->> file-name
          (concat (-some #'lsp--workspace-host-root (lsp-workspaces)))
-         (lsp--fix-path-casing)
          (lsp-remap-path-if-needed))))
 
 (defun lsp--buffer-uri ()
@@ -2130,7 +2129,7 @@ interface PublishDiagnosticsParams {
 PARAMS contains the diagnostics data.
 WORKSPACE is the workspace that contains the diagnostics."
   (let* ((lsp--virtual-buffer-mappings (ht))
-         (file (lsp--uri-to-path uri))
+         (file (lsp--fix-path-casing (lsp--uri-to-path uri)))
          (workspace-diagnostics (lsp--workspace-diagnostics workspace)))
 
     (if (seq-empty-p diagnostics)
@@ -4449,8 +4448,12 @@ Added to `after-change-functions'."
         ;; force cleanup overlays after each change
         (lsp--remove-overlays 'lsp-highlight)
         (lsp--after-change  (current-buffer))
-        (setq lsp--signature-last-index nil)
-        (setq lsp--signature-last nil)))))
+        (setq lsp--signature-last-index nil
+              lsp--signature-last nil)
+        ;; cleanup diagnostics
+        (lsp-foreach-workspace
+         (-let [diagnostics (lsp--workspace-diagnostics lsp--cur-workspace)]
+           (remhash (lsp--fix-path-casing (buffer-file-name)) diagnostics)))))))
 
 
 
@@ -8206,8 +8209,7 @@ This avoids overloading the server with many files when starting Emacs."
 (defun lsp--get-buffer-diagnostics ()
   (gethash (or
             (plist-get lsp--virtual-buffer :buffer-file-name)
-            (lsp--fix-path-casing buffer-file-name)
-            (lsp--fix-path-casing (file-truename buffer-file-name)))
+            (lsp--fix-path-casing buffer-file-name))
            (lsp-diagnostics t)))
 
 (defun lsp--flycheck-calculate-level (severity tags)
