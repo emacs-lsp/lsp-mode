@@ -507,7 +507,7 @@ entire project."
   :group 'lsp-mode
   :type '(repeat string)
   :package-version '(lsp-mode . "6.3.1"))
-;;;###autoload(put 'lsp-watch-folders 'safe-local-variable #'booleanp)
+;;;###autoload(put 'lsp-watch-folders 'safe-local-variable #'t)
 
 (defcustom lsp-file-watch-ignored '(; SCM tools
                                     "[/\\\\]\\.git$"
@@ -3669,7 +3669,7 @@ disappearing, unset all the variables related to it."
         (let ((watch (make-lsp-watch :root-directory folder)))
           (puthash folder watch created-watches)
           (lsp-watch-root-folder (file-truename folder)
-                                 (when (f-equal? folder workspace-root)
+                                 (when (lsp-f-same? folder workspace-root)
                                    workspace-sub-folders)
                                  (-partial #'lsp--file-process-event (lsp-session) folder)
                                  watch
@@ -7217,7 +7217,6 @@ returns the command to execute."
 INITIALIZATION-OPTIONS are passed to initialize function.
 SESSION is the active session."
   (lsp--spinner-start)
-  (hack-local-variables)
   (-let* ((default-directory root)
           (client (copy-lsp--client client-template))
           (workspace (make-lsp--workspace
