@@ -1532,7 +1532,7 @@
 <p>When configured properly <code>lsp-mode</code>'s performance is on par with mainstream LSP clients (e. g. <code>VScode</code>, <code>Theia</code>, etc). Here are steps to achieve optimal results.</p>
 <ul>
 <li>
-<p>Use Emacs 27+ with native json support. (Note: this requires that you have <a href="http://www.digip.org/jansson/">libjansson</a> installed, and that emacs was compiled with `–with-json` passed to `./configure`.) You can check your installation for native json support by running do <kbd>M-:</kbd> <code>(functionp 'json-serialize)</code> <kbd>RET</kbd>. 
+<p>Use Emacs 27+ with native json support. (Note: this requires that you have <a href="http://www.digip.org/jansson/">libjansson</a> installed, and that emacs was compiled with `–with-json` passed to `./configure`.) You can check your installation for native json support by running <kbd>M-:</kbd> <code>(functionp 'json-serialize)</code> <kbd>RET</kbd>.
 Benchmarks show that Emacs 27 is <code>~15 times</code> faster than Emacs when using Elisp json parser implementation.</p>
 </li>
 <li>
