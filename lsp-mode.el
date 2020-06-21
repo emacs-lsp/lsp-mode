@@ -2116,10 +2116,6 @@ The `:global' workspace is global one.")
 
 
 
-(defalias 'lsp--buffer-for-file (if (eq system-type 'windows-nt)
-                                    #'find-buffer-visiting
-                                  #'get-file-buffer))
-
 (lsp-defun lsp--on-diagnostics (workspace (&PublishDiagnosticsParams :uri :diagnostics))
   "Callback for textDocument/publishDiagnostics.
 interface PublishDiagnosticsParams {
@@ -4122,7 +4118,7 @@ interface TextDocumentEdit {
     ("rename" (-let* (((&RenameFile :old-uri :new-uri :options? (&RenameFileOptions? :overwrite?)) edit)
                       (old-file-name (lsp--uri-to-path old-uri))
                       (new-file-name (lsp--uri-to-path new-uri))
-                      (buf (lsp--buffer-for-file old-file-name)))
+                      (buf (find-buffer-visiting old-file-name)))
                 (when buf
                   (lsp-with-current-buffer buf
                     (save-buffer)
@@ -4137,7 +4133,7 @@ interface TextDocumentEdit {
                              (lsp:text-document-edit-text-document)
                              (lsp:versioned-text-document-identifier-uri)
                              (lsp--uri-to-path))))
-         (lsp-with-current-buffer (lsp--buffer-for-file file-name)
+         (lsp-with-current-buffer (find-buffer-visiting file-name)
            (lsp-with-filename file-name
              (lsp--apply-text-edits (lsp:text-document-edit-edits edit))))))))
 
@@ -5163,7 +5159,7 @@ Others: TRIGGER-CHARS"
                (file-locs location-link)
                (-let [(filename . matches) file-locs]
                  (condition-case err
-                     (let ((visiting (lsp--buffer-for-file filename))
+                     (let ((visiting (find-buffer-visiting filename))
                            (fn (lambda (loc)
                                  (lsp-with-filename filename
                                    (lsp--xref-make-item
@@ -6692,7 +6688,7 @@ an alist
     (not (eq (->> location
                   (lsp:location-uri)
                   (lsp--uri-to-path)
-                  (lsp--buffer-for-file))
+                  (find-buffer-visiting))
              (current-buffer)))))
 
 (lsp-defun lsp--get-symbol-type ((&SymbolInformation :kind))
