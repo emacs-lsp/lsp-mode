@@ -352,6 +352,22 @@
     "debugger": "Not available"
   },
   {
+    "name": "rust",
+    "full-name": "Rust",
+    "server-name": "rls",
+    "server-url": "https://github.com/rust-lang/rls",
+    "installation-url": "https://github.com/rust-lang/rls",
+    "debugger": "Yes"
+  },
+  {
+    "name": "rust-analyzer",
+    "full-name": "Rust",
+    "server-name": "rust-analyzer",
+    "server-url": "https://github.com/rust-analyzer/rust-analyzer",
+    "installation-url": "https://github.com/rust-analyzer/rust-analyzer#language-server-quick-start",
+    "debugger": "Not available"
+  },
+  {
     "name": "serenata",
     "full-name": "PHP (Serenata)",
     "server-name": "Serenata",
@@ -368,19 +384,11 @@
     "debugger": "Yes"
   },
   {
-    "name": "rust",
-    "full-name": "Rust",
-    "server-name": "rls",
-    "server-url": "https://github.com/rust-lang/rls",
-    "installation-url": "https://github.com/rust-lang/rls",
-    "debugger": "Yes"
-  },
-  {
-    "name": "rust-analyzer",
-    "full-name": "Rust",
-    "server-name": "rust-analyzer",
-    "server-url": "https://github.com/rust-analyzer/rust-analyzer",
-    "installation-url": "https://github.com/rust-analyzer/rust-analyzer#language-server-quick-start",
+    "name": "sqls",
+    "full-name": "SQL (sqls)",
+    "server-name": "sqls",
+    "server-url": "https://github.com/lighttiger2505/sqls",
+    "installation": "go get github.com/lighttiger2505/sqls",
     "debugger": "Not available"
   },
   {
