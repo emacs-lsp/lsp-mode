@@ -1,11 +1,35 @@
 * Changelog
 ** Master branch
+  * Configurable Rust Analyzer inlay face via ~lsp-rust-analyzer-inlay-face~.
   * Add ~lsp-headerline-breadcrumb-mode~ which shows a breadcrumb with the document symbols on headerline when enabled.
   * Add ~lsp-modeline-code-actions-mode~ which shows code actions on modeline when enabled.
   * Support for Theia-based semantic highlighting has been removed in favor of the semanticTokens protocol specified by LSP 3.16. To enable it, set ~lsp-enable-semantic-highlighting~ to ~t~.
   * ~lsp-metals~ moved into a separate repo https://github.com/emacs-lsp/lsp-metals
   * Breaking change: use alist instead of hast-tables for =lsp-gopls-env= and =lsp-yaml-schemas=.
   * Add =lsp-gopls-codelens= defcustom to configure codelenses used for golang.
+  * Added =lsp-diagnose= to help users verify their performance related settings
+  * Created new website https://emacs-lsp.github.io/lsp-mode/ (thanks to @ericdallo)
+  * Implemented special handling of Clangd echo area.
+  * Added setting to disable additional text edits (=lsp-completion-enable-additional-text-edit=).
+  * Added setting to disable text detail (=lsplsp-completion-show-detail=).
+  * Add serenata language server support (thanks to @Sasanidas)
+  * Various capf improments - better handling of partial results, support for try-completions, improved resposibility, optimized filtering/sorting, etc.
+  * Remove Elixir JakeBecker support (no longer supported)
+  * Support semantic tokens protocol (thanks to @sebastiansturm)
+  * Improved flycheck integration for better performance.
+  * Implemented client side bindings for the protocol.
+  * =Fixup= Ignore timeouts from =willSaveWaitUntil=
+  * Implemented org-mode support (see https://github.com/emacs-lsp/lsp-mode/blob/master/docs/page/lsp-org.md)
+  * Removed support for Theia semantic highlighting protocol
+  * Performed serveral fixes to make sure lsp-mode is working fine with Emacs 28 native compilation.
+  * Add modeline code actions support (thanks to @ericdallo). Enabled by
+    default, use =lsp-modeline-code-actions-enable= to disable it.
+  * Migrated to github actions from travis.
+  * Add breadcrumb on headerline (thanks to @ericdallo). Disabled by default,
+    can be enabled via =lsp-headerline-breadcrumb-enable=
+  * Migrated lsp-mode to use plists(thanks to @yyoncho, @kiennq and @ericdallo).
+  * lsp-diagnostics-modeline: perf improvement (thanks to @kiennq)
+
 ** Release 6.3
   * Implemented ~company-capf~ integration. ~company-lsp~ is no longer supported.
   * Dropped support for dart language server in favour of dart SDK(breaking)
