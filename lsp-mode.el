@@ -4482,6 +4482,9 @@ Added to `after-change-functions'."
 
 
 (defun lsp--idle-reschedule (buffer)
+  (when lsp--on-idle-timer
+    (cancel-timer lsp--on-idle-timer))
+
   (setq lsp--on-idle-timer (run-with-idle-timer
                             lsp-idle-delay
                             nil
@@ -8292,16 +8295,20 @@ CALLBACK is the status callback passed by Flycheck."
 (defun lsp--flycheck-report ()
   "This callback is invoked when new diagnostics are received
 from the language server."
-  (when (and (memq 'idle-change flycheck-check-syntax-automatically)
+  (when (and (or (memq 'idle-change flycheck-check-syntax-automatically)
+                 (and (memq 'save flycheck-check-syntax-automatically)
+                      (not (buffer-modified-p))))
              lsp--cur-workspace)
     ;; make sure diagnostics are published even if the diagnostics
     ;; have been received after idle-change has been triggered
-    (-some->> lsp--cur-workspace
-      (lsp--workspace-buffers)
-      (mapc (lambda (buffer)
-              (when (lsp-buffer-live-p buffer)
-                (lsp-with-current-buffer buffer
-                  (add-hook 'lsp-on-idle-hook #'lsp--flycheck-buffer nil t))))))))
+    (->> lsp--cur-workspace
+         (lsp--workspace-buffers)
+         (mapc (lambda (buffer)
+                 (when (lsp-buffer-live-p buffer)
+                   (lsp-with-current-buffer buffer
+                     (add-hook 'lsp-on-idle-hook #'lsp--flycheck-buffer nil t)
+                     (lsp--idle-reschedule (current-buffer)))))))))
+
 
 (declare-function lsp-cpp-flycheck-clang-tidy-error-explainer "lsp-cpp")
 
