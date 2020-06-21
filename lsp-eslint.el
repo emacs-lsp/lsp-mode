@@ -228,12 +228,17 @@
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--server-register-capability
-                       (ht ("id" "random-id")
-                           ("method" "workspace/didChangeWatchedFiles")
-                           ("registerOptions" (ht ("watchers"
-                                                   (vector (ht ("globPattern" "**/.eslintr{c.js,c.yaml,c.yml,c,c.json}"))
-                                                           (ht ("globPattern" "**/.eslintignore"))
-                                                           (ht ("globPattern" "**/package.json"))))))))))))
+                       (lsp-make-registration
+                        :id "random-id"
+                        :method "workspace/didChangeWatchedFiles"
+                        :register-options? (lsp-make-did-change-watched-files-registration-options
+                                            :watchers
+                                            `[,(lsp-make-file-system-watcher
+                                                :glob-pattern "**/.eslintr{c.js,c.yaml,c.yml,c,c.json}")
+                                               ,(lsp-make-file-system-watcher
+                                                 :glob-pattern "**/.eslintignore")
+                                               ,(lsp-make-file-system-watcher
+                                                 :glob-pattern "**/package.json")])))))))
 
 (provide 'lsp-eslint)
 ;;; lsp-eslint.el ends here

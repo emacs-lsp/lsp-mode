@@ -223,9 +223,13 @@
 
     (advice-add 'lsp-notify :around 'lsp-notify-collect)
 
-    (lsp--server-register-capability (ht ("id" "test-id")
-                                         ("method" "workspace/didChangeWatchedFiles")
-                                         ("registerOptions" (ht ("watchers" (vector (ht ("globPattern" "file-name-matching"))))))))
+    (lsp--server-register-capability
+     (lsp-make-registration
+      :id "test-id"
+      :method "workspace/didChangeWatchedFiles"
+      :register-options? (lsp-make-did-change-watched-files-registration-options
+                          :watchers
+                          `[,(lsp-make-file-system-watcher :glob-pattern "file-name-matching")])))
 
     (f-write-text "some-text" 'utf-8 matching-file)
 
@@ -236,10 +240,10 @@
     (advice-remove 'lsp-notify 'lsp-notify-collect)
 
     (should (equal lsp--test-events
-                   `(((workspace-1) "workspace/didChangeWatchedFiles" ((changes . [((type . 2)
-                                                                                    (uri . ,(lsp--path-to-uri matching-file)))])))
-                     ((workspace-1) "workspace/didChangeWatchedFiles" ((changes . [((type . 1)
-                                                                                    (uri . ,(lsp--path-to-uri matching-file)))]))))))))
+                   `(((workspace-1) "workspace/didChangeWatchedFiles"
+                      ((changes . [((type . 2) (uri . ,(lsp--path-to-uri matching-file)))])))
+                     ((workspace-1) "workspace/didChangeWatchedFiles"
+                      ((changes . [((type . 1) (uri . ,(lsp--path-to-uri matching-file)))]))))))))
 
 (ert-deftest lsp-file-watches-cleanup-test ()
   :tags '(no-win)
@@ -255,16 +259,20 @@
 
     (advice-add 'lsp-notify :around 'lsp-notify-collect)
 
-    (lsp--server-register-capability (ht ("id" "test-id")
-                                         ("method" "workspace/didChangeWatchedFiles")
-                                         ("registerOptions" (ht ("watchers" (vector (ht ("globPattern" "file-name-matching"))))))))
+    (lsp--server-register-capability
+     (lsp-make-registration
+      :id "test-id"
+      :method "workspace/didChangeWatchedFiles"
+      :register-options? (lsp-make-did-change-watched-files-registration-options
+                          :watchers
+                          `[,(lsp-make-file-system-watcher :glob-pattern "file-name-matching")])))
 
     (should (= (ht-size (lsp-session-watches)) 1))
 
     (lsp--server-unregister-capability
-     (ht ("id" "test-id")
-         ("method" "workspace/didChangeWatchedFiles")
-         ("registerOptions" (ht ("watchers" (vector (ht ("globPattern" "file-name-matching"))))))))
+     (lsp-make-unregistration
+      :id "test-id"
+      :method "workspace/didChangeWatchedFiles"))
 
     (f-write-text "some-text" 'utf-8 matching-file)
 

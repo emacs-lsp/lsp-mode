@@ -65,23 +65,23 @@
 (defvar lsp-json--major-modes '(json-mode jsonc-mode))
 
 (defvar lsp-json--schema-associations
-  (ht ("/*.css-data.json" ["https://raw.githubusercontent.com/Microsoft/vscode-css-languageservice/master/docs/customData.schema.json"])
-      ("/package.json" ["http://json.schemastore.org/package"])
-      ("/*.html-data.json" ["https://raw.githubusercontent.com/Microsoft/vscode-html-languageservice/master/docs/customData.schema.json"])
-      ("/*.schema.json" ["http://json-schema.org/draft-07/schema#"])
-      ("/bower.json" ["http://json.schemastore.org/bower"])
-      ("/composer.json" ["http://json.schemastore.org/composer"])
-      ("/tsconfig.json" ["http://json.schemastore.org/tsconfig"])
-      ("/tsconfig.*.json" ["http://json.schemastore.org/tsconfig"])
-      ("/typings.json" ["http://json.schemastore.org/typings"])
-      ("/.bowerrc" ["http://json.schemastore.org/bowerrc"])
-      ("/.babelrc" ["http://json.schemastore.org/babelrc"])
-      ("/.babelrc.json" ["http://json.schemastore.org/babelrc"])
-      ("/babel.config.json" ["http://json.schemastore.org/babelrc"])
-      ("/jsconfig.json" ["http://json.schemastore.org/jsconfig"])
-      ("/jsconfig.*.json" ["http://json.schemastore.org/jsconfig"])
-      ("/project.json" ["http://json.schemastore.org/project"])
-      ("/omnisharp.json" ["http://json.schemastore.org/omnisharp"]))
+  `(:/*.css-data.json ["https://raw.githubusercontent.com/Microsoft/vscode-css-languageservice/master/docs/customData.schema.json"]
+    :/package.json ["http://json.schemastore.org/package"]
+    :/*.html-data.json ["https://raw.githubusercontent.com/Microsoft/vscode-html-languageservice/master/docs/customData.schema.json"]
+    :/*.schema.json ["http://json-schema.org/draft-07/schema#"]
+    :/bower.json ["http://json.schemastore.org/bower"]
+    :/composer.json ["http://json.schemastore.org/composer"]
+    :/tsconfig.json ["http://json.schemastore.org/tsconfig"]
+    :/tsconfig.*.json ["http://json.schemastore.org/tsconfig"]
+    :/typings.json ["http://json.schemastore.org/typings"]
+    :/.bowerrc ["http://json.schemastore.org/bowerrc"]
+    :/.babelrc ["http://json.schemastore.org/babelrc"]
+    :/.babelrc.json ["http://json.schemastore.org/babelrc"]
+    :/babel.config.json ["http://json.schemastore.org/babelrc"]
+    :/jsconfig.json ["http://json.schemastore.org/jsconfig"]
+    :/jsconfig.*.json ["http://json.schemastore.org/jsconfig"]
+    :/project.json ["http://json.schemastore.org/project"]
+    :/omnisharp.json ["http://json.schemastore.org/omnisharp"])
   "Default json schemas.")
 
 (defun lsp-json--get-content (_workspace uri callback)
