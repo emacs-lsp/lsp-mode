@@ -65,6 +65,8 @@
 (declare-function evil-set-command-property "ext:evil-common")
 (declare-function projectile-project-root "ext:projectile")
 (declare-function yas-expand-snippet "ext:yasnippet")
+(declare-function dap-mode "ext:dap-mode")
+(declare-function dap-auto-configure-mode "ext:dap-mode")
 
 (defvar company-backends)
 (defvar c-basic-offset)
@@ -598,6 +600,12 @@ This flag affects only server which do not support incremental update."
   :type 'boolean
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-enable-dap-auto-configure t
+  "If non-nil, enable the `dap-auto-configure-mode`."
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.4"))
 
 (defcustom lsp-links-check-internal 0.1
   "The interval for updating document links."
@@ -3963,7 +3971,11 @@ in that particular folder."
 
     (when (and lsp-enable-links
                (lsp-feature? "textDocument/documentLink"))
-      (add-hook 'lsp-on-idle-hook #'lsp--document-links nil t)))
+      (add-hook 'lsp-on-idle-hook #'lsp--document-links nil t))
+
+    (when (and lsp-enable-dap-auto-configure
+               (featurep 'dap-mode))
+      (dap-auto-configure-mode 1)))
 
   (let ((buffer (current-buffer)))
     (run-with-idle-timer
@@ -8076,7 +8088,7 @@ server if there is such. When `lsp' is called with prefix
 argument ask the user to select which language server to start. "
   (interactive "P")
 
-  (when (and lsp-auto-configure)
+  (when lsp-auto-configure
     (seq-do (lambda (package)
               ;; loading client is slow and `lsp' can be called repeatedly
               (unless (featurep package) (require package nil t)))
