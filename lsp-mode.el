@@ -72,6 +72,7 @@
 (defvar c-basic-offset)
 (defvar yas-inhibit-overlay-modification-protection)
 (defvar yas-indent-line)
+(defvar dap-auto-configure-mode)
 
 (defconst lsp--message-type-face
   `((1 . ,compilation-error-face)
@@ -3526,11 +3527,14 @@ To find out what capabilities support your server use `M-x lsp-describe-session'
   "Cleanup buffer state.
 When a workspace is shut down, by request or from just
 disappearing, unset all the variables related to it."
-  (let ((proc (lsp--workspace-cmd-proc lsp--cur-workspace)))
+  (let ((proc (lsp--workspace-cmd-proc lsp--cur-workspace))
+        (buffers (lsp--workspace-buffers lsp--cur-workspace)))
     (when (process-live-p proc)
       (kill-process proc))
-    (unless lsp--buffer-workspaces
-      (lsp-managed-mode -1))))
+    (mapc (lambda (buf)
+            (with-current-buffer buf
+              (lsp-managed-mode -1)))
+          buffers)))
 
 (defun lsp--client-capabilities (&optional custom-capabilities)
   "Return the client capabilities."
@@ -3882,13 +3886,15 @@ in that particular folder."
       (add-hook 'auto-save-hook #'lsp--on-auto-save nil t)
       (add-hook 'before-change-functions #'lsp-before-change nil t)
       (add-hook 'before-save-hook #'lsp--before-save nil t)
+      (add-hook 'kill-buffer-hook #'lsp--text-document-did-close nil t)
+      (add-hook 'post-command-hook #'lsp--post-command nil t)
+
       (when (and lsp-enable-completion-at-point
                  (lsp-feature? "textDocument/completion"))
         (setq-local completion-at-point-functions nil)
         (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t)
         (setq-local completion-category-defaults
                     (add-to-list 'completion-category-defaults '(lsp-capf (styles basic)))))
-      (add-hook 'kill-buffer-hook #'lsp--text-document-did-close nil t)
 
       (lsp--update-on-type-formatting-hook)
       (lsp--update-signature-help-hook)
@@ -3899,15 +3905,9 @@ in that particular folder."
                  (lsp-feature? "textDocument/semanticTokens"))
         (lsp--semantic-tokens-initialize-buffer
          (lsp-feature? "textDocument/semanticTokensRangeProvider")))
-      (add-hook 'post-command-hook #'lsp--post-command nil t)
+
       (when lsp-enable-xref
         (add-hook 'xref-backend-functions #'lsp--xref-backend nil t))
-      (when (and lsp-enable-text-document-color
-                 (lsp-feature? "textDocument/documentColor"))
-        (add-hook 'lsp-on-change-hook #'lsp--document-color nil t))
-
-      (when (and lsp-lens-auto-enable (lsp-feature? "textDocument/codeLens"))
-        (lsp-lens-mode 1))
 
       (setq-local global-mode-string (if (-contains? global-mode-string status)
                                          global-mode-string
@@ -3915,15 +3915,9 @@ in that particular folder."
       (when (bound-and-true-p company-mode)
         (lsp--setup-company))
 
-      (when (and lsp-modeline-code-actions-enable
-                 (lsp--capability "codeActionProvider"))
-        (lsp-modeline-code-actions-mode 1))
-
-      (when (and lsp-headerline-breadcrumb-enable
-                 (lsp--capability "documentSymbolProvider"))
-        (lsp-headerline-breadcrumb-mode 1)))
+      (lsp-configure-buffer))
      (t
-      (setq-local indent-region-function nil)
+      (lsp-unconfig-buffer)
       (remove-function (local 'eldoc-documentation-function) #'lsp-eldoc-function)
 
       (remove-hook 'post-command-hook #'lsp--post-command t)
@@ -3955,16 +3949,32 @@ in that particular folder."
       (lsp--remove-overlays 'lsp-sem-highlight)
       (lsp--remove-overlays 'lsp-highlight)
       (lsp--remove-overlays 'lsp-links)
-      (lsp--remove-overlays 'lsp-color)
-      (lsp-lens-mode -1)
 
       (remove-hook 'xref-backend-functions #'lsp--xref-backend t)
-      (remove-hook 'lsp-on-change-hook #'lsp--document-color t)
-      (setq-local global-mode-string (remove status global-mode-string))))))
+      (setq-local global-mode-string (remove status global-mode-string))
+      (when (bound-and-true-p company-mode)
+        (lsp--clean-company))))))
 
 (defun lsp-configure-buffer ()
+  (when (and lsp-modeline-code-actions-enable
+             (lsp-feature? "textDocument/codeAction"))
+    (lsp-modeline-code-actions-mode 1))
+
+  (when (and lsp-headerline-breadcrumb-enable
+             (lsp-feature? "textDocument/documentSymbol"))
+    (lsp-headerline-breadcrumb-mode 1))
+
+  (when (and lsp-lens-auto-enable
+             (lsp-feature? "textDocument/codeLens"))
+    (lsp-lens-mode 1))
+
+  (when (and lsp-enable-text-document-color
+             (lsp-feature? "textDocument/documentColor"))
+    (add-hook 'lsp-on-change-hook #'lsp--document-color nil t))
+
   (when lsp-auto-configure
-    (when (and lsp-enable-imenu (lsp-feature? "textDocument/documentSymbol"))
+    (when (and lsp-enable-imenu
+               (lsp-feature? "textDocument/documentSymbol"))
       (lsp-enable-imenu))
 
     (when (and lsp-enable-indentation
@@ -3992,6 +4002,20 @@ in that particular folder."
            (lsp--on-change-debounce buffer)
            (lsp--on-idle buffer)))))))
 
+(defun lsp-unconfig-buffer ()
+  (when lsp-modeline-code-actions-mode
+    (lsp-modeline-code-actions-mode -1))
+  (when lsp-headerline-breadcrumb-mode
+    (lsp-headerline-breadcrumb-mode -1))
+
+  (when lsp-lens-mode
+    (lsp-lens-mode -1))
+  (lsp--remove-overlays 'lsp-color)
+  (setq-local indent-region-function nil)
+  (remove-hook 'lsp-on-change-hook #'lsp--document-color t)
+  (remove-hook 'lsp-on-idle-hook #'lsp--document-highlight t)
+  (remove-hook 'lsp-on-idle-hook #'lsp--document-links t))
+
 (defun lsp--buffer-content ()
   (lsp-save-restriction-and-excursion
     (or (lsp-virtual-buffer-call :buffer-string)
@@ -4012,8 +4036,6 @@ in that particular folder."
                :text (lsp--buffer-content))))
 
   (lsp-managed-mode 1)
-
-  (lsp-configure-buffer)
 
   (run-hooks 'lsp-after-open-hook)
   (-some-> lsp--cur-workspace
@@ -6429,6 +6451,7 @@ PARAMS are the `workspace/configuration' request params"
 WORKSPACE is the active workspace."
   (-let* ((recv-time (current-time))
           (client (lsp--workspace-client workspace))
+          (buffers (lsp--workspace-buffers workspace))
           handler
           (response (cond
                      ((setq handler (gethash method (lsp--client-request-handlers client) nil))
@@ -6441,6 +6464,11 @@ WORKSPACE is the active workspace."
                      ((equal method "client/registerCapability")
                       (mapc #'lsp--server-register-capability
                             (lsp:registration-params-registrations params))
+                      (mapc (lambda (buf)
+                              (with-current-buffer buf
+                                (lsp-unconfig-buffer)
+                                (lsp-configure-buffer)))
+                            buffers)
                       nil)
                      ((equal method "window/showMessageRequest")
                       (let ((choice (lsp--window-log-message-request params)))
@@ -6448,6 +6476,11 @@ WORKSPACE is the active workspace."
                      ((equal method "client/unregisterCapability")
                       (mapc #'lsp--server-unregister-capability
                             (lsp:unregistration-params-unregisterations params))
+                      (mapc (lambda (buf)
+                              (with-current-buffer buf
+                                (lsp-unconfig-buffer)
+                                (lsp-configure-buffer)))
+                            buffers)
                       nil)
                      ((equal method "workspace/applyEdit")
                       (list :applied (condition-case err
@@ -7099,6 +7132,17 @@ returns the command to execute."
               (setq-local lsp-inhibit-lsp-hooks nil))
             nil
             t))
+
+(defun lsp--clean-company ()
+  (remove-hook 'company-completion-started-hook
+               (lambda (&rest _)
+                 (setq-local lsp-inhibit-lsp-hooks t))
+               t)
+  (remove-hook 'company-after-completion-hook
+               (lambda (&rest _)
+                 (lsp--capf-clear-cache)
+                 (setq-local lsp-inhibit-lsp-hooks nil))
+               t))
 
 (defun lsp--auto-configure ()
   "Autoconfigure `company', `flycheck', `lsp-ui',  if they are installed."
@@ -8489,9 +8533,9 @@ See https://github.com/emacs-lsp/lsp-mode."
     (when lsp-managed-mode
       (lsp-managed-mode -1)
       (lsp-mode -1)
-      (setq-local lsp--buffer-workspaces nil)
-      (setq-local lsp--virtual-buffer nil)
-      (setq-local lsp-buffer-uri nil)
+      (setq lsp--buffer-workspaces nil)
+      (setq lsp--virtual-buffer nil)
+      (setq lsp-buffer-uri nil)
 
       ;; force refresh of diagnostics
       (run-hooks 'lsp-after-diagnostics-hook))))
@@ -8543,12 +8587,11 @@ See https://github.com/emacs-lsp/lsp-mode."
                                                               (funcall in-range))
                                                             lsp--virtual-buffer-connections))
       (unless (equal lsp--virtual-buffer virtual-buffer)
-        (setq-local lsp--buffer-workspaces workspaces)
-        (setq-local lsp--virtual-buffer virtual-buffer)
-        (setq-local lsp-buffer-uri nil)
+        (setq lsp--buffer-workspaces workspaces)
+        (setq lsp--virtual-buffer virtual-buffer)
+        (setq lsp-buffer-uri nil)
         (lsp-mode 1)
         (lsp-managed-mode 1)
-        (lsp-configure-buffer)
         (lsp-patch-on-change-event))
 
     (save-excursion
