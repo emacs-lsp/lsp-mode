@@ -38,6 +38,8 @@ These are `lsp-mode` specific custom settings:
 
 To see all error statistics in the modeline you can enable `lsp-diagnostics-modeline-mode`. This is especially useful for languages that compilation might be broken due to errors in other files(e.g. Java/Haskell).
 
+![](../examples/modeline-diagnostics.png)
+
 ```elisp
 (with-eval-after-load 'lsp-mode
   ;; :project/:workspace/:file
