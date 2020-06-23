@@ -1865,39 +1865,45 @@ WORKSPACE is the workspace that contains the progress token."
   "Plist of workspaces to their modeline strings.
 The `:global' workspace is global one.")
 
+(declare-function lsp-treemacs-errors-list "ext:lsp-treemacs" t)
+
 (defun lsp--diagnostics-modeline-statistics ()
   "Calculate diagnostics statistics based on `lsp-diagnostics-modeline-scope'"
   (let ((diagnostics (cond
-                       ((equal :file lsp-diagnostics-modeline-scope)
-                        (list (lsp--get-buffer-diagnostics)))
-                       (t (->> (eq :workspace lsp-diagnostics-modeline-scope)
-                               (lsp-diagnostics)
-                               (ht-values))))))
-    (->> (let ((stats (make-vector lsp/diagnostic-severity-max 0))
-               strs
-               (i 0))
-           (mapc (lambda (buf-diags)
-                   (mapc (lambda (diag)
-                           (-let [(&Diagnostic? :severity?) diag]
-                             (when severity?
-                               (cl-incf (aref stats severity?)))))
-                         buf-diags))
-                 diagnostics)
-           (while (< i lsp/diagnostic-severity-max)
-             (when (> (aref stats i) 0)
-               (setq strs
-                     (nconc strs
-                            `(,(propertize
-                                (format "%s" (aref stats i))
-                                'face
-                                (cond
-                                  ((equal i lsp/diagnostic-severity-error) 'error)
-                                  ((equal i lsp/diagnostic-severity-warning) 'warning)
-                                  ((equal i lsp/diagnostic-severity-information) 'success)
-                                  ((equal i lsp/diagnostic-severity-hint) 'success)))))))
-             (cl-incf i))
-           strs)
-         (s-join "/"))))
+                      ((equal :file lsp-diagnostics-modeline-scope)
+                       (list (lsp--get-buffer-diagnostics)))
+                      (t (->> (eq :workspace lsp-diagnostics-modeline-scope)
+                              (lsp-diagnostics)
+                              (ht-values)))))
+        (stats (make-vector lsp/diagnostic-severity-max 0))
+        strs
+        (i 0))
+    (mapc (lambda (buf-diags)
+            (mapc (lambda (diag)
+                    (-let [(&Diagnostic? :severity?) diag]
+                      (when severity?
+                        (cl-incf (aref stats severity?)))))
+                  buf-diags))
+          diagnostics)
+    (while (< i lsp/diagnostic-severity-max)
+      (when (> (aref stats i) 0)
+        (setq strs
+              (nconc strs
+                     `(,(propertize
+                         (format "%s" (aref stats i))
+                         'face
+                         (cond
+                          ((equal i lsp/diagnostic-severity-error) 'error)
+                          ((equal i lsp/diagnostic-severity-warning) 'warning)
+                          ((equal i lsp/diagnostic-severity-information) 'success)
+                          ((equal i lsp/diagnostic-severity-hint) 'success)))))))
+      (cl-incf i))
+    (-> (s-join "/" strs)
+        (propertize 'mouse-face 'mode-line-highlight
+                    'help-echo "mouse-1: Show diagnostics"
+                    'local-map (when (require 'lsp-treemacs nil t)
+                                 (make-mode-line-mouse-map
+                                  'mouse-1 #'lsp-treemacs-errors-list))))))
 
 (defun lsp--diagnostics-reset-modeline-cache ()
   ""
