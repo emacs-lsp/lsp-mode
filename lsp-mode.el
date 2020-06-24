@@ -381,7 +381,7 @@ unless overridden by a more specific face association."
          lsp-erlang lsp-eslint lsp-fsharp lsp-gdscript lsp-go lsp-haskell lsp-haxe
          lsp-intelephense lsp-java lsp-json lsp-metals lsp-perl lsp-pwsh lsp-pyls
          lsp-python-ms lsp-rust lsp-serenata lsp-solargraph lsp-terraform lsp-verilog lsp-vetur
-         lsp-vhdl lsp-xml lsp-yaml)
+         lsp-vhdl lsp-xml lsp-yaml lsp-sqls)
   "List of the clients to be automatically required."
   :group 'lsp-mode
   :type '(repeat symbol))
@@ -6526,6 +6526,12 @@ WORKSPACE is the active workspace."
                                'hash-table))
            (json-false nil))
        (json-read-from-string ,str))))
+
+(defun lsp--read-json-file (file-path)
+  "Read json file."
+  (-> file-path
+      (f-read-text)
+      (lsp--read-json)))
 
 (defun lsp--log-request-time (server-id method id start-time before-send received-time after-parsed-time after-processed-time)
   (when lsp-print-performance
