@@ -2480,7 +2480,7 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
   (-doto (make-sparse-keymap)
     (define-key [mouse-1] (lsp--lens-create-interactive-command command))))
 
-(lsp-defun lsp--lens-create-interactive-command ((&CodeLens :command?))
+(lsp-defun lsp--lens-create-interactive-command (command?)
   (let ((server-id (->> (lsp-workspaces)
                         (cl-first)
                         (or lsp--cur-workspace)
@@ -2565,7 +2565,7 @@ version."
                         backend-data))
       ;; display the data only when the backends have reported data for the
       ;; current version of the file
-      (lsp--lens-display (-flatten (-map 'cl-rest backend-data)))))
+      (lsp--lens-display (apply #'append (-map #'cl-rest backend-data)))))
   version)
 
 (defun lsp-lens-show ()
