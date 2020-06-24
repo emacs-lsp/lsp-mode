@@ -59,7 +59,7 @@
                                  ".sqls/config.json")
                                 ((equal lsp-sqls-workspace-config-path "root")
                                  (-> (lsp-workspace-root)
-                                     (concat "/.sqls/config.json"))))))
+                                     (f-join "/.sqls/config.json"))))))
     (when (file-exists-p config-json-path)
       (lsp--set-configuration (lsp--read-json-file config-json-path)))))
 
