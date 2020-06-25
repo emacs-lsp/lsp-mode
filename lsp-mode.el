@@ -2480,7 +2480,7 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
   (-doto (make-sparse-keymap)
     (define-key [mouse-1] (lsp--lens-create-interactive-command command))))
 
-(lsp-defun lsp--lens-create-interactive-command (command?)
+(defun lsp--lens-create-interactive-command (command?)
   (let ((server-id (->> (lsp-workspaces)
                         (cl-first)
                         (or lsp--cur-workspace)
