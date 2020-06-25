@@ -5854,7 +5854,9 @@ If ACTION is not set it will be selected from `lsp-code-actions-at-point'."
   (cond ((lsp-feature? "textDocument/formatting")
          (let ((edits (lsp-request "textDocument/formatting"
                                    (lsp--make-document-formatting-params))))
-           (lsp--apply-text-edits edits)))
+           (if (seq-empty-p edits)
+               (lsp--info "No formatting changes provided")
+             (lsp--apply-text-edits edits))))
         ((lsp-feature? "textDocument/rangeFormatting")
          (save-restriction
            (widen)
@@ -5864,9 +5866,12 @@ If ACTION is not set it will be selected from `lsp-code-actions-at-point'."
 (defun lsp-format-region (s e)
   "Ask the server to format the region, or if none is selected, the current line."
   (interactive "r")
-  (lsp--apply-text-edits (lsp-request
-                          "textDocument/rangeFormatting"
-                          (lsp--make-document-range-formatting-params s e))))
+  (let ((edits (lsp-request
+                "textDocument/rangeFormatting"
+                (lsp--make-document-range-formatting-params s e))))
+    (if (seq-empty-p edits)
+        (lsp--info "No formatting changes provided")
+      (lsp--apply-text-edits edits))))
 
 (defun lsp-organize-imports ()
   "Perform the source.organizeImports code action, if available."
