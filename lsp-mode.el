@@ -1843,9 +1843,9 @@ WORKSPACE is the workspace that contains the progress token."
                                 (->> workspace
                                      (lsp--workspace-diagnostics)
                                      (maphash (lambda (file-name diagnostics)
-                                                (if-let ((cur (gethash file-name result)))
-                                                    (nconc cur diagnostics)
-                                                  (puthash file-name diagnostics result))))))
+                                                (puthash file-name
+                                                         (append (gethash file-name result) diagnostics)
+                                                         result)))))
                               workspaces)
                         result)))
       (ht)))
