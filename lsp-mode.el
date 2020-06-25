@@ -5531,7 +5531,7 @@ RENDER-ALL - nil if only the signature should be rendered."
     (lsp--render-element contents))
    (t
     ;; MarkedString -> MarkedString[]
-    (when (or (hash-table-p contents) (stringp contents))
+    (when (or (lsp-marked-string? contents) (stringp contents))
       (setq contents (list contents)))
     ;; Consider the signature consisting of the elements who have a renderable
     ;; "language" property. When render-all is nil, ignore other elements.
@@ -5542,7 +5542,7 @@ RENDER-ALL - nil if only the signature should be rendered."
           contents
         ;; Only render contents that have an available renderer.
         (seq-filter
-         (-andfn #'hash-table-p
+         (-andfn #'lsp-marked-string?
                  (-compose #'lsp-get-renderer #'lsp:marked-string-language))
          contents)))
      (if (bound-and-true-p page-break-lines-mode)
@@ -5838,7 +5838,7 @@ If ACTION is not set it will be selected from `lsp-code-actions-at-point'."
 
   (cond
    ((stringp command?) (lsp--execute-command action))
-   ((hash-table-p command?) (lsp--execute-command command?))))
+   ((lsp-command? command?) (lsp--execute-command command?))))
 
 (defun lsp--make-document-formatting-params ()
   "Create document formatting params."
