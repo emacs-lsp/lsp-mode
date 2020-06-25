@@ -664,7 +664,7 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
-(defcustom lsp-modeline-code-actions-kind-regex "quickfix.*\\|refactor.*"
+(defcustom lsp-modeline-code-actions-kind-regex "$\\|quickfix.*\\|refactor.*"
   "Regex for the code actions kinds to show in the modeline."
   :type 'string
   :group 'lsp-mode)
