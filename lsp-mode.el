@@ -3309,7 +3309,7 @@ If NO-WAIT is non-nil send the request as notification."
             (cond
              ((eq resp-result :finished) nil)
              (resp-result resp-result)
-             ((ht? resp-error) (error (lsp:json-error-message resp-error)))
+             ((lsp-json-error? resp-error) (error (lsp:json-error-message resp-error)))
              (t (error (lsp:json-error-message (cl-first resp-error))))))
         (unless done?
           (lsp-cancel-request-by-token :sync-request))))))
