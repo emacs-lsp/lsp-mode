@@ -6044,12 +6044,12 @@ A reference is highlighted only if it is visible in a window."
                    (setq text-property-beg (+ line-start-pos column))
                    (setq text-property-end (+ text-property-beg (aref data (+ i 2))))
                    (when face (put-text-property text-property-beg text-property-end 'face face))
-                   (cl-loop for i from 0 to (1- (length modifier-faces)) do
-                        (when (and (aref modifier-faces i)
-                                   (> 0 (logand (aref data (+ i 4)) (lsh 1 i))))
-                          (add-face-text-property text-property-beg text-property-end
-                                                  (aref modifier-faces i))))
-                 when (> current-line line-max-inclusive) return nil)))))
+                   (cl-loop for j from 0 to (1- (length modifier-faces)) do
+                            (when (and (aref modifier-faces j)
+                                       (> (logand (aref data (+ i 4)) (lsh 1 j)) 0))
+                              (add-face-text-property text-property-beg text-property-end
+                                                      (aref modifier-faces j))))
+                   when (> current-line line-max-inclusive) return nil)))))
       (let ((token-region (lsp-get lsp--semantic-tokens-cache :_region)))
         (if token-region
             `(jit-lock-bounds ,(max beg (car token-region)) . ,(min end (cdr token-region)))
