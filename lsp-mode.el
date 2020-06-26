@@ -4769,27 +4769,28 @@ When the completion is incomplete, cache contains value of `incomplete'.")
     (set-marker nil))
   (setq lsp--capf-cache nil))
 
-(lsp-defun lsp--capf-guess-prefix ((item &as &CompletionItem :text-edit?) default)
+(lsp-defun lsp--capf-guess-prefix ((item &as &CompletionItem :text-edit?))
   "Guess ITEM's prefix start point according to following heuristics:
 - If `textEdit' exists, use insertion range start as prefix start point.
-- Else, find the point before current point that's longest prefix match of
-`insertText' or `label'.
-When the heuristic fails to find the prefix start point, return DEFAULT value."
-  (or (cond
-       (text-edit?
-        (lsp--position-to-point (lsp:range-start (lsp:text-edit-range text-edit?))))
-       (t
-        (-let* (((&CompletionItem :label :insert-text?) item)
-                (text (or insert-text? label))
-                (start (max 1 (- (point) (length text))))
-                (point (point))
-                start-point)
-          (while (and (< start point) (not start-point))
-            (when (string-prefix-p (buffer-substring-no-properties start point) text)
-              (setq start-point start))
-            (cl-incf start))
-          start-point)))
-      default))
+- Else, find the point before current point is longest prefix match of
+`insertText' or `label'. And:
+  - The character before prefix is not word constitute
+Return `nil' when fails to guess prefix."
+  (cond
+    (text-edit?
+     (lsp--position-to-point (lsp:range-start (lsp:text-edit-range text-edit?))))
+    (t
+     (-let* (((&CompletionItem :label :insert-text?) item)
+             (text (or insert-text? label))
+             (point (point))
+             (start (max 1 (- point (length text))))
+             start-point)
+       (while (and (< start point) (not start-point))
+         (when (and (not (equal (char-syntax (char-before start)) ?w))
+                    (string-prefix-p (buffer-substring-no-properties start point) text))
+           (setq start-point start))
+         (cl-incf start))
+       start-point))))
 
 (defun lsp--capf-cached-items (items)
   "Convert ITEMS into `lsp--capf-cache-items' form."
@@ -4957,7 +4958,8 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                                      (-map (lambda (item)
                                              (lsp-put item
                                                       :_emacsStartPoint
-                                                      (lsp--capf-guess-prefix item bounds-start)))
+                                                      (or (lsp--capf-guess-prefix item)
+                                                          bounds-start)))
                                            it))))
                         (markers (list bounds-start (copy-marker (point) t)))
                         (prefix (buffer-substring-no-properties bounds-start (point))))
