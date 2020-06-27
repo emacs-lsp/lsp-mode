@@ -3581,7 +3581,8 @@ disappearing, unset all the variables related to it."
                       (rangeFormatting . ((dynamicRegistration . t)))
                       ,@(when lsp-enable-semantic-highlighting
                             `((semanticTokens
-                               . ((tokenModifiers . ,(if lsp-semantic-tokens-apply-modifiers
+                               . ((dynamicRegistration . t)
+                                  (tokenModifiers . ,(if lsp-semantic-tokens-apply-modifiers
                                                          (apply 'vector (mapcar #'car lsp-semantic-token-modifier-faces)) []))
                                   (tokenTypes . ,(apply 'vector (mapcar #'car lsp-semantic-token-faces)))))))
                       (rename . ((dynamicRegistration . t) (prepareSupport . t)))
@@ -3924,11 +3925,6 @@ in that particular folder."
 
       (lsp--semantic-highlighting-warn-about-deprecated-setting)
 
-      (when (and lsp-enable-semantic-highlighting
-                 (lsp-feature? "textDocument/semanticTokens"))
-        (lsp--semantic-tokens-initialize-buffer
-         (lsp-feature? "textDocument/semanticTokensRangeProvider")))
-
       (when lsp-enable-xref
         (add-hook 'xref-backend-functions #'lsp--xref-backend nil t))
 
@@ -3965,11 +3961,6 @@ in that particular folder."
       (remove-hook 'lsp-on-idle-hook #'lsp--document-links t)
       (remove-hook 'lsp-on-idle-hook #'lsp--document-highlight t)
 
-      (when lsp--semantic-tokens-teardown
-        (funcall lsp--semantic-tokens-teardown)
-        (setq lsp--semantic-tokens-teardown nil))
-
-      (lsp--remove-overlays 'lsp-sem-highlight)
       (lsp--remove-overlays 'lsp-highlight)
       (lsp--remove-overlays 'lsp-links)
 
@@ -4014,7 +4005,14 @@ in that particular folder."
 
     (when (and lsp-enable-dap-auto-configure
                (featurep 'dap-mode))
-      (dap-auto-configure-mode 1)))
+      (dap-auto-configure-mode 1))
+
+    (when (and lsp-enable-semantic-highlighting
+               (lsp-feature? "textDocument/semanticTokens"))
+      (mapc #'lsp--semantic-tokens-initialize-workspace
+            (lsp--find-workspaces-for "textDocument/semanticTokens"))
+      (lsp--semantic-tokens-initialize-buffer
+       (lsp-feature? "textDocument/semanticTokensRangeProvider"))))
 
   (let ((buffer (current-buffer)))
     (run-with-idle-timer
@@ -5985,19 +5983,24 @@ A reference is highlighted only if it is visible in a window."
 
 (defun lsp--semantic-tokens-initialize-workspace (workspace)
   (cl-assert workspace)
-  (-let* ((token-capabilities (lsp:server-capabilities-semantic-tokens-provider?
-                               (lsp--workspace-server-capabilities workspace)))
-          ((&SemanticTokensOptions :legend) token-capabilities))
-    (setf (lsp--workspace-semantic-highlighting-faces workspace)
-          (lsp--build-face-map (lsp:semantic-tokens-legend-token-types legend)
-                               lsp-semantic-token-faces
-                               "semantic token"
-                               "lsp-semantic-token-faces"))
-    (setf (lsp--workspace-semantic-highlighting-modifier-faces workspace)
-          (lsp--build-face-map (lsp:semantic-tokens-legend-token-modifiers legend)
-                               lsp-semantic-token-modifier-faces
-                               "semantic token modifier"
-                               "lsp-semantic-token-modifier-faces"))))
+  (when-let ((token-capabilities
+              (or
+               (-some->
+                   (lsp--registered-capability "textDocument/semanticTokens")
+                 (lsp--registered-capability-options))
+               (lsp:server-capabilities-semantic-tokens-provider?
+                (lsp--workspace-server-capabilities workspace)))))
+    (-let* (((&SemanticTokensOptions :legend) token-capabilities))
+      (setf (lsp--workspace-semantic-highlighting-faces workspace)
+            (lsp--build-face-map (lsp:semantic-tokens-legend-token-types legend)
+                                 lsp-semantic-token-faces
+                                 "semantic token"
+                                 "lsp-semantic-token-faces"))
+      (setf (lsp--workspace-semantic-highlighting-modifier-faces workspace)
+            (lsp--build-face-map (lsp:semantic-tokens-legend-token-modifiers legend)
+                                 lsp-semantic-token-modifier-faces
+                                 "semantic token modifier"
+                                 "lsp-semantic-token-modifier-faces")))))
 
 (defun lsp--semantic-tokens-request-update ()
   (lsp--semantic-tokens-request
@@ -6019,6 +6022,11 @@ A reference is highlighted only if it is visible in a window."
     (setq lsp--semantic-tokens-teardown
           (lambda ()
             (setq font-lock-extend-region-functions old-extend-region-functions)
+            (when lsp--semantic-tokens-idle-timer
+              (cancel-timer lsp--semantic-tokens-idle-timer)
+              (setq lsp--semantic-tokens-idle-timer nil))
+            (setq lsp--semantic-tokens-use-ranged-requests nil)
+            (setq lsp--semantic-tokens-cache nil)
             (remove-function (local 'font-lock-fontify-region-function)
                              #'lsp--semantic-tokens-fontify)
             (remove-hook 'lsp-on-change-hook #'lsp--semantic-tokens-request-update t)))))
@@ -7364,9 +7372,6 @@ SESSION is the active session."
          (setf (lsp--workspace-server-capabilities workspace) (lsp:initialize-result-capabilities
                                                                response)
                (lsp--workspace-status workspace) 'initialized)
-
-         (mapc #'lsp--semantic-tokens-initialize-workspace
-               (lsp--find-workspaces-for "textDocument/semanticTokens"))
 
          (with-lsp-workspace workspace
            (lsp-notify "initialized" lsp--empty-ht))
