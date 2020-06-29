@@ -7422,7 +7422,7 @@ JavaScript file, tsserver.js (the *.js is required for Windows)."
     (-map (-compose #'symbol-name #'lsp--client-server-id) it)
     (format "%s" it)
     (propertize it 'face 'success)
-    (format "Installing following servers: %s" it)
+    (format " Installing following servers: %s" it)
     (propertize it
                 'local-map (make-mode-line-mouse-map
                             'mouse-1 (lambda ()

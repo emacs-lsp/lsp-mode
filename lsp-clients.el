@@ -101,15 +101,28 @@ See instructions at https://marketplace.visualstudio.com/items?itemName=mads-har
   :group 'lsp-bash
   :package-version '(lsp-mode . "6.3"))
 
+(defun lsp-bash--bash-ls-server-command ()
+  "Startup command for Bash language server."
+  (list (lsp-package-path 'bash-language-server) "start"))
+
+(lsp-dependency 'bash-language-server
+                '(:system "bash-language-server")
+                '(:npm :package "bash-language-server"
+                       :path "bash-language-server"))
+
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '("bash-language-server" "start"))
-                  :major-modes '(sh-mode)
-                  :priority -1
-                  :environment-fn (lambda ()
-                                    '(("EXPLAINSHELL_ENDPOINT" . lsp-bash-explainshell-endpoint)
-                                      ("HIGHLIGHT_PARSING_ERRORS" . lsp-bash-highlight-parsing-errors)
-                                      ("GLOB_PATTERN" . lsp-bash-glob-pattern)))
-                  :server-id 'bash-ls))
+ (make-lsp-client
+  :new-connection (lsp-stdio-connection #'lsp-bash--bash-ls-server-command)
+  :major-modes '(sh-mode)
+  :priority -1
+  :environment-fn (lambda ()
+                    '(("EXPLAINSHELL_ENDPOINT" . lsp-bash-explainshell-endpoint)
+                      ("HIGHLIGHT_PARSING_ERRORS" . lsp-bash-highlight-parsing-errors)
+                      ("GLOB_PATTERN" . lsp-bash-glob-pattern)))
+  :server-id 'bash-ls
+  :download-server-fn (lambda (_client callback error-callback _update?)
+                        (lsp-package-ensure 'bash-language-server callback error-callback))))
+
 
 ;;; Groovy
 (defgroup lsp-groovy nil
@@ -871,9 +884,8 @@ responsiveness at the cost of possible stability issues."
   :group 'lsp-mode
   :link '(url-link "https://github.com/nwolverson/purescript-language-server"))
 
-(defcustom lsp-purescript-server-executable
-  "purescript-language-server"
-  "Arguments to pass to the server."
+(defcustom lsp-purescript-server-executable nil
+  "Path to server executable."
   :type 'string
   :risky t
   :group 'lsp-purescript)
@@ -887,15 +899,24 @@ responsiveness at the cost of possible stability issues."
 
 (defun lsp-purescript--server-command ()
   "Generate LSP startup command for purescript-language-server."
-  (cons lsp-purescript-server-executable
+  (cons (or lsp-purescript-server-executable
+            (lsp-package-path 'purescript-language-server))
         lsp-purescript-server-args))
 
+(lsp-dependency 'purescript-language-server
+                '(:system "purescript-language-server")
+                '(:npm :package "purescript-language-server"
+                       :path "purescript-language-server"))
+
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection
-                                   #'lsp-purescript--server-command)
-                  :major-modes '(purescript-mode)
-                  :priority -1
-                  :server-id 'pursls))
+ (make-lsp-client
+  :new-connection (lsp-stdio-connection
+                   #'lsp-purescript--server-command)
+  :major-modes '(purescript-mode)
+  :priority -1
+  :server-id 'pursls
+  :download-server-fn (lambda (_client callback error-callback _update?)
+                        (lsp-package-ensure 'purescript-language-server callback error-callback))))
 
 ;;; Rf
 (defgroup lsp-rf nil
