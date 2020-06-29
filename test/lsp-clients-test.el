@@ -46,22 +46,34 @@
 (defconst lsp-flow-but-not-in-comment-tag "@flow")
 
 (ert-deftest lsp-flow-regular-tag-detection ()
-  (should (lsp-clients-flow-tag-string-present-p lsp-flow-regular-tag)))
+  (should (with-temp-buffer
+            (insert lsp-flow-regular-tag)
+            (lsp-clients-flow-tag-string-present-p))))
 
 (ert-deftest lsp-flow-c-style-tag-detection ()
-  (should (lsp-clients-flow-tag-string-present-p lsp-flow-c-style-tag)))
+  (should (with-temp-buffer
+            (insert lsp-flow-c-style-tag)
+            (lsp-clients-flow-tag-string-present-p))))
 
 (ert-deftest lsp-flow-simple-multiline-tag-detection ()
-  (should (lsp-clients-flow-tag-string-present-p lsp-flow-simple-multiline-tag)))
+  (should (with-temp-buffer
+            (insert lsp-flow-simple-multiline-tag)
+            (lsp-clients-flow-tag-string-present-p))))
 
 (ert-deftest lsp-flow-simple-multiline-with-comments-before-tag-detection ()
-  (should (lsp-clients-flow-tag-string-present-p lsp-flow-multiline-with-comments-before-tag)))
+  (should (with-temp-buffer
+            (insert lsp-flow-multiline-with-comments-before-tag)
+            (lsp-clients-flow-tag-string-present-p))))
 
 (ert-deftest lsp-flow-wrong-tag-detection ()
-  (should (not (lsp-clients-flow-tag-string-present-p lsp-flow-wrong-tag))))
+  (should (not (with-temp-buffer
+                 (insert lsp-flow-wrong-tag)
+                 (lsp-clients-flow-tag-string-present-p)))))
 
 (ert-deftest lsp-flow-but-not-in-comment-tag-detection ()
-  (should (not (lsp-clients-flow-tag-string-present-p lsp-flow-but-not-in-comment-tag))))
+  (should (not (with-temp-buffer
+                 (insert lsp-flow-but-not-in-comment-tag)
+                 (lsp-clients-flow-tag-string-present-p)))))
 
 (ert-deftest lsp-flow-should-activate-on-flow-project ()
   ;; Set `js-mode' ON and check that a Flow project activates the Flow
