@@ -1316,13 +1316,41 @@ depending on it."
          :is-incomplete (seq-some
                         #'lsp:completion-list-is-incomplete
                         results)
-         :items (apply 'append (--map (append (if (lsp-completion-list? it)
-                                                  (lsp:completion-list-items it)
-                                                it)
-                                              nil)
-                                      results))))
-       (_ (apply 'append (seq-map (lambda (it) (if (seqp it) it (list it)))
-                                  results)))))))
+         :items (cl-mapcan (lambda (it) (append (if (lsp-completion-list? it)
+                                                    (lsp:completion-list-items it)
+                                                  it)
+                                                nil))
+                        results)))
+       ("completionItem/resolve"
+        (let ((item (cl-first results)))
+          (when-let (details (seq-filter #'identity
+                                         (seq-map #'lsp:completion-item-detail? results)))
+            (lsp:set-completion-item-detail?
+             item
+             (string-join details " ")))
+          (when-let (docs (seq-filter #'identity
+                                      (seq-map #'lsp:completion-item-documentation? results)))
+            (lsp:set-completion-item-documentation?
+             item
+             (lsp-make-markup-content
+              :kind (or (seq-some (lambda (it)
+                                    (when (equal (lsp:markup-content-kind it)
+                                                 lsp/markup-kind-markdown)
+                                      lsp/markup-kind-markdown))
+                                  docs)
+                        lsp/markup-kind-plain-text)
+              :value (string-join (seq-map (lambda (doc)
+                                             (or (lsp:markup-content-value doc)
+                                                 (and (stringp doc) doc)))
+                                           docs)
+                                  "\n"))))
+          (when-let (edits (seq-filter #'identity
+                                       (seq-map #'lsp:completion-item-additional-text-edits? results)))
+            (lsp:set-completion-item-additional-text-edits?
+             item
+             (cl-mapcan (lambda (it) (if (seqp it) it (list it))) edits)))
+          item))
+       (_ (cl-mapcan (lambda (it) (if (seqp it) it (list it))) results))))))
 (defun lsp--spinner-start ()
   "Start spinner indication."
   (condition-case _err (spinner-start 'progress-bar-filled) (error)))
@@ -3282,14 +3310,12 @@ If NO-WAIT is non-nil send the request as notification."
   (let* (resp-result resp-error done?)
     (unwind-protect
         (progn
-          (lsp-request-async
-           method
-           params
-           (lambda (res) (setf resp-result (or res :finished)))
-           :error-handler (lambda (err) (setf resp-error err))
-           :mode 'detached
-           :cancel-token :sync-request)
-
+          (lsp-request-async method
+                             params
+                             (lambda (res) (setf resp-result (or res :finished)))
+                             :error-handler (lambda (err) (setf resp-error err))
+                             :mode 'detached
+                             :cancel-token :sync-request)
           (while (and (not (or resp-error resp-result))
                       (not (input-pending-p)))
             (accept-process-output nil 0.001))
@@ -3297,7 +3323,7 @@ If NO-WAIT is non-nil send the request as notification."
           (cond
            ((eq resp-result :finished) nil)
            (resp-result resp-result)
-           ((ht? resp-error) (error (lsp:json-error-message resp-error)))
+           ((lsp-json-error? resp-error) (error (lsp:json-error-message resp-error)))
            ((input-pending-p) nil)
            (t (error (lsp:json-error-message (cl-first resp-error))))))
       (unless done?
@@ -3306,18 +3332,38 @@ If NO-WAIT is non-nil send the request as notification."
 (defvar lsp--cancelable-requests (ht))
 
 (cl-defun lsp-request-async (method params callback
-                                    &key mode error-handler no-merge cancel-token)
-  "Send request METHOD with PARAMS."
-  (lsp--send-request-async `(:jsonrpc "2.0" :method ,method :params ,params)
-                           callback mode error-handler no-merge cancel-token))
+                                    &key mode error-handler cancel-handler no-merge cancel-token)
+  "Send METHOD with PARAMS as a request to the language server.
+Call CALLBACK with the response received from the server
+asynchronously.
+MODE determines when the callback will be called depending on the
+condition of the original buffer.  It could be:
+- `detached' which means that the callback will be executed no
+matter what has happened to the buffer.
+- `alive' - the callback will be executed only if the buffer from
+which the call was executed is still alive.
+- `current' the callback will be executed only if the original buffer
+is still selected.
+- `tick' - the callback will be executed only if the buffer was not modified.
+- `unchanged' - the callback will be executed only if the buffer hasn't
+changed and if the buffer is not modified.
 
-(defun lsp--create-request-cancel (id workspaces hook buf method)
+ERROR-HANDLER will be called in case the request has failed.
+CANCEL-HANDLER will be called in case the request is being canceled.
+If NO-MERGE is non-nil, don't merge the results but return alist
+workspace->result.
+CANCEL-TOKEN is the token that can be used to cancel request."
+  (lsp--send-request-async `(:jsonrpc "2.0" :method ,method :params ,params)
+                           callback mode error-handler cancel-handler no-merge cancel-token))
+
+(defun lsp--create-request-cancel (id workspaces hook buf method cancel-callback)
   (lambda (&rest _)
     (unless (and (equal 'post-command-hook hook)
                  (equal (current-buffer) buf))
       (lsp--request-cleanup-hooks id)
       (with-lsp-workspaces workspaces
-        (lsp--cancel-request id))
+        (lsp--cancel-request id)
+        (when cancel-callback (funcall cancel-callback)))
       (lsp-log "Cancelling %s(%s) in hook %s" method id hook))))
 
 (defun lsp--create-async-callback
@@ -3360,23 +3406,29 @@ METHOD is the executed method."
     (remhash cancel-token lsp--cancelable-requests)
     (lsp--request-cleanup-hooks request-id)))
 
-(defun lsp--send-request-async (body callback &optional mode error-callback no-merge cancel-token)
+(defun lsp--send-request-async (body callback
+                                     &optional mode error-callback cancel-callback
+                                     no-merge cancel-token)
   "Send BODY as a request to the language server.
 Call CALLBACK with the response received from the server
-asynchronously. MODE determines when the callback will be called
-depending on the condition of the original buffer. It could be:
-`detached' which means that the callback will be executed no
-matter what has happened to the buffer. `alive' - the callback
-will be executed only if the buffer from which the call was
-executed is still alive. `current' the callback will be executed
-only if the original buffer is still selected. `tick' - the
-callback will be executed only if the buffer was not modified.
-`unchanged' - the callback will be executed only if the buffer
-hasn't changed and if the buffer is not modified.
+asynchronously.
+MODE determines when the callback will be called depending on the
+condition of the original buffer.  It could be:
+- `detached' which means that the callback will be executed no
+matter what has happened to the buffer.
+- `alive' - the callback will be executed only if the buffer from
+which the call was executed is still alive.
+- `current' the callback will be executed only if the original buffer
+is still selected.
+- `tick' - the callback will be executed only if the buffer was not modified.
+- `unchanged' - the callback will be executed only if the buffer hasn't
+changed and if the buffer is not modified.
 
 ERROR-CALLBACK will be called in case the request has failed.
-If NO-MERGE is non-nil, don't merge the results but return alist workspace->result.
-"
+CANCEL-CALLBACK will be called in case the request is being canceled.
+If NO-MERGE is non-nil, don't merge the results but return alist
+workspace->result.
+CANCEL-TOKEN is the token that can be used to cancel request."
   (when cancel-token
     (lsp-cancel-request-by-token cancel-token))
 
@@ -3403,7 +3455,7 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
                                           (remove-hook
                                            hook
                                            (lsp--create-request-cancel
-                                            id target-workspaces hook buf method)
+                                            id target-workspaces hook buf method cancel-callback)
                                            local))
                                         hooks)))
                               (remhash cancel-token lsp--cancelable-requests)))
@@ -3429,13 +3481,19 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
                                (funcall callback :error)
                                (lsp--request-cleanup-hooks id)
                                (funcall error-callback error)))
+             (cancel-callback (when cancel-callback
+                                (pcase mode
+                                  ((or 'alive 'tick) (lambda ()
+                                                       (with-current-buffer buf
+                                                         (funcall cancel-callback))))
+                                  (_ cancel-callback))))
              (body (plist-put body :id id)))
 
         ;; cancel request in any of the hooks
         (mapc (-lambda ((hook . local))
                 (add-hook hook
                           (lsp--create-request-cancel
-                           id target-workspaces hook buf method)
+                           id target-workspaces hook buf method cancel-callback)
                           nil local))
               hooks)
         (puthash id cleanup-hooks lsp--request-cleanup-hooks)
@@ -3459,12 +3517,14 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
                          (lsp--client-response-handlers)))
             (lsp--send-no-wait message (lsp--workspace-proc workspace))))
         body)
-    (error "The connected server(s) does not support method %s
-To find out what capabilities support your server use `M-x lsp-describe-session' and expand the capabilities section."
+    (error "The connected server(s) does not support method %s.
+To find out what capabilities support your server use `M-x lsp-describe-session'
+and expand the capabilities section"
            (plist-get body :method))))
 
 ;; deprecated, use lsp-request-async.
 (defalias 'lsp-send-request-async 'lsp--send-request-async)
+(make-obsolete 'lsp-send-request-async 'lsp-request-async "lsp-mode 7.0.1")
 
 ;; Clean up the entire state of lsp mode when Emacs is killed, to get rid of any
 ;; pending language servers.
@@ -3544,7 +3604,8 @@ disappearing, unset all the variables related to it."
                                                                              :json-false)
                                                                             (lsp-enable-snippet t)
                                                                             (t :json-false)))
-                                                        (documentationFormat . ["markdown"])))
+                                                        (documentationFormat . ["markdown"])
+                                                        (resolveAdditionalTextEditsSupport . t)))
                                      (contextSupport . t)))
                       (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))))
                       (documentLink . ((dynamicRegistration . t)
@@ -4245,6 +4306,27 @@ it has to calculate identation based on SRC block position."
             (with-no-warnings (undo-amalgamate-change-group change-group)))
           (progress-reporter-done reporter))))))
 
+(defun lsp--create-apply-text-edits-handlers ()
+  "Create (handler cancel-handler) for applying text edits in async request.
+Only works when mode is 'tick or 'alive."
+  (let* (first-edited
+         (func (lambda (start &rest _)
+                 (setq first-edited (if first-edited
+                                        (min start first-edited)
+                                      start)))))
+    (add-hook 'before-change-functions func nil t)
+    (list
+     (lambda (edits)
+       (if (and first-edited
+                (seq-find (-lambda ((&TextEdit :range (&RangeToPoint :end)))
+                            ;; Text edit region is overlapped
+                            (> end first-edited))
+                          edits))
+           (lsp--warn "TextEdits will not be applied since document has been modified before of them.")
+         (lsp--apply-text-edits edits)))
+     (lambda ()
+       (remove-hook 'before-change-functions func t)))))
+
 (defun lsp--capability (cap &optional capabilities)
   "Get the value of capability CAP.  If CAPABILITIES is non-nil, use them instead."
   (when (stringp cap)
@@ -4447,7 +4529,7 @@ Added to `after-change-functions'."
                                 #'lsp--flush-delayed-changes))
         ;; force cleanup overlays after each change
         (lsp--remove-overlays 'lsp-highlight)
-        (lsp--after-change  (current-buffer))
+        (lsp--after-change (current-buffer))
         (setq lsp--signature-last-index nil
               lsp--signature-last nil)
         ;; cleanup diagnostics
@@ -4472,7 +4554,7 @@ Added to `after-change-functions'."
   :group 'lsp-mode)
 
 (defcustom lsp-idle-delay 0.500
-  "Debounce interval for `after-change-functions'. "
+  "Debounce interval for `after-change-functions'."
   :type 'number
   :group 'lsp-mode)
 
@@ -4480,7 +4562,6 @@ Added to `after-change-functions'."
   "Hooks to run after `lsp-idle-delay'."
   :type 'hook
   :group 'lsp-mode)
-
 
 (defun lsp--idle-reschedule (buffer)
   (when lsp--on-idle-timer
@@ -4511,16 +4592,15 @@ Added to `after-change-functions'."
              lsp-managed-mode)
     (run-hooks 'lsp-on-change-hook)))
 
-(defun lsp--after-change (&rest _)
+(defun lsp--after-change (buffer)
   (when lsp--on-change-timer
     (cancel-timer lsp--on-change-timer))
-
   (setq lsp--on-change-timer (run-with-idle-timer
                               lsp-idle-delay
                               nil
                               #'lsp--on-change-debounce
-                              (current-buffer)))
-  (lsp--idle-reschedule (current-buffer)))
+                              buffer))
+  (lsp--idle-reschedule buffer))
 
 
 
@@ -5018,8 +5098,17 @@ Others: TRIGGER-CHARS"
              start-point
              (point))))
 
-        (when (and lsp-completion-enable-additional-text-edit additional-text-edits?)
-          (lsp--apply-text-edits additional-text-edits?))
+        (when lsp-completion-enable-additional-text-edit
+          (if (or (get-text-property 0 'lsp-completion-resolved candidate)
+                  additional-text-edits?)
+              (lsp--apply-text-edits additional-text-edits?)
+            (-let [(callback cancel-callback) (lsp--create-apply-text-edits-handlers)]
+              (lsp--resolve-completion-async
+               item
+               (lambda (resolved-item)
+                 (funcall callback
+                  (lsp:completion-item-additional-text-edits? resolved-item)))
+               cancel-callback))))
 
         (when (and lsp-signature-auto-activate
                    (lsp-feature? "textDocument/signatureHelp"))
@@ -5138,14 +5227,30 @@ Others: TRIGGER-CHARS"
 (defun lsp--resolve-completion (item)
   "Resolve completion ITEM."
   (cl-assert item nil "Completion item must not be nil")
-  (or (-first 'identity
-              (condition-case _err
-                  (lsp-foreach-workspace
-                   (when (lsp:completion-options-resolve-provider?
-                          (lsp--capability :completionProvider))
-                     (lsp-request "completionItem/resolve" item)))
-                (error)))
+  (or (ignore-errors
+        (when (lsp:completion-options-resolve-provider?
+               (lsp--capability :completionProvider))
+          (lsp-request "completionItem/resolve" item)))
       item))
+
+(defun lsp--resolve-completion-async (item callback &optional cleanup-fn)
+  "Resolve completion ITEM asynchronously with CALLBACK.
+The CLEANUP-FN will be called to cleanup."
+  (cl-assert item nil "Completion item must not be nil")
+  (ignore-errors
+    (if (lsp:completion-options-resolve-provider?
+         (lsp--capability :completionProvider))
+        (lsp-request-async "completionItem/resolve" item
+                           (lambda (result)
+                             (funcall callback result)
+                             (when cleanup-fn (funcall cleanup-fn)))
+                           :error-handler (lambda (err)
+                                            (when cleanup-fn (funcall cleanup-fn))
+                                            (error (lsp:json-error-message err)))
+                           :cancel-handler cleanup-fn
+                           :mode 'alive)
+      (funcall callback item)
+      (when cleanup-fn (funcall cleanup-fn)))))
 
 (defun lsp--extract-line-from-buffer (pos)
   "Return the line pointed to by POS (a Position object) in the current buffer."
