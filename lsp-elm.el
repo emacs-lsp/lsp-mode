@@ -31,8 +31,7 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/elm-tooling/elm-language-server"))
 
-(defcustom lsp-elm-elm-language-server-path
-  "elm-language-server"
+(defcustom lsp-elm-elm-language-server-path nil
   "Path for elm-language-server.
 Can be installed globally with: npm i -g @elm-tooling/elm-language-server,
 or manually by cloning the repo and following the installing instructions."
@@ -81,24 +80,32 @@ or manually by cloning the repo and following the installing instructions."
 (defun lsp-elm--elm-language-server-command ()
   "Generate LSP startup command for the Elm Language Server."
   (cons
-   lsp-elm-elm-language-server-path
+   (or lsp-elm-elm-language-server-path
+       (lsp-package-path 'elm-language-server))
    lsp-elm-server-args))
 
 (defun lsp-clients-elm--make-init-options ()
   "Init options for elm-language-server."
-  `(
-    :elmPath ,lsp-elm-elm-path
+  `(:elmPath ,lsp-elm-elm-path
     :elmFormatPath ,lsp-elm-elm-format-path
     :elmTestPath ,lsp-elm-elm-test-path
     :elmAnalyseTrigger ,lsp-elm-elm-analyse-trigger
     :trace.server ,(lsp-json-bool lsp-elm-trace-server)))
 
+(lsp-dependency 'elm-language-server
+                '(:system "elm-language-server")
+                '(:npm :package "@elm-tooling/elm-language-server"
+                       :path "elm-language-server"))
+
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-elm--elm-language-server-command)
-                  :major-modes '(elm-mode)
-                  :priority -1
-                  :initialization-options #'lsp-clients-elm--make-init-options
-                  :server-id 'elm-ls))
+ (make-lsp-client
+  :new-connection (lsp-stdio-connection #'lsp-elm--elm-language-server-command)
+  :major-modes '(elm-mode)
+  :priority -1
+  :initialization-options #'lsp-clients-elm--make-init-options
+  :server-id 'elm-ls
+  :download-server-fn (lambda (_client callback error-callback _update?)
+                        (lsp-package-ensure 'elm-language-server callback error-callback))))
 
 (provide 'lsp-elm)
 ;;; lsp-elm.el ends here
