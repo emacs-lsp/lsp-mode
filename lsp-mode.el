@@ -5013,44 +5013,44 @@ Also, additional data to attached to each candidate can be passed via PLIST."
   "Exit function of `completion-at-point'.
 CANDIDATE is the selected completion item.
 Others: TRIGGER-CHARS"
-  (-let* (((&plist 'lsp-completion-item item
-                   'lsp-completion-start-point start-point
-                   'lsp-completion-markers markers
-                   'lsp-completion-prefix prefix)
-           (text-properties-at 0 candidate))
-          ((&CompletionItem :label :insert-text? :text-edit? :insert-text-format? :additional-text-edits?)
-           item))
-    (cond
-     (text-edit?
-      (apply #'delete-region markers)
-      (insert prefix)
-      (lsp--apply-text-edit text-edit?))
-     ((or insert-text? label)
-      (apply #'delete-region markers)
-      (insert prefix)
-      (delete-region start-point (point))
-      (insert (or insert-text? label))))
+  (unwind-protect
+       (-let* (((&plist 'lsp-completion-item item
+                        'lsp-completion-start-point start-point
+                        'lsp-completion-markers markers
+                        'lsp-completion-prefix prefix)
+                (text-properties-at 0 candidate))
+               ((&CompletionItem :label :insert-text? :text-edit? :insert-text-format? :additional-text-edits?)
+                item))
+         (cond
+           (text-edit?
+            (apply #'delete-region markers)
+            (insert prefix)
+            (lsp--apply-text-edit text-edit?))
+           ((or insert-text? label)
+            (apply #'delete-region markers)
+            (insert prefix)
+            (delete-region start-point (point))
+            (insert (or insert-text? label))))
 
-    (when (eq insert-text-format? 2)
-      (let (yas-indent-line)
-        (yas-expand-snippet
-         (lsp--to-yasnippet-snippet (buffer-substring start-point (point)))
-         start-point
-         (point))))
+         (when (eq insert-text-format? 2)
+           (let (yas-indent-line)
+             (yas-expand-snippet
+              (lsp--to-yasnippet-snippet (buffer-substring start-point (point)))
+              start-point
+              (point))))
 
-    (when (and lsp-completion-enable-additional-text-edit additional-text-edits?)
-      (lsp--apply-text-edits additional-text-edits?)))
+         (when (and lsp-completion-enable-additional-text-edit additional-text-edits?)
+           (lsp--apply-text-edits additional-text-edits?))
 
-  (lsp--capf-clear-cache)
+         (when (and lsp-signature-auto-activate
+                    (lsp-feature? "textDocument/signatureHelp"))
+           (lsp-signature-activate))
 
-  (when (and lsp-signature-auto-activate
-             (lsp-feature? "textDocument/signatureHelp"))
-    (lsp-signature-activate))
+         (setq-local lsp-inhibit-lsp-hooks nil)
 
-  (setq-local lsp-inhibit-lsp-hooks nil)
-
-  (when (lsp--looking-back-trigger-characterp trigger-chars)
-    (setq this-command 'self-insert-command)))
+         (when (lsp--looking-back-trigger-characterp trigger-chars)
+           (setq this-command 'self-insert-command)))
+    (lsp--capf-clear-cache)))
 
 (advice-add #'completion-at-point :before #'lsp--capf-clear-cache)
 
