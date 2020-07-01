@@ -8094,8 +8094,7 @@ such."
 (defun lsp--any-inconsistency? ()
   "Check for any inconsistency on LSP package"
   (and lsp-use-plists
-       (or (not (fboundp 'lsp-make-range))
-           (not (boundp 'lsp/symbol-kind-field)))))
+       (equal (symbol-function 'lsp-merge) 'ht-merge)))
 
 (defun lsp-shutdown-workspace ()
   "Shutdown language server."
