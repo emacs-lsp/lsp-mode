@@ -8091,6 +8091,12 @@ such."
       (lsp--warn "No LSP server for %s(check *lsp-log*)." major-mode)
       nil)))
 
+(defun lsp--any-inconsistency? ()
+  "Check for any inconsistency on LSP package"
+  (and lsp-use-plists
+       (or (not (fboundp 'lsp-make-range))
+           (not (boundp 'lsp/symbol-kind-field)))))
+
 (defun lsp-shutdown-workspace ()
   "Shutdown language server."
   (interactive)
@@ -8216,7 +8222,10 @@ You may find the installation instructions at https://emacs-lsp.github.io/lsp-mo
        ;; no matches
        ((-> #'lsp--matching-clients? lsp--filter-clients not)
         (lsp--error "There are no language servers supporting current mode %s registered with `lsp-mode'."
-                    major-mode))))))
+                    major-mode)))
+      (unless (lsp--any-inconsistency?)
+        (lsp--warn "It's seems that one or more LSP packages are outdated or it may need to re-compile it to avoid errors.
+Make sure to update all LSP packages and byte-compile it again.")))))
 
 (defun lsp--init-if-visible ()
   "Run `lsp' for the current buffer if the buffer is visible.
