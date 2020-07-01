@@ -75,7 +75,6 @@ on the next project initialization."
     :phpVersion ,lsp-serenata-php-version
     :fileExtensions ,lsp-serenata-file-extensions))
 
-
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-tcp-connection 'lsp-serenata-server-start-fun)
