@@ -3469,14 +3469,13 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
              (body (plist-put body :id id)))
 
         ;; cancel request in any of the hooks
-        (when hooks
-          (mapc (-lambda ((hook . local))
-                  (add-hook hook
-                            (lsp--create-request-cancel
-                             id target-workspaces hook buf method)
-                            nil local))
-                hooks)
-          (puthash id cleanup-hooks lsp--request-cleanup-hooks))
+        (mapc (-lambda ((hook . local))
+                (add-hook hook
+                          (lsp--create-request-cancel
+                           id target-workspaces hook buf method)
+                          nil local))
+              hooks)
+        (puthash id cleanup-hooks lsp--request-cleanup-hooks)
 
         (setq lsp--last-active-workspaces target-workspaces)
 
@@ -5053,6 +5052,7 @@ Others: TRIGGER-CHARS"
     (lsp--capf-clear-cache)))
 
 (advice-add #'completion-at-point :before #'lsp--capf-clear-cache)
+
 
 (defun lsp--to-yasnippet-snippet (text)
   "Convert LSP snippet TEXT to yasnippet snippet."
