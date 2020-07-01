@@ -5,7 +5,7 @@
 ;; Author: Vibhav Pant, Fangrui Song, Ivan Yonchovski
 ;; Keywords: languages
 ;; Package-Requires: ((emacs "25.1") (dash "2.14.1") (dash-functional "2.14.1") (f "0.20.0") (ht "2.0") (spinner "1.7.3") (markdown-mode "2.3") (lv "0"))
-;; Version: 6.3.1
+;; Version: 7.0
 
 ;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; This program is free software; you can redistribute it and/or modify
@@ -606,7 +606,7 @@ This flag affects only server which do not support incremental update."
   "If non-nil, enable the `dap-auto-configure-mode`."
   :type 'boolean
   :group 'lsp-mode
-  :package-version '(lsp-mode . "6.4"))
+  :package-version '(lsp-mode . "7.0"))
 
 (defcustom lsp-links-check-internal 0.1
   "The interval for updating document links."

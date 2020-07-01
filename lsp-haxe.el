@@ -66,7 +66,7 @@
 (defcustom lsp-haxe-hxml "build.hxml"
   "The compile file for the haxe project."
   :type 'file
-  :package-version '(lsp-mode . "6.4"))
+  :package-version '(lsp-mode . "7.0"))
 
 ;; https://github.com/emacs-lsp/lsp-mode/blob/150a933694349df960dc8fd7a15e04f5727e6433/lsp-rust.el#L251
 (lsp-defun lsp-clients--haxe-processStart (_workspace (&haxe:ProcessStartNotification :title))

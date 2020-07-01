@@ -114,7 +114,7 @@ The codelens can be found at https://github.com/golang/tools/blob/4d5ea46c79fe3b
   :type (lsp-gopls--defcustom-available-as-alist-type lsp-gopls-available-codelens)
   :group 'lsp-gopls
   :risky t
-  :package-version '(lsp-mode "6.4"))
+  :package-version '(lsp-mode "7.0"))
 
 (lsp-register-custom-settings
  '(("gopls.usePlaceholders" lsp-gopls-use-placeholders t)
