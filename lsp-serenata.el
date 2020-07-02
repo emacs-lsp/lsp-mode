@@ -76,7 +76,7 @@ on the next project initialization."
     :phpVersion ,lsp-serenata-php-version
     :fileExtensions ,lsp-serenata-file-extensions))
 
-(lsp-interface (serenata:didProgressIndexing (:info) nil))
+(lsp-interface (serenata:didProgressIndexing (:sequenceOfIndexedItem :totalItemsToIndex :progressPercentage :folderUri :fileUri :info) nil ))
 
 (lsp-register-client
  (make-lsp-client
