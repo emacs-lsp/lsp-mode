@@ -1146,6 +1146,20 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#lsp-serenata-php-version" class="md-nav__link">
+    lsp-serenata-php-version
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-serenata-file-extensions" class="md-nav__link">
+    lsp-serenata-file-extensions
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1668,6 +1682,20 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#lsp-serenata-php-version" class="md-nav__link">
+    lsp-serenata-php-version
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-serenata-file-extensions" class="md-nav__link">
+    lsp-serenata-file-extensions
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1704,6 +1732,27 @@
 <p><em>Default: <code>serenata.phar</code></em></p>
 <p>Path to the Serenata Language Server phar file.
 It can be downloaded from https://gitlab.com/Serenata/Serenata/-/releases.</p>
+<hr />
+<h3 id="lsp-serenata-php-version"><code>lsp-serenata-php-version</code><a class="headerlink" href="#lsp-serenata-php-version" title="Permanent link">#</a></h3>
+<p><em>Default: <code>7.3</code></em></p>
+<p>Allows you to specify the PHP version your project is written in.
+At the moment this directive is still ignored, but it will
+influence functionality such as refactoring in the future, where
+older PHP versions may not support scalar type hints, which may
+then be omitted from places such as getters and setters.</p>
+<hr />
+<h3 id="lsp-serenata-file-extensions"><code>lsp-serenata-file-extensions</code><a class="headerlink" href="#lsp-serenata-file-extensions" title="Permanent link">#</a></h3>
+<p><em>Default: <code>[php]</code></em></p>
+<p>List of file extensions (without dot) to process.
+Files that do not match this whitelist will be ignored during
+indexing.  Usually you’ll want to set this to at least include
+php, as it is the most common PHP extension.  phpt is not
+included by default as it is often used to contain test code that
+is not directly part of the code.  Note that for existing
+projects, removing extensions will not not automatically prune
+files having them from the index if they are already present.
+Adding new ones will cause the files having them to be picked up
+on the next project initialization.</p>
 <hr />
                 
                   
