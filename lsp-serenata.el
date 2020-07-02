@@ -63,7 +63,7 @@ files having them from the index if they are already present.
 Adding new ones will cause the files having them to be picked up
 on the next project initialization."
   :group 'lsp-serenata
-  :type 'array)
+  :type 'lsp-string-array)
 
 (defun lsp-serenata-server-start-fun (port)
   "Define serenata start function, it requires a PORT."
@@ -84,7 +84,7 @@ on the next project initialization."
   :major-modes '(php-mode)
   :priority -2
   :notification-handlers (ht ("serenata/didProgressIndexing"
-			      (lambda (server data)
+			      (lambda (_server data)
 				(message "%s" (lsp:serenata-did-progress-indexing-info data)) )))
   :initialization-options #'lsp-serenata-init-options
   :initialized-fn (lambda (workspace)
