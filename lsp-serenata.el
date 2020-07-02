@@ -63,7 +63,7 @@ files having them from the index if they are already present.
 Adding new ones will cause the files having them to be picked up
 on the next project initialization."
   :group 'lsp-serenata
-  :type 'lsp-string-array)
+  :type 'lsp-string-vector)
 
 (defun lsp-serenata-server-start-fun (port)
   "Define serenata start function, it requires a PORT."
