@@ -24,6 +24,7 @@
 
 ;;; Code:
 
+(require 'lsp-protocol)
 (require 'lsp-mode)
 
 (defgroup lsp-serenata nil
@@ -75,6 +76,8 @@ on the next project initialization."
     :phpVersion ,lsp-serenata-php-version
     :fileExtensions ,lsp-serenata-file-extensions))
 
+(lsp-interface (serenata:didProgressIndexing (:info) nil))
+
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-tcp-connection 'lsp-serenata-server-start-fun)
@@ -82,7 +85,7 @@ on the next project initialization."
   :priority -2
   :notification-handlers (ht ("serenata/didProgressIndexing"
 			      (lambda (server data)
-				(message "%s" (ht-get data "info")))))
+				(message "%s" (lsp:serenata-did-progress-indexing-info data)) )))
   :initialization-options #'lsp-serenata-init-options
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
