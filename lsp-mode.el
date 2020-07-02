@@ -608,11 +608,6 @@ This flag affects only server which do not support incremental update."
   :group 'lsp-mode
   :package-version '(lsp-mode . "7.0"))
 
-(defcustom lsp-links-check-internal 0.1
-  "The interval for updating document links."
-  :group 'lsp-mode
-  :type 'float)
-
 (defcustom lsp-eldoc-enable-hover t
   "If non-nil, eldoc will display hover info when it is present."
   :type 'boolean
