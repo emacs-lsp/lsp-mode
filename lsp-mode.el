@@ -3091,7 +3091,9 @@ active `major-mode', or for all major modes when ALL-MODES is t."
   (folder->servers (make-hash-table :test 'equal))
   ;; ‘metadata’ is a generic storage for workspace specific data. It is
   ;; accessed via `lsp-workspace-set-metadata' and `lsp-workspace-set-metadata'
-  (metadata (make-hash-table :test 'equal)))
+  (metadata (make-hash-table :test 'equal))
+  ;; If we should warn user about a possible inconsistency between LSP packages.
+  (warn-possible-inconsistency? lsp-use-plists))
 
 (defun lsp-workspace-status (status-string &optional workspace)
   "Set current workspace status to STATUS-STRING.
@@ -7348,7 +7350,14 @@ SESSION is the active session."
 
          (with-lsp-workspace workspace
            (run-hooks 'lsp-after-initialize-hook))
-         (lsp--info "%s initialized successfully" (lsp--workspace-print workspace)))
+         (lsp--info "%s initialized successfully" (lsp--workspace-print workspace))
+
+         (condition-case ()
+             (when (lsp-session-warn-possible-inconsistency? session)
+               (lsp--warn "LSP packages may need to re-compile it to avoid errors.
+Make sure to update all LSP packages and byte-compile it again.")
+               (setf (lsp-session-warn-possible-inconsistency? session) nil))
+           (error t)))
        :mode 'detached))
     workspace))
 
@@ -8091,11 +8100,6 @@ such."
       (lsp--warn "No LSP server for %s(check *lsp-log*)." major-mode)
       nil)))
 
-(defun lsp--any-inconsistency? ()
-  "Check for any inconsistency on LSP package"
-  (and lsp-use-plists
-       (equal (symbol-function 'lsp-merge) 'ht-merge)))
-
 (defun lsp-shutdown-workspace ()
   "Shutdown language server."
   (interactive)
@@ -8221,10 +8225,7 @@ You may find the installation instructions at https://emacs-lsp.github.io/lsp-mo
        ;; no matches
        ((-> #'lsp--matching-clients? lsp--filter-clients not)
         (lsp--error "There are no language servers supporting current mode %s registered with `lsp-mode'."
-                    major-mode)))
-      (unless (lsp--any-inconsistency?)
-        (lsp--warn "It's seems that one or more LSP packages are outdated or it may need to re-compile it to avoid errors.
-Make sure to update all LSP packages and byte-compile it again.")))))
+                    major-mode))))))
 
 (defun lsp--init-if-visible ()
   "Run `lsp' for the current buffer if the buffer is visible.
