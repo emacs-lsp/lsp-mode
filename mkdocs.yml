@@ -89,6 +89,9 @@ nav:
       - page/gallery.md
   - Changelog:
       - page/CHANGELOG.md
+  - Blog:
+      - 2020:
+          - '7.0 Release': blog/2020/7.0-release.md
 
 extra_css:
   - stylesheets/layout.css
