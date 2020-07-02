@@ -2050,6 +2050,7 @@ The `:global' workspace is global one.")
 (declare-function all-the-icons-material "ext:all-the-icons" t t)
 (declare-function treemacs-get-icon-value "ext:treemacs-icons" t t)
 (declare-function lsp-treemacs-symbol-kind->icon "ext:lsp-treemacs" t)
+(defvar lsp-treemacs-theme)
 
 (defun lsp--headerline-breadcrumb-arrow-icon ()
   "Build the arrow icon for headerline breadcrumb."
@@ -2061,7 +2062,7 @@ The `:global' workspace is global one.")
 (lsp-defun lsp--headerline-breadcrumb-symbol-icon ((&DocumentSymbol :kind))
   "Build the SYMBOL icon for headerline breadcrumb."
   (when (require 'lsp-treemacs nil t)
-    (treemacs-get-icon-value (lsp-treemacs-symbol-kind->icon kind))))
+    (treemacs-get-icon-value (lsp-treemacs-symbol-kind->icon kind) nil lsp-treemacs-theme)))
 
 (defun lsp--headerline-build-string (symbols-hierarchy)
   "Build the header-line from SYMBOLS-HIERARCHY."
