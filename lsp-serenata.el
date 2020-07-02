@@ -85,7 +85,7 @@ on the next project initialization."
   :priority -2
   :notification-handlers (ht ("serenata/didProgressIndexing"
 			      (lambda (_server data)
-				(message "%s" (lsp:serenata-did-progress-indexing-info data)) )))
+				(lsp--info "%s" (lsp:serenata-did-progress-indexing-info data)) )))
   :initialization-options #'lsp-serenata-init-options
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
