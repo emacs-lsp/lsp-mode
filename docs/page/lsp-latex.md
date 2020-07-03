@@ -13,9 +13,7 @@ cargo install --git https://github.com/latex-lsp/texlab.git
 ## Installation(client)
 You can get `lsp-latex` from melpa. Add melpa to the list `package-archives`,
 and run:
-```
-M-x package-initialize M-x package-install lsp-latex
-```
+<kbd>M-x</kbd> `package-initialize` <kbd>M-x</kbd> `package-install` <kbd>RET</kbd> `lsp-latex`
 
 ## Available configurations
 These are available configuration. All configurations texlab provides is available.
