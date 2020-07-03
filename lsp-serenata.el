@@ -31,7 +31,7 @@
   "LSP support for the PHP programming language, using serenata"
   :group 'lsp-mode
   :link '(url-link "https://gitlab.com/Serenata/Serenata")
-  :package-version '(lsp-mode . "6.4"))
+  :package-version '(lsp-mode . "7.0"))
 
 (defcustom lsp-serenata-server-path
   "serenata.phar"
@@ -113,6 +113,7 @@ already present."
 		   :excludedPathExpressions ,lsp-serenata-exclude-path-expressions
 		   :fileExtensions ,lsp-serenata-file-extensions)))
 
+
 (lsp-interface (serenata:didProgressIndexing (:sequenceOfIndexedItem :totalItemsToIndex :progressPercentage :folderUri :fileUri :info) nil ))
 
 (lsp-register-client
@@ -123,6 +124,7 @@ already present."
   :notification-handlers (ht ("serenata/didProgressIndexing"
 			      (lambda (_server data)
 				(lsp--info "%s" (lsp:serenata-did-progress-indexing-info data)))))
+
   :initialization-options #'lsp-serenata-init-options
   :initialized-fn (lambda (workspace)
 		    (when (equal (length lsp-serenata-uris) 0)

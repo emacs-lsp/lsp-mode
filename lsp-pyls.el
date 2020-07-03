@@ -372,14 +372,14 @@ should be the python executable. This option will be prioritized over
 Can hit performance, as well as lsp-mode implements its own fuzzy search on completion items."
   :type 'boolean
   :group 'lsp-pyls
-  :package-version '(lsp-mode . "6.4"))
+  :package-version '(lsp-mode . "7.0"))
 
 (defcustom lsp-pyls-plugins-jedi-completion-include-class-objects t
   "If enabled, adds class objects to completion in order to avoid snippet with init args.
 Has no effect if `lsp-pyls-plugins-jedi-completion-include-params' is disabled. Requires pyls >= 0.33.0"
   :type 'boolean
   :group 'lsp-pyls
-  :package-version '(lsp-mode . "6.4"))
+  :package-version '(lsp-mode . "7.0"))
 
 (defcustom lsp-pyls-rename-backend 'jedi
   "Choose renaming backend. Jedi is preferred but only works for python >= 3.6 and pyls >= 0.32.0
@@ -388,7 +388,7 @@ So it will rename only references it can find."
   :type '(choice (const :tag "jedi" jedi)
                  (const :tag "rope" rope))
   :group 'lsp-pyls
-  :package-version '(lsp-mode . "6.4"))
+  :package-version '(lsp-mode . "7.0"))
 
 
 (defun lsp-pyls-get-pyenv-environment ()

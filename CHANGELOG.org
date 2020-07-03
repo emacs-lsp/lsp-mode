@@ -1,5 +1,7 @@
 * Changelog
-** Master branch
+** Release 7.0
+  * Support for new language server - Shttps://github.com/lighttiger2505/sqls (thanks to @v2okimochi)
+  * Provided automatic installers for elp/css/bash/purescript(thanks to @kiennq)
   * Configurable Rust Analyzer inlay face via ~lsp-rust-analyzer-inlay-face~.
   * Add ~lsp-headerline-breadcrumb-mode~ which shows a breadcrumb with the document symbols on headerline when enabled.
   * Add ~lsp-modeline-code-actions-mode~ which shows code actions on modeline when enabled.
@@ -29,7 +31,6 @@
     can be enabled via =lsp-headerline-breadcrumb-enable=
   * Migrated lsp-mode to use plists(thanks to @yyoncho, @kiennq and @ericdallo).
   * lsp-diagnostics-modeline: perf improvement (thanks to @kiennq)
-
 ** Release 6.3
   * Implemented ~company-capf~ integration. ~company-lsp~ is no longer supported.
   * Dropped support for dart language server in favour of dart SDK(breaking)

@@ -52,6 +52,7 @@
             (require pkg))
           pkg-list)
 
+  (yas-global-mode)
   (add-hook 'prog-mode-hook 'lsp)
   (add-hook 'kill-emacs-hook `(lambda ()
                                 (delete-directory ,package-user-dir t))))

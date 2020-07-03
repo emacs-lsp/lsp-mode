@@ -12,7 +12,7 @@ These are `lsp-mode` specific custom settings:
 - `lsp-auto-guess-root` - Automatically guess the project root using projectile/project. Do **not** use this setting unless you are familiar with `lsp-mode` internals and you are sure that all of your projects are following `projectile=/=project.el` conventions.
 - `lsp-restart` - Defines how server exited event must be handled.
 - `lsp-session-file` - File where session information is stored.
-- `lsp-auto-configure` - Auto configure `lsp-mode`. When set to `t`, `lsp-mode` will auto-configure `lsp-ui` and `company-lsp`.
+- `lsp-auto-configure` - Auto configure `lsp-mode`. When set to `t`, `lsp-mode` will auto-configure `lsp-ui`, `dap-mode` and other settings that makes sense to enable by default.
 - `lsp-document-sync-method` - How to sync the document with the language server.
 - `lsp-auto-execute-action` - Auto-execute single action.
 - `lsp-eldoc-render-all` - Display all of the info returned by `document/onHover`. If this is nil, `eldoc` will show only the symbol information.

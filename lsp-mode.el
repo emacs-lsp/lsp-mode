@@ -5,7 +5,7 @@
 ;; Author: Vibhav Pant, Fangrui Song, Ivan Yonchovski
 ;; Keywords: languages
 ;; Package-Requires: ((emacs "25.1") (dash "2.14.1") (dash-functional "2.14.1") (f "0.20.0") (ht "2.0") (spinner "1.7.3") (markdown-mode "2.3") (lv "0"))
-;; Version: 6.3.1
+;; Version: 7.0
 
 ;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; This program is free software; you can redistribute it and/or modify
@@ -606,12 +606,7 @@ This flag affects only server which do not support incremental update."
   "If non-nil, enable the `dap-auto-configure-mode`."
   :type 'boolean
   :group 'lsp-mode
-  :package-version '(lsp-mode . "6.4"))
-
-(defcustom lsp-links-check-internal 0.1
-  "The interval for updating document links."
-  :group 'lsp-mode
-  :type 'float)
+  :package-version '(lsp-mode . "7.0"))
 
 (defcustom lsp-eldoc-enable-hover t
   "If non-nil, eldoc will display hover info when it is present."
@@ -2050,6 +2045,7 @@ The `:global' workspace is global one.")
 (declare-function all-the-icons-material "ext:all-the-icons" t t)
 (declare-function treemacs-get-icon-value "ext:treemacs-icons" t t)
 (declare-function lsp-treemacs-symbol-kind->icon "ext:lsp-treemacs" t)
+(defvar lsp-treemacs-theme)
 
 (defun lsp--headerline-breadcrumb-arrow-icon ()
   "Build the arrow icon for headerline breadcrumb."
@@ -2061,7 +2057,7 @@ The `:global' workspace is global one.")
 (lsp-defun lsp--headerline-breadcrumb-symbol-icon ((&DocumentSymbol :kind))
   "Build the SYMBOL icon for headerline breadcrumb."
   (when (require 'lsp-treemacs nil t)
-    (treemacs-get-icon-value (lsp-treemacs-symbol-kind->icon kind))))
+    (treemacs-get-icon-value (lsp-treemacs-symbol-kind->icon kind) nil lsp-treemacs-theme)))
 
 (defun lsp--headerline-build-string (symbols-hierarchy)
   "Build the header-line from SYMBOLS-HIERARCHY."
@@ -3469,14 +3465,13 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
              (body (plist-put body :id id)))
 
         ;; cancel request in any of the hooks
-        (when hooks
-          (mapc (-lambda ((hook . local))
-                  (add-hook hook
-                            (lsp--create-request-cancel
-                             id target-workspaces hook buf method)
-                            nil local))
-                hooks)
-          (puthash id cleanup-hooks lsp--request-cleanup-hooks))
+        (mapc (-lambda ((hook . local))
+                (add-hook hook
+                          (lsp--create-request-cancel
+                           id target-workspaces hook buf method)
+                          nil local))
+              hooks)
+        (puthash id cleanup-hooks lsp--request-cleanup-hooks)
 
         (setq lsp--last-active-workspaces target-workspaces)
 
@@ -4784,12 +4779,15 @@ Return `nil' when fails to guess prefix."
              (text (or insert-text? label))
              (point (point))
              (start (max 1 (- point (length text))))
+             (char-before (char-before start))
              start-point)
        (while (and (< start point) (not start-point))
-         (when (and (not (equal (char-syntax (char-before start)) ?w))
-                    (string-prefix-p (buffer-substring-no-properties start point) text))
+         (unless (or (and char-before (equal (char-syntax char-before) ?w))
+                     (not (string-prefix-p (buffer-substring-no-properties start point)
+                                           text)))
            (setq start-point start))
-         (cl-incf start))
+         (cl-incf start)
+         (setq char-before (char-before start)))
        start-point))))
 
 (defun lsp--capf-cached-items (items)
@@ -5010,46 +5008,47 @@ Also, additional data to attached to each candidate can be passed via PLIST."
   "Exit function of `completion-at-point'.
 CANDIDATE is the selected completion item.
 Others: TRIGGER-CHARS"
-  (-let* (((&plist 'lsp-completion-item item
-                   'lsp-completion-start-point start-point
-                   'lsp-completion-markers markers
-                   'lsp-completion-prefix prefix)
-           (text-properties-at 0 candidate))
-          ((&CompletionItem :label :insert-text? :text-edit? :insert-text-format? :additional-text-edits?)
-           item))
-    (cond
-     (text-edit?
-      (apply #'delete-region markers)
-      (insert prefix)
-      (lsp--apply-text-edit text-edit?))
-     ((or insert-text? label)
-      (apply #'delete-region markers)
-      (insert prefix)
-      (delete-region start-point (point))
-      (insert (or insert-text? label))))
+  (unwind-protect
+       (-let* (((&plist 'lsp-completion-item item
+                        'lsp-completion-start-point start-point
+                        'lsp-completion-markers markers
+                        'lsp-completion-prefix prefix)
+                (text-properties-at 0 candidate))
+               ((&CompletionItem :label :insert-text? :text-edit? :insert-text-format? :additional-text-edits?)
+                item))
+         (cond
+           (text-edit?
+            (apply #'delete-region markers)
+            (insert prefix)
+            (lsp--apply-text-edit text-edit?))
+           ((or insert-text? label)
+            (apply #'delete-region markers)
+            (insert prefix)
+            (delete-region start-point (point))
+            (insert (or insert-text? label))))
 
-    (when (eq insert-text-format? 2)
-      (let (yas-indent-line)
-        (yas-expand-snippet
-         (lsp--to-yasnippet-snippet (buffer-substring start-point (point)))
-         start-point
-         (point))))
+         (when (eq insert-text-format? 2)
+           (let (yas-indent-line)
+             (yas-expand-snippet
+              (lsp--to-yasnippet-snippet (buffer-substring start-point (point)))
+              start-point
+              (point))))
 
-    (when (and lsp-completion-enable-additional-text-edit additional-text-edits?)
-      (lsp--apply-text-edits additional-text-edits?)))
+         (when (and lsp-completion-enable-additional-text-edit additional-text-edits?)
+           (lsp--apply-text-edits additional-text-edits?))
 
-  (lsp--capf-clear-cache)
+         (when (and lsp-signature-auto-activate
+                    (lsp-feature? "textDocument/signatureHelp"))
+           (lsp-signature-activate))
 
-  (when (and lsp-signature-auto-activate
-             (lsp-feature? "textDocument/signatureHelp"))
-    (lsp-signature-activate))
+         (setq-local lsp-inhibit-lsp-hooks nil)
 
-  (setq-local lsp-inhibit-lsp-hooks nil)
-
-  (when (lsp--looking-back-trigger-characterp trigger-chars)
-    (setq this-command 'self-insert-command)))
+         (when (lsp--looking-back-trigger-characterp trigger-chars)
+           (setq this-command 'self-insert-command)))
+    (lsp--capf-clear-cache)))
 
 (advice-add #'completion-at-point :before #'lsp--capf-clear-cache)
+
 
 (defun lsp--to-yasnippet-snippet (text)
   "Convert LSP snippet TEXT to yasnippet snippet."
@@ -7422,7 +7421,7 @@ JavaScript file, tsserver.js (the *.js is required for Windows)."
     (-map (-compose #'symbol-name #'lsp--client-server-id) it)
     (format "%s" it)
     (propertize it 'face 'success)
-    (format "Installing following servers: %s" it)
+    (format " Installing following servers: %s" it)
     (propertize it
                 'local-map (make-mode-line-mouse-map
                             'mouse-1 (lambda ()

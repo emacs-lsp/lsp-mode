@@ -30,14 +30,14 @@
   "LSP support for SQL, using sqls"
   :group 'lsp-mode
   :link '(url-link "https://github.com/lighttiger2505/sqls")
-  :package-version `(lsp-mode . "6.4"))
+  :package-version `(lsp-mode . "7.0"))
 
 (defcustom lsp-sqls-server "sqls"
   "Path to the `sqls` binary."
   :group 'lsp-sqls
   :risky t
   :type 'file
-  :package-version `(lsp-mode . "6.4"))
+  :package-version `(lsp-mode . "7.0"))
 
 (defcustom lsp-sqls-workspace-config-path "workspace"
   "If non-nil then setup workspace configuration with json file path."
@@ -45,7 +45,7 @@
   :risky t
   :type '(choice (const "workspace")
                  (const "root"))
-  :package-version `(lsp-mode . "6.4"))
+  :package-version `(lsp-mode . "7.0"))
 
 (defun lsp-sqls--make-launch-cmd ()
   (-let [base `(,lsp-sqls-server)]

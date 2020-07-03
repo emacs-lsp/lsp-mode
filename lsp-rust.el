@@ -460,7 +460,7 @@ The command should include `--message=format=json` or similar option."
   "The face to use for the Rust Analyzer inlays."
   :type 'face
   :group 'lsp-rust
-  :package-version '(lsp-mode . "6.4"))
+  :package-version '(lsp-mode . "7.0"))
 
 (defun lsp-rust-analyzer--make-init-options ()
   "Init options for rust-analyzer"
