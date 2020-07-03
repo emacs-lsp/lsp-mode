@@ -79,7 +79,7 @@ on the next project initialization."
   :group 'lsp-serenata
   :type 'lsp-string-vector)
 
-(defcustom lsp-serenata-index-database-uri (lsp--path-to-uri (f-join  "~/.emacs.d/index.sqlite"))
+(defcustom lsp-serenata-index-database-uri (lsp--path-to-uri (f-join  user-emacs-directory "index.sqlite"))
   "The location to store the index database.
 Note that, as the index database uses SQLite and WAL mode,
 additional files (usually two) may be generated and used in the
