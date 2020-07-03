@@ -77,6 +77,7 @@ nav:
     - Terraform: page/lsp-terraform.md
     - TeX, LaTeX, etc (digestif): page/lsp-tex.md
     - TeX, LaTeX, etc (texlab): page/lsp-texlab.md
+    - TeX, LaTeX, etc (texlab, external): page/lsp-latex.md
     - Verilog/SystemVerilog: page/lsp-verilog.md
     - VHDL: page/lsp-vhdl.md
     - Vimscript: page/lsp-vim.md
