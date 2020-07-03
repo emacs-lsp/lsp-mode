@@ -24,6 +24,7 @@
 
 ;;; Code:
 
+(require 'lsp-protocol)
 (require 'lsp-mode)
 
 (defgroup lsp-serenata nil
@@ -38,6 +39,20 @@
 It can be downloaded from https://gitlab.com/Serenata/Serenata/-/releases."
   :group 'lsp-serenata
   :type 'file)
+
+(defcustom lsp-serenata-uris
+  []
+  "A list of folders to index for your project.
+This does not have to include the root of the project itself, in
+case you have need of an exotic configuration where the root of
+the project is at some location but your actual PHP code is
+somewhere else.  Note that if you are running Serenata in a
+container, you will have to ensure that these URI's are mapped
+inside it.  Avoid using file paths containing spaces. This is
+currently broken due to apparant PHP quirks.  By default, the
+value is taken from the lsp workspace location."
+  :group 'lsp-serenata
+  :type 'lsp-string-vector)
 
 (defcustom lsp-serenata-php-version
   7.3
@@ -62,7 +77,28 @@ files having them from the index if they are already present.
 Adding new ones will cause the files having them to be picked up
 on the next project initialization."
   :group 'lsp-serenata
-  :type 'array)
+  :type 'lsp-string-vector)
+
+(defcustom lsp-serenata-index-database-uri (lsp--path-to-uri (f-join  "~/.emacs.d/index.sqlite"))
+  "The location to store the index database.
+Note that, as the index database uses SQLite and WAL mode,
+additional files (usually two) may be generated and used in the
+same folder.  Note also that Serenata relies on the Doctrine DBAL
+library as well as the SQLite backends in PHP, which may not
+support non-file URI's, which may prevent you from using these."
+  :group 'lsp-serenata
+  :type 'file)
+
+(defcustom lsp-serenata-exclude-path-expressions ["/.+Test.php$/"]
+  "One or more expressions of paths to ignore.
+This uses Symfony's Finder in the background, so this means you
+can configure anything here that can also be passed to the name
+function, which includes plain strings, globs, as well as regular
+expressions.  Note that for existing projects, modifying these
+will not not automatically prune them from the index if they are
+already present."
+  :group 'lsp-serenata
+  :type 'lsp-string-vector)
 
 (defun lsp-serenata-server-start-fun (port)
   "Define serenata start function, it requires a PORT."
@@ -71,10 +107,13 @@ on the next project initialization."
 
 (defun lsp-serenata-init-options ()
   "Init options for lsp-serenata."
-  `(
-    :phpVersion ,lsp-serenata-php-version
-    :fileExtensions ,lsp-serenata-file-extensions))
+  `(:config (:uris ,lsp-serenata-uris
+		   :indexDatabaseUri ,lsp-serenata-index-database-uri
+		   :phpVersion ,lsp-serenata-php-version
+		   :excludedPathExpressions ,lsp-serenata-exclude-path-expressions
+		   :fileExtensions ,lsp-serenata-file-extensions)))
 
+(lsp-interface (serenata:didProgressIndexing (:sequenceOfIndexedItem :totalItemsToIndex :progressPercentage :folderUri :fileUri :info) nil ))
 
 (lsp-register-client
  (make-lsp-client
@@ -82,10 +121,13 @@ on the next project initialization."
   :major-modes '(php-mode)
   :priority -2
   :notification-handlers (ht ("serenata/didProgressIndexing"
-			      (lambda (server data)
-				(message "%s" (ht-get data "info")))))
+			      (lambda (_server data)
+				(lsp--info "%s" (lsp:serenata-did-progress-indexing-info data)))))
   :initialization-options #'lsp-serenata-init-options
   :initialized-fn (lambda (workspace)
+		    (when (equal (length lsp-serenata-uris) 0)
+		      (let* ((lsp-root (lsp--path-to-uri (lsp-workspace-root))))
+			(setq lsp-serenata-uris (vector lsp-root))))
                     (with-lsp-workspace workspace
                       (lsp--set-configuration
                        (lsp-configuration-section "serenata"))))
