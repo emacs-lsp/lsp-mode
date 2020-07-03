@@ -3091,9 +3091,7 @@ active `major-mode', or for all major modes when ALL-MODES is t."
   (folder->servers (make-hash-table :test 'equal))
   ;; ‘metadata’ is a generic storage for workspace specific data. It is
   ;; accessed via `lsp-workspace-set-metadata' and `lsp-workspace-set-metadata'
-  (metadata (make-hash-table :test 'equal))
-  ;; If we should warn user about a possible inconsistency between LSP packages.
-  (warn-possible-inconsistency? lsp-use-plists))
+  (metadata (make-hash-table :test 'equal)))
 
 (defun lsp-workspace-status (status-string &optional workspace)
   "Set current workspace status to STATUS-STRING.
@@ -7352,12 +7350,12 @@ SESSION is the active session."
            (run-hooks 'lsp-after-initialize-hook))
          (lsp--info "%s initialized successfully" (lsp--workspace-print workspace))
 
-         (condition-case ()
-             (when (lsp-session-warn-possible-inconsistency? session)
-               (lsp--warn "LSP packages may need to re-compile it to avoid errors.
+         (when (and lsp-use-plists
+                    (not (lsp-session-get-metadata :plists-already-warned?)))
+           (lsp--warn "LSP packages may need to be re-compiled to avoid errors.
 Make sure to update all LSP packages and byte-compile it again.")
-               (setf (lsp-session-warn-possible-inconsistency? session) nil))
-           (error t)))
+           (lsp-session-set-metadata :plists-already-warned? t)
+           (lsp--persist-session (lsp-session))))
        :mode 'detached))
     workspace))
 
