@@ -16,7 +16,7 @@ and run:
 <kbd>M-x</kbd> `package-initialize` <kbd>M-x</kbd> `package-install` <kbd>RET</kbd> `lsp-latex`
 
 ## Available configurations
-These are available configuration. All configurations texlab provides is available.
+These are the available configurations. All configurations `texlab` provides are available.
 See also [document of texlab](https://texlab.netlify.app/docs/reference/configuration).
 
 | texlab configuration           | custom variable                         | summary                                                      |
