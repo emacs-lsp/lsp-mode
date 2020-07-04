@@ -2023,6 +2023,10 @@ The `:global' workspace is global one.")
    :mode 'tick
    :cancel-token :lsp-modeline-code-actions))
 
+(defun lsp--modeline-clean-code-actions ()
+  "Clean the code actions from modeline."
+  (setq global-mode-string (remove '(t (:eval lsp--modeline-code-actions-string)) global-mode-string)))
+
 (define-minor-mode lsp-modeline-code-actions-mode
   "Toggle code actions on modeline."
   :group 'lsp-mode
@@ -2034,7 +2038,7 @@ The `:global' workspace is global one.")
     (add-hook 'lsp-on-idle-hook 'lsp--modeline-check-code-actions nil t))
    (t
     (remove-hook 'lsp-on-idle-hook 'lsp--modeline-check-code-actions t)
-    (setq global-mode-string (remove '(t (:eval lsp--modeline-code-actions-string)) global-mode-string)))))
+    (lsp--modeline-clean-code-actions))))
 
 
 ;; headerline breadcrumb
@@ -3947,6 +3951,7 @@ in that particular folder."
 
       (remove-hook 'xref-backend-functions #'lsp--xref-backend t)
       (setq-local global-mode-string (remove status global-mode-string))
+      (lsp--modeline-clean-code-actions)
       (when (bound-and-true-p company-mode)
         (lsp--clean-company))))))
 
