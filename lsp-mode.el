@@ -8066,10 +8066,13 @@ The library folders are defined by each client for each of the active workspace.
 
 (defun lsp--persist-session (session)
   "Persist SESSION to `lsp-session-file'."
-  (lsp--persist lsp-session-file (make-lsp-session
-                                  :folders (lsp-session-folders session)
-                                  :folders-blacklist (lsp-session-folders-blacklist session)
-                                  :server-id->folders (lsp-session-server-id->folders session))))
+  (let ((metadata (make-hash-table :test 'equal)))
+    (puthash :plists-already-warned? (lsp-session-get-metadata :plists-already-warned?) metadata)
+    (lsp--persist lsp-session-file (make-lsp-session
+                                    :folders (lsp-session-folders session)
+                                    :folders-blacklist (lsp-session-folders-blacklist session)
+                                    :server-id->folders (lsp-session-server-id->folders session)
+                                    :metadata metadata))))
 
 (defun lsp--try-project-root-workspaces (ask-for-client ignore-multi-folder)
   "Try create opening file as a project file.
