@@ -5,7 +5,6 @@ These are `lsp-mode` specific custom settings:
 
 - `lsp-log-io` - If non-nil, print all messages to and from the language server to `*lsp-log*`.
 - `lsp-print-performance` - If non-nil, print performance info. to `*lsp-log*`.
-- `lsp-inhibit-message` - If non-nil, inhibit the message echo via `inhibit-message`.
 - `lsp-report-if-no-buffer` - If non nil the errors will be reported even when the file is not open.
 - `lsp-keep-workspace-alive` - If non nil keep workspace alive when the last workspace buffer is closed.
 - `lsp-enable-snippet` - Enable/disable snippet completion support.
