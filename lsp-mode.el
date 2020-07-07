@@ -805,6 +805,12 @@ ignored."
   :type 'boolean
   :group 'lsp-mode)
 
+(defcustom lsp-completion-no-cache nil
+  "Whether or not caching the returned completions from server."
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "7.0.1"))
+
 (defcustom lsp-server-trace nil
   "Request tracing on the server side.
 The actual trace output at each level depends on the language server in use.
@@ -4814,6 +4820,9 @@ Return `nil' when fails to guess prefix."
                            'lsp-completion-score score?))
              it)))
 
+(defvar lsp--capf-no-reordering nil
+  "Dont do client-side reordering completion items when set.")
+
 (cl-defun lsp--capf-filter-candidates (items
                                        &rest plist
                                        &key lsp-items
@@ -4824,7 +4833,7 @@ Also, additional data to attached to each candidate can be passed via PLIST."
   (lsp--while-no-input
    (->>
     (if items
-        (->>
+        (-->
          (let (queries fuz-queries)
            (-keep (lambda (cand)
                     (let* ((start-point (get-text-property 0 'lsp-completion-start-point cand))
@@ -4847,11 +4856,13 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                                            cand)
                         cand)))
                   items))
-         (-sort (lambda (o1 o2)
-                  (> (get-text-property 0 'sort-score o1)
-                     (get-text-property 0 'sort-score o2))))
+         (if lsp--capf-no-reordering
+             it
+           (sort it (lambda (o1 o2)
+                      (> (get-text-property 0 'sort-score o1)
+                         (get-text-property 0 'sort-score o2)))))
          ;; TODO: pass additional function to sort the candidates
-         (-map (-partial #'get-text-property 0 'lsp-completion-item)))
+         (-map (-partial #'get-text-property 0 'lsp-completion-item) it))
       lsp-items)
     (-map (lambda (item) (apply #'lsp--make-completion-item item plist))))))
 
@@ -4942,7 +4953,8 @@ Also, additional data to attached to each candidate can be passed via PLIST."
             (lambda ()
               (cond
                (done? result)
-               ((and lsp--capf-cache
+               ((and (not lsp-completion-no-cache)
+                     lsp--capf-cache
                      (listp lsp--capf-cache)
                      (s-prefix? (car lsp--capf-cache)
                                 (buffer-substring-no-properties bounds-start (point)))
@@ -4970,7 +4982,8 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                                                           bounds-start)))
                                            it))))
                         (markers (list bounds-start (copy-marker (point) t)))
-                        (prefix (buffer-substring-no-properties bounds-start (point))))
+                        (prefix (buffer-substring-no-properties bounds-start (point)))
+                        (lsp--capf-no-reordering t))
                   (setf done? completed
                         lsp--capf-cache (cond
                                          ((and done? (not (seq-empty-p items)))
