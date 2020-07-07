@@ -2026,12 +2026,13 @@ The `:global' workspace is global one.")
 
 (defun lsp--modeline-check-code-actions (&rest _)
   "Request code actions to update modeline for given BUFFER."
-  (lsp-request-async
-   "textDocument/codeAction"
-   (lsp--text-document-code-action-params)
-   #'lsp-modeline--update-code-actions
-   :mode 'tick
-   :cancel-token :lsp-modeline-code-actions))
+  (when (lsp-feature? "textDocument/codeAction")
+    (lsp-request-async
+     "textDocument/codeAction"
+     (lsp--text-document-code-action-params)
+     #'lsp-modeline--update-code-actions
+     :mode 'unchanged
+     :cancel-token :lsp-modeline-code-actions)))
 
 (define-minor-mode lsp-modeline-code-actions-mode
   "Toggle code actions on modeline."
@@ -3961,23 +3962,23 @@ in that particular folder."
         (lsp--clean-company))))))
 
 (defun lsp-configure-buffer ()
-  (when (and lsp-modeline-code-actions-enable
-             (lsp-feature? "textDocument/codeAction"))
-    (lsp-modeline-code-actions-mode 1))
-
-  (when (and lsp-headerline-breadcrumb-enable
-             (lsp-feature? "textDocument/documentSymbol"))
-    (lsp-headerline-breadcrumb-mode 1))
-
-  (when (and lsp-lens-auto-enable
-             (lsp-feature? "textDocument/codeLens"))
-    (lsp-lens-mode 1))
-
-  (when (and lsp-enable-text-document-color
-             (lsp-feature? "textDocument/documentColor"))
-    (add-hook 'lsp-on-change-hook #'lsp--document-color nil t))
-
   (when lsp-auto-configure
+    (when (and lsp-modeline-code-actions-enable
+               (lsp-feature? "textDocument/codeAction"))
+      (lsp-modeline-code-actions-mode 1))
+
+    (when (and lsp-headerline-breadcrumb-enable
+               (lsp-feature? "textDocument/documentSymbol"))
+      (lsp-headerline-breadcrumb-mode 1))
+
+    (when (and lsp-lens-auto-enable
+               (lsp-feature? "textDocument/codeLens"))
+      (lsp-lens-mode 1))
+
+    (when (and lsp-enable-text-document-color
+               (lsp-feature? "textDocument/documentColor"))
+      (add-hook 'lsp-on-change-hook #'lsp--document-color nil t))
+
     (when (and lsp-enable-imenu
                (lsp-feature? "textDocument/documentSymbol"))
       (lsp-enable-imenu))
@@ -4579,24 +4580,25 @@ Applies on type formatting."
 
 ;; links
 (defun lsp--document-links ()
-  (lsp-request-async
-   "textDocument/documentLink"
-   `(:textDocument ,(lsp--text-document-identifier))
-   (lambda (links)
-     (lsp--remove-overlays 'lsp-link)
-     (seq-do
-      (-lambda ((link &as &DocumentLink :range (&Range :start :end)))
-        (-doto (make-button (lsp--position-to-point start)
-                            (lsp--position-to-point end)
-                            'action (lsp--document-link-keymap link)
-                            'keymap (let ((map (make-sparse-keymap)))
-                                      (define-key map [M-return] 'push-button)
-                                      (define-key map [mouse-2] 'push-button)
-                                      map)
-                            'help-echo "mouse-2, M-RET: Visit this link")
-          (overlay-put 'lsp-link t)))
-      links))
-   :mode 'tick))
+  (when (lsp-feature? "textDocument/documentLink")
+    (lsp-request-async
+     "textDocument/documentLink"
+     `(:textDocument ,(lsp--text-document-identifier))
+     (lambda (links)
+       (lsp--remove-overlays 'lsp-link)
+       (seq-do
+        (-lambda ((link &as &DocumentLink :range (&Range :start :end)))
+          (-doto (make-button (lsp--position-to-point start)
+                              (lsp--position-to-point end)
+                              'action (lsp--document-link-keymap link)
+                              'keymap (let ((map (make-sparse-keymap)))
+                                        (define-key map [M-return] 'push-button)
+                                        (define-key map [mouse-2] 'push-button)
+                                        map)
+                              'help-echo "mouse-2, M-RET: Visit this link")
+            (overlay-put 'lsp-link t)))
+        links))
+     :mode 'unchanged)))
 
 (defun lsp--document-link-handle-target (url)
   (let* ((parsed-url (url-generic-parse-url (url-unhex-string url)))
@@ -5741,34 +5743,35 @@ It will show up only if current point has signature help."
 
 (defun lsp--document-color ()
   "Document color handler."
-  (lsp-request-async
-   "textDocument/documentColor"
-   `(:textDocument ,(lsp--text-document-identifier))
-   (lambda (result)
-     (lsp--remove-overlays 'lsp-color)
-     (seq-do
-      (-lambda ((&ColorInformation :color (color &as &Color :red :green :blue)
-                                   :range))
-        (-let* (((beg . end) (lsp--range-to-region range))
-                (overlay (make-overlay beg end))
-                (command (lsp--color-create-interactive-command color range)))
-          (overlay-put overlay 'lsp-color t)
-          (overlay-put overlay 'evaporate t)
-          (overlay-put overlay
-                       'before-string
-                       (propertize
-                        lsp-overlay-document-color-char
-                        'face `((:foreground ,(format "#%s%s%s"
-                                                      (lsp--number->color red)
-                                                      (lsp--number->color green)
-                                                      (lsp--number->color blue))))
-                        'action command
-                        'mouse-face 'lsp-lens-mouse-face
-                        'local-map (-doto (make-sparse-keymap)
-                                     (define-key [mouse-1] command))))))
-      result))
-   :mode 'tick
-   :cancel-token :document-color-token))
+  (when (lsp-feature? "textDocument/documentColor")
+    (lsp-request-async
+     "textDocument/documentColor"
+     `(:textDocument ,(lsp--text-document-identifier))
+     (lambda (result)
+       (lsp--remove-overlays 'lsp-color)
+       (seq-do
+        (-lambda ((&ColorInformation :color (color &as &Color :red :green :blue)
+                                     :range))
+          (-let* (((beg . end) (lsp--range-to-region range))
+                  (overlay (make-overlay beg end))
+                  (command (lsp--color-create-interactive-command color range)))
+            (overlay-put overlay 'lsp-color t)
+            (overlay-put overlay 'evaporate t)
+            (overlay-put overlay
+                         'before-string
+                         (propertize
+                          lsp-overlay-document-color-char
+                          'face `((:foreground ,(format "#%s%s%s"
+                                                        (lsp--number->color red)
+                                                        (lsp--number->color green)
+                                                        (lsp--number->color blue))))
+                          'action command
+                          'mouse-face 'lsp-lens-mouse-face
+                          'local-map (-doto (make-sparse-keymap)
+                                       (define-key [mouse-1] command))))))
+        result))
+     :mode 'unchanged
+     :cancel-token :document-color-token)))
 
 
 ;; hover
