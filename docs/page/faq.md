@@ -31,3 +31,9 @@
       ```
       See also
       [\#1652](https://github.com/emacs-lsp/lsp-mode/issues/1652).
+- How do I force `lsp-mode` to forget the workspace folders for multi root
+  servers so the workspace folders are added on demand?
+  - Use the following snippet:
+  ``` elisp
+  (advice-add 'lsp :before (lambda (&rest _args) (eval '(setf (lsp-session-server-id->folders (lsp-session)) (ht)))))
+  ```
