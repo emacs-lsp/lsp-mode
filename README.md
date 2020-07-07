@@ -103,6 +103,13 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
 
 Contributions are very much welcome.
 
+## Support the project
+
+The `emacs-lsp` organization has more than **20.000 lines of code**, to keep all of this working, 
+we need to implement new features and help the community on a lot of issues. 
+
+You can help us keep going and improving it by **[supporting the project](https://opencollective.com/emacs-lsp)**
+
 ### Members
 
 Here it is a list of the current `lsp-mode` members and what they are

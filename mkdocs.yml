@@ -93,6 +93,8 @@ nav:
   - Blog:
       - 2020:
           - '7.0 Release': blog/2020/7.0-release.md
+  - Support us:
+      - https://opencollective.com/emacs-lsp
 
 extra_css:
   - stylesheets/layout.css
