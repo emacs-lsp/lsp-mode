@@ -7146,6 +7146,7 @@ returns the command to execute."
 (defun lsp--setup-company ()
   (add-hook 'company-completion-started-hook
             (lambda (&rest _)
+              (lsp--capf-clear-cache)
               (setq-local lsp-inhibit-lsp-hooks t))
             nil
             t)
