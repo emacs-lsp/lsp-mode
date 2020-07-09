@@ -800,6 +800,12 @@ ignored."
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.3.2"))
 
+(defcustom lsp-completion-show-kind t
+  "Whether or not to show kind of completion candidates."
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "7.0.1"))
+
 (defcustom lsp-completion-show-detail t
   "Whether or not to show detail of completion candidates."
   :type 'boolean
@@ -4759,8 +4765,9 @@ and the position respectively."
                                                        'lsp-completion-item)))
     (concat (when (and lsp-completion-show-detail detail?)
               (concat " " (s-replace "\r" "" detail?)))
-            (when-let (kind-name (and kind? (aref lsp--completion-item-kind kind?)))
-              (format " (%s)" kind-name)))))
+            (when lsp-completion-show-kind
+              (when-let (kind-name (and kind? (aref lsp--completion-item-kind kind?)))
+                (format " (%s)" kind-name))))))
 
 (defun lsp--looking-back-trigger-characterp (trigger-characters)
   "Return trigger character if text before point matches any of the TRIGGER-CHARACTERS."
