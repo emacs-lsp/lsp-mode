@@ -274,7 +274,7 @@ See `-let' for a description of the destructuring mechanism."
                (rust-analyzer:ResovedCodeActionParams (:id :codeActionParams) nil)
                (rust-analyzer:JoinLinesParams (:textDocument :ranges) nil)
                (rust-analyzer:RunnablesParams (:textDocument) (:position))
-               (rust-analyzer:Runnable (:label :kind :args) (:location :env :bin :extraArgs))
+               (rust-analyzer:Runnable (:label :kind :args) (:location))
                (rust-analyzer:RunnableArgs (:cargoArgs :executableArgs) (:workspaceRoot))
                (rust-analyzer:InlayHint (:range :label :kind) nil)
                (rust-analyzer:InlayHintsParams (:textDocument) nil)
