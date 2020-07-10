@@ -4970,9 +4970,9 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                ((and (not lsp-completion-no-cache)
                      lsp--capf-cache
                      (listp lsp--capf-cache)
+                     (equal (cl-second lsp--capf-cache) bounds-start)
                      (s-prefix? (car lsp--capf-cache)
-                                (buffer-substring-no-properties bounds-start (point)))
-                     (< (cl-second lsp--capf-cache) (point)))
+                                (buffer-substring-no-properties bounds-start (point))))
                 (apply #'lsp--capf-filter-candidates (cddr lsp--capf-cache)))
                (t
                 (-let* ((resp (lsp-request-while-no-input
@@ -4998,6 +4998,7 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                         (markers (list bounds-start (copy-marker (point) t)))
                         (prefix (buffer-substring-no-properties bounds-start (point)))
                         (lsp--capf-no-reordering t))
+                  (lsp--capf-clear-cache)
                   (setf done? completed
                         lsp--capf-cache (cond
                                          ((and done? (not (seq-empty-p items)))
@@ -5083,9 +5084,6 @@ Others: TRIGGER-CHARS"
          (when (lsp--looking-back-trigger-characterp trigger-chars)
            (setq this-command 'self-insert-command)))
     (lsp--capf-clear-cache)))
-
-(advice-add #'completion-at-point :before #'lsp--capf-clear-cache)
-
 
 (defun lsp--to-yasnippet-snippet (text)
   "Convert LSP snippet TEXT to yasnippet snippet."
