@@ -564,6 +564,9 @@ The command should include `--message=format=json` or similar option."
   :notification-handlers (ht<-alist lsp-rust-notification-handlers)
   :action-handlers (ht<-alist lsp-rust-action-handlers)
   :library-folders-fn (lambda (_workspace) lsp-rust-library-directories)
+  :after-open-fn (lambda ()
+                   (when lsp-rust-analyzer-server-display-inlay-hints
+                     (lsp-rust-analyzer-inlay-hints-mode)))
   :ignore-messages nil
   :server-id 'rust-analyzer))
 
@@ -631,12 +634,6 @@ The command should include `--message=format=json` or similar option."
    (t
     (remove-overlays (point-min) (point-max) 'lsp-rust-analyzer-inlay-hint t)
     (remove-hook 'lsp-on-change-hook #'lsp-rust-analyzer-inlay-hints-change-handler t))))
-
-;; activate `lsp-rust-analyzer-inlay-hints-mode'
-(when lsp-rust-analyzer-server-display-inlay-hints
-  (add-hook 'lsp-after-open-hook (lambda ()
-                                   (when (lsp-find-workspace 'rust-analyzer nil)
-                                     (lsp-rust-analyzer-inlay-hints-mode)))))
 
 (defun lsp-rust-analyzer-expand-macro ()
   "Expands the macro call at point recursively."
