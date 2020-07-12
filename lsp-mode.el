@@ -2213,7 +2213,7 @@ PATH is the current folder to be checked."
     (setq header-line-format (remove '(t (:eval lsp--headerline-breadcrumb-string)) header-line-format)))))
 
 ;;;###autoload
-(defun lsp-breadrumb-go-to-symbol (symbol-position)
+(defun lsp-breadcrumb-go-to-symbol (symbol-position)
   "Go to the symbol on breadcrumb at SYMBOL-POSITION."
   (interactive "P")
   (if (numberp symbol-position)
@@ -2227,7 +2227,7 @@ PATH is the current folder to be checked."
     (lsp--info "Call this function with a number representing the symbol position on breadcrumb")))
 
 ;;;###autoload
-(defun lsp-breadrumb-narrow-to-symbol (symbol-position)
+(defun lsp-breadcrumb-narrow-to-symbol (symbol-position)
   "Narrow to the symbol range on breadcrumb at SYMBOL-POSITION."
   (interactive "P")
   (if (numberp symbol-position)
