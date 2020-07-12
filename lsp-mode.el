@@ -2084,6 +2084,20 @@ The `:global' workspace is global one.")
 
 (declare-function all-the-icons-material "ext:all-the-icons" t t)
 (declare-function lsp-treemacs-symbol-icon "ext:lsp-treemacs" (kind))
+(declare-function treemacs-current-theme "ext:treemacs-themes")
+(declare-function treemacs-get-icon-value "ext:treemacs-icons" (ext &optional tui theme) t)
+(declare-function treemacs-theme->name "ext:treemacs-themes" t t)
+
+(defun lsp--filename-with-icon (file-path)
+  "Return the filename from FILE-PATH with the extension related icon."
+  (let ((filename (f-filename file-path)))
+    (if (f-ext? file-path)
+        (when (require 'treemacs nil t)
+          (format "%s %s"
+                  (->> (treemacs-get-icon-value "dart" nil (treemacs-theme->name (treemacs-current-theme)))
+                       (replace-regexp-in-string "\s\\|\t" ""))
+                  filename))
+      filename)))
 
 (defun lsp--headerline-breadcrumb-arrow-icon ()
   "Build the arrow icon for headerline breadcrumb."
@@ -2152,7 +2166,7 @@ The `:global' workspace is global one.")
 (defun lsp--headerline-dirs-up-to-project-root (root-path path)
   "Find recursively the folders until the project ROOT-PATH.
 PATH is the current folder to be checked."
-  (let ((cur-path (list (f-filename path))))
+  (let ((cur-path (list (lsp--filename-with-icon path))))
     (if (lsp-f-same? root-path (lsp-f-parent path))
         cur-path
       (append (lsp--headerline-dirs-up-to-project-root root-path (lsp-f-parent path)) cur-path))))
@@ -2169,7 +2183,7 @@ PATH is the current folder to be checked."
                  (lsp--headerline-dirs-up-to-project-root (lsp-workspace-root) (buffer-file-name)) ""))
     ('file-name-only (format " %s %s"
                              (lsp--headerline-breadcrumb-arrow-icon)
-                             (propertize (f-filename (buffer-file-name)) 'font-lock-face lsp-headerline-breadcrumb-face)))))
+                             (propertize (lsp--filename-with-icon (buffer-file-name)) 'font-lock-face lsp-headerline-breadcrumb-face)))))
 
 (defun lsp--headerline-build-string (symbols-hierarchy)
   "Build the header-line from SYMBOLS-HIERARCHY."
