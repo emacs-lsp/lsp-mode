@@ -2156,7 +2156,7 @@ PATH is the current folder to be checked."
                         last-dirs
                         (lsp--headerline-breadcrumb-arrow-icon)
                         (propertize next-dir 'font-lock-face lsp-headerline-breadcrumb-face)))
-              (lsp--headerline-dirs-until-root (lsp--suggest-project-root) (buffer-file-name)) ""))
+              (lsp--headerline-dirs-until-root (lsp-workspace-root) (buffer-file-name)) ""))
 
 (defun lsp--headerline-build-string (symbols-hierarchy)
   "Build the header-line from SYMBOLS-HIERARCHY."
