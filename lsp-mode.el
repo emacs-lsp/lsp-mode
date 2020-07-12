@@ -2113,8 +2113,8 @@ The `:global' workspace is global one.")
                                (lsp--headerline-breadcrumb-narrow-to-symbol symbol)))
                            map)))
 
-(defun lsp--headerline-build-string (symbols-hierarchy)
-  "Build the header-line from SYMBOLS-HIERARCHY."
+(defun lsp--headerline-build-symbols-string (symbols-hierarchy)
+  "Build the symbols breadcrumb from SYMBOLS-HIERARCHY."
   (seq-reduce (lambda (last-symbol-name symbol-to-append)
                 (let* ((symbol2-name (if (lsp:document-symbol-deprecated? symbol-to-append)
                                          (propertize (lsp:document-symbol-name symbol-to-append)
@@ -2132,6 +2132,28 @@ The `:global' workspace is global one.")
                           (lsp--headerline-with-action symbol-to-append full-symbol-2))))
               symbols-hierarchy ""))
 
+(defun lsp--headerline-dirs-until-root (root-path path)
+  "Find recursively the folders until the project ROOT-PATH.
+PATH is the current folder to be checked."
+  (let ((cur-path (list (f-base path))))
+    (if (f-same? root-path (f-parent path))
+        cur-path
+      (append (lsp--headerline-dirs-until-root root-path (f-parent path)) cur-path))))
+
+(defun lsp--headerline-breadcrumb-build-prefix-string ()
+  "Build the prefix for breadcrumb."
+  (seq-reduce (lambda (last-dirs next-dir)
+                (format "%s %s %s"
+                        last-dirs
+                        (lsp--headerline-breadcrumb-arrow-icon)
+                        (propertize next-dir 'font-lock-face lsp-headerline-breadcrumb-face)))
+              (lsp--headerline-dirs-until-root (lsp--suggest-project-root) (buffer-file-name)) ""))
+
+(defun lsp--headerline-build-string (symbols-hierarchy)
+  "Build the header-line from SYMBOLS-HIERARCHY."
+  (concat (lsp--headerline-breadcrumb-build-prefix-string)
+          (lsp--headerline-build-symbols-string symbols-hierarchy)))
+
 (defun lsp--document-symbols->symbols-hierarchy (document-symbols)
   "Convert DOCUMENT-SYMBOLS to symbols hierarchy."
   (-let (((symbol &as &DocumentSymbol? :children?)
@@ -2145,7 +2167,7 @@ The `:global' workspace is global one.")
         (list symbol)))))
 
 (defun lsp--symbols-informations->symbols-hierarchy (symbols-informations)
-  "Convert SYMBOL-INFORMATIONS to symbols hierarchy."
+  "Convert SYMBOLS-INFORMATIONS to symbols hierarchy."
   (seq-filter (-lambda ((symbol &as &SymbolInformation :location (&Location :range (&RangeToPoint :start :end))))
                 (when (<= start (point) end)
                   symbol))
@@ -2182,7 +2204,7 @@ The `:global' workspace is global one.")
 
 ;;;###autoload
 (defun lsp-breadrumb-go-to-symbol (symbol-position)
-  "TODO"
+  "Go to the symbol on breadcrumb at SYMBOL-POSITION."
   (interactive "P")
   (if (numberp symbol-position)
       (if (lsp-feature? "textDocument/documentSymbol")
@@ -2196,7 +2218,7 @@ The `:global' workspace is global one.")
 
 ;;;###autoload
 (defun lsp-breadrumb-narrow-to-symbol (symbol-position)
-  "TODO"
+  "Narrow to the symbol range on breadcrumb at SYMBOL-POSITION."
   (interactive "P")
   (if (numberp symbol-position)
       (if (lsp-feature? "textDocument/documentSymbol")
