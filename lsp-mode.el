@@ -674,6 +674,13 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
+(defcustom lsp-headerline-breadcrumb-prefix 'path-up-to-project
+  "Face used on breadcrumb text on modeline."
+  :type '(choice (const :tag "Show the filename and the parent dirs up to project." path-up-to-project)
+                 (const :tag "Show only the open file name." file-name-only)
+                 (const :tag "No path prefix, showing only the document symbols." nil))
+  :group 'lsp-mode)
+
 (defcustom lsp-headerline-breadcrumb-face 'font-lock-doc-face
   "Face used on breadcrumb text on modeline."
   :type 'face
@@ -2142,22 +2149,27 @@ The `:global' workspace is global one.")
                           (lsp--headerline-with-action symbol-to-append full-symbol-2))))
               symbols-hierarchy ""))
 
-(defun lsp--headerline-dirs-until-root (root-path path)
+(defun lsp--headerline-dirs-up-to-project-root (root-path path)
   "Find recursively the folders until the project ROOT-PATH.
 PATH is the current folder to be checked."
   (let ((cur-path (list (f-filename path))))
     (if (lsp-f-same? root-path (lsp-f-parent path))
         cur-path
-      (append (lsp--headerline-dirs-until-root root-path (lsp-f-parent path)) cur-path))))
+      (append (lsp--headerline-dirs-up-to-project-root root-path (lsp-f-parent path)) cur-path))))
 
 (defun lsp--headerline-breadcrumb-build-prefix-string ()
   "Build the prefix for breadcrumb."
-  (seq-reduce (lambda (last-dirs next-dir)
-                (format "%s %s %s"
-                        last-dirs
-                        (lsp--headerline-breadcrumb-arrow-icon)
-                        (propertize next-dir 'font-lock-face lsp-headerline-breadcrumb-face)))
-              (lsp--headerline-dirs-until-root (lsp-workspace-root) (buffer-file-name)) ""))
+  (pcase lsp-headerline-breadcrumb-prefix
+    ('path-up-to-project
+     (seq-reduce (lambda (last-dirs next-dir)
+                   (format "%s %s %s"
+                           last-dirs
+                           (lsp--headerline-breadcrumb-arrow-icon)
+                           (propertize next-dir 'font-lock-face lsp-headerline-breadcrumb-face)))
+                 (lsp--headerline-dirs-up-to-project-root (lsp-workspace-root) (buffer-file-name)) ""))
+    ('file-name-only (format " %s %s"
+                             (lsp--headerline-breadcrumb-arrow-icon)
+                             (propertize (f-filename (buffer-file-name)) 'font-lock-face lsp-headerline-breadcrumb-face)))))
 
 (defun lsp--headerline-build-string (symbols-hierarchy)
   "Build the header-line from SYMBOLS-HIERARCHY."
