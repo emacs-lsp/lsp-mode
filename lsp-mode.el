@@ -1251,6 +1251,16 @@ Symlinks are not followed."
      (lsp-f-canonical (directory-file-name (f-expand path-a)))
      (lsp-f-canonical (directory-file-name (f-expand path-b))))))
 
+(defun lsp-f-parent (path)
+  "Return the parent directory to PATH.
+Symlinks are not followed"
+  (let ((parent (file-name-directory
+                 (directory-file-name (f-expand path default-directory)))))
+    (unless (lsp-f-same? path parent)
+      (if (f-relative? path)
+          (f-relative parent)
+        (directory-file-name parent)))))
+
 (defun lsp-f-ancestor-of? (path-a path-b)
   "Return t if PATH-A is ancestor of PATH-B.
 Symlinks are not followed."
@@ -2136,9 +2146,9 @@ The `:global' workspace is global one.")
   "Find recursively the folders until the project ROOT-PATH.
 PATH is the current folder to be checked."
   (let ((cur-path (list (f-base path))))
-    (if (f-same? root-path (f-parent path))
+    (if (lsp-f-same? root-path (lsp-f-parent path))
         cur-path
-      (append (lsp--headerline-dirs-until-root root-path (f-parent path)) cur-path))))
+      (append (lsp--headerline-dirs-until-root root-path (lsp-f-parent path)) cur-path))))
 
 (defun lsp--headerline-breadcrumb-build-prefix-string ()
   "Build the prefix for breadcrumb."
