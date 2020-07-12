@@ -2144,7 +2144,7 @@ The `:global' workspace is global one.")
 (defun lsp--headerline-dirs-until-root (root-path path)
   "Find recursively the folders until the project ROOT-PATH.
 PATH is the current folder to be checked."
-  (let ((cur-path (list (f-base path))))
+  (let ((cur-path (list (f-filename path))))
     (if (lsp-f-same? root-path (lsp-f-parent path))
         cur-path
       (append (lsp--headerline-dirs-until-root root-path (lsp-f-parent path)) cur-path))))
