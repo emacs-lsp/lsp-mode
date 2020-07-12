@@ -2097,15 +2097,14 @@ The `:global' workspace is global one.")
                                       (lsp-treemacs-symbol-icon kind))))
                            :background (face-attribute 'header-line :background))))))
 
-(lsp-defun lsp--headerline-breadcrumb-go-to-symbol ((&DocumentSymbol :selection-range (&Range :start)))
+(lsp-defun lsp--headerline-breadcrumb-go-to-symbol ((&DocumentSymbol :selection-range (&RangeToPoint :start)))
   "Go to breadcrumb symbol."
   (->> start
-       lsp--position-to-point
        goto-char))
 
-(lsp-defun lsp--headerline-breadcrumb-narrow-to-symbol ((&DocumentSymbol :range (&Range :start :end)))
+(lsp-defun lsp--headerline-breadcrumb-narrow-to-symbol ((&DocumentSymbol :range (&RangeToPoint :start :end)))
   "Narrow to breadcrumb symbol range."
-  (narrow-to-region (lsp--position-to-point start) (lsp--position-to-point end)))
+  (narrow-to-region start end))
 
 (lsp-defun lsp--headerline-with-action ((symbol &as &DocumentSymbol :name) symbol-string)
   "Build action for SYMBOL and SYMBOL-STRING."
