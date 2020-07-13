@@ -681,8 +681,18 @@ If this is set to nil, `eldoc' will show only the symbol information."
                  (const :tag "No path prefix, showing only the document symbols." nil))
   :group 'lsp-mode)
 
-(defcustom lsp-headerline-breadcrumb-face 'font-lock-doc-face
-  "Face used on breadcrumb text on modeline."
+(defcustom lsp-headerline-breadcrumb-separator-face 'font-lock-doc-face
+  "Face used for breadcrumb separator on headerline."
+  :type 'face
+  :group 'lsp-faces)
+
+(defcustom lsp-headerline-breadcrumb-prefix-face 'font-lock-doc-face
+  "Face used for breadcrumb prefix on headerline."
+  :type 'face
+  :group 'lsp-faces)
+
+(defcustom lsp-headerline-breadcrumb-symbols-face 'font-lock-doc-face
+  "Face used for breadcrumb symbols text on headerline."
   :type 'face
   :group 'lsp-faces)
 
@@ -2104,8 +2114,8 @@ The `:global' workspace is global one.")
   "Build the arrow icon for headerline breadcrumb."
   (if (require 'all-the-icons nil t)
       (all-the-icons-material "chevron_right"
-                              :face lsp-headerline-breadcrumb-face)
-    (propertize "›" 'face lsp-headerline-breadcrumb-face)))
+                              :face lsp-headerline-breadcrumb-separator-face)
+    (propertize "›" 'face lsp-headerline-breadcrumb-separator-face)))
 
 (lsp-defun lsp--headerline-breadcrumb-symbol-icon ((&DocumentSymbol :kind))
   "Build the SYMBOL icon for headerline breadcrumb."
@@ -2152,7 +2162,7 @@ The `:global' workspace is global one.")
                                          (propertize (lsp:document-symbol-name symbol-to-append)
                                                      'font-lock-face 'lsp-headerline-breadcrumb-deprecated-face)
                                        (propertize (lsp:document-symbol-name symbol-to-append)
-                                                   'font-lock-face lsp-headerline-breadcrumb-face)))
+                                                   'font-lock-face lsp-headerline-breadcrumb-symbols-face)))
                        (symbol2-icon (lsp--headerline-breadcrumb-symbol-icon symbol-to-append))
                        (arrow-icon (lsp--headerline-breadcrumb-arrow-icon))
                        (full-symbol-2 (if symbol2-icon
@@ -2177,14 +2187,16 @@ PATH is the current folder to be checked."
   (pcase lsp-headerline-breadcrumb-prefix
     ('path-up-to-project
      (seq-reduce (lambda (last-dirs next-dir)
-                   (format "%s %s %s"
-                           last-dirs
+                   (format "%s%s %s"
+                           (if last-dirs
+                               (concat last-dirs " ")
+                               "")
                            (lsp--headerline-breadcrumb-arrow-icon)
-                           (propertize next-dir 'font-lock-face lsp-headerline-breadcrumb-face)))
-                 (lsp--headerline-dirs-up-to-project-root (lsp-workspace-root) (buffer-file-name)) ""))
-    ('file-name-only (format " %s %s"
+                           (propertize next-dir 'font-lock-face lsp-headerline-breadcrumb-prefix-face)))
+                 (lsp--headerline-dirs-up-to-project-root (lsp-workspace-root) (buffer-file-name)) nil))
+    ('file-name-only (format "%s %s"
                              (lsp--headerline-breadcrumb-arrow-icon)
-                             (propertize (lsp--filename-with-icon (buffer-file-name)) 'font-lock-face lsp-headerline-breadcrumb-face)))))
+                             (propertize (lsp--filename-with-icon (buffer-file-name)) 'font-lock-face lsp-headerline-breadcrumb-prefix-face)))))
 
 (defun lsp--headerline-breadcrumb-check-symbols ()
   "Check for document symbols if available to present on breadcrumb."
