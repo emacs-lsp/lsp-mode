@@ -2175,7 +2175,7 @@ PATH is the current folder to be checked."
   "Build the project segment string for the breadcrumb."
   (when (member 'project lsp-headerline-breadcrumb-segments)
     (format "%s%s %s"
-            (if (= 0 (cl-position 'project lsp-headerline-breadcrumb-segments))
+            (if (eq (cl-first lsp-headerline-breadcrumb-segments) 'project)
                 ""
               " ")
             (lsp--headerline-breadcrumb-arrow-icon)
@@ -2185,7 +2185,7 @@ PATH is the current folder to be checked."
   "Build the file segment string for the breadcrumb."
   (when (member 'file lsp-headerline-breadcrumb-segments)
     (format "%s%s %s"
-            (if (= 0 (cl-position 'file lsp-headerline-breadcrumb-segments))
+            (if (eq (cl-first lsp-headerline-breadcrumb-segments) 'file)
                 ""
               " ")
             (lsp--headerline-breadcrumb-arrow-icon)
@@ -2198,7 +2198,7 @@ PATH is the current folder to be checked."
                   (format "%s%s %s"
                           (if last-dirs
                               (concat last-dirs " ")
-                            (if (= 0 (cl-position 'path-up-to-project lsp-headerline-breadcrumb-segments))
+                            (if (eq (cl-first lsp-headerline-breadcrumb-segments) 'path-up-to-project)
                                 ""
                               " "))
                           (lsp--headerline-breadcrumb-arrow-icon)
@@ -2226,7 +2226,7 @@ PATH is the current folder to be checked."
                       (format "%s%s %s"
                               (if last-symbol-name
                                   (concat last-symbol-name " ")
-                                (if (= 0 (cl-position 'symbols lsp-headerline-breadcrumb-segments))
+                                (if (eq (cl-first lsp-headerline-breadcrumb-segments) 'symbols)
                                     ""
                                   " "))
                               arrow-icon
