@@ -674,7 +674,7 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
-(defcustom lsp-headerline-breadcrumb-segments '(path-up-to-project symbols)
+(defcustom lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols)
   "Face used on breadcrumb text on modeline."
   :type '(repeat
           (choice (const :tag "Include the project name." project)
