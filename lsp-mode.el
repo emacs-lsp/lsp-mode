@@ -674,20 +674,28 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
-(defcustom lsp-headerline-breadcrumb-prefix 'path-up-to-project
+(defcustom lsp-headerline-breadcrumb-segments '(path-up-to-project symbols)
   "Face used on breadcrumb text on modeline."
-  :type '(choice (const :tag "Show the filename and the parent dirs up to project." path-up-to-project)
-                 (const :tag "Show only the open file name." file-name-only)
-                 (const :tag "No path prefix, showing only the document symbols." nil))
+  :type '(repeat
+          (choice (const :tag "Include the project name." project)
+                  (const :tag "Include the open file name." file)
+                  (const :tag "Include the directories up to project." path-up-to-project)
+                  (const :tag "Include document symbols if server supports it." symbols)))
   :group 'lsp-mode)
 
-(defcustom lsp-headerline-breadcrumb-separator-face 'font-lock-doc-face
+(defcustom lsp-headerline-breadcrumb-separator-face 'shadow
   "Face used for breadcrumb separator on headerline."
   :type 'face
   :group 'lsp-faces)
 
-(defcustom lsp-headerline-breadcrumb-prefix-face 'font-lock-doc-face
+(defcustom lsp-headerline-breadcrumb-prefix-face 'font-lock-string-face
   "Face used for breadcrumb prefix on headerline."
+  :type 'face
+  :group 'lsp-faces)
+
+(defcustom lsp-headerline-breadcrumb-project-prefix-face '((t :inherit font-lock-string-face :weight bold))
+  "Face used for breadcrumb prefix on headerline.
+Only if `lsp-headerline-breadcrumb-prefix` is `project-name-only`."
   :type 'face
   :group 'lsp-faces)
 
@@ -2155,61 +2163,82 @@ The `:global' workspace is global one.")
                                (lsp--headerline-breadcrumb-narrow-to-symbol symbol)))
                            map)))
 
-(defun lsp--headerline-build-symbols-string (symbols-hierarchy)
-  "Build the symbols breadcrumb from SYMBOLS-HIERARCHY."
-  (seq-reduce (lambda (last-symbol-name symbol-to-append)
-                (let* ((symbol2-name (if (lsp:document-symbol-deprecated? symbol-to-append)
-                                         (propertize (lsp:document-symbol-name symbol-to-append)
-                                                     'font-lock-face 'lsp-headerline-breadcrumb-deprecated-face)
-                                       (propertize (lsp:document-symbol-name symbol-to-append)
-                                                   'font-lock-face lsp-headerline-breadcrumb-symbols-face)))
-                       (symbol2-icon (lsp--headerline-breadcrumb-symbol-icon symbol-to-append))
-                       (arrow-icon (lsp--headerline-breadcrumb-arrow-icon))
-                       (full-symbol-2 (if symbol2-icon
-                                          (concat symbol2-icon symbol2-name)
-                                        symbol2-name)))
-                  (format "%s %s %s"
-                          last-symbol-name
-                          arrow-icon
-                          (lsp--headerline-with-action symbol-to-append full-symbol-2))))
-              symbols-hierarchy ""))
-
-(defun lsp--headerline-dirs-up-to-project-root (root-path path)
+(defun lsp--headerline-path-up-to-project-root (root-path path)
   "Find recursively the folders until the project ROOT-PATH.
 PATH is the current folder to be checked."
   (let ((cur-path (list (lsp--filename-with-icon path))))
     (if (lsp-f-same? root-path (lsp-f-parent path))
         cur-path
-      (append (lsp--headerline-dirs-up-to-project-root root-path (lsp-f-parent path)) cur-path))))
+      (append (lsp--headerline-path-up-to-project-root root-path (lsp-f-parent path)) cur-path))))
 
-(defun lsp--headerline-breadcrumb-build-prefix-string ()
-  "Build the prefix for breadcrumb."
-  (pcase lsp-headerline-breadcrumb-prefix
-    ('path-up-to-project
-     (seq-reduce (lambda (last-dirs next-dir)
-                   (format "%s%s %s"
-                           (if last-dirs
-                               (concat last-dirs " ")
-                               "")
-                           (lsp--headerline-breadcrumb-arrow-icon)
-                           (propertize next-dir 'font-lock-face lsp-headerline-breadcrumb-prefix-face)))
-                 (lsp--headerline-dirs-up-to-project-root (lsp-workspace-root) (buffer-file-name)) nil))
-    ('file-name-only (format "%s %s"
-                             (lsp--headerline-breadcrumb-arrow-icon)
-                             (propertize (lsp--filename-with-icon (buffer-file-name)) 'font-lock-face lsp-headerline-breadcrumb-prefix-face)))))
+(defun lsp--headerline-breadcrumb-build-project-string ()
+  "TODO"
+  (when (member 'project lsp-headerline-breadcrumb-segments)
+    (format "%s %s"
+            (lsp--headerline-breadcrumb-arrow-icon)
+            (propertize (f-filename (lsp-workspace-root)) 'font-lock-face lsp-headerline-breadcrumb-project-prefix-face))))
 
-(defun lsp--headerline-breadcrumb-check-symbols ()
-  "Check for document symbols if available to present on breadcrumb."
-  (when (lsp-feature? "textDocument/documentSymbol")
+(defun lsp--headerline-breadcrumb-build-file-string ()
+  "TODO"
+  (when (member 'file lsp-headerline-breadcrumb-segments)
+    (format "%s%s %s"
+            (if (member 'project lsp-headerline-breadcrumb-segments)
+                " "
+              "")
+            (lsp--headerline-breadcrumb-arrow-icon)
+            (propertize (lsp--filename-with-icon (buffer-file-name)) 'font-lock-face lsp-headerline-breadcrumb-prefix-face))))
+
+(defun lsp--headerline-breadcrumb-build-path-up-to-project-string ()
+  "TODO"
+  (when (member 'path-up-to-project lsp-headerline-breadcrumb-segments)
+    (seq-reduce (lambda (last-dirs next-dir)
+                  (format "%s%s %s"
+                          (if last-dirs
+                              (concat last-dirs " ")
+                            (if (or (member 'project lsp-headerline-breadcrumb-segments)
+                                    (member 'file lsp-headerline-breadcrumb-segments))
+                                " "
+                              ""))
+                          (lsp--headerline-breadcrumb-arrow-icon)
+                          (propertize next-dir 'font-lock-face lsp-headerline-breadcrumb-prefix-face)))
+                (lsp--headerline-path-up-to-project-root (lsp-workspace-root) (buffer-file-name)) nil)))
+
+(defun lsp--headerline-breadcrumb-build-symbols-string ()
+  "TODO"
+  (when (and (member 'symbols lsp-headerline-breadcrumb-segments)
+             (lsp-feature? "textDocument/documentSymbol"))
     (-when-let* ((lsp--document-symbols-request-async t)
                  (symbols (lsp--get-document-symbols))
                  (symbols-hierarchy (lsp-symbols->symbols-hierarchy symbols)))
-      (lsp--headerline-build-symbols-string symbols-hierarchy))))
+      (seq-reduce (lambda (last-symbol-name symbol-to-append)
+                    (let* ((symbol2-name (if (lsp:document-symbol-deprecated? symbol-to-append)
+                                             (propertize (lsp:document-symbol-name symbol-to-append)
+                                                         'font-lock-face 'lsp-headerline-breadcrumb-deprecated-face)
+                                           (propertize (lsp:document-symbol-name symbol-to-append)
+                                                       'font-lock-face lsp-headerline-breadcrumb-symbols-face)))
+                           (symbol2-icon (lsp--headerline-breadcrumb-symbol-icon symbol-to-append))
+                           (arrow-icon (lsp--headerline-breadcrumb-arrow-icon))
+                           (full-symbol-2 (if symbol2-icon
+                                              (concat symbol2-icon symbol2-name)
+                                            symbol2-name)))
+                      (format "%s%s %s"
+                              (if last-symbol-name
+                                  (concat last-symbol-name " ")
+                                (if (or (member 'project lsp-headerline-breadcrumb-segments)
+                                        (member 'file lsp-headerline-breadcrumb-segments)
+                                        (member 'path-up-to-project lsp-headerline-breadcrumb-segments))
+                                    " "
+                                  ""))
+                              arrow-icon
+                              (lsp--headerline-with-action symbol-to-append full-symbol-2))))
+                  symbols-hierarchy nil))))
 
 (defun lsp--headerline-build-string ()
   "Build the header-line string."
-  (concat (lsp--headerline-breadcrumb-build-prefix-string)
-          (lsp--headerline-breadcrumb-check-symbols)))
+  (concat (or (lsp--headerline-breadcrumb-build-project-string) "")
+          (or (lsp--headerline-breadcrumb-build-file-string) "")
+          (or (lsp--headerline-breadcrumb-build-path-up-to-project-string) "")
+          (or (lsp--headerline-breadcrumb-build-symbols-string) "")))
 
 (defun lsp--document-symbols->symbols-hierarchy (document-symbols)
   "Convert DOCUMENT-SYMBOLS to symbols hierarchy."
