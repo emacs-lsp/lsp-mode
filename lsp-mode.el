@@ -6190,7 +6190,7 @@ A reference is highlighted only if it is visible in a window."
     (when lsp--semantic-tokens-idle-timer
       (cancel-timer lsp--semantic-tokens-idle-timer))
     (lsp-request-async
-     (if region "textDocument/semanticTokens/range" "textDocument/semanticTokens")
+     (if region "textDocument/semanticTokens/range" "textDocument/semanticTokens/full")
      `(:textDocument ,(lsp--text-document-identifier)
        ,@(if region (list :range (lsp--region-to-range (car region) (cdr region))) '()))
      (lambda (response)
