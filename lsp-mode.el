@@ -2106,6 +2106,18 @@ The `:global' workspace is global one.")
 (declare-function treemacs-get-icon-value "ext:treemacs-icons" (ext &optional tui theme) t)
 (declare-function treemacs-theme->name "ext:treemacs-themes" t t)
 
+(defun lsp--safe-image (image)
+  (if (get-text-property 0 'display image)
+      (propertize " " 'display
+                  (cl-list* 'image
+                            (plist-put
+                             (cl-copy-list
+                              (cl-rest (get-text-property
+                                        0 'display
+                                        image)))
+                             :background (face-attribute 'header-line :background))))
+    (replace-regexp-in-string "\s\\|\t" "" image)))
+
 (defun lsp--filename-with-icon (file-path)
   "Return the filename from FILE-PATH with the extension related icon."
   (let ((filename (f-filename file-path))
@@ -2113,8 +2125,7 @@ The `:global' workspace is global one.")
     (if file-ext
         (when (require 'treemacs nil t)
           (format "%s %s"
-                  (->> (treemacs-get-icon-value file-ext nil (treemacs-theme->name (treemacs-current-theme)))
-                       (replace-regexp-in-string "\s\\|\t" ""))
+                  (lsp--safe-image (treemacs-get-icon-value file-ext nil (treemacs-theme->name (treemacs-current-theme))))
                   filename))
       filename)))
 
@@ -2128,14 +2139,7 @@ The `:global' workspace is global one.")
 (lsp-defun lsp--headerline-breadcrumb-symbol-icon ((&DocumentSymbol :kind))
   "Build the SYMBOL icon for headerline breadcrumb."
   (when (require 'lsp-treemacs nil t)
-    (concat (propertize " " 'display
-                        (cl-list* 'image
-                                  (plist-put
-                                   (cl-copy-list
-                                    (cl-rest (get-text-property
-                                              0 'display
-                                              (lsp-treemacs-symbol-icon kind))))
-                                   :background (face-attribute 'header-line :background))))
+    (concat (lsp--safe-image (lsp-treemacs-symbol-icon kind))
             " ")))
 
 (lsp-defun lsp--headerline-breadcrumb-go-to-symbol ((&DocumentSymbol :selection-range (&RangeToPoint :start)))
