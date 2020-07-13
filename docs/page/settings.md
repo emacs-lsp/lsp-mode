@@ -56,9 +56,21 @@ For a UI feedback of the available code actions, you can enable `lsp-modeline-co
 
 ## Breadcrumb on headerline
 
-For a UI feedback on headerline of the document symbol at point, you can enable `lsp-headerline-breadcrumb-mode` which shows a breadcrumb on top of window:
+For a UI feedback on headerline of the document symbols at point, current file or project name, you can enable `lsp-headerline-breadcrumb-mode` which shows a breadcrumb on top of window.
 
-![](../examples/headerline-breadcrumb.png)
+You can customize the breadcrumb segments via `lsp-headerline-breadcrumb-segments` variable, some examples:
+
+`'(path-up-to-project file symbols)` (Default)
+
+![](../examples/headerline-breadcrumb-path-up-to-project-file-symbols.png)
+
+`'(project file symbols)`
+
+![](../examples/headerline-breadcrumb-project-file-symbols.png)
+
+`'(symbols)`
+
+![](../examples/headerline-breadcrumb-symbols.png)
 
 ## Limitations
 
