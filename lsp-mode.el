@@ -2172,39 +2172,41 @@ PATH is the current folder to be checked."
       (append (lsp--headerline-path-up-to-project-root root-path (lsp-f-parent path)) cur-path))))
 
 (defun lsp--headerline-breadcrumb-build-project-string ()
-  "TODO"
+  "Build the project segment string for the breadcrumb."
   (when (member 'project lsp-headerline-breadcrumb-segments)
-    (format "%s %s"
+    (format "%s%s %s"
+            (if (= 0 (cl-position 'project lsp-headerline-breadcrumb-segments))
+                ""
+              " ")
             (lsp--headerline-breadcrumb-arrow-icon)
             (propertize (f-filename (lsp-workspace-root)) 'font-lock-face lsp-headerline-breadcrumb-project-prefix-face))))
 
 (defun lsp--headerline-breadcrumb-build-file-string ()
-  "TODO"
+  "Build the file segment string for the breadcrumb."
   (when (member 'file lsp-headerline-breadcrumb-segments)
     (format "%s%s %s"
-            (if (member 'project lsp-headerline-breadcrumb-segments)
-                " "
-              "")
+            (if (= 0 (cl-position 'file lsp-headerline-breadcrumb-segments))
+                ""
+              " ")
             (lsp--headerline-breadcrumb-arrow-icon)
             (propertize (lsp--filename-with-icon (buffer-file-name)) 'font-lock-face lsp-headerline-breadcrumb-prefix-face))))
 
 (defun lsp--headerline-breadcrumb-build-path-up-to-project-string ()
-  "TODO"
+  "Build the path-up-to-project segment string for the breadcrumb."
   (when (member 'path-up-to-project lsp-headerline-breadcrumb-segments)
     (seq-reduce (lambda (last-dirs next-dir)
                   (format "%s%s %s"
                           (if last-dirs
                               (concat last-dirs " ")
-                            (if (or (member 'project lsp-headerline-breadcrumb-segments)
-                                    (member 'file lsp-headerline-breadcrumb-segments))
-                                " "
-                              ""))
+                            (if (= 0 (cl-position 'path-up-to-project lsp-headerline-breadcrumb-segments))
+                                ""
+                              " "))
                           (lsp--headerline-breadcrumb-arrow-icon)
                           (propertize next-dir 'font-lock-face lsp-headerline-breadcrumb-prefix-face)))
-                (lsp--headerline-path-up-to-project-root (lsp-workspace-root) (buffer-file-name)) nil)))
+                (lsp--headerline-path-up-to-project-root (lsp-workspace-root) (f-parent (buffer-file-name))) nil)))
 
 (defun lsp--headerline-breadcrumb-build-symbols-string ()
-  "TODO"
+  "Build the symbols segment string for the breadcrumb."
   (when (and (member 'symbols lsp-headerline-breadcrumb-segments)
              (lsp-feature? "textDocument/documentSymbol"))
     (-when-let* ((lsp--document-symbols-request-async t)
@@ -2224,21 +2226,24 @@ PATH is the current folder to be checked."
                       (format "%s%s %s"
                               (if last-symbol-name
                                   (concat last-symbol-name " ")
-                                (if (or (member 'project lsp-headerline-breadcrumb-segments)
-                                        (member 'file lsp-headerline-breadcrumb-segments)
-                                        (member 'path-up-to-project lsp-headerline-breadcrumb-segments))
-                                    " "
-                                  ""))
+                                (if (= 0 (cl-position 'symbols lsp-headerline-breadcrumb-segments))
+                                    ""
+                                  " "))
                               arrow-icon
                               (lsp--headerline-with-action symbol-to-append full-symbol-2))))
                   symbols-hierarchy nil))))
 
 (defun lsp--headerline-build-string ()
   "Build the header-line string."
-  (concat (or (lsp--headerline-breadcrumb-build-project-string) "")
-          (or (lsp--headerline-breadcrumb-build-file-string) "")
-          (or (lsp--headerline-breadcrumb-build-path-up-to-project-string) "")
-          (or (lsp--headerline-breadcrumb-build-symbols-string) "")))
+  (seq-reduce (lambda (last-segment next-segment)
+                (concat last-segment
+                        (or (pcase next-segment
+                              ('project (lsp--headerline-breadcrumb-build-project-string))
+                              ('file (lsp--headerline-breadcrumb-build-file-string))
+                              ('path-up-to-project (lsp--headerline-breadcrumb-build-path-up-to-project-string))
+                              ('symbols (lsp--headerline-breadcrumb-build-symbols-string)))
+                            "")))
+              lsp-headerline-breadcrumb-segments ""))
 
 (defun lsp--document-symbols->symbols-hierarchy (document-symbols)
   "Convert DOCUMENT-SYMBOLS to symbols hierarchy."
