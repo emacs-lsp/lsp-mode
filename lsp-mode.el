@@ -2090,11 +2090,12 @@ The `:global' workspace is global one.")
 
 (defun lsp--filename-with-icon (file-path)
   "Return the filename from FILE-PATH with the extension related icon."
-  (let ((filename (f-filename file-path)))
-    (if (f-ext? file-path)
+  (let ((filename (f-filename file-path))
+        (file-ext (f-ext file-path)))
+    (if file-ext
         (when (require 'treemacs nil t)
           (format "%s %s"
-                  (->> (treemacs-get-icon-value "dart" nil (treemacs-theme->name (treemacs-current-theme)))
+                  (->> (treemacs-get-icon-value file-ext nil (treemacs-theme->name (treemacs-current-theme)))
                        (replace-regexp-in-string "\s\\|\t" ""))
                   filename))
       filename)))
@@ -2185,10 +2186,18 @@ PATH is the current folder to be checked."
                              (lsp--headerline-breadcrumb-arrow-icon)
                              (propertize (lsp--filename-with-icon (buffer-file-name)) 'font-lock-face lsp-headerline-breadcrumb-face)))))
 
-(defun lsp--headerline-build-string (symbols-hierarchy)
-  "Build the header-line from SYMBOLS-HIERARCHY."
+(defun lsp--headerline-breadcrumb-check-symbols ()
+  "Check for document symbols if available to present on breadcrumb."
+  (when (lsp-feature? "textDocument/documentSymbol")
+    (-when-let* ((lsp--document-symbols-request-async t)
+                 (symbols (lsp--get-document-symbols))
+                 (symbols-hierarchy (lsp-symbols->symbols-hierarchy symbols)))
+      (lsp--headerline-build-symbols-string symbols-hierarchy))))
+
+(defun lsp--headerline-build-string ()
+  "Build the header-line string."
   (concat (lsp--headerline-breadcrumb-build-prefix-string)
-          (lsp--headerline-build-symbols-string symbols-hierarchy)))
+          (lsp--headerline-breadcrumb-check-symbols)))
 
 (defun lsp--document-symbols->symbols-hierarchy (document-symbols)
   "Convert DOCUMENT-SYMBOLS to symbols hierarchy."
@@ -2218,13 +2227,8 @@ PATH is the current folder to be checked."
 
 (defun lsp--headerline-check-breadcrumb (&rest _)
   "Request for document symbols to build the breadcrumb."
-  (when (lsp-feature? "textDocument/documentSymbol")
-    (-if-let* ((lsp--document-symbols-request-async t)
-               (symbols (lsp--get-document-symbols))
-               (symbols-hierarchy (lsp-symbols->symbols-hierarchy symbols)))
-        (setq lsp--headerline-breadcrumb-string (lsp--headerline-build-string symbols-hierarchy))
-      (setq lsp--headerline-breadcrumb-string ""))
-    (force-mode-line-update)))
+  (setq lsp--headerline-breadcrumb-string (lsp--headerline-build-string))
+  (force-mode-line-update))
 
 (define-minor-mode lsp-headerline-breadcrumb-mode
   "Toggle breadcrumb on headerline."
