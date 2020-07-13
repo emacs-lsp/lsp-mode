@@ -2088,14 +2088,15 @@ The `:global' workspace is global one.")
 (lsp-defun lsp--headerline-breadcrumb-symbol-icon ((&DocumentSymbol :kind))
   "Build the SYMBOL icon for headerline breadcrumb."
   (when (require 'lsp-treemacs nil t)
-    (propertize " " 'display
-                (cl-list* 'image
-                          (plist-put
-                           (cl-copy-list
-                            (cl-rest (get-text-property
-                                      0 'display
-                                      (lsp-treemacs-symbol-icon kind))))
-                           :background (face-attribute 'header-line :background))))))
+    (concat (propertize " " 'display
+                        (cl-list* 'image
+                                  (plist-put
+                                   (cl-copy-list
+                                    (cl-rest (get-text-property
+                                              0 'display
+                                              (lsp-treemacs-symbol-icon kind))))
+                                   :background (face-attribute 'header-line :background))))
+            " ")))
 
 (lsp-defun lsp--headerline-breadcrumb-go-to-symbol ((&DocumentSymbol :selection-range (&RangeToPoint :start)))
   "Go to breadcrumb symbol."
