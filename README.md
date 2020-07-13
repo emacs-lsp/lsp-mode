@@ -53,8 +53,7 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
     [company-lsp](https://github.com/tigersoldier/company-lsp) is no
     longer supported).
   - Hovers - using [lsp-ui](https://emacs-lsp.github.io/lsp-ui)
-  - Code actions - using `lsp-execute-code-action` or
-    [lsp-ui](https://emacs-lsp.github.io/lsp-ui) sideline.
+  - Code actions - via `lsp-execute-code-action`, [modeline](./page/settings/#code-actions-on-modeline) (recommended) or [lsp-ui](https://emacs-lsp.github.io/lsp-ui) sideline.
   - Code outline - using builtin
     [imenu](https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html)
     or `helm-imenu`
@@ -65,7 +64,9 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
   - Code lens
   - Symbol highlights
   - Formatting
+  - [Project errors](./page/settings/#checking-project-errors) on modeline
   - Debugger - [dap-mode](https://emacs-lsp.github.io/dap-mode/)
+  - [Breadcrumb on headerline](./page/settings/#breadcrumb-on-headerline)
   - Helm integration -
     [helm-lsp](https://github.com/emacs-lsp/helm-lsp/)
   - Ivy integration - [lsp-ivy](https://github.com/emacs-lsp/lsp-ivy/)
