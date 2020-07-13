@@ -1795,8 +1795,14 @@
 <p>For a UI feedback of the available code actions, you can enable <code>lsp-modeline-code-actions-mode</code> which shows available code actions on modeline:</p>
 <p><img alt="" src="../../examples/modeline-code-actions.png" /></p>
 <h2 id="breadcrumb-on-headerline">Breadcrumb on headerline<a class="headerlink" href="#breadcrumb-on-headerline" title="Permanent link">#</a></h2>
-<p>For a UI feedback on headerline of the document symbol at point, you can enable <code>lsp-headerline-breadcrumb-mode</code> which shows a breadcrumb on top of window:</p>
-<p><img alt="" src="../../examples/headerline-breadcrumb.png" /></p>
+<p>For a UI feedback on headerline of the document symbols at point, current file or project name, you can enable <code>lsp-headerline-breadcrumb-mode</code> which shows a breadcrumb on top of window.</p>
+<p>You can customize the breadcrumb segments via <code>lsp-headerline-breadcrumb-segments</code> variable, some examples:</p>
+<p><code>'(path-up-to-project file symbols)</code> (Default)</p>
+<p><img alt="" src="../../examples/headerline-breadcrumb-path-up-to-project-file-symbols.png" /></p>
+<p><code>'(project file symbols)</code></p>
+<p><img alt="" src="../../examples/headerline-breadcrumb-project-file-symbols.png" /></p>
+<p><code>'(symbols)</code></p>
+<p><img alt="" src="../../examples/headerline-breadcrumb-symbols.png" /></p>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">#</a></h2>
 <h3 id="file-watches">File watches<a class="headerlink" href="#file-watches" title="Permanent link">#</a></h3>
 <p>When some of the workspaces that are active in the current project requests file notifications via <code>workspace/didChangeWatchedFiles</code>, <code>lsp-mode</code> will start monitoring each of the folders in the workspace for changes. In case your project contains a lot of files you might want to disable file monitoring via <code>lsp-enable-file-watchers</code> (you may use dir-locals).</p>
