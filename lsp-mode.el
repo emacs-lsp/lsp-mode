@@ -2130,9 +2130,11 @@ The `:global' workspace is global one.")
         (file-ext (f-ext file-path)))
     (if file-ext
         (when (require 'treemacs nil t)
-          (format "%s %s"
-                  (lsp--fix-image-background (treemacs-get-icon-value file-ext nil (treemacs-theme->name (treemacs-current-theme))))
-                  filename))
+          (if-let (icon (treemacs-get-icon-value file-ext nil (treemacs-theme->name (treemacs-current-theme))))
+              (format "%s %s"
+                      (lsp--fix-image-background icon)
+                      filename)
+            filename))
       filename)))
 
 (defun lsp--headerline-breadcrumb-arrow-icon ()
@@ -2189,7 +2191,10 @@ PATH is the current folder to be checked."
                 ""
               " ")
             (lsp--headerline-breadcrumb-arrow-icon)
-            (propertize (f-filename (lsp-workspace-root)) 'font-lock-face lsp-headerline-breadcrumb-project-prefix-face))))
+            (propertize (-if-let (root (lsp-workspace-root))
+                            (f-filename root)
+                          "unknown project")
+                        'font-lock-face lsp-headerline-breadcrumb-project-prefix-face))))
 
 (defun lsp--headerline-breadcrumb-build-file-string ()
   "Build the file segment string for the breadcrumb."
@@ -2203,17 +2208,18 @@ PATH is the current folder to be checked."
 
 (defun lsp--headerline-breadcrumb-build-path-up-to-project-string ()
   "Build the path-up-to-project segment string for the breadcrumb."
-  (when (member 'path-up-to-project lsp-headerline-breadcrumb-segments)
-    (seq-reduce (lambda (last-dirs next-dir)
-                  (format "%s%s %s"
-                          (if last-dirs
-                              (concat last-dirs " ")
-                            (if (eq (cl-first lsp-headerline-breadcrumb-segments) 'path-up-to-project)
-                                ""
-                              " "))
-                          (lsp--headerline-breadcrumb-arrow-icon)
-                          (propertize next-dir 'font-lock-face lsp-headerline-breadcrumb-prefix-face)))
-                (lsp--headerline-path-up-to-project-root (lsp-workspace-root) (f-parent (buffer-file-name))) nil)))
+  (when (and (member 'path-up-to-project lsp-headerline-breadcrumb-segments))
+    (when-let (root (lsp-workspace-root))
+      (seq-reduce (lambda (last-dirs next-dir)
+                    (format "%s%s %s"
+                            (if last-dirs
+                                (concat last-dirs " ")
+                              (if (eq (cl-first lsp-headerline-breadcrumb-segments) 'path-up-to-project)
+                                  ""
+                                " "))
+                            (lsp--headerline-breadcrumb-arrow-icon)
+                            (propertize next-dir 'font-lock-face lsp-headerline-breadcrumb-prefix-face)))
+                  (lsp--headerline-path-up-to-project-root root (f-parent (buffer-file-name))) nil))))
 
 (defun lsp--headerline-breadcrumb-build-symbols-string ()
   "Build the symbols segment string for the breadcrumb."
