@@ -817,6 +817,12 @@ ignored."
   :group 'lsp-mode
   :package-version '(lsp-mode . "7.0.1"))
 
+(defcustom lsp-completion-filter-on-incomplete t
+  "Whether or not filter incomplete results."
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "7.0.1"))
+
 (defcustom lsp-server-trace nil
   "Request tracing on the server side.
 The actual trace output at each level depends on the language server in use.
@@ -1648,8 +1654,8 @@ This set of allowed chars is enough for hexifying local file paths.")
   root-directory)
 
 (defun lsp--folder-watch-callback (event callback watch)
-  (let ((file-name (cl-caddr event))
-        (event-type (cadr event)))
+  (let ((file-name (cl-third event))
+        (event-type (cl-second event)))
     (cond
      ((and (file-directory-p file-name)
            (equal 'created event-type)
@@ -3724,7 +3730,7 @@ disappearing, unset all the variables related to it."
 
 (defun lsp--file-process-event (session root-folder event)
   "Process file event."
-  (let ((changed-file (cl-caddr event)))
+  (let ((changed-file (cl-third event)))
     (->>
      session
      lsp-session-folder->servers
@@ -3750,7 +3756,7 @@ disappearing, unset all the variables related to it."
                  (with-lsp-workspace workspace
                    (lsp-notify
                     "workspace/didChangeWatchedFiles"
-                    `((changes . [((type . ,(alist-get (cadr event) lsp--file-change-type))
+                    `((changes . [((type . ,(alist-get (cl-second event) lsp--file-change-type))
                                    (uri . ,(lsp--path-to-uri changed-file)))]))))))))))
 
 (lsp-defun lsp--server-register-capability ((&Registration :method :id :register-options?))
@@ -4906,8 +4912,8 @@ Return `nil' when fails to guess prefix."
          (setq char-before (char-before start)))
        start-point))))
 
-(defun lsp--capf-cached-items (items)
-  "Convert ITEMS into `lsp--capf-cache-items' form."
+(defun lsp--capf-client-items (items)
+  "Convert lsp-items into client items form."
   (--> items
        (-map (-lambda ((item &as &CompletionItem
                              :label
@@ -5090,15 +5096,19 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                                          ((and done? (not (seq-empty-p items)))
                                           (list (buffer-substring-no-properties bounds-start (point))
                                                 bounds-start
-                                                (lsp--capf-cached-items items)
+                                                (lsp--capf-client-items items)
                                                 :lsp-items nil
                                                 :markers markers
                                                 :prefix prefix))
                                          ((not done?) 'incomplete))
-                        result (lsp--capf-filter-candidates (if done? (cl-caddr lsp--capf-cache))
-                                                            :lsp-items items
-                                                            :markers markers
-                                                            :prefix prefix))))))))
+                        result (lsp--capf-filter-candidates
+                                (cond (done?
+                                       (cl-third lsp--capf-cache))
+                                      (lsp-completion-filter-on-incomplete
+                                       (lsp--capf-client-items items)))
+                                :lsp-items items
+                                :markers markers
+                                :prefix prefix))))))))
       (list
        bounds-start
        (point)
@@ -5111,7 +5121,7 @@ Also, additional data to attached to each candidate can be passed via PLIST."
           ;; boundaries
           ((equal (car-safe action) 'boundaries) nil)
           ;; try-completion
-          ((null action) (and (member probe (funcall all-completions)) t))
+          ((null action) (cl-first (member probe (funcall all-completions))))
           ;; test-completion
           ((equal action 'lambda) (member probe (funcall all-completions)))
           ;; retrieve candidates
