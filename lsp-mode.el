@@ -5804,9 +5804,9 @@ RENDER-ALL - nil if only the signature should be rendered."
 
 (defun lsp--handle-signature-update (signature)
   (let ((message
-         (if (string= 'cons (type-of signature))
-             (mapconcat 'lsp--signature->message signature "\n")
-           (lsp--signature->message signature))))
+         (if (lsp-signature-help? signature)
+             (lsp--signature->message signature)
+           (mapconcat #'lsp--signature->message signature "\n"))))
     (if (s-present? message)
         (funcall lsp-signature-function message)
       (lsp-signature-stop))))
