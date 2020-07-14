@@ -70,6 +70,8 @@ You can customize the breadcrumb segments via `lsp-headerline-breadcrumb-segment
 
 ![](../examples/headerline-breadcrumb-symbols.png)
 
+If `lsp-headerline-breadcrumb-segments` contains `'symbols`, you can optionally label the corresponding entries in the headerline display by setting `lsp-headerline-breadcrumb-enable-symbol-numbers` to `t`.
+
 ## Symbol highlights
 
 In case LSP server supports `hover` feature:
