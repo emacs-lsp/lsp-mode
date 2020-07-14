@@ -2178,10 +2178,12 @@ The `:global' workspace is global one.")
 (defun lsp--headerline-path-up-to-project-root (root-path path)
   "Find recursively the folders until the project ROOT-PATH.
 PATH is the current folder to be checked."
-  (let ((cur-path (list (lsp--filename-with-icon path))))
-    (if (lsp-f-same? root-path (lsp-f-parent path))
-        cur-path
-      (append (lsp--headerline-path-up-to-project-root root-path (lsp-f-parent path)) cur-path))))
+  (let ((current-path path)
+        headerline-path-components)
+    (while (not (lsp-f-same? root-path current-path))
+      (push (lsp--filename-with-icon current-path) headerline-path-components)
+      (setq current-path (lsp-f-parent current-path)))
+    headerline-path-components))
 
 (defun lsp--headerline-breadcrumb-build-project-string ()
   "Build the project segment string for the breadcrumb."
