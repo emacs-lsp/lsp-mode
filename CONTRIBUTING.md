@@ -1,5 +1,11 @@
 # Contributing
 
+`emacs-lsp` is a very active organization so before you start working on 
+a feature/issue make sure that there is a corresponding issue and drop a 
+note that you start working on that to avoid collisions. 
+Feel free to ping the maintainers in [Gitter](https://gitter.im/emacs-lsp/lsp-mode) 
+chat or in the issue report if you need help/clarification on how things work.
+
 If you discover issues, have ideas for improvements or new features,
 please report them to the [issue tracker][1] of the repository or
 submit a pull request. Please, try to follow these guidelines when you
