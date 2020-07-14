@@ -2159,10 +2159,19 @@ for caching purposes.")
     (concat (lsp--fix-image-background (lsp-treemacs-symbol-icon kind))
             " ")))
 
-(lsp-defun lsp--headerline-breadcrumb-go-to-symbol ((&DocumentSymbol :selection-range (&RangeToPoint :start)))
-  "Go to breadcrumb symbol."
-  (->> start
-       goto-char))
+(lsp-defun lsp--headerline-breadcrumb-go-to-symbol
+  ((&DocumentSymbol :selection-range (&RangeToPoint :start selection-range-start)
+                    :range (&RangeToPoint :start narrowing-range-start
+                                          :end narrowing-range-end)))
+  "Go to breadcrumb symbol.
+If the buffer is narrowed and the target symbol lies before the
+minimum reachable point in the narrowed buffer, then widen and
+narrow to the outer symbol."
+  (when (< selection-range-start (point-min))
+      (narrow-to-region
+       narrowing-range-start
+       narrowing-range-end))
+  (goto-char selection-range-start))
 
 (lsp-defun lsp--headerline-breadcrumb-narrow-to-symbol ((&DocumentSymbol :range (&RangeToPoint :start :end)))
   "Narrow to breadcrumb symbol range."
