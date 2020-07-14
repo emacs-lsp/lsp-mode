@@ -670,7 +670,7 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :group 'lsp-faces)
 
 (defcustom lsp-headerline-breadcrumb-enable nil
-  "Wheter to enable breadcrumb on headerline."
+  "Whether to enable breadcrumb on headerline."
   :type 'boolean
   :group 'lsp-mode)
 
@@ -681,6 +681,11 @@ If this is set to nil, `eldoc' will show only the symbol information."
                   (const :tag "Include the open file name." file)
                   (const :tag "Include the directories up to project." path-up-to-project)
                   (const :tag "Include document symbols if server supports it." symbols)))
+  :group 'lsp-mode)
+
+(defcustom lsp-headerline-breadcrumb-enable-symbol-numbers nil
+  "Whether to label symbols with numbers on the breadcrumb."
+  :type 'boolean
   :group 'lsp-mode)
 
 (defface lsp-headerline-breadcrumb-separator-face '((t :inherit shadow :height 0.8))
@@ -2235,25 +2240,43 @@ PATH is the current folder to be checked."
              (lsp-feature? "textDocument/documentSymbol"))
     (-when-let* ((lsp--document-symbols-request-async t)
                  (symbols (lsp--get-document-symbols))
-                 (symbols-hierarchy (lsp-symbols->symbols-hierarchy symbols)))
-      (seq-reduce (-lambda (last-symbol-name (symbol-to-append &as &DocumentSymbol :deprecated? :name))
-                    (let* ((symbol2-name (propertize name
-                                                     'font-lock-face (if deprecated?
-                                                                         'lsp-headerline-breadcrumb-deprecated-face
-                                                                       'font-lock-face)))
-                           (symbol2-icon (lsp--headerline-breadcrumb-symbol-icon symbol-to-append))
-                           (full-symbol-2 (if symbol2-icon
-                                              (concat symbol2-icon symbol2-name)
-                                            symbol2-name)))
-                      (format "%s%s %s"
-                              (if last-symbol-name
-                                  (concat last-symbol-name " ")
-                                (if (eq (cl-first lsp-headerline-breadcrumb-segments) 'symbols)
-                                    ""
-                                  " "))
-                              (lsp--headerline-breadcrumb-arrow-icon)
-                              (lsp--headerline-with-action symbol-to-append full-symbol-2))))
-                  symbols-hierarchy nil))))
+                 (symbols-hierarchy (lsp-symbols->symbols-hierarchy symbols))
+                 (enumerated-symbols-hierarchy
+                  (-map-indexed (lambda (index elt)
+                                  (cons elt (1+ index)))
+                                symbols-hierarchy)))
+      (concat
+       (if (eq (cl-first lsp-headerline-breadcrumb-segments) 'symbol)
+           ""
+         " ")
+       (mapconcat
+        (-lambda (((symbol-to-append &as &DocumentSymbol :deprecated? :name)
+                   . index))
+          (let* ((symbol2-name
+                  (propertize name
+                              'font-lock-face
+                              (if deprecated?
+                                  'lsp-headerline-breadcrumb-deprecated-face
+                                'font-lock-face)))
+                 (symbol2-icon
+                  (lsp--headerline-breadcrumb-symbol-icon symbol-to-append))
+                 (full-symbol-2
+                  (concat
+                   (if lsp-headerline-breadcrumb-enable-symbol-numbers
+                       (concat
+                        (propertize (number-to-string index)
+                                    'face
+                                    'lsp-headerline-breadcrumb-separator-face)
+                        " ")
+                     "")
+                   (if symbol2-icon
+                       (concat symbol2-icon symbol2-name)
+                     symbol2-name))))
+            (format "%s %s"
+                    (lsp--headerline-breadcrumb-arrow-icon)
+                    (lsp--headerline-with-action symbol-to-append full-symbol-2))))
+        enumerated-symbols-hierarchy
+        " ")))))
 
 (defun lsp--headerline-build-string ()
   "Build the header-line string."
