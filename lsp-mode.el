@@ -2106,6 +2106,9 @@ The `:global' workspace is global one.")
 
 (defvar-local lsp--headerline-breadcrumb-string nil
   "Holds the current breadcrumb string on headerline.")
+(defvar-local lsp--headerline-breadcrumb-path-up-to-project-string nil
+  "Holds the current breadcrumb path-up-to-project segment string
+for caching purposes.")
 
 (declare-function all-the-icons-material "ext:all-the-icons" t t)
 (declare-function lsp-treemacs-symbol-icon "ext:lsp-treemacs" (kind))
@@ -2213,7 +2216,7 @@ PATH is the current folder to be checked."
 
 (defun lsp--headerline-breadcrumb-build-path-up-to-project-string ()
   "Build the path-up-to-project segment string for the breadcrumb."
-  (when (and (member 'path-up-to-project lsp-headerline-breadcrumb-segments))
+  (when (member 'path-up-to-project lsp-headerline-breadcrumb-segments)
     (when-let (root (lsp-workspace-root))
       (seq-reduce (lambda (last-dirs next-dir)
                     (format "%s%s %s"
@@ -2259,7 +2262,8 @@ PATH is the current folder to be checked."
                         (or (pcase next-segment
                               ('project (lsp--headerline-breadcrumb-build-project-string))
                               ('file (lsp--headerline-breadcrumb-build-file-string))
-                              ('path-up-to-project (lsp--headerline-breadcrumb-build-path-up-to-project-string))
+                              ('path-up-to-project (or lsp--headerline-breadcrumb-path-up-to-project-string
+                                                       (lsp--headerline-breadcrumb-build-path-up-to-project-string)))
                               ('symbols (lsp--headerline-breadcrumb-build-symbols-string)))
                             "")))
               lsp-headerline-breadcrumb-segments ""))
@@ -4119,6 +4123,10 @@ in that particular folder."
                                        (cons status global-mode-string)))
       (when (bound-and-true-p company-mode)
         (lsp--setup-company))
+
+      (when (and lsp-headerline-breadcrumb-enable
+                 (member 'path-up-to-project lsp-headerline-breadcrumb-segments))
+        (setq lsp--headerline-breadcrumb-path-up-to-project-string (lsp--headerline-breadcrumb-build-path-up-to-project-string)))
 
       (lsp-configure-buffer))
      (t
