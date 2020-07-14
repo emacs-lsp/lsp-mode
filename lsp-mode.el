@@ -8663,7 +8663,7 @@ g. `error', `warning') and list of LSP TAGS."
 provided by lsp-mode.
 See https://github.com/emacs-lsp/lsp-mode."
     :start #'lsp--flycheck-start
-    :modes '(python-mode)
+    :modes '(lsp-foo-bar-mode) ;; placeholder
     :predicate (lambda () lsp-mode)
     :error-explainer (lambda (e)
                        (cond ((string-prefix-p "clang-tidy" (flycheck-error-message e))
