@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-css/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/limitations/">
       
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
@@ -17,7 +17,7 @@
     
     
       
-        <title>CSS/LessCSS/SASS/SCSS - LSP Mode - LSP support for Emacs</title>
+        <title>Limitations - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -59,7 +59,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#csslesscsssassscss" class="md-skip">
+        <a href="#limitations" class="md-skip">
           Skip to content
         </a>
       
@@ -86,7 +86,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              CSS/LessCSS/SASS/SCSS
+              Limitations
             
           </span>
         </div>
@@ -159,7 +159,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="../.." class="md-tabs__link">
+        <a href="../.." class="md-tabs__link md-tabs__link--active">
           Home
         </a>
       
@@ -172,7 +172,7 @@
   
     <li class="md-tabs__item">
       
-        <a href="../languages/" class="md-tabs__link md-tabs__link--active">
+        <a href="../languages/" class="md-tabs__link">
           Languages
         </a>
       
@@ -292,10 +292,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" checked>
     
     <label class="md-nav__link" for="nav-1">
       Home
@@ -497,11 +499,53 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../limitations/" title="Limitations" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Limitations
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="Limitations" class="md-nav__link md-nav__link--active">
       Limitations
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#file-watches" class="md-nav__link">
+    File watches
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -562,12 +606,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
     
     <label class="md-nav__link" for="nav-2">
       Languages
@@ -709,254 +751,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        CSS/LessCSS/SASS/SCSS
-        <span class="md-nav__icon md-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
-        </span>
-      </label>
-    
-    <a href="./" title="CSS/LessCSS/SASS/SCSS" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../lsp-css/" title="CSS/LessCSS/SASS/SCSS" class="md-nav__link">
       CSS/LessCSS/SASS/SCSS
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-      </span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-    <nav class="md-nav" aria-label="Installation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-not-available" class="md-nav__link">
-    Debugger: Not available
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-experimental-custom-data" class="md-nav__link">
-    lsp-css-experimental-custom-data
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-completion-trigger-property-value-completion" class="md-nav__link">
-    lsp-css-completion-trigger-property-value-completion
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-validate" class="md-nav__link">
-    lsp-css-validate
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-compatible-vendor-prefixes" class="md-nav__link">
-    lsp-css-lint-compatible-vendor-prefixes
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-vendor-prefix" class="md-nav__link">
-    lsp-css-lint-vendor-prefix
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-duplicate-properties" class="md-nav__link">
-    lsp-css-lint-duplicate-properties
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-empty-rules" class="md-nav__link">
-    lsp-css-lint-empty-rules
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-import-statement" class="md-nav__link">
-    lsp-css-lint-import-statement
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-box-model" class="md-nav__link">
-    lsp-css-lint-box-model
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-universal-selector" class="md-nav__link">
-    lsp-css-lint-universal-selector
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-zero-units" class="md-nav__link">
-    lsp-css-lint-zero-units
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-font-face-properties" class="md-nav__link">
-    lsp-css-lint-font-face-properties
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-hex-color-length" class="md-nav__link">
-    lsp-css-lint-hex-color-length
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-arguments-in-color-function" class="md-nav__link">
-    lsp-css-lint-arguments-in-color-function
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-unknown-properties" class="md-nav__link">
-    lsp-css-lint-unknown-properties
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-valid-properties" class="md-nav__link">
-    lsp-css-lint-valid-properties
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-ie-hack" class="md-nav__link">
-    lsp-css-lint-ie-hack
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-unknown-vendor-specific-properties" class="md-nav__link">
-    lsp-css-lint-unknown-vendor-specific-properties
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-property-ignored-due-to-display" class="md-nav__link">
-    lsp-css-lint-property-ignored-due-to-display
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-important" class="md-nav__link">
-    lsp-css-lint-important
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-float" class="md-nav__link">
-    lsp-css-lint-float
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-id-selector" class="md-nav__link">
-    lsp-css-lint-id-selector
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-unknown-at-rules" class="md-nav__link">
-    lsp-css-lint-unknown-at-rules
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-trace-server" class="md-nav__link">
-    lsp-css-trace-server
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -1867,210 +1666,9 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
+  <a href="#file-watches" class="md-nav__link">
+    File watches
   </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-    <nav class="md-nav" aria-label="Installation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-not-available" class="md-nav__link">
-    Debugger: Not available
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-experimental-custom-data" class="md-nav__link">
-    lsp-css-experimental-custom-data
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-completion-trigger-property-value-completion" class="md-nav__link">
-    lsp-css-completion-trigger-property-value-completion
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-validate" class="md-nav__link">
-    lsp-css-validate
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-compatible-vendor-prefixes" class="md-nav__link">
-    lsp-css-lint-compatible-vendor-prefixes
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-vendor-prefix" class="md-nav__link">
-    lsp-css-lint-vendor-prefix
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-duplicate-properties" class="md-nav__link">
-    lsp-css-lint-duplicate-properties
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-empty-rules" class="md-nav__link">
-    lsp-css-lint-empty-rules
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-import-statement" class="md-nav__link">
-    lsp-css-lint-import-statement
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-box-model" class="md-nav__link">
-    lsp-css-lint-box-model
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-universal-selector" class="md-nav__link">
-    lsp-css-lint-universal-selector
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-zero-units" class="md-nav__link">
-    lsp-css-lint-zero-units
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-font-face-properties" class="md-nav__link">
-    lsp-css-lint-font-face-properties
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-hex-color-length" class="md-nav__link">
-    lsp-css-lint-hex-color-length
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-arguments-in-color-function" class="md-nav__link">
-    lsp-css-lint-arguments-in-color-function
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-unknown-properties" class="md-nav__link">
-    lsp-css-lint-unknown-properties
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-valid-properties" class="md-nav__link">
-    lsp-css-lint-valid-properties
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-ie-hack" class="md-nav__link">
-    lsp-css-lint-ie-hack
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-unknown-vendor-specific-properties" class="md-nav__link">
-    lsp-css-lint-unknown-vendor-specific-properties
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-property-ignored-due-to-display" class="md-nav__link">
-    lsp-css-lint-property-ignored-due-to-display
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-important" class="md-nav__link">
-    lsp-css-lint-important
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-float" class="md-nav__link">
-    lsp-css-lint-float
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-id-selector" class="md-nav__link">
-    lsp-css-lint-id-selector
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-lint-unknown-at-rules" class="md-nav__link">
-    lsp-css-lint-unknown-at-rules
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-css-trace-server" class="md-nav__link">
-    lsp-css-trace-server
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -2086,7 +1684,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/lsp-css.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/limitations.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
@@ -2094,112 +1692,9 @@
                   
                 
                 
-                <h1 id="csslesscsssassscss">CSS/LessCSS/SASS/SCSS<a class="headerlink" href="#csslesscsssassscss" title="Permanent link">#</a></h1>
-<h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For information about the LSP server, check the <a href="https://github.com/vscode-langservers/vscode-css-languageserver-bin">css</a>.</p>
-<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
-<p><code>npm install -g vscode-css-languageserver-bin</code></p>
-<h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
-<h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<h3 id="lsp-css-experimental-custom-data"><code>lsp-css-experimental-custom-data</code><a class="headerlink" href="#lsp-css-experimental-custom-data" title="Permanent link">#</a></h3>
-<p><em>Default: <code>nil</code></em></p>
-<p>A list of JSON file paths that define custom CSS data that
-loads custom properties, at directives, pseudo classes /
-elements.</p>
-<hr />
-<h3 id="lsp-css-completion-trigger-property-value-completion"><code>lsp-css-completion-trigger-property-value-completion</code><a class="headerlink" href="#lsp-css-completion-trigger-property-value-completion" title="Permanent link">#</a></h3>
-<p><em>Default: <code>t</code></em></p>
-<p>By default, VS Code triggers property value completion after
-selecting a CSS property. Use this setting to disable this
-behavior.</p>
-<hr />
-<h3 id="lsp-css-validate"><code>lsp-css-validate</code><a class="headerlink" href="#lsp-css-validate" title="Permanent link">#</a></h3>
-<p><em>Default: <code>t</code></em></p>
-<p>Enables or disables all validations.</p>
-<hr />
-<h3 id="lsp-css-lint-compatible-vendor-prefixes"><code>lsp-css-lint-compatible-vendor-prefixes</code><a class="headerlink" href="#lsp-css-lint-compatible-vendor-prefixes" title="Permanent link">#</a></h3>
-<p><em>Default: <code>ignore</code></em></p>
-<p>When using a vendor-specific prefix make sure to also include
-all other vendor-specific properties.</p>
-<hr />
-<h3 id="lsp-css-lint-vendor-prefix"><code>lsp-css-lint-vendor-prefix</code><a class="headerlink" href="#lsp-css-lint-vendor-prefix" title="Permanent link">#</a></h3>
-<p><em>Default: <code>warning</code></em></p>
-<p>When using a vendor-specific prefix, also include the standard
-property.</p>
-<hr />
-<h3 id="lsp-css-lint-duplicate-properties"><code>lsp-css-lint-duplicate-properties</code><a class="headerlink" href="#lsp-css-lint-duplicate-properties" title="Permanent link">#</a></h3>
-<p><em>Default: <code>ignore</code></em></p>
-<p>Do not use duplicate style definitions.</p>
-<hr />
-<h3 id="lsp-css-lint-empty-rules"><code>lsp-css-lint-empty-rules</code><a class="headerlink" href="#lsp-css-lint-empty-rules" title="Permanent link">#</a></h3>
-<p><em>Default: <code>warning</code></em></p>
-<p>Do not use empty rulesets.</p>
-<hr />
-<h3 id="lsp-css-lint-import-statement"><code>lsp-css-lint-import-statement</code><a class="headerlink" href="#lsp-css-lint-import-statement" title="Permanent link">#</a></h3>
-<p><em>Default: <code>ignore</code></em></p>
-<p>Import statements do not load in parallel.</p>
-<hr />
-<h3 id="lsp-css-lint-box-model"><code>lsp-css-lint-box-model</code><a class="headerlink" href="#lsp-css-lint-box-model" title="Permanent link">#</a></h3>
-<p><em>Default: <code>ignore</code></em></p>
-<hr />
-<h3 id="lsp-css-lint-universal-selector"><code>lsp-css-lint-universal-selector</code><a class="headerlink" href="#lsp-css-lint-universal-selector" title="Permanent link">#</a></h3>
-<p><em>Default: <code>ignore</code></em></p>
-<hr />
-<h3 id="lsp-css-lint-zero-units"><code>lsp-css-lint-zero-units</code><a class="headerlink" href="#lsp-css-lint-zero-units" title="Permanent link">#</a></h3>
-<p><em>Default: <code>ignore</code></em></p>
-<p>No unit for zero needed.</p>
-<hr />
-<h3 id="lsp-css-lint-font-face-properties"><code>lsp-css-lint-font-face-properties</code><a class="headerlink" href="#lsp-css-lint-font-face-properties" title="Permanent link">#</a></h3>
-<p><em>Default: <code>warning</code></em></p>
-<hr />
-<h3 id="lsp-css-lint-hex-color-length"><code>lsp-css-lint-hex-color-length</code><a class="headerlink" href="#lsp-css-lint-hex-color-length" title="Permanent link">#</a></h3>
-<p><em>Default: <code>error</code></em></p>
-<p>Hex colors must consist of three or six hex numbers.</p>
-<hr />
-<h3 id="lsp-css-lint-arguments-in-color-function"><code>lsp-css-lint-arguments-in-color-function</code><a class="headerlink" href="#lsp-css-lint-arguments-in-color-function" title="Permanent link">#</a></h3>
-<p><em>Default: <code>error</code></em></p>
-<p>Invalid number of parameters.</p>
-<hr />
-<h3 id="lsp-css-lint-unknown-properties"><code>lsp-css-lint-unknown-properties</code><a class="headerlink" href="#lsp-css-lint-unknown-properties" title="Permanent link">#</a></h3>
-<p><em>Default: <code>warning</code></em></p>
-<p>Unknown property.</p>
-<hr />
-<h3 id="lsp-css-lint-valid-properties"><code>lsp-css-lint-valid-properties</code><a class="headerlink" href="#lsp-css-lint-valid-properties" title="Permanent link">#</a></h3>
-<p><em>Default: <code>nil</code></em></p>
-<p>A list of properties that are not validated against the
-‘unknownProperties‘ rule.</p>
-<hr />
-<h3 id="lsp-css-lint-ie-hack"><code>lsp-css-lint-ie-hack</code><a class="headerlink" href="#lsp-css-lint-ie-hack" title="Permanent link">#</a></h3>
-<p><em>Default: <code>ignore</code></em></p>
-<p>IE hacks are only necessary when supporting IE7 and older.</p>
-<hr />
-<h3 id="lsp-css-lint-unknown-vendor-specific-properties"><code>lsp-css-lint-unknown-vendor-specific-properties</code><a class="headerlink" href="#lsp-css-lint-unknown-vendor-specific-properties" title="Permanent link">#</a></h3>
-<p><em>Default: <code>ignore</code></em></p>
-<p>Unknown vendor specific property.</p>
-<hr />
-<h3 id="lsp-css-lint-property-ignored-due-to-display"><code>lsp-css-lint-property-ignored-due-to-display</code><a class="headerlink" href="#lsp-css-lint-property-ignored-due-to-display" title="Permanent link">#</a></h3>
-<p><em>Default: <code>warning</code></em></p>
-<hr />
-<h3 id="lsp-css-lint-important"><code>lsp-css-lint-important</code><a class="headerlink" href="#lsp-css-lint-important" title="Permanent link">#</a></h3>
-<p><em>Default: <code>ignore</code></em></p>
-<hr />
-<h3 id="lsp-css-lint-float"><code>lsp-css-lint-float</code><a class="headerlink" href="#lsp-css-lint-float" title="Permanent link">#</a></h3>
-<p><em>Default: <code>ignore</code></em></p>
-<hr />
-<h3 id="lsp-css-lint-id-selector"><code>lsp-css-lint-id-selector</code><a class="headerlink" href="#lsp-css-lint-id-selector" title="Permanent link">#</a></h3>
-<p><em>Default: <code>ignore</code></em></p>
-<p>Selectors should not contain IDs because these rules are too
-tightly coupled with the HTML.</p>
-<hr />
-<h3 id="lsp-css-lint-unknown-at-rules"><code>lsp-css-lint-unknown-at-rules</code><a class="headerlink" href="#lsp-css-lint-unknown-at-rules" title="Permanent link">#</a></h3>
-<p><em>Default: <code>warning</code></em></p>
-<p>Unknown at-rule.</p>
-<hr />
-<h3 id="lsp-css-trace-server"><code>lsp-css-trace-server</code><a class="headerlink" href="#lsp-css-trace-server" title="Permanent link">#</a></h3>
-<p><em>Default: <code>off</code></em></p>
-<p>Traces the communication between VS Code and the CSS language
-server.</p>
-<hr />
+                <h1 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">#</a></h1>
+<h2 id="file-watches">File watches<a class="headerlink" href="#file-watches" title="Permanent link">#</a></h2>
+<p>When some of the workspaces that are active in the current project requests file notifications via <code>workspace/didChangeWatchedFiles</code>, <code>lsp-mode</code> will start monitoring each of the folders in the workspace for changes. In case your project contains a lot of files you might want to disable file monitoring via <code>lsp-enable-file-watchers</code> (you may use dir-locals).</p>
                 
                   
                     
@@ -2231,7 +1726,7 @@ server.</p>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../lsp-crystal/" title="Crystal" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../keybindings/" title="Keybindings" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -2240,19 +1735,19 @@ server.</p>
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Crystal
+                Keybindings
               </div>
             </div>
           </a>
         
         
-          <a href="../lsp-dhall/" title="Dhall" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../remote/" title="Remote" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Dhall
+                Remote
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">

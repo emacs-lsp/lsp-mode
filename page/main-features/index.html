@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/additional-settings/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/main-features/">
       
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
@@ -17,7 +17,7 @@
     
     
       
-        <title>Additional settings - LSP Mode - LSP support for Emacs</title>
+        <title>Main features - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -59,7 +59,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#additional-settings" class="md-skip">
+        <a href="#main-features" class="md-skip">
           Skip to content
         </a>
       
@@ -86,7 +86,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              Additional settings
+              Main features
             
           </span>
         </div>
@@ -331,12 +331,10 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1-2" type="checkbox" id="nav-1-2" checked>
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1-2" type="checkbox" id="nav-1-2">
     
     <label class="md-nav__link" for="nav-1-2">
       Setup
@@ -378,6 +376,11 @@
   </li>
 
         
+      </ul>
+    </nav>
+  </li>
+
+        
           
           
           
@@ -393,14 +396,14 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Additional settings
+        Main features
         <span class="md-nav__icon md-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
         </span>
       </label>
     
-    <a href="./" title="Additional settings" class="md-nav__link md-nav__link--active">
-      Additional settings
+    <a href="./" title="Main features" class="md-nav__link md-nav__link--active">
+      Main features
     </a>
     
       
@@ -419,22 +422,51 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#recommended-settings-for-related-packages" class="md-nav__link">
-    Recommended settings for related packages
-  </a>
-  
-    <nav class="md-nav" aria-label="Recommended settings for related packages">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#company-autocomplete" class="md-nav__link">
-    Company (autocomplete)
+  <a href="#completion-at-point" class="md-nav__link">
+    Completion at point
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#code-navigation" class="md-nav__link">
+    Code navigation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-lens" class="md-nav__link">
+    Code lens
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checking-project-errors" class="md-nav__link">
+    Checking project errors
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-actions-on-modeline" class="md-nav__link">
+    Code actions on modeline
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#breadcrumb-on-headerline" class="md-nav__link">
+    Breadcrumb on headerline
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#symbol-highlights" class="md-nav__link">
+    Symbol highlights
+  </a>
   
 </li>
       
@@ -445,15 +477,24 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#debugger" class="md-nav__link">
+    Debugger
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integrations" class="md-nav__link">
+    Integrations
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
     
-  </li>
-
-        
-      </ul>
-    </nav>
   </li>
 
         
@@ -488,16 +529,16 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1-5" type="checkbox" id="nav-1-5">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1-6" type="checkbox" id="nav-1-6">
     
-    <label class="md-nav__link" for="nav-1-5">
+    <label class="md-nav__link" for="nav-1-6">
       Extensions
       <span class="md-nav__icon md-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
       </span>
     </label>
     <nav class="md-nav" aria-label="Extensions" data-md-level="2">
-      <label class="md-nav__title" for="nav-1-5">
+      <label class="md-nav__title" for="nav-1-6">
         <span class="md-nav__icon md-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
         </span>
@@ -556,6 +597,18 @@
         
       </ul>
     </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../limitations/" title="Limitations" class="md-nav__link">
+      Limitations
+    </a>
   </li>
 
         
@@ -1676,28 +1729,71 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#recommended-settings-for-related-packages" class="md-nav__link">
-    Recommended settings for related packages
-  </a>
-  
-    <nav class="md-nav" aria-label="Recommended settings for related packages">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#company-autocomplete" class="md-nav__link">
-    Company (autocomplete)
+  <a href="#completion-at-point" class="md-nav__link">
+    Completion at point
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#code-navigation" class="md-nav__link">
+    Code navigation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-lens" class="md-nav__link">
+    Code lens
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checking-project-errors" class="md-nav__link">
+    Checking project errors
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-actions-on-modeline" class="md-nav__link">
+    Code actions on modeline
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#breadcrumb-on-headerline" class="md-nav__link">
+    Breadcrumb on headerline
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#symbol-highlights" class="md-nav__link">
+    Symbol highlights
+  </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#formatting" class="md-nav__link">
     Formatting
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugger" class="md-nav__link">
+    Debugger
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integrations" class="md-nav__link">
+    Integrations
   </a>
   
 </li>
@@ -1714,7 +1810,7 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/additional-settings.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/main-features.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
@@ -1722,20 +1818,63 @@
                   
                 
                 
-                <h1 id="additional-settings">Additional settings<a class="headerlink" href="#additional-settings" title="Permanent link">#</a></h1>
-<h2 id="recommended-settings-for-related-packages">Recommended settings for related packages<a class="headerlink" href="#recommended-settings-for-related-packages" title="Permanent link">#</a></h2>
-<h3 id="company-autocomplete">Company (autocomplete)<a class="headerlink" href="#company-autocomplete" title="Permanent link">#</a></h3>
+                <h1 id="main-features">Main features<a class="headerlink" href="#main-features" title="Permanent link">#</a></h1>
+<h2 id="completion-at-point">Completion at point<a class="headerlink" href="#completion-at-point" title="Permanent link">#</a></h2>
+<p>If LSP server supports completion, <code>lsp-mode</code> use symbols returned by the server to present the user when completion is triggered via <code>completion-at-point</code>.</p>
+<p>For better performance and results, use <code>company-capf</code> by installing <a href="https://company-mode.github.io/">company-mode</a>.</p>
+<p><img alt="" src="../../examples/completion.gif" /></p>
+<p>You can check above the recommended settings for <code>company-mode</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">company-minimum-prefix-length</span> <span class="mi">1</span>
       <span class="nv">company-idle-delay</span> <span class="mf">0.0</span><span class="p">)</span> <span class="c1">;; default is 0.2</span>
 </code></pre></div>
 
+<h2 id="code-navigation">Code navigation<a class="headerlink" href="#code-navigation" title="Permanent link">#</a></h2>
+<p><code>lsp-find-definition</code></p>
+<p><img alt="" src="../../examples/find-definition.gif" /></p>
+<p><code>lsp-find-references</code></p>
+<p><img alt="" src="../../examples/find-references.gif" /></p>
+<h2 id="code-lens">Code lens<a class="headerlink" href="#code-lens" title="Permanent link">#</a></h2>
+<p>In case the LSP server supports code lens:</p>
+<p><img alt="" src="../../examples/code-lens.png" /></p>
+<h2 id="checking-project-errors">Checking project errors<a class="headerlink" href="#checking-project-errors" title="Permanent link">#</a></h2>
+<p>To see all error statistics in the modeline you can enable <code>lsp-diagnostics-modeline-mode</code>. This is especially useful for languages that compilation might be broken due to errors in other files(e.g. Java/Haskell).</p>
+<p><img alt="" src="../../examples/modeline-diagnostics.png" /></p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-mode</span>
+  <span class="c1">;; :project/:workspace/:file</span>
+  <span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-diagnostics-modeline-scope</span> <span class="nb">:project</span><span class="p">)</span>
+  <span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;lsp-managed-mode-hook</span> <span class="ss">&#39;lsp-diagnostics-modeline-mode</span><span class="p">))</span>
+</code></pre></div>
+
+<p><em>Tip:</em> To find out the global errors you might use <code>lsp-treemacs-errors-list</code>.</p>
+<h2 id="code-actions-on-modeline">Code actions on modeline<a class="headerlink" href="#code-actions-on-modeline" title="Permanent link">#</a></h2>
+<p>For a UI feedback of the available code actions, you can enable <code>lsp-modeline-code-actions-mode</code> which shows available code actions on modeline:</p>
+<p><img alt="" src="../../examples/modeline-code-actions.png" /></p>
+<h2 id="breadcrumb-on-headerline">Breadcrumb on headerline<a class="headerlink" href="#breadcrumb-on-headerline" title="Permanent link">#</a></h2>
+<p>For a UI feedback on headerline of the document symbols at point, current file or project name, you can enable <code>lsp-headerline-breadcrumb-mode</code> which shows a breadcrumb on top of window.</p>
+<p>You can customize the breadcrumb segments via <code>lsp-headerline-breadcrumb-segments</code> variable, some examples:</p>
+<p><code>'(path-up-to-project file symbols)</code> (Default)</p>
+<p><img alt="" src="../../examples/headerline-breadcrumb-path-up-to-project-file-symbols.png" /></p>
+<p><code>'(project file symbols)</code></p>
+<p><img alt="" src="../../examples/headerline-breadcrumb-project-file-symbols.png" /></p>
+<p><code>'(symbols)</code></p>
+<p><img alt="" src="../../examples/headerline-breadcrumb-symbols.png" /></p>
+<h2 id="symbol-highlights">Symbol highlights<a class="headerlink" href="#symbol-highlights" title="Permanent link">#</a></h2>
+<p>In case LSP server supports <code>hover</code> feature:</p>
+<p><img alt="" src="../../examples/symbol-highlights.gif" /></p>
 <h2 id="formatting">Formatting<a class="headerlink" href="#formatting" title="Permanent link">#</a></h2>
-<p>In general the formatter settings are language server specific(e. g. <code>JDT LS</code> uses eclipse formatter file and <code>lsp-java-format-settings-url</code> to configure it while clangd uses <code>clangd-format</code>). The only settings that are controlled on <code>lsp-mode</code> level are indent size and whether the server should use tabs or spaces.</p>
+<p><img alt="" src="../../examples/formatting.gif" /></p>
+<p>In general the formatter settings are language server specific(e. g. <code>JDT LS</code> uses eclipse formatter file and <code>lsp-java-format-settings-url</code> to configure it while clangd uses <code>clangd-format</code> and <code>lsp-dart</code> uses the built-in <code>dartfmt</code> from <code>Dart SDK</code>). The only settings that are controlled on <code>lsp-mode</code> level are indent size and whether the server should use tabs or spaces.</p>
 <ul>
 <li>Use <code>c-basic-offset</code> for <code>cc-mode</code> derived moves(e. g. java, C++) to control the tab size.</li>
 <li>Use <code>tab-width</code> for any other mode to do the same.</li>
 <li>Use <code>indent-tabs-mode</code> for selecting tab/spaces.</li>
 </ul>
+<h2 id="debugger">Debugger<a class="headerlink" href="#debugger" title="Permanent link">#</a></h2>
+<p><code>lsp-mode</code> integrates with <a href="https://emacs-lsp.github.io/dap-mode/">dap-mode</a> with implements the DAP(Debugger Adapter Protocol), for more information check the <a href="https://emacs-lsp.github.io/dap-mode/"><code>dap-mode</code> documentation</a>.</p>
+<p><img alt="" src="../../examples/lsp-dart-flutter-debug.gif" /></p>
+<h2 id="integrations">Integrations<a class="headerlink" href="#integrations" title="Permanent link">#</a></h2>
+<p><code>lsp-mode</code> supports many integrations for improve the user experience like <a href="https://github.com/emacs-lsp/lsp-treemacs">treemacs</a>, <a href="https://github.com/emacs-lsp/helm-lsp">Helm</a>, <a href="https://github.com/emacs-lsp/lsp-ivy">Ivy</a> and others. </p>
+<p>For all available integrations, check the <code>Extensions</code> section on the left navigation.</p>
                 
                   
                     
@@ -1744,7 +1883,7 @@
 <div class="md-source-date">
   <small>
     
-      Last update: July 13, 2020
+      Last update: July 14, 2020
     
   </small>
 </div>
