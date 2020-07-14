@@ -7,7 +7,7 @@ nav:
     - Setup:
         - Installation: page/installation.md
         - Perfomance: page/performance.md
-        - Additional settings: page/additional-settings.md
+    - Main features: page/main-features.md
     - Settings: page/settings.md
     - Keybindings: page/keybindings.md
     - Extensions:
@@ -15,6 +15,7 @@ nav:
         - Treemacs: https://github.com/emacs-lsp/lsp-treemacs
         - Helm: https://github.com/emacs-lsp/helm-lsp
         - Ivy: https://github.com/emacs-lsp/lsp-ivy
+    - Limitations: page/limitations.md
     - Remote: page/remote.md
     - FAQ: page/faq.md
     - Troubleshooting: page/troubleshooting.md
