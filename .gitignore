@@ -41,9 +41,6 @@ flycheck_*.el
 # projectiles files
 .projectile
 
-# directory configuration
-.dir-locals.el
-
 /*-autoloads.el
 /*-pkg.el
 /.ecukes-failing-scenarios
