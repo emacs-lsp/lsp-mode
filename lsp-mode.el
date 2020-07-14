@@ -2257,7 +2257,7 @@ PATH is the current folder to be checked."
                               'font-lock-face
                               (if deprecated?
                                   'lsp-headerline-breadcrumb-deprecated-face
-                                'font-lock-face)))
+                                'lsp-headerline-breadcrumb-symbols-face)))
                  (symbol2-icon
                   (lsp--headerline-breadcrumb-symbol-icon symbol-to-append))
                  (full-symbol-2
