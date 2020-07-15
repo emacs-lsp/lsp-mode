@@ -2275,7 +2275,7 @@ PATH is the current folder to be checked."
                        (concat
                         (propertize (number-to-string index)
                                     'face
-                                    'lsp-headerline-breadcrumb-separator-face)
+                                    'lsp-headerline-breadcrumb-symbols-face)
                         " ")
                      "")
                    (if symbol2-icon
