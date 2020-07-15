@@ -310,16 +310,18 @@ PATH is the current folder to be checked."
   :global nil
   (cond
    (lsp-headerline-breadcrumb-mode
+    (lsp-headerline--breadcrumb-cache-path-up-to-project)
     (add-to-list 'header-line-format '(t (:eval lsp--headerline-breadcrumb-string)))
-    (add-hook 'lsp-managed-mode-hook #'lsp-headerline--breadcrumb-cache-path-up-to-project nil t)
+
     (add-hook 'lsp-on-idle-hook #'lsp-headerline--check-breadcrumb nil t)
     (add-hook 'lsp-configure-hook #'lsp--headerline-enable-breadcrumb nil t)
     (add-hook 'lsp-unconfigure-hook #'lsp--headerline-disable-breadcrumb nil t))
    (t
-    (remove-hook 'lsp-managed-mode-hook #'lsp-headerline--breadcrumb-cache-path-up-to-project t)
     (remove-hook 'lsp-on-idle-hook #'lsp-headerline--check-breadcrumb t)
     (remove-hook 'lsp-configure-hook #'lsp--headerline-enable-breadcrumb t)
     (remove-hook 'lsp-unconfigure-hook #'lsp--headerline-disable-breadcrumb t)
+
+    (setq lsp--headerline-breadcrumb-path-up-to-project-string nil)
     (setq header-line-format (remove '(t (:eval lsp--headerline-breadcrumb-string)) header-line-format)))))
 
 ;;;###autoload

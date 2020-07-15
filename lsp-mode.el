@@ -3893,7 +3893,9 @@ in that particular folder."
 
 (defun lsp-configure-buffer ()
   (when lsp-auto-configure
-    (run-hooks 'lsp-configure-hook)
+    (when lsp-headerline-breadcrumb-enable
+      (add-hook 'lsp-configure-hook 'lsp-headerline-breadcrumb-mode))
+
     (when (and lsp-modeline-code-actions-enable
                (lsp-feature? "textDocument/codeAction"))
       (lsp-modeline-code-actions-mode 1))
@@ -3932,6 +3934,8 @@ in that particular folder."
             (lsp--find-workspaces-for "textDocument/semanticTokens"))
       (lsp--semantic-tokens-initialize-buffer
        (lsp-feature? "textDocument/semanticTokensRangeProvider"))))
+
+  (run-hooks 'lsp-configure-hook)
 
   (let ((buffer (current-buffer)))
     (run-with-idle-timer
@@ -7127,9 +7131,6 @@ returns the command to execute."
   "Autoconfigure `company', `flycheck', `lsp-ui',  if they are installed."
   (when (functionp 'lsp-ui-mode)
     (lsp-ui-mode))
-
-  (when lsp-headerline-breadcrumb-enable
-    (add-hook 'lsp-managed-mode-hook 'lsp-headerline-breadcrumb-mode))
 
   (cond
    ((or
