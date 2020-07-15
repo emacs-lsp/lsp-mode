@@ -674,6 +674,16 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
+(defcustom lsp-configure-hook nil
+  "Hooks to run when `lsp-configure-buffer' is called."
+  :type 'hook
+  :group 'lsp-mode)
+
+(defcustom lsp-unconfigure-hook nil
+  "Hooks to run when `lsp-unconfig-buffer' is called."
+  :type 'hook
+  :group 'lsp-mode)
+
 (defcustom lsp-after-diagnostics-hook nil
   "Hooks to run after diagnostics are received.
 Note: it runs only if the receiving buffer is open. Use
