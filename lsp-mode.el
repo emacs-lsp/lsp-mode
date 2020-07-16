@@ -1335,7 +1335,7 @@ depending on it."
                                         hovers))))
        ("textDocument/completion"
         (lsp-make-completion-list
-         :isIncomplete (seq-some
+         :is-incomplete (seq-some
                         #'lsp:completion-list-is-incomplete
                         results)
          :items (apply 'append (--map (append (if (lsp-completion-list? it)
