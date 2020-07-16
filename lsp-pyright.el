@@ -22,6 +22,8 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'dash)
+(require 'ht)
 
 ;; Group declaration
 (defgroup lsp-pyright nil
@@ -144,7 +146,10 @@ set as `python3' to let ms-pyls use python 3 environments."
    ("python.analysis.diagnosticMode" lsp-pyright-diagnostic-mode)
    ("python.analysis.typeCheckingMode" lsp-pyright-typechecking-mode)
    ("python.analysis.logLevel" lsp-pyright-log-level)
-   ("python.analysis.autoSearchPaths" lsp-pyright-auto-search-paths)))
+   ("python.analysis.autoSearchPaths" lsp-pyright-auto-search-paths)
+   ("python.pythonPath" lsp-pyright-locate-python)))
+
+
 
 (lsp-dependency 'pyright
                 '(:system "pyright-langserver")
@@ -161,14 +166,12 @@ set as `python3' to let ms-pyls use python 3 environments."
   :multi-root t
   :priority -1
   :initialization-options (lambda () (ht-merge (lsp-configuration-section "pyright")
-                                               (lsp-configuration-section "python")
-                                               (ht ("python" (ht ("pythonPath" (lsp-pyright-locate-python)))))))
+                                               (lsp-configuration-section "python")))
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--set-configuration
                        (ht-merge (lsp-configuration-section "pyright")
-                                 (lsp-configuration-section "python")
-                                 (ht ("python" (ht ("pythonPath" (lsp-pyright-locate-python)))))))))
+                                 (lsp-configuration-section "python")))))
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'pyright callback error-callback))
   :notification-handlers (lsp-ht ("pyright/beginProgress" 'lsp-pyright--begin-progress-callback)
