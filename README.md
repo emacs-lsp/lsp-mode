@@ -18,13 +18,13 @@ Language Server Protocol Support for Emacs
 
 <hr>
 <p align="center">
-  <a href="https://emacs-lsp.github.io/lsp-mode"><strong>homepage</strong></a> • 
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/installation"><strong>installation</strong></a> • 
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/languages"><strong>languages</strong></a> • 
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/settings"><strong>settings</strong></a> • 
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/extensions"><strong>extensions</strong></a> • 
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/troubleshooting"><strong>troubleshooting</strong></a> • 
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/gallery"><strong>screenshots</strong></a> • 
+  <a href="https://emacs-lsp.github.io/lsp-mode"><strong>homepage</strong></a> •
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/installation"><strong>installation</strong></a> •
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/languages"><strong>languages</strong></a> •
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/settings"><strong>settings</strong></a> •
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/extensions"><strong>extensions</strong></a> •
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/troubleshooting"><strong>troubleshooting</strong></a> •
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/gallery"><strong>screenshots</strong></a> •
   <a href="https://emacs-lsp.github.io/lsp-mode/page/faq"><strong>FAQ</strong></a>
 </p>
 <hr>
@@ -106,8 +106,8 @@ Contributions are very much welcome.
 
 ## Support the project
 
-The `emacs-lsp` organization has more than **20.000 lines of code**, to keep all of this working, 
-we need to implement new features and help the community on a lot of issues. 
+The `emacs-lsp` organization has more than **20.000 lines of code**, to keep all of this working,
+we need to implement new features and help the community on a lot of issues.
 
 You can help us keep going and improving it by **[supporting the project](https://opencollective.com/emacs-lsp)**
 
@@ -235,7 +235,7 @@ primary working on/responsible for.
     <td align="center">
       <div>
         <a href="https://github.com/kiennq">
-          <img src="https://github.com/kiennq.png" width="100px;" style="border-radius: 50%;" alt="danielmartin"/>
+          <img src="https://github.com/kiennq.png" width="100px;" style="border-radius: 50%;" alt="kiennq"/>
           <br/>
           <sub><b>kiennq</b></sub>
         </a>
