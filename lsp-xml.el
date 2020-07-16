@@ -213,7 +213,3 @@ Newlines and excess whitespace are removed."
 
 (provide 'lsp-xml)
 ;;; lsp-xml.el ends here
-
-;; Local Variables:
-;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
-;; End:

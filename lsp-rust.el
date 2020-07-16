@@ -711,7 +711,3 @@ The command should include `--message=format=json` or similar option."
 
 (provide 'lsp-rust)
 ;;; lsp-rust.el ends here
-
-;; Local Variables:
-;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
-;; End:

@@ -482,7 +482,3 @@ So it will rename only references it can find."
 
 (provide 'lsp-pyls)
 ;;; lsp-pyls.el ends here
-
-;; Local Variables:
-;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
-;; End:

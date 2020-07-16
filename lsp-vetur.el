@@ -848,7 +848,3 @@ Code's JavaScript and TypeScript support."
 
 (provide 'lsp-vetur)
 ;;; lsp-vetur.el ends here
-
-;; Local Variables:
-;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
-;; End:

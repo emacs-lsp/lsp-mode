@@ -8758,7 +8758,3 @@ See https://github.com/emacs-lsp/lsp-mode."
 
 (provide 'lsp-mode)
 ;;; lsp-mode.el ends here
-
-;; Local Variables:
-;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
-;; End:

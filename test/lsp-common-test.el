@@ -57,6 +57,7 @@
   (seq-doseq (library (-filter
                        (lambda (file)
                          (and (f-ext? file "el")
+                              (not (s-contains? ".dir-locals" file))
                               (not (s-contains? "test" file))))
                        (append (when (or load-file-name buffer-file-name)
                                  (f-files (f-parent (f-dirname (or load-file-name buffer-file-name)))))
