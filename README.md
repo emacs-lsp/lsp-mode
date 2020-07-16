@@ -231,4 +231,17 @@ primary working on/responsible for.
       </div>
     </td>
   </tr>
+  <tr>
+    <td align="center">
+      <div>
+        <a href="https://github.com/kiennq">
+          <img src="https://github.com/kiennq.png" width="100px;" style="border-radius: 50%;" alt="danielmartin"/>
+          <br/>
+          <sub><b>kiennq</b></sub>
+        </a>
+        <br/>
+        completions | pwsh
+      </div>
+    </td>
+  </tr>
 </table>
