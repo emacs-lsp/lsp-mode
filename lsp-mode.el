@@ -3930,9 +3930,9 @@ in that particular folder."
       (mapc #'lsp--semantic-tokens-initialize-workspace
             (lsp--find-workspaces-for "textDocument/semanticTokens"))
       (lsp--semantic-tokens-initialize-buffer
-       (lsp-feature? "textDocument/semanticTokensRangeProvider"))))
+       (lsp-feature? "textDocument/semanticTokensRangeProvider")))
 
-  (run-hooks 'lsp-configure-hook)
+    (run-hooks 'lsp-configure-hook))
 
   (let ((buffer (current-buffer)))
     (run-with-idle-timer
