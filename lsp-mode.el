@@ -813,6 +813,15 @@ than the second parameter.")
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.3"))
 
+(defcustom lsp-diagnostic-clean-after-change t
+  "When non-nil, clean the diagnostics on change.
+
+Note that when that setting is nil, `lsp-mode' will show stale
+diagnostics until server publishes the new set of diagnostics"
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "7.0.1"))
+
 (make-obsolete-variable 'lsp-prefer-flymake 'lsp-diagnostic-package "lsp-mode 6.2")
 
 (defcustom lsp-prefer-capf nil
@@ -4730,9 +4739,10 @@ Added to `after-change-functions'."
         (setq lsp--signature-last-index nil
               lsp--signature-last nil)
         ;; cleanup diagnostics
-        (lsp-foreach-workspace
-         (-let [diagnostics (lsp--workspace-diagnostics lsp--cur-workspace)]
-           (remhash (lsp--fix-path-casing (buffer-file-name)) diagnostics)))))))
+        (when lsp-diagnostic-clean-after-change
+          (lsp-foreach-workspace
+           (-let [diagnostics (lsp--workspace-diagnostics lsp--cur-workspace)]
+             (remhash (lsp--fix-path-casing (buffer-file-name)) diagnostics))))))))
 
 
 
