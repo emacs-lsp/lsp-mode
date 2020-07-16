@@ -57,7 +57,3 @@
 (provide 'lsp-gdscript)
 
 ;;; lsp-gdscript.el ends here
-
-;; Local Variables:
-;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
-;; End:

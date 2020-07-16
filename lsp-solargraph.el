@@ -153,7 +153,3 @@
 
 (provide 'lsp-solargraph)
 ;;; lsp-solargraph.el ends here
-
-;; Local Variables:
-;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
-;; End:

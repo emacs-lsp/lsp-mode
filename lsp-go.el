@@ -257,6 +257,3 @@ $GOPATH/pkg/mod along with the value of
 (provide 'lsp-go)
 ;;; lsp-go.el ends here
 
-;; Local Variables:
-;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
-;; End:

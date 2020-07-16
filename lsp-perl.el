@@ -64,6 +64,3 @@
 (provide 'lsp-perl)
 ;;; lsp-perl.el ends here
 
-;; Local Variables:
-;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
-;; End:

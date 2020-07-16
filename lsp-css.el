@@ -250,7 +250,3 @@ server."
 
 (provide 'lsp-css)
 ;;; lsp-css.el ends here
-
-;; Local Variables:
-;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
-;; End:

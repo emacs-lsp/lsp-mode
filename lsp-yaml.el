@@ -137,7 +137,3 @@
 
 (provide 'lsp-yaml)
 ;;; lsp-yaml.el ends here
-
-;; Local Variables:
-;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
-;; End:
