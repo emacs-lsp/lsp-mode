@@ -94,6 +94,28 @@ if there are no execution environments defined in the config file."
   :group 'lsp-pyright
   :package-version '(lsp-mode . "7.0"))
 
+;; taken from lsp-python-ms
+(defcustom lsp-pyright-python-executable-cmd "python"
+  "Command to specify the Python command for the Microsoft Python Language Server.
+Similar to the `python-shell-interpreter', but used only with mspyls.
+Useful when there are multiple python versions in system.
+e.g, there are `python2' and `python3', both in system PATH,
+and the default `python' links to python2,
+set as `python3' to let ms-pyls use python 3 environments."
+  :type 'string
+  :group 'lsp-python-ms
+  :package-version '(lsp-mode . "7.0"))
+
+;; taken from lsp-python-ms
+(defun lsp-pyright-locate-python ()
+  "Look for virtual environments local to the workspace"
+  (let* ((venv (locate-dominating-file default-directory "venv/"))
+         (sys-python (executable-find lsp-pyright-python-executable-cmd))
+         (venv-python (f-expand "venv/bin/python" venv)))
+    (cond
+     ((and venv (f-executable? venv-python)) venv-python)
+     (sys-python))))
+
 (defun lsp-pyright--begin-progress-callback (workspace &rest _)
   (with-lsp-workspace workspace
     (--each (lsp--workspace-buffers workspace)
@@ -139,12 +161,14 @@ if there are no execution environments defined in the config file."
   :multi-root t
   :priority -1
   :initialization-options (lambda () (ht-merge (lsp-configuration-section "pyright")
-                                               (lsp-configuration-section "python")))
+                                               (lsp-configuration-section "python")
+                                               (ht ("python" (ht ("pythonPath" (lsp-pyright-locate-python)))))))
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--set-configuration
                        (ht-merge (lsp-configuration-section "pyright")
-                                 (lsp-configuration-section "python")))))
+                                 (lsp-configuration-section "python")
+                                 (ht ("python" (ht ("pythonPath" (lsp-pyright-locate-python)))))))))
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'pyright callback error-callback))
   :notification-handlers (lsp-ht ("pyright/beginProgress" 'lsp-pyright--begin-progress-callback)
