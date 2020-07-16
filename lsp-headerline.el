@@ -72,9 +72,7 @@ for caching purposes.")
 
 (declare-function all-the-icons-material "ext:all-the-icons" t t)
 (declare-function lsp-treemacs-symbol-icon "ext:lsp-treemacs" (kind))
-(declare-function treemacs-current-theme "ext:treemacs-themes")
-(declare-function treemacs-get-icon-value "ext:treemacs-icons" (ext &optional tui theme) t)
-(declare-function treemacs-theme->name "ext:treemacs-themes" t t)
+(declare-function lsp-treemacs-get-icon "ext:lsp-treemacs" (icon-name))
 
 (defun lsp-headerline--fix-image-background (image)
   "Fix IMAGE background if it is a file otherwise return as an icon."
@@ -94,8 +92,8 @@ for caching purposes.")
   (let ((filename (f-filename file-path))
         (file-ext (f-ext file-path)))
     (if file-ext
-        (when (require 'treemacs nil t)
-          (if-let (icon (treemacs-get-icon-value file-ext nil (treemacs-theme->name (treemacs-current-theme))))
+        (when (require 'lsp-treemacs nil t)
+          (if-let (icon (lsp-treemacs-get-icon file-ext))
               (format "%s %s"
                       (lsp-headerline--fix-image-background icon)
                       filename)
