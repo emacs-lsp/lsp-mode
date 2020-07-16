@@ -69,6 +69,7 @@ nav:
     - PureScript: page/lsp-purescript.md
     - Python: page/lsp-pyls.md
     - Python (Microsoft): https://emacs-lsp.github.io/lsp-python-ms
+    - Python (Pyright): page/lsp-pyright.md
     - R: page/lsp-r.md
     - Ruby: page/lsp-solargraph.md
     - Rust: page/lsp-rust.md

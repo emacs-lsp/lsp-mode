@@ -344,6 +344,13 @@
     "debugger": "Yes"
   },
   {
+    "name": "pyright",
+    "full-name": "Pyright",
+    "server-name": "Pyright Language Server",
+    "server-url": "https://github.com/microsoft/pyright",
+    "installation-url": "npm install -g pyright"
+  },
+  {
     "name": "r",
     "full-name": "R",
     "server-name": "languageserver",
