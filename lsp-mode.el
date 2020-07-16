@@ -6120,6 +6120,32 @@ perform the request synchronously."
               (let ((lsp--document-symbols-request-async t))
                 (apply oldfun r))))
 
+(defun lsp--document-symbols->symbols-hierarchy (document-symbols)
+  "Convert DOCUMENT-SYMBOLS to symbols hierarchy."
+  (-let (((symbol &as &DocumentSymbol? :children?)
+          (seq-some (-lambda ((symbol &as &DocumentSymbol :range (&RangeToPoint :start :end)))
+                      (when (<= start (point) end)
+                        symbol))
+                    document-symbols)))
+    (if children?
+        (cons symbol (lsp--document-symbols->symbols-hierarchy children?))
+      (when symbol
+        (list symbol)))))
+
+(defun lsp--symbols-informations->symbols-hierarchy (symbols-informations)
+  "Convert SYMBOLS-INFORMATIONS to symbols hierarchy."
+  (seq-filter (-lambda ((symbol &as &SymbolInformation :location (&Location :range (&RangeToPoint :start :end))))
+                (when (<= start (point) end)
+                  symbol))
+              symbols-informations))
+
+(defun lsp--symbols->symbols-hierarchy (symbols)
+  "Convert SYMBOLS to symbols-hierarchy."
+  (when-let (first-symbol (lsp-seq-first symbols))
+    (if (lsp-symbol-information? first-symbol)
+        (lsp--symbols-informations->symbols-hierarchy symbols)
+      (lsp--document-symbols->symbols-hierarchy symbols))))
+
 (defun lsp--xref-backend () 'xref-lsp)
 
 (cl-defmethod xref-backend-identifier-at-point ((_backend (eql xref-lsp)))
