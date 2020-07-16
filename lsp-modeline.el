@@ -33,12 +33,12 @@
   "Face used to code action text on modeline."
   :group 'lsp-faces)
 
-(defvar-local lsp--modeline-code-actions-string nil
-  "Holds the current code action string on modeline.")
-
 (declare-function all-the-icons-octicon "ext:all-the-icons" t t)
 
-(defun lsp--modeline-code-actions-icon ()
+(defvar-local lsp-modeline--code-actions-string nil
+  "Holds the current code action string on modeline.")
+
+(defun lsp-modeline--code-actions-icon ()
   "Build the icon for modeline code actions."
   (if (require 'all-the-icons nil t)
       (all-the-icons-octicon "light-bulb"
@@ -46,21 +46,21 @@
                              :v-adjust -0.0575)
     (propertize "💡" 'face lsp-modeline-code-actions-face)))
 
-(defun lsp--modeline-code-action->string (action)
+(defun lsp-modeline--code-action->string (action)
   "Convert code ACTION to friendly string."
   (->> action
        lsp:code-action-title
        (replace-regexp-in-string "[\n\t ]+" " ")))
 
-(defun lsp--modeline-build-code-actions-string (actions)
+(defun lsp-modeline--build-code-actions-string (actions)
   "Build the string to be presented on modeline for code ACTIONS."
-  (-let* ((icon (lsp--modeline-code-actions-icon))
+  (-let* ((icon (lsp-modeline--code-actions-icon))
           (first-action-string (propertize (or (-some->> actions
                                                  (-first #'lsp:code-action-is-preferred?)
-                                                 lsp--modeline-code-action->string)
+                                                 lsp-modeline--code-action->string)
                                                (->> actions
                                                     lsp-seq-first
-                                                    lsp--modeline-code-action->string))
+                                                    lsp-modeline--code-action->string))
                                            'face lsp-modeline-code-actions-face))
           (single-action? (= (length actions) 1))
           (keybinding (-some->> #'lsp-execute-code-action
@@ -88,25 +88,25 @@
                                            (lsp-execute-code-action (lsp-seq-first actions))
                                          (lsp-execute-code-action (lsp--select-action actions))))))))
 
-(defun lsp-modeline--update-code-actions (actions)
+(defun lsp--modeline-update-code-actions (actions)
   "Update modeline with new code ACTIONS."
   (when lsp-modeline-code-actions-kind-regex
     (setq actions (seq-filter (-lambda ((&CodeAction :kind?))
                                 (or (not kind?)
                                     (s-match lsp-modeline-code-actions-kind-regex kind?)))
                               actions)))
-  (setq lsp--modeline-code-actions-string
+  (setq lsp-modeline--code-actions-string
         (if (seq-empty-p actions) ""
-          (lsp--modeline-build-code-actions-string actions)))
+          (lsp-modeline--build-code-actions-string actions)))
   (force-mode-line-update))
 
-(defun lsp--modeline-check-code-actions (&rest _)
+(defun lsp-modeline--check-code-actions (&rest _)
   "Request code actions to update modeline for given BUFFER."
   (when (lsp-feature? "textDocument/codeAction")
     (lsp-request-async
      "textDocument/codeAction"
      (lsp--text-document-code-action-params)
-     #'lsp-modeline--update-code-actions
+     #'lsp--modeline-update-code-actions
      :mode 'unchanged
      :cancel-token :lsp-modeline-code-actions)))
 
@@ -128,16 +128,16 @@
   :lighter ""
   (cond
    (lsp-modeline-code-actions-mode
-    (add-to-list 'global-mode-string '(t (:eval lsp--modeline-code-actions-string)))
+    (add-to-list 'global-mode-string '(t (:eval lsp-modeline--code-actions-string)))
 
-    (add-hook 'lsp-on-idle-hook 'lsp--modeline-check-code-actions nil t)
+    (add-hook 'lsp-on-idle-hook 'lsp-modeline--check-code-actions nil t)
     (add-hook 'lsp-configure-hook #'lsp-modeline--enable-code-actions nil t)
     (add-hook 'lsp-unconfigure-hook #'lsp-modeline--disable-code-actions nil t))
    (t
-    (remove-hook 'lsp-on-idle-hook 'lsp--modeline-check-code-actions t)
+    (remove-hook 'lsp-on-idle-hook 'lsp-modeline--check-code-actions t)
     (remove-hook 'lsp-configure-hook #'lsp-modeline--enable-code-actions t)
     (remove-hook 'lsp-unconfigure-hook #'lsp-modeline--disable-code-actions t)
-    (setq global-mode-string (remove '(t (:eval lsp--modeline-code-actions-string)) global-mode-string)))))
+    (setq global-mode-string (remove '(t (:eval lsp-modeline--code-actions-string)) global-mode-string)))))
 
 (provide 'lsp-modeline)
 ;;; lsp-modeline.el ends here
