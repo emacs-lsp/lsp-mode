@@ -1210,13 +1210,7 @@ FORMAT and ARGS i the same as for `message'."
 
 (defalias 'lsp-ht 'ht)
 
-;; `file-local-name' was added in Emacs 26.1.
-(defalias 'lsp-file-local-name
-  (if (fboundp 'file-local-name)
-      'file-local-name
-    (lambda (file)
-      "Return the local name component of FILE."
-      (or (file-remote-p file 'localname) file))))
+(defalias 'lsp-file-local-name 'file-local-name)
 
 (defun lsp-f-canonical (file-name)
   "Return the canonical, without trailing slash FILE-NAME."
@@ -1959,25 +1953,23 @@ WORKSPACE is the workspace that contains the diagnostics."
                                                         :end (&Position :line end-line))) it)
                             ((start . end) (lsp--range-to-region range)))
                       (when (= start end)
-                        (if-let ((region (and (fboundp 'flymake-diag-region)
-                                              (flymake-diag-region (current-buffer)
-                                                                   (1+ start-line)
-                                                                   character))))
+                        (if-let ((region (flymake-diag-region (current-buffer)
+                                                              (1+ start-line)
+                                                              character)))
                             (setq start (car region)
                                   end (cdr region))
                           (lsp-save-restriction-and-excursion
                             (goto-char (point-min))
                             (setq start (point-at-bol (1+ start-line))
                                   end (point-at-eol (1+ end-line))))))
-                      (and (fboundp 'flymake-make-diagnostic)
-                           (flymake-make-diagnostic (current-buffer)
-                                                    start
-                                                    end
-                                                    (cl-case severity?
-                                                      (1 :error)
-                                                      (2 :warning)
-                                                      (t :note))
-                                                    message)))))
+                      (flymake-make-diagnostic (current-buffer)
+                                               start
+                                               end
+                                               (cl-case severity?
+                                                 (1 :error)
+                                                 (2 :warning)
+                                                 (t :note))
+                                               message))))
            ;; This :region keyword forces flymake to delete old diagnostics in
            ;; case the buffer hasn't changed since the last call to the report
            ;; function. See https://github.com/joaotavora/eglot/issues/159
@@ -3771,8 +3763,7 @@ it has to calculate identation based on SRC block position."
   (unless (seq-empty-p edits)
     (atomic-change-group
       (run-hooks 'lsp-before-apply-edits-hook)
-      (let* ((change-group (when (functionp 'undo-amalgamate-change-group)
-                             (prepare-change-group)))
+      (let* ((change-group (prepare-change-group))
              (howmany (length edits))
              (message (format "Applying %s edits to `%s' ..." howmany (current-buffer)))
              (_ (lsp--info message))
@@ -5906,12 +5897,11 @@ perform the request synchronously."
                        (read-string (format "Rename %s to: " symbol) placeholder nil symbol))))
   (unless newname
     (user-error "A rename is not valid at this position"))
-  (let ((edits (lsp-request "textDocument/rename"
-                            `(:textDocument ,(lsp--text-document-identifier)
-                                            :position ,(lsp--cur-position)
-                                            :newName ,newname))))
-    (when edits
-      (lsp--apply-workspace-edit edits))))
+  (when-let ((edits (lsp-request "textDocument/rename"
+                                 `(:textDocument ,(lsp--text-document-identifier)
+                                                 :position ,(lsp--cur-position)
+                                                 :newName ,newname))))
+    (lsp--apply-workspace-edit edits)))
 
 (defun lsp-show-xrefs (xrefs display-action references?)
   (unless (region-active-p) (push-mark nil t))
