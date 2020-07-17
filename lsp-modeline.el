@@ -232,6 +232,16 @@ The `:global' workspace is global one.")
                          (plist-put lsp-modeline--diagnostics-wks->strings :global ml))
                    ml)))))))
 
+(defun lsp-modeline--enable-diagnostics ()
+  "Enable diagnostics on modeline mode."
+  (when (and lsp-modeline-diagnostics-enable
+             (lsp-feature? "textDocument/publishDiagnostics"))
+    (lsp-modeline-diagnostics-mode 1)))
+
+(defun lsp-modeline--disable-diagnostics ()
+  "Disable diagnostics on modeline mode."
+  (lsp-modeline-diagnostics-mode -1))
+
 ;;;###autoload
 (define-obsolete-function-alias 'lsp-diagnostics-modeline-mode
   'lsp-modeline-diagnostics-mode "lsp-mode 7.0.1")
@@ -243,12 +253,16 @@ The `:global' workspace is global one.")
   :global nil
   :lighter ""
   (cond
-    (lsp-modeline-diagnostics-mode
-     (add-to-list 'global-mode-string '(t (:eval (lsp-modeline--diagnostics-update-modeline))))
-     (add-hook 'lsp-diagnostics-updated-hook 'lsp-modeline--diagnostics-reset-modeline-cache))
-    (t
-     (remove-hook 'lsp-diagnostics-updated-hook 'lsp-modeline--diagnostics-reset-modeline-cache)
-     (setq global-mode-string (remove '(t (:eval (lsp-modeline--diagnostics-update-modeline))) global-mode-string)))))
+   (lsp-modeline-diagnostics-mode
+    (add-hook 'lsp-configure-hook #'lsp-modeline--enable-diagnostics nil t)
+    (add-hook 'lsp-unconfigure-hook #'lsp-modeline--disable-diagnostics nil t)
+    (add-to-list 'global-mode-string '(t (:eval (lsp-modeline--diagnostics-update-modeline))))
+    (add-hook 'lsp-diagnostics-updated-hook 'lsp-modeline--diagnostics-reset-modeline-cache))
+   (t
+    (remove-hook 'lsp-configure-hook #'lsp-modeline--enable-diagnostics t)
+    (remove-hook 'lsp-unconfigure-hook #'lsp-modeline--disable-diagnostics t)
+    (remove-hook 'lsp-diagnostics-updated-hook 'lsp-modeline--diagnostics-reset-modeline-cache)
+    (setq global-mode-string (remove '(t (:eval (lsp-modeline--diagnostics-update-modeline))) global-mode-string)))))
 
 (provide 'lsp-modeline)
 ;;; lsp-modeline.el ends here

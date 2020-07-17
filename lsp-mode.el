@@ -655,7 +655,12 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :group 'lsp-mode)
 
 (defcustom lsp-modeline-code-actions-enable t
-  "Wheter to show code actions on modeline."
+  "Whether to show code actions on modeline."
+  :type 'boolean
+  :group 'lsp-mode)
+
+(defcustom lsp-modeline-diagnostics-enable t
+  "Whether to show diagnostics on modeline."
   :type 'boolean
   :group 'lsp-mode)
 
@@ -2569,6 +2574,7 @@ BINDINGS is a list of (key def cond)."
       "Th" lsp-toggle-symbol-highlight (lsp-feature? "textDocument/documentHighlight")
       "Tb" lsp-headerline-breadcrumb-mode (lsp-feature? "textDocument/documentSymbol")
       "Ta" lsp-modeline-code-actions-mode (lsp-feature? "textDocument/codeAction")
+      "TD" lsp-modeline-diagnostics-mode (lsp-feature? "textDocument/publishDiagnostics")
       "TS" lsp-ui-sideline-mode (featurep 'lsp-ui-sideline)
       "Td" lsp-ui-doc-mode (featurep 'lsp-ui-doc)
       "Ts" lsp-toggle-signature-auto-activate (lsp-feature? "textDocument/signatureHelp")
@@ -2755,9 +2761,11 @@ active `major-mode', or for all major modes when ALL-MODES is t."
       ["Add" lsp-workspace-folders-add]
       ["Remove" lsp-workspace-folders-remove]
       ["Open" lsp-workspace-folders-open])
-     ["Toggle Lenses" lsp-lens-mode]
-     ["Toggle headerline breadcrumb" lsp-headerline-breadcrumb-mode]
-     ["Toggle modeline code actions" lsp-modeline-code-actions-mode]))
+     ("Toggle features"
+      ["Lenses" lsp-lens-mode]
+      ["Headerline breadcrumb" lsp-headerline-breadcrumb-mode]
+      ["Modeline code actions" lsp-modeline-code-actions-mode]
+      ["Modeline diagnostics" lsp-modeline-diagnostics-mode])))
   "Menu for lsp-mode.")
 
 (defun lsp-mode-line ()
@@ -7083,6 +7091,8 @@ returns the command to execute."
     (add-hook 'lsp-configure-hook 'lsp-headerline-breadcrumb-mode))
   (when lsp-modeline-code-actions-enable
     (add-hook 'lsp-configure-hook 'lsp-modeline-code-actions-mode))
+  (when lsp-modeline-diagnostics-enable
+    (add-hook 'lsp-configure-hook 'lsp-modeline-diagnostics-mode))
 
   (cond
    ((or
