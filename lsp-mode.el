@@ -4200,6 +4200,14 @@ The method uses `replace-buffer-contents'."
                                     beg (+ beg (length new-text))
                                     length)))))))))
 
+(defun lsp--indent-snippets? ()
+  "Enable indenting of snippets for everything but `org-mode'.
+
+Indending snippets is extremely slow in `org-mode' buffers since
+it has to calculate identation based on SRC block position."
+  (unless (derived-mode-p 'org-mode)
+    'auto))
+
 (defun lsp--apply-text-edits (edits)
   "Apply the edits described in the TextEdit[] object."
   (unless (seq-empty-p edits)
@@ -4230,7 +4238,7 @@ The method uses `replace-buffer-contents'."
                            (-when-let ((&SnippetTextEdit :range (&RangeToPoint :start)
                                                          :insert-text-format? :new-text) edit)
                              (when (eq insert-text-format? lsp/insert-text-format-snippet)
-                               (let (yas-indent-line)
+                               (let ((yas-indent-line (lsp--indent-snippets?)))
                                  (yas-expand-snippet (lsp--to-yasnippet-snippet new-text)
                                                      start (+ start (length new-text))))))))))
           (when (fboundp 'undo-amalgamate-change-group)
@@ -4985,42 +4993,42 @@ Also, additional data to attached to each candidate can be passed via PLIST."
 CANDIDATE is the selected completion item.
 Others: TRIGGER-CHARS"
   (unwind-protect
-       (-let* (((&plist 'lsp-completion-item item
-                        'lsp-completion-start-point start-point
-                        'lsp-completion-markers markers
-                        'lsp-completion-prefix prefix)
-                (text-properties-at 0 candidate))
-               ((&CompletionItem :label :insert-text? :text-edit? :insert-text-format? :additional-text-edits?)
-                item))
-         (cond
-           (text-edit?
-            (apply #'delete-region markers)
-            (insert prefix)
-            (lsp--apply-text-edit text-edit?))
-           ((or insert-text? label)
-            (apply #'delete-region markers)
-            (insert prefix)
-            (delete-region start-point (point))
-            (insert (or insert-text? label))))
+      (-let* (((&plist 'lsp-completion-item item
+                       'lsp-completion-start-point start-point
+                       'lsp-completion-markers markers
+                       'lsp-completion-prefix prefix)
+               (text-properties-at 0 candidate))
+              ((&CompletionItem :label :insert-text? :text-edit? :insert-text-format? :additional-text-edits?)
+               item))
+        (cond
+         (text-edit?
+          (apply #'delete-region markers)
+          (insert prefix)
+          (lsp--apply-text-edit text-edit?))
+         ((or insert-text? label)
+          (apply #'delete-region markers)
+          (insert prefix)
+          (delete-region start-point (point))
+          (insert (or insert-text? label))))
 
-         (when (eq insert-text-format? 2)
-           (let (yas-indent-line)
-             (yas-expand-snippet
-              (lsp--to-yasnippet-snippet (buffer-substring start-point (point)))
-              start-point
-              (point))))
+        (when (eq insert-text-format? 2)
+          (let ((yas-indent-line (lsp--indent-snippets?)))
+            (yas-expand-snippet
+             (lsp--to-yasnippet-snippet (buffer-substring start-point (point)))
+             start-point
+             (point))))
 
-         (when (and lsp-completion-enable-additional-text-edit additional-text-edits?)
-           (lsp--apply-text-edits additional-text-edits?))
+        (when (and lsp-completion-enable-additional-text-edit additional-text-edits?)
+          (lsp--apply-text-edits additional-text-edits?))
 
-         (when (and lsp-signature-auto-activate
-                    (lsp-feature? "textDocument/signatureHelp"))
-           (lsp-signature-activate))
+        (when (and lsp-signature-auto-activate
+                   (lsp-feature? "textDocument/signatureHelp"))
+          (lsp-signature-activate))
 
-         (setq-local lsp-inhibit-lsp-hooks nil)
+        (setq-local lsp-inhibit-lsp-hooks nil)
 
-         (when (lsp--looking-back-trigger-characterp trigger-chars)
-           (setq this-command 'self-insert-command)))
+        (when (lsp--looking-back-trigger-characterp trigger-chars)
+          (setq this-command 'self-insert-command)))
     (lsp--capf-clear-cache)))
 
 (defun lsp--to-yasnippet-snippet (text)
