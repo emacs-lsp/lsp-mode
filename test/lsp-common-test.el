@@ -158,38 +158,4 @@
     (should (lsp-f-ancestor-of? "test\\tmp" "test/tmp/a"))
     (should-not (lsp-f-ancestor-of? "test\\tmp" "test\\tmp-a"))))
 
-(defun lsp--json-string-equal? (str1 str2)
-  "Roughly compare json string STR1 and STR2."
-  (equal (sort (split-string str1 "[:\f\t\n\r\v{},]+") #'string-lessp)
-         (sort (split-string str2 "[:\f\t\n\r\v{},]+") #'string-lessp)))
-
-(ert-deftest lsp--merge-results ()
-  (should (lsp--json-string-equal?
-           (json-encode (lsp--merge-results
-                         `(,(lsp-make-completion-item
-                             :label "1"
-                             :documentation? "bcd"
-                             :detail? "b"
-                             :additional-text-edits?
-                             (lsp-make-text-edit :new-text "a"
-                                                 :range (lsp-make-range :start 10 :end 11)))
-                            ,(lsp-make-completion-item
-                              :label "1"
-                              :documentation? (lsp-make-markup-content :kind lsp/markup-kind-markdown
-                                                                       :value "xyz")
-                              :detail? "cd"
-                              :additional-text-edits?
-                              (lsp-make-text-edit :new-text "b"
-                                                  :range (lsp-make-range :start 13 :end 15)))
-                            ,(lsp-make-completion-item
-                              :label "1"))
-                         "completionItem/resolve"))
-           "{\"additionalTextEdits\":[{\"newText\":\"a\",\"range\":{\"start\":10,\"end\":11}},{\"newText\":\"b\",\"range\":{\"start\":13,\"end\":15}}],\"detail\":\"b cd\",\"documentation\":{\"kind\":\"markdown\",\"value\":\"bcd\\nxyz\"},\"label\":\"1\"}"))
-
-  (should (lsp--json-string-equal?
-           (lsp--json-serialize (lsp--merge-results
-                                 `(,(lsp-make-completion-item :label "1")
-                                    ,(lsp-make-completion-item :label "1"))
-                                 "completionItem/resolve"))
-           "{\"label\":\"1\"}")))
 ;;; lsp-common-test.el ends here
