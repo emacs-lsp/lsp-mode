@@ -475,6 +475,7 @@ See `-let' for a description of the destructuring mechanism."
  (TextDocumentItem (:languageId :text :uri :version) nil)
  (TextDocumentSyncOptions nil (:change :openClose :save :willSave :willSaveWaitUntil))
  (TextEdit (:newText :range) nil)
+ (SnippetTextEdit (:newText :range) (:insertTextFormat))
  (TypeDefinitionCapabilities nil (:dynamicRegistration :linkSupport))
  (TypeHierarchyCapabilities nil (:dynamicRegistration))
  (TypeHierarchyItem (:kind :name :range :selectionRange :uri) (:children :data :deprecated :detail :parents))
