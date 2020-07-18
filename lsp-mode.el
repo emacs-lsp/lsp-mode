@@ -6481,9 +6481,10 @@ WORKSPACE is the active workspace."
                       (mapc #'lsp--server-register-capability
                             (lsp:registration-params-registrations params))
                       (mapc (lambda (buf)
-                              (with-current-buffer buf
-                                (lsp-unconfig-buffer)
-                                (lsp-configure-buffer)))
+                              (when (buffer-live-p buf)
+                                (lsp-with-current-buffer buf
+                                  (lsp-unconfig-buffer)
+                                  (lsp-configure-buffer))))
                             buffers)
                       nil)
                      ((equal method "window/showMessageRequest")
