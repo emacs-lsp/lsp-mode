@@ -3486,8 +3486,9 @@ disappearing, unset all the variables related to it."
     (when (process-live-p proc)
       (kill-process proc))
     (mapc (lambda (buf)
-            (with-current-buffer buf
-              (lsp-managed-mode -1)))
+            (when (lsp-buffer-live-p buf)
+              (lsp-with-current-buffer buf
+                (lsp-managed-mode -1))))
           buffers)))
 
 (defun lsp--client-capabilities (&optional custom-capabilities)
@@ -3865,7 +3866,15 @@ in that particular folder."
       (when (bound-and-true-p company-mode)
         (lsp--setup-company))
 
-      (lsp-configure-buffer))
+      (lsp-configure-buffer)
+      (let ((buffer (lsp-current-buffer)))
+        (run-with-idle-timer
+         0.0 nil
+         (lambda ()
+           (when (lsp-buffer-live-p buffer)
+             (lsp-with-current-buffer buffer
+               (lsp--on-change-debounce buffer)
+               (lsp--on-idle buffer)))))))
      (t
       (lsp-unconfig-buffer)
       (remove-function (local 'eldoc-documentation-function) #'lsp-eldoc-function)
@@ -3941,16 +3950,7 @@ in that particular folder."
       (lsp--semantic-tokens-initialize-buffer
        (lsp-feature? "textDocument/semanticTokensRangeProvider")))
 
-    (run-hooks 'lsp-configure-hook))
-
-  (let ((buffer (current-buffer)))
-    (run-with-idle-timer
-     0.0 nil
-     (lambda ()
-       (when (buffer-live-p buffer)
-         (with-current-buffer buffer
-           (lsp--on-change-debounce buffer)
-           (lsp--on-idle buffer)))))))
+    (run-hooks 'lsp-configure-hook)))
 
 (defun lsp-unconfig-buffer ()
   (run-hooks 'lsp-unconfigure-hook)
@@ -6481,7 +6481,7 @@ WORKSPACE is the active workspace."
                       (mapc #'lsp--server-register-capability
                             (lsp:registration-params-registrations params))
                       (mapc (lambda (buf)
-                              (when (buffer-live-p buf)
+                              (when (lsp-buffer-live-p buf)
                                 (lsp-with-current-buffer buf
                                   (lsp-unconfig-buffer)
                                   (lsp-configure-buffer))))
@@ -6494,9 +6494,10 @@ WORKSPACE is the active workspace."
                       (mapc #'lsp--server-unregister-capability
                             (lsp:unregistration-params-unregisterations params))
                       (mapc (lambda (buf)
-                              (with-current-buffer buf
-                                (lsp-unconfig-buffer)
-                                (lsp-configure-buffer)))
+                              (when (lsp-buffer-live-p buf)
+                                (lsp-with-current-buffer buf
+                                  (lsp-unconfig-buffer)
+                                  (lsp-configure-buffer))))
                             buffers)
                       nil)
                      ((equal method "workspace/applyEdit")
