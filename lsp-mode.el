@@ -4226,7 +4226,7 @@ The method uses `replace-buffer-contents'."
                  (mapc (lambda (edit)
                          (progress-reporter-update reporter (cl-incf done))
                          (funcall apply-edit edit)
-                         (when (lsp-snippet-text-edit? edit)
+                         (when (lsp:snippet-text-edit-insert-text-format? edit)
                            (-when-let ((&SnippetTextEdit :range (&RangeToPoint :start)
                                                          :insert-text-format? :new-text) edit)
                              (when (eq insert-text-format? lsp/insert-text-format-snippet)
