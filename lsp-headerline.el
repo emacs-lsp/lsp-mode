@@ -89,15 +89,14 @@ for caching purposes.")
 
 (defun lsp-headerline--filename-with-icon (file-path)
   "Return the filename from FILE-PATH with the extension related icon."
-  (let ((filename (f-filename file-path))
-        (file-ext (f-ext file-path)))
-    (if file-ext
-        (when (require 'lsp-treemacs nil t)
-          (if-let (icon (lsp-treemacs-get-icon file-ext))
-              (format "%s %s"
-                      (lsp-headerline--fix-image-background icon)
-                      filename)
-            filename))
+  (let ((filename (f-filename file-path)))
+    (-if-let* ((file-ext (f-ext file-path))
+               (icon (and file-ext
+                        (require 'lsp-treemacs nil t)
+                        (lsp-treemacs-get-icon file-ext))))
+        (format "%s %s"
+                (lsp-headerline--fix-image-background icon)
+                filename)
       filename)))
 
 (defun lsp-headerline--arrow-icon ()
