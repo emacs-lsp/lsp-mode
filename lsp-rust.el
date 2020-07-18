@@ -569,7 +569,7 @@ The command should include `--message=format=json` or similar option."
                      (lsp-rust-analyzer-inlay-hints-mode)))
   :ignore-messages nil
   :server-id 'rust-analyzer
-  :custom-capabilities '((experimental . ((snippetTextEdit . ,lsp-enable-snippet ))))))
+  :custom-capabilities `((experimental . ((snippetTextEdit . ,lsp-enable-snippet ))))))
 
 (defun lsp-rust-switch-server (&optional lsp-server)
   "Switch priorities of lsp servers, unless LSP-SERVER is already active."
