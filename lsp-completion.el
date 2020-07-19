@@ -427,7 +427,8 @@ Others: TRIGGER-CHARS"
                        'lsp-completion-markers markers
                        'lsp-completion-prefix prefix)
                (text-properties-at 0 candidate))
-              ((&CompletionItem :label :insert-text? :text-edit? :insert-text-format? :additional-text-edits?)
+              ((&CompletionItem :label :insert-text? :text-edit? :insert-text-format?
+                                :additional-text-edits? :keep-whitespace?)
                item))
         (cond
          (text-edit?
@@ -440,12 +441,12 @@ Others: TRIGGER-CHARS"
           (delete-region start-point (point))
           (insert (or insert-text? label))))
 
-        (when (eq insert-text-format? 2)
-          (let ((yas-indent-line (lsp--indent-snippets?)))
-            (yas-expand-snippet
-             (lsp--to-yasnippet-snippet (buffer-substring start-point (point)))
-             start-point
-             (point))))
+        (when (equal insert-text-format? lsp/insert-text-format-snippet)
+          (lsp--expand-snippet (buffer-substring start-point (point))
+                               start-point
+                               (point)
+                               nil
+                               keep-whitespace?))
 
         (when lsp-completion-enable-additional-text-edit
           (if (or (get-text-property 0 'lsp-completion-resolved candidate)

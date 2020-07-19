@@ -404,7 +404,7 @@ See `-let' for a description of the destructuring mechanism."
  (Command (:title :command) (:arguments))
  (CompletionCapabilities nil (:completionItem :completionItemKind :contextSupport :dynamicRegistration))
  (CompletionContext (:triggerKind) (:triggerCharacter))
- (CompletionItem (:label) (:additionalTextEdits :command :commitCharacters :data :deprecated :detail :documentation :filterText :insertText :insertTextFormat :kind :preselect :sortText :tags :textEdit :score))
+ (CompletionItem (:label) (:additionalTextEdits :command :commitCharacters :data :deprecated :detail :documentation :filterText :insertText :insertTextFormat :kind :preselect :sortText :tags :textEdit :score :keepWhitespace))
  (CompletionItemCapabilities nil (:commitCharactersSupport :deprecatedSupport :documentationFormat :preselectSupport :snippetSupport :tagSupport))
  (CompletionItemKindCapabilities nil (:valueSet))
  (CompletionItemTagSupportCapabilities (:valueSet) nil)
