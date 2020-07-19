@@ -34,7 +34,7 @@
   :link '(url-link "https://github.com/rust-lang/rls")
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-rust-server 'rls
+(defcustom lsp-rust-server 'rust-analyzer
   "Choose LSP server."
   :type '(choice (const :tag "rls" rls)
                  (const :tag "rust-analyzer" rust-analyzer))
