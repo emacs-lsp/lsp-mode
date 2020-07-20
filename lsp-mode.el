@@ -1350,6 +1350,14 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
                                       def inherit-input-method)))
     (cdr (assoc completion col))))
 
+(defmacro lsp-with-current-buffer (buffer-id &rest body)
+  (declare (indent 1) (debug t))
+  `(if-let (wcb (plist-get ,buffer-id :with-current-buffer))
+       (with-lsp-workspaces (plist-get ,buffer-id :workspaces)
+         (funcall wcb (lambda () ,@body)))
+     (with-current-buffer ,buffer-id
+       ,@body)))
+
 (defmacro lsp--while-no-input (&rest body)
   "Run BODY and return value while there's no input.
 If it's interrupt by input, return nil.
@@ -4066,14 +4074,6 @@ in that particular folder."
        (with-current-buffer (-> uri lsp--uri-to-path find-file-noselect)
          (lsp--apply-text-edits text-edits)))
      changes?)))
-
-(defmacro lsp-with-current-buffer (buffer-id &rest body)
-  (declare (indent 1) (debug t))
-  `(if-let (wcb (plist-get ,buffer-id :with-current-buffer))
-       (with-lsp-workspaces (plist-get ,buffer-id :workspaces)
-         (funcall wcb (lambda () ,@body)))
-     (with-current-buffer ,buffer-id
-       ,@body)))
 
 (defmacro lsp-with-filename (file &rest body)
   "Execute BODY with FILE as a context.
