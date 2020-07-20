@@ -92,8 +92,8 @@ for caching purposes.")
   (let ((filename (f-filename file-path)))
     (-if-let* ((file-ext (f-ext file-path))
                (icon (and file-ext
-                        (require 'lsp-treemacs nil t)
-                        (lsp-treemacs-get-icon file-ext))))
+                          (require 'lsp-treemacs nil t)
+                          (lsp-treemacs-get-icon file-ext))))
         (format "%s %s"
                 (lsp-headerline--fix-image-background icon)
                 filename)
@@ -130,21 +130,45 @@ narrow to the outer symbol."
   "Narrow to breadcrumb symbol range."
   (narrow-to-region start end))
 
-(lsp-defun lsp-headerline--with-action ((symbol &as &DocumentSymbol :name) symbol-string)
-  "Build action for SYMBOL and SYMBOL-STRING."
-  (propertize symbol-string
+(defun lsp-headerline--with-action (local-map help-echo-string display-string)
+  "Assign LOCAL-MAP and HELP-ECHO-STRING to the region around the
+DISPLAY-STRING."
+  (propertize display-string
               'mouse-face 'header-line-highlight
-              'help-echo (format "mouse-1: go to '%s' symbol\nmouse-2: narrow to '%s' range" name name)
-              'local-map (let ((map (make-sparse-keymap)))
-                           (define-key map [header-line mouse-1]
-                             (lambda ()
-                               (interactive)
-                               (lsp-headerline--go-to-symbol symbol)))
-                           (define-key map [header-line mouse-2]
-                             (lambda ()
-                               (interactive)
-                               (lsp-headerline--narrow-to-symbol symbol)))
-                           map)))
+              'help-echo help-echo-string
+              'local-map local-map))
+
+(defun lsp-headerline--directory-with-action (full-path directory-display-string)
+  "Build action for FULL-PATH and DIRECTORY-DISPLAY-STRING."
+  (lsp-headerline--with-action (let ((map (make-sparse-keymap)))
+                                 (define-key map [header-line mouse-1]
+                                   (lambda ()
+                                     (interactive)
+                                     (dired full-path)))
+                                 (define-key map [header-line mouse-2]
+                                   (lambda ()
+                                     (interactive)
+                                     (dired-other-window full-path)))
+                                 map)
+                               (format "mouse-1: browse '%s' with Dired\nmouse-2: browse '%s' with Dired in other window"
+                                       directory-display-string
+                                       directory-display-string)
+                               directory-display-string))
+
+(lsp-defun lsp-headerline--symbol-with-action ((symbol &as &DocumentSymbol :name) symbol-display-string)
+  "Build action for SYMBOL and SYMBOL-STRING."
+  (lsp-headerline--with-action (let ((map (make-sparse-keymap)))
+                                 (define-key map [header-line mouse-1]
+                                   (lambda ()
+                                     (interactive)
+                                     (lsp-headerline--go-to-symbol symbol)))
+                                 (define-key map [header-line mouse-2]
+                                   (lambda ()
+                                     (interactive)
+                                     (lsp-headerline--narrow-to-symbol symbol)))
+                                 map)
+                               (format "mouse-1: go to '%s' symbol\nmouse-2: narrow to '%s' range" name name)
+                               symbol-display-string))
 
 (defun lsp-headerline--path-up-to-project-root (root-path path)
   "Find recursively the folders until the project ROOT-PATH.
@@ -152,7 +176,9 @@ PATH is the current folder to be checked."
   (let ((current-path path)
         headerline-path-components)
     (while (not (lsp-f-same? root-path current-path))
-      (push (lsp-headerline--filename-with-icon current-path) headerline-path-components)
+      (push (lsp-headerline--directory-with-action current-path
+                                                   (f-filename current-path))
+            headerline-path-components)
       (setq current-path (lsp-f-parent current-path)))
     headerline-path-components))
 
@@ -165,7 +191,9 @@ PATH is the current folder to be checked."
               " ")
             (lsp-headerline--arrow-icon)
             (-if-let (root (lsp-workspace-root))
-                (propertize (f-filename root)
+                (propertize (lsp-headerline--directory-with-action
+                             root
+                             (f-filename root))
                             'font-lock-face 'lsp-headerline-breadcrumb-project-prefix-face)
               (propertize "<unknown>"
                           'font-lock-face 'lsp-headerline-breadcrumb-unknown-project-prefix-face)))))
@@ -236,7 +264,7 @@ PATH is the current folder to be checked."
                      symbol2-name))))
             (format "%s %s"
                     (lsp-headerline--arrow-icon)
-                    (lsp-headerline--with-action symbol-to-append full-symbol-2))))
+                    (lsp-headerline--symbol-with-action symbol-to-append full-symbol-2))))
         enumerated-symbols-hierarchy
         " ")))))
 
