@@ -948,11 +948,11 @@ directory")
     ("textDocument/rename" :capability :renameProvider)
     ("textDocument/selectionRange" :capability :selectionRangeProvider)
     ("textDocument/semanticTokens" :capability :semanticTokensProvider)
-    ("textDocument/semanticTokensLegacy"
+    ("textDocument/semanticTokensFull"
      :check-command (lambda (workspace)
                       (with-lsp-workspace workspace
                         (lsp-get (lsp--capability :semanticTokensProvider)
-                                 :rangeProvider))))
+                                 :full))))
     ("textDocument/semanticTokensRangeProvider"
      :check-command (lambda (workspace)
                       (with-lsp-workspace workspace
@@ -6197,9 +6197,9 @@ A reference is highlighted only if it is visible in a window."
     (lsp-request-async
      (cond
       (region "textDocument/semanticTokens/range")
-      ((lsp-feature? "textDocument/semanticTokensLegacy")
-       "textDocument/semanticTokens")
-      (t "textDocument/semanticTokens/full"))
+      ((lsp-feature? "textDocument/semanticTokensFull")
+       "textDocument/semanticTokens/full")
+      (t "textDocument/semanticTokens"))
      `(:textDocument ,(lsp--text-document-identifier)
        ,@(if region (list :range (lsp--region-to-range (car region) (cdr region))) '()))
      (lambda (response)
