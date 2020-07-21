@@ -24,11 +24,13 @@
 
 ;;; Code:
 
-(require 'ert)
-(require 'lsp-mode)
-(require 'f)
 (require 'deferred)
 (require 'dash)
+(require 'ert)
+(require 'f)
+
+(require 'lsp-mode)
+(require 'lsp-modeline)
 
 (defconst lsp-test-location (file-name-directory (or load-file-name buffer-file-name)))
 

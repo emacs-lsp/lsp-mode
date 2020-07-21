@@ -56,9 +56,9 @@
   "Build the icon for modeline code actions."
   (if (require 'all-the-icons nil t)
       (all-the-icons-octicon "light-bulb"
-                             :face lsp-modeline-code-actions-face
+                             :face 'lsp-modeline-code-actions-face
                              :v-adjust -0.0575)
-    (propertize "💡" 'face lsp-modeline-code-actions-face)))
+    (propertize "💡" 'face 'lsp-modeline-code-actions-face)))
 
 (defun lsp-modeline--code-action->string (action)
   "Convert code ACTION to friendly string."
@@ -75,7 +75,7 @@
                                                (->> actions
                                                     lsp-seq-first
                                                     lsp-modeline--code-action->string))
-                                           'face lsp-modeline-code-actions-face))
+                                           'face 'lsp-modeline-code-actions-face))
           (single-action? (= (length actions) 1))
           (keybinding (-some->> #'lsp-execute-code-action
                         where-is-internal
@@ -88,7 +88,7 @@
                     (format " %s %s %s " icon first-action-string
                             (propertize (format "(%d more)" (1- (seq-length actions)))
                                         'display `((height 0.9))
-                                        'face lsp-modeline-code-actions-face)))))
+                                        'face 'lsp-modeline-code-actions-face)))))
     (propertize string
                 'help-echo (concat (format "Apply code actions %s\nmouse-1: " keybinding)
                                    (if single-action?
