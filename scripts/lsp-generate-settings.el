@@ -22,6 +22,9 @@
 
 ;; Functions for generating settings from package.json file
 
+;; Usage
+;; (lsp-generate-settings "/home/kyoncho/Sources/vscode-java/package.json")
+
 ;;; Code:
 
 (require 'cl-lib)
@@ -58,20 +61,21 @@ FILE-NAME is path to package.json vscode manifest."
                           cl-rest))
          props-to-register)
     (append
-     (-map (-lambda ((prop-name . (&alist 'type 'default 'enum 'description)))
-             (let ((type (lsp--convert-type type enum))
-                   (prop-symbol (intern (format "lsp-%s" (s-dashed-words (symbol-name prop-name)))) ))
-               (push (append (list (symbol-name prop-name) prop-symbol) (when (equal type 'boolean) (list t)))
-                     props-to-register)
-               `(defcustom ,prop-symbol
-                  ,(cond
-                    ((equal default :json-false) nil)
-                    ((and default (listp default)) (apply 'vector default))
-                    (t default))
-                  ,description
-                  :type ',type))
-             )
-           properties)
+     (-keep (-lambda ((prop-name . (&alist 'type 'default 'enum 'description 'markdownDescription)))
+              (let ((type (lsp--convert-type type enum))
+                    (prop-symbol (intern (format "lsp-%s" (s-dashed-words (symbol-name prop-name)))) ))
+                (unless (boundp prop-symbol)
+                  (push (append (list (symbol-name prop-name) prop-symbol) (when (equal type 'boolean) (list t)))
+                        props-to-register)
+                  `(defcustom ,prop-symbol
+                     ,(cond
+                       ((equal default :json-false) nil)
+                       ((and default (listp default)) (apply 'vector default))
+                       (t default))
+                     ,(or description markdownDescription)
+                     :type ',type)))
+              )
+            properties)
      `((lsp-register-custom-settings ',props-to-register)))))
 
 (provide 'lsp-generate-settings)
