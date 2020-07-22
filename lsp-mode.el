@@ -4160,6 +4160,7 @@ interface TextDocumentEdit {
   (pcase (lsp:edit-kind edit)
     ("create" (-let* (((&CreateFile :uri :options?) edit)
                       (file-name (lsp--uri-to-path uri)))
+                (mkdir (f-dirname file-name) t)
                 (f-touch file-name)
                 (when (lsp:create-file-options-overwrite? options?)
                   (f-write-text "" nil file-name))))
@@ -4173,6 +4174,7 @@ interface TextDocumentEdit {
                   (lsp-with-current-buffer buf
                     (save-buffer)
                     (lsp--text-document-did-close)))
+                (mkdir (f-dirname new-file-name) t)
                 (rename-file old-file-name new-file-name overwrite?)
                 (when buf
                   (lsp-with-current-buffer buf
