@@ -802,7 +802,7 @@ Code's JavaScript and TypeScript support."
    ("vetur.dev.vlsPath" lsp-vetur-dev-vls-path)
    ("vetur.dev.vlsPort" lsp-vetur-dev-vls-port)
    ("vetur.dev.logLevel" lsp-vetur-dev-log-level)
-   ("vetur.experimental.templateInterpolationService" lsp-vetur-experimental-template-interpolation-service nil)
+   ("vetur.experimental.templateInterpolationService" lsp-vetur-experimental-template-interpolation-service t)
    ("emmet.showExpandedAbbreviation" lsp-vetur-emmet)))
 
 (define-obsolete-variable-alias
