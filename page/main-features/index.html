@@ -443,8 +443,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#checking-project-errors" class="md-nav__link">
-    Checking project errors
+  <a href="#project-errors-on-modeline" class="md-nav__link">
+    Project errors on modeline
   </a>
   
 </li>
@@ -1750,8 +1750,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#checking-project-errors" class="md-nav__link">
-    Checking project errors
+  <a href="#project-errors-on-modeline" class="md-nav__link">
+    Project errors on modeline
   </a>
   
 </li>
@@ -1836,13 +1836,12 @@
 <h2 id="code-lens">Code lens<a class="headerlink" href="#code-lens" title="Permanent link">#</a></h2>
 <p>In case the LSP server supports code lens:</p>
 <p><img alt="" src="../../examples/code-lens.png" /></p>
-<h2 id="checking-project-errors">Checking project errors<a class="headerlink" href="#checking-project-errors" title="Permanent link">#</a></h2>
-<p>To see all error statistics in the modeline you can enable <code>lsp-diagnostics-modeline-mode</code>. This is especially useful for languages that compilation might be broken due to errors in other files(e.g. Java/Haskell).</p>
+<h2 id="project-errors-on-modeline">Project errors on modeline<a class="headerlink" href="#project-errors-on-modeline" title="Permanent link">#</a></h2>
+<p>To see all error statistics in the modeline you can enable <code>lsp-modeline-diagnostics-mode</code>. This is especially useful for languages that compilation might be broken due to errors in other files(e.g. Java/Haskell).</p>
 <p><img alt="" src="../../examples/modeline-diagnostics.png" /></p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-mode</span>
   <span class="c1">;; :project/:workspace/:file</span>
-  <span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-diagnostics-modeline-scope</span> <span class="nb">:project</span><span class="p">)</span>
-  <span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;lsp-managed-mode-hook</span> <span class="ss">&#39;lsp-diagnostics-modeline-mode</span><span class="p">))</span>
+  <span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-modeline-diagnostics-scope</span> <span class="nb">:project</span><span class="p">))</span>
 </code></pre></div>
 
 <p><em>Tip:</em> To find out the global errors you might use <code>lsp-treemacs-errors-list</code>.</p>
