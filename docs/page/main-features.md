@@ -31,17 +31,16 @@ In case the LSP server supports code lens:
 
 ![](../examples/code-lens.png)
 
-## Checking project errors
+## Project errors on modeline
 
-To see all error statistics in the modeline you can enable `lsp-diagnostics-modeline-mode`. This is especially useful for languages that compilation might be broken due to errors in other files(e.g. Java/Haskell).
+To see all error statistics in the modeline you can enable `lsp-modeline-diagnostics-mode`. This is especially useful for languages that compilation might be broken due to errors in other files(e.g. Java/Haskell).
 
 ![](../examples/modeline-diagnostics.png)
 
 ```elisp
 (with-eval-after-load 'lsp-mode
   ;; :project/:workspace/:file
-  (setq lsp-diagnostics-modeline-scope :project)
-  (add-hook 'lsp-managed-mode-hook 'lsp-diagnostics-modeline-mode))
+  (setq lsp-modeline-diagnostics-scope :project))
 ```
 
 _Tip:_ To find out the global errors you might use `lsp-treemacs-errors-list`.
