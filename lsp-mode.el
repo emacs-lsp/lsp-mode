@@ -4,7 +4,7 @@
 
 ;; Author: Vibhav Pant, Fangrui Song, Ivan Yonchovski
 ;; Keywords: languages
-;; Package-Requires: ((emacs "25.1") (dash "2.14.1") (dash-functional "2.14.1") (f "0.20.0") (ht "2.0") (spinner "1.7.3") (markdown-mode "2.3") (lv "0"))
+;; Package-Requires: ((emacs "26.1") (dash "2.14.1") (dash-functional "2.14.1") (f "0.20.0") (ht "2.0") (spinner "1.7.3") (markdown-mode "2.3") (lv "0"))
 ;; Version: 7.0
 
 ;; URL: https://github.com/emacs-lsp/lsp-mode
@@ -1917,64 +1917,72 @@ WORKSPACE is the workspace that contains the diagnostics."
     (run-hooks 'lsp-diagnostics-updated-hook)
     (lsp--idle-reschedule (current-buffer))))
 
-(with-no-warnings
-  (unless (version< emacs-version "26")
-    (defun lsp--flymake-setup()
-      "Setup flymake."
-      (setq lsp--flymake-report-fn nil)
-      (flymake-mode 1)
-      (add-hook 'flymake-diagnostic-functions 'lsp--flymake-backend nil t)
-      (add-hook 'lsp-after-diagnostics-hook 'lsp--flymake-after-diagnostics nil t))
+
+;; flymake integration
 
-    (defun lsp--flymake-after-diagnostics ()
-      "Handler for `lsp-after-diagnostics-hook'"
-      (cond
-       ((and lsp--flymake-report-fn flymake-mode)
-        (lsp--flymake-update-diagnostics))
-       ((not flymake-mode)
-        (setq lsp--flymake-report-fn nil))))
+(declare-function flymake-mode "ext:flymake")
+(declare-function flymake-make-diagnostic "ext:flymake")
+(declare-function flymake-diag-region "ext:flymake")
 
-    (defun lsp--flymake-backend (report-fn &rest _args)
-      "Flymake backend."
-      (let ((first-run (null lsp--flymake-report-fn)))
-        (setq lsp--flymake-report-fn report-fn)
-        (when first-run
-          (lsp--flymake-update-diagnostics))))
+(defvar flymake-diagnostic-functions )
+(defvar flymake-mode)
 
-    (defun lsp--flymake-update-diagnostics ()
-      "Report new diagnostics to flymake."
-      (funcall lsp--flymake-report-fn
-               (-some->> (lsp-diagnostics t)
-                 (gethash (lsp--fix-path-casing buffer-file-name))
-                 (--map (-let* (((&Diagnostic :message :severity?
-                                              :range (range &as &Range
-                                                            :start (&Position :line start-line :character)
-                                                            :end (&Position :line end-line))) it)
-                                ((start . end) (lsp--range-to-region range)))
-                          (when (= start end)
-                            (if-let ((region (and (fboundp 'flymake-diag-region)
-                                                  (flymake-diag-region (current-buffer)
-                                                                       (1+ start-line)
-                                                                       character))))
-                                (setq start (car region)
-                                      end (cdr region))
-                              (lsp-save-restriction-and-excursion
-                                (goto-char (point-min))
-                                (setq start (point-at-bol (1+ start-line))
-                                      end (point-at-eol (1+ end-line))))))
-                          (and (fboundp 'flymake-make-diagnostic)
-                               (flymake-make-diagnostic (current-buffer)
-                                                        start
-                                                        end
-                                                        (cl-case severity?
-                                                          (1 :error)
-                                                          (2 :warning)
-                                                          (t :note))
-                                                        message)))))
-               ;; This :region keyword forces flymake to delete old diagnostics in
-               ;; case the buffer hasn't changed since the last call to the report
-               ;; function. See https://github.com/joaotavora/eglot/issues/159
-               :region (cons (point-min) (point-max))))))
+(defun lsp--flymake-setup()
+  "Setup flymake."
+  (setq lsp--flymake-report-fn nil)
+  (flymake-mode 1)
+  (add-hook 'flymake-diagnostic-functions 'lsp--flymake-backend nil t)
+  (add-hook 'lsp-after-diagnostics-hook 'lsp--flymake-after-diagnostics nil t))
+
+(defun lsp--flymake-after-diagnostics ()
+  "Handler for `lsp-after-diagnostics-hook'"
+  (cond
+   ((and lsp--flymake-report-fn flymake-mode)
+    (lsp--flymake-update-diagnostics))
+   ((not flymake-mode)
+    (setq lsp--flymake-report-fn nil))))
+
+(defun lsp--flymake-backend (report-fn &rest _args)
+  "Flymake backend."
+  (let ((first-run (null lsp--flymake-report-fn)))
+    (setq lsp--flymake-report-fn report-fn)
+    (when first-run
+      (lsp--flymake-update-diagnostics))))
+
+(defun lsp--flymake-update-diagnostics ()
+  "Report new diagnostics to flymake."
+  (funcall lsp--flymake-report-fn
+           (-some->> (lsp-diagnostics t)
+             (gethash (lsp--fix-path-casing buffer-file-name))
+             (--map (-let* (((&Diagnostic :message :severity?
+                                          :range (range &as &Range
+                                                        :start (&Position :line start-line :character)
+                                                        :end (&Position :line end-line))) it)
+                            ((start . end) (lsp--range-to-region range)))
+                      (when (= start end)
+                        (if-let ((region (and (fboundp 'flymake-diag-region)
+                                              (flymake-diag-region (current-buffer)
+                                                                   (1+ start-line)
+                                                                   character))))
+                            (setq start (car region)
+                                  end (cdr region))
+                          (lsp-save-restriction-and-excursion
+                            (goto-char (point-min))
+                            (setq start (point-at-bol (1+ start-line))
+                                  end (point-at-eol (1+ end-line))))))
+                      (and (fboundp 'flymake-make-diagnostic)
+                           (flymake-make-diagnostic (current-buffer)
+                                                    start
+                                                    end
+                                                    (cl-case severity?
+                                                      (1 :error)
+                                                      (2 :warning)
+                                                      (t :note))
+                                                    message)))))
+           ;; This :region keyword forces flymake to delete old diagnostics in
+           ;; case the buffer hasn't changed since the last call to the report
+           ;; function. See https://github.com/joaotavora/eglot/issues/159
+           :region (cons (point-min) (point-max))))
 
 (defun lsp--ht-get (tbl &rest keys)
   "Get nested KEYS in TBL."
@@ -3746,8 +3754,7 @@ The method uses `replace-buffer-contents'."
                     (length (- end beg)))
                 (run-hook-with-args 'before-change-functions
                                     beg end)
-                (when (fboundp 'replace-buffer-contents)
-                  (with-no-warnings (replace-buffer-contents temp)))
+                (replace-buffer-contents temp)
                 (run-hook-with-args 'after-change-functions
                                     beg (+ beg (length new-text))
                                     length)))))))))
@@ -3772,10 +3779,9 @@ it has to calculate identation based on SRC block position."
              (_ (lsp--info message))
              (reporter (make-progress-reporter message 0 howmany))
              (done 0)
-             (apply-edit (if (and (functionp 'replace-buffer-contents)
-                                  (not lsp--virtual-buffer))
-                             'lsp--apply-text-edit-replace-buffer-contents
-                           'lsp--apply-text-edit)))
+             (apply-edit (if (not lsp--virtual-buffer)
+                             #'lsp--apply-text-edit-replace-buffer-contents
+                           #'lsp--apply-text-edit)))
         (unwind-protect
             (->> edits
                  (mapc (-lambda ((edit &as &TextEdit :new-text))
@@ -3793,8 +3799,7 @@ it has to calculate identation based on SRC block position."
                                (let ((yas-indent-line (lsp--indent-snippets?)))
                                  (yas-expand-snippet (lsp--to-yasnippet-snippet new-text)
                                                      start (+ start (length new-text))))))))))
-          (when (fboundp 'undo-amalgamate-change-group)
-            (with-no-warnings (undo-amalgamate-change-group change-group)))
+          (undo-amalgamate-change-group change-group)
           (progress-reporter-done reporter))))))
 
 (defun lsp--create-apply-text-edits-handlers ()
@@ -6806,9 +6811,8 @@ returns the command to execute."
          (or (eq lsp-diagnostic-package :auto)
              (eq lsp-diagnostic-package :flymake)
              (eq lsp-diagnostic-package t)))
-    (with-no-warnings
-      (require 'flymake)
-      (lsp--flymake-setup)))
+    (require 'flymake)
+    (lsp--flymake-setup))
    ((not (eq lsp-diagnostic-package :none))
     (lsp--warn "Unable to autoconfigure flycheck/flymake. The diagnostics won't be rendered.")))
 
@@ -7740,7 +7744,6 @@ such."
 (defun lsp-disconnect ()
   "Disconnect the buffer from the language server."
   (interactive)
-  (with-no-warnings (when (functionp 'lsp-ui-mode) (lsp-ui-mode -1)))
   (lsp--text-document-did-close t)
   (lsp-managed-mode -1)
   (lsp-mode -1)
