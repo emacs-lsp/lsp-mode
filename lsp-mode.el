@@ -994,8 +994,11 @@ must be used for handling a particular message.")
   "Face used for highlighting symbols being written to."
   :group 'lsp-faces)
 
-(defcustom lsp-lens-auto-enable nil
-  "Auto lenses if server there is server support."
+(define-obsolete-variable-alias 'lsp-lens-auto-enable
+  'lsp-lens-enable  "lsp-mode 7.0.1")
+
+(defcustom lsp-lens-enable nil
+  "Auto enable lenses if server supports."
   :group 'lsp-mode
   :type 'boolean
   :package-version '(lsp-mode . "6.3"))
@@ -6776,7 +6779,7 @@ returns the command to execute."
     (add-hook 'lsp-configure-hook 'lsp-modeline-code-actions-mode))
   (when lsp-modeline-diagnostics-enable
     (add-hook 'lsp-configure-hook 'lsp-modeline-diagnostics-mode))
-  (when lsp-lens-auto-enable
+  (when lsp-lens-enable
     (add-hook 'lsp-configure-hook 'lsp-lens-mode))
 
   (cond

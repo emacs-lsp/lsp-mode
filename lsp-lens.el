@@ -315,7 +315,7 @@ CALLBACK - callback for the lenses."
 
 (defun lsp-lens--enable ()
   "Enable lens mode."
-  (when (and lsp-lens-auto-enable
+  (when (and lsp-lens-enable
              (lsp-feature? "textDocument/codeLens"))
     (lsp-lens-mode 1)))
 
