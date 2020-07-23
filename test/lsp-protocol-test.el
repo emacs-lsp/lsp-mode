@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;;
+;; Tests for lsp-protocol.
 
 ;;; Code:
 
@@ -55,7 +55,15 @@
     (should (lsp-my-position? position))
 
     (-let (((&MyPosition? :line) nil))
-      (should (null line)))))
+      (should (null line)))
+
+    (should (= (-> (lsp-make-my-position :character 1 :line 2)
+                   (lsp:set-my-position-line 100)
+                   (lsp:my-position-line))
+               100))
+    (should (lsp-my-position? (lsp-make-my-position :character nil :line 2 :camel-case nil)))
+
+    (should (lsp-my-position? (lsp-make-my-position :character nil :line 2 :camelCase nil)))))
 
 (provide 'lsp-protocol-test)
 ;;; lsp-protocol-test.el ends here

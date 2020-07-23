@@ -122,8 +122,7 @@
                     'clangd)
                    "void function(int n);"))
   (should-error (lsp-clients-extract-signature-on-hover
-                 (lsp-make-markup-content :kind nil
-                                          :value "Wrong")
+                 (lsp-make-markup-content :value "Wrong")
                  'clangd)))
 
 (ert-deftest lsp-clients-join-region ()
