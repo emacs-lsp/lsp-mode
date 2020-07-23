@@ -6676,7 +6676,9 @@ returned by COMMAND is available via `executable-find'"
          connection)
     (while (and (not connection) (< retries number-of-retries))
       (condition-case err
-          (setq connection (open-network-stream name nil host port :type 'plain))
+          (setq connection (open-network-stream name nil host port
+                                                :type 'plain
+                                                :coding 'no-conversion))
         (file-error
          (let ((inhibit-message t))
            (lsp--warn "Failed to connect to %s:%s with error message %s"
