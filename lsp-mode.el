@@ -5056,6 +5056,15 @@ When language is nil render as markup if `markdown-mode' is loaded."
       (t (error "Failed to handle %s" content)))
      "")))
 
+(defun lsp--create-unique-string-fn ()
+  (let (elements)
+    (lambda (element)
+      (let ((count (cl-count element elements :test #'string=)))
+        (prog1 (if (zerop count)
+                   element
+                 (format "%s (%s)" element count))
+          (push element elements))))))
+
 (defun lsp--select-action (actions)
   "Select an action to execute from ACTIONS."
   (cond
@@ -5065,7 +5074,8 @@ When language is nil render as markup if `markdown-mode' is loaded."
    (t (let ((completion-ignore-case t))
         (lsp--completing-read "Select code action: "
                               (seq-into actions 'list)
-                              #'lsp:code-action-title
+                              (-compose (lsp--create-unique-string-fn)
+                                        #'lsp:code-action-title)
                               nil t)))))
 
 (defun lsp-join-region (beg end)

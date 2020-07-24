@@ -74,5 +74,18 @@
                                  "completionItem/resolve"))
            "{\"label\":\"1\"}")))
 
+(ert-deftest lsp-generate-unique-names ()
+  (let ((fn (lsp--create-unique-string-fn)))
+    (should (equal (-map fn '("a" "b"))
+                   '("a" "b"))))
+
+  (let ((fn (lsp--create-unique-string-fn)))
+    (should (equal (-map fn '("a" "a"))
+                   '("a" "a (1)"))))
+
+  (let ((fn (lsp--create-unique-string-fn)))
+    (should (equal (-map fn '("a" "a" "a"))
+                   '("a" "a (1)" "a (2)")))))
+
 (provide 'lsp-mode-test)
 ;;; lsp-mode-test.el ends here
