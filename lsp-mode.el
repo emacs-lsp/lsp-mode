@@ -69,7 +69,6 @@
 (declare-function dap-auto-configure-mode "ext:dap-mode")
 
 (defvar company-backends)
-(defvar c-basic-offset)
 (defvar yas-inhibit-overlay-modification-protection)
 (defvar yas-indent-line)
 (defvar dap-auto-configure-mode)
@@ -5431,13 +5430,55 @@ If ACTION is not set it will be selected from `lsp-code-actions-at-point'."
    ((stringp command?) (lsp--execute-command action))
    ((lsp-command? command?) (lsp--execute-command command?))))
 
+(defvar lsp--formatting-indent-alist
+;; Taken from `dtrt-indent-mode'
+  '((c-mode             . c-basic-offset)            ; C
+    (c++-mode           . c-basic-offset)            ; C++
+    (d-mode             . c-basic-offset)            ; D
+    (java-mode          . c-basic-offset)            ; Java
+    (jde-mode           . c-basic-offset)            ; Java (JDE)
+    (js-mode            . js-indent-level)           ; JavaScript
+    (js2-mode           . js2-basic-offset)          ; JavaScript-IDE
+    (js3-mode           . js3-indent-level)          ; JavaScript-IDE
+    (json-mode          . js-indent-level)           ; JSON
+    (lua-mode           . lua-indent-level)          ; Lua
+    (objc-mode          . c-basic-offset)            ; Objective C
+    (php-mode           . c-basic-offset)            ; PHP
+    (perl-mode          . perl-indent-level)         ; Perl
+    (cperl-mode         . cperl-indent-level)        ; Perl
+    (raku-mode          . raku-indent-offset)        ; Perl6/Raku
+    (erlang-mode        . erlang-indent-level)       ; Erlang
+    (ada-mode           . ada-indent)                ; Ada
+    (sgml-mode          . sgml-basic-offset)         ; SGML
+    (nxml-mode          . nxml-child-indent)         ; XML
+    (pascal-mode        . pascal-indent-level)       ; Pascal
+    (typescript-mode    . typescript-indent-level)   ; Typescript
+    (sh-mode            . sh-basic-offset)           ; Shell Script
+    (ruby-mode          . ruby-indent-level)         ; Ruby
+    (enh-ruby-mode      . enh-ruby-indent-level)     ; Ruby
+    (crystal-mode       . crystal-indent-level)      ; Crystal (Ruby)
+    (css-mode           . css-indent-offset)         ; CSS
+    (rust-mode          . rust-indent-offset)        ; Rust
+    (rustic-mode        . rustic-indent-offset)      ; Rust
+    (scala-mode         . scala-indent:step)         ; Scala
+    (powershell-mode    . powershell-indent)         ; PowerShell
+
+    (default            . standard-indent))          ; default fallback
+  "A mapping from `major-mode' to its indent variable.")
+
+(defun lsp--get-indent-width (mode)
+  "Get indentation offset for MODE."
+  (or (alist-get mode lsp--formatting-indent-alist)
+      (lsp--get-indent-width (get mode 'derived-mode-parent))
+      (alist-get 'default lsp--formatting-indent-alist)))
+
 (defun lsp--make-document-formatting-params ()
   "Create document formatting params."
-  `(:textDocument ,(lsp--text-document-identifier)
-                  :options (:tabSize ,(if (bound-and-true-p c-buffer-is-cc-mode)
-                                          c-basic-offset
-                                        tab-width)
-                                     :insertSpaces ,(if indent-tabs-mode :json-false t))))
+  (lsp-make-document-formatting-params
+   :text-document (lsp--text-document-identifier)
+   :options (lsp-make-formatting-options
+             :tab-size (symbol-value (lsp--get-indent-width major-mode))
+             :insert-spaces (if indent-tabs-mode :json-false t))))
 
 (defun lsp-format-buffer ()
   "Ask the server to format this document."
@@ -5474,14 +5515,9 @@ If ACTION is not set it will be selected from `lsp-code-actions-at-point'."
        (lsp--info "source.organizeImports action not available")))))
 
 (defun lsp--make-document-range-formatting-params (start end)
-  "Make DocumentRangeFormattingParams for selected region.
-interface DocumentRangeFormattingParams {
-    textDocument: TextDocumentIdentifier;
-    range: Range;
-    options: FormattingOptions;
-}"
-  (plist-put (lsp--make-document-formatting-params)
-             :range (lsp--region-to-range start end)))
+  "Make DocumentRangeFormattingParams for selected region."
+  (lsp:set-document-range-formatting-params-range (lsp--make-document-formatting-params)
+                                                  (lsp--region-to-range start end)))
 
 (defconst lsp--highlight-kind-face
   '((1 . lsp-face-highlight-textual)

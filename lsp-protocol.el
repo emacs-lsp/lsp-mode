@@ -432,7 +432,7 @@ See `-let' for a description of the destructuring mechanism."
  (FoldingRangeCapabilities nil (:dynamicRegistration :lineFoldingOnly :rangeLimit))
  (FoldingRangeProviderOptions nil (:documentSelector :id))
  (FormattingCapabilities nil (:dynamicRegistration))
- (FormattingOptions (:loadFactor :threshold :accessOrder) nil)
+ (FormattingOptions (:tabSize :insertSpaces) (:trimTrailingWhitespace :insertFinalNewline :trimFinalNewlines))
  (HoverCapabilities nil (:contentFormat :dynamicRegistration))
  (ImplementationCapabilities nil (:dynamicRegistration :linkSupport))
  (Location (:range :uri) nil)
