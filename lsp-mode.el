@@ -3803,7 +3803,7 @@ it has to calculate identation based on SRC block position."
           (progress-reporter-done reporter))))))
 
 (defun lsp--create-apply-text-edits-handlers ()
-  "Create (handler cancel-handler) for applying text edits in async request.
+  "Create (handler cleanup-fn) for applying text edits in async request.
 Only works when mode is 'tick or 'alive."
   (let* (first-edited
          (func (lambda (start &rest _)
@@ -4106,11 +4106,18 @@ Applies on type formatting."
   (let ((ch last-command-event))
     (when (or (eq (string-to-char first-trigger-characters) ch)
               (cl-find ch more-trigger-characters :key #'string-to-char))
-      (lsp-request-async "textDocument/onTypeFormatting"
-                         (append (lsp--make-document-formatting-params)
-                                 `(:ch ,(char-to-string ch) :position ,(lsp--cur-position)))
-                         #'lsp--apply-text-edits
-                         :mode 'tick))))
+      (-let [(callback cleanup-fn) (lsp--create-apply-text-edits-handlers)]
+        (lsp-request-async "textDocument/onTypeFormatting"
+                           (append (lsp--make-document-formatting-params)
+                                   `(:ch ,(char-to-string ch) :position ,(lsp--cur-position)))
+                           (lambda (text-edits)
+                             (funcall callback text-edits)
+                             (funcall cleanup-fn))
+                           :error-handler (lambda (err)
+                                            (funcall cleanup-fn)
+                                            (error (lsp:json-error-message err)))
+                           :cancel-handler cleanup-fn
+                           :mode 'alive)))))
 
 
 ;; links
@@ -4598,13 +4605,13 @@ Others: TRIGGER-CHARS"
           (if (or (get-text-property 0 'lsp-completion-resolved candidate)
                   additional-text-edits?)
               (lsp--apply-text-edits additional-text-edits?)
-            (-let [(callback cancel-callback) (lsp--create-apply-text-edits-handlers)]
+            (-let [(callback cleanup-fn) (lsp--create-apply-text-edits-handlers)]
               (lsp--resolve-completion-async
                item
                (lambda (resolved-item)
                  (funcall callback
                   (lsp:completion-item-additional-text-edits? resolved-item)))
-               cancel-callback))))
+               cleanup-fn))))
 
         (when (and lsp-signature-auto-activate
                    (lsp-feature? "textDocument/signatureHelp"))
