@@ -50,3 +50,4 @@ target
 .classpath
 .project
 .settings
+/ert-profile
