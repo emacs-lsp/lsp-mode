@@ -329,7 +329,7 @@ Must not nil.")
 
 (defun lsp-pwsh-setup (_client callback error-callback update)
   "Downloads PowerShellEditorServices to `lsp-pwsh-dir'.
-CALLBACK is called when the download finish succesfully otherwise
+CALLBACK is called when the download finish successfully otherwise
 ERROR-CALLBACK is called.
 UPDATE is non-nil if it is already downloaded.
 FORCED if specified with prefix argument."

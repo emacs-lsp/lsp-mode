@@ -554,7 +554,7 @@
           ;;                              (buffer-string)))))
 
 
-          ;;           ;; delete identation + from the original buffer
+          ;;           ;; delete indentation + from the original buffer
           ;;           (unwind-protect
           ;;               (progn
           ;;                 (goto-char (+ (point-at-bol) 2))
@@ -568,7 +568,7 @@
           ;;                              (buffer-string)))))
 
 
-          ;;           ;; delete identation
+          ;;           ;; delete indentation
 
           ;;           (unwind-protect
           ;;               (progn
@@ -585,7 +585,7 @@
 
 
 
-          ;;           ;; delete 2 chars from identation
+          ;;           ;; delete 2 chars from indentation
           ;;           (unwind-protect
           ;;               (progn
           ;;                 (goto-char (point-at-bol))

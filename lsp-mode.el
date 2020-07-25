@@ -3754,7 +3754,7 @@ The method uses `replace-buffer-contents'."
   "Enable indenting of snippets for everything but `org-mode'.
 
 Indending snippets is extremely slow in `org-mode' buffers since
-it has to calculate identation based on SRC block position."
+it has to calculate indentation based on SRC block position."
   (unless (derived-mode-p 'org-mode)
     'auto))
 
