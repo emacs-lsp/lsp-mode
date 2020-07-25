@@ -87,5 +87,18 @@
     (should (equal (-map fn '("a" "a" "a"))
                    '("a" "a (1)" "a (2)")))))
 
+(ert-deftest lsp-formatting-params ()
+  (let ((standard-indent 10)
+        (major-mode 'python-mode))
+    (should (= 10 (->> (lsp--make-document-formatting-params)
+                       lsp:document-formatting-params-options
+                       lsp:formatting-options-tab-size))))
+
+  (let ((standard-indent 100)
+        (major-mode 'non-existing-mode))
+    (should (= 100 (->> (lsp--make-document-formatting-params)
+                        lsp:document-formatting-params-options
+                        lsp:formatting-options-tab-size)))))
+
 (provide 'lsp-mode-test)
 ;;; lsp-mode-test.el ends here
