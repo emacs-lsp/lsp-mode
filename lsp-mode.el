@@ -5474,8 +5474,7 @@ If ACTION is not set it will be selected from `lsp-code-actions-at-point'."
 (defun lsp--get-indent-width (mode)
   "Get indentation offset for MODE."
   (or (alist-get mode lsp--formatting-indent-alist)
-      (lsp--get-indent-width (get mode 'derived-mode-parent))
-      (alist-get 'default lsp--formatting-indent-alist)))
+      (lsp--get-indent-width (or (get mode 'derived-mode-parent) 'default))))
 
 (defun lsp--make-document-formatting-params ()
   "Create document formatting params."
