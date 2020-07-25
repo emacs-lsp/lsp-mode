@@ -47,7 +47,7 @@
               (if (not lsp--override-calculate-lisp-indent?)
                   (funcall fn parse-start)
                 ;; This line because `calculate-lisp-indent-last-sexp` was defined with `defvar`
-                ;; with it's value ommited, marking it special and only defining it locally. So
+                ;; with it's value omitted, marking it special and only defining it locally. So
                 ;; if you don't have this, you'll get a void variable error.
                 (defvar calculate-lisp-indent-last-sexp)
                 (save-excursion
