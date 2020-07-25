@@ -73,11 +73,8 @@ with class 'section', and also removes 'headerlinks'."
   (lsp-cpp-flycheck-clang-tidy--remove-crlf)
   (let* ((dom (libxml-parse-html-region (point-min) (point-max)))
          (section (dom-by-class dom "section")))
-    ;; `dom-remove-node' was added in 2016. Some Emacs version may not
-    ;; have it.
-    (when (fboundp 'dom-remove-node)
-      (dolist (headerlink (dom-by-class section "headerlink"))
-        (dom-remove-node section headerlink)))
+    (dolist (headerlink (dom-by-class section "headerlink"))
+      (dom-remove-node section headerlink))
     section))
 
 (defun lsp-cpp-flycheck-clang-tidy--explain-error (explanation &rest args)
