@@ -88,6 +88,16 @@
   :type 'boolean
   :package-version '(lsp-mode . "6.3"))
 
+(defcustom lsp-eslint-fix-all-problem-type
+  "all"
+  "Determines which problems are fixed when running the
+source.fixAll code action."
+  :type '(choice
+          (const "all")
+          (const "problems")
+          string)
+  :package-version '(lsp-mode . "7.0"))
+
 (defcustom lsp-eslint-quiet nil
   "Turns on quiet mode, which ignores warnings."
   :type 'boolean
@@ -178,7 +188,8 @@
                     (with-current-buffer buffer
                       (list :validate "probe"
                             :packageManager lsp-eslint-package-manager
-                            :codeActionOnSave t
+                            :codeActionOnSave (list :enable t
+                                                    :mode lsp-eslint-fix-all-problem-type)
                             :format (lsp-json-bool lsp-eslint-format)
                             :options (or lsp-eslint-options (ht))
                             :run (or lsp-eslint-run "onType")
@@ -192,17 +203,19 @@
                                                                  (list :enable t
                                                                        :location "separateLine"))
                                          :showDocumentation (or lsp-eslint-code-action-show-documentation
-                                                                (list :enable t)) ))))))
+                                                                (list :enable t))))))))
        (apply #'vector)))
 
 (lsp-defun lsp-eslint--open-doc (_workspace (&eslint:OpenESLintDocParams :url))
-  "Open doccumentation."
+  "Open documentation."
   (browse-url url))
 
 (defun lsp-eslint-apply-all-fixes ()
   "Apply all autofixes in the current buffer."
   (interactive)
   (lsp-send-execute-command "eslint.applyAllFixes" (vector (lsp--versioned-text-document-identifier))))
+
+(lsp-make-interactive-code-action eslint-fix-all "source.fixAll.eslint")
 
 (lsp-register-client
  (make-lsp-client
@@ -235,10 +248,10 @@
                                             :watchers
                                             `[,(lsp-make-file-system-watcher
                                                 :glob-pattern "**/.eslintr{c.js,c.yaml,c.yml,c,c.json}")
-                                               ,(lsp-make-file-system-watcher
-                                                 :glob-pattern "**/.eslintignore")
-                                               ,(lsp-make-file-system-watcher
-                                                 :glob-pattern "**/package.json")])))))))
+                                              ,(lsp-make-file-system-watcher
+                                                :glob-pattern "**/.eslintignore")
+                                              ,(lsp-make-file-system-watcher
+                                                :glob-pattern "**/package.json")])))))))
 
 (provide 'lsp-eslint)
 ;;; lsp-eslint.el ends here
