@@ -655,7 +655,7 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :group 'lsp-mode)
 
 (defcustom lsp-modeline-code-actions-enable t
-  "Wheter to show code actions on modeline."
+  "Whether to show code actions on modeline."
   :type 'boolean
   :group 'lsp-mode)
 
@@ -4204,7 +4204,7 @@ The method uses `replace-buffer-contents'."
   "Enable indenting of snippets for everything but `org-mode'.
 
 Indending snippets is extremely slow in `org-mode' buffers since
-it has to calculate identation based on SRC block position."
+it has to calculate indentation based on SRC block position."
   (unless (derived-mode-p 'org-mode)
     'auto))
 

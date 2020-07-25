@@ -6,7 +6,7 @@ nav:
     - Overview: README.md
     - Setup:
         - Installation: page/installation.md
-        - Perfomance: page/performance.md
+        - Performance: page/performance.md
     - Main features: page/main-features.md
     - Settings: page/settings.md
     - Keybindings: page/keybindings.md

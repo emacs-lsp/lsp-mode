@@ -49,7 +49,7 @@ the project is at some location but your actual PHP code is
 somewhere else.  Note that if you are running Serenata in a
 container, you will have to ensure that these URI's are mapped
 inside it.  Avoid using file paths containing spaces. This is
-currently broken due to apparant PHP quirks.  By default, the
+currently broken due to apparent PHP quirks.  By default, the
 value is taken from the lsp workspace location."
   :group 'lsp-serenata
   :type 'lsp-string-vector)
