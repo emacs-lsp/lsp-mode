@@ -4101,8 +4101,10 @@ Applies on type formatting."
               (cl-find ch more-trigger-characters :key #'string-to-char))
       (-let [(callback cleanup-fn) (lsp--create-apply-text-edits-handlers)]
         (lsp-request-async "textDocument/onTypeFormatting"
-                           (append (lsp--make-document-formatting-params)
-                                   `(:ch ,(char-to-string ch) :position ,(lsp--cur-position)))
+                           (lsp-merge (lsp-make-document-on-type-formatting-params
+                                       :ch (char-to-string ch)
+                                       :position (lsp--cur-position))
+                                      (lsp--make-document-formatting-params))
                            (lambda (text-edits)
                              (funcall callback text-edits)
                              (funcall cleanup-fn))
