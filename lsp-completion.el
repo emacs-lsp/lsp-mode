@@ -474,6 +474,22 @@ Others: TRIGGER-CHARS"
     (lsp-completion--capf-clear-cache)))
 
 ;;;###autoload
+(defun lsp-completion--auto-configure ()
+  "Auto configure LSP completion."
+  (when (lsp--capability :completionProvider)
+    (cond
+     ((and (functionp 'company-lsp)
+           (not lsp-completion-prefer-capf))
+      (progn
+        (company-mode 1)
+        (add-to-list 'company-backends 'company-lsp)
+        (setq-local company-backends (remove 'company-capf company-backends))))
+
+     ((and (fboundp 'company-mode) lsp-completion-enable)
+      (company-mode 1)
+      (add-to-list 'company-backends 'company-capf))))
+  (lsp-completion--enable))
+
 (defun lsp-completion--enable ()
   "Enable LSP completion support."
   (when (and lsp-completion-enable
@@ -496,19 +512,6 @@ Others: TRIGGER-CHARS"
     (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t)
     (setq-local completion-category-defaults
                 (add-to-list 'completion-category-defaults '(lsp-capf (styles basic))))
-
-    (when (lsp--capability :completionProvider)
-      (cond
-       ((and (functionp 'company-lsp)
-             (not lsp-completion-prefer-capf))
-        (progn
-          (company-mode 1)
-          (add-to-list 'company-backends 'company-lsp)
-          (setq-local company-backends (remove 'company-capf company-backends))))
-
-       ((and (fboundp 'company-mode) lsp-completion-enable)
-        (company-mode 1)
-        (add-to-list 'company-backends 'company-capf))))
 
     (when (bound-and-true-p company-mode)
       (add-hook 'company-completion-started-hook
@@ -542,7 +545,7 @@ Others: TRIGGER-CHARS"
                    t)))))
 
 ;;;###autoload
-(add-hook 'lsp--auto-configure-hook #'lsp-completion--enable)
+(add-hook 'lsp--auto-configure-hook #'lsp-completion--auto-configure)
 
 (provide 'lsp-completion)
 ;;; lsp-completion.el ends here
