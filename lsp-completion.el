@@ -23,7 +23,10 @@
 
 (require 'lsp-mode)
 
-(defcustom lsp-prefer-capf nil
+(define-obsolete-variable-alias 'lsp-prefer-capf
+  'lsp-completion-prefer-capf  "lsp-mode 7.0.1")
+
+(defcustom lsp-completion-prefer-capf nil
   "Prefer capf."
   :type 'boolean
   :group 'lsp-mode
@@ -466,13 +469,13 @@ Others: TRIGGER-CHARS"
   "Setup company-mode."
   (cond
    ((and (functionp 'company-lsp)
-         (not lsp-prefer-capf))
+         (not lsp-completion-prefer-capf))
     (progn
       (company-mode 1)
       (add-to-list 'company-backends 'company-lsp)
       (setq-local company-backends (remove 'company-capf company-backends))))
 
-   ((and (fboundp 'company-mode) lsp-enable-completion-at-point)
+   ((and (fboundp 'company-mode) lsp-completion-enable)
     (company-mode 1)
     (add-to-list 'company-backends 'company-capf)))
 
@@ -502,7 +505,7 @@ Others: TRIGGER-CHARS"
 
 (defun lsp-completion--enable ()
   "Enable LSP completion support."
-  (when (and lsp-enable-completion-at-point
+  (when (and lsp-completion-enable
              (lsp-feature? "textDocument/completion"))
     (setq-local completion-at-point-functions nil)
     (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t)

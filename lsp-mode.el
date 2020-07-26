@@ -588,7 +588,10 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
-(defcustom lsp-enable-completion-at-point t
+(define-obsolete-variable-alias 'lsp-enable-completion-at-point
+  'lsp-completion-enable  "lsp-mode 7.0.1")
+
+(defcustom lsp-completion-enable t
   "Enable `completion-at-point' integration."
   :type 'boolean
   :group 'lsp-mode)
@@ -6364,7 +6367,7 @@ returns the command to execute."
   (when (functionp 'lsp-ui-mode)
     (lsp-ui-mode))
 
-  (when lsp-enable-completion-at-point
+  (when lsp-completion-enable
     (add-hook 'lsp-configure-hook 'lsp-completion-mode))
   (when lsp-headerline-breadcrumb-enable
     (add-hook 'lsp-configure-hook 'lsp-headerline-breadcrumb-mode))
