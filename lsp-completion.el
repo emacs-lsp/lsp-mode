@@ -62,7 +62,7 @@ ignored."
   :group 'lsp-mode
   :package-version '(lsp-mode . "7.0.1"))
 
-(defconst lsp--completion-item-kind
+(defconst lsp-completion--item-kind
   [nil
    "Text"
    "Method"
@@ -93,11 +93,14 @@ ignored."
 (defvar yas-indent-line)
 (defvar company-backends)
 
+(defvar lsp-completion--capf-no-reordering nil
+  "Dont do client-side reordering completion items when set.")
+
 (declare-function company-mode "ext:company")
 (declare-function company-doc-buffer "ext:company")
 (declare-function yas-expand-snippet "ext:yasnippet")
 
-(defun lsp--make-completion-item (item &rest plist)
+(defun lsp-completion--make-item (item &rest plist)
   "Make completion item from lsp ITEM and PLIST."
   (-let (((&CompletionItem :label
                            :insert-text?
@@ -112,17 +115,17 @@ ignored."
                 'lsp-completion-markers markers
                 'lsp-completion-prefix prefix)))
 
-(defun lsp--annotate (item)
+(defun lsp-completion--annotate (item)
   "Annotate ITEM detail."
   (-let (((&CompletionItem :detail? :kind?) (plist-get (text-properties-at 0 item)
                                                        'lsp-completion-item)))
     (concat (when (and lsp-completion-show-detail detail?)
               (concat " " (s-replace "\r" "" detail?)))
             (when lsp-completion-show-kind
-              (when-let (kind-name (and kind? (aref lsp--completion-item-kind kind?)))
+              (when-let (kind-name (and kind? (aref lsp-completion--item-kind kind?)))
                 (format " (%s)" kind-name))))))
 
-(defun lsp--looking-back-trigger-characterp (trigger-characters)
+(defun lsp-completion--looking-back-trigger-characterp (trigger-characters)
   "Return trigger character if text before point match any of the TRIGGER-CHARACTERS."
   (unless (= (point) (point-at-bol))
     (seq-some
@@ -132,22 +135,22 @@ ignored."
             trigger-char))
      trigger-characters)))
 
-(defvar lsp--capf-cache nil
+(defvar lsp-completion--capf-cache nil
   "Cached candidates for completion at point function.
 In the form of list (prefix prefix-pos items :lsp-items ...).
 When the completion is incomplete, cache contains value of `incomplete'.")
 
-(defun lsp--capf-clear-cache (&rest _)
+(defun lsp-completion--capf-clear-cache (&rest _)
   "Clear completion caches."
-  (-some-> (and (listp lsp--capf-cache) lsp--capf-cache)
+  (-some-> (and (listp lsp-completion--capf-cache) lsp-completion--capf-cache)
     (cddr)
     (cdr)
     (plist-get :markers)
     (cl-second)
     (set-marker nil))
-  (setq lsp--capf-cache nil))
+  (setq lsp-completion--capf-cache nil))
 
-(lsp-defun lsp--capf-guess-prefix ((item &as &CompletionItem :text-edit?))
+(lsp-defun lsp-completion--capf-guess-prefix ((item &as &CompletionItem :text-edit?))
   "Guess ITEM's prefix start point according to following heuristics:
 - If `textEdit' exists, use insertion range start as prefix start point.
 - Else, find the point before current point is longest prefix match of
@@ -173,7 +176,7 @@ Return `nil' when fails to guess prefix."
         (setq char-before (char-before start)))
       start-point))))
 
-(defun lsp--capf-client-items (items)
+(defun lsp-completion--capf-client-items (items)
   "Convert ITEMS into client items form."
   (--> items
        (-map (-lambda ((item &as &CompletionItem
@@ -187,10 +190,7 @@ Return `nil' when fails to guess prefix."
                            'lsp-completion-score score?))
              it)))
 
-(defvar lsp--capf-no-reordering nil
-  "Dont do client-side reordering completion items when set.")
-
-(cl-defun lsp--capf-filter-candidates (items
+(cl-defun lsp-completion--capf-filter-candidates (items
                                        &rest plist
                                        &key lsp-items
                                        &allow-other-keys)
@@ -223,7 +223,7 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                                            cand)
                         cand)))
                   items))
-         (if lsp--capf-no-reordering
+         (if lsp-completion--capf-no-reordering
              it
            (sort it (lambda (o1 o2)
                       (> (get-text-property 0 'sort-score o1)
@@ -231,9 +231,9 @@ Also, additional data to attached to each candidate can be passed via PLIST."
          ;; TODO: pass additional function to sort the candidates
          (-map (-partial #'get-text-property 0 'lsp-completion-item) it))
       lsp-items)
-    (-map (lambda (item) (apply #'lsp--make-completion-item item plist))))))
+    (-map (lambda (item) (apply #'lsp-completion--make-item item plist))))))
 
-(defun lsp--capf-company-match (candidate)
+(defun lsp-completion--capf-company-match (candidate)
   "Return highlight of typed prefix inside CANDIDATE."
   (let* ((prefix (downcase
                   (buffer-substring-no-properties
@@ -267,7 +267,7 @@ Also, additional data to attached to each candidate can be passed via PLIST."
         (setq label-pos 0)))
     matches))
 
-(defun lsp--capf-get-documentation (item)
+(defun lsp-completion--capf-get-documentation (item)
   "Get doc comment for completion ITEM."
   (unless (get-text-property 0 'lsp-completion-resolved item)
     (let ((resolved-item
@@ -282,14 +282,14 @@ Also, additional data to attached to each candidate can be passed via PLIST."
     (lsp:completion-item-documentation?)
     (lsp--render-element)))
 
-(defun lsp--capf-get-context (trigger-characters)
+(defun lsp-completion--capf-get-context (trigger-characters)
   "Get completion context with provided TRIGGER-CHARACTERS."
   (let* (trigger-char
          (trigger-kind (cond
-                        ((setq trigger-char (lsp--looking-back-trigger-characterp
+                        ((setq trigger-char (lsp-completion--looking-back-trigger-characterp
                                              trigger-characters))
                          lsp/completion-trigger-kind-trigger-character)
-                        ((equal lsp--capf-cache 'incomplete)
+                        ((equal lsp-completion--capf-cache 'incomplete)
                          lsp/completion-trigger-kind-trigger-for-incomplete-completions)
                         (t lsp/completion-trigger-kind-invoked))))
     (apply #'lsp-make-completion-context
@@ -298,7 +298,7 @@ Also, additional data to attached to each candidate can be passed via PLIST."
             (when trigger-char
               `(:trigger-character? ,trigger-char))))))
 
-(defun lsp--sort-completions (completions)
+(defun lsp-completion--sort-completions (completions)
   "Sort COMPLETIONS."
   (sort
    completions
@@ -321,7 +321,7 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                                (save-excursion
                                  (ignore-errors
                                    (goto-char (+ it 1))
-                                   (while (lsp--looking-back-trigger-characterp trigger-chars)
+                                   (while (lsp-completion--looking-back-trigger-characterp trigger-chars)
                                      (cl-incf it)
                                      (forward-char))
                                    it)))
@@ -332,17 +332,17 @@ Also, additional data to attached to each candidate can be passed via PLIST."
               (cond
                (done? result)
                ((and (not lsp-completion-no-cache)
-                     lsp--capf-cache
-                     (listp lsp--capf-cache)
-                     (equal (cl-second lsp--capf-cache) bounds-start)
-                     (s-prefix? (car lsp--capf-cache)
+                     lsp-completion--capf-cache
+                     (listp lsp-completion--capf-cache)
+                     (equal (cl-second lsp-completion--capf-cache) bounds-start)
+                     (s-prefix? (car lsp-completion--capf-cache)
                                 (buffer-substring-no-properties bounds-start (point))))
-                (apply #'lsp--capf-filter-candidates (cddr lsp--capf-cache)))
+                (apply #'lsp-completion--capf-filter-candidates (cddr lsp-completion--capf-cache)))
                (t
                 (-let* ((resp (lsp-request-while-no-input
                                "textDocument/completion"
                                (plist-put (lsp--text-document-position-params)
-                                          :context (lsp--capf-get-context trigger-chars))))
+                                          :context (lsp-completion--capf-get-context trigger-chars))))
                         (completed (or (and resp (not (lsp-completion-list? resp)))
                                        (not (lsp:completion-list-is-incomplete resp))))
                         (items (lsp--while-no-input
@@ -351,33 +351,33 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                                       (t resp))
                                      (if (or completed
                                              (seq-some #'lsp:completion-item-sort-text? it))
-                                         (lsp--sort-completions it)
+                                         (lsp-completion--sort-completions it)
                                        it)
                                      (-map (lambda (item)
                                              (lsp-put item
                                                       :_emacsStartPoint
-                                                      (or (lsp--capf-guess-prefix item)
+                                                      (or (lsp-completion--capf-guess-prefix item)
                                                           bounds-start)))
                                            it))))
                         (markers (list bounds-start (copy-marker (point) t)))
                         (prefix (buffer-substring-no-properties bounds-start (point)))
-                        (lsp--capf-no-reordering t))
-                  (lsp--capf-clear-cache)
+                        (lsp-completion--capf-no-reordering t))
+                  (lsp-completion--capf-clear-cache)
                   (setf done? completed
-                        lsp--capf-cache (cond
+                        lsp-completion--capf-cache (cond
                                          ((and done? (not (seq-empty-p items)))
                                           (list (buffer-substring-no-properties bounds-start (point))
                                                 bounds-start
-                                                (lsp--capf-client-items items)
+                                                (lsp-completion--capf-client-items items)
                                                 :lsp-items nil
                                                 :markers markers
                                                 :prefix prefix))
                                          ((not done?) 'incomplete))
-                        result (lsp--capf-filter-candidates
+                        result (lsp-completion--capf-filter-candidates
                                 (cond (done?
-                                       (cl-third lsp--capf-cache))
+                                       (cl-third lsp-completion--capf-cache))
                                       (lsp-completion-filter-on-incomplete
-                                       (lsp--capf-client-items items)))
+                                       (lsp-completion--capf-client-items items)))
                                 :lsp-items items
                                 :markers markers
                                 :prefix prefix))))))))
@@ -398,19 +398,19 @@ Also, additional data to attached to each candidate can be passed via PLIST."
           ((equal action 'lambda) (member probe (funcall all-completions)))
           ;; retrieve candidates
           (t (funcall all-completions))))
-       :annotation-function #'lsp--annotate
+       :annotation-function #'lsp-completion--annotate
        :company-require-match 'never
        :company-prefix-length
        (save-excursion
          (goto-char bounds-start)
-         (and (lsp--looking-back-trigger-characterp trigger-chars) t))
-       :company-match #'lsp--capf-company-match
+         (and (lsp-completion--looking-back-trigger-characterp trigger-chars) t))
+       :company-match #'lsp-completion--capf-company-match
        :company-doc-buffer (-compose #'company-doc-buffer
-                                     #'lsp--capf-get-documentation)
+                                     #'lsp-completion--capf-get-documentation)
        :exit-function
-       (-rpartial #'lsp--capf-exit-fn trigger-chars)))))
+       (-rpartial #'lsp-completion--capf-exit-fn trigger-chars)))))
 
-(defun lsp--capf-exit-fn (candidate _status &optional trigger-chars)
+(defun lsp-completion--capf-exit-fn (candidate _status &optional trigger-chars)
   "Exit function of `completion-at-point'.
 CANDIDATE is the selected completion item.
 Others: TRIGGER-CHARS"
@@ -458,9 +458,9 @@ Others: TRIGGER-CHARS"
 
         (setq-local lsp-inhibit-lsp-hooks nil)
 
-        (when (lsp--looking-back-trigger-characterp trigger-chars)
+        (when (lsp-completion--looking-back-trigger-characterp trigger-chars)
           (setq this-command 'self-insert-command)))
-    (lsp--capf-clear-cache)))
+    (lsp-completion--capf-clear-cache)))
 
 (defun lsp-completion--setup-company ()
   "Setup company-mode."
@@ -483,7 +483,7 @@ Others: TRIGGER-CHARS"
             t)
   (add-hook 'company-after-completion-hook
             (lambda (&rest _)
-              (lsp--capf-clear-cache)
+              (lsp-completion--capf-clear-cache)
               (setq-local lsp-inhibit-lsp-hooks nil))
             nil
             t))
@@ -496,7 +496,7 @@ Others: TRIGGER-CHARS"
                t)
   (remove-hook 'company-after-completion-hook
                (lambda (&rest _)
-                 (lsp--capf-clear-cache)
+                 (lsp-completion--capf-clear-cache)
                  (setq-local lsp-inhibit-lsp-hooks nil))
                t))
 
