@@ -473,32 +473,7 @@ Others: TRIGGER-CHARS"
           (setq this-command 'self-insert-command)))
     (lsp-completion--capf-clear-cache)))
 
-(defun lsp-completion--setup-company ()
-  "Setup company-mode."
-  (add-hook 'company-completion-started-hook
-            (lambda (&rest _)
-              (setq-local lsp-inhibit-lsp-hooks t))
-            nil
-            t)
-  (add-hook 'company-after-completion-hook
-            (lambda (&rest _)
-              (lsp-completion--capf-clear-cache)
-              (setq-local lsp-inhibit-lsp-hooks nil))
-            nil
-            t))
-
-(defun lsp-completion--clean-company ()
-  "Clean company-mode."
-  (remove-hook 'company-completion-started-hook
-               (lambda (&rest _)
-                 (setq-local lsp-inhibit-lsp-hooks t))
-               t)
-  (remove-hook 'company-after-completion-hook
-               (lambda (&rest _)
-                 (lsp-completion--capf-clear-cache)
-                 (setq-local lsp-inhibit-lsp-hooks nil))
-               t))
-
+;;;###autoload
 (defun lsp-completion--auto-configure ()
   "Auto configure completion."
   (cond
@@ -516,20 +491,11 @@ Others: TRIGGER-CHARS"
 
 (defun lsp-completion--enable ()
   "Enable LSP completion support."
-  (when (and lsp-completion-enable
-             (lsp-feature? "textDocument/completion"))
-    (setq-local completion-at-point-functions nil)
-    (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t)
-    (setq-local completion-category-defaults
-                (add-to-list 'completion-category-defaults '(lsp-capf (styles basic))))
-    (lsp-completion-mode 1)))
+    (lsp-completion-mode 1))
 
 (defun lsp-completion--disable ()
   "Disable LSP completion support."
-  (lsp-completion-mode -1)
-  (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t)
-  (setq-local completion-category-defaults
-              (cl-remove 'lsp-capf completion-category-defaults :key #'car)))
+  (lsp-completion-mode -1))
 
 ;;;###autoload
 (define-minor-mode lsp-completion-mode
@@ -539,15 +505,42 @@ Others: TRIGGER-CHARS"
   :lighter ""
   (cond
    (lsp-completion-mode
+    (when (and lsp-completion-enable
+               (lsp-feature? "textDocument/completion"))
+      (setq-local completion-at-point-functions nil)
+      (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t)
+      (setq-local completion-category-defaults
+                  (add-to-list 'completion-category-defaults '(lsp-capf (styles basic)))))
     (add-hook 'lsp-configure-hook #'lsp-completion--enable nil t)
     (add-hook 'lsp-unconfigure-hook #'lsp-completion--disable nil t)
     (when (bound-and-true-p company-mode)
-      (lsp-completion--setup-company)))
+      (add-hook 'company-completion-started-hook
+                (lambda (&rest _)
+                  (setq-local lsp-inhibit-lsp-hooks t))
+                nil
+                t)
+      (add-hook 'company-after-completion-hook
+                (lambda (&rest _)
+                  (lsp-completion--capf-clear-cache)
+                  (setq-local lsp-inhibit-lsp-hooks nil))
+                nil
+                t)))
    (t
+    (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t)
+    (setq-local completion-category-defaults
+                (cl-remove 'lsp-capf completion-category-defaults :key #'car))
     (remove-hook 'lsp-configure-hook #'lsp-completion--enable t)
     (remove-hook 'lsp-unconfigure-hook #'lsp-completion--disable t)
     (when (featurep 'company)
-      (lsp-completion--clean-company)))))
+      (remove-hook 'company-completion-started-hook
+                   (lambda (&rest _)
+                     (setq-local lsp-inhibit-lsp-hooks t))
+                   t)
+      (remove-hook 'company-after-completion-hook
+                   (lambda (&rest _)
+                     (lsp-completion--capf-clear-cache)
+                     (setq-local lsp-inhibit-lsp-hooks nil))
+                   t)))))
 
 ;;;###autoload
 (add-hook 'lsp--auto-configure-hook #'lsp-completion--auto-configure)
