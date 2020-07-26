@@ -528,14 +528,14 @@ Others: TRIGGER-CHARS"
   :lighter ""
   (cond
    (lsp-completion-mode
+    (add-hook 'lsp-configure-hook #'lsp-completion--enable nil t)
+    (add-hook 'lsp-unconfigure-hook #'lsp-completion--disable nil t)
     (when (bound-and-true-p company-mode)
-      (add-hook 'lsp-configure-hook #'lsp-completion--enable nil t)
-      (add-hook 'lsp-unconfigure-hook #'lsp-completion--disable nil t)
       (lsp-completion--setup-company)))
    (t
+    (remove-hook 'lsp-configure-hook #'lsp-completion--enable t)
+    (remove-hook 'lsp-unconfigure-hook #'lsp-completion--disable t)
     (when (bound-and-true-p company-mode)
-      (remove-hook 'lsp-configure-hook #'lsp-completion--enable t)
-      (remove-hook 'lsp-unconfigure-hook #'lsp-completion--disable t)
       (lsp-completion--clean-company)))))
 
 (provide 'lsp-completion)
