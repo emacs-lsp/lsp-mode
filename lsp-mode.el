@@ -5511,14 +5511,19 @@ If ACTION is not set it will be selected from `lsp-code-actions-at-point'."
         (lsp--info "No formatting changes provided")
       (lsp--apply-text-edits edits))))
 
-(defun lsp-organize-imports ()
-  "Perform the source.organizeImports code action, if available."
-  (interactive)
-  (condition-case nil
-      (lsp-execute-code-action-by-kind "source.organizeImports")
-    (lsp-no-code-actions
-     (when (called-interactively-p 'any)
-       (lsp--info "source.organizeImports action not available")))))
+(defmacro lsp-make-interactive-code-action (func-name code-action-kind)
+  "Define an interactive function FUNC-NAME that attempts to
+execute a CODE-ACTION-KIND action."
+  `(defun ,(intern (concat "lsp-" (symbol-name func-name))) ()
+     ,(format "Perform the %s code action, if available." code-action-kind)
+     (interactive)
+     (condition-case nil
+         (lsp-execute-code-action-by-kind ,code-action-kind)
+       (lsp-no-code-actions
+        (when (called-interactively-p 'any)
+          (lsp--info ,(format "%s action not available" code-action-kind)))))))
+
+(lsp-make-interactive-code-action organize-imports "source.organizeImports")
 
 (defun lsp--make-document-range-formatting-params (start end)
   "Make DocumentRangeFormattingParams for selected region."
