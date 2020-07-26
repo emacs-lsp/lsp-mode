@@ -476,7 +476,9 @@ Others: TRIGGER-CHARS"
 ;;;###autoload
 (defun lsp-completion--enable ()
   "Enable LSP completion support."
-    (lsp-completion-mode 1))
+  (when (and lsp-completion-enable
+             (lsp-feature? "textDocument/completion")))
+  (lsp-completion-mode 1))
 
 (defun lsp-completion--disable ()
   "Disable LSP completion support."
@@ -490,12 +492,10 @@ Others: TRIGGER-CHARS"
   :lighter ""
   (cond
    (lsp-completion-mode
-    (when (and lsp-completion-enable
-               (lsp-feature? "textDocument/completion"))
-      (setq-local completion-at-point-functions nil)
-      (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t)
-      (setq-local completion-category-defaults
-                  (add-to-list 'completion-category-defaults '(lsp-capf (styles basic)))))
+    (setq-local completion-at-point-functions nil)
+    (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t)
+    (setq-local completion-category-defaults
+                (add-to-list 'completion-category-defaults '(lsp-capf (styles basic))))
 
     (when (lsp--capability :completionProvider)
       (cond
