@@ -2298,7 +2298,7 @@ BINDINGS is a list of (key def cond)."
 
       ;; actions
       "aa" lsp-execute-code-action (lsp-feature? "textDocument/codeAction")
-      "al" lsp-avy-lens (and lsp-lens-mode (featurep 'avy))
+      "al" lsp-avy-lens (and (bound-and-true-p lsp-lens-mode) (featurep 'avy))
       "ah" lsp-document-highlight (lsp-feature? "textDocument/documentHighlight")
 
       ;; peeks
