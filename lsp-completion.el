@@ -23,6 +23,14 @@
 
 (require 'lsp-mode)
 
+(define-obsolete-variable-alias 'lsp-enable-completion-at-point
+  'lsp-completion-enable  "lsp-mode 7.0.1")
+
+(defcustom lsp-completion-enable t
+  "Enable `completion-at-point' integration."
+  :type 'boolean
+  :group 'lsp-mode)
+
 (define-obsolete-variable-alias 'lsp-prefer-capf
   'lsp-completion-prefer-capf  "lsp-mode 7.0.1")
 
@@ -537,6 +545,9 @@ Others: TRIGGER-CHARS"
     (remove-hook 'lsp-unconfigure-hook #'lsp-completion--disable t)
     (when (bound-and-true-p company-mode)
       (lsp-completion--clean-company)))))
+
+;;;###autoload
+(add-hook 'lsp--auto-configure-hook #'lsp-completion--enable)
 
 (provide 'lsp-completion)
 ;;; lsp-completion.el ends here
