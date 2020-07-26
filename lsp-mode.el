@@ -4112,7 +4112,7 @@ Applies on type formatting."
                                             (funcall cleanup-fn)
                                             (error (lsp:json-error-message err)))
                            :cancel-handler cleanup-fn
-                           :mode 'alive)))))
+                           :mode 'tick)))))
 
 
 ;; links
