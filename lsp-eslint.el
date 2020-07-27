@@ -96,7 +96,7 @@ source.fixAll code action."
           (const "all")
           (const "problems")
           string)
-  :package-version '(lsp-mode . "7.0"))
+  :package-version '(lsp-mode . "7.0.1"))
 
 (defcustom lsp-eslint-quiet nil
   "Turns on quiet mode, which ignores warnings."
