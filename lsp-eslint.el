@@ -215,7 +215,17 @@ source.fixAll code action."
   (interactive)
   (lsp-send-execute-command "eslint.applyAllFixes" (vector (lsp--versioned-text-document-identifier))))
 
-(lsp-make-interactive-code-action eslint-fix-all "source.fixAll.eslint")
+;; XXX: replace with `lsp-make-interactive-code-action' macro
+;; (lsp-make-interactive-code-action eslint-fix-all "source.fixAll.eslint")
+
+(defun lsp-eslint-fix-all ()
+  "Perform the source.fixAll.eslint code action, if available."
+  (interactive)
+  (condition-case nil
+      (lsp-execute-code-action-by-kind "source.fixAll.eslint")
+    (lsp-no-code-actions
+     (when (called-interactively-p 'any)
+       (lsp--info "source.fixAll.eslint action not available")))))
 
 (lsp-register-client
  (make-lsp-client
