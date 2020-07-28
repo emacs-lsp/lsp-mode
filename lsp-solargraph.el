@@ -116,6 +116,13 @@
   :group 'lsp-solargraph
   :package-version '(lsp-mode . "6.3"))
 
+(defcustom lsp-solargraph-library-directories
+  '("~/.rbenv/" "/usr/lib/ruby/" "~/.rvm/" "~/.gem/")
+  "List of directories which will be considered to be libraries."
+  :type '(repeat string)
+  :group 'lsp-solargraph
+  :package-version '(lsp-mode . "7.0.1"))
+
 (defun lsp-solargraph--build-command ()
   "Build solargraph command"
   (let ((lsp-command '("solargraph" "stdio")))
@@ -145,6 +152,7 @@
   :major-modes '(ruby-mode enh-ruby-mode)
   :priority -1
   :multi-root lsp-solargraph-multi-root
+  :library-folders-fn (lambda (_workspace) lsp-solargraph-library-directories)
   :server-id 'ruby-ls
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
