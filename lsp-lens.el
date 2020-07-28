@@ -92,8 +92,10 @@ Results are meaningful only if FROM and TO are on the same line."
         ov)
       (let* ((ov (save-excursion
                    (goto-char pos)
-                   (make-overlay (point-at-bol) (1+ (point-at-eol))))))
+                   (make-overlay (point-at-bol) (1+ (point-at-eol)) nil t t))))
         (overlay-put ov 'lsp-lens t)
+        (overlay-put ov 'evaporate t)
+        (overlay-put ov 'lsp-lens-position pos)
         ov)))
 
 (defun lsp-lens--show (str pos metadata)
@@ -115,6 +117,7 @@ Results are meaningful only if FROM and TO are on the same line."
 (defun lsp-lens--overlay-matches-pos (ov pos)
   "Check if OV is a lens covering POS."
   (and (overlay-get ov 'lsp-lens)
+       (overlay-start ov)
        (<= (overlay-start ov) pos)
        (< pos (overlay-end ov))))
 
@@ -192,9 +195,15 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
                       (s-join (propertize "|" 'face 'lsp-lens-face) data)
                       (-> sorted cl-first lsp:code-lens-range lsp:range-start lsp--position-to-point)
                       data)))))))
-      (--each lsp-lens--overlays
-        (unless (-contains? overlays it)
-          (delete-overlay it)))
+      (mapc (lambda (overlay)
+              (unless (and (-contains? overlays overlay)
+                           (overlay-start overlay)
+                           ;; buffer narrowed, overlay outside of it
+                           (<= (point-min)
+                               (overlay-get overlay 'lsp-lens-position )
+                               (point-max)))
+                (delete-overlay overlay)))
+            lsp-lens--overlays)
       (setq lsp-lens--overlays overlays))))
 
 (defun lsp-lens--refresh (buffer-modified? &optional buffer)
