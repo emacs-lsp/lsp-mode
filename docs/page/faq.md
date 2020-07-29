@@ -24,16 +24,9 @@
       ```
 - I have disabled snippets and `Rust Analyzer` server inserts redundant `$0` when performing completion?
     - `Rust Analyzer` does not support disabling snippets - see <https://github.com/rust-analyzer/rust-analyzer/issues/2518>
-- How do I get flex completion in when using `Emacs 26`?
-    - `flex` filtering has been implemented in `Emacs 27+` and `lsp-mode` is using it by default and there is no `flex` matching by default. In order to have `flex` completion by default you could either upgrade to `Emacs 27` or try using `helm-flex` implementation including the following snippet in your config:
-      ``` elisp
-      (setq lsp-completion-styles '(helm-flex))
-      ```
-      See also
-      [\#1652](https://github.com/emacs-lsp/lsp-mode/issues/1652).
 - How do I force `lsp-mode` to forget the workspace folders for multi root
   servers so the workspace folders are added on demand?
-  - Use the following snippet:
+    - Use the following snippet:
   ``` elisp
   (advice-add 'lsp :before (lambda (&rest _args) (eval '(setf (lsp-session-server-id->folders (lsp-session)) (ht)))))
   ```
