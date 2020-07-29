@@ -588,6 +588,14 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
+(define-obsolete-variable-alias 'lsp-enable-completion-at-point
+  'lsp-completion-enable  "lsp-mode 7.0.1")
+
+(defcustom lsp-completion-enable t
+  "Enable `completion-at-point' integration."
+  :type 'boolean
+  :group 'lsp-mode)
+
 (defcustom lsp-enable-symbol-highlighting t
   "Highlight references of the symbol at point."
   :type 'boolean
@@ -3392,38 +3400,39 @@ in that particular folder."
 
 (defun lsp-configure-buffer ()
   "Configure LSP features for current buffer."
-  (when (and lsp-enable-text-document-color
-             (lsp-feature? "textDocument/documentColor"))
-    (add-hook 'lsp-on-change-hook #'lsp--document-color nil t))
+  (when lsp-auto-configure
+    (when (and lsp-enable-text-document-color
+               (lsp-feature? "textDocument/documentColor"))
+      (add-hook 'lsp-on-change-hook #'lsp--document-color nil t))
 
-  (when (and lsp-enable-imenu
-             (lsp-feature? "textDocument/documentSymbol"))
-    (lsp-enable-imenu))
+    (when (and lsp-enable-imenu
+               (lsp-feature? "textDocument/documentSymbol"))
+      (lsp-enable-imenu))
 
-  (when (and lsp-enable-indentation
-             (lsp-feature? "textDocument/rangeFormatting"))
-    (setq-local indent-region-function #'lsp-format-region))
+    (when (and lsp-enable-indentation
+               (lsp-feature? "textDocument/rangeFormatting"))
+      (setq-local indent-region-function #'lsp-format-region))
 
-  (when (and lsp-enable-symbol-highlighting
-             (lsp-feature? "textDocument/documentHighlight"))
-    (add-hook 'lsp-on-idle-hook #'lsp--document-highlight nil t))
+    (when (and lsp-enable-symbol-highlighting
+               (lsp-feature? "textDocument/documentHighlight"))
+      (add-hook 'lsp-on-idle-hook #'lsp--document-highlight nil t))
 
-  (when (and lsp-enable-links
-             (lsp-feature? "textDocument/documentLink"))
-    (add-hook 'lsp-on-idle-hook #'lsp--document-links nil t))
+    (when (and lsp-enable-links
+               (lsp-feature? "textDocument/documentLink"))
+      (add-hook 'lsp-on-idle-hook #'lsp--document-links nil t))
 
-  (when (and lsp-enable-dap-auto-configure
-             (featurep 'dap-mode))
-    (dap-auto-configure-mode 1))
+    (when (and lsp-enable-dap-auto-configure
+               (featurep 'dap-mode))
+      (dap-auto-configure-mode 1))
 
-  (when (and lsp-enable-semantic-highlighting
-             (lsp-feature? "textDocument/semanticTokens"))
-    (mapc #'lsp--semantic-tokens-initialize-workspace
-          (lsp--find-workspaces-for "textDocument/semanticTokens"))
-    (lsp--semantic-tokens-initialize-buffer
-     (lsp-feature? "textDocument/semanticTokensRangeProvider")))
+    (when (and lsp-enable-semantic-highlighting
+               (lsp-feature? "textDocument/semanticTokens"))
+      (mapc #'lsp--semantic-tokens-initialize-workspace
+            (lsp--find-workspaces-for "textDocument/semanticTokens"))
+      (lsp--semantic-tokens-initialize-buffer
+       (lsp-feature? "textDocument/semanticTokensRangeProvider")))
 
-  (run-hooks 'lsp-configure-hook))
+    (run-hooks 'lsp-configure-hook)))
 
 (defun lsp-unconfig-buffer ()
   "Unconfigure LSP features for buffer."
@@ -6357,7 +6366,6 @@ returns the command to execute."
 
 (defun lsp--auto-configure ()
   "Autoconfigure `company', `flycheck', `lsp-ui', etc if they are installed."
-  (run-hooks 'lsp--auto-configure-hook)
   (when (functionp 'lsp-ui-mode)
     (lsp-ui-mode))
 
