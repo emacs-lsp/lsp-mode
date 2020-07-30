@@ -3430,9 +3430,8 @@ in that particular folder."
       (mapc #'lsp--semantic-tokens-initialize-workspace
             (lsp--find-workspaces-for "textDocument/semanticTokens"))
       (lsp--semantic-tokens-initialize-buffer
-       (lsp-feature? "textDocument/semanticTokensRangeProvider")))
-
-    (run-hooks 'lsp-configure-hook)))
+       (lsp-feature? "textDocument/semanticTokensRangeProvider"))))
+  (run-hooks 'lsp-configure-hook))
 
 (defun lsp-unconfig-buffer ()
   "Unconfigure LSP features for buffer."
