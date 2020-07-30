@@ -1837,7 +1837,7 @@
 <p>In case the LSP server supports code lens:</p>
 <p><img alt="" src="../../examples/code-lens.png" /></p>
 <h2 id="project-errors-on-modeline">Project errors on modeline<a class="headerlink" href="#project-errors-on-modeline" title="Permanent link">#</a></h2>
-<p>To see all error statistics in the modeline you can enable <code>lsp-modeline-diagnostics-mode</code>. This is especially useful for languages that compilation might be broken due to errors in other files(e.g. Java/Haskell).</p>
+<p>To see all error statistics in the modeline you can enable <code>lsp-modeline-diagnostics-mode</code> or <code>(setq lsp-modeline-diagnostics-enable t)</code>. This is especially useful for languages that compilation might be broken due to errors in other files(e.g. Java/Haskell).</p>
 <p><img alt="" src="../../examples/modeline-diagnostics.png" /></p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-mode</span>
   <span class="c1">;; :project/:workspace/:file</span>
