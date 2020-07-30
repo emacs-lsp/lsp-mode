@@ -31,6 +31,7 @@
 
 (require 'lsp-mode)
 (require 'lsp-modeline)
+(require 'lsp-completion)
 
 (defconst lsp-test-location (file-name-directory (or load-file-name buffer-file-name)))
 

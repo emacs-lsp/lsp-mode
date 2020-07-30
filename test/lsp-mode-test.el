@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'lsp-completion)
 (require 'ert)
 
 (ert-deftest lsp-mode-test-merging-completion-results ()
@@ -37,7 +38,7 @@
                                                                        nil))
                              "textDocument/completion")))
     (should (lsp-completion-list? merged-completions))
-    (should (lsp--sort-completions (lsp:completion-list-items merged-completions)))))
+    (should (lsp-completion--sort-completions (lsp:completion-list-items merged-completions)))))
 
 (defun lsp--json-string-equal? (str1 str2)
   "Roughly compare json string STR1 and STR2."
