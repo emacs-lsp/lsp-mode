@@ -31,7 +31,8 @@
   :type '(choice
           (const :tag "Prefer company-capf" :capf)
           (const :tag "Prefer company-capf" t)
-          (const :tag "Deprecated - Prefer company-lsp" nil))
+          (const :tag "Deprecated - Prefer company-lsp" nil)
+          (const :tag "None" :none))
   :group 'lsp-mode
   :package-version '(lsp-mode . "7.0.1"))
 
@@ -493,6 +494,7 @@ Others: TRIGGER-CHARS"
                 (add-to-list 'completion-category-defaults '(lsp-capf (styles basic))))
 
     (cond
+     ((equal lsp-completion-provider :none))
      ((and (null lsp-completion-provider)
            (functionp 'company-lsp))
       (progn
