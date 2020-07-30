@@ -24,13 +24,16 @@
 (require 'lsp-mode)
 
 (define-obsolete-variable-alias 'lsp-prefer-capf
-  'lsp-completion-prefer-capf  "lsp-mode 7.0.1")
+  'lsp-completion-provider  "lsp-mode 7.0.1")
 
-(defcustom lsp-completion-prefer-capf nil
-  "Prefer capf."
-  :type 'boolean
+(defcustom lsp-completion-provider :capf
+  "The completion backend provider."
+  :type '(choice
+          (const :tag "Prefer company-capf" :capf)
+          (const :tag "Prefer company-capf" t)
+          (const :tag "Deprecated - Prefer company-lsp" nil))
   :group 'lsp-mode
-  :package-version '(lsp-mode . "6.3"))
+  :package-version '(lsp-mode . "7.0.1"))
 
 (defcustom lsp-completion-enable-additional-text-edit t
   "Whether or not to apply additional text edit when performing completion.
@@ -489,18 +492,19 @@ Others: TRIGGER-CHARS"
     (setq-local completion-category-defaults
                 (add-to-list 'completion-category-defaults '(lsp-capf (styles basic))))
 
-    (when (lsp--capability :completionProvider)
-      (cond
-       ((and (functionp 'company-lsp)
-             (not lsp-completion-prefer-capf))
-        (progn
-          (company-mode 1)
-          (add-to-list 'company-backends 'company-lsp)
-          (setq-local company-backends (remove 'company-capf company-backends))))
-
-       ((and (fboundp 'company-mode) lsp-completion-enable)
+    (cond
+     ((and (null lsp-completion-provider)
+           (functionp 'company-lsp))
+      (progn
         (company-mode 1)
-        (add-to-list 'company-backends 'company-capf))))
+        (add-to-list 'company-backends 'company-lsp)
+        (setq-local company-backends (remove 'company-capf company-backends))))
+
+     ((and (or (eq lsp-completion-provider :capf)
+               lsp-completion-provider)
+           (fboundp 'company-mode))
+      (company-mode 1)
+      (add-to-list 'company-backends 'company-capf)))
 
     (when (bound-and-true-p company-mode)
       (add-hook 'company-completion-started-hook
@@ -514,13 +518,11 @@ Others: TRIGGER-CHARS"
                   (setq-local lsp-inhibit-lsp-hooks nil))
                 nil
                 t))
-    (add-hook 'lsp-configure-hook #'lsp-completion--enable nil t)
     (add-hook 'lsp-unconfigure-hook #'lsp-completion--disable nil t))
    (t
     (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t)
     (setq-local completion-category-defaults
                 (cl-remove 'lsp-capf completion-category-defaults :key #'car))
-    (remove-hook 'lsp-configure-hook #'lsp-completion--enable t)
     (remove-hook 'lsp-unconfigure-hook #'lsp-completion--disable t)
     (when (featurep 'company)
       (remove-hook 'company-completion-started-hook
@@ -535,7 +537,8 @@ Others: TRIGGER-CHARS"
 
 ;;;###autoload
 (add-hook 'lsp-configure-hook (lambda ()
-                                (when lsp-completion-enable
+                                (when (and lsp-auto-configure
+                                           lsp-completion-enable)
                                   (lsp-completion--enable))))
 
 (provide 'lsp-completion)
