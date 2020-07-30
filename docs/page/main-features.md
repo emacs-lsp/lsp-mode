@@ -33,7 +33,7 @@ In case the LSP server supports code lens:
 
 ## Project errors on modeline
 
-To see all error statistics in the modeline you can enable `lsp-modeline-diagnostics-mode`. This is especially useful for languages that compilation might be broken due to errors in other files(e.g. Java/Haskell).
+To see all error statistics in the modeline you can enable `lsp-modeline-diagnostics-mode` or `(setq lsp-modeline-diagnostics-enable t)`. This is especially useful for languages that compilation might be broken due to errors in other files(e.g. Java/Haskell).
 
 ![](../examples/modeline-diagnostics.png)
 
