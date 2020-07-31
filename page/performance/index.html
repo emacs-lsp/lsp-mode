@@ -1737,9 +1737,9 @@ Benchmarks show that Emacs 27 is <code>~15 times</code> faster than Emacs when u
 </code></pre></div>
 
 <ul>
-<li>Optional: use <code>company-capf</code> . Although <code>company-lsp</code> also supports caching <code>lsp-mode</code>'s <code>company-capf</code> does that by default. To achieve that uninstall <code>company-lsp</code> or put these lines in your config:</li>
+<li>Make sure that you are using <code>company-capf</code> as the completion provider with:</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-prefer-capf</span> <span class="no">t</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-completion-provider</span> <span class="nb">:capf</span><span class="p">)</span>
 </code></pre></div>
 
 <p><em>Note:</em> - to verify which <code>company</code> backend implementation you are using do <code>M-x company-diag</code> when performing auto-completion.</p>
@@ -1774,7 +1774,7 @@ Benchmarks show that Emacs 27 is <code>~15 times</code> faster than Emacs when u
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 30, 2020</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 31, 2020</span>
     
   </small>
 </div>

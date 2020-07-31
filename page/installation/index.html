@@ -1842,7 +1842,7 @@ Then you need to install the specific LSP server for your language.</p>
 <span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;XXX-mode-hook</span> <span class="nf">#&#39;</span><span class="nv">lsp</span><span class="p">)</span>
 </code></pre></div>
 
-<p>Where <code>XXX</code> could be major mode like <code>python</code>, <code>java</code>, <code>c++</code>. Alternatively, if you want to minimize you configuration you may use <code>prog-mode-hook</code>. In case you do that, <code>lsp</code> will try to start for each programming mode and echo a message when there is no client registered for the current mode or if the corresponding server is not present. In addition, <code>lsp-mode</code> will automatically detect and configure <a href="https://emacs-lsp.github.io/lsp-ui">lsp-ui</a> and <a href="https://github.com/tigersoldier/company-lsp">company-lsp</a>. To turn off that behavior you could set <code>lsp-auto-configure</code> to <code>nil</code>.</p>
+<p>Where <code>XXX</code> could be major mode like <code>python</code>, <code>java</code>, <code>c++</code>. Alternatively, if you want to minimize you configuration you may use <code>prog-mode-hook</code>. In case you do that, <code>lsp</code> will try to start for each programming mode and echo a message when there is no client registered for the current mode or if the corresponding server is not present. In addition, <code>lsp-mode</code> will automatically detect and configure <a href="https://emacs-lsp.github.io/lsp-ui">lsp-ui</a> and <a href="https://github.com/company-mode/company-mode">company-mode</a>. To turn off that behavior you could set <code>lsp-auto-configure</code> to <code>nil</code>.</p>
 <p>To defer LSP server startup (and DidOpen notifications) until the buffer is visible you can use <code>lsp-deferred</code> instead of <code>lsp</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;XXX-mode-hook</span> <span class="nf">#&#39;</span><span class="nv">lsp-deferred</span><span class="p">)</span>
 </code></pre></div>
@@ -1893,7 +1893,7 @@ Then you need to install the specific LSP server for your language.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 30, 2020</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 31, 2020</span>
     
   </small>
 </div>
