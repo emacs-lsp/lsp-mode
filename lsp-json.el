@@ -122,13 +122,5 @@
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'vscode-json-languageserver callback error-callback))))
 
-;; Compatibility
-(with-eval-after-load 'company-lsp
-  (advice-add 'company-tng--supress-post-completion
-              :after-while
-              (lambda (&rest _)
-                (not (memq major-mode lsp-json--major-modes)))
-              '((name . --force-post-completion-for-json))))
-
 (provide 'lsp-json)
 ;;; lsp-json.el ends here

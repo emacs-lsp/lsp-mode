@@ -55,7 +55,7 @@ You could go minimal and use `lsp-mode` as it is without external packages with 
 (add-hook 'XXX-mode-hook #'lsp)
 ```
 
-Where `XXX` could be major mode like `python`, `java`, `c++`. Alternatively, if you want to minimize you configuration you may use `prog-mode-hook`. In case you do that, `lsp` will try to start for each programming mode and echo a message when there is no client registered for the current mode or if the corresponding server is not present. In addition, `lsp-mode` will automatically detect and configure [lsp-ui](https://emacs-lsp.github.io/lsp-ui) and [company-lsp](https://github.com/tigersoldier/company-lsp). To turn off that behavior you could set `lsp-auto-configure` to `nil`.
+Where `XXX` could be major mode like `python`, `java`, `c++`. Alternatively, if you want to minimize you configuration you may use `prog-mode-hook`. In case you do that, `lsp` will try to start for each programming mode and echo a message when there is no client registered for the current mode or if the corresponding server is not present. In addition, `lsp-mode` will automatically detect and configure [lsp-ui](https://emacs-lsp.github.io/lsp-ui) and [company-mode](https://github.com/company-mode/company-mode). To turn off that behavior you could set `lsp-auto-configure` to `nil`.
 
 To defer LSP server startup (and DidOpen notifications) until the buffer is visible you can use `lsp-deferred` instead of `lsp`:
 

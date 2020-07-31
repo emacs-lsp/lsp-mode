@@ -312,14 +312,6 @@ Must not nil.")
                       (lsp:set-server-capabilities-document-formatting-provider? caps t)))
   :download-server-fn #'lsp-pwsh-setup))
 
-;; Compatibility
-(with-eval-after-load 'company-lsp
-  (advice-add 'company-tng--supress-post-completion
-              :after-while
-              (lambda (&rest _)
-                (not (memq major-mode lsp-pwsh--major-modes)))
-              '((name . --force-post-completion-for-pwsh))))
-
 (defcustom lsp-pwsh-github-asset-url
   "https://github.com/%s/%s/releases/latest/download/%s"
   "GitHub latest asset template url."

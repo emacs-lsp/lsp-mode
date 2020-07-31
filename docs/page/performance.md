@@ -26,10 +26,10 @@ Benchmarks show that Emacs 27 is `~15 times` faster than Emacs when using Elisp 
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 ```
 
-- Optional: use `company-capf` . Although `company-lsp` also supports caching `lsp-mode`'s `company-capf` does that by default. To achieve that uninstall `company-lsp` or put these lines in your config:
+- Make sure that you are using `company-capf` as the completion provider with:
 
 ``` elisp
-(setq lsp-prefer-capf t)
+(setq lsp-completion-provider :capf)
 ```
 
 *Note:* - to verify which `company` backend implementation you are using do `M-x company-diag` when performing auto-completion.
