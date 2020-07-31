@@ -499,7 +499,7 @@ Others: TRIGGER-CHARS"
      ((and lsp-completion-provider
            (fboundp 'company-mode)
            (member 'company-lsp company-backends))
-      (message "Warning: `company-lsp` is not supported anymore, using `company-capf` as the `lsp-completion-provider`.")
+      (lsp-warn "`company-lsp` is not supported anymore. Using `company-capf` as the `lsp-completion-provider`.")
       (company-mode 1)
       (add-to-list 'company-backends 'company-capf))
 
