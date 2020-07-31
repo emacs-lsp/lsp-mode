@@ -616,7 +616,7 @@ The CLEANUP-FN will be called to cleanup."
                 (member 'company-lsp company-backends))
         (lsp--warn "`company-lsp` is not supported anymore. Using `company-capf` as the `lsp-completion-provider`."))
       (company-mode 1)
-      (add-to-list 'company-backends 'company-capf)))
+      (add-to-list 'company-backends 'company-capf))
      (t
       (lsp--warn "Unable to autoconfigure company-mode.")))
 
