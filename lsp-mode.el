@@ -2361,7 +2361,7 @@ active `major-mode', or for all major modes when ALL-MODES is t."
 (defvar lsp-mode-menu
   (easy-menu-create-menu
    nil
-   '(["Go to definition" lsp-find-definition
+   `(["Go to definition" lsp-find-definition
       :active (lsp--find-workspaces-for "textDocument/definition")]
      ["Find references" lsp-find-references
       :active (lsp--find-workspaces-for "textDocument/references")]
@@ -2378,7 +2378,7 @@ active `major-mode', or for all major modes when ALL-MODES is t."
      ["Highlight references" lsp-document-highlight]
      ["Rename" lsp-rename
       :active (or (lsp--capability :renameProvider)
-                  (lsp--registered-capability "textDocument/rename"))]
+               (lsp--registered-capability "textDocument/rename"))]
      "--"
      ("Session"
       ["View logs" lsp-workspace-show-log]
@@ -2393,7 +2393,11 @@ active `major-mode', or for all major modes when ALL-MODES is t."
       ["Lenses" lsp-lens-mode]
       ["Headerline breadcrumb" lsp-headerline-breadcrumb-mode]
       ["Modeline code actions" lsp-modeline-code-actions-mode]
-      ["Modeline diagnostics" lsp-modeline-diagnostics-mode])))
+      ["Modeline diagnostics" lsp-modeline-diagnostics-mode])
+     "---"
+     ("Debug"
+      :active (bound-and-true-p dap-ui-mode)
+      :filter ,(lambda (_) (nthcdr 3 dap-ui-menu-items)))))
   "Menu for lsp-mode.")
 
 (defun lsp-mode-line ()
