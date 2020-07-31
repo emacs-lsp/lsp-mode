@@ -1,5 +1,6 @@
 * Changelog
 ** Release 7.0.1
+  * Dropped support for ~company-lsp~, the suggested provider is ~company-capf~.
   * Moved completion features to ~lsp-completion.el~
   * Safe renamed ~lsp-prefer-capf~ -> ~lsp-completion-provider~
   * Safe renamed ~lsp-enable-completion-at-point~ -> ~lsp-completion-enable~
