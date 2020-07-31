@@ -496,16 +496,12 @@ Others: TRIGGER-CHARS"
     (cond
      ((equal lsp-completion-provider :none))
 
-     ((and lsp-completion-provider
-           (fboundp 'company-mode)
-           (member 'company-lsp company-backends))
-      (lsp-warn "`company-lsp` is not supported anymore. Using `company-capf` as the `lsp-completion-provider`.")
-      (company-mode 1)
-      (add-to-list 'company-backends 'company-capf))
+     ((fboundp 'company-mode)
 
-     ((and (or (eq lsp-completion-provider :capf)
-               lsp-completion-provider)
-           (fboundp 'company-mode))
+      (when (or (null lsp-completion-provider)
+                (member 'company-lsp company-backends))
+        (lsp-warn "`company-lsp` is not supported anymore. Using `company-capf` as the `lsp-completion-provider`."))
+
       (company-mode 1)
       (add-to-list 'company-backends 'company-capf)))
    
