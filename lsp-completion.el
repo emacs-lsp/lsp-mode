@@ -31,7 +31,7 @@
   :type '(choice
           (const :tag "Prefer company-capf" :capf)
           (const :tag "Prefer company-capf" t)
-          (const :tag "Deprecated - Prefer company-lsp" nil)
+          (const :tag "None" nil)
           (const :tag "None" :none))
   :group 'lsp-mode
   :package-version '(lsp-mode . "7.0.1"))
@@ -495,19 +495,18 @@ Others: TRIGGER-CHARS"
 
     (cond
      ((equal lsp-completion-provider :none))
-     ((and (null lsp-completion-provider)
-           (functionp 'company-lsp))
-      (progn
-        (company-mode 1)
-        (add-to-list 'company-backends 'company-lsp)
-        (setq-local company-backends (remove 'company-capf company-backends))))
+
+     ((and lsp-completion-provider
+           (fboundp 'company-mode)
+           (member 'company-lsp company-backends))
+      (message "Warning: company-lsp is not supported anymore, make sure `lsp-completion-provider` is configured correctly."))
 
      ((and (or (eq lsp-completion-provider :capf)
                lsp-completion-provider)
            (fboundp 'company-mode))
       (company-mode 1)
       (add-to-list 'company-backends 'company-capf)))
-
+   
     (when (bound-and-true-p company-mode)
       (add-hook 'company-completion-started-hook
                 (lambda (&rest _)
