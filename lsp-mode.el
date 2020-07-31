@@ -70,6 +70,7 @@
 (defvar yas-inhibit-overlay-modification-protection)
 (defvar yas-indent-line)
 (defvar dap-auto-configure-mode)
+(defvar dap-ui-menu-items)
 
 (defconst lsp--message-type-face
   `((1 . ,compilation-error-face)
