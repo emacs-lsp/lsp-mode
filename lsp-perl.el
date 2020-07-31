@@ -50,6 +50,33 @@
   :group 'lsp-perl
   :package-version '(lsp-mode . "6.3"))
 
+(defcustom lsp-perl-perl-cmd nil
+  "Path to perl interpreter used in Perl Language Server.  Defaults to `perl' if nil."
+  :type 'string
+  :group 'lsp-perl
+  :package-version '(lsp-mode . "7.0.1"))
+(defcustom lsp-perl-perl-inc nil
+  "A vector of paths to add to perl library path."
+  :type 'lsp-string-vector
+  :group 'lsp-perl
+  :package-version '(lsp-mode . "7.0.1"))
+(defcustom lsp-perl-file-filter nil
+  "A vector of directories filtering perl file.  Defaults to `[\".pm\" \".pl\"]' if nil."
+  :type 'lsp-string-vector
+  :group 'lsp-perl
+  :package-version '(lsp-mode . "7.0.1"))
+(defcustom lsp-perl-ignore-dirs nil
+  "A vector of directories to ignore.  Defaults to `[\".vscode\" \".git\" \".svn\"]' if nil."
+  :type 'lsp-string-vector
+  :group 'lsp-perl
+  :package-version '(lsp-mode . "7.0.1"))
+
+(lsp-register-custom-settings
+ '(("perl.perlCmd" lsp-perl-perl-cmd)
+   ("perl.perlInc" lsp-perl-perl-inc)
+   ("perl.fileFilter" lsp-perl-file-filter)
+   ("perl.ignoreDirs" lsp-perl-ignore-dirs)))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda ()
@@ -58,6 +85,10 @@
                                            (format "--port %d --version %s"
                                                    lsp-perl-language-server-port lsp-perl-language-server-client-version))))
                   :major-modes '(perl-mode cperl-mode)
+                  :initialized-fn (lambda (workspace)
+                                    (with-lsp-workspace workspace
+                                      (lsp--set-configuration
+                                       (lsp-configuration-section "perl"))))
                   :priority -1
                   :server-id 'perl-language-server))
 
