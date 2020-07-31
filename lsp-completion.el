@@ -612,10 +612,10 @@ The CLEANUP-FN will be called to cleanup."
      ((equal lsp-completion-provider :none))
      ((and (member lsp-completion-provider '(:capf nil t))
            (fboundp 'company-mode))
+      (company-mode 1)
       (when (or (null lsp-completion-provider)
                 (member 'company-lsp company-backends))
         (lsp--warn "`company-lsp` is not supported anymore. Using `company-capf` as the `lsp-completion-provider`."))
-      (company-mode 1)
       (add-to-list 'company-backends 'company-capf))
      (t
       (lsp--warn "Unable to autoconfigure company-mode.")))
