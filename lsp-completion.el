@@ -217,14 +217,14 @@ Also, additional data to attached to each candidate can be passed via PLIST."
                                         (setq queries (plist-put queries start-point s))
                                         s)))
                            (fuz-query (or (plist-get fuz-queries start-point)
-                                          (let ((s (lsp--regex-fuzzy query)))
+                                          (let ((s (lsp-completion--regex-fuz query)))
                                             (setq fuz-queries
                                                   (plist-put fuz-queries start-point s))
                                             s))))
                       (when (string-match fuz-query cand)
                         (put-text-property 0 1 'match-data (match-data) cand)
                         (put-text-property 0 1 'sort-score
-                                           (* (or (lsp--fuzzy-score query cand) 1e-05)
+                                           (* (or (lsp-completion--fuz-score query cand) 1e-05)
                                               (or (get-text-property 0 'lsp-completion-score cand)
                                                   0.001))
                                            cand)
@@ -280,7 +280,7 @@ Also, additional data to attached to each candidate can be passed via PLIST."
     (let ((resolved-item
            (-some->> item
              (get-text-property 0 'lsp-completion-item)
-             (lsp--resolve-completion)))
+             (lsp-completion--resolve)))
           (len (length item)))
       (put-text-property 0 len 'lsp-completion-item resolved-item item)
       (put-text-property 0 len 'lsp-completion-resolved t item)))
@@ -452,7 +452,7 @@ Others: TRIGGER-CHARS"
                   additional-text-edits?)
               (lsp--apply-text-edits additional-text-edits?)
             (-let [(callback cleanup-fn) (lsp--create-apply-text-edits-handlers)]
-              (lsp--resolve-completion-async
+              (lsp-completion--resolve-async
                item
                (lambda (resolved-item)
                  (funcall callback
@@ -468,6 +468,121 @@ Others: TRIGGER-CHARS"
         (when (lsp-completion--looking-back-trigger-characterp trigger-chars)
           (setq this-command 'self-insert-command)))
     (lsp-completion--capf-clear-cache)))
+
+(defun lsp-completion--regex-fuz (str)
+  "Build a regex sequence from STR.  Insert .* between each char."
+  (apply #'concat
+         (cl-mapcar
+          #'concat
+          (cons "" (cdr (seq-map (lambda (c) (format "[^%c]*" c)) str)))
+          (seq-map (lambda (c)
+                     (format "\\(%s\\)" (regexp-quote (char-to-string c))))
+                   str))))
+
+(defvar lsp-completion--fuz-case-sensitiveness 20
+  "Case sensitiveness, can be in range of [0, inf).")
+
+(defun lsp-completion--fuz-score (query str)
+  "Calculate fuzzy score for STR with query QUERY."
+  (-when-let* ((md (cddr (or (get-text-property 0 'match-data str)
+                             (let ((re (lsp-completion--regex-fuz query)))
+                               (when (string-match re str)
+                                 (match-data))))))
+               (start (pop md))
+               (len (length str))
+               ;; To understand how this works, consider these bad
+               ;; ascii(tm) diagrams showing how the pattern "foo"
+               ;; flex-matches "fabrobazo", "fbarbazoo" and
+               ;; "barfoobaz":
+
+               ;;      f abr o baz o
+               ;;      + --- + --- +
+
+               ;;      f barbaz oo
+               ;;      + ------ ++
+
+               ;;      bar foo baz
+               ;;          +++
+
+               ;; "+" indicates parts where the pattern matched.  A
+               ;; "hole" in the middle of the string is indicated by
+               ;; "-".  Note that there are no "holes" near the edges
+               ;; of the string.  The completion score is a number
+               ;; bound by ]0..1]: the higher the better and only a
+               ;; perfect match (pattern equals string) will have
+               ;; score 1.  The formula takes the form of a quotient.
+               ;; For the numerator, we use the number of +, i.e. the
+               ;; length of the pattern.  For the denominator, it
+               ;; first computes
+               ;;
+               ;;     hole_i_contrib = 1 + (Li-1)^(1/tightness)
+               ;;
+               ;; , for each hole "i" of length "Li", where tightness
+               ;; is given by `flex-score-match-tightness'.  The
+               ;; final value for the denominator is then given by:
+               ;;
+               ;;    (SUM_across_i(hole_i_contrib) + 1) * len
+               ;;
+               ;; , where "len" is the string's length.
+               (score-numerator 0)
+               (score-denominator 0)
+               (last-b 0)
+               (q-ind 0)
+               (update-score
+                (lambda (a b)
+                  "Update score variables given match range (A B)."
+                  (setq score-numerator (+ score-numerator (- b a)))
+                  (unless (= a len)
+                    (setq score-denominator
+                          (+ score-denominator
+                             (if (= a last-b) 0
+                               (+ 1
+                                  (if (zerop last-b)
+                                      (- 0 (expt 0.8 (- a last-b)))
+                                    (expt (- a last-b 1)
+                                          0.25))))
+                             (if (equal (aref query q-ind) (aref str a))
+                                 0
+                               lsp-completion--fuz-case-sensitiveness))))
+                  (setq last-b b))))
+    (funcall update-score start start)
+    (while md
+      (funcall update-score start (car md))
+      (pop md)
+      (setq start (pop md))
+      (cl-incf q-ind))
+    (funcall update-score len len)
+    (unless (zerop len)
+      (/ score-numerator (* len (1+ score-denominator)) 1.0))))
+
+(defun lsp-completion--resolve (item)
+  "Resolve completion ITEM."
+  (cl-assert item nil "Completion item must not be nil")
+  (or (ignore-errors
+        (when (lsp:completion-options-resolve-provider?
+               (lsp--capability :completionProvider))
+          (lsp-request "completionItem/resolve" item)))
+      item))
+
+(defun lsp-completion--resolve-async (item callback &optional cleanup-fn)
+  "Resolve completion ITEM asynchronously with CALLBACK.
+The CLEANUP-FN will be called to cleanup."
+  (cl-assert item nil "Completion item must not be nil")
+  (ignore-errors
+    (if (lsp:completion-options-resolve-provider?
+         (lsp--capability :completionProvider))
+        (lsp-request-async "completionItem/resolve" item
+                           (lambda (result)
+                             (funcall callback result)
+                             (when cleanup-fn (funcall cleanup-fn)))
+                           :error-handler (lambda (err)
+                                            (when cleanup-fn (funcall cleanup-fn))
+                                            (error (lsp:json-error-message err)))
+                           :cancel-handler cleanup-fn
+                           :mode 'alive)
+      (funcall callback item)
+      (when cleanup-fn (funcall cleanup-fn)))))
+
 
 ;;;###autoload
 (defun lsp-completion--enable ()
@@ -495,16 +610,16 @@ Others: TRIGGER-CHARS"
 
     (cond
      ((equal lsp-completion-provider :none))
-
-     ((fboundp 'company-mode)
-
+     ((and (member lsp-completion-provider '(:capf nil t))
+           (fboundp 'company-mode))
+      (company-mode 1)
       (when (or (null lsp-completion-provider)
                 (member 'company-lsp company-backends))
-        (lsp-warn "`company-lsp` is not supported anymore. Using `company-capf` as the `lsp-completion-provider`."))
+        (lsp--warn "`company-lsp` is not supported anymore. Using `company-capf` as the `lsp-completion-provider`."))
+      (add-to-list 'company-backends 'company-capf))
+     (t
+      (lsp--warn "Unable to autoconfigure company-mode.")))
 
-      (company-mode 1)
-      (add-to-list 'company-backends 'company-capf)))
-   
     (when (bound-and-true-p company-mode)
       (add-hook 'company-completion-started-hook
                 (lambda (&rest _)
