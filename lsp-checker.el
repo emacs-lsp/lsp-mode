@@ -23,8 +23,14 @@
 
 (require 'lsp-mode)
 
-(defcustom lsp-diagnostic-package :auto
-  "`lsp-mode' diagnostics auto-configuration."
+(define-obsolete-variable-alias 'lsp-prefer-flymake
+  'lsp-checker-provider  "lsp-mode 6.2")
+
+(define-obsolete-variable-alias 'lsp-diagnostic-package
+  'lsp-checker-provider  "lsp-mode 7.0.1")
+
+(defcustom lsp-checker-provider :auto
+  "The checker backend provider."
   :type
   '(choice
     (const :tag "Pick flycheck if present and fallback to flymake" :auto)
@@ -36,22 +42,29 @@
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.3"))
 
-(make-obsolete-variable 'lsp-prefer-flymake 'lsp-diagnostic-package "lsp-mode 6.2")
+(define-obsolete-variable-alias 'lsp-flycheck-default-level
+  'lsp-checker-flycheck-default-level  "lsp-mode 7.0.1")
 
-(defcustom lsp-flycheck-default-level 'error
+(defcustom lsp-checker-flycheck-default-level 'error
   "Error level to use when the server does not report back a diagnostic level."
-  :type '(choice (const error)
-                 (const warning)
-                 (const info))
+  :type '(choice
+          (const error)
+          (const warning)
+          (const info))
   :group 'lsp-mode)
 
-(defvar lsp-diagnostics-attributes
+(define-obsolete-variable-alias 'lsp-diagnostics-attributes
+  'lsp-checker-diagnostics-attributes  "lsp-mode 7.0.1")
+
+(defcustom lsp-checker-diagnostics-attributes
   `((unnecessary :foreground "dim gray")
     (deprecated  :strike-through t))
   "The Attributes used on the diagnostics.
 List containing (tag attributes) where tag is the LSP diagnostic tag and
 attributes is a `plist' containing face attributes which will be applied
-on top the flycheck face for that error level.")
+on top the flycheck face for that error level."
+  :type '(repeat list)
+  :group 'lsp-mode)
 
 ;; Flycheck integration
 
@@ -69,7 +82,7 @@ on top the flycheck face for that error level.")
 (defvar flycheck-checker)
 (defvar flycheck-checkers)
 
-(defun lsp--flycheck-level (flycheck-level tags)
+(defun lsp-checker--flycheck-level (flycheck-level tags)
   "Generate flycheck level from the original FLYCHECK-LEVEL (e.
 g. `error', `warning') and list of LSP TAGS."
   (let ((name (format "lsp-flycheck-%s-%s"
@@ -83,7 +96,7 @@ g. `error', `warning') and list of LSP TAGS."
                                   it)
                        (mapc (lambda (tag)
                                (apply #'set-face-attribute it nil
-                                      (cl-rest (assoc tag lsp-diagnostics-attributes))))
+                                      (cl-rest (assoc tag lsp-checker-diagnostics-attributes))))
                              tags)))
                (category (--doto (intern (format "lsp-%s-category" name))
                            (setf (get it 'face) face
@@ -100,7 +113,7 @@ g. `error', `warning') and list of LSP TAGS."
             :error-list-face face)
           new-level))))
 
-(defun lsp--flycheck-calculate-level (severity tags)
+(defun lsp-checker--flycheck-calculate-level (severity tags)
   "Calculate flycheck level by SEVERITY and TAGS."
   (let ((level (pcase severity
                  (1 'error)
@@ -115,15 +128,15 @@ g. `error', `warning') and list of LSP TAGS."
                           ((= tag lsp/diagnostic-tag-deprecated) 'deprecated)))
                        tags)))
     (if tags
-        (lsp--flycheck-level level tags)
+        (lsp-checker--flycheck-level level tags)
       level)))
 
-(defun lsp--flycheck-start (checker callback)
+(defun lsp-checker--flycheck-start (checker callback)
   "Start an LSP syntax check with CHECKER.
 
 CALLBACK is the status callback passed by Flycheck."
 
-  (remove-hook 'lsp-on-idle-hook #'lsp--flycheck-buffer t)
+  (remove-hook 'lsp-on-idle-hook #'lsp-checker--flycheck-buffer t)
 
   (->> (lsp--get-buffer-diagnostics)
        (-map (-lambda ((&Diagnostic :message :severity? :tags? :code?
@@ -136,7 +149,7 @@ CALLBACK is the status callback passed by Flycheck."
                 :checker checker
                 :filename buffer-file-name
                 :message message
-                :level (lsp--flycheck-calculate-level severity? tags?)
+                :level (lsp-checker--flycheck-calculate-level severity? tags?)
                 :id code?
                 :line (lsp-translate-line (1+ start-line))
                 :column (1+ (lsp-translate-column start-character))
@@ -144,12 +157,12 @@ CALLBACK is the status callback passed by Flycheck."
                 :end-column (1+ (lsp-translate-column end-character)))))
        (funcall callback 'finished)))
 
-(defun lsp--flycheck-buffer ()
+(defun lsp-checker--flycheck-buffer ()
   "Trigger flyckeck on buffer."
-  (remove-hook 'lsp-on-idle-hook #'lsp--flycheck-buffer t)
+  (remove-hook 'lsp-on-idle-hook #'lsp-checker--flycheck-buffer t)
   (flycheck-buffer))
 
-(defun lsp--flycheck-report ()
+(defun lsp-checker--flycheck-report ()
   "Report flycheck.
 This callback is invoked when new diagnostics are received
 from the language server."
@@ -164,17 +177,17 @@ from the language server."
          (mapc (lambda (buffer)
                  (when (lsp-buffer-live-p buffer)
                    (lsp-with-current-buffer buffer
-                     (add-hook 'lsp-on-idle-hook #'lsp--flycheck-buffer nil t)
+                     (add-hook 'lsp-on-idle-hook #'lsp-checker--flycheck-buffer nil t)
                      (lsp--idle-reschedule (current-buffer)))))))))
 
-(defun lsp-flycheck-enable (&rest _)
+(defun lsp-checker--flycheck-enable (&rest _)
   "Enable flycheck integration for the current buffer."
   (flycheck-mode 1)
   (setq-local flycheck-checker 'lsp)
   (lsp-flycheck-add-mode major-mode)
   (add-to-list 'flycheck-checkers 'lsp)
-  (add-hook 'lsp-diagnostics-updated-hook #'lsp--flycheck-report nil t)
-  (add-hook 'lsp-managed-mode-hook #'lsp--flycheck-report nil t))
+  (add-hook 'lsp-diagnostics-updated-hook #'lsp-checker--flycheck-report nil t)
+  (add-hook 'lsp-managed-mode-hook #'lsp-checker--flycheck-report nil t))
 
 ;;;###autoload
 (with-eval-after-load 'flycheck
@@ -182,7 +195,7 @@ from the language server."
     "A syntax checker using the Language Server Protocol (LSP)
 provided by lsp-mode.
 See https://github.com/emacs-lsp/lsp-mode."
-    :start #'lsp--flycheck-start
+    :start #'lsp-checker--flycheck-start
     :modes '(lsp-placeholder-mode) ;; placeholder
     :predicate (lambda () lsp-mode)
     :error-explainer (lambda (e)
@@ -217,7 +230,7 @@ See https://github.com/emacs-lsp/lsp-mode."
                 (user-error "The lsp-diagnostic-package is set to :flycheck but flycheck is not installed?")))
        ;; legacy
        (null lsp-diagnostic-package))
-      (lsp-flycheck-enable))
+      (lsp-checker--flycheck-enable))
      ((and (not (version< emacs-version "26.1"))
            (or (eq lsp-diagnostic-package :auto)
                (eq lsp-diagnostic-package :flymake)
