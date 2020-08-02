@@ -182,15 +182,6 @@ from the language server."
 
 (defun lsp-checker--flycheck-enable (&rest _)
   "Enable flycheck integration for the current buffer."
-  (flycheck-mode 1)
-  (setq-local flycheck-checker 'lsp)
-  (lsp-flycheck-add-mode major-mode)
-  (add-to-list 'flycheck-checkers 'lsp)
-  (add-hook 'lsp-diagnostics-updated-hook #'lsp-checker--flycheck-report nil t)
-  (add-hook 'lsp-managed-mode-hook #'lsp-checker--flycheck-report nil t))
-
-;;;###autoload
-(with-eval-after-load 'flycheck
   (flycheck-define-generic-checker 'lsp
     "A syntax checker using the Language Server Protocol (LSP)
 provided by lsp-mode.
@@ -201,7 +192,13 @@ See https://github.com/emacs-lsp/lsp-mode."
     :error-explainer (lambda (e)
                        (cond ((string-prefix-p "clang-tidy" (flycheck-error-message e))
                               (lsp-cpp-flycheck-clang-tidy-error-explainer e))
-                             (t (flycheck-error-message e))))))
+                             (t (flycheck-error-message e)))))
+  (flycheck-mode 1)
+  (setq-local flycheck-checker 'lsp)
+  (lsp-flycheck-add-mode major-mode)
+  (add-to-list 'flycheck-checkers 'lsp)
+  (add-hook 'lsp-diagnostics-updated-hook #'lsp-checker--flycheck-report nil t)
+  (add-hook 'lsp-managed-mode-hook #'lsp-checker--flycheck-report nil t))
 
 
 ;; Flymake integration
@@ -291,21 +288,21 @@ See https://github.com/emacs-lsp/lsp-mode."
    (lsp-checker-mode
     (cond
      ((or
-       (and (eq lsp-diagnostic-package :auto)
+       (and (eq lsp-checker-provider :auto)
             (functionp 'flycheck-mode))
-       (and (eq lsp-diagnostic-package :flycheck)
+       (and (eq lsp-checker-provider :flycheck)
             (or (functionp 'flycheck-mode)
-                (user-error "The lsp-diagnostic-package is set to :flycheck but flycheck is not installed?")))
+                (user-error "The lsp-checker-provider is set to :flycheck but flycheck is not installed?")))
        ;; legacy
-       (null lsp-diagnostic-package))
+       (null lsp-checker-provider))
       (lsp-checker--flycheck-enable))
      ((and (not (version< emacs-version "26.1"))
-           (or (eq lsp-diagnostic-package :auto)
-               (eq lsp-diagnostic-package :flymake)
-               (eq lsp-diagnostic-package t)))
+           (or (eq lsp-checker-provider :auto)
+               (eq lsp-checker-provider :flymake)
+               (eq lsp-checker-provider t)))
       (require 'flymake)
       (lsp-checker--flymake-setup))
-     ((not (eq lsp-diagnostic-package :none))
+     ((not (eq lsp-checker-provider :none))
       (lsp--warn "Unable to autoconfigure flycheck/flymake. The diagnostics won't be rendered.")))
 
     (add-hook 'lsp-unconfigure-hook #'lsp-checker--disable nil t))
