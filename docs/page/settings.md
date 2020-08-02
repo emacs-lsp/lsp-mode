@@ -17,7 +17,7 @@ These are `lsp-mode` specific custom settings:
 - `lsp-eldoc-render-all` - Display all of the info returned by `document/onHover`. If this is nil, `eldoc` will show only the symbol information.
 - `lsp-enable-completion-at-point` - Enable `completion-at-point` integration.
 - `lsp-enable-xref` - Enable xref integration.
-- `lsp-diagnostic-package` - Specifies which package to use for diagnostics. Choose from `:auto`, `:flycheck`, `:flymake` and `:none`. Default is `:auto` which means use `:flycheck` if present.
+- `lsp-checker-provider` - Specifies which package to use for diagnostics. Choose from `:auto`, `:flycheck`, `:flymake` and `:none`. Default is `:auto` which means use `:flycheck` if present and fallback to `:flymake`.
 - `lsp-enable-indentation` - Indent regions using the file formatting functionality provided by the language server.
 - `lsp-enable-on-type-formatting` - Enable `textDocument/onTypeFormatting` integration.
 - `lsp-before-save-edits` - If non-nil, `lsp-mode` will apply edits suggested by the language server before saving a document.

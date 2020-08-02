@@ -1,5 +1,9 @@
 * Changelog
 ** Release 7.0.1
+  * Introduced ~lsp-checker-mode~ and ~lsp-checker-enable~.
+  * Safe renamed ~lsp-flycheck-default-level~ -> ~lsp-checker-flycheck-default-level~
+  * Safe renamed ~lsp-diagnostics-attributes~ -> ~lsp-checker-diagnostics-attributes~
+  * Safe renamed ~lsp-diagnostic-package~ -> ~lsp-checker-provider~
   * Dropped support for ~company-lsp~, the suggested provider is ~company-capf~.
   * Moved completion features to ~lsp-completion.el~
   * Safe renamed ~lsp-prefer-capf~ -> ~lsp-completion-provider~
