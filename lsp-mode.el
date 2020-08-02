@@ -764,8 +764,6 @@ Changes take effect only when a new session is started."
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
 
-(defvar-local lsp--flymake-report-fn nil)
-
 (defvar lsp-language-id-configuration '((".*\\.vue$" . "vue")
                                         (".*\\.tsx$" . "typescriptreact")
                                         (".*\\.ts$" . "typescript")
@@ -1838,69 +1836,6 @@ WORKSPACE is the workspace that contains the diagnostics."
     (lsp--idle-reschedule (current-buffer))))
 
 
-;; flymake integration
-
-(declare-function flymake-mode "ext:flymake")
-(declare-function flymake-make-diagnostic "ext:flymake")
-(declare-function flymake-diag-region "ext:flymake")
-
-(defvar flymake-diagnostic-functions)
-(defvar flymake-mode)
-
-(defun lsp--flymake-setup ()
-  "Setup flymake."
-  (setq lsp--flymake-report-fn nil)
-  (flymake-mode 1)
-  (add-hook 'flymake-diagnostic-functions 'lsp--flymake-backend nil t)
-  (add-hook 'lsp-after-diagnostics-hook 'lsp--flymake-after-diagnostics nil t))
-
-(defun lsp--flymake-after-diagnostics ()
-  "Handler for `lsp-after-diagnostics-hook'"
-  (cond
-   ((and lsp--flymake-report-fn flymake-mode)
-    (lsp--flymake-update-diagnostics))
-   ((not flymake-mode)
-    (setq lsp--flymake-report-fn nil))))
-
-(defun lsp--flymake-backend (report-fn &rest _args)
-  "Flymake backend."
-  (let ((first-run (null lsp--flymake-report-fn)))
-    (setq lsp--flymake-report-fn report-fn)
-    (when first-run
-      (lsp--flymake-update-diagnostics))))
-
-(defun lsp--flymake-update-diagnostics ()
-  "Report new diagnostics to flymake."
-  (funcall lsp--flymake-report-fn
-           (-some->> (lsp-diagnostics t)
-             (gethash (lsp--fix-path-casing buffer-file-name))
-             (--map (-let* (((&Diagnostic :message :severity?
-                                          :range (range &as &Range
-                                                        :start (&Position :line start-line :character)
-                                                        :end (&Position :line end-line))) it)
-                            ((start . end) (lsp--range-to-region range)))
-                      (when (= start end)
-                        (if-let ((region (flymake-diag-region (current-buffer)
-                                                              (1+ start-line)
-                                                              character)))
-                            (setq start (car region)
-                                  end (cdr region))
-                          (lsp-save-restriction-and-excursion
-                            (goto-char (point-min))
-                            (setq start (point-at-bol (1+ start-line))
-                                  end (point-at-eol (1+ end-line))))))
-                      (flymake-make-diagnostic (current-buffer)
-                                               start
-                                               end
-                                               (cl-case severity?
-                                                 (1 :error)
-                                                 (2 :warning)
-                                                 (t :note))
-                                               message))))
-           ;; This :region keyword forces flymake to delete old diagnostics in
-           ;; case the buffer hasn't changed since the last call to the report
-           ;; function. See https://github.com/joaotavora/eglot/issues/159
-           :region (cons (point-min) (point-max))))
 
 (defun lsp--ht-get (tbl &rest keys)
   "Get nested KEYS in TBL."
@@ -1909,8 +1844,6 @@ WORKSPACE is the workspace that contains the diagnostics."
       (setq val (ht-get val (cl-first keys)))
       (setq keys (cl-rest keys)))
     val))
-
-
 
 ;; textDocument/foldingRange support
 

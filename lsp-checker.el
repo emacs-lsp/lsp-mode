@@ -203,6 +203,74 @@ See https://github.com/emacs-lsp/lsp-mode."
                               (lsp-cpp-flycheck-clang-tidy-error-explainer e))
                              (t (flycheck-error-message e))))))
 
+
+;; Flymake integration
+
+(declare-function flymake-mode "ext:flymake")
+(declare-function flymake-make-diagnostic "ext:flymake")
+(declare-function flymake-diag-region "ext:flymake")
+
+(defvar flymake-diagnostic-functions)
+(defvar flymake-mode)
+(defvar-local lsp-checker--flymake-report-fn nil)
+
+(defun lsp-checker--flymake-setup ()
+  "Setup flymake."
+  (setq lsp-checker--flymake-report-fn nil)
+  (flymake-mode 1)
+  (add-hook 'flymake-diagnostic-functions 'lsp-checker--flymake-backend nil t)
+  (add-hook 'lsp-diagnostics-updated-hook 'lsp-checker--flymake-after-diagnostics nil t))
+
+(defun lsp-checker--flymake-after-diagnostics ()
+  "Handler for `lsp-diagnostics-updated-hook'."
+  (cond
+   ((and lsp-checker--flymake-report-fn flymake-mode)
+    (lsp-checker--flymake-update-diagnostics))
+   ((not flymake-mode)
+    (setq lsp-checker--flymake-report-fn nil))))
+
+(defun lsp-checker--flymake-backend (report-fn &rest _args)
+  "Flymake backend using REPORT-FN."
+  (let ((first-run (null lsp-checker--flymake-report-fn)))
+    (setq lsp-checker--flymake-report-fn report-fn)
+    (when first-run
+      (lsp-checker--flymake-update-diagnostics))))
+
+(defun lsp-checker--flymake-update-diagnostics ()
+  "Report new diagnostics to flymake."
+  (funcall lsp-checker--flymake-report-fn
+           (-some->> (lsp-diagnostics t)
+             (gethash (lsp--fix-path-casing buffer-file-name))
+             (--map (-let* (((&Diagnostic :message :severity?
+                                          :range (range &as &Range
+                                                        :start (&Position :line start-line :character)
+                                                        :end (&Position :line end-line))) it)
+                            ((start . end) (lsp--range-to-region range)))
+                      (when (= start end)
+                        (if-let ((region (flymake-diag-region (current-buffer)
+                                                              (1+ start-line)
+                                                              character)))
+                            (setq start (car region)
+                                  end (cdr region))
+                          (lsp-save-restriction-and-excursion
+                            (goto-char (point-min))
+                            (setq start (point-at-bol (1+ start-line))
+                                  end (point-at-eol (1+ end-line))))))
+                      (flymake-make-diagnostic (current-buffer)
+                                               start
+                                               end
+                                               (cl-case severity?
+                                                 (1 :error)
+                                                 (2 :warning)
+                                                 (t :note))
+                                               message))))
+           ;; This :region keyword forces flymake to delete old diagnostics in
+           ;; case the buffer hasn't changed since the last call to the report
+           ;; function. See https://github.com/joaotavora/eglot/issues/159
+           :region (cons (point-min) (point-max))))
+
+
+
 ;;;###autoload
 (defun lsp-checker--enable ()
   "Enable LSP checker support."
@@ -236,7 +304,7 @@ See https://github.com/emacs-lsp/lsp-mode."
                (eq lsp-diagnostic-package :flymake)
                (eq lsp-diagnostic-package t)))
       (require 'flymake)
-      (lsp--flymake-setup))
+      (lsp-checker--flymake-setup))
      ((not (eq lsp-diagnostic-package :none))
       (lsp--warn "Unable to autoconfigure flycheck/flymake. The diagnostics won't be rendered.")))
 
