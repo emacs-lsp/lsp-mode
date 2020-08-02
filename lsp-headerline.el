@@ -131,8 +131,7 @@ narrow to the outer symbol."
   (narrow-to-region start end))
 
 (defun lsp-headerline--with-action (local-map help-echo-string display-string)
-  "Assign LOCAL-MAP and HELP-ECHO-STRING to the region around the
-DISPLAY-STRING."
+  "Assign LOCAL-MAP and HELP-ECHO-STRING to the region around the DISPLAY-STRING."
   (propertize display-string
               'mouse-face 'header-line-highlight
               'help-echo help-echo-string
