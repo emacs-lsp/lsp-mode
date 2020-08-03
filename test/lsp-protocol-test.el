@@ -28,7 +28,8 @@
 (require 'lsp-protocol)
 (require 'ert)
 
-(lsp-interface (MyPosition (:line :character :camelCase) (:optional)))
+(eval-and-compile
+  (lsp-interface (MyPosition (:line :character :camelCase) (:optional))))
 
 (ert-deftest lsp-test-lsp-interface ()
   (let ((position (lsp-make-my-position :character 1 :line 2)))

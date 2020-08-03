@@ -32,15 +32,16 @@
 (require 'ht)
 (require 's)
 
-(defun lsp-keyword->symbol (keyword)
-  "Convert a KEYWORD to symbol."
-  (intern (substring (symbol-name keyword) 1)))
+(eval-and-compile
+  (defun lsp-keyword->symbol (keyword)
+    "Convert a KEYWORD to symbol."
+    (intern (substring (symbol-name keyword) 1)))
 
-(defun lsp-keyword->string (keyword)
-  "Convert a KEYWORD to string."
-  (substring (symbol-name keyword) 1))
+  (defun lsp-keyword->string (keyword)
+    "Convert a KEYWORD to string."
+    (substring (symbol-name keyword) 1))
 
-(defvar lsp-use-plists nil)
+  (defvar lsp-use-plists nil))
 
 (defmacro lsp-interface (&rest interfaces)
   "Generate LSP bindings from INTERFACES triplet.
