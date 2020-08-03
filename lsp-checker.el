@@ -311,8 +311,7 @@ See https://github.com/emacs-lsp/lsp-mode."
 
 ;;;###autoload
 (add-hook 'lsp-configure-hook (lambda ()
-                                (when (and lsp-auto-configure
-                                           lsp-checker-enable)
+                                (when lsp-auto-configure
                                   (lsp-checker--enable))))
 
 (provide 'lsp-checker)
