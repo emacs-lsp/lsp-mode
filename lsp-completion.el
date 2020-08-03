@@ -129,7 +129,7 @@ ignored."
     (concat (when (and lsp-completion-show-detail detail?)
               (concat " " (s-replace "\r" "" detail?)))
             (when lsp-completion-show-kind
-              (when-let (kind-name (and kind? (aref lsp-completion--item-kind kind?)))
+              (when-let ((kind-name (and kind? (aref lsp-completion--item-kind kind?))))
                 (format " (%s)" kind-name))))))
 
 (defun lsp-completion--looking-back-trigger-characterp (trigger-characters)

@@ -200,7 +200,7 @@ PATH is the current folder to be checked."
 
 (defun lsp-headerline--build-path-up-to-project-string ()
   "Build the path-up-to-project segment for the breadcrumb."
-  (if-let (root (lsp-workspace-root))
+  (if-let ((root (lsp-workspace-root)))
       (mapconcat (lambda (next-dir)
                    (propertize next-dir
                                'font-lock-face
