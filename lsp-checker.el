@@ -271,7 +271,7 @@ See https://github.com/emacs-lsp/lsp-mode."
 ;;;###autoload
 (defun lsp-checker--enable ()
   "Enable LSP checker support."
-  (when lsp-checker-enable
+  (unless (eq lsp-checker-provider :none)
     (lsp-checker-mode 1)))
 
 (defun lsp-checker--disable ()

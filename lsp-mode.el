@@ -599,11 +599,6 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
-(defcustom lsp-checker-enable t
-  "Enable diagnostics checker integration."
-  :type 'boolean
-  :group 'lsp-mode)
-
 (defcustom lsp-enable-symbol-highlighting t
   "Highlight references of the symbol at point."
   :type 'boolean
