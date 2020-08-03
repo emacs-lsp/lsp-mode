@@ -135,7 +135,7 @@ Information comes from the clang.llvm.org website."
   "Explain a clang-tidy ERROR by scraping documentation from llvm.org."
   (unless (fboundp 'libxml-parse-html-region)
     (error "This function requires Emacs to be compiled with libxml2"))
-  (if-let (clang-tidy-error-id (flycheck-error-id error))
+  (if-let ((clang-tidy-error-id (flycheck-error-id error)))
       (condition-case err
           (lsp-cpp-flycheck-clang-tidy--show-documentation clang-tidy-error-id)
         (error

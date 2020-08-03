@@ -149,7 +149,7 @@ source.fixAll code action."
 
 (defun lsp--find-eslint ()
   (or
-   (when-let (workspace-folder (lsp-find-session-folder (lsp-session) default-directory))
+   (when-let ((workspace-folder (lsp-find-session-folder (lsp-session) default-directory)))
      (let ((eslint-local-path (f-join workspace-folder "node_modules" ".bin"
                                       (if (eq system-type 'windows-nt) "eslint.cmd" "eslint"))))
        (when (f-exists? eslint-local-path)

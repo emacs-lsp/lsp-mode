@@ -248,7 +248,7 @@ tarball or a zip file (based on a current platform) to TARGET-DIR."
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    #'lsp-csharp--language-server-command
                                    (lambda ()
-                                     (when-let (binary (lsp-csharp--language-server-path))
+                                     (when-let ((binary (lsp-csharp--language-server-path)))
                                        (f-exists? binary))))
 
                   :major-modes '(csharp-mode)

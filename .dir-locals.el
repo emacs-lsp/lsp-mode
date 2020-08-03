@@ -109,7 +109,7 @@
                                     ;; condition is more debatable. It's so that I can have
                                     ;; unquoted plists in macros. It assumes that you won't
                                     ;; make a function whose name is a keyword.
-                                    ;; (when-let (char-after (char-after (1+ containing-sexp)))
+                                    ;; (when-let ((char-after (char-after (1+ containing-sexp))))
                                     ;;   (char-equal char-after ?:))
 
                                     ;; Check for quotes or backquotes around.
@@ -119,7 +119,7 @@
                                            (any-quoted-p nil)
                                            (point nil))
                                       (or
-                                       (when-let (char (char-before last))
+                                       (when-let ((char (char-before last)))
                                          (or (char-equal char ?')
                                              (char-equal char ?`)))
                                        (progn
@@ -127,7 +127,7 @@
                                            (setq point (pop rest))
                                            (setq any-quoted-p
                                                  (or
-                                                  (when-let (char (char-before point))
+                                                  (when-let ((char (char-before point)))
                                                     (or (char-equal char ?')
                                                         (char-equal char ?`)))
                                                   (save-excursion

@@ -279,7 +279,7 @@ finding the executable with variable `exec-path'."
 (defun lsp-clients-flow-tag-file-present-p (file-name)
   "Check if the '// @flow' or `/* @flow */' tag is present in
 the contents of FILE-NAME."
-  (if-let (buffer (find-buffer-visiting file-name))
+  (if-let ((buffer (find-buffer-visiting file-name)))
       (with-current-buffer buffer
         (lsp-clients-flow-tag-string-present-p))
     (with-temp-buffer
