@@ -99,6 +99,8 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
     package that displays available keybindings in popup
   - [projectile](https://github.com/bbatsov/projectile/) - Project
     Interaction Library for Emacs
+  - [emacs-tree-sitter](https://github.com/ubolonton/emacs-tree-sitter) - Faster, fine-grained code highlighting via [tree-sitter](https://github.com/tree-sitter/tree-sitter).
+  - [gccemacs](https://akrl.sdf.org/gccemacs.html) - modified Emacs capable of compiling and running Emacs Lisp as native code.
 
 ## Contributions
 
