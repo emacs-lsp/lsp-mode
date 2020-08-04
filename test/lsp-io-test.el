@@ -34,6 +34,9 @@
       (cl-letf (((symbol-function 'lsp--parser-on-message) (lambda (_msg _workspace)))
                 ((symbol-function 'json-read-from-string)
                  (lambda (msg)
+                   (push msg lsp--test-results)))
+                ((symbol-function 'json-parse-string)
+                 (lambda (msg &rest _)
                    (push msg lsp--test-results))))
         (funcall fn nil input)
         (prog1 lsp--test-results
