@@ -69,6 +69,7 @@
 (defvar company-backends)
 (defvar yas-inhibit-overlay-modification-protection)
 (defvar yas-indent-line)
+(defvar yas-also-auto-indent-first-line)
 (defvar dap-auto-configure-mode)
 (defvar dap-ui-menu-items)
 
@@ -3470,10 +3471,12 @@ in that particular folder."
   (lsp-managed-mode 1)
 
   (run-hooks 'lsp-after-open-hook)
-  (-some-> lsp--cur-workspace
-    (lsp--workspace-client)
-    (lsp--client-after-open-fn)
-    (funcall)))
+  (when-let  ((client (-some-> lsp--cur-workspace (lsp--workspace-client))))
+    (-some-> (lsp--client-after-open-fn client)
+      (funcall))
+    (-some-> (format "lsp-%s-after-open-hook" (lsp--client-server-id client))
+      (intern-soft)
+      (run-hooks))))
 
 (defun lsp--text-document-identifier ()
   "Make TextDocumentIdentifier."
@@ -3676,16 +3679,42 @@ The method uses `replace-buffer-contents'."
                                     beg (+ beg (length new-text))
                                     length)))))))))
 
-(defun lsp--indent-snippets? ()
-  "Enable indenting of snippets for everything but `org-mode'.
+(defun lsp--to-yasnippet-snippet (snippet)
+  "Convert LSP SNIPPET to yasnippet snippet."
+  ;; LSP snippet doesn't escape "{", but yasnippet requires escaping it.
+  (replace-regexp-in-string (rx (or bos (not (any "$" "\\"))) (group "{"))
+                            (rx "\\" (backref 1))
+                            snippet
+                            nil nil 1))
 
-Indending snippets is extremely slow in `org-mode' buffers since
-it has to calculate indentation based on SRC block position."
-  (unless (derived-mode-p 'org-mode)
-    'auto))
+(defvar-local lsp-enable-relative-indentation nil
+  "Enable relative indentation when insert texts, snippets ... from language server.")
+
+(defun lsp--expand-snippet (snippet &optional start end expand-env keep-whitespace)
+  "Wrapper of `yas-expand-snippet' with all of it arguments.
+The snippet will be convert to LSP style and indent according to
+LSP server result."
+  (let* ((inhibit-field-text-motion t)
+         (offset (save-excursion
+                   (goto-char start)
+                   (back-to-indentation)
+                   (buffer-substring-no-properties
+                    (line-beginning-position)
+                    (point))))
+         (yas-indent-line (unless keep-whitespace 'auto))
+         (yas-also-auto-indent-first-line nil)
+         (indent-line-function (if (or lsp-enable-relative-indentation
+                                       (derived-mode-p 'org-mode))
+                                   (lambda () (save-excursion
+                                                (forward-line 0)
+                                                (insert offset)))
+                                 indent-line-function)))
+    (yas-expand-snippet
+     (lsp--to-yasnippet-snippet snippet)
+     start end expand-env)))
 
 (defun lsp--apply-text-edits (edits)
-  "Apply the edits described in the TextEdit[] object."
+  "Apply the EDITS described in the TextEdit[] object."
   (unless (seq-empty-p edits)
     (atomic-change-group
       (run-hooks 'lsp-before-apply-edits-hook)
@@ -3712,9 +3741,7 @@ it has to calculate indentation based on SRC block position."
                            (-when-let ((&SnippetTextEdit :range (&RangeToPoint :start)
                                                          :insert-text-format? :new-text) edit)
                              (when (eq insert-text-format? lsp/insert-text-format-snippet)
-                               (let ((yas-indent-line (lsp--indent-snippets?)))
-                                 (yas-expand-snippet (lsp--to-yasnippet-snippet new-text)
-                                                     start (+ start (length new-text))))))))))
+                               (lsp--expand-snippet new-text start (+ start (length new-text)))))))))
           (undo-amalgamate-change-group change-group)
           (progress-reporter-done reporter))))))
 
@@ -4189,14 +4216,6 @@ and the position respectively."
                'vector)))
 
 (defalias 'lsp--cur-line-diagnotics 'lsp-cur-line-diagnostics)
-
-(defun lsp--to-yasnippet-snippet (text)
-  "Convert LSP snippet TEXT to yasnippet snippet."
-  ;; LSP snippet doesn't escape "{", but yasnippet requires escaping it.
-  (replace-regexp-in-string (rx (or bos (not (any "$" "\\"))) (group "{"))
-                            (rx "\\" (backref 1))
-                            text
-                            nil nil 1))
 
 (defun lsp--extract-line-from-buffer (pos)
   "Return the line pointed to by POS (a Position object) in the current buffer."
@@ -6745,7 +6764,13 @@ remote machine and vice versa."
                    (seq-every-p (apply-partially #'symbolp)
                                 (lsp--client-major-modes client))))
              nil "Invalid activation-fn and/or major-modes.")
-  (puthash (lsp--client-server-id client) client lsp-clients))
+  (let ((client-id (lsp--client-server-id client)))
+    (puthash client-id client lsp-clients)
+    (setplist (intern (format "lsp-%s-after-open-hook" client-id))
+              `(standard-value (nil) custom-type hook
+                custom-package-version (lsp-mode . "7.0.1")
+                variable-documentation ,(format "Hooks to run after `%s' server is run." client-id)
+                custom-requests nil))))
 
 (defun lsp--create-initialization-options (_session client)
   "Create initialization-options from SESSION and CLIENT.
