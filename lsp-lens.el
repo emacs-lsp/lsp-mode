@@ -49,7 +49,7 @@
 (defvar-local lsp-lens--last-count nil
   "The number of lenses the last time they were rendered.")
 
-(defvar lsp-lens--backends '(lsp-lens--backend)
+(defvar lsp-lens-backends '(lsp-lens--backend)
   "Backends providing lenses.")
 
 (defvar-local lsp-lens--refresh-timer nil
@@ -212,7 +212,7 @@ BUFFER-MODIFIED? determines whether the BUFFER is modified or not."
   (let ((buffer (or buffer (current-buffer))))
     (when (buffer-live-p buffer)
       (with-current-buffer buffer
-        (dolist (backend lsp-lens--backends)
+        (dolist (backend lsp-lens-backends)
           (funcall backend buffer-modified?
                    (lambda (lenses version)
                      (when (buffer-live-p buffer)
@@ -229,7 +229,7 @@ version."
 
   (-let [backend-data (->> lsp-lens--data ht-values (-filter #'cl-rest))]
     (when (and
-           (= (length lsp-lens--backends) (ht-size lsp-lens--data))
+           (= (length lsp-lens-backends) (ht-size lsp-lens--data))
            (seq-every-p (-lambda ((version))
                           (or (not version) (eq version lsp--cur-version)))
                         backend-data))
