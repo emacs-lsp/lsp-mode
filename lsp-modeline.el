@@ -97,7 +97,7 @@
                            'face 'lsp-modeline-code-actions-face))))
    lsp-modeline-code-actions-segments " "))
 
-(defun lsp-modeline--buildcode-actions-string (actions)
+(defun lsp-modeline--build-code-actions-string (actions)
   "Build the string to be presented on modeline for code ACTIONS."
   (-let* ((single-action? (= (length actions) 1))
           (keybinding (concat "("
@@ -132,7 +132,7 @@
                               actions)))
   (setq lsp-modeline--code-actions-string
         (if (seq-empty-p actions) ""
-          (lsp-modeline--buildcode-actions-string actions)))
+          (lsp-modeline--build-code-actions-string actions)))
   (force-mode-line-update))
 
 (defun lsp-modeline--check-code-actions (&rest _)
