@@ -32,7 +32,7 @@
 (require 'lsp-mode)
 (require 'lsp-modeline)
 (require 'lsp-completion)
-(require 'lsp-checker)
+(require 'lsp-diagnostics)
 
 (defconst lsp-test-location (file-name-directory (or load-file-name buffer-file-name)))
 
@@ -266,7 +266,7 @@
     (lsp-workspace-folders-add (f-expand "fixtures/org-mode"))
     (lsp-org)
 
-    (setq lsp-checker-provider nil)
+    (setq lsp-diagnostics-provider nil)
 
     (-> (lsp-test-wait
          (eq 'initialized (lsp--workspace-status
@@ -293,7 +293,7 @@
     (lsp-workspace-folders-add (f-expand "fixtures/org-mode"))
     (lsp-org)
 
-    (setq lsp-checker-provider nil)
+    (setq lsp-diagnostics-provider nil)
 
     (-> (lsp-test-wait
          (eq 'initialized (lsp--workspace-status
@@ -651,7 +651,7 @@
     (lsp-workspace-folders-add (f-expand "fixtures/org-mode"))
     (lsp-org)
 
-    (setq lsp-checker-provider nil)
+    (setq lsp-diagnostics-provider nil)
 
     (-> (lsp-test-wait
          (eq 'initialized (lsp--workspace-status
