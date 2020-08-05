@@ -107,21 +107,23 @@
                                          (not (member (aref o 0) '(menu-bar normal-state)))))
                                 key-description)
                               ")"))
-          (built-string (concat " "
-                                (lsp-modeline--build-code-actions-segments actions)
-                                " ")))
-    (propertize built-string
-                'help-echo (concat (format "Apply code actions %s\nmouse-1: " keybinding)
-                                   (if single-action?
-                                       (lsp-modeline--preferred-code-action-name actions)
-                                     "select from multiple code actions"))
-                'mouse-face 'mode-line-highlight
-                'local-map (make-mode-line-mouse-map
-                            'mouse-1 (lambda ()
-                                       (interactive)
+          (built-string (lsp-modeline--build-code-actions-segments actions)))
+    (add-text-properties 0 (length built-string)
+                         (list 'help-echo
+                               (concat (format "Apply code actions %s\nmouse-1: " keybinding)
                                        (if single-action?
-                                           (lsp-execute-code-action (lsp-seq-first actions))
-                                         (lsp-execute-code-action (lsp--select-action actions))))))))
+                                           (lsp-modeline--preferred-code-action-name actions)
+                                         "select from multiple code actions"))
+                               'mouse-face 'mode-line-highlight
+                               'local-map (make-mode-line-mouse-map
+                                           'mouse-1 (lambda ()
+                                                      (interactive)
+                                                      (if single-action?
+                                                          (lsp-execute-code-action (lsp-seq-first actions))
+                                                        (lsp-execute-code-action (lsp--select-action actions))))))
+                         built-string)
+    (unless (string= "" built-string)
+      built-string)))
 
 (defun lsp--modeline-update-code-actions (actions)
   "Update modeline with new code ACTIONS."
