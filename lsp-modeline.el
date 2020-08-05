@@ -28,6 +28,15 @@
   :type 'string
   :group 'lsp-mode)
 
+(defcustom lsp-modeline-code-actions-segments '(count icon)
+  "Define what should display on the modeline when code actions are available."
+  :type '(repeat (choice
+                  (const :tag "Show the lightbulb icon" icon)
+                  (const :tag "Show the name of the preferred code action" name)
+                  (const :tag "Show the count of how many code actions available" count)))
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "7.0.1"))
+
 (defface lsp-modeline-code-actions-face
   '((t :inherit homoglyph))
   "Face used to code action text on modeline."
@@ -61,23 +70,36 @@
                              :v-adjust -0.0575)
     (propertize "💡" 'face 'lsp-modeline-code-actions-face)))
 
+(defun lsp-modeline--preferred-code-action-name (actions)
+  "Return the preferred code action name from ACTIONS."
+  (or (-some->> actions
+        (-first #'lsp:code-action-is-preferred?)
+        lsp-modeline--code-action->string)
+      (->> actions
+           lsp-seq-first
+           lsp-modeline--code-action->string)))
+
 (defun lsp-modeline--code-action->string (action)
   "Convert code ACTION to friendly string."
   (->> action
        lsp:code-action-title
        (replace-regexp-in-string "[\n\t ]+" " ")))
 
-(defun lsp-modeline--build-code-actions-string (actions)
+(defun lsp-modeline--build-code-actions-segments (actions)
+  "Build the code ACTIONS string from the defined segments."
+  (mapconcat
+   (lambda (segment)
+     (pcase segment
+       ('icon (lsp-modeline--code-actions-icon))
+       ('name (propertize (lsp-modeline--preferred-code-action-name actions)
+                          'face 'lsp-modeline-code-actions-face))
+       ('count (propertize (number-to-string (seq-length actions))
+                           'face 'lsp-modeline-code-actions-face))))
+   lsp-modeline-code-actions-segments " "))
+
+(defun lsp-modeline--buildcode-actions-string (actions)
   "Build the string to be presented on modeline for code ACTIONS."
-  (-let* ((icon (lsp-modeline--code-actions-icon))
-          (first-action-string (propertize (or (-some->> actions
-                                                 (-first #'lsp:code-action-is-preferred?)
-                                                 lsp-modeline--code-action->string)
-                                               (->> actions
-                                                    lsp-seq-first
-                                                    lsp-modeline--code-action->string))
-                                           'face 'lsp-modeline-code-actions-face))
-          (single-action? (= (length actions) 1))
+  (-let* ((single-action? (= (length actions) 1))
           (keybinding (concat "("
                               (-some->> #'lsp-execute-code-action
                                 where-is-internal
@@ -85,17 +107,13 @@
                                          (not (member (aref o 0) '(menu-bar normal-state)))))
                                 key-description)
                               ")"))
-          (string (if single-action?
-                      (concat " " icon " " first-action-string " ")
-                    (concat " " icon " " first-action-string " "
-                            (propertize (concat "(" (number-to-string (1- (seq-length actions))) " more)")
-                                        'display `((height 0.9))
-                                        'face 'lsp-modeline-code-actions-face)
-                            " "))))
-    (propertize string
+          (built-string (concat " "
+                                (lsp-modeline--build-code-actions-segments actions)
+                                " ")))
+    (propertize built-string
                 'help-echo (concat (format "Apply code actions %s\nmouse-1: " keybinding)
                                    (if single-action?
-                                       first-action-string
+                                       (lsp-modeline--preferred-code-action-name actions)
                                      "select from multiple code actions"))
                 'mouse-face 'mode-line-highlight
                 'local-map (make-mode-line-mouse-map
@@ -114,7 +132,7 @@
                               actions)))
   (setq lsp-modeline--code-actions-string
         (if (seq-empty-p actions) ""
-          (lsp-modeline--build-code-actions-string actions)))
+          (lsp-modeline--buildcode-actions-string actions)))
   (force-mode-line-update))
 
 (defun lsp-modeline--check-code-actions (&rest _)
