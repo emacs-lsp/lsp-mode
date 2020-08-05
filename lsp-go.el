@@ -171,17 +171,7 @@ The codelens can be found at https://github.com/golang/tools/blob/4d5ea46c79fe3b
                   :major-modes '(go-mode go-dot-mod-mode)
                   :priority 0
                   :server-id 'gopls
-                  :library-folders-fn 'lsp-clients-go--library-default-directories))
-
-(defgroup lsp-clients-go nil
-  "LSP support for the Go Programming Language."
-  :group 'lsp-mode)
-
-(defcustom lsp-clients-go-server "bingo"
-  "The go language server executable to use."
-  :group 'lsp-clients-go
-  :risky t
-  :type 'file)
+                  :library-folders-fn 'lsp-go--library-default-directories))
 
 (define-obsolete-variable-alias
   'lsp-clients-go-library-directories
