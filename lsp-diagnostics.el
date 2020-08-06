@@ -262,7 +262,7 @@ See https://github.com/emacs-lsp/lsp-mode."
 ;;;###autoload
 (defun lsp-diagnostics--enable ()
   "Enable LSP checker support."
-  (unless (eq lsp-diagnostics-provider :none)
+  (when (member lsp-diagnostics-provider '(:auto :none :flycheck :flymake t nil))
     (lsp-diagnostics-mode 1)))
 
 (defun lsp-diagnostics--disable ()
