@@ -434,7 +434,7 @@ This option can also be used as a file or directory local variable to
 disable a language server for individual files or directories/projects
 respectively."
   :group 'lsp-mode
-  :type 'list
+  :type '(repeat (symbol))
   :safe 'listp
   :package-version '(lsp-mode . "6.1"))
 
