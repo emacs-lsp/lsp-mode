@@ -240,6 +240,38 @@ Also, additional data to attached to each candidate can be passed via PLIST."
       lsp-items)
     (-map (lambda (item) (apply #'lsp-completion--make-item item plist))))))
 
+(defconst lsp-completion--kind->symbol
+  '((1 . text)
+    (2 . method)
+    (3 . function)
+    (4 . constructor)
+    (5 . field)
+    (6 . variable)
+    (7 . class)
+    (8 . interface)
+    (9 . module)
+    (10 . property)
+    (11 . unit)
+    (12 . value)
+    (13 . enum)
+    (14 . keyword)
+    (15 . snippet)
+    (16 . color)
+    (17 . file)
+    (18 . reference)
+    (19 . folder)
+    (20 . enum-member)
+    (21 . constant)
+    (22 . struct)
+    (23 . event)
+    (24 . operator)
+    (25 . type-parameter)))
+
+(defun lsp-completion--candidate-kind (item)
+  "Return ITEM's kind."
+  (alist-get (lsp:completion-item-kind? (get-text-property 0 'lsp-completion-item item))
+             lsp-completion--kind->symbol))
+
 (defun lsp-completion--capf-company-match (candidate)
   "Return highlight of typed prefix inside CANDIDATE."
   (let* ((prefix (downcase
@@ -406,6 +438,7 @@ Also, additional data to attached to each candidate can be passed via PLIST."
           ;; retrieve candidates
           (t (funcall all-completions))))
        :annotation-function #'lsp-completion--annotate
+       :company-candidate-kind #'lsp-completion--candidate-kind
        :company-require-match 'never
        :company-prefix-length
        (save-excursion
