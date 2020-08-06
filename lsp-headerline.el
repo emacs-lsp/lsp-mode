@@ -76,7 +76,7 @@ caching purposes.")
 
 (defun lsp-headerline--fix-image-background (image)
   "Fix IMAGE background if it is a file otherwise return as an icon."
-  (if (get-text-property 0 'display image)
+  (if (and image (get-text-property 0 'display image))
       (propertize " " 'display
                   (cl-list* 'image
                             (plist-put
