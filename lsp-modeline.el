@@ -33,6 +33,7 @@
   "Face used to code action text on modeline."
   :group 'lsp-faces)
 
+;;;###autoload
 (define-obsolete-variable-alias 'lsp-diagnostics-modeline-scope
   'lsp-modeline-diagnostics-scope  "lsp-mode 7.0.1")
 

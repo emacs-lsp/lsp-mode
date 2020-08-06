@@ -23,6 +23,7 @@
 
 (require 'lsp-mode)
 
+;;;###autoload
 (define-obsolete-variable-alias 'lsp-prefer-capf
   'lsp-completion-provider  "lsp-mode 7.0.1")
 

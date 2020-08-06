@@ -40,6 +40,7 @@
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.3"))
 
+;;;###autoload
 (define-obsolete-variable-alias 'lsp-flycheck-default-level
   'lsp-diagnostics-flycheck-default-level  "lsp-mode 7.0.1")
 
