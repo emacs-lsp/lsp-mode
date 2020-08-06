@@ -1659,7 +1659,7 @@
 <li><code>lsp-eldoc-render-all</code> - Display all of the info returned by <code>document/onHover</code>. If this is nil, <code>eldoc</code> will show only the symbol information.</li>
 <li><code>lsp-enable-completion-at-point</code> - Enable <code>completion-at-point</code> integration.</li>
 <li><code>lsp-enable-xref</code> - Enable xref integration.</li>
-<li><code>lsp-diagnostic-package</code> - Specifies which package to use for diagnostics. Choose from <code>:auto</code>, <code>:flycheck</code>, <code>:flymake</code> and <code>:none</code>. Default is <code>:auto</code> which means use <code>:flycheck</code> if present.</li>
+<li><code>lsp-diagnostics-provider</code> - Specifies which package to use for diagnostics. Choose from <code>:auto</code>, <code>:flycheck</code>, <code>:flymake</code> and <code>:none</code>. Default is <code>:auto</code> which means use <code>:flycheck</code> if present and fallback to <code>:flymake</code>.</li>
 <li><code>lsp-enable-indentation</code> - Indent regions using the file formatting functionality provided by the language server.</li>
 <li><code>lsp-enable-on-type-formatting</code> - Enable <code>textDocument/onTypeFormatting</code> integration.</li>
 <li><code>lsp-before-save-edits</code> - If non-nil, <code>lsp-mode</code> will apply edits suggested by the language server before saving a document.</li>
@@ -1683,7 +1683,7 @@
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 4, 2020</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 6, 2020</span>
     
   </small>
 </div>
