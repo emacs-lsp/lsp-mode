@@ -413,10 +413,12 @@ following `projectile'/`project.el' conventions."
   :type 'file)
 
 (defcustom lsp-auto-configure t
-  "Auto configure `lsp-mode'.
-When set to t `lsp-mode' will auto-configure `company',
-`flycheck', `flymake', `imenu', symbol highlighting, lenses,
-links, and so on. For finer granularity you may use `lsp-enable-*' properties."
+  "Auto configure `lsp-mode' main features.
+When set to t `lsp-mode' will auto-configure completion,
+code-actions, breadcrumb, `flycheck', `flymake', `imenu', symbol highlighting,
+lenses, links, and so on.
+
+For finer granularity you may use `lsp-enable-*' properties."
   :group 'lsp-mode
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
@@ -738,19 +740,6 @@ returns a negative number, 0, or a positive number indicating
 whether the first parameter is less than, equal to, or greater
 than the second parameter.")
 
-(defcustom lsp-diagnostic-package :auto
-  "`lsp-mode' diagnostics auto-configuration."
-  :type
-  '(choice
-    (const :tag "Pick flycheck if present and fallback to flymake" :auto)
-    (const :tag "Pick flycheck" :flycheck)
-    (const :tag "Pick flymake" :flymake)
-    (const :tag "Use neither flymake nor lsp" :none)
-    (const :tag "Prefer flymake" t)
-    (const :tag "Prefer flycheck" nil))
-  :group 'lsp-mode
-  :package-version '(lsp-mode . "6.3"))
-
 (defcustom lsp-diagnostic-clean-after-change t
   "When non-nil, clean the diagnostics on change.
 
@@ -759,8 +748,6 @@ diagnostics until server publishes the new set of diagnostics"
   :type 'boolean
   :group 'lsp-mode
   :package-version '(lsp-mode . "7.0.1"))
-
-(make-obsolete-variable 'lsp-prefer-flymake 'lsp-diagnostic-package "lsp-mode 6.2")
 
 (defcustom lsp-server-trace nil
   "Request tracing on the server side.
@@ -772,8 +759,6 @@ Changes take effect only when a new session is started."
                  (const :tag "Default (disabled)" nil))
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
-
-(defvar-local lsp--flymake-report-fn nil)
 
 (defvar lsp-language-id-configuration '((".*\\.vue$" . "vue")
                                         (".*\\.tsx$" . "typescriptreact")
@@ -1847,69 +1832,6 @@ WORKSPACE is the workspace that contains the diagnostics."
     (lsp--idle-reschedule (current-buffer))))
 
 
-;; flymake integration
-
-(declare-function flymake-mode "ext:flymake")
-(declare-function flymake-make-diagnostic "ext:flymake")
-(declare-function flymake-diag-region "ext:flymake")
-
-(defvar flymake-diagnostic-functions)
-(defvar flymake-mode)
-
-(defun lsp--flymake-setup ()
-  "Setup flymake."
-  (setq lsp--flymake-report-fn nil)
-  (flymake-mode 1)
-  (add-hook 'flymake-diagnostic-functions 'lsp--flymake-backend nil t)
-  (add-hook 'lsp-after-diagnostics-hook 'lsp--flymake-after-diagnostics nil t))
-
-(defun lsp--flymake-after-diagnostics ()
-  "Handler for `lsp-after-diagnostics-hook'"
-  (cond
-   ((and lsp--flymake-report-fn flymake-mode)
-    (lsp--flymake-update-diagnostics))
-   ((not flymake-mode)
-    (setq lsp--flymake-report-fn nil))))
-
-(defun lsp--flymake-backend (report-fn &rest _args)
-  "Flymake backend."
-  (let ((first-run (null lsp--flymake-report-fn)))
-    (setq lsp--flymake-report-fn report-fn)
-    (when first-run
-      (lsp--flymake-update-diagnostics))))
-
-(defun lsp--flymake-update-diagnostics ()
-  "Report new diagnostics to flymake."
-  (funcall lsp--flymake-report-fn
-           (-some->> (lsp-diagnostics t)
-             (gethash (lsp--fix-path-casing buffer-file-name))
-             (--map (-let* (((&Diagnostic :message :severity?
-                                          :range (range &as &Range
-                                                        :start (&Position :line start-line :character)
-                                                        :end (&Position :line end-line))) it)
-                            ((start . end) (lsp--range-to-region range)))
-                      (when (= start end)
-                        (if-let ((region (flymake-diag-region (current-buffer)
-                                                              (1+ start-line)
-                                                              character)))
-                            (setq start (car region)
-                                  end (cdr region))
-                          (lsp-save-restriction-and-excursion
-                            (goto-char (point-min))
-                            (setq start (point-at-bol (1+ start-line))
-                                  end (point-at-eol (1+ end-line))))))
-                      (flymake-make-diagnostic (current-buffer)
-                                               start
-                                               end
-                                               (cl-case severity?
-                                                 (1 :error)
-                                                 (2 :warning)
-                                                 (t :note))
-                                               message))))
-           ;; This :region keyword forces flymake to delete old diagnostics in
-           ;; case the buffer hasn't changed since the last call to the report
-           ;; function. See https://github.com/joaotavora/eglot/issues/159
-           :region (cons (point-min) (point-max))))
 
 (defun lsp--ht-get (tbl &rest keys)
   "Get nested KEYS in TBL."
@@ -1918,8 +1840,6 @@ WORKSPACE is the workspace that contains the diagnostics."
       (setq val (ht-get val (cl-first keys)))
       (setq keys (cl-rest keys)))
     val))
-
-
 
 ;; textDocument/foldingRange support
 
@@ -4206,6 +4126,13 @@ and the position respectively."
   (list :textDocument (or identifier (lsp--text-document-identifier))
         :position (or position (lsp--cur-position))))
 
+(defun lsp--get-buffer-diagnostics ()
+  "Return buffer diagnostics."
+  (gethash (or
+            (plist-get lsp--virtual-buffer :buffer-file-name)
+            (lsp--fix-path-casing buffer-file-name))
+           (lsp-diagnostics t)))
+
 (defun lsp-cur-line-diagnostics ()
   "Return any diagnostics that apply to the current line."
   (-let [(&plist :start (&plist :line start) :end (&plist :line end)) (lsp--region-or-line)]
@@ -6300,26 +6227,6 @@ returns the command to execute."
   (when lsp-lens-enable
     (add-hook 'lsp-configure-hook 'lsp-lens-mode))
 
-  (cond
-   ((or
-     (and (eq lsp-diagnostic-package :auto)
-          (functionp 'flycheck-mode))
-     (and (eq lsp-diagnostic-package :flycheck)
-          (or (functionp 'flycheck-mode)
-              (user-error
-               "lsp-diagnostic-package is set to :flycheck but flycheck is not installed?")))
-     ;; legacy
-     (null lsp-diagnostic-package))
-    (lsp-flycheck-enable))
-   ((and (not (version< emacs-version "26.1"))
-         (or (eq lsp-diagnostic-package :auto)
-             (eq lsp-diagnostic-package :flymake)
-             (eq lsp-diagnostic-package t)))
-    (require 'flymake)
-    (lsp--flymake-setup))
-   ((not (eq lsp-diagnostic-package :none))
-    (lsp--warn "Unable to autoconfigure flycheck/flymake. The diagnostics won't be rendered.")))
-
   ;; yas-snippet config
   (setq-local yas-inhibit-overlay-modification-protection t))
 
@@ -7384,51 +7291,6 @@ This avoids overloading the server with many files when starting Emacs."
            ,@body)
        (fset 'file-truename old-fn))))
 
-;; flycheck
-
-(declare-function flycheck-define-generic-checker
-                  "ext:flycheck" (symbol docstring &rest properties))
-(declare-function flycheck-error-message "ext:flycheck" (err) t)
-(declare-function flycheck-define-error-level "ext:flycheck" (level &rest properties))
-(declare-function flycheck-mode "ext:flycheck")
-(declare-function flycheck-checker-supports-major-mode-p "ext:flycheck")
-(declare-function flycheck-error-new "ext:flycheck" t t)
-(declare-function flycheck-buffer "ext:flycheck")
-(declare-function flycheck-add-mode "ext:flycheck")
-
-(defvar flycheck-check-syntax-automatically)
-(defvar flycheck-checker)
-(defvar flycheck-checkers)
-
-(defcustom lsp-flycheck-default-level 'error
-  "Error level to use when the server does not report back a diagnostic level."
-  :type '(choice (const error)
-                 (const warning)
-                 (const info))
-  :group 'lsp-mode)
-
-(defun lsp--get-buffer-diagnostics ()
-  (gethash (or
-            (plist-get lsp--virtual-buffer :buffer-file-name)
-            (lsp--fix-path-casing buffer-file-name))
-           (lsp-diagnostics t)))
-
-(defun lsp--flycheck-calculate-level (severity tags)
-  (let ((level (pcase severity
-                 (1 'error)
-                 (2 'warning)
-                 (3 'info)
-                 (4 'info)
-                 (_ lsp-flycheck-default-level)))
-        ;; materialize only first tag.
-        (tags (seq-map (lambda (tag)
-                         (cond
-                          ((= tag lsp/diagnostic-tag-unnecessary) 'unnecessary)
-                          ((= tag lsp/diagnostic-tag-deprecated) 'deprecated)))
-                       tags)))
-    (if tags
-        (lsp--flycheck-level level tags)
-      level)))
 
 (defun lsp-virtual-buffer-call (key &rest args)
   (when lsp--virtual-buffer
@@ -7454,127 +7316,6 @@ This avoids overloading the server with many files when starting Emacs."
 ;;   "Translate COLUMN taking into account virtual buffers."
 ;;   (or (lsp-virtual-buffer-call :real<-virtual-char column)
 ;;       column))
-
-(defun lsp--flycheck-start (checker callback)
-  "Start an LSP syntax check with CHECKER.
-
-CALLBACK is the status callback passed by Flycheck."
-
-  (remove-hook 'lsp-on-idle-hook #'lsp--flycheck-buffer t)
-
-  (->> (lsp--get-buffer-diagnostics)
-       (-map (-lambda ((&Diagnostic :message :severity? :tags? :code?
-                                    :range (&Range :start (&Position :line      start-line
-                                                                     :character start-character)
-                                                   :end   (&Position :line      end-line
-                                                                     :character end-character))))
-               (flycheck-error-new
-                :buffer (current-buffer)
-                :checker checker
-                :filename buffer-file-name
-                :message message
-                :level (lsp--flycheck-calculate-level severity? tags?)
-                :id code?
-                :line (lsp-translate-line (1+ start-line))
-                :column (1+ (lsp-translate-column start-character))
-                :end-line (lsp-translate-line (1+ end-line))
-                :end-column (1+ (lsp-translate-column end-character)))))
-       (funcall callback 'finished)))
-
-(defun lsp--flycheck-buffer ()
-  (remove-hook 'lsp-on-idle-hook #'lsp--flycheck-buffer t)
-  (flycheck-buffer))
-
-(defun lsp--buffer-visible? ()
-  (or (get-buffer-window (current-buffer))
-      (eq (window-buffer (selected-window))
-          (current-buffer))))
-
-(defun lsp--flycheck-report ()
-  "This callback is invoked when new diagnostics are received
-from the language server."
-  (when (and (or (memq 'idle-change flycheck-check-syntax-automatically)
-                 (and (memq 'save flycheck-check-syntax-automatically)
-                      (not (buffer-modified-p))))
-             lsp--cur-workspace)
-    ;; make sure diagnostics are published even if the diagnostics
-    ;; have been received after idle-change has been triggered
-    (->> lsp--cur-workspace
-         (lsp--workspace-buffers)
-         (mapc (lambda (buffer)
-                 (when (lsp-buffer-live-p buffer)
-                   (lsp-with-current-buffer buffer
-                     (add-hook 'lsp-on-idle-hook #'lsp--flycheck-buffer nil t)
-                     (lsp--idle-reschedule (current-buffer)))))))))
-
-
-(declare-function lsp-cpp-flycheck-clang-tidy-error-explainer "lsp-cpp")
-
-(defvar lsp-diagnostics-attributes
-  `((unnecessary :foreground "dim gray")
-    (deprecated  :strike-through t))
-  "List containing (tag attributes) where tag is the LSP
-  diagnostic tag and attributes is a `plist' containing face
-  attributes which will be applied on top the flycheck face for
-  that error level.")
-
-(defun lsp--flycheck-level (flycheck-level tags)
-  "Generate flycheck level from the original FLYCHECK-LEVEL (e.
-g. `error', `warning') and list of LSP TAGS."
-  (let ((name (format "lsp-flycheck-%s-%s"
-                      flycheck-level
-                      (mapconcat #'symbol-name tags "-"))))
-    (or (intern-soft name)
-        (let* ((face (--doto (intern (format "lsp-%s-face" name))
-                       (copy-face (-> flycheck-level
-                                      (get 'flycheck-overlay-category)
-                                      (get 'face))
-                                  it)
-                       (mapc (lambda (tag)
-                               (apply #'set-face-attribute it nil
-                                      (cl-rest (assoc tag lsp-diagnostics-attributes))))
-                             tags)))
-               (category (--doto (intern (format "lsp-%s-category" name))
-                           (setf (get it 'face) face
-                                 (get it 'priority) 100)))
-               (new-level (intern name))
-               (bitmap (or (get flycheck-level 'flycheck-fringe-bitmaps)
-                           (get flycheck-level 'flycheck-fringe-bitmap-double-arrow))))
-          (flycheck-define-error-level new-level
-            :severity (get flycheck-level 'flycheck-error-severity)
-            :compilation-level (get flycheck-level 'flycheck-compilation-level)
-            :overlay-category category
-            :fringe-bitmap bitmap
-            :fringe-face (get flycheck-level 'flycheck-fringe-face)
-            :error-list-face face)
-          new-level))))
-
-(with-eval-after-load 'flycheck
-  (flycheck-define-generic-checker 'lsp
-    "A syntax checker using the Language Server Protocol (LSP)
-provided by lsp-mode.
-See https://github.com/emacs-lsp/lsp-mode."
-    :start #'lsp--flycheck-start
-    :modes '(lsp-placeholder-mode) ;; placeholder
-    :predicate (lambda () lsp-mode)
-    :error-explainer (lambda (e)
-                       (cond ((string-prefix-p "clang-tidy" (flycheck-error-message e))
-                              (lsp-cpp-flycheck-clang-tidy-error-explainer e))
-                             (t (flycheck-error-message e))))))
-
-(defun lsp-flycheck-add-mode (mode)
-  "Register flycheck support for MODE."
-  (unless (flycheck-checker-supports-major-mode-p 'lsp mode)
-    (flycheck-add-mode 'lsp mode)))
-
-(defun lsp-flycheck-enable (&rest _)
-  "Enable flycheck integration for the current buffer."
-  (flycheck-mode 1)
-  (setq-local flycheck-checker 'lsp)
-  (lsp-flycheck-add-mode major-mode)
-  (add-to-list 'flycheck-checkers 'lsp)
-  (add-hook 'lsp-after-diagnostics-hook #'lsp--flycheck-report nil t)
-  (add-hook 'lsp-managed-mode-hook #'lsp--flycheck-report nil t))
 
 
 ;; lsp internal validation.
@@ -7673,6 +7414,14 @@ See https://github.com/emacs-lsp/lsp-mode."
     (if (<= point (+ (point-at-bol) indentation))
         (point-at-bol)
       point)))
+
+(declare-function flycheck-checker-supports-major-mode-p "ext:flycheck")
+(declare-function flycheck-add-mode "ext:flycheck")
+
+(defun lsp-flycheck-add-mode (mode)
+  "Register flycheck support for MODE."
+  (unless (flycheck-checker-supports-major-mode-p 'lsp mode)
+    (flycheck-add-mode 'lsp mode)))
 
 (defun lsp-org ()
   (interactive)
