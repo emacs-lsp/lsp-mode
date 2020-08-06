@@ -23,12 +23,6 @@
 
 (require 'lsp-mode)
 
-(define-obsolete-variable-alias 'lsp-prefer-flymake
-  'lsp-diagnostics-provider  "lsp-mode 6.2")
-
-(define-obsolete-variable-alias 'lsp-diagnostic-package
-  'lsp-diagnostics-provider  "lsp-mode 7.0.1")
-
 (defcustom lsp-diagnostics-provider :auto
   "The checker backend provider."
   :type
