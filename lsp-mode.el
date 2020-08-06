@@ -748,9 +748,6 @@ diagnostics until server publishes the new set of diagnostics"
   :group 'lsp-mode
   :package-version '(lsp-mode . "7.0.1"))
 
-(define-obsolete-variable-alias 'lsp-diagnostic-package
-  'lsp-diagnostics-provider  "lsp-mode 7.0.1")
-
 (defcustom lsp-server-trace nil
   "Request tracing on the server side.
 The actual trace output at each level depends on the language server in use.
