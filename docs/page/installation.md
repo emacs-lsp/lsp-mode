@@ -105,6 +105,21 @@ To defer LSP server startup (and DidOpen notifications) until the buffer is visi
     :commands (lsp lsp-deferred))
 ```
 
+#### use-package configuration
+
+Setting configuration options is easy:
+
+```
+(use-package lsp-mode
+             ...other options...
+             :config
+             (setq lsp-enable-on-type-formatting nil
+                   lsp-enable-file-watchers nil
+                   lsp-enable-xref t
+                   lsp-enable-completion-at-point t
+                   lsp-prefer-flymake nil))
+```
+
 ## Install a language server
 
 For instructions on how to install a server for your language, check the [available supported servers](./languages.md).
