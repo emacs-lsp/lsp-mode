@@ -293,10 +293,9 @@ See https://github.com/emacs-lsp/lsp-mode."
        ;; legacy
        (null lsp-diagnostics-provider))
       (lsp-diagnostics--flycheck-enable))
-     ((and (not (version< emacs-version "26.1"))
-           (or (eq lsp-diagnostics-provider :auto)
-               (eq lsp-diagnostics-provider :flymake)
-               (eq lsp-diagnostics-provider t)))
+     ((or (eq lsp-diagnostics-provider :auto)
+          (eq lsp-diagnostics-provider :flymake)
+          (eq lsp-diagnostics-provider t))
       (require 'flymake)
       (lsp-diagnostics--flymake-setup))
      ((not (eq lsp-diagnostics-provider :none))
