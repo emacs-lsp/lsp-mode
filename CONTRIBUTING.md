@@ -37,6 +37,7 @@ reliably would also make a huge difference.
 * Make sure that the unit tests are passing locally via `make test` or via the CI.
 * Write [good commit messages][3].
 * Update the [changelog][6].
+* Code-style/formatting changes and typo-fixes should go into their own commits and put into the `.git-blame-ignore-revs` file to avoid thrashing the `git blame` data.
 
 [1]: https://github.com/emacs-lsp/lsp-mode/issues
 [2]: http://gun.io/blog/how-to-github-fork-branch-and-pull-request

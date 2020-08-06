@@ -1,0 +1,12 @@
+# Configure git to ignore commits listed in this file with:
+#
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Fix another typo (#1965)
+1530757b9c66c88ef77cf97bd023211de9833ed0
+
+# Migrate to new form of ‘if-let’ and ‘when-let’. (#1991)
+c7199f6bd95d174b20bb5f6fb4e7b24c6ce1784a
+
+# Fix typos (#1964)
+1c18d4362d7cacc3b4ef8ff5cc9f336c123a89e5
