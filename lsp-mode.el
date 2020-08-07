@@ -5,7 +5,7 @@
 ;; Author: Vibhav Pant, Fangrui Song, Ivan Yonchovski
 ;; Keywords: languages
 ;; Package-Requires: ((emacs "26.1") (dash "2.14.1") (dash-functional "2.14.1") (f "0.20.0") (ht "2.0") (spinner "1.7.3") (markdown-mode "2.3") (lv "0"))
-;; Version: 7.0
+;; Version: 7.0.1
 
 ;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; This program is free software; you can redistribute it and/or modify
