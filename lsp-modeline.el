@@ -123,7 +123,7 @@
                                                         (lsp-execute-code-action (lsp--select-action actions))))))
                          built-string)
     (unless (string= "" built-string)
-      built-string)))
+      (concat " " built-string))))
 
 (defun lsp--modeline-update-code-actions (actions)
   "Update modeline with new code ACTIONS."
