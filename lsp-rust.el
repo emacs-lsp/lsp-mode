@@ -456,12 +456,6 @@ The command should include `--message=format=json` or similar option."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.3.2"))
 
-(defcustom lsp-rust-analyzer-inlay-face 'font-lock-comment-face
-  "The face to use for the Rust Analyzer inlays."
-  :type 'face
-  :group 'lsp-rust
-  :package-version '(lsp-mode . "7.0"))
-
 (defun lsp-rust-analyzer--make-init-options ()
   "Init options for rust-analyzer"
   `(:diagnostics (:enable ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable))
@@ -586,6 +580,12 @@ The command should include `--message=format=json` or similar option."
 ;; inlay hints
 
 (defvar-local lsp-rust-analyzer-inlay-hints-timer nil)
+
+(defface lsp-rust-analyzer-inlay-face
+  '((t :inherit font-lock-comment-face))
+  "The face to use for the Rust Analyzer inlays."
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.0"))
 
 (defun lsp-rust-analyzer-update-inlay-hints (buffer)
   (if (and (lsp-rust-analyzer-initialized?)
