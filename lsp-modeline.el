@@ -35,7 +35,7 @@
                   (const :tag "Show the name of the preferred code action" name)
                   (const :tag "Show the count of how many code actions available" count)))
   :group 'lsp-mode
-  :package-version '(lsp-mode . "7.0.1"))
+  :package-version '(lsp-mode . "7.1"))
 
 (defface lsp-modeline-code-actions-face
   '((t :inherit homoglyph))
