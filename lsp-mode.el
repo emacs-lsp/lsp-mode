@@ -3549,7 +3549,7 @@ interface TextDocumentEdit {
       (lsp--position-compare left-end right-end)
     (lsp--position-compare left-start right-start)))
 
-(lsp-defun lsp--apply-text-edit ((&TextEdit :range (&RangeToPoint :start :end) :new-text))
+(lsp-defun lsp--apply-text-edit ((edit &as &TextEdit :range (&RangeToPoint :start :end) :new-text))
   "Apply the edits described in the TextEdit object in TEXT-EDIT."
   ;; We sort text edits so as to apply edits that modify latter parts of the
   ;; document first. Furthermore, because the LSP spec dictates that:
@@ -3557,6 +3557,8 @@ interface TextDocumentEdit {
   ;; defines which edit to apply first."
   ;; We reverse the initial list and sort stably to make sure the order among
   ;; edits with the same position is preserved.
+  (setq new-text (s-replace "\r" "" (or new-text "")))
+  (lsp:set-text-edit-new-text edit new-text)
   (goto-char start)
   (delete-region start end)
   (insert new-text))
@@ -3568,9 +3570,12 @@ interface TextDocumentEdit {
     (lsp:set-position-line (max 0 line))
     (lsp:set-position-character (max 0 character))))
 
-(lsp-defun lsp--apply-text-edit-replace-buffer-contents ((&TextEdit :range (&Range :start :end) :new-text))
+(lsp-defun lsp--apply-text-edit-replace-buffer-contents ((edit &as &TextEdit :range (&Range :start :end)
+                                                                             :new-text))
   "Apply the edits described in the TextEdit object in TEXT-EDIT.
 The method uses `replace-buffer-contents'."
+  (setq new-text (s-replace "\r" "" (or new-text "")))
+  (lsp:set-text-edit-new-text edit new-text)
   (-let* ((source (current-buffer))
           ((beg . end) (lsp--range-to-region (lsp-make-range :start (lsp--fix-point start)
                                                              :end (lsp--fix-point end)))))
@@ -3649,9 +3654,6 @@ LSP server result."
                            #'lsp--apply-text-edit)))
         (unwind-protect
             (->> edits
-                 (mapc (-lambda ((edit &as &TextEdit :new-text))
-                         (lsp:set-text-edit-new-text edit
-                                                     (s-replace "\r" "" (or new-text "")))))
                  (nreverse)
                  (seq-sort #'lsp--text-edit-sort-predicate)
                  (mapc (lambda (edit)
