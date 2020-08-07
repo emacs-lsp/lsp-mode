@@ -49,7 +49,14 @@ _Tip:_ To find out the global errors you might use `lsp-treemacs-errors-list`.
 
 For a UI feedback of the available code actions, you can enable `lsp-modeline-code-actions-mode` which shows available code actions on modeline:
 
-![](../examples/modeline-code-actions.png)
+With `lsp-modeline-code-actions-segments` you can customize what to show on the modeline as you want:
+
+|`lsp-modeline-code-actions-segments`|result|
+|:-----:|:------:|
+|`'(count icon)` (Default)|![](../examples/modeline-code-actions-count-icon.png)|
+|`'(name icon)`|![](../examples/modeline-code-actions-name-icon.png)|
+|`'(icon)`|![](../examples/modeline-code-actions-icon.png)|
+|`'(count icon name)`|![](../examples/modeline-code-actions-count-icon-name.png)|
 
 ## Breadcrumb on headerline
 
@@ -57,17 +64,11 @@ For a UI feedback on headerline of the document symbols at point, current file o
 
 You can customize the breadcrumb segments via `lsp-headerline-breadcrumb-segments` variable, some examples:
 
-`'(path-up-to-project file symbols)` (Default)
-
-![](../examples/headerline-breadcrumb-path-up-to-project-file-symbols.png)
-
-`'(project file symbols)`
-
-![](../examples/headerline-breadcrumb-project-file-symbols.png)
-
-`'(symbols)`
-
-![](../examples/headerline-breadcrumb-symbols.png)
+|`lsp-headerline-breadcrumb-segments`|result|
+|:-----:|:------:|
+|`'(path-up-to-project file symbols)` (Default)|![](../examples/headerline-breadcrumb-path-up-to-project-file-symbols.png)|
+|`'(project file symbols)`|![](../examples/headerline-breadcrumb-project-file-symbols.png)|
+|`'(symbols)`|![](../examples/headerline-breadcrumb-symbols.png)|
 
 If `lsp-headerline-breadcrumb-segments` contains `'symbols`, you can optionally label the corresponding entries in the headerline display by setting `lsp-headerline-breadcrumb-enable-symbol-numbers` to `t`.
 
