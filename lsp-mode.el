@@ -4560,9 +4560,7 @@ RENDER-ALL - nil if only the signature should be rendered."
   "Stop showing current signature help."
   (interactive)
   (lsp-cancel-request-by-token :signature)
-  (with-current-buffer (or lsp--signature-last-buffer (current-buffer))
-    (remove-hook 'lsp-on-idle-hook #'lsp-signature t))
-  (remove-hook 'post-command-hook #'lsp--signature-maybe-stop)
+  (remove-hook 'post-command-hook #'lsp-signature)
   (funcall lsp-signature-function nil)
   (lsp-signature-mode -1))
 
@@ -4583,20 +4581,14 @@ RENDER-ALL - nil if only the signature should be rendered."
         (funcall lsp-signature-function message)
       (lsp-signature-stop))))
 
-(defun lsp--signature-maybe-stop ()
-  (when (and lsp--signature-last-buffer
-             (not (equal (current-buffer) lsp--signature-last-buffer)))
-    (lsp-signature-stop)))
-
 (defun lsp-signature-activate ()
   "Activate signature help.
 It will show up only if current point has signature help."
   (interactive)
-  (setq lsp--signature-last nil)
-  (setq lsp--signature-last-index nil)
-  (setq lsp--signature-last-buffer nil)
-  (add-hook 'lsp-on-idle-hook #'lsp-signature nil t)
-  (add-hook 'post-command-hook #'lsp--signature-maybe-stop)
+  (setq lsp--signature-last nil
+        lsp--signature-last-index nil
+        lsp--signature-last-buffer (current-buffer))
+  (add-hook 'post-command-hook #'lsp-signature)
   (lsp-signature-mode t))
 
 (defun lsp-signature-next ()
@@ -4638,11 +4630,11 @@ It will show up only if current point has signature help."
             (active-signature? (or lsp--signature-last-index active-signature? 0))
             (_ (setq lsp--signature-last-index active-signature?))
             ((signature &as &SignatureInformation? :label :parameters?) (seq-elt signatures active-signature?))
-            (prefix (format "%s/%s%s"
-                            (1+ active-signature?)
-                            (length signatures)
-                            (propertize "│ " 'face 'shadow)))
-            (prefix-length (- (length prefix) 2))
+            (prefix (concat (propertize (format " %s/%s"
+                                                (1+ active-signature?)
+                                                (length signatures))
+                                        'face 'success)
+                            " │ "))
             (method-docs (when
                              (and lsp-signature-render-documentation
                                   (or (not (numberp lsp-signature-doc-lines)) (< 0 lsp-signature-doc-lines)))
@@ -4650,20 +4642,12 @@ It will show up only if current point has signature help."
                                         (lsp:parameter-information-documentation? signature))))
                              (when (s-present? docs)
                                (concat
-                                (propertize (concat "\n"
-                                                    (s-repeat prefix-length "─")
-                                                    "┴─────────────────────────────────────────────────")
-                                            'face 'shadow)
                                 "\n"
                                 (if (and (numberp lsp-signature-doc-lines)
                                          (> (length (s-lines docs)) lsp-signature-doc-lines))
                                     (concat (s-join "\n" (-take lsp-signature-doc-lines (s-lines docs)))
                                             (propertize "\nTruncated..." 'face 'highlight))
-                                  docs)
-                                (propertize (concat "\n"
-                                                    (s-repeat prefix-length "─")
-                                                    "──────────────────────────────────────────────────")
-                                            'face 'shadow)))))))
+                                  docs)))))))
       (when (and active-parameter? (not (seq-empty-p parameters?)))
         (-when-let* ((param (when (and (< -1 active-parameter? (length parameters?)))
                               (seq-elt parameters? active-parameter?)))
@@ -4680,10 +4664,13 @@ It will show up only if current point has signature help."
 
 (defun lsp-signature ()
   "Display signature info (based on `textDocument/signatureHelp')"
-  (lsp-request-async "textDocument/signatureHelp"
-                     (lsp--text-document-position-params)
-                     #'lsp--handle-signature-update
-                     :cancel-token :signature))
+  (if (and lsp--signature-last-buffer
+           (not (equal (current-buffer) lsp--signature-last-buffer)))
+      (lsp-signature-stop)
+    (lsp-request-async "textDocument/signatureHelp"
+                       (lsp--text-document-position-params)
+                       #'lsp--handle-signature-update
+                       :cancel-token :signature)))
 
 
 (defcustom lsp-overlay-document-color-char "■"
