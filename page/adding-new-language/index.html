@@ -1749,8 +1749,8 @@ additional behavior, you can register that by using the
                   <span class="nb">:major-modes</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">sh-mode</span><span class="p">)</span>
                   <span class="nb">:priority</span> <span class="mi">-1</span>
                   <span class="nb">:environment-fn</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">()</span>
-                                    <span class="p">((</span><span class="s">&quot;EXPLAINSHELL_ENDPOINT&quot;</span> <span class="o">.</span> <span class="nv">lsp-bash-explainshell-endpoint</span><span class="p">)</span>
-                                     <span class="p">(</span><span class="s">&quot;HIGHLIGHT_PARSING_ERRORS&quot;</span> <span class="o">.</span> <span class="nv">lsp-bash-highlight-parsing-errors</span><span class="p">)))</span>
+                                    <span class="o">&#39;</span><span class="p">((</span><span class="s">&quot;EXPLAINSHELL_ENDPOINT&quot;</span> <span class="o">.</span> <span class="nv">lsp-bash-explainshell-endpoint</span><span class="p">)</span>
+                                      <span class="p">(</span><span class="s">&quot;HIGHLIGHT_PARSING_ERRORS&quot;</span> <span class="o">.</span> <span class="nv">lsp-bash-highlight-parsing-errors</span><span class="p">)))</span>
                   <span class="nb">:server-id</span> <span class="ss">&#39;bash-ls</span><span class="p">))</span>
 </code></pre></div>
 
