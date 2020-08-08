@@ -1059,15 +1059,15 @@ every element of it is of type string, else nil."
    (vectorp candidate)
    (seq-every-p #'stringp candidate)))
 
-(make-obsolete 'lsp--string-vector-p nil "7.0.2")
+(make-obsolete 'lsp--string-vector-p nil "7.1")
 
-(defun lsp-editable-vector-match (widget value)
+(defun lsp--editable-vector-match (widget value)
   "Function for `lsp-editable-vector' :match."
   ;; Value must be a list or a vector and all the members must match the type.
   (and (or (listp value) (vectorp value))
-       (length (cdr (lsp-editable-vector-match-inline widget value)))))
+       (length (cdr (lsp--editable-vector-match-inline widget value)))))
 
-(defun lsp-editable-vector-match-inline (widget value)
+(defun lsp--editable-vector-match-inline (widget value)
   "Value for `lsp-editable-vector' :match-inline."
   (let ((type (nth 0 (widget-get widget :args)))
         (ok t)
@@ -1082,27 +1082,27 @@ every element of it is of type string, else nil."
           (setq ok nil))))
     (cons found value)))
 
-(define-widget 'lsp-editable-vector 'editable-list
-  "A subclass of `editable-list' that accepts and returns a
-vector instead of a list."
-  :value-to-external 'lsp-editable-vector-value-to-external
-  :value-to-internal 'lsp-editable-vector-value-to-internal
-  :match 'lsp-editable-vector-match
-  :match-inline 'lsp-editable-vector-match-inline)
-
-(defun lsp-editable-vector-value-to-external (_widget internal-value)
+(defun lsp--editable-vector-value-to-external (_widget internal-value)
   "Convert the internal list value to a vector."
   (if (listp internal-value)
       (apply 'vector internal-value)
     internal-value))
 
-(defun lsp-editable-vector-value-to-internal (_widget external-value)
+(defun lsp--editable-vector-value-to-internal (_widget external-value)
   "Convert the external vector value to a list."
   (if (vectorp external-value)
       (append external-value nil)
     external-value))
 
-(define-widget 'lsp-repeatable-vector 'lsp-editable-vector
+(define-widget 'lsp--editable-vector 'editable-list
+  "A subclass of `editable-list' that accepts and returns a
+vector instead of a list."
+  :value-to-external 'lsp--editable-vector-value-to-external
+  :value-to-internal 'lsp--editable-vector-value-to-internal
+  :match 'lsp--editable-vector-match
+  :match-inline 'lsp--editable-vector-match-inline)
+
+(define-widget 'lsp-repeatable-vector 'lsp--editable-vector
   "A variable length homogeneous vector."
   :tag "Repeat"
   :format "%{%t%}:\n%v%i\n")
@@ -1110,10 +1110,14 @@ vector instead of a list."
 (define-widget 'lsp-string-vector 'lazy
   "A vector of zero or more elements, every element of which is a string.
 Appropriate for any language-specific `defcustom' that needs to
-serialize as a JSON array of strings."
+serialize as a JSON array of strings.
+
+Deprecated. Use `lsp-repeatable-vector' instead. "
   :offset 4
   :tag "Vector"
   :type '(lsp-repeatable-vector string))
+
+(make-obsolete 'lsp-string-vector nil "7.1")
 
 (defun lsp--info (format &rest args)
   "Display lsp info message with FORMAT with ARGS."
