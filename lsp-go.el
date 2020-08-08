@@ -111,7 +111,7 @@ completing function calls."
 
 (define-obsolete-variable-alias
   'lsp-gopls-available-codelens
-  'lsp-go-available-codelesn
+  'lsp-go-available-codelens
   "lsp-mode 7.0.1")
 
 (defvar lsp-go-available-codelens
