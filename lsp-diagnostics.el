@@ -283,14 +283,15 @@ See https://github.com/emacs-lsp/lsp-mode."
   (cond
    (lsp-diagnostics-mode
     (cond
-     ((or
-       (and (eq lsp-diagnostics-provider :auto)
-            (functionp 'flycheck-mode))
-       (and (eq lsp-diagnostics-provider :flycheck)
-            (or (functionp 'flycheck-mode)
-                (user-error "The lsp-diagnostics-provider is set to :flycheck but flycheck is not installed?")))
-       ;; legacy
-       (null lsp-diagnostics-provider))
+     ((and (or
+            (and (eq lsp-diagnostics-provider :auto)
+                 (functionp 'flycheck-mode))
+            (and (eq lsp-diagnostics-provider :flycheck)
+                 (or (functionp 'flycheck-mode)
+                     (user-error "The lsp-diagnostics-provider is set to :flycheck but flycheck is not installed?")))
+            ;; legacy
+            (null lsp-diagnostics-provider))
+           (require 'flycheck nil t))
       (lsp-diagnostics--flycheck-enable))
      ((or (eq lsp-diagnostics-provider :auto)
           (eq lsp-diagnostics-provider :flymake)
