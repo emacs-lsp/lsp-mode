@@ -153,25 +153,10 @@ The returned type provides a tri-state that either:
   "Select what codelens should be enabled or not.
 
 The codelens can be found at https://github.com/golang/tools/blob/4d5ea46c79fe3bbb57dd00de9c167e93d94f4710/internal/lsp/source/options.go#L102-L108."
-  :type (lsp-go--defcustom-available-as-alist-type lsp-gopls-available-codelens)
+  :type (lsp-go--defcustom-available-as-alist-type lsp-go-available-codelens)
   :group 'lsp-gopls
   :risky t
   :package-version '(lsp-mode "7.0"))
-
-(lsp-register-custom-settings
- '(("gopls.usePlaceholders" lsp-gopls-use-placeholders t)
-   ("gopls.hoverKind" lsp-gopls-hover-kind)
-   ("gopls.buildFlags" lsp-gopls-build-flags)
-   ("gopls.env" lsp-gopls-env)
-   ("gopls.codelens" lsp-gopls-codelens)))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda () (cons lsp-gopls-server-path lsp-gopls-server-args)))
-                  :major-modes '(go-mode go-dot-mod-mode)
-                  :priority 0
-                  :server-id 'gopls
-                  :library-folders-fn 'lsp-go--library-default-directories))
 
 (define-obsolete-variable-alias
   'lsp-clients-go-library-directories
