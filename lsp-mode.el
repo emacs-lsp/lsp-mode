@@ -1059,7 +1059,7 @@ every element of it is of type string, else nil."
    (vectorp candidate)
    (seq-every-p #'stringp candidate)))
 
-(make-obsolete 'lsp--string-vector-p nil "7.1")
+(make-obsolete 'lsp--string-vector-p nil "lsp-mode 7.1")
 
 (defun lsp--editable-vector-match (widget value)
   "Function for `lsp-editable-vector' :match."
@@ -1117,7 +1117,7 @@ Deprecated. Use `lsp-repeatable-vector' instead. "
   :tag "Vector"
   :type '(lsp-repeatable-vector string))
 
-(make-obsolete 'lsp-string-vector nil "7.1")
+(make-obsolete 'lsp-string-vector nil "lsp-mode 7.1")
 
 (defun lsp--info (format &rest args)
   "Display lsp info message with FORMAT with ARGS."
