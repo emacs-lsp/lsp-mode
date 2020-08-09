@@ -5498,8 +5498,14 @@ textDocument/didOpen for the new file."
 PARAMS are the `workspace/configuration' request params"
   (->> items
        (-map (-lambda ((&ConfigurationItem :section?))
-               (apply 'ht-get* (append (list (lsp-configuration-section section?))
-                                       (split-string section? "\\.")))))
+               (-let* ((path-parts (split-string section? "\\."))
+                       (path-without-last (s-join "." (-slice path-parts 0 -1)))
+                       (path-parts-len (length path-parts)))
+                 (cond
+                  ((<= path-parts-len 1)
+                   (apply 'ht-get* `(,(lsp-configuration-section section?) ,@path-parts)))
+                  ((> path-parts-len 1)
+                   (apply 'ht-get* `(,(lsp-configuration-section path-without-last) ,@path-parts)))))))
        (apply #'vector)))
 
 (defun lsp--send-request-response (workspace recv-time request response)
