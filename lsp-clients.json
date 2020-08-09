@@ -146,14 +146,6 @@
     "debugger": "Yes"
   },
   {
-    "name": "bingo",
-    "full-name": "Go",
-    "server-name": "bingo",
-    "server-url": "https://github.com/saibing/bingo",
-    "installation-url": "https://github.com/saibing/bingo/wiki/Install",
-    "debugger": "Yes"
-  },
-  {
     "name": "gdscript",
     "full-name": "GDScript",
     "server-name": "godot",
