@@ -214,7 +214,7 @@ $GOPATH/pkg/mod along with the value of
 (lsp-register-custom-settings
  '(("gopls.usePlaceholders" lsp-go-use-placeholders t)
    ("gopls.hoverKind" lsp-go-hover-kind)
-   ("gopls.buildFlags" lsp-gop-build-flags)
+   ("gopls.buildFlags" lsp-go-build-flags)
    ("gopls.env" lsp-go-env)
    ("gopls.linkTarget" lsp-go-link-target)
    ("gopls.codelens" lsp-go-codelens)))
