@@ -456,12 +456,6 @@ The command should include `--message=format=json` or similar option."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.3.2"))
 
-(defcustom lsp-rust-analyzer-inlay-face 'font-lock-comment-face
-  "The face to use for the Rust Analyzer inlays."
-  :type 'face
-  :group 'lsp-rust
-  :package-version '(lsp-mode . "7.0"))
-
 (defun lsp-rust-analyzer--make-init-options ()
   "Init options for rust-analyzer"
   `(:diagnostics (:enable ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable))
@@ -587,6 +581,66 @@ The command should include `--message=format=json` or similar option."
 
 (defvar-local lsp-rust-analyzer-inlay-hints-timer nil)
 
+(defface lsp-rust-analyzer-inlay-face
+  '((t :inherit font-lock-comment-face))
+  "The face to use for the Rust Analyzer inlays."
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.0"))
+
+(defface lsp-rust-analyzer-inlay-type-face
+  '((t :inherit lsp-rust-analyzer-inlay-face))
+  "Face for inlay type hints (e.g. inferred variable types)."
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1"))
+
+(defcustom lsp-rust-analyzer-inlay-type-space-format "%s"
+  "Format string for spacing around variable inlays (not part of the inlay face)."
+  :type '(string :tag "String")
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1"))
+
+(defcustom lsp-rust-analyzer-inlay-type-format ": %s"
+  "Format string for variable inlays (part of the inlay face)."
+  :type '(string :tag "String")
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1"))
+
+(defface lsp-rust-analyzer-inlay-param-face
+  '((t :inherit lsp-rust-analyzer-inlay-face))
+  "Face for inlay parameter hints (e.g. function parameter names at call-site)."
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1"))
+
+(defcustom lsp-rust-analyzer-inlay-param-space-format "%s "
+  "Format string for spacing around parameter inlays (not part of the inlay face)."
+  :type '(string :tag "String")
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1"))
+
+(defcustom lsp-rust-analyzer-inlay-param-format "%s:"
+  "Format string for parameter inlays (part of the inlay face)."
+  :type '(string :tag "String")
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1"))
+
+(defface lsp-rust-analyzer-inlay-chain-face
+  '((t :inherit lsp-rust-analyzer-inlay-face))
+  "Face for inlay chaining hints (e.g. inferred chain intermediate types)."
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1"))
+
+(defcustom lsp-rust-analyzer-inlay-chain-space-format "%s"
+  "Format string for spacing around chain inlays (not part of the inlay face)."
+  :type '(string :tag "String")
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1"))
+
+(defcustom lsp-rust-analyzer-inlay-chain-format ": %s"
+  "Format string for chain inlays (part of the inlay face)."
+  :type '(string :tag "String")
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1"))
+
 (defun lsp-rust-analyzer-update-inlay-hints (buffer)
   (if (and (lsp-rust-analyzer-initialized?)
            (eq buffer (current-buffer)))
@@ -604,16 +658,24 @@ The command should include `--message=format=json` or similar option."
              (overlay-put overlay 'evaporate t)
              (cond
               ((equal kind lsp/rust-analyzer-inlay-hint-kind-type-hint)
-               (overlay-put overlay 'after-string (propertize (concat ": " label)
-                                                              'font-lock-face lsp-rust-analyzer-inlay-face)))
+               (overlay-put overlay 'after-string
+                (format lsp-rust-analyzer-inlay-type-space-format
+                 (propertize (format lsp-rust-analyzer-inlay-type-format label)
+                  'font-lock-face 'lsp-rust-analyzer-inlay-type-face))))
+
               ((equal kind lsp/rust-analyzer-inlay-hint-kind-param-hint)
-               (overlay-put overlay 'before-string (propertize (concat label ": ")
-                                                               'font-lock-face lsp-rust-analyzer-inlay-face)))
+               (overlay-put overlay 'before-string
+                (format lsp-rust-analyzer-inlay-param-space-format
+                 (propertize (format lsp-rust-analyzer-inlay-param-format label)
+                  'font-lock-face 'lsp-rust-analyzer-inlay-param-face))))
+
               ((equal kind lsp/rust-analyzer-inlay-hint-kind-chaining-hint)
-               (overlay-put overlay 'after-string (propertize (concat ": " label)
-                                                              'font-lock-face lsp-rust-analyzer-inlay-face)))))))
+               (overlay-put overlay 'after-string
+                (format lsp-rust-analyzer-inlay-chain-space-format
+                 (propertize (format lsp-rust-analyzer-inlay-chain-format label)
+                  'font-lock-face 'lsp-rust-analyzer-inlay-chain-face))))))))
        :mode 'tick))
-  nil)
+ nil)
 
 (defun lsp-rust-analyzer-initialized? ()
   (when-let ((workspace (lsp-find-workspace 'rust-analyzer)))
