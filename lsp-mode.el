@@ -7368,7 +7368,7 @@ This avoids overloading the server with many files when starting Emacs."
 
 ;; lsp internal validation.
 
-(defmacro lsp--validate (&rest checks)
+(defmacro lsp--doctor (&rest checks)
   `(-let [buf (current-buffer)]
      (with-current-buffer (get-buffer-create "*lsp-performance*")
        (with-help-window (current-buffer)
@@ -7380,10 +7380,15 @@ This avoids overloading the server with many files when starting Emacs."
                                       (propertize "ERROR" 'face 'error)))))
                  (-partition 2 checks))))))
 
-(defun lsp-diagnose ()
+(defvar company-backends)
+
+(define-obsolete-function-alias 'lsp-diagnose
+  'lsp-doctor "lsp-mode 7.1")
+
+(defun lsp-doctor ()
   "Validate performance settings."
   (interactive)
-  (lsp--validate
+  (lsp--doctor
    "Checking for Native JSON support" (functionp 'json-serialize)
    "Checking emacs version has `read-process-output-max'" (boundp 'read-process-output-max)
    "Using company-capf" (-contains? company-backends 'company-capf)

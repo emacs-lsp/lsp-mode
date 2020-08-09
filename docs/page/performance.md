@@ -3,7 +3,7 @@ Performance
 
 ## Tuning
 
-Use `M-x lsp-diagnose` to validate if your `lsp-mode` is properly configured. In the section below, you could find description for each of the checks:
+Use `M-x lsp-doctor` to validate if your `lsp-mode` is properly configured. In the section below, you could find description for each of the checks:
 
 When configured properly `lsp-mode`'s performance is on par with mainstream LSP clients (e. g. `VScode`, `Theia`, etc). Here are steps to achieve optimal results.
 
