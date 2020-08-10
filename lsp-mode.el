@@ -715,8 +715,7 @@ are determined by the index of the element."
                          (const kind)))
   :group 'lsp-imenu)
 
-(defcustom lsp-imenu-index-symbol-kinds
-  '(Class Method Property Field Constructor Enum Interface Function Struct)
+(defcustom lsp-imenu-index-symbol-kinds nil
   "Which symbol kinds to show in imenu."
   :type '(repeat (choice (const :tag "File" File)
                          (const :tag "Module" Module)
