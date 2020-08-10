@@ -41,6 +41,16 @@ Benchmarks show that Emacs 27 is `~15 times` faster than Emacs when using Elisp 
 (setq lsp-idle-delay 0.500)
 ```
 
+## Ignore watch folders/files
+
+By default `lsp-mode` tries to watch all files and folders of the project ignoring the regexp from `lsp-file-watch-ignored`. If you don't want some file or folder
+to be watched for performance reasons, you can add a regexp to that variable excluding the file or folder. 
+Also you can disable the file watch feature with:
+
+```elisp
+(setq lsp-enable-file-watchers nil)
+```
+
 ## Reporting performance problems
 
 If you have tried all of the non-optional steps from the list and `emacs` is still not very responsive please open a PR with the following information:
