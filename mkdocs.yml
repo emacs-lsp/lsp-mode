@@ -74,6 +74,7 @@ nav:
     - Rust: page/lsp-rust.md
     - Scala: https://emacs-lsp.github.io/lsp-metals
     - SQL (sqls): page/lsp-sqls.md
+    - Svelte: page/lsp-svelte.md
     - Swift: https://emacs-lsp.github.io/lsp-sourcekit
     - Terraform: page/lsp-terraform.md
     - TeX, LaTeX, etc (digestif): page/lsp-tex.md
