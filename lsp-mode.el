@@ -715,6 +715,36 @@ are determined by the index of the element."
                          (const kind)))
   :group 'lsp-imenu)
 
+(defcustom lsp-imenu-index-symbol-kinds nil
+  "Which symbol kinds to show in imenu."
+  :type '(repeat (choice (const :tag "File" File)
+                         (const :tag "Module" Module)
+                         (const :tag "Namespace" Namespace)
+                         (const :tag "Package" Package)
+                         (const :tag "Class" Class)
+                         (const :tag "Method" Method)
+                         (const :tag "Property" Property)
+                         (const :tag "Field" Field)
+                         (const :tag "Constructor" Constuctor)
+                         (const :tag "Enum" Enum)
+                         (const :tag "Interface" Interface)
+                         (const :tag "Function" Function)
+                         (const :tag "Variable" Variable)
+                         (const :tag "Constant" Constant)
+                         (const :tag "String" String)
+                         (const :tag "Number" Number)
+                         (const :tag "Boolean" Boolean)
+                         (const :tag "Array" Array)
+                         (const :tag "Object" Object)
+                         (const :tag "Key" Key)
+                         (const :tag "Null" Null)
+                         (const :tag "Enum Member" EnumMember)
+                         (const :tag "Struct" Struct)
+                         (const :tag "Event" Event)
+                         (const :tag "Operator" Operator)
+                         (const :tag "Type Parameter" TypeParameter)))
+  :group 'lsp-imenu)
+
 ;; vibhavp: Should we use a lower value (5)?
 (defcustom lsp-response-timeout 10
   "Number of seconds to wait for a response from the language server before timing out."
@@ -5868,16 +5898,18 @@ an alist
       (cons name
             (lsp--imenu-create-hierarchical-index children?)))))
 
-(lsp-defun lsp--symbol-filter ((&SymbolInformation :location))
-  "Determine if SYM is for the current document."
-  ;; It's a SymbolInformation or DocumentSymbol, which is always in the current
-  ;; buffer file.
-  (when location
-    (not (eq (->> location
-                  (lsp:location-uri)
-                  (lsp--uri-to-path)
-                  (find-buffer-visiting))
-             (current-buffer)))))
+(lsp-defun lsp--symbol-filter ((&SymbolInformation :kind :location))
+  "Determine if SYM is for the current document and is to be shown."
+  ;; It's a SymbolInformation or DocumentSymbol, which is always in the
+  ;; current buffer file.
+  (or (and lsp-imenu-index-symbol-kinds
+           (not (memql (aref lsp/symbol-kind-lookup kind) lsp-imenu-index-symbol-kinds)))
+      (and location
+           (not (eq (->> location
+                         (lsp:location-uri)
+                         (lsp--uri-to-path)
+                         (find-buffer-visiting))
+                    (current-buffer))))))
 
 (lsp-defun lsp--get-symbol-type ((&SymbolInformation :kind))
   "The string name of the kind of SYM."
