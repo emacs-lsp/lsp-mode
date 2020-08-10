@@ -24,7 +24,6 @@
 ;;; Code:
 (require 'lsp-mode)
 (require 'filenotify)
-(require 'em-glob)
 
 (ert-deftest lsp-file-watch--recursive ()
   :tags '(no-win)
@@ -144,10 +143,10 @@
     (lsp-kill-watch watch)))
 
 (ert-deftest lsp-file-watch--glob-pattern ()
-  (should (string-match (eshell-glob-regexp "pom.xml") "pom.xml"))
-  (should (string-match (eshell-glob-regexp "**/pom.xml") "/pom.xml"))
-  (should (string-match (eshell-glob-regexp "**/*.xml") "data/pom.xml"))
-  (should (not (string-match (eshell-glob-regexp "**/*.xml") "pom.xml"))))
+  (should (string-match (lsp-glob-to-regexp "pom.xml") "pom.xml"))
+  (should (string-match (lsp-glob-to-regexp "**/pom.xml") "/pom.xml"))
+  (should (string-match (lsp-glob-to-regexp "**/*.xml") "data/pom.xml"))
+  (should (string-match (lsp-glob-to-regexp "**/*.xml") "pom.xml")))
 
 (ert-deftest lsp-file-watch--ignore-list ()
   :tags '(no-win)

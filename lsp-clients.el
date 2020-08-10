@@ -29,7 +29,6 @@
 (require 'dash-functional)
 (require 'rx)
 (require 'cl-lib)
-(require 'em-glob)
 
 ;;; Ada
 (defgroup lsp-ada nil
@@ -946,7 +945,7 @@ responsiveness at the cost of possible stability issues."
 
 (defun parse-rf-language-server-globs-to-regex (vector)
   "Converts vector with globs to regex"
-    (concat "\\("(mapconcat 'eshell-glob-regexp vector "\\|") "\\)"))
+  (concat "\\(" (mapconcat #'lsp-glob-to-regexp vector "\\|") "\\)"))
 
 (defun parse-rf-language-server-include-path-regex (vector)
   "Creates regexp to select files from workspace directory"
