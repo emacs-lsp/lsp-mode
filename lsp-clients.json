@@ -384,6 +384,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "svelte",
+    "full-name": "Svelte",
+    "server-name": "svelteserver",
+    "server-url": "https://github.com/sveltejs/language-tools",
+    "installation": "npm i -g svelte-language-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "terraform",
     "full-name": "Terraform",
     "server-name": "terraform-lsp",
