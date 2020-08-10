@@ -430,13 +430,18 @@ particular FILE-NAME and MODE."
   :group 'lsp-mode
   :link '(url-link "https://clang.llvm.org/extra/clangd/"))
 
-(defcustom lsp-clients-clangd-executable "clangd"
+(defcustom lsp-clients-clangd-executable nil
   "The clangd executable to use.
-Leave as just the executable name to use the default behavior of
-finding the executable with `exec-path'."
+When `'non-nil' use the name of the clangd executable file
+available in your path to use. Otherwise the system will try to
+find a suitable one. Set this variable before loading lsp."
   :group 'lsp-clangd
   :risky t
   :type 'file)
+
+(defvar lsp-clients-clangd-executable-found nil
+  "Clang executable full path when found.
+This must be set only once after loading the clang client.")
 
 (defcustom lsp-clients-clangd-args '()
   "Extra arguments for the clangd executable."
@@ -446,7 +451,13 @@ finding the executable with `exec-path'."
 
 (defun lsp-clients--clangd-command ()
   "Generate the language server startup command."
-  `(,lsp-clients-clangd-executable ,@lsp-clients-clangd-args))
+  (unless lsp-clients-clangd-executable-found
+    (setq lsp-clients-clangd-executable-found
+          (or (and lsp-clients-clangd-executable
+                   (locate-file lsp-clients-clangd-executable exec-path nil 1))
+              (locate-file "clangd" exec-path '("" "-10" "-9" "-8" "-7" "-6") 1))))
+
+  `(,lsp-clients-clangd-executable-found ,@lsp-clients-clangd-args))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
