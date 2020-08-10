@@ -87,7 +87,7 @@ completing function calls."
   on the user's behalf. This variable takes a hash table of env
   var names to desired values."
   :type '(alist :key-type (string :tag "env var name") :value-type (string :tag "value"))
-  :group 'lsp-gopls
+  :group 'lsp-go
   :risky t
   :package-version '(lsp-mode "6.2"))
 
@@ -116,13 +116,21 @@ completing function calls."
 
 (defvar lsp-go-available-codelens
   '((generate . "Run `go generate` for a directory")
-	  (test . "Run `go test` for a specific test function")
-	  (tidy . "Run `go mod tidy` for a module")
-	  (upgrade_dependency . "Upgrade a dependency")
-	  (regenerate_cgo . "Regenerate cgo definitions"))
+    (test . "Run `go test` for a specific test function")
+    (tidy . "Run `go mod tidy` for a module")
+    (upgrade_dependency . "Upgrade a dependency")
+    (regenerate_cgo . "Regenerate cgo definitions")
+    (gc_details . "Show the gc compiler's choices for inline analysis and escaping"))
   "Available codelens that can be further enabled or disabled
-  through `lsp-gopls-codelens'.")
+  through `lsp-go-codelens'.")
 
+(defvar lsp-go-available-annotation-suppressions
+  '((noBounds . "Bounds checking")
+    (noEscape . "Escape analysis")
+    (noInline . "Inlining")
+    (noNilcheck . "Generated nil checks"))
+  "Available diagnostics for gc_details that can be suppressed through
+ `lsp-go-disabled-annotations.'")
 
 (defun lsp-go--defcustom-available-as-alist-type (alist)
   "Returns a list suitable for the `:type' field in a `defcustom' used to populate an alist.
@@ -149,14 +157,21 @@ The returned type provides a tri-state that either:
   'lsp-go-codelens
   "lsp-mode 7.0.1")
 
-(defcustom lsp-go-codelens '((generate . t) (test . t))
+(defcustom lsp-go-codelens '((generate . t) (upgrade_dependency . t))
   "Select what codelens should be enabled or not.
 
 The codelens can be found at https://github.com/golang/tools/blob/4d5ea46c79fe3bbb57dd00de9c167e93d94f4710/internal/lsp/source/options.go#L102-L108."
   :type (lsp-go--defcustom-available-as-alist-type lsp-go-available-codelens)
-  :group 'lsp-gopls
+  :group 'lsp-go
   :risky t
   :package-version '(lsp-mode "7.0"))
+
+(defcustom lsp-go-disabled-annotations nil
+  "Disabled gc_details annotations."
+  :type (lsp-go--defcustom-available-as-alist-type lsp-go-available-annotation-suppressions)
+  :group 'lsp-go
+  :risky t
+  :package-version '(lsp-mode "7.0.2"))
 
 (define-obsolete-variable-alias
   'lsp-clients-go-library-directories
@@ -211,13 +226,37 @@ $GOPATH/pkg/mod along with the value of
   :group 'lsp-go
   :package-version '(lsp-mode "7.0.1"))
 
+(defcustom lsp-go-complete-unimported nil
+  "If non-nil, the completion engine is allowed to make suggestions for packages that you do not currently import."
+  :type 'boolean
+  :group 'lsp-go
+  :package-version '(lsp-mode "7.0.2"))
+
+(defcustom lsp-go-matcher "caseInsensitive"
+  "Defines the algorithm that is used when calculating completion candidates."
+  :type '(choice (const "fuzzy")
+          (const "caseSensitive")
+          (const "caseInsensitive"))
+  :group 'lsp-go
+  :package-version '(lsp-mode "7.0.2"))
+
+(defcustom lsp-go-staticcheck t
+  "If non-nil, enables the use of staticcheck.io analyzers."
+  :type 'boolean
+  :group 'lsp-go
+  :package-version '(lsp-mode "7.0.2"))
+
 (lsp-register-custom-settings
  '(("gopls.usePlaceholders" lsp-go-use-placeholders t)
    ("gopls.hoverKind" lsp-go-hover-kind)
    ("gopls.buildFlags" lsp-go-build-flags)
    ("gopls.env" lsp-go-env)
    ("gopls.linkTarget" lsp-go-link-target)
-   ("gopls.codelens" lsp-go-codelens)))
+   ("gopls.codelens" lsp-go-codelens)
+   ("gopls.staticcheck" lsp-go-staticcheck)
+   ("gopls.matcher" lsp-go-matcher)
+   ("gopls.completeUnimported" lsp-go-complete-unimported)
+   ("gopls.annotations" lsp-go-disabled-annotations)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
