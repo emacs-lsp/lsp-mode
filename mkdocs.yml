@@ -48,7 +48,9 @@ nav:
     - Hack: page/lsp-hack.md
     - HTML: page/lsp-html.md
     - Haskell: https://emacs-lsp.github.io/lsp-haskell
-    - Lua: page/lsp-emmy-lua.md
+    - Lua (EmmyLua): page/lsp-emmy-lua.md
+    - Lua (Lua Language Server): page/lsp-lua-language-server.md
+    - Lua (Lua-Lsp): page/lsp-lua-lsp.md
     - Java: https://emacs-lsp.github.io/lsp-java
     - JavaScript/TypeScript (sourcegraph): page/lsp-typescript-javascript.md
     - JavaScript/TypeScript (theia-ide): page/lsp-typescript.md

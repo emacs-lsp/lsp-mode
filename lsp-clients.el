@@ -772,39 +772,6 @@ responsiveness at the cost of possible stability issues."
                   :initialization-options (lambda ()
                                             lsp-clients-vim-initialization-options)))
 
-
-;; LUA
-(defgroup lsp-emmy-lua nil
-  "LSP support for emmy-lua."
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/EmmyLua/EmmyLua-LanguageServer"))
-
-(defcustom lsp-clients-emmy-lua-java-path "java"
-  "Path to java which will be used for running emmy-lua language server."
-  :group 'lsp-emmy-lua
-  :risky t
-  :type 'file)
-
-(defcustom lsp-clients-emmy-lua-jar-path (f-expand "~/.emacs.d/EmmyLua-LS-all.jar")
-  "Path to jar which will be used for running EmmyLua language server."
-  :group 'lsp-emmy-lua
-  :risky t
-  :type 'file)
-
-(defun lsp-clients-emmy-lua--create-connection ()
-  "Create connection to emmy lua language server."
-  (lsp-stdio-connection
-   (lambda ()
-     (list lsp-clients-emmy-lua-java-path "-jar" lsp-clients-emmy-lua-jar-path))
-   (lambda ()
-     (f-exists? lsp-clients-emmy-lua-jar-path))))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-clients-emmy-lua--create-connection)
-                  :major-modes '(lua-mode)
-                  :priority -1
-                  :server-id 'emmy-lua
-                  :notification-handlers (lsp-ht ("emmy/progressReport" #'ignore))))
 
 
 ;; R
