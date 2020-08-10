@@ -244,6 +244,23 @@
     "debugger": "Not available"
   },
   {
+    "name": "lua-language-server",
+    "full-name": "Lua",
+    "server-name": "lua-language-server",
+    "installation-url": "https://github.com/sumneko/lua-language-server/wiki/Build-and-Run-(Standalone)",
+    "server-url": "https://github.com/sumneko/lua-language-server",
+    "debugger": "Not available"
+  },
+  {
+    "name": "lua-lsp",
+    "full-name": "Lua",
+    "server-name": "lua-lsp",
+    "installation-url": "https://luarocks.org/modules/alloyed/lua-lsp",
+    "server-url": "https://github.com/Alloyed/lua-lsp",
+    "installation": "luarocks install --server=https://luarocks.org/dev lua-lsp --local",
+    "debugger": "Not available"
+  },
+  {
     "name": "nim",
     "full-name": "Nim",
     "server-name": "nimlsp",
