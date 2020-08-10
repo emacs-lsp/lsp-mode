@@ -144,6 +144,14 @@
      <lastmod>2020-08-10</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-lua-language-server/</loc>
+     <lastmod>2020-08-10</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-lua-lsp/</loc>
+     <lastmod>2020-08-10</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
      <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript-javascript/</loc>
      <lastmod>2020-08-10</lastmod>
      <changefreq>daily</changefreq>
