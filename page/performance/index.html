@@ -414,6 +414,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#ignore-watch-foldersfiles" class="md-nav__link">
+    Ignore watch folders/files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#reporting-performance-problems" class="md-nav__link">
     Reporting performance problems
   </a>
@@ -1694,6 +1701,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#ignore-watch-foldersfiles" class="md-nav__link">
+    Ignore watch folders/files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#reporting-performance-problems" class="md-nav__link">
     Reporting performance problems
   </a>
@@ -1760,6 +1774,13 @@ Benchmarks show that Emacs 27 is <code>~15 times</code> faster than Emacs when u
 <li>Optional: fine-tune <code>lsp-idle-delay</code>. This variable determines how often lsp-mode will refresh the highlights, lenses, links, etc while you type.</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-idle-delay</span> <span class="mf">0.500</span><span class="p">)</span>
+</code></pre></div>
+
+<h2 id="ignore-watch-foldersfiles">Ignore watch folders/files<a class="headerlink" href="#ignore-watch-foldersfiles" title="Permanent link">#</a></h2>
+<p>If the server supports watch files, by default <code>lsp-mode</code> tries to watch all files and folders of the project ignoring the regexp from <code>lsp-file-watch-ignored</code>. If you don't want some file or folder
+to be watched for performance reasons, you can add a regexp to that variable excluding the file or folder. 
+Also you can disable the file watch feature with:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-enable-file-watchers</span> <span class="no">nil</span><span class="p">)</span>
 </code></pre></div>
 
 <h2 id="reporting-performance-problems">Reporting performance problems<a class="headerlink" href="#reporting-performance-problems" title="Permanent link">#</a></h2>
