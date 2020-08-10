@@ -1029,5 +1029,17 @@ responsiveness at the cost of possible stability issues."
                                                             (parse-rf-language-server-include-path-regex
                                                              lsp-rf-language-server-include-paths))))))))))
 
+
+;; Nix
+(defgroup lsp-nix nil
+  "LSP support for Nix, using rnix-lsp."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/nix-community/rnix-lsp"))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection "rnix-lsp")
+                  :major-modes '(nix-mode)
+                  :server-id 'nix-ls))
+
 (provide 'lsp-clients)
 ;;; lsp-clients.el ends here
