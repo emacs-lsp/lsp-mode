@@ -874,7 +874,8 @@ Changes take effect only when a new session is started."
                                         (purescript-mode . "purescript")
                                         (gdscript-mode . "gdscript")
                                         (perl-mode . "perl")
-                                        (robot-mode . "robot"))
+                                        (robot-mode . "robot")
+                                        (nix-mode . "nix"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
