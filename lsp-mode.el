@@ -3445,28 +3445,31 @@ in that particular folder."
     (when (cl-find ch trigger-characters :key #'string-to-char)
       (lsp-signature-activate))))
 
-(defun lsp--update-on-type-formatting-hook (&optional cleanup?)
-  (let ((on-type-formatting-handler
-         (when-let ((provider (lsp--capability :documentOnTypeFormattingProvider)))
-           (-let [(&DocumentOnTypeFormattingOptions :more-trigger-character?
-                                                    :first-trigger-character) provider]
-             (lambda ()
-               (lsp--on-type-formatting first-trigger-character
-                                        more-trigger-character?))))))
-    (cond
-     ((and lsp-enable-on-type-formatting on-type-formatting-handler)
-      (add-hook 'post-self-insert-hook on-type-formatting-handler nil t))
+(defun lsp--on-type-formatting-handler-create ()
+  (when-let ((provider (lsp--capability :documentOnTypeFormattingProvider)))
+    (-let [(&DocumentOnTypeFormattingOptions :more-trigger-character?
+                                             :first-trigger-character) provider]
+      (lambda ()
+        (lsp--on-type-formatting first-trigger-character
+                                 more-trigger-character?)))))
 
+(defun lsp--update-on-type-formatting-hook (&optional cleanup?)
+  (let ((on-type-formatting-handler (lsp--on-type-formatting-handler-create)))
+    (cond
+     ((and lsp-enable-on-type-formatting on-type-formatting-handler (not cleanup?))
+      (add-hook 'post-self-insert-hook on-type-formatting-handler nil t))
      ((or cleanup?
           (not lsp-enable-on-type-formatting))
       (remove-hook 'post-self-insert-hook on-type-formatting-handler t)))))
 
+(defun lsp--signature-help-handler-create ()
+  (-when-let ((&SignatureHelpOptions? :trigger-characters?)
+              (lsp--capability :signatureHelpProvider))
+    (lambda ()
+      (lsp--maybe-enable-signature-help trigger-characters?))))
+
 (defun lsp--update-signature-help-hook (&optional cleanup?)
-  (let ((signature-help-handler
-         (-when-let ((&SignatureHelpOptions? :trigger-characters?)
-                     (lsp--capability :signatureHelpProvider))
-           (lambda ()
-             (lsp--maybe-enable-signature-help trigger-characters?)))))
+  (let ((signature-help-handler (lsp--signature-help-handler-create)))
     (cond
      ((and lsp-signature-auto-activate signature-help-handler)
       (add-hook 'post-self-insert-hook signature-help-handler nil t))
