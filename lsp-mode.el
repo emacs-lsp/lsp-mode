@@ -33,7 +33,6 @@
 (require 'compile)
 (require 'dash)
 (require 'dash-functional)
-(require 'em-glob)
 (require 'ewoc)
 (require 'f)
 (require 'filenotify)
@@ -1164,7 +1163,13 @@ Deprecated. Use `lsp-repeatable-vector' instead. "
 (defun lsp--eldoc-message (&optional msg)
   "Show MSG in eldoc."
   (setq lsp--eldoc-saved-message msg)
-  (run-with-idle-timer 0 nil (lambda () (eldoc-message msg))))
+  (run-with-idle-timer 0 nil (lambda ()
+                               ;; XXX: new eldoc in Emacs 28
+                               ;; recommends running the hook variable
+                               ;; `eldoc-documentation-functions'
+                               ;; instead of using eldoc-message
+                               (with-no-warnings
+                                 (eldoc-message msg)))))
 
 (defun lsp-log (format &rest args)
   "Log message to the ’*lsp-log*’ buffer.
@@ -2324,6 +2329,157 @@ active `major-mode', or for all major modes when ALL-MODES is t."
        "G s" "peek workspace symbol")))))
 
 
+;; Globbing syntax
+
+;; We port VSCode's glob-to-regexp code
+;; (https://github.com/Microsoft/vscode/blob/466da1c9013c624140f6d1473b23a870abc82d44/src/vs/base/common/glob.ts)
+;; since the LSP globbing syntax seems to be the same as that of
+;; VSCode.
+
+(defconst lsp-globstar "**"
+  "Globstar pattern.")
+
+(defconst lsp-glob-split ?/
+  "The character by which we split path components in a glob
+pattern.")
+
+(defconst lsp-path-regexp "[/\\\\]"
+  "Forward or backslash to be used as a path separator in
+computed regexps.")
+
+(defconst lsp-non-path-regexp "[^/\\\\]"
+  "A regexp matching anything other than a slash.")
+
+(defconst lsp-globstar-regexp
+  (format "\\(?:%s\\|%s+%s\\|%s%s+\\)*?"
+          lsp-path-regexp
+          lsp-non-path-regexp lsp-path-regexp
+          lsp-path-regexp lsp-non-path-regexp)
+  "Globstar in regexp form.")
+
+(defun lsp-split-glob-pattern (pattern split-char)
+  "Split PATTERN at SPLIT-CHAR while respecting braces and brackets."
+  (when pattern
+    (let ((segments nil)
+          (in-braces nil)
+          (in-brackets nil)
+          (current-segment ""))
+      (dolist (char (string-to-list pattern))
+        (cl-block 'exit-point
+          (if (eq char split-char)
+              (when (and (null in-braces)
+                         (null in-brackets))
+                (push current-segment segments)
+                (setq current-segment "")
+                (cl-return-from 'exit-point))
+            (pcase char
+              (?{
+               (setq in-braces t))
+              (?}
+               (setq in-braces nil))
+              (?\[
+               (setq in-brackets t))
+              (?\]
+               (setq in-brackets nil))))
+          (setq current-segment (concat current-segment
+                                        (char-to-string char)))))
+      (unless (string-empty-p current-segment)
+        (push current-segment segments))
+      (nreverse segments))))
+
+(defun lsp--glob-to-regexp (pattern)
+  "Helper function to convert a PATTERN from LSP's glob syntax to
+an Elisp regexp."
+  (if (string-empty-p pattern)
+      ""
+    (let ((current-regexp "")
+          (glob-segments (lsp-split-glob-pattern pattern lsp-glob-split)))
+      (if (-all? (lambda (segment) (eq segment lsp-globstar))
+                 glob-segments)
+          ".*"
+        (let ((prev-segment-was-globstar nil))
+          (seq-do-indexed
+           (lambda (segment index)
+             (if (string-equal segment lsp-globstar)
+                 (unless prev-segment-was-globstar
+                   (setq current-regexp (concat current-regexp
+                                                lsp-globstar-regexp))
+                   (setq prev-segment-was-globstar t))
+               (let ((in-braces nil)
+                     (brace-val "")
+                     (in-brackets nil)
+                     (bracket-val ""))
+                 (dolist (char (string-to-list segment))
+                   (cond
+                    ((and (not (char-equal char ?\}))
+                          in-braces)
+                     (setq brace-val (concat brace-val
+                                             (char-to-string char))))
+                    ((and in-brackets
+                          (or (not (char-equal char ?\]))
+                              (string-empty-p bracket-val)))
+                     (let ((curr (cond
+                                  ((char-equal char ?-)
+                                   "-")
+                                  ;; NOTE: ?\^ and ?^ are different characters
+                                  ((and (memq char '(?^ ?!))
+                                        (string-empty-p bracket-val))
+                                   "^")
+                                  ((char-equal char lsp-glob-split)
+                                   "")
+                                  (t
+                                   (regexp-quote (char-to-string char))))))
+                       (setq bracket-val (concat bracket-val curr))))
+                    (t
+                     (cl-case char
+                       (?{
+                        (setq in-braces t))
+                       (?\[
+                        (setq in-brackets t))
+                       (?}
+                        (let* ((choices (lsp-split-glob-pattern brace-val ?\,))
+                               (brace-regexp (concat "\\(?:"
+                                                     (mapconcat #'lsp--glob-to-regexp choices "\\|")
+                                                     "\\)")))
+                          (setq current-regexp (concat current-regexp
+                                                       brace-regexp))
+                          (setq in-braces nil)
+                          (setq brace-val "")))
+                       (?\]
+                        (setq current-regexp
+                              (concat current-regexp
+                                      "[" bracket-val "]"))
+                        (setq in-brackets nil)
+                        (setq bracket-val ""))
+                       (??
+                        (setq current-regexp
+                              (concat current-regexp
+                                      lsp-non-path-regexp)))
+                       (?*
+                        (setq current-regexp
+                              (concat current-regexp
+                                      lsp-non-path-regexp "*?")))
+                       (t
+                        (setq current-regexp
+                              (concat current-regexp
+                                      (regexp-quote (char-to-string char)))))))))
+                 (when (and (< index (1- (length glob-segments)))
+                            (or (not (string-equal (nth (1+ index) glob-segments)
+                                                   lsp-globstar))
+                                (< (+ index 2)
+                                   (length glob-segments))))
+                   (setq current-regexp
+                         (concat current-regexp
+                                 lsp-path-regexp)))
+                 (setq prev-segment-was-globstar nil))))
+           glob-segments)
+          current-regexp)))))
+
+(defun lsp-glob-to-regexp (pattern)
+  "Convert a PATTERN from LSP's glob syntax to an Elisp regexp."
+  (concat "\\`" (lsp--glob-to-regexp (string-trim pattern)) "\\'"))
+
+
 
 (defvar lsp-mode-menu)
 
@@ -3101,7 +3257,7 @@ disappearing, unset all the variables related to it."
                            (lsp:did-change-watched-files-registration-options-watchers)
                            (seq-find
                             (-lambda ((&FileSystemWatcher :glob-pattern))
-                              (-let [glob-regex (eshell-glob-regexp glob-pattern)]
+                              (-let [glob-regex (lsp-glob-to-regexp glob-pattern)]
                                 (or (string-match glob-regex changed-file)
                                     (string-match glob-regex (f-relative changed-file root-folder)))))))))))
                  (with-lsp-workspace workspace
@@ -3198,7 +3354,8 @@ in that particular folder."
                                   (error nil)))
    (when (featurep 'project)
      (when-let ((project (project-current)))
-       (car (project-roots project))))))
+       (car (with-no-warnings
+              (project-roots project)))))))
 
 (defun lsp--read-from-file (file)
   "Read FILE content."
