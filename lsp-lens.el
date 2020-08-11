@@ -134,7 +134,7 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
   (setq lsp-lens--refresh-timer
         (run-with-timer lsp-lens-debounce-interval
                         nil
-                        #'lsp-lens--refresh
+                        #'lsp-lens-refresh
                         (or lsp-lens--modified? buffer-modified?)
                         (current-buffer))))
 
@@ -206,7 +206,7 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
             lsp-lens--overlays)
       (setq lsp-lens--overlays overlays))))
 
-(defun lsp-lens--refresh (buffer-modified? &optional buffer)
+(defun lsp-lens-refresh (buffer-modified? &optional buffer)
   "Refresh lenses using lenses backend.
 BUFFER-MODIFIED? determines whether the BUFFER is modified or not."
   (let ((buffer (or buffer (current-buffer))))
@@ -349,7 +349,7 @@ CALLBACK - callback for the lenses."
     (add-hook 'lsp-on-change-hook (lambda () (lsp-lens--schedule-refresh t)) nil t)
     (add-hook 'after-save-hook (lambda () (lsp-lens--schedule-refresh t)) nil t)
     (add-hook 'before-revert-hook #'lsp-lens-hide nil t)
-    (lsp-lens--refresh t))
+    (lsp-lens-refresh t))
    (t
     (lsp-lens-hide)
     (remove-hook 'lsp-configure-hook #'lsp-lens--enable t)
