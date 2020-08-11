@@ -33,7 +33,7 @@
   :version "7.1"
   :link '(url-link "https://github.com/EmmyLua/EmmyLua-LanguageServer"))
 
-(defcustom lsp-clients-emmy-lua-java-path (executable-find "java")
+(defcustom lsp-clients-emmy-lua-java-path "java"
   "Java Runtime binary location."
   :group 'lsp-emmy-lua
   :version "7.1"
