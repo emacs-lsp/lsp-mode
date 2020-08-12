@@ -13,7 +13,7 @@
       
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.5">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.6">
     
     
       
@@ -1830,10 +1830,11 @@
 <h3 id="debugger-yes-gdb-or-lldb">Debugger: Yes (gdb or lldb)<a class="headerlink" href="#debugger-yes-gdb-or-lldb" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
 <h3 id="lsp-clients-clangd-executable"><code>lsp-clients-clangd-executable</code><a class="headerlink" href="#lsp-clients-clangd-executable" title="Permanent link">#</a></h3>
-<p><em>Default: <code>clangd</code></em></p>
+<p><em>Default: <code>nil</code></em></p>
 <p>The clangd executable to use.
-Leave as just the executable name to use the default behavior of
-finding the executable with ‘exec-path’.</p>
+When ‘’non-nil’ use the name of the clangd executable file
+available in your path to use. Otherwise the system will try to
+find a suitable one. Set this variable before loading lsp.</p>
 <hr />
 <h3 id="lsp-clients-clangd-args"><code>lsp-clients-clangd-args</code><a class="headerlink" href="#lsp-clients-clangd-args" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
@@ -1950,7 +1951,7 @@ finding the executable with ‘exec-path’.</p>
     </div>
     
       <script src="../../assets/javascripts/vendor.d1f5a259.min.js"></script>
-      <script src="../../assets/javascripts/bundle.f9edbbd5.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      <script src="../../assets/javascripts/bundle.d5fec882.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
       
       <script>
         app = initialize({
