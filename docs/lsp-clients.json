@@ -11,9 +11,10 @@
     "name": "angular",
     "full-name": "Angular",
     "server-name": "vscode-ng-language-service",
-    "server-url": "https://github.com/angular/vscode-ng-language-service/",
+    "server-url": "https://github.com/angular/vscode-ng-language-service",
     "installation-url": "https://github.com/emacs-lsp/lsp-mode/wiki/Install-Angular-Language-server",
-    "debugger": "Not relevant"
+    "installation": "npm install -g @angular/language-service@next typescript  @angular/language-server",
+      "debugger": "Not relevant"
   },
   {
     "name": "bash",

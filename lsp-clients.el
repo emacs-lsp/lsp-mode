@@ -665,42 +665,6 @@ responsiveness at the cost of possible stability issues."
                   :server-id 'dockerfile-ls))
 
 
-;;; Angular
-(defcustom lsp-clients-angular-language-server-command
-  '("node"
-    "/usr/lib/node_modules/@angular/language-server"
-    "--ngProbeLocations"
-    "/usr/lib/node_modules"
-    "--tsProbeLocations"
-    "/usr/lib/node_modules"
-    "--stdio")
-  "The command that starts the angular language server."
-  :group 'lsp-clients-angular
-  :type '(choice
-          (string :tag "Single string value")
-          (repeat :tag "List of string values"
-                  string)))
-
-(defun lsp-client--angular-start-loading (_workspace params)
-  (lsp--info "Started loading project %s" params))
-
-(defun lsp-client--angular-finished-loading (_workspace params)
-  (lsp--info "Finished loading project %s" params))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda () lsp-clients-angular-language-server-command))
-                  :activation-fn (lambda (&rest _args)
-                                   (and (string-match-p "\\.html\\'" (buffer-file-name))
-                                        (lsp-workspace-root)
-                                        (file-exists-p (f-join (lsp-workspace-root) "angular.json"))))
-                  :priority -1
-                  :notification-handlers (ht ("angular-language-service/projectLoadingStart" #'lsp-client--angular-start-loading)
-                                             ("angular-language-service/projectLoadingFinish" #'lsp-client--angular-finished-loading))
-                  :add-on? t
-                  :server-id 'angular-ls))
-
-
 ;; TeX
 (defgroup lsp-tex nil
   "LSP support for TeX and friends, using Digestif and texlab."
