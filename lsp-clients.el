@@ -73,54 +73,6 @@
                                        (lsp-configuration-section "ada"))))
                   :server-id 'ada-ls))
 
-;;; Bash
-(defgroup lsp-bash nil
-  "Settings for the Bash Language Server."
-  :group 'tools
-  :tag "Language Server"
-  :package-version '(lsp-mode . "6.2"))
-
-(defcustom lsp-bash-explainshell-endpoint nil
-  "The endpoint to use explainshell.com to answer 'onHover' queries.
-See instructions at https://marketplace.visualstudio.com/items?itemName=mads-hartmann.bash-ide-vscode"
-  :type 'string
-  :risky t
-  :group 'lsp-bash
-  :package-version '(lsp-mode . "6.2"))
-
-(defcustom lsp-bash-highlight-parsing-errors nil
-  "Consider parsing errors in scripts as 'problems'."
-  :type 'boolean
-  :group 'lsp-bash
-  :package-version '(lsp-mode . "6.2"))
-
-(defcustom lsp-bash-glob-pattern nil
-  "Glob pattern used to find shell script files to parse."
-  :type 'string
-  :group 'lsp-bash
-  :package-version '(lsp-mode . "6.3"))
-
-(defun lsp-bash--bash-ls-server-command ()
-  "Startup command for Bash language server."
-  (list (lsp-package-path 'bash-language-server) "start"))
-
-(lsp-dependency 'bash-language-server
-                '(:system "bash-language-server")
-                '(:npm :package "bash-language-server"
-                       :path "bash-language-server"))
-
-(lsp-register-client
- (make-lsp-client
-  :new-connection (lsp-stdio-connection #'lsp-bash--bash-ls-server-command)
-  :major-modes '(sh-mode)
-  :priority -1
-  :environment-fn (lambda ()
-                    '(("EXPLAINSHELL_ENDPOINT" . lsp-bash-explainshell-endpoint)
-                      ("HIGHLIGHT_PARSING_ERRORS" . lsp-bash-highlight-parsing-errors)
-                      ("GLOB_PATTERN" . lsp-bash-glob-pattern)))
-  :server-id 'bash-ls
-  :download-server-fn (lambda (_client callback error-callback _update?)
-                        (lsp-package-ensure 'bash-language-server callback error-callback))))
 
 
 ;;; Groovy
