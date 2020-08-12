@@ -790,20 +790,8 @@ responsiveness at the cost of possible stability issues."
  (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-crystal-executable)
                   :major-modes '(crystal-mode)
                   :server-id 'scry))
+
 
-
-;; Nim
-(defgroup lsp-nim nil
-  "LSP support for Nim, using nimlsp."
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/PMunch/nimlsp"))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "nimlsp")
-                  :major-modes '(nim-mode)
-                  :priority -1
-                  :server-id 'nimls))
-
 ;; Dhall
 (defgroup lsp-dhall nil
   "LSP support for Dhall, using dhall-lsp-server."
