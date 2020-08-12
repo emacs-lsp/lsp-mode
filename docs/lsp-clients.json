@@ -232,7 +232,7 @@
     "full-name": "Kotlin",
     "server-name": "kotlin-language-server",
     "server-url": "https://github.com/fwcd/KotlinLanguageServer",
-    "installation-url": "https://github.com/fwcd/KotlinLanguageServer",
+    "installation-url": "https://github.com/fwcd/kotlin-language-server/blob/master/BUILDING.md",
     "debugger": "Not available"
   },
   {
