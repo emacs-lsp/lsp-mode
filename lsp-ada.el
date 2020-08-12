@@ -26,7 +26,6 @@
 
 (require 'lsp-mode)
 
-;;; Ada
 (defgroup lsp-ada nil
   "Settings for Ada Language Server."
   :group 'tools
