@@ -71,7 +71,7 @@ See instructions at https://marketplace.visualstudio.com/items?itemName=mads-har
                     '(("EXPLAINSHELL_ENDPOINT" . lsp-bash-explainshell-endpoint)
                       ("HIGHLIGHT_PARSING_ERRORS" . lsp-bash-highlight-parsing-errors)
                       ("GLOB_PATTERN" . lsp-bash-glob-pattern)))
-  :server-id 'lsp-bash
+  :server-id 'bash-ls
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'bash-language-server callback error-callback))))
 
