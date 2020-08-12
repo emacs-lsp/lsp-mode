@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
-;; Keywords: lsp,
+;; Keywords: lsp, crystal
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@
 
 (require 'lsp-mode)
 
-;; Scry
 (defgroup lsp-scry nil
   "LSP support for Crystal via scry."
   :group 'lsp-mode
