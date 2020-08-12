@@ -350,7 +350,7 @@ unless overridden by a more specific face association."
 (defcustom lsp-client-packages
   '(ccls lsp-bash lsp-clients lsp-clojure lsp-crystal lsp-csharp lsp-css lsp-dart lsp-dockerfile lsp-elm
          lsp-erlang lsp-eslint lsp-fsharp lsp-gdscript lsp-go lsp-haskell lsp-haxe
-         lsp-intelephense lsp-java lsp-json lsp-lua lsp-metals lsp-perl lsp-pwsh lsp-pyls
+         lsp-intelephense lsp-java lsp-json lsp-kotlin lsp-lua lsp-metals lsp-perl lsp-pwsh lsp-pyls
          lsp-python-ms lsp-rust lsp-serenata lsp-solargraph lsp-terraform lsp-verilog lsp-vetur
          lsp-vhdl lsp-xml lsp-yaml lsp-sqls lsp-svelte)
   "List of the clients to be automatically required."
