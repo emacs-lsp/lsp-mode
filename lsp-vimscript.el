@@ -26,8 +26,6 @@
 
 (require 'lsp-mode)
 
-
-
 ;; Vim script
 (defgroup lsp-vim nil
   "LSP support for viml using vim-language-server"
@@ -58,7 +56,6 @@
                   :priority -1
                   :server-id 'vimls
                   :initialization-options (lambda () lsp-clients-vim-initialization-options)))
-
 
 (provide 'lsp-vimscript)
 ;;; lsp-vimscript.el ends here
