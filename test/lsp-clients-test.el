@@ -19,6 +19,7 @@
 
 (require 'ert)
 (require 'lsp-clients)
+(require 'lsp-javascript)
 (require 'js) ;; Standard mode in Emacs for JS.
 
 (defconst test-location (file-name-directory (or load-file-name buffer-file-name)))
