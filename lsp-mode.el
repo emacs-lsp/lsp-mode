@@ -348,7 +348,7 @@ unless overridden by a more specific face association."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-client-packages
-  '(ccls lsp-clients lsp-clojure lsp-csharp lsp-css lsp-dart lsp-dockerfile lsp-elm
+  '(ccls lsp-bash lsp-clients lsp-clojure lsp-crystal lsp-csharp lsp-css lsp-dart lsp-dockerfile lsp-elm
          lsp-erlang lsp-eslint lsp-fsharp lsp-gdscript lsp-go lsp-haskell lsp-haxe
          lsp-intelephense lsp-java lsp-json lsp-lua lsp-metals lsp-nim lsp-perl lsp-pwsh lsp-pyls
          lsp-python-ms lsp-rust lsp-serenata lsp-solargraph lsp-terraform lsp-verilog lsp-vetur
@@ -1632,7 +1632,7 @@ On other systems, returns path without change."
   (or lsp-buffer-uri
       (plist-get lsp--virtual-buffer :buffer-uri)
       (lsp--path-to-uri
-       (or buffer-file-name (buffer-file-name (buffer-base-buffer))))))
+       (or (buffer-file-name) (buffer-file-name (buffer-base-buffer))))))
 
 (defun lsp-register-client-capabilities (&rest _args)
   "Implemented only to make `company-lsp' happy.
@@ -3445,28 +3445,31 @@ in that particular folder."
     (when (cl-find ch trigger-characters :key #'string-to-char)
       (lsp-signature-activate))))
 
-(defun lsp--update-on-type-formatting-hook (&optional cleanup?)
-  (let ((on-type-formatting-handler
-         (when-let ((provider (lsp--capability :documentOnTypeFormattingProvider)))
-           (-let [(&DocumentOnTypeFormattingOptions :more-trigger-character?
-                                                    :first-trigger-character) provider]
-             (lambda ()
-               (lsp--on-type-formatting first-trigger-character
-                                        more-trigger-character?))))))
-    (cond
-     ((and lsp-enable-on-type-formatting on-type-formatting-handler)
-      (add-hook 'post-self-insert-hook on-type-formatting-handler nil t))
+(defun lsp--on-type-formatting-handler-create ()
+  (when-let ((provider (lsp--capability :documentOnTypeFormattingProvider)))
+    (-let [(&DocumentOnTypeFormattingOptions :more-trigger-character?
+                                             :first-trigger-character) provider]
+      (lambda ()
+        (lsp--on-type-formatting first-trigger-character
+                                 more-trigger-character?)))))
 
+(defun lsp--update-on-type-formatting-hook (&optional cleanup?)
+  (let ((on-type-formatting-handler (lsp--on-type-formatting-handler-create)))
+    (cond
+     ((and lsp-enable-on-type-formatting on-type-formatting-handler (not cleanup?))
+      (add-hook 'post-self-insert-hook on-type-formatting-handler nil t))
      ((or cleanup?
           (not lsp-enable-on-type-formatting))
       (remove-hook 'post-self-insert-hook on-type-formatting-handler t)))))
 
+(defun lsp--signature-help-handler-create ()
+  (-when-let ((&SignatureHelpOptions? :trigger-characters?)
+              (lsp--capability :signatureHelpProvider))
+    (lambda ()
+      (lsp--maybe-enable-signature-help trigger-characters?))))
+
 (defun lsp--update-signature-help-hook (&optional cleanup?)
-  (let ((signature-help-handler
-         (-when-let ((&SignatureHelpOptions? :trigger-characters?)
-                     (lsp--capability :signatureHelpProvider))
-           (lambda ()
-             (lsp--maybe-enable-signature-help trigger-characters?)))))
+  (let ((signature-help-handler (lsp--signature-help-handler-create)))
     (cond
      ((and lsp-signature-auto-activate signature-help-handler)
       (add-hook 'post-self-insert-hook signature-help-handler nil t))
@@ -4282,7 +4285,8 @@ Applies on type formatting."
   (or (->> lsp-language-id-configuration
            (-first (-lambda ((mode-or-pattern . language))
                      (cond
-                      ((and (stringp mode-or-pattern) (s-matches? mode-or-pattern buffer-file-name)) language)
+                      ((and (stringp mode-or-pattern)
+                            (s-matches? mode-or-pattern (buffer-file-name))) language)
                       ((eq mode-or-pattern major-mode) language))))
            cl-rest)
       (lsp-warn "Unable to calculate the languageId for current buffer. Take a look at lsp-language-id-configuration.")))
@@ -4370,7 +4374,7 @@ and the position respectively."
   "Return buffer diagnostics."
   (gethash (or
             (plist-get lsp--virtual-buffer :buffer-file-name)
-            (lsp--fix-path-casing buffer-file-name))
+            (lsp--fix-path-casing (buffer-file-name)))
            (lsp-diagnostics t)))
 
 (defun lsp-cur-line-diagnostics ()
@@ -6848,7 +6852,7 @@ nil."
 (defun lsp--matching-clients? (client)
   (and
    ;; both file and client remote or both local
-   (eq (---truthy? (file-remote-p buffer-file-name))
+   (eq (---truthy? (file-remote-p (buffer-file-name)))
        (---truthy? (lsp--client-remote? client)))
 
    ;; activation function or major-mode match.
@@ -6876,7 +6880,7 @@ remote machine and vice versa."
   (-when-let (matching-clients (lsp--filter-clients (-andfn #'lsp--matching-clients?
                                                             #'lsp--server-binary-present?)))
     (lsp-log "Found the following clients for %s: %s"
-             buffer-file-name
+             (buffer-file-name)
              (s-join ", "
                      (-map (lambda (client)
                              (format "(server-id %s, priority %s)"
@@ -6885,9 +6889,9 @@ remote machine and vice versa."
                            matching-clients)))
     (-let* (((add-on-clients main-clients) (-separate #'lsp--client-add-on? matching-clients))
             (selected-clients (if-let ((main-client (and main-clients
-                                                          (--max-by (> (lsp--client-priority it)
-                                                                       (lsp--client-priority other))
-                                                                    main-clients))))
+                                                         (--max-by (> (lsp--client-priority it)
+                                                                      (lsp--client-priority other))
+                                                                   main-clients))))
                                   (cons main-client add-on-clients)
                                 add-on-clients)))
       (lsp-log "The following clients were selected based on priority: %s"
