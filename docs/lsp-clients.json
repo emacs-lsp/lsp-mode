@@ -357,6 +357,7 @@
     "full-name": "R",
     "server-name": "languageserver",
     "server-url": "https://github.com/REditorSupport/languageserver",
+    "installation-url": "https://github.com/REditorSupport/languageserver",
     "installation": "install.packages(“languageserver”)",
     "debugger": "Not available"
   },
