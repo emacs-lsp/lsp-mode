@@ -543,30 +543,6 @@ responsiveness at the cost of possible stability issues."
                       (lsp--set-configuration (lsp-configuration-section "kotlin"))))))
 
 
-;; Hack
-(defgroup lsp-hack nil
-  "LSP support for Hack, using HHVM."
-  :group 'lsp-mode
-  :link '(url-link "https://docs.hhvm.com/hhvm/"))
-
-(defcustom lsp-clients-hack-command '("hh_client" "lsp" "--from" "emacs")
-  "Command to start hh_client."
-  :group 'lsp-hack
-  :risky t
-  :type '(repeat string))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-clients-hack-command))
-                  :major-modes '(hack-mode)
-                  :priority -1
-                  :server-id 'hack
-                  ;; ignore some unsupported messages from Nuclide
-                  :notification-handlers (lsp-ht ("telemetry/event" 'ignore)
-                                                 ("$/cancelRequest" 'ignore))
-                  :request-handlers (lsp-ht ("window/showStatus" 'ignore))))
-
-
-
 ;;; Angular
 (defcustom lsp-clients-angular-language-server-command
   '("node"
