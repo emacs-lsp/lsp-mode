@@ -706,18 +706,6 @@ responsiveness at the cost of possible stability issues."
                   :priority -1
                   :server-id 'nimls))
 
-;; Dhall
-(defgroup lsp-dhall nil
-  "LSP support for Dhall, using dhall-lsp-server."
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/dhall-lang/dhall-haskell"))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "dhall-lsp-server")
-                  :major-modes '(dhall-mode)
-                  :priority -1
-                  :server-id 'dhallls))
-
 ;; CMake
 (defgroup lsp-cmake nil
   "LSP support for CMake, using cmake-language-server."
