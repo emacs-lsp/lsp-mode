@@ -26,7 +26,6 @@
 
 (require 'lsp-mode)
 
-;; Dhall
 (defgroup lsp-dhall nil
   "LSP support for Dhall, using dhall-lsp-server."
   :group 'lsp-mode
