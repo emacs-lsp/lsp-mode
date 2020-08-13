@@ -424,38 +424,7 @@ finding the executable with `exec-path'."
                                          ("change" 2))
                                      (lsp--workspace-server-capabilities workspace)))))
 
-;; Fortran
-(defgroup lsp-fortran nil
-  "LSP support for Fortran, using the Fortran Language Server."
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/hansec/fortran-language-server"))
-
-(defcustom lsp-clients-fortls-executable "fortls"
-  "The fortls executable to use.
-Leave as just the executable name to use the default behavior of
-finding the executable with `exec-path'."
-  :group 'lsp-fortran
-  :risky t
-  :type 'file)
-
-(defcustom lsp-clients-fortls-args '()
-  "Extra arguments for the fortls executable"
-  :group 'lsp-fortran
-  :risky t
-  :type '(repeat string))
-
-(defun lsp-clients--fortls-command ()
-  "Generate the language server startup command."
-  `(,lsp-clients-fortls-executable,@lsp-clients-fortls-args))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-clients--fortls-command)
-                  :major-modes '(f90-mode fortran-mode)
-                  :priority -1
-                  :server-id 'fortls))
-
 
-
 ;; Kotlin
 (defgroup lsp-kotlin nil
   "LSP support for Kotlin, using KotlinLanguageServer."
