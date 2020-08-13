@@ -343,6 +343,16 @@
     "debugger": "Yes"
   },
   {
+    "name": "pyright",
+    "full-name": "Python(Pyright)",
+    "server-name": "pyright-langserver",
+    "server-url": "https://github.com/microsoft/pyright",
+    "client-name": "lsp-pyright",
+    "client-url": "https://github.com/emacs-lsp/lsp-pyright",
+    "installation-url": "https://github.com/emacs-lsp/lsp-pyright",
+    "debugger": "Yes"
+  },
+  {
     "name": "python-ms",
     "full-name": "Python(Microsoft)",
     "server-name": "Microsoft Python Language Server",
