@@ -346,8 +346,8 @@ find a suitable one. Set this variable before loading lsp."
   :risky t
   :type 'file)
 
-(defvar lsp-clients-clangd-executable-found nil
-  "Clang executable full path when found.
+(defvar lsp-clients--clangd-default-executable nil
+  "Clang default executable full path when found.
 This must be set only once after loading the clang client.")
 
 (defcustom lsp-clients-clangd-args '()
@@ -358,13 +358,16 @@ This must be set only once after loading the clang client.")
 
 (defun lsp-clients--clangd-command ()
   "Generate the language server startup command."
-  (unless lsp-clients-clangd-executable-found
-    (setq lsp-clients-clangd-executable-found
-          (or (and lsp-clients-clangd-executable
-                   (locate-file lsp-clients-clangd-executable exec-path nil 1))
-              (locate-file "clangd" exec-path '("" "-10" "-9" "-8" "-7" "-6") 1))))
+  (unless lsp-clients--clangd-default-executable
+    (setq lsp-clients--clangd-default-executable
+          (catch 'path
+            (mapc (lambda (suffix)
+                    (let ((path (executable-find (concat "clangd" suffix))))
+                      (when path (throw 'path path))))
+                  '("" "-10" "-9" "-8" "-7" "-6")))))
 
-  `(,lsp-clients-clangd-executable-found ,@lsp-clients-clangd-args))
+  `(,(or lsp-clients-clangd-executable lsp-clients--clangd-default-executable)
+    ,@lsp-clients-clangd-args))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
