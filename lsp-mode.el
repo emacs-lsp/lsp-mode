@@ -3346,6 +3346,9 @@ in that particular folder."
        (lsp:text-document-sync-options-save?)
        (lsp:text-document-save-registration-options-include-text?)))
 
+(declare-function project-roots "ext:project" (project) t)
+(declare-function project-root "ext:project" (project) t)
+
 (defun lsp--suggest-project-root ()
   "Get project root."
   (or
@@ -3354,8 +3357,10 @@ in that particular folder."
                                   (error nil)))
    (when (featurep 'project)
      (when-let ((project (project-current)))
-       (car (with-no-warnings
-              (project-roots project)))))))
+       (if (fboundp 'project-root)
+           (project-root project)
+         (car (with-no-warnings
+                (project-roots project))))))))
 
 (defun lsp--read-from-file (file)
   "Read FILE content."
