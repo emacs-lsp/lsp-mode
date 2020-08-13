@@ -331,7 +331,8 @@
     "full-name": "PureScript",
     "server-name": "purescript-language-server",
     "server-url": "https://github.com/nwolverson/purescript-language-server",
-    "installation": "npm i purescript-language-server",
+    "installation-url": "https://github.com/nwolverson/purescript-language-server#usage",
+    "installation": "npm i -g purescript-language-server",
     "debugger": "Not available"
   },
   {
