@@ -395,34 +395,8 @@ returned to avoid that the echo area grows uncomfortably."
                  (lsp--render-element (lsp-join-region (point-min) (point-max))))
         (car (s-lines (lsp--render-element contents)))))))
 
-;; Elixir
-(defgroup lsp-elixir nil
-  "LSP support for Elixir, using elixir-ls."
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/elixir-lsp/elixir-ls"))
 
-(defcustom lsp-clients-elixir-server-executable
-  (if (equal system-type 'windows-nt)
-      "language_server.bat"
-    "language_server.sh")
-  "The elixir-language-server executable to use.
-Leave as just the executable name to use the default behavior of
-finding the executable with `exec-path'."
-  :group 'lsp-elixir
-  :type 'file)
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
-                                                          `(,lsp-clients-elixir-server-executable)))
-                  :major-modes '(elixir-mode)
-                  :priority -1
-                  :server-id 'elixir-ls
-                  :initialized-fn (lambda (workspace)
-                                    (puthash
-                                     "textDocumentSync"
-                                     (ht ("save" t)
-                                         ("change" 2))
-                                     (lsp--workspace-server-capabilities workspace)))))
+
 
 ;; Fortran
 (defgroup lsp-fortran nil
