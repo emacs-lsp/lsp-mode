@@ -30,98 +30,6 @@
 (require 'rx)
 (require 'cl-lib)
 
-;;; Ada
-(defgroup lsp-ada nil
-  "Settings for Ada Language Server."
-  :group 'tools
-  :tag "Language Server"
-  :package-version '(lsp-mode . "6.2"))
-
-(defcustom lsp-ada-project-file "default.gpr"
-  "Set the project file full path to configure the language server with.
-  The ~ prefix (for the user home directory) is supported.
-  See https://github.com/AdaCore/ada_language_server for a per-project
-  configuration example."
-  :type 'string
-  :group 'lsp-ada
-  :package-version '(lsp-mode . "6.2"))
-
-(defcustom lsp-ada-option-charset "UTF-8"
-  "The charset to use by the Ada Language server. Defaults to 'UTF-8'."
-  :type 'string
-  :group 'lsp-ada
-  :package-version '(lsp-mode . "6.2"))
-
-(defcustom lsp-ada-enable-diagnostics t
-  "A boolean to disable diagnostics. Defaults to true."
-  :type 'boolean
-  :group 'lsp-ada
-  :package-version '(lsp-mode . "6.2"))
-
-(lsp-register-custom-settings
- '(("ada.projectFile" lsp-ada-project-file)
-   ("ada.enableDiagnostics" lsp-ada-enable-diagnostics)
-   ("ada.defaultCharset" lsp-ada-option-charset)))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '("ada_language_server"))
-                  :major-modes '(ada-mode)
-                  :priority -1
-                  :initialized-fn (lambda (workspace)
-                                    (with-lsp-workspace workspace
-                                      (lsp--set-configuration
-                                       (lsp-configuration-section "ada"))))
-                  :server-id 'ada-ls))
-
-;;; Bash
-(defgroup lsp-bash nil
-  "Settings for the Bash Language Server."
-  :group 'tools
-  :tag "Language Server"
-  :package-version '(lsp-mode . "6.2"))
-
-(defcustom lsp-bash-explainshell-endpoint nil
-  "The endpoint to use explainshell.com to answer 'onHover' queries.
-See instructions at https://marketplace.visualstudio.com/items?itemName=mads-hartmann.bash-ide-vscode"
-  :type 'string
-  :risky t
-  :group 'lsp-bash
-  :package-version '(lsp-mode . "6.2"))
-
-(defcustom lsp-bash-highlight-parsing-errors nil
-  "Consider parsing errors in scripts as 'problems'."
-  :type 'boolean
-  :group 'lsp-bash
-  :package-version '(lsp-mode . "6.2"))
-
-(defcustom lsp-bash-glob-pattern nil
-  "Glob pattern used to find shell script files to parse."
-  :type 'string
-  :group 'lsp-bash
-  :package-version '(lsp-mode . "6.3"))
-
-(defun lsp-bash--bash-ls-server-command ()
-  "Startup command for Bash language server."
-  (list (lsp-package-path 'bash-language-server) "start"))
-
-(lsp-dependency 'bash-language-server
-                '(:system "bash-language-server")
-                '(:npm :package "bash-language-server"
-                       :path "bash-language-server"))
-
-(lsp-register-client
- (make-lsp-client
-  :new-connection (lsp-stdio-connection #'lsp-bash--bash-ls-server-command)
-  :major-modes '(sh-mode)
-  :priority -1
-  :environment-fn (lambda ()
-                    '(("EXPLAINSHELL_ENDPOINT" . lsp-bash-explainshell-endpoint)
-                      ("HIGHLIGHT_PARSING_ERRORS" . lsp-bash-highlight-parsing-errors)
-                      ("GLOB_PATTERN" . lsp-bash-glob-pattern)))
-  :server-id 'bash-ls
-  :download-server-fn (lambda (_client callback error-callback _update?)
-                        (lsp-package-ensure 'bash-language-server callback error-callback))))
-
 
 ;;; Groovy
 (defgroup lsp-groovy nil
@@ -241,13 +149,18 @@ See instructions at https://marketplace.visualstudio.com/items?itemName=mads-har
   :group 'lsp-mode
   :link '(url-link "https://clang.llvm.org/extra/clangd/"))
 
-(defcustom lsp-clients-clangd-executable "clangd"
+(defcustom lsp-clients-clangd-executable nil
   "The clangd executable to use.
-Leave as just the executable name to use the default behavior of
-finding the executable with `exec-path'."
+When `'non-nil' use the name of the clangd executable file
+available in your path to use. Otherwise the system will try to
+find a suitable one. Set this variable before loading lsp."
   :group 'lsp-clangd
   :risky t
   :type 'file)
+
+(defvar lsp-clients-clangd-executable-found nil
+  "Clang executable full path when found.
+This must be set only once after loading the clang client.")
 
 (defcustom lsp-clients-clangd-args '()
   "Extra arguments for the clangd executable."
@@ -257,7 +170,13 @@ finding the executable with `exec-path'."
 
 (defun lsp-clients--clangd-command ()
   "Generate the language server startup command."
-  `(,lsp-clients-clangd-executable ,@lsp-clients-clangd-args))
+  (unless lsp-clients-clangd-executable-found
+    (setq lsp-clients-clangd-executable-found
+          (or (and lsp-clients-clangd-executable
+                   (locate-file lsp-clients-clangd-executable exec-path nil 1))
+              (locate-file "clangd" exec-path '("" "-10" "-9" "-8" "-7" "-6") 1))))
+
+  `(,lsp-clients-clangd-executable-found ,@lsp-clients-clangd-args))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
@@ -458,23 +377,6 @@ responsiveness at the cost of possible stability issues."
                                                  ("$/cancelRequest" 'ignore))
                   :request-handlers (lsp-ht ("window/showStatus" 'ignore))))
 
-
-;;; Dockerfile
-(defcustom lsp-dockerfile-language-server-command
-  '("docker-langserver" "--stdio")
-  "The command that starts the docker language server."
-  :group 'lsp-dockerfile
-  :type '(choice
-          (string :tag "Single string value")
-          (repeat :tag "List of string values"
-                  string)))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (-const lsp-dockerfile-language-server-command))
-                  :major-modes '(dockerfile-mode)
-                  :priority -1
-                  :server-id 'dockerfile-ls))
 
 
 ;;; Angular
@@ -603,23 +505,6 @@ responsiveness at the cost of possible stability issues."
                   :server-id 'lsp-r))
 
 
-;; Crystal
-(defgroup lsp-crystal nil
-  "LSP support for Crystal via scry."
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/crystal-lang-tools/scry"))
-
-(defcustom lsp-clients-crystal-executable '("scry" "--stdio")
-  "Command to start the scry language server."
-  :group 'lsp-crystal
-  :risky t
-  :type 'file)
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-crystal-executable)
-                  :major-modes '(crystal-mode)
-                  :server-id 'scry))
-
 
 ;; Nim
 (defgroup lsp-nim nil
@@ -632,18 +517,6 @@ responsiveness at the cost of possible stability issues."
                   :major-modes '(nim-mode)
                   :priority -1
                   :server-id 'nimls))
-
-;; Dhall
-(defgroup lsp-dhall nil
-  "LSP support for Dhall, using dhall-lsp-server."
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/dhall-lang/dhall-haskell"))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "dhall-lsp-server")
-                  :major-modes '(dhall-mode)
-                  :priority -1
-                  :server-id 'dhallls))
 
 ;; CMake
 (defgroup lsp-cmake nil
