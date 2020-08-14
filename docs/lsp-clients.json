@@ -372,6 +372,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "robot",
+    "full-name": "robot framework",
+    "server-name": "rf-intellisense",
+    "server-url": "https://github.com/tomi/vscode-rf-language-server",
+    "installation-url": "https://github.com/tomi/vscode-rf-language-server/tree/master/client",
+    "installation": "pip install robotframework --user",
+    "debugger": "Yes"
+  },
+  {
     "name": "rust",
     "full-name": "Rust",
     "server-name": "rls",
