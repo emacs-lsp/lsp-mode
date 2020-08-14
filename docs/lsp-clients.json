@@ -62,6 +62,7 @@
     "full-name": "CMake",
     "server-name": "cmake-language-server",
     "server-url": "https://github.com/regen100/cmake-language-server",
+    "installation-url": "https://github.com/regen100/cmake-language-server#installation",
     "installation": "pip install cmake-language-server",
     "debugger": "Not relevant"
   },
