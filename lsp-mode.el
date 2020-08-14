@@ -4051,11 +4051,12 @@ Added to `before-change-functions'."
   ;; boundaries of the region where the changes happen might include more than
   ;; just the actual changed text, or even lump together several changes done
   ;; piecemeal.
-  (lsp-save-restriction-and-excursion
-    (setq lsp--before-change-vals
-          (list :start start
-                :end end
-                :end-pos (lsp--point-to-position end)))))
+  (save-match-data
+    (lsp-save-restriction-and-excursion
+      (setq lsp--before-change-vals
+            (list :start start
+                  :end end
+                  :end-pos (lsp--point-to-position end))))))
 
 (defun lsp--flush-delayed-changes ()
   (let ((inhibit-quit t))
