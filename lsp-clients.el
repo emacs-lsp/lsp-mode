@@ -689,18 +689,6 @@ responsiveness at the cost of possible stability issues."
                   :priority -1
                   :server-id 'nimls))
 
-;; CMake
-(defgroup lsp-cmake nil
-  "LSP support for CMake, using cmake-language-server."
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/regen100/cmake-language-server"))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "cmake-language-server")
-                  :major-modes '(cmake-mode)
-                  :priority -1
-                  :server-id 'cmakels))
-
 ;; PureScript
 (defgroup lsp-purescript nil
   "LSP support for PureScript, using purescript-language-server."
