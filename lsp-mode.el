@@ -348,10 +348,10 @@ unless overridden by a more specific face association."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-client-packages
-  '(ccls lsp-ada lsp-bash lsp-clients lsp-clojure lsp-crystal lsp-csharp lsp-css lsp-dart lsp-dhall
+  '(ccls lsp-ada lsp-bash lsp-clients lsp-clojure lsp-cmake lsp-crystal lsp-csharp lsp-css lsp-dart lsp-dhall
          lsp-dockerfile lsp-elm lsp-erlang lsp-eslint lsp-fsharp lsp-gdscript lsp-go lsp-haskell lsp-haxe
          lsp-intelephense lsp-java lsp-javascript lsp-json lsp-lua lsp-metals lsp-perl lsp-pwsh lsp-pyls
-         lsp-python-ms lsp-rust lsp-serenata lsp-solargraph lsp-terraform lsp-verilog lsp-vetur
+         lsp-python-ms lsp-r lsp-rf lsp-rust lsp-serenata lsp-solargraph lsp-terraform lsp-verilog lsp-vetur
          lsp-vhdl lsp-xml lsp-yaml lsp-sqls lsp-svelte)
   "List of the clients to be automatically required."
   :group 'lsp-mode
@@ -3346,6 +3346,9 @@ in that particular folder."
        (lsp:text-document-sync-options-save?)
        (lsp:text-document-save-registration-options-include-text?)))
 
+(declare-function project-roots "ext:project" (project) t)
+(declare-function project-root "ext:project" (project) t)
+
 (defun lsp--suggest-project-root ()
   "Get project root."
   (or
@@ -3354,8 +3357,10 @@ in that particular folder."
                                   (error nil)))
    (when (featurep 'project)
      (when-let ((project (project-current)))
-       (car (with-no-warnings
-              (project-roots project)))))))
+       (if (fboundp 'project-root)
+           (project-root project)
+         (car (with-no-warnings
+                (project-roots project))))))))
 
 (defun lsp--read-from-file (file)
   "Read FILE content."
@@ -4046,11 +4051,12 @@ Added to `before-change-functions'."
   ;; boundaries of the region where the changes happen might include more than
   ;; just the actual changed text, or even lump together several changes done
   ;; piecemeal.
-  (lsp-save-restriction-and-excursion
-    (setq lsp--before-change-vals
-          (list :start start
-                :end end
-                :end-pos (lsp--point-to-position end)))))
+  (save-match-data
+    (lsp-save-restriction-and-excursion
+      (setq lsp--before-change-vals
+            (list :start start
+                  :end end
+                  :end-pos (lsp--point-to-position end))))))
 
 (defun lsp--flush-delayed-changes ()
   (let ((inhibit-quit t))
