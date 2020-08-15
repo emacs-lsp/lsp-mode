@@ -18,8 +18,9 @@
 ;;; Code:
 
 (require 'ert)
-(require 'lsp-clients)
+(require 'lsp-clangd)
 (require 'js) ;; Standard mode in Emacs for JS.
+(require 'lsp-clients)
 
 (defconst test-location (file-name-directory (or load-file-name buffer-file-name)))
 
