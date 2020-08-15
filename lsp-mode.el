@@ -930,6 +930,11 @@ must be used for handling a particular message.")
     (changed . 2)
     (deleted . 3)))
 
+(defconst lsp--watch-kind
+  `((create . 1)
+    (change . 2)
+    (delete . 4)))
+
 (defvar lsp-window-body-width 40
   "Window body width when rendering doc.")
 
@@ -3237,7 +3242,10 @@ disappearing, unset all the variables related to it."
 
 (defun lsp--file-process-event (session root-folder event)
   "Process file event."
-  (let ((changed-file (cl-third event)))
+  (let* ((changed-file (cl-third event))
+         (event-numeric-kind (alist-get (cl-second event) lsp--file-change-type))
+         (bit-position (1- event-numeric-kind))
+         (watch-bit (ash 1 bit-position)))
     (->>
      session
      lsp-session-folder->servers
@@ -3256,14 +3264,16 @@ disappearing, unset all the variables related to it."
                            lsp--registered-capability-options
                            (lsp:did-change-watched-files-registration-options-watchers)
                            (seq-find
-                            (-lambda ((&FileSystemWatcher :glob-pattern))
-                              (-let [glob-regex (lsp-glob-to-regexp glob-pattern)]
-                                (or (string-match glob-regex changed-file)
-                                    (string-match glob-regex (f-relative changed-file root-folder)))))))))))
+                            (-lambda ((&FileSystemWatcher :glob-pattern :kind?))
+                              (when (or (null kind?)
+                                        (> (logand kind? watch-bit) 0))
+                                (-let [glob-regex (lsp-glob-to-regexp glob-pattern)]
+                                  (or (string-match glob-regex changed-file)
+                                      (string-match glob-regex (f-relative changed-file root-folder))))))))))))
                  (with-lsp-workspace workspace
                    (lsp-notify
                     "workspace/didChangeWatchedFiles"
-                    `((changes . [((type . ,(alist-get (cl-second event) lsp--file-change-type))
+                    `((changes . [((type . ,event-numeric-kind)
                                    (uri . ,(lsp--path-to-uri changed-file)))]))))))))))
 
 (lsp-defun lsp--server-register-capability ((&Registration :method :id :register-options?))
