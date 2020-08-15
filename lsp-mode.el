@@ -4507,10 +4507,21 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
     (setq lsp--have-document-highlights nil)
     (lsp-cancel-request-by-token :highlights)))
 
+(defvar-local lsp--symbol-bounds-of-last-highlight-invocation nil
+  "The bounds of the symbol from which `lsp--document-highlight'
+  was most recently invoked.")
+
 (defun lsp--document-highlight ()
   (unless (or (looking-at "[[:space:]\n]")
-              (lsp--point-on-highlight?)
-              (not lsp-enable-symbol-highlighting))
+              (not lsp-enable-symbol-highlighting)
+              (and (lsp--point-on-highlight?)
+                   (let ((curr-sym-bounds (bounds-of-thing-at-point 'symbol)))
+                     (prog1
+                         (and curr-sym-bounds
+                              (equal curr-sym-bounds
+                                     lsp--symbol-bounds-of-last-highlight-invocation))
+                       (setq lsp--symbol-bounds-of-last-highlight-invocation
+                             curr-sym-bounds)))))
     (lsp-request-async "textDocument/documentHighlight"
                        (lsp--text-document-position-params)
                        #'lsp--document-highlight-callback
