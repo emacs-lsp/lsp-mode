@@ -28,12 +28,14 @@
 
 ;; Vim script
 (defgroup lsp-vim nil
-  "LSP support for viml using vim-language-server"
-  :group 'lsp-mode)
+  "LSP support for viml using vim-language-server."
+  :group 'lsp-mode
+  :version "7.1")
 
 (defcustom lsp-clients-vim-executable '("vim-language-server" "--stdio")
   "Command to start the vim language server."
   :group 'lsp-vim
+  :version "7.1"
   :risky t
   :type 'file)
 
@@ -48,6 +50,7 @@
                                                                 (fromRuntimepath . :json-false))))
   "Initialization options for vim language server."
   :group 'lsp-vim
+  :version "7.1"
   :type 'alist)
 
 (lsp-register-client
