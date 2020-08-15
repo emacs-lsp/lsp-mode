@@ -25,7 +25,7 @@
 ;;; Code:
 
 
-;; adapted from clangd configuration in lsp-clients.el
+;; adapted from lsp-clangd configuration
 (require 'lsp-protocol)
 (require 'lsp-mode)
 
