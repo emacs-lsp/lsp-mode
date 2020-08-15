@@ -85,7 +85,7 @@ nav:
     - TeX, LaTeX, etc (texlab, external): page/lsp-latex.md
     - Verilog/SystemVerilog: page/lsp-verilog.md
     - VHDL: page/lsp-vhdl.md
-    - Vimscript: page/lsp-vimscript.md
+    - Vimscript: page/lsp-vim.md
     - Vue: page/lsp-vetur.md
     - XML: page/lsp-xml.md
     - YAML: page/lsp-yaml.md
