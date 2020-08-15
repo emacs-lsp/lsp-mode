@@ -176,7 +176,8 @@ from the language server."
                      (add-hook 'lsp-on-idle-hook #'lsp-diagnostics--flycheck-buffer nil t)
                      (lsp--idle-reschedule (current-buffer)))))))))
 
-(defun lsp-diagnostics--flycheck-enable (&rest _)
+
+(defun lsp-diagnostics-flycheck-enable (&rest _)
   "Enable flycheck integration for the current buffer."
   (flycheck-define-generic-checker 'lsp
     "A syntax checker using the Language Server Protocol (LSP)
@@ -292,7 +293,7 @@ See https://github.com/emacs-lsp/lsp-mode."
             ;; legacy
             (null lsp-diagnostics-provider))
            (require 'flycheck nil t))
-      (lsp-diagnostics--flycheck-enable))
+      (lsp-diagnostics-flycheck-enable))
      ((or (eq lsp-diagnostics-provider :auto)
           (eq lsp-diagnostics-provider :flymake)
           (eq lsp-diagnostics-provider t))
