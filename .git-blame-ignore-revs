@@ -3,7 +3,7 @@
 #   git config blame.ignoreRevsFile .git-blame-ignore-revs
 
 # Reindent lsp-mode using new indentation function
-40122e6b376ae5321980206b66d9c789f4f9917a
+48e53d1f4c9558fd88a4ea66bb40312c6558b01b
 
 # Fix another typo (#1965)
 1530757b9c66c88ef77cf97bd023211de9833ed0
