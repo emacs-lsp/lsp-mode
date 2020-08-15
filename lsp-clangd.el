@@ -27,6 +27,7 @@
 (require 'lsp-mode)
 (require 'cl-lib)
 (require 'rx)
+(require 'seq)
 
 (require 'dash)
 (require 'dash-functional)
