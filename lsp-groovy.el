@@ -27,7 +27,6 @@
 (require 'lsp-mode)
 (require 'f)
 
-;;; Groovy
 (defgroup lsp-groovy nil
   "LSP support for Groovy, using groovy-language-server."
   :group 'lsp-mode
