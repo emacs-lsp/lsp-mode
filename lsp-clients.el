@@ -31,29 +31,6 @@
 (require 'cl-lib)
 
 
-;;; Groovy
-(defgroup lsp-groovy nil
-  "LSP support for Groovy, using groovy-language-server"
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/prominic/groovy-language-server"))
-
-(defcustom lsp-groovy-server-file
-  (locate-user-emacs-file "groovy-language-server/groovy-language-server-all.jar")
-  "JAR file path for groovy-language-server-all.jar."
-  :group 'lsp-groovy
-  :risky t
-  :type 'file)
-
-(defun lsp-groovy--lsp-command ()
-  "Generate LSP startup command."
-  `("java" "-jar" ,(expand-file-name lsp-groovy-server-file)))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-groovy--lsp-command)
-                  :major-modes '(groovy-mode)
-                  :priority -1
-                  :server-id 'groovy-ls))
-
 ;;; TypeScript/JavaScript
 
 (lsp-dependency 'javascript-typescript-langserver
