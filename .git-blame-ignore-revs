@@ -13,3 +13,12 @@ c7199f6bd95d174b20bb5f6fb4e7b24c6ce1784a
 
 # Fix typos (#1964)
 1c18d4362d7cacc3b4ef8ff5cc9f336c123a89e5
+
+# Fix typos (#1618)
+485d8d23d096cb98aa9b79249a3c96c25ad61e6a
+
+# Fix typos (#1687)
+bac42c50b370f3716f258506dc1ae9f62906313f
+
+# Remove some Emacs < 26, and fix some whitespace/indentation (#1955)
+b08232485c050708ea261405ced8d704a5861d49
