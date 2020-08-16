@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; LSP Clients for the PHP Programming Language
+;; LSP Clients for the PHP Programming Language.
 
 ;;; Code:
 
@@ -185,7 +185,7 @@ language server."
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-intelephense-multi-root t
-  "Flag to control if the server supports multi-root projects"
+  "Flag to control if the server supports multi-root projects."
   :type 'boolean
   :group 'lsp-intelephense
   :package-version '(lsp-mode . "6.3"))
@@ -234,7 +234,7 @@ language server."
 
 ;;; Serenata
 (defgroup lsp-serenata nil
-  "LSP support for the PHP programming language, using serenata"
+  "LSP support for the PHP programming language, using serenata."
   :group 'lsp-mode
   :link '(url-link "https://gitlab.com/Serenata/Serenata")
   :package-version '(lsp-mode . "7.0"))
