@@ -70,6 +70,7 @@ nav:
     - Powershell: page/lsp-pwsh.md
     - PureScript: page/lsp-purescript.md
     - Python: page/lsp-pyls.md
+    - Python (Pyright): https://emacs-lsp.github.io/lsp-pyright
     - Python (Microsoft): https://emacs-lsp.github.io/lsp-python-ms
     - R: page/lsp-r.md
     - Ruby: page/lsp-solargraph.md

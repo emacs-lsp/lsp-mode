@@ -30,73 +30,6 @@
 (require 'rx)
 (require 'cl-lib)
 
-;;; Ada
-(defgroup lsp-ada nil
-  "Settings for Ada Language Server."
-  :group 'tools
-  :tag "Language Server"
-  :package-version '(lsp-mode . "6.2"))
-
-(defcustom lsp-ada-project-file "default.gpr"
-  "Set the project file full path to configure the language server with.
-  The ~ prefix (for the user home directory) is supported.
-  See https://github.com/AdaCore/ada_language_server for a per-project
-  configuration example."
-  :type 'string
-  :group 'lsp-ada
-  :package-version '(lsp-mode . "6.2"))
-
-(defcustom lsp-ada-option-charset "UTF-8"
-  "The charset to use by the Ada Language server. Defaults to 'UTF-8'."
-  :type 'string
-  :group 'lsp-ada
-  :package-version '(lsp-mode . "6.2"))
-
-(defcustom lsp-ada-enable-diagnostics t
-  "A boolean to disable diagnostics. Defaults to true."
-  :type 'boolean
-  :group 'lsp-ada
-  :package-version '(lsp-mode . "6.2"))
-
-(lsp-register-custom-settings
- '(("ada.projectFile" lsp-ada-project-file)
-   ("ada.enableDiagnostics" lsp-ada-enable-diagnostics)
-   ("ada.defaultCharset" lsp-ada-option-charset)))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '("ada_language_server"))
-                  :major-modes '(ada-mode)
-                  :priority -1
-                  :initialized-fn (lambda (workspace)
-                                    (with-lsp-workspace workspace
-                                      (lsp--set-configuration
-                                       (lsp-configuration-section "ada"))))
-                  :server-id 'ada-ls))
-
-
-
-;;; Groovy
-(defgroup lsp-groovy nil
-  "LSP support for Groovy, using groovy-language-server"
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/prominic/groovy-language-server"))
-
-(defcustom lsp-groovy-server-file
-  (locate-user-emacs-file "groovy-language-server/groovy-language-server-all.jar")
-  "JAR file path for groovy-language-server-all.jar."
-  :group 'lsp-groovy
-  :risky t
-  :type 'file)
-
-(defun lsp-groovy--lsp-command ()
-  "Generate LSP startup command."
-  `("java" "-jar" ,(expand-file-name lsp-groovy-server-file)))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-groovy--lsp-command)
-                  :major-modes '(groovy-mode)
-                  :priority -1
-                  :server-id 'groovy-ls))
 
 ;;; TypeScript/JavaScript
 
@@ -287,40 +220,6 @@ particular FILE-NAME and MODE."
                   :server-id 'flow-ls))
 
 
-;; PHP
-(defgroup lsp-php nil
-  "LSP support for PHP, using php-language-server."
-  :link '(url-link "https://github.com/felixfbecker/php-language-server")
-  :group 'lsp-mode)
-
-(defcustom lsp-clients-php-server-command
-  `("php" ,(expand-file-name "~/.composer/vendor/felixfbecker/language-server/bin/php-language-server.php"))
-  "Install directory for php-language-server."
-  :group 'lsp-php
-  :type '(repeat string))
-
-(defun lsp-php--create-connection ()
-  "Create lsp connection."
-  (lsp-stdio-connection
-   (lambda () lsp-clients-php-server-command)
-   (lambda ()
-     (if (and (cdr lsp-clients-php-server-command)
-              (eq (string-match-p "php[0-9.]*\\'" (car lsp-clients-php-server-command)) 0))
-         ;; Start with the php command and the list has more elems. Test the existence of the PHP script.
-         (let ((php-file (nth 1 lsp-clients-php-server-command)))
-           (or (file-exists-p php-file)
-               (progn
-                 (lsp-log "%s is not present." php-file)
-                 nil)))
-       t))))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-php--create-connection)
-                  :major-modes '(php-mode)
-                  :priority -3
-                  :server-id 'php-ls))
-
-
 
 (defgroup lsp-ocaml nil
   "LSP support for OCaml, using ocaml-language-server."
@@ -390,8 +289,8 @@ find a suitable one. Set this variable before loading lsp."
   :risky t
   :type 'file)
 
-(defvar lsp-clients-clangd-executable-found nil
-  "Clang executable full path when found.
+(defvar lsp-clients--clangd-default-executable nil
+  "Clang default executable full path when found.
 This must be set only once after loading the clang client.")
 
 (defcustom lsp-clients-clangd-args '()
@@ -402,13 +301,16 @@ This must be set only once after loading the clang client.")
 
 (defun lsp-clients--clangd-command ()
   "Generate the language server startup command."
-  (unless lsp-clients-clangd-executable-found
-    (setq lsp-clients-clangd-executable-found
-          (or (and lsp-clients-clangd-executable
-                   (locate-file lsp-clients-clangd-executable exec-path nil 1))
-              (locate-file "clangd" exec-path '("" "-10" "-9" "-8" "-7" "-6") 1))))
+  (unless lsp-clients--clangd-default-executable
+    (setq lsp-clients--clangd-default-executable
+          (catch 'path
+            (mapc (lambda (suffix)
+                    (let ((path (executable-find (concat "clangd" suffix))))
+                      (when path (throw 'path path))))
+                  '("" "-10" "-9" "-8" "-7" "-6")))))
 
-  `(,lsp-clients-clangd-executable-found ,@lsp-clients-clangd-args))
+  `(,(or lsp-clients-clangd-executable lsp-clients--clangd-default-executable)
+    ,@lsp-clients-clangd-args))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
@@ -523,42 +425,6 @@ finding the executable with `exec-path'."
 
 
 
-;;; Angular
-(defcustom lsp-clients-angular-language-server-command
-  '("node"
-    "/usr/lib/node_modules/@angular/language-server"
-    "--ngProbeLocations"
-    "/usr/lib/node_modules"
-    "--tsProbeLocations"
-    "/usr/lib/node_modules"
-    "--stdio")
-  "The command that starts the angular language server."
-  :group 'lsp-clients-angular
-  :type '(choice
-          (string :tag "Single string value")
-          (repeat :tag "List of string values"
-                  string)))
-
-(defun lsp-client--angular-start-loading (_workspace params)
-  (lsp--info "Started loading project %s" params))
-
-(defun lsp-client--angular-finished-loading (_workspace params)
-  (lsp--info "Finished loading project %s" params))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda () lsp-clients-angular-language-server-command))
-                  :activation-fn (lambda (&rest _args)
-                                   (and (string-match-p "\\.html\\'" (buffer-file-name))
-                                        (lsp-workspace-root)
-                                        (file-exists-p (f-join (lsp-workspace-root) "angular.json"))))
-                  :priority -1
-                  :notification-handlers (ht ("angular-language-service/projectLoadingStart" #'lsp-client--angular-start-loading)
-                                             ("angular-language-service/projectLoadingFinish" #'lsp-client--angular-finished-loading))
-                  :add-on? t
-                  :server-id 'angular-ls))
-
-
 ;; TeX
 (defgroup lsp-tex nil
   "LSP support for TeX and friends, using Digestif and texlab."
@@ -596,95 +462,6 @@ finding the executable with `exec-path'."
                   :priority (if (eq lsp-tex-server 'texlab) 1 -1)
                   :server-id 'texlab))
 
-
-;; Vim script
-(defgroup lsp-vim nil
-  "LSP support for viml using vim-language-server"
-  :group 'lsp-mode)
-
-(defcustom lsp-clients-vim-executable '("vim-language-server" "--stdio")
-  "Command to start the vim language server."
-  :group 'lsp-vim
-  :risky t
-  :type 'file)
-
-(defcustom lsp-clients-vim-initialization-options '((iskeyword . "vim iskeyword option")
-                                                    (vimruntime . "/usr/bin/vim")
-                                                    (runtimepath . "/usr/bin/vim")
-                                                    (diagnostic . ((enable . t)))
-                                                    (indexes . ((runtimepath . t)
-                                                                (gap . 100)
-                                                                (count . 3)))
-                                                    (suggest . ((fromVimruntime . t)
-                                                                (fromRuntimepath . :json-false))))
-  "Initialization options for vim language server."
-  :group 'lsp-vim
-  :type 'alist)
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-vim-executable)
-                  :major-modes '(vimrc-mode)
-                  :priority -1
-                  :server-id 'vimls
-                  :initialization-options (lambda ()
-                                            lsp-clients-vim-initialization-options)))
-
-
-
-;; R
-(defgroup lsp-r nil
-  "LSP support for R."
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/REditorSupport/languageserver"))
-
-(defcustom lsp-clients-r-server-command '("R" "--slave" "-e" "languageserver::run()")
-  "Command to start the R language server."
-  :group 'lsp-r
-  :risky t
-  :type '(repeat string))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-r-server-command)
-                  :major-modes '(ess-r-mode)
-                  :server-id 'lsp-r))
-
-
-
-;; Nim
-(defgroup lsp-nim nil
-  "LSP support for Nim, using nimlsp."
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/PMunch/nimlsp"))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "nimlsp")
-                  :major-modes '(nim-mode)
-                  :priority -1
-                  :server-id 'nimls))
-
-;; Dhall
-(defgroup lsp-dhall nil
-  "LSP support for Dhall, using dhall-lsp-server."
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/dhall-lang/dhall-haskell"))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "dhall-lsp-server")
-                  :major-modes '(dhall-mode)
-                  :priority -1
-                  :server-id 'dhallls))
-
-;; CMake
-(defgroup lsp-cmake nil
-  "LSP support for CMake, using cmake-language-server."
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/regen100/cmake-language-server"))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "cmake-language-server")
-                  :major-modes '(cmake-mode)
-                  :priority -1
-                  :server-id 'cmakels))
 
 ;; PureScript
 (defgroup lsp-purescript nil
@@ -726,115 +503,6 @@ finding the executable with `exec-path'."
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'purescript-language-server callback error-callback))))
 
-;;; Rf
-(defgroup lsp-rf nil
-  "Settings for Robot Framework Language Server."
-  :group 'lsp-mode
-  :tag "Language Server"
-  :link '(url-link "https://github.com/tomi/vscode-rf-language-server.git"))
-
-(defcustom lsp-rf-language-server-start-command '("~/.nvm/versions/node/v9.11.2/bin/node" "~/.vscode/extensions/tomiturtiainen.rf-intellisense-2.8.0/server/server.js")
-  "Path to the server.js file of the rf-intellisense server. Accepts a list of strings (path/to/interpreter path/to/server.js)"
-  :type 'list
-  :group 'lsp-rf)
-
-(defcustom lsp-rf-language-server-include-paths []
-  "An array of files that should be included by the parser. Glob patterns as strings are accepted (eg. *.robot between double quotes)"
-  :type 'lsp-string-vector
-  :group 'lsp-rf)
-
-(defcustom lsp-rf-language-server-exclude-paths []
-  "An array of files that should be ignored by the parser. Glob patterns as strings are accepted (eg. *bad.robot between double quotes)"
-  :type 'lsp-string-vector
-  :group 'lsp-rf)
-
-(defcustom lsp-rf-language-server-dir "~/.vscode/extensions/tomiturtiainen.rf-intellisense-2.8.0/server/library-docs/"
-  "Libraries directory for libraries in lsp-rf-language-server-libraries"
-  :type 'string
-  :group 'lsp-rf)
-
-(defcustom lsp-rf-language-server-libraries ["BuiltIn-3.1.1" "Collections-3.0.4"]
-  "Libraries whose keywords are suggested with auto-complete"
-  :type '(repeat string)
-  ;; :type 'lsp-string-vector
-  :group 'lsp-rf)
-
-(defcustom lsp-rf-language-server-log-level "debug"
-  "What language server log messages are printed"
-  :type 'string
-  ;; :type '(choice (:tag "off" "errors" "info" "debug"))
-  :group 'lsp-rf)
-
-(defcustom lsp-rf-language-server-trace-server "verbose"
-  "Traces the communication between VSCode and the rfLanguageServer service."
-  :type 'string
-  ;; :type '(choice (:tag "off" "messages" "verbose"))
-  :group 'lsp-rf)
-
-(defun parse-rf-language-server-library-dirs (dirs)
-  (vconcat (mapcar
-   (lambda (x)
-     (concat
-      (expand-file-name
-       lsp-rf-language-server-dir)
-      x
-      ".json"))
-   dirs)))
-
-(defun expand-start-command ()
-  (mapcar 'expand-file-name lsp-rf-language-server-start-command))
-
-(defun parse-rf-language-server-globs-to-regex (vector)
-  "Converts vector with globs to regex"
-  (concat "\\(" (mapconcat #'lsp-glob-to-regexp vector "\\|") "\\)"))
-
-(defun parse-rf-language-server-include-path-regex (vector)
-  "Creates regexp to select files from workspace directory"
-  (let ((globs (if (eq vector [])
-                        ["*.robot" "*.resource"]
-                      vector)))
-    (parse-rf-language-server-globs-to-regex globs)))
-
-(defun parse-rf-language-server-exclude-paths (seq)
-  "Creates regexp to select files from workspace directory"
-  (if (eq lsp-rf-language-server-exclude-paths [])
-      seq
-  (cl-delete-if (lambda (x) (string-match-p
-                             (parse-rf-language-server-globs-to-regex
-                              lsp-rf-language-server-exclude-paths)
-                             x))
-                seq)))
-
-(lsp-register-custom-settings
- '(
-   ("rfLanguageServer.trace.server" lsp-rf-language-server-trace-server)
-   ("rfLanguageServer.logLevel" lsp-rf-language-server-log-level)
-   ("rfLanguageServer.libraries" lsp-rf-language-server-libraries)
-   ("rfLanguageServer.excludePaths" lsp-rf-language-server-exclude-paths)
-   ("rfLanguageServer.includePaths" lsp-rf-language-server-include-paths)))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (expand-start-command))
-                  :major-modes '(robot-mode)
-                  :server-id 'rf-intellisense
-                  ;; :library-folders-fn (lambda (_workspace)
-                  ;;                        lsp-rf-language-server-libraries)
-                  :library-folders-fn (lambda (_workspace)
-                                         (parse-rf-language-server-library-dirs
-                                         lsp-rf-language-server-libraries))
-                  :initialized-fn (lambda (workspace)
-                                    (with-lsp-workspace workspace
-                                      (lsp--set-configuration
-                                       (lsp-configuration-section "rfLanguageServer"))
-                                      (lsp-request "buildFromFiles"
-                                                   (list :files
-                                                         (vconcat
-                                                          (parse-rf-language-server-exclude-paths
-                                                           (directory-files-recursively
-                                                            (lsp--workspace-root workspace)
-                                                            (parse-rf-language-server-include-path-regex
-                                                             lsp-rf-language-server-include-paths))))))))))
 
 (provide 'lsp-clients)
 ;;; lsp-clients.el ends here
