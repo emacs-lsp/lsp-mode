@@ -243,40 +243,6 @@ particular FILE-NAME and MODE."
                   :server-id 'flow-ls))
 
 
-;; PHP
-(defgroup lsp-php nil
-  "LSP support for PHP, using php-language-server."
-  :link '(url-link "https://github.com/felixfbecker/php-language-server")
-  :group 'lsp-mode)
-
-(defcustom lsp-clients-php-server-command
-  `("php" ,(expand-file-name "~/.composer/vendor/felixfbecker/language-server/bin/php-language-server.php"))
-  "Install directory for php-language-server."
-  :group 'lsp-php
-  :type '(repeat string))
-
-(defun lsp-php--create-connection ()
-  "Create lsp connection."
-  (lsp-stdio-connection
-   (lambda () lsp-clients-php-server-command)
-   (lambda ()
-     (if (and (cdr lsp-clients-php-server-command)
-              (eq (string-match-p "php[0-9.]*\\'" (car lsp-clients-php-server-command)) 0))
-         ;; Start with the php command and the list has more elems. Test the existence of the PHP script.
-         (let ((php-file (nth 1 lsp-clients-php-server-command)))
-           (or (file-exists-p php-file)
-               (progn
-                 (lsp-log "%s is not present." php-file)
-                 nil)))
-       t))))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-php--create-connection)
-                  :major-modes '(php-mode)
-                  :priority -3
-                  :server-id 'php-ls))
-
-
 
 (defgroup lsp-ocaml nil
   "LSP support for OCaml, using ocaml-language-server."
