@@ -309,7 +309,8 @@
     "full-name": "PHP",
     "server-name": "php-language-server",
     "server-url": "https://github.com/felixfbecker/php-language-server",
-    "installation-url": "https://github.com/felixfbecker/php-language-server",
+    "installation-url": "https://github.com/felixfbecker/php-language-server#installation",
+    "installation": "composer require felixfbecker/language-server",
     "debugger": "Yes"
   },
   {
