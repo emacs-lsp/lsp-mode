@@ -276,7 +276,8 @@
          (lsp--session (make-lsp-session
                         :folder->servers (ht (root (list lsp--cur-workspace)))))
          (create-lockfiles nil)
-         (matching-file (f-join root "file-name-matching")))
+         (matching-file-1 (f-join root "file-name-matching-1"))
+         (matching-file-2 (f-join root "file-name-matching-2")))
 
     (setq lsp--test-events nil)
 
@@ -288,11 +289,15 @@
       :method "workspace/didChangeWatchedFiles"
       :register-options? (lsp-make-did-change-watched-files-registration-options
                           :watchers
-                          `[,(lsp-make-file-system-watcher :glob-pattern "file-name-matching")])))
+                          ;; kind = 5 == 4 | 1 admits DELETE (4) and CREATE (1) WatchKind events, but not CHANGE (2)
+                          `[,(lsp-make-file-system-watcher :glob-pattern "file-name-matching-[0-9]" :kind 5)])))
 
-    (f-write-text "some-text" 'utf-8 matching-file)
+    (f-write-text "some-text" 'utf-8 matching-file-1)
+    (f-write-text "more-text" 'utf-8 matching-file-2)
 
     (f-write-text "some-text" 'utf-8 (f-join root "not-matching"))
+
+    (delete-file matching-file-1)
 
     (sit-for 0.3)
 
@@ -300,9 +305,11 @@
 
     (should (equal lsp--test-events
                    `(((workspace-1) "workspace/didChangeWatchedFiles"
-                      ((changes . [((type . 2) (uri . ,(lsp--path-to-uri matching-file)))])))
+                      ((changes . [((type . 3) (uri . ,(lsp--path-to-uri matching-file-1)))])))
                      ((workspace-1) "workspace/didChangeWatchedFiles"
-                      ((changes . [((type . 1) (uri . ,(lsp--path-to-uri matching-file)))]))))))))
+                      ((changes . [((type . 1) (uri . ,(lsp--path-to-uri matching-file-2)))])))
+                     ((workspace-1) "workspace/didChangeWatchedFiles"
+                      ((changes . [((type . 1) (uri . ,(lsp--path-to-uri matching-file-1)))]))))))))
 
 (ert-deftest lsp-file-watches-cleanup-test ()
   :tags '(no-win)
