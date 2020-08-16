@@ -20,14 +20,11 @@
 
 ;;; Commentary:
 
-;; LSP Clients for the JavaScript and TypeScript Programming Languages
+;; LSP Clients for the JavaScript and TypeScript Programming Languages.
 
 ;;; Code:
 
 (require 'lsp-mode)
-
-
-;;; TypeScript/JavaScript
 
 (lsp-dependency 'javascript-typescript-langserver
                 '(:system "javascript-typescript-stdio")
@@ -65,8 +62,7 @@
                                          callback
                                          error-callback))))
 
-
-;;; TypeScript
+
 (defgroup lsp-typescript nil
   "LSP support for TypeScript, using Theia/Typefox's TypeScript Language Server."
   :group 'lsp-mode
@@ -134,8 +130,7 @@ directory containing the package. Example:
                                                    error-callback)
                                          error-callback))))
 
-
-;;; JavaScript Flow
+
 (defgroup lsp-flow nil
   "LSP support for the Flow Javascript type checker."
   :group 'lsp-mode
