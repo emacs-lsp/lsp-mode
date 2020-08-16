@@ -175,7 +175,7 @@
     "name": "hack",
     "full-name": "Hack",
     "server-name": "hhvm",
-    "server-url": "https://docs.hhvm.com/hhvm/",
+    "server-url": "https://docs.hhvm.com/hhvm",
     "installation-url": "https://docs.hhvm.com/hhvm/installation/introduction",
     "debugger": "Not available"
   },
