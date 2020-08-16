@@ -608,24 +608,6 @@ responsiveness at the cost of possible stability issues."
                   :server-id 'texlab))
 
 
-
-;; Crystal
-(defgroup lsp-crystal nil
-  "LSP support for Crystal via scry."
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/crystal-lang-tools/scry"))
-
-(defcustom lsp-clients-crystal-executable '("scry" "--stdio")
-  "Command to start the scry language server."
-  :group 'lsp-crystal
-  :risky t
-  :type 'file)
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-crystal-executable)
-                  :major-modes '(crystal-mode)
-                  :server-id 'scry))
-
 ;; PureScript
 (defgroup lsp-purescript nil
   "LSP support for PureScript, using purescript-language-server."
