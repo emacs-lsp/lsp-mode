@@ -57,7 +57,7 @@
   "For a given KEY return a decorated VALUE."
   (pcase key
     ("installation" (format "`%s`" value))
-    ("installation-url" (format "\nFor more instructions on how to install, check [here](%s)." value))
+    ("installation-url" (format "\n\nFor more instructions on how to install, check [here](%s)." value))
     (_ value)))
 
 (defun lsp-doc--replace-placeholders (client)
