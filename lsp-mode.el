@@ -351,7 +351,7 @@ unless overridden by a more specific face association."
   '(ccls lsp-ada lsp-angular lsp-bash lsp-clients lsp-clojure lsp-cmake lsp-crystal lsp-csharp lsp-css lsp-dart lsp-dhall
          lsp-dockerfile lsp-elm lsp-elixir lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go lsp-hack lsp-groovy lsp-haskell lsp-haxe
          lsp-java lsp-json lsp-kotlin lsp-lua lsp-nim lsp-metals lsp-perl lsp-php lsp-pwsh lsp-pyls
-         lsp-python-ms lsp-r lsp-rf lsp-rust lsp-solargraph lsp-terraform lsp-verilog lsp-vetur
+         lsp-python-ms lsp-purescript lsp-r lsp-rf lsp-rust lsp-solargraph lsp-terraform lsp-verilog lsp-vetur
          lsp-vhdl lsp-vimscript lsp-xml lsp-yaml lsp-sqls lsp-svelte)
   "List of the clients to be automatically required."
   :group 'lsp-mode
