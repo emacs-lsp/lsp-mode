@@ -104,7 +104,7 @@
     "full-name": "Elixir",
     "server-name": "elixir-lsp/elixir-ls",
     "server-url": "https://github.com/elixir-lsp/elixir-ls",
-    "installation-url": "https://github.com/elixir-lsp/elixir-ls",
+    "installation-url": "https://github.com/elixir-lsp/elixir-ls#building-and-running",
     "debugger": "Yes"
   },
   {
