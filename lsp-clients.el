@@ -574,19 +574,6 @@ responsiveness at the cost of possible stability issues."
                   :server-id 'texlab))
 
 
-
-;; Nim
-(defgroup lsp-nim nil
-  "LSP support for Nim, using nimlsp."
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/PMunch/nimlsp"))
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "nimlsp")
-                  :major-modes '(nim-mode)
-                  :priority -1
-                  :server-id 'nimls))
-
 ;; PureScript
 (defgroup lsp-purescript nil
   "LSP support for PureScript, using purescript-language-server."
