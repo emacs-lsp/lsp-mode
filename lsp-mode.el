@@ -4509,13 +4509,14 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
 
 (defvar-local lsp--symbol-bounds-of-last-highlight-invocation nil
   "The bounds of the symbol from which `lsp--document-highlight'
-  was most recently invoked.")
+  most recently requested highlights.")
 
 (defun lsp--document-highlight ()
   (let ((curr-sym-bounds (bounds-of-thing-at-point 'symbol)))
     (unless (or (looking-at "[[:space:]\n]")
                 (not lsp-enable-symbol-highlighting)
-                (and curr-sym-bounds
+                (and lsp--have-document-highlights
+                     curr-sym-bounds
                      (equal curr-sym-bounds
                             lsp--symbol-bounds-of-last-highlight-invocation)))
       (setq lsp--symbol-bounds-of-last-highlight-invocation
