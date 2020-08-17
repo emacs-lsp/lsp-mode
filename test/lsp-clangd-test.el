@@ -46,17 +46,6 @@
                  (lsp-make-markup-content :value "Wrong")
                  'clangd)))
 
-(defun lsp-clangd-join-region (beg end)
-  "Apply join-line from BEG to END.
-This function is useful when an indented function prototype needs
-to be shown in a single line."
-  (save-excursion
-    (let ((end (copy-marker end)))
-      (goto-char beg)
-      (while (< (point) end)
-        (join-line 1)))
-    (s-trim (buffer-string))))
-
 (ert-deftest lsp-clients-join-region ()
   (with-temp-buffer
     (insert "void function(int n);")

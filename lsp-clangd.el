@@ -77,6 +77,17 @@ This must be set only once after loading the clang client.")
                   :priority -1
                   :server-id 'clangd))
 
+(defun lsp-clangd-join-region (beg end)
+  "Apply join-line from BEG to END.
+This function is useful when an indented function prototype needs
+to be shown in a single line."
+  (save-excursion
+    (let ((end (copy-marker end)))
+      (goto-char beg)
+      (while (< (point) end)
+        (join-line 1)))
+    (s-trim (buffer-string))))
+
 (cl-defmethod lsp-clients-extract-signature-on-hover (contents (_server-id (eql clangd)))
   "Extract a representative line from clangd's CONTENTS, to show in the echo area.
 This function tries to extract the type signature from CONTENTS,
@@ -96,7 +107,7 @@ returned to avoid that the echo area grows uncomfortably."
                                        "\n")
                                       "```")) nil t nil)
           (progn (narrow-to-region (match-beginning 2) (match-end 2))
-                 (lsp--render-element (lsp-join-region (point-min) (point-max))))
+                 (lsp--render-element (lsp-clangd-join-region (point-min) (point-max))))
         (car (s-lines (lsp--render-element contents)))))))
 
 (provide 'lsp-clangd)
