@@ -4746,17 +4746,6 @@ When language is nil render as markup if `markdown-mode' is loaded."
                                         #'lsp:code-action-title)
                               nil t)))))
 
-(defun lsp-join-region (beg end)
-  "Apply join-line from BEG to END.
-This function is useful when an indented function prototype needs
-to be shown in a single line."
-  (save-excursion
-    (let ((end (copy-marker end)))
-      (goto-char beg)
-      (while (< (point) end)
-        (join-line 1)))
-    (s-trim (buffer-string))))
-
 (defun lsp--workspace-server-id (workspace)
   "Return the server ID of WORKSPACE."
   (-> workspace lsp--workspace-client lsp--client-server-id))

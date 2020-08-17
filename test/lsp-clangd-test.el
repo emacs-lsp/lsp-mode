@@ -21,8 +21,10 @@
 
 ;;; Code:
 
-(require 'ert)
 (require 'lsp-clangd)
+
+(require 'ert)
+(require 's)
 
 (ert-deftest lsp-clangd-extract-signature-on-hover ()
   (should (string= (lsp-clients-extract-signature-on-hover
@@ -44,22 +46,33 @@
                  (lsp-make-markup-content :value "Wrong")
                  'clangd)))
 
+(defun lsp-clangd-join-region (beg end)
+  "Apply join-line from BEG to END.
+This function is useful when an indented function prototype needs
+to be shown in a single line."
+  (save-excursion
+    (let ((end (copy-marker end)))
+      (goto-char beg)
+      (while (< (point) end)
+        (join-line 1)))
+    (s-trim (buffer-string))))
+
 (ert-deftest lsp-clients-join-region ()
   (with-temp-buffer
     (insert "void function(int n);")
-    (should (string= (lsp-join-region (point-min) (point-max)) "void function(int n);"))
+    (should (string= (lsp-clangd-join-region (point-min) (point-max)) "void function(int n);"))
     (erase-buffer)
     (insert "    void function(int n);")
-    (should (string= (lsp-join-region (point-min) (point-max)) "void function(int n);"))
+    (should (string= (lsp-clangd-join-region (point-min) (point-max)) "void function(int n);"))
     (erase-buffer)
     (insert "void foo(int n,
                       int p,
                       int k);")
-    (should (string= (lsp-join-region (point-min) (point-max)) "void foo(int n, int p, int k);"))
+    (should (string= (lsp-clangd-join-region (point-min) (point-max)) "void foo(int n, int p, int k);"))
     (erase-buffer)
     (insert "void foo(int n,
                   int p,
                   int k);")
-    (should (string= (lsp-join-region (point-min) (point-max)) "void foo(int n, int p, int k);"))))
+    (should (string= (lsp-clangd-join-region (point-min) (point-max)) "void foo(int n, int p, int k);"))))
 
 ;;; lsp-clangd-test.el ends here
