@@ -13,6 +13,12 @@ The recommended way to install `lsp-mode` is via `package.el` - the built-in pac
 
 <kbd>M-x</kbd> `package-install` <kbd>RET</kbd> `lsp-mode` <kbd>RET</kbd>
 
+When updating your packages with `package.el`, we recommend the following procedure:
+
+    1. Delete your LSP-related packages
+    2. Restart Emacs
+    3. Install the new versions of the packages.
+
 ### Doom Emacs
 
 [Doom Emacs](https://github.com/hlissner/doom-emacs) has a module to install and configure `lsp-mode` automatically, you just need to add `lsp` below `:tools` in your `init.el`.
