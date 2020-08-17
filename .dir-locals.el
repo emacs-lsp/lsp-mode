@@ -1,5 +1,7 @@
 ((nil
   (require-final-newline . t))
+ (git-commit-mode
+  (git-commit-major-mode . git-commit-elisp-text-mode))
  (emacs-lisp-mode
   (eval . (progn
             (let ((dirloc-lsp-defun-regexp
@@ -15,41 +17,29 @@
 
             (defvar lsp--override-calculate-lisp-indent?
               nil
-              "Whether to override the default
-              `calculate-lisp-indent'.")
+              "Whether to override `lisp-indent-function' with
+              the updated `calculate-lisp-indent' definition from
+              Emacs 28.")
 
-            (setq-local lsp--override-calculate-lisp-indent? t)
+            ;; from Emacs 28
 
-            ;; FIXME: This doesn't appear to correct the behavior of
-            ;; `evil-indent' or `indent-region'. But it does seem to
-            ;; work with `newline-and-indent'.
+            (defun wrap-calculate-lisp-indent (func &optional parse-start)
+              "Return appropriate indentation for current line as Lisp code.
+In usual case returns an integer: the column to indent to.
+If the value is nil, that means don't change the indentation
+because the line starts inside a string.
 
-            ;; FIXME: This also doesn't work particularly well with
-            ;; comma-evaluated forms inside backticks if any arguments
-            ;; are on the same line as the function. But there is a workaround.
+PARSE-START may be a buffer position to start parsing from, or a
+parse state as returned by calling `parse-partial-sexp' up to the
+beginning of the current line.
 
-            ;; For example, the incorrectly-indented
-
-            ;; `(:range ,(lsp--range (lsp--point-to-position start)
-            ;;            (plist-get lsp--before-change-vals :end-pos)))
-
-            ;; can be changed to
-
-            ;; `(:range ,(lsp--range
-            ;;            (lsp--point-to-position start)
-            ;;            (plist-get lsp--before-change-vals :end-pos)))
-
-            ;; by executing `newline-and-indent'.
-
-            ;; https://www.reddit.com/r/emacs/comments/d7x7x8/finally_fixing_indentation_of_quoted_lists/
-            (defun wrap~calculate-lisp-indent (fn &optional parse-start)
-              "Add better indentation for quoted and backquoted lists."
+The value can also be a list of the form (COLUMN CONTAINING-SEXP-START).
+This means that following lines at the same level of indentation
+should not necessarily be indented the same as this line.
+Then COLUMN is the column to indent to, and CONTAINING-SEXP-START
+is the buffer position of the start of the containing expression."
               (if (not lsp--override-calculate-lisp-indent?)
-                  (funcall fn parse-start)
-                ;; This line because `calculate-lisp-indent-last-sexp` was defined with `defvar`
-                ;; with it's value omitted, marking it special and only defining it locally. So
-                ;; if you don't have this, you'll get a void variable error.
-                (defvar calculate-lisp-indent-last-sexp)
+                  (funcall func parse-start)
                 (save-excursion
                   (beginning-of-line)
                   (let ((indent-point (point))
@@ -57,6 +47,7 @@
                         ;; setting this to a number inhibits calling hook
                         (desired-indent nil)
                         (retry t)
+                        whitespace-after-open-paren
                         calculate-lisp-indent-last-sexp containing-sexp)
                     (cond ((or (markerp parse-start) (integerp parse-start))
                            (goto-char parse-start))
@@ -86,6 +77,7 @@
                         nil
                       ;; Innermost containing sexp found
                       (goto-char (1+ containing-sexp))
+                      (setq whitespace-after-open-paren (looking-at (rx whitespace)))
                       (if (not calculate-lisp-indent-last-sexp)
                           ;; indent-point immediately follows open paren.
                           ;; Don't call hook.
@@ -100,43 +92,11 @@
                                   calculate-lisp-indent-last-sexp)
                                ;; This is the first line to start within the containing sexp.
                                ;; It's almost certainly a function call.
-                               (if (or
-                                    ;; Containing sexp has nothing before this line
-                                    ;; except the first element. Indent under that element.
-                                    (= (point) calculate-lisp-indent-last-sexp)
-
-                                    ;; First sexp after `containing-sexp' is a keyword. This
-                                    ;; condition is more debatable. It's so that I can have
-                                    ;; unquoted plists in macros. It assumes that you won't
-                                    ;; make a function whose name is a keyword.
-                                    ;; (when-let ((char-after (char-after (1+ containing-sexp))))
-                                    ;;   (char-equal char-after ?:))
-
-                                    ;; Check for quotes or backquotes around.
-                                    (let* ((positions (elt state 9))
-                                           (last (car (last positions)))
-                                           (rest (reverse (butlast positions)))
-                                           (any-quoted-p nil)
-                                           (point nil))
-                                      (or
-                                       (when-let ((char (char-before last)))
-                                         (or (char-equal char ?')
-                                             (char-equal char ?`)))
-                                       (progn
-                                         (while (and rest (not any-quoted-p))
-                                           (setq point (pop rest))
-                                           (setq any-quoted-p
-                                                 (or
-                                                  (when-let ((char (char-before point)))
-                                                    (or (char-equal char ?')
-                                                        (char-equal char ?`)))
-                                                  (save-excursion
-                                                    (goto-char (1+ point))
-                                                    (looking-at-p
-                                                     "\\(?:back\\)?quote[\t\n\f\s]+(")))))
-                                         any-quoted-p))))
+                               (if (or (= (point) calculate-lisp-indent-last-sexp)
+                                       whitespace-after-open-paren)
                                    ;; Containing sexp has nothing before this line
-                                   ;; except the first element.  Indent under that element.
+                                   ;; except the first element, or the first element is
+                                   ;; preceded by whitespace.  Indent under that element.
                                    nil
                                  ;; Skip the first element, find start of second (the first
                                  ;; argument of the function call) and indent under.
@@ -219,6 +179,8 @@
                             (t
                              normal-indent)))))))
 
-            (advice-add #'calculate-lisp-indent :around #'wrap~calculate-lisp-indent)))
+            (when (< emacs-major-version 28)
+              (advice-add #'calculate-lisp-indent :around #'wrap-calculate-lisp-indent))))
   (flycheck-disabled-checkers . '(emacs-lisp-checkdoc))
+  (lsp--override-calculate-lisp-indent? . t)
   (indent-tabs-mode . nil)))

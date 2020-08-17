@@ -1,9 +1,9 @@
-;;; lsp-clients.el --- lightweight clients                       -*- lexical-binding: t; -*-
+;;; lsp-nim.el --- description -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2018 Ivan Yonchovski
+;; Copyright (C) 2020 emacs-lsp maintainers
 
-;; Author: Ivan Yonchovski <ivan.yonchovski@tick42.com>
-;; Keywords: languages
+;; Author: emacs-lsp maintainers
+;; Keywords: lsp, nim
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -20,21 +20,24 @@
 
 ;;; Commentary:
 
-;; Contains definitions for the simple clients.
+;; LSP Clients for the Nim Programming Language.
 
 ;;; Code:
 
 (require 'lsp-mode)
-(require 'dash)
-(require 'dash-functional)
-(require 'rx)
-(require 'cl-lib)
 
-
+;; Nim
+(defgroup lsp-nimlsp nil
+  "LSP support for Nim, using nimlsp."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/PMunch/nimlsp"))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection "nimlsp")
+                  :major-modes '(nim-mode)
+                  :priority -1
+                  :server-id 'nimls))
 
 
-
-
-
-(provide 'lsp-clients)
-;;; lsp-clients.el ends here
+(provide 'lsp-nim)
+;;; lsp-nim.el ends here

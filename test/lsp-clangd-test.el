@@ -1,4 +1,4 @@
-;;; lsp-clients-test.el --- unit tests for lsp-clients.el -*- lexical-binding: t -*-
+;;; lsp-clangd-test.el --- unit tests for lsp-clangd.el -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2019 Daniel Martín <mardani29@yahoo.es>.
 
@@ -14,6 +14,10 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; Tests for the Clangd  Language Server.
 
 ;;; Code:
 
@@ -58,4 +62,4 @@
                   int k);")
     (should (string= (lsp-join-region (point-min) (point-max)) "void foo(int n, int p, int k);"))))
 
-;;; lsp-clients-test.el ends here
+;;; lsp-clangd-test.el ends here

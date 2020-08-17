@@ -45,6 +45,9 @@ flycheck_*.el
 /*-pkg.el
 /.ecukes-failing-scenarios
 
+# personal customizations
+.dir-locals-2.el
+
 # java stuff
 target
 .classpath
