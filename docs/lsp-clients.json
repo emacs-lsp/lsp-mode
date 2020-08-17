@@ -275,7 +275,7 @@
     "full-name": "OCaml",
     "server-name": "ocaml-lsp-server",
     "server-url": "https://github.com/ocaml/ocaml-lsp",
-    "installation-url": "https://github.com/ocaml/ocaml-lsp",
+    "installation-url": "https://github.com/ocaml/ocaml-lsp#installation",
     "debugger": "Not available"
   },
   {
@@ -283,7 +283,7 @@
     "full-name": "OCaml",
     "server-name": "ocaml-language-server",
     "server-url": "https://github.com/ocaml-lsp/ocaml-language-server",
-    "installation-url": "https://github.com/ocaml-lsp/ocaml-language-server",
+    "installation-url": "https://github.com/ocaml-lsp/ocaml-language-server#server",
     "debugger": "Not available"
   },
   {
