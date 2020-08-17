@@ -24,7 +24,7 @@
 (require 'ert)
 (require 'lsp-clangd)
 
-(ert-deftest lsp-clients-extract-signature-from-clangd-on-hover ()
+(ert-deftest lsp-clangd-extract-signature-on-hover ()
   (should (string= (lsp-clients-extract-signature-on-hover
                     (lsp-make-markup-content :kind lsp/markup-kind-markdown
                                              :value "Sample\n ```cpp\n// In Function.hpp\nvoid function(int n);\n```")
