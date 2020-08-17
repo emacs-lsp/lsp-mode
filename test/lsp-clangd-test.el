@@ -22,7 +22,7 @@
 ;;; Code:
 
 (require 'ert)
-(require 'lsp-clangd)
+(require 'lsp-c-languages)
 
 (ert-deftest lsp-clangd-extract-signature-on-hover ()
   (should (string= (lsp-clients-extract-signature-on-hover
