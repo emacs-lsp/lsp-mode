@@ -21,10 +21,8 @@
 
 ;;; Code:
 
-(require 'lsp-clangd)
-
 (require 'ert)
-(require 's)
+(require 'lsp-clangd)
 
 (ert-deftest lsp-clangd-extract-signature-on-hover ()
   (should (string= (lsp-clients-extract-signature-on-hover
