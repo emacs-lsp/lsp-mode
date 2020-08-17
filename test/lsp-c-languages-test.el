@@ -1,4 +1,4 @@
-;;; lsp-clangd-test.el --- unit tests for lsp-clangd.el -*- lexical-binding: t -*-
+;;; lsp-c-languages-test.el --- unit tests for c languages family -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2019 Daniel Martín <mardani29@yahoo.es>.
 
@@ -17,7 +17,7 @@
 
 ;;; Commentary:
 
-;; Tests for the Clangd  Language Server.
+;; Unit tests for the C languages family servers.
 
 ;;; Code:
 
@@ -62,4 +62,4 @@
                   int k);")
     (should (string= (lsp-clangd-join-region (point-min) (point-max)) "void foo(int n, int p, int k);"))))
 
-;;; lsp-clangd-test.el ends here
+;;; lsp-c-languages-test.el ends here
