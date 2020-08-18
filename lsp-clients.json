@@ -46,8 +46,8 @@
     "name": "clangd",
     "full-name": "C++",
     "server-name": "clangd",
-    "server-url": "https://clang.llvm.org/extra/clangd.html",
-    "installation-url": "https://clang.llvm.org/extra/clangd.html",
+    "server-url": "https://clangd.llvm.org/",
+    "installation-url": "https://clangd.llvm.org/installation.html",
     "debugger": "Yes (gdb or lldb)"
   },
   {
