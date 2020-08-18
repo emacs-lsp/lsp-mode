@@ -105,6 +105,21 @@
   :group 'lsp-yaml
   :package-version '(lsp-mode . "6.2"))
 
+(defcustom lsp-yaml-schema-store-uri "https://www.schemastore.org/api/json/catalog.json"
+  "URI of schema store that would be fetched to get the list of schemas."
+  :type 'string
+  :group 'lsp-yaml)
+
+(defcustom lsp-yaml-schema-store-local-db (expand-file-name
+                                           (locate-user-emacs-file
+                                            (f-join ".cache" "lsp" "lsp-yaml-schemas.json")))
+  "Cached databse of schema store."
+  :type 'file
+  :group 'lsp-yaml)
+
+(defvar lsp-yaml--schema-store-schemas-alist nil
+  "A list of schemas fetched from schema stores.")
+
 (lsp-register-custom-settings
  '(("yaml.format.enable" lsp-yaml-format-enable t)
    ("yaml.format.singleQuote" lsp-yaml-single-quote t)
@@ -134,6 +149,59 @@
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
                                        (lsp-configuration-section "yaml"))))))
+
+(defconst lsp-yaml--built-in-kubernetes-schema
+  '((name . "Kubernetes")
+    (description . "Built-in kubernetes manifest schema definition")
+    (url . :kubernetes)
+    (fileMatch . ["*-k8s.yaml" "*-k8s.yml"])))
+
+(defun lsp-yaml-download-schema-store-db (&optional force-downloading)
+  "Download the remote schema store at `lsp-yaml-schema-store-uri' into local cache.
+Set FORCE-DOWNLOADING to non-nil to force re-download the database."
+  (interactive "P")
+  (or force-downloading
+      (file-exists-p lsp-yaml-schema-store-local-db)
+      (url-copy-file lsp-yaml-schema-store-uri lsp-yaml-schema-store-local-db)))
+
+(defun lsp-yaml--get-supported-schemas ()
+  "Get out the list of supported schemas."
+  (when (and lsp-yaml-schema-store-enable
+             (not lsp-yaml--schema-store-schemas-alist))
+    (progn
+      (lsp-yaml-download-schema-store-db)
+      (setq lsp-yaml--schema-store-schemas-alist
+            (alist-get 'schemas (json-read-file lsp-yaml-schema-store-local-db)))))
+  (seq-concatenate 'list (list lsp-yaml--built-in-kubernetes-schema) lsp-yaml--schema-store-schemas-alist))
+
+(defun lsp-yaml-set-buffer-schema (uri)
+  "Set yaml schema for the current buffer to URI."
+  (interactive "MURI: ")
+  (let* ((workspace-path (file-relative-name
+                          (lsp--uri-to-path (lsp--buffer-uri))
+                          (lsp-workspace-root (lsp--buffer-uri))))
+         (glob-pattern (concat "/" workspace-path))
+         (current-config (cl-assoc uri lsp-yaml-schemas :test 'equal))
+         (current-patterns (and current-config (cdr current-config))))
+    (if current-config
+        (or (cl-member glob-pattern current-patterns :test 'equal)
+            (setq lsp-yaml-schemas
+                  (cl-acons uri (cl-list* glob-pattern current-patterns)
+                            (cl-remove current-config lsp-yaml-schemas))))
+      (setq lsp-yaml-schemas
+            (cl-acons uri (cl-list* glob-pattern nil) lsp-yaml-schemas)))
+    (lsp--set-configuration (lsp-configuration-section "yaml"))))
+
+(defun lsp-yaml-select-buffer-schema ()
+  "Select schema for the current buffer based on the list of supported schemas."
+  (interactive)
+  (let* ((schema (lsp--completing-read "Select buffer schema: "
+                                       (lsp-yaml--get-supported-schemas)
+                                       (lambda (schema)
+                                         (alist-get 'description schema))
+                                       nil t))
+         (uri (alist-get 'url schema)))
+    (lsp-yaml-set-buffer-schema uri)))
 
 (provide 'lsp-yaml)
 ;;; lsp-yaml.el ends here
