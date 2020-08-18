@@ -26,6 +26,7 @@
 
 (require 'lsp-mode)
 (require 'f)
+(require 'files)
 
 (defgroup lsp-emmy-lua nil
   "Lua LSP client, provided by the EmmyLua Language Server."
@@ -65,7 +66,7 @@
 
 (defun lsp-clients-emmy-lua-test ()
   "Test the Emmy Lua binaries and files."
-  (and (f-exists? lsp-clients-emmy-lua-java-path)
+  (and (executable-find lsp-clients-emmy-lua-java-path)
        (f-exists? lsp-clients-emmy-lua-jar-path)))
 
 (lsp-register-client
