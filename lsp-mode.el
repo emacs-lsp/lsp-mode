@@ -348,11 +348,14 @@ unless overridden by a more specific face association."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-client-packages
-  '(ccls lsp-ada lsp-angular lsp-bash lsp-clients lsp-clojure lsp-cmake lsp-crystal lsp-csharp lsp-css lsp-dart lsp-dhall
-         lsp-dockerfile lsp-elm lsp-elixir lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go lsp-hack lsp-groovy lsp-haskell lsp-haxe
-         lsp-java lsp-javascript lsp-json lsp-kotlin lsp-lua lsp-nim lsp-metals lsp-ocaml lsp-perl lsp-php lsp-pwsh lsp-pyls
-         lsp-python-ms lsp-purescript lsp-r lsp-rf lsp-rust lsp-solargraph lsp-tex lsp-terraform lsp-verilog lsp-vetur
-         lsp-vhdl lsp-vimscript lsp-xml lsp-yaml lsp-sqls lsp-svelte)
+  '(ccls lsp-ada lsp-angular lsp-bash lsp-clangd lsp-clients lsp-clojure lsp-cmake
+         lsp-crystal lsp-csharp lsp-css lsp-dart lsp-dhall lsp-dockerfile lsp-elm
+         lsp-elixir lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go
+         lsp-hack lsp-groovy lsp-haskell lsp-haxe lsp-java lsp-javascript lsp-json
+         lsp-kotlin lsp-lua lsp-nim lsp-metals lsp-ocaml lsp-perl lsp-php lsp-pwsh
+         lsp-pyls lsp-python-ms lsp-purescript lsp-r lsp-rf lsp-rust lsp-solargraph
+         lsp-tex lsp-terraform lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript lsp-xml
+         lsp-yaml lsp-sqls lsp-svelte)
   "List of the clients to be automatically required."
   :group 'lsp-mode
   :type '(repeat symbol))
@@ -4745,17 +4748,6 @@ When language is nil render as markup if `markdown-mode' is loaded."
                               (-compose (lsp--create-unique-string-fn)
                                         #'lsp:code-action-title)
                               nil t)))))
-
-(defun lsp-join-region (beg end)
-  "Apply join-line from BEG to END.
-This function is useful when an indented function prototype needs
-to be shown in a single line."
-  (save-excursion
-    (let ((end (copy-marker end)))
-      (goto-char beg)
-      (while (< (point) end)
-        (join-line 1)))
-    (s-trim (buffer-string))))
 
 (defun lsp--workspace-server-id (workspace)
   "Return the server ID of WORKSPACE."
