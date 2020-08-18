@@ -11,9 +11,10 @@
     "name": "angular",
     "full-name": "Angular",
     "server-name": "vscode-ng-language-service",
-    "server-url": "https://github.com/angular/vscode-ng-language-service/",
+    "server-url": "https://github.com/angular/vscode-ng-language-service",
     "installation-url": "https://github.com/emacs-lsp/lsp-mode/wiki/Install-Angular-Language-server",
-    "debugger": "Not relevant"
+    "installation": "npm install -g @angular/language-service@next typescript  @angular/language-server",
+      "debugger": "Not relevant"
   },
   {
     "name": "bash",
@@ -45,8 +46,8 @@
     "name": "clangd",
     "full-name": "C++",
     "server-name": "clangd",
-    "server-url": "https://clang.llvm.org/extra/clangd.html",
-    "installation-url": "https://clang.llvm.org/extra/clangd.html",
+    "server-url": "https://clangd.llvm.org/",
+    "installation-url": "https://clangd.llvm.org/installation.html",
     "debugger": "Yes (gdb or lldb)"
   },
   {
@@ -103,7 +104,7 @@
     "full-name": "Elixir",
     "server-name": "elixir-lsp/elixir-ls",
     "server-url": "https://github.com/elixir-lsp/elixir-ls",
-    "installation-url": "https://github.com/elixir-lsp/elixir-ls",
+    "installation-url": "https://github.com/elixir-lsp/elixir-ls#building-and-running",
     "debugger": "Yes"
   },
   {
@@ -167,14 +168,14 @@
     "full-name": "Groovy",
     "server-name": "groovy-language-server",
     "server-url": "https://github.com/prominic/groovy-language-server",
-    "installation-url": "https://github.com/prominic/groovy-language-server",
+    "installation-url": "https://github.com/prominic/groovy-language-server#build",
     "debugger": "Not available"
   },
   {
     "name": "hack",
     "full-name": "Hack",
     "server-name": "hhvm",
-    "server-url": "https://docs.hhvm.com/hhvm/",
+    "server-url": "https://docs.hhvm.com/hhvm",
     "installation-url": "https://docs.hhvm.com/hhvm/installation/introduction",
     "debugger": "Not available"
   },
@@ -233,7 +234,7 @@
     "full-name": "Kotlin",
     "server-name": "kotlin-language-server",
     "server-url": "https://github.com/fwcd/KotlinLanguageServer",
-    "installation-url": "https://github.com/fwcd/KotlinLanguageServer",
+    "installation-url": "https://github.com/fwcd/kotlin-language-server/blob/master/BUILDING.md",
     "debugger": "Not available"
   },
   {
@@ -274,7 +275,7 @@
     "full-name": "OCaml",
     "server-name": "ocaml-lsp-server",
     "server-url": "https://github.com/ocaml/ocaml-lsp",
-    "installation-url": "https://github.com/ocaml/ocaml-lsp",
+    "installation-url": "https://github.com/ocaml/ocaml-lsp#installation",
     "debugger": "Not available"
   },
   {
@@ -282,7 +283,7 @@
     "full-name": "OCaml",
     "server-name": "ocaml-language-server",
     "server-url": "https://github.com/ocaml-lsp/ocaml-language-server",
-    "installation-url": "https://github.com/ocaml-lsp/ocaml-language-server",
+    "installation-url": "https://github.com/ocaml-lsp/ocaml-language-server#server",
     "debugger": "Not available"
   },
   {
@@ -308,7 +309,8 @@
     "full-name": "PHP",
     "server-name": "php-language-server",
     "server-url": "https://github.com/felixfbecker/php-language-server",
-    "installation-url": "https://github.com/felixfbecker/php-language-server",
+    "installation-url": "https://github.com/felixfbecker/php-language-server#installation",
+    "installation": "composer require felixfbecker/language-server",
     "debugger": "Yes"
   },
   {
@@ -332,7 +334,8 @@
     "full-name": "PureScript",
     "server-name": "purescript-language-server",
     "server-url": "https://github.com/nwolverson/purescript-language-server",
-    "installation": "npm i purescript-language-server",
+    "installation-url": "https://github.com/nwolverson/purescript-language-server#usage",
+    "installation": "npm i -g purescript-language-server",
     "debugger": "Not available"
   },
   {
