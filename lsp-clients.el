@@ -30,11 +30,5 @@
 (require 'rx)
 (require 'cl-lib)
 
-
-
-
-
-
-
 (provide 'lsp-clients)
 ;;; lsp-clients.el ends here
