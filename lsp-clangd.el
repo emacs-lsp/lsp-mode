@@ -1,4 +1,4 @@
-;;; lsp-c-languages.el --- LSP clients for the C Languages Family -*- lexical-binding: t; -*-
+;;; lsp-clangd.el --- LSP clients for the C Languages Family -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020 Daniel Martín & emacs-lsp maintainers
 ;; URL: https://github.com/emacs-lsp/lsp-mode
@@ -231,5 +231,5 @@ returned to avoid that the echo area grows uncomfortably."
         (car (s-lines (lsp--render-element contents)))))))
 
 
-(provide 'lsp-c-languages)
-;;; lsp-c-languages.el ends here
+(provide 'lsp-clangd)
+;;; lsp-clangd.el ends here

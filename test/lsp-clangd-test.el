@@ -1,4 +1,4 @@
-;;; lsp-c-languages-test.el --- unit tests for c languages family -*- lexical-binding: t -*-
+;;; lsp-clangd-test.el --- unit tests for clangd -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2019 Daniel Martín <mardani29@yahoo.es>.
 
@@ -17,12 +17,12 @@
 
 ;;; Commentary:
 
-;; Unit tests for the C languages family servers.
+;; Unit tests for Clangd servers.
 
 ;;; Code:
 
 (require 'ert)
-(require 'lsp-c-languages)
+(require 'lsp-clangd)
 
 (ert-deftest lsp-clangd-extract-signature-on-hover ()
   (should (string= (lsp-clients-extract-signature-on-hover
@@ -62,4 +62,4 @@
                   int k);")
     (should (string= (lsp-clangd-join-region (point-min) (point-max)) "void foo(int n, int p, int k);"))))
 
-;;; lsp-c-languages-test.el ends here
+;;; lsp-clangd-test.el ends here
