@@ -39,17 +39,26 @@
   '("docker-langserver" "--stdio")
   "The command that starts the docker language server."
   :group 'lsp-dockerfile
-  :type '(choice
-          (string :tag "Single string value")
-          (repeat :tag "List of string values"
-                  string)))
+  :type '(repeat :tag "List of string values" string))
+
+(lsp-dependency 'docker-langserver
+                '(:system "docker-langserver")
+                '(:npm :package "dockerfile-language-server-nodejs"
+                       :path "docker-langserver"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (-const lsp-dockerfile-language-server-command))
+                                   (lambda ()
+                                     `(,(or (executable-find
+                                             (cl-first lsp-dockerfile-language-server-command))
+                                            (lsp-package-path 'docker-langserver))
+                                       ,@(cl-rest lsp-dockerfile-language-server-command))))
                   :major-modes '(dockerfile-mode)
                   :priority -1
-                  :server-id 'dockerfile-ls))
+                  :server-id 'dockerfile-ls
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure 'docker-langserver
+                                                            callback error-callback))))
 
 (provide 'lsp-dockerfile)
 ;;; lsp-dockerfile.el ends here
