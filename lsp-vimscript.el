@@ -50,12 +50,24 @@
   :group 'lsp-vim
   :type 'alist)
 
+(lsp-dependency 'vim-language-server
+                '(:system "vim-language-server")
+                '(:npm :package "vim-language-server"
+                       :path "vim-language-server"))
+
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-vim-executable)
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (lambda ()
+                                     `(,(or (executable-find (cl-first lsp-clients-vim-executable))
+                                            (lsp-package-path 'vim-language-server))
+                                       ,@(cl-rest lsp-clients-vim-executable))))
                   :major-modes '(vimrc-mode)
                   :priority -1
                   :server-id 'vimls
-                  :initialization-options (lambda () lsp-clients-vim-initialization-options)))
+                  :initialization-options (lambda () lsp-clients-vim-initialization-options)
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure 'vim-language-server
+                                                            callback error-callback))))
 
 (provide 'lsp-vimscript)
 ;;; lsp-vimscript.el ends here

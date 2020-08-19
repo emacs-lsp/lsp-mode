@@ -822,9 +822,16 @@ Code's JavaScript and TypeScript support."
   :risky t
   :package-version '(lsp-mode . "6.1"))
 
+(lsp-dependency 'vetur-language-server
+                '(:system "vls")
+                '(:npm :package "vls" :path "vls"))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda () lsp-vetur-server-command))
+                                   (lambda ()
+                                     `(,(or (executable-find (cl-first lsp-vetur-server-command))
+                                            (lsp-package-path 'vetur-language-server))
+                                       ,@(cl-rest lsp-vetur-server-command))))
                   :activation-fn (lambda (filename _mode)
                                    (string= (file-name-extension filename) "vue"))
                   :priority -1
@@ -844,7 +851,10 @@ Code's JavaScript and TypeScript support."
                                                  (lsp-configuration-section "html")
                                                  (lsp-configuration-section "javascript")
                                                  (lsp-configuration-section "emmet")
-                                                 (lsp-configuration-section "typescript")))))))
+                                                 (lsp-configuration-section "typescript")))))
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure 'vetur-language-server
+                                                            callback error-callback))))
 
 (provide 'lsp-vetur)
 ;;; lsp-vetur.el ends here

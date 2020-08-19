@@ -124,16 +124,27 @@
   :group 'lsp-yaml
   :package-version '(lsp-mode . "6.2"))
 
+(lsp-dependency 'yaml-language-server
+                '(:system "yaml-language-server")
+                '(:npm :package "yaml-language-server"
+                       :path "yaml-language-server"))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda () lsp-yaml-server-command))
+                                   (lambda ()
+                                     `(,(or (executable-find (cl-first lsp-yaml-server-command))
+                                            (lsp-package-path 'yaml-language-server))
+                                       ,@(cl-rest lsp-yaml-server-command))))
                   :major-modes '(yaml-mode)
                   :priority 0
                   :server-id 'yamlls
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
-                                       (lsp-configuration-section "yaml"))))))
+                                       (lsp-configuration-section "yaml"))))
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure 'yaml-language-server
+                                                            callback error-callback))))
 
 (provide 'lsp-yaml)
 ;;; lsp-yaml.el ends here

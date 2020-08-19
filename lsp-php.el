@@ -216,9 +216,18 @@ language server."
   :group 'lsp-intelephense
   :package-version '(lsp-mode . "6.1"))
 
+(lsp-dependency 'intelephense
+                '(:system "intelephense")
+                '(:npm :package "intelephense"
+                       :path "intelephense"))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda () lsp-intelephense-server-command))
+                                   (lambda ()
+                                     `(,(or (executable-find
+                                             (cl-first lsp-intelephense-server-command))
+                                            (lsp-package-path 'intelephense))
+                                       ,@(cl-rest lsp-intelephense-server-command))))
                   :major-modes '(php-mode)
                   :priority -1
                   :notification-handlers (ht ("indexingStarted" #'ignore)
@@ -229,7 +238,10 @@ language server."
                                                   :clearCache lsp-intelephense-clear-cache))
                   :multi-root lsp-intelephense-multi-root
                   :completion-in-comments? t
-                  :server-id 'iph))
+                  :server-id 'iph
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure 'intelephense
+                                                            callback error-callback))))
 
 
 ;;; Serenata
@@ -313,11 +325,11 @@ already present."
 
 (defun lsp-serenata-init-options ()
   "Init options for lsp-serenata."
-  `(:config (:uris ,lsp-serenata-uris
-		   :indexDatabaseUri ,lsp-serenata-index-database-uri
-		   :phpVersion ,lsp-serenata-php-version
-		   :excludedPathExpressions ,lsp-serenata-exclude-path-expressions
-		   :fileExtensions ,lsp-serenata-file-extensions)))
+  `( :config ( :uris ,lsp-serenata-uris
+               :indexDatabaseUri ,lsp-serenata-index-database-uri
+               :phpVersion ,lsp-serenata-php-version
+               :excludedPathExpressions ,lsp-serenata-exclude-path-expressions
+               :fileExtensions ,lsp-serenata-file-extensions)))
 
 
 (lsp-interface (serenata:didProgressIndexing (:sequenceOfIndexedItem :totalItemsToIndex :progressPercentage :folderUri :fileUri :info) nil ))
@@ -328,14 +340,14 @@ already present."
   :major-modes '(php-mode)
   :priority -2
   :notification-handlers (ht ("serenata/didProgressIndexing"
-			      (lambda (_server data)
-				(lsp--info "%s" (lsp:serenata-did-progress-indexing-info data)))))
+                              (lambda (_server data)
+                                (lsp--info "%s" (lsp:serenata-did-progress-indexing-info data)))))
 
   :initialization-options #'lsp-serenata-init-options
   :initialized-fn (lambda (workspace)
-		    (when (equal (length lsp-serenata-uris) 0)
-		      (let* ((lsp-root (lsp--path-to-uri (lsp-workspace-root))))
-			(setq lsp-serenata-uris (vector lsp-root))))
+                    (when (equal (length lsp-serenata-uris) 0)
+                      (let* ((lsp-root (lsp--path-to-uri (lsp-workspace-root))))
+                        (setq lsp-serenata-uris (vector lsp-root))))
                     (with-lsp-workspace workspace
                       (lsp--set-configuration
                        (lsp-configuration-section "serenata"))))
