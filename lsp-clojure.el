@@ -41,16 +41,20 @@
 
 ;; Refactorings
 
+(defun lsp-clojure--execute-command (command &rest args)
+  "Send an executeCommand request for COMMAND with ARGS."
+  (lsp--cur-workspace-check)
+  (lsp--send-execute-command command args))
+
 (defun lsp-clojure--refactoring-call (refactor-name &rest additional-args)
   "Send an executeCommand request for REFACTOR-NAME with ADDITIONAL-ARGS.
 If there are more arguments expected after the line and column numbers."
   (lsp--cur-workspace-check)
-  (lsp--send-execute-command refactor-name
-                             (apply #'vector
-                                    (cl-list* (lsp--buffer-uri)
-                                              (- (line-number-at-pos) 1) ;; clojure-lsp expects line numbers to start at 0
-                                              (current-column)
-                                              additional-args))))
+  (lsp-clojure--execute-command refactor-name (apply #'vector
+                                                     (cl-list* (lsp--buffer-uri)
+                                                               (- (line-number-at-pos) 1) ;; clojure-lsp expects line numbers to start at 0
+                                                               (current-column)
+                                                               additional-args))))
 
 (defun lsp-clojure-add-missing-libspec ()
   "Apply add-missing-libspec refactoring at point."
@@ -126,6 +130,11 @@ If there are more arguments expected after the line and column numbers."
   "Apply unwind-thread refactoring at point."
   (interactive)
   (lsp-clojure--refactoring-call "unwind-thread"))
+
+(defun lsp-clojure-server-info ()
+  "Request server info."
+  (interactive)
+  (lsp-clojure--execute-command "server-info"))
 
 (defun lsp-clojure--library-folders (_workspace)
   "Return the library folders path to analyze for WORKSPACE."
