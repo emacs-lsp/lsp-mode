@@ -6110,7 +6110,7 @@ an alist
 
 (defun lsp--collect-lines-and-cols (symbols)
   "Return a sorted list ((line . col) ...) of the locations of SYMBOLS."
-  (let ((stack (lsp--imenu-filter-symbols symbols))
+  (let ((stack (mapcar 'identity symbols))
         line-col-list)
     (while stack
       (let ((sym (pop stack)))
@@ -6195,10 +6195,8 @@ Return a nested alist keyed by symbol names. e.g.
                  (\"SomeSubClass\" (\"(Class)\" . 30)
                                   (\"someSubField (Field)\" . 35))
     (\"someFunction (Function)\" . 40))"
-  (let ((symbols (lsp--imenu-filter-symbols symbols)))
-    (seq-map #'lsp--symbol-to-hierarchical-imenu-elem
-             (seq-sort #'lsp--imenu-symbol-lessp
-                       (lsp--imenu-filter-symbols symbols)))))
+  (seq-map #'lsp--symbol-to-hierarchical-imenu-elem
+           (seq-sort #'lsp--imenu-symbol-lessp symbols)))
 
 (defun lsp--imenu-symbol-lessp (sym1 sym2)
   (let* ((compare-results (mapcar (lambda (method)
