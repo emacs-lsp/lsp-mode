@@ -6072,12 +6072,13 @@ an alist
 
   (\"symbol-name\" . ((\"(symbol-kind)\" . start-point)
                     cons-cells-from-children))"
-  (let* ((start-point (ht-get lsp--line-col-to-point-hash-table
-                              (lsp--get-line-and-col sym))))
-    (if (seq-empty-p children?)
-        (cons name start-point)
+  (let ((filtered-children (lsp--imenu-filter-symbols children?)))
+    (if (seq-empty-p filtered-children)
+        (cons name
+              (ht-get lsp--line-col-to-point-hash-table
+                      (lsp--get-line-and-col sym)))
       (cons name
-            (lsp--imenu-create-hierarchical-index children?)))))
+            (lsp--imenu-create-hierarchical-index filtered-children)))))
 
 (lsp-defun lsp--symbol-filter ((&SymbolInformation :kind :location))
   "Determine if SYM is for the current document and is to be shown."
