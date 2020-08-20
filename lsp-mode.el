@@ -6072,12 +6072,13 @@ an alist
 
   (\"symbol-name\" . ((\"(symbol-kind)\" . start-point)
                     cons-cells-from-children))"
-  (let* ((start-point (ht-get lsp--line-col-to-point-hash-table
-                              (lsp--get-line-and-col sym))))
-    (if (seq-empty-p children?)
-        (cons name start-point)
+  (let ((filtered-children (lsp--imenu-filter-symbols children?)))
+    (if (seq-empty-p filtered-children)
+        (cons name
+              (ht-get lsp--line-col-to-point-hash-table
+                      (lsp--get-line-and-col sym)))
       (cons name
-            (lsp--imenu-create-hierarchical-index children?)))))
+            (lsp--imenu-create-hierarchical-index filtered-children)))))
 
 (lsp-defun lsp--symbol-filter ((&SymbolInformation :kind :location))
   "Determine if SYM is for the current document and is to be shown."
@@ -6109,7 +6110,7 @@ an alist
 
 (defun lsp--collect-lines-and-cols (symbols)
   "Return a sorted list ((line . col) ...) of the locations of SYMBOLS."
-  (let ((stack (lsp--imenu-filter-symbols symbols))
+  (let ((stack (mapcar 'identity symbols))
         line-col-list)
     (while stack
       (let ((sym (pop stack)))
@@ -6194,10 +6195,8 @@ Return a nested alist keyed by symbol names. e.g.
                  (\"SomeSubClass\" (\"(Class)\" . 30)
                                   (\"someSubField (Field)\" . 35))
     (\"someFunction (Function)\" . 40))"
-  (let ((symbols (lsp--imenu-filter-symbols symbols)))
-    (seq-map #'lsp--symbol-to-hierarchical-imenu-elem
-             (seq-sort #'lsp--imenu-symbol-lessp
-                       (lsp--imenu-filter-symbols symbols)))))
+  (seq-map #'lsp--symbol-to-hierarchical-imenu-elem
+           (seq-sort #'lsp--imenu-symbol-lessp symbols)))
 
 (defun lsp--imenu-symbol-lessp (sym1 sym2)
   (let* ((compare-results (mapcar (lambda (method)
