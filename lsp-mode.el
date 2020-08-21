@@ -3789,7 +3789,7 @@ interface TextDocumentEdit {
                                              :character left-character)
                                   (&Position :line right-line
                                              :character right-character))
-  "Compare position LEFT and RIGHT."
+  "Return t if position LEFT is greater than RIGHT."
   (if (= left-line right-line)
       (> left-character right-character)
     (> left-line right-line)))
@@ -4433,24 +4433,32 @@ and the position respectively."
                 (lsp-translate-line (1+ start-line))
                 (lsp-translate-column start-char)))))
 
+(defun lsp--location-uri (loc)
+  (if (lsp-location? loc)
+      (lsp:location-uri loc)
+    (lsp:location-link-target-uri loc)))
+
+(defun lsp--location-range (loc)
+  (if (lsp-location? loc)
+      (lsp:location-range loc)
+    (lsp:location-link-target-selection-range loc)))
+
 (defun lsp--locations-to-xref-items (locations)
   "Return a list of `xref-item' from Location[] or LocationLink[]."
   (setq locations (if (sequencep locations)
                       (append locations nil)
                     (list locations)))
 
+
   (cl-labels ((get-xrefs-in-file
-               (file-locs location-link)
+               (file-locs)
                (-let [(filename . matches) file-locs]
                  (condition-case err
                      (let ((visiting (find-buffer-visiting filename))
                            (fn (lambda (loc)
                                  (lsp-with-filename filename
-                                   (lsp--xref-make-item
-                                    filename
-                                    (if location-link
-                                        (lsp:location-link-target-selection-range loc)
-                                      (lsp:location-range loc)))))))
+                                   (lsp--xref-make-item filename
+                                                        (lsp--location-range loc))))))
                        (if visiting
                            (with-current-buffer visiting
                              (seq-map fn matches))
@@ -4462,14 +4470,22 @@ and the position respectively."
                                     filename (error-message-string err)))
                    (file-error (lsp-warn "Failed to process xref entry, file-error, '%s': %s"
                                          filename (error-message-string err)))))))
-    (apply #'append
-           (if (->> locations cl-first lsp-location?)
-               (->> locations
-                    (seq-group-by (-compose #'lsp--uri-to-path #'lsp:location-uri))
-                    (seq-map (-rpartial #'get-xrefs-in-file nil)))
-             (->> locations
-                  (seq-group-by (-compose #'lsp--uri-to-path #'lsp:location-link-target-uri))
-                  (seq-map (-rpartial #'get-xrefs-in-file t)))))))
+
+    (->> locations
+         (seq-sort #'lsp--location-before-p)
+         (seq-group-by (-compose #'lsp--uri-to-path #'lsp--location-uri))
+         (seq-map #'get-xrefs-in-file)
+         (apply #'nconc))))
+
+(defun lsp--location-before-p (left right)
+  "Sort first by file, then by line, then by column."
+  (let ((left-uri (lsp--location-uri left))
+        (right-uri (lsp--location-uri right)))
+    (if (not (string= left-uri right-uri))
+        (string< left-uri right-uri)
+      (-let (((&Range :start left-start) (lsp--location-range left))
+             ((&Range :start right-start) (lsp--location-range right)))
+        (lsp--position-compare right-start left-start)))))
 
 (defun lsp--make-reference-params (&optional td-position include-declaration)
   "Make a ReferenceParam object.
