@@ -226,8 +226,8 @@ $GOPATH/pkg/mod along with the value of
                   :language-id "go"
                   :priority 0
                   :server-id 'gopls
+                  :completion-in-comments? t
                   :library-folders-fn #'lsp-go--library-default-directories))
 
 (provide 'lsp-go)
 ;;; lsp-go.el ends here
-
