@@ -70,6 +70,12 @@ ignored."
   :group 'lsp-mode
   :package-version '(lsp-mode . "7.0.1"))
 
+(defcustom lsp-completion-sort-initial-results t
+  "Whether or not filter initial results from server."
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "7.1"))
+
 (defconst lsp-completion--item-kind
   [nil
    "Text"
@@ -402,7 +408,7 @@ The MARKERS and PREFIX value will be attached to each candidate."
                                            it))))
                         (markers (list bounds-start (copy-marker (point) t)))
                         (prefix (buffer-substring-no-properties bounds-start (point)))
-                        (lsp-completion--no-reordering t))
+                        (lsp-completion--no-reordering (not lsp-completion-sort-initial-results)))
                   (lsp-completion--clear-cache)
                   (setf done? completed
                         lsp-completion--cache (cond
