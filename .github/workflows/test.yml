@@ -30,5 +30,8 @@ jobs:
               with:
                   version: 0.8.4
 
+            - name: Install depedencies
+              run: "sudo pip install python-language-server"
+
             - name: Run tests
               run: "make ci"
