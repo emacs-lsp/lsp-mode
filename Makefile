@@ -27,7 +27,7 @@ ci: clean build compile testprereq test
 compile:
 	@echo "Compiling..."
 	@$(CASK) $(EMACS) -Q --batch \
-		-L . \
+		-L . -L clients \
 		--eval '(setq byte-compile-error-on-warn t)' \
 		-f batch-byte-compile \
 		*.el
@@ -64,7 +64,7 @@ testprereq:
 	sudo pip install python-language-server
 
 test:
-	$(CASK) exec ert-runner -t '!no-win' -t '!org'
+	$(CASK) exec ert-runner -t '!no-win' -t '!org' -L clients
 
 docs:
 	make -C docs/ generate
@@ -75,6 +75,6 @@ local-webpage: docs
 	docker run --rm -it -p 8000:8000 -v ${PWD}:/docs squidfunk/mkdocs-material
 
 clean:
-	rm -rf .cask *.elc
+	rm -rf .cask *.elc clients/*.elc
 
 .PHONY: all build ci compile checkdoc lint testprereq test docs local-webpage clean
