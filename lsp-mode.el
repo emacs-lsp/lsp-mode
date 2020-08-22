@@ -4438,6 +4438,14 @@ and the position respectively."
       (lsp:location-uri loc)
     (lsp:location-link-target-uri loc)))
 
+(lsp-defun lsp-goto-location ((loc &as &Location :uri :range (&Range :start)))
+  "Go to location."
+  (let ((path (lsp--uri-to-path uri)))
+    (if (f-exists? path)
+        (with-current-buffer (find-file path)
+          (goto-char (lsp--position-to-point start)))
+      (error "There is no file %s" path))))
+
 (defun lsp--location-range (loc)
   (if (lsp-location? loc)
       (lsp:location-range loc)
