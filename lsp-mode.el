@@ -1937,7 +1937,7 @@ WORKSPACE is the workspace that contains the diagnostics."
 
 ;; textDocument/foldingRange support
 
-(cl-defstruct lsp--folding-range beg end kind children orig-folding-range)
+(cl-defstruct lsp--folding-range beg end kind children)
 
 (defvar-local lsp--cached-folding-ranges nil)
 (defvar-local lsp--cached-nested-folding-ranges nil)
@@ -1975,8 +1975,7 @@ WORKSPACE is the workspace that contains the diagnostics."
                                                 (cons start-line start-character?))
                                    :end (ht-get line-col-to-point-map
                                                 (cons end-line end-character?))
-                                   :kind kind?
-                                   :orig-folding-range range))
+                                   :kind kind?))
                                 it)
                        (seq-filter (lambda (folding-range)
                                      (< (lsp--folding-range-beg folding-range)
