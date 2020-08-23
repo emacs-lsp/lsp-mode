@@ -27,13 +27,13 @@
 (require 'lsp-mode)
 (require 'ht)
 
-(defcustom lsp-elixir-dialyzer-enable t
+(defcustom lsp-elixir-dialyzer-enabled t
   "Run ElixirLS's rapid Dialyzer when code is saved."
   :type 'boolean
   :group 'lsp-elixir
   :package-version '(lsp-mode . "7.1"))
 
-(defcustom lsp-elixir-dialyzer-warn-options '()
+(defcustom lsp-elixir-dialyzer-warn-opts '()
   "Dialyzer options to enable or disable warnings.
 
 See Dialyzer's documentation for options. Note that the \"race_conditions\" option is unsupported"
@@ -60,7 +60,9 @@ See Dialyzer's documentation for options. Note that the \"race_conditions\" opti
   :package-version '(lsp-mode . "7.1"))
 
 (defcustom lsp-elixir-project-dir nil
-  "Subdirectory containing Mix project if not in the project root."
+  "Subdirectory containing Mix project if not in the project root.
+
+ If value is `\"\"` then defaults to the workspace rootUri."
   :type 'string
   :group 'lsp-elixir
   :package-version '(lsp-mode . "7.1"))
@@ -99,8 +101,8 @@ finding the executable with `exec-path'."
   :type 'file)
 
 (lsp-register-custom-settings
- '(("elixirLS.dialyzerEnabled" lsp-elixir-dialyzer-enable t)
-   ("elixirLS.dialyzerWarnOpts" lsp-elixir-dialyzer-warn-options)
+ '(("elixirLS.dialyzerEnabled" lsp-elixir-dialyzer-enabled t)
+   ("elixirLS.dialyzerWarnOpts" lsp-elixir-dialyzer-warn-opts)
    ("elixirLS.dialyzerFormat" lsp-elixir-dialyzer-format)
    ("elixirLS.mixEnv" lsp-elixir-mix-env)
    ("elixirLS.mixTarget" lsp-elixir-mix-target)
