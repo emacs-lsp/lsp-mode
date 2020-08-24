@@ -339,6 +339,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "jedi",
+    "full-name": "Python(Jedi-language-server)",
+    "server-name": "jedi",
+    "server-url": "https://github.com/pappasam/jedi-language-server",
+    "installation-url": "https://github.com/fredcamps/lsp-jedi",
+    "debugger": "Not available"
+  },
+  {
     "name": "pyls",
     "full-name": "Python",
     "server-name": "pyls",

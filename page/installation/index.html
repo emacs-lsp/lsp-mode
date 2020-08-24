@@ -1858,6 +1858,13 @@ Then you need to install the specific LSP server for your language.</p>
 <h3 id="manually-via-melpa">Manually via MELPA<a class="headerlink" href="#manually-via-melpa" title="Permanent link">#</a></h3>
 <p>The recommended way to install <code>lsp-mode</code> is via <code>package.el</code> - the built-in package manager in Emacs. <code>lsp-mode</code> is available on the two major <code>package.el</code> community maintained repos - <a href="http://stable.melpa.org">MELPA Stable</a> and <a href="http://melpa.org">MELPA</a>.</p>
 <p><kbd>M-x</kbd> <code>package-install</code> <kbd>RET</kbd> <code>lsp-mode</code> <kbd>RET</kbd></p>
+<p>When updating your packages with <code>package.el</code>, we recommend the following procedure:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">1. Delete your LSP-related packages</span>
+<span class="err">2. Restart Emacs</span>
+<span class="err">3. Install the new versions of the packages.</span>
+</code></pre></div>
+
+
 <h3 id="doom-emacs">Doom Emacs<a class="headerlink" href="#doom-emacs" title="Permanent link">#</a></h3>
 <p><a href="https://github.com/hlissner/doom-emacs">Doom Emacs</a> has a module to install and configure <code>lsp-mode</code> automatically, you just need to add <code>lsp</code> below <code>:tools</code> in your <code>init.el</code>.</p>
 <p>To add <code>lsp-mode</code> support to some language, you can add the <code>+lsp</code> flag to the language you want. Example:</p>
@@ -1941,7 +1948,7 @@ Then you need to install the specific LSP server for your language.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 23, 2020</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 24, 2020</span>
     
   </small>
 </div>
