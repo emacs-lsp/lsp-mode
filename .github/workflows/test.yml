@@ -11,7 +11,7 @@ jobs:
                     - 26.1
                     - 26.2
                     - 26.3
-                    # - 27.1
+                    - 27.1
                     - snapshot
 
         steps:
@@ -29,6 +29,9 @@ jobs:
             - uses: conao3/setup-cask@master
               with:
                   version: 0.8.4
+
+            - name: Install depedencies
+              run: "sudo pip install python-language-server"
 
             - name: Run tests
               run: "make ci"

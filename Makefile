@@ -22,15 +22,15 @@ build:
 	$(CASK) install
 
 # TODO: add 'checkdoc' and 'lint' here when they pass
-ci: clean build compile testprereq test
+ci: clean build compile test
 
 compile:
 	@echo "Compiling..."
 	@$(CASK) $(EMACS) -Q --batch \
-		-L . \
+		-L . -L clients \
 		--eval '(setq byte-compile-error-on-warn t)' \
 		-f batch-byte-compile \
-		*.el
+		*.el clients/*.el
 
 checkdoc:
 	$(eval LOG := $(shell mktemp -d)/checklog.log)
@@ -55,16 +55,13 @@ checkdoc:
 lint:
 	@echo "package linting..."
 	@$(CASK) $(EMACS) -Q --batch \
-		-L . \
+		-L . -L clients \
 		--eval $(INIT) \
 		--eval $(LINT) \
 		*.el
 
-testprereq:
-	sudo pip install python-language-server
-
 test:
-	$(CASK) exec ert-runner -t '!no-win' -t '!org'
+	$(CASK) exec ert-runner -L . -L clients  -t '!no-win' -t '!org'
 
 docs:
 	make -C docs/ generate
@@ -75,6 +72,6 @@ local-webpage: docs
 	docker run --rm -it -p 8000:8000 -v ${PWD}:/docs squidfunk/mkdocs-material
 
 clean:
-	rm -rf .cask *.elc
+	rm -rf .cask *.elc clients/*.elc
 
-.PHONY: all build ci compile checkdoc lint testprereq test docs local-webpage clean
+.PHONY: all build ci compile checkdoc lint test docs local-webpage clean
