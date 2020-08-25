@@ -41,7 +41,7 @@
        (package-user-dir (expand-file-name (make-temp-name "lsp-tmp-elpa")
                                            user-emacs-directory))
        (custom-file (expand-file-name "custom.el" package-user-dir))
-       (pkg-list '(lsp-mode lsp-ui yasnippet lsp-java lsp-python-ms lsp-haskell helm-lsp lsp-treemacs dap-mode lsp-origami lsp-dart company flycheck)))
+       (pkg-list '(lsp-mode lsp-ui yasnippet lsp-java lsp-python-ms lsp-haskell helm-lsp lsp-treemacs dap-mode lsp-origami lsp-dart company flycheck lsp-pyright)))
 
   (package-initialize)
   (package-refresh-contents)
