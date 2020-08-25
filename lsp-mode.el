@@ -874,6 +874,7 @@ Changes take effect only when a new session is started."
                                         (purescript-mode . "purescript")
                                         (gdscript-mode . "gdscript")
                                         (perl-mode . "perl")
+                                        (cperl-mode . "perl")
                                         (robot-mode . "robot"))
   "Language id configuration.")
 
