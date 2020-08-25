@@ -3372,7 +3372,8 @@ in that particular folder."
        (if (fboundp 'project-root)
            (project-root project)
          (car (with-no-warnings
-                (project-roots project))))))))
+                (project-roots project))))))
+   default-directory))
 
 (defun lsp--read-from-file (file)
   "Read FILE content."
