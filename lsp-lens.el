@@ -188,6 +188,7 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
                                     title
                                     'face (or face 'lsp-lens-face)
                                     'action (lsp-lens--create-interactive-command command)
+                                    'point 'hand
                                     'mouse-face 'lsp-lens-mouse-face
                                     'local-map (lsp-lens--keymap command)))
                                  sorted)))
