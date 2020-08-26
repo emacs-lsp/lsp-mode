@@ -181,13 +181,12 @@ This must be set only once after loading the clang client.")
   "Generate the language server startup command."
   (unless lsp-clients--clangd-default-executable
     (setq lsp-clients--clangd-default-executable
-          (catch 'path
-            (mapc (lambda (suffix)
-                    (let ((path (executable-find (concat "clangd" suffix))))
-                      (when path (throw 'path path))))
-                  '("" "-10" "-9" "-8" "-7" "-6")))))
+          (-first #'executable-find
+                  (-map (lambda (version)
+                          (concat "clangd" version))
+                        '("" "-10" "-9" "-8" "-7" "-6")))))
 
-  `(,(or lsp-clients-clangd-executable lsp-clients--clangd-default-executable)
+  `(,(or lsp-clients-clangd-executable lsp-clients--clangd-default-executable "clangd")
     ,@lsp-clients-clangd-args))
 
 (lsp-register-client
