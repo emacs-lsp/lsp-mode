@@ -233,10 +233,10 @@ source.fixAll code action."
   (lsp-stdio-connection
    (lambda () lsp-eslint-server-command)
    (lambda ()
-     (or
-      (not (equal (f-base (f-filename (cl-first lsp-eslint-server-command))) "node")) ;; if first command is not node then assume it's good
-      (and (cl-second lsp-eslint-server-command)
-           (file-exists-p (cl-second lsp-eslint-server-command))))))
+    (let ((command-name (f-base (f-filename (cl-first lsp-eslint-server-command))))
+          (first-argument (cl-second lsp-eslint-server-command))
+          (first-argument-exist (and first-argument (file-exists-p first-argument))))
+     (if (equal command-name "node") first-argument-exist t))))
   :activation-fn (lambda (filename &optional _)
                    (or (string-match-p (rx (one-or-more anything) "."
                                            (or "ts" "js" "jsx" "tsx" "html" "vue"))
