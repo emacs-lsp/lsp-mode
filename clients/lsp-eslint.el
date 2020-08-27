@@ -236,7 +236,7 @@ source.fixAll code action."
     (let* ((command-name (f-base (f-filename (cl-first lsp-eslint-server-command))))
            (first-argument (cl-second lsp-eslint-server-command))
            (first-argument-exist (and first-argument (file-exists-p first-argument))))
-     (if (equal command-name "node") first-argument-exist (not (not (executable-find (cl-first lsp-eslint-server-command))))))))
+     (if (equal command-name "node") first-argument-exist (executable-find (cl-first lsp-eslint-server-command))))))
   :activation-fn (lambda (filename &optional _)
                    (or (string-match-p (rx (one-or-more anything) "."
                                            (or "ts" "js" "jsx" "tsx" "html" "vue"))
