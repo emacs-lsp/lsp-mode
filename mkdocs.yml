@@ -70,7 +70,8 @@ nav:
     - PHP (felixbecker): page/lsp-php.md
     - Powershell: page/lsp-pwsh.md
     - PureScript: page/lsp-purescript.md
-    - Python: page/lsp-pyls.md
+    - Python (Jedi Language Server): page/lsp-jedi.md
+    - Python (Palantir): page/lsp-pyls.md
     - Python (Pyright): https://emacs-lsp.github.io/lsp-pyright
     - Python (Microsoft): https://emacs-lsp.github.io/lsp-python-ms
     - R: page/lsp-r.md
