@@ -234,7 +234,7 @@ source.fixAll code action."
    (lambda () lsp-eslint-server-command)
    (lambda ()
      (or
-      (not (string-equal (cl-first lsp-eslint-server-command) "node"))
+      (not (equal (f-base (f-filename (cl-first lsp-eslint-server-command))) "node")) ;; if first command is not node then assume it's good
       (and (cl-second lsp-eslint-server-command)
            (file-exists-p (cl-second lsp-eslint-server-command))))))
   :activation-fn (lambda (filename &optional _)
