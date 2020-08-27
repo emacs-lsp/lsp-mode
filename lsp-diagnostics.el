@@ -71,6 +71,7 @@ on top the flycheck face for that error level."
 (declare-function flycheck-error-message "ext:flycheck" (err) t)
 (declare-function flycheck-define-error-level "ext:flycheck" (level &rest properties))
 (declare-function flycheck-buffer "ext:flycheck")
+(declare-function flycheck-valid-checker-p "ext:flycheck")
 
 (declare-function lsp-cpp-flycheck-clang-tidy-error-explainer "lsp-cpp")
 
@@ -179,17 +180,19 @@ from the language server."
 
 (defun lsp-diagnostics-flycheck-enable (&rest _)
   "Enable flycheck integration for the current buffer."
-  (flycheck-define-generic-checker 'lsp
-    "A syntax checker using the Language Server Protocol (LSP)
+  (require 'flycheck)
+  (unless (flycheck-valid-checker-p 'lsp)
+    (flycheck-define-generic-checker 'lsp
+      "A syntax checker using the Language Server Protocol (LSP)
 provided by lsp-mode.
 See https://github.com/emacs-lsp/lsp-mode."
-    :start #'lsp-diagnostics--flycheck-start
-    :modes '(lsp-placeholder-mode) ;; placeholder
-    :predicate (lambda () lsp-mode)
-    :error-explainer (lambda (e)
-                       (cond ((string-prefix-p "clang-tidy" (flycheck-error-message e))
-                              (lsp-cpp-flycheck-clang-tidy-error-explainer e))
-                             (t (flycheck-error-message e)))))
+      :start #'lsp-diagnostics--flycheck-start
+      :modes '(lsp-placeholder-mode) ;; placeholder
+      :predicate (lambda () lsp-mode)
+      :error-explainer (lambda (e)
+                         (cond ((string-prefix-p "clang-tidy" (flycheck-error-message e))
+                                (lsp-cpp-flycheck-clang-tidy-error-explainer e))
+                               (t (flycheck-error-message e))))))
   (flycheck-mode 1)
   (setq-local flycheck-checker 'lsp)
   (lsp-flycheck-add-mode major-mode)
