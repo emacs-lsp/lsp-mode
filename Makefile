@@ -3,8 +3,6 @@ SHELL := /usr/bin/env bash
 EMACS ?= emacs
 CASK ?= cask
 
-EXTRA ?= "(progn)"
-
 INIT="(progn \
   (require 'package) \
   (push '(\"melpa\" . \"https://melpa.org/packages/\") package-archives) \
@@ -17,15 +15,6 @@ LINT="(progn \
 		(require 'package-lint) \
 		(package-lint-batch-and-exit))"
 
-WINDOWS_DEPS="(progn \
-    (setq pkgs '(dash dash-functional ht f lv spinner markdown-mode deferred ert-runner)) \
-    (require 'package) \
-	(add-to-list 'package-archives '(\"melpa\" . \"http://melpa.org/packages/\") t) \
-	(package-initialize) \
-	(when (cl-find-if-not 'package-installed-p pkgs) \
-	  (package-refresh-contents) \
-	  (mapc 'package-install pkgs)))"
-
 all:
 	$(CASK) unix-build
 
@@ -33,22 +22,27 @@ unix-build:
 	$(CASK) install
 
 # TODO: add 'checkdoc' and 'lint' here when they pass
-unix-ci: clean unix-build compile unix-test
+unix-ci: clean unix-build unix-compile unix-test
 
 windows-ci: CASK=
 windows-ci: clean windows-compile windows-test
 
-compile:
+unix-compile:
 	@echo "Compiling..."
 	@$(CASK) $(EMACS) -Q --batch \
 		-L . -L clients \
-        --eval $(EXTRA) \
 		--eval '(setq byte-compile-error-on-warn t)' \
 		-f batch-byte-compile \
 		*.el clients/*.el
 
-windows-compile: EXTRA=$(WINDOWS_DEPS)
-windows-compile: compile
+windows-compile:
+	@echo "Compiling..."
+	@$(CASK) $(EMACS) -Q --batch \
+	    -l test/windows-bootstrap.el \
+		-L . -L clients \
+		--eval '(setq byte-compile-error-on-warn t)' \
+		-f batch-byte-compile \
+		*.el clients/*.el
 
 checkdoc:
 	$(eval LOG := $(shell mktemp -d)/checklog.log)
@@ -84,9 +78,8 @@ unix-test:
 windows-test:
 	@$(EMACS) -Q --batch \
 		-L . -L clients \
-		--eval $(WINDOWS_DEPS) \
-		--eval "(require 'ert-runner)"
-		-f ert-runner/run \
+		--eval "(require 'ert)"
+		-f ert-runner/run
 
 docs:
 	make -C docs/ generate
@@ -99,4 +92,4 @@ local-webpage: docs
 clean:
 	rm -rf .cask *.elc clients/*.elc
 
-.PHONY: all unix-build ci compile checkdoc lint unix-test docs local-webpage clean
+.PHONY: all unix-build	 ci unix-compile windows-compile checkdoc lint unix-test windows-test docs local-webpage clean
