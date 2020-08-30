@@ -34,7 +34,8 @@ jobs:
               run: "sudo pip install python-language-server"
 
             - name: Run tests
-              run: "make ci"
+              run:
+                make unix-ci
 
     windows-test:
         runs-on: windows-latest
@@ -59,4 +60,5 @@ jobs:
               run: "pip install python-language-server"
 
             - name: Run tests
-              run: "make ci"
+              run:
+                make windows-ci

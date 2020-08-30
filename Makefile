@@ -3,6 +3,8 @@ SHELL := /usr/bin/env bash
 EMACS ?= emacs
 CASK ?= cask
 
+EXTRA ?= "(progn)"
+
 INIT="(progn \
   (require 'package) \
   (push '(\"melpa\" . \"https://melpa.org/packages/\") package-archives) \
@@ -15,22 +17,38 @@ LINT="(progn \
 		(require 'package-lint) \
 		(package-lint-batch-and-exit))"
 
-all:
-	$(CASK) build
+WINDOWS_DEPS="(progn \
+    (setq pkgs '(dash dash-functional ht f lv spinner markdown-mode deferred ert-runner)) \
+    (require 'package) \
+	(add-to-list 'package-archives '(\"melpa\" . \"http://melpa.org/packages/\") t) \
+	(package-initialize) \
+	(when (cl-find-if-not 'package-installed-p pkgs) \
+	  (package-refresh-contents) \
+	  (mapc 'package-install pkgs)))"
 
-build:
+all:
+	$(CASK) unix-build
+
+unix-build:
 	$(CASK) install
 
 # TODO: add 'checkdoc' and 'lint' here when they pass
-ci: clean build compile test
+unix-ci: clean unix-build compile unix-test
+
+windows-ci: CASK=
+windows-ci: clean windows-compile windows-test
 
 compile:
 	@echo "Compiling..."
 	@$(CASK) $(EMACS) -Q --batch \
 		-L . -L clients \
+        --eval $(EXTRA) \
 		--eval '(setq byte-compile-error-on-warn t)' \
 		-f batch-byte-compile \
 		*.el clients/*.el
+
+windows-compile: EXTRA=$(WINDOWS_DEPS)
+windows-compile: compile
 
 checkdoc:
 	$(eval LOG := $(shell mktemp -d)/checklog.log)
@@ -60,8 +78,15 @@ lint:
 		--eval $(LINT) \
 		*.el
 
-test:
+unix-test:
 	$(CASK) exec ert-runner -L . -L clients  -t '!no-win' -t '!org'
+
+windows-test:
+	@$(EMACS) -Q --batch \
+		-L . -L clients \
+		--eval $(WINDOWS_DEPS) \
+		--eval "(require 'ert-runner)"
+		-f ert-runner/run \
 
 docs:
 	make -C docs/ generate
@@ -74,4 +99,4 @@ local-webpage: docs
 clean:
 	rm -rf .cask *.elc clients/*.elc
 
-.PHONY: all build ci compile checkdoc lint test docs local-webpage clean
+.PHONY: all unix-build ci compile checkdoc lint unix-test docs local-webpage clean
