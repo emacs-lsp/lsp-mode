@@ -3,7 +3,7 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-    build:
+    unix-test:
         runs-on: ubuntu-latest
         strategy:
             matrix:
@@ -15,9 +15,9 @@ jobs:
                     - snapshot
 
         steps:
-            - uses: actions/checkout@v1
+            - uses: actions/checkout@v2
 
-            - uses: actions/setup-python@v1.1.1
+            - uses: actions/setup-python@v2
               with:
                   python-version: "3.6"
                   architecture: "x64"
@@ -32,6 +32,31 @@ jobs:
 
             - name: Install depedencies
               run: "sudo pip install python-language-server"
+
+            - name: Run tests
+              run: "make ci"
+
+    windows-test:
+        runs-on: windows-latest
+        strategy:
+            matrix:
+                emacs-version:
+                    - 27.1
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - uses: actions/setup-python@v2
+              with:
+                  python-version: "3.6"
+                  architecture: "x64"
+
+            - uses: jcs090218/setup-emacs-windows@v3
+              with:
+                version: ${{ matrix.emacs-version }}
+
+            - name: Install depedencies
+              run: "pip install python-language-server"
 
             - name: Run tests
               run: "make ci"
