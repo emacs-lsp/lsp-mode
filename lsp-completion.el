@@ -469,7 +469,8 @@ Others: TRIGGER-CHARS"
                        'lsp-completion-prefix prefix)
                (text-properties-at 0 candidate))
               ((&CompletionItem :label :insert-text? :text-edit? :insert-text-format?
-                                :additional-text-edits? :keep-whitespace?)
+                                :additional-text-edits? :keep-whitespace?
+                                :command?)
                item))
         (cond
          (text-edit?
@@ -500,6 +501,14 @@ Others: TRIGGER-CHARS"
                  (funcall callback
                           (lsp:completion-item-additional-text-edits? resolved-item)))
                cleanup-fn))))
+
+        (when command?
+          (condition-case-unless-debug err
+              (lsp--execute-command command?)
+            (error
+             (lsp--error "Please open an issue in lsp-mode for implementing `%s'.\n\n%S"
+                         (lsp:command-command command?)
+                         err))))
 
         (when (and lsp-signature-auto-activate
                    (lsp-feature? "textDocument/signatureHelp"))
