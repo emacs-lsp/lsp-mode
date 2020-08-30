@@ -16,17 +16,29 @@ LINT="(progn \
 		(package-lint-batch-and-exit))"
 
 all:
-	$(CASK) build
+	$(CASK) unix-build
 
-build:
+unix-build:
 	$(CASK) install
 
 # TODO: add 'checkdoc' and 'lint' here when they pass
-ci: clean build compile test
+unix-ci: clean unix-build unix-compile unix-test
 
-compile:
+windows-ci: CASK=
+windows-ci: clean windows-compile windows-test
+
+unix-compile:
 	@echo "Compiling..."
 	@$(CASK) $(EMACS) -Q --batch \
+		-L . -L clients \
+		--eval '(setq byte-compile-error-on-warn t)' \
+		-f batch-byte-compile \
+		*.el clients/*.el
+
+windows-compile:
+	@echo "Compiling..."
+	@$(CASK) $(EMACS) -Q --batch \
+	    -l test/windows-bootstrap.el \
 		-L . -L clients \
 		--eval '(setq byte-compile-error-on-warn t)' \
 		-f batch-byte-compile \
@@ -60,8 +72,14 @@ lint:
 		--eval $(LINT) \
 		*.el
 
-test:
+unix-test:
 	$(CASK) exec ert-runner -L . -L clients  -t '!no-win' -t '!org'
+
+windows-test:
+	@$(EMACS) -Q --batch \
+		-L . -L clients \
+		--eval "(require 'ert)"
+		-f ert-runner/run
 
 docs:
 	make -C docs/ generate
@@ -74,4 +92,4 @@ local-webpage: docs
 clean:
 	rm -rf .cask *.elc clients/*.elc
 
-.PHONY: all build ci compile checkdoc lint test docs local-webpage clean
+.PHONY: all unix-build	 ci unix-compile windows-compile checkdoc lint unix-test windows-test docs local-webpage clean
