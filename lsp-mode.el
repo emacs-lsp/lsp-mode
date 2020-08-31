@@ -990,7 +990,7 @@ They are added to `markdown-code-lang-modes'")
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.2"))
 
-(defcustom lsp-signature-auto-activate t
+(defcustom lsp-signature-auto-activate nil
   "Auto activate signature when trigger char is pressed."
   :type 'boolean
   :group 'lsp-mode
@@ -5059,13 +5059,34 @@ It will show up only if current point has signature help."
 
 
 
+(defun lsp--action-trigger-parameter-hints (_command)
+  "Handler for editor.action.triggerParameterHints."
+  (lsp-signature-activate))
+
+(defvar company-mode)
+
+(defun lsp--action-trigger-suggest (_command)
+  "Handler for editor.action.triggerSuggest."
+  (cond
+   ((and company-mode (fboundp 'company-complete))
+    (company-complete))
+   (t
+    (completion-at-point))))
+
+(defconst lsp--default-action-handlers
+  (ht ("editor.action.triggerParameterHints" #'lsp--action-trigger-parameter-hints)
+      ("editor.action.triggerSuggest" #'lsp--action-trigger-suggest))
+  "Default action handlers.")
+
 (defun lsp--find-action-handler (command)
   "Find action handler for particular COMMAND."
-  (--some (-some->> it
+  (or
+   (--some (-some->> it
             (lsp--workspace-client)
             (lsp--client-action-handlers)
             (gethash command))
-          (lsp-workspaces)))
+           (lsp-workspaces))
+   (gethash command lsp--default-action-handlers)))
 
 (defun lsp--text-document-code-action-params (&optional kind)
   "Code action params."
