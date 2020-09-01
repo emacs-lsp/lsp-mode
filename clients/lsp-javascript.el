@@ -167,24 +167,18 @@ with the file contents."
     (goto-char (point-min))
     (let (stop found)
       (while (not stop)
-        (when (not (re-search-forward "[^\n[:space:]]" nil t))
+        (unless (re-search-forward "[^\n[:space:]]" nil t)
           (setq stop t))
-        (if (equal (point) (point-min))
-            (setq stop t)
-          (backward-char))
+        (if (= (point) (point-min)) (setq stop t) (backward-char))
         (cond ((or (looking-at "//+[ ]*@flow")
                    (looking-at "/\\**[ ]*@flow")
                    (looking-at "[ ]*\\*[ ]*@flow"))
-               (setq found t)
-               (setq stop t))
-              ((looking-at "//")
-               (forward-line))
-              ((looking-at "*")
+               (setq found t) (setq stop t))
+              ((or (looking-at "//") (looking-at "*"))
                (forward-line))
               ((looking-at "/\\*")
                (save-excursion
-                 (when (not (re-search-forward "*/" nil t))
-                   (setq stop t)))
+                 (unless (re-search-forward "*/" nil t) (setq stop t)))
                (forward-line))
               (t (setq stop t))))
       found)))
@@ -199,12 +193,13 @@ there is a .flowconfig file in the folder hierarchy."
 particular FILE-NAME and MODE."
   (and (derived-mode-p 'js-mode 'web-mode 'js2-mode 'flow-js2-mode 'rjsx-mode)
        (or (lsp-clients-flow-project-p file-name)
-	   (lsp-clients-flow-tag-file-present-p file-name))))
+           (lsp-clients-flow-tag-file-present-p file-name))))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
-                                                          (cons lsp-clients-flow-server
-                                                                lsp-clients-flow-server-args)))
+ (make-lsp-client :new-connection
+                  (lsp-stdio-connection (lambda ()
+                                          (cons lsp-clients-flow-server
+                                                lsp-clients-flow-server-args)))
                   :priority -1
                   :activation-fn 'lsp-clients-flow-activate-p
                   :server-id 'flow-ls))
