@@ -85,7 +85,7 @@ caching purposes.")
                                         0 'display
                                         image)))
                              :background (face-attribute 'header-line :background))))
-    (replace-regexp-in-string "\s\\|\t" "" image)))
+    (replace-regexp-in-string "\s\\|\t" "" (or image ""))))
 
 (defun lsp-headerline--filename-with-icon (file-path)
   "Return the filename from FILE-PATH with the extension related icon."
