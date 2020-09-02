@@ -2,6 +2,18 @@
 #
 #   git config blame.ignoreRevsFile .git-blame-ignore-revs
 
+# Clean up for lsp-haxe. (#2135)
+57a33363aa03a38a1c5a57019362735cebdd15a4
+
+# Clean up for lsp-javascript. (#2129)
+3678cf7c6c1f949b39759867aefaa735cef8de17
+
+# Clean up for lsp-csharp (#2132)
+ad632a1de8e2f3fc337527d1c9644299558d9bda
+
+# Clean up some docstrings and fix typos
+220d67462810db2c445ce80efc11eb9151cb2917
+
 # Reindent lsp-mode using new indentation function
 48e53d1f4c9558fd88a4ea66bb40312c6558b01b
 
