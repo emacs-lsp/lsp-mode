@@ -65,8 +65,7 @@ Set this if you have the binary installed or have it built yourself."
   "Retrieves and parses JSON from URL."
   (with-temp-buffer
     (url-insert-file-contents url)
-    (let ((json-false :false))
-      (json-read))))
+    (let ((json-false :false)) (json-read))))
 
 (defun lsp-csharp--latest-available-version ()
   "Returns latest version of the server available from github."
@@ -115,18 +114,14 @@ for installation."
 
 (defun lsp-csharp--extract-server (url filename reinstall)
   "Downloads and extracts a tgz/zip into the same directory."
-
   ;; remove the file if reinstall is set
-  (if (and reinstall (f-exists-p filename))
-      (f-delete filename))
+  (when (and reinstall (f-exists-p filename))
+    (f-delete filename))
 
   (lsp-csharp--download url filename)
 
   (let ((target-dir (f-dirname filename)))
-    (message (format "lsp-csharp: extracting \"%s\" to \"%s\""
-                     (f-filename filename)
-                     target-dir))
-
+    (message "lsp-csharp: extracting \"%s\" to \"%s\"" (f-filename filename) target-dir)
     (lsp-csharp--extract filename target-dir)))
 
 (defun lsp-csharp-update-server ()
@@ -137,11 +132,11 @@ available on github and if so, downloads and installs a newer version."
         (installed-version (lsp-csharp--latest-installed-version)))
     (if latest-version
         (progn
-          (if (and latest-version
-                   (or (not installed-version)
-                       (version< (substring installed-version 1)
-                                 (substring latest-version 1))))
-              (lsp-csharp--install-server latest-version nil))
+          (when (and latest-version
+                     (or (not installed-version)
+                         (version< (substring installed-version 1)
+                                   (substring latest-version 1))))
+            (lsp-csharp--install-server latest-version nil))
           (message "lsp-csharp-update-server: latest installed version is %s; latest available is %s"
                    (lsp-csharp--latest-installed-version)
                    latest-version))
@@ -151,47 +146,43 @@ available on github and if so, downloads and installs a newer version."
   "Installs (or updates to UPDATE-VERSION) server binary unless it is already installed."
   (let ((installed-version (lsp-csharp--latest-installed-version))
         (target-version (or update-version (lsp-csharp--latest-available-version))))
-    (if (and target-version
-             (not (string-equal installed-version target-version)))
-        (progn
-          (message "lsp-csharp-update-server: current version is %s; installing %s.."
-                   (or installed-version "(none)")
-                   target-version)
-          (if (or (not ask-confirmation)
-                  (yes-or-no-p (format "OmniSharp Roslyn Server %s. Do you want to download and install %s now?"
-                                       (if installed-version
-                                           (format "can be updated, currently installed version is %s" installed-version)
-                                         "is not installed")
-                                       target-version)))
-              (let ((new-server-dir (lsp-csharp--server-dir target-version))
-                    (new-server-bin (lsp-csharp--server-bin target-version))
-                    (package-filename (lsp-csharp--server-package-filename))
-                    (package-url (lsp-csharp--server-package-url target-version)))
+    (when (and target-version
+               (not (string-equal installed-version target-version)))
+      (message "lsp-csharp-update-server: current version is %s; installing %s.."
+               (or installed-version "(none)")
+               target-version)
+      (when (or (not ask-confirmation)
+                (yes-or-no-p (format "OmniSharp Roslyn Server %s. Do you want to download and install %s now?"
+                                     (if installed-version
+                                         (format "can be updated, currently installed version is %s" installed-version)
+                                       "is not installed")
+                                     target-version)))
+        (let ((new-server-dir (lsp-csharp--server-dir target-version))
+              (new-server-bin (lsp-csharp--server-bin target-version))
+              (package-filename (lsp-csharp--server-package-filename))
+              (package-url (lsp-csharp--server-package-url target-version)))
 
-                (mkdir new-server-dir t)
+          (mkdir new-server-dir t)
 
-                (lsp-csharp--extract-server package-url
-                                            (f-join new-server-dir package-filename)
-                                            nil)
+          (lsp-csharp--extract-server package-url
+                                      (f-join new-server-dir package-filename)
+                                      nil)
 
-                (unless (and new-server-bin (file-exists-p new-server-bin))
-                  (error "Failed to auto-install the server %s; file \"%s\" was not found"
-                         target-version new-server-bin))))))))
+          (unless (and new-server-bin (file-exists-p new-server-bin))
+            (error "Failed to auto-install the server %s; file \"%s\" was not found"
+                   target-version new-server-bin)))))))
 
 (defun lsp-csharp--get-or-install-server ()
   "Resolves path to server binary installed, otherwise, if not found
 will ask the user if we can download and install it.
-
 Returns location of script or a binary to use to start the server."
   (let ((installed-bin (lsp-csharp--server-bin (lsp-csharp--latest-installed-version))))
     (if (and installed-bin (file-exists-p installed-bin))
         installed-bin
-      (progn
-        (lsp-csharp--install-server nil t)
-        (let ((installed-bin (lsp-csharp--server-bin (lsp-csharp--latest-installed-version))))
-          (unless installed-bin
-            (error "Server binary is required for LSP C# to work."))
-          installed-bin)))))
+      (lsp-csharp--install-server nil t)
+      (let ((installed-bin (lsp-csharp--server-bin (lsp-csharp--latest-installed-version))))
+        (unless installed-bin (error "Server binary is required for LSP C# to work."))
+        installed-bin))))
 
 (defun lsp-csharp--download (url filename)
   "Downloads file from URL as FILENAME. Will not do anything should
