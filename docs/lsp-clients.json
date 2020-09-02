@@ -392,6 +392,22 @@
     "debugger": "Not available"
   },
   {
+    "name": "racket-langserver",
+    "full-name": "Racket (jeapostrophe)",
+    "server-name": "racket-langserver",
+    "server-url": "https://github.com/jeapostrophe/racket-langserver",
+    "installation": "raco pkg install racket-langserver",
+    "debugger": "Not available"
+  },
+  {
+    "name": "racket-language-server",
+    "full-name": "Racket (Theia)",
+    "server-name": "racket-language-server",
+    "server-url": "https://github.com/theia-ide/racket-language-server",
+    "installation": "raco pkg install racket-language-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "robot",
     "full-name": "robot framework",
     "server-name": "rf-intellisense",

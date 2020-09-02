@@ -5,6 +5,7 @@
   * Add [[https://github.com/sumneko/lua-language-server][Lua Language Server]], [[https://github.com/Alloyed/lua-lsp][Lua-LSP]] and improve EmmyLua.
   * Add configuration settings for elixir-ls.
   * Add Nix support.
+  * Add Racket support.
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
   * Safe renamed ~lsp-flycheck-default-level~ -> ~lsp-diagnostics-flycheck-default-level~
