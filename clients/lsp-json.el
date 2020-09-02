@@ -63,7 +63,7 @@
     :handledSchemaProtocols ["file" "http" "https"]))
 
 (defvar lsp-json--major-modes '(json-mode jsonc-mode)
-  "List of supported JSON major mode.")
+  "List of supported JSON major modes.")
 
 (defvar lsp-json--schema-associations
   `(:/*.css-data.json ["https://raw.githubusercontent.com/Microsoft/vscode-css-languageservice/master/docs/customData.schema.json"]
