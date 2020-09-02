@@ -66,6 +66,7 @@
 (defcustom lsp-haxe-hxml "build.hxml"
   "The compile file for the haxe project."
   :type 'file
+  :group 'lsp-haxe
   :package-version '(lsp-mode . "7.0"))
 
 ;; https://github.com/emacs-lsp/lsp-mode/blob/150a933694349df960dc8fd7a15e04f5727e6433/lsp-rust.el#L251
@@ -73,15 +74,36 @@
   "Handle processStart notification.  Just logs PARAMS."
   (lsp-log title))
 
-(defcustom lsp-haxe-executable "haxe" nil
-  :type 'file)
-(defcustom lsp-haxe-configurations nil nil :type
-  '(repeat string))
-(defcustom lsp-haxe-display-configurations nil nil :type
-  '(repeat string))
-(defcustom lsp-haxe-display-server nil nil :type 'string)
-(defcustom lsp-haxe-display-port "auto" nil :type 'number)
-(defcustom lsp-haxe-enable-compilation-server t nil :type 'boolean)
+(defcustom lsp-haxe-executable "haxe"
+  nil
+  :type 'file
+  :group 'lsp-haxe)
+
+(defcustom lsp-haxe-configurations nil
+  nil
+  :type '(repeat string)
+  :group 'lsp-haxe)
+
+(defcustom lsp-haxe-display-configurations nil
+  nil
+  :type '(repeat string)
+  :group 'lsp-haxe)
+
+(defcustom lsp-haxe-display-server nil
+  nil
+  :type 'string
+  :group 'lsp-haxe)
+
+(defcustom lsp-haxe-display-port "auto"
+  nil
+  :type 'number
+  :group 'lsp-haxe)
+
+(defcustom lsp-haxe-enable-compilation-server t
+  nil
+  :type 'boolean
+  :group 'lsp-haxe)
+
 (defcustom lsp-haxe-task-presentation
   '((echo . t)
     (reveal . "always")
@@ -90,22 +112,63 @@
     (showReuseMessage . t)
     (clear . :json-false))
   nil
-  :type 'plist)
-(defcustom lsp-haxe-enable-code-lens t nil :type 'boolean)
-(defcustom lsp-haxe-enable-diagnostics t nil :type 'boolean)
-(defcustom lsp-haxe-enable-server-view nil nil :type 'boolean)
-(defcustom lsp-haxe-enable-methods-view nil nil :type 'boolean)
-(defcustom lsp-haxe-enable-signature-help-documentation t nil :type 'boolean)
-(defcustom lsp-haxe-diagnostics-path-filter "${workspaceRoot}" nil :type 'string)
-(defcustom lsp-haxe-build-completion-cache t nil :type 'boolean)
-(defcustom lsp-haxe-enable-completion-cache-warning t nil :type 'boolean)
-(defcustom lsp-haxe-code-generation nil nil :type 'string)
-(defcustom lsp-haxe-exclude
-  ["zpp_nape"]
-  nil :type
-  '(repeat string))
+  :type 'plist
+  :group 'lsp-haxe)
 
-(defcustom lsp-haxe-postfix-completion nil nil :type 'string)
+(defcustom lsp-haxe-enable-code-lens t
+  nil
+  :type 'boolean
+  :group 'lsp-haxe)
+
+(defcustom lsp-haxe-enable-diagnostics t
+  nil
+  :type 'boolean
+  :group 'lsp-haxe)
+
+(defcustom lsp-haxe-enable-server-view nil
+  nil
+  :type 'boolean
+  :group 'lsp-haxe)
+
+(defcustom lsp-haxe-enable-methods-view nil
+  nil
+  :type 'boolean
+  :group 'lsp-haxe)
+
+(defcustom lsp-haxe-enable-signature-help-documentation t
+  nil
+  :type 'boolean
+  :group 'lsp-haxe)
+
+(defcustom lsp-haxe-diagnostics-path-filter "${workspaceRoot}"
+  nil
+  :type 'string
+  :group 'lsp-haxe)
+
+(defcustom lsp-haxe-build-completion-cache t
+  nil
+  :type 'boolean
+  :group 'lsp-haxe)
+
+(defcustom lsp-haxe-enable-completion-cache-warning t
+  nil
+  :type 'boolean
+  :group 'lsp-haxe)
+
+(defcustom lsp-haxe-code-generation nil
+  nil
+  :type 'string
+  :group 'lsp-haxe)
+
+(defcustom lsp-haxe-exclude ["zpp_nape"]
+  nil
+  :type '(repeat string)
+  :group 'lsp-haxe)
+
+(defcustom lsp-haxe-postfix-completion nil
+  nil
+  :type 'string
+  :group 'lsp-haxe)
 
 (lsp-register-custom-settings
  '(("haxe.hxml" lsp-haxe-hxml)
@@ -129,36 +192,33 @@
    ("haxe.executable" lsp-haxe-executable)))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection
-                                   #'lsp-clients--haxe-command)
-                  :major-modes '(haxe-mode)
-                                        ; force didChangeConfiguration message
-                  :initialized-fn (lambda (workspace)
-                                    (with-lsp-workspace workspace
-                                      (lsp--set-configuration
-                                       (lsp-configuration-section "haxe"))))
-                  :priority -1
-                  :server-id 'haxe
-                  :initialization-options (lambda ()
-                                    `(("sendMethodResults" . t)
-                                      ("haxelibConfig"
-                                       ("executable" . "haxelib"))
-                                      ("displayServerConfig"
-                                       ("print"
-                                        ("reusing" . :json-false)
-                                        ("completion" . :json-false))
-                                       ("arguments" .
-                                        [])
-                                       ("env")
-                                       ("path" . "haxe"))
-                                      ("displayArguments" . [,lsp-haxe-hxml])))
-                  :notification-handlers (lsp-ht ("haxe/progressStart" 'lsp-clients--haxe-processStart)
-                                                 ("haxe/progressStop" 'ignore)
-                                                 ("haxe/didDetectOldPreview" 'ignore)
-                                                 ("haxe/didChangeDisplayPort" 'ignore)
-                                                 ("haxe/didRunHaxeMethod" 'ignore)
-                                                 ("haxe/didChangeRequestQueue" 'ignore)
-                                                 ("haxe/cacheBuildFailed" 'ignore))))
+ (make-lsp-client
+  :new-connection (lsp-stdio-connection #'lsp-clients--haxe-command)
+  :major-modes '(haxe-mode)  ; force didChangeConfiguration message
+  :initialized-fn
+  (lambda (workspace)
+    (with-lsp-workspace workspace
+      (lsp--set-configuration (lsp-configuration-section "haxe"))))
+  :priority -1
+  :server-id 'haxe
+  :initialization-options
+  (lambda ()
+    `(("sendMethodResults" . t)
+      ("haxelibConfig" ("executable" . "haxelib"))
+      ("displayServerConfig"
+       ("print" ("reusing" . :json-false) ("completion" . :json-false))
+       ("arguments" . [])
+       ("env")
+       ("path" . "haxe"))
+      ("displayArguments" . [,lsp-haxe-hxml])))
+  :notification-handlers
+  (lsp-ht ("haxe/progressStart" 'lsp-clients--haxe-processStart)
+          ("haxe/progressStop" 'ignore)
+          ("haxe/didDetectOldPreview" 'ignore)
+          ("haxe/didChangeDisplayPort" 'ignore)
+          ("haxe/didRunHaxeMethod" 'ignore)
+          ("haxe/didChangeRequestQueue" 'ignore)
+          ("haxe/cacheBuildFailed" 'ignore))))
 
 (provide 'lsp-haxe)
 ;;; lsp-haxe.el ends here
