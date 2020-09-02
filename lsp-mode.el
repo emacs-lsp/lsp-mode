@@ -5528,7 +5528,7 @@ perform the request synchronously."
                   (lsp--symbol-information->document-symbol symbol)))
               symbols-informations))
 
-(defun lsp--symbols->symbols-hierarchy (symbols)
+(defun lsp--symbols->document-symbols-hierarchy (symbols)
   "Convert SYMBOLS to symbols-hierarchy."
   (when-let ((first-symbol (lsp-seq-first symbols)))
     (let ((cur-position (lsp-make-position :line (plist-get (lsp--cur-position) :line)
