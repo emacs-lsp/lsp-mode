@@ -5496,7 +5496,7 @@ perform the request synchronously."
               (let ((lsp--document-symbols-request-async t))
                 (apply oldfun r))))
 
-(defun lsp--document-symbols->symbols-hierarchy (document-symbols current-position)
+(defun lsp--document-symbols->document-symbols-hierarchy (document-symbols current-position)
   "Convert DOCUMENT-SYMBOLS to symbols hierarchy on CURRENT-POSITION."
   (-let (((symbol &as &DocumentSymbol? :children?)
           (seq-some (-lambda ((symbol &as &DocumentSymbol :range (&Range :start start-position
@@ -5506,17 +5506,26 @@ perform the request synchronously."
                         symbol))
                     document-symbols)))
     (if children?
-        (cons symbol (lsp--document-symbols->symbols-hierarchy children? current-position))
+        (cons symbol (lsp--document-symbols->document-symbols-hierarchy children? current-position))
       (when symbol
         (list symbol)))))
 
-(defun lsp--symbols-informations->symbols-hierarchy (symbols-informations current-position)
+(lsp-defun lsp--symbol-information->document-symbol ((&SymbolInformation :name :kind :location :container-name? :deprecated?))
+  "Convert a SymbolInformation to a DocumentInformation"
+  (lsp-make-document-symbol :name name
+                            :kind kind
+                            :range (lsp:location-range location)
+                            :children? nil
+                            :deprecated? deprecated?
+                            :detail? container-name?))
+
+(defun lsp--symbols-informations->document-symbols-hierarchy (symbols-informations current-position)
   "Convert SYMBOLS-INFORMATIONS to symbols hierarchy on CURRENT-POSITION."
   (seq-filter (-lambda ((symbol &as &SymbolInformation :location (&Location :range (&Range :start start-position
                                                                                            :end end-position))))
                 (when (and (lsp--position-compare current-position start-position)
                            (lsp--position-compare end-position current-position))
-                  symbol))
+                  (lsp--symbol-information->document-symbol symbol)))
               symbols-informations))
 
 (defun lsp--symbols->symbols-hierarchy (symbols)
@@ -5525,8 +5534,8 @@ perform the request synchronously."
     (let ((cur-position (lsp-make-position :line (plist-get (lsp--cur-position) :line)
                                            :character (plist-get (lsp--cur-position) :character))))
       (if (lsp-symbol-information? first-symbol)
-          (lsp--symbols-informations->symbols-hierarchy symbols cur-position)
-        (lsp--document-symbols->symbols-hierarchy symbols cur-position)))))
+          (lsp--symbols-informations->document-symbols-hierarchy symbols cur-position)
+        (lsp--document-symbols->document-symbols-hierarchy symbols cur-position)))))
 
 (defun lsp--xref-backend () 'xref-lsp)
 
