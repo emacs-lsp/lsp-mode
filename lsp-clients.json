@@ -271,7 +271,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "ocalm-lsp-server",
+    "name": "ocaml-lsp-server",
     "full-name": "OCaml",
     "server-name": "ocaml-lsp-server",
     "server-url": "https://github.com/ocaml/ocaml-lsp",
