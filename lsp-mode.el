@@ -403,7 +403,7 @@ following `projectile'/`project.el' conventions."
   :type 'boolean)
 
 (defcustom lsp-restart 'interactive
-  "Defines how server exited event must be handled."
+  "Defines how server-exited events must be handled."
   :group 'lsp-mode
   :type '(choice (const interactive)
                  (const auto-restart)
@@ -432,7 +432,7 @@ a symbol, the server-id for the LSP client, or
 a cons pair (MAJOR-MODE . CLIENTS), where MAJOR-MODE is the major-mode,
 and CLIENTS is either a client or a list of clients.
 
-This option can also be used as a file or directory local variable to
+This option can also be used as a file- or directory-local variable to
 disable a language server for individual files or directories/projects
 respectively."
   :group 'lsp-mode
@@ -526,7 +526,7 @@ the server has requested that."
 
 (defcustom lsp-debounce-full-sync-notifications t
   "If non-nil debounce full sync events.
-This flag affects only server which do not support incremental update."
+This flag affects only servers which do not support incremental updates."
   :type 'boolean
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
@@ -578,13 +578,13 @@ This flag affects only server which do not support incremental update."
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-enable-dap-auto-configure t
-  "If non-nil, enable the `dap-auto-configure-mode`."
+  "If non-nil, enable `dap-auto-configure-mode`."
   :type 'boolean
   :group 'lsp-mode
   :package-version '(lsp-mode . "7.0"))
 
 (defcustom lsp-eldoc-enable-hover t
-  "If non-nil, eldoc will display hover info when it is present."
+  "If non-nil, `eldoc' will display hover info when it is present."
   :type 'boolean
   :group 'lsp-mode)
 
@@ -926,8 +926,8 @@ directory")
     ("workspace/executeCommand" :capability :executeCommandProvider)
     ("workspace/symbol" :capability :workspaceSymbolProvider))
 
-  "Contain method to requirements mapping.
-It is used by send request functions to determine which server
+  "Map methods to requirements.
+It is used by request-sending functions to determine which server
 must be used for handling a particular message.")
 
 (defconst lsp--file-change-type
@@ -1230,13 +1230,13 @@ FORMAT and ARGS i the same as for `message'."
 (defalias 'lsp-file-local-name 'file-local-name)
 
 (defun lsp-f-canonical (file-name)
-  "Return the canonical, without trailing slash FILE-NAME."
+  "Return the canonical FILE-NAME, without a trailing slash."
   (directory-file-name (expand-file-name file-name)))
 
 (defalias 'lsp-canonical-file-name 'lsp-f-canonical)
 
 (defun lsp-f-same? (path-a path-b)
-  "Return t if PATH-A and PATH-B are references to same file.
+  "Return t if PATH-A and PATH-B are references to the same file.
 Symlinks are not followed."
   (when (and (f-exists? path-a)
              (f-exists? path-b))
@@ -1246,7 +1246,7 @@ Symlinks are not followed."
 
 (defun lsp-f-parent (path)
   "Return the parent directory to PATH.
-Symlinks are not followed"
+Symlinks are not followed."
   (let ((parent (file-name-directory
                  (directory-file-name (f-expand path default-directory)))))
     (unless (lsp-f-same? path parent)
@@ -1255,16 +1255,15 @@ Symlinks are not followed"
         (directory-file-name parent)))))
 
 (defun lsp-f-ancestor-of? (path-a path-b)
-  "Return t if PATH-A is ancestor of PATH-B.
+  "Return t if PATH-A is an ancestor of PATH-B.
 Symlinks are not followed."
   (unless (lsp-f-same? path-a path-b)
     (s-prefix? (concat (lsp-f-canonical path-a) (f-path-separator))
                (lsp-f-canonical path-b))))
 
 (defun lsp--merge-results (results method)
-  "Merge RESULTS by filtering the empty hash-tables and merging the lists.
-METHOD is the executed method so the results could be merged
-depending on it."
+  "Merge RESULTS by filtering the empty hash-tables and merging
+the lists according to METHOD."
   (pcase (--map (if (vectorp it)
                     (append it nil) it)
                 (-filter #'identity results))
@@ -1329,6 +1328,7 @@ depending on it."
              (cl-mapcan (lambda (it) (if (seqp it) it (list it))) edits)))
           item))
        (_ (cl-mapcan (lambda (it) (if (seqp it) it (list it))) results))))))
+
 (defun lsp--spinner-start ()
   "Start spinner indication."
   (condition-case _err (spinner-start 'progress-bar-filled) (error)))
@@ -1669,7 +1669,7 @@ This set of allowed chars is enough for hexifying local file paths.")
     (lsp--path-to-uri-1 path)))
 
 (defun lsp--string-match-any (regex-list str)
-  "Given a list of REGEX-LIST and STR return the first matching regex if any."
+  "Return the first regex, if any, within REGEX-LIST matching STR."
   (--first (string-match it str) regex-list))
 
 (cl-defstruct lsp-watch
@@ -2871,7 +2871,8 @@ TYPE can either be 'incoming or 'outgoing"
 (defun lsp--send-request (body &optional no-wait no-merge)
   "Send BODY as a request to the language server, get the response.
 If NO-WAIT is non-nil, don't synchronously wait for a response.
-If NO-MERGE is non-nil, don't merge the results but return alist workspace->result."
+If NO-MERGE is non-nil, don't merge the results but return an
+alist mapping workspace->result."
   (lsp-request (plist-get body :method)
                (plist-get body :params)
                :no-wait no-wait
@@ -3336,19 +3337,19 @@ in that particular folder."
         (lsp:text-document-sync-options-open-close? sync))))
 
 (defun lsp--send-will-save-p ()
-  "Return whether will save notifications should be sent to the server."
+  "Return whether willSave notifications should be sent to the server."
   (-> (lsp--server-capabilities)
       (lsp:server-capabilities-text-document-sync?)
       (lsp:text-document-sync-options-will-save?)))
 
 (defun lsp--send-will-save-wait-until-p ()
-  "Return whether will save wait until notifications should be sent to the server."
+  "Return whether willSaveWaitUntil notifications should be sent to the server."
   (-> (lsp--server-capabilities)
       (lsp:server-capabilities-text-document-sync?)
       (lsp:text-document-sync-options-will-save-wait-until?)))
 
 (defun lsp--send-did-save-p ()
-  "Return whether did save notifications should be sent to the server."
+  "Return whether didSave notifications should be sent to the server."
   (let ((sync (lsp:server-capabilities-text-document-sync? (lsp--server-capabilities))))
     (or (memq sync '(1 2))
         (lsp:text-document-sync-options-save? sync))))

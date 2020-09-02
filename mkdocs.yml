@@ -62,7 +62,7 @@ nav:
     - Nim: page/lsp-nim.md
     - Nix: page/lsp-nix.md
     - OCaml (ocaml): page/lsp-ocaml.md
-    - OCaml (icaml-lsp): page/lsp-ocalm-lsp-server.md
+    - OCaml (ocaml-lsp): page/lsp-ocaml-lsp-server.md
     - Pascal/Object Pascal: page/lsp-pascal.md
     - Perl: page/lsp-perl.md
     - PHP (intelephense): page/lsp-intelephense.md
