@@ -175,11 +175,10 @@ available on github and if so, downloads and installs a newer version."
 (defun lsp-csharp--get-or-install-server ()
   "Resolves path to server binary installed, otherwise, if not found
 will ask the user if we can download and install it.
-
 Returns location of script or a binary to use to start the server."
   (let ((installed-bin (lsp-csharp--server-bin (lsp-csharp--latest-installed-version))))
-    (when (and installed-bin (file-exists-p installed-bin))
-      installed-bin
+    (if (and installed-bin (file-exists-p installed-bin))
+        installed-bin
       (lsp-csharp--install-server nil t)
       (let ((installed-bin (lsp-csharp--server-bin (lsp-csharp--latest-installed-version))))
         (unless installed-bin (error "Server binary is required for LSP C# to work."))
