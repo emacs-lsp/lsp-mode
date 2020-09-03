@@ -232,6 +232,14 @@
      <lastmod>2020-09-03</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-racket-langserver/</loc>
+     <lastmod>2020-09-03</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-racket-language-server/</loc>
+     <lastmod>2020-09-03</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
      <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-solargraph/</loc>
      <lastmod>2020-09-03</lastmod>
      <changefreq>daily</changefreq>
