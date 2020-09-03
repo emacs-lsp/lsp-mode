@@ -5517,6 +5517,7 @@ perform the request synchronously."
                             :range (lsp:location-range location)
                             :children? nil
                             :deprecated? deprecated?
+                            :selection-range (lsp:location-range location)
                             :detail? container-name?))
 
 (defun lsp--symbols-informations->document-symbols-hierarchy (symbols-informations current-position)
