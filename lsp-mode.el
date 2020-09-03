@@ -877,6 +877,7 @@ Changes take effect only when a new session is started."
                                         (perl-mode . "perl")
                                         (cperl-mode . "perl")
                                         (robot-mode . "robot")
+                                        (racket-mode . "racket")
                                         (nix-mode . "nix"))
   "Language id configuration.")
 
