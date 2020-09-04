@@ -42,11 +42,23 @@
   "Generate LSP startup command."
   `("java" "-jar" ,(expand-file-name lsp-groovy-server-file)))
 
+(defcustom lsp-groovy-classpath `("/usr/local/opt/groovy/libexec/lib")
+  "List of paths to Groovy JARs."
+  :group 'lsp-groovy
+  :risky t
+  :type 'list)
+
+(lsp-register-custom-settings
+ '(("groovy.classpath" lsp-groovy-classpath)))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-groovy--lsp-command)
                   :major-modes '(groovy-mode)
                   :priority -1
-                  :server-id 'groovy-ls))
+                  :server-id 'groovy-ls
+                  :initialized-fn (lambda (workspace)
+                                    (with-lsp-workspace workspace
+                                      (lsp--set-configuration (lsp-configuration-section "groovy"))))))
 
 (provide 'lsp-groovy)
 ;;; lsp-groovy.el ends here
