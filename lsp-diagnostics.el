@@ -65,7 +65,8 @@ on top the flycheck face for that error level."
 (defcustom lsp-diagnostics-disabled-modes nil
   "A list of major models for which `lsp-diagnostics-mode' should be disabled."
   :type '(repeat symbol)
-  :group 'lsp-mode)
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "7.1"))
 
 ;; Flycheck integration
 
