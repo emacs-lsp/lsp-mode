@@ -62,6 +62,11 @@ on top the flycheck face for that error level."
   :type '(repeat list)
   :group 'lsp-mode)
 
+(defcustom lsp-diagnostics-disabled-modes nil
+  "A list of major models for which `lsp-diagnostics-mode' should be disabled."
+  :type '(repeat symbol)
+  :group 'lsp-mode)
+
 ;; Flycheck integration
 
 (declare-function flycheck-mode "ext:flycheck")
@@ -271,7 +276,8 @@ See https://github.com/emacs-lsp/lsp-mode."
 ;;;###autoload
 (defun lsp-diagnostics--enable ()
   "Enable LSP checker support."
-  (when (member lsp-diagnostics-provider '(:auto :none :flycheck :flymake t nil))
+  (when (and (member lsp-diagnostics-provider '(:auto :none :flycheck :flymake t nil))
+             (not (member major-mode lsp-diagnostics-disabled-modes)))
     (lsp-diagnostics-mode 1)))
 
 (defun lsp-diagnostics--disable ()
