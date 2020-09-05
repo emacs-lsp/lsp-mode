@@ -16,7 +16,7 @@ LINT="(progn \
 		(package-lint-batch-and-exit))"
 
 all:
-	$(CASK) unix-build
+	$(CASK) build
 
 unix-build:
 	$(CASK) install
