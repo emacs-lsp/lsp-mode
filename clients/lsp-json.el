@@ -62,7 +62,8 @@
   `(:provideFormatter t
     :handledSchemaProtocols ["file" "http" "https"]))
 
-(defvar lsp-json--major-modes '(json-mode jsonc-mode))
+(defvar lsp-json--major-modes '(json-mode jsonc-mode)
+  "List of supported JSON major modes.")
 
 (defvar lsp-json--schema-associations
   `(:/*.css-data.json ["https://raw.githubusercontent.com/Microsoft/vscode-css-languageservice/master/docs/customData.schema.json"]
@@ -87,13 +88,14 @@
 (defun lsp-json--get-content (_workspace uri callback)
   "Get content from URI."
   (ignore-errors
-    (url-retrieve uri (lambda (_status callback)
-                        (goto-char (point-min))
-                        (re-search-forward "\n\n" nil 'noerror)
-                        (funcall
-                         callback
-                         (decode-coding-string (buffer-substring (point) (point-max))
-                                               'utf-8-unix)))
+    (url-retrieve uri
+                  (lambda (_status callback)
+                    (goto-char (point-min))
+                    (re-search-forward "\n\n" nil 'noerror)
+                    (funcall
+                     callback
+                     (decode-coding-string (buffer-substring (point) (point-max))
+                                           'utf-8-unix)))
                   (list callback))))
 
 (lsp-dependency 'vscode-json-languageserver
@@ -103,9 +105,9 @@
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection (lambda ()
-                                          (list (lsp-package-path 'vscode-json-languageserver)
-                                                "--stdio")))
+  :new-connection
+  (lsp-stdio-connection
+   (lambda () (list (lsp-package-path 'vscode-json-languageserver) "--stdio")))
   :major-modes lsp-json--major-modes
   :server-id 'json-ls
   :priority -1
@@ -113,14 +115,16 @@
   :completion-in-comments? t
   :initialization-options lsp-json--extra-init-params
   :async-request-handlers (ht ("vscode/content" #'lsp-json--get-content))
-  :initialized-fn (lambda (w)
-                    (with-lsp-workspace w
-                      (lsp--set-configuration
-                       (ht-merge (lsp-configuration-section "json")
-                                 (lsp-configuration-section "http")))
-                      (lsp-notify "json/schemaAssociations" lsp-json--schema-associations)))
-  :download-server-fn (lambda (_client callback error-callback _update?)
-                        (lsp-package-ensure 'vscode-json-languageserver callback error-callback))))
+  :initialized-fn
+  (lambda (w)
+    (with-lsp-workspace w
+      (lsp--set-configuration
+       (ht-merge (lsp-configuration-section "json")
+                 (lsp-configuration-section "http")))
+      (lsp-notify "json/schemaAssociations" lsp-json--schema-associations)))
+  :download-server-fn
+  (lambda (_client callback error-callback _update?)
+    (lsp-package-ensure 'vscode-json-languageserver callback error-callback))))
 
 (provide 'lsp-json)
 ;;; lsp-json.el ends here
