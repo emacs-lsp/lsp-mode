@@ -184,7 +184,7 @@ This must be set only once after loading the clang client.")
           (-first #'executable-find
                   (-map (lambda (version)
                           (concat "clangd" version))
-                        '("" "-10" "-9" "-8" "-7" "-6")))))
+                        '("" "-12" "-11" "-10" "-9" "-8" "-7" "-6")))))
 
   `(,(or lsp-clients-clangd-executable lsp-clients--clangd-default-executable "clangd")
     ,@lsp-clients-clangd-args))
