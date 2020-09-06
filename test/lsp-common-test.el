@@ -34,7 +34,8 @@
   (let ((lsp--uri-file-prefix "file:///")
         (system-type 'windows-nt))
     (should (equal (lsp--uri-to-path "file:///c:/Users/%7B%7D/") "c:/Users/{}/")))
-  (let ((lsp--uri-file-prefix "file://"))
+  (let ((lsp--uri-file-prefix "file://")
+        (system-type 'gnu/linux))
     (should (equal (lsp--uri-to-path "/root/%5E/%60") "/root/^/`"))))
 
 (ert-deftest lsp-common-test--path-to-uri-custom-schemes ()
@@ -50,7 +51,8 @@
   (let ((lsp--uri-file-prefix "file:///")
         (system-type 'windows-nt))
     (should (equal (lsp--uri-to-path "file:///c:/Users/%E4%BD%A0%E5%A5%BD/") "c:/Users/你好/")))
-  (let ((lsp--uri-file-prefix "file://"))
+  (let ((lsp--uri-file-prefix "file://")
+        (system-type 'gnu/linux))
     (should (equal (lsp--uri-to-path "/root/%E4%BD%A0%E5%A5%BD/%E8%B0%A2%E8%B0%A2") "/root/你好/谢谢"))))
 
 (ert-deftest lsp-byte-compilation-test ()

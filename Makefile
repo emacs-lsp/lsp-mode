@@ -15,6 +15,15 @@ LINT="(progn \
 		(require 'package-lint) \
 		(package-lint-batch-and-exit))"
 
+LSP-FILES := lsp-protocol.el lsp-mode.el lsp.el lsp-completion.el \
+		lsp-diagnostics.el lsp-lens.el lsp-modeline.el \
+		$(wildcard clients/*.el)
+
+TEST-FILES := test/windows-bootstrap.el test/test-helper.el \
+		$(shell ls test/lsp-*.el)
+LOAD-FILE = -l $(test-file)
+LOAD-TEST-FILES := $(foreach test-file, $(TEST-FILES), $(LOAD-FILE))
+
 all:
 	$(CASK) build
 
@@ -32,17 +41,15 @@ unix-compile:
 	@$(CASK) $(EMACS) -Q --batch \
 		-L . -L clients \
 		--eval '(setq byte-compile-error-on-warn t)' \
-		-f batch-byte-compile \
-		*.el clients/*.el
+		-f batch-byte-compile $(LSP-FILES)
 
 windows-compile:
 	@echo "Compiling..."
 	@$(CASK) $(EMACS) -Q --batch \
-	    -l test/windows-bootstrap.el \
+		-l test/windows-bootstrap.el \
 		-L . -L clients \
 		--eval '(setq byte-compile-error-on-warn t)' \
-		-f batch-byte-compile \
-		*.el clients/*.el
+		-f batch-byte-compile $(LSP-FILES)
 
 checkdoc:
 	$(eval LOG := $(shell mktemp -d)/checklog.log)
@@ -50,11 +57,10 @@ checkdoc:
 
 	@echo "checking doc..."
 
-	@for f in *.el ; do \
+	@for f in $(LSP-FILES); do \
 		$(CASK) $(EMACS) -Q --batch \
-			-L . \
 			--eval "(checkdoc-file \"$$f\")" \
-			*.el 2>&1 | tee -a $(LOG); \
+			2>&1 | tee -a $(LOG); \
 	done
 
 	@if [ -s $(LOG) ]; then \
@@ -70,7 +76,7 @@ lint:
 		-L . -L clients \
 		--eval $(INIT) \
 		--eval $(LINT) \
-		*.el
+		$(LSP-FILES)
 
 unix-test:
 	$(CASK) exec ert-runner -L . -L clients  -t '!no-win' -t '!org'
@@ -78,8 +84,9 @@ unix-test:
 windows-test:
 	@$(EMACS) -Q --batch \
 		-L . -L clients \
-		--eval "(require 'ert)"
-		-f ert-runner/run
+		$(LOAD-TEST-FILES) \
+		--eval "(ert-run-tests-batch-and-exit \
+		'(and (not (tag no-win)) (not (tag org))))"
 
 docs:
 	make -C docs/ generate

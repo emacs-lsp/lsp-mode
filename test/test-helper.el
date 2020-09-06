@@ -21,6 +21,7 @@
 
 ;;; Code:
 
+(require 'f)
 
 (setq safe-local-variable-values
       '((flycheck-disabled-checkers emacs-lisp-checkdoc)))
