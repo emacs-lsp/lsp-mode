@@ -69,6 +69,7 @@ nav:
     - PHP (Serenata): page/lsp-serenata.md
     - PHP (felixbecker): page/lsp-php.md
     - Powershell: page/lsp-pwsh.md
+    - Prolog: page/lsp-prolog.md
     - PureScript: page/lsp-purescript.md
     - Python (Jedi Language Server): page/lsp-jedi.md
     - Python (Palantir): page/lsp-pyls.md
