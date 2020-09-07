@@ -203,14 +203,14 @@
   :server-id 'haxe
   :initialization-options
   (lambda ()
-    `(("sendMethodResults" . t)
-      ("haxelibConfig" ("executable" . "haxelib"))
-      ("displayServerConfig"
-       ("print" ("reusing" . :json-false) ("completion" . :json-false))
-       ("arguments" . [])
-       ("env")
-       ("path" . "haxe"))
-      ("displayArguments" . [,lsp-haxe-hxml])))
+    `(:sendMethodResults t
+      :haxelibConfig (:executable "haxelib")
+      :displayServerConfig
+      ( :print (:reusing :json-false :completion :json-false)
+               :arguments []
+               :env nil
+               :path "haxe")
+      :displayArguments [,lsp-haxe-hxml]))
   :notification-handlers
   (lsp-ht ("haxe/progressStart" 'lsp-clients--haxe-processStart)
           ("haxe/progressStop" 'ignore)
