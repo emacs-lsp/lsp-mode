@@ -878,7 +878,8 @@ Changes take effect only when a new session is started."
                                         (cperl-mode . "perl")
                                         (robot-mode . "robot")
                                         (racket-mode . "racket")
-                                        (nix-mode . "nix"))
+                                        (nix-mode . "nix")
+                                        (prolog-mode . "prolog"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
