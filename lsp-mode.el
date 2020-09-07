@@ -3057,17 +3057,20 @@ CANCEL-TOKEN is the token that can be used to cancel request."
              ;; that all of the captured arguments are the same - in our case
              ;; `lsp--create-request-cancel' will return the same lambda when
              ;; called with the same params.
-             (cleanup-hooks (lambda ()
-                              (when (buffer-live-p buf)
-                                (with-current-buffer buf
-                                  (mapc (-lambda ((hook . local))
-                                          (remove-hook
-                                           hook
-                                           (lsp--create-request-cancel
-                                            id target-workspaces hook buf method cancel-callback)
-                                           local))
-                                        hooks)))
-                              (remhash cancel-token lsp--cancelable-requests)))
+             (cleanup-hooks
+              (lambda () (mapc
+                          (-lambda ((hook . local))
+                            (if local
+                                (when (buffer-live-p buf)
+                                  (with-current-buffer buf
+                                    (remove-hook hook
+                                                 (lsp--create-request-cancel
+                                                  id target-workspaces hook buf method cancel-callback)
+                                                 t)))
+                              (remove-hook hook (lsp--create-request-cancel
+                                                 id target-workspaces hook buf method cancel-callback))))
+                          hooks)
+                (remhash cancel-token lsp--cancelable-requests)))
              (callback (pcase mode
                          ((or 'alive 'tick) (lambda (&rest args)
                                               (with-current-buffer buf
