@@ -3644,7 +3644,7 @@ in that particular folder."
       (add-hook 'lsp-on-idle-hook #'lsp--document-links nil t))
 
     (when (and lsp-enable-dap-auto-configure
-               (featurep 'dap-mode))
+               (functionp 'dap-mode))
       (dap-auto-configure-mode 1))
 
     (when (and lsp-enable-semantic-highlighting
