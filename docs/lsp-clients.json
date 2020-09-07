@@ -309,7 +309,7 @@
     "full-name": "Perl",
     "server-name": "Perl::LanguageServer",
     "server-url": "https://github.com/richterger/Perl-LanguageServer",
-    "installation": "cpanm Perl::LanguageServer",
+    "installation": "cpan Perl::LanguageServer",
     "debugger": "Not available"
   },
   {
