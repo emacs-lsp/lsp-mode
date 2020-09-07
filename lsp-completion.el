@@ -153,6 +153,9 @@ ignored."
 In the form of plist (prefix prefix-pos items :lsp-items ...).
 When the completion is incomplete, cache contains value of `incomplete'.")
 
+(defvar lsp-completion--last-result nil
+  "Last completion result.")
+
 (defun lsp-completion--clear-cache (&rest _)
   "Clear completion caches."
   (-some-> (and (listp lsp-completion--cache) lsp-completion--cache)
@@ -368,23 +371,25 @@ The MARKERS and PREFIX value will be attached to each candidate."
                                (save-excursion
                                  (ignore-errors
                                    (goto-char (+ it 1))
-                                   (while (lsp-completion--looking-back-trigger-characterp trigger-chars)
+                                   (while (lsp-completion--looking-back-trigger-characterp
+                                           trigger-chars)
                                      (cl-incf it)
                                      (forward-char))
                                    it)))
                              (point)))
            result done?
-           (all-completions
+           (candidates
             (lambda ()
               (cond
-               (done? result)
+               ((or done? result) result)
                ((and (not lsp-completion-no-cache)
                      lsp-completion--cache
                      (listp lsp-completion--cache)
                      (equal (cl-second lsp-completion--cache) bounds-start)
                      (s-prefix? (car lsp-completion--cache)
                                 (buffer-substring-no-properties bounds-start (point))))
-                (apply #'lsp-completion--filter-candidates (cddr lsp-completion--cache)))
+                (setf result (apply #'lsp-completion--filter-candidates
+                                    (cddr lsp-completion--cache))))
                (t
                 (-let* ((resp (lsp-request-while-no-input
                                "textDocument/completion"
@@ -427,7 +432,8 @@ The MARKERS and PREFIX value will be attached to each candidate."
                                        (lsp-completion--to-internal items)))
                                 :lsp-items items
                                 :markers markers
-                                :prefix prefix))))))))
+                                :prefix prefix)))))
+              (setq lsp-completion--last-result result))))
       (list
        bounds-start
        (point)
@@ -440,11 +446,12 @@ The MARKERS and PREFIX value will be attached to each candidate."
           ;; boundaries
           ((equal (car-safe action) 'boundaries) nil)
           ;; try-completion
-          ((null action) (cl-first (member probe (funcall all-completions))))
-          ;; test-completion
-          ((equal action 'lambda) (member probe (funcall all-completions)))
+          ((null action) (cl-first (member probe (funcall candidates))))
+          ;; test-completion: not return exact match so that the selection will
+          ;; always be shown
+          ((equal action 'lambda) nil)
           ;; retrieve candidates
-          (t (funcall all-completions))))
+          (t (funcall candidates))))
        :annotation-function #'lsp-completion--annotate
        :company-candidate-kind #'lsp-completion--candidate-kind
        :company-require-match 'never
@@ -456,21 +463,25 @@ The MARKERS and PREFIX value will be attached to each candidate."
        :company-doc-buffer (-compose #'company-doc-buffer
                                      #'lsp-completion--get-documentation)
        :exit-function
-       (-rpartial #'lsp-completion--exit-fn trigger-chars)))))
+       (-rpartial #'lsp-completion--exit-fn trigger-chars candidates)))))
 
-(defun lsp-completion--exit-fn (candidate _status &optional trigger-chars)
+(defun lsp-completion--exit-fn (candidate _status &optional trigger-chars candidates)
   "Exit function of `completion-at-point'.
 CANDIDATE is the selected completion item.
-Others: TRIGGER-CHARS"
+Others: TRIGGER-CHARS CANDIDATES"
   (unwind-protect
-      (-let* (((&plist 'lsp-completion-item item
+      (-let* ((candidate (if (plist-member (text-properties-at 0 candidate)
+                                           'lsp-completion-item)
+                             candidate
+                           (cl-find candidate (funcall candidates) :test #'equal)))
+              ((&plist 'lsp-completion-item item
                        'lsp-completion-start-point start-point
                        'lsp-completion-markers markers
                        'lsp-completion-prefix prefix)
                (text-properties-at 0 candidate))
-              ((&CompletionItem :label :insert-text? :text-edit? :insert-text-format?
-                                :additional-text-edits? :keep-whitespace?
-                                :command?)
+              ((&CompletionItem? :label :insert-text? :text-edit? :insert-text-format?
+                                 :additional-text-edits? :keep-whitespace?
+                                 :command?)
                item))
         (cond
          (text-edit?
