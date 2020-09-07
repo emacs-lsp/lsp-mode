@@ -5522,16 +5522,17 @@ perform the request synchronously."
 
 (defun lsp--symbols-informations->document-symbols-hierarchy (symbols-informations current-position)
   "Convert SYMBOLS-INFORMATIONS to symbols hierarchy on CURRENT-POSITION."
-  (->> symbols-informations
+  (--> symbols-informations
        (mapcan (-lambda ((symbol &as &SymbolInformation :location (&Location :range (&Range :start start-position
                                                                                             :end end-position))))
                  (when (and (lsp--position-compare current-position start-position)
                             (lsp--position-compare end-position current-position))
-                   (list (lsp--symbol-information->document-symbol symbol)))))
-       (-sort (-lambda ((&DocumentSymbol :range (&Range :start a-start-position :end a-end-position))
-                        (&DocumentSymbol :range (&Range :start b-start-position :end b-end-position)))
-                (and (lsp--position-compare b-start-position a-start-position)
-                     (lsp--position-compare a-end-position b-end-position))))))
+                   (list (lsp--symbol-information->document-symbol symbol))))
+               it)
+       (sort it (-lambda ((&DocumentSymbol :range (&Range :start a-start-position :end a-end-position))
+                          (&DocumentSymbol :range (&Range :start b-start-position :end b-end-position)))
+                  (and (lsp--position-compare b-start-position a-start-position)
+                       (lsp--position-compare a-end-position b-end-position))))))
 
 (defun lsp--symbols->document-symbols-hierarchy (symbols)
   "Convert SYMBOLS to symbols-hierarchy."
