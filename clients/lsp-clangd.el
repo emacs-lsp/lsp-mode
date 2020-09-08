@@ -226,7 +226,9 @@ returned to avoid that the echo area grows uncomfortably."
                                        "\n")
                                       "```")) nil t nil)
           (progn (narrow-to-region (match-beginning 2) (match-end 2))
-                 (lsp--render-element (lsp-clangd-join-region (point-min) (point-max))))
+                 (lsp--render-element (lsp-make-marked-string
+                                       :language "cpp"
+                                       :value (lsp-clangd-join-region (point-min) (point-max)))))
         (car (s-lines (lsp--render-element contents)))))))
 
 
