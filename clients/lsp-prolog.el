@@ -44,8 +44,7 @@
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection
-  (lsp-stdio-connection lsp-prolog-server-command)
+  :new-connection (lsp-stdio-connection (lambda () lsp-prolog-server-command))
   :major-modes '(prolog-mode)
   :multi-root t
   :server-id 'prolog-lsp))
