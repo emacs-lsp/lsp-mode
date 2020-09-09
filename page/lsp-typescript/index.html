@@ -1021,6 +1021,33 @@
     Available configurations
   </a>
   
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-server-args" class="md-nav__link">
+    lsp-clients-typescript-server-args
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-log-verbosity" class="md-nav__link">
+    lsp-clients-typescript-log-verbosity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-plugins" class="md-nav__link">
+    lsp-clients-typescript-plugins
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1774,6 +1801,33 @@
     Available configurations
   </a>
   
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-server-args" class="md-nav__link">
+    lsp-clients-typescript-server-args
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-log-verbosity" class="md-nav__link">
+    lsp-clients-typescript-log-verbosity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-plugins" class="md-nav__link">
+    lsp-clients-typescript-plugins
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1803,6 +1857,24 @@
 <p><code>npm i -g typescript-language-server; npm i -g typescript</code></p>
 <h3 id="debugger-yes-firefoxchrome">Debugger: Yes (Firefox/Chrome)<a class="headerlink" href="#debugger-yes-firefoxchrome" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
+<h3 id="lsp-clients-typescript-server-args"><code>lsp-clients-typescript-server-args</code><a class="headerlink" href="#lsp-clients-typescript-server-args" title="Permanent link">#</a></h3>
+<p><em>Default: <code>(--stdio)</code></em></p>
+<p>Extra arguments for the typescript-language-server language server.</p>
+<hr />
+<h3 id="lsp-clients-typescript-log-verbosity"><code>lsp-clients-typescript-log-verbosity</code><a class="headerlink" href="#lsp-clients-typescript-log-verbosity" title="Permanent link">#</a></h3>
+<p><em>Default: <code>info</code></em></p>
+<p>The server log verbosity.</p>
+<hr />
+<h3 id="lsp-clients-typescript-plugins"><code>lsp-clients-typescript-plugins</code><a class="headerlink" href="#lsp-clients-typescript-plugins" title="Permanent link">#</a></h3>
+<p><em>Default: <code>[]</code></em></p>
+<p>The list of plugins to load.
+It should be a vector of plist with keys ‘:location’ and ‘:name’
+where ‘:name’ is the name of the package and ‘:location’ is the
+directory containing the package. Example:
+(vector
+   (list :name "@vsintellicode/typescript-intellicode-plugin"
+         :location "<path>.vscode/extensions/visualstudioexptteam.vscodeintellicode-1.1.9/"))</p>
+<hr />
                 
                   
                     
