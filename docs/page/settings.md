@@ -29,7 +29,7 @@ These are `lsp-mode` specific custom settings:
 - `lsp-server-trace` - Request trace mode on the language server.
 - `lsp-semantic-highlighting` - Enable experimental semantic highlighting support
 - `lsp-enable-imenu` - If non-nil, automatically enable imenu integration when server provides `textDocument/documentSymbol`.
-- `lsp-signature-auto-activate` - Auto activate signature when trigger char is pressed.
+- `lsp-signature-auto-activate` - Auto activate signature when trigger conditions are meet.
 - `lsp-signature-render-documentation` - Include signature documentation in signature help.
 - `lsp-enable-text-document-color` - Enable `textDocument/documentColor` when server supports it.
 

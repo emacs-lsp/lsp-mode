@@ -992,9 +992,10 @@ They are added to `markdown-code-lang-modes'")
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.2"))
 
-(defcustom lsp-signature-auto-activate nil
-  "Auto activate signature when trigger char is pressed."
-  :type 'boolean
+(defcustom lsp-signature-auto-activate '(:on-trigger-char)
+  "Auto activate signature conditions."
+  :type '(repeat (choice (const :tag "On trigger chars pressed." :on-trigger-char)
+                         (const :tag "After selected completion." :after-completion)))
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.2"))
 
@@ -2131,7 +2132,8 @@ WORKSPACE is the workspace that contains the diagnostics."
 (defun lsp-toggle-signature-auto-activate ()
   "Toggle signature auto activate."
   (interactive)
-  (setq lsp-signature-auto-activate (not lsp-signature-auto-activate))
+  (setq lsp-signature-auto-activate
+        (unless lsp-signature-auto-activate '(:on-trigger-char)))
   (lsp--info "Signature autoactivate %s." (if lsp-signature-auto-activate "enabled" "disabled"))
   (lsp--update-signature-help-hook))
 
@@ -3500,11 +3502,14 @@ in that particular folder."
 (defun lsp--update-signature-help-hook (&optional cleanup?)
   (let ((signature-help-handler (lsp--signature-help-handler-create)))
     (cond
-     ((and lsp-signature-auto-activate signature-help-handler)
+     ((and (or (equal lsp-signature-auto-activate t)
+               (memq :on-trigger-char lsp-signature-auto-activate))
+           signature-help-handler)
       (add-hook 'post-self-insert-hook signature-help-handler nil t))
 
      ((or cleanup?
-          (not lsp-signature-auto-activate))
+          (not (or (equal lsp-signature-auto-activate t)
+                   (memq :on-trigger-char lsp-signature-auto-activate))))
       (remove-hook 'post-self-insert-hook signature-help-handler t)))))
 
 (defun lsp--semantic-highlighting-warn-about-deprecated-setting ()
