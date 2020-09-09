@@ -57,6 +57,11 @@
 (declare-function all-the-icons-octicon "ext:all-the-icons" t t)
 (declare-function lsp-treemacs-errors-list "ext:lsp-treemacs" t)
 
+(defcustom lsp-modeline-overlap-minor-modes '(display-time-mode)
+  "Minor modes that need to add a space to prevent overlap."
+  :type 'list
+  :group 'lsp-mode)
+
 ;; code actions
 
 (defvar-local lsp-modeline--code-actions-string nil
@@ -187,6 +192,17 @@
   "Plist of workspaces to their modeline strings.
 The `:global' workspace is global one.")
 
+(defun lsp-modeline--is-minor-mode-enabled-p (min-mode)
+  "Return non-nil if MIN-MODE is enabled.
+Return nil if MIN-MODE is not enabled."
+  (bound-and-true-p min-mode)
+  (if (fboundp min-mode) (symbol-value min-mode) nil))
+
+(defun lsp-modeline--overlap-minor-modes-p ()
+  "Check if there is minor-mode active in `lsp-modeline-overlap-minor-modes'."
+  (cl-some (lambda (md) (lsp-modeline--is-minor-mode-enabled-p md))
+           lsp-modeline-overlap-minor-modes))
+
 (defun lsp-modeline-diagnostics-statistics ()
   "Calculate diagnostics statistics based on `lsp-modeline-diagnostics-scope'."
   (let ((diagnostics (cond
@@ -236,7 +252,9 @@ The `:global' workspace is global one.")
   (cl-labels ((calc-modeline ()
                              (let ((str (lsp-modeline-diagnostics-statistics)))
                                (if (string-empty-p str) ""
-                                 (concat " " str)))))
+                                 (concat " " str
+                                         (if (lsp-modeline--overlap-minor-modes-p)
+                                             " " ""))))))
     (setq lsp-modeline--diagnostics-string
           (cl-case lsp-modeline-diagnostics-scope
             (:file (or lsp-modeline--diagnostics-string
