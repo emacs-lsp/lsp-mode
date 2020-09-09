@@ -521,7 +521,8 @@ Others: TRIGGER-CHARS CANDIDATES"
                          (lsp:command-command command?)
                          err))))
 
-        (when (and lsp-signature-auto-activate
+        (when (and (or (equal lsp-signature-auto-activate t)
+                       (memq :after-completion lsp-signature-auto-activate))
                    (lsp-feature? "textDocument/signatureHelp"))
           (lsp-signature-activate))
 
