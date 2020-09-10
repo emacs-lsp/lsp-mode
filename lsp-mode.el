@@ -1525,10 +1525,10 @@ BODY should never return `t' value."
 
 FIND-COMMAND is the executable finder that searches for the
 actual language server executable. ARGS is a list of arguments to
-give to FIND-COMMAND to find the language server. Returns the
+give to FIND-COMMAND to find the language server.  Returns the
 output of FIND-COMMAND if it exits successfully, nil otherwise.
 
-Typical uses includes finding an executable by invoking 'find' in
+Typical uses include finding an executable by invoking 'find' in
 a project, finding LLVM commands on macOS with 'xcrun', or
 looking up project-specific language servers for projects written
 in the various dynamic languages, e.g. 'nvm', 'pyenv' and 'rbenv'
