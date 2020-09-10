@@ -83,6 +83,7 @@ unix-test:
 
 windows-test:
 	@$(EMACS) -Q --batch \
+		-l test/windows-bootstrap.el \
 		-L . -L clients \
 		$(LOAD-TEST-FILES) \
 		--eval "(ert-run-tests-batch-and-exit \
