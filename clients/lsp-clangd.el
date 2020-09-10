@@ -165,7 +165,8 @@ available in your path to use. Otherwise the system will try to
 find a suitable one. Set this variable before loading lsp."
   :group 'lsp-clangd
   :risky t
-  :type 'file)
+  :type '(choice (file :tag "Path")
+                 (const :tag "Auto" nil)))
 
 (defvar lsp-clients--clangd-default-executable nil
   "Clang default executable full path when found.
