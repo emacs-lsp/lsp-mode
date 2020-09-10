@@ -3792,6 +3792,7 @@ interface TextDocumentEdit {
                 (when buf
                   (lsp-with-current-buffer buf
                     (set-buffer-modified-p nil)
+                    (setq lsp-buffer-uri nil)
                     (set-visited-file-name new-file-name)
                     (lsp)))))
     (_ (let ((file-name (->> edit
