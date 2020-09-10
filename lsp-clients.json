@@ -338,6 +338,14 @@
     "debugger": "Yes"
   },
   {
+    "name": "prolog",
+    "full-name": "Prolog",
+    "server-name": "lsp_server",
+    "server-url": "https://github.com/jamesnvc/lsp_server",
+    "installation": "swipl -g 'pack_install(lsp_server).'",
+    "debugger": "Not available"
+  },
+  {
     "name": "purescript",
     "full-name": "PureScript",
     "server-name": "purescript-language-server",
