@@ -1527,11 +1527,11 @@ FIND-COMMAND is the executable finder that searches for the
 actual language server executable. ARGS is a list of arguments to
 give to FIND-COMMAND to find the language server.
 
-Typical uses includes finding an executable by invoking `find' in
-a project, finding LLVM commands on macOS with `xcrun', or
+Typical uses includes finding an executable by invoking 'find' in
+a project, finding LLVM commands on macOS with 'xcrun', or
 looking up project-specific language servers for projects written
-in the various dynamic languages, e.g. `nvm', `pyenv' and
-`rbenv' etc."
+in the various dynamic languages, e.g. 'nvm', 'pyenv' and 'rbenv'
+etc."
   (when-let* ((find-command-path (executable-find find-command))
               (executable-path
                (with-temp-buffer
