@@ -23,13 +23,24 @@
 
 (require 'package)
 
-(let* ((pkgs '(dash dash-functional f lv ht spinner markdown-mode deferred ert-runner)))
-  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+
+(setq user-emacs-directory (expand-file-name (make-temp-name ".emacs.d")
+                                             "~")
+      package-user-dir (expand-file-name (make-temp-name "tmp-elpa")
+                                         user-emacs-directory))
+
+(let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("gnu" . "https://elpa.gnu.org/packages/")))
+       (pkgs '(dash dash-functional f lv ht spinner markdown-mode deferred)))
   (package-initialize)
+  (package-refresh-contents)
 
-  (when (cl-find-if-not 'package-installed-p pkgs)
-    (package-refresh-contents)
-    (mapc 'package-install pkgs)))
+  (mapc (lambda (pkg)
+          (unless (package-installed-p pkg)
+            (package-install pkg)))
+        pkgs)
 
-(provide 'windows-bootstrap)
+  (add-hook 'kill-emacs-hook
+            `(lambda () (delete-directory ,user-emacs-directory t))))
+
 ;;; windows-bootstrap.el ends here
