@@ -177,14 +177,24 @@ This must be set only once after loading the clang client.")
   :risky t
   :type '(repeat string))
 
+(defun lsp-clients--clangd-darwin-executable-find (executable &rest args)
+  (when-let* ((executable-path (executable-find executable))
+              (clangd-path
+               (with-temp-buffer
+                 (when (zerop (apply 'call-process executable-path nil t nil args))
+                   (buffer-substring-no-properties (point-min) (point-max))))))
+    (string-trim clangd-path)))
+
 (defun lsp-clients--clangd-command ()
   "Generate the language server startup command."
   (unless lsp-clients--clangd-default-executable
     (setq lsp-clients--clangd-default-executable
-          (-first #'executable-find
-                  (-map (lambda (version)
-                          (concat "clangd" version))
-                        '("" "-12" "-11" "-10" "-9" "-8" "-7" "-6")))))
+          (or (-first #'executable-find
+                      (-map (lambda (version)
+                              (concat "clangd" version))
+                            '("" "-12" "-11" "-10" "-9" "-8" "-7" "-6")))
+              (lsp-clients--clangd-darwin-executable-find "xcodebuild" "-find-executable" "clangd")
+              (lsp-clients--clangd-darwin-executable-find "xcrun" "--find" "clangd"))))
 
   `(,(or lsp-clients-clangd-executable lsp-clients--clangd-default-executable "clangd")
     ,@lsp-clients-clangd-args))
