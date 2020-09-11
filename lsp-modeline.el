@@ -213,10 +213,10 @@ The `:global' workspace is global one.")
                          (format "%s" (aref stats i))
                          'face
                          (cond
-                          ((equal i lsp/diagnostic-severity-error) 'error)
-                          ((equal i lsp/diagnostic-severity-warning) 'warning)
-                          ((equal i lsp/diagnostic-severity-information) 'success)
-                          ((equal i lsp/diagnostic-severity-hint) 'success)))))))
+                          ((= i lsp/diagnostic-severity-error) 'error)
+                          ((= i lsp/diagnostic-severity-warning) 'warning)
+                          ((= i lsp/diagnostic-severity-information) 'success)
+                          ((= i lsp/diagnostic-severity-hint) 'success)))))))
       (cl-incf i))
     (-> (s-join "/" strs)
         (propertize 'mouse-face 'mode-line-highlight
