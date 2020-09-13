@@ -31,7 +31,7 @@ jobs:
                   version: 0.8.4
 
             - name: Install depedencies
-              run: "sudo pip install python-language-server"
+              run: "pip3 install python-language-server"
 
             - name: Run tests
               run:
