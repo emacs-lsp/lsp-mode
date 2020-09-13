@@ -76,6 +76,13 @@ ignored."
   :group 'lsp-mode
   :package-version '(lsp-mode . "7.1"))
 
+(defcustom lsp-completion-use-last-result t
+  "Temporarily use last server result when interrupted by keyboard.
+This will help minimize popup flickering issue in `company-mode'."
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "7.1"))
+
 (defconst lsp-completion--item-kind
   [nil
    "Text"
@@ -381,7 +388,7 @@ The MARKERS and PREFIX value will be attached to each candidate."
            (candidates
             (lambda ()
               (lsp--catch 'input
-                  (let ((lsp--throw-on-input t))
+                  (let ((lsp--throw-on-input lsp-completion-use-last-result))
                     (cond
                      ((or done? result) result)
                      ((and (not lsp-completion-no-cache)
