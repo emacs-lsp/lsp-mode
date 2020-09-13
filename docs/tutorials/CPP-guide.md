@@ -33,13 +33,11 @@ production-ready language servers for `C/C++` and `Objective-C`,
 features(completion, diagnostics, navigation, etc). For some of the language
 servers `lsp-mode` ships with automatic installation scripts but there is no
 such script for installing `C/C++` language server due to their overall
-complexity. As of end of 2020 there are 2 `C/C++` language servers - `ccls` and
-`clangd` with `cquery` being deprecated. For this guide we will be using
-`clangd` but most of the steps here apply to `ccls` as well. `lsp-mode` is
-pre-configured and it will be able to find the language server automatically
-when it is installed on the host machine and it is present on the path. In case
-`clangd` is not present on the path `clangd` can be installed following their
-[Getting Started](https://clangd.llvm.org/installation.html "Getting Started")
+complexity. For this guide we will be using `clangd` but most of the steps 
+here apply to `ccls` as well. `lsp-mode` is pre-configured and it will be able 
+to find the language server automatically when it is installed on the host machine 
+and it is present on the path. In case `clangd` is not present on the path `clangd` 
+can be installed following their [Getting Started](https://clangd.llvm.org/installation.html "Getting Started")
 instructions.
 
 _Note:_ for `Debian` based system use https://apt.llvm.org/
