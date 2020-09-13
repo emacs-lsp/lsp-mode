@@ -151,7 +151,7 @@ present, `company-mode` will be auto-configured and it will just work.
 itself when a certain feature is supported by the server and when the
 corresponding `Emacs` package is installed. In addition to that, `lsp-mode`
 ships with [which-key](https://github.com/justbur/emacs-which-key "which key url") integration for better discoverability.
-By default, `lsp-mode`'s keybindings are available under `s-l` (Super-l), e. g. `s-l t t` will
+By default, `lsp-mode`'s keybindings are available under `s-l` (Super-l), e. g. `s-l h h` will
 show documentation at point. You may change the default prefix by setting
 `lsp-keymap-prefix`.
 
