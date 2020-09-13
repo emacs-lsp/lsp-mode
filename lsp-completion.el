@@ -76,6 +76,13 @@ ignored."
   :group 'lsp-mode
   :package-version '(lsp-mode . "7.1"))
 
+(defcustom lsp-completion-use-last-result t
+  "Temporarily use last server result when interrupted by keyboard.
+This will help minimize popup flickering issue in `company-mode'."
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "7.1"))
+
 (defconst lsp-completion--item-kind
   [nil
    "Text"
@@ -151,7 +158,7 @@ ignored."
 (defvar lsp-completion--cache nil
   "Cached candidates for completion at point function.
 In the form of plist (prefix prefix-pos items :lsp-items ...).
-When the completion is incomplete, cache contains value of `incomplete'.")
+When the completion is incomplete, cache contains value of :incomplete.")
 
 (defvar lsp-completion--last-result nil
   "Last completion result.")
@@ -339,7 +346,7 @@ The MARKERS and PREFIX value will be attached to each candidate."
                         ((setq trigger-char (lsp-completion--looking-back-trigger-characterp
                                              trigger-characters))
                          lsp/completion-trigger-kind-trigger-character)
-                        ((equal lsp-completion--cache 'incomplete)
+                        ((equal lsp-completion--cache :incomplete)
                          lsp/completion-trigger-kind-trigger-for-incomplete-completions)
                         (t lsp/completion-trigger-kind-invoked))))
     (apply #'lsp-make-completion-context
@@ -380,60 +387,65 @@ The MARKERS and PREFIX value will be attached to each candidate."
            result done?
            (candidates
             (lambda ()
-              (cond
-               ((or done? result) result)
-               ((and (not lsp-completion-no-cache)
-                     lsp-completion--cache
-                     (listp lsp-completion--cache)
-                     (equal (cl-second lsp-completion--cache) bounds-start)
-                     (s-prefix? (car lsp-completion--cache)
-                                (buffer-substring-no-properties bounds-start (point))))
-                (setf result (apply #'lsp-completion--filter-candidates
-                                    (cddr lsp-completion--cache))))
-               (t
-                (-let* ((resp (lsp-request-while-no-input
-                               "textDocument/completion"
-                               (plist-put (lsp--text-document-position-params)
-                                          :context (lsp-completion--get-context trigger-chars))))
-                        (completed (or (and resp (not (lsp-completion-list? resp)))
-                                       (not (lsp:completion-list-is-incomplete resp))))
-                        (items (lsp--while-no-input
-                                (--> (cond
-                                      ((lsp-completion-list? resp) (lsp:completion-list-items resp))
-                                      (t resp))
-                                     (if (or completed
-                                             (seq-some #'lsp:completion-item-sort-text? it))
-                                         (lsp-completion--sort-completions it)
-                                       it)
-                                     (-map (lambda (item)
-                                             (lsp-put item
-                                                      :_emacsStartPoint
-                                                      (or (lsp-completion--guess-prefix item)
-                                                          bounds-start)))
-                                           it))))
-                        (markers (list bounds-start (copy-marker (point) t)))
-                        (prefix (buffer-substring-no-properties bounds-start (point)))
-                        (lsp-completion--no-reordering (not lsp-completion-sort-initial-results)))
-                  (lsp-completion--clear-cache)
-                  (setf done? completed
-                        lsp-completion--cache (cond
-                                               ((and done? (not (seq-empty-p items)))
-                                                (list (buffer-substring-no-properties bounds-start (point))
-                                                      bounds-start
-                                                      (lsp-completion--to-internal items)
-                                                      :lsp-items nil
-                                                      :markers markers
-                                                      :prefix prefix))
-                                               ((not done?) 'incomplete))
-                        result (lsp-completion--filter-candidates
-                                (cond (done?
-                                       (cl-third lsp-completion--cache))
-                                      (lsp-completion-filter-on-incomplete
-                                       (lsp-completion--to-internal items)))
-                                :lsp-items items
-                                :markers markers
-                                :prefix prefix)))))
-              (setq lsp-completion--last-result result))))
+              (lsp--catch 'input
+                  (let ((lsp--throw-on-input lsp-completion-use-last-result))
+                    (cond
+                     ((or done? result) result)
+                     ((and (not lsp-completion-no-cache)
+                           lsp-completion--cache
+                           (listp lsp-completion--cache)
+                           (equal (cl-second lsp-completion--cache) bounds-start)
+                           (s-prefix? (car lsp-completion--cache)
+                                      (buffer-substring-no-properties bounds-start (point))))
+                      (setf result (apply #'lsp-completion--filter-candidates
+                                          (cddr lsp-completion--cache))))
+                     (t
+                      (-let* ((resp (lsp-request-while-no-input
+                                     "textDocument/completion"
+                                     (plist-put (lsp--text-document-position-params)
+                                                :context (lsp-completion--get-context trigger-chars))))
+                              (completed (or (and resp (not (lsp-completion-list? resp)))
+                                             (not (lsp:completion-list-is-incomplete resp))))
+                              (items (lsp--while-no-input
+                                       (--> (cond
+                                             ((lsp-completion-list? resp)
+                                              (lsp:completion-list-items resp))
+                                             (t resp))
+                                            (if (or completed
+                                                    (seq-some #'lsp:completion-item-sort-text? it))
+                                                (lsp-completion--sort-completions it)
+                                              it)
+                                            (-map (lambda (item)
+                                                    (lsp-put item
+                                                             :_emacsStartPoint
+                                                             (or (lsp-completion--guess-prefix item)
+                                                                 bounds-start)))
+                                                  it))))
+                              (markers (list bounds-start (copy-marker (point) t)))
+                              (prefix (buffer-substring-no-properties bounds-start (point)))
+                              (lsp-completion--no-reordering (not lsp-completion-sort-initial-results)))
+                        (lsp-completion--clear-cache)
+                        (setf done? completed
+                              lsp-completion--cache (cond
+                                                     ((and done? (not (seq-empty-p items)))
+                                                      (list (buffer-substring-no-properties
+                                                             bounds-start (point))
+                                                            bounds-start
+                                                            (lsp-completion--to-internal items)
+                                                            :lsp-items nil
+                                                            :markers markers
+                                                            :prefix prefix))
+                                                     ((not done?) :incomplete))
+                              result (lsp-completion--filter-candidates
+                                      (cond (done?
+                                             (cl-third lsp-completion--cache))
+                                            (lsp-completion-filter-on-incomplete
+                                             (lsp-completion--to-internal items)))
+                                      :lsp-items items
+                                      :markers markers
+                                      :prefix prefix))))))
+                (:interrupted lsp-completion--last-result)
+                (`,res (setq lsp-completion--last-result res))))))
       (list
        bounds-start
        (point)
