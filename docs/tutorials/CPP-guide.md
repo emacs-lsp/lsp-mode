@@ -248,7 +248,7 @@ in project root and `dap-mode` will pick it up.
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": true,
+            "externalConsole": false,
             "MIMode": "gdb"
         }
     ]
