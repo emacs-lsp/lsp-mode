@@ -137,16 +137,23 @@ narrow to the outer symbol."
               'help-echo help-echo-string
               'local-map local-map))
 
+(defmacro lsp-headerline--make-mouse-handler (&rest body)
+  "Making mouse event handler.
+Switch to current mouse interacting window before doing BODY."
+  (declare (debug t) (indent 0))
+  `(lambda (event)
+     (interactive "e")
+     (select-window (posn-window (elt event 1)))
+     ,@body))
+
 (defun lsp-headerline--directory-with-action (full-path directory-display-string)
   "Build action for FULL-PATH and DIRECTORY-DISPLAY-STRING."
   (lsp-headerline--with-action (let ((map (make-sparse-keymap)))
                                  (define-key map [header-line mouse-1]
-                                   (lambda ()
-                                     (interactive)
+                                   (lsp-headerline--make-mouse-handler
                                      (dired full-path)))
                                  (define-key map [header-line mouse-2]
-                                   (lambda ()
-                                     (interactive)
+                                   (lsp-headerline--make-mouse-handler
                                      (dired-other-window full-path)))
                                  map)
                                (format "mouse-1: browse '%s' with Dired\nmouse-2: browse '%s' with Dired in other window"
@@ -158,12 +165,10 @@ narrow to the outer symbol."
   "Build action for SYMBOL and SYMBOL-STRING."
   (lsp-headerline--with-action (let ((map (make-sparse-keymap)))
                                  (define-key map [header-line mouse-1]
-                                   (lambda ()
-                                     (interactive)
+                                   (lsp-headerline--make-mouse-handler
                                      (lsp-headerline--go-to-symbol symbol)))
                                  (define-key map [header-line mouse-2]
-                                   (lambda ()
-                                     (interactive)
+                                   (lsp-headerline--make-mouse-handler
                                      (lsp-headerline--narrow-to-symbol symbol)))
                                  map)
                                (format "mouse-1: go to '%s' symbol\nmouse-2: narrow to '%s' range" name name)
