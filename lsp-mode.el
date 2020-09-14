@@ -6129,7 +6129,7 @@ deserialization.")
                                            (split-string
                                             (substring chunk
                                                        (or (string-match-p "Content-Length" chunk)
-                                                           (error "Unable to find Content-Length header."))
+                                                           (error "Unable to find Content-Length header"))
                                                        body-sep-pos)
                                             "\r\n")))
                       body-received 0
@@ -6159,14 +6159,18 @@ deserialization.")
                                                          body-length nil
                                                          body-received nil
                                                          body nil)))) 'utf-8)))
-                (lsp--parser-on-message
-                 (condition-case err
-                     (lsp--read-json lsp-parsed-message)
-                   (error
-                    (lsp-warn "Failed to parse the following chunk:\n'''\n%s\n'''\nwith message %s"
-                              (concat leftovers input)
-                              err)))
-                 workspace)))))))))
+                (run-at-time
+                 0 nil
+                 (lambda (msg)
+                   (lsp--parser-on-message
+                    (condition-case err
+                        (lsp--read-json msg)
+                      (error
+                       (lsp-warn "Failed to parse the following chunk:\n'''\n%s\n'''\nwith message %s"
+                                 (concat leftovers input)
+                                 err)))
+                    workspace))
+                 lsp-parsed-message)))))))))
 
 (defvar-local lsp--line-col-to-point-hash-table nil
   "Hash table with keys (line . col) and values that are either point positions
