@@ -102,7 +102,7 @@ nav:
       - page/CHANGELOG.md
   - Tutorials:
       - 'Configuring Emacs a C/C++ IDE': tutorials/CPP-guide.md
-        - 'A guide on disabling/enabling lsp-mode features': tutorials/how-to-turn-off.md
+      - 'A guide on disabling/enabling lsp-mode features': tutorials/how-to-turn-off.md
   - Blog:
       - 2020:
           - '7.0 Release': blog/2020/7.0-release.md
