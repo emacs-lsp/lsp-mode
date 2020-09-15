@@ -526,12 +526,7 @@ Others: TRIGGER-CHARS CANDIDATES"
                cleanup-fn))))
 
         (when command?
-          (condition-case-unless-debug err
-              (lsp--execute-command command?)
-            (error
-             (lsp--error "Please open an issue in lsp-mode for implementing `%s'.\n\n%S"
-                         (lsp:command-command command?)
-                         err))))
+          (lsp--execute-command command?))
 
         (when (and (or (equal lsp-signature-auto-activate t)
                        (memq :after-completion lsp-signature-auto-activate))
