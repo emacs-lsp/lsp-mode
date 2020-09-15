@@ -378,7 +378,7 @@ The command should include `--message=format=json` or similar option."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.2.2"))
 
-(defcustom lsp-rust-analyzer-cargo-all-targets nil
+(defcustom lsp-rust-analyzer-cargo-all-targets t
   "Cargo watch all targets or not."
   :type 'boolean
   :group 'lsp-rust
