@@ -5767,7 +5767,12 @@ REFERENCES? t when METHOD returns references."
   (let ((params (if args
                     (list :command command :arguments args)
                   (list :command command))))
-    (lsp-request "workspace/executeCommand" params)))
+    (condition-case-unless-debug err
+        (lsp-request "workspace/executeCommand" params)
+      (error
+       (lsp--error "Please open an issue in lsp-mode for implementing `%s'.\n\n%S"
+                   command
+                   err)))))
 
 (defalias 'lsp-point-to-position #'lsp--point-to-position)
 (defalias 'lsp-text-document-identifier #'lsp--text-document-identifier)
