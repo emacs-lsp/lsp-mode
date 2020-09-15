@@ -719,7 +719,8 @@ are determined by the index of the element."
 
 (defcustom lsp-imenu-index-symbol-kinds nil
   "Which symbol kinds to show in imenu."
-  :type '(repeat (choice (const :tag "File" File)
+  :type '(repeat (choice (const :tag "Miscellaneous" nil)
+                         (const :tag "File" File)
                          (const :tag "Module" Module)
                          (const :tag "Namespace" Namespace)
                          (const :tag "Package" Package)
@@ -6185,12 +6186,17 @@ an alist
       (cons name
             (lsp--imenu-create-hierarchical-index filtered-children)))))
 
-(lsp-defun lsp--symbol-filter ((&SymbolInformation :kind :location))
+(lsp-defun lsp--symbol-ignore ((&SymbolInformation :kind :location))
   "Determine if SYM is for the current document and is to be shown."
   ;; It's a SymbolInformation or DocumentSymbol, which is always in the
   ;; current buffer file.
   (or (and lsp-imenu-index-symbol-kinds
-           (not (memql (aref lsp/symbol-kind-lookup kind) lsp-imenu-index-symbol-kinds)))
+           (numberp kind)
+           (let ((clamped-kind (if (< 0 kind (length lsp/symbol-kind-lookup))
+                                   kind
+                                 0)))
+             (not (memql (aref lsp/symbol-kind-lookup clamped-kind)
+                         lsp-imenu-index-symbol-kinds))))
       (and location
            (not (eq (->> location
                          (lsp:location-uri)
@@ -6263,7 +6269,7 @@ representation to point representation."
 
 (defun lsp--imenu-filter-symbols (symbols)
   "Filter out unsupported symbols from SYMBOLS."
-  (seq-remove #'lsp--symbol-filter symbols))
+  (seq-remove #'lsp--symbol-ignore symbols))
 
 (defun lsp--imenu-hierarchical-p (symbols)
   "Determine whether any element in SYMBOLS has children."
