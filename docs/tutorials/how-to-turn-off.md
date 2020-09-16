@@ -16,7 +16,6 @@ which led to a lot of frustration. Hopefully, this article will help solving
 that issue:
 
 ![Turn Off 1](images/turn-off-1.png "turn off 1")
-
 1. Symbol highlighting
 ``` elisp
 (setq lsp-enable-symbol-highlighting nil)
@@ -64,14 +63,11 @@ that issue:
 ``` elisp
 (setq lsp-modeline-code-actions-enable nil)
 ```
-
 ![Turn Off 2](images/turn-off-2.png "turn off 2")
-
 8. `Flycheck` (or `flymake` if no `flycheck` is present)
 ``` elisp
 (setq lsp-diagnostics-provider :none)
 ```
-
 9. Sideline diagnostics
    * disable whole sideline via
    ``` elisp
@@ -90,7 +86,6 @@ that issue:
 (setq lsp-modeline-diagnostics-enable nil)
 ```
 ![Turn Off 3](images/turn-off-3.png "turn off 3")
-
 12. Signature help
 ``` elisp
 (setq lsp-signature-auto-activate nil) ;; you could manually requiest them via `lsp-signature-activate`
@@ -98,10 +93,8 @@ that issue:
 13. Signature help documentation (keep the signatures)
 ``` elisp
 (setq lsp-signature-render-documentation nil)
-
 ```
 ![Turn Off 4](images/turn-off-4.png "turn off 4")
-
 14. Completion (`company-mode`)
 ``` elisp
 (setq lsp-completion-provider :none)
