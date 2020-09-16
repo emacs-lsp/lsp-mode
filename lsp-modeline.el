@@ -42,6 +42,11 @@
   "Face used to code action text on modeline."
   :group 'lsp-faces)
 
+(defface lsp-modeline-code-actions-preferred-face
+  '((t :foreground "yellow"))
+  "Face used to code action text on modeline."
+  :group 'lsp-faces)
+
 ;;;###autoload
 (define-obsolete-variable-alias 'lsp-diagnostics-modeline-scope
   'lsp-modeline-diagnostics-scope  "lsp-mode 7.0.1")
@@ -62,18 +67,23 @@
 (defvar-local lsp-modeline--code-actions-string nil
   "Holds the current code action string on modeline.")
 
-(defun lsp-modeline--code-actions-icon ()
-  "Build the icon for modeline code actions."
+(defun lsp-modeline--code-action-face (preferred-code-action)
+  "Return the face checking if there is any PREFERRED-CODE-ACTION."
+  (if preferred-code-action
+      'lsp-modeline-code-actions-preferred-face
+    'lsp-modeline-code-actions-face))
+
+(defun lsp-modeline--code-actions-icon (face)
+  "Build the icon for modeline code actions using FACE."
   (if (require 'all-the-icons nil t)
       (all-the-icons-octicon "light-bulb"
-                             :face 'lsp-modeline-code-actions-face
+                             :face face
                              :v-adjust -0.0575)
-    (propertize "💡" 'face 'lsp-modeline-code-actions-face)))
+    (propertize "💡" 'face face)))
 
-(defun lsp-modeline--preferred-code-action-name (actions)
-  "Return the preferred code action name from ACTIONS."
-  (or (-some->> actions
-        (-first #'lsp:code-action-is-preferred?)
+(defun lsp-modeline--code-action-name (actions preferred-code-action)
+  "Return the code action name from ACTIONS and PREFERRED-CODE-ACTION."
+  (or (-some-> preferred-code-action
         lsp-modeline--code-action->string)
       (->> actions
            lsp-seq-first
@@ -87,15 +97,19 @@
 
 (defun lsp-modeline--build-code-actions-segments (actions)
   "Build the code ACTIONS string from the defined segments."
-  (mapconcat
-   (lambda (segment)
-     (pcase segment
-       ('icon (lsp-modeline--code-actions-icon))
-       ('name (propertize (lsp-modeline--preferred-code-action-name actions)
-                          'face 'lsp-modeline-code-actions-face))
-       ('count (propertize (number-to-string (seq-length actions))
-                           'face 'lsp-modeline-code-actions-face))))
-   lsp-modeline-code-actions-segments " "))
+  (let* ((preferred-code-action (-some->> actions
+                                  (-first #'lsp:code-action-is-preferred?)
+                                  lsp-modeline--code-action->string))
+         (face (lsp-modeline--code-action-face preferred-code-action)))
+    (mapconcat
+     (lambda (segment)
+       (pcase segment
+         ('icon (lsp-modeline--code-actions-icon face))
+         ('name (propertize (lsp-modeline--code-action-name actions preferred-code-action)
+                            'face face))
+         ('count (propertize (number-to-string (seq-length actions))
+                             'face face))))
+     lsp-modeline-code-actions-segments " ")))
 
 (defun lsp-modeline--build-code-actions-string (actions)
   "Build the string to be presented on modeline for code ACTIONS."
@@ -107,12 +121,15 @@
                                          (not (member (aref o 0) '(menu-bar normal-state)))))
                                 key-description)
                               ")"))
-          (built-string (lsp-modeline--build-code-actions-segments actions)))
+          (built-string (lsp-modeline--build-code-actions-segments actions))
+          (preferred-code-action (-some->> actions
+                                   (-first #'lsp:code-action-is-preferred?)
+                                   lsp-modeline--code-action->string)))
     (add-text-properties 0 (length built-string)
                          (list 'help-echo
                                (concat (format "Apply code actions %s\nmouse-1: " keybinding)
                                        (if single-action?
-                                           (lsp-modeline--preferred-code-action-name actions)
+                                           (lsp-modeline--code-action-name actions preferred-code-action)
                                          "select from multiple code actions"))
                                'mouse-face 'mode-line-highlight
                                'local-map (make-mode-line-mouse-map
