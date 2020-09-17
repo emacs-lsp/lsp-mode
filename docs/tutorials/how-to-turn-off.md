@@ -11,7 +11,7 @@ users coming from IDEs but still in `Emacs` community there are a lot of people
 looking for a minimal distraction-free experience especially traditional long
 time users. Although the turn off `defcustom` settings are documented in
 corresponding `README` and available via `customize-group` it turned out that it
-is not very easy to find the them when you want to turn a particular feature off
+is not very easy to find them when you want to turn a particular feature off
 which led to a lot of frustration. Hopefully, this article will help solving
 that issue:
 
@@ -21,18 +21,18 @@ that issue:
 (setq lsp-enable-symbol-highlighting nil)
 ```
 2. `lsp-ui-doc` - on hover dialogs.
-   * disable via
-   ```
-   (setq lsp-ui-doc-enable nil)
-   ```
-   * disable cursor hover (keep mouse hover)
-   ``` elisp
-   (setq lsp-ui-doc-show-with-cursor nil)
-   ```
-   * disable mouse hover (keep cursor hover)
-   ``` elisp
-   (setq lsp-ui-doc-show-with-mouse nil)
-   ```
+* disable via
+```
+(setq lsp-ui-doc-enable nil)
+```
+* disable cursor hover (keep mouse hover)
+``` elisp
+(setq lsp-ui-doc-show-with-cursor nil)
+```
+* disable mouse hover (keep cursor hover)
+``` elisp
+(setq lsp-ui-doc-show-with-mouse nil)
+```
 3. Lenses
 ``` elisp
 (setq lsp-lens-enable nil)
@@ -42,23 +42,23 @@ that issue:
 (setq lsp-headerline-breadcrumb-enable nil)
 ```
 5. Sideline code actions
-   * disable whole sideline via
-   ``` elisp
-   (setq lsp-ui-sideline-enable nil)
-   ```
-   * hide code actions
-   ``` elisp
-   (setq lsp-ui-sideline-show-code-actions nil)
-   ```
+* disable whole sideline via
+``` elisp
+(setq lsp-ui-sideline-enable nil)
+```
+* hide code actions
+``` elisp
+(setq lsp-ui-sideline-show-code-actions nil)
+```
 6. Sideline hover symbols
-   * disable whole sideline via
-   ``` elisp
-   (setq lsp-ui-sideline-enable nil)
-   ```
-   * hide only hover symbols
-   ``` elisp
-   (setq lsp-ui-sideline-show-hover nil)
-   ```
+* disable whole sideline via
+``` elisp
+(setq lsp-ui-sideline-enable nil)
+```
+* hide only hover symbols
+``` elisp
+(setq lsp-ui-sideline-show-hover nil)
+```
 7. Modeline code actions
 ``` elisp
 (setq lsp-modeline-code-actions-enable nil)
@@ -69,14 +69,14 @@ that issue:
 (setq lsp-diagnostics-provider :none)
 ```
 9. Sideline diagnostics
-   * disable whole sideline via
-   ``` elisp
-   (setq lsp-ui-sideline-enable nil)
-   ```
-   * hide only errors
-   ``` elisp
-   (setq lsp-ui-sideline-show-diagnostics nil)
-   ```
+* disable whole sideline via
+``` elisp
+(setq lsp-ui-sideline-enable nil)
+```
+* hide only errors
+``` elisp
+(setq lsp-ui-sideline-show-diagnostics nil)
+```
 10. Eldoc
 ``` elisp
 (setq lsp-eldoc-enable-hover nil)
