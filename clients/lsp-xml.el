@@ -123,17 +123,18 @@ Newlines and excess whitespace are removed."
   :group 'lsp-xml
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-xml-server-vmargs "-noverify -Xmx64M
-  -XX:+UseG1GC -XX:+UseStringDeduplication" "Specifies extra VM
-  arguments used to launch the XML Language Server. Eg. use
-  `-noverify -Xmx1G -XX:+UseG1GC -XX:+UseStringDeduplication` to
-  bypass class verification, increase the heap size to 1GB and
-  enable String deduplication with the G1 Garbage collector"
-  :type '(repeat string)
+(defcustom lsp-xml-server-vmargs ["-noverify" "-Xmx64M" "-XX:+UseG1GC"
+                                  "-XX:+UseStringDeduplication"]
+  "Specifies extra VM arguments used to launch the XML Language
+  Server. Eg. use `-noverify -Xmx1G -XX:+UseG1GC
+  -XX:+UseStringDeduplication` to bypass class verification,
+  increase the heap size to 1GB and enable String deduplication
+  with the G1 Garbage collector"
+  :type 'lsp-string-vector
   :group 'lsp-xml
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-xml-server-work-dir "~/.lsp4xml"
+(defcustom lsp-xml-server-work-dir (expand-file-name ".lsp4xml" "~")
   "Set a custom folder path for cached XML Schemas. An absolute
   path is expected, although the ~ prefix (for the user home
   directory) is supported."
@@ -189,6 +190,12 @@ Newlines and excess whitespace are removed."
   :group 'lsp-xml
   :type 'file
   :package-version '(lsp-mode . "6.1"))
+
+(lsp-dependency
+ 'xmlls
+ '(:system lsp-xml-jar-file)
+ `(:download :url "https://repo.eclipse.org/content/repositories/lemminx-releases/org/eclipse/lemminx/org.eclipse.lemminx/0.13.1/org.eclipse.lemminx-0.13.1-uber.jar"
+             :store-path ,(f-join lsp-server-install-dir "xmlls" "org.eclipse.lemminx.jar")))
 
 (defcustom lsp-xml-server-command `("java" "-jar" ,lsp-xml-jar-file)
   "Xml server command."
