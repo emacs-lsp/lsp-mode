@@ -10,14 +10,14 @@
     <atom:link href="https://emacs-lsp.github.io/lsp-mode/feed_rss_updated.xml" rel="self" type="application/rss+xml" />
 
     <!-- Optional elements -->
-    <managingEditor>Emacs LSP Maintainers</managingEditor>
+    <managingEditor>ercdll1337@gmail.com</managingEditor>
     <category>None</category>
     <docs>https://github.com/emacs-lsp/lsp-mode/</docs>
     
 
     <!-- Timestamps and frequency -->
-    <pubDate>Fri, 18 Sep 2020 23:29:52 -0000</pubDate>
-    <lastBuildDate>Fri, 18 Sep 2020 23:29:52 -0000</lastBuildDate>
+    <pubDate>Fri, 18 Sep 2020 23:42:35 -0000</pubDate>
+    <lastBuildDate>Fri, 18 Sep 2020 23:42:35 -0000</lastBuildDate>
     <ttl>1440</ttl>
 
     <!-- Credits -->
