@@ -1781,7 +1781,7 @@ users coming from IDEs but still in <code>Emacs</code> community there are a lot
 looking for a minimal distraction-free experience especially traditional long
 time users. Although the turn off <code>defcustom</code> settings are documented in
 corresponding <code>README</code> and available via <code>customize-group</code> it turned out that it
-is not very easy to find them when you want to turn a particular feature off
+is not very easy to find the them when you want to turn a particular feature off
 which led to a lot of frustration. Hopefully, this article will help solving
 that issue:</p>
 <p><img alt="Turn Off 1" src="../images/turn-off-1.png" title="turn off 1" />
@@ -1789,14 +1789,14 @@ that issue:</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-enable-symbol-highlighting</span> <span class="no">nil</span><span class="p">)</span>
 </code></pre></div>
 2. <code>lsp-ui-doc</code> - on hover dialogs.
-* disable via
-<div class="highlight"><pre><span></span><code>(setq lsp-ui-doc-enable nil)
+   * disable via
+   <div class="highlight"><pre><span></span><code>(setq lsp-ui-doc-enable nil)
 </code></pre></div>
-* disable cursor hover (keep mouse hover)
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-ui-doc-show-with-cursor</span> <span class="no">nil</span><span class="p">)</span>
+   * disable cursor hover (keep mouse hover)
+   <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-ui-doc-show-with-cursor</span> <span class="no">nil</span><span class="p">)</span>
 </code></pre></div>
-* disable mouse hover (keep cursor hover)
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-ui-doc-show-with-mouse</span> <span class="no">nil</span><span class="p">)</span>
+   * disable mouse hover (keep cursor hover)
+   <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-ui-doc-show-with-mouse</span> <span class="no">nil</span><span class="p">)</span>
 </code></pre></div>
 3. Lenses
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-lens-enable</span> <span class="no">nil</span><span class="p">)</span>
@@ -1805,18 +1805,18 @@ that issue:</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-headerline-breadcrumb-enable</span> <span class="no">nil</span><span class="p">)</span>
 </code></pre></div>
 5. Sideline code actions
-* disable whole sideline via
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-ui-sideline-enable</span> <span class="no">nil</span><span class="p">)</span>
+   * disable whole sideline via
+   <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-ui-sideline-enable</span> <span class="no">nil</span><span class="p">)</span>
 </code></pre></div>
-* hide code actions
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-ui-sideline-show-code-actions</span> <span class="no">nil</span><span class="p">)</span>
+   * hide code actions
+   <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-ui-sideline-show-code-actions</span> <span class="no">nil</span><span class="p">)</span>
 </code></pre></div>
 6. Sideline hover symbols
-* disable whole sideline via
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-ui-sideline-enable</span> <span class="no">nil</span><span class="p">)</span>
+   * disable whole sideline via
+   <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-ui-sideline-enable</span> <span class="no">nil</span><span class="p">)</span>
 </code></pre></div>
-* hide only hover symbols
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-ui-sideline-show-hover</span> <span class="no">nil</span><span class="p">)</span>
+   * hide only hover symbols
+   <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-ui-sideline-show-hover</span> <span class="no">nil</span><span class="p">)</span>
 </code></pre></div>
 7. Modeline code actions
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-modeline-code-actions-enable</span> <span class="no">nil</span><span class="p">)</span>
@@ -1826,11 +1826,11 @@ that issue:</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-diagnostics-provider</span> <span class="nb">:none</span><span class="p">)</span>
 </code></pre></div>
 9. Sideline diagnostics
-* disable whole sideline via
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-ui-sideline-enable</span> <span class="no">nil</span><span class="p">)</span>
+   * disable whole sideline via
+   <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-ui-sideline-enable</span> <span class="no">nil</span><span class="p">)</span>
 </code></pre></div>
-* hide only errors
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-ui-sideline-show-diagnostics</span> <span class="no">nil</span><span class="p">)</span>
+   * hide only errors
+   <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-ui-sideline-show-diagnostics</span> <span class="no">nil</span><span class="p">)</span>
 </code></pre></div>
 10. Eldoc
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-eldoc-enable-hover</span> <span class="no">nil</span><span class="p">)</span>
@@ -1863,7 +1863,7 @@ that issue:</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 15, 2020</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 18, 2020</span>
     
   </small>
 </div>

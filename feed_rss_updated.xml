@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0"
+  xmlns:atom="https://www.w3.org/2005/Atom"
+  xmlns:dc="https://purl.org/dc/elements/1.1/">
+  <channel>
+    <!-- Mandatory elements -->
+    <title>LSP Mode - LSP support for Emacs</title>
+    <description>None</description>
+    <link>https://emacs-lsp.github.io/lsp-mode</link>
+    <atom:link href="https://emacs-lsp.github.io/lsp-mode/feed_rss_updated.xml" rel="self" type="application/rss+xml" />
+
+    <!-- Optional elements -->
+    <managingEditor>None</managingEditor>
+    <category>None</category>
+    <docs>https://github.com/emacs-lsp/lsp-mode/</docs>
+    
+
+    <!-- Timestamps and frequency -->
+    <pubDate>Fri, 18 Sep 2020 23:15:19 -0000</pubDate>
+    <lastBuildDate>Fri, 18 Sep 2020 23:15:19 -0000</lastBuildDate>
+    <ttl>1440</ttl>
+
+    <!-- Credits -->
+    <generator>MkDocs RSS plugin - v0.6.1</generator>
+
+    <!-- Feed illustration -->
+    
+
+    <!-- Entries -->
+    
+  </channel>
+</rss>
