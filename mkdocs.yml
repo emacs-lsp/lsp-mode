@@ -1,5 +1,7 @@
 site_name: LSP Mode - LSP support for Emacs
+site_description: Language Server Protocol Support for Emacs
 site_url: https://emacs-lsp.github.io/lsp-mode
+site_author: ercdll1337@gmail.com
 
 nav:
   - Home:
@@ -151,6 +153,7 @@ plugins:
   - search
   - awesome-pages
   - git-revision-date-localized
+  - rss
 
 google_analytics:
   - UA-165661257-1
