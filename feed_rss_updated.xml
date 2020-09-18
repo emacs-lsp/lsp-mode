@@ -5,19 +5,19 @@
   <channel>
     <!-- Mandatory elements -->
     <title>LSP Mode - LSP support for Emacs</title>
-    <description>None</description>
+    <description>Language Server Protocol Support for Emacs</description>
     <link>https://emacs-lsp.github.io/lsp-mode</link>
     <atom:link href="https://emacs-lsp.github.io/lsp-mode/feed_rss_updated.xml" rel="self" type="application/rss+xml" />
 
     <!-- Optional elements -->
-    <managingEditor>None</managingEditor>
+    <managingEditor>Emacs LSP Maintainers</managingEditor>
     <category>None</category>
     <docs>https://github.com/emacs-lsp/lsp-mode/</docs>
     
 
     <!-- Timestamps and frequency -->
-    <pubDate>Fri, 18 Sep 2020 23:15:24 -0000</pubDate>
-    <lastBuildDate>Fri, 18 Sep 2020 23:15:24 -0000</lastBuildDate>
+    <pubDate>Fri, 18 Sep 2020 23:29:52 -0000</pubDate>
+    <lastBuildDate>Fri, 18 Sep 2020 23:29:52 -0000</lastBuildDate>
     <ttl>1440</ttl>
 
     <!-- Credits -->
