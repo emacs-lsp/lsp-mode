@@ -235,6 +235,17 @@ tarball or a zip file (based on a current platform) to TARGET-DIR."
   "Resolves path and arguments to use to start the server."
   (list (lsp-csharp--language-server-path) "-lsp"))
 
+(lsp-defun lsp-csharp--action-client-find-references ((&Command :arguments?))
+  "Read first argument from ACTION as Location and display xrefs for that location
+using the `textDocument/references' request."
+  (-if-let* (((&Location :uri :range) (lsp-seq-first arguments?))
+             ((&Range :start range-start) range)
+             (find-refs-params (append (lsp--text-document-position-params (list :uri uri) range-start)
+                                       (list :context (list :includeDeclaration json-false))))
+             (locations-found (lsp-request "textDocument/references" find-refs-params)))
+      (lsp-show-xrefs (lsp--locations-to-xref-items locations-found) nil t)
+    (message "No references found")))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    #'lsp-csharp--language-server-command
@@ -244,6 +255,7 @@ tarball or a zip file (based on a current platform) to TARGET-DIR."
 
                   :major-modes '(csharp-mode)
                   :server-id 'csharp
+                  :action-handlers (ht ("omnisharp/client/findReferences" 'lsp-csharp--action-client-find-references))
                   :download-server-fn
                   (lambda (_client callback error-callback _update?)
                     (condition-case err
