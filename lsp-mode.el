@@ -3242,9 +3242,11 @@ disappearing, unset all the variables related to it."
                       ,@(when lsp-enable-semantic-highlighting
                           `((semanticTokens
                              . ((dynamicRegistration . t)
+                                (requests . ((range . t) (full . t)))
                                 (tokenModifiers . ,(if lsp-semantic-tokens-apply-modifiers
                                                        (apply 'vector (mapcar #'car lsp-semantic-token-modifier-faces)) []))
-                                (tokenTypes . ,(apply 'vector (mapcar #'car lsp-semantic-token-faces)))))))
+                                (tokenTypes . ,(apply 'vector (mapcar #'car lsp-semantic-token-faces)))
+                                (formats . ["relative"])))))
                       (rename . ((dynamicRegistration . t) (prepareSupport . t)))
                       (codeAction . ((dynamicRegistration . t)
                                      (isPreferredSupport . t)
