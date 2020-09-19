@@ -244,18 +244,14 @@ tarball or a zip file (based on a current platform) to TARGET-DIR."
   "Resolves path and arguments to use to start the server."
   (list (lsp-csharp--language-server-path) "-lsp"))
 
-(defun lsp-csharp--action-client-find-references (action)
-  "Reads first argument from ACTION as Location and displays xrefs for that location
+(lsp-defun lsp-csharp--action-client-find-references ((&Command :command :arguments?))
+  "Read first argument from ACTION as Location and display xrefs for that location
 using the `textDocument/references' request."
-  (if-let ((arguments (gethash "arguments" action))
-           (location (lsp-seq-first arguments))
-           (location-uri (gethash "uri" location))
-           (location-range (gethash "range" location))
-           (location-range-start-pos (gethash "start" location-range))
-           (find-refs-params (append (lsp--text-document-position-params (list :uri location-uri)
-                                                                         location-range-start-pos)
-                                     (list :context (list :includeDeclaration json-false))))
-           (locations-found (lsp-request "textDocument/references" find-refs-params)))
+  (-if-let* (((&Location :uri :range) (lsp-seq-first arguments?))
+             ((&Range :start range-start) range)
+             (find-refs-params (append (lsp--text-document-position-params (list :uri uri) range-start)
+                                       (list :context (list :includeDeclaration json-false))))
+             (locations-found (lsp-request "textDocument/references" find-refs-params)))
       (lsp-show-xrefs (lsp--locations-to-xref-items locations-found) nil t)
     (message "No references found")))
 
