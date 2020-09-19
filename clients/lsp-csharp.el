@@ -235,7 +235,7 @@ tarball or a zip file (based on a current platform) to TARGET-DIR."
   "Resolves path and arguments to use to start the server."
   (list (lsp-csharp--language-server-path) "-lsp"))
 
-(lsp-defun lsp-csharp--action-client-find-references ((&Command :command :arguments?))
+(lsp-defun lsp-csharp--action-client-find-references ((&Command :arguments?))
   "Read first argument from ACTION as Location and display xrefs for that location
 using the `textDocument/references' request."
   (-if-let* (((&Location :uri :range) (lsp-seq-first arguments?))
