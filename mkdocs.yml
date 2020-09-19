@@ -1,13 +1,15 @@
 site_name: LSP Mode - LSP support for Emacs
+site_description: Language Server Protocol Support for Emacs
 site_url: https://emacs-lsp.github.io/lsp-mode
+site_author: ercdll1337@gmail.com
 
 nav:
   - Home:
     - Overview: README.md
     - Setup:
         - Installation: page/installation.md
-        - Perfomance: page/performance.md
-        - Additional settings: page/additional-settings.md
+        - Performance: page/performance.md
+    - Main features: page/main-features.md
     - Settings: page/settings.md
     - Keybindings: page/keybindings.md
     - Extensions:
@@ -15,6 +17,7 @@ nav:
         - Treemacs: https://github.com/emacs-lsp/lsp-treemacs
         - Helm: https://github.com/emacs-lsp/helm-lsp
         - Ivy: https://github.com/emacs-lsp/lsp-ivy
+    - Limitations: page/limitations.md
     - Remote: page/remote.md
     - FAQ: page/faq.md
     - Troubleshooting: page/troubleshooting.md
@@ -47,7 +50,9 @@ nav:
     - Hack: page/lsp-hack.md
     - HTML: page/lsp-html.md
     - Haskell: https://emacs-lsp.github.io/lsp-haskell
-    - Lua: page/lsp-emmy-lua.md
+    - Lua (EmmyLua): page/lsp-emmy-lua.md
+    - Lua (Lua Language Server): page/lsp-lua-language-server.md
+    - Lua (Lua-Lsp): page/lsp-lua-lsp.md
     - Java: https://emacs-lsp.github.io/lsp-java
     - JavaScript/TypeScript (sourcegraph): page/lsp-typescript-javascript.md
     - JavaScript/TypeScript (theia-ide): page/lsp-typescript.md
@@ -57,26 +62,34 @@ nav:
     - Kotlin: page/lsp-kotlin.md
     - MSSQL: https://emacs-lsp.github.io/lsp-mssql
     - Nim: page/lsp-nim.md
+    - Nix: page/lsp-nix.md
     - OCaml (ocaml): page/lsp-ocaml.md
-    - OCaml (icaml-lsp): page/lsp-ocalm-lsp-server.md
+    - OCaml (ocaml-lsp): page/lsp-ocaml-lsp-server.md
     - Pascal/Object Pascal: page/lsp-pascal.md
     - Perl: page/lsp-perl.md
     - PHP (intelephense): page/lsp-intelephense.md
     - PHP (Serenata): page/lsp-serenata.md
     - PHP (felixbecker): page/lsp-php.md
     - Powershell: page/lsp-pwsh.md
+    - Prolog: page/lsp-prolog.md
     - PureScript: page/lsp-purescript.md
-    - Python: page/lsp-pyls.md
+    - Python (Jedi Language Server): page/lsp-jedi.md
+    - Python (Palantir): page/lsp-pyls.md
+    - Python (Pyright): https://emacs-lsp.github.io/lsp-pyright
     - Python (Microsoft): https://emacs-lsp.github.io/lsp-python-ms
     - R: page/lsp-r.md
+    - Racket (jeapostrophe): page/lsp-racket-langserver.md
+    - Racket (Theia): page/lsp-racket-language-server.md
     - Ruby: page/lsp-solargraph.md
     - Rust: page/lsp-rust.md
     - Scala: https://emacs-lsp.github.io/lsp-metals
     - SQL (sqls): page/lsp-sqls.md
+    - Svelte: page/lsp-svelte.md
     - Swift: https://emacs-lsp.github.io/lsp-sourcekit
     - Terraform: page/lsp-terraform.md
     - TeX, LaTeX, etc (digestif): page/lsp-tex.md
     - TeX, LaTeX, etc (texlab): page/lsp-texlab.md
+    - TeX, LaTeX, etc (texlab, external): page/lsp-latex.md
     - Verilog/SystemVerilog: page/lsp-verilog.md
     - VHDL: page/lsp-vhdl.md
     - Vimscript: page/lsp-vim.md
@@ -89,6 +102,14 @@ nav:
       - page/gallery.md
   - Changelog:
       - page/CHANGELOG.md
+  - Tutorials:
+      - 'Configuring Emacs a C/C++ IDE': tutorials/CPP-guide.md
+      - 'A guide on disabling/enabling lsp-mode features': tutorials/how-to-turn-off.md
+  - Blog:
+      - 2020:
+          - '7.0 Release': blog/2020/7.0-release.md
+  - Support us:
+      - https://opencollective.com/emacs-lsp
 
 extra_css:
   - stylesheets/layout.css
@@ -132,6 +153,7 @@ plugins:
   - search
   - awesome-pages
   - git-revision-date-localized
+  - rss
 
 google_analytics:
   - UA-165661257-1

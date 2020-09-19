@@ -24,11 +24,16 @@
 
 ;;; Code:
 
-(require 'ert)
-(require 'lsp-mode)
-(require 'f)
 (require 'deferred)
 (require 'dash)
+(require 'ert)
+(require 'f)
+
+(require 'lsp-mode)
+(require 'lsp-modeline)
+(require 'lsp-completion)
+(require 'lsp-diagnostics)
+(require 'lsp-pyls)
 
 (defconst lsp-test-location (file-name-directory (or load-file-name buffer-file-name)))
 
@@ -37,7 +42,7 @@
     (run-with-timer
      0.001 nil
      (lambda ()
-       (if-let (result (eval form))
+       (if-let ((result (eval form)))
            (deferred:callback-post it result)
          (lsp-test--wait-for form it))))))
 
@@ -262,7 +267,7 @@
     (lsp-workspace-folders-add (f-expand "fixtures/org-mode"))
     (lsp-org)
 
-    (setq lsp-diagnostic-package nil)
+    (setq lsp-diagnostics-provider nil)
 
     (-> (lsp-test-wait
          (eq 'initialized (lsp--workspace-status
@@ -289,7 +294,7 @@
     (lsp-workspace-folders-add (f-expand "fixtures/org-mode"))
     (lsp-org)
 
-    (setq lsp-diagnostic-package nil)
+    (setq lsp-diagnostics-provider nil)
 
     (-> (lsp-test-wait
          (eq 'initialized (lsp--workspace-status
@@ -552,7 +557,7 @@
           ;;                              (buffer-string)))))
 
 
-          ;;           ;; delete identation + from the original buffer
+          ;;           ;; delete indentation + from the original buffer
           ;;           (unwind-protect
           ;;               (progn
           ;;                 (goto-char (+ (point-at-bol) 2))
@@ -566,7 +571,7 @@
           ;;                              (buffer-string)))))
 
 
-          ;;           ;; delete identation
+          ;;           ;; delete indentation
 
           ;;           (unwind-protect
           ;;               (progn
@@ -583,7 +588,7 @@
 
 
 
-          ;;           ;; delete 2 chars from identation
+          ;;           ;; delete 2 chars from indentation
           ;;           (unwind-protect
           ;;               (progn
           ;;                 (goto-char (point-at-bol))
@@ -647,7 +652,7 @@
     (lsp-workspace-folders-add (f-expand "fixtures/org-mode"))
     (lsp-org)
 
-    (setq lsp-diagnostic-package nil)
+    (setq lsp-diagnostics-provider nil)
 
     (-> (lsp-test-wait
          (eq 'initialized (lsp--workspace-status

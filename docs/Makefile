@@ -8,6 +8,7 @@ generate: deps
 
 	@cask emacs -Q --batch \
 		-L ../ \
+		-L ../clients \
 		-l lsp-doc.el \
 		-f lsp-doc-generate
 

@@ -33,8 +33,8 @@ additional behavior, you can register that by using the
                   :major-modes '(sh-mode)
                   :priority -1
                   :environment-fn (lambda ()
-                                    (("EXPLAINSHELL_ENDPOINT" . lsp-bash-explainshell-endpoint)
-                                     ("HIGHLIGHT_PARSING_ERRORS" . lsp-bash-highlight-parsing-errors)))
+                                    '(("EXPLAINSHELL_ENDPOINT" . lsp-bash-explainshell-endpoint)
+                                      ("HIGHLIGHT_PARSING_ERRORS" . lsp-bash-highlight-parsing-errors)))
                   :server-id 'bash-ls))
 ```
 

@@ -115,4 +115,11 @@ Get a list of possible auto import candidates with `lsp-execute-code-action`
 ![](../examples/lsp-rust-analyzer-auto-import.png)
 
 ### Caveats
+
 - Rust Analyzer does not support disabling snippets - https://github.com/rust-analyzer/rust-analyzer/issues/2518
+
+### extract signature
+
+This [unmerged PR](https://github.com/emacs-lsp/lsp-mode/pull/1740) contains an example method that allows
+modifying the signature that is displayed by eldoc.
+

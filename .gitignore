@@ -41,15 +41,16 @@ flycheck_*.el
 # projectiles files
 .projectile
 
-# directory configuration
-.dir-locals.el
-
 /*-autoloads.el
 /*-pkg.el
 /.ecukes-failing-scenarios
+
+# personal customizations
+.dir-locals-2.el
 
 # java stuff
 target
 .classpath
 .project
 .settings
+/ert-profile

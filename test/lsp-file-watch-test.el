@@ -24,7 +24,6 @@
 ;;; Code:
 (require 'lsp-mode)
 (require 'filenotify)
-(require 'em-glob)
 
 (ert-deftest lsp-file-watch--recursive ()
   :tags '(no-win)
@@ -144,10 +143,70 @@
     (lsp-kill-watch watch)))
 
 (ert-deftest lsp-file-watch--glob-pattern ()
-  (should (string-match (eshell-glob-regexp "pom.xml") "pom.xml"))
-  (should (string-match (eshell-glob-regexp "**/pom.xml") "/pom.xml"))
-  (should (string-match (eshell-glob-regexp "**/*.xml") "data/pom.xml"))
-  (should (not (string-match (eshell-glob-regexp "**/*.xml") "pom.xml"))))
+  (should (string-match (lsp-glob-to-regexp "pom.xml") "pom.xml"))
+  (should (string-match (lsp-glob-to-regexp "**/pom.xml") "/pom.xml"))
+  (should (string-match (lsp-glob-to-regexp "**/*.xml") "data/pom.xml"))
+  (should (string-match (lsp-glob-to-regexp "**/*.xml") "pom.xml"))
+
+  ;; Some VSCode tests
+  ;; (https://github.com/Microsoft/vscode/blob/466da1c9013c624140f6d1473b23a870abc82d44/src/vs/base/test/node/glob.test.ts)
+  (should (string-match (lsp-glob-to-regexp "**/.*") ".git"))
+  (should (string-match (lsp-glob-to-regexp "**/.*") ".hidden.txt"))
+  (should (not (string-match (lsp-glob-to-regexp "**/.*") "git")))
+  (should (not (string-match (lsp-glob-to-regexp "**/.*") "hidden.txt")))
+
+  (should (string-match (lsp-glob-to-regexp "**/.*") "path/.git"))
+  (should (string-match (lsp-glob-to-regexp "**/.*") "path/.hidden.txt"))
+  (should (not (string-match (lsp-glob-to-regexp "**/.*") "path/git")))
+  (should (not (string-match (lsp-glob-to-regexp "**/.*") "pat.h/hidden.txt")))
+
+  (should (string-match (lsp-glob-to-regexp "**/node_modules/**") "node_modules"))
+  (should (string-match (lsp-glob-to-regexp "**/node_modules/**") "node_modules/"))
+  (should (not (string-match (lsp-glob-to-regexp "**/node_modules/**") "node/_modules/")))
+
+  (should (string-match (lsp-glob-to-regexp "?") "h"))
+  (should (not (string-match (lsp-glob-to-regexp "?") "hi")))
+
+  (should (string-match (lsp-glob-to-regexp "foo.[[]") "foo.["))
+
+  (should (string-match (lsp-glob-to-regexp "{foo,bar}/**") "foo"))
+  (should (string-match (lsp-glob-to-regexp "{foo,bar}/**") "bar"))
+  (should (string-match (lsp-glob-to-regexp "{foo,bar}/**") "foo/test"))
+  (should (string-match (lsp-glob-to-regexp "{foo,bar}/**") "bar/test"))
+
+  (should (string-match (lsp-glob-to-regexp "{**/*.d.ts,**/*.js}") "/testing/foo.js"))
+  (should (string-match (lsp-glob-to-regexp "{**/*.d.ts,**/*.js}") "testing/foo.d.ts"))
+  (should (string-match (lsp-glob-to-regexp "{**/*.d.ts,**/*.js,foo.[0-9]}") "foo.5"))
+
+  (should (string-match (lsp-glob-to-regexp "some/**/*") "some/foo.js"))
+  (should (string-match (lsp-glob-to-regexp "some/**/*") "some/folder/foo.js"))
+
+  (should (not (string-match (lsp-glob-to-regexp "some/**/*") "something/foo.js")))
+  (should (not (string-match (lsp-glob-to-regexp "some/**/*") "something/folder/foo.js")))
+
+  (should (not (string-match (lsp-glob-to-regexp "{**/*.d.ts,**/*.js,foo.[0-9]}") "foo.f")))
+  (should (string-match (lsp-glob-to-regexp "prefix/{**/*.d.ts,**/*.js,foo.[0-9]}") "prefix/foo.8"))
+  (should (not (string-match (lsp-glob-to-regexp "prefix/{**/*.d.ts,**/*.js,foo.[0-9]}") "prefix/foo.f")))
+
+  (should (not (string-match (lsp-glob-to-regexp "foo.[!0-9]") "foo.5")))
+  (should (not (string-match (lsp-glob-to-regexp "foo.[!0-9]") "foo.8")))
+  (should (string-match (lsp-glob-to-regexp "foo.[!0-9]") "foo.f"))
+
+  (should (not (string-match (lsp-glob-to-regexp "foo.[^0-9]") "foo.5")))
+  (should (not (string-match (lsp-glob-to-regexp "foo.[^0-9]") "foo.8")))
+  (should (string-match (lsp-glob-to-regexp "foo.[^0-9]") "foo.f"))
+
+  ;; ???: This should properly fail since path-separators should be
+  ;; ignored inside brackets, but here (and in VSCode) it fails for a
+  ;; strange reason: the produced regexp is "\`foo\'" and everything
+  ;; to the right of the left bracket is treated as bracket text that
+  ;; never gets added because the right bracket is ignored when there
+  ;; is no preceding bracket text. Hence nothing can balance the left
+  ;; bracket, and all bracket text is dropped. One reasonable-looking
+  ;; way of handling this to recognize that because we're unbalanced
+  ;; at the end, that everything should be treated as a literal. But
+  ;; after experimenting with zsh, this isn't what they use.
+  (should (not (string-match (lsp-glob-to-regexp "foo[/]bar") "foo/bar"))))
 
 (ert-deftest lsp-file-watch--ignore-list ()
   :tags '(no-win)
@@ -217,7 +276,8 @@
          (lsp--session (make-lsp-session
                         :folder->servers (ht (root (list lsp--cur-workspace)))))
          (create-lockfiles nil)
-         (matching-file (f-join root "file-name-matching")))
+         (matching-file-1 (f-join root "file-name-matching-1"))
+         (matching-file-2 (f-join root "file-name-matching-2")))
 
     (setq lsp--test-events nil)
 
@@ -229,11 +289,15 @@
       :method "workspace/didChangeWatchedFiles"
       :register-options? (lsp-make-did-change-watched-files-registration-options
                           :watchers
-                          `[,(lsp-make-file-system-watcher :glob-pattern "file-name-matching")])))
+                          ;; kind = 5 == 4 | 1 admits DELETE (4) and CREATE (1) WatchKind events, but not CHANGE (2)
+                          `[,(lsp-make-file-system-watcher :glob-pattern "file-name-matching-[0-9]" :kind 5)])))
 
-    (f-write-text "some-text" 'utf-8 matching-file)
+    (f-write-text "some-text" 'utf-8 matching-file-1)
+    (f-write-text "more-text" 'utf-8 matching-file-2)
 
     (f-write-text "some-text" 'utf-8 (f-join root "not-matching"))
+
+    (delete-file matching-file-1)
 
     (sit-for 0.3)
 
@@ -241,9 +305,11 @@
 
     (should (equal lsp--test-events
                    `(((workspace-1) "workspace/didChangeWatchedFiles"
-                      ((changes . [((type . 2) (uri . ,(lsp--path-to-uri matching-file)))])))
+                      ((changes . [((type . 3) (uri . ,(lsp--path-to-uri matching-file-1)))])))
                      ((workspace-1) "workspace/didChangeWatchedFiles"
-                      ((changes . [((type . 1) (uri . ,(lsp--path-to-uri matching-file)))]))))))))
+                      ((changes . [((type . 1) (uri . ,(lsp--path-to-uri matching-file-2)))])))
+                     ((workspace-1) "workspace/didChangeWatchedFiles"
+                      ((changes . [((type . 1) (uri . ,(lsp--path-to-uri matching-file-1)))]))))))))
 
 (ert-deftest lsp-file-watches-cleanup-test ()
   :tags '(no-win)

@@ -3,7 +3,7 @@ Performance
 
 ## Tuning
 
-Use `M-x lsp-diagnose` to validate if your `lsp-mode` is properly configured. In the section below, you could find description for each of the checks:
+Use `M-x lsp-doctor` to validate if your `lsp-mode` is properly configured. In the section below, you could find description for each of the checks:
 
 When configured properly `lsp-mode`'s performance is on par with mainstream LSP clients (e. g. `VScode`, `Theia`, etc). Here are steps to achieve optimal results.
 
@@ -26,10 +26,10 @@ Benchmarks show that Emacs 27 is `~15 times` faster than Emacs when using Elisp 
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 ```
 
-- Optional: use `company-capf` . Although `company-lsp` also supports caching `lsp-mode`'s `company-capf` does that by default. To achieve that uninstall `company-lsp` or put these lines in your config:
+- Make sure that you are using `company-capf` as the completion provider with:
 
 ``` elisp
-(setq lsp-prefer-capf t)
+(setq lsp-completion-provider :capf)
 ```
 
 *Note:* - to verify which `company` backend implementation you are using do `M-x company-diag` when performing auto-completion.
@@ -39,6 +39,16 @@ Benchmarks show that Emacs 27 is `~15 times` faster than Emacs when using Elisp 
 
 ``` elisp
 (setq lsp-idle-delay 0.500)
+```
+
+## Ignore watch folders/files
+
+If the server supports watch files, by default `lsp-mode` tries to watch all files and folders of the project ignoring the regexp from `lsp-file-watch-ignored`. If you don't want some file or folder
+to be watched for performance reasons, you can add a regexp to that variable excluding the file or folder. 
+Also you can disable the file watch feature with:
+
+```elisp
+(setq lsp-enable-file-watchers nil)
 ```
 
 ## Reporting performance problems

@@ -14,11 +14,10 @@ Before logging the bug, please make sure that:
    ``` bash
    emacs -q -l lsp-start-plain.el
    ```
-   where `lsp-start-plain.el` could be downloaded from `https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-start-plain.el`.  
+   where `lsp-start-plain.el` could be downloaded from `https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-start-plain.el`.
    Alternatively, in will be great if you can reproduce the issue using [lsp-docker](https://github.com/emacs-lsp/lsp-docker/) which provides the minimal configurations for `lsp-mode` and ships with most of the language servers.
-3. Check FAQ and Troubleshooting section (https://github.com/emacs-lsp/lsp-mode#faq and https://github.com/emacs-lsp/lsp-mode#troubleshooting)
+3. Check FAQ and Troubleshooting section (https://emacs-lsp.github.io/lsp-mode/page/faq/ and https://emacs-lsp.github.io/lsp-mode/page/troubleshooting/)
 4. Consider providing a minimal project to reproduce the issue with. Note that `lsp-mode` supports 30+ languages and the maintainers of the project are not familiar with all of the languages and a sample project + full steps to reproduce will help a lot.
-
 
 **Describe the bug**
 A clear and concise description of what the bug is.

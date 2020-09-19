@@ -13,17 +13,17 @@ LSP mode has support for tramp buffers with the following requirements:
 
 ### Sample configuration
 
-Here it is example how you can configure python language server to work when using `TRAMP`. Note that if you are trying to convert existing language server configuration you should copy all of it's properties(e. g. `:request-handlers`, `activation-fn`, etc).
+Here it is example how you can configure python language server to work when using `TRAMP`. Note that if you are trying to convert existing language server configuration you should copy all of it's properties(e. g. `:request-handlers`, `activation-fn`, etc). Also, when you are doing that you should make sure that none of the custom language server settings are not pointing to local path because those settings will be sent to the remote server.
 
 ```elisp
 (lsp-register-client
-    (make-lsp-client :new-connection (lsp-tramp-connection "<insert your LS's binary name or path here>")
+    (make-lsp-client :new-connection (lsp-tramp-connection "<binary name (e. g. pyls, rls)>")
                      :major-modes '(python-mode)
                      :remote? t
                      :server-id 'pyls-remote))
 ```
 
-_Note:_ the path passed to `lsp-tramp-connection` should be either full path including host name, e. g. `/docker:my-image:/usr/bin/rust-analyzer` or the binary name (e. g. `rust-analyzer`) if the binary is on the path.
+_Note:_ when you do not have root privileges on the remote machine to put the language server on the path you may alter the remote path by changing `tramp-remote-path`.
 
 ### Dealing with stderr
 

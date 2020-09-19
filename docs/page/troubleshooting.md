@@ -10,3 +10,8 @@ Troubleshooting
 - `lsp-describe-session` will show the current projects roots + the started severs and allows inspecting the server capabilities:
 
     ![Describe session](../examples/describe.png)
+- If you manage your Emacs packages with the built-in `package.el`, we recommend the following procedure to update your packages:
+
+    1. Delete your LSP-related packages
+    2. Restart Emacs
+    3. Install the new versions of the packages.

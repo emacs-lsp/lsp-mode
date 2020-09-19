@@ -19,7 +19,7 @@ jobs:
 
       - uses: purcell/setup-emacs@master
         with:
-          version: 26.3
+          version: 27.1
 
       - uses: conao3/setup-cask@master
         with:
@@ -30,8 +30,9 @@ jobs:
 
       - name: MkDocs
         run: |
+          docker build -t emacs-lsp/mkdocs-material docs
           cp -rf README.md examples docs
-          docker run --rm -v ${PWD}:/docs squidfunk/mkdocs-material -- build
+          docker run --rm -v ${PWD}:/docs emacs-lsp/mkdocs-material -- build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3

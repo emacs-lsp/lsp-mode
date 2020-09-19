@@ -18,13 +18,13 @@ Language Server Protocol Support for Emacs
 
 <hr>
 <p align="center">
-  <a href="https://emacs-lsp.github.io/lsp-mode"><strong>homepage</strong></a> • 
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/installation"><strong>installation</strong></a> • 
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/languages"><strong>languages</strong></a> • 
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/settings"><strong>settings</strong></a> • 
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/extensions"><strong>extensions</strong></a> • 
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/troubleshooting"><strong>troubleshooting</strong></a> • 
-  <a href="https://emacs-lsp.github.io/lsp-mode/page/gallery"><strong>screenshots</strong></a> • 
+  <a href="https://emacs-lsp.github.io/lsp-mode"><strong>homepage</strong></a> •
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/installation"><strong>installation</strong></a> •
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/languages"><strong>languages</strong></a> •
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/settings"><strong>settings</strong></a> •
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/extensions"><strong>extensions</strong></a> •
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/troubleshooting"><strong>troubleshooting</strong></a> •
+  <a href="https://emacs-lsp.github.io/lsp-mode/page/gallery"><strong>screenshots</strong></a> •
   <a href="https://emacs-lsp.github.io/lsp-mode/page/faq"><strong>FAQ</strong></a>
 </p>
 <hr>
@@ -53,8 +53,7 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
     [company-lsp](https://github.com/tigersoldier/company-lsp) is no
     longer supported).
   - Hovers - using [lsp-ui](https://emacs-lsp.github.io/lsp-ui)
-  - Code actions - using `lsp-execute-code-action` or
-    [lsp-ui](https://emacs-lsp.github.io/lsp-ui) sideline.
+  - Code actions - via `lsp-execute-code-action`, [modeline](https://emacs-lsp.github.io/lsp-mode/page/main-features/#code-actions-on-modeline) (recommended) or [lsp-ui](https://emacs-lsp.github.io/lsp-ui) sideline.
   - Code outline - using builtin
     [imenu](https://www.gnu.org/software/emacs/manual/html_node/emacs/Imenu.html)
     or `helm-imenu`
@@ -65,7 +64,9 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
   - Code lens
   - Symbol highlights
   - Formatting
+  - [Project errors](https://emacs-lsp.github.io/lsp-mode/page/main-features/#project-errors-on-modeline) on modeline
   - Debugger - [dap-mode](https://emacs-lsp.github.io/dap-mode/)
+  - [Breadcrumb on headerline](https://emacs-lsp.github.io/lsp-mode/page/main-features/#breadcrumb-on-headerline)
   - Helm integration -
     [helm-lsp](https://github.com/emacs-lsp/helm-lsp/)
   - Ivy integration - [lsp-ivy](https://github.com/emacs-lsp/lsp-ivy/)
@@ -98,10 +99,19 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
     package that displays available keybindings in popup
   - [projectile](https://github.com/bbatsov/projectile/) - Project
     Interaction Library for Emacs
+  - [emacs-tree-sitter](https://github.com/ubolonton/emacs-tree-sitter) - Faster, fine-grained code highlighting via [tree-sitter](https://github.com/tree-sitter/tree-sitter).
+  - [gccemacs](https://akrl.sdf.org/gccemacs.html) - modified Emacs capable of compiling and running Emacs Lisp as native code.
 
 ## Contributions
 
 Contributions are very much welcome.
+
+## Support the project
+
+The `emacs-lsp` organization has more than **20.000 lines of code**, to keep all of this working,
+we need to implement new features and help the community on a lot of issues.
+
+You can help us keep going and improving it by **[supporting the project](https://opencollective.com/emacs-lsp)**
 
 ### Members
 
@@ -220,6 +230,19 @@ primary working on/responsible for.
         </a>
         <br/>
         C++ | Swift
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <div>
+        <a href="https://github.com/kiennq">
+          <img src="https://github.com/kiennq.png" width="100px;" style="border-radius: 50%;" alt="kiennq"/>
+          <br/>
+          <sub><b>kiennq</b></sub>
+        </a>
+        <br/>
+        completions | pwsh
       </div>
     </td>
   </tr>

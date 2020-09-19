@@ -36,7 +36,7 @@ print "Hello!"
 * Deleting content that spans across the source block and the content of the org
   document is not handled.
 * Opening and editing the actual file from the disk might cause undefined
-  behavour because the server expects file to be open only once.
+  behaviour because the server expects file to be open only once.
 
 ## What does not work
 * `dap-mode`
