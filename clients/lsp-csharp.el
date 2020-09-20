@@ -248,8 +248,8 @@ using the `textDocument/references' request."
 
 (defun lsp-csharp--handle-os-error (_workspace params)
   "Handle the 'o#/error' (interop) notification with PARAMS by displaying a message with lsp-warn."
-  (-let (((&hash "FileName" filename "Text" text) params))
-    (lsp-warn "%s: %s" filename text)))
+  (-let (((&omnisharp:ErrorMessage :file-name :text) params))
+    (lsp-warn "%s: %s" file-name text)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
