@@ -247,7 +247,7 @@ using the `textDocument/references' request."
     (message "No references found")))
 
 (lsp-defun lsp-csharp--handle-os-error (_workspace (&omnisharp:ErrorMessage :file-name :text))
-  "Handle the 'o#/error' (interop) notification with PARAMS by displaying a message with lsp-warn."
+  "Handle the 'o#/error' (interop) notification by displaying a message with lsp-warn."
   (lsp-warn "%s: %s" file-name text))
 
 (lsp-register-client
