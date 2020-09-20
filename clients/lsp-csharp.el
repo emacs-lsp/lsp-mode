@@ -256,6 +256,15 @@ using the `textDocument/references' request."
                   :major-modes '(csharp-mode)
                   :server-id 'csharp
                   :action-handlers (ht ("omnisharp/client/findReferences" 'lsp-csharp--action-client-find-references))
+                  :notification-handlers (ht ("o#/projectadded" 'ignore)
+                                             ("o#/projectchanged" 'ignore)
+                                             ("o#/projectremoved" 'ignore)
+                                             ("o#/packagerestorestarted" 'ignore)
+                                             ("o#/packagerestorefinished" 'ignore)
+                                             ("o#/unresolveddependencies" 'ignore)
+                                             ("o#/error" 'ignore)
+                                             ("o#/projectconfiguration" 'ignore)
+                                             ("o#/projectdiagnosticstatus" 'ignore))
                   :download-server-fn
                   (lambda (_client callback error-callback _update?)
                     (condition-case err
