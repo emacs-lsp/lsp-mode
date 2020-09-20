@@ -246,6 +246,11 @@ using the `textDocument/references' request."
       (lsp-show-xrefs (lsp--locations-to-xref-items locations-found) nil t)
     (message "No references found")))
 
+(defun lsp-csharp--handle-os-error (_workspace params)
+  "Handle the 'o#/error' (interop) notification with PARAMS by displaying a message with lsp-warn."
+  (-let (((&hash "FileName" filename "Text" text) params))
+    (lsp-warn "%s: %s" filename text)))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    #'lsp-csharp--language-server-command
@@ -262,7 +267,7 @@ using the `textDocument/references' request."
                                              ("o#/packagerestorestarted" 'ignore)
                                              ("o#/packagerestorefinished" 'ignore)
                                              ("o#/unresolveddependencies" 'ignore)
-                                             ("o#/error" 'ignore)
+                                             ("o#/error" 'lsp-csharp--handle-os-error)
                                              ("o#/projectconfiguration" 'ignore)
                                              ("o#/projectdiagnosticstatus" 'ignore))
                   :download-server-fn
