@@ -16,8 +16,8 @@
     
 
     <!-- Timestamps and frequency -->
-    <pubDate>Sun, 20 Sep 2020 09:52:31 -0000</pubDate>
-    <lastBuildDate>Sun, 20 Sep 2020 09:52:31 -0000</lastBuildDate>
+    <pubDate>Sun, 20 Sep 2020 10:06:50 -0000</pubDate>
+    <lastBuildDate>Sun, 20 Sep 2020 10:06:50 -0000</lastBuildDate>
     <ttl>1440</ttl>
 
     <!-- Credits -->
@@ -29,66 +29,6 @@
     <!-- Entries -->
     
     <item>
-      <title>TeX, LaTeX, etc (texlab)</title>
-      <description>TeX, LaTeX, etc.
-==========
-
-## Server
-For information about the LSP server, check the [texlab](https://github.com/latex-lsp/texlab).
-
-## Installation</description>
-      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-texlab/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
-      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
-      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-texlab/</guid>
-      <enclosure url="None" type="None" />
-    </item>
-    
-    <item>
-      <title>JavaScript/TypeScript (sourcegraph)</title>
-      <description>JavaScript/TypeScript (sourcegraph)
-==========
-
-## Server
-For information about the LSP server, check the [javascript-typescript-stdio](https://github</description>
-      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript-javascript/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
-      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
-      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript-javascript/</guid>
-      <enclosure url="None" type="None" />
-    </item>
-    
-    <item>
-      <title>JavaScript/TypeScript (theia-ide)</title>
-      <description>JavaScript/TypeScript (theia-ide)
-==========
-
-## Server
-For information about the LSP server, check the [typescript-language-server (recommended)](htt</description>
-      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
-      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
-      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript/</guid>
-      <enclosure url="None" type="None" />
-    </item>
-    
-    <item>
-      <title>Verilog/SystemVerilog</title>
-      <description>Verilog/SystemVerilog
-==========
-
-## Server
-For information about the LSP server, check the [hdl_checker](https://github.com/suoto/hdl_checker).
-
-## I</description>
-      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-verilog/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
-      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
-      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-verilog/</guid>
-      <enclosure url="None" type="None" />
-    </item>
-    
-    <item>
       <title>Vue</title>
       <description>Vue
 ==========
@@ -98,7 +38,7 @@ For information about the LSP server, check the [vue-language-server](https://gi
 
 #</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-vetur/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:55 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-vetur/</guid>
       <enclosure url="None" type="None" />
@@ -117,7 +57,7 @@ For information about the LSP server, check the [VHDL Tool](http://www.vhdltool.
 
 For more instructi</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-vhdl/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:55 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-vhdl/</guid>
       <enclosure url="None" type="None" />
@@ -132,7 +72,7 @@ For more instructi</description>
 For information about the LSP server, check the [vim-language-server](https://github.com/iamcco/vim-language-server).
 </description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-vim/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:55 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-vim/</guid>
       <enclosure url="None" type="None" />
@@ -149,7 +89,7 @@ For information about the LSP server, check the [lsp4xml](https://github.com/ang
 ## Installation
 `Download</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-xml/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:55 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-xml/</guid>
       <enclosure url="None" type="None" />
@@ -165,55 +105,9 @@ For information about the LSP server, check the [yaml](https://github.com/redhat
 
 ## Insta</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-yaml/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:55 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-yaml/</guid>
-      <enclosure url="None" type="None" />
-    </item>
-    
-    <item>
-      <title>Python (Palantir)</title>
-      <description>Python
-==========
-
-## Server
-For information about the LSP server, check the [pyls](https://github.com/palantir/python-language-server).
-
-## Installat</description>
-      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-pyls/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
-      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
-      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-pyls/</guid>
-      <enclosure url="None" type="None" />
-    </item>
-    
-    <item>
-      <title>Lsp pyright</title>
-      <description>Python(Pyright)
-==========
-
-## Server
-For information about the LSP server, check the [pyright-langserver](https://github.com/microsoft/pyright).
-
-## </description>
-      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-pyright/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
-      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
-      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-pyright/</guid>
-      <enclosure url="None" type="None" />
-    </item>
-    
-    <item>
-      <title>Lsp python ms</title>
-      <description>Python(Microsoft)
-==========
-
-## Server
-For information about the LSP server, check the [Microsoft Python Language Server](https://github.com/Microsof</description>
-      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-python-ms/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
-      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
-      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-python-ms/</guid>
       <enclosure url="None" type="None" />
     </item>
     
@@ -227,7 +121,7 @@ For information about the LSP server, check the [languageserver](https://github.
 
 ## Instal</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-r/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-r/</guid>
       <enclosure url="None" type="None" />
@@ -241,7 +135,7 @@ For information about the LSP server, check the [languageserver](https://github.
 ## Server
 For information about the LSP server, check the [racket-langserver](https://github.com/jeapostrophe/racket</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-racket-langserver/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-racket-langserver/</guid>
       <enclosure url="None" type="None" />
@@ -255,7 +149,7 @@ For information about the LSP server, check the [racket-langserver](https://gith
 ## Server
 For information about the LSP server, check the [racket-language-server](https://github.com/theia-ide/racket-lang</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-racket-language-server/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-racket-language-server/</guid>
       <enclosure url="None" type="None" />
@@ -269,7 +163,7 @@ For information about the LSP server, check the [racket-language-server](https:/
 ## Server
 For information about the LSP server, check the [rf-intellisense](https://github.com/tomi/vscode-rf-language-ser</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-robot/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-robot/</guid>
       <enclosure url="None" type="None" />
@@ -285,7 +179,7 @@ For information about the LSP server, check the [rust-analyzer](https://github.c
 
 ## Instal</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/</guid>
       <enclosure url="None" type="None" />
@@ -301,7 +195,7 @@ For information about the LSP server, check the [Serenata](https://gitlab.com/Se
 
 ## Installatio</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-serenata/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-serenata/</guid>
       <enclosure url="None" type="None" />
@@ -318,7 +212,7 @@ For information about the LSP server, check the [solargraph](https://github.com/
 ## Installation
 `gem</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-solargraph/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-solargraph/</guid>
       <enclosure url="None" type="None" />
@@ -335,9 +229,57 @@ For information about the LSP server, check the [sqls](https://github.com/lightt
 ## Installation
 `go </description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-sqls/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-sqls/</guid>
+      <enclosure url="None" type="None" />
+    </item>
+    
+    <item>
+      <title>Svelte</title>
+      <description>Svelte
+==========
+
+## Server
+For information about the LSP server, check the [svelteserver](https://github.com/sveltejs/language-tools).
+
+## Installat</description>
+      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-svelte/</link>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
+      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
+      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-svelte/</guid>
+      <enclosure url="None" type="None" />
+    </item>
+    
+    <item>
+      <title>Terraform</title>
+      <description>Terraform
+==========
+
+## Server
+For information about the LSP server, check the [terraform-lsp](https://github.com/juliosueiras/terraform-lsp).
+
+## In</description>
+      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-terraform/</link>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
+      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
+      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-terraform/</guid>
+      <enclosure url="None" type="None" />
+    </item>
+    
+    <item>
+      <title>TeX, LaTeX, etc (digestif)</title>
+      <description>TeX, LaTeX, etc.
+==========
+
+## Server
+For information about the LSP server, check the [Digestif](https://github.com/astoff/digestif).
+
+## Installatio</description>
+      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-tex/</link>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
+      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
+      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-tex/</guid>
       <enclosure url="None" type="None" />
     </item>
     
@@ -351,7 +293,7 @@ For information about the LSP server, check the [texlab](https://github.com/late
 
 ## Installation</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-texlab/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-texlab/</guid>
       <enclosure url="None" type="None" />
@@ -365,7 +307,7 @@ For information about the LSP server, check the [texlab](https://github.com/late
 ## Server
 For information about the LSP server, check the [javascript-typescript-stdio](https://github</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript-javascript/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript-javascript/</guid>
       <enclosure url="None" type="None" />
@@ -379,7 +321,7 @@ For information about the LSP server, check the [javascript-typescript-stdio](ht
 ## Server
 For information about the LSP server, check the [typescript-language-server (recommended)](htt</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript/</guid>
       <enclosure url="None" type="None" />
@@ -395,7 +337,7 @@ For information about the LSP server, check the [hdl_checker](https://github.com
 
 ## I</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-verilog/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-verilog/</guid>
       <enclosure url="None" type="None" />
@@ -411,7 +353,7 @@ For information about the LSP server, check the [vue-language-server](https://gi
 
 #</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-vetur/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:55 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-vetur/</guid>
       <enclosure url="None" type="None" />
@@ -430,7 +372,7 @@ For information about the LSP server, check the [VHDL Tool](http://www.vhdltool.
 
 For more instructi</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-vhdl/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:55 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-vhdl/</guid>
       <enclosure url="None" type="None" />
@@ -445,7 +387,7 @@ For more instructi</description>
 For information about the LSP server, check the [vim-language-server](https://github.com/iamcco/vim-language-server).
 </description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-vim/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:55 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-vim/</guid>
       <enclosure url="None" type="None" />
@@ -462,7 +404,7 @@ For information about the LSP server, check the [lsp4xml](https://github.com/ang
 ## Installation
 `Download</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-xml/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:55 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-xml/</guid>
       <enclosure url="None" type="None" />
@@ -478,55 +420,9 @@ For information about the LSP server, check the [yaml](https://github.com/redhat
 
 ## Insta</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-yaml/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:36 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:55 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-yaml/</guid>
-      <enclosure url="None" type="None" />
-    </item>
-    
-    <item>
-      <title>Python (Palantir)</title>
-      <description>Python
-==========
-
-## Server
-For information about the LSP server, check the [pyls](https://github.com/palantir/python-language-server).
-
-## Installat</description>
-      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-pyls/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
-      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
-      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-pyls/</guid>
-      <enclosure url="None" type="None" />
-    </item>
-    
-    <item>
-      <title>Lsp pyright</title>
-      <description>Python(Pyright)
-==========
-
-## Server
-For information about the LSP server, check the [pyright-langserver](https://github.com/microsoft/pyright).
-
-## </description>
-      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-pyright/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
-      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
-      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-pyright/</guid>
-      <enclosure url="None" type="None" />
-    </item>
-    
-    <item>
-      <title>Lsp python ms</title>
-      <description>Python(Microsoft)
-==========
-
-## Server
-For information about the LSP server, check the [Microsoft Python Language Server](https://github.com/Microsof</description>
-      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-python-ms/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
-      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
-      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-python-ms/</guid>
       <enclosure url="None" type="None" />
     </item>
     
@@ -540,7 +436,7 @@ For information about the LSP server, check the [languageserver](https://github.
 
 ## Instal</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-r/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-r/</guid>
       <enclosure url="None" type="None" />
@@ -554,7 +450,7 @@ For information about the LSP server, check the [languageserver](https://github.
 ## Server
 For information about the LSP server, check the [racket-langserver](https://github.com/jeapostrophe/racket</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-racket-langserver/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-racket-langserver/</guid>
       <enclosure url="None" type="None" />
@@ -568,7 +464,7 @@ For information about the LSP server, check the [racket-langserver](https://gith
 ## Server
 For information about the LSP server, check the [racket-language-server](https://github.com/theia-ide/racket-lang</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-racket-language-server/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-racket-language-server/</guid>
       <enclosure url="None" type="None" />
@@ -582,7 +478,7 @@ For information about the LSP server, check the [racket-language-server](https:/
 ## Server
 For information about the LSP server, check the [rf-intellisense](https://github.com/tomi/vscode-rf-language-ser</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-robot/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-robot/</guid>
       <enclosure url="None" type="None" />
@@ -598,7 +494,7 @@ For information about the LSP server, check the [rust-analyzer](https://github.c
 
 ## Instal</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/</guid>
       <enclosure url="None" type="None" />
@@ -614,7 +510,7 @@ For information about the LSP server, check the [Serenata](https://gitlab.com/Se
 
 ## Installatio</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-serenata/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-serenata/</guid>
       <enclosure url="None" type="None" />
@@ -631,7 +527,7 @@ For information about the LSP server, check the [solargraph](https://github.com/
 ## Installation
 `gem</description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-solargraph/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-solargraph/</guid>
       <enclosure url="None" type="None" />
@@ -648,9 +544,117 @@ For information about the LSP server, check the [sqls](https://github.com/lightt
 ## Installation
 `go </description>
       <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-sqls/</link>
-      <pubDate>Sun, 20 Sep 2020 09:52:35 -0000</pubDate>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
       <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
       <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-sqls/</guid>
+      <enclosure url="None" type="None" />
+    </item>
+    
+    <item>
+      <title>Svelte</title>
+      <description>Svelte
+==========
+
+## Server
+For information about the LSP server, check the [svelteserver](https://github.com/sveltejs/language-tools).
+
+## Installat</description>
+      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-svelte/</link>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
+      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
+      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-svelte/</guid>
+      <enclosure url="None" type="None" />
+    </item>
+    
+    <item>
+      <title>Terraform</title>
+      <description>Terraform
+==========
+
+## Server
+For information about the LSP server, check the [terraform-lsp](https://github.com/juliosueiras/terraform-lsp).
+
+## In</description>
+      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-terraform/</link>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
+      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
+      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-terraform/</guid>
+      <enclosure url="None" type="None" />
+    </item>
+    
+    <item>
+      <title>TeX, LaTeX, etc (digestif)</title>
+      <description>TeX, LaTeX, etc.
+==========
+
+## Server
+For information about the LSP server, check the [Digestif](https://github.com/astoff/digestif).
+
+## Installatio</description>
+      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-tex/</link>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
+      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
+      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-tex/</guid>
+      <enclosure url="None" type="None" />
+    </item>
+    
+    <item>
+      <title>TeX, LaTeX, etc (texlab)</title>
+      <description>TeX, LaTeX, etc.
+==========
+
+## Server
+For information about the LSP server, check the [texlab](https://github.com/latex-lsp/texlab).
+
+## Installation</description>
+      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-texlab/</link>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
+      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
+      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-texlab/</guid>
+      <enclosure url="None" type="None" />
+    </item>
+    
+    <item>
+      <title>JavaScript/TypeScript (sourcegraph)</title>
+      <description>JavaScript/TypeScript (sourcegraph)
+==========
+
+## Server
+For information about the LSP server, check the [javascript-typescript-stdio](https://github</description>
+      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript-javascript/</link>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
+      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
+      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript-javascript/</guid>
+      <enclosure url="None" type="None" />
+    </item>
+    
+    <item>
+      <title>JavaScript/TypeScript (theia-ide)</title>
+      <description>JavaScript/TypeScript (theia-ide)
+==========
+
+## Server
+For information about the LSP server, check the [typescript-language-server (recommended)](htt</description>
+      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript/</link>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
+      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
+      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript/</guid>
+      <enclosure url="None" type="None" />
+    </item>
+    
+    <item>
+      <title>Verilog/SystemVerilog</title>
+      <description>Verilog/SystemVerilog
+==========
+
+## Server
+For information about the LSP server, check the [hdl_checker](https://github.com/suoto/hdl_checker).
+
+## I</description>
+      <link>https://emacs-lsp.github.io/lsp-mode/page/lsp-verilog/</link>
+      <pubDate>Sun, 20 Sep 2020 10:06:54 -0000</pubDate>
+      <source url="https://emacs-lsp.github.io/lsp-mode/feed_rss_created.xml">LSP Mode - LSP support for Emacs</source>
+      <guid isPermaLink="true">https://emacs-lsp.github.io/lsp-mode/page/lsp-verilog/</guid>
       <enclosure url="None" type="None" />
     </item>
     
