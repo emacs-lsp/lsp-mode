@@ -81,10 +81,9 @@
                              :v-adjust -0.0575)
     (propertize "💡" 'face face)))
 
-(defun lsp-modeline--code-action-name (actions preferred-code-action)
-  "Return the code action name from ACTIONS and PREFERRED-CODE-ACTION."
-  (or (-some-> preferred-code-action
-        lsp-modeline--code-action->string)
+(defun lsp-modeline--code-action-name (actions preferred-code-action-title)
+  "Return the code action name from ACTIONS and PREFERRED-CODE-ACTION-TITLE."
+  (or preferred-code-action-title
       (->> actions
            lsp-seq-first
            lsp-modeline--code-action->string)))
