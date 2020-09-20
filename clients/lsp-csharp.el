@@ -246,10 +246,9 @@ using the `textDocument/references' request."
       (lsp-show-xrefs (lsp--locations-to-xref-items locations-found) nil t)
     (message "No references found")))
 
-(defun lsp-csharp--handle-os-error (_workspace params)
+(lsp-defun lsp-csharp--handle-os-error (_workspace (&omnisharp:ErrorMessage :file-name :text))
   "Handle the 'o#/error' (interop) notification with PARAMS by displaying a message with lsp-warn."
-  (-let (((&omnisharp:ErrorMessage :file-name :text) params))
-    (lsp-warn "%s: %s" file-name text)))
+  (lsp-warn "%s: %s" file-name text))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
