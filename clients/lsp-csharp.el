@@ -246,6 +246,10 @@ using the `textDocument/references' request."
       (lsp-show-xrefs (lsp--locations-to-xref-items locations-found) nil t)
     (message "No references found")))
 
+(lsp-defun lsp-csharp--handle-os-error (_workspace (&omnisharp:ErrorMessage :file-name :text))
+  "Handle the 'o#/error' (interop) notification by displaying a message with lsp-warn."
+  (lsp-warn "%s: %s" file-name text))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    #'lsp-csharp--language-server-command
@@ -256,6 +260,15 @@ using the `textDocument/references' request."
                   :major-modes '(csharp-mode)
                   :server-id 'csharp
                   :action-handlers (ht ("omnisharp/client/findReferences" 'lsp-csharp--action-client-find-references))
+                  :notification-handlers (ht ("o#/projectadded" 'ignore)
+                                             ("o#/projectchanged" 'ignore)
+                                             ("o#/projectremoved" 'ignore)
+                                             ("o#/packagerestorestarted" 'ignore)
+                                             ("o#/packagerestorefinished" 'ignore)
+                                             ("o#/unresolveddependencies" 'ignore)
+                                             ("o#/error" 'lsp-csharp--handle-os-error)
+                                             ("o#/projectconfiguration" 'ignore)
+                                             ("o#/projectdiagnosticstatus" 'ignore))
                   :download-server-fn
                   (lambda (_client callback error-callback _update?)
                     (condition-case err

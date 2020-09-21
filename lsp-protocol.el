@@ -267,6 +267,8 @@ See `-let' for a description of the destructuring mechanism."
 
 (lsp-interface (pwsh:ScriptRegion (:StartLineNumber :EndLineNumber :StartColumnNumber :EndColumnNumber :Text) nil))
 
+(lsp-interface (omnisharp:ErrorMessage (:Text :FileName :Line :Column)))
+
 (lsp-interface (rls:Cmd (:args :binary :env :cwd) nil))
 
 (defconst lsp/rust-analyzer-inlay-hint-kind-type-hint "TypeHint")
