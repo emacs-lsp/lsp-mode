@@ -24,6 +24,8 @@
 
 ;;; Code:
 
+(require 'lsp-mode)
+
 (defgroup lsp-nix nil
   "LSP support for Nix, using rnix-lsp."
   :group 'lsp-mode
@@ -31,6 +33,7 @@
 
 (defcustom lsp-nix-server-path "rnix-lsp"
   "Executable path for the server."
+  :group 'lsp-nix
   :type 'string
   :package-version '(lsp-mode . "7.1"))
 
