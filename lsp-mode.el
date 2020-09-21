@@ -1029,7 +1029,7 @@ called with nil the signature info must be cleared."
 
 (defvar lsp--tcp-port 10000)
 
-(defvar lsp--client-packages-required nil
+(defvar lsp--client-packages-required t
   "If non-nil, `lsp-client-packages' are yet to be required.")
 
 (defvar lsp--tcp-server-port 0
@@ -7563,12 +7563,12 @@ server if there is such. When `lsp' is called with prefix
 argument ask the user to select which language server to start. "
   (interactive "P")
 
-  (when (and lsp-auto-configure (not lsp--client-packages-required))
+  (when (and lsp-auto-configure lsp--client-packages-required)
     (seq-do (lambda (package)
               ;; loading client is slow and `lsp' can be called repeatedly
               (unless (featurep package) (require package nil t)))
             lsp-client-packages)
-    (setq lsp--client-packages-required t))
+    (setq lsp--client-packages-required nil))
 
   (when (buffer-file-name)
     (let (clients
