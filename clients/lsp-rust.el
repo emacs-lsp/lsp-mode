@@ -555,7 +555,7 @@ The command should include `--message=format=json` or similar option."
     (lsp--apply-text-edits result)))
 
 (defcustom lsp-rust-analyzer-download-url
-  (format "https://github.com/rust-analyzer/rust-analyzer/releases/download/nightly/%s"
+  (format "https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/%s"
           (pcase system-type
             ('gnu/linux "rust-analyzer-linux")
             ('darwin "rust-analyzer-macos")
