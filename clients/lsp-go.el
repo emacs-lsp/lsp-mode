@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'lsp-completion)
 
 (defgroup lsp-go nil
   "LSP support for the Go Programming Language, using the gopls language server."
@@ -227,7 +228,10 @@ $GOPATH/pkg/mod along with the value of
                   :priority 0
                   :server-id 'gopls
                   :completion-in-comments? t
-                  :library-folders-fn #'lsp-go--library-default-directories))
+                  :library-folders-fn #'lsp-go--library-default-directories
+                  :after-open-fn (lambda ()
+                                   ;; https://github.com/golang/tools/commit/b2d8b0336
+                                   (setq-local lsp-completion-filter-on-incomplete nil))))
 
 (provide 'lsp-go)
 ;;; lsp-go.el ends here
