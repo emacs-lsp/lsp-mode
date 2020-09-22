@@ -498,6 +498,7 @@ the server has requested that."
                                     "[/\\\\]\\.metals$"
                                     "[/\\\\]target$"
                                     "[/\\\\]\\.ccls-cache$"
+                                    "[/\\\\]\\.vscode$"
                                     ;; Autotools output
                                     "[/\\\\]\\.deps$"
                                     "[/\\\\]build-aux$"
