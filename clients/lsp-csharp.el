@@ -264,6 +264,7 @@ using the `textDocument/references' request."
                                              ("o#/projectchanged" 'ignore)
                                              ("o#/projectremoved" 'ignore)
                                              ("o#/packagerestorestarted" 'ignore)
+                                             ("o#/msbuildprojectdiagnostics" 'ignore)
                                              ("o#/packagerestorefinished" 'ignore)
                                              ("o#/unresolveddependencies" 'ignore)
                                              ("o#/error" 'lsp-csharp--handle-os-error)
