@@ -99,7 +99,7 @@
                   (list callback))))
 
 (lsp-dependency 'vscode-json-languageserver
-                '(:system "json-languageserver")
+                '(:system "vscode-json-languageserver")
                 '(:npm :package "vscode-json-languageserver"
                        :path "vscode-json-languageserver"))
 
