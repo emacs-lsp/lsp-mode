@@ -13,15 +13,15 @@
     <managingEditor>ercdll1337@gmail.com</managingEditor>
     <category>None</category>
     <docs>https://github.com/emacs-lsp/lsp-mode/</docs>
-    
+    <language>en</language>
 
     <!-- Timestamps and frequency -->
-    <pubDate>Tue, 22 Sep 2020 10:15:35 -0000</pubDate>
-    <lastBuildDate>Tue, 22 Sep 2020 10:15:35 -0000</lastBuildDate>
+    <pubDate>Tue, 22 Sep 2020 16:50:49 -0000</pubDate>
+    <lastBuildDate>Tue, 22 Sep 2020 16:50:49 -0000</lastBuildDate>
     <ttl>1440</ttl>
 
     <!-- Credits -->
-    <generator>MkDocs RSS plugin - v0.6.1</generator>
+    <generator>MkDocs RSS plugin - v0.7.0</generator>
 
     <!-- Feed illustration -->
     
