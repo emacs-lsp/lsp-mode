@@ -37,6 +37,15 @@
   :group 'lsp-mode
   :package-version '(lsp-mode . "7.0.1"))
 
+;;;###autoload
+(define-obsolete-variable-alias 'lsp-enable-completion-at-point
+  'lsp-completion-enable "lsp-mode 7.0.1")
+
+(defcustom lsp-completion-enable t
+  "Enable `completion-at-point' integration."
+  :type 'boolean
+  :group 'lsp-mode)
+
 (defcustom lsp-completion-enable-additional-text-edit t
   "Whether or not to apply additional text edit when performing completion.
 
@@ -157,21 +166,22 @@ This will help minimize popup flickering issue in `company-mode'."
 
 (defvar lsp-completion--cache nil
   "Cached candidates for completion at point function.
-In the form of plist (prefix prefix-pos items :lsp-items ...).
-When the completion is incomplete, cache contains value of :incomplete.")
+In the form of plist (prefix-pos items :lsp-items :prefix ...).
+When the completion is incomplete, `items' contains value of :incomplete.")
 
 (defvar lsp-completion--last-result nil
   "Last completion result.")
 
-(defun lsp-completion--clear-cache (&rest _)
-  "Clear completion caches."
-  (-some-> (and (listp lsp-completion--cache) lsp-completion--cache)
+(defun lsp-completion--clear-cache (&optional keep-last-result)
+  "Clear completion caches.
+KEEP-LAST-RESULT if specified."
+  (-some-> lsp-completion--cache
     (cddr)
-    (cdr)
     (plist-get :markers)
     (cl-second)
     (set-marker nil))
-  (setq lsp-completion--cache nil))
+  (setq lsp-completion--cache nil)
+  (unless keep-last-result (setq lsp-completion--last-result nil)))
 
 (lsp-defun lsp-completion--guess-prefix ((item &as &CompletionItem :text-edit?))
   "Guess ITEM's prefix start point according to following heuristics:
@@ -346,7 +356,7 @@ The MARKERS and PREFIX value will be attached to each candidate."
                         ((setq trigger-char (lsp-completion--looking-back-trigger-characterp
                                              trigger-characters))
                          lsp/completion-trigger-kind-trigger-character)
-                        ((equal lsp-completion--cache :incomplete)
+                        ((equal (cl-second lsp-completion--cache) :incomplete)
                          lsp/completion-trigger-kind-trigger-for-incomplete-completions)
                         (t lsp/completion-trigger-kind-invoked))))
     (apply #'lsp-make-completion-context
@@ -374,7 +384,7 @@ The MARKERS and PREFIX value will be attached to each candidate."
     (let* ((trigger-chars (->> (lsp--server-capabilities)
                                (lsp:server-capabilities-completion-provider?)
                                (lsp:completion-options-trigger-characters?)))
-           (bounds-start (or (-some--> (car (bounds-of-thing-at-point 'symbol))
+           (bounds-start (or (-some--> (cl-first (bounds-of-thing-at-point 'symbol))
                                (save-excursion
                                  (ignore-errors
                                    (goto-char (+ it 1))
@@ -388,17 +398,21 @@ The MARKERS and PREFIX value will be attached to each candidate."
            (candidates
             (lambda ()
               (lsp--catch 'input
-                  (let ((lsp--throw-on-input lsp-completion-use-last-result))
+                  (let ((lsp--throw-on-input lsp-completion-use-last-result)
+                        (same-session? (and (not done?)
+                                            (not result)
+                                            lsp-completion--cache
+                                            (equal (cl-first lsp-completion--cache) bounds-start)
+                                            (s-prefix?
+                                             (plist-get (cddr lsp-completion--cache) :prefix)
+                                             (buffer-substring-no-properties bounds-start (point))))))
                     (cond
                      ((or done? result) result)
                      ((and (not lsp-completion-no-cache)
-                           lsp-completion--cache
-                           (listp lsp-completion--cache)
-                           (equal (cl-second lsp-completion--cache) bounds-start)
-                           (s-prefix? (car lsp-completion--cache)
-                                      (buffer-substring-no-properties bounds-start (point))))
+                           same-session?
+                           (listp (cl-second lsp-completion--cache)))
                       (setf result (apply #'lsp-completion--filter-candidates
-                                          (cddr lsp-completion--cache))))
+                                          (cdr lsp-completion--cache))))
                      (t
                       (-let* ((resp (lsp-request-while-no-input
                                      "textDocument/completion"
@@ -424,21 +438,19 @@ The MARKERS and PREFIX value will be attached to each candidate."
                               (markers (list bounds-start (copy-marker (point) t)))
                               (prefix (buffer-substring-no-properties bounds-start (point)))
                               (lsp-completion--no-reordering (not lsp-completion-sort-initial-results)))
-                        (lsp-completion--clear-cache)
+                        (lsp-completion--clear-cache same-session?)
                         (setf done? completed
-                              lsp-completion--cache (cond
-                                                     ((and done? (not (seq-empty-p items)))
-                                                      (list (buffer-substring-no-properties
-                                                             bounds-start (point))
-                                                            bounds-start
-                                                            (lsp-completion--to-internal items)
-                                                            :lsp-items nil
-                                                            :markers markers
-                                                            :prefix prefix))
-                                                     ((not done?) :incomplete))
+                              lsp-completion--cache (list bounds-start
+                                                          (cond
+                                                           ((and done? (not (seq-empty-p items)))
+                                                            (lsp-completion--to-internal items))
+                                                            ((not done?) :incomplete))
+                                                          :lsp-items nil
+                                                          :markers markers
+                                                          :prefix prefix)
                               result (lsp-completion--filter-candidates
                                       (cond (done?
-                                             (cl-third lsp-completion--cache))
+                                             (cl-second lsp-completion--cache))
                                             (lsp-completion-filter-on-incomplete
                                              (lsp-completion--to-internal items)))
                                       :lsp-items items
@@ -617,7 +629,7 @@ Others: TRIGGER-CHARS CANDIDATES"
                   (setq last-b b))))
     (funcall update-score start start)
     (while md
-      (funcall update-score start (car md))
+      (funcall update-score start (cl-first md))
       (pop md)
       (setq start (pop md))
       (cl-incf q-ind))
@@ -671,53 +683,53 @@ The CLEANUP-FN will be called to cleanup."
   :group 'lsp-mode
   :global nil
   :lighter ""
-  (cond
-   (lsp-completion-mode
-    (setq-local completion-at-point-functions nil)
-    (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t)
-    (setq-local completion-category-defaults
-                (add-to-list 'completion-category-defaults '(lsp-capf (styles basic))))
-
+  (let ((completion-started-fn (lambda (&rest _)
+                                 (setq-local lsp-inhibit-lsp-hooks t)))
+        (after-completion-fn (lambda (&rest _)
+                               (lsp-completion--clear-cache)
+                               (setq-local lsp-inhibit-lsp-hooks nil))))
     (cond
-     ((equal lsp-completion-provider :none))
-     ((and (member lsp-completion-provider '(:capf nil t))
-           (fboundp 'company-mode))
-      (company-mode 1)
-      (when (or (null lsp-completion-provider)
-                (member 'company-lsp company-backends))
-        (lsp--warn "`company-lsp` is not supported anymore. Using `company-capf` as the `lsp-completion-provider`."))
-      (add-to-list 'company-backends 'company-capf))
-     (t
-      (lsp--warn "Unable to autoconfigure company-mode.")))
+     (lsp-completion-mode
+      (setq-local completion-at-point-functions nil)
+      (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t)
+      (setq-local completion-category-defaults
+                  (add-to-list 'completion-category-defaults '(lsp-capf (styles basic))))
 
-    (when (bound-and-true-p company-mode)
-      (add-hook 'company-completion-started-hook
-                (lambda (&rest _)
-                  (setq-local lsp-inhibit-lsp-hooks t))
-                nil
-                t)
-      (add-hook 'company-after-completion-hook
-                (lambda (&rest _)
-                  (lsp-completion--clear-cache)
-                  (setq-local lsp-inhibit-lsp-hooks nil))
-                nil
-                t))
-    (add-hook 'lsp-unconfigure-hook #'lsp-completion--disable nil t))
-   (t
-    (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t)
-    (setq-local completion-category-defaults
-                (cl-remove 'lsp-capf completion-category-defaults :key #'car))
-    (remove-hook 'lsp-unconfigure-hook #'lsp-completion--disable t)
-    (when (featurep 'company)
-      (remove-hook 'company-completion-started-hook
-                   (lambda (&rest _)
-                     (setq-local lsp-inhibit-lsp-hooks t))
-                   t)
-      (remove-hook 'company-after-completion-hook
-                   (lambda (&rest _)
-                     (lsp-completion--clear-cache)
-                     (setq-local lsp-inhibit-lsp-hooks nil))
-                   t)))))
+      (cond
+       ((equal lsp-completion-provider :none))
+       ((and (member lsp-completion-provider '(:capf nil t))
+             (fboundp 'company-mode))
+        (company-mode 1)
+        (when (or (null lsp-completion-provider)
+                  (member 'company-lsp company-backends))
+          (lsp--warn
+           "`company-lsp' is not supported anymore.  Using `company-capf' as the `lsp-completion-provider'."))
+        (add-to-list 'company-backends 'company-capf))
+       (t
+        (lsp--warn "Unable to autoconfigure company-mode.")))
+
+      (when (bound-and-true-p company-mode)
+        (add-hook 'company-completion-started-hook
+                  completion-started-fn
+                  nil
+                  t)
+        (add-hook 'company-after-completion-hook
+                  after-completion-fn
+                  nil
+                  t))
+      (add-hook 'lsp-unconfigure-hook #'lsp-completion--disable nil t))
+     (t
+      (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t)
+      (setq-local completion-category-defaults
+                  (cl-remove 'lsp-capf completion-category-defaults :key #'cl-first))
+      (remove-hook 'lsp-unconfigure-hook #'lsp-completion--disable t)
+      (when (featurep 'company)
+        (remove-hook 'company-completion-started-hook
+                     completion-started-fn
+                     t)
+        (remove-hook 'company-after-completion-hook
+                     after-completion-fn
+                     t))))))
 
 ;;;###autoload
 (add-hook 'lsp-configure-hook (lambda ()
