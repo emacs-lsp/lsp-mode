@@ -572,10 +572,9 @@ Others: TRIGGER-CHARS CANDIDATES"
                                  (match-data))))))
                (start (pop md))
                (len (length str))
-               ;; To understand how this works, consider these bad
-               ;; ascii(tm) diagrams showing how the pattern "foo"
-               ;; flex-matches "fabrobazo", "fbarbazoo" and
-               ;; "barfoobaz":
+               ;; To understand how this works, consider these bad ascii(tm)
+               ;; diagrams showing how the pattern "foo" flex-matches
+               ;; "fabrobazo", "fbarbazoo" and "barfoobaz":
 
                ;;      f abr o baz o
                ;;      + --- + --- +
@@ -584,31 +583,27 @@ Others: TRIGGER-CHARS CANDIDATES"
                ;;      + ------ ++
 
                ;;      bar foo baz
-               ;;          +++
+               ;;      --- +++ ---
 
-               ;; "+" indicates parts where the pattern matched.  A
-               ;; "hole" in the middle of the string is indicated by
-               ;; "-".  Note that there are no "holes" near the edges
-               ;; of the string.  The completion score is a number
-               ;; bound by ]0..1]: the higher the better and only a
-               ;; perfect match (pattern equals string) will have
-               ;; score 1.  The formula takes the form of a quotient.
-               ;; For the numerator, we use the number of +, i.e. the
-               ;; length of the pattern.  For the denominator, it
-               ;; first computes
+               ;; "+" indicates parts where the pattern matched.  A "hole" in
+               ;; the middle of the string is indicated by "-".  Note that there
+               ;; are no "holes" near the edges of the string.  The completion
+               ;; score is a number bound by ]0..1]: the higher the better and
+               ;; only a perfect match (pattern equals string) will have score
+               ;; 1.  The formula takes the form of a quotient.  For the
+               ;; numerator, we use the number of +, i.e. the length of the
+               ;; pattern.  For the denominator, it first computes
                ;;
-               ;;     hole_i_contrib = 1 + (Li-1)^(1/tightness)
+               ;;     hole_i_contrib = 1 + (Li-1)^1.05 for first hole
+               ;;     hole_i_contrib = 1 + (Li-1)^0.25 for hole i of length Li
                ;;
-               ;; , for each hole "i" of length "Li", where tightness
-               ;; is given by `flex-score-match-tightness'.  The
-               ;; final value for the denominator is then given by:
+               ;; The final value for the denominator is then given by:
                ;;
-               ;;    (SUM_across_i(hole_i_contrib) + 1) * len
+               ;;    (SUM_across_i(hole_i_contrib) + 1)
                ;;
-               ;; , where "len" is the string's length.
                (score-numerator 0)
                (score-denominator 0)
-               (last-b 0)
+               (last-b -1)
                (q-ind 0)
                (update-score
                 (lambda (a b)
@@ -618,13 +613,9 @@ Others: TRIGGER-CHARS CANDIDATES"
                     (setq score-denominator
                           (+ score-denominator
                              (if (= a last-b) 0
-                               (+ 1
-                                  (if (zerop last-b)
-                                      (- 0 (expt 0.8 (- a last-b)))
-                                    (expt (- a last-b 1)
-                                          0.25))))
-                             (if (equal (aref query q-ind) (aref str a))
-                                 0
+                               ;; Give a higher score for match near start
+                               (+ 1 (expt (- a last-b 1) (if (eq last-b -1) 0.75 0.25))))
+                             (if (equal (aref query q-ind) (aref str a)) 0
                                lsp-completion--fuz-case-sensitiveness))))
                   (setq last-b b))))
     (funcall update-score start start)
@@ -635,7 +626,7 @@ Others: TRIGGER-CHARS CANDIDATES"
       (cl-incf q-ind))
     (funcall update-score len len)
     (unless (zerop len)
-      (/ score-numerator (* len (1+ score-denominator)) 1.0))))
+      (/ score-numerator (1+ score-denominator) 1.0))))
 
 (defun lsp-completion--resolve (item)
   "Resolve completion ITEM."
