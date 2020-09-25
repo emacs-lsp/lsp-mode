@@ -34,34 +34,47 @@
               'function)))
 
 (ert-deftest lsp-completion-test-fuz-score ()
-  (let ((query "as")
-        (cands '("hashCode() : int"
-                 "asSubclass(Class<U> clazz) : Class<? extends U>")))
-    (should (equal (sort cands (lambda (l r) (> (lsp-completion--fuz-score query l)
-                                                (lsp-completion--fuz-score query r))))
-                   '("asSubclass(Class<U> clazz) : Class<? extends U>"
-                     "hashCode() : int"))))
-
-  (let ((query "as")
-        (cands '("hash-map"
-                 "as-definition"
-                 "as-def"
-                 "aS-selection"
-                 "To-as-expected"
-                 "amused"
-                 "subclass-1"
-                 "superand-sort")))
-    (should (equal (sort cands (lambda (l r) (> (lsp-completion--fuz-score query l)
-                                                (lsp-completion--fuz-score query r))))
-                   '("as-definition"    ; Prefix match
-                     "as-def"           ; Also prefix match (stable)
-                     "hash-map"         ; middle match
-                     "amused"           ; partial match with prefix match
-                     "To-as-expected"   ; more in middle match
-                     "subclass-1"       ; more in middle match
-                     "superand-sort"    ; partial match without prefix match
-                     "aS-selection"     ; case mismatch
-                     )))))
+  (cl-labels ((do-test (query cands expected)
+                       (should (equal
+                                (sort cands
+                                      (lambda (l r) (> (lsp-completion--fuz-score query l)
+                                                       (lsp-completion--fuz-score query r))))
+                                expected))))
+    (do-test "as"
+             '("hashCode() : int"
+               "asSubclass(Class<U> clazz) : Class<? extends U>")
+             '("asSubclass(Class<U> clazz) : Class<? extends U>"
+               "hashCode() : int"))
+    (do-test "as"
+             '("hash-map"
+               "as-definition"
+               "as-def"
+               "aS-selection"
+               "To-as-expected"
+               "amused"
+               "subclass-1"
+               "superand-sort")
+             '("as-definition"    ; Prefix match
+               "as-def"           ; Also prefix match (stable)
+               "hash-map"         ; middle match
+               "amused"           ; partial match with prefix match
+               "To-as-expected"   ; more in middle match
+               "subclass-1"       ; more in middle match
+               "superand-sort"    ; partial match without prefix match
+               "aS-selection"     ; case mismatch
+               ))
+    (do-test "F"
+             '("F" "foo" "Foo")
+             '("F" "Foo" "foo"))
+    (do-test "Fo"
+             '("Fo" "daFo" "safo")
+             '("Fo" "daFo" "safo"))
+    (do-test "F"
+             '("F" "daFo" "safo")
+             '("F" "daFo" "safo"))
+    (do-test "foo"
+             '("foo" "afoo" "aafoo" "aaafoo")
+             '("foo" "afoo" "aafoo" "aaafoo"))))
 
 (provide 'lsp-completion-test)
 ;;; lsp-completion-test.el ends here
