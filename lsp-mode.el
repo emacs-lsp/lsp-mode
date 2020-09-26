@@ -6916,11 +6916,22 @@ When prefix UPDATE? is t force installation even if the server is present."
    :buffer " *lsp-install*"
    :noquery t))
 
+(defun lsp-resolve-value (value)
+  "Resolve VALUE's value.
+If it is function - call it.
+If it is symbol - return it's value
+Otherwise returns value itself."
+  (cond
+   ((functionp value) (funcall value))
+   ((symbolp value) (symbol-value value))
+   (value)))
 
 (defvar lsp-deps-providers
   (list :npm (list :path #'lsp--npm-dependency-path
-                   :install #'lsp--npm-dependency-download)
-        :system (list :path #'lsp--system-path)))
+                   :install #'lsp--npm-dependency-install)
+        :system (list :path #'lsp--system-path)
+        :download (list :path #'lsp-download-path
+                        :install #'lsp-download-install)))
 
 (defun lsp--system-path (path)
   "If PATH is absolute and exists return it as is. Otherwise,
@@ -6934,10 +6945,11 @@ nil."
   ;; child process spawn command that is invoked by the
   ;; typescript-language-server). This is why we check for existence and not
   ;; that the path is executable.
-  (if (and (f-absolute? path)
-           (f-exists? path))
-      path
-    (executable-find path)))
+  (let ((path (lsp-resolve-value path)))
+    (if (and (f-absolute? path)
+             (f-exists? path))
+        path
+      (executable-find path))))
 
 (defun lsp-package-path (dependency)
   "Path to the DEPENDENCY each of the registered providers."
@@ -6975,7 +6987,7 @@ nil."
       (error "The package %s is not installed.  Unable to find %s" package path))
     path))
 
-(cl-defun lsp--npm-dependency-download (callback error-callback &key package &allow-other-keys)
+(cl-defun lsp--npm-dependency-install (callback error-callback &key package &allow-other-keys)
   (if-let ((npm-binary (executable-find "npm")))
       (lsp-async-start-process callback
                                error-callback
@@ -6989,6 +7001,38 @@ nil."
     nil))
 
 
+;; Download URL handling
+(cl-defun lsp-download-install (callback error-callback &key url store-path &allow-other-keys)
+  (let ((url (lsp-resolve-value url))
+        (store-path (lsp-resolve-value store-path)))
+    (make-thread
+     (lambda ()
+       (condition-case err
+           (progn
+             (when (f-exists? store-path)
+               (f-delete store-path))
+             (lsp--info "Starting to download %s to %s..." url store-path)
+             (mkdir (f-parent store-path) t)
+             (url-copy-file url store-path)
+             (lsp--info "Finished downloading %s..." store-path)
+             (funcall callback))
+         (error (funcall error-callback err)))))))
+
+(cl-defun lsp-download-path (&key store-path set-executable? &allow-other-keys)
+  "Download URL and store it into STORE-PATH.
+
+SET-EXECUTABLE? when non-nil change the executable flags of
+STORE-PATH to make it executable."
+  (let ((store-path (lsp-resolve-value store-path)))
+    (cond
+     ((executable-find store-path) store-path)
+     ((and set-executable? (f-exists? store-path))
+      (set-file-modes store-path #o0700)
+      store-path)
+     ((f-exists? store-path) store-path))))
+
+
+
 (defun lsp--matching-clients? (client)
   (and
    ;; both file and client remote or both local

@@ -95,5 +95,12 @@
   (let ((standard-indent 100))
     (should (= 100 (symbol-value (lsp--get-indent-width 'python-mode))))))
 
+(defvar lsp-test-my-var "bar")
+
+(ert-deftest lsp-resolve-value-test ()
+  (should (string= "foo" (lsp-resolve-value "foo")))
+  (should (string= "bar" (lsp-resolve-value 'lsp-test-my-var )))
+  (should (string= "fn-result" (lsp-resolve-value (-const "fn-result" )))))
+
 (provide 'lsp-mode-test)
 ;;; lsp-mode-test.el ends here

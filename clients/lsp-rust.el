@@ -316,12 +316,17 @@ PARAMS progress report notification data."
 
 
 ;; rust-analyzer
-
 (defcustom lsp-rust-analyzer-server-command '("rust-analyzer")
   "Command to start rust-analyzer."
   :type '(repeat string)
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.2"))
+
+(defcustom lsp-rust-analyzer-server-args '()
+  "Args to start rust-analyzer with when rust-analyzer is downloaded automatically."
+  :type '(repeat string)
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1"))
 
 (defcustom lsp-rust-analyzer-server-display-inlay-hints nil
   "Show inlay hints."
@@ -549,9 +554,43 @@ The command should include `--message=format=json` or similar option."
          (result (lsp-send-request (lsp-make-request "experimental/joinLines" params))))
     (lsp--apply-text-edits result)))
 
+(defcustom lsp-rust-analyzer-download-url
+  (format "https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/%s"
+          (pcase system-type
+            ('gnu/linux "rust-analyzer-linux")
+            ('darwin "rust-analyzer-macos")
+            ('windows-nt "rust-analyzer-windows.exe")))
+  "Automatic download url for Rust Analyzer"
+  :type 'string
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1"))
+
+(defcustom lsp-rust-analyzer-store-path (f-join lsp-server-install-dir
+                                                "rust"
+                                                (if (eq system-type 'windows-nt)
+                                                    "rust-analyzer.exe"
+                                                  "rust-analyzer"))
+  "The path to the file in which `rust-analyzer' will be stored."
+  :type 'file
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1"))
+
+(lsp-dependency
+ 'rust-analyzer
+ '(:system "rust-analyzer")
+ `(:download :url lsp-rust-analyzer-download-url
+             :store-path lsp-rust-analyzer-store-path
+             :set-executable? t))
+
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection (lambda () lsp-rust-analyzer-server-command))
+  :new-connection (lsp-stdio-connection
+                   (lambda ()
+                     `(,(or (executable-find
+                             (cl-first lsp-rust-analyzer-server-command))
+                            (lsp-package-path 'rust-analyzer)
+                            "rust-analyzer")
+                       ,@(cl-rest lsp-rust-analyzer-server-args))))
   :major-modes '(rust-mode rustic-mode)
   :priority (if (eq lsp-rust-server 'rust-analyzer) 1 -1)
   :initialization-options 'lsp-rust-analyzer--make-init-options
@@ -563,7 +602,9 @@ The command should include `--message=format=json` or similar option."
                      (lsp-rust-analyzer-inlay-hints-mode)))
   :ignore-messages nil
   :server-id 'rust-analyzer
-  :custom-capabilities `((experimental . ((snippetTextEdit . ,lsp-enable-snippet ))))))
+  :custom-capabilities `((experimental . ((snippetTextEdit . ,lsp-enable-snippet ))))
+  :download-server-fn (lambda (_client callback error-callback _update?)
+                        (lsp-package-ensure 'rust-analyzer callback error-callback))))
 
 (defun lsp-rust-switch-server (&optional lsp-server)
   "Switch priorities of lsp servers, unless LSP-SERVER is already active."
