@@ -2236,16 +2236,15 @@ Newlines and excess whitespace are removed.</p>
   editor.autoClosingTags for this to work</p>
 <hr />
 <h3 id="lsp-xml-server-vmargs"><code>lsp-xml-server-vmargs</code><a class="headerlink" href="#lsp-xml-server-vmargs" title="Permanent link">#</a></h3>
-<p><em>Default: <code>-noverify -Xmx64M
-  -XX:+UseG1GC -XX:+UseStringDeduplication</code></em></p>
-<p>Specifies extra VM
-  arguments used to launch the XML Language Server. Eg. use
-  ‘-noverify -Xmx1G -XX:+UseG1GC -XX:+UseStringDeduplication‘ to
-  bypass class verification, increase the heap size to 1GB and
-  enable String deduplication with the G1 Garbage collector</p>
+<p><em>Default: <code>[-noverify -Xmx64M -XX:+UseG1GC -XX:+UseStringDeduplication]</code></em></p>
+<p>Specifies extra VM arguments used to launch the XML Language
+  Server. Eg. use ‘-noverify -Xmx1G -XX:+UseG1GC
+  -XX:+UseStringDeduplication‘ to bypass class verification,
+  increase the heap size to 1GB and enable String deduplication
+  with the G1 Garbage collector</p>
 <hr />
 <h3 id="lsp-xml-server-work-dir"><code>lsp-xml-server-work-dir</code><a class="headerlink" href="#lsp-xml-server-work-dir" title="Permanent link">#</a></h3>
-<p><em>Default: <code>~/.lsp4xml</code></em></p>
+<p><em>Default: <code>/home/runner/.lsp4xml</code></em></p>
 <p>Set a custom folder path for cached XML Schemas. An absolute
   path is expected, although the ~ prefix (for the user home
   directory) is supported.</p>
@@ -2280,7 +2279,7 @@ Newlines and excess whitespace are removed.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 25, 2020</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 26, 2020</span>
     
   </small>
 </div>
