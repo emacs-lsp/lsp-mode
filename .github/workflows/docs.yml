@@ -30,9 +30,10 @@ jobs:
 
       - name: MkDocs
         run: |
-          docker build -t emacs-lsp/mkdocs-material docs
           cp -rf README.md examples docs
-          docker run --rm -v ${PWD}:/docs emacs-lsp/mkdocs-material -- build
+
+          docker login docker.pkg.github.com --username $GITHUB_ACTOR --password ${{ secrets.GITHUB_TOKEN }}
+          docker run --rm -v ${PWD}:/docs docker.pkg.github.com/emacs-lsp/docs-image/docs-image -- build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
