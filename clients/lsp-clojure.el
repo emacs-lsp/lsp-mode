@@ -194,13 +194,11 @@ If there are more arguments expected after the line and column numbers."
                         (lsp-package-ensure 'clojure-lsp callback error-callback))
   :new-connection (lsp-stdio-connection
                    (lambda ()
-                     (if lsp-clojure-custom-server-command
-                         lsp-clojure-custom-server-command
-                       `("bash" "-c" ,(lsp-clojure--server-executable-path))))
+                     (or lsp-clojure-custom-server-command
+                         `("bash" "-c" ,(lsp-clojure--server-executable-path))))
                    (lambda ()
-                     (if lsp-clojure-custom-server-command
-                         t
-                       (lsp-clojure--server-executable-path))))
+                     (or lsp-clojure-custom-server-command
+                         (lsp-clojure--server-executable-path))))
   :major-modes '(clojure-mode clojurec-mode clojurescript-mode)
   :library-folders-fn #'lsp-clojure--library-folders
   :uri-handlers (lsp-ht ("jar" #'lsp-clojure--file-in-jar))
