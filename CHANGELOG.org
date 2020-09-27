@@ -6,6 +6,7 @@
   * Add configuration settings for elixir-ls.
   * Add Nix support.
   * Add Racket support.
+  * Provided automatic installers for `lsp-clojure` (`clojure-lsp`).
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
   * Safe renamed ~lsp-flycheck-default-level~ -> ~lsp-diagnostics-flycheck-default-level~
