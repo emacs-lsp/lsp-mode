@@ -7659,13 +7659,13 @@ When ARG is t the lsp mode will start new language server even if
 there is language server which can handle current language. When
 ARG is nil current file will be opened in multi folder language
 server if there is such. When `lsp' is called with prefix
-argument ask the user to select which language server to start. "
+argument ask the user to select which language server to start."
   (interactive "P")
 
   (when (and lsp-auto-configure (not lsp--client-packages-required))
     (seq-do (lambda (package)
               ;; loading client is slow and `lsp' can be called repeatedly
-              (unless (featurep package) (require package nil t)))
+              (require package nil t))
             lsp-client-packages)
     (setq lsp--client-packages-required t))
 
