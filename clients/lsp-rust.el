@@ -582,6 +582,9 @@ The command should include `--message=format=json` or similar option."
              :store-path lsp-rust-analyzer-store-path
              :set-executable? t))
 
+(lsp-defun lsp-rust--analyzer-run-single ((&Command :arguments?))
+  (lsp-rust-analyzer-run (lsp-seq-first arguments?)))
+
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection
@@ -595,7 +598,7 @@ The command should include `--message=format=json` or similar option."
   :priority (if (eq lsp-rust-server 'rust-analyzer) 1 -1)
   :initialization-options 'lsp-rust-analyzer--make-init-options
   :notification-handlers (ht<-alist lsp-rust-notification-handlers)
-  :action-handlers (ht<-alist lsp-rust-action-handlers)
+  :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single))
   :library-folders-fn (lambda (_workspace) lsp-rust-library-directories)
   :after-open-fn (lambda ()
                    (when lsp-rust-analyzer-server-display-inlay-hints
