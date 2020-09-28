@@ -125,7 +125,7 @@ theme:
   icon:
     repo: fontawesome/brands/github
   features:
-    - tabs
+    - navigation.tabs
 
 extra:
   social:

@@ -95,7 +95,8 @@ docs:
 local-webpage: docs
 	cp -rf README.md examples docs
 	docker run --rm --volume "`pwd`:/data" --user `id -u`:`id -g` pandoc/core:2.9 -s CHANGELOG.org -t gfm -o docs/page/CHANGELOG.md
-	docker run --rm -it -p 8000:8000 -v ${PWD}:/docs squidfunk/mkdocs-material
+	docker login docker.pkg.github.com
+	docker run --rm -it -p 8000:8000 -v ${PWD}:/docs docker.pkg.github.com/emacs-lsp/docs-image/docs-image
 
 clean:
 	rm -rf .cask *.elc clients/*.elc
