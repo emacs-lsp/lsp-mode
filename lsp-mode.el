@@ -7756,10 +7756,12 @@ This avoids overloading the server with many files when starting Emacs."
        (with-help-window (current-buffer)
          ,@(-map (-lambda ((msg form))
                    `(insert (format "%s: %s\n" ,msg
-                                    (if (with-current-buffer buf
-                                          ,form)
-                                        (propertize "OK" 'face 'success)
-                                      (propertize "ERROR" 'face 'error)))))
+                                    (let ((res (with-current-buffer buf
+                                                 ,form)))
+                                      (cond
+                                       ((eq res :optional) (propertize "NOT AVAILABLE (OPTIONAL)" 'face 'warning))
+                                       (res (propertize "OK" 'face 'success))
+                                       (t (propertize "ERROR" 'face 'error)))))))
                  (-partition 2 checks))))))
 
 (defvar company-backends)
@@ -7772,7 +7774,6 @@ This avoids overloading the server with many files when starting Emacs."
   (interactive)
   (lsp--doctor
    "Checking for Native JSON support" (functionp 'json-serialize)
-   "Checking emacs version has `read-process-output-max'" (boundp 'read-process-output-max)
    "Using company-capf" (--find (or (equal it 'company-capf)
                                     (and (listp it) (-contains? it 'company-capf)))
                                 company-backends)
@@ -7785,7 +7786,11 @@ This avoids overloading the server with many files when starting Emacs."
        (progn (lsp--make-message (list "a" "b"))
               nil)
      (error t))
-   "`gc-cons-threshold' increased?" (> gc-cons-threshold 800000)))
+   "`gc-cons-threshold' increased?" (> gc-cons-threshold 800000)
+   "Using gccemacs with emacs lisp native compilation (https://akrl.sdf.org/gccemacs.html)"
+   (or (and (fboundp 'native-comp-available-p)
+            (native-comp-available-p))
+       :optional)))
 
 
 ;; org-mode/virtual-buffer
