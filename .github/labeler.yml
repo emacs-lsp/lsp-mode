@@ -2,7 +2,9 @@ tutorial:
   - docs/tutorials/**/*
 
 documentation:
-  - any: ['docs/**/*', 'mkdocs.yml', 'README.md']
+  - docs/**/*
+  - mkdocs.yml
+  - README.md
 
 client:
   - clients/**/*
