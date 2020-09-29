@@ -40,11 +40,14 @@ Benchmarks show that Emacs 27 is `~15 times` faster than Emacs when using Elisp 
 ``` elisp
 (setq lsp-idle-delay 0.500)
 ```
+### gccemacs
+
+[gccemacs](https://akrl.sdf.org/gccemacs.html) is a bleeding-edge version of `Emacs` that compiles elisp to native code, resulting in more than 200% speedup. For everyone looking for optimal performance, `gccemacs` is the way to go.
 
 ## Ignore watch folders/files
 
 If the server supports watch files, by default `lsp-mode` tries to watch all files and folders of the project ignoring the regexp from `lsp-file-watch-ignored`. If you don't want some file or folder
-to be watched for performance reasons, you can add a regexp to that variable excluding the file or folder. 
+to be watched for performance reasons, you can add a regexp to that variable excluding the file or folder.
 Also you can disable the file watch feature with:
 
 ```elisp
