@@ -127,47 +127,56 @@
   (and (f-exists? lsp-clients-lua-language-server-main-location)
        (f-exists? lsp-clients-lua-language-server-bin)))
 
-(defcustom lsp-lua-color-mode "Semantic" "Color mode."
+(defcustom lsp-lua-color-mode "Semantic"
+  "Color mode."
   :type '(choice (:tag "Grammar" "Semantic"))
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-completion-call-snippet "Disable" "Shows function call snippets."
+(defcustom lsp-lua-completion-call-snippet "Disable"
+  "Shows function call snippets."
   :type '(choice (:tag "Disable" "Both" "Replace"))
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-completion-display-context 6 "Previewing the relevant code snippet of the suggestion may help you understand the usage of the suggestion. The number set indicates the number of intercepted lines in the code fragment. If it is set to `0`, this feature can be disabled."
+(defcustom lsp-lua-completion-display-context 6
+  "Previewing the relevant code snippet of the suggestion may help you understand the usage of the suggestion. The number set indicates the number of intercepted lines in the code fragment. If it is set to `0`, this feature can be disabled."
   :type 'number
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-completion-enable t "Enable completion."
+(defcustom lsp-lua-completion-enable t
+  "Enable completion."
   :type 'boolean
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-completion-keyword-snippet "Replace" "Shows keyword syntax snippets."
+(defcustom lsp-lua-completion-keyword-snippet "Replace"
+  "Shows keyword syntax snippets."
   :type '(choice (:tag "Disable" "Both" "Replace"))
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-develop-debugger-port 11412 "Listen port of debugger."
+(defcustom lsp-lua-develop-debugger-port 11412
+  "Listen port of debugger."
   :type 'number
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-develop-debugger-wait nil "Suspend before debugger connects."
+(defcustom lsp-lua-develop-debugger-wait nil
+  "Suspend before debugger connects."
   :type 'boolean
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-develop-enable nil "Developer mode. Do not enable, performance will be affected."
+(defcustom lsp-lua-develop-enable nil
+  "Developer mode. Do not enable, performance will be affected."
   :type 'boolean
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-diagnostics-disable nil "Disabled diagnostic (Use code in hover brackets).
+(defcustom lsp-lua-diagnostics-disable nil
+  "Disabled diagnostic (Use code in hover brackets).
 ```json
 \"Lua.diagnostics.disable\" : [
 \"unused-local\",
@@ -175,15 +184,17 @@
 ]
 ```"
   :type 'lsp-string-vector
-  :package-version '(lsp-mode . "7.0")
-:group 'lsp-lua-language-server)
-
-(defcustom lsp-lua-diagnostics-enable t "Enable diagnostics."
-  :type 'boolean
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-diagnostics-globals nil "Defined global variables.
+(defcustom lsp-lua-diagnostics-enable t
+  "Enable diagnostics."
+  :type 'boolean
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
+(defcustom lsp-lua-diagnostics-globals nil
+  "Defined global variables.
 ```json
 \"Lua.diagnostics.globals\" : [
 \"GLOBAL1\",
@@ -191,10 +202,11 @@
 ]
 ```"
   :type 'lsp-string-vector
-  :package-version '(lsp-mode . "7.0")
-:group 'lsp-lua-language-server)
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-diagnostics-severity nil "Modified diagnostic severity.
+(defcustom lsp-lua-diagnostics-severity nil
+  "Modified diagnostic severity.
 ```json
 \"Lua.diagnostics.severity\" : {
 \"redefined-local\" : \"Warning\",
@@ -202,44 +214,50 @@
 }
 ```"
   :type 'alist
-  :package-version '(lsp-mode . "7.0")
-:group 'lsp-lua-language-server)
-
-(defcustom lsp-lua-hover-enable t "Enable hover."
-  :type 'boolean
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-hover-view-number t "Hover to view numeric content (only if literal is not decimal)."
+(defcustom lsp-lua-hover-enable t
+  "Enable hover."
   :type 'boolean
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-hover-view-string t "Hover to view the contents of a string (only if the literal contains an escape character)."
+(defcustom lsp-lua-hover-view-number t
+  "Hover to view numeric content (only if literal is not decimal)."
   :type 'boolean
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-hover-view-string-max 1000 "The maximum length of a hover to view the contents of a string."
+(defcustom lsp-lua-hover-view-string t
+  "Hover to view the contents of a string (only if the literal contains an escape character)."
+  :type 'boolean
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
+(defcustom lsp-lua-hover-view-string-max 1000
+  "The maximum length of a hover to view the contents of a string."
   :type 'number
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-runtime-path
   ["?.lua" "?/init.lua" "?/?.lua"]
   "`package.path`"
   :type 'lsp-string-vector
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-runtime-version "Lua 5.3" "Lua runtime version."
+(defcustom lsp-lua-runtime-version "Lua 5.3"
+  "Lua runtime version."
   :type '(choice (:tag "Lua 5.1" "Lua 5.2" "Lua 5.3" "Lua 5.4" "LuaJIT"))
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-signature-help-enable t "Enable signature help."
+(defcustom lsp-lua-signature-help-enable t
+  "Enable signature help."
   :type 'boolean
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-workspace-ignore-dir
@@ -252,15 +270,17 @@
 ]
 ```"
   :type 'lsp-string-vector
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-workspace-ignore-submodules t "Ignore submodules."
+(defcustom lsp-lua-workspace-ignore-submodules t
+  "Ignore submodules."
   :type 'boolean
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-workspace-library nil "Load external library.
+(defcustom lsp-lua-workspace-library nil
+  "Load external library.
 This feature can load external Lua files, which can be used for definition, automatic completion and other functions. Note that the language server does not monitor changes in external files and needs to restart if the external files are modified.
 The following example shows loaded files in `C:/lua` and `../lib` ,exclude `../lib/temp`.
 ```json
@@ -272,37 +292,43 @@ The following example shows loaded files in `C:/lua` and `../lib` ,exclude `../l
 }
 ```"
   :type 'alist
-  :package-version '(lsp-mode . "7.0")
-:group 'lsp-lua-language-server)
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-workspace-max-preload 300 "Max preloaded files."
+(defcustom lsp-lua-workspace-max-preload 300
+  "Max preloaded files."
   :type 'number
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-workspace-preload-file-size 100 "Skip files larger than this value (KB) when preloading."
+(defcustom lsp-lua-workspace-preload-file-size 100
+  "Skip files larger than this value (KB) when preloading."
   :type 'number
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-workspace-use-git-ignore t "Ignore files list in `.gitignore` ."
+(defcustom lsp-lua-workspace-use-git-ignore t
+  "Ignore files list in `.gitignore` ."
   :type 'boolean
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-zzzzzz-cat nil "DONT TOUCH ME, LET ME SLEEP >_<"
+(defcustom lsp-lua-zzzzzz-cat nil
+  "DONT TOUCH ME, LET ME SLEEP >_<"
   :type 'boolean
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-files-associations nil "files.associations"
+(defcustom lsp-lua-files-associations nil
+  "files.associations"
   :type 'alist
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-files-exclude nil "files.exclude"
+(defcustom lsp-lua-files-exclude nil
+  "files.exclude"
   :type 'alist
-  :package-version '(lsp-mode . "7.0")
+  :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
 (lsp-register-custom-settings
