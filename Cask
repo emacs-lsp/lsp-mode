@@ -11,6 +11,7 @@
  "lsp.el"
  "lsp-completion.el"
  "lsp-diagnostics.el"
+ "lsp-headerline.el"
  "lsp-lens.el"
  "lsp-modeline.el"
  "clients/*.el")
