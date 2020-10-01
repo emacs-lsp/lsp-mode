@@ -42,11 +42,11 @@
   "Generate LSP startup command."
   `("java" "-jar" ,(expand-file-name lsp-groovy-server-file)))
 
-(defcustom lsp-groovy-classpath `("/usr/local/opt/groovy/libexec/lib")
+(defcustom lsp-groovy-classpath ["/usr/local/opt/groovy/libexec/lib"]
   "List of paths to Groovy JARs."
   :group 'lsp-groovy
   :risky t
-  :type 'list)
+  :type 'lsp-string-vector)
 
 (lsp-register-custom-settings
  '(("groovy.classpath" lsp-groovy-classpath)))
