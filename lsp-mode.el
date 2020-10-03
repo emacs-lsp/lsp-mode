@@ -3443,7 +3443,9 @@ in that particular folder."
 
 (defun lsp--persist (file-name to-persist)
   "Persist TO-PERSIST in FILE-NAME."
-  (f-write-text (prin1-to-string to-persist) 'utf-8 file-name))
+  (let ((print-length nil)
+        (print-level nil))
+    (f-write-text (prin1-to-string to-persist) 'utf-8 file-name)))
 
 (defun lsp-workspace-folders-add (project-root)
   "Add PROJECT-ROOT to the list of workspace folders."
