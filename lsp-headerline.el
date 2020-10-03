@@ -161,11 +161,15 @@ Switch to current mouse interacting window before doing BODY."
                                        directory-display-string)
                                directory-display-string))
 
+(declare-function evil-set-jump "ext:evil-jumps")
+
 (lsp-defun lsp-headerline--symbol-with-action ((symbol &as &DocumentSymbol :name) symbol-display-string)
   "Build action for SYMBOL and SYMBOL-STRING."
   (lsp-headerline--with-action (let ((map (make-sparse-keymap)))
                                  (define-key map [header-line mouse-1]
                                    (lsp-headerline--make-mouse-handler
+                                     (when (bound-and-true-p evil-mode)
+                                       (evil-set-jump))
                                      (lsp-headerline--go-to-symbol symbol)))
                                  (define-key map [header-line mouse-2]
                                    (lsp-headerline--make-mouse-handler
@@ -334,6 +338,11 @@ PATH is the current folder to be checked."
             (lsp--info "Symbol not found for position %s" symbol-position))
         (lsp--info "Server does not support breadcrumb."))
     (lsp--info "Call this function with a number representing the symbol position on breadcrumb")))
+
+(declare-function evil-set-command-property "ext:evil-common")
+
+(with-eval-after-load 'evil
+  (evil-set-command-property 'lsp-breadcrumb-go-to-symbol :jump t))
 
 ;;;###autoload
 (defun lsp-breadcrumb-narrow-to-symbol (symbol-position)
