@@ -88,7 +88,7 @@ completing function calls."
   on the user's behalf. This variable takes a hash table of env
   var names to desired values."
   :type '(alist :key-type (string :tag "env var name") :value-type (string :tag "value"))
-  :group 'lsp-gopls
+  :group 'lsp-go
   :risky t
   :package-version '(lsp-mode "6.2"))
 
@@ -117,12 +117,12 @@ completing function calls."
 
 (defvar lsp-go-available-codelens
   '((generate . "Run `go generate` for a directory")
-	  (test . "Run `go test` for a specific test function")
-	  (tidy . "Run `go mod tidy` for a module")
-	  (upgrade_dependency . "Upgrade a dependency")
-	  (regenerate_cgo . "Regenerate cgo definitions"))
+    (test . "Run `go test` for a specific test function")
+    (tidy . "Run `go mod tidy` for a module")
+    (upgrade_dependency . "Upgrade a dependency")
+    (regenerate_cgo . "Regenerate cgo definitions"))
   "Available codelens that can be further enabled or disabled
-  through `lsp-gopls-codelens'.")
+  through `lsp-go-codelens'.")
 
 
 (defun lsp-go--defcustom-available-as-alist-type (alist)
@@ -155,7 +155,7 @@ The returned type provides a tri-state that either:
 
 The codelens can be found at https://github.com/golang/tools/blob/4d5ea46c79fe3bbb57dd00de9c167e93d94f4710/internal/lsp/source/options.go#L102-L108."
   :type (lsp-go--defcustom-available-as-alist-type lsp-go-available-codelens)
-  :group 'lsp-gopls
+  :group 'lsp-go
   :risky t
   :package-version '(lsp-mode "7.0"))
 
