@@ -78,6 +78,7 @@ on top the flycheck face for that error level."
 (declare-function flycheck-define-error-level "ext:flycheck" (level &rest properties))
 (declare-function flycheck-buffer "ext:flycheck")
 (declare-function flycheck-valid-checker-p "ext:flycheck")
+(declare-function flycheck-stop "ext:flycheck")
 
 (declare-function lsp-cpp-flycheck-clang-tidy-error-explainer "lsp-cpp")
 
@@ -200,6 +201,7 @@ See https://github.com/emacs-lsp/lsp-mode."
                                 (lsp-cpp-flycheck-clang-tidy-error-explainer e))
                                (t (flycheck-error-message e))))))
   (flycheck-mode 1)
+  (flycheck-stop)
   (setq-local flycheck-checker 'lsp)
   (lsp-flycheck-add-mode major-mode)
   (add-to-list 'flycheck-checkers 'lsp)
