@@ -261,7 +261,8 @@ See `-let' for a description of the destructuring mechanism."
     (lsp-get ,source ,key)))
 
 (lsp-interface (eslint:StatusParams  (:state) nil)
-               (eslint:OpenESLintDocParams (:url) nil))
+               (eslint:OpenESLintDocParams (:url) nil)
+               (eslint:ConfirmESLintLibraryParams (:scope :file :libraryPath) nil))
 
 (lsp-interface (haxe:ProcessStartNotification (:title) nil))
 
