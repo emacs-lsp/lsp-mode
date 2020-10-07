@@ -173,9 +173,17 @@ Switch to current mouse interacting window before doing BODY."
                                      (lsp-headerline--go-to-symbol symbol)))
                                  (define-key map [header-line mouse-2]
                                    (lsp-headerline--make-mouse-handler
-                                     (lsp-headerline--narrow-to-symbol symbol)))
+                                     (-let (((&DocumentSymbol :range (&RangeToPoint :start :end)) symbol))
+                                       (if (and (eq (point-min) start) (eq (point-max) end))
+                                           (widen)
+                                         (lsp-headerline--narrow-to-symbol symbol)))))
                                  map)
-                               (format "mouse-1: go to '%s' symbol\nmouse-2: narrow to '%s' range" name name)
+                               (format "mouse-1: go to '%s' symbol\nmouse-2: %s"
+                                       name
+                                       (-let (((&DocumentSymbol :range (&RangeToPoint :start :end)) symbol))
+                                         (if (and (eq (point-min) start) (eq (point-max) end))
+                                             "widen"
+                                           (format "narrow to '%s' range" name))))
                                symbol-display-string))
 
 (defun lsp-headerline--path-up-to-project-root (root-path path)
