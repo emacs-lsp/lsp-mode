@@ -1974,8 +1974,7 @@ WORKSPACE is the workspace that contains the diagnostics."
         (remhash file workspace-diagnostics)
       (puthash file (append diagnostics nil) workspace-diagnostics))
 
-    (run-hooks 'lsp-diagnostics-updated-hook)
-    (lsp--idle-reschedule (current-buffer))))
+    (run-hooks 'lsp-diagnostics-updated-hook)))
 
 
 

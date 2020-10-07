@@ -179,7 +179,12 @@ from the language server."
     (->> lsp--cur-workspace
          (lsp--workspace-buffers)
          (mapc (lambda (buffer)
-                 (when (lsp-buffer-live-p buffer)
+                 (when (and (lsp-buffer-live-p buffer)
+                            (or
+                             (not (bufferp buffer))
+                             (and (get-buffer-window buffer)
+                                  (not (-contains? (buffer-local-value 'lsp-on-idle-hook buffer)
+                                                   'lsp-diagnostics--flycheck-buffer)))))
                    (lsp-with-current-buffer buffer
                      (add-hook 'lsp-on-idle-hook #'lsp-diagnostics--flycheck-buffer nil t)
                      (lsp--idle-reschedule (current-buffer)))))))))
