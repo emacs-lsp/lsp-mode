@@ -74,6 +74,12 @@ TypeScript."
   :group 'lsp-vetur
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-vetur-language-features-code-actions t
+  "Enable/disable code actions."
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "7.1"))
+
 (defcustom lsp-vetur-validation-style t
   "Validate css/scss/less/postcss in <style>"
   :type 'boolean
@@ -794,6 +800,7 @@ Code's JavaScript and TypeScript support."
    ("vetur.validation.script" lsp-vetur-validation-script t)
    ("vetur.validation.style" lsp-vetur-validation-style t)
    ("vetur.validation.template" lsp-vetur-validation-template t)
+   ("vetur.languageFeatures.codeActions" lsp-vetur-language-features-code-actions t)
    ("vetur.grammar.customBlocks" lsp-vetur-grammar-custom-blocks)
    ("vetur.completion.tagCasing" lsp-vetur-completion-tag-casing)
    ("vetur.completion.useScaffoldSnippets" lsp-vetur-completion-use-scaffold-snippets t)
