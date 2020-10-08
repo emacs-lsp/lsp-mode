@@ -82,7 +82,9 @@
     :/jsconfig.json ["http://json.schemastore.org/jsconfig"]
     :/jsconfig.*.json ["http://json.schemastore.org/jsconfig"]
     :/project.json ["http://json.schemastore.org/project"]
-    :/omnisharp.json ["http://json.schemastore.org/omnisharp"])
+    :/omnisharp.json ["http://json.schemastore.org/omnisharp"]
+    :/.eslintrc.json ["http://json.schemastore.org/eslintrc"]
+    :/.eslintrc ["http://json.schemastore.org/eslintrc"])
   "Default json schemas.")
 
 (defun lsp-json--get-content (_workspace uri callback)
