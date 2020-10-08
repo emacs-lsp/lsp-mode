@@ -76,16 +76,17 @@ caching purposes.")
 
 (defun lsp-headerline--fix-image-background (image)
   "Fix IMAGE background if it is a file otherwise return as an icon."
-  (if (and image (get-text-property 0 'display image))
-      (propertize " " 'display
-                  (cl-list* 'image
-                            (plist-put
-                             (cl-copy-list
-                              (cl-rest (get-text-property
-                                        0 'display
-                                        image)))
-                             :background (face-attribute 'header-line :background))))
-    (replace-regexp-in-string "\s\\|\t" "" (or image ""))))
+  (if image
+      (let ((display-image (get-text-property 0 'display image)))
+        (if (listp display-image)
+            (propertize " " 'display
+                        (cl-list* 'image
+                                  (plist-put
+                                   (cl-copy-list
+                                    (cl-rest display-image))
+                                   :background (face-attribute 'header-line :background))))
+          (replace-regexp-in-string "\s\\|\t" "" display-image)))
+    ""))
 
 (defun lsp-headerline--filename-with-icon (file-path)
   "Return the filename from FILE-PATH with the extension related icon."
