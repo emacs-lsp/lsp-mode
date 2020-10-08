@@ -36,7 +36,7 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/Microsoft/vscode-eslint"))
 
-(defcustom lsp-eslint-unziped-path (f-join lsp-server-install-dir "eslint/unziped")
+(defcustom lsp-eslint-unzipped-path (f-join lsp-server-install-dir "eslint/unzipped")
   "The path to the file in which `eslint' will be stored."
   :type 'file
   :group 'lsp-eslint
@@ -241,7 +241,7 @@ source.fixAll code action."
 (defun lsp-eslint-server-command ()
   (if (lsp-eslint-server-exists? lsp-eslint-server-command)
       lsp-eslint-server-command
-    `(,lsp-eslint-node ,(f-join lsp-eslint-unziped-path
+    `(,lsp-eslint-node ,(f-join lsp-eslint-unzipped-path
                                 "extension/server/out/eslintServer.js")
                        "--stdio")))
 
@@ -299,7 +299,7 @@ source.fixAll code action."
                            (lambda (&rest _)
                              (condition-case err
                                  (progn
-                                   (lsp-unzip tmp-zip lsp-eslint-unziped-path)
+                                   (lsp-unzip tmp-zip lsp-eslint-unzipped-path)
                                    (funcall callback))
                                (error (funcall error-callback err))))
                            error-callback
