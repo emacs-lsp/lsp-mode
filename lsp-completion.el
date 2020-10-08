@@ -487,12 +487,12 @@ The MARKERS and PREFIX value will be attached to each candidate."
        :company-doc-buffer (-compose #'company-doc-buffer
                                      #'lsp-completion--get-documentation)
        :exit-function
-       (-rpartial #'lsp-completion--exit-fn trigger-chars candidates)))))
+       (-rpartial #'lsp-completion--exit-fn candidates)))))
 
-(defun lsp-completion--exit-fn (candidate _status &optional trigger-chars candidates)
+(defun lsp-completion--exit-fn (candidate _status &optional candidates)
   "Exit function of `completion-at-point'.
 CANDIDATE is the selected completion item.
-Others: TRIGGER-CHARS CANDIDATES"
+Others: CANDIDATES"
   (unwind-protect
       (-let* ((candidate (if (plist-member (text-properties-at 0 candidate)
                                            'lsp-completion-item)
@@ -545,10 +545,7 @@ Others: TRIGGER-CHARS CANDIDATES"
                    (lsp-feature? "textDocument/signatureHelp"))
           (lsp-signature-activate))
 
-        (setq-local lsp-inhibit-lsp-hooks nil)
-
-        (when (lsp-completion--looking-back-trigger-characterp trigger-chars)
-          (setq this-command 'self-insert-command)))
+        (setq-local lsp-inhibit-lsp-hooks nil))
     (lsp-completion--clear-cache)))
 
 (defun lsp-completion--regex-fuz (str)
