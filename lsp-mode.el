@@ -6108,6 +6108,12 @@ WORKSPACE is the active workspace."
   (let ((json-encoding-pretty-print t))
     (json-encode (json-read-from-string msg))))
 
+(defvar lsp-parsed-message nil
+  "This will store the string representation of the json message.
+
+In some cases like #1807 we lose information during json
+deserialization.")
+
 (defun lsp--create-filter-function (workspace)
   "Make filter for the workspace."
   (let ((body-received 0)
@@ -6146,22 +6152,22 @@ WORKSPACE is the active workspace."
             (push this-body body)
             (setf body-received (+ body-received body-bytes))
             (when (>= chunk-length left-to-receive)
-              (lsp--parser-on-message
-               (condition-case err
-                   (let ((parsed-message (decode-coding-string
-                                          (apply #'concat
-                                                 (nreverse
-                                                  (prog1 body
-                                                    (setf leftovers nil
-                                                          body-length nil
-                                                          body-received nil
-                                                          body nil)))) 'utf-8)))
-                     (lsp--read-json parsed-message))
-                 (error
-                  (lsp-warn "Failed to parse the following chunk:\n'''\n%s\n'''\nwith message %s"
-                            (concat leftovers input)
-                            err)))
-               workspace))))))))
+              (let ((lsp-parsed-message (decode-coding-string
+                                         (apply #'concat
+                                                (nreverse
+                                                 (prog1 body
+                                                   (setf leftovers nil
+                                                         body-length nil
+                                                         body-received nil
+                                                         body nil)))) 'utf-8)))
+                (lsp--parser-on-message
+                 (condition-case err
+                     (lsp--read-json lsp-parsed-message)
+                   (error
+                    (lsp-warn "Failed to parse the following chunk:\n'''\n%s\n'''\nwith message %s"
+                              (concat leftovers input)
+                              err)))
+                 workspace)))))))))
 
 (defvar-local lsp--line-col-to-point-hash-table nil
   "Hash table with keys (line . col) and values that are either point positions or markers.")
@@ -6740,24 +6746,38 @@ SESSION is the active session."
            (lsp--spinner-stop)
            (signal 'lsp-empty-response-error (list "initialize")))
 
-         (setf (lsp--workspace-server-capabilities workspace) (lsp:initialize-result-capabilities
-                                                               response)
-               (lsp--workspace-status workspace) 'initialized)
+         (let* ((capabilities (lsp:initialize-result-capabilities response))
+                (json-object-type 'hash-table)
+                (text-document-sync (-some-> lsp-parsed-message
+                                      (json-read-from-string)
+                                      (ht-get "result")
+                                      (ht-get "capabilities")
+                                      (ht-get "textDocumentSync")))
+                (save (when (ht? text-document-sync)
+                        (ht-get text-document-sync "save"))))
+           ;; see #1807
+           (when (and (ht? save) (ht-empty? save))
+             (-> capabilities
+                 (lsp:server-capabilities-text-document-sync?)
+                 (lsp:set-text-document-sync-options-save? save)))
 
-         (with-lsp-workspace workspace
-           (lsp-notify "initialized" lsp--empty-ht))
+           (setf (lsp--workspace-server-capabilities workspace) capabilities
+                 (lsp--workspace-status workspace) 'initialized)
 
-         (when initialized-fn (funcall initialized-fn workspace))
+           (with-lsp-workspace workspace
+             (lsp-notify "initialized" lsp--empty-ht))
 
-         (->> workspace
-              (lsp--workspace-buffers)
-              (mapc (lambda (buffer)
-                      (lsp-with-current-buffer buffer
-                        (lsp--open-in-workspace workspace)))))
+           (when initialized-fn (funcall initialized-fn workspace))
 
-         (with-lsp-workspace workspace
-           (run-hooks 'lsp-after-initialize-hook))
-         (lsp--info "%s initialized successfully" (lsp--workspace-print workspace)))
+           (->> workspace
+                (lsp--workspace-buffers)
+                (mapc (lambda (buffer)
+                        (lsp-with-current-buffer buffer
+                          (lsp--open-in-workspace workspace)))))
+
+           (with-lsp-workspace workspace
+             (run-hooks 'lsp-after-initialize-hook))
+           (lsp--info "%s initialized successfully" (lsp--workspace-print workspace))))
        :mode 'detached))
     workspace))
 
