@@ -36,6 +36,12 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/Microsoft/vscode-eslint"))
 
+(defcustom lsp-eslint-unzipped-path (f-join lsp-server-install-dir "eslint/unzipped")
+  "The path to the file in which `eslint' will be stored."
+  :type 'file
+  :group 'lsp-eslint
+  :package-version '(lsp-mode . "7.1"))
+
 (defcustom lsp-eslint-server-command `("node"
                                        "~/server/out/eslintServer.js"
                                        "--stdio")
@@ -66,6 +72,11 @@
   "A path added to NODE_PATH when resolving the eslint module."
   :type '(repeat string)
   :package-version '(lsp-mode . "6.3"))
+
+(defcustom lsp-eslint-node "node"
+  "Path to nodejs."
+  :type 'file
+  :package-version '(lsp-mode . "7.1"))
 
 (defcustom lsp-eslint-options nil
   "The eslint options object to provide args normally passed to
@@ -227,16 +238,32 @@ source.fixAll code action."
      (when (called-interactively-p 'any)
        (lsp--info "source.fixAll.eslint action not available")))))
 
+(defun lsp-eslint-server-command ()
+  (if (lsp-eslint-server-exists? lsp-eslint-server-command)
+      lsp-eslint-server-command
+    `(,lsp-eslint-node ,(f-join lsp-eslint-unzipped-path
+                                "extension/server/out/eslintServer.js")
+                       "--stdio")))
+
+(defun lsp-eslint-server-exists? (eslint-server-command)
+  (let* ((command-name (f-base (f-filename (cl-first eslint-server-command))))
+         (first-argument (cl-second eslint-server-command))
+         (first-argument-exist (and first-argument (file-exists-p first-argument))))
+    (if (equal command-name lsp-eslint-node)
+        first-argument-exist
+      (executable-find (cl-first eslint-server-command)))))
+
+(defun lsp-eslint--confirm-local (_workspace _params)
+  ;; don't bother implementing since it will be dropped in next version of the
+  ;; server
+  t)
+
 (lsp-register-client
  (make-lsp-client
   :new-connection
   (lsp-stdio-connection
-   (lambda () lsp-eslint-server-command)
-   (lambda ()
-    (let* ((command-name (f-base (f-filename (cl-first lsp-eslint-server-command))))
-           (first-argument (cl-second lsp-eslint-server-command))
-           (first-argument-exist (and first-argument (file-exists-p first-argument))))
-     (if (equal command-name "node") first-argument-exist (executable-find (cl-first lsp-eslint-server-command))))))
+   (lambda () (lsp-eslint-server-command))
+   (lambda () (lsp-eslint-server-exists? (lsp-eslint-server-command))))
   :activation-fn (lambda (filename &optional _)
                    (or (string-match-p (rx (one-or-more anything) "."
                                            (or "ts" "js" "jsx" "tsx" "html" "vue"))
@@ -248,7 +275,8 @@ source.fixAll code action."
   :multi-root t
   :notification-handlers (ht ("eslint/status" #'lsp-eslint-status-handler))
   :request-handlers (ht ("workspace/configuration" #'lsp-eslint--configuration)
-                        ("eslint/openDoc" 'lsp-eslint--open-doc))
+                        ("eslint/openDoc" #'lsp-eslint--open-doc)
+                        ("eslint/confirmLocalESLint" #'lsp-eslint--confirm-local))
   :server-id 'eslint
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
@@ -263,7 +291,20 @@ source.fixAll code action."
                                               ,(lsp-make-file-system-watcher
                                                 :glob-pattern "**/.eslintignore")
                                               ,(lsp-make-file-system-watcher
-                                                :glob-pattern "**/package.json")])))))))
+                                                :glob-pattern "**/package.json")])))))
+  :download-server-fn (lambda (_client callback error-callback _update?)
+                        (let ((tmp-zip (make-temp-file "ext" nil ".zip")))
+                          (delete-file tmp-zip)
+                          (lsp-download-install
+                           (lambda (&rest _)
+                             (condition-case err
+                                 (progn
+                                   (lsp-unzip tmp-zip lsp-eslint-unzipped-path)
+                                   (funcall callback))
+                               (error (funcall error-callback err))))
+                           error-callback
+                           :url (lsp-vscode-extension-url "dbaeumer" "vscode-eslint")
+                           :store-path tmp-zip)))))
 
 (provide 'lsp-eslint)
 ;;; lsp-eslint.el ends here
