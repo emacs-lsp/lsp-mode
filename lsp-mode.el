@@ -648,7 +648,8 @@ If this is set to nil, `eldoc' will show only the symbol information."
 (defcustom lsp-modeline-workspace-status-enable t
   "Whether to show workspace status on modeline."
   :type 'boolean
-  :group 'lsp-mode)
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "7.1"))
 
 (defcustom lsp-headerline-breadcrumb-enable nil
   "Whether to enable breadcrumb on headerline."
