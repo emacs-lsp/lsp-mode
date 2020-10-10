@@ -139,7 +139,7 @@
                                                         (lsp-execute-code-action (lsp--select-action actions))))))
                          built-string)
     (unless (string= "" built-string)
-      (concat " " built-string))))
+      (concat built-string " "))))
 
 (defun lsp--modeline-update-code-actions (actions)
   "Update modeline with new code ACTIONS."
@@ -252,7 +252,7 @@ The `:global' workspace is global one.")
   (cl-labels ((calc-modeline ()
                              (let ((str (lsp-modeline-diagnostics-statistics)))
                                (if (string-empty-p str) ""
-                                 (concat " " str)))))
+                                 (concat str " ")))))
     (setq lsp-modeline--diagnostics-string
           (cl-case lsp-modeline-diagnostics-scope
             (:file (or lsp-modeline--diagnostics-string
