@@ -7,6 +7,7 @@
   * Add Nix support.
   * Add Racket support.
   * Provided automatic installers for `lsp-clojure` (`clojure-lsp`).
+  * Added ~lsp-modeline-workspace-status-mode~ and option to disable it via ~lsp-modeline-workspace-status-enable~.
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
   * Safe renamed ~lsp-flycheck-default-level~ -> ~lsp-diagnostics-flycheck-default-level~
