@@ -62,6 +62,7 @@
 (declare-function all-the-icons-octicon "ext:all-the-icons" t t)
 (declare-function lsp-treemacs-errors-list "ext:lsp-treemacs" t)
 
+
 ;; code actions
 
 (defvar-local lsp-modeline--code-actions-string nil
@@ -193,7 +194,6 @@
     (setq global-mode-string (remove '(t (:eval lsp-modeline--code-actions-string)) global-mode-string)))))
 
 
-
 ;; diagnostics
 
 (defvar-local lsp-modeline--diagnostics-string nil
@@ -302,6 +302,39 @@ The `:global' workspace is global one.")
     (remove-hook 'lsp-unconfigure-hook #'lsp-modeline--disable-diagnostics t)
     (remove-hook 'lsp-diagnostics-updated-hook 'lsp-modeline--diagnostics-reset-modeline-cache)
     (setq global-mode-string (remove '(t (:eval (lsp-modeline--diagnostics-update-modeline))) global-mode-string)))))
+
+
+;; workspace status
+
+(defun lsp-modeline--workspace-status-string ()
+  "Build the workspace status string."
+  '(t (:eval (-keep #'lsp--workspace-status-string (lsp-workspaces)))))
+
+(defun lsp-modeline--enable-workspace-status ()
+  "Enable workspace status on modeline."
+  (let ((status (lsp-modeline--workspace-status-string)))
+    (setq-local global-mode-string (if (-contains? global-mode-string status)
+                                       global-mode-string
+                                     (cons status global-mode-string)))))
+
+(defun lsp-modeline--disable-workspace-status ()
+  "Disable workspace status on modeline."
+  (let ((status (lsp-modeline--workspace-status-string)))
+    (setq-local global-mode-string (remove status global-mode-string))))
+
+;;;###autoload
+(define-minor-mode lsp-modeline-workspace-status-mode
+  "Toggle workspace status on modeline."
+  :group 'lsp-mode
+  :global nil
+  :lighter ""
+  (cond
+   (lsp-modeline-workspace-status-mode
+    (add-hook 'lsp-configure-hook #'lsp-modeline--enable-workspace-status nil t)
+    (add-hook 'lsp-unconfigure-hook #'lsp-modeline--disable-workspace-status nil t))
+   (t
+    (remove-hook 'lsp-configure-hook #'lsp-modeline--enable-workspace-status t)
+    (remove-hook 'lsp-unconfigure-hook #'lsp-modeline--disable-workspace-status t))))
 
 (provide 'lsp-modeline)
 ;;; lsp-modeline.el ends here

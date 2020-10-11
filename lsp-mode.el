@@ -645,6 +645,12 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
+(defcustom lsp-modeline-workspace-status-enable t
+  "Whether to show workspace status on modeline."
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "7.1"))
+
 (defcustom lsp-headerline-breadcrumb-enable nil
   "Whether to enable breadcrumb on headerline."
   :type 'boolean
@@ -3582,71 +3588,65 @@ in that particular folder."
 (define-minor-mode lsp-managed-mode
   "Mode for source buffers managed by lsp-mode."
   nil nil nil
-  (let ((status '(t (:eval (-keep #'lsp--workspace-status-string (lsp-workspaces))))))
-    (cond
-     (lsp-managed-mode
-      (when (lsp-feature? "textDocument/hover")
-        (add-function :before-until (local 'eldoc-documentation-function) #'lsp-eldoc-function)
-        (eldoc-mode 1))
+  (cond
+   (lsp-managed-mode
+    (when (lsp-feature? "textDocument/hover")
+      (add-function :before-until (local 'eldoc-documentation-function) #'lsp-eldoc-function)
+      (eldoc-mode 1))
 
-      (add-hook 'after-change-functions #'lsp-on-change nil t)
-      (add-hook 'after-revert-hook #'lsp-on-revert nil t)
-      (add-hook 'after-save-hook #'lsp-on-save nil t)
-      (add-hook 'auto-save-hook #'lsp--on-auto-save nil t)
-      (add-hook 'before-change-functions #'lsp-before-change nil t)
-      (add-hook 'before-save-hook #'lsp--before-save nil t)
-      (add-hook 'kill-buffer-hook #'lsp--text-document-did-close nil t)
-      (add-hook 'post-command-hook #'lsp--post-command nil t)
+    (add-hook 'after-change-functions #'lsp-on-change nil t)
+    (add-hook 'after-revert-hook #'lsp-on-revert nil t)
+    (add-hook 'after-save-hook #'lsp-on-save nil t)
+    (add-hook 'auto-save-hook #'lsp--on-auto-save nil t)
+    (add-hook 'before-change-functions #'lsp-before-change nil t)
+    (add-hook 'before-save-hook #'lsp--before-save nil t)
+    (add-hook 'kill-buffer-hook #'lsp--text-document-did-close nil t)
+    (add-hook 'post-command-hook #'lsp--post-command nil t)
 
-      (lsp--update-on-type-formatting-hook)
-      (lsp--update-signature-help-hook)
+    (lsp--update-on-type-formatting-hook)
+    (lsp--update-signature-help-hook)
 
-      (lsp--semantic-highlighting-warn-about-deprecated-setting)
+    (lsp--semantic-highlighting-warn-about-deprecated-setting)
 
-      (when lsp-enable-xref
-        (add-hook 'xref-backend-functions #'lsp--xref-backend nil t))
+    (when lsp-enable-xref
+      (add-hook 'xref-backend-functions #'lsp--xref-backend nil t))
 
-      (setq-local global-mode-string (if (-contains? global-mode-string status)
-                                         global-mode-string
-                                       (cons status global-mode-string)))
+    (lsp-configure-buffer)
+    (let ((buffer (lsp-current-buffer)))
+      (run-with-idle-timer
+       0.0 nil
+       (lambda ()
+         (when (lsp-buffer-live-p buffer)
+           (lsp-with-current-buffer buffer
+             (lsp--on-change-debounce buffer)
+             (lsp--on-idle buffer)))))))
+   (t
+    (lsp-unconfig-buffer)
+    (remove-function (local 'eldoc-documentation-function) #'lsp-eldoc-function)
 
-      (lsp-configure-buffer)
-      (let ((buffer (lsp-current-buffer)))
-        (run-with-idle-timer
-         0.0 nil
-         (lambda ()
-           (when (lsp-buffer-live-p buffer)
-             (lsp-with-current-buffer buffer
-               (lsp--on-change-debounce buffer)
-               (lsp--on-idle buffer)))))))
-     (t
-      (lsp-unconfig-buffer)
-      (remove-function (local 'eldoc-documentation-function) #'lsp-eldoc-function)
+    (remove-hook 'post-command-hook #'lsp--post-command t)
+    (remove-hook 'after-change-functions #'lsp-on-change t)
+    (remove-hook 'after-revert-hook #'lsp-on-revert t)
+    (remove-hook 'after-save-hook #'lsp-on-save t)
+    (remove-hook 'auto-save-hook #'lsp--on-auto-save t)
+    (remove-hook 'before-change-functions #'lsp-before-change t)
+    (remove-hook 'before-save-hook #'lsp--before-save t)
+    (remove-hook 'kill-buffer-hook #'lsp--text-document-did-close t)
 
-      (remove-hook 'post-command-hook #'lsp--post-command t)
-      (remove-hook 'after-change-functions #'lsp-on-change t)
-      (remove-hook 'after-revert-hook #'lsp-on-revert t)
-      (remove-hook 'after-save-hook #'lsp-on-save t)
-      (remove-hook 'auto-save-hook #'lsp--on-auto-save t)
-      (remove-hook 'before-change-functions #'lsp-before-change t)
-      (remove-hook 'before-save-hook #'lsp--before-save t)
-      (remove-hook 'kill-buffer-hook #'lsp--text-document-did-close t)
+    (lsp--update-on-type-formatting-hook :cleanup)
+    (lsp--update-signature-help-hook :cleanup)
 
-      (lsp--update-on-type-formatting-hook :cleanup)
-      (lsp--update-signature-help-hook :cleanup)
+    (when lsp--on-idle-timer
+      (cancel-timer lsp--on-idle-timer)
+      (setq lsp--on-idle-timer nil))
 
-      (when lsp--on-idle-timer
-        (cancel-timer lsp--on-idle-timer)
-        (setq lsp--on-idle-timer nil))
+    (remove-hook 'lsp-on-idle-hook #'lsp--document-links t)
+    (remove-hook 'lsp-on-idle-hook #'lsp--document-highlight t)
 
-      (remove-hook 'lsp-on-idle-hook #'lsp--document-links t)
-      (remove-hook 'lsp-on-idle-hook #'lsp--document-highlight t)
+    (lsp--remove-overlays 'lsp-highlight)
+    (lsp--remove-overlays 'lsp-links)
 
-      (lsp--remove-overlays 'lsp-highlight)
-      (lsp--remove-overlays 'lsp-links)
-
-      (remove-hook 'xref-backend-functions #'lsp--xref-backend t)
-      (setq-local global-mode-string (remove status global-mode-string))))))
+    (remove-hook 'xref-backend-functions #'lsp--xref-backend t))))
 
 (defun lsp-configure-buffer ()
   "Configure LSP features for current buffer."
@@ -6606,6 +6606,8 @@ returns the command to execute."
     (add-hook 'lsp-configure-hook 'lsp-modeline-code-actions-mode))
   (when lsp-modeline-diagnostics-enable
     (add-hook 'lsp-configure-hook 'lsp-modeline-diagnostics-mode))
+  (when lsp-modeline-workspace-status-enable
+    (add-hook 'lsp-configure-hook 'lsp-modeline-workspace-status-mode))
   (when lsp-lens-enable
     (add-hook 'lsp-configure-hook 'lsp-lens-mode))
 
