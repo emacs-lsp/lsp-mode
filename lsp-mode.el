@@ -6581,7 +6581,7 @@ returns the command to execute."
                           (remote-command-and-args
                            (append
                             (list remote-command)
-                            (rest command-and-args)))
+                            (cdr command-and-args)))
                           ;; wrap with stty to disable converting \r to \n
                           (process-name (generate-new-buffer-name name))
                           (wrapped-command (append '("stty" "raw" ";")
