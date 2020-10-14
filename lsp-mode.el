@@ -6573,11 +6573,19 @@ should return the command to start the LS server."
 LOCAL-COMMAND is either list of strings, string or function which
 returns the command to execute."
   (list :connect (lambda (filter sentinel name environment-fn)
-                   (let* ((final-command (lsp-resolve-final-function local-command))
+                   (let* ((command-and-args (lsp-resolve-final-function local-command))
+                          (remote-command ;; command to execute at remote host
+                           (file-local-name
+                            (-first-item
+                             command-and-args)))
+                          (remote-command-and-args
+                           (append
+                            (list remote-command)
+                            (rest command-and-args)))
                           ;; wrap with stty to disable converting \r to \n
                           (process-name (generate-new-buffer-name name))
                           (wrapped-command (append '("stty" "raw" ";")
-                                                   final-command
+                                                   remote-command-and-args
                                                    (list
                                                     (concat "2>"
                                                             (or (when generate-error-file-fn
