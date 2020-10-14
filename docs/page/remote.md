@@ -25,6 +25,23 @@ Here it is example how you can configure python language server to work when usi
 
 _Note:_ when you do not have root privileges on the remote machine to put the language server on the path you may alter the remote path by changing `tramp-remote-path`.
 
+When providing a full path for a remote Language Server, it should be with the proper Tramp prefix. We recommend that you provide the command as a separate function so you can control different settings in a single place.
+
+```elisp
+(defun my/remote-lsp-command ()
+  "Use pyls, but only on remoteA and on a custom location"
+  (when (and (file-remote-p default-directory)
+             (s-matches? "remoteA" default-directory))
+    (concat (file-remote-p default-directory)
+            "/home/me/bin/pyls")))
+(lsp-register-client
+    (make-lsp-client :new-connection 'my/remote-lsp-command)
+                     :major-modes '(python-mode)
+                     :remote? t
+                     :server-id 'remoteA-pyls-remote))
+```
+
+
 ### Dealing with stderr
 
 With TRAMP, Emacs does not have an easy way to distinguish stdout and stderr, so when the underlying LSP process writes to stderr, it breaks the `lsp-mode` parser. As a workaround, `lsp-mode` is redirecting stderr to `/tmp/<process-name>-<id>~stderr`.
