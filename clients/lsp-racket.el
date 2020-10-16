@@ -24,6 +24,9 @@
 
 ;;; Code:
 
+(require 'ht)
+(require 'lsp-mode)
+
 
 ;; racket-langserver
 
