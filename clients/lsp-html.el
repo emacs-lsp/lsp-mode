@@ -20,6 +20,8 @@
 
 ;;; Code:
 
+(require 'lsp-mode)
+
 (defgroup lsp-html nil
   "LSP support for HTML, using vscode-html-languageserver."
   :group 'lsp-mode
