@@ -323,6 +323,8 @@ PATH is the current folder to be checked."
     (lsp-headerline--breadcrumb-cache-path-up-to-project)
     (add-to-list 'header-line-format '(t (:eval lsp-headerline--string)))
 
+    (add-hook 'xref-after-jump-hook #'lsp-headerline--check-breadcrumb nil t)
+
     (add-hook 'lsp-on-idle-hook #'lsp-headerline--check-breadcrumb nil t)
     (add-hook 'lsp-configure-hook #'lsp-headerline--enable-breadcrumb nil t)
     (add-hook 'lsp-unconfigure-hook #'lsp-headerline--disable-breadcrumb nil t))
@@ -330,6 +332,8 @@ PATH is the current folder to be checked."
     (remove-hook 'lsp-on-idle-hook #'lsp-headerline--check-breadcrumb t)
     (remove-hook 'lsp-configure-hook #'lsp-headerline--enable-breadcrumb t)
     (remove-hook 'lsp-unconfigure-hook #'lsp-headerline--disable-breadcrumb t)
+
+    (remove-hook 'xref-after-jump-hook #'lsp-headerline--check-breadcrumb t)
 
     (setq lsp-headerline--path-up-to-project-string nil)
     (setq header-line-format (remove '(t (:eval lsp-headerline--string)) header-line-format)))))
