@@ -5882,10 +5882,20 @@ PARAMS are the `workspace/configuration' request params"
                        (path-without-last (s-join "." (-slice path-parts 0 -1)))
                        (path-parts-len (length path-parts)))
                  (cond
+                  ;; We use `ignore-errors' because `ht-get*' throws
+                  ;; an error if a nested hash table doesn't exist.
+                  ;; For example, if we are asked to provide
+                  ;; configuration for section "foo.bar" but we don't
+                  ;; have a section "foo", then we'd get an error.
+                  ;; `ignore-errors' is arguably a bit of a hack
+                  ;; because `ht-get*' doesn't support nil punning,
+                  ;; but it's easy.
                   ((<= path-parts-len 1)
-                   (apply 'ht-get* `(,(lsp-configuration-section section?) ,@path-parts)))
+                   (ignore-errors
+                     (apply 'ht-get* `(,(lsp-configuration-section section?) ,@path-parts))))
                   ((> path-parts-len 1)
-                   (apply 'ht-get* `(,(lsp-configuration-section path-without-last) ,@path-parts)))))))
+                   (ignore-errors
+                     (apply 'ht-get* `(,(lsp-configuration-section path-without-last) ,@path-parts))))))))
        (apply #'vector)))
 
 (defun lsp--send-request-response (workspace recv-time request response)
