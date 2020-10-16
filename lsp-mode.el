@@ -5885,7 +5885,11 @@ PARAMS are the `workspace/configuration' request params"
                   ((<= path-parts-len 1)
                    (apply 'ht-get* `(,(lsp-configuration-section section?) ,@path-parts)))
                   ((> path-parts-len 1)
-                   (apply 'ht-get* `(,(lsp-configuration-section path-without-last) ,@path-parts)))))))
+                   (when-let ((section (lsp-configuration-section path-without-last))
+                              (keys path-parts))
+                     (while (and keys section)
+                       (setf section (ht-get section (pop keys))))
+                     section))))))
        (apply #'vector)))
 
 (defun lsp--send-request-response (workspace recv-time request response)
