@@ -182,20 +182,32 @@ Newlines and excess whitespace are removed."
   ("xml.catalogs" lsp-xml-catalogs)
   ("xml.trace.server" lsp-xml-trace-server)))
 
-(defcustom lsp-xml-jar-file (expand-file-name
-                             (locate-user-emacs-file
-                              "org.eclipse.lsp4xml-0.3.0-uber.jar"))
+(defconst lsp-xml-jar-version "0.13.1")
+
+(defconst lsp-xml-jar-name (format "org.eclipse.lemminx-%s-uber.jar" lsp-xml-jar-version))
+
+(defcustom lsp-xml-jar-file (f-join lsp-server-install-dir "xmlls" lsp-xml-jar-name)
   "Xml server jar command."
   :type 'string
   :group 'lsp-xml
   :type 'file
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-xml-jar-download-url
+  (format
+   "https://repo.eclipse.org/content/repositories/lemminx-releases/org/eclipse/lemminx/org.eclipse.lemminx/%s/%s"
+   lsp-xml-jar-version
+   lsp-xml-jar-name)
+  "Automatic download url for lsp-xml."
+  :type 'string
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "7.1"))
+
 (lsp-dependency
  'xmlls
  '(:system lsp-xml-jar-file)
- `(:download :url "https://repo.eclipse.org/content/repositories/lemminx-releases/org/eclipse/lemminx/org.eclipse.lemminx/0.13.1/org.eclipse.lemminx-0.13.1-uber.jar"
-             :store-path ,(f-join lsp-server-install-dir "xmlls" "org.eclipse.lemminx.jar")))
+ `(:download :url lsp-xml-jar-download-url
+             :store-path lsp-xml-jar-file))
 
 (defcustom lsp-xml-server-command `("java" "-jar" ,lsp-xml-jar-file)
   "Xml server command."
@@ -216,7 +228,9 @@ Newlines and excess whitespace are removed."
                   :server-id 'xmlls
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
-                                      (lsp--set-configuration (lsp-configuration-section "xml"))))))
+                                      (lsp--set-configuration (lsp-configuration-section "xml"))))
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure 'xmlls callback error-callback))))
 
 (provide 'lsp-xml)
 ;;; lsp-xml.el ends here
