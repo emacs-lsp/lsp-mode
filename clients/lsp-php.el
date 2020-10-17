@@ -325,11 +325,11 @@ already present."
 
 (defun lsp-serenata-init-options ()
   "Init options for lsp-serenata."
-  `( :config ( :uris ,lsp-serenata-uris
-               :indexDatabaseUri ,lsp-serenata-index-database-uri
-               :phpVersion ,lsp-serenata-php-version
-               :excludedPathExpressions ,lsp-serenata-exclude-path-expressions
-               :fileExtensions ,lsp-serenata-file-extensions)))
+  `( :configuration ( :uris ,lsp-serenata-uris
+                      :indexDatabaseUri ,lsp-serenata-index-database-uri
+                      :phpVersion ,lsp-serenata-php-version
+                      :excludedPathExpressions ,lsp-serenata-exclude-path-expressions
+                      :fileExtensions ,lsp-serenata-file-extensions)))
 
 
 (lsp-interface (serenata:didProgressIndexing (:sequenceOfIndexedItem :totalItemsToIndex :progressPercentage :folderUri :fileUri :info) nil ))
