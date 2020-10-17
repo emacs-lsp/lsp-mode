@@ -542,8 +542,8 @@
     "name": "xml",
     "full-name": "XML",
     "server-name": "lsp4xml",
-    "server-url": "https://github.com/angelozerr/lsp4xml",
-    "installation": "Download from lsp4xml releases",
+    "server-url": "https://github.com/eclipse/lemminx",
+    "installation": "Automatic by lsp-mode",
     "debugger": "Not available"
   },
   {
