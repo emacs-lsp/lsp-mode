@@ -155,6 +155,12 @@ Newlines and excess whitespace are removed."
   :group 'lsp-xml
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-xml-validation-resolve-external-entities nil
+  "Enable/disable resolution (downloading) of external entities from the internet."
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "7.1"))
+
 (defcustom lsp-xml-validation-schema t
   "Enable/disable schema based validation. Ignored if
   \"xml.validation.enabled\": false."
@@ -164,6 +170,7 @@ Newlines and excess whitespace are removed."
 
 (lsp-register-custom-settings '
  (("xml.validation.schema" lsp-xml-validation-schema t)
+  ("xml.validation.resolveExternalEntities" lsp-xml-validation-resolve-external-entities)
   ("xml.validation.enabled" lsp-xml-validation-enabled t)
   ("xml.validation.noGrammar" lsp-xml-validation-no-grammar)
   ("xml.server.workDir" lsp-xml-server-work-dir)
