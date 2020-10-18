@@ -7835,6 +7835,25 @@ This avoids overloading the server with many files when starting Emacs."
    (or (and (fboundp 'native-comp-available-p)
             (native-comp-available-p))
        :optional)))
+
+(declare-function package-version-join "ext:package")
+(declare-function package-desc-version "ext:package")
+(declare-function package--alist "ext:package")
+(defun lsp-version ()
+  "Return string describing current version of `lsp-mode'."
+  (interactive)
+  (unless (featurep 'package)
+    (require 'package))
+  (let ((ver (format "lsp-mode %s, Emacs %s, %s"
+                     (package-version-join
+                      (package-desc-version
+                       (car (alist-get 'lsp-mode (package--alist)))))
+                     emacs-version
+                     system-type)))
+    (if (called-interactively-p 'interactive)
+        (message "%s" ver)
+      ver)))
+
 
 
 ;; org-mode/virtual-buffer
