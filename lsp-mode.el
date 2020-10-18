@@ -6429,7 +6429,7 @@ COMMAND-FN will be called with PORT=0 and its output examined."
 Like `lsp-tcp-connection', but in reverse: Emacs listens for a
 connection from the language server, not the other way around.
 
-COMMAND-FN and TEST-FN behave equally."
+COMMAND-FN and TEST-FN behave as there."
   (cl-check-type command-fn function)
   (list
    :connect
