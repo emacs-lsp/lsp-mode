@@ -6237,14 +6237,20 @@ Return a nested alist keyed by symbol names. e.g.
   (when menu-bar-mode
     (lsp--imenu-refresh)))
 
+(defun lsp--check-command-list (command)
+  (cl-assert (seq-every-p (apply-partially #'stringp) command) nil
+             "Invalid command list"))
+
 (defun lsp-resolve-final-function (command)
   "Resolve final function COMMAND."
   (-let [command (if (functionp command) (funcall command) command)]
     (cl-etypecase command
       (list
-       (cl-assert (seq-every-p (apply-partially #'stringp) command) nil
-                  "Invalid command list")
+       (lsp--check-command-list command)
        command)
+      (vector
+       (lsp--check-command-list command)
+       (cl-coerce command 'list))
       (string (list command)))))
 
 (defun lsp-server-present? (final-command)
@@ -6364,34 +6370,25 @@ returned by COMMAND is available via `executable-find'"
         (file-error (setq success t))))
     port))
 
-(defun lsp--command-present? (command)
-  "Check if COMMAND can be started.
-COMMAND shall be a command as returned by the COMMAND-FN argument
-of the various server starting functions.
+(defun lsp-resolve-tcp-function (command-fn port)
+  "Get a command from COMMAND-FN.
+COMMAND-FN shall be a function that takes a single integer
+argument, PORT, and yields a command (see
+`lsp-resolve-final-function')."
+  (lsp-resolve-final-function (funcall command-fn port)))
 
-It may be an argv-vector (list or vector) or a string, specifying
-a shell command."
-  (when-let ((program
-              ;; `nth' to support vectors
-              (or (and (or (listp command) (vectorp command)) (nth 0 command))
-                  (car (split-string-and-unquote command)))))
-    (if (file-remote-p default-directory)
-        (executable-find program t)
-      (executable-find program))))
-
-(defun lsp--command-fn-present? (command-fn)
+(defun lsp--tcp-command-present (command-fn)
   "Make a checker-function for COMMAND-FN.
 The result is a function that, if called, checks wether
 COMMAND-FN (as defined in `lsp-tcp-connection') yields a command
 that can be executed."
-  (lambda () (lsp--command-present? (funcall command-fn 0))))
+  (lambda () (lsp-server-present? (lsp-resolve-tcp-function command-fn 0))))
 
 (defun lsp-tcp-connection (command-fn &optional test-fn)
   "Return an lsp connection object for TCP servers.
 COMMAND-FN will be called to start the server and shall take a
 single argument, the port, which is an int. It should return a
-command to launch the server in a way that listens on that port.
-The command should be an argv-vector (as a list).
+command to launch the server (see `lsp-resolve-final-function').
 
 TEST-FN is a function that should yield a truthy value if and
 only if the server can be started. If this is unspecified,
@@ -6403,7 +6400,7 @@ COMMAND-FN will be called with PORT=0 and its output examined."
      (let* ((host "localhost")
             (port (lsp--find-available-port host (cl-incf lsp--tcp-port)))
             (command (funcall command-fn port))
-            (final-command (if (consp command) command (list command)))
+            (final-command (lsp-resolve-tcp-function command port))
             (_ (unless (executable-find (cl-first final-command))
                  (user-error (format "Couldn't find executable %s" (cl-first final-command)))))
             (process-environment
@@ -6420,7 +6417,7 @@ COMMAND-FN will be called with PORT=0 and its output examined."
        (set-process-query-on-exit-flag tcp-proc nil)
        (set-process-filter tcp-proc filter)
        (cons tcp-proc proc)))
-   :test? (or test-fn (lsp--command-fn-present? command-fn))))
+   :test? (or test-fn (lsp--tcp-command-present command-fn))))
 
 (defalias 'lsp-tcp-server 'lsp-tcp-server-command)
 
@@ -6446,7 +6443,7 @@ COMMAND-FN and TEST-FN behave as there."
                           (setf tcp-client-connection proc))
               :server 't))
             (port (process-contact tcp-server :service))
-            (final-command (funcall command-fn port))
+            (final-command (lsp-resolve-tcp-function command-fn port))
             (process-environment
              (lsp--compute-process-environment environment-fn))
             (cmd-proc (make-process :name name
@@ -6477,7 +6474,7 @@ COMMAND-FN and TEST-FN behave as there."
        (set-process-sentinel tcp-client-connection sentinel)
        (cons tcp-client-connection cmd-proc)))
    :test?
-   (or test-fn (lsp--command-present? command-fn))))
+   (or test-fn (lsp--tcp-command-present command-fn))))
 
 (defun lsp-tramp-connection (local-command &optional generate-error-file-fn)
   "Create LSP stdio connection named name.
