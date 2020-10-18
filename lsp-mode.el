@@ -6401,8 +6401,6 @@ COMMAND-FN will be called with PORT=0 and its output examined."
             (port (lsp--find-available-port host (cl-incf lsp--tcp-port)))
             (command (funcall command-fn port))
             (final-command (lsp-resolve-tcp-function command port))
-            (_ (unless (executable-find (cl-first final-command))
-                 (user-error (format "Couldn't find executable %s" (cl-first final-command)))))
             (process-environment
              (lsp--compute-process-environment environment-fn))
             (proc (make-process :name name
