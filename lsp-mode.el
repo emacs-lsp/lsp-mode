@@ -6237,8 +6237,14 @@ Return a nested alist keyed by symbol names. e.g.
   (when menu-bar-mode
     (lsp--imenu-refresh)))
 
-(defun lsp--check-command-list (command)
-  (cl-assert (seq-every-p (apply-partially #'stringp) command) nil
+(defun lsp--check-command-list (final-command)
+  "Assert that FINAL-COMMAND is correctly formatted.
+FINAL-COMMAND shall be a list of arguments to start a program,
+the first being the program itself.
+
+Currently throws an error if FINAL-COMMAND contains non-strings,
+but additional checks may be added in the future."
+  (cl-assert (seq-every-p (apply-partially #'stringp) final-command) nil
              "Invalid command list"))
 
 (defun lsp-resolve-final-function (command)
