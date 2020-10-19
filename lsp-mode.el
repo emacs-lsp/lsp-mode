@@ -5693,7 +5693,7 @@ EXTRA is a plist of extra parameters.
 REFERENCES? t when METHOD returns references."
   (let ((loc (lsp-request method
                           (append (lsp--text-document-position-params) extra))))
-    (if (seq-empty-p loc)
+    (if (or (null loc) (hash-table-empty-p loc))
         (message "Not found for: %s" (thing-at-point 'symbol t))
       (lsp-show-xrefs (lsp--locations-to-xref-items loc) display-action references?))))
 
