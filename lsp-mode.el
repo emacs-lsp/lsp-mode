@@ -5687,14 +5687,17 @@ perform the request synchronously."
                    (display-action . ,display-action))))
     (xref--show-xrefs xrefs display-action)))
 
+(cl-defmethod seq-empty-p ((ht hash-table))
+  "Function `seq-empty-p' for hash-table."
+  (hash-table-empty-p ht))
+
 (cl-defun lsp-find-locations (method &optional extra &key display-action references?)
   "Send request named METHOD and get cross references of the symbol under point.
 EXTRA is a plist of extra parameters.
 REFERENCES? t when METHOD returns references."
   (let ((loc (lsp-request method
                           (append (lsp--text-document-position-params) extra))))
-    (if (or (seq-empty-p loc)
-            (and (hash-table-p loc) (hash-table-empty-p loc)))
+    (if (seq-empty-p loc)
         (message "Not found for: %s" (thing-at-point 'symbol t))
       (lsp-show-xrefs (lsp--locations-to-xref-items loc) display-action references?))))
 
