@@ -5687,6 +5687,10 @@ perform the request synchronously."
                    (display-action . ,display-action))))
     (xref--show-xrefs xrefs display-action)))
 
+(cl-defmethod seq-empty-p ((ht hash-table))
+  "Function `seq-empty-p' for hash-table."
+  (hash-table-empty-p ht))
+
 (cl-defun lsp-find-locations (method &optional extra &key display-action references?)
   "Send request named METHOD and get cross references of the symbol under point.
 EXTRA is a plist of extra parameters.
