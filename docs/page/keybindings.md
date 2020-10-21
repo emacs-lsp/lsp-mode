@@ -44,7 +44,7 @@ configured `lsp-command-map` which is bound to `lsp-keymap-prefix`
 | `s-l G g`  | Peek definitions to the identifier at point. (requires `lsp-ui`)                                                           |
 | `s-l G r`  | Peek references to the identifier at point. (requires `lsp-ui`)                                                            |
 | `s-l G i`  | Peek implementation locations of the symbol at point. (requires `lsp-ui`)                                                  |
-| `s-l G s`  | Peek symbols in the worskpace. (requires `lsp-ui`)                                                                         |
+| `s-l G s`  | Peek symbols in the workspace. (requires `lsp-ui`)                                                                         |
 
 ## which-key integration
 
