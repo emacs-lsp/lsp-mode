@@ -3961,9 +3961,10 @@ LSP server result."
                                                 (forward-line 0)
                                                 (insert offset)))
                                  indent-line-function)))
-    (yas-expand-snippet
-     (lsp--to-yasnippet-snippet snippet)
-     start end expand-env)))
+    (when (featurep 'yasnippet)
+      (yas-expand-snippet
+       (lsp--to-yasnippet-snippet snippet)
+       start end expand-env))))
 
 (defun lsp--apply-text-edits (edits)
   "Apply the EDITS described in the TextEdit[] object."
