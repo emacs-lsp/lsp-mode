@@ -235,5 +235,18 @@ returned to avoid that the echo area grows uncomfortably."
         (car (s-lines (lsp--render-element contents)))))))
 
 
+;; Running this in "/home/petr_tik/Coding/rr/src/AutoRemoteSyscalls.cc"
+(with-lsp-workspace (lsp-find-workspace 'clangd)
+                             (lsp-send-request (lsp-make-request
+                                                "textDocument/switchSourceHeader"
+                                                (lsp--text-document-identifier))))
+;; returns this a URI
+;; "file:///home/petr_tik/Coding/rr/src/AutoRemoteSyscalls.h"
+;; running in a file with a companion - returns nil
+
+;; (url-generic-parse-url "file:///home/petr_tik/Coding/rr/src/AutoRemoteSyscalls.h")
+;; returns a structure that we can access
+
+
 (provide 'lsp-clangd)
 ;;; lsp-clangd.el ends here
