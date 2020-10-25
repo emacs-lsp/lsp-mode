@@ -7665,7 +7665,8 @@ argument ask the user to select which language server to start."
   (when (and lsp-auto-configure (not lsp--client-packages-required))
     (seq-do (lambda (package)
               ;; loading client is slow and `lsp' can be called repeatedly
-              (require package nil t))
+              (unless (featurep package)
+                (require package nil t)))
             lsp-client-packages)
     (setq lsp--client-packages-required t))
 
