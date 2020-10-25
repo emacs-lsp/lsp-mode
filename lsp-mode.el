@@ -4481,8 +4481,7 @@ and the position respectively."
          (inhibit-field-text-motion t))
     (save-excursion
       (goto-char point)
-      (buffer-substring-no-properties (line-beginning-position)
-                                      (line-end-position)))))
+      (buffer-substring (line-beginning-position) (line-end-position)))))
 
 (lsp-defun lsp--xref-make-item (filename (&Range :start (start &as &Position :character start-char :line start-line)
                                                  :end (end &as &Position :character end-char)))
