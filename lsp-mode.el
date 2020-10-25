@@ -480,32 +480,32 @@ the server has requested that."
 ;;;###autoload(put 'lsp-enable-file-watchers 'safe-local-variable #'booleanp)
 
 (defcustom lsp-file-watch-ignored '(; SCM tools
-                                    "[/\\\\]\\.git$"
-                                    "[/\\\\]\\.hg$"
-                                    "[/\\\\]\\.bzr$"
-                                    "[/\\\\]_darcs$"
-                                    "[/\\\\]\\.svn$"
-                                    "[/\\\\]_FOSSIL_$"
+                                    "[/\\\\]\\.git\\'"
+                                    "[/\\\\]\\.hg\\'"
+                                    "[/\\\\]\\.bzr\\'"
+                                    "[/\\\\]_darcs\\'"
+                                    "[/\\\\]\\.svn\\'"
+                                    "[/\\\\]_FOSSIL_\\'"
                                     ;; IDE or build tools
-                                    "[/\\\\]\\.idea$"
-                                    "[/\\\\]\\.ensime_cache$"
-                                    "[/\\\\]\\.eunit$"
-                                    "[/\\\\]node_modules$"
-                                    "[/\\\\]\\.fslckout$"
-                                    "[/\\\\]\\.tox$"
-                                    "[/\\\\]dist$"
-                                    "[/\\\\]dist-newstyle$"
-                                    "[/\\\\]\\.stack-work$"
-                                    "[/\\\\]\\.bloop$"
-                                    "[/\\\\]\\.metals$"
-                                    "[/\\\\]target$"
-                                    "[/\\\\]\\.ccls-cache$"
-                                    "[/\\\\]\\.vscode$"
+                                    "[/\\\\]\\.idea\\'"
+                                    "[/\\\\]\\.ensime_cache\\'"
+                                    "[/\\\\]\\.eunit\\'"
+                                    "[/\\\\]node_modules"
+                                    "[/\\\\]\\.fslckout\\'"
+                                    "[/\\\\]\\.tox\\'"
+                                    "[/\\\\]dist\\'"
+                                    "[/\\\\]dist-newstyle\\'"
+                                    "[/\\\\]\\.stack-work\\'"
+                                    "[/\\\\]\\.bloop\\'"
+                                    "[/\\\\]\\.metals\\'"
+                                    "[/\\\\]target\\'"
+                                    "[/\\\\]\\.ccls-cache\\'"
+                                    "[/\\\\]\\.vscode\\'"
                                     ;; Autotools output
-                                    "[/\\\\]\\.deps$"
-                                    "[/\\\\]build-aux$"
-                                    "[/\\\\]autom4te.cache$"
-                                    "[/\\\\]\\.reference$")
+                                    "[/\\\\]\\.deps\\'"
+                                    "[/\\\\]build-aux\\'"
+                                    "[/\\\\]autom4te.cache\\'"
+                                    "[/\\\\]\\.reference\\'")
   "List of regexps matching directory paths which won't be monitored when creating file watches."
   :group 'lsp-mode
   :type '(repeat string)
@@ -7678,13 +7678,14 @@ When ARG is t the lsp mode will start new language server even if
 there is language server which can handle current language. When
 ARG is nil current file will be opened in multi folder language
 server if there is such. When `lsp' is called with prefix
-argument ask the user to select which language server to start. "
+argument ask the user to select which language server to start."
   (interactive "P")
 
   (when (and lsp-auto-configure (not lsp--client-packages-required))
     (seq-do (lambda (package)
               ;; loading client is slow and `lsp' can be called repeatedly
-              (unless (featurep package) (require package nil t)))
+              (unless (featurep package)
+                (require package nil t)))
             lsp-client-packages)
     (setq lsp--client-packages-required t))
 
