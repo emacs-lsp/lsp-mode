@@ -235,18 +235,28 @@ returned to avoid that the echo area grows uncomfortably."
         (car (s-lines (lsp--render-element contents)))))))
 
 
+(defun lsp-clangd-to-other ()
+  "Open the corresponding header/source file."
+  (if-let ((other-fname
+            (with-lsp-workspace (lsp-find-workspace 'clangd)
+              ;; TODO define an extension with lsp-interace
+              ;; similar to rust-analyzer on lines 278-292 in
+              ;; lsp-protocol.el
+              (lsp-send-request (lsp-make-request
+                                 "textDocument/switchSourceHeader"
+                                 (lsp--text-document-identifier))))
+            ))
+      other-fname
+    (lsp--info "This file doesn't have a corresponding file")
+    nil))
 ;; Running this in "/home/petr_tik/Coding/rr/src/AutoRemoteSyscalls.cc"
-(with-lsp-workspace (lsp-find-workspace 'clangd)
-                             (lsp-send-request (lsp-make-request
-                                                "textDocument/switchSourceHeader"
-                                                (lsp--text-document-identifier))))
 ;; returns this a URI
 ;; "file:///home/petr_tik/Coding/rr/src/AutoRemoteSyscalls.h"
-;; running in a file with a companion - returns nil
+;; running in a file without a companion - returns nil
 
-;; (url-generic-parse-url "file:///home/petr_tik/Coding/rr/src/AutoRemoteSyscalls.h")
+;;
 ;; returns a structure that we can access
-
+;; (url-generic-parse-url "file:///home/petr_tik/Coding/rr/src/AutoRemoteSyscalls.h")
 
 (provide 'lsp-clangd)
 ;;; lsp-clangd.el ends here
