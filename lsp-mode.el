@@ -4517,11 +4517,15 @@ and the position respectively."
     (lsp:location-link-target-selection-range loc)))
 
 (defun lsp--locations-to-xref-items (locations)
-  "Return a list of `xref-item' from Location[] or LocationLink[]."
-  (setq locations (if (sequencep locations)
-                      (append locations nil)
-                    (list locations)))
-
+  "Return a list of `xref-item' given LOCATIONS, which can be of
+type Location, LocationLink, Location[] or LocationLink[]."
+  (setq locations
+        (if (and (sequencep locations)
+                 (let ((fst (lsp-seq-first locations)))
+                   (or (lsp-location? fst)
+                       (lsp-location-link? fst))))
+            (append locations nil)
+          (list locations)))
 
   (cl-labels ((get-xrefs-in-file
                (file-locs)
