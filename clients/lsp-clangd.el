@@ -246,17 +246,10 @@ returned to avoid that the echo area grows uncomfortably."
                                  "textDocument/switchSourceHeader"
                                  (lsp--text-document-identifier))))
             ))
-      other-fname
+      ;; TODO use lsp-goto-location instead
+      (find-file (lsp--uri-to-path other-fname))
     (lsp--info "This file doesn't have a corresponding file")
     nil))
-;; Running this in "/home/petr_tik/Coding/rr/src/AutoRemoteSyscalls.cc"
-;; returns this a URI
-;; "file:///home/petr_tik/Coding/rr/src/AutoRemoteSyscalls.h"
-;; running in a file without a companion - returns nil
-
-;;
-;; returns a structure that we can access
-;; (url-generic-parse-url "file:///home/petr_tik/Coding/rr/src/AutoRemoteSyscalls.h")
 
 (provide 'lsp-clangd)
 ;;; lsp-clangd.el ends here
