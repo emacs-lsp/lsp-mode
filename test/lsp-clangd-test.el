@@ -24,6 +24,24 @@
 (require 'ert)
 (require 'lsp-clangd)
 
+;; TODO move to a common/shared test-utils.el
+(defconst lsp-test-location (file-name-directory (or load-file-name buffer-file-name)))
+
+;; TODO move to a common/shared test-utils.el
+(defun lsp-test--wait-for (form &optional d)
+  (--doto (or d (deferred:new #'identity))
+    (run-with-timer
+     0.001 nil
+     (lambda ()
+       (if-let ((result (eval form)))
+           (deferred:callback-post it result)
+         (lsp-test--wait-for form it))))))
+
+;; TODO move to a common/shared test-utils.el and import here and in
+;; integration-test.el
+(defmacro lsp-test-wait (form)
+  `(lsp-test--wait-for '(progn ,form)))
+
 (ert-deftest lsp-clangd-extract-signature-on-hover ()
   (should (string= (lsp-clients-extract-signature-on-hover
                     (lsp-make-markup-content :kind lsp/markup-kind-markdown
@@ -62,4 +80,32 @@
                   int k);")
     (should (string= (lsp-clangd-join-region (point-min) (point-max)) "void foo(int n, int p, int k);"))))
 
+
+;;;
+;;; Integration tests with the sample project
+;;;
+
+(defmacro lsp-in-sample-cpp-project (&rest body)
+  "Creates a macro to wrap test BODY with.
+
+Add the fixtures/SampleCppProject to lsp-workspaces, opens the main.cpp file
+and starts lsp. After the test BODY runs - tidy up."
+  `(progn
+     (lsp-workspace-folders-add (f-join lsp-test-location "fixtures/SampleCppProject/"))
+     (find-file (f-join lsp-test-location "fixtures/SampleCppProject/src/main.cpp"))
+     (lsp)
+     ,@body
+
+     (find-file (f-join lsp-test-location "fixtures/SampleCppProject/src/main.cpp"))
+     (save-buffer)
+     (kill-buffer)
+     (lsp-workspace-folders-remove (f-join lsp-test-location "fixtures/SampleCppProject/"))))
+
+(ert-deftest lsp-clangd-initialised-workspace ()
+  (lsp-in-sample-cpp-project
+   ;; first check that compilation_commands.json was created
+   (should (file-exists-p (f-join lsp-test-location "fixtures/SampleCppProject/build/compile_commands.json")))
+   ;; now check that the workspace has started
+   (should (lsp-test-wait (eq 'initialized
+                              (lsp--workspace-status (cl-first (lsp-workspaces))))))))
 ;;; lsp-clangd-test.el ends here
