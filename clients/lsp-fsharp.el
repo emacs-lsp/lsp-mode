@@ -233,7 +233,7 @@ disable if `--backgorund-service-enabled' is not used"
                                 `(:directory ,(lsp-workspace-root)
                                              :deep 10
                                              :excludedDirs ["paket-files" ".git" "packages" "node_modules"])))
-         (data (json-read-from-string (ht-get response "content")))
+         (data (json-read-from-string (lsp-get response :content)))
          (found (cdr (assq 'Found (cdr (assq 'Data data)))))
          (directory (car (seq-filter (lambda (d) (equal "directory" (cdr (assq 'Type d)))) found))))
     (cdr (assq 'Fsprojs (cdr (assq 'Data directory))))))
