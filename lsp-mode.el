@@ -4525,7 +4525,7 @@ type Location, LocationLink, Location[] or LocationLink[]."
                    (or (lsp-location? fst)
                        (lsp-location-link? fst))))
             (append locations nil)
-          (list locations)))
+          (when locations (list locations))))
 
   (cl-labels ((get-xrefs-in-file
                (file-locs)
