@@ -242,21 +242,18 @@ returned to avoid that the echo area grows uncomfortably."
          (lsp-cpp-flycheck-clang-tidy-error-explainer e))
         (t (flycheck-error-message e))))
 
-(defun lsp-clangd-to-other ()
-  "Open the corresponding header/source file."
-  (if-let ((other-fname
-            (with-lsp-workspace (lsp-find-workspace 'clangd)
-              ;; TODO define an extension with lsp-interace
-              ;; similar to rust-analyzer on lines 278-292 in
-              ;; lsp-protocol.el
-              (lsp-send-request (lsp-make-request
-                                 "textDocument/switchSourceHeader"
-                                 (lsp--text-document-identifier))))
-            ))
-      ;; TODO use lsp-goto-location instead
-      (find-file (lsp--uri-to-path other-fname))
-    (lsp--info "This file doesn't have a corresponding file")
-    nil))
+(defun lsp-clangd-to-other (&optional arg)
+  "Open the corresponding header/source file.
+
+If called with ARG universal argument, the file will open in the other window."
+  (interactive "P")
+  (if-let ((other-fname (lsp-send-request (lsp-make-request
+                                           "textDocument/switchSourceHeader"
+                                           (lsp--text-document-identifier)))))
+      (if arg
+          (find-file-other-window (lsp--uri-to-path other-fname))
+        (find-file (lsp--uri-to-path other-fname)))
+    (lsp--info "This file doesn't have a corresponding file")))
 
 (provide 'lsp-clangd)
 ;;; lsp-clangd.el ends here

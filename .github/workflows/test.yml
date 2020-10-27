@@ -31,8 +31,21 @@ jobs:
               with:
                   version: 0.8.4
 
+            - name: Setup cmake
+              uses: jwlawson/actions-setup-cmake@v1.4
+              with:
+                 cmake-version: '3.18.x'
+
+            - name: Check cmake
+              run: "cmake --version"
+
             - name: Install depedencies
-              run: "pip3 install python-language-server"
+              run: |
+                   pip3 install python-language-server
+                   sudo apt-get install clangd-9
+
+            - name: Check clangd
+              run: "clangd-9 --version"
 
             - name: Run tests
               run:
