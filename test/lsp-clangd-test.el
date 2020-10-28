@@ -91,15 +91,28 @@
 Add the fixtures/SampleCppProject to lsp-workspaces, opens the main.cpp file
 and starts lsp. After the test BODY runs - tidy up."
   `(progn
+     ;; lsp setup
+     ;; save to temp
+     (setq actual-clangd-args lsp-clients-clangd-args)
+     ;; HACK until https://github.com/emacs-lsp/lsp-mode/issues/2278 lands
+     ;; or we might keep it forever
+     (setq lsp-clients-clangd-args '("--compile-commands-dir=build/" "--log=verbose"))
+     ;; snippet complains in logs
+     (setq lsp-enable-snippet nil)
      (lsp-workspace-folders-add (f-join lsp-test-location "fixtures/SampleCppProject/"))
      (find-file (f-join lsp-test-location "fixtures/SampleCppProject/src/main.cpp"))
+     ;; initialise the workspace
      (lsp)
+
+     ;; run our test body
      ,@body
 
+     ;; lsp tidy up
      (find-file (f-join lsp-test-location "fixtures/SampleCppProject/src/main.cpp"))
      (save-buffer)
      (kill-buffer)
-     (lsp-workspace-folders-remove (f-join lsp-test-location "fixtures/SampleCppProject/"))))
+     (lsp-workspace-folders-remove (f-join lsp-test-location "fixtures/SampleCppProject/"))
+     (setq lsp-clients-clangd-args actual-clangd-args)))
 
 (ert-deftest lsp-clangd-initialised-workspace ()
   (lsp-in-sample-cpp-project
@@ -108,4 +121,25 @@ and starts lsp. After the test BODY runs - tidy up."
    ;; now check that the workspace has started
    (should (lsp-test-wait (eq 'initialized
                               (lsp--workspace-status (cl-first (lsp-workspaces))))))))
+
+(ert-deftest lsp-clangd-switch-to-other-from-cpp ()
+  (lsp-in-sample-cpp-project
+   (should (lsp-test-wait (eq 'initialized
+                              (lsp--workspace-status (cl-first (lsp-workspaces))))))
+   (should (string= (buffer-name) "main.cpp"))
+   ;; switch to other - check it's the header
+   (lsp-clangd-to-other)
+   (should (string= (buffer-name) "main.h"))
+   ;; switch to other again - check it's main.cpp again
+   (lsp-clangd-to-other)
+   (should (string= (buffer-name) "main.cpp"))))
+
+(ert-deftest lsp-clangd-switch-to-nonexistent-other ()
+  ;; TODO add a cpp file without a corresponding header file and add it to CML
+  (lsp-in-sample-cpp-project
+   (find-file (f-join lsp-test-location "fixtures/SampleCppProject/src/individual_file.cpp"))
+   (should (string= (buffer-name) "individual_file.cpp"))
+   (lsp-clangd-to-other)
+   (should (string= (buffer-name) "individual_file.cpp"))))
+
 ;;; lsp-clangd-test.el ends here
