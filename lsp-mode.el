@@ -354,7 +354,7 @@ unless overridden by a more specific face association."
          lsp-hack lsp-groovy lsp-haskell lsp-haxe lsp-java lsp-javascript lsp-json
          lsp-kotlin lsp-lua lsp-nim lsp-nix lsp-metals lsp-ocaml lsp-perl lsp-php lsp-pwsh
          lsp-pyls lsp-python-ms lsp-purescript lsp-r lsp-rf lsp-rust lsp-solargraph
-         lsp-tex lsp-terraform lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript lsp-xml
+         lsp-tex lsp-terraform lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript lsp-xml
          lsp-yaml lsp-sqls lsp-svelte)
   "List of the clients to be automatically required."
   :group 'lsp-mode
@@ -889,7 +889,8 @@ Changes take effect only when a new session is started."
                                         (robot-mode . "robot")
                                         (racket-mode . "racket")
                                         (nix-mode . "nix")
-                                        (prolog-mode . "prolog"))
+                                        (prolog-mode . "prolog")
+                                        (vala-mode . "vala"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
