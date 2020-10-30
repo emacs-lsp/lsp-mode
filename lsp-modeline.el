@@ -37,6 +37,12 @@
   :group 'lsp-mode
   :package-version '(lsp-mode . "7.1"))
 
+(defcustom lsp-modeline-code-action-fallback-icon "💡"
+  "Define what should display on the modeline when code actions are available."
+  :type 'string
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "7.1"))
+
 (defface lsp-modeline-code-actions-face
   '((t :inherit homoglyph))
   "Face used to code action text on modeline."
@@ -80,7 +86,7 @@
       (all-the-icons-octicon "light-bulb"
                              :face face
                              :v-adjust -0.0575)
-    (propertize "💡" 'face face)))
+    (propertize lsp-modeline-code-action-fallback-icon 'face face)))
 
 (defun lsp-modeline--code-action-name (actions preferred-code-action-title)
   "Return the code action name from ACTIONS and PREFERRED-CODE-ACTION-TITLE."
