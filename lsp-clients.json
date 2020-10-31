@@ -507,6 +507,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "vala",
+    "full-name": "Vala",
+    "server-name": "vala-language-server",
+    "server-url": "https://github.com/benwaffle/vala-language-server",
+    "installation": "meson build && ninja -C build install",
+    "debugger": "Not available"
+  },
+  {
     "name": "verilog",
     "full-name": "Verilog/SystemVerilog",
     "server-name": "hdl_checker",
