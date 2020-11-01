@@ -39,8 +39,8 @@ To see all error statistics in the modeline you can enable `lsp-modeline-diagnos
 
 ```elisp
 (with-eval-after-load 'lsp-mode
-  ;; :project/:workspace/:file
-  (setq lsp-modeline-diagnostics-scope :project))
+  ;; :global/:workspace/:file
+  (setq lsp-modeline-diagnostics-scope :workspace))
 ```
 
 _Tip:_ To find out the global errors you might use `lsp-treemacs-errors-list`.
