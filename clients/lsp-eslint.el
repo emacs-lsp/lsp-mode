@@ -303,7 +303,7 @@ source.fixAll code action."
                                    (funcall callback))
                                (error (funcall error-callback err))))
                            error-callback
-                           :url (lsp-vscode-extension-url "dbaeumer" "vscode-eslint")
+                           :url (lsp-vscode-extension-url "dbaeumer" "vscode-eslint" "2.1.8")
                            :store-path tmp-zip)))))
 
 (provide 'lsp-eslint)
