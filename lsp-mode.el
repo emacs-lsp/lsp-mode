@@ -2580,7 +2580,12 @@ an Elisp regexp."
 (define-minor-mode lsp-mode ""
   nil nil nil
   :keymap lsp-mode-map
-  :lighter (:eval (lsp-mode-line))
+  :lighter
+  '(" LSP["
+    (lsp--buffer-workspaces
+     (:eval (mapconcat #'lsp--workspace-print lsp--buffer-workspaces "]["))
+     (:propertize "Disconnected" face warning))
+    "]")
   :group 'lsp-mode)
 
 (defvar lsp-mode-menu
@@ -2624,13 +2629,6 @@ an Elisp regexp."
       :active (bound-and-true-p dap-ui-mode)
       :filter ,(lambda (_) (nthcdr 3 dap-ui-menu-items)))))
   "Menu for lsp-mode.")
-
-(defun lsp-mode-line ()
-  "Construct the mode line text."
-  (if-let ((workspaces (lsp-workspaces)))
-      (concat " LSP" (string-join (--map (format "[%s]" (lsp--workspace-print it))
-                                         workspaces)))
-    (concat " LSP" (propertize "[Disconnected]" 'face 'warning))))
 
 (defalias 'make-lsp-client 'make-lsp--client)
 
