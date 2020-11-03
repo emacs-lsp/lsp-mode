@@ -145,16 +145,11 @@ See `lsp-lens--schedule-refresh' for details."
 
 (defun lsp-lens--create-interactive-command (command?)
   "Create an interactive COMMAND? for the lens."
-  (let ((server-id (->> (lsp-workspaces)
-                        (cl-first)
-                        (or lsp--cur-workspace)
-                        (lsp--workspace-client)
-                        (lsp--client-server-id))))
-    (if (functionp (lsp:command-command command?))
-        (lsp:command-command command?)
-      (lambda ()
-        (interactive)
-        (lsp--execute-command command?)))))
+  (if (functionp (lsp:command-command command?))
+      (lsp:command-command command?)
+    (lambda ()
+      (interactive)
+      (lsp--execute-command command?))))
 
 (defun lsp-lens--display (lenses)
   "Show LENSES."
