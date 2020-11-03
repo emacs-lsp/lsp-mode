@@ -154,9 +154,7 @@ See `lsp-lens--schedule-refresh' for details."
         (lsp:command-command command?)
       (lambda ()
         (interactive)
-        (lsp-execute-command server-id
-                             (intern (lsp:command-command command?))
-                             (lsp:command-arguments? command?))))))
+        (lsp--execute-command command?)))))
 
 (defun lsp-lens--display (lenses)
   "Show LENSES."

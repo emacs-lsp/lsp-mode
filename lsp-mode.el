@@ -968,9 +968,6 @@ calling `remove-overlays'.")
 
 (defvar-local lsp--virtual-buffer-point-max nil)
 
-(cl-defgeneric lsp-execute-command (server command arguments)
-  "Ask SERVER to execute COMMAND with ARGUMENTS.")
-
 (defun lsp-elt (sequence n)
   "Return Nth element of SEQUENCE or nil if N is out of range."
   (cond
@@ -5740,7 +5737,7 @@ REFERENCES? t when METHOD returns references."
     (lsp-request "workspace/executeCommand" params)))
 
 (defun lsp--send-execute-command (command &optional args)
-  "Execute workspace COMMAND with ARGS showing error if command is not mapped client-side."
+  "Create and send a 'workspace/executeCommand' message having command COMMAND and optional ARGS."
   (condition-case-unless-debug err
       (lsp-workspace-command-execute command args)
     (error
