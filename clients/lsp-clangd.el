@@ -208,9 +208,10 @@ that contains compile_commands.json.
 
 Then return either the default args or the modified args"
   (if (-first
-       ;; lsp-client-clangd-args might already lists a "--compile-commands-dir=build/" and will fail if we pass another one
+       ;; lsp-client-clangd-args might already lists a
+       ;; "--compile-commands-dir=build/" and will fail if we pass another one
        ;; trust the user - if it's already set, don't mess around
-       (lambda (arg) (string-prefix-p "--compile-commands-dir" arg))
+       (lambda (arg) (string-match-p "--compile-commands-dir" arg))
        lsp-clients-clangd-args)
       ((lsp--info "compilation_commands_dir set in clangd-args")
        lsp-clients-clangd-args)
