@@ -7758,7 +7758,7 @@ You may find the installation instructions at https://emacs-lsp.github.io/lsp-mo
        ((-> #'lsp--matching-clients? lsp--filter-clients not)
         (lsp--error "There are no language servers supporting current mode `%s' registered with `lsp-mode'.
 This issue might be caused by:
-1. You haven't registered/loaded external language server package which doesn't ship with `lsp-mode'(e. g. `lsp-java', `lsp-metals').
+1. The language you are trying to use does not have built-in support in `lsp-mode'. You must install the required support manually. Examples of this are `lsp-java' or `lsp-metals'.
 2. The language server that you expect to run is not configured to run for major mode `%s'. You may check that by checking the `:major-modes' that are passed to `lsp-register-client'.
 3. `lsp-mode' doesn't have any integration for the language behind `%s'. Refer to https://emacs-lsp.github.io/lsp-mode/page/languages and https://langserver.org/ ."
                     major-mode major-mode major-mode))))))
