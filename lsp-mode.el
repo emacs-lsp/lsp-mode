@@ -3649,38 +3649,39 @@ in that particular folder."
 
 (defun lsp-configure-buffer ()
   "Configure LSP features for current buffer."
-  (when lsp-auto-configure
-    (when (and lsp-enable-text-document-color
-               (lsp-feature? "textDocument/documentColor"))
-      (add-hook 'lsp-on-change-hook #'lsp--document-color nil t))
+  (let (lsp--cur-workspace)
+    (when lsp-auto-configure
+      (when (and lsp-enable-text-document-color
+                 (lsp-feature? "textDocument/documentColor"))
+        (add-hook 'lsp-on-change-hook #'lsp--document-color nil t))
 
-    (when (and lsp-enable-imenu
-               (lsp-feature? "textDocument/documentSymbol"))
-      (lsp-enable-imenu))
+      (when (and lsp-enable-imenu
+                 (lsp-feature? "textDocument/documentSymbol"))
+        (lsp-enable-imenu))
 
-    (when (and lsp-enable-indentation
-               (lsp-feature? "textDocument/rangeFormatting"))
-      (setq-local indent-region-function #'lsp-format-region))
+      (when (and lsp-enable-indentation
+                 (lsp-feature? "textDocument/rangeFormatting"))
+        (setq-local indent-region-function #'lsp-format-region))
 
-    (when (and lsp-enable-symbol-highlighting
-               (lsp-feature? "textDocument/documentHighlight"))
-      (add-hook 'lsp-on-idle-hook #'lsp--document-highlight nil t))
+      (when (and lsp-enable-symbol-highlighting
+                 (lsp-feature? "textDocument/documentHighlight"))
+        (add-hook 'lsp-on-idle-hook #'lsp--document-highlight nil t))
 
-    (when (and lsp-enable-links
-               (lsp-feature? "textDocument/documentLink"))
-      (add-hook 'lsp-on-idle-hook #'lsp--document-links nil t))
+      (when (and lsp-enable-links
+                 (lsp-feature? "textDocument/documentLink"))
+        (add-hook 'lsp-on-idle-hook #'lsp--document-links nil t))
 
-    (when (and lsp-enable-dap-auto-configure
-               (functionp 'dap-mode))
-      (dap-auto-configure-mode 1))
+      (when (and lsp-enable-dap-auto-configure
+                 (functionp 'dap-mode))
+        (dap-auto-configure-mode 1))
 
-    (when (and lsp-enable-semantic-highlighting
-               (lsp-feature? "textDocument/semanticTokens"))
-      (mapc #'lsp--semantic-tokens-initialize-workspace
-            (lsp--find-workspaces-for "textDocument/semanticTokens"))
-      (lsp--semantic-tokens-initialize-buffer
-       (lsp-feature? "textDocument/semanticTokensRangeProvider"))))
-  (run-hooks 'lsp-configure-hook))
+      (when (and lsp-enable-semantic-highlighting
+                 (lsp-feature? "textDocument/semanticTokens"))
+        (mapc #'lsp--semantic-tokens-initialize-workspace
+              (lsp--find-workspaces-for "textDocument/semanticTokens"))
+        (lsp--semantic-tokens-initialize-buffer
+         (lsp-feature? "textDocument/semanticTokensRangeProvider"))))
+    (run-hooks 'lsp-configure-hook)))
 
 (defun lsp-unconfig-buffer ()
   "Unconfigure LSP features for buffer."
