@@ -32,4 +32,5 @@ These are `lsp-mode` specific custom settings:
 - `lsp-signature-auto-activate` - Auto activate signature when trigger conditions are meet.
 - `lsp-signature-render-documentation` - Include signature documentation in signature help.
 - `lsp-enable-text-document-color` - Enable `textDocument/documentColor` when server supports it.
+- `lsp-headerline-breadcrumb-enable` - Enable `lsp-headerline-breadcrumb-mode`.
 
