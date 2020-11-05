@@ -6184,6 +6184,13 @@ deserialization.")
 (defvar-local lsp--line-col-to-point-hash-table nil
   "Hash table with keys (line . col) and values that are either point positions or markers.")
 
+(defcustom lsp-imenu-detailed-outline t
+  "Whether `lsp-imenu' should include signatures.
+This will be ignored if the server doesn't provide the necessary
+information, for example if it doesn't support DocumentSymbols."
+  :group 'lsp-imenu
+  :type 'boolean)
+
 (lsp-defun lsp--symbol-to-imenu-elem ((sym &as &SymbolInformation :name :container-name?))
   "Convert SYM to imenu element.
 
@@ -6197,7 +6204,7 @@ Return a cons cell (full-name . start-point)."
             name)
           start-point)))
 
-(lsp-defun lsp--symbol-to-hierarchical-imenu-elem ((sym &as &DocumentSymbol :name :children?))
+(lsp-defun lsp--symbol-to-hierarchical-imenu-elem ((sym &as &DocumentSymbol :name :detail? :children?))
   "Convert SYM to hierarchical imenu elements.
 
 SYM is a DocumentSymbol message.
@@ -6208,12 +6215,13 @@ an alist
 
   (\"symbol-name\" . ((\"(symbol-kind)\" . start-point)
                     cons-cells-from-children))"
-  (let ((filtered-children (lsp--imenu-filter-symbols children?)))
+  (let ((filtered-children (lsp--imenu-filter-symbols children?))
+        (signature (or (and lsp-imenu-detailed-outline detail?) name)))
     (if (seq-empty-p filtered-children)
-        (cons name
+        (cons signature
               (ht-get lsp--line-col-to-point-hash-table
                       (lsp--get-line-and-col sym)))
-      (cons name
+      (cons signature
             (lsp--imenu-create-hierarchical-index filtered-children)))))
 
 (lsp-defun lsp--symbol-ignore ((&SymbolInformation :kind :location))
