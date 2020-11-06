@@ -1,4 +1,8 @@
 * Changelog
+** Release 7.2
+  * Add a new ~lsp-render-symbol~ function, which can be used to render a
+    ~DocumentSymbol~. It will take any future improvements to ~DocumentSymbol~
+    into account.
 ** Release 7.1
   * Safe renamed ~lsp-diagnose~ to ~lsp-doctor~.
   * Add ~lsp-modeline-code-actions-segments~ for a better customization.
