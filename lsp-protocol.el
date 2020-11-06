@@ -174,60 +174,7 @@ Allowed params: %s" interface (reverse (-map #'cl-first params)))
   (defalias 'lsp-empty? 'ht-empty?)
   (defalias 'lsp-copy 'ht-copy))
 
-(defmacro lsp-defun (name match-form &rest body)
-  "Define a function named NAME.
-The function destructures its input as MATCH-FORM then executes BODY.
-
-Note that you have to enclose the MATCH-FORM in a pair of parens,
-such that:
-
-  (-defun (x) body)
-  (-defun (x y ...) body)
-
-has the usual semantics of `defun'.  Furthermore, these get
-translated into a normal `defun', so there is no performance
-penalty.
-
-See `-let' for a description of the destructuring mechanism."
-  (declare (doc-string 3) (indent defun)
-           (debug (&define name sexp
-                           [&optional stringp]
-                           [&optional ("declare" &rest sexp)]
-                           [&optional ("interactive" interactive)]
-                           def-body)))
-  (cond
-   ((nlistp match-form)
-    (signal 'wrong-type-argument (list #'listp match-form)))
-   ;; no destructuring, so just return regular defun to make things faster
-   ((-all? #'symbolp match-form)
-    `(defun ,name ,match-form ,@body))
-   (t
-    (-let* ((inputs (--map-indexed (list it (make-symbol (format "input%d" it-index))) match-form))
-            ((body docs) (cond
-                          ;; only docs
-                          ((and (stringp (car body))
-                                (not (cdr body)))
-                           (list body (car body)))
-                          ;; docs + body
-                          ((stringp (car body))
-                           (list (cdr body) (car body)))
-                          ;; no docs
-                          (t (list body))))
-            ((body interactive-form) (cond
-                                      ;; interactive form
-                                      ((and (listp (car body))
-                                            (eq (caar body) 'interactive))
-                                       (list (cdr body) (car body)))
-                                      ;; no interactive form
-                                      (t (list body)))))
-      ;; TODO: because inputs to the defun are evaluated only once,
-      ;; -let* need not to create the extra bindings to ensure that.
-      ;; We should find a way to optimize that.  Not critical however.
-      `(defun ,name ,(-map #'cadr inputs)
-         ,@(when docs (list docs))
-         ,@(when interactive-form (list interactive-form))
-         (-let* ,inputs ,@body))))))
-
+(defalias 'lsp-defun '-defun)
 
 
 
