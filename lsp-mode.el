@@ -5,7 +5,7 @@
 ;; Author: Vibhav Pant, Fangrui Song, Ivan Yonchovski
 ;; Keywords: languages
 ;; Package-Requires: ((emacs "26.1") (dash "2.14.1") (dash-functional "2.14.1") (f "0.20.0") (ht "2.0") (spinner "1.7.3") (markdown-mode "2.3") (lv "0"))
-;; Version: 7.1.0
+;; Version: 7.2.0
 
 ;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; This program is free software; you can redistribute it and/or modify
@@ -6190,6 +6190,15 @@ information, for example if it doesn't support DocumentSymbols."
   :group 'lsp-imenu
   :type 'boolean)
 
+(lsp-defun lsp-render-symbol ((&DocumentSymbol :name :detail? :deprecated?)
+                              show-detail?)
+  "Render INPUT0, an `&DocumentSymbol', to a string.
+If SHOW-DETAIL? is set, make use of its `:detail?' field (often
+the signature)."
+  (let ((base (or (and show-detail? detail?) detail? name)))
+    (if deprecated? (propertize base 'face 'lsp-face-semhl-deprecated)
+      base)))
+
 (lsp-defun lsp--symbol-to-imenu-elem ((sym &as &SymbolInformation :name :container-name?))
   "Convert SYM to imenu element.
 
@@ -6215,7 +6224,7 @@ an alist
   (\"symbol-name\" . ((\"(symbol-kind)\" . start-point)
                     cons-cells-from-children))"
   (let ((filtered-children (lsp--imenu-filter-symbols children?))
-        (signature (or (and lsp-imenu-detailed-outline detail?) name)))
+        (signature (lsp-render-symbol sym lsp-imenu-detailed-outline)))
     (if (seq-empty-p filtered-children)
         (cons signature
               (ht-get lsp--line-col-to-point-hash-table
