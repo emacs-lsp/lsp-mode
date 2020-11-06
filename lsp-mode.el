@@ -5515,39 +5515,33 @@ A reference is highlighted only if it is visible in a window."
                                       line
                                       character)))
 
-(defun lsp--get-document-symbols ()
+(defun lsp--get-document-symbols (&optional callback)
   "Get document symbols.
 
 If the buffer has not been modified since symbols were last
 retrieved, simply return the latest result.
 
-Else, if the request was initiated by Imenu updating its menu-bar
-entry, perform it asynchronously; i.e., give Imenu the latest
-result and then force a refresh when a new one is available.
+If CALLBACK is specified, call it when the document's symbols
+have been fetched. It implies
+`lsp--document-symbols-request-async'.
 
-Else (e.g., due to interactive use of `imenu' or `xref'),
-perform the request synchronously."
+Else (e.g., due to interactive use of `imenu' or `xref'), perform
+the request synchronously."
   (if (= (buffer-chars-modified-tick) lsp--document-symbols-tick)
       lsp--document-symbols
     (let ((method "textDocument/documentSymbol")
           (params `(:textDocument ,(lsp--text-document-identifier)))
           (tick (buffer-chars-modified-tick)))
-      (if (not lsp--document-symbols-request-async)
-          (prog1
-              (setq lsp--document-symbols (lsp-request method params))
-            (setq lsp--document-symbols-tick tick))
-        (lsp-request-async method params
-                           (lambda (document-symbols)
-                             (setq lsp--document-symbols document-symbols
-                                   lsp--document-symbols-tick tick)
-                             (lsp--imenu-refresh))
-                           :mode 'alive)
+      (if (or callback lsp--document-symbols-request-async)
+          (lsp-request-async method params
+                             (lambda (document-symbols)
+                               (setq lsp--document-symbols document-symbols
+                                     lsp--document-symbols-tick tick)
+                               (when callback (funcall callback)))
+                             :mode 'alive)
+        (setq lsp--document-symbols (lsp-request method params)
+              lsp--document-symbols-tick tick)
         lsp--document-symbols))))
-
-(advice-add 'imenu-update-menubar :around
-            (lambda (oldfun &rest r)
-              (let ((lsp--document-symbols-request-async t))
-                (apply oldfun r))))
 
 (defun lsp--document-symbols->document-symbols-hierarchy (document-symbols current-position)
   "Convert DOCUMENT-SYMBOLS to symbols hierarchy on CURRENT-POSITION."
@@ -6296,7 +6290,8 @@ representation to point representation."
 
 (defun lsp--imenu-create-index ()
   "Create imenu index from document symbols."
-  (let* ((filtered-symbols (lsp--imenu-filter-symbols (lsp--get-document-symbols)))
+  (let* ((filtered-symbols (lsp--imenu-filter-symbols
+                            (lsp--get-document-symbols #'lsp--imenu-refresh)))
          (lsp--line-col-to-point-hash-table (-> filtered-symbols
                                                 lsp--collect-lines-and-cols
                                                 lsp--convert-line-col-to-points-batch)))
