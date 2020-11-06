@@ -6205,7 +6205,7 @@ the signature)."
 Handle :deprecated?. If SEPARATOR is non-nil, the
 symbol's (optional) parent, SEPARATOR and the symbol itself are
 concatenated."
-  (when (and separator container-name?)
+  (when (and separator container-name? (not (string-empty-p container-name?)))
     (setq name (concat name separator container-name?)))
   (if deprecated? (propertize name 'face 'lsp-face-semhl-deprecated) name))
 
