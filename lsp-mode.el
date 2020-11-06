@@ -5540,8 +5540,8 @@ the request synchronously."
                                (when callback (funcall callback)))
                              :mode 'alive)
         (setq lsp--document-symbols (lsp-request method params)
-              lsp--document-symbols-tick tick)
-        lsp--document-symbols))))
+              lsp--document-symbols-tick tick))
+      lsp--document-symbols)))
 
 (defun lsp--document-symbols->document-symbols-hierarchy (document-symbols current-position)
   "Convert DOCUMENT-SYMBOLS to symbols hierarchy on CURRENT-POSITION."
