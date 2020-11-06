@@ -5521,9 +5521,9 @@ A reference is highlighted only if it is visible in a window."
 If the buffer has not been modified since symbols were last
 retrieved, simply return the latest result.
 
-If CALLBACK is specified, call it when the document's symbols
-have been fetched. It implies
-`lsp--document-symbols-request-async'.
+The request is asynchronous if
+`lsp--document-symbols-request-async' is set. CALLBACK is called
+when the asynchronous request is done.
 
 Else (e.g., due to interactive use of `imenu' or `xref'), perform
 the request synchronously."
@@ -5532,7 +5532,7 @@ the request synchronously."
     (let ((method "textDocument/documentSymbol")
           (params `(:textDocument ,(lsp--text-document-identifier)))
           (tick (buffer-chars-modified-tick)))
-      (if (or callback lsp--document-symbols-request-async)
+      (if lsp--document-symbols-request-async
           (lsp-request-async method params
                              (lambda (document-symbols)
                                (setq lsp--document-symbols document-symbols
@@ -6287,6 +6287,11 @@ representation to point representation."
            (cond ((and c1 c2)
                   (< c1 c2))
                  (c1 t)))))
+
+(advice-add 'imenu-update-menubar :around
+            (lambda (oldfun &rest r)
+              (let ((lsp--document-symbols-request-async t))
+                (apply oldfun r))))
 
 (defun lsp--imenu-create-index ()
   "Create imenu index from document symbols."
