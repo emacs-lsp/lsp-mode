@@ -6190,6 +6190,15 @@ information, for example if it doesn't support DocumentSymbols."
   :group 'lsp-imenu
   :type 'boolean)
 
+(lsp-defun lsp-render-symbol ((&DocumentSymbol :name :detail? :deprecated?)
+                              show-detail?)
+  "Render INPUT0, an `&DocumentSymbol', to a string.
+If SHOW-DETAIL? is set, make use of its `:detail?' field (often
+the signature)."
+  (let ((base (or (and show-detail? detail?) detail? name)))
+    (if deprecated? (propertize base 'face 'lsp-face-semhl-deprecated)
+      base)))
+
 (lsp-defun lsp--symbol-to-imenu-elem ((sym &as &SymbolInformation :name :container-name?))
   "Convert SYM to imenu element.
 
@@ -6203,7 +6212,7 @@ Return a cons cell (full-name . start-point)."
             name)
           start-point)))
 
-(lsp-defun lsp--symbol-to-hierarchical-imenu-elem ((sym &as &DocumentSymbol :name :detail? :children?))
+(lsp-defun lsp--symbol-to-hierarchical-imenu-elem ((sym &as &DocumentSymbol :children?))
   "Convert SYM to hierarchical imenu elements.
 
 SYM is a DocumentSymbol message.
@@ -6215,7 +6224,7 @@ an alist
   (\"symbol-name\" . ((\"(symbol-kind)\" . start-point)
                     cons-cells-from-children))"
   (let ((filtered-children (lsp--imenu-filter-symbols children?))
-        (signature (or (and lsp-imenu-detailed-outline detail?) name)))
+        (signature (lsp-render-symbol sym lsp-imenu-detailed-outline)))
     (if (seq-empty-p filtered-children)
         (cons signature
               (ht-get lsp--line-col-to-point-hash-table
