@@ -6195,7 +6195,9 @@ information, for example if it doesn't support DocumentSymbols."
   "Render INPUT0, an `&DocumentSymbol', to a string.
 If SHOW-DETAIL? is set, make use of its `:detail?' field (often
 the signature)."
-  (let ((base (or (and show-detail? detail?) detail? name)))
+  (let ((base (or (and show-detail? detail?
+                       (not (string-empty-p detail?)) detail?)
+                  name)))
     (if deprecated? (propertize base 'face 'lsp-face-semhl-deprecated)
       base)))
 
