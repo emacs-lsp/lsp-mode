@@ -6190,7 +6190,14 @@ information, for example if it doesn't support DocumentSymbols."
   :group 'lsp-imenu
   :type 'boolean)
 
-(defface lsp-signature-face '((t :height 0.8 :inherit shadow))
+(defface lsp-details-face '((t :height 0.8 :inherit shadow))
+  "Used to display additional information troughout `lsp'.
+Things like line numbers, signatures, ... are considered
+additional information. Often, additional faces are defined that
+inherit from this face by default, like `lsp-signature-face', and
+they may be customized for finer control.")
+
+(defface lsp-signature-face '((t :inherit lsp-details-face))
   "Used to display signatures in `imenu', ...."
   :group 'lsp-faces)
 

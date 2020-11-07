@@ -34,7 +34,7 @@
   :group 'lsp-faces)
 
 (defface lsp-lens-face
-  '((t :height 0.8 :inherit shadow))
+  '((t :inherit lsp-details-face))
   "The face used for code lens overlays."
   :group 'lsp-faces)
 
