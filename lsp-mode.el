@@ -6190,14 +6190,29 @@ information, for example if it doesn't support DocumentSymbols."
   :group 'lsp-imenu
   :type 'boolean)
 
+(defface lsp-details-face '((t :height 0.8 :inherit shadow))
+  "Used to display additional information troughout `lsp'.
+Things like line numbers, signatures, ... are considered
+additional information. Often, additional faces are defined that
+inherit from this face by default, like `lsp-signature-face', and
+they may be customized for finer control."
+  :group 'lsp-faces)
+
+(defface lsp-signature-face '((t :inherit lsp-details-face))
+  "Used to display signatures in `imenu', ...."
+  :group 'lsp-faces)
+
 (lsp-defun lsp-render-symbol ((&DocumentSymbol :name :detail? :deprecated?)
                               show-detail?)
   "Render INPUT0, an `&DocumentSymbol', to a string.
 If SHOW-DETAIL? is set, make use of its `:detail?' field (often
 the signature)."
-  (let ((base (or (and show-detail? detail?) detail? name)))
-    (if deprecated? (propertize base 'face 'lsp-face-semhl-deprecated)
-      base)))
+  (let ((detail (and show-detail? (s-present? detail?)
+                     (propertize (concat " " (s-trim-left detail?))
+                                 'face 'lsp-signature-face)))
+        (name (if deprecated?
+                  (propertize name 'face 'lsp-face-semhl-deprecated) name)))
+    (concat name detail)))
 
 (lsp-defun lsp--symbol-to-imenu-elem ((sym &as &SymbolInformation :name :container-name?))
   "Convert SYM to imenu element.
