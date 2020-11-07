@@ -782,7 +782,7 @@ returns a negative number, 0, or a positive number indicating
 whether the first parameter is less than, equal to, or greater
 than the second parameter.")
 
-(defcustom lsp-diagnostic-clean-after-change t
+(defcustom lsp-diagnostic-clean-after-change nil
   "When non-nil, clean the diagnostics on change.
 
 Note that when that setting is nil, `lsp-mode' will show stale
