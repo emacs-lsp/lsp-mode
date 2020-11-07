@@ -6262,7 +6262,7 @@ shall be a list of DocumentSymbols or SymbolInformation."
        ;; If there is no :kind (this is being defensive), or we couldn't look it
        ;; up, just display the symbols inline, without categories.
        (if cat (list (cons cat symbols)) symbols)))
-   (sort (seq-group-by (-lambda ((&DocumentSymbol :kind)) kind) symbols)
+   (sort (seq-group-by #'lsp:document-symbol-kind symbols)
          (-lambda ((kinda) (kindb)) (< kinda kindb)))))
 
 (defcustom lsp-imenu-index-function #'lsp-imenu-create-uncategorized-index
