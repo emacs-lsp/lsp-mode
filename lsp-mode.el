@@ -4302,20 +4302,16 @@ Applies on type formatting."
   (let ((ch last-command-event))
     (when (or (eq (string-to-char first-trigger-characters) ch)
               (cl-find ch more-trigger-characters :key #'string-to-char))
-      (-let [(callback cleanup-fn) (lsp--create-apply-text-edits-handlers)]
-        (lsp-request-async "textDocument/onTypeFormatting"
-                           (lsp-merge (lsp-make-document-on-type-formatting-params
-                                       :ch (char-to-string ch)
-                                       :position (lsp--cur-position))
-                                      (lsp--make-document-formatting-params))
-                           (lambda (text-edits)
-                             (funcall callback text-edits)
-                             (funcall cleanup-fn))
-                           :error-handler (lambda (err)
-                                            (funcall cleanup-fn)
-                                            (error (lsp:json-error-message err)))
-                           :cancel-handler cleanup-fn
-                           :mode 'tick)))))
+      (lsp-request-async "textDocument/onTypeFormatting"
+                         (lsp-make-document-on-type-formatting-params
+                          :text-document (lsp--text-document-identifier)
+                          :options (lsp-make-formatting-options
+                                    :tab-size (symbol-value (lsp--get-indent-width major-mode))
+                                    :insert-spaces (if indent-tabs-mode :json-false t))
+                          :ch (char-to-string ch)
+                          :position (lsp--cur-position))
+                         #'lsp--apply-text-edits
+                         :mode 'tick))))
 
 
 ;; links
