@@ -6190,6 +6190,10 @@ information, for example if it doesn't support DocumentSymbols."
   :group 'lsp-imenu
   :type 'boolean)
 
+(defface lsp-signature-face '((t :height 0.8 :inherit shadow))
+  "Used to display signatures in `imenu', ...."
+  :group 'lsp-faces)
+
 (lsp-defun lsp-render-symbol ((&DocumentSymbol :name :detail? :deprecated?)
                               show-detail?)
   "Render INPUT0, an `&DocumentSymbol', to a string.
@@ -6197,7 +6201,7 @@ If SHOW-DETAIL? is set, make use of its `:detail?' field (often
 the signature)."
   (let ((detail (and show-detail? (s-present? detail?)
                      (propertize (concat " " (s-trim-left detail?))
-                                 'face 'lsp-lens-face)))
+                                 'face 'lsp-signature-face)))
         (name (if deprecated?
                   (propertize name 'face 'lsp-face-semhl-deprecated) name)))
     (concat name detail)))
