@@ -6217,13 +6217,47 @@ representation to point representation."
         (lsp--imenu-create-hierarchical-index symbols)
       (lsp--imenu-create-non-hierarchical-index symbols))))
 
+(defcustom lsp-imenu-symbol-kinds
+  '((1 . "Files")
+    (2 . "Modules")
+    (3 . "Namespaces")
+    (4 . "Packages")
+    (5 . "Classes")
+    (6 . "Methods")
+    (7 . "Properties")
+    (8 . "Fields")
+    (9 . "Constructors")
+    (10 . "Enums")
+    (11 . "Interfaces")
+    (12 . "Functions")
+    (13 . "Variables")
+    (14 . "Constants")
+    (15 . "Strings")
+    (16 . "Numbers")
+    (17 . "Booleans")
+    (18 . "Arrays")
+    (19 . "Objects")
+    (20 . "Keys")
+    (21 . "Nulls")
+    (22 . "Enumerators")
+    (23 . "Structs")
+    (24 . "Events")
+    (25 . "Operators")
+    (26 . "Type Parameters"))
+  "`lsp-symbol-kinds', but only used by `imenu'.
+A new variable is needed, as it is `imenu' convention to use
+pluralized categories, which `lsp-symbol-kinds' doesn't. If the
+the non-pluralized names are preferred, this can be set to
+`lsp-symbol-kinds'."
+  :type '(alist :key-type integer :value-type string))
+
 (defun lsp-imenu-create-categorized-index (symbols)
   "Create an `imenu' index categorizing SYMBOLS by type.
 See `lsp-symbol-kinds' to customize the category naming. SYMBOLS
 shall be a list of DocumentSymbols or SymbolInformation."
   (mapcan
    (-lambda ((type . symbols))
-     (let ((cat (cdr (assoc type lsp-symbol-kinds)))
+     (let ((cat (cdr (assoc type lsp-imenu-symbol-kinds)))
            (symbols (lsp-imenu-create-uncategorized-index symbols)))
        ;; If there is no :kind (this is being defensive), or we couldn't look it
        ;; up, just display the symbols inline, without categories.
