@@ -5292,7 +5292,7 @@ A reference is highlighted only if it is visible in a window."
         wins-visible-pos))
      highlights)))
 
-(defconst lsp--symbol-kind
+(defcustom lsp-symbol-kinds
   '((1 . "File")
     (2 . "Module")
     (3 . "Namespace")
@@ -5314,18 +5314,27 @@ A reference is highlighted only if it is visible in a window."
     (19 . "Object")
     (20 . "Key")
     (21 . "Null")
-    (22 . "Enum Member")
+    (22 . "Enumerator")
     (23 . "Struct")
     (24 . "Event")
     (25 . "Operator")
-    (26 . "Type Parameter")))
+    (26 . "Type Parameter"))
+  "Alist mapping SymbolKinds to human-readable strings.
+Various Symbol objects in the LSP protocol have an integral type,
+specifying what they are. This alist maps such type integrals to
+readable representations of them. See
+`https://microsoft.github.io/language-server-protocol/specifications/specification-current/',
+namespace SymbolKind."
+  :group 'lsp-mode
+  :type '(alist :key-type integer :value-type string))
+(defalias 'lsp--symbol-kind 'lsp-symbol-kinds)
 
 (lsp-defun lsp--symbol-information-to-xref
   ((&SymbolInformation :kind :name
                        :location (&Location :uri :range (&Range :start
                                                                 (&Position :line :character)))))
   "Return a `xref-item' from SYMBOL information."
-  (xref-make (format "[%s] %s" (alist-get kind lsp--symbol-kind) name)
+  (xref-make (format "[%s] %s" (alist-get kind lsp-symbol-kinds) name)
              (xref-make-file-location (lsp--uri-to-path uri)
                                       line
                                       character)))
@@ -6151,10 +6160,7 @@ an alist
 
 (lsp-defun lsp--get-symbol-type ((&SymbolInformation :kind))
   "The string name of the kind of SYM."
-  (-> kind
-      (assoc lsp--symbol-kind)
-      (cl-rest)
-      (or "Other")))
+  (alist-get kind lsp-symbol-kinds "Other"))
 
 (defun lsp--get-line-and-col (sym)
   "Obtain the line and column corresponding to SYM."
@@ -6211,46 +6217,13 @@ representation to point representation."
         (lsp--imenu-create-hierarchical-index symbols)
       (lsp--imenu-create-non-hierarchical-index symbols))))
 
-(defcustom lsp-imenu-symbol-categories
-  ["File"
-   "Module"
-   "Namespace"
-   "Package"
-   "Class"
-   "Method"
-   "Property"
-   "Field"
-   "Constructor"
-   "Enum"
-   "Interface"
-   "Function"
-   "Variable"
-   "Constant"
-   "String"
-   "Number"
-   "Boolean"
-   "Array"
-   "Object"
-   "Key"
-   "Null"
-   "Enumerator"
-   "Struct"
-   "Event"
-   "Operator"
-   "Type Parameter"]
-  "Vector mapping LSP SymbolKinds to `imenu' categories."
-  :group 'lsp-imenu
-  :type '(vector string))
-
 (defun lsp-imenu-create-categorized-index (symbols)
   "Create an `imenu' index categorizing SYMBOLS by type.
-See `lsp-imenu-symbol-categories' to customize the category
-naming. SYMBOLS shall be a list of DocumentSymbols or
-SymbolInformation."
+See `lsp-symbol-kinds' to customize the category naming. SYMBOLS
+shall be a list of DocumentSymbols or SymbolInformation."
   (mapcan
    (-lambda ((type . symbols))
-     (let ((cat (and type (< type (length lsp-imenu-symbol-categories))
-                     (elt lsp-imenu-symbol-categories type)))
+     (let ((cat (cdr (assoc type lsp-symbol-kinds)))
            (symbols (lsp-imenu-create-uncategorized-index symbols)))
        ;; If there is no :kind (this is being defensive), or we couldn't look it
        ;; up, just display the symbols inline, without categories.
