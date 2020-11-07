@@ -6196,7 +6196,7 @@ information, for example if it doesn't support DocumentSymbols."
 If SHOW-DETAIL? is set, make use of its `:detail?' field (often
 the signature)."
   (let ((detail (and show-detail? (s-present? detail?)
-                     (propertize (concat ": " detail?) 'face 'font-lock-type-face)))
+                     (propertize (concat " " detail?) 'face 'font-lock-type-face)))
         (name (if deprecated?
                   (propertize name 'face 'lsp-face-semhl-deprecated) name)))
     (concat name detail)))
