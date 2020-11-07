@@ -6195,7 +6195,8 @@ information, for example if it doesn't support DocumentSymbols."
 Things like line numbers, signatures, ... are considered
 additional information. Often, additional faces are defined that
 inherit from this face by default, like `lsp-signature-face', and
-they may be customized for finer control.")
+they may be customized for finer control."
+  :group 'lsp-faces)
 
 (defface lsp-signature-face '((t :inherit lsp-details-face))
   "Used to display signatures in `imenu', ...."
