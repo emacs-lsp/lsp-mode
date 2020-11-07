@@ -6195,11 +6195,11 @@ information, for example if it doesn't support DocumentSymbols."
   "Render INPUT0, an `&DocumentSymbol', to a string.
 If SHOW-DETAIL? is set, make use of its `:detail?' field (often
 the signature)."
-  (let ((base (or (and show-detail? detail?
-                       (not (string-empty-p detail?)) detail?)
-                  name)))
-    (if deprecated? (propertize base 'face 'lsp-face-semhl-deprecated)
-      base)))
+  (let ((detail (and show-detail? detail? (not (string-empty-p detail?))
+                     (propertize (concat ": " detail?) 'face 'font-lock-type-face)))
+        (name (if deprecated?
+                  (propertize name 'face 'lsp-face-semhl-deprecated) name)))
+    (concat name detail)))
 
 (lsp-defun lsp--symbol-to-imenu-elem ((sym &as &SymbolInformation :name :container-name?))
   "Convert SYM to imenu element.
