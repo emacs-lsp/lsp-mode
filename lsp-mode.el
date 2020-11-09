@@ -1198,6 +1198,12 @@ fields to it."
   (error "%s :: %s" (propertize "LSP" 'face 'error)
          (apply #'format format args)))
 
+(defun lsp--user-error (format &rest args)
+  "Like `lsp--fatal-error', but with `user-error'.
+FORMAT and ARGS are the same."
+  (user-error "%s :: %s" (propertize "LSP" 'face 'error)
+              (apply #'format format args)))
+
 (defun lsp--eldoc-message (&optional msg)
   "Show MSG in eldoc."
   (setq lsp--eldoc-saved-message msg)
@@ -5671,15 +5677,16 @@ Returns a cons (SYMBOL-TO-RENAME . PLACEHOLDER)."
       ;; Do we have prepare rename? Do it in that case. If we fail, don't do a
       ;; rename, since it's invalid.
       (if (lsp:rename-options-prepare-provider? rename-provider)
-          (-let* ((prepare (lsp-request "textDocument/prepareRename"
-                                        (lsp--text-document-position-params)))
-                  ((start . end) (lsp--range-to-region
-                                  (if (lsp-range? prepare)
-                                      prepare
-                                    (lsp:prepare-rename-result-range prepare))))
-                  (symbol (buffer-substring-no-properties start end))
-                  (placeholder (lsp:prepare-rename-result-placeholder prepare)))
-            (cons symbol (or placeholder symbol)))
+          (when-let ((prepare
+                      (lsp-request "textDocument/prepareRename"
+                                   (lsp--text-document-position-params))))
+            (-let* (((start . end) (lsp--range-to-region
+                                    (if (lsp-range? prepare)
+                                        prepare
+                                      (lsp:prepare-rename-result-range prepare))))
+                    (symbol (buffer-substring start end))
+                    (placeholder (lsp:prepare-rename-result-placeholder prepare)))
+              (cons symbol (or placeholder symbol))))
         ;; We don't support prepare-rename, so just yield the symbol at point.
         (let ((sym (thing-at-point 'symbol)))
           (cons sym sym)))
@@ -5691,7 +5698,7 @@ Returns a cons (SYMBOL-TO-RENAME . PLACEHOLDER)."
   (interactive (list (-when-let ((symbol . placeholder) (lsp--get-symbol-to-rename))
                        (read-string (format "Rename %s to: " symbol) placeholder nil symbol))))
   (unless newname
-    (user-error "A rename is not valid at this position"))
+    (lsp--user-error "A rename is not valid at this position"))
   (when-let ((edits (lsp-request "textDocument/rename"
                                  `( :textDocument ,(lsp--text-document-identifier)
                                     :position ,(lsp--cur-position)
