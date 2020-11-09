@@ -605,7 +605,7 @@ The command should include `--message=format=json` or similar option."
                      (lsp-rust-analyzer-inlay-hints-mode)))
   :ignore-messages nil
   :server-id 'rust-analyzer
-  :custom-capabilities `((experimental . ((snippetTextEdit . ,lsp-enable-snippet ))))
+  :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (featurep 'yasnippet))))))
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'rust-analyzer callback error-callback))))
 
