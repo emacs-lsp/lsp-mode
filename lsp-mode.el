@@ -3610,13 +3610,13 @@ in that particular folder."
     (when lsp-enable-xref
       (add-hook 'xref-backend-functions #'lsp--xref-backend nil t))
 
-    (lsp-configure-buffer)
     (let ((buffer (lsp-current-buffer)))
       (run-with-idle-timer
        0.0 nil
        (lambda ()
          (when (lsp-buffer-live-p buffer)
            (lsp-with-current-buffer buffer
+             (lsp-configure-buffer)
              (lsp--on-change-debounce buffer)
              (lsp--on-idle buffer)))))))
    (t
