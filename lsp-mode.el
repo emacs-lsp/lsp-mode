@@ -5655,7 +5655,8 @@ perform the request synchronously."
 
 (defun lsp--get-symbol-to-rename ()
   "Get symbol to rename and placeholder at point.
-Returns a cons (SYMBOL-TO-RENAME . PLACEHOLDER)."
+Returns a cons (SYMBOL-TO-RENAME . PLACEHOLDER). Returns nil if
+renaming is supported but cannot be done at point."
   (unless (lsp-feature? "textDocument/rename")
     (error "The connected server(s) doesn't support renaming"))
   (if (lsp-feature? "textDocument/prepareRename")
@@ -5669,7 +5670,7 @@ Returns a cons (SYMBOL-TO-RENAME . PLACEHOLDER)."
                 (symbol (buffer-substring start end))
                 (placeholder (lsp:prepare-rename-result-placeholder response)))
           (cons symbol (or placeholder symbol))))
-    (let ((sym (thing-at-point 'symbol)))
+    (when-let ((sym (thing-at-point 'symbol)))
       (cons sym sym))))
 
 (defun lsp-rename (newname)
