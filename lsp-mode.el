@@ -5669,29 +5669,21 @@ perform the request synchronously."
 (defun lsp--get-symbol-to-rename ()
   "Get symbol to rename and placeholder at point.
 Returns a cons (SYMBOL-TO-RENAME . PLACEHOLDER)."
-  ;; Is there some connected server that supports renaming?
-  (if-let ((rename-provider
-            (or (lsp--capability :renameProvider)
-                (-some-> (lsp--registered-capability "textDocument/rename")
-                  (lsp--registered-capability-options)))))
-      ;; Do we have prepare rename? Do it in that case. If we fail, don't do a
-      ;; rename, since it's invalid.
-      (if (lsp:rename-options-prepare-provider? rename-provider)
-          (when-let ((prepare
-                      (lsp-request "textDocument/prepareRename"
-                                   (lsp--text-document-position-params))))
-            (-let* (((start . end) (lsp--range-to-region
-                                    (if (lsp-range? prepare)
-                                        prepare
-                                      (lsp:prepare-rename-result-range prepare))))
-                    (symbol (buffer-substring start end))
-                    (placeholder (lsp:prepare-rename-result-placeholder prepare)))
-              (cons symbol (or placeholder symbol))))
-        ;; We don't support prepare-rename, so just yield the symbol at point.
-        (let ((sym (thing-at-point 'symbol)))
-          (cons sym sym)))
-    ;; No connected server supports renaming.
-    (lsp--fatal-error "The connected server(s) doesn't support renaming")))
+  (unless (lsp-feature? "textDocument/rename")
+    (lsp--fatal-error "The connected server(s) doesn't support renaming"))
+  (if (lsp-feature? "textDocument/prepareRename")
+      (when-let ((response
+                  (lsp-request "textDocument/prepareRename"
+                               (lsp--text-document-position-params))))
+        (-let* (((start . end) (lsp--range-to-region
+                                (if (lsp-range? response)
+                                    response
+                                  (lsp:prepare-rename-result-range response))))
+                (symbol (buffer-substring start end))
+                (placeholder (lsp:prepare-rename-result-placeholder response)))
+          (cons symbol (or placeholder symbol))))
+    (let ((sym (thing-at-point 'symbol)))
+      (cons sym sym))))
 
 (defun lsp-rename (newname)
   "Rename the symbol (and all references to it) under point to NEWNAME."
