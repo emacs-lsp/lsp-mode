@@ -1191,19 +1191,6 @@ Deprecated. Use `lsp-repeatable-vector' instead. "
   "Display lsp error message with FORMAT with ARGS."
   (message "%s :: %s" (propertize "LSP" 'face 'error) (apply #'format format args)))
 
-(defun lsp--fatal-error (format &rest args)
-  "Show an lsp error message using `error'.
-FORMAT is the `format' format to use, while ARGS provides the
-fields to it."
-  (error "%s :: %s" (propertize "LSP" 'face 'error)
-         (apply #'format format args)))
-
-(defun lsp--user-error (format &rest args)
-  "Like `lsp--fatal-error', but with `user-error'.
-FORMAT and ARGS are the same."
-  (user-error "%s :: %s" (propertize "LSP" 'face 'error)
-              (apply #'format format args)))
-
 (defun lsp--eldoc-message (&optional msg)
   "Show MSG in eldoc."
   (setq lsp--eldoc-saved-message msg)
@@ -5670,7 +5657,7 @@ perform the request synchronously."
   "Get symbol to rename and placeholder at point.
 Returns a cons (SYMBOL-TO-RENAME . PLACEHOLDER)."
   (unless (lsp-feature? "textDocument/rename")
-    (lsp--fatal-error "The connected server(s) doesn't support renaming"))
+    (error "The connected server(s) doesn't support renaming"))
   (if (lsp-feature? "textDocument/prepareRename")
       (when-let ((response
                   (lsp-request "textDocument/prepareRename"
@@ -5689,8 +5676,7 @@ Returns a cons (SYMBOL-TO-RENAME . PLACEHOLDER)."
   "Rename the symbol (and all references to it) under point to NEWNAME."
   (interactive (list (-when-let ((symbol . placeholder) (lsp--get-symbol-to-rename))
                        (read-string (format "Rename %s to: " symbol) placeholder nil symbol))))
-  (unless newname
-    (lsp--user-error "A rename is not valid at this position"))
+  (unless newname (user-error "`lsp-rename' is invalid here"))
   (when-let ((edits (lsp-request "textDocument/rename"
                                  `( :textDocument ,(lsp--text-document-identifier)
                                     :position ,(lsp--cur-position)
