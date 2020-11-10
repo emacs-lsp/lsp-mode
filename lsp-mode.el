@@ -5679,7 +5679,8 @@ language server as the initial input of a new-name prompt."
 
 (defface lsp-face-rename '((t :inherit highlight))
   "Face used to highlight the identifier being renamed.
-Renaming can be done using `lsp-rename'.")
+Renaming can be done using `lsp-rename'."
+  :group 'lsp-faces)
 
 (defvar lsp--rename-history '()
   "History for `lsp--read-rename'.")
