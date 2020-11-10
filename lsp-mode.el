@@ -5670,16 +5670,15 @@ renaming is supported but cannot be done at point."
                 (symbol (buffer-substring start end))
                 (placeholder (lsp:prepare-rename-result-placeholder response)))
           (cons symbol (or placeholder symbol))))
-    (when-let ((sym (thing-at-point 'symbol)))
-      (cons sym sym))))
+    (when-let ((symbol (thing-at-point 'symbol)))
+      (cons symbol symbol))))
 
 (defun lsp-rename (newname)
   "Rename the symbol (and all references to it) under point to NEWNAME."
-  (interactive
-   (-if-let ((symbol . placeholder) (lsp--get-symbol-to-rename))
-       (list (read-string (format "Rename %s to: " symbol)
-                          placeholder nil symbol))
-     (user-error "`lsp-rename' is invalid here")))
+  (interactive (list (-when-let ((symbol . placeholder) (lsp--get-symbol-to-rename))
+                       (read-string (format "Rename %s to: " symbol) placeholder nil symbol))))
+  (unless newname
+    (user-error "`lsp-rename' is invalid here"))
   (when-let ((edits (lsp-request "textDocument/rename"
                                  `( :textDocument ,(lsp--text-document-identifier)
                                     :position ,(lsp--cur-position)
