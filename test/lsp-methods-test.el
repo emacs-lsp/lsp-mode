@@ -313,6 +313,12 @@ KEYS is passed to `execute-kbd-macro', after being run trough
      (execute-kbd-macro (kbd ,keys) 1 (lambda () (setq result (progn ,@body))))
      result))
 
+(defun lsp-test--rename-overlays? (pos)
+  "Return non-nil if there are `lsp-rename' overlays at POS.
+POS is a point in the current buffer."
+  (--any? (equal (overlay-get it 'face) 'lsp-face-rename)
+          (overlays-at pos)))
+
 (ert-deftest lsp--read-rename ()
   "Ensure that `lsp--read-rename' works.
 If AT-POINT is nil, it throws a `user-error'.
@@ -333,10 +339,21 @@ C-g."
                        (lsp--read-rename '((1 . 10) . "ident")))))
     (goto-char 1)
     (condition-case nil
-        (lsp-test--simulated-input "C-g"
+        (cl-letf (((symbol-function #'read-string)
+                   (lambda (&rest _)
+                     ;; NOTE: BEGIN and END means a range [BEGIN;END[, so at
+                     ;; point 10, there shouldn't be an overlay anymore. This is
+                     ;; consistent with of `bounds-thing-at-point', and it
+                     ;; worked during manual testing.
+                     (should (lsp-test--rename-overlays? 1))
+                     (should (lsp-test--rename-overlays? 9))
+                     (should-not (lsp-test--rename-overlays? 10)))))
           (lsp--read-rename '((1 . 10) . "id")))
       (quit))
-    (should (equal nil (get-text-property 1 'lsp--read-rename)))))
+    ;; but not after `lsp--read-rename'
+    (should-not (lsp-test--rename-overlays? 1))
+    (should-not (lsp-test--rename-overlays? 9))
+    (should-not (lsp-test--rename-overlays? 10))))
 
 (ert-deftest lsp--get-symbol-to-rename ()
   "Test `lsp--get-symbol-to-rename'.
