@@ -505,7 +505,10 @@ the server has requested that."
                                     "[/\\\\]\\.deps\\'"
                                     "[/\\\\]build-aux\\'"
                                     "[/\\\\]autom4te.cache\\'"
-                                    "[/\\\\]\\.reference\\'")
+                                    "[/\\\\]\\.reference\\'"
+                                    ;; .Net Core build-output
+                                    "[/\\\\]bin/Debug\\'"
+                                    "[/\\\\]obj\\'")
   "List of regexps matching directory paths which won't be monitored when creating file watches."
   :group 'lsp-mode
   :type '(repeat string)
