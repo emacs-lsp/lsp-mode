@@ -5700,17 +5700,18 @@ relied upon."
   (-let* ((((start . end) . placeholder?) at-point)
           ;; Do the `buffer-substring' first to not include `lsp-face-rename'
           (rename-me (buffer-substring start end))
-          (placeholder (or placeholder? rename-me)))
+          (placeholder (or placeholder? rename-me))
+
+          overlay)
     ;; We need unwind protect, as the user might cancel here, causing the
     ;; overlay to linger.
     (unwind-protect
         (progn
-          (-doto (make-overlay start end)
-            (overlay-put 'face 'lsp-face-rename)
-            (overlay-put 'lsp--read-rename t))
+          (setq overlay (-doto (make-overlay start end)
+                          (overlay-put 'face 'lsp-face-rename)))
           (read-string (format "Rename %s to: " rename-me) placeholder
                        'lsp--rename-history))
-      (lsp--remove-overlays 'lsp--read-rename))))
+      (and overlay (delete-overlay overlay)))))
 
 (defun lsp-rename (newname)
   "Rename the symbol (and all references to it) under point to NEWNAME."
