@@ -5670,7 +5670,9 @@ language server as the initial input of a new-name prompt."
                         (if (lsp-range? response)
                             response
                           (lsp:prepare-rename-result-range response))))
-               (placeholder (lsp:prepare-rename-result-placeholder response)))
+               (placeholder
+                (and (not (lsp-range? response))
+                     (lsp:prepare-rename-result-placeholder response))))
           (cons bounds placeholder)))
     (when-let ((bounds (bounds-of-thing-at-point 'symbol)))
       (cons bounds nil))))
@@ -5705,10 +5707,10 @@ relied upon."
         (progn
           (-doto (make-overlay start end)
             (overlay-put 'face 'lsp-face-rename)
-            (overlay-put 'lsp-rename t))
+            (overlay-put 'lsp--read-rename t))
           (read-string (format "Rename %s to: " rename-me) placeholder
                        'lsp--rename-history))
-      (lsp--remove-overlays 'lsp-rename))))
+      (lsp--remove-overlays 'lsp--read-rename))))
 
 (defun lsp-rename (newname)
   "Rename the symbol (and all references to it) under point to NEWNAME."

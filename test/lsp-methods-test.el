@@ -302,3 +302,78 @@ private void extracted() {
                                :kind "rename")]))
     (should-not (f-exists? old-file-name))
     (should (f-exists? new-file-name))))
+
+;;; `lsp-rename'
+(defmacro lsp-test--simulated-input (keys &rest body)
+  "Execute body, while simulating the pressing KEYS.
+KEYS is passed to `execute-kbd-macro', after being run trough
+`kbd'. Returns the result of the last BODY form."
+  (declare (indent 1))
+  `(let (result)
+     (execute-kbd-macro (kbd ,keys) 1 (lambda () (setq result (progn ,@body))))
+     result))
+
+(ert-deftest lsp--read-rename ()
+  "Ensure that `lsp--read-rename' works.
+If AT-POINT is nil, it throws a `user-error'.
+If a placeholder is given, it shall be the default value,
+
+otherwise the bounds are to be used.
+
+Rename overlays are removed afterwards, even if the user presses
+C-g."
+  (should-error (lsp--read-rename nil) :type 'user-error)
+  (with-temp-buffer
+    (insert "identifier")
+    (should (string= "identifier"
+                     (lsp-test--simulated-input "RET"
+                       (lsp--read-rename '((1 . 11) . nil)))))
+    (should (string= "ident"
+                     (lsp-test--simulated-input "RET"
+                       (lsp--read-rename '((1 . 10) . "ident")))))
+    (goto-char 1)
+    (condition-case nil
+        (lsp-test--simulated-input "C-g"
+          (lsp--read-rename '((1 . 10) . "id")))
+      (quit))
+    (should (equal nil (get-text-property 1 'lsp--read-rename)))))
+
+(ert-deftest lsp--get-symbol-to-rename ()
+  "Test `lsp--get-symbol-to-rename'.
+It should error if renaming cannot be done, make use of
+prepareRename as much as possible, with or without bounds, and it
+should work without the latter."
+  ;; We don't support rename
+  (cl-letf (((symbol-function #'lsp-feature?) #'ignore))
+    (should-error (lsp--get-symbol-to-rename) :type 'error))
+  (cl-letf (((symbol-function #'lsp--text-document-position-params) #'ignore)
+            ((symbol-function #'lsp--range-to-region) #'identity))
+    (with-temp-buffer
+      (insert "identifier")
+      (goto-char 1)
+      ;; We do support rename, but no prepareRename
+      (cl-letf (((symbol-function #'lsp-feature?)
+                 (lambda (f) (member f '("textDocument/rename")))))
+        (should (equal (cons (bounds-of-thing-at-point 'symbol) nil)
+                       (lsp--get-symbol-to-rename)))
+        (goto-char (point-max))
+        (insert " ")
+        ;; we are not on an identifier
+        (should (equal nil (lsp--get-symbol-to-rename))))
+      ;; Do the following tests with an identifier at point
+      (goto-char 1)
+      (cl-letf (((symbol-function #'lsp-feature?)
+                 (lambda (f) (member f '("textDocument/rename"
+                                    "textDocument/prepareRename")))))
+        (cl-letf (((symbol-function #'lsp-request)
+                   (lambda (&rest _) (lsp-make-prepare-rename-result
+                                 :range '(1 . 12)
+                                 :placeholder nil))))
+          (should (equal '((1 . 12) . nil) (lsp--get-symbol-to-rename))))
+        (cl-letf (((symbol-function #'lsp-request)
+                   (lambda (&rest _) (lsp-make-prepare-rename-result
+                                 :range '(1 . 12)
+                                 :placeholder "_"))))
+          (should (equal '((1 . 12) . "_") (lsp--get-symbol-to-rename))))))))
+
+;;; lsp-methods-test.el ends here
