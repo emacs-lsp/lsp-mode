@@ -2584,11 +2584,11 @@ an Elisp regexp."
   nil nil nil
   :keymap lsp-mode-map
   :lighter
-  '(" LSP["
-    (lsp--buffer-workspaces
-     (:eval (mapconcat #'lsp--workspace-print lsp--buffer-workspaces "]["))
-     (:propertize "Disconnected" face warning))
-    "]")
+  (" LSP["
+   (lsp--buffer-workspaces
+    (:eval (mapconcat #'lsp--workspace-print lsp--buffer-workspaces "]["))
+    (:propertize "Disconnected" face warning))
+   "]")
   :group 'lsp-mode)
 
 (defvar lsp-mode-menu
