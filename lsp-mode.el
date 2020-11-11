@@ -5653,6 +5653,13 @@ perform the request synchronously."
   (seq-map #'lsp--symbol-information-to-xref
            (lsp-request "workspace/symbol" `(:query ,pattern))))
 
+(defcustom lsp-rename-use-prepare t
+  "Whether `lsp-rename' should do a prepareRename first.
+For some language servers, textDocument/prepareRename might be
+too slow, in which case this variable may be set to nil.
+`lsp-rename' will then use `thing-at-point' `symbol' to determine
+the symbol to rename at point.")
+
 (defun lsp--get-symbol-to-rename ()
   "Get a symbol to rename and placeholder at point.
 Returns a cons ((START . END) . PLACEHOLDER?), and nil if
@@ -5662,7 +5669,7 @@ while PLACEHOLDER?, is either nil or a string suggested by the
 language server as the initial input of a new-name prompt."
   (unless (lsp-feature? "textDocument/rename")
     (error "The connected server(s) doesn't support renaming"))
-  (if (lsp-feature? "textDocument/prepareRename")
+  (if (and lsp-rename-use-prepare (lsp-feature? "textDocument/prepareRename"))
       (when-let ((response
                   (lsp-request "textDocument/prepareRename"
                                (lsp--text-document-position-params))))
