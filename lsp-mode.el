@@ -3652,7 +3652,12 @@ in that particular folder."
 
 (defun lsp-configure-buffer ()
   "Configure LSP features for current buffer."
-  (let (lsp--cur-workspace)
+  ;; make sure the core is running in the context of all available workspaces
+  ;; to avoid misconfiguration in case we are running in `with-lsp-workspace' context
+  (let ((lsp--buffer-workspaces (cond
+                                 (lsp--buffer-workspaces)
+                                 (lsp--cur-workspace (list lsp--cur-workspace))))
+        lsp--cur-workspace)
     (when lsp-auto-configure
       (when (and lsp-enable-text-document-color
                  (lsp-feature? "textDocument/documentColor"))
