@@ -84,7 +84,7 @@ caching purposes.")
                                   (plist-put
                                    (cl-copy-list
                                     (cl-rest display-image))
-                                   :background (face-attribute 'header-line :background))))
+                                   :background (face-attribute 'header-line :background nil t))))
           (replace-regexp-in-string "\s\\|\t" "" display-image)))
     ""))
 
