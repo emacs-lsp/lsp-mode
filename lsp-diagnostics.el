@@ -68,6 +68,13 @@ on top the flycheck face for that error level."
   :group 'lsp-mode
   :package-version '(lsp-mode . "7.1"))
 
+(defcustom lsp-diagnostics-flycheck-next-checkers-function nil
+  "Variable to hold the function that returns flycheck next checkers for lsp."
+  :type '(choice function (const nil))
+  :group 'lsp-mode)
+
+(make-variable-buffer-local 'lsp-diagnostics-flycheck-next-checkers-function)
+
 ;; Flycheck integration
 
 (declare-function flycheck-mode "ext:flycheck")
@@ -190,6 +197,12 @@ from the language server."
                      (lsp--idle-reschedule (current-buffer)))))))))
 
 
+(defun lsp-diagnostics--flycheck-next-checkers (checker)
+  "Function called by flycheck to find next checkers if CHECKER is lsp."
+  (when (and (eq checker 'lsp)
+             (functionp lsp-diagnostics-flycheck-next-checkers-function))
+    (funcall lsp-diagnostics-flycheck-next-checkers-function)))
+
 (defun lsp-diagnostics-flycheck-enable (&rest _)
   "Enable flycheck integration for the current buffer."
   (require 'flycheck)
@@ -208,6 +221,7 @@ See https://github.com/emacs-lsp/lsp-mode."
   (flycheck-mode 1)
   (flycheck-stop)
   (setq-local flycheck-checker 'lsp)
+  (flycheck-set-next-checkers-function 'lsp #'lsp-diagnostics--flycheck-next-checkers)
   (lsp-flycheck-add-mode major-mode)
   (add-to-list 'flycheck-checkers 'lsp)
   (add-hook 'lsp-diagnostics-updated-hook #'lsp-diagnostics--flycheck-report nil t)
