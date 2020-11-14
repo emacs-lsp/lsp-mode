@@ -5715,8 +5715,9 @@ relied upon."
     ;; overlay to linger.
     (unwind-protect
         (progn
-          (setq overlay (-doto (make-overlay start end)
-                          (overlay-put 'face 'lsp-face-rename)))
+          (setq overlay (make-overlay start end))
+          (overlay-put overlay 'face 'lsp-face-rename)
+
           (read-string (format "Rename %s to: " rename-me) placeholder
                        'lsp--rename-history))
       (and overlay (delete-overlay overlay)))))
