@@ -45,9 +45,7 @@ unix-compile:
 
 prepare_cpp_project:
 	@echo "Setting up Sample C++ project with CMake and clangd"
-	cd test/fixtures/SampleCppProject/
-	mkdir -p build && cd build/
-	cmake ..
+	cd test/fixtures/SampleCppProject/ && mkdir -p build && cd build/ && cmake ..
 
 windows-compile:
 	@echo "Compiling..."
