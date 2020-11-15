@@ -237,7 +237,10 @@ returned to avoid that the echo area grows uncomfortably."
 
 (defun lsp-clangd-to-other ()
   "Open the corresponding header/source file."
+  (interactive)
   (if-let ((other-fname
+            ;; find-workspace might be too brittle if users make their own lsp IDs
+            ;; eg. clangd-remote
             (with-lsp-workspace (lsp-find-workspace 'clangd)
               ;; TODO define an extension with lsp-interace
               ;; similar to rust-analyzer on lines 278-292 in
@@ -246,7 +249,7 @@ returned to avoid that the echo area grows uncomfortably."
                                  "textDocument/switchSourceHeader"
                                  (lsp--text-document-identifier))))
             ))
-      ;; TODO use lsp-goto-location instead
+      ;; TODO maybe worth using lsp-goto-location instead
       (find-file (lsp--uri-to-path other-fname))
     (lsp--info "This file doesn't have a corresponding file")
     nil))

@@ -139,7 +139,7 @@ and starts lsp. After the test BODY runs - tidy up."
   (lsp-in-sample-cpp-project
    (find-file (f-join lsp-test-location "fixtures/SampleCppProject/src/individual_file.cpp"))
    (should (string= (buffer-name) "individual_file.cpp"))
-   (lsp-clangd-to-other)
+   (should (= (lsp-clangd-to-other) nil))
    (should (string= (buffer-name) "individual_file.cpp"))))
 
 ;;; lsp-clangd-test.el ends here

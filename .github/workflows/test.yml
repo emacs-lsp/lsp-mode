@@ -30,6 +30,20 @@ jobs:
               with:
                   version: 0.8.4
 
+            - name: Setup cmake
+              uses: jwlawson/actions-setup-cmake@v1.4
+              with:
+                 cmake-version: '2.8.x'
+
+            - name: Install LLVM and Clang
+              uses: KyleMayes/install-llvm-action@v1
+              with:
+                 version: "9.0"
+                 directory: ${{ runner.temp }}/llvm
+
+            - name: Check clangd
+              run: "which clangd"
+
             - name: Install depedencies
               run: "pip3 install python-language-server"
 
