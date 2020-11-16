@@ -35,10 +35,13 @@ jobs:
               with:
                  cmake-version: '2.8.x'
 
+            - name: Check cmake
+              run: "cmake --version"
+
             - name: Install LLVM and Clang
               uses: KyleMayes/install-llvm-action@v1
               with:
-                 version: "9.0"
+                 version: "10.0"
                  directory: ${{ runner.temp }}/llvm
 
             - name: Check clangd
