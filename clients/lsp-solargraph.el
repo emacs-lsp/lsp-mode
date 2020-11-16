@@ -106,6 +106,7 @@
 (defcustom lsp-solargraph-use-bundler nil
   "Run solargraph under bundler"
   :type 'boolean
+  :safe #'booleanp
   :group 'lsp-solargraph
   :package-version '(lsp-mode . "6.1"))
 
