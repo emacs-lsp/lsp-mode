@@ -355,6 +355,7 @@ unless overridden by a more specific face association."
          lsp-kotlin lsp-lua lsp-nim lsp-nix lsp-metals lsp-ocaml lsp-perl lsp-php lsp-pwsh
          lsp-pyls lsp-python-ms lsp-purescript lsp-r lsp-rf lsp-rust lsp-solargraph
          lsp-tex lsp-terraform lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript lsp-xml
+         lsp-galaxy
          lsp-yaml lsp-sqls lsp-svelte)
   "List of the clients to be automatically required."
   :group 'lsp-mode
@@ -809,7 +810,7 @@ Changes take effect only when a new session is started."
                                         (".*\\.tsx$" . "typescriptreact")
                                         (".*\\.ts$" . "typescript")
                                         (".*\\.jsx$" . "javascriptreact")
-                                        (".*\\.xml$" . "xml")
+                                        (".*\\.xml$" . "galaxy")
                                         (".*\\.hx$" . "haxe")
                                         (".*\\.lua$" . "lua")
                                         (".*\\.sql$" . "sql")
