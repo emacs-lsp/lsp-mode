@@ -103,7 +103,6 @@ and starts lsp. After the test BODY runs - tidy up."
      (find-file (f-join lsp-test-location "fixtures/SampleCppProject/src/main.cpp"))
      ;; initialise the workspace
      (lsp)
-     (lsp-describe-session)
      ;; run our test body
      ,@body
 
