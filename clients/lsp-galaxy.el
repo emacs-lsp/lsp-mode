@@ -74,7 +74,7 @@
                            (format "--host %s --port %d"
                                    lsp-galaxy-language-server-host
                                    lsp-galaxy-language-server-port))))
-  :major-modes '(galaxy-mode cgalaxy-mode)
+  :major-modes '(nxml-mode galaxyxml-mode)
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--set-configuration
