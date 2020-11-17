@@ -29,37 +29,37 @@
   "LSP support for Galaxy"
   :group 'lsp-mode
   :link '(url-link "https://github.com/galaxyproject/galaxy-language-server/")
-  :package-version '(lsp-mode . "6.3"))
+  :package-version '(lsp-mode . "7.1.0"))
 
 (defcustom lsp-galaxy-galaxy-cmd '["python" "-m" "galaxyls"]
   "Path to binary used in Galaxy Language Server.  Defaults to `python -m galaxyls' if nil."
   :type 'lsp-string-vector
   :group 'lsp-galaxy
-  :package-version '(lsp-mode . "7.0.1"))
+  :package-version '(lsp-mode . "7.1.0"))
 
 (defcustom lsp-galaxy-language-server-host "127.0.0.1"
   "Choose host address."
   :type 'string
   :group 'lsp-galaxy
-  :package-version '(lsp-mode . "6.3"))
+  :package-version '(lsp-mode . "7.1.0"))
 
 (defcustom lsp-galaxy-language-server-port 2087
   "Choose listen port."
   :type 'integer
   :group 'lsp-galaxy
-  :package-version '(lsp-mode . "6.3"))
+  :package-version '(lsp-mode . "7.1.0"))
 
 (defcustom lsp-galaxy-language-server-client-version "2.1.0"
   "Choose client version."
   :type 'string
   :group 'lsp-galaxy
-  :package-version '(lsp-mode . "6.3"))
+  :package-version '(lsp-mode . "7.1.0"))
 
 (defcustom lsp-galaxy-file-filter '[".xml"]
   "A vector of directories filtering galaxy file."
   :type 'lsp-string-vector
   :group 'lsp-galaxy
-  :package-version '(lsp-mode . "7.0.1"))
+  :package-version '(lsp-mode . "7.1.0"))
 
 
 (lsp-register-custom-settings
