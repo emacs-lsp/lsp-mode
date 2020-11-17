@@ -5684,7 +5684,7 @@ language server as the initial input of a new-name prompt."
     (when-let ((bounds (bounds-of-thing-at-point 'symbol)))
       (cons bounds nil))))
 
-(defface lsp-face-rename '((t :inherit highlight))
+(defface lsp-face-rename '((t :underline t))
   "Face used to highlight the identifier being renamed.
 Renaming can be done using `lsp-rename'."
   :group 'lsp-faces)
