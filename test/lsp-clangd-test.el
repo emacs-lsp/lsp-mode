@@ -23,24 +23,7 @@
 
 (require 'ert)
 (require 'lsp-clangd)
-
-;; TODO move to a common/shared test-utils.el
-(defconst lsp-test-location (file-name-directory (or load-file-name buffer-file-name)))
-
-;; TODO move to a common/shared test-utils.el
-(defun lsp-test--wait-for (form &optional d)
-  (--doto (or d (deferred:new #'identity))
-    (run-with-timer
-     0.001 nil
-     (lambda ()
-       (if-let ((result (eval form)))
-           (deferred:callback-post it result)
-         (lsp-test--wait-for form it))))))
-
-;; TODO move to a common/shared test-utils.el and import here and in
-;; integration-test.el
-(defmacro lsp-test-wait (form)
-  `(lsp-test--wait-for '(progn ,form)))
+(require 'lsp-integration-test)
 
 (ert-deftest lsp-clangd-extract-signature-on-hover ()
   (should (string= (lsp-clients-extract-signature-on-hover
@@ -107,9 +90,6 @@ and starts lsp. After the test BODY runs - tidy up."
      ,@body
 
      ;; lsp tidy up
-     (find-file (f-join lsp-test-location "fixtures/SampleCppProject/src/main.cpp"))
-     (save-buffer)
-     (kill-buffer)
      (lsp-workspace-folders-remove (f-join lsp-test-location "fixtures/SampleCppProject/"))
      (setq lsp-clients-clangd-args actual-clangd-args)))
 
@@ -134,11 +114,9 @@ and starts lsp. After the test BODY runs - tidy up."
    (should (string= (buffer-name) "main.cpp"))))
 
 (ert-deftest lsp-clangd-switch-to-nonexistent-other ()
-  ;; TODO add a cpp file without a corresponding header file and add it to CML
   (lsp-in-sample-cpp-project
    (find-file (f-join lsp-test-location "fixtures/SampleCppProject/src/individual_file.cpp"))
    (should (string= (buffer-name) "individual_file.cpp"))
-   (should (= (lsp-clangd-to-other) nil))
    (should (string= (buffer-name) "individual_file.cpp"))))
 
 ;;; lsp-clangd-test.el ends here
