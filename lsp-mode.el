@@ -5689,6 +5689,12 @@ language server as the initial input of a new-name prompt."
 Renaming can be done using `lsp-rename'."
   :group 'lsp-faces)
 
+(defface lsp-rename-placeholder-face '((t :inherit font-lock-variable-name-face))
+  "Face used to display the rename placeholder in.
+When calling `lsp-rename' interactively, this will be the face of
+the new name."
+  :group 'lsp-faces)
+
 (defvar lsp--rename-history '()
   "History for `lsp--read-rename'.")
 
@@ -5709,6 +5715,7 @@ relied upon."
           ;; Do the `buffer-substring' first to not include `lsp-face-rename'
           (rename-me (buffer-substring start end))
           (placeholder (or placeholder? rename-me))
+          (placeholder (propertize placeholder 'face 'lsp-rename-placeholder-face))
 
           overlay)
     ;; We need unwind protect, as the user might cancel here, causing the
