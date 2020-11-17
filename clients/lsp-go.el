@@ -223,7 +223,7 @@ $GOPATH/pkg/mod along with the value of
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda () (cons lsp-go-gopls-server-path lsp-go-gopls-server-args)))
-                  :major-modes '(go-mode)
+                  :major-modes '(go-mode go-dot-mod-mode)
                   :language-id "go"
                   :priority 0
                   :server-id 'gopls
