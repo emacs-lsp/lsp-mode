@@ -64,8 +64,8 @@
                                         (lsp-workspace-root)
                                         (file-exists-p (f-join (lsp-workspace-root) "angular.json"))))
                   :priority -1
-                  :notification-handlers (ht ("angular-language-service/projectLoadingStart" #'lsp-client--angular-start-loading)
-                                             ("angular-language-service/projectLoadingFinish" #'lsp-client--angular-finished-loading))
+                  :notification-handlers (ht ("angular/projectLoadingStart" #'lsp-client--angular-start-loading)
+                                             ("angular/projectLoadingFinish" #'lsp-client--angular-finished-loading))
                   :add-on? t
                   :server-id 'angular-ls))
 
