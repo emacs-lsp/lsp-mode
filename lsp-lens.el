@@ -375,9 +375,10 @@ CALLBACK - callback for the lenses."
   (interactive)
   (if (not lsp-lens-mode)
       (user-error "`lsp-lens-mode' not active")
+    (unless lsp-lens--overlays
+      (user-error "No lenses in current buffer"))
     (let* ((avy-action 'identity)
-           (action (cl-third
-                    (avy-process
+           (actions (avy-process
                      (-mapcat
                       (lambda (overlay)
                         (-map-indexed
@@ -407,8 +408,8 @@ CALLBACK - callback for the lenses."
                      (lambda ()
                        (--map (overlay-put it 'before-string
                                            (overlay-get it 'lsp-original))
-                              lsp-lens--overlays))))))
-      (when action (funcall-interactively action)))))
+                              lsp-lens--overlays)))))
+      (when actions (funcall-interactively (cl-third actions))))))
 
 (provide 'lsp-lens)
 ;;; lsp-lens.el ends here
