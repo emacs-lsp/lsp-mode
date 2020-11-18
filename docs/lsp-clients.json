@@ -22,6 +22,7 @@
     "server-name": "bash-language-server",
     "server-url": "https://github.com/mads-hartmann/bash-language-server",
     "installation": "npm i -g bash-language-server",
+    "lsp-install-server": "bash",
     "debugger": "Not available"
   },
   {
@@ -30,6 +31,7 @@
     "server-name": "OmniSharp-Roslyn",
     "server-url": "https://github.com/OmniSharp/omnisharp-roslyn",
     "installation": "Supports automatic installation. Use M-x lsp-csharp-update-server to update to latest.",
+    "lsp-install-server": "csharp",
     "debugger": "Not available"
   },
   {
@@ -56,6 +58,7 @@
     "server-name": "clojure-lsp",
     "server-url": "https://github.com/snoe/clojure-lsp",
     "installation-url": "https://github.com/snoe/clojure-lsp",
+    "lsp-install-server": "clojure-lsp",
     "debugger": "Not available"
   },
   {
@@ -81,6 +84,7 @@
     "server-name": "css",
     "server-url": "https://github.com/vscode-langservers/vscode-css-languageserver-bin",
     "installation": "npm install -g vscode-css-languageserver-bin",
+    "lsp-install-server": "css-ls",
     "debugger": "Not available"
   },
   {
@@ -97,6 +101,7 @@
     "server-name": "dockerfile-language-server-nodejs",
     "server-url": "https://github.com/rcjsuen/dockerfile-language-server-nodejs",
     "installation": "npm install -g dockerfile-language-server-nodejs",
+    "lsp-install-server": "dockerfile-ls",
     "debugger": "Not available"
   },
   {
@@ -113,6 +118,7 @@
     "server-name": "elmLS",
     "server-url": "https://github.com/elm-tooling/elm-language-server",
     "installation": "npm i -g @elm-tooling/elm-language-server, or clone the repository and follow installation instructions",
+    "lsp-install-server": "elm-ls",
     "debugger": "Not available"
   },
   {
@@ -125,10 +131,10 @@
   },
   {
     "name": "eslint",
-    "full-name": "Eslint",
+    "full-name": "ESlint",
     "server-name": "eslint",
     "server-url": "https://github.com/Microsoft/vscode-eslint",
-    "installation-url": "https://github.com/emacs-lsp/lsp-mode/wiki/LSP-ESlint-integration",
+    "lsp-install-server": "eslint",
     "debugger": "N/A"
   },
   {
@@ -137,6 +143,7 @@
     "server-name": "fsautocomplete",
     "server-url": "https://github.com/fsharp/FsAutoComplete",
     "installation": "Automatic by lsp-mode",
+    "lsp-install-server": "fsac",
     "debugger": "Not available"
   },
   {
@@ -185,6 +192,7 @@
     "server-name": "html",
     "server-url": "https://github.com/vscode-langservers/vscode-html-languageserver",
     "installation": "npm install -g vscode-html-languageserver-bin",
+    "lsp-install-server": "html-ls",
     "debugger": "Not available"
   },
   {
@@ -209,6 +217,7 @@
     "server-name": "javascript-typescript-stdio",
     "server-url": "https://github.com/sourcegraph/javascript-typescript-langserver",
     "installation": "npm i -g javascript-typescript-langserver",
+    "lsp-install-server": "js-ts",
     "debugger": "Yes (Firefox/Chrome)"
   },
   {
@@ -217,6 +226,7 @@
     "server-name": "vscode-json-languageserver",
     "server-url": "https://github.com/vscode-langservers/vscode-json-languageserver",
     "installation": "Automatic or manual by npm i -g vscode-json-languageserver",
+    "lsp-install-server": "json-ls",
     "debugger": "Not available"
   },
   {
@@ -335,6 +345,7 @@
     "server-name": "PowerShellEditorServices",
     "server-url": "https://github.com/PowerShell/PowerShellEditorServices",
     "installation": "Automatic",
+    "lsp-install-server": "pwsh-ls",
     "debugger": "Yes"
   },
   {
@@ -352,6 +363,7 @@
     "server-url": "https://github.com/nwolverson/purescript-language-server",
     "installation-url": "https://github.com/nwolverson/purescript-language-server#usage",
     "installation": "npm i -g purescript-language-server",
+    "lsp-install-server": "pursls",
     "debugger": "Not available"
   },
   {
@@ -470,6 +482,7 @@
     "server-name": "svelteserver",
     "server-url": "https://github.com/sveltejs/language-tools",
     "installation": "npm i -g svelte-language-server",
+    "lsp-install-server": "svelte-ls",
     "debugger": "Not available"
   },
   {
@@ -536,6 +549,7 @@
     "server-name": "vim-language-server",
     "server-url": "https://github.com/iamcco/vim-language-server",
     "installation": "npm install -g vim-language-server",
+    "lsp-install-server": "vimls",
     "debugger": "n/a"
   },
   {
@@ -544,6 +558,7 @@
     "server-name": "vue-language-server",
     "server-url": "https://github.com/vuejs/vetur/tree/master/server",
     "installation": "npm install -g vls",
+    "lsp-install-server": "vls",
     "debugger": "Yes (Firefox/Chrome)"
   },
   {
@@ -552,6 +567,7 @@
     "server-name": "lsp4xml",
     "server-url": "https://github.com/eclipse/lemminx",
     "installation": "Automatic by lsp-mode",
+    "lsp-install-server": "xmlls",
     "debugger": "Not available"
   },
   {
@@ -560,6 +576,7 @@
     "server-name": "yaml",
     "server-url": "https://github.com/redhat-developer/yaml-language-server",
     "installation": "npm install -g yaml-language-server",
+    "lsp-install-server": "yamlls",
     "debugger": "Not available"
   }
 ]
