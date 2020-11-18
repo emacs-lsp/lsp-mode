@@ -165,5 +165,15 @@
     (should (lsp-point-in-range? (lsp-make-position :character 3 :line 3)
                                  range))))
 
+(ert-deftest lsp-test--merge-hover ()
+  (should (= (length (lsp:hover-contents
+                      (lsp--merge-results
+                       (list (lsp-make-hover :contents (vector "string"
+                                                               (lsp-make-marked-string :language "java"
+                                                                                       :value "XXX")))
+                             (lsp-make-hover :contents []))
+                       "textDocument/hover")))
+             2)))
+
 (provide 'lsp-mode-test)
 ;;; lsp-mode-test.el ends here
