@@ -85,6 +85,7 @@ and starts lsp. After the test BODY runs - tidy up."
      (lsp-workspace-folders-add (f-join lsp-test-location "fixtures/SampleCppProject/"))
      (find-file (f-join lsp-test-location "fixtures/SampleCppProject/src/main.cpp"))
      ;; initialise the workspace
+     (setq lsp-log-io t)
      (lsp)
      ;; run our test body
      ,@body
@@ -117,6 +118,7 @@ and starts lsp. After the test BODY runs - tidy up."
   (lsp-in-sample-cpp-project
    (find-file (f-join lsp-test-location "fixtures/SampleCppProject/src/individual_file.cpp"))
    (should (string= (buffer-name) "individual_file.cpp"))
+   (lsp-clangd-to-other)
    (should (string= (buffer-name) "individual_file.cpp"))))
 
 ;;; lsp-clangd-test.el ends here
