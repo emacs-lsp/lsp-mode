@@ -87,6 +87,7 @@ and starts lsp. After the test BODY runs - tidy up."
      ;; initialise the workspace
      (setq lsp-log-io t)
      (lsp)
+     (message "The test body will start in %s" (buffer-file-name))
      ;; run our test body
      ,@body
 
