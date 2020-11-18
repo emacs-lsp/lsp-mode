@@ -408,7 +408,7 @@ CALLBACK - callback for the lenses."
                        (--map (overlay-put it 'before-string
                                            (overlay-get it 'lsp-original))
                               lsp-lens--overlays))))))
-      (funcall-interactively action))))
+      (when action (funcall-interactively action)))))
 
 (provide 'lsp-lens)
 ;;; lsp-lens.el ends here
