@@ -1,13 +1,14 @@
 {{full-name}}
-==========
+=============
 
 ## Server
-For information about the LSP server, check the [{{server-name}}]({{server-url}}).
+
+For more information about {{server-name}}, check [here]({{server-url}}).
 
 ## Installation
-{{installation}}{{installation-url}}
+
+{{installation}}{{installation-url}}{{lsp-install-server}}
 
 ### Debugger: {{debugger}}
 
 ## Available configurations
-

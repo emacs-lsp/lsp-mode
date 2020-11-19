@@ -57,6 +57,7 @@
   "For a given KEY return a decorated VALUE."
   (pcase key
     ("installation" (format "`%s`" value))
+    ("lsp-install-server" (format "Install this language server with <kbd>M-x</kbd>`lsp-install-server`<kbd>RET</kbd>`%s`<kbd>RET</kbd>." value))
     ("installation-url" (format "\n\nFor more instructions on how to install, check [here](%s)." value))
     (_ value)))
 
