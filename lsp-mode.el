@@ -5658,7 +5658,9 @@ perform the request synchronously."
 For some language servers, textDocument/prepareRename might be
 too slow, in which case this variable may be set to nil.
 `lsp-rename' will then use `thing-at-point' `symbol' to determine
-the symbol to rename at point.")
+the symbol to rename at point."
+  :group 'lsp-mode
+  :type 'boolean)
 
 (defun lsp--get-symbol-to-rename ()
   "Get a symbol to rename and placeholder at point.
