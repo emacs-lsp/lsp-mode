@@ -5209,17 +5209,6 @@ It will filter by KIND if non nil."
       (funcall action-handler action)
     (lsp--send-execute-command command arguments?)))
 
-(defun lsp-execute-command (_server command arguments)
-  "Execute code action COMMAND with ARGUMENTS?.
-Note that this function can now longer be overloaded using
-`cl-defmethod', because that proved to be a liability. Use the
-:action-handlers argument of `make-lsp-client' instead."
-  (lsp--execute-command
-   (lsp-make-command :command (symbol-name command)
-                     :arguments? arguments)))
-(make-obsolete 'lsp-execute-command "use `lsp--execute-command' instead."
-               "7.1.0")
-
 (lsp-defun lsp-execute-code-action ((action &as &CodeAction :command? :edit?))
   "Execute code action ACTION.
 If ACTION is not set it will be selected from `lsp-code-actions-at-point'.
