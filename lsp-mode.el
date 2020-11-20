@@ -5695,7 +5695,7 @@ When calling `lsp-rename' interactively, this will be the face of
 the new name."
   :group 'lsp-faces)
 
-(defvar lsp--rename-history '()
+(defvar lsp-rename-history '()
   "History for `lsp--read-rename'.")
 
 (defun lsp--read-rename (at-point)
@@ -5726,7 +5726,7 @@ relied upon."
           (overlay-put overlay 'face 'lsp-face-rename)
 
           (read-string (format "Rename %s to: " rename-me) placeholder
-                       'lsp--rename-history))
+                       'lsp-rename-history))
       (and overlay (delete-overlay overlay)))))
 
 (defun lsp-rename (newname)
