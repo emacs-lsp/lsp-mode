@@ -5302,8 +5302,8 @@ A reference is highlighted only if it is visible in a window."
   (lsp--remove-overlays 'lsp-highlight)
 
   (let* ((wins-visible-pos (-map (lambda (win)
-                                   (cons (1- (line-number-at-pos (window-start win)))
-                                         (1+ (line-number-at-pos (window-end win)))))
+                                   (cons (1- (line-number-at-pos (window-start win) t))
+                                         (1+ (line-number-at-pos (window-end win) t))))
                                  (get-buffer-window-list nil nil 'visible))))
     (setq lsp--have-document-highlights t)
     (-map
