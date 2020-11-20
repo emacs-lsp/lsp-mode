@@ -558,7 +558,7 @@ The command should include `--message=format=json` or similar option."
   (format "https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/%s"
           (pcase system-type
             ('gnu/linux "rust-analyzer-linux")
-            ('darwin "rust-analyzer-macos")
+            ('darwin "rust-analyzer-mac")
             ('windows-nt "rust-analyzer-windows.exe")))
   "Automatic download url for Rust Analyzer"
   :type 'string
