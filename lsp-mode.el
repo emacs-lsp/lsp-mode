@@ -5653,30 +5653,85 @@ perform the request synchronously."
   (seq-map #'lsp--symbol-information-to-xref
            (lsp-request "workspace/symbol" `(:query ,pattern))))
 
+(defcustom lsp-rename-use-prepare t
+  "Whether `lsp-rename' should do a prepareRename first.
+For some language servers, textDocument/prepareRename might be
+too slow, in which case this variable may be set to nil.
+`lsp-rename' will then use `thing-at-point' `symbol' to determine
+the symbol to rename at point.")
+
 (defun lsp--get-symbol-to-rename ()
-  "Get symbol to rename and placeholder at point."
-  (if (let ((rename-provider (or (lsp--capability :renameProvider)
-                                 (-some-> (lsp--registered-capability "textDocument/rename")
-                                   (lsp--registered-capability-options)))))
-        (lsp:rename-options-prepare-provider? rename-provider))
-      (-when-let (response (lsp-request "textDocument/prepareRename"
-                                        (lsp--text-document-position-params)))
-        (-let* (((start . end) (lsp--range-to-region
-                                (if (lsp-range? response)
-                                    response
-                                  (lsp:prepare-rename-result-range response))))
-                (symbol (buffer-substring-no-properties start end))
-                (placeholder (lsp:prepare-rename-result-placeholder response)))
-          (cons symbol (or placeholder symbol))))
-    (let ((symbol (thing-at-point 'symbol t)))
-      (cons symbol symbol))))
+  "Get a symbol to rename and placeholder at point.
+Returns a cons ((START . END) . PLACEHOLDER?), and nil if
+renaming is generally supported but cannot be done at point.
+START and END are the bounds of the identifiers being renamed,
+while PLACEHOLDER?, is either nil or a string suggested by the
+language server as the initial input of a new-name prompt."
+  (unless (lsp-feature? "textDocument/rename")
+    (error "The connected server(s) doesn't support renaming"))
+  (if (and lsp-rename-use-prepare (lsp-feature? "textDocument/prepareRename"))
+      (when-let ((response
+                  (lsp-request "textDocument/prepareRename"
+                               (lsp--text-document-position-params))))
+        (let* ((bounds (lsp--range-to-region
+                        (if (lsp-range? response)
+                            response
+                          (lsp:prepare-rename-result-range response))))
+               (placeholder
+                (and (not (lsp-range? response))
+                     (lsp:prepare-rename-result-placeholder response))))
+          (cons bounds placeholder)))
+    (when-let ((bounds (bounds-of-thing-at-point 'symbol)))
+      (cons bounds nil))))
+
+(defface lsp-face-rename '((t :underline t))
+  "Face used to highlight the identifier being renamed.
+Renaming can be done using `lsp-rename'."
+  :group 'lsp-faces)
+
+(defface lsp-rename-placeholder-face '((t :inherit font-lock-variable-name-face))
+  "Face used to display the rename placeholder in.
+When calling `lsp-rename' interactively, this will be the face of
+the new name."
+  :group 'lsp-faces)
+
+(defvar lsp-rename-history '()
+  "History for `lsp--read-rename'.")
+
+(defun lsp--read-rename (at-point)
+  "Read a new name for a `lsp-rename' at `point' from the user.
+AT-POINT shall be a structure as returned by
+`lsp--get-symbol-to-rename'.
+
+Returns a string, which should be the new name for the identifier
+at point. If renaming cannot be done at point (as determined from
+AT-POINT), throw a `user-error'.
+
+This function is for use in `lsp-rename' only, and shall not be
+relied upon."
+  (unless at-point
+    (user-error "`lsp-rename' is invalid here"))
+  (-let* ((((start . end) . placeholder?) at-point)
+          ;; Do the `buffer-substring' first to not include `lsp-face-rename'
+          (rename-me (buffer-substring start end))
+          (placeholder (or placeholder? rename-me))
+          (placeholder (propertize placeholder 'face 'lsp-rename-placeholder-face))
+
+          overlay)
+    ;; We need unwind protect, as the user might cancel here, causing the
+    ;; overlay to linger.
+    (unwind-protect
+        (progn
+          (setq overlay (make-overlay start end))
+          (overlay-put overlay 'face 'lsp-face-rename)
+
+          (read-string (format "Rename %s to: " rename-me) placeholder
+                       'lsp-rename-history))
+      (and overlay (delete-overlay overlay)))))
 
 (defun lsp-rename (newname)
   "Rename the symbol (and all references to it) under point to NEWNAME."
-  (interactive (list (-when-let ((symbol . placeholder) (lsp--get-symbol-to-rename))
-                       (read-string (format "Rename %s to: " symbol) placeholder nil symbol))))
-  (unless newname
-    (user-error "A rename is not valid at this position"))
+  (interactive (list (lsp--read-rename (lsp--get-symbol-to-rename))))
   (when-let ((edits (lsp-request "textDocument/rename"
                                  `( :textDocument ,(lsp--text-document-identifier)
                                     :position ,(lsp--cur-position)
