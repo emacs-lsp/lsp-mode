@@ -21,10 +21,6 @@ jobs:
         with:
           version: 27.1
 
-      - name: Set workaround env var
-        run: |
-          echo "ACTIONS_ALLOW_UNSECURE_COMMANDS=true" >> $GITHUB_ENV
-
       - uses: conao3/setup-cask@master
         with:
           version: 0.8.4
