@@ -52,7 +52,7 @@ jobs:
                   python-version: "3.6"
                   architecture: "x64"
 
-            - uses: jcs090218/setup-emacs-windows@vmaster
+            - uses: jcs090218/setup-emacs-windows@master
               with:
                 version: ${{ matrix.emacs-version }}
 
