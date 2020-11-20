@@ -373,43 +373,41 @@ CALLBACK - callback for the lenses."
 (defun lsp-avy-lens ()
   "Click lsp lens using `avy' package."
   (interactive)
-  (if (not lsp-lens-mode)
-      (user-error "`lsp-lens-mode' not active")
-    (unless lsp-lens--overlays
-      (user-error "No lenses in current buffer"))
-    (let* ((avy-action 'identity)
-           (actions (avy-process
-                     (-mapcat
-                      (lambda (overlay)
-                        (-map-indexed
-                         (lambda (index lens-token)
-                           (list overlay index
-                                 (get-text-property 0 'action lens-token)))
-                         (overlay-get overlay 'lsp--metadata)))
-                      lsp-lens--overlays)
-                     (-lambda (path ((ov index) . _win))
-                       (let* ((path (mapcar #'avy--key-to-char path))
-                              (str (propertize (string (car (last path)))
-                                               'face 'avy-lead-face))
-                              (old-str (overlay-get ov 'before-string))
-                              (old-str-tokens (s-split "\|" old-str))
-                              (old-token (seq-elt old-str-tokens index))
-                              (tokens `(,@(-take index old-str-tokens)
-                                        ,(-if-let ((_ prefix suffix)
-                                                   (s-match "\\(^[[:space:]]+\\)\\(.*\\)" old-token))
-                                             (concat prefix str suffix)
-                                           (concat str old-token))
-                                        ,@(-drop (1+ index) old-str-tokens)))
-                              (new-str (s-join (propertize "|" 'face 'lsp-lens-face) tokens))
-                              (new-str (if (s-ends-with? "\n" new-str)
-                                           new-str
-                                         (concat new-str "\n"))))
-                         (overlay-put ov 'before-string new-str)))
-                     (lambda ()
-                       (--map (overlay-put it 'before-string
-                                           (overlay-get it 'lsp-original))
-                              lsp-lens--overlays)))))
-      (when actions (funcall-interactively (cl-third actions))))))
+  (unless lsp-lens--overlays
+    (user-error "No lenses in current buffer"))
+  (let* ((avy-action 'identity)
+         (actions (avy-process
+                   (-mapcat
+                    (lambda (overlay)
+                      (-map-indexed
+                       (lambda (index lens-token)
+                         (list overlay index
+                               (get-text-property 0 'action lens-token)))
+                       (overlay-get overlay 'lsp--metadata)))
+                    lsp-lens--overlays)
+                   (-lambda (path ((ov index) . _win))
+                     (let* ((path (mapcar #'avy--key-to-char path))
+                            (str (propertize (string (car (last path)))
+                                             'face 'avy-lead-face))
+                            (old-str (overlay-get ov 'before-string))
+                            (old-str-tokens (s-split "\|" old-str))
+                            (old-token (seq-elt old-str-tokens index))
+                            (tokens `(,@(-take index old-str-tokens)
+                                      ,(-if-let ((_ prefix suffix)
+                                                 (s-match "\\(^[[:space:]]+\\)\\(.*\\)" old-token))
+                                           (concat prefix str suffix)
+                                         (concat str old-token))
+                                      ,@(-drop (1+ index) old-str-tokens)))
+                            (new-str (s-join (propertize "|" 'face 'lsp-lens-face) tokens))
+                            (new-str (if (s-ends-with? "\n" new-str)
+                                         new-str
+                                       (concat new-str "\n"))))
+                       (overlay-put ov 'before-string new-str)))
+                   (lambda ()
+                     (--map (overlay-put it 'before-string
+                                         (overlay-get it 'lsp-original))
+                            lsp-lens--overlays)))))
+    (when actions (funcall-interactively (cl-third actions)))))
 
 (provide 'lsp-lens)
 ;;; lsp-lens.el ends here
