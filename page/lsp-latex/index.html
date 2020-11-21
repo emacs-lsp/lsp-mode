@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#lsp-latex-for-tex-latex-etc" class="md-skip">
+        <a href="#tex-latex-etc" class="md-skip">
           Skip to content
         </a>
       
@@ -1427,57 +1427,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#installationserver" class="md-nav__link">
-    Installation(server)
+  <a href="#installation" class="md-nav__link">
+    Installation
   </a>
   
-    <nav class="md-nav" aria-label="Installation(server)">
+    <nav class="md-nav" aria-label="Installation">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#debugger-not-available" class="md-nav__link">
     Debugger: Not available
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installationclient" class="md-nav__link">
-    Installation(client)
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#other-variables" class="md-nav__link">
-    Other variables
-  </a>
-  
-    <nav class="md-nav" aria-label="Other variables">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-latex-texlab-executable" class="md-nav__link">
-    lsp-latex-texlab-executable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-latex-texlab-executable-argument-list" class="md-nav__link">
-    lsp-latex-texlab-executable-argument-list
   </a>
   
 </li>
@@ -1517,6 +1476,13 @@
         <li class="md-nav__item">
   <a href="#note" class="md-nav__link">
     Note
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-configurations" class="md-nav__link">
+    Available configurations
   </a>
   
 </li>
@@ -1914,57 +1880,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#installationserver" class="md-nav__link">
-    Installation(server)
+  <a href="#installation" class="md-nav__link">
+    Installation
   </a>
   
-    <nav class="md-nav" aria-label="Installation(server)">
+    <nav class="md-nav" aria-label="Installation">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#debugger-not-available" class="md-nav__link">
     Debugger: Not available
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installationclient" class="md-nav__link">
-    Installation(client)
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#other-variables" class="md-nav__link">
-    Other variables
-  </a>
-  
-    <nav class="md-nav" aria-label="Other variables">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-latex-texlab-executable" class="md-nav__link">
-    lsp-latex-texlab-executable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-latex-texlab-executable-argument-list" class="md-nav__link">
-    lsp-latex-texlab-executable-argument-list
   </a>
   
 </li>
@@ -2008,6 +1933,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#available-configurations" class="md-nav__link">
+    Available configurations
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2025,97 +1957,12 @@
                   </a>
                 
                 
-                <h1 id="lsp-latex-for-tex-latex-etc">lsp-latex for TeX, LaTeX, etc.<a class="headerlink" href="#lsp-latex-for-tex-latex-etc" title="Permanent link">#</a></h1>
+                <h1 id="tex-latex-etc">TeX, LaTeX, etc.<a class="headerlink" href="#tex-latex-etc" title="Permanent link">#</a></h1>
 <h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For information about the LSP server, check the <a href="https://texlab.netlify.app/">texlab</a>.</p>
-<h2 id="installationserver">Installation(server)<a class="headerlink" href="#installationserver" title="Permanent link">#</a></h2>
-<div class="highlight"><pre><span></span><code>cargo install --git https://github.com/latex-lsp/texlab.git
-</code></pre></div>
-
+<p>For more information about the LSP server, check <a href="https://github.com/latex-lsp/texlab">texlab</a>.</p>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
+<p><code>cargo install --git https://github.com/latex-lsp/texlab.git</code></p>
 <h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
-<h2 id="installationclient">Installation(client)<a class="headerlink" href="#installationclient" title="Permanent link">#</a></h2>
-<p>You can get <code>lsp-latex</code> from melpa. Add melpa to the list <code>package-archives</code>,
-and run:
-<kbd>M-x</kbd> <code>package-initialize</code> <kbd>M-x</kbd> <code>package-install</code> <kbd>RET</kbd> <code>lsp-latex</code></p>
-<h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<p>These are the available configurations. All configurations <code>texlab</code> provides are available.
-See also <a href="https://texlab.netlify.app/docs/reference/configuration">document of texlab</a>.</p>
-<table>
-<thead>
-<tr>
-<th>texlab configuration</th>
-<th>custom variable</th>
-<th>summary</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>latex.rootDirectory</td>
-<td>lsp-latex-root-directory</td>
-<td>Directory from which file get compiled</td>
-</tr>
-<tr>
-<td>latex.build.executable</td>
-<td>lsp-latex-build-executable</td>
-<td>Executable used on <code>lsp-latex-build</code></td>
-</tr>
-<tr>
-<td>latex.build.args</td>
-<td>lsp-latex--build-args</td>
-<td>Args passed to <code>lsp-latex-texlab-executable</code></td>
-</tr>
-<tr>
-<td>latex.build.onSave</td>
-<td>lsp-latex-build-on-save</td>
-<td>Build after saving file or not</td>
-</tr>
-<tr>
-<td>latex.build.outputDirectory</td>
-<td>lsp-latex-build-output-directory</td>
-<td>Directory which will contain outputs</td>
-</tr>
-<tr>
-<td>latex.build.forwardSearchAfter</td>
-<td>lsp-latex-forward-search-after</td>
-<td>Execute forward search after building or not</td>
-</tr>
-<tr>
-<td>latex.forwardSearch.executable</td>
-<td>lsp-latex-forward-search-executable</td>
-<td>PDF viewer which will receive forward search signal</td>
-</tr>
-<tr>
-<td>latex.forwardSearch.args</td>
-<td>lsp-latex--forward-search-args</td>
-<td>Args passed to <code>lsp-latex-forward-search-executable</code></td>
-</tr>
-<tr>
-<td>latex.lint.onChange</td>
-<td>lsp-latex-lint-on-change</td>
-<td>Lint with chktex after changing a file or not</td>
-</tr>
-<tr>
-<td>latex.lint.onSave</td>
-<td>lsp-latex-lint-on-save</td>
-<td>Lint with chktex after saving a file</td>
-</tr>
-<tr>
-<td>bibtex.formatting.lineLength</td>
-<td>lsp-latex-bibtex-formatting-line-length</td>
-<td>Max length of characters per line on formatting BibTeX files</td>
-</tr>
-<tr>
-<td>bibtex.formatting.formatter</td>
-<td>lsp-latex-bibtex-formatting-formatter</td>
-<td>Formatter of BibTeX (texlab or latexindent)</td>
-</tr>
-</tbody>
-</table>
-<h2 id="other-variables">Other variables<a class="headerlink" href="#other-variables" title="Permanent link">#</a></h2>
-<h3 id="lsp-latex-texlab-executable"><code>lsp-latex-texlab-executable</code><a class="headerlink" href="#lsp-latex-texlab-executable" title="Permanent link">#</a></h3>
-<p>Where texlab server located.</p>
-<h3 id="lsp-latex-texlab-executable-argument-list"><code>lsp-latex-texlab-executable-argument-list</code><a class="headerlink" href="#lsp-latex-texlab-executable-argument-list" title="Permanent link">#</a></h3>
-<p>Argument list passed to texlab server.</p>
 <h2 id="available-functions">Available functions<a class="headerlink" href="#available-functions" title="Permanent link">#</a></h2>
 <h3 id="lsp-latex-build"><code>lsp-latex-build</code><a class="headerlink" href="#lsp-latex-build" title="Permanent link">#</a></h3>
 <p>Build .tex files with texlab.
@@ -2144,6 +1991,8 @@ though it is not recommended. If you want to use them, you can write like:</p>
 <span class="c1">;; you can specify the path to &quot;texlab.jar&quot; as follows:</span>
 <span class="c1">;; (setq lsp-latex-texlab-jar-file &quot;/path/to/texlab.jar&quot;)</span>
 </code></pre></div>
+
+<h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
                 
                   
                     
