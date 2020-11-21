@@ -969,7 +969,8 @@ calling `remove-overlays'.")
 (defvar-local lsp--virtual-buffer-point-max nil)
 
 (cl-defgeneric lsp-execute-command (server command arguments)
-  "Ask SERVER to execute COMMAND with ARGUMENTS.")
+  "Ask SERVER to execute COMMAND with ARGUMENTS."
+  (declare (obsolete "use `make-lsp-client' with :action-handlers instead." "7.1.0")))
 
 (defun lsp-elt (sequence n)
   "Return Nth element of SEQUENCE or nil if N is out of range."
@@ -5214,8 +5215,7 @@ It will filter by KIND if non nil."
                         (lsp--workspace-client)
                         (lsp--client-server-id))))
     (condition-case nil
-        (prog1 (lsp-execute-command server-id (intern command) arguments?)
-          (lsp--warn "`lsp-execute-command' is deprecated"))
+        (lsp-execute-command server-id (intern command) arguments?)
       (cl-no-applicable-method
        (if-let ((action-handler (lsp--find-action-handler command)))
            (funcall action-handler action)
