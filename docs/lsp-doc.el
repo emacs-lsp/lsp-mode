@@ -53,22 +53,38 @@
                         (eq (cadr p) 'custom-variable)))
                  custom-group))))
 
-(defun lsp-doc--decorate-value (key value)
-  "For a given KEY return a decorated VALUE."
-  (pcase key
-    ("installation" (format "`%s`" value))
-    ("lsp-install-server" (format "Install this language server with <kbd>M-x</kbd>`lsp-install-server`<kbd>RET</kbd>`%s`<kbd>RET</kbd>." value))
-    ("installation-url" (format "\n\nFor more instructions on how to install, check [here](%s)." value))
-    (_ value)))
+(defun lsp-doc--build-manual-doc (client-name)
+  "Build manual documentation for CLIENT-NAME."
+  (let ((manual-doc-file (file-truename (concat "../manual-language-docs/lsp-" client-name ".md"))))
+    (when (file-exists-p manual-doc-file)
+        (with-temp-buffer
+          (insert-file-contents manual-doc-file)
+          (buffer-string)))))
+
+(defun lsp-doc--decorate-value (key value client-name)
+  "For a given KEY return a decorated VALUE for CLIENT-NAME."
+  (or (pcase key
+        ("installation"
+         (when value
+           (format "`%s`" value)))
+        ("lsp-install-server"
+         (when value
+           (format "This Server supports automatic install.\nInstall this language server with <kbd>M-x</kbd>`lsp-install-server`<kbd>RET</kbd>`%s`<kbd>RET</kbd>." value)))
+        ("installation-url"
+         (when value
+           (format "\n\nFor more instructions on how to install manually, check [here](%s)." value)))
+        ("manual-documentation"
+         (lsp-doc--build-manual-doc client-name))
+        (_ value))
+      ""))
 
 (defun lsp-doc--replace-placeholders (client)
   "Replace found placeholders for a CLIENT."
   (while (re-search-forward "{{\\([][:word:]\\[.-]+\\)}}" nil t)
     (let* ((key (match-string 1))
-           (value (gethash key client)))
-      (if value
-          (replace-match (lsp-doc--decorate-value key value))
-        (replace-match "")))))
+           (value (gethash key client))
+           (client-name (gethash "name" client)))
+      (replace-match (lsp-doc--decorate-value key value client-name)))))
 
 (defun lsp-doc--variables (client-name)
   "Return all custom variables for a CLIENT-NAME."

@@ -1,5 +1,4 @@
-LSP Rust
-========
+## Server note
 
 NOTE: If you are using `rustic-mode`, you have to change `rustic-lsp-server` instead of `lsp-rust-server`, since it also supports eglot as a lightweight alternative to lsp-mode.
 
@@ -31,38 +30,6 @@ To enable automatic code format on save, add this to your `init.el` (`rust-mode`
 ```
 
 ## rust-analyzer
-
-### Customization
-
-`lsp-rust-analyzer-server-command` change command to start rust-analyzer
-
-`lsp-rust-analyzer-server-display-inlay-hints` toggle inlay hints
-
-`lsp-rust-analyzer-display-chaining-hints` show inlay type hints for method chains
-
-`lsp-rust-analyzer-display-parameter-hints` show function parameter name inlay hints at the call site
-
-`lsp-rust-analyzer-max-inlay-hint-length` max inlay hint length
-
-`lsp-rust-analyzer-cargo-watch-enable` toggle cargo watch
-
-`lsp-rust-analyzer-cargo-watch-command` cargo watch command, e.g. `check` or `clippy`
-
-`lsp-rust-analyzer-cargo-watch-args` extra args passed to cargo watch command, should be specified as a vector of strings
-
-`lsp-rust-analyzer-use-client-watching` toggle client side watching
-
-`lsp-rust-analyzer-cargo-all-targets` should run cargo watch for all targets or not
-
-`lsp-rust-analyzer-exclude-globs` a list of glob patterns for Cargo package exclusion
-
-`lsp-rust-analyzer-enabled-feature-flags` a list of feature flags that should be enabled
-
-`lsp-rust-analyzer-lru-capacity` Number of syntax trees rust-analyzer keeps in memory
-
-`lsp-rust-analyzer-cargo-override-command` Advanced option, fully override the command rust-analyzer uses for checking. The command should include `--message=format=json` or similar option
-
-`lsp-rust-analyzer-inlay-face` The face to use for the Rust Analyzer inlays
 
 ### Commands
 
@@ -122,4 +89,3 @@ Get a list of possible auto import candidates with `lsp-execute-code-action`
 
 This [unmerged PR](https://github.com/emacs-lsp/lsp-mode/pull/1740) contains an example method that allows
 modifying the signature that is displayed by eldoc.
-
