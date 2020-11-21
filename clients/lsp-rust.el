@@ -635,8 +635,6 @@ them with `crate` or the crate name they refer to."
 (lsp-defun lsp-rust--analyzer-run-single ((&Command :arguments?))
   (lsp-rust-analyzer-run (lsp-seq-first arguments?)))
 
-;; `lsp-interface' is unsuitable for ShowReference destructuring, as that code
-;; action yields an array of three elements, not a map.
 (lsp-defun lsp-rust--analyzer-show-references
   ((&Command :title :arguments? [_uri _filepos references]))
   (lsp-show-xrefs (lsp--locations-to-xref-items references) nil
