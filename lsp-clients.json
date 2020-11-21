@@ -469,6 +469,14 @@
     "debugger": "Yes"
   },
   {
+    "name": "sorbet",
+    "full-name": "Ruby (Sorbet)",
+    "server-name": "sorbet",
+    "server-url": "https://github.com/sorbet/sorbet",
+    "installation-url": "https://sorbet.org/docs/adopting#step-1-install-dependencies",
+    "debugger": "Not available"
+  },
+  {
     "name": "sqls",
     "full-name": "SQL (sqls)",
     "server-name": "sqls",
