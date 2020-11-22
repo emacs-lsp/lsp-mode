@@ -128,42 +128,6 @@
        (deferred::nextc (should (equal result :timeout)))
        (deferred:sync!))))
 
-(ert-deftest lsp-test-current-buffer-mode ()
-  (lsp-with-pyls
-   (-> (lsp-test-wait
-        (eq 'initialized (lsp--workspace-status
-                          (cl-first (lsp-workspaces)))))
-       (deferred::nextc
-         (goto-char (point-min))
-         (search-forward "fn1")
-         (prog1 (deferred:earlier
-                  (lsp-def-request-async "textDocument/hover"
-                                         (lsp--text-document-position-params)
-                                         :mode 'alive)
-                  (deferred::nextc (deferred:wait 1000) :timeout))
-           (kill-buffer (current-buffer))))
-       (deferred::nextc (should (equal result :timeout)))
-       (deferred:sync!))))
-
-(ert-deftest lsp-test-current-buffer-mode ()
-  (lsp-with-pyls
-   (-> (lsp-test-wait
-        (eq 'initialized (lsp--workspace-status
-                          (cl-first (lsp-workspaces)))))
-       (deferred::nextc
-         (goto-char (point-min))
-         (search-forward "fn1")
-         (prog1 (deferred:earlier
-                  (lsp-def-request-async "textDocument/hover"
-                                         (lsp--text-document-position-params)
-                                         :mode 'alive)
-                  (deferred::nextc (deferred:wait 1000) :timeout))
-           (-> (f-join lsp-test-location "fixtures/pyls/test.py")
-               (find-buffer-visiting)
-               (kill-buffer))))
-       (deferred::nextc (should (equal result :timeout)))
-       (deferred:sync!))))
-
 (ert-deftest lsp-org-position-translation-test ()
   :tags '(org)
   (with-current-buffer (find-file-noselect "test/fixtures/org-mode/demo.org")
