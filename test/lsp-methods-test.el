@@ -305,12 +305,16 @@ private void extracted() {
 
 ;;; `lsp-rename'
 (defmacro lsp-test--simulated-input (keys &rest body)
-  "Execute body, while simulating the pressing KEYS.
+  "Execute body, while simulating the pressing of KEYS.
 KEYS is passed to `execute-kbd-macro', after being run trough
 `kbd'. Returns the result of the last BODY form."
   (declare (indent 1))
   `(let (result)
-     (execute-kbd-macro (kbd ,keys) 1 (lambda () (setq result (progn ,@body))))
+     ;; This somehow fixes the test, which works without ert-runner just fine.
+     ;; Perhaps `execute-kbd-macro' changes back to the first non-temporary
+     ;; buffer first?
+     (save-current-buffer
+       (execute-kbd-macro (kbd ,keys) 1 (lambda () (setq result (progn ,@body)))))
      result))
 
 (defun lsp-test--rename-overlays? (pos)
@@ -322,8 +326,8 @@ POS is a point in the current buffer."
 (ert-deftest lsp--read-rename ()
   "Ensure that `lsp--read-rename' works.
 If AT-POINT is nil, it throws a `user-error'.
-If a placeholder is given, it shall be the default value,
 
+If a placeholder is given, it shall be the default value,
 otherwise the bounds are to be used.
 
 Rename overlays are removed afterwards, even if the user presses
@@ -347,7 +351,8 @@ C-g."
                      ;; worked during manual testing.
                      (should (lsp-test--rename-overlays? 1))
                      (should (lsp-test--rename-overlays? 9))
-                     (should-not (lsp-test--rename-overlays? 10)))))
+                     (should-not (lsp-test--rename-overlays? 10))
+                     (keyboard-quit))))
           (lsp--read-rename '((1 . 10) . "id")))
       (quit))
     ;; but not after `lsp--read-rename'
