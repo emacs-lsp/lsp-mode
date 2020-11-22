@@ -5676,7 +5676,8 @@ language server as the initial input of a new-name prompt."
    (and lsp-rename-use-prepare (lsp-feature? "textDocument/prepareRename")
         (if-let ((response (lsp-request "textDocument/prepareRename"
                                         (lsp--text-document-position-params))))
-            (unless (lsp-get response :defaultBehavior)
+            (unless (lsp:prepare-rename-default-behavior-result-default-behavior
+                     response)
               (let* ((bounds (lsp--range-to-region
                               (if (lsp-range? response)
                                   response
