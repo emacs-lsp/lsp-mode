@@ -391,7 +391,7 @@ CALLBACK - callback for the lenses."
                             (str (propertize (string (car (last path)))
                                              'face 'avy-lead-face))
                             (old-str (overlay-get ov 'before-string))
-                            (old-str-tokens (s-split "\|" old-str))
+                            (old-str-tokens (s-split "|" old-str))
                             (old-token (seq-elt old-str-tokens index))
                             (tokens `(,@(-take index old-str-tokens)
                                       ,(-if-let ((_ prefix suffix)
