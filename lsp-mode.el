@@ -5688,7 +5688,7 @@ language server as the initial input of a new-name prompt."
                 (cons bounds placeholder)))
           ;; If prepareRename returned null, fail now and don't fall back to the
           ;; symbol at point.
-          (cl-return nil)))
+          (cl-return-from lsp--get-symbol-to-rename nil)))
    (when-let ((bounds (bounds-of-thing-at-point 'symbol)))
      (cons bounds nil))))
 
