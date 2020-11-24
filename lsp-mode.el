@@ -7311,7 +7311,9 @@ changing the value of `foo'."
               tail (cdr (cdr tail))))))
     plist))
 
-(defvar lsp-client-settings nil)
+(defvar lsp-client-settings nil
+  "For internal use, any external users please use
+  `lsp-register-custom-settings' function instead")
 
 (defun lsp--compare-setting-path (a b)
   (equal (car a) (car b)))
@@ -7322,7 +7324,10 @@ PROPS is list of triple (path value boolean?) where PATH is the path to the
 property; VALUE can be a literal value, symbol to be evaluated, or either a
 function or lambda function to be called without arguments; BOOLEAN? is an
 optional flag that should be non-nil for boolean settings, when it is nil the
-property will be ignored if the VALUE is nil."
+property will be ignored if the VALUE is nil.
+
+Example: `(lsp-register-custom-settings '((\"foo.bar.buzz.enabled\" t t)))'
+(note the double parentheses)"
   (let ((-compare-fn #'lsp--compare-setting-path))
     (setq lsp-client-settings (-uniq (append props lsp-client-settings)))))
 
