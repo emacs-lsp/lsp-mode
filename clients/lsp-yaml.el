@@ -171,18 +171,18 @@
   "Download the remote schema store at `lsp-yaml-schema-store-uri' into local cache.
 Set FORCE-DOWNLOADING to non-nil to force re-download the database."
   (interactive "P")
-  (or force-downloading
-      (file-exists-p lsp-yaml-schema-store-local-db)
-      (url-copy-file lsp-yaml-schema-store-uri lsp-yaml-schema-store-local-db)))
+  (when (or force-downloading (not (file-exists-p lsp-yaml-schema-store-local-db)))
+    (unless (file-directory-p (file-name-directory lsp-yaml-schema-store-local-db))
+      (mkdir (file-name-directory lsp-yaml-schema-store-local-db)))
+    (url-copy-file lsp-yaml-schema-store-uri lsp-yaml-schema-store-local-db force-downloading)))
 
 (defun lsp-yaml--get-supported-schemas ()
   "Get out the list of supported schemas."
   (when (and lsp-yaml-schema-store-enable
              (not lsp-yaml--schema-store-schemas-alist))
-    (progn
-      (lsp-yaml-download-schema-store-db)
-      (setq lsp-yaml--schema-store-schemas-alist
-            (alist-get 'schemas (json-read-file lsp-yaml-schema-store-local-db)))))
+    (lsp-yaml-download-schema-store-db)
+    (setq lsp-yaml--schema-store-schemas-alist
+          (alist-get 'schemas (json-read-file lsp-yaml-schema-store-local-db))))
   (seq-concatenate 'list (list lsp-yaml--built-in-kubernetes-schema) lsp-yaml--schema-store-schemas-alist))
 
 (defun lsp-yaml-set-buffer-schema (uri)
