@@ -25,10 +25,9 @@
 ;;; Code:
 
 (require 'lsp-mode)
-(require 'seq)
+(require 'dash)
 
 (declare-function assoc-delete-all "subr" (key alist &optional test))
-(declare-function seq-filter "seq" (pred sequence))
 
 (defgroup lsp-yaml nil
   "LSP support for YAML, using yaml-language-server."
@@ -226,7 +225,8 @@ Set FORCE-DOWNLOADING to non-nil to force re-download the database."
 (defun lsp-yaml--remove-glob (mapping glob)
   (let ((patterns (cdr mapping)))
     (cons (car mapping)
-          (vconcat (seq-filter (lambda (p) (not (equal p glob))) patterns)))))
+          (vconcat (-filter (lambda (p) (not (equal p glob)))
+                            (append patterns nil)) nil))))
 
 (provide 'lsp-yaml)
 ;;; lsp-yaml.el ends here
