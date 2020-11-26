@@ -265,10 +265,11 @@ source.fixAll code action."
    (lambda () (lsp-eslint-server-command))
    (lambda () (lsp-eslint-server-exists? (lsp-eslint-server-command))))
   :activation-fn (lambda (filename &optional _)
-                   (or (string-match-p (rx (one-or-more anything) "."
-                                           (or "ts" "js" "jsx" "tsx" "html" "vue"))
-                                       filename)
-                       (derived-mode-p 'js-mode 'js2-mode 'typescript-mode 'html-mode)))
+                   (when lsp-eslint-enable
+                     (or (string-match-p (rx (one-or-more anything) "."
+                                             (or "ts" "js" "jsx" "tsx" "html" "vue"))
+                                         filename)
+                         (derived-mode-p 'js-mode 'js2-mode 'typescript-mode 'html-mode))))
   :priority -1
   :completion-in-comments? t
   :add-on? t
