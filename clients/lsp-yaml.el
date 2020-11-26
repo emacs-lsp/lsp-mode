@@ -28,7 +28,6 @@
 (require 'seq)
 
 (declare-function assoc-delete-all "subr" (key alist &optional test))
-(declare-function seq-contains-p"seq" (sequence elt &optional testfn))
 (declare-function seq-filter "seq" (pred sequence))
 
 (defgroup lsp-yaml nil
@@ -201,7 +200,7 @@ Set FORCE-DOWNLOADING to non-nil to force re-download the database."
          (current-config (assoc uri lsp-yaml-schemas))
          (current-patterns (and current-config (cdr current-config))))
     (if current-config
-        (or (seq-contains-p current-patterns glob 'equal)
+        (or (member glob (append current-patterns nil))
             (setq lsp-yaml-schemas
                   (cl-acons uri
                             (vconcat (vector glob) current-patterns)
