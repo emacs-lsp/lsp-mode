@@ -51,7 +51,7 @@ to be watched for performance reasons, you can add a regexp to that variable exc
 Also you can disable the file watch feature with:
 
 ```elisp
-(setq lsp`-enable-file-watchers nil)
+(setq lsp-enable-file-watchers nil)
 ```
 
 ## Check if logging is switched off.
