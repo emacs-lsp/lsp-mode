@@ -51,8 +51,18 @@ to be watched for performance reasons, you can add a regexp to that variable exc
 Also you can disable the file watch feature with:
 
 ```elisp
-(setq lsp-enable-file-watchers nil)
+(setq lsp`-enable-file-watchers nil)
 ```
+
+## Check if logging is switched off.
+
+Make sure `lsp-log-io` is `nil`. You might have forgotten it after a debugging session, for example. It can cause a great performance hit. 
+
+```elisp
+(setq lsp-log-io nil) ; if set to true can cause a performance hit
+```
+
+Sometimes you might need to check logging for specific LSP server configuration as well, i.e. for `lsp-eslint` it is: `lsp-eslint-trace-server`. Make 
 
 ## Reporting performance problems
 
