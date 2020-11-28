@@ -62,7 +62,7 @@ Make sure `lsp-log-io` is `nil`. You might have forgotten it after a debugging s
 (setq lsp-log-io nil) ; if set to true can cause a performance hit
 ```
 
-Sometimes you might need to check logging for specific LSP server configuration as well, i.e. for `lsp-eslint` it is: `lsp-eslint-trace-server`. Make 
+Sometimes you might need to check logging for specific LSP server configuration as well, i.e. for `lsp-eslint` it is: `lsp-eslint-trace-server`.
 
 ## Reporting performance problems
 
