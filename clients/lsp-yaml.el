@@ -27,8 +27,6 @@
 (require 'lsp-mode)
 (require 'dash)
 
-(declare-function assoc-delete-all "subr" (key alist &optional test))
-
 (defgroup lsp-yaml nil
   "LSP support for YAML, using yaml-language-server."
   :group 'lsp-mode
@@ -203,9 +201,9 @@ Set FORCE-DOWNLOADING to non-nil to force re-download the database."
             (setq lsp-yaml-schemas
                   (cl-acons uri
                             (vconcat (vector glob) current-patterns)
-                            (assoc-delete-all uri
-                                       (mapcar (lambda (x) (lsp-yaml--remove-glob x glob))
-                                               lsp-yaml-schemas)))))
+                            (assq-delete-all uri
+                                             (mapcar (lambda (x) (lsp-yaml--remove-glob x glob))
+                                                     lsp-yaml-schemas)))))
       (setq lsp-yaml-schemas
             (cl-acons uri (vector glob) (mapcar (lambda (x) (lsp-yaml--remove-glob x glob))
                                                 lsp-yaml-schemas))))
