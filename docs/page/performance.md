@@ -54,6 +54,16 @@ Also you can disable the file watch feature with:
 (setq lsp-enable-file-watchers nil)
 ```
 
+## Check if logging is switched off.
+
+Make sure `lsp-log-io` is `nil`. You might have forgotten it after a debugging session, for example. It can cause a great performance hit. 
+
+```elisp
+(setq lsp-log-io nil) ; if set to true can cause a performance hit
+```
+
+Sometimes you might need to check logging for specific LSP server configuration as well, i.e. for `lsp-eslint` it is: `lsp-eslint-trace-server`.
+
 ## Reporting performance problems
 
 If you have tried all of the non-optional steps from the list and `emacs` is still not very responsive please open a PR with the following information:
