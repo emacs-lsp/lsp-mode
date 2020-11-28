@@ -5215,7 +5215,8 @@ It will filter by KIND if non nil."
                         (lsp--workspace-client)
                         (lsp--client-server-id))))
     (condition-case nil
-        (lsp-execute-command server-id (intern command) arguments?)
+        (with-no-warnings
+          (lsp-execute-command server-id (intern command) arguments?))
       (cl-no-applicable-method
        (if-let ((action-handler (lsp--find-action-handler command)))
            (funcall action-handler action)
