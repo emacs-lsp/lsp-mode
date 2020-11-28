@@ -267,7 +267,7 @@ source.fixAll code action."
   :activation-fn (lambda (filename &optional _)
                    (when lsp-eslint-enable
                      (or (string-match-p (rx (one-or-more anything) "."
-                                             (or "ts" "js" "jsx" "tsx" "html" "vue")eol)
+                                             (or "ts" "js" "jsx" "tsx" "html" "vue")eos)
                                          filename)
                          (derived-mode-p 'js-mode 'js2-mode 'typescript-mode 'html-mode))))
   :priority -1
