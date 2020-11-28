@@ -144,7 +144,9 @@ See `lsp-lens--schedule-refresh' for details."
     (define-key [mouse-1] (lsp-lens--create-interactive-command command))))
 
 (defun lsp-lens--create-interactive-command (command?)
-  "Create an interactive COMMAND? for the lens."
+  "Create an interactive COMMAND? for the lens.
+COMMAND? shall be an `&Command' (e.g. `&CodeLens' :command?) and
+mustn't be nil."
   (if (functionp (lsp:command-command command?))
       (lsp:command-command command?)
     (lambda ()
