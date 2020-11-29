@@ -344,8 +344,6 @@ CALLBACK - callback for the lenses."
   :lighter "Lens"
   (cond
    (lsp-lens-mode
-    (add-hook 'lsp-configure-hook #'lsp-lens--enable nil t)
-    (add-hook 'lsp-unconfigure-hook #'lsp-lens--disable nil t)
     (add-hook 'lsp-on-idle-hook #'lsp-lens--idle-function nil t)
     (add-hook 'lsp-on-change-hook (lambda () (lsp-lens--schedule-refresh t)) nil t)
     (add-hook 'after-save-hook (lambda () (lsp-lens--schedule-refresh t)) nil t)
@@ -353,8 +351,6 @@ CALLBACK - callback for the lenses."
     (lsp-lens-refresh t))
    (t
     (lsp-lens-hide)
-    (remove-hook 'lsp-configure-hook #'lsp-lens--enable t)
-    (remove-hook 'lsp-unconfigure-hook #'lsp-lens--disable t)
     (remove-hook 'lsp-on-idle-hook #'lsp-lens--idle-function t)
     (remove-hook 'lsp-on-change-hook (lambda () (lsp-lens--schedule-refresh nil)) t)
     (remove-hook 'after-save-hook (lambda () (lsp-lens--schedule-refresh t)) t)
