@@ -1776,6 +1776,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-diagnostics-enable-experimental" class="md-nav__link">
+    lsp-rust-analyzer-diagnostics-enable-experimental
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-diagnostics-disabled" class="md-nav__link">
+    lsp-rust-analyzer-diagnostics-disabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-cargo-load-out-dirs-from-check" class="md-nav__link">
     lsp-rust-analyzer-cargo-load-out-dirs-from-check
   </a>
@@ -1827,6 +1841,20 @@
           <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-proc-macro-enable" class="md-nav__link">
     lsp-rust-analyzer-proc-macro-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-import-merge-behaviour" class="md-nav__link">
+    lsp-rust-analyzer-import-merge-behaviour
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-import-prefix" class="md-nav__link">
+    lsp-rust-analyzer-import-prefix
   </a>
   
 </li>
@@ -2826,6 +2854,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-diagnostics-enable-experimental" class="md-nav__link">
+    lsp-rust-analyzer-diagnostics-enable-experimental
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-diagnostics-disabled" class="md-nav__link">
+    lsp-rust-analyzer-diagnostics-disabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-cargo-load-out-dirs-from-check" class="md-nav__link">
     lsp-rust-analyzer-cargo-load-out-dirs-from-check
   </a>
@@ -2877,6 +2919,20 @@
           <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-proc-macro-enable" class="md-nav__link">
     lsp-rust-analyzer-proc-macro-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-import-merge-behaviour" class="md-nav__link">
+    lsp-rust-analyzer-import-merge-behaviour
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-import-prefix" class="md-nav__link">
+    lsp-rust-analyzer-import-prefix
   </a>
   
 </li>
@@ -3229,6 +3285,14 @@ The command should include ‘--message=format=json‘ or similar option.</p>
 <p><em>Default: <code>t</code></em></p>
 <p>Whether to show native rust-analyzer diagnostics.</p>
 <hr />
+<h3 id="lsp-rust-analyzer-diagnostics-enable-experimental"><code>lsp-rust-analyzer-diagnostics-enable-experimental</code><a class="headerlink" href="#lsp-rust-analyzer-diagnostics-enable-experimental" title="Permanent link">#</a></h3>
+<p><em>Default: <code>t</code></em></p>
+<p>Whether to show native rust-analyzer diagnostics that are still experimental (might have more false positives than usual).</p>
+<hr />
+<h3 id="lsp-rust-analyzer-diagnostics-disabled"><code>lsp-rust-analyzer-diagnostics-disabled</code><a class="headerlink" href="#lsp-rust-analyzer-diagnostics-disabled" title="Permanent link">#</a></h3>
+<p><em>Default: <code>[]</code></em></p>
+<p>List of native rust-analyzer diagnostics to disable.</p>
+<hr />
 <h3 id="lsp-rust-analyzer-cargo-load-out-dirs-from-check"><code>lsp-rust-analyzer-cargo-load-out-dirs-from-check</code><a class="headerlink" href="#lsp-rust-analyzer-cargo-load-out-dirs-from-check" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
 <p>Whether to run ‘cargo check‘ on startup to get the correct value for package OUT_DIRs.</p>
@@ -3260,6 +3324,20 @@ The command should include ‘--message=format=json‘ or similar option.</p>
 <h3 id="lsp-rust-analyzer-proc-macro-enable"><code>lsp-rust-analyzer-proc-macro-enable</code><a class="headerlink" href="#lsp-rust-analyzer-proc-macro-enable" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
 <p>Enable Proc macro support; lsp-rust-analyzer-cargo-load-out-dirs-from-check must be enabled.</p>
+<hr />
+<h3 id="lsp-rust-analyzer-import-merge-behaviour"><code>lsp-rust-analyzer-import-merge-behaviour</code><a class="headerlink" href="#lsp-rust-analyzer-import-merge-behaviour" title="Permanent link">#</a></h3>
+<p><em>Default: <code>full</code></em></p>
+<p>The strategy to use when inserting new imports or merging imports. Valid values are:
+ - "none": No merging
+ - "full": Merge all layers of the import trees
+ - "last": Only merge the last layer of the import trees</p>
+<hr />
+<h3 id="lsp-rust-analyzer-import-prefix"><code>lsp-rust-analyzer-import-prefix</code><a class="headerlink" href="#lsp-rust-analyzer-import-prefix" title="Permanent link">#</a></h3>
+<p><em>Default: <code>plain</code></em></p>
+<p>The path structure for newly inserted paths to use. Valid values are:
+ - "plain": Insert import paths relative to the current module, using up to one ‘super‘ prefix if the parent module contains the requested item.
+ - "by_self": Prefix all import paths with ‘self‘ if they don’t begin with ‘self‘, ‘super‘, ‘crate‘ or a crate name
+ - "by_crate": Force import paths to be absolute by always starting them with ‘crate‘ or the crate name they refer to.</p>
 <hr />
 <h3 id="lsp-rust-analyzer-download-url"><code>lsp-rust-analyzer-download-url</code><a class="headerlink" href="#lsp-rust-analyzer-download-url" title="Permanent link">#</a></h3>
 <p><em>Default: <code>https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/rust-analyzer-linux</code></em></p>
