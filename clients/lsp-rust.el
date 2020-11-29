@@ -413,6 +413,18 @@ The command should include `--message=format=json` or similar option."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.3.2"))
 
+(defcustom lsp-rust-analyzer-diagnostics-enable-experimental t
+  "Whether to show native rust-analyzer diagnostics that are still experimental (might have more false positives than usual)."
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-rust-analyzer-diagnostics-disabled []
+  "List of native rust-analyzer diagnostics to disable."
+  :type 'lsp-string-vector
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1.0"))
+
 (defcustom lsp-rust-analyzer-cargo-load-out-dirs-from-check nil
   "Whether to run `cargo check` on startup to get the correct value for package OUT_DIRs."
   :type 'boolean
@@ -461,9 +473,31 @@ The command should include `--message=format=json` or similar option."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.3.2"))
 
+(defcustom lsp-rust-analyzer-import-merge-behaviour "full"
+  "The strategy to use when inserting new imports or merging imports. Valid values are:\n - \"none\": No merging\n - \"full\": Merge all layers of the import trees\n - \"last\": Only merge the last layer of the import trees"
+  :type '(choice
+          (const "none")
+          (const "full")
+          (const "last"))
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-rust-analyzer-import-prefix "plain"
+  "The path structure for newly inserted paths to use. Valid values are:\n - \"plain\": Insert import paths relative to the current module, using up to one `super` prefix if the parent module contains the requested item.\n - \"by_self\": Prefix all import paths with `self` if they don't begin with `self`, `super`, `crate` or a crate name\n - \"by_crate\": Force import paths to be absolute by always starting them with `crate` or the crate name they refer to."
+  :type '(choice
+          (const "plain")
+          (const "by_self")
+          (const "by_crate"))
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1.0"))
+
 (defun lsp-rust-analyzer--make-init-options ()
   "Init options for rust-analyzer"
-  `(:diagnostics (:enable ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable))
+  `(:diagnostics (:enable ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable)
+                  :enableExperimental ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable-experimental)
+                  :disabled ,lsp-rust-analyzer-diagnostics-disabled)
+    :assist (:importMergeBehaviour ,lsp-rust-analyzer-import-merge-behaviour
+             :importPrefix ,lsp-rust-analyzer-import-prefix)
     :lruCapacity ,lsp-rust-analyzer-lru-capacity
     :checkOnSave (:enable ,(lsp-json-bool lsp-rust-analyzer-cargo-watch-enable)
                   :command ,lsp-rust-analyzer-cargo-watch-command
