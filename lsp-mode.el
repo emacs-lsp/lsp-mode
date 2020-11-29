@@ -4914,7 +4914,7 @@ RENDER-ALL - nil if only the signature should be rendered."
       (progn
         (setq lsp--signature-last-buffer (current-buffer))
         (let ((lv-force-update t))
-          (lv-message message)))
+          (lv-message "%s" message)))
     (lv-delete-window)))
 
 (defun lsp--handle-signature-update (signature)
