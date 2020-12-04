@@ -210,14 +210,13 @@ Then return either the default args or the modified args"
   (if
        ;; lsp-client-clangd-args might already lists a
        ;; "--compile-commands-dir=build/" and will fail if we pass another one
-       ;; trust the user - if it's already set, don't mess around
+       ;; trust the user - if compile-commands-dir is already set, don't mess around
       (cl-find "--compile-commands-dir" lsp-clients-clangd-args)
       (progn
-        (lsp--info "compilation_commands_dir set in clangd-args")
+        (lsp--info "compile-commands-dir set in clangd-args")
         lsp-clients-clangd-args)
     (if-let (found-dir (lsp-clangd-find-compile-commands-dir))
-        ;; TODO expensive to create a list from 1 element - how to append atom to list
-        (append lsp-clients-clangd-args (list (concat "--compile-commands-dir=" found-dir)))
+        (cons (concat "--compile-commands-dir=" found-dir) lsp-clients-clangd-args)
       lsp-clients-clangd-args)))
 
 
