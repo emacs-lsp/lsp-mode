@@ -148,6 +148,14 @@
     "debugger": "Yes"
   },
   {
+    "name": "galaxyls",
+    "full-name": "Galaxy Language Server",
+    "server-name": "galaxyls",
+    "server-url": "https://github.com/galaxyproject/galaxy-language-server",
+    "installation": "pip install galaxy-language-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "gdscript",
     "full-name": "GDScript",
     "server-name": "godot",

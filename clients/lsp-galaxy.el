@@ -74,13 +74,13 @@
                            (format "--host %s --port %d"
                                    lsp-galaxy-language-server-host
                                    lsp-galaxy-language-server-port))))
-  :major-modes '(nxml-mode galaxyxml-mode)
+  :major-modes '(planemo-mode)
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--set-configuration
                        (lsp-configuration-section "galaxy"))))
   :priority -1
-  :server-id 'galaxy-language-server))
+  :server-id 'galaxyls))
 
 (provide 'lsp-galaxy)
 ;;; lsp-galaxy.el ends here

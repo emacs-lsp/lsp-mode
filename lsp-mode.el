@@ -893,6 +893,7 @@ Changes take effect only when a new session is started."
                                         (racket-mode . "racket")
                                         (nix-mode . "nix")
                                         (prolog-mode . "prolog")
+                                        (planemo-mode . "galaxyls")
                                         (vala-mode . "vala"))
   "Language id configuration.")
 
