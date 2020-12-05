@@ -5952,7 +5952,9 @@ PARAMS are the `workspace/configuration' request params"
                        (path-parts-len (length path-parts)))
                  (cond
                   ((<= path-parts-len 1)
-                   (apply 'ht-get* `(,(lsp-configuration-section section?) ,@path-parts)))
+                   (ht-get (lsp-configuration-section section?)
+                           (car-safe path-parts)
+                           (ht-create)))
                   ((> path-parts-len 1)
                    (when-let ((section (lsp-configuration-section path-without-last))
                               (keys path-parts))
