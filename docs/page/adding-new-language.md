@@ -3,7 +3,7 @@
 ## Registering server
 
 Here it is the minimal configuration that is needed for new language
-server registration. Refer to the documentation of `lsp-client.el` for
+server registration. Refer to the documentation of `lsp-mode.el` for
 the additional settings supported on registration time.
 `lsp-language-id-configuration` must be updated to contain the
 corresponding mode -\> language id - in this case `(python-mode .
