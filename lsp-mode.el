@@ -6950,10 +6950,11 @@ typescript-language-server requires both the server and the
 typescript compiler. If you've installed them in a team shared
 read-only location, you can instruct lsp-mode to use them via
 
-  (eval-after-load 'lsp-clients
-    '(progn
-       (lsp-dependency 'typescript-language-server `(:system ,tls-exe))
-       (lsp-dependency 'typescript `(:system ,ts-js))))
+ (eval-after-load 'lsp-mode
+   '(progn
+      (require 'lsp-javascript)
+      (lsp-dependency 'typescript-language-server `(:system ,tls-exe))
+      (lsp-dependency 'typescript `(:system ,ts-js))))
 
 where tls-exe is the absolute path to the typescript-language-server
 executable and ts-js is the absolute path to the typescript compiler
