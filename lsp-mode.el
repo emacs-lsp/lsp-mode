@@ -1181,11 +1181,15 @@ Deprecated. Use `lsp-repeatable-vector' instead. "
 
 (defun lsp--info (format &rest args)
   "Display lsp info message with FORMAT with ARGS."
-  (message "%s :: %s" (propertize "LSP" 'face 'success) (apply #'format format args)))
+  ;; Display the message when the echo area isn't in use. Consider the case of find-file active and
+  ;; then lsp wants to display a message, in this case lsp shouldn't overwrite the find-file prompt.
+  (when (= (minibuffer-depth) 0)
+    (message "%s :: %s" (propertize "LSP" 'face 'success) (apply #'format format args))))
 
 (defun lsp--warn (format &rest args)
   "Display lsp warn message with FORMAT with ARGS."
-  (message "%s :: %s" (propertize "LSP" 'face 'warning) (apply #'format format args)))
+  (when (= (minibuffer-depth) 0)
+    (message "%s :: %s" (propertize "LSP" 'face 'warning) (apply #'format format args))))
 
 (defun lsp--error (format &rest args)
   "Display lsp error message with FORMAT with ARGS."
