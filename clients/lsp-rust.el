@@ -491,6 +491,12 @@ The command should include `--message=format=json` or similar option."
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1.0"))
 
+(defcustom lsp-rust-analyzer-rust-src-path nil
+  "The location of the rust-src component or checkout of the rust standard library source. The location should should contain a `core' directory."
+  :type 'string
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1.0"))
+
 (defun lsp-rust-analyzer--make-init-options ()
   "Init options for rust-analyzer"
   `(:diagnostics (:enable ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable)
@@ -629,6 +635,8 @@ The command should include `--message=format=json` or similar option."
                             "rust-analyzer")
                        ,@(cl-rest lsp-rust-analyzer-server-args))))
   :major-modes '(rust-mode rustic-mode)
+  :environment-fn (lambda ()
+                    '(("RUST_SRC_PATH" . lsp-rust-analyzer-rust-src-path)))
   :priority (if (eq lsp-rust-server 'rust-analyzer) 1 -1)
   :initialization-options 'lsp-rust-analyzer--make-init-options
   :notification-handlers (ht<-alist lsp-rust-notification-handlers)
