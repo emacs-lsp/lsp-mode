@@ -90,7 +90,7 @@
 (defun parse-rf-language-server-include-path-regex (vector)
   "Creates regexp to select files from workspace directory."
   (let ((globs (if (eq vector [])
-                        ["*.robot" "*.resource"]
+                        ["**/*.robot" "**/*.resource"]
                       vector)))
     (parse-rf-language-server-globs-to-regex globs)))
 
