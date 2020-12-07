@@ -87,7 +87,7 @@
   "Convert a VECTOR of globs to a regex."
   (--> (mapcan #'lsp-glob-to-regexps vector)
        (s-join "\\|" it)
-       (concat "\\(" it "\\)")))
+       (concat "\\(?:" it "\\)")))
 
 (defun parse-rf-language-server-include-path-regex (vector)
   "Creates regexp to select files from workspace directory."
