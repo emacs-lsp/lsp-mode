@@ -44,7 +44,7 @@
   (defvar lsp-use-plists nil))
 
 (defmacro lsp-interface (&rest interfaces)
-  "Generate LSP bindings from INTERFACES triplet.
+  "Generate LSP bindings from INTERFACES tuples.
 
 Example usage with `dash`.
 
@@ -52,9 +52,12 @@ Example usage with `dash`.
   :failure-reason?) (ht (\"failureReason\" \"...\"))]
   failure-reason?)
 
-\(fn (INTERFACE-NAME-1 REQUIRED-FIELDS-1 OPTIONAL-FIELDS-1) (INTERFACE-NAME-2 REQUIRED-FIELDS-2 OPTIONAL-FIELDS-2) ...)"
+SEMI-OPTIONAL-FIELDS behave like OPTIONAL-FIELDS, but their
+accessors don't end in a question mark.
+
+\(fn (INTERFACE-NAME REQUIRED-FIELDS OPTIONAL-FIELDS &optional SEMI-OPTIONAL-FIELDS)...)"
   (->> interfaces
-       (-map (-lambda ((interface required optional))
+       (-map (-lambda ((interface required optional semi-required))
                (let ((params (nconc
                               (-map (lambda (param-name)
                                       (cons
@@ -64,7 +67,7 @@ Example usage with `dash`.
                               (-map (lambda (param-name)
                                       (cons (intern (concat ":" (s-dashed-words (symbol-name param-name))))
                                             param-name))
-                                    required))))
+                                    (append required semi-required)))))
                  (cl-list*
                   `(defun ,(intern (format "dash-expand:&%s" interface)) (key source)
                      (unless (or (member key ',(-map #'cl-first params))
@@ -544,7 +547,7 @@ See `-let' for a description of the destructuring mechanism."
  (ColorPresentationParams (:color :textDocument :range) nil)
  (ColoringParams (:uri :infos) nil)
  (ColoringStyle nil nil)
- (CompletionList (:items :isIncomplete) nil)
+ (CompletionList (:items) nil (:isIncomplete))
  (CompletionParams (:textDocument :position) (:context :uri))
  (CompletionRegistrationOptions nil (:documentSelector :resolveProvider :triggerCharacters))
  (ConfigurationParams (:items) nil)
