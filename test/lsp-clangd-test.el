@@ -120,7 +120,7 @@ and starts lsp. After the test BODY runs - tidy up."
 
     (deferred::nextc
       (should (string= (buffer-name) "main.cpp"))
-      (lsp-clangd-to-other)
+      (lsp-clangd-find-other-file)
       (should (string= (buffer-name) "main.h"))
       (lsp)
       ;; give enough time for clangd to respond for main.h
@@ -128,7 +128,7 @@ and starts lsp. After the test BODY runs - tidy up."
       ;; The connected server(s) does not support
       ;; method textDocument/switchSourceHeader.
       (sleep-for 1)
-      (lsp-clangd-to-other)
+      (lsp-clangd-find-other-file)
 
       (should (string= (buffer-name) "main.cpp")))
 
@@ -147,7 +147,7 @@ and starts lsp. After the test BODY runs - tidy up."
       ;; after opening a new buffer - need to make sure we are in the same lsp session
       (lsp)
       (sleep-for 1)
-      (lsp-clangd-to-other)
+      (lsp-clangd-find-other-file)
 
       (should (string= (buffer-name) "individual_file.cpp")))
 

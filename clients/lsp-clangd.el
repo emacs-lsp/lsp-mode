@@ -242,8 +242,8 @@ returned to avoid that the echo area grows uncomfortably."
          (lsp-cpp-flycheck-clang-tidy-error-explainer e))
         (t (flycheck-error-message e))))
 
-(defun lsp-clangd-to-other (&optional arg)
-  "Open the corresponding header/source file.
+(defun lsp-clangd-find-other-file (&optional arg)
+  "Switch between the corresponding C/C++ header and source file.
 
 If called with ARG universal argument, the file will open in the other window."
   (interactive "P")
