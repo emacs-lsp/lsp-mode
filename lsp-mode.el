@@ -4835,6 +4835,17 @@ When language is nil render as markup if `markdown-mode' is loaded."
                  (format "%s (%s)" element count))
           (push element elements))))))
 
+(defface lsp-preferred-code-action-face '((t :underline t))
+  "Face used to highlight preferred code actions.
+Used by `lsp-execute-code-action' and
+`lsp-execute-code-action-by-kind' if they have to prompt for an
+action.")
+
+(lsp-defun lsp--code-action-title ((&CodeAction :title :is-preferred?))
+  (if is-preferred?
+      (propertize title 'face 'lsp-preferred-code-action-face)
+    title))
+
 (defun lsp--select-action (all-actions)
   "Select an action to execute from ALL-ACTIONS.
 ALL-ACTIONS is a list of `&CodeAction'. `:disabled?' actions are
@@ -4848,7 +4859,7 @@ excluded from display."
           (lsp--completing-read "Select code action: "
                                 actions
                                 (-compose (lsp--create-unique-string-fn)
-                                          #'lsp:code-action-title)
+                                          #'lsp--code-action-title)
                                 nil t))))))
 
 (defun lsp--workspace-server-id (workspace)
