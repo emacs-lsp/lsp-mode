@@ -220,7 +220,7 @@
          (nested-dir (f-join temp-directory "nested"))
          (nested-matching-file (f-join nested-dir "file.ext"))
          (create-lockfiles nil)
-         (lsp-file-watch-ignored '("nested"))
+         (lsp-file-watch-ignored-directories '("nested"))
          events watch)
 
     (mkdir nested-dir)
