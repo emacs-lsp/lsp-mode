@@ -3245,6 +3245,7 @@ disappearing, unset all the variables related to it."
                       (rename . ((dynamicRegistration . t) (prepareSupport . t)))
                       (codeAction . ((dynamicRegistration . t)
                                      (isPreferredSupport . t)
+                                     (disabledSupport . t)
                                      (codeActionLiteralSupport . ((codeActionKind . ((valueSet . [""
                                                                                                   "quickfix"
                                                                                                   "refactor"
@@ -4834,18 +4835,21 @@ When language is nil render as markup if `markdown-mode' is loaded."
                  (format "%s (%s)" element count))
           (push element elements))))))
 
-(defun lsp--select-action (actions)
-  "Select an action to execute from ACTIONS."
-  (cond
-   ((seq-empty-p actions) (signal 'lsp-no-code-actions nil))
-   ((and (eq (seq-length actions) 1) lsp-auto-execute-action)
-    (lsp-seq-first actions))
-   (t (let ((completion-ignore-case t))
-        (lsp--completing-read "Select code action: "
-                              (seq-into actions 'list)
-                              (-compose (lsp--create-unique-string-fn)
-                                        #'lsp:code-action-title)
-                              nil t)))))
+(defun lsp--select-action (all-actions)
+  "Select an action to execute from ALL-ACTIONS.
+ALL-ACTIONS is a list of `&CodeAction'. `:disabled?' actions are
+excluded from display."
+  (let ((actions (seq-filter #'lsp:code-action-disabled? all-actions)))
+    (cond
+     ((null actions) (signal 'lsp-no-code-actions nil))
+     ((and (null (cdr actions)) lsp-auto-execute-action)
+      (car actions))
+     (t (let ((completion-ignore-case t))
+          (lsp--completing-read "Select code action: "
+                                actions
+                                (-compose (lsp--create-unique-string-fn)
+                                          #'lsp:code-action-title)
+                                nil t))))))
 
 (defun lsp--workspace-server-id (workspace)
   "Return the server ID of WORKSPACE."
