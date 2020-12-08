@@ -364,7 +364,8 @@ CALLBACK - callback for the lenses."
     (remove-hook 'lsp-on-change-hook #'lsp-lens--schedule-refresh-modified t)
     (remove-hook 'after-save-hook #'lsp-lens--schedule-refresh t)
     (remove-hook 'before-revert-hook #'lsp-lens-hide t)
-    (cancel-timer lsp-lens--refresh-timer)
+    (when lsp-lens--refresh-timer
+      (cancel-timer lsp-lens--refresh-timer))
     (setq lsp-lens--refresh-timer nil)
     (lsp-lens-hide)
     (setq lsp-lens--last-count nil)
