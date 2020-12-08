@@ -4841,16 +4841,31 @@ Used by `lsp-execute-code-action' and
 `lsp-execute-code-action-by-kind' if they have to prompt for an
 action.")
 
-(lsp-defun lsp--code-action-title ((&CodeAction :title :is-preferred?))
-  (if is-preferred?
-      (propertize title 'face 'lsp-preferred-code-action-face)
-    title))
+(defface lsp-disabled-code-action-face '((t :inherit shadow))
+  "Face used to highlight disabled code actions.
+See `lsp-preferred-code-action-face' for details.")
 
-(defun lsp--select-action (all-actions)
-  "Select an action to execute from ALL-ACTIONS.
-ALL-ACTIONS is a list of `&CodeAction'. `:disabled?' actions are
-excluded from display."
-  (let ((actions (seq-filter #'lsp:code-action-disabled? all-actions)))
+(defface lsp-disabled-code-action-reason-face '((t :inherit lsp-details-face))
+  "Face used to highlight the reason a code action is disabled.
+Shown after the code action in `lsp-execute-code-action',
+... (see `lsp-preferred-code-action-face').")
+
+(lsp-defun lsp--code-action-title ((action &as &CodeAction :title :is-preferred? :disabled?))
+  ;; It would be strange for a code action to be both preferred and disabled, so
+  ;; `cond' is probably good enough.
+  (cond (is-preferred?
+         (propertize title 'face 'lsp-preferred-code-action-face))
+        (disabled?
+         (concat
+          (propertize title 'face 'lsp-disabled-code-action-face)
+          " "
+          (propertize (lsp:code-action-disabled-reason disabled?)
+                      'face 'lsp-disabled-code-action-reason-face)))
+        (t title)))
+
+(defun lsp--select-action (actions)
+  "Select an action to execute from ACTIONS."
+  (let ((actions (seq-into actions 'list)))
     (cond
      ((null actions) (signal 'lsp-no-code-actions nil))
      ((and (null (cdr actions)) lsp-auto-execute-action)
@@ -4861,6 +4876,12 @@ excluded from display."
                                 (-compose (lsp--create-unique-string-fn)
                                           #'lsp--code-action-title)
                                 nil t))))))
+
+(defun lsp--select-enabled-action (actions)
+  "Select an action to execute from ACTIONS.
+Like `lsp--select-action', except that disabled code actions are
+not shown."
+  (lsp--select-action (seq-remove #'lsp:code-action-disabled? actions)))
 
 (defun lsp--workspace-server-id (workspace)
   "Return the server ID of WORKSPACE."
@@ -5236,7 +5257,7 @@ It will filter by KIND if non nil."
   (if-let ((action (->> (lsp-get-or-calculate-code-actions command-kind)
                         (-filter (-lambda ((&CodeAction :kind?))
                                    (and kind? (equal command-kind kind?))))
-                        lsp--select-action)))
+                        lsp--select-enabled-action)))
       (lsp-execute-code-action action)
     (signal 'lsp-no-code-actions '(command-kind))))
 
@@ -5257,11 +5278,27 @@ It will filter by KIND if non nil."
            (funcall action-handler action)
          (lsp-send-execute-command command arguments?))))))
 
+(defun lsp--select-action-enabled-or-die (actions)
+  "Prompt the user to select an action from ACTIONS.
+Even disabled code actions are shown. If such an action is
+chosen, `user-error'."
+  (let ((action (lsp--select-action actions)))
+    (-when-let ((&CodeAction :disabled?) action)
+      (user-error "%s is disabled: %s" (lsp:code-action-title action)
+                  (lsp:code-action-disabled-reason disabled?)))
+    action))
+
 (lsp-defun lsp-execute-code-action ((action &as &CodeAction :command? :edit?))
   "Execute code action ACTION.
-If ACTION is not set it will be selected from `lsp-code-actions-at-point'.
-Request codeAction/resolve for more info if server supports."
-  (interactive (list (lsp--select-action (lsp-code-actions-at-point))))
+Interactively, ask for a code action. With the prefix argument,
+filter those that are not disabled. Request codeAction/resolve
+for more info if server supports."
+  (interactive
+   (list
+    (funcall (if current-prefix-arg
+                 #'lsp--select-action-enabled-or-die
+               #'lsp--select-enabled-action)
+             (lsp-code-actions-at-point))))
   (if (and (lsp-feature? "codeAction/resolve")
            (not command?)
            (not edit?))
