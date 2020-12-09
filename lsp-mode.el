@@ -2545,9 +2545,27 @@ an Elisp regexp."
            glob-segments)
           current-regexp)))))
 
-(defun lsp-glob-to-regexp (pattern)
-  "Convert a PATTERN from LSP's glob syntax to an Elisp regexp."
-  (concat "\\`" (lsp--glob-to-regexp (string-trim pattern)) "\\'"))
+;; See https://github.com/emacs-lsp/lsp-mode/issues/2365
+(defun lsp-glob-unbrace-at-top-level (glob-pattern)
+  "If GLOB-PATTERN does not start with a brace, return a singleton list containing GLOB-PATTERN.
+
+If GLOB-PATTERN does start with a brace, return a list of the
+comma-separated globs within the top-level braces."
+  (if (not (string-prefix-p "{" glob-pattern))
+      (list glob-pattern)
+    (lsp-split-glob-pattern (substring glob-pattern 1 -1) ?\,)))
+
+(defun lsp-glob-convert-to-wrapped-regexp (glob-pattern)
+  "Convert GLOB-PATTERN to a regexp wrapped with the beginning-
+and end-of-string meta-characters."
+  (concat "\\`" (lsp--glob-to-regexp (string-trim glob-pattern)) "\\'"))
+
+(defun lsp-glob-to-regexps (glob-pattern)
+  "Convert a GLOB-PATTERN to a list of Elisp regexps."
+  (let* ((trimmed-pattern (string-trim glob-pattern))
+         (top-level-unbraced-patterns (lsp-glob-unbrace-at-top-level trimmed-pattern)))
+    (seq-map #'lsp-glob-convert-to-wrapped-regexp
+             top-level-unbraced-patterns)))
 
 
 
@@ -3314,6 +3332,7 @@ disappearing, unset all the variables related to it."
 (defun lsp--file-process-event (session root-folder event)
   "Process file event."
   (let* ((changed-file (cl-third event))
+         (rel-changed-file (f-relative changed-file root-folder))
          (event-numeric-kind (alist-get (cl-second event) lsp--file-change-type))
          (bit-position (1- event-numeric-kind))
          (watch-bit (ash 1 bit-position)))
@@ -3338,9 +3357,11 @@ disappearing, unset all the variables related to it."
                             (-lambda ((&FileSystemWatcher :glob-pattern :kind?))
                               (when (or (null kind?)
                                         (> (logand kind? watch-bit) 0))
-                                (-let [glob-regex (lsp-glob-to-regexp glob-pattern)]
-                                  (or (string-match glob-regex changed-file)
-                                      (string-match glob-regex (f-relative changed-file root-folder))))))))))))
+                                (-let [regexes (lsp-glob-to-regexps glob-pattern)]
+                                  (-any? (lambda (re)
+                                           (or (string-match re changed-file)
+                                               (string-match re rel-changed-file)))
+                                         regexes))))))))))
                  (with-lsp-workspace workspace
                    (lsp-notify
                     "workspace/didChangeWatchedFiles"

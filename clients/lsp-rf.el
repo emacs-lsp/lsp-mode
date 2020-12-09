@@ -84,8 +84,10 @@
   (mapcar 'expand-file-name lsp-rf-language-server-start-command))
 
 (defun parse-rf-language-server-globs-to-regex (vector)
-  "Converts `vector' with globs to regex."
-  (concat "\\(" (mapconcat #'lsp-glob-to-regexp vector "\\|") "\\)"))
+  "Convert a VECTOR of globs to a regex."
+  (--> (mapcan #'lsp-glob-to-regexps vector)
+       (s-join "\\|" it)
+       (concat "\\(?:" it "\\)")))
 
 (defun parse-rf-language-server-include-path-regex (vector)
   "Creates regexp to select files from workspace directory."

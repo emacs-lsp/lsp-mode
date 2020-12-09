@@ -142,59 +142,65 @@
     (should (equal expected-events events))
     (lsp-kill-watch watch)))
 
+(ert-deftest lsp-file-watch--glob-split ()
+  (should (equal (lsp-glob-unbrace-at-top-level "{/home/alice/project/**/*.hs,/home/alice/project/stack.yaml}")
+                 '("/home/alice/project/**/*.hs" "/home/alice/project/stack.yaml")))
+  (should (equal (lsp-glob-unbrace-at-top-level "{/home/alice/project/**/*.{ml,eliom},/home/alice/project/dune.project}")
+                 '("/home/alice/project/**/*.{ml,eliom}" "/home/alice/project/dune.project"))))
+
 (ert-deftest lsp-file-watch--glob-pattern ()
-  (should (string-match (lsp-glob-to-regexp "pom.xml") "pom.xml"))
-  (should (string-match (lsp-glob-to-regexp "**/pom.xml") "/pom.xml"))
-  (should (string-match (lsp-glob-to-regexp "**/*.xml") "data/pom.xml"))
-  (should (string-match (lsp-glob-to-regexp "**/*.xml") "pom.xml"))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "pom.xml") "pom.xml"))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/pom.xml") "/pom.xml"))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/*.xml") "data/pom.xml"))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/*.xml") "pom.xml"))
 
   ;; Some VSCode tests
   ;; (https://github.com/Microsoft/vscode/blob/466da1c9013c624140f6d1473b23a870abc82d44/src/vs/base/test/node/glob.test.ts)
-  (should (string-match (lsp-glob-to-regexp "**/.*") ".git"))
-  (should (string-match (lsp-glob-to-regexp "**/.*") ".hidden.txt"))
-  (should (not (string-match (lsp-glob-to-regexp "**/.*") "git")))
-  (should (not (string-match (lsp-glob-to-regexp "**/.*") "hidden.txt")))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/.*") ".git"))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/.*") ".hidden.txt"))
+  (should (not (string-match (lsp-glob-convert-to-wrapped-regexp "**/.*") "git")))
+  (should (not (string-match (lsp-glob-convert-to-wrapped-regexp "**/.*") "hidden.txt")))
 
-  (should (string-match (lsp-glob-to-regexp "**/.*") "path/.git"))
-  (should (string-match (lsp-glob-to-regexp "**/.*") "path/.hidden.txt"))
-  (should (not (string-match (lsp-glob-to-regexp "**/.*") "path/git")))
-  (should (not (string-match (lsp-glob-to-regexp "**/.*") "pat.h/hidden.txt")))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/.*") "path/.git"))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/.*") "path/.hidden.txt"))
+  (should (not (string-match (lsp-glob-convert-to-wrapped-regexp "**/.*") "path/git")))
+  (should (not (string-match (lsp-glob-convert-to-wrapped-regexp "**/.*") "pat.h/hidden.txt")))
 
-  (should (string-match (lsp-glob-to-regexp "**/node_modules/**") "node_modules"))
-  (should (string-match (lsp-glob-to-regexp "**/node_modules/**") "node_modules/"))
-  (should (not (string-match (lsp-glob-to-regexp "**/node_modules/**") "node/_modules/")))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/node_modules/**") "node_modules"))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "**/node_modules/**") "node_modules/"))
+  (should (not (string-match (lsp-glob-convert-to-wrapped-regexp "**/node_modules/**") "node/_modules/")))
 
-  (should (string-match (lsp-glob-to-regexp "?") "h"))
-  (should (not (string-match (lsp-glob-to-regexp "?") "hi")))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "?") "h"))
+  (should (not (string-match (lsp-glob-convert-to-wrapped-regexp "?") "hi")))
 
-  (should (string-match (lsp-glob-to-regexp "foo.[[]") "foo.["))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "foo.[[]") "foo.["))
 
-  (should (string-match (lsp-glob-to-regexp "{foo,bar}/**") "foo"))
-  (should (string-match (lsp-glob-to-regexp "{foo,bar}/**") "bar"))
-  (should (string-match (lsp-glob-to-regexp "{foo,bar}/**") "foo/test"))
-  (should (string-match (lsp-glob-to-regexp "{foo,bar}/**") "bar/test"))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "{foo,bar}/**") "foo"))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "{foo,bar}/**") "bar"))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "{foo,bar}/**") "foo/test"))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "{foo,bar}/**") "bar/test"))
 
-  (should (string-match (lsp-glob-to-regexp "{**/*.d.ts,**/*.js}") "/testing/foo.js"))
-  (should (string-match (lsp-glob-to-regexp "{**/*.d.ts,**/*.js}") "testing/foo.d.ts"))
-  (should (string-match (lsp-glob-to-regexp "{**/*.d.ts,**/*.js,foo.[0-9]}") "foo.5"))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "{**/*.d.ts,**/*.js}") "/testing/foo.js"))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "{**/*.d.ts,**/*.js}") "testing/foo.d.ts"))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "{**/*.d.ts,**/*.js,foo.[0-9]}") "foo.5"))
 
-  (should (string-match (lsp-glob-to-regexp "some/**/*") "some/foo.js"))
-  (should (string-match (lsp-glob-to-regexp "some/**/*") "some/folder/foo.js"))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "some/**/*") "some/foo.js"))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "some/**/*") "some/folder/foo.js"))
 
-  (should (not (string-match (lsp-glob-to-regexp "some/**/*") "something/foo.js")))
-  (should (not (string-match (lsp-glob-to-regexp "some/**/*") "something/folder/foo.js")))
+  (should (not (string-match (lsp-glob-convert-to-wrapped-regexp "some/**/*") "something/foo.js")))
+  (should (not (string-match (lsp-glob-convert-to-wrapped-regexp "some/**/*") "something/folder/foo.js")))
 
-  (should (not (string-match (lsp-glob-to-regexp "{**/*.d.ts,**/*.js,foo.[0-9]}") "foo.f")))
-  (should (string-match (lsp-glob-to-regexp "prefix/{**/*.d.ts,**/*.js,foo.[0-9]}") "prefix/foo.8"))
-  (should (not (string-match (lsp-glob-to-regexp "prefix/{**/*.d.ts,**/*.js,foo.[0-9]}") "prefix/foo.f")))
+  (should (not (string-match (lsp-glob-convert-to-wrapped-regexp "{**/*.d.ts,**/*.js,foo.[0-9]}") "foo.f")))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "prefix/{**/*.d.ts,**/*.js,foo.[0-9]}") "prefix/foo.8"))
+  (should (not (string-match (lsp-glob-convert-to-wrapped-regexp "prefix/{**/*.d.ts,**/*.js,foo.[0-9]}") "prefix/foo.f")))
 
-  (should (not (string-match (lsp-glob-to-regexp "foo.[!0-9]") "foo.5")))
-  (should (not (string-match (lsp-glob-to-regexp "foo.[!0-9]") "foo.8")))
-  (should (string-match (lsp-glob-to-regexp "foo.[!0-9]") "foo.f"))
+  (should (not (string-match (lsp-glob-convert-to-wrapped-regexp "foo.[!0-9]") "foo.5")))
+  (should (not (string-match (lsp-glob-convert-to-wrapped-regexp "foo.[!0-9]") "foo.8")))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "foo.[!0-9]") "foo.f"))
 
-  (should (not (string-match (lsp-glob-to-regexp "foo.[^0-9]") "foo.5")))
-  (should (not (string-match (lsp-glob-to-regexp "foo.[^0-9]") "foo.8")))
-  (should (string-match (lsp-glob-to-regexp "foo.[^0-9]") "foo.f"))
+  (should (not (string-match (lsp-glob-convert-to-wrapped-regexp "foo.[^0-9]") "foo.5")))
+  (should (not (string-match (lsp-glob-convert-to-wrapped-regexp "foo.[^0-9]") "foo.8")))
+  (should (string-match (lsp-glob-convert-to-wrapped-regexp "foo.[^0-9]") "foo.f"))
 
   ;; ???: This should properly fail since path-separators should be
   ;; ignored inside brackets, but here (and in VSCode) it fails for a
@@ -206,7 +212,7 @@
   ;; way of handling this to recognize that because we're unbalanced
   ;; at the end, that everything should be treated as a literal. But
   ;; after experimenting with zsh, this isn't what they use.
-  (should (not (string-match (lsp-glob-to-regexp "foo[/]bar") "foo/bar"))))
+  (should (not (string-match (lsp-glob-convert-to-wrapped-regexp "foo[/]bar") "foo/bar"))))
 
 (ert-deftest lsp-file-watch--ignore-list ()
   :tags '(no-win)
