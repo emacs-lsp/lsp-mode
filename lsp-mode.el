@@ -6732,7 +6732,7 @@ returns the command to execute."
   (when lsp-modeline-workspace-status-enable
     (add-hook 'lsp-configure-hook 'lsp-modeline-workspace-status-mode))
   (when lsp-lens-enable
-    (add-hook 'lsp-configure-hook 'lsp-lens-mode))
+    (add-hook 'lsp-configure-hook 'lsp-lens--enable))
 
   ;; yas-snippet config
   (setq-local yas-inhibit-overlay-modification-protection t))

@@ -125,9 +125,10 @@ Results are meaningful only if FROM and TO are on the same line."
   "Handler for `after-save-hook' for lens mode."
   (lsp-lens--schedule-refresh t))
 
-(defun lsp-lens--schedule-refresh (buffer-modified?)
+(defun lsp-lens--schedule-refresh (&optional buffer-modified?)
   "Call each of the backend.
-BUFFER-MODIFIED? determines whether the buffer is modified or not."
+BUFFER-MODIFIED? determines whether the buffer was modified or
+not."
   (-some-> lsp-lens--refresh-timer cancel-timer)
 
   (setq lsp-lens--page (cons (window-start) (window-end)))
@@ -137,6 +138,11 @@ BUFFER-MODIFIED? determines whether the buffer is modified or not."
                         #'lsp-lens-refresh
                         (or lsp-lens--modified? buffer-modified?)
                         (current-buffer))))
+
+(defun lsp-lens--schedule-refresh-modified ()
+  "Schedule a lens refresh due to a buffer-modification.
+See `lsp-lens--schedule-refresh' for details."
+  (lsp-lens--schedule-refresh t))
 
 (defun lsp-lens--keymap (command)
   "Build the lens keymap for COMMAND."
@@ -344,21 +350,20 @@ CALLBACK - callback for the lenses."
   :lighter "Lens"
   (cond
    (lsp-lens-mode
-    (add-hook 'lsp-configure-hook #'lsp-lens--enable nil t)
-    (add-hook 'lsp-unconfigure-hook #'lsp-lens--disable nil t)
     (add-hook 'lsp-on-idle-hook #'lsp-lens--idle-function nil t)
-    (add-hook 'lsp-on-change-hook (lambda () (lsp-lens--schedule-refresh t)) nil t)
-    (add-hook 'after-save-hook (lambda () (lsp-lens--schedule-refresh t)) nil t)
+    (add-hook 'lsp-on-change-hook #'lsp-lens--schedule-refresh-modified nil t)
+    (add-hook 'after-save-hook #'lsp-lens--schedule-refresh nil t)
     (add-hook 'before-revert-hook #'lsp-lens-hide nil t)
     (lsp-lens-refresh t))
    (t
-    (lsp-lens-hide)
-    (remove-hook 'lsp-configure-hook #'lsp-lens--enable t)
-    (remove-hook 'lsp-unconfigure-hook #'lsp-lens--disable t)
     (remove-hook 'lsp-on-idle-hook #'lsp-lens--idle-function t)
-    (remove-hook 'lsp-on-change-hook (lambda () (lsp-lens--schedule-refresh nil)) t)
-    (remove-hook 'after-save-hook (lambda () (lsp-lens--schedule-refresh t)) t)
+    (remove-hook 'lsp-on-change-hook #'lsp-lens--schedule-refresh-modified t)
+    (remove-hook 'after-save-hook #'lsp-lens--schedule-refresh t)
     (remove-hook 'before-revert-hook #'lsp-lens-hide t)
+    (when lsp-lens--refresh-timer
+      (cancel-timer lsp-lens--refresh-timer))
+    (setq lsp-lens--refresh-timer nil)
+    (lsp-lens-hide)
     (setq lsp-lens--last-count nil)
     (setq lsp-lens--backend-cache nil))))
 
