@@ -6247,7 +6247,7 @@ representation to point representation."
   "`lsp-symbol-kinds', but only used by `imenu'.
 A new variable is needed, as it is `imenu' convention to use
 pluralized categories, which `lsp-symbol-kinds' doesn't. If the
-the non-pluralized names are preferred, this can be set to
+non-pluralized names are preferred, this can be set to
 `lsp-symbol-kinds'."
   :type '(alist :key-type integer :value-type string))
 
