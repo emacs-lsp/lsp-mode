@@ -479,46 +479,72 @@ the server has requested that."
   :package-version '(lsp-mode . "6.1"))
 ;;;###autoload(put 'lsp-enable-file-watchers 'safe-local-variable #'booleanp)
 
-(defcustom lsp-file-watch-ignored '(; SCM tools
-                                    "[/\\\\]\\.git\\'"
-                                    "[/\\\\]\\.hg\\'"
-                                    "[/\\\\]\\.bzr\\'"
-                                    "[/\\\\]_darcs\\'"
-                                    "[/\\\\]\\.svn\\'"
-                                    "[/\\\\]_FOSSIL_\\'"
-                                    ;; IDE or build tools
-                                    "[/\\\\]\\.idea\\'"
-                                    "[/\\\\]\\.ensime_cache\\'"
-                                    "[/\\\\]\\.eunit\\'"
-                                    "[/\\\\]node_modules"
-                                    "[/\\\\]\\.fslckout\\'"
-                                    "[/\\\\]\\.tox\\'"
-                                    "[/\\\\]dist\\'"
-                                    "[/\\\\]dist-newstyle\\'"
-                                    "[/\\\\]\\.stack-work\\'"
-                                    "[/\\\\]\\.bloop\\'"
-                                    "[/\\\\]\\.metals\\'"
-                                    "[/\\\\]target\\'"
-                                    "[/\\\\]\\.ccls-cache\\'"
-                                    "[/\\\\]\\.vscode\\'"
-                                    ;; Autotools output
-                                    "[/\\\\]\\.deps\\'"
-                                    "[/\\\\]build-aux\\'"
-                                    "[/\\\\]autom4te.cache\\'"
-                                    "[/\\\\]\\.reference\\'"
-                                    ;; .Net Core build-output
-                                    "[/\\\\]bin/Debug\\'"
-                                    "[/\\\\]obj\\'")
+(define-obsolete-variable-alias 'lsp-file-watch-ignored 'lsp-file-watch-ignored-directories "7.1.0")
+
+(defcustom lsp-file-watch-ignored-directories
+  '(; SCM tools
+    "[/\\\\]\\.git\\'"
+    "[/\\\\]\\.hg\\'"
+    "[/\\\\]\\.bzr\\'"
+    "[/\\\\]_darcs\\'"
+    "[/\\\\]\\.svn\\'"
+    "[/\\\\]_FOSSIL_\\'"
+    ;; IDE or build tools
+    "[/\\\\]\\.idea\\'"
+    "[/\\\\]\\.ensime_cache\\'"
+    "[/\\\\]\\.eunit\\'"
+    "[/\\\\]node_modules"
+    "[/\\\\]\\.fslckout\\'"
+    "[/\\\\]\\.tox\\'"
+    "[/\\\\]dist\\'"
+    "[/\\\\]dist-newstyle\\'"
+    "[/\\\\]\\.stack-work\\'"
+    "[/\\\\]\\.bloop\\'"
+    "[/\\\\]\\.metals\\'"
+    "[/\\\\]target\\'"
+    "[/\\\\]\\.ccls-cache\\'"
+    "[/\\\\]\\.vscode\\'"
+    ;; Autotools output
+    "[/\\\\]\\.deps\\'"
+    "[/\\\\]build-aux\\'"
+    "[/\\\\]autom4te.cache\\'"
+    "[/\\\\]\\.reference\\'"
+    ;; .Net Core build-output
+    "[/\\\\]bin/Debug\\'"
+    "[/\\\\]obj\\'")
   "List of regexps matching directory paths which won't be monitored when creating file watches."
   :group 'lsp-mode
   :type '(repeat string)
-  :package-version '(lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "7.1.0"))
 
-(defun lsp-file-watch-ignored ()
-  lsp-file-watch-ignored)
+(define-obsolete-function-alias 'lsp-file-watch-ignored 'lsp-file-watch-ignored-directories "7.0.1")
 
-;; Allow lsp-file-watch-ignored as a file or directory-local variable
-(put 'lsp-file-watch-ignored 'safe-local-variable 'lsp--string-listp)
+(defun lsp-file-watch-ignored-directories ()
+  lsp-file-watch-ignored-directories)
+
+;; Allow lsp-file-watch-ignored-directories as a file or directory-local variable
+(put 'lsp-file-watch-ignored-directories 'safe-local-variable 'lsp--string-listp)
+
+(defcustom lsp-file-watch-ignored-files
+  '(
+    ;; lockfiles
+    "[/\\\\]\\.#[^/\\\\]+\\'"
+    ;; backup files
+    "[/\\\\][^/\\\\]+~\\'" )
+  "List of regexps matching files for which change events will
+not be sent to the server.
+
+This setting has no impact on whether a file-watch is created for
+a directory; it merely prevents notifications pertaining to
+matched files from being sent to the server.  To prevent a
+file-watch from being created for a directory, customize
+`lsp-file-watch-ignored-directories'"
+  :group 'lsp-mode
+  :type '(repeat string)
+  :package-version '(lsp-mode . "7.1.0"))
+
+;; Allow lsp-file-watch-ignored-files as a file or directory-local variable
+(put 'lsp-file-watch-ignored-files 'safe-local-variable 'lsp--string-listp)
 
 (defcustom lsp-after-uninitialized-functions nil
   "List of functions to be called after a Language Server has been uninitialized."
@@ -1743,7 +1769,7 @@ This set of allowed chars is enough for hexifying local file paths.")
     (cond
      ((and (file-directory-p file-name)
            (equal 'created event-type)
-           (not (lsp--string-match-any (lsp-file-watch-ignored) file-name)))
+           (not (lsp--string-match-any (lsp-file-watch-ignored-directories) file-name)))
 
       (lsp-watch-root-folder (file-truename file-name) callback watch)
 
@@ -1754,11 +1780,12 @@ This set of allowed chars is enough for hexifying local file paths.")
                      (unless (file-directory-p f)
                        (funcall callback (list nil 'created f)))))))
      ((and (not (file-directory-p file-name))
+           (not (lsp--string-match-any lsp-file-watch-ignored-files file-name))
            (memq event-type '(created deleted changed)))
       (funcall callback event)))))
 
 (defun lsp--directory-files-recursively (dir regexp &optional include-directories)
-  "Copy of `directory-files-recursively' but it skips `lsp-file-watch-ignored'."
+  "Copy of `directory-files-recursively' but it skips `lsp-file-watch-ignored-directories'."
   (let* ((result nil)
          (files nil)
          (dir (directory-file-name dir))
@@ -1769,7 +1796,7 @@ This set of allowed chars is enough for hexifying local file paths.")
                         'string<))
       (unless (member file '("./" "../"))
         (if (and (directory-name-p file)
-                 (not (lsp--string-match-any (lsp-file-watch-ignored) (f-join dir (f-filename file)))))
+                 (not (lsp--string-match-any (lsp-file-watch-ignored-directories) (f-join dir (f-filename file)))))
             (let* ((leaf (substring file 0 (1- (length file))))
                    (full-file (f-join dir leaf)))
               ;; Don't follow symlinks to other directories.
@@ -1838,7 +1865,7 @@ already have been created."
                                                   (file-truename f)
                                                 f)
                                               (lsp-watch-descriptors watch)))
-                                (not (lsp--string-match-any (lsp-file-watch-ignored) f))
+                                (not (lsp--string-match-any (lsp-file-watch-ignored-directories) f))
                                 (not (-contains? '("." "..") (f-filename f)))))
                          (directory-files dir t))))
         (error (lsp-log "Failed to create a watch for %s: message" (error-message-string err)))
