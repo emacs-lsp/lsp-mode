@@ -102,7 +102,7 @@ and starts lsp. After the test BODY runs - tidy up."
      (setq lsp-clients-clangd-args actual-clangd-args)))
 
 (ert-deftest lsp-clangd-initialised-workspace ()
-  :tags '(no-win)
+  (skip-unless (memq system-type '(gnu/linux)))
   (lsp-in-sample-cpp-project
    (->
     ;; now check that the workspace has started
@@ -112,7 +112,7 @@ and starts lsp. After the test BODY runs - tidy up."
    ))
 
 (ert-deftest lsp-clangd-switch-to-other-from-cpp ()
-  :tags '(no-win)
+  (skip-unless (memq system-type '(gnu/linux)))
   (lsp-in-sample-cpp-project
    (->
     (lsp-test-wait (eq 'initialized
@@ -135,7 +135,7 @@ and starts lsp. After the test BODY runs - tidy up."
     (deferred:sync!))))
 
 (ert-deftest lsp-clangd-switch-to-nonexistent-other ()
-  :tags '(no-win)
+  (skip-unless (memq system-type '(gnu/linux)))
   (lsp-in-sample-cpp-project
    (->
     (lsp-test-wait (eq 'initialized
@@ -147,7 +147,7 @@ and starts lsp. After the test BODY runs - tidy up."
       ;; after opening a new buffer - need to make sure we are in the same lsp session
       (lsp)
       (sleep-for 1)
-      (lsp-clangd-find-other-file)
+      (should-error (lsp-clangd-find-other-file) :type 'user-error)
 
       (should (string= (buffer-name) "individual_file.cpp")))
 

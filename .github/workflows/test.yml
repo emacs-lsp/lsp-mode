@@ -39,12 +39,19 @@ jobs:
             - name: Check cmake
               run: "cmake --version"
 
-            - name: Install depedencies
+            - name: Install depedencies on Linux
+              if: runner.os == 'Linux'
               run: |
                    pip3 install python-language-server
                    sudo apt-get install clangd-9
 
+            - name: Install deps on macOS
+              if: runner.os == 'macOS'
+              run: |
+                   pip3 install python-language-server
+
             - name: Check clangd
+              if: runner.os == 'Linux'
               run: "clangd-9 --version"
 
             - name: Run tests
