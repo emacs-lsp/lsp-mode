@@ -1205,17 +1205,32 @@ Deprecated. Use `lsp-repeatable-vector' instead. "
 
 (make-obsolete 'lsp-string-vector nil "lsp-mode 7.1")
 
+(defun lsp--message  (format &rest args)
+  "Wrapper for `message'
+
+We `inhibit-message' the message when the cursor is in the
+minibuffer and when emacs version is before emacs 27 due to the
+fact that we often use `lsp--info', `lsp--warn' and `lsp--error'
+in async context and the call to these function is removing the
+minibuffer prompt. The issue with async messages is already fixed
+in emacs 27.
+
+See #2049"
+  (let ((inhibit-message (and (minibufferp)
+                              (version< emacs-version "27.0"))))
+    (apply #'message format args)))
+
 (defun lsp--info (format &rest args)
   "Display lsp info message with FORMAT with ARGS."
-  (message "%s :: %s" (propertize "LSP" 'face 'success) (apply #'format format args)))
+  (lsp--message "%s :: %s" (propertize "LSP" 'face 'success) (apply #'format format args)))
 
 (defun lsp--warn (format &rest args)
   "Display lsp warn message with FORMAT with ARGS."
-  (message "%s :: %s" (propertize "LSP" 'face 'warning) (apply #'format format args)))
+  (lsp--message "%s :: %s" (propertize "LSP" 'face 'warning) (apply #'format format args)))
 
 (defun lsp--error (format &rest args)
   "Display lsp error message with FORMAT with ARGS."
-  (message "%s :: %s" (propertize "LSP" 'face 'error) (apply #'format format args)))
+  (lsp--message "%s :: %s" (propertize "LSP" 'face 'error) (apply #'format format args)))
 
 (defun lsp--eldoc-message (&optional msg)
   "Show MSG in eldoc."
@@ -5811,7 +5826,7 @@ REFERENCES? t when METHOD returns references."
   (let ((loc (lsp-request method
                           (append (lsp--text-document-position-params) extra))))
     (if (seq-empty-p loc)
-        (message "Not found for: %s" (thing-at-point 'symbol t))
+        (lsp--error "Not found for: %s" (thing-at-point 'symbol t))
       (lsp-show-xrefs (lsp--locations-to-xref-items loc) display-action references?))))
 
 (cl-defun lsp-find-declaration (&key display-action)
@@ -8031,6 +8046,7 @@ This avoids overloading the server with many files when starting Emacs."
 (declare-function package-version-join "ext:package")
 (declare-function package-desc-version "ext:package")
 (declare-function package--alist "ext:package")
+
 (defun lsp-version ()
   "Return string describing current version of `lsp-mode'."
   (interactive)
@@ -8043,7 +8059,7 @@ This avoids overloading the server with many files when starting Emacs."
                      emacs-version
                      system-type)))
     (if (called-interactively-p 'interactive)
-        (message "%s" ver)
+        (lsp--info "%s" ver)
       ver)))
 
 
