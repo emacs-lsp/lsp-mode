@@ -246,8 +246,6 @@ primary working on/responsible for.
         completions | pwsh
       </div>
     </td>
-  </tr>
-  <tr>
     <td align="center">
       <div>
         <a href="https://github.com/nbfalcon">
