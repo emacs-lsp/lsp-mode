@@ -4866,16 +4866,15 @@ Shown after the code action in `lsp-execute-code-action',
 (defun lsp--select-action (actions)
   "Select an action to execute from ACTIONS."
   (let ((actions (seq-into actions 'list)))
-    (cond
-     ((null actions) (signal 'lsp-no-code-actions nil))
-     ((and (null (cdr actions)) lsp-auto-execute-action)
-      (car actions))
-     (t (let ((completion-ignore-case t))
-          (lsp--completing-read "Select code action: "
-                                actions
-                                (-compose (lsp--create-unique-string-fn)
-                                          #'lsp--code-action-title)
-                                nil t))))))
+    (pcase actions
+      (`nil (signal 'lsp-no-code-actions nil))
+      ((and `(,action) (guard lsp-auto-execute-action)) action)
+      (_ (let ((completion-ignore-case t))
+           (lsp--completing-read "Select code action: "
+                                 actions
+                                 (-compose (lsp--create-unique-string-fn)
+                                           #'lsp--code-action-title)
+                                 nil t))))))
 
 (defun lsp--select-enabled-action (actions)
   "Select an action to execute from ACTIONS.
