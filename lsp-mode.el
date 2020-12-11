@@ -40,6 +40,7 @@
 (require 'ht)
 (require 'imenu)
 (require 'inline)
+(require 'jka-compr)
 (require 'json)
 (require 'lv)
 (require 'markdown-mode)
@@ -7215,7 +7216,8 @@ nil."
              (when decompress
                (lsp--info "Decompressing %s..." download-path)
                (pcase decompress
-                 (:gzip (lsp-gunzip download-path))
+                 (:gzip
+                  (lsp-gunzip download-path))
                  (:zip (lsp-unzip download-path store-path)))
                (lsp--info "Decompressed %s..." store-path))
              (funcall callback))
@@ -7272,7 +7274,7 @@ STORE-PATH to make it executable."
 (defun lsp-gunzip (gz-file)
   "Decompress file in place."
   (unless lsp-gunzip-script
-    (error "Unable to find `gzip' on the path, please customize `lsp-gunzip-script'"))
+    (error "Unable to find `gzip' on the path, please either customize `lsp-gunzip-script' or manually decompress %s" gz-file))
   (shell-command (format lsp-gunzip-script gz-file)))
 
 ;; VSCode marketplace
