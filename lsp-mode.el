@@ -1272,9 +1272,15 @@ the lists according to METHOD."
 
 TRANSFORM-FN will be used to transform each of the items before displaying.
 
-PROMPT COLLECTION PREDICATE REQUIRE-MATCH INITIAL-INPUT HIST DEF
-INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
+IF DEF is a number, it specifies the zero-based index into the
+COLLECTION that is to be used as the default result and that is
+to be preselected.
+
+PROMPT COLLECTION PREDICATE REQUIRE-MATCH INITIAL-INPUT HIST
+INHERIT-INPUT-METHOD will be proxied to `completing-read' without
+changes."
   (let* ((col (--map (cons (funcall transform-fn it) it) collection))
+         (def (if (numberp def) (nth def col) def))
          (completion (completing-read prompt col
                                       predicate require-match initial-input hist
                                       def inherit-input-method)))
@@ -4874,7 +4880,8 @@ Shown after the code action in `lsp-execute-code-action',
                                  actions
                                  (-compose (lsp--create-unique-string-fn)
                                            #'lsp--code-action-title)
-                                 nil t))))))
+                                 nil t nil nil
+                                 (-find-index #'lsp:code-action-is-preferred? actions)))))))
 
 (defun lsp--select-enabled-action (actions)
   "Select an action to execute from ACTIONS.
