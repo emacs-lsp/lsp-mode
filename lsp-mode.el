@@ -7201,7 +7201,7 @@ nil."
            (:gzip (concat store-path ".gz"))
            (:zip (concat store-path ".zip"))
            (`nil store-path)
-            (_ (error ":decompress must be `:gzip', `:zip' or `nil'")))))
+           (_ (error ":decompress must be `:gzip', `:zip' or `nil'")))))
     (make-thread
      (lambda ()
        (condition-case err
