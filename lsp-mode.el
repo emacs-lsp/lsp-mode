@@ -4883,12 +4883,6 @@ Shown after the code action in `lsp-execute-code-action',
                                  nil t nil nil
                                  (-find-index #'lsp:code-action-is-preferred? actions)))))))
 
-(defun lsp--select-enabled-action (actions)
-  "Select an action to execute from ACTIONS.
-Like `lsp--select-action', except that disabled code actions are
-not shown."
-  (lsp--select-action (seq-remove #'lsp:code-action-disabled? actions)))
-
 (defun lsp--workspace-server-id (workspace)
   "Return the server ID of WORKSPACE."
   (-> workspace lsp--workspace-client lsp--client-server-id))
@@ -5253,17 +5247,23 @@ It will show up only if current point has signature help."
         :context `( :diagnostics ,(lsp-cur-line-diagnostics)
                     ,@(when kind (list :only (vector kind))))))
 
-(defun lsp-code-actions-at-point (&optional kind)
+(defun lsp-code-actions-at-point (&optional kind enabled)
   "Retrieve the code actions for the active region or the current line.
-It will filter by KIND if non nil."
-  (lsp-request "textDocument/codeAction" (lsp--text-document-code-action-params kind)))
+If ENABLED is specified, only return code actions that are not
+disabled."
+  (--doto (lsp-request "textDocument/codeAction" (lsp--text-document-code-action-params kind))
+    (when enabled
+      (cl-callf2 seq-remove #'lsp-code-action-disabled? it))))
 
 (defun lsp-execute-code-action-by-kind (command-kind)
   "Execute code action by name."
   (->> (lsp-get-or-calculate-code-actions command-kind)
        (-filter (-lambda ((&CodeAction :kind?))
                   (and kind? (equal command-kind kind?))))
-       lsp--select-enabled-action
+       ;; Fail in `lsp-execute-code-action' if there is only one disabled
+       ;; action, and show a list of applicable actions with an overview of why
+       ;; they are disabled otherwise.
+       lsp--select-action
        lsp-execute-code-action))
 
 (defun lsp-execute-code-action-by-type (kind)
@@ -5309,11 +5309,8 @@ Interactively, ask for a code action. With the prefix argument,
 filter those that are not disabled. Request codeAction/resolve
 for more info if server supports."
   (interactive
-   (list
-    (funcall (if current-prefix-arg
-                 #'lsp--select-action-enabled
-               #'lsp--select-enabled-action)
-             (lsp-code-actions-at-point))))
+   (list (lsp--select-action
+          (lsp-code-actions-at-point nil (not current-prefix-arg)))))
   (when disabled?
     (error "%s is disabled: %s"
            (lsp:code-action-title action)
