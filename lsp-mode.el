@@ -40,7 +40,6 @@
 (require 'ht)
 (require 'imenu)
 (require 'inline)
-(require 'jka-compr)
 (require 'json)
 (require 'lv)
 (require 'markdown-mode)
