@@ -7198,8 +7198,8 @@ nil."
          ;; (decompress (lsp-resolve-value decompress))
          (download-path
           (pcase decompress
-           (`gzip (concat store-path ".gz"))
-           (`zip (concat store-path ".zip"))
+           (:gzip (concat store-path ".gz"))
+           (:zip (concat store-path ".zip"))
            (`nil store-path)
            (_ (error ":decompress must be `gzip', `zip' or `nil'")))))
     (make-thread
@@ -7215,8 +7215,8 @@ nil."
              (when decompress
                (lsp--info "Decompressing %s..." download-path)
                (pcase decompress
-                 (`gzip (lsp-gunzip download-path))
-                 (`zip (lsp-unzip download-path store-path)))
+                 (:gzip (lsp-gunzip download-path))
+                 (:zip (lsp-unzip download-path store-path)))
                (lsp--info "Decompressed %s..." store-path))
              (funcall callback))
          (error (funcall error-callback err)))))))
