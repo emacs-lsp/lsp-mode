@@ -5253,13 +5253,12 @@ It will filter by KIND if non nil."
   (lsp-request "textDocument/codeAction" (lsp--text-document-code-action-params kind)))
 
 (defun lsp-execute-code-action-by-kind (command-kind)
-  "Execute code action by COMMAND-KIND."
-  (if-let ((action (->> (lsp-get-or-calculate-code-actions command-kind)
-                        (-filter (-lambda ((&CodeAction :kind?))
-                                   (and kind? (equal command-kind kind?))))
-                        lsp--select-enabled-action)))
-      (lsp-execute-code-action action)
-    (signal 'lsp-no-code-actions '(command-kind))))
+  "Execute code action by name."
+  (->> (lsp-get-or-calculate-code-actions command-kind)
+       (-filter (-lambda ((&CodeAction :kind?))
+                  (and kind? (equal command-kind kind?))))
+       lsp--select-enabled-action
+       lsp-execute-code-action))
 
 (defalias 'lsp-get-or-calculate-code-actions 'lsp-code-actions-at-point)
 
