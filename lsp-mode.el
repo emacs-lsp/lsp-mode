@@ -5260,6 +5260,26 @@ It will filter by KIND if non nil."
        lsp--select-enabled-action
        lsp-execute-code-action))
 
+(defun lsp-execute-code-action-by-type (kind)
+  "Execute a code action with a given base KIND."
+  (->> (lsp-get-or-calculate-code-actions kind)
+       (-filter (-lambda ((&CodeAction :kind?))
+                  (and kind? (string-match-p (format "\\`%s\\(\\.\\|\\'\\)"
+                                                     (regexp-quote kind))
+                                             kind?))))
+       ;; "[...] shown as faded out if the user requests a more specific type of
+       ;; code action"
+       lsp--select-action
+       lsp-execute-code-action))
+
+(defun lsp-auto-fix ()
+  "Execute a preferred code action at point."
+  (interactive)
+  (->> (lsp-get-or-calculate-code-actions)
+       (-filter #'lsp:code-action-is-preferred?)
+       lsp--select-action
+       lsp-execute-code-action))
+
 (defalias 'lsp-get-or-calculate-code-actions 'lsp-code-actions-at-point)
 
 (lsp-defun lsp--execute-command ((action &as &Command :command :arguments?))
