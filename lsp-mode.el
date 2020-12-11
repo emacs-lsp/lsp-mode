@@ -2676,7 +2676,9 @@ and end-of-string meta-characters."
      "---"
      ("Debug"
       :active (bound-and-true-p dap-ui-mode)
-      :filter ,(lambda (_) (nthcdr 3 dap-ui-menu-items)))))
+      :filter ,(lambda (_)
+                 (and (boundp 'dap-ui-menu-items)
+                      (nthcdr 3 dap-ui-menu-items))))))
   "Menu for lsp-mode.")
 
 (defalias 'make-lsp-client 'make-lsp--client)
