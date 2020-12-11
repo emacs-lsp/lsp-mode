@@ -5296,17 +5296,7 @@ It will filter by KIND if non nil."
            (funcall action-handler action)
          (lsp-send-execute-command command arguments?))))))
 
-(defun lsp--select-action-enabled-or-die (actions)
-  "Prompt the user to select an action from ACTIONS.
-Even disabled code actions are shown. If such an action is
-chosen, `user-error'."
-  (let ((action (lsp--select-action actions)))
-    (-when-let ((&CodeAction :disabled?) action)
-      (user-error "%s is disabled: %s" (lsp:code-action-title action)
-                  (lsp:code-action-disabled-reason disabled?)))
-    action))
-
-(lsp-defun lsp-execute-code-action ((action &as &CodeAction :command? :edit?))
+(lsp-defun lsp-execute-code-action ((action &as &CodeAction :command? :edit? :disabled?))
   "Execute code action ACTION.
 Interactively, ask for a code action. With the prefix argument,
 filter those that are not disabled. Request codeAction/resolve
@@ -5314,9 +5304,14 @@ for more info if server supports."
   (interactive
    (list
     (funcall (if current-prefix-arg
-                 #'lsp--select-action-enabled-or-die
+                 #'lsp--select-action-enabled
                #'lsp--select-enabled-action)
              (lsp-code-actions-at-point))))
+  (when disabled?
+    (error "%s is disabled: %s"
+           (lsp:code-action-title action)
+           (lsp:code-action-disabled-reason disabled?)))
+
   (if (and (lsp-feature? "codeAction/resolve")
            (not command?)
            (not edit?))
