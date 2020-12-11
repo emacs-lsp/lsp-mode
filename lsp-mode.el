@@ -40,6 +40,7 @@
 (require 'ht)
 (require 'imenu)
 (require 'inline)
+(require 'jka-compr)
 (require 'json)
 (require 'lv)
 (require 'markdown-mode)
@@ -7192,19 +7193,33 @@ nil."
 
 
 ;; Download URL handling
-(cl-defun lsp-download-install (callback error-callback &key url store-path &allow-other-keys)
-  (let ((url (lsp-resolve-value url))
-        (store-path (lsp-resolve-value store-path)))
+(cl-defun lsp-download-install (callback error-callback &key url store-path decompress &allow-other-keys)
+  (let* ((url (lsp-resolve-value url))
+         (store-path (lsp-resolve-value store-path))
+         ;; (decompress (lsp-resolve-value decompress))
+         (download-path
+          (pcase decompress
+           (:gzip (concat store-path ".gz"))
+           (:zip (concat store-path ".zip"))
+           (`nil store-path)
+           (_ (error ":decompress must be `:gzip', `:zip' or `nil'")))))
     (make-thread
      (lambda ()
        (condition-case err
            (progn
-             (when (f-exists? store-path)
-               (f-delete store-path))
-             (lsp--info "Starting to download %s to %s..." url store-path)
-             (mkdir (f-parent store-path) t)
-             (url-copy-file url store-path)
-             (lsp--info "Finished downloading %s..." store-path)
+             (when (f-exists? download-path)
+               (f-delete download-path))
+             (lsp--info "Starting to download %s to %s..." url download-path)
+             (mkdir (f-parent download-path) t)
+             (url-copy-file url download-path)
+             (lsp--info "Finished downloading %s..." download-path)
+             (when decompress
+               (lsp--info "Decompressing %s..." download-path)
+               (pcase decompress
+                 (:gzip
+                  (lsp-gunzip download-path))
+                 (:zip (lsp-unzip download-path store-path)))
+               (lsp--info "Decompressed %s..." store-path))
              (funcall callback))
          (error (funcall error-callback err)))))))
 
@@ -7243,7 +7258,24 @@ STORE-PATH to make it executable."
   (unless lsp-unzip-script
     (error "Unable to find `unzip' or `powershell' on the path, please customize `lsp-unzip-script'"))
   (shell-command (format lsp-unzip-script zip-file dest)))
+
+;; gunzip
 
+(defconst lsp-ext-gunzip-script "gzip -d %1$s"
+  "Script to decompress a gzippped file with gzip.")
+
+(defcustom lsp-gunzip-script (cond ((executable-find "gzip") lsp-ext-gunzip-script)
+                                   (t nil))
+  "The script to decompress a gzipped file. Should be a format string with one argument for the file to be decompressed in place."
+  :group 'lsp-mode
+  :type 'string
+  :package-version '(lsp-mode . "7.1"))
+
+(defun lsp-gunzip (gz-file)
+  "Decompress file in place."
+  (unless lsp-gunzip-script
+    (error "Unable to find `gzip' on the path, please either customize `lsp-gunzip-script' or manually decompress %s" gz-file))
+  (shell-command (format lsp-gunzip-script gz-file)))
 
 ;; VSCode marketplace
 
