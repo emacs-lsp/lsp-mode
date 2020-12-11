@@ -5253,7 +5253,7 @@ If ENABLED is specified, only return code actions that are not
 disabled."
   (--doto (lsp-request "textDocument/codeAction" (lsp--text-document-code-action-params kind))
     (when enabled
-      (cl-callf2 seq-remove #'lsp-code-action-disabled? it))))
+      (cl-callf2 seq-remove #'lsp:code-action-disabled? it))))
 
 (defun lsp-execute-code-action-by-kind (command-kind)
   "Execute code action by name."
