@@ -5257,14 +5257,12 @@ disabled."
 
 (defun lsp-execute-code-action-by-kind (command-kind)
   "Execute code action by name."
-  (->> (lsp-get-or-calculate-code-actions command-kind)
-       (-filter (-lambda ((&CodeAction :kind?))
-                  (and kind? (equal command-kind kind?))))
-       ;; Fail in `lsp-execute-code-action' if there is only one disabled
-       ;; action, and show a list of applicable actions with an overview of why
-       ;; they are disabled otherwise.
-       lsp--select-action
-       lsp-execute-code-action))
+  (let* ((all-actions (->> (lsp-get-or-calculate-code-actions command-kind)
+                           (-filter (-lambda ((&CodeAction :kind?))
+                                      (and kind? (equal command-kind kind?))))))
+         (enabled-actions (-remove #'lsp:code-action-disabled? all-actions))
+         (action (lsp--select-action (or enabled-actions all-actions))))
+    (lsp-execute-code-action action)))
 
 (defun lsp-execute-code-action-by-type (kind)
   "Execute a code action with a given base KIND."
