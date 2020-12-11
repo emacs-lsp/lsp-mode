@@ -5264,9 +5264,11 @@ disabled."
          (action (lsp--select-action (or enabled-actions all-actions))))
     (lsp-execute-code-action action)))
 
-(defun lsp-execute-code-action-by-type (kind)
-  "Execute a code action with a given base KIND."
-  (->> (lsp-get-or-calculate-code-actions kind)
+(defun lsp-execute-code-action-by-type (kind &optional enabled)
+  "Execute a code action with a given base KIND.
+When ENABLED is given, filter out all disabled code actions. This
+is in contrast with the spec's recommended behavior."
+  (->> (lsp-get-or-calculate-code-actions kind enabled)
        (-filter (-lambda ((&CodeAction :kind?))
                   (and kind? (string-match-p (format "\\`%s\\(\\.\\|\\'\\)"
                                                      (regexp-quote kind))
