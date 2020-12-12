@@ -4864,9 +4864,9 @@ Shown after the code action in `lsp-execute-code-action',
         (disabled?
          (concat
           (propertize title 'face 'lsp-disabled-code-action-face)
-          " "
-          (propertize (lsp:code-action-disabled-reason disabled?)
-                      'face 'lsp-disabled-code-action-reason-face)))
+          ;; Support spec-breaking servers that don't specify a reason.
+          (when-let ((reason (lsp:code-action-disabled-reason disabled?)))
+            (concat " " (propertize reason 'face 'lsp-disabled-code-action-reason-face)))))
         (t title)))
 
 (defun lsp--select-action (actions)
@@ -5312,9 +5312,9 @@ for more info if server supports."
    (list (lsp--select-action
           (lsp-code-actions-at-point nil (not current-prefix-arg)))))
   (when disabled?
-    (error "%s is disabled: %s"
+    (error "%s is disabled%s"
            (lsp:code-action-title action)
-           (lsp:code-action-disabled-reason disabled?)))
+           (or (-some->> (lsp:code-action-disabled-reason disabled?) (concat ": ")) "")))
 
   (if (and (lsp-feature? "codeAction/resolve")
            (not command?)
