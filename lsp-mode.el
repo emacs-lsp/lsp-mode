@@ -6209,7 +6209,11 @@ representation to point representation."
                  (c1 t)))))
 
 (defun lsp-imenu-create-uncategorized-index (symbols)
-  "Create imenu index from document SYMBOLS."
+  "Create imenu index from document SYMBOLS.
+This function, unlike `lsp-imenu-create-categorized-index', does
+not categorize by type, but instead returns an `imenu' index
+corresponding to the symbol hierarchy returned by the server
+directly."
   (let* ((lsp--line-col-to-point-hash-table (-> symbols
                                                 lsp--collect-lines-and-cols
                                                 lsp--convert-line-col-to-points-batch)))
