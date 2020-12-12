@@ -4881,7 +4881,8 @@ Shown after the code action in `lsp-execute-code-action',
                                  (-compose (lsp--create-unique-string-fn)
                                            #'lsp--code-action-title)
                                  nil t nil nil
-                                 (-find-index #'lsp:code-action-is-preferred? actions)))))))
+                                 (or (-find-index #'lsp:code-action-is-preferred? actions)
+                                     (-find-index (-not #'lsp:code-action-disabled?) actions))))))))
 
 (defun lsp--workspace-server-id (workspace)
   "Return the server ID of WORKSPACE."
@@ -5273,8 +5274,6 @@ is in contrast with the spec's recommended behavior."
                   (and kind? (string-match-p (format "\\`%s\\(\\.\\|\\'\\)"
                                                      (regexp-quote kind))
                                              kind?))))
-       ;; "[...] shown as faded out if the user requests a more specific type of
-       ;; code action"
        lsp--select-action
        lsp-execute-code-action))
 
