@@ -6274,9 +6274,9 @@ then return an appropriate `imenu' index (see
   :group 'lsp-imenu
   :type '(radio
           (const :tag "Categorized by type"
-                 #'lsp-imenu-create-categorized-index)
+                 lsp-imenu-create-categorized-index)
           (const :tag "Uncategorized, inline entries"
-                 #'lsp-imenu-create-uncategorized-index)
+                 lsp-imenu-create-uncategorized-index)
           (function :tag "Custom function")))
 
 (defun lsp--imenu-create-index ()
