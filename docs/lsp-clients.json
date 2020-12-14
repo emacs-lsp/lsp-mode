@@ -485,6 +485,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "steep",
+    "full-name": "Ruby (Steep)",
+    "server-name": "steep",
+    "server-url": "https://github.com/soutaro/steep",
+    "installation": "gem install steep",
+    "debugger": "Not available"
+  },
+  {
     "name": "svelte",
     "full-name": "Svelte",
     "server-name": "svelteserver",

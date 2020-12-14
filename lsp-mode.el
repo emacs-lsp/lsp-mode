@@ -355,7 +355,7 @@ unless overridden by a more specific face association."
          lsp-kotlin lsp-lua lsp-nim lsp-nix lsp-metals lsp-ocaml lsp-perl lsp-php lsp-pwsh
          lsp-pyls lsp-python-ms lsp-purescript lsp-r lsp-rf lsp-rust lsp-solargraph lsp-sorbet
          lsp-tex lsp-terraform lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript lsp-xml
-         lsp-yaml lsp-sqls lsp-svelte)
+         lsp-yaml lsp-sqls lsp-svelte lsp-steep)
   "List of the clients to be automatically required."
   :group 'lsp-mode
   :type '(repeat symbol))
