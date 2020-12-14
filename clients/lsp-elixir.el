@@ -108,9 +108,9 @@ finding the executable with `exec-path'."
 
 (defun lsp-elixir--build-test-command (argument)
   "Builds the test command from the ARGUMENT."
-  (let ((test-name (gethash "testName" argument))
-        (module (gethash "module" argument))
-        (describe (gethash "describe" argument)))
+  (let ((test-name (lsp-get argument :testName))
+        (module (lsp-get argument :module))
+        (describe (lsp-get argument :describe)))
     (cond (module (concat "\"" "module:" module "\""))
           ((not test-name) (concat "\"" "describe:" describe "\""))
           (describe (concat "\"" "test:test " describe " " test-name "\"" ))
@@ -119,18 +119,12 @@ finding the executable with `exec-path'."
 (lsp-defun lsp-elixir--run-test ((&Command :arguments?))
   "Runs tests."
   (let* ((argument (lsp-seq-first arguments?))
-         (file-path (gethash "filePath" argument))
+         (file-path (lsp-get argument :filePath))
          (test-command (lsp-elixir--build-test-command argument)))
     (compile
-     (concat
-      "cd "
-      (lsp-workspace-root file-path)
-      " && "
-      "mix test --exclude test --include "
-      test-command
-      " "
-      file-path
-      " --no-color"))
+     (concat "cd " (lsp-workspace-root file-path) " && "
+             "mix test --exclude test --include " test-command " " file-path
+             " --no-color"))
     file-path))
 
 (lsp-register-custom-settings
