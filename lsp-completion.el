@@ -470,12 +470,14 @@ The MARKERS and PREFIX value will be attached to each candidate."
           ;; boundaries
           ((equal (car-safe action) 'boundaries) nil)
           ;; try-completion
-          ((null action) (cl-first (member probe (funcall candidates))))
+          ((null action)
+           (when-let ((cands (funcall candidates)))
+             (if (cl-rest cands) probe (cl-first cands))))
           ;; test-completion: not return exact match so that the selection will
           ;; always be shown
           ((equal action 'lambda) nil)
           ;; retrieve candidates
-          (t (funcall candidates))))
+          ((equal action t) (funcall candidates))))
        :annotation-function #'lsp-completion--annotate
        :company-candidate-kind #'lsp-completion--candidate-kind
        :company-require-match 'never
