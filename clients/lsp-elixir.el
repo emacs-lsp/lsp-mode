@@ -129,7 +129,8 @@ finding the executable with `exec-path'."
       "mix test --exclude test --include "
       test-command
       " "
-      file-path))
+      file-path
+      " --no-color"))
     file-path))
 
 (lsp-register-custom-settings
