@@ -3665,6 +3665,11 @@ in that particular folder."
       (add-hook 'xref-backend-functions #'lsp--xref-backend nil t))
 
     (lsp-configure-buffer)
+
+    ;; make sure we turn off lsp-mode in case major mode changes, because major
+    ;; mode change will wipe the buffer locals.
+    (add-hook 'change-major-mode-hook #'lsp-disconnect nil t)
+
     (let ((buffer (lsp-current-buffer)))
       (run-with-idle-timer
        0.0 nil
@@ -3699,7 +3704,8 @@ in that particular folder."
     (lsp--remove-overlays 'lsp-highlight)
     (lsp--remove-overlays 'lsp-links)
 
-    (remove-hook 'xref-backend-functions #'lsp--xref-backend t))))
+    (remove-hook 'xref-backend-functions #'lsp--xref-backend t)
+    (remove-hook 'change-major-mode-hook #'lsp-disconnect t))))
 
 (defun lsp-configure-buffer ()
   "Configure LSP features for current buffer."
