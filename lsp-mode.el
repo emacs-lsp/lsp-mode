@@ -3747,7 +3747,8 @@ in that particular folder."
   (run-hooks 'lsp-unconfigure-hook)
 
   (lsp--remove-overlays 'lsp-color)
-  (setq-local indent-region-function nil)
+  (when (eq indent-region-function #'lsp-format-region)
+    (setq-local indent-region-function nil))
   (remove-hook 'lsp-on-change-hook #'lsp--document-color t)
   (remove-hook 'lsp-on-idle-hook #'lsp--document-highlight t)
   (remove-hook 'lsp-on-idle-hook #'lsp--document-links t))
