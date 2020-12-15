@@ -100,6 +100,33 @@ finding the executable with `exec-path'."
   :group 'lsp-elixir
   :type 'file)
 
+(defcustom lsp-elixir-enable-test-lenses t
+  "Suggest Tests."
+  :type 'boolean
+  :group 'lsp-elixir
+  :package-version '(lsp-mode . "7.1"))
+
+(defun lsp-elixir--build-test-command (argument)
+  "Builds the test command from the ARGUMENT."
+  (let ((test-name (lsp-get argument :testName))
+        (module (lsp-get argument :module))
+        (describe (lsp-get argument :describe)))
+    (cond (module (concat "\"" "module:" module "\""))
+          ((not test-name) (concat "\"" "describe:" describe "\""))
+          (describe (concat "\"" "test:test " describe " " test-name "\"" ))
+          (t (concat "\"" "test:test " test-name "\"" )))))
+
+(lsp-defun lsp-elixir--run-test ((&Command :arguments?))
+  "Runs tests."
+  (let* ((argument (lsp-seq-first arguments?))
+         (file-path (lsp-get argument :filePath))
+         (test-command (lsp-elixir--build-test-command argument)))
+    (compile
+     (concat "cd " (lsp-workspace-root file-path) " && "
+             "mix test --exclude test --include " test-command " " file-path
+             " --no-color"))
+    file-path))
+
 (lsp-register-custom-settings
  '(("elixirLS.dialyzerEnabled" lsp-elixir-dialyzer-enabled t)
    ("elixirLS.dialyzerWarnOpts" lsp-elixir-dialyzer-warn-opts)
@@ -109,13 +136,15 @@ finding the executable with `exec-path'."
    ("elixirLS.projectDir" lsp-elixir-project-dir)
    ("elixirLS.fetchDeps" lsp-elixir-fetch-deps t)
    ("elixirLS.suggestSpecs" lsp-elixir-suggest-specs t)
-   ("elixirLS.signatureAfterComplete" lsp-elixir-signature-after-complete t)))
+   ("elixirLS.signatureAfterComplete" lsp-elixir-signature-after-complete t)
+   ("elixirLS.enableTestLenses" lsp-elixir-enable-test-lenses t)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () `(,lsp-clients-elixir-server-executable)))
                   :major-modes '(elixir-mode)
                   :priority -1
                   :server-id 'elixir-ls
+                  :action-handlers (ht ("elixir.lens.test.run" 'lsp-elixir--run-test))
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration

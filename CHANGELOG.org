@@ -11,6 +11,7 @@
   * Automatically download [[https://github.com/eclipse/lemminx][XML language server Lemminx]]
   * Add Vala support.
   * Add [[https://github.com/sorbet/sorbet][Sorbet Language Server]] for typechecking Ruby code.
+  * Add Elixir test lenses support.
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
   * Safe renamed ~lsp-flycheck-default-level~ -> ~lsp-diagnostics-flycheck-default-level~
