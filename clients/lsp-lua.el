@@ -71,7 +71,7 @@
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection lsp-clients-emmy-lua-command
+  :new-connection (lsp-stdio-connection (lambda () lsp-clients-emmy-lua-command)
                                         #'lsp-clients-emmy-lua-test)
   :major-modes '(lua-mode)
   :server-id 'emmy-lua
@@ -363,7 +363,7 @@ The following example shows loaded files in `C:/lua` and `../lib` ,exclude `../l
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection lsp-clients-lua-language-server-command
+  :new-connection (lsp-stdio-connection (lambda () lsp-clients-lua-language-server-command)
                                         #'lsp-clients-lua-language-server-test)
   :major-modes '(lua-mode)
   :priority -2
@@ -397,7 +397,7 @@ The following example shows loaded files in `C:/lua` and `../lib` ,exclude `../l
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection lsp-clients-lua-lsp-server-install-dir
+  :new-connection (lsp-stdio-connection (lambda () lsp-clients-lua-lsp-server-install-dir)
                                         #'lsp-clients-lua-lsp-test)
   :major-modes '(lua-mode)
   :priority -3
