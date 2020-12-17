@@ -30,6 +30,7 @@
 (require 'f)
 
 (require 'lsp-mode)
+(require 'lsp-headerline)
 (require 'lsp-modeline)
 (require 'lsp-completion)
 (require 'lsp-diagnostics)
