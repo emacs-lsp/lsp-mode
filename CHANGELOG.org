@@ -12,6 +12,7 @@
   * Add Vala support.
   * Add [[https://github.com/sorbet/sorbet][Sorbet Language Server]] for typechecking Ruby code.
   * Add Elixir test lenses support.
+  * Enable headerline breadcrumb by default
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
   * Safe renamed ~lsp-flycheck-default-level~ -> ~lsp-diagnostics-flycheck-default-level~
