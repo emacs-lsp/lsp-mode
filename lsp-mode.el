@@ -680,7 +680,7 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :group 'lsp-mode
   :package-version '(lsp-mode . "7.1"))
 
-(defcustom lsp-headerline-breadcrumb-enable nil
+(defcustom lsp-headerline-breadcrumb-enable t
   "Whether to enable breadcrumb on headerline."
   :type 'boolean
   :group 'lsp-mode)
