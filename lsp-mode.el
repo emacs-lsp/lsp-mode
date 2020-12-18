@@ -664,6 +664,13 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
+(defcustom lsp-auto-save-changed-buffers nil
+  "If non-nil, `lsp-mode' will save the buffer after apply text edits.
+Useful for multiple file changes like `lsp-rename`"
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "7.1"))
+
 (defcustom lsp-modeline-code-actions-enable t
   "Whether to show code actions on modeline."
   :type 'boolean
@@ -4056,7 +4063,9 @@ LSP server result."
                            (-when-let ((&SnippetTextEdit :range (&RangeToPoint :start)
                                                          :insert-text-format? :new-text) edit)
                              (when (eq insert-text-format? lsp/insert-text-format-snippet)
-                               (lsp--expand-snippet new-text start (+ start (length new-text)))))))))
+                               (lsp--expand-snippet new-text start (+ start (length new-text))))))
+                         (when lsp-auto-save-changed-buffers
+                           (save-buffer)))))
           (undo-amalgamate-change-group change-group)
           (progress-reporter-done reporter))))))
 
