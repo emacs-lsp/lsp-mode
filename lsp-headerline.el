@@ -143,7 +143,7 @@ caching purposes.")
 (defun lsp-headerline--fix-image-background (image)
   "Fix IMAGE background if it is a file otherwise return as an icon."
   (if image
-      (let* ((display-image (get-text-property 0 'display image)))
+      (let ((display-image (get-text-property 0 'display image)))
         (if (and (listp display-image)
                  (plist-member (cl-copy-list (cl-rest display-image)) :type))
             (propertize " " 'display
