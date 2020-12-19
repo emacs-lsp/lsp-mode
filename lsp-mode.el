@@ -1990,6 +1990,11 @@ WORKSPACE is the workspace that contains the progress token."
          (progress-reporter-done reporter))
        (lsp-workspace-rem-work-done-token token workspace)))))
 
+
+;; diagnostics
+
+(defvar lsp-diagnostic-stats (ht))
+
 (defun lsp-diagnostics (&optional current-workspace?)
   "Return the diagnostics from all workspaces."
   (or (pcase (if current-workspace?
@@ -2009,9 +2014,38 @@ WORKSPACE is the workspace that contains the progress token."
                         result)))
       (ht)))
 
-
+(defun lsp-diagnostics-stats-for (path)
+  "Get diagnostics statistics for PATH.
+The result format is vector [_ errors warnings infos hints] or nil."
+  (gethash (lsp--fix-path-casing path) lsp-diagnostic-stats))
 
-(lsp-defun lsp--on-diagnostics (workspace (&PublishDiagnosticsParams :uri :diagnostics))
+(defun lsp-diagnostics--update-path (path new-stats)
+  (let ((new-stats (copy-sequence new-stats))
+        (path (lsp--fix-path-casing (directory-file-name path))))
+    (if-let ((old-data (gethash path lsp-diagnostic-stats)))
+        (dotimes (idx 5)
+          (cl-callf + (aref old-data idx)
+            (aref new-stats idx)))
+      (puthash path new-stats lsp-diagnostic-stats))))
+
+(lsp-defun lsp--on-diagnostics-update-stats (workspace
+                                             (&PublishDiagnosticsParams :uri :diagnostics))
+  (let ((path (lsp--uri-to-path uri))
+        (new-stats (make-vector 5 0)))
+    (mapc (-lambda ((&Diagnostic :severity?))
+            (cl-incf (aref new-stats (or severity? 1))))
+          diagnostics)
+    (when-let ((old-diags (gethash path (lsp--workspace-diagnostics workspace))))
+      (mapc (-lambda ((&Diagnostic :severity?))
+              (cl-decf (aref new-stats (or severity? 1))))
+            old-diags))
+    (lsp-diagnostics--update-path path new-stats)
+    (while (not (string= path (setf path (file-name-directory
+                                          (directory-file-name path)))))
+      (lsp-diagnostics--update-path path new-stats))))
+
+(lsp-defun lsp--on-diagnostics (workspace (params &as
+                                                  &PublishDiagnosticsParams :uri :diagnostics))
   "Callback for textDocument/publishDiagnostics.
 interface PublishDiagnosticsParams {
     uri: string;
@@ -2019,6 +2053,7 @@ interface PublishDiagnosticsParams {
 }
 PARAMS contains the diagnostics data.
 WORKSPACE is the workspace that contains the diagnostics."
+  (lsp--on-diagnostics-update-stats workspace params)
   (let* ((lsp--virtual-buffer-mappings (ht))
          (file (lsp--fix-path-casing (lsp--uri-to-path uri)))
          (workspace-diagnostics (lsp--workspace-diagnostics workspace)))
@@ -2028,6 +2063,17 @@ WORKSPACE is the workspace that contains the diagnostics."
       (puthash file (append diagnostics nil) workspace-diagnostics))
 
     (run-hooks 'lsp-diagnostics-updated-hook)))
+
+(defun lsp-diagnostics--workspace-cleanup (workspace)
+  (->> workspace
+       (lsp--workspace-diagnostics)
+       (maphash (lambda (key _)
+                  (lsp--on-diagnostics-update-stats
+                   workspace
+                   (lsp-make-publish-diagnostics-params
+                    :uri (lsp--path-to-uri key)
+                    :diagnostics [])))))
+  (clrhash (lsp--workspace-diagnostics workspace)))
 
 
 
@@ -3290,7 +3336,8 @@ disappearing, unset all the variables related to it."
             (when (lsp-buffer-live-p buf)
               (lsp-with-current-buffer buf
                 (lsp-managed-mode -1))))
-          buffers)))
+          buffers)
+    (lsp-diagnostics--workspace-cleanup lsp--cur-workspace)))
 
 (defun lsp--client-capabilities (&optional custom-capabilities)
   "Return the client capabilities."
@@ -3940,6 +3987,11 @@ interface TextDocumentEdit {
   (if (= left-line right-line)
       (> left-character right-character)
     (> left-line right-line)))
+
+(lsp-defun lsp-point-in-range? (position (&Range :start :end))
+  "Returns if POINT is in RANGE."
+  (not (or (lsp--position-compare start position)
+           (lsp--position-compare position end))))
 
 (lsp-defun lsp--position-equal ((&Position :line left-line
                                            :character left-character)
@@ -4660,7 +4712,7 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
   (run-hooks 'lsp-eldoc-hook)
   eldoc-last-message)
 
-(eval-when-compile
+(eval-and-compile
   (defun dash-expand:&lsp-wks (key source)
     `(,(intern-soft (format "lsp--workspace-%s" (eval key))) ,source))
 
@@ -5653,12 +5705,10 @@ perform the request synchronously."
 (defun lsp--symbols-informations->document-symbols-hierarchy (symbols-informations current-position)
   "Convert SYMBOLS-INFORMATIONS to symbols hierarchy on CURRENT-POSITION."
   (--> symbols-informations
-       (mapcan (-lambda ((symbol &as &SymbolInformation :location (&Location :range (&Range :start start-position
-                                                                                            :end end-position))))
-                 (when (and (lsp--position-compare current-position start-position)
-                            (lsp--position-compare end-position current-position))
-                   (list (lsp--symbol-information->document-symbol symbol))))
-               it)
+       (-keep (-lambda ((symbol &as &SymbolInformation :location (&Location :range)))
+                (when (lsp-point-in-range? current-position range)
+                  (lsp--symbol-information->document-symbol symbol)))
+              it)
        (sort it (-lambda ((&DocumentSymbol :range (&Range :start a-start-position :end a-end-position))
                           (&DocumentSymbol :range (&Range :start b-start-position :end b-end-position)))
                   (and (lsp--position-compare b-start-position a-start-position)

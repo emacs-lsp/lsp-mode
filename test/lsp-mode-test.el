@@ -102,5 +102,68 @@
   (should (string= "bar" (lsp-resolve-value 'lsp-test-my-var )))
   (should (string= "fn-result" (lsp-resolve-value (-const "fn-result" )))))
 
+(ert-deftest lsp-diagnostics-stats-test ()
+  (let ((workspace (make-lsp--workspace))
+        (lsp-diagnostic-stats (ht)))
+    (clrhash lsp-diagnostic-stats)
+    (lsp--on-diagnostics workspace
+                         (lsp-make-publish-diagnostics-params
+                          :uri (lsp--path-to-uri "/foo/bar/baz/txt.txt")
+                          :diagnostics (vector
+                                        (lsp-make-diagnostic :severity? lsp/diagnostic-severity-error)
+                                        (lsp-make-diagnostic :severity? lsp/diagnostic-severity-warning))))
+    (should (equal (lsp-diagnostics-stats-for (expand-file-name "/foo"))
+                   [0 1 1 0 0]))
+    (should (equal (lsp-diagnostics-stats-for (expand-file-name "/foo/bar"))
+                   [0 1 1 0 0]))
+    (lsp--on-diagnostics workspace
+                         (lsp-make-publish-diagnostics-params
+                          :uri (lsp--path-to-uri "/foo/bar/baz/txt.txt")
+                          :diagnostics (vector
+                                        (lsp-make-diagnostic :severity? lsp/diagnostic-severity-error))))
+    (should (equal (lsp-diagnostics-stats-for (expand-file-name "/foo"))
+                   [0 1 0 0 0]))
+    (lsp--on-diagnostics workspace
+                         (lsp-make-publish-diagnostics-params
+                          :uri (lsp--path-to-uri "/foo/bar/baz/txt.txt")
+                          :diagnostics []))
+    (should (equal (lsp-diagnostics-stats-for (expand-file-name "/"))
+                   [0 0 0 0 0]))))
+
+(ert-deftest lsp-diagnostics-stats-workspace-shutdown-test ()
+  (let ((workspace (make-lsp--workspace))
+        (lsp-diagnostic-stats (ht)))
+    (lsp--on-diagnostics workspace
+                         (lsp-make-publish-diagnostics-params
+                          :uri (lsp--path-to-uri "/foo/bar/baz/txt.txt")
+                          :diagnostics (vector
+                                        (lsp-make-diagnostic :severity? lsp/diagnostic-severity-error)
+                                        (lsp-make-diagnostic :severity? lsp/diagnostic-severity-warning))))
+    (lsp--on-diagnostics workspace
+                         (lsp-make-publish-diagnostics-params
+                          :uri (lsp--path-to-uri "/foo/bar/baz/txt.txt1")
+                          :diagnostics (vector
+                                        (lsp-make-diagnostic :severity? lsp/diagnostic-severity-error)
+                                        (lsp-make-diagnostic :severity? lsp/diagnostic-severity-warning))))
+    (should (equal (lsp-diagnostics-stats-for (expand-file-name "/foo"))
+                   [0 2 2 0 0]))
+    (lsp-diagnostics--workspace-cleanup workspace)
+    (should (equal (lsp-diagnostics-stats-for (expand-file-name "/foo"))
+                   [0 0 0 0 0]))))
+
+(ert-deftest lsp-point-in-range?-test ()
+  (let ((range (lsp-make-range :start (lsp-make-position :character 1 :line 1)
+                               :end (lsp-make-position :character 3 :line 3))))
+    (should (lsp-point-in-range? (lsp-make-position :character 2 :line 2)
+                                 range))
+    (should-not (lsp-point-in-range? (lsp-make-position :character 0 :line 0)
+                                     range))
+    (should-not (lsp-point-in-range? (lsp-make-position :character 10 :line 10)
+                                     range))
+    (should (lsp-point-in-range? (lsp-make-position :character 1 :line 1)
+                                 range))
+    (should (lsp-point-in-range? (lsp-make-position :character 3 :line 3)
+                                 range))))
+
 (provide 'lsp-mode-test)
 ;;; lsp-mode-test.el ends here

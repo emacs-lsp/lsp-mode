@@ -37,36 +37,102 @@
   :type 'boolean
   :group 'lsp-mode)
 
+(defcustom lsp-headerline-breadcrumb-enable-diagnostics t
+  "If non-nil, apply different face on the breadcrumb based on the errors."
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "7.1"))
+
 (defface lsp-headerline-breadcrumb-separator-face '((t :inherit shadow :height 0.8))
   "Face used for breadcrumb separator on headerline."
   :group 'lsp-faces)
 
-(defface lsp-headerline-breadcrumb-prefix-face '((t :inherit font-lock-string-face))
-  "Face used for breadcrumb prefix on headerline."
+(defface lsp-headerline-breadcrumb-path-face '((t :inherit font-lock-string-face))
+  "Face used for breadcrumb paths on headerline."
   :group 'lsp-faces)
 
-(defface lsp-headerline-breadcrumb-project-prefix-face '((t :inherit font-lock-string-face :weight bold))
+(defface lsp-headerline-breadcrumb-path-error-face
+  '((t :underline (:style wave :color "Red1")
+       :inherit lsp-headerline-breadcrumb-path-face))
+  "Face used for breadcrumb paths on headerline when there is an error under that path"
+  :group 'lsp-faces)
+
+(defface lsp-headerline-breadcrumb-path-warning-face
+  '((t :underline (:style wave :color "Yellow")
+       :inherit lsp-headerline-breadcrumb-path-face))
+  "Face used for breadcrumb paths on headerline when there is an warning under that path"
+  :group 'lsp-faces)
+
+(defface lsp-headerline-breadcrumb-path-info-face
+  '((t :underline (:style wave :color "Green")
+       :inherit lsp-headerline-breadcrumb-path-face))
+  "Face used for breadcrumb paths on headerline when there is an info under that path"
+  :group 'lsp-faces)
+
+(defface lsp-headerline-breadcrumb-path-hint-face
+  '((t :underline (:style wave :color "Green")
+       :inherit lsp-headerline-breadcrumb-path-face))
+  "Face used for breadcrumb paths on headerline when there is an hint under that path"
+  :group 'lsp-faces)
+
+(defface lsp-headerline-breadcrumb-project-prefix-face
+  '((t :inherit font-lock-string-face :weight bold))
   "Face used for breadcrumb prefix on headerline.
 Only if `lsp-headerline-breadcrumb-prefix` is `project-name-only`."
   :group 'lsp-faces)
 
-(defface lsp-headerline-breadcrumb-unknown-project-prefix-face '((t :inherit shadow :weight bold))
+(defface lsp-headerline-breadcrumb-unknown-project-prefix-face
+  '((t :inherit shadow :weight bold))
   "Face used for breadcrumb prefix on headerline.
 Only if `lsp-headerline-breadcrumb-prefix` is `project-name-only`."
   :group 'lsp-faces)
 
-(defface lsp-headerline-breadcrumb-symbols-face '((t :inherit font-lock-doc-face :weight bold))
+(defface lsp-headerline-breadcrumb-symbols-face
+  '((t :inherit font-lock-doc-face :weight bold))
   "Face used for breadcrumb symbols text on headerline."
   :group 'lsp-faces)
 
-(defface lsp-headerline-breadcrumb-deprecated-face '((t :inherit font-lock-doc-face
-                                                        :strike-through t))
+(defface lsp-headerline-breadcrumb-symbols-error-face
+  '((t :inherit lsp-headerline-breadcrumb-symbols-face
+       :underline (:style wave :color "Red1")))
+  "Face used for breadcrumb symbols text on headerline when there
+is an error in symbols range."
+  :group 'lsp-faces)
+
+(defface lsp-headerline-breadcrumb-symbols-warning-face
+  '((t :inherit lsp-headerline-breadcrumb-symbols-face
+       :underline (:style wave :color "Yellow")))
+  "Face used for breadcrumb symbols text on headerline when there
+is an warning in symbols range."
+  :group 'lsp-faces)
+
+(defface lsp-headerline-breadcrumb-symbols-info-face
+  '((t :inherit lsp-headerline-breadcrumb-symbols-face
+       :underline (:style wave :color "Green")))
+  "Face used for breadcrumb symbols text on headerline when there
+is an info in symbols range."
+  :group 'lsp-faces)
+
+(defface lsp-headerline-breadcrumb-symbols-hint-face
+  '((t :inherit lsp-headerline-breadcrumb-symbols-face
+       :underline (:style wave :color "Green")))
+  "Face used for breadcrumb symbols text on headerline when there
+is an hints in symbols range."
+  :group 'lsp-faces)
+
+(defface lsp-headerline-breadcrumb-deprecated-face
+  '((t :inherit lsp-headerline-breadcrumb-symbols-face
+       :strike-through t))
   "Face used on breadcrumb deprecated text on modeline."
   :group 'lsp-faces)
 
 (defvar-local lsp-headerline--string nil
   "Holds the current breadcrumb string on headerline.")
-(defvar-local lsp-headerline--path-up-to-project-string nil
+
+(defvar-local lsp-headerline--arrow nil
+  "Holds the current breadcrumb string on headerline.")
+
+(defvar-local lsp-headerline--path-up-to-project-segments nil
   "Holds the current breadcrumb path-up-to-project segments for
 caching purposes.")
 
@@ -88,24 +154,15 @@ caching purposes.")
           (replace-regexp-in-string "\s\\|\t" "" display-image)))
     ""))
 
-(defun lsp-headerline--filename-with-icon (file-path)
-  "Return the filename from FILE-PATH with the extension related icon."
-  (let ((filename (f-filename file-path)))
-    (-if-let* ((file-ext (f-ext file-path))
-               (icon (and file-ext
-                          (require 'lsp-treemacs nil t)
-                          (lsp-treemacs-get-icon file-ext))))
-        (format "%s %s"
-                (lsp-headerline--fix-image-background icon)
-                filename)
-      filename)))
-
 (defun lsp-headerline--arrow-icon ()
   "Build the arrow icon for headerline breadcrumb."
-  (if (require 'all-the-icons nil t)
-      (all-the-icons-material "chevron_right"
-                              :face 'lsp-headerline-breadcrumb-separator-face)
-    (propertize "›" 'face 'lsp-headerline-breadcrumb-separator-face)))
+  (or
+   lsp-headerline--arrow
+   (setq lsp-headerline--arrow
+         (if (require 'all-the-icons nil t)
+             (all-the-icons-material "chevron_right"
+                                     :face 'lsp-headerline-breadcrumb-separator-face)
+           (propertize "›" 'face 'lsp-headerline-breadcrumb-separator-face)))))
 
 (lsp-defun lsp-headerline--symbol-icon ((&DocumentSymbol :kind))
   "Build the SYMBOL icon for headerline breadcrumb."
@@ -160,7 +217,8 @@ Switch to current mouse interacting window before doing BODY."
                                (format "mouse-1: browse '%s' with Dired\nmouse-2: browse '%s' with Dired in other window"
                                        directory-display-string
                                        directory-display-string)
-                               directory-display-string))
+                               (propertize directory-display-string
+                                           'lsp-full-path full-path)))
 
 (declare-function evil-set-jump "ext:evil-jumps")
 
@@ -213,21 +271,85 @@ PATH is the current folder to be checked."
 
 (defun lsp-headerline--build-file-string ()
   "Build the file-segment string for the breadcrumb."
-  (propertize (lsp-headerline--filename-with-icon (buffer-file-name))
-              'font-lock-face 'lsp-headerline-breadcrumb-prefix-face))
+  (let* ((file-path (buffer-file-name))
+         (filename (f-filename file-path)))
+    (-if-let* ((file-ext (f-ext file-path))
+               (icon (and file-ext
+                          (require 'lsp-treemacs nil t)
+                          (lsp-treemacs-get-icon file-ext))))
+        (concat (lsp-headerline--fix-image-background icon)
+                " "
+                (propertize filename
+                            'font-lock-face
+                            (lsp-headerline--face-for-path file-path)))
+      filename)))
+
+
+(defun lsp-headerline--face-for-path (dir)
+  "Calculate the face for PATH."
+  (if-let ((diags (lsp-diagnostics-stats-for (directory-file-name dir))))
+      (cl-labels ((check-severity
+                   (severity)
+                   (not (zerop (aref diags severity)))))
+        (cond
+         ((not lsp-headerline-breadcrumb-enable-diagnostics)
+          'lsp-headerline-breadcrumb-path-face)
+         ((check-severity lsp/diagnostic-severity-error)
+          'lsp-headerline-breadcrumb-path-error-face)
+         ((check-severity lsp/diagnostic-severity-warning)
+          'lsp-headerline-breadcrumb-path-warning-face)
+         ((check-severity lsp/diagnostic-severity-information)
+          'lsp-headerline-breadcrumb-path-info-face)
+         ((check-severity lsp/diagnostic-severity-hint)
+          'lsp-headerline-breadcrumb-path-hint-face)
+         (t 'lsp-headerline-breadcrumb-path-face)))
+    'lsp-headerline-breadcrumb-path-face))
+
+(defun lsp-headerline--severity-level-for-range (range)
+  "Get the severiy level for "
+  (let ((range-severity 10))
+    (mapc (-lambda ((&Diagnostic :range (&Range :start) :severity?))
+            (when (lsp-point-in-range? start range)
+              (setq range-severity (min range-severity severity?))))
+          (lsp--get-buffer-diagnostics))
+    range-severity))
 
 (defun lsp-headerline--build-path-up-to-project-string ()
   "Build the path-up-to-project segment for the breadcrumb."
   (if-let ((root (lsp-workspace-root)))
-      (mapconcat (lambda (next-dir)
-                   (propertize next-dir
-                               'font-lock-face
-                               'lsp-headerline-breadcrumb-prefix-face))
-                 (lsp-headerline--path-up-to-project-root
-                  root
-                  (lsp-f-parent (buffer-file-name)))
-                 (format " %s " (lsp-headerline--arrow-icon)))
+      (let ((segments (or
+                       lsp-headerline--path-up-to-project-segments
+                       (setq lsp-headerline--path-up-to-project-segments
+                             (lsp-headerline--path-up-to-project-root
+                              root
+                              (lsp-f-parent (buffer-file-name)))))))
+        (mapconcat (lambda (next-dir)
+                     (propertize next-dir
+                                 'font-lock-face
+                                 (lsp-headerline--face-for-path
+                                  (get-text-property
+                                   0 'lsp-full-path next-dir))))
+                   segments
+                   (concat " " (lsp-headerline--arrow-icon) " ")))
     ""))
+
+(lsp-defun lsp-headerline--face-for-symbol ((&DocumentSymbol :deprecated?
+                                                             :range))
+  "Get the face for SYMBOL."
+  (let ((range-severity (lsp-headerline--severity-level-for-range range)))
+    (cond
+     (deprecated? 'lsp-headerline-breadcrumb-deprecated-face)
+     ((not lsp-headerline-breadcrumb-enable-diagnostics)
+      'lsp-headerline-breadcrumb-symbols-face)
+     ((= range-severity lsp/diagnostic-severity-error)
+      'lsp-headerline-breadcrumb-symbols-error-face)
+     ((= range-severity lsp/diagnostic-severity-warning)
+      'lsp-headerline-breadcrumb-symbols-warning-face)
+     ((= range-severity lsp/diagnostic-severity-information)
+      'lsp-headerline-breadcrumb-symbols-info-face)
+     ((= range-severity lsp/diagnostic-severity-hint)
+      'lsp-headerline-breadcrumb-symbols-hint-face)
+     (t 'lsp-headerline-breadcrumb-symbols-face))))
 
 (defun lsp-headerline--build-symbol-string ()
   "Build the symbol segment for the breadcrumb."
@@ -239,31 +361,29 @@ PATH is the current folder to be checked."
                   (-map-indexed (lambda (index elt)
                                   (cons elt (1+ index)))
                                 symbols-hierarchy)))
-          (mapconcat (-lambda (((symbol-to-append &as &DocumentSymbol :deprecated? :name)
-                                . index))
-                       (let* ((symbol2-name
-                               (propertize name
-                                           'font-lock-face
-                                           (if deprecated?
-                                               'lsp-headerline-breadcrumb-deprecated-face
-                                             'lsp-headerline-breadcrumb-symbols-face)))
-                              (symbol2-icon
-                               (lsp-headerline--symbol-icon symbol-to-append))
-                              (full-symbol-2
-                               (concat
-                                (if lsp-headerline-breadcrumb-enable-symbol-numbers
-                                    (concat
-                                     (propertize (number-to-string index)
-                                                 'face
-                                                 'lsp-headerline-breadcrumb-symbols-face)
-                                     " ")
-                                  "")
-                                (if symbol2-icon
-                                    (concat symbol2-icon symbol2-name)
-                                  symbol2-name))))
-                         (lsp-headerline--symbol-with-action symbol-to-append full-symbol-2)))
-                     enumerated-symbols-hierarchy
-                     (format " %s " (lsp-headerline--arrow-icon)))
+          (mapconcat
+           (-lambda (((symbol &as &DocumentSymbol :name)
+                      . index))
+             (let* ((symbol2-name
+                     (propertize name
+                                 'font-lock-face
+                                 (lsp-headerline--face-for-symbol symbol)))
+                    (symbol2-icon (lsp-headerline--symbol-icon symbol))
+                    (full-symbol-2
+                     (concat
+                      (if lsp-headerline-breadcrumb-enable-symbol-numbers
+                          (concat
+                           (propertize (number-to-string index)
+                                       'face
+                                       'lsp-headerline-breadcrumb-symbols-face)
+                           " ")
+                        "")
+                      (if symbol2-icon
+                          (concat symbol2-icon symbol2-name)
+                        symbol2-name))))
+               (lsp-headerline--symbol-with-action symbol full-symbol-2)))
+           enumerated-symbols-hierarchy
+           (concat " " (lsp-headerline--arrow-icon) " "))
         "")
     ""))
 
@@ -276,19 +396,17 @@ PATH is the current folder to be checked."
              (pcase segment
                ('project (lsp-headerline--build-project-string))
                ('file (lsp-headerline--build-file-string))
-               ('path-up-to-project
-                (or lsp-headerline--path-up-to-project-string
-                    (lsp-headerline--build-path-up-to-project-string)))
+               ('path-up-to-project (lsp-headerline--build-path-up-to-project-string))
                ('symbols (lsp-headerline--build-symbol-string))
-               (_ (progn
-                    (lsp-log "'%s' is not a valid entry for `lsp-headerline-breadcrumb-segments'"
-                             (symbol-name segment))
-                    "")))))
+               (_ (lsp-log "'%s' is not a valid entry for `lsp-headerline-breadcrumb-segments'"
+                           (symbol-name segment))
+                  ""))))
         (if (eq segment-string "")
             ""
-          (format "%s %s "
-                  (lsp-headerline--arrow-icon)
-                  segment-string))))
+          (concat (lsp-headerline--arrow-icon)
+                  " "
+                  segment-string
+                  " "))))
     lsp-headerline-breadcrumb-segments
     "")))
 
@@ -296,12 +414,6 @@ PATH is the current folder to be checked."
   "Request for document symbols to build the breadcrumb."
   (setq lsp-headerline--string (lsp-headerline--build-string))
   (force-mode-line-update))
-
-(defun lsp-headerline--breadcrumb-cache-path-up-to-project ()
-  "Cache the path-up-to-project breadcrumb segment if enabled."
-  (when (and lsp-headerline-breadcrumb-enable
-             (member 'path-up-to-project lsp-headerline-breadcrumb-segments))
-    (setq lsp-headerline--path-up-to-project-string (lsp-headerline--build-path-up-to-project-string))))
 
 (defun lsp-headerline--enable-breadcrumb ()
   "Enable headerline breadcrumb mode."
@@ -320,7 +432,6 @@ PATH is the current folder to be checked."
   :global nil
   (cond
    (lsp-headerline-breadcrumb-mode
-    (lsp-headerline--breadcrumb-cache-path-up-to-project)
     (add-to-list 'header-line-format '(t (:eval lsp-headerline--string)))
 
     (add-hook 'xref-after-jump-hook #'lsp-headerline--check-breadcrumb nil t)
@@ -335,7 +446,7 @@ PATH is the current folder to be checked."
 
     (remove-hook 'xref-after-jump-hook #'lsp-headerline--check-breadcrumb t)
 
-    (setq lsp-headerline--path-up-to-project-string nil)
+    (setq lsp-headerline--path-up-to-project-segments nil)
     (setq header-line-format (remove '(t (:eval lsp-headerline--string)) header-line-format)))))
 
 ;;;###autoload
