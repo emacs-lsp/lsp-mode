@@ -7,4 +7,4 @@ assignees: ''
 
 ---
 
-Please ask your questions at https://gitter.im/emacs-lsp/lsp-mode
+Please ask your questions at https://discord.gg/swuxy5AAgT
