@@ -144,14 +144,17 @@ caching purposes.")
   "Fix IMAGE background if it is a file otherwise return as an icon."
   (if image
       (let ((display-image (get-text-property 0 'display image)))
-        (if (listp display-image)
+        (if (and (listp display-image)
+                 (plist-member (cl-copy-list (cl-rest display-image)) :type))
             (propertize " " 'display
                         (cl-list* 'image
                                   (plist-put
                                    (cl-copy-list
                                     (cl-rest display-image))
                                    :background (face-attribute 'header-line :background nil t))))
-          (replace-regexp-in-string "\s\\|\t" "" display-image)))
+          (if (stringp display-image)
+              (replace-regexp-in-string "\s\\|\t" "" display-image)
+            (replace-regexp-in-string "\s\\|\t" "" image))))
     ""))
 
 (defun lsp-headerline--arrow-icon ()
@@ -286,7 +289,7 @@ PATH is the current folder to be checked."
 
 
 (defun lsp-headerline--face-for-path (dir)
-  "Calculate the face for PATH."
+  "Calculate the face for DIR."
   (if-let ((diags (lsp-diagnostics-stats-for (directory-file-name dir))))
       (cl-labels ((check-severity
                    (severity)
@@ -306,7 +309,7 @@ PATH is the current folder to be checked."
     'lsp-headerline-breadcrumb-path-face))
 
 (defun lsp-headerline--severity-level-for-range (range)
-  "Get the severiy level for "
+  "Get the severiy level for RANGE."
   (let ((range-severity 10))
     (mapc (-lambda ((&Diagnostic :range (&Range :start) :severity?))
             (when (lsp-point-in-range? start range)
