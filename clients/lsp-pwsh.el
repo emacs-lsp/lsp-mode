@@ -272,7 +272,7 @@ Must not nil.")
              (edits `[,(lsp-make-text-edit :range (lsp-make-range :start start-position
                                                                   :end end-position)
                                            :newText text)]))
-      (lsp--apply-text-edits edits)
+      (lsp--apply-text-edits edits 'code-action)
     (lsp-send-execute-command command arguments?)))
 
 (lsp-defun lsp-pwsh--show-code-action-document ((&Command :arguments?))
