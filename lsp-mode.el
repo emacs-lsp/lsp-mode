@@ -664,50 +664,9 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
-(defcustom lsp-before-save-text-edit-applied-hook nil
-  "Hooks to run when text edit is applied from a before save operation."
-  :type 'hook
-  :group 'lsp-mode
-  :package-version '(lsp-mode . "7.1"))
-
-(defcustom lsp-code-action-text-edit-applied-hook nil
-  "Hooks to run when text edit is applied from a code action operation."
-  :type 'hook
-  :group 'lsp-mode
-  :package-version '(lsp-mode . "7.1"))
-
-(defcustom lsp-color-presentation-text-edit-applied-hook nil
-  "Hooks to run when text edit is applied from a color presentation operation."
-  :type 'hook
-  :group 'lsp-mode
-  :package-version '(lsp-mode . "7.1"))
-
-(defcustom lsp-completion-text-edit-applied-hook nil
-  "Hooks to run when text edit is applied from a completion operation."
-  :type 'hook
-  :group 'lsp-mode
-  :package-version '(lsp-mode . "7.1"))
-
-(defcustom lsp-completion-cleanup-text-edit-applied-hook nil
-  "Hooks to run when text edit is applied from a completion cleanup operation."
-  :type 'hook
-  :group 'lsp-mode
-  :package-version '(lsp-mode . "7.1"))
-
-(defcustom lsp-format-text-edit-applied-hook nil
-  "Hooks to run when text edit is applied from a format operation."
-  :type 'hook
-  :group 'lsp-mode
-  :package-version '(lsp-mode . "7.1"))
-
-(defcustom lsp-rename-text-edit-applied-hook nil
-  "Hooks to run when text edit is applied from a rename operation."
-  :type 'hook
-  :group 'lsp-mode
-  :package-version '(lsp-mode . "7.1"))
-
-(defcustom lsp-server-requested-text-edit-applied-hook nil
-  "Hooks to run when text edit is applied from a server requested operation."
+(defcustom lsp-text-edit-applied-hook nil
+  "Hooks to run when text edit is applied.
+It contains the operation source."
   :type 'hook
   :group 'lsp-mode
   :package-version '(lsp-mode . "7.1"))
@@ -3892,25 +3851,27 @@ in that particular folder."
            document-changes)
     (error "Document changes cannot be applied")))
 
-(lsp-defun lsp--apply-workspace-edit ((&WorkspaceEdit :document-changes? :changes?) operation)
-  "Apply the WorkspaceEdit object EDIT.
+(defun lsp--apply-workspace-edit (workspace-edit &optional operation)
+  "Apply the WorkspaceEdit object WORKSPACE-EDIT.
 OPERATION is symbol representing the source of this text edit."
-  (if-let ((document-changes (seq-reverse document-changes?)))
-      (progn
-        (lsp--check-document-changes-version document-changes)
-        (->> document-changes
-             (seq-filter (-lambda ((&CreateFile :kind))
-                           (or (not kind) (equal kind "edit"))))
-             (seq-do (lambda (change) (lsp--apply-text-document-edit change operation))))
-        (->> document-changes
-             (seq-filter (-lambda ((&CreateFile :kind))
-                           (not (or (not kind) (equal kind "edit")))))
-             (seq-do (lambda (change) (lsp--apply-text-document-edit change operation)))))
-    (lsp-map
-     (lambda (uri text-edits)
-       (with-current-buffer (-> uri lsp--uri-to-path find-file-noselect)
-         (lsp--apply-text-edits text-edits operation)))
-     changes?)))
+  (let ((document-changes? (lsp:workspace-edit-document-changes? workspace-edit))
+        (changes? (lsp:workspace-edit-changes? workspace-edit)))
+    (if-let ((document-changes (seq-reverse document-changes?)))
+        (progn
+          (lsp--check-document-changes-version document-changes)
+          (->> document-changes
+               (seq-filter (-lambda ((&CreateFile :kind))
+                             (or (not kind) (equal kind "edit"))))
+               (seq-do (lambda (change) (lsp--apply-text-document-edit change operation))))
+          (->> document-changes
+               (seq-filter (-lambda ((&CreateFile :kind))
+                             (not (or (not kind) (equal kind "edit")))))
+               (seq-do (lambda (change) (lsp--apply-text-document-edit change operation)))))
+      (lsp-map
+       (lambda (uri text-edits)
+         (with-current-buffer (-> uri lsp--uri-to-path find-file-noselect)
+           (lsp--apply-text-edits text-edits operation)))
+       changes?))))
 
 (defmacro lsp-with-filename (file &rest body)
   "Execute BODY with FILE as a context.
@@ -3921,7 +3882,7 @@ Need to handle the case when FILE indicates virtual buffer."
          ,@body)
      ,@body))
 
-(defun lsp--apply-text-document-edit (edit operation)
+(defun lsp--apply-text-document-edit (edit &optional operation)
   "Apply the TextDocumentEdit object EDIT.
 OPERATION is symbol representing the source of this text edit.
 If the file is not being visited by any buffer, it is opened with
@@ -4081,7 +4042,7 @@ LSP server result."
      (lsp--to-yasnippet-snippet snippet)
      start end expand-env)))
 
-(defun lsp--apply-text-edits (edits operation)
+(defun lsp--apply-text-edits (edits &optional operation)
   "Apply the EDITS described in the TextEdit[] object.
 OPERATION is symbol representing the source of this text edit."
   (unless (seq-empty-p edits)
@@ -4108,7 +4069,7 @@ OPERATION is symbol representing the source of this text edit."
                                                          :insert-text-format? :new-text) edit)
                              (when (eq insert-text-format? lsp/insert-text-format-snippet)
                                (lsp--expand-snippet new-text start (+ start (length new-text))))))
-                         (run-hooks (intern (concat "lsp-" (symbol-name operation) "-text-edit-applied-hook"))))))
+                         (run-hook-with-args 'lsp-text-edit-applied-hook operation))))
           (undo-amalgamate-change-group change-group)
           (progress-reporter-done reporter))))))
 

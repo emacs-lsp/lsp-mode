@@ -206,8 +206,7 @@ private void extracted() {
          (actual (with-temp-buffer
                    (insert input)
                    (lsp--apply-text-edits
-                    (lsp--read-json lsp-methods-test--changes)
-                    'test)
+                    (lsp--read-json lsp-methods-test--changes))
                    (buffer-string))))
     (should (string= actual expected))))
 
@@ -218,8 +217,7 @@ private void extracted() {
      (lsp-make-workspace-edit
       :document-changes?
       `[,(lsp-make-create-file :uri (lsp--path-to-uri new-file-name)
-                               :kind "create")])
-     'test)
+                               :kind "create")]))
     (should (f-exists? new-file-name)))
   (let ((new-file-name (make-temp-file "should be overridden")))
     (f-write-text "should be overridden" nil new-file-name)
@@ -228,8 +226,7 @@ private void extracted() {
       :document-changes?
       `[,(lsp-make-create-file :uri (lsp--path-to-uri new-file-name)
                                :kind "create"
-                               :options? (lsp-make-create-file-options :overwrite? t))])
-     'test)
+                               :options? (lsp-make-create-file-options :overwrite? t))]))
     (should (equal (f-read-text new-file-name) "")))
   (let ((new-file-name (make-temp-file "should not be overridden")))
     (f-write-text "text" nil new-file-name)
@@ -238,8 +235,7 @@ private void extracted() {
       :document-changes?
       `[,(lsp-make-create-file :uri (lsp--path-to-uri new-file-name)
                                :kind "create"
-                               :options? (lsp-make-create-file-options :overwrite? nil))])
-     'test)
+                               :options? (lsp-make-create-file-options :overwrite? nil))]))
     (should (equal (f-read-text new-file-name) "text")))
   ;; nested file without parent dir
   (let ((new-file-name (make-temp-file "new")))
@@ -249,8 +245,7 @@ private void extracted() {
      (lsp-make-workspace-edit
       :document-changes?
       `[,(lsp-make-create-file :uri (lsp--path-to-uri new-file-name)
-                               :kind "create")])
-     'test)
+                               :kind "create")]))
     (should (f-exists? new-file-name))))
 
 (ert-deftest lsp-delete-test ()
@@ -259,8 +254,7 @@ private void extracted() {
      (lsp-make-workspace-edit
       :document-changes?
       `[,(lsp-make-delete-file :uri (lsp--path-to-uri delete-file-name)
-                               :kind "delete")])
-     'test)
+                               :kind "delete")]))
     (should-not (f-exists? delete-file-name))))
 
 (ert-deftest lsp-update-test ()
@@ -274,8 +268,7 @@ private void extracted() {
       :document-changes?
       `[,(lsp-make-rename-file :old-uri (lsp--path-to-uri old-file-name)
                                :new-uri (lsp--path-to-uri new-file-name)
-                               :kind "rename")])
-     'test)
+                               :kind "rename")]))
     (should-not (f-exists? old-file-name))
     (should (f-exists? new-file-name)))
 
@@ -291,8 +284,7 @@ private void extracted() {
       `[,(lsp-make-rename-file :old-uri (lsp--path-to-uri old-file-name)
                                :new-uri (lsp--path-to-uri new-file-name)
                                :kind "rename"
-                               :options? (lsp-make-rename-file-options :overwrite? t))])
-     'test)
+                               :options? (lsp-make-rename-file-options :overwrite? t))]))
     (should-not (f-exists? old-file-name))
     (should (f-exists? new-file-name)))
 
@@ -307,8 +299,7 @@ private void extracted() {
       :document-changes?
       `[,(lsp-make-rename-file :old-uri (lsp--path-to-uri old-file-name)
                                :new-uri (lsp--path-to-uri new-file-name)
-                               :kind "rename")])
-     'test)
+                               :kind "rename")]))
     (should-not (f-exists? old-file-name))
     (should (f-exists? new-file-name))))
 
