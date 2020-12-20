@@ -129,7 +129,7 @@ is an hints in symbols range."
 (defvar-local lsp-headerline--string nil
   "Holds the current breadcrumb string on headerline.")
 
-(defvar-local lsp-headerline--arrow nil
+(defvar lsp-headerline-arrow nil
   "Holds the current breadcrumb string on headerline.")
 
 (defvar-local lsp-headerline--path-up-to-project-segments nil
@@ -160,8 +160,8 @@ caching purposes.")
 (defun lsp-headerline--arrow-icon ()
   "Build the arrow icon for headerline breadcrumb."
   (or
-   lsp-headerline--arrow
-   (setq lsp-headerline--arrow
+   lsp-headerline-arrow
+   (setq lsp-headerline-arrow
          (if (require 'all-the-icons nil t)
              (all-the-icons-material "chevron_right"
                                      :face 'lsp-headerline-breadcrumb-separator-face)
