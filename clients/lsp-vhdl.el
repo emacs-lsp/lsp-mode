@@ -84,7 +84,7 @@ VHDL LS: A complete VHDL language server protocol implementation with diagnostic
   (lsp-vhdl--set-server-args)
   (lsp-stdio-connection
     (lambda () (cons (plist-get lsp-vhdl--params 'server-path) (plist-get lsp-vhdl--params 'server-args)))
-    (lambda () (f-executable? (plist-get lsp-vhdl--params 'server-path)))))
+    (lambda () (executable-find (plist-get lsp-vhdl--params 'server-path)))))
 
 (defun lsp-vhdl--set-server-path()
   "Set path to server binary based on selection in lsp-vhdl-server."
