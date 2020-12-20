@@ -55,9 +55,7 @@
   :risky t
   :type  '(repeat string))
 
-(defcustom lsp-clients-emmy-lua-command `(,lsp-clients-emmy-lua-java-path
-                                          ,@lsp-clients-emmy-lua-args
-                                          ,lsp-clients-emmy-lua-jar-path)
+(defcustom lsp-clients-emmy-lua-command nil
   "Final command to call the Lua Language server."
   :group 'lsp-emmy-lua
   :version "7.1"
@@ -71,7 +69,10 @@
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection (lambda () lsp-clients-emmy-lua-command)
+  :new-connection (lsp-stdio-connection (lambda () (or lsp-clients-emmy-lua-command
+                                                       `(,lsp-clients-emmy-lua-java-path
+                                                         ,@lsp-clients-emmy-lua-args
+                                                         ,lsp-clients-emmy-lua-jar-path)))
                                         #'lsp-clients-emmy-lua-test)
   :major-modes '(lua-mode)
   :server-id 'emmy-lua
@@ -114,9 +115,7 @@
   :risky t
   :type '(repeat string))
 
-(defcustom lsp-clients-lua-language-server-command `(,lsp-clients-lua-language-server-bin
-                                                     ,@lsp-clients-lua-language-server-args
-                                                     ,lsp-clients-lua-language-server-main-location)
+(defcustom lsp-clients-lua-language-server-command nil
   "Command to start Lua Language server."
   :group 'lsp-lua-language-server
   :type '(repeat string))
@@ -363,7 +362,10 @@ The following example shows loaded files in `C:/lua` and `../lib` ,exclude `../l
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection (lambda () lsp-clients-lua-language-server-command)
+  :new-connection (lsp-stdio-connection (lambda () (or lsp-clients-lua-language-server-command
+                                                       `(,lsp-clients-lua-language-server-bin
+                                                         ,@lsp-clients-lua-language-server-args
+                                                         ,lsp-clients-lua-language-server-main-location)))
                                         #'lsp-clients-lua-language-server-test)
   :major-modes '(lua-mode)
   :priority -2
@@ -384,7 +386,7 @@ The following example shows loaded files in `C:/lua` and `../lib` ,exclude `../l
   :risky t
   :type 'directory)
 
-(defcustom lsp-clients-lua-lsp-server-install-dir (f-join lsp-clients-luarocks-bin-dir "lua-lsp")
+(defcustom lsp-clients-lua-lsp-server-install-dir nil
   "Installation directory for Lua-Lsp Language Server."
   :group 'lsp-lua-lsp
   :version "7.1"
@@ -397,7 +399,9 @@ The following example shows loaded files in `C:/lua` and `../lib` ,exclude `../l
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection (lambda () lsp-clients-lua-lsp-server-install-dir)
+  :new-connection (lsp-stdio-connection (lambda ()
+                                          (or lsp-clients-lua-lsp-server-install-dir
+                                              (f-join lsp-clients-luarocks-bin-dir "lua-lsp")))
                                         #'lsp-clients-lua-lsp-test)
   :major-modes '(lua-mode)
   :priority -3
