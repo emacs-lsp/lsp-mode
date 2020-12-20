@@ -3581,7 +3581,8 @@ in that particular folder."
 (defun lsp-workspace-folders-remove (project-root)
   "Remove PROJECT-ROOT from the list of workspace folders."
   (interactive (list (completing-read "Select folder to remove: "
-                                      (lsp-session-folders (lsp-session)) nil t
+                                      (lsp-session-folders (lsp-session))
+                                      nil t nil nil
                                       (lsp-find-session-folder (lsp-session) default-directory))))
 
   (setq project-root (lsp-f-canonical project-root))
