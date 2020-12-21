@@ -664,7 +664,7 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
-(defcustom lsp-text-edit-applied-hook nil
+(defcustom lsp-after-apply-edits-hook nil
   "Hooks to run when text edit is applied.
 It contains the operation source."
   :type 'hook
@@ -3854,8 +3854,7 @@ in that particular folder."
 (defun lsp--apply-workspace-edit (workspace-edit &optional operation)
   "Apply the WorkspaceEdit object WORKSPACE-EDIT.
 OPERATION is symbol representing the source of this text edit."
-  (let ((document-changes? (lsp:workspace-edit-document-changes? workspace-edit))
-        (changes? (lsp:workspace-edit-changes? workspace-edit)))
+  (-let (((&WorkspaceEdit :document-changes? :changes?) workspace-edit))
     (if-let ((document-changes (seq-reverse document-changes?)))
         (progn
           (lsp--check-document-changes-version document-changes)
@@ -4069,7 +4068,7 @@ OPERATION is symbol representing the source of this text edit."
                                                          :insert-text-format? :new-text) edit)
                              (when (eq insert-text-format? lsp/insert-text-format-snippet)
                                (lsp--expand-snippet new-text start (+ start (length new-text))))))
-                         (run-hook-with-args 'lsp-text-edit-applied-hook operation))))
+                         (run-hook-with-args 'lsp-after-apply-edits-hook operation))))
           (undo-amalgamate-change-group change-group)
           (progress-reporter-done reporter))))))
 
