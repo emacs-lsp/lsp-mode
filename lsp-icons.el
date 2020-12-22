@@ -21,9 +21,25 @@
 ;;
 ;;; Code:
 
+(defgroup lsp-icons nil
+  "LSP icons"
+  :group 'lsp-mode
+  :tag "Icons")
+
+(defcustom lsp-headerline-breadcrumb-icons-enable t
+  "If non-nil, icons support is enabled for headerline-breadcrumb."
+  :type 'boolean
+  :group 'lsp-icons)
+
 (declare-function all-the-icons-material "ext:all-the-icons" t t)
 (declare-function lsp-treemacs-symbol-icon "ext:lsp-treemacs" (kind))
 (declare-function lsp-treemacs-get-icon "ext:lsp-treemacs" (icon-name))
+
+(defun lsp-icons--enabled-for-feature (feature)
+  "Check if icons support is enabled for FEATURE."
+  (cond
+   ((= feature 'headerline-breadcrumb) lsp-headerline-breadcrumb-icons-enable)
+   (t t)))
 
 (defun lsp-icons--fix-image-background (image)
   "Fix IMAGE background if it is a file otherwise return as an icon."
@@ -42,24 +58,33 @@
             (replace-regexp-in-string "\s\\|\t" "" image))))
     ""))
 
-(defun lsp-icons-get-by-file-ext (file-ext)
-  "Get an icon by file FILE-EXT."
+(defun lsp-icons-get-by-file-ext (file-ext &optional feature)
+  "Get an icon by file FILE-EXT.
+FEATURE is the feature that will use the icon which we should check
+if its enabled."
   (when (and file-ext
+             (lsp-icons--enabled-for-feature feature)
              (require 'lsp-treemacs nil t))
     (lsp-icons--fix-image-background
      (lsp-treemacs-get-icon file-ext))))
 
-(defun lsp-icons-get-by-symbol-kind (kind)
-  "Get an icon by symbol KIND."
+(defun lsp-icons-get-by-symbol-kind (kind &optional feature)
+  "Get an icon by symbol KIND.
+FEATURE is the feature that will use the icon which we should check
+if its enabled."
   (when (and kind
+             (lsp-icons--enabled-for-feature feature)
              (require 'lsp-treemacs nil t))
     (lsp-icons--fix-image-background
      (lsp-treemacs-symbol-icon kind))))
 
-(defun lsp-icons-all-the-icons-material-icon (icon-name face fallback)
+(defun lsp-icons-all-the-icons-material-icon (icon-name face fallback &optional feature)
   "Get a material icon from all-the-icons by ICON-NAME using FACE.
-Fallback to FALLBACK string if not found or not available."
-  (if (require 'all-the-icons nil t)
+Fallback to FALLBACK string if not found or not available.
+FEATURE is the feature that will use the icon which we should check
+if its enabled."
+  (if (and (require 'all-the-icons nil t)
+           (lsp-icons--enabled-for-feature feature))
       (all-the-icons-material icon-name
                               :face face)
     (propertize fallback 'face face)))
