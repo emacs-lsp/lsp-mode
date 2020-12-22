@@ -13,6 +13,7 @@
   * Add [[https://github.com/sorbet/sorbet][Sorbet Language Server]] for typechecking Ruby code.
   * Add Elixir test lenses support.
   * Enable headerline breadcrumb by default
+  * Add [[https://github.com/soutaro/steep][Steep Language Server]] for typechecking Ruby code.
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
   * Safe renamed ~lsp-flycheck-default-level~ -> ~lsp-diagnostics-flycheck-default-level~
