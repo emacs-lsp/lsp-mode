@@ -4067,8 +4067,8 @@ The method uses `replace-buffer-contents'."
 
 (defun lsp--to-yasnippet-snippet (snippet)
   "Convert LSP SNIPPET to yasnippet snippet."
-  ;; LSP snippet doesn't escape "{", but yasnippet requires escaping it.
-  (replace-regexp-in-string (rx (or bos (not (any "$" "\\"))) (group "{"))
+  ;; LSP snippet doesn't escape "{" and "`", but yasnippet requires escaping it.
+  (replace-regexp-in-string (rx (or bos (not (any "$" "\\"))) (group (or "{" "`")))
                             (rx "\\" (backref 1))
                             snippet
                             nil nil 1))
