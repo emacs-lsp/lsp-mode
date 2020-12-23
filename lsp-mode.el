@@ -5277,6 +5277,16 @@ is in contrast with the spec's recommended behavior."
        lsp--select-action
        lsp-execute-code-action))
 
+(defun lsp-quickfix ()
+  "Execute a \"quickfix\" code action at point."
+  (interactive)
+  (lsp-execute-code-action-by-type "quickfix"))
+
+(defun lsp-refactor ()
+  "Execute a \"refactor\" code action at point."
+  (interactive)
+  (lsp-execute-code-action-by-type "refactor"))
+
 (defun lsp-auto-fix ()
   "Execute a preferred code action at point."
   (interactive)
