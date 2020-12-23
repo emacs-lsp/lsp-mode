@@ -184,12 +184,11 @@
 
 (defcustom lsp-svelte-plugin-svelte-compiler-warnings nil
   "Svelte compiler warning codes to ignore or to treat as errors.
-Example: { 'css-unused-selector': 'ignore', 'unused-export-let':
-'error'}"
-  :type '(alist :key-type (string :tag "Warning code")
+Example: '((css-unused-selector . ignore) (unused-export-let . error))"
+  :type '(alist :key-type (symbol :tag "Warning code")
                 :value-type (choice
-                             (const :tag "Ignore" "ignore")
-                             (const :tag "Treat as error" "error")))
+                             (const :tag "Ignore" ignore)
+                             (const :tag "Treat as error" error)))
   :package-version '(lsp-mode . "7.1.0"))
 
 (defcustom lsp-svelte-plugin-svelte-format-enable t
