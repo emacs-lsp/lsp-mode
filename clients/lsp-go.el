@@ -112,17 +112,22 @@ completing function calls."
 
 (define-obsolete-variable-alias
   'lsp-gopls-available-codelens
-  'lsp-go-available-codelens
+  'lsp-go-available-codelenses
   "lsp-mode 7.0.1")
 
-(defvar lsp-go-available-codelens
+(define-obsolete-variable-alias
+  'lsp-go-available-codelens
+  'lsp-go-available-codelenses
+  "lsp-mode 7.0.1")
+
+(defvar lsp-go-available-codelenses
   '((generate . "Run `go generate` for a directory")
     (test . "Run `go test` for a specific test function")
     (tidy . "Run `go mod tidy` for a module")
     (upgrade_dependency . "Upgrade a dependency")
     (regenerate_cgo . "Regenerate cgo definitions"))
-  "Available codelens that can be further enabled or disabled
-  through `lsp-go-codelens'.")
+  "Available codelenses that can be further enabled or disabled
+  through `lsp-go-codelenses'.")
 
 
 (defun lsp-go--defcustom-available-as-alist-type (alist)
@@ -147,14 +152,19 @@ The returned type provides a tri-state that either:
 
 (define-obsolete-variable-alias
   'lsp-gopls-codelens
-  'lsp-go-codelens
+  'lsp-go-codelenses
   "lsp-mode 7.0.1")
 
-(defcustom lsp-go-codelens '((generate . t) (test . t))
-  "Select what codelens should be enabled or not.
+(define-obsolete-variable-alias
+  'lsp-go-codelens
+  'lsp-go-codelenses
+  "lsp-mode 7.0.1")
 
-The codelens can be found at https://github.com/golang/tools/blob/4d5ea46c79fe3bbb57dd00de9c167e93d94f4710/internal/lsp/source/options.go#L102-L108."
-  :type (lsp-go--defcustom-available-as-alist-type lsp-go-available-codelens)
+(defcustom lsp-go-codelenses '((generate . t) (test . t))
+  "Select what codelenses should be enabled or not.
+
+The codelenses can be found at https://github.com/golang/tools/blob/3fa0e8f87c1aae0a9adc2a63af1a1945d16d9359/internal/lsp/source/options.go#L106-L112."
+  :type (lsp-go--defcustom-available-as-alist-type lsp-go-available-codelenses)
   :group 'lsp-go
   :risky t
   :package-version '(lsp-mode "7.0"))
@@ -218,7 +228,7 @@ $GOPATH/pkg/mod along with the value of
    ("gopls.buildFlags" lsp-go-build-flags)
    ("gopls.env" lsp-go-env)
    ("gopls.linkTarget" lsp-go-link-target)
-   ("gopls.codelens" lsp-go-codelens)))
+   ("gopls.codelenses" lsp-go-codelenses)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
