@@ -161,9 +161,20 @@
    (ht ("tabSize" (symbol-value (lsp--get-indent-width major-mode))))
    (lsp-configuration-section "tailwindcss")))
 
+(defun lsp-tailwindcss--server-exists? (tailwindcss-server-command)
+  (let* ((command-name (f-base (f-filename (cl-first tailwindcss-server-command))))
+         (first-argument (cl-second tailwindcss-server-command))
+         (first-argument-exist (and first-argument (file-exists-p first-argument))))
+    (if (equal command-name "node")
+        first-argument-exist
+      (executable-find (cl-first tailwindcss-server-command)))))
+
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection (lambda () lsp-tailwindcss-server-command))
+  :new-connection
+  (lsp-stdio-connection
+   (lambda () lsp-tailwindcss-server-command)
+   (lambda () (lsp-tailwindcss--server-exists? lsp-tailwindcss-server-command)))
   :priority 0
   :add-on? t
   :server-id 'tailwindcss
