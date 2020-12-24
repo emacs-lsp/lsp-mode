@@ -167,15 +167,10 @@
   ;; https://github.com/tailwindlabs/tailwindcss-intellisense/blob/b3c17cf5c9d1d74091a4a5ee0504696bb2ce1c46/packages/tailwindcss-intellisense/src/lib/registerConfigErrorHandler.ts#L5
   t)
 
-(defun lsp-tailwindcss--get-configuration ()
-  ;; FIXME: Handle get configuration request
-  ;; https://github.com/tailwindlabs/tailwindcss-intellisense/blob/b3c17cf5c9d1d74091a4a5ee0504696bb2ce1c46/packages/tailwindcss-intellisense/src/extension.ts#L160
-  t)
-
-(defun lsp-tailwindcss--get-document-symbols ()
-  ;; FIXME: Handle get document symbols request
-  ;; https://github.com/tailwindlabs/tailwindcss-intellisense/blob/b3c17cf5c9d1d74091a4a5ee0504696bb2ce1c46/packages/tailwindcss-intellisense/src/extension.ts#L168
-  t)
+(defun lsp-tailwindcss--get-configuration (_workspace _)
+  (ht-merge
+   (ht ("tabSize" (symbol-value (lsp--get-indent-width major-mode))))
+   (lsp-configuration-section "tailwindcss")))
 
 (lsp-register-client
  (make-lsp-client
@@ -190,10 +185,10 @@
                                          filename)
                          (derived-mode-p 'js-mode 'js2-mode 'typescript-mode 'html-mode))))
   :notification-handlers (ht
-                          ("tailwindcss/configUpdated" #'lsp-tailwindcss--config-updated)
-                          ("tailwindcss/configError" #'lsp-tailwindcss--config-error)
+                          ("tailwindcss/configUpdated" #'ignore)
+                          ("tailwindcss/configError" #'ignore)
                           ("tailwindcss/getConfiguration" #'lsp-tailwindcss--get-configuration)
-                          ("tailwindcss/getDocumentSymbols" #'lsp-tailwindcss--get-document-symbols))
+                          ("tailwindcss/getDocumentSymbols" #'lsp--get-document-symbols))
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (let ((tmp-zip (make-temp-file "ext" nil ".zip")))
                           (delete-file tmp-zip)
