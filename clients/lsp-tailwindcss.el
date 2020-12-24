@@ -156,17 +156,6 @@
    ("tailwindCSS.experimental.classRegex" lsp-tailwindcss-experimental-class-regex)
    ("tailwindCSS.experimental.showPixelValues" lsp-tailwindcss-experimental-show-pixel-values)))
 
-(defun lsp-tailwindcss--config-updated ()
-  ;; FIXME: Update decorations in editor, see original implementation
-  ;; https://github.com/tailwindlabs/tailwindcss-intellisense/blob/b3c17cf5c9d1d74091a4a5ee0504696bb2ce1c46/packages/tailwindcss-intellisense/src/lib/registerColorDecorator.ts#L125
-  t)
-
-(defun lsp-tailwindcss--config-error ()
-  ;; FIXME: Update decorations in editor and show error message, see original implementation
-  ;; https://github.com/tailwindlabs/tailwindcss-intellisense/blob/b3c17cf5c9d1d74091a4a5ee0504696bb2ce1c46/packages/tailwindcss-intellisense/src/lib/registerColorDecorator.ts#L129
-  ;; https://github.com/tailwindlabs/tailwindcss-intellisense/blob/b3c17cf5c9d1d74091a4a5ee0504696bb2ce1c46/packages/tailwindcss-intellisense/src/lib/registerConfigErrorHandler.ts#L5
-  t)
-
 (defun lsp-tailwindcss--get-configuration (_workspace _)
   (ht-merge
    (ht ("tabSize" (symbol-value (lsp--get-indent-width major-mode))))
