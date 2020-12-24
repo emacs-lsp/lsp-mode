@@ -181,9 +181,9 @@
   :activation-fn (lambda (filename &optional _)
                    (when lsp-tailwindcss-enable
                      (or (string-match-p (rx (one-or-more anything) "."
-                                             (or "ts" "js" "jsx" "tsx" "html" "vue")eos)
+                                             (or "ts" "js" "jsx" "tsx" "html" "vue" "css")eos)
                                          filename)
-                         (derived-mode-p 'js-mode 'js2-mode 'typescript-mode 'html-mode))))
+                         (derived-mode-p 'js-mode 'js2-mode 'typescript-mode 'html-mode 'css-mode))))
   :notification-handlers (ht
                           ("tailwindcss/configUpdated" #'ignore)
                           ("tailwindcss/configError" #'ignore)
