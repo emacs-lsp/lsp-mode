@@ -40,7 +40,7 @@
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-nix-server-path))
                   :major-modes '(nix-mode)
-                  :server-id 'nix-ls))
+                  :server-id 'rnix-lsp))
 
 (provide 'lsp-nix)
 ;;; lsp-nix.el ends here
