@@ -27,7 +27,7 @@ These are `lsp-mode` specific custom settings:
 - `lsp-response-timeout` - Number of seconds to wait for a response from the language server before timing out.
 - `lsp-enable-file-watchers` - If non-nil lsp-mode will watch the files in the workspace if the server has requested that.
 - `lsp-server-trace` - Request trace mode on the language server.
-- `lsp-semantic-highlighting` - Enable experimental semantic highlighting support
+- `lsp-semantic-tokens-enable` - Enable semantic tokens highlighting support
 - `lsp-enable-imenu` - If non-nil, automatically enable imenu integration when server provides `textDocument/documentSymbol`.
 - `lsp-signature-auto-activate` - Auto activate signature when trigger conditions are meet.
 - `lsp-signature-render-documentation` - Include signature documentation in signature help.
