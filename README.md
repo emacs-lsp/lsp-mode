@@ -72,7 +72,7 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
   - Ivy integration - [lsp-ivy](https://github.com/emacs-lsp/lsp-ivy/)
   - Treemacs integration -
     [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs)
-  - Semantic highlighting as defined by LSP 3.16 (compatible language servers include recent development builds of clangd and rust-analyzer)
+  - Semantic tokens as defined by LSP 3.16 (compatible language servers include recent development builds of clangd and rust-analyzer)
   - [which-key](https://github.com/justbur/emacs-which-key/) integration
     for better discovery
 

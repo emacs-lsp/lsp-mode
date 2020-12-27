@@ -139,21 +139,25 @@ the buffer when it becomes large."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-enable-semantic-highlighting nil
-  "Enable/disable support for semantic highlighting as defined by
-the Language Server Protocol 3.16."
+(define-obsolete-variable-alias 'lsp-enable-semantic-highlighting 'lsp-enable-semantic-tokens "lsp-mode 7.1")
+
+(defcustom lsp-semantic-tokens-enable nil
+  "Enable/disable support for semantic tokens.
+As defined by the Language Server Protocol 3.16."
   :group 'lsp-mode
   :type 'boolean)
 
-(defcustom lsp-semantic-highlighting-warn-on-missing-face nil
-  "When non-nil, this option will emit a warning any time a token
+(define-obsolete-variable-alias 'lsp-semantic-highlighting-warn-on-missing-face 'lsp-semantic-tokens-warn-on-missing-face "lsp-mode 7.1")
+
+(defcustom lsp-semantic-tokens-warn-on-missing-face nil
+  "Warning on missing face for token type/modifier.
+When non-nil, this option will emit a warning any time a token
 or modifier type returned by a language server has no face associated with it."
   :group 'lsp-mode
   :type 'boolean)
 
 (defcustom lsp-semantic-tokens-apply-modifiers nil
-  "Determines whether semantic highlighting should take token
-modifiers into account."
+  "Whether semantic tokens should take token modifiers into account."
   :group 'lsp-mode
   :type 'boolean)
 
@@ -317,13 +321,14 @@ unless overridden by a more specific face association."
     ("enumConstant" . lsp-face-semhl-constant)
     ("dependent" . lsp-face-semhl-type)
     ("concept" . lsp-face-semhl-interface))
-  "Faces to use for semantic highlighting.")
+  "Faces to use for semantic tokens.")
 
 (defvar lsp-semantic-token-modifier-faces
   ;; TODO: add default definitions
   '(("declaration" . lsp-face-semhl-interface)
     ("readonly" . lsp-face-semhl-constant))
-  "Faces to use for semantic token modifiers if
+  "Semantic tokens modifier faces.
+Faces to use for semantic token modifiers if
 `lsp-semantic-tokens-apply-modifiers' is non-nil.")
 
 (defvar lsp--semantic-tokens-idle-timer nil)
@@ -2794,9 +2799,9 @@ and end-of-string meta-characters."
   ;; ‘buffers’ is a list of buffers associated with this workspace.
   (buffers nil)
 
-  ;; if semantic highlighting is enabled, `semantic-highlighting-faces' contains
+  ;; if semantic tokens is enabled, `semantic-tokens-faces' contains
   ;; one face (or nil) for each token type supported by the language server.
-  (semantic-highlighting-faces nil)
+  (semantic-tokens-faces nil)
 
   ;; If semantic highlighting is enabled, `semantic-highlighting-modifier-faces'
   ;; contains one face (or nil) for each modifier type supported by the language
@@ -3359,7 +3364,7 @@ disappearing, unset all the variables related to it."
                                          (hierarchicalDocumentSymbolSupport . t)))
                       (formatting . ((dynamicRegistration . t)))
                       (rangeFormatting . ((dynamicRegistration . t)))
-                      ,@(when lsp-enable-semantic-highlighting
+                      ,@(when lsp-semantic-tokens-enable
                           `((semanticTokens
                              . ((dynamicRegistration . t)
                                 (requests . ((range . t) (full . t)))
@@ -3683,23 +3688,24 @@ in that particular folder."
                    (memq :on-trigger-char lsp-signature-auto-activate))))
       (remove-hook 'post-self-insert-hook signature-help-handler t)))))
 
-(defun lsp--semantic-highlighting-warn-about-deprecated-setting ()
+(defun lsp--semantic-tokens-warn-about-deprecated-setting ()
+  "Warn about deprecated semantic highlighting variable."
   (when (boundp 'lsp-semantic-highlighting)
     (pcase lsp-semantic-highlighting
       (:semantic-tokens
        (lsp-warn "It seems you wish to use semanticTokens-based
  highlighting. To do so, please remove any references to the
  deprecated variable `lsp-semantic-highlighting' from your
- configuration and set `lsp-enable-semantic-highlighting' to `t'
+ configuration and set `lsp-semantic-tokens-enable' to `t'
  instead.")
-       (setq lsp-enable-semantic-highlighting t))
+       (setq lsp-semantic-tokens-enable t))
       ((or :immediate :deferred)
        (lsp-warn "It seems you wish to use Theia-based semantic
  highlighting. This protocol has been superseded by the
  semanticTokens protocol specified by LSP v3.16 and is no longer
  supported by lsp-mode. If your language server provides
  semanticToken support, please set
- `lsp-enable-semantic-highlighting' to `t' to use it.")))))
+ `lsp-semantic-tokens-enable' to `t' to use it.")))))
 
 (define-minor-mode lsp-managed-mode
   "Mode for source buffers managed by lsp-mode."
@@ -3722,7 +3728,7 @@ in that particular folder."
     (lsp--update-on-type-formatting-hook)
     (lsp--update-signature-help-hook)
 
-    (lsp--semantic-highlighting-warn-about-deprecated-setting)
+    (lsp--semantic-tokens-warn-about-deprecated-setting)
 
     (when lsp-enable-xref
       (add-hook 'xref-backend-functions #'lsp--xref-backend nil t))
@@ -3803,7 +3809,7 @@ in that particular folder."
                  (functionp 'dap-mode))
         (dap-auto-configure-mode 1))
 
-      (when (and lsp-enable-semantic-highlighting
+      (when (and lsp-semantic-tokens-enable
                  (lsp-feature? "textDocument/semanticTokens"))
         (mapc #'lsp--semantic-tokens-initialize-workspace
               (lsp--find-workspaces-for "textDocument/semanticTokens"))
@@ -5455,11 +5461,12 @@ A reference is highlighted only if it is visible in a window."
   (apply 'vector
          (mapcar (lambda (id)
                    (let ((maybe-face (cdr (assoc id faces))))
-                     (when (and lsp-semantic-highlighting-warn-on-missing-face (not maybe-face))
+                     (when (and lsp-semantic-tokens-warn-on-missing-face (not maybe-face))
                        (lsp-warn "No face has been associated to the %s '%s': consider adding a corresponding definition to %s"
                                  category id varname)) maybe-face)) identifiers)))
 
 (defun lsp--semantic-tokens-initialize-workspace (workspace)
+  "Initialize semantic tokens for WORKSPACE."
   (cl-assert workspace)
   (when-let ((token-capabilities
               (or
@@ -5469,7 +5476,7 @@ A reference is highlighted only if it is visible in a window."
                (lsp:server-capabilities-semantic-tokens-provider?
                 (lsp--workspace-server-capabilities workspace)))))
     (-let* (((&SemanticTokensOptions :legend) token-capabilities))
-      (setf (lsp--workspace-semantic-highlighting-faces workspace)
+      (setf (lsp--workspace-semantic-tokens-faces workspace)
             (lsp--build-face-map (lsp:semantic-tokens-legend-token-types legend)
                                  lsp-semantic-token-faces
                                  "semantic token"
@@ -5481,10 +5488,13 @@ A reference is highlighted only if it is visible in a window."
                                  "lsp-semantic-token-modifier-faces")))))
 
 (defun lsp--semantic-tokens-request-update ()
+  "Request semantic-tokens update."
   (lsp--semantic-tokens-request
    (when lsp--semantic-tokens-use-ranged-requests (cons (window-start) (window-end))) t))
 
 (defun lsp--semantic-tokens-initialize-buffer (is-range-provider)
+  "Initialize the buffer for semantic tokens.
+IS-RANGE-PROVIDER is non-nil when server supports range requests."
   (let* ((old-extend-region-functions font-lock-extend-region-functions)
          ;; make sure font-lock always fontifies entire lines (TODO: do we also have
          ;; to change some jit-lock-...-region functions/variables?)
@@ -5510,8 +5520,11 @@ A reference is highlighted only if it is visible in a window."
             (remove-hook 'lsp-on-change-hook #'lsp--semantic-tokens-request-update t)))))
 
 (defun lsp--semantic-tokens-fontify (old-fontify-region beg end &optional loudly)
+  "Apply fonts to retrieved semantic tokens.
+OLD-FONTIFY-REGION is the region where it was applied before
+BEG and END are the regtions."
   ;; TODO: support multiple language servers per buffer?
-  (let ((faces (seq-some #'lsp--workspace-semantic-highlighting-faces lsp--buffer-workspaces))
+  (let ((faces (seq-some #'lsp--workspace-semantic-tokens-faces lsp--buffer-workspaces))
         (modifier-faces
          (when lsp-semantic-tokens-apply-modifiers
            (seq-some #'lsp--workspace-semantic-highlighting-modifier-faces lsp--buffer-workspaces))))
