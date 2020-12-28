@@ -25,11 +25,13 @@
 
 (require 'lsp-mode)
 
+(declare-function iedit-make-occurrence-overlay "iedit-lib" (begin end))
+(declare-function iedit-start-buffering "iedit-lib" ())
+
 (defvar iedit-mode)
 (defvar iedit-auto-buffering)
 (defvar iedit-occurrences-overlays)
-(declare-function iedit-make-occurrence-overlay "iedit-lib" (begin end))
-(declare-function iedit-start-buffering "iedit-lib" ())
+
 (defun lsp-iedit--on-ranges (ranges)
   "Start an `iedit' operation using RANGES.
 RANGES shall be a list of lsp-`&Range's. They can be acquired
