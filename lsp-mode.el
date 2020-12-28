@@ -5125,6 +5125,7 @@ If ACTION is not set it will be selected from `lsp-code-actions-at-point'."
     (rustic-mode        . rustic-indent-offset)      ; Rust
     (scala-mode         . scala-indent:step)         ; Scala
     (powershell-mode    . powershell-indent)         ; PowerShell
+    (ess-mode           . ess-indent-offset)         ; ESS (R)
 
     (default            . standard-indent))          ; default fallback
   "A mapping from `major-mode' to its indent variable.")
