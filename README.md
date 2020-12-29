@@ -74,6 +74,7 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
   - Semantic tokens as defined by LSP 3.16 (compatible language servers include recent development builds of clangd and rust-analyzer)
   - [which-key](https://github.com/justbur/emacs-which-key/) integration
     for better discovery
+  - [iedit](https://emacs-lsp.github.io/lsp-mode/page/main-features/#iedit)
 
 ## Presentations/demos
   - [System Crafters](https://twitter.com/SystemCrafters) channel
@@ -255,7 +256,7 @@ primary working on/responsible for.
           <sub><b>nbfalcon</b></sub>
         </a>
         <br/>
-        lsp-mode core
+        lsp-mode core | iedit
       </div>
     </td>
   </tr>
