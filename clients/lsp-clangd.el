@@ -115,7 +115,7 @@ number of newlines."
                            (t
                             1))
                    1)))
-         (extra-new-lines (make-string num-lines-threshold ?\n)))
+         (extra-new-lines (make-string (1+ num-lines-threshold) ?\n)))
     (concat "Loading documentation..." extra-new-lines)))
 
 (defun lsp-cpp-flycheck-clang-tidy--show-documentation (error-id)
