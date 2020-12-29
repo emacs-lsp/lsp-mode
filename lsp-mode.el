@@ -1462,6 +1462,9 @@ etc."
 (lsp-defun lsp--range-to-region ((&RangeToPoint :start :end))
   (cons start end))
 
+(lsp-defun lsp--range-text ((&RangeToPoint :start :end))
+  (buffer-substring start end))
+
 (lsp-defun lsp--find-wrapping-range ((&SelectionRange :parent? :range (&RangeToPoint :start :end)))
   (cond
    ((and
