@@ -1,17 +1,19 @@
 ;;; lsp-semantic-tokens.el --- Semantic tokens -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2020
+;; Copyright (C) 2020 emacs-lsp maintainers
 ;;
-;; Author:  <http://github/greg>
-;; Maintainer:  <greg@gregnix-note>
-;; Created: December 26, 2020
-;; Modified: December 26, 2020
-;; Version: 0.0.1
-;; Keywords:
-;; Homepage: https://github.com/greg/lsp-semantic-tokens
-;; Package-Requires: ((emacs 28.0.50) (cl-lib "0.5"))
-;;
-;; This file is not part of GNU Emacs.
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ;;
 ;;; Commentary:
 ;;
