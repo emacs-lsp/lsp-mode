@@ -143,7 +143,7 @@ CALLBACK is the status callback passed by Flycheck."
   (remove-hook 'lsp-on-idle-hook #'lsp-diagnostics--flycheck-buffer t)
 
   (->> (lsp--get-buffer-diagnostics)
-       (-map (-lambda ((&Diagnostic :message :severity? :tags? :code?
+       (-map (-lambda ((&Diagnostic :message :severity? :tags? :code? :source?
                                     :range (&Range :start (&Position :line      start-line
                                                                      :character start-character)
                                                    :end   (&Position :line      end-line
@@ -155,6 +155,7 @@ CALLBACK is the status callback passed by Flycheck."
                 :message message
                 :level (lsp-diagnostics--flycheck-calculate-level severity? tags?)
                 :id code?
+                :group source?
                 :line (lsp-translate-line (1+ start-line))
                 :column (1+ (lsp-translate-column start-character))
                 :end-line (lsp-translate-line (1+ end-line))
@@ -202,7 +203,7 @@ See https://github.com/emacs-lsp/lsp-mode."
       :modes '(lsp-placeholder-mode) ;; placeholder
       :predicate (lambda () lsp-mode)
       :error-explainer (lambda (e)
-                         (cond ((string-prefix-p "clang-tidy" (flycheck-error-message e))
+                         (cond ((string-equal "clang-tidy" (flycheck-error-group e))
                                 (lsp-cpp-flycheck-clang-tidy-error-explainer e))
                                (t (flycheck-error-message e))))))
   (flycheck-mode 1)
