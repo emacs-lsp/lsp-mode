@@ -249,7 +249,7 @@ primary working on/responsible for.
     <td align="center">
       <div>
         <a href="https://github.com/nbfalcon">
-          <img src="https://github.com/nbfalcon.png" width="100px;" style="border-radius: 50%;" alt="kiennq"/>
+          <img src="https://github.com/nbfalcon.png" width="100px;" style="border-radius: 50%;" alt="nbfalcon"/>
           <br/>
           <sub><b>nbfalcon</b></sub>
         </a>
