@@ -81,7 +81,7 @@ on top the flycheck face for that error level."
 (declare-function flycheck-valid-checker-p "ext:flycheck")
 (declare-function flycheck-stop "ext:flycheck")
 
-(declare-function lsp-cpp-flycheck-clang-tidy-error-explainer "clients/lsp-clangd")
+(declare-function lsp-cpp-flycheck-clang-tidy-error-explainer "lsp-clangd")
 
 (defvar flycheck-check-syntax-automatically)
 (defvar flycheck-checker)
