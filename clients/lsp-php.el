@@ -352,7 +352,49 @@ already present."
                       (lsp--set-configuration
                        (lsp-configuration-section "serenata"))))
   :server-id 'serenata))
+
+;;; phpactor
+(defcustom lsp-phpactor-path "~/.composer/vendor/phpactor/phpactor/bin/phpactor"
+  "Path to the `phpactor' command."
+  :group 'lsp-phpactor
+  :type "string")
 
+(lsp-register-client
+ (make-lsp-client
+  :new-connection (lsp-stdio-connection (list lsp-phpactor-path "language-server"))
+  :major-modes '(php-mode)
+  ;; `phpactor' is not really that feature-complete: it doesn't support
+  ;; `textDocument/showOccurence' and sometimes errors (e.g. find references on
+  ;; a global free-standing function).
+  :priority -4
+  ;; Even though `phpactor' itself supports no options, this needs to be
+  ;; serialized as an empty object (otherwise the LS won't even start, due to a
+  ;; type error).
+  :initialization-options (ht)
+  :server-id 'phpactor))
+
+(defcustom lsp-phpactor-extension-alist '(("Phpstan" . "phpactor/language-server-phpstan-extension")
+                                          ("Behat" . "phpactor/behat-extension")
+                                          ("PHPUnit" . "phpactor/phpunit-extension"))
+  "Alist mapping extension names to `composer' packages.
+These extensions can be installed using
+`lsp-phpactor-install-extension'."
+  :type '(alist :key-type "string" :value-type "string")
+  :group 'lsp-phpactor)
+
+(defun lsp-phpactor-install-extension (extension)
+  "Install a `phpactor' EXTENSION.
+See `lsp-phpactor-extension-alist' and "
+  (interactive (list (completing-read "Select extension: "
+                                      lsp-phpactor-extension-alist)))
+  (compilation-start
+   (format "%s extension:install %s"
+           (shell-quote-argument (expand-file-name lsp-phpactor-path))
+           (shell-quote-argument
+            (cdr (assoc extension lsp-phpactor-extension-alist))))
+   nil
+   (lambda (_mode)
+     (format "*Phpactor install %s*" extension))))
 
 (provide 'lsp-php)
 ;;; lsp-php.el ends here

@@ -70,6 +70,7 @@ nav:
     - PHP (intelephense): page/lsp-intelephense.md
     - PHP (Serenata): page/lsp-serenata.md
     - PHP (felixbecker): page/lsp-php.md
+    - PHP (phpactor): page/lsp-phpactor.md
     - Powershell: page/lsp-pwsh.md
     - Prolog: page/lsp-prolog.md
     - PureScript: page/lsp-purescript.md
