@@ -367,7 +367,8 @@ already present."
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection (list lsp-phpactor-path "language-server"))
+  :new-connection (lsp-stdio-connection
+                   (lambda () (list lsp-phpactor-path "language-server")))
   :major-modes '(php-mode)
   ;; `phpactor' is not really that feature-complete: it doesn't support
   ;; `textDocument/showOccurence' and sometimes errors (e.g. find references on
