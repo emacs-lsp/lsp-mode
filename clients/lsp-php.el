@@ -354,6 +354,12 @@ already present."
   :server-id 'serenata))
 
 ;;; phpactor
+
+(defgroup lsp-phpactor nil
+  "LSP support for Phpactor."
+  :link '(url-link "https://github.com/phpactor/phpactor")
+  :group 'lsp-mode)
+
 (defcustom lsp-phpactor-path "~/.composer/vendor/phpactor/phpactor/bin/phpactor"
   "Path to the `phpactor' command."
   :group 'lsp-phpactor
@@ -384,7 +390,8 @@ These extensions can be installed using
 
 (defun lsp-phpactor-install-extension (extension)
   "Install a `phpactor' EXTENSION.
-See `lsp-phpactor-extension-alist' and "
+See `lsp-phpactor-extension-alist' and
+https://phpactor.readthedocs.io/en/develop/extensions.html."
   (interactive (list (completing-read "Select extension: "
                                       lsp-phpactor-extension-alist)))
   (compilation-start
