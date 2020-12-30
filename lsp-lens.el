@@ -347,7 +347,7 @@ CALLBACK - callback for the lenses."
   :group 'lsp-mode
   :global nil
   :init-value nil
-  :lighter "Lens"
+  :lighter " Lens"
   (cond
    (lsp-lens-mode
     (add-hook 'lsp-on-idle-hook #'lsp-lens--idle-function nil t)
