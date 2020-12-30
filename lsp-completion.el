@@ -399,9 +399,7 @@ The MARKERS and PREFIX value will be attached to each candidate."
             (lambda ()
               (lsp--catch 'input
                   (let ((lsp--throw-on-input lsp-completion-use-last-result)
-                        (same-session? (and (not done?)
-                                            (not result)
-                                            lsp-completion--cache
+                        (same-session? (and lsp-completion--cache
                                             (equal (cl-first lsp-completion--cache) bounds-start)
                                             (s-prefix?
                                              (plist-get (cddr lsp-completion--cache) :prefix)
@@ -444,7 +442,7 @@ The MARKERS and PREFIX value will be attached to each candidate."
                                                           (cond
                                                            ((and done? (not (seq-empty-p items)))
                                                             (lsp-completion--to-internal items))
-                                                            ((not done?) :incomplete))
+                                                           ((not done?) :incomplete))
                                                           :lsp-items nil
                                                           :markers markers
                                                           :prefix prefix)
@@ -675,8 +673,9 @@ The CLEANUP-FN will be called to cleanup."
   :lighter ""
   (let ((completion-started-fn (lambda (&rest _)
                                  (setq-local lsp-inhibit-lsp-hooks t)))
-        (after-completion-fn (lambda (&rest _)
-                               (lsp-completion--clear-cache)
+        (after-completion-fn (lambda (result)
+                               (when (stringp result)
+                                 (lsp-completion--clear-cache))
                                (setq-local lsp-inhibit-lsp-hooks nil))))
     (cond
      (lsp-completion-mode
