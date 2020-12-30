@@ -9,7 +9,7 @@
         <meta name="description" content="Language Server Protocol Support for Emacs">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-crystal/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-phpactor/">
       
       
         <meta name="author" content="ercdll1337@gmail.com">
@@ -19,7 +19,7 @@
     
     
       
-        <title>Crystal - LSP Mode - LSP support for Emacs</title>
+        <title>PHP (phpactor) - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#crystal" class="md-skip">
+        <a href="#phpactor" class="md-skip">
           Skip to content
         </a>
       
@@ -97,7 +97,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              Crystal
+              PHP (phpactor)
             
           </span>
         </div>
@@ -703,76 +703,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Crystal
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-    
-    <a href="./" title="Crystal" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../lsp-crystal/" title="Crystal" class="md-nav__link">
       Crystal
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-    <nav class="md-nav" aria-label="Installation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-not-available" class="md-nav__link">
-    Debugger: Not available
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -1224,11 +1159,96 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../lsp-phpactor/" title="PHP (phpactor)" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        PHP (phpactor)
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" title="PHP (phpactor)" class="md-nav__link md-nav__link--active">
       PHP (phpactor)
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#server" class="md-nav__link">
+    Server
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugger-yes" class="md-nav__link">
+    Debugger: yes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-configurations" class="md-nav__link">
+    Available configurations
+  </a>
+  
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-phpactor-path" class="md-nav__link">
+    lsp-phpactor-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-phpactor-extension-alist" class="md-nav__link">
+    lsp-phpactor-extension-alist
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -1866,8 +1886,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#debugger-not-available" class="md-nav__link">
-    Debugger: Not available
+  <a href="#debugger-yes" class="md-nav__link">
+    Debugger: yes
   </a>
   
 </li>
@@ -1881,6 +1901,26 @@
   <a href="#available-configurations" class="md-nav__link">
     Available configurations
   </a>
+  
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-phpactor-path" class="md-nav__link">
+    lsp-phpactor-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-phpactor-extension-alist" class="md-nav__link">
+    lsp-phpactor-extension-alist
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1896,18 +1936,29 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/lsp-crystal.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/lsp-phpactor.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
                 
-                <h1 id="crystal">Crystal<a class="headerlink" href="#crystal" title="Permanent link">#</a></h1>
+                <h1 id="phpactor">Phpactor<a class="headerlink" href="#phpactor" title="Permanent link">#</a></h1>
 <h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For more information about the LSP server, check <a href="https://github.com/crystal-lang-tools/scry">scry</a>.</p>
+<p>For more information about the LSP server, check <a href="https://github.com/phpactor/phpactor">phpactor</a>.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
-<p>For more instructions on how to install manually, check <a href="https://github.com/crystal-lang-tools/scry#installation">here</a>.</p>
-<h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
+<p><code>composer g require phpactor/phpactor</code></p>
+<p>For more instructions on how to install manually, check <a href="https://phpactor.readthedocs.io/en/develop/usage/standalone.html#installation-global">here</a>.</p>
+<h3 id="debugger-yes">Debugger: yes<a class="headerlink" href="#debugger-yes" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
+<h3 id="lsp-phpactor-path"><code>lsp-phpactor-path</code><a class="headerlink" href="#lsp-phpactor-path" title="Permanent link">#</a></h3>
+<p><em>Default: <code>~/.composer/vendor/phpactor/phpactor/bin/phpactor</code></em></p>
+<p>Path to the ‘phpactor’ command.</p>
+<hr />
+<h3 id="lsp-phpactor-extension-alist"><code>lsp-phpactor-extension-alist</code><a class="headerlink" href="#lsp-phpactor-extension-alist" title="Permanent link">#</a></h3>
+<p><em>Default: <code>((Phpstan . phpactor/language-server-phpstan-extension) (Behat . phpactor/behat-extension) (PHPUnit . phpactor/phpunit-extension))</code></em></p>
+<p>Alist mapping extension names to ‘composer’ packages.
+These extensions can be installed using
+‘lsp-phpactor-install-extension’.</p>
+<hr />
                 
                   
                     
@@ -1939,7 +1990,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../lsp-cmake/" title="CMake" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../lsp-php/" title="PHP (felixbecker)" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -1948,19 +1999,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                CMake
+                PHP (felixbecker)
               </div>
             </div>
           </a>
         
         
-          <a href="../lsp-css/" title="CSS/LessCSS/SASS/SCSS" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../lsp-pwsh/" title="Powershell" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                CSS/LessCSS/SASS/SCSS
+                Powershell
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
