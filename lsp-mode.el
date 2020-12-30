@@ -139,7 +139,7 @@ the buffer when it becomes large."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
-(define-obsolete-variable-alias 'lsp-enable-semantic-highlighting 'lsp-enable-semantic-tokens "lsp-mode 7.1")
+(define-obsolete-variable-alias 'lsp-enable-semantic-highlighting 'lsp-semantic-tokens-enable "lsp-mode 7.1")
 
 (defcustom lsp-semantic-tokens-enable nil
   "Enable/disable support for semantic tokens.
