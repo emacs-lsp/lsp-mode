@@ -75,13 +75,10 @@ on top the flycheck face for that error level."
                   "ext:flycheck" (symbol docstring &rest properties))
 (declare-function flycheck-error-new "ext:flycheck" t t)
 (declare-function flycheck-error-message "ext:flycheck" (err) t)
-(declare-function flycheck-error-group "ext:flycheck" (err) t)
 (declare-function flycheck-define-error-level "ext:flycheck" (level &rest properties))
 (declare-function flycheck-buffer "ext:flycheck")
 (declare-function flycheck-valid-checker-p "ext:flycheck")
 (declare-function flycheck-stop "ext:flycheck")
-
-(declare-function lsp-cpp-flycheck-clang-tidy-error-explainer "lsp-clangd")
 
 (defvar flycheck-check-syntax-automatically)
 (defvar flycheck-checker)
@@ -191,6 +188,9 @@ from the language server."
                      (add-hook 'lsp-on-idle-hook #'lsp-diagnostics--flycheck-buffer nil t)
                      (lsp--idle-reschedule (current-buffer)))))))))
 
+(cl-defgeneric lsp-diagnostics-flycheck-error-explainer (e _server-id)
+  "Explain a `flycheck-error' E in a generic way depending on the SERVER-ID."
+  (flycheck-error-message e))
 
 (defun lsp-diagnostics-flycheck-enable (&rest _)
   "Enable flycheck integration for the current buffer."
@@ -204,9 +204,8 @@ See https://github.com/emacs-lsp/lsp-mode."
       :modes '(lsp-placeholder-mode) ;; placeholder
       :predicate (lambda () lsp-mode)
       :error-explainer (lambda (e)
-                         (cond ((string-equal "clang-tidy" (flycheck-error-group e))
-                                (lsp-cpp-flycheck-clang-tidy-error-explainer e))
-                               (t (flycheck-error-message e))))))
+                         (lsp-diagnostics-flycheck-error-explainer
+                          e (lsp--workspace-server-id (car-safe (lsp-workspaces)))))))
   (flycheck-mode 1)
   (flycheck-stop)
   (setq-local flycheck-checker 'lsp)
