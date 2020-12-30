@@ -75,6 +75,7 @@ on top the flycheck face for that error level."
                   "ext:flycheck" (symbol docstring &rest properties))
 (declare-function flycheck-error-new "ext:flycheck" t t)
 (declare-function flycheck-error-message "ext:flycheck" (err) t)
+(declare-function flycheck-error-group "ext:flycheck" (err) t)
 (declare-function flycheck-define-error-level "ext:flycheck" (level &rest properties))
 (declare-function flycheck-buffer "ext:flycheck")
 (declare-function flycheck-valid-checker-p "ext:flycheck")
