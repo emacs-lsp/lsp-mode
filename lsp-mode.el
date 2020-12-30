@@ -5514,7 +5514,7 @@ REFERENCES? t when METHOD returns references."
   (let ((loc (lsp-request method
                           (append (lsp--text-document-position-params) extra))))
     (if (seq-empty-p loc)
-        (lsp--error "Not found for: %s" (thing-at-point 'symbol t))
+        (lsp--error "Not found for: %s" (or (thing-at-point 'symbol t) ""))
       (lsp-show-xrefs (lsp--locations-to-xref-items loc) display-action references?))))
 
 (cl-defun lsp-find-declaration (&key display-action)
