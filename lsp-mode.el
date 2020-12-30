@@ -4434,12 +4434,13 @@ and the position respectively."
   "Return a list of `xref-item' given LOCATIONS, which can be of
 type Location, LocationLink, Location[] or LocationLink[]."
   (setq locations
-        (if (and (sequencep locations)
-                 (let ((fst (lsp-seq-first locations)))
-                   (or (lsp-location? fst)
-                       (lsp-location-link? fst))))
-            (append locations nil)
-          (when locations (list locations))))
+        (pcase locations
+          ((seq (or (Location)
+                    (LocationLink)))
+           (append locations nil))
+          ((or (Location)
+               (LocationLink))
+           (list locations))))
 
   (cl-labels ((get-xrefs-in-file
                (file-locs)
@@ -4707,17 +4708,15 @@ When language is nil render as markup if `markdown-mode' is loaded."
   "Render CONTENT element."
   (let ((inhibit-message t))
     (or
-     (cond
-      ((lsp-marked-string? content)
-       (-let [(&MarkedString :language :value) content]
-         (lsp--render-string value language)))
-      ((lsp-markup-content? content)
-       (-let [(&MarkupContent :value :kind) content]
-         (lsp--render-string value kind)))
-      ;; plain string
-      ((stringp content) (lsp--render-string content "markdown"))
-      ((null content) "")
-      (t (error "Failed to handle %s" content)))
+     (pcase content
+       ((MarkedString :value :language)
+        (lsp--render-string value language))
+       ((MarkupContent :value :kind)
+        (lsp--render-string value kind))
+       ;; plain string
+       ((pred stringp) (lsp--render-string content "markdown"))
+       ((pred null) "")
+       (_ (error "Failed to handle %s" content)))
      "")))
 
 (defun lsp--create-unique-string-fn ()
