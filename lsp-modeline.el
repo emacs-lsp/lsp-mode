@@ -82,7 +82,7 @@
 
 (defun lsp-modeline--code-actions-icon (face)
   "Build the icon for modeline code actions using FACE."
-  (if (require 'all-the-icons nil t)
+  (if (functionp 'all-the-icons-octicon)
       (all-the-icons-octicon "light-bulb"
                              :face face
                              :v-adjust -0.0575)
@@ -243,7 +243,7 @@ The `:global' workspace is global one.")
     (-> (s-join "/" strs)
         (propertize 'mouse-face 'mode-line-highlight
                     'help-echo "mouse-1: Show diagnostics"
-                    'local-map (when (require 'lsp-treemacs nil t)
+                    'local-map (when (functionp 'lsp-treemacs-errors-list)
                                  (make-mode-line-mouse-map
                                   'mouse-1 #'lsp-treemacs-errors-list))))))
 

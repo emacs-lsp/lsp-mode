@@ -128,7 +128,6 @@ This will help minimize popup flickering issue in `company-mode'."
 
 (declare-function company-mode "ext:company")
 (declare-function company-doc-buffer "ext:company")
-(declare-function yas-expand-snippet "ext:yasnippet")
 
 (cl-defun lsp-completion--make-item (item &key markers prefix)
   "Make completion item from lsp ITEM and with MARKERS and PREFIX."

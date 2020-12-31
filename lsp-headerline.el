@@ -162,14 +162,14 @@ caching purposes.")
   (or
    lsp-headerline-arrow
    (setq lsp-headerline-arrow
-         (if (require 'all-the-icons nil t)
+         (if (functionp 'all-the-icons-material)
              (all-the-icons-material "chevron_right"
                                      :face 'lsp-headerline-breadcrumb-separator-face)
            (propertize "›" 'face 'lsp-headerline-breadcrumb-separator-face)))))
 
 (lsp-defun lsp-headerline--symbol-icon ((&DocumentSymbol :kind))
   "Build the SYMBOL icon for headerline breadcrumb."
-  (when (require 'lsp-treemacs nil t)
+  (when (functionp 'lsp-treemacs-symbol-icon)
     (concat (lsp-headerline--fix-image-background (lsp-treemacs-symbol-icon kind))
             " ")))
 
