@@ -350,6 +350,7 @@ CALLBACK - callback for the lenses."
   :lighter " Lens"
   (cond
    (lsp-lens-mode
+    (add-hook 'lsp-unconfigure-hook #'lsp-lens--disable nil t)
     (add-hook 'lsp-on-idle-hook #'lsp-lens--idle-function nil t)
     (add-hook 'lsp-on-change-hook #'lsp-lens--schedule-refresh-modified nil t)
     (add-hook 'after-save-hook #'lsp-lens--schedule-refresh nil t)
@@ -365,7 +366,8 @@ CALLBACK - callback for the lenses."
     (setq lsp-lens--refresh-timer nil)
     (lsp-lens-hide)
     (setq lsp-lens--last-count nil)
-    (setq lsp-lens--backend-cache nil))))
+    (setq lsp-lens--backend-cache nil)
+    (remove-hook 'lsp-unconfigure-hook #'lsp-lens--disable t))))
 
 
 ;; avy integration
