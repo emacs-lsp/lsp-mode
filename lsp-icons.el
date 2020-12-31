@@ -21,6 +21,9 @@
 ;;
 ;;; Code:
 
+(require 'lsp-treemacs nil t)
+(require 'all-the-icons nil t)
+
 (defgroup lsp-icons nil
   "LSP icons"
   :group 'lsp-mode
@@ -64,7 +67,7 @@ FEATURE is the feature that will use the icon which we should check
 if its enabled."
   (when (and file-ext
              (lsp-icons--enabled-for-feature feature)
-             (require 'lsp-treemacs nil t))
+             (featurep 'lsp-treemacs-get-icon))
     (lsp-icons--fix-image-background
      (lsp-treemacs-get-icon file-ext))))
 
@@ -74,7 +77,7 @@ FEATURE is the feature that will use the icon which we should check
 if its enabled."
   (when (and kind
              (lsp-icons--enabled-for-feature feature)
-             (require 'lsp-treemacs nil t))
+             (featurep 'lsp-treemacs-symbol-icon))
     (lsp-icons--fix-image-background
      (lsp-treemacs-symbol-icon kind))))
 
@@ -83,7 +86,7 @@ if its enabled."
 Fallback to FALLBACK string if not found or not available.
 FEATURE is the feature that will use the icon which we should check
 if its enabled."
-  (if (and (require 'all-the-icons nil t)
+  (if (and (featurep 'all-the-icons-material)
            (lsp-icons--enabled-for-feature feature))
       (all-the-icons-material icon-name
                               :face face)
