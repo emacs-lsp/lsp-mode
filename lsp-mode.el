@@ -4857,6 +4857,7 @@ Shown after the code action in `lsp-execute-code-action',
 ... (see `lsp-preferred-code-action-face').")
 
 (lsp-defun lsp--code-action-title ((action &as &CodeAction :title :is-preferred? :disabled?))
+  "Render an `&CodeAction' as a propertized string."
   ;; It would be strange for a code action to be both preferred and disabled, so
   ;; `cond' is probably good enough.
   (cond (is-preferred?
