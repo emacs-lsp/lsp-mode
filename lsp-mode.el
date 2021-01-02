@@ -4858,17 +4858,14 @@ Shown after the code action in `lsp-execute-code-action',
 
 (lsp-defun lsp--code-action-title ((action &as &CodeAction :title :is-preferred? :disabled?))
   "Render an `&CodeAction' as a propertized string."
-  ;; It would be strange for a code action to be both preferred and disabled, so
-  ;; `cond' is probably good enough.
-  (cond (is-preferred?
-         (propertize title 'face 'lsp-preferred-code-action-face))
-        (disabled?
-         (concat
-          (propertize title 'face 'lsp-disabled-code-action-face)
-          ;; Support spec-breaking servers that don't specify a reason.
-          (when-let ((reason (lsp:code-action-disabled-reason disabled?)))
-            (concat " " (propertize reason 'face 'lsp-disabled-code-action-reason-face)))))
-        (t title)))
+  (--doto (copy-sequence title)
+    (let ((len (length it)))
+      (when is-preferred?
+        (add-face-text-property 0 len 'lsp-preferred-code-action-face nil it))
+      (when disabled?
+        (add-face-text-property 0 len 'lsp-disabled-code-action-face nil it)
+        (-when-let ((&CodeActionDisabled :reason) disabled?)
+          (cl-callf concat it " " (propertize reason 'face 'lsp-disabled-code-action-reason-face)))))))
 
 (defun lsp--select-action (actions)
   "Select an action to execute from ACTIONS."
