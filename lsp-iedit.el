@@ -84,7 +84,7 @@ language server doesn't support renaming.
 See also `lsp-enable-symbol-highlighting'."
   (interactive)
   (require 'evil-multiedit)
-  (if (fboundp 'ahs-clear) (ahs-clear))
+  (when (fboundp 'ahs-clear) (ahs-clear))
   (setq evil-multiedit--dont-recall t)
   (lsp-iedit-highlights)
   (evil-multiedit-state))
