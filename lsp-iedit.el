@@ -28,12 +28,14 @@
 (declare-function iedit-make-occurrence-overlay "iedit-lib" (begin end))
 (declare-function iedit-start-buffering "iedit-lib" ())
 (declare-function iedit-lib-start "iedit-lib" ())
+(declare-function evil-multiedit-state "evil-multiedit" ())
 
 (defvar iedit-mode)
 (defvar iedit-auto-buffering)
 (defvar iedit-occurrences-overlays)
 (defvar iedit-occurrence-keymap)
 (defvar iedit-mode-occurrence-keymap)
+(defvar evil-multiedit--dont-recall)
 
 (defun lsp-iedit--on-ranges (ranges)
   "Start an `iedit' operation using RANGES.
@@ -72,6 +74,20 @@ See also `lsp-enable-symbol-highlighting'."
   (let ((highlights (lsp-request "textDocument/documentHighlight"
                                  (lsp--text-document-position-params))))
     (lsp-iedit--on-ranges (mapcar #'lsp:document-highlight-range highlights))))
+
+;;;###autoload
+(defun lsp-evil-multiedit-highlights ()
+  "Start an `evil-multiedit' operation on the documentHighlights at point.
+This can be used as a primitive `lsp-rename' replacement if the
+language server doesn't support renaming.
+
+See also `lsp-enable-symbol-highlighting'."
+  (interactive)
+  (require 'evil-multiedit)
+  (if (fboundp 'ahs-clear) (ahs-clear))
+  (setq evil-multiedit--dont-recall t)
+  (lsp-iedit-highlights)
+  (evil-multiedit-state))
 
 (provide 'lsp-iedit)
 ;;; lsp-iedit.el ends here
