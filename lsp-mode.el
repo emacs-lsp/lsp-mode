@@ -2000,7 +2000,7 @@ WORKSPACE is the workspace that contains the diagnostics."
     (seq-doseq (range (lsp--get-folding-ranges))
       (when (lsp--point-inside-range-p point range)
         (if inner
-            (when (lsp--range-inside-p inner range)
+            (when (lsp--range-inside-p range inner)
               (setq inner range))
           (setq inner range))))
     inner))
