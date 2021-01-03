@@ -27,10 +27,13 @@
 
 (declare-function iedit-make-occurrence-overlay "iedit-lib" (begin end))
 (declare-function iedit-start-buffering "iedit-lib" ())
+(declare-function iedit-lib-start "iedit-lib" ())
 
 (defvar iedit-mode)
 (defvar iedit-auto-buffering)
 (defvar iedit-occurrences-overlays)
+(defvar iedit-occurrence-keymap)
+(defvar iedit-mode-occurrence-keymap)
 
 (defun lsp-iedit--on-ranges (ranges)
   "Start an `iedit' operation using RANGES.
@@ -44,9 +47,11 @@ from various lsp protocol requests, e.g.
                   iedit-occurrences-overlays))
           ranges)
     ;; See `iedit-start'; TODO: upstream this
+    (setq iedit-occurrence-keymap iedit-mode-occurrence-keymap)
     (setq iedit-mode t)
     (when iedit-auto-buffering
       (iedit-start-buffering))
+    (iedit-lib-start)
     (run-hooks 'iedit-mode-hook)
     (add-hook 'before-revert-hook 'iedit-done nil t)
     (add-hook 'kbd-macro-termination-hook 'iedit-done nil t)
