@@ -122,6 +122,7 @@ This will help minimize popup flickering issue in `company-mode'."
 
 (defvar yas-indent-line)
 (defvar company-backends)
+(defvar company-abort-on-unique-match)
 
 (defvar lsp-completion--no-reordering nil
   "Dont do client-side reordering completion items when set.")
@@ -688,6 +689,7 @@ The CLEANUP-FN will be called to cleanup."
        ((equal lsp-completion-provider :none))
        ((and (member lsp-completion-provider '(:capf nil t))
              (fboundp 'company-mode))
+        (setq-local company-abort-on-unique-match nil)
         (company-mode 1)
         (when (or (null lsp-completion-provider)
                   (member 'company-lsp company-backends))
