@@ -1996,26 +1996,26 @@ WORKSPACE is the workspace that contains the diagnostics."
 
 (cl-defun lsp--get-current-innermost-folding-range (&optional (point (point)))
   "Return the innermost folding range POINT lies in."
-  (let (inner)
-    (seq-doseq (range (lsp--get-folding-ranges))
-      (when (lsp--point-inside-range-p point range)
-        (if inner
-            (when (lsp--range-inside-p range inner)
-              (setq inner range))
-          (setq inner range))))
-    inner))
+  (seq-reduce (lambda (innermost-range curr-range)
+                (if (and (lsp--point-inside-range-p point curr-range)
+                         (or (null innermost-range)
+                             (lsp--range-inside-p curr-range innermost-range)))
+                    curr-range
+                  innermost-range))
+              (lsp--get-folding-ranges)
+              nil))
 
 (cl-defun lsp--get-current-outermost-folding-range (&optional (point (point)))
   "Return the outermost folding range POINT lies in."
-  (let (outer width)
-    (seq-doseq (range (lsp--get-folding-ranges))
-      (when (lsp--point-inside-range-p point range)
-        (setq width (lsp--folding-range-width range))
-        (if outer
-            (when (> width (car outer))
-              (setq outer (cons width range)))
-          (setq outer (cons width range)))))
-    (cdr outer)))
+  (cdr (seq-reduce (-lambda ((best-pair &as outermost-width . _) curr-range)
+                     (let ((curr-width (lsp--folding-range-width curr-range)))
+                       (if (and (lsp--point-inside-range-p point curr-range)
+                                (or (null best-pair)
+                                    (> curr-width outermost-width)))
+                           (cons curr-width curr-range)
+                         best-pair)))
+                   (lsp--get-folding-ranges)
+                   nil)))
 
 (defun lsp--folding-range-at-point-bounds ()
   (if (and (or (lsp--capability :foldingRangeProvider)
