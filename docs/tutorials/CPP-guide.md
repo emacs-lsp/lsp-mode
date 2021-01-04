@@ -171,7 +171,7 @@ Yeah, `lsp-mode` supports mouse!
 
 - `xref-find-definitions`(`M-.` and `s-l g g`) - find definition(s) at point
 - `xref-find-references`(`s-l g r`) - find references to the symbol at point
-![References](images/images/references-helm.png "References helm")
+![References](images/references-helm.png "References helm")
 - `helm-imenu` - browse the symbols in current document
 - `helm-lsp-workspace-symbol` - find symbol in current project
 ![workspace symbols](images/workspace-symbols.png "workspace symbols")

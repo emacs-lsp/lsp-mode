@@ -217,7 +217,10 @@ For more info on all available refactorings, check [here](https://github.com/clo
 Another feature recently introduced in LSP 3.16, is **semantic tokens**, which consists of the LSP server return to 
 client the tokens and what they mean, with that, `lsp-mode` can color the tokens according to their meaning on the code:
 
-![semantic-tokens](images/clojure-semantic-tokens.png "semantic-tokens")
+| semantic-tokens OFF                                           | semantic-tokens ON                                           | CIDER code evaluated                                            |
+|---------------------------------------------------------------|--------------------------------------------------------------|-----------------------------------------------------------------|
+| <img src="/tutorials/images/clojure-semantic-tokens-off.png"> | <img src="/tutorials/images/clojure-semantic-tokens-on.png"> | <img src="/tutorials/images/clojure-semantic-tokens-cider.png"> |
+|                                                               |                                                              |                                                                 |
 
 ## Performance
 
