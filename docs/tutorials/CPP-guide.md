@@ -2,7 +2,7 @@
 disqus: emacs-lsp
 ---
 
-# Configuring `Emacs` a `C/C++` IDE
+# Configuring `Emacs` as a `C/C++` IDE
 
 In this guide, I will show you how to configure `lsp-mode` and `dap-mode` for C/C++ development, using `GNU Emacs` as an example code base. At the end of this tutorial, Emacs should provide you with all the language-aware editor features you'd expect from a modern C++ IDE, such as
 
