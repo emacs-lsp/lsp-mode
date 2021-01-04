@@ -5,29 +5,28 @@ disqus: emacs-lsp
 
 # Configuring `Emacs` as a `Clojure` IDE
 
-In this guide, I will show you how to configure emacs to develop for Clojure
+In this guide, I will show you how to configure Emacs to develop Clojure
 using: 
 
-- `lsp-mode`, which have a lot of IDE features like **completion**, **renaming**
-**find-references**, **find-definition**, **code lens**, **code actions**
-- [cider](https://github.com/clojure-emacs/cider),
-the Emacs package most famous for a Clojure **REPL driven development**. 
+- `lsp-mode`, which has many IDE features like **completion**, **renaming**,
+**reference-searching**, **definition-finding**, **code lenses**, and **code actions**
+- [CIDER](https://github.com/clojure-emacs/cider),
+the Emacs package most famous for enabling **REPL-driven development** with Clojure.
 
 ## Why should I try LSP for Clojure?
 
-When I started programming for Clojure in Emacs coming from Java world, it was odd to me that 
-for almost everything you need to do, **you need a REPL running in your project**, and if you change anything
-on it, you would need to reload the namespace/code that was changed to apply changes on your REPL, also I 
-missed a lot of features I used to use on my day that works pretty well for Java like cleaning unused imports, 
-call hierarchy of a method/function, formatting, real-time syntax checking, and code actions like adding a missing import.
-Then I found [clojure-lsp](https://github.com/clojure-lsp/clojure-lsp), which implements most of those features and 
-since that, I use it along with `cider` for more than a year without issues. 
+Coming from the Java world, when I started programming for Clojure in Emacs, it was odd to me that 
+for almost everything you needed to do with Clojure, **you needed a REPL running in your project**, and if you changed anything
+in your project, you would need to reload the modified namespace/code to see the changes in the REPL.
+I also
+missed a lot of features popularized by Java IDEs, like cleaning unused imports, 
+viewing the call hierarchy of a method/function, formatting code automatically, checking syntax in real-time, and using code actions that could, for example, add a missing import.
+Ever since I found [clojure-lsp](https://github.com/clojure-lsp/clojure-lsp), which implements most of those features, I have been using it alongside `CIDER` without issues.
 
-I really like `cider` and I think is one of the best tools for Clojure development built indeed,
-but that does not mean you cannot use other packages along with it to improve your development.
+While I really like `CIDER` and believe it is one of the best tools for Clojure development,
+you can complement it with `clojure-lsp` to make programming in Clojure even better.
 
-After `cider` is running (REPL plugged), you can have a lot of those features too so they may conflict, 
-like `Find definition` for example, you just need to tell Emacs which one is that you want.
+Once it is running (and you are plugged into the REPL), `CIDER` will provide many of the same features that `clojure-lsp` does, so you need to tell Emacs how to resolve conflicts.
 
 Therefore, if you want to have a more *IDE-ish* experience with Emacs, you should read this guide.
 
@@ -107,11 +106,8 @@ For a custom path, you can set the path of the server location with:
 
 ## LSP features
 
-`lsp-mode` has a lot of features and integrations, this guide will show the most important ones 
-that I think it's important on Clojure development. You can check all the features on the 
-official [lsp-mode documentation](https://emacs-lsp.github.io/lsp-mode/)
-
-For more info on `lsp-mode` features, check [here](https://emacs-lsp.github.io/lsp-mode/page/main-features/).
+This guide will focus on the features of `lsp-mode` that are most relevant to Clojure development. You can view documentation of all features at the 
+official [lsp-mode site](https://emacs-lsp.github.io/lsp-mode/page/main-features/).
 
 ### Syntax check
 
@@ -153,8 +149,8 @@ You may need to remove the lookup handlers conflict from `cider` and/or `clj-ref
 
 ### Code lens
 
-LSP supports code lens that are texts that server may want to present in client IDE. `clojure-lsp` 
-use it for references count of a function/variable, they are disabled by default so you need to manually enable via:
+LSP supports code lenses, actionable text snippets that a server may want to display in a client IDE. `clojure-lsp` 
+uses it to show the reference count of a function/variable. They are disabled by default so you need to manually enable them via:
 
 ```elisp
 (setq lsp-lens-enable t)
@@ -164,12 +160,12 @@ use it for references count of a function/variable, they are disabled by default
 
 ### Call hierarchy
 
-This is a feature recently introduced in LSP 3.16, which servers should return the call hierarchy of a function/method.
-As of now, `clojure-lsp` supports only incoming call hierarchy:
+This feature returns the call hierarchy of a function/method.
+As of now, `clojure-lsp` only supports returning the incoming-call hierarchy.
 
-![incoming call-hierarchy](images/clojure-call-hierarchy.png "incoming call-hierarchy")
+![incoming-call hierarchy](images/clojure-call-hierarchy.png "incoming-call hierarchy")
 
-It uses [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs) which you should install to use this feature.
+It uses [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs), which you should install to use this feature.
 
 ### Formatting
 
@@ -219,7 +215,7 @@ For an example configuration, check [here](https://github.com/ericdallo/dotfiles
 
 ## CIDER integration
 
-Therefore, it turns out that it's possible to use both `cider` and `lsp-mode` features for a clojure-development, both work 
-great together, I rely on `cider` when I really need a REPL, to eval anything, run tests, etc. You can just <kbd>M-x</kbd> `cider-jack-in` and the REPL will start normally.
+We suggest using both `cider` and `lsp-mode` for Clojure development. 
+I rely on `cider` to use its REPL, evaluate expressions, run tests, and more. You can execute <kbd>M-x</kbd> `cider-jack-in` to start the REPL.
 
 Author: [@ericdallo](https://github.com/ericdallo)
