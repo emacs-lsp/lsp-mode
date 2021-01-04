@@ -3,9 +3,9 @@ author: ericdallo
 disqus: emacs-lsp
 ---
 
-Author: [@ericdallo](https://github.com/ericdallo)
-
 # Configuring `Emacs` as a `Clojure` IDE
+
+Author: [@ericdallo](https://github.com/ericdallo)
 
 In this guide, I will show you how to configure Emacs to develop Clojure
 using: 
@@ -70,8 +70,8 @@ in your config or you could run in a separate session.
       company-minimum-prefix-length 1
       lsp-lens-enable t
       lsp-signature-auto-activate nil 
-      ; lsp-enable-indentation nil ; uncomment to use cider indentation
-      ; lsp-enable-completion-at-point nil ; uncomment to use cider completion
+      ; lsp-enable-indentation nil ; uncomment to use cider indentation instead of lsp
+      ; lsp-enable-completion-at-point nil ; uncomment to use cider completion instead of lsp
       )
 
 (with-eval-after-load 'lsp-mode
@@ -148,6 +148,20 @@ You may need to remove the lookup handlers conflict from `cider` and/or `clj-ref
 ```
 
 </details>
+
+### Completion
+
+By default, `lsp-mode` uses `company-mode` as its completion front-end. When
+present, `company-mode` and enabled for `lsp-mode`, it will be auto-configured and it will just work using the completion items returned by the LSP server. 
+If you do not want LSP completion, It's possible to use `cider` completion instead with:
+
+```elisp
+(setq lsp-enable-completion-at-point nil) ; use cider completion
+```
+
+![completion](images/clojure-completion.png "completion")
+
+See also [CIDER code completion](https://docs.cider.mx/cider/usage/code_completion.html)
 
 ### Code lens
 
