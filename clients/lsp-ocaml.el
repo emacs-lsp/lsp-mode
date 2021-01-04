@@ -57,8 +57,8 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/ocaml/ocaml-lsp"))
 
-(define-obsolete-variable-alias 'lsp-merlin 'lsp-ocaml-lsp-server)
-(define-obsolete-variable-alias 'lsp-merlin-command 'lsp-ocaml-lsp-server-command)
+(define-obsolete-variable-alias 'lsp-merlin 'lsp-ocaml-lsp-server "lsp-mode 6.1")
+(define-obsolete-variable-alias 'lsp-merlin-command 'lsp-ocaml-lsp-server-command "lsp-mode 6.1")
 
 (defcustom lsp-ocaml-lsp-server-command
   '("ocamllsp")
