@@ -68,7 +68,7 @@ in your config or you could run in separate session.
       company-idle-delay 0.0
       company-minimum-prefix-length 1
       lsp-lens-enable t
-      lsp-signature-auto-activate nil
+      lsp-signature-auto-activate nil 
       ; lsp-enable-indentation nil ; uncomment to use cider indentation
       ; lsp-enable-completion-at-point nil ; uncomment to use cider completion
       )
@@ -210,10 +210,14 @@ client the tokens and what they mean, with that, `lsp-mode` can color the tokens
 ## Performance
 
 For the first time `clojure-lsp` starts in your project, it will scan all jar dependencies and source code, this can 
-take a while depending on your project size, after started, it should be really fast and next times, 
-it will use it's cache and you may not notice any performance
+take a while depending on your project size, after started, it should be really fast and for the next time it will use it's cache and you may not notice any performance issues.
 
-### Cider integration
+## Server settings
+
+`clojure-lsp` has a lot of settings for improving your development experience, make sure to check it out the [settings](https://github.com/clojure-lsp/clojure-lsp#settings) section.
+For an example configuration, check [here](https://github.com/ericdallo/dotfiles/blob/master/.lsp/config.edn).
+
+## CIDER integration
 
 Therefore, it turns out that it's possible to use both `cider` and `lsp-mode` features for a clojure-development, both works 
 great together, I rely on `cider` when I really need a REPL, to eval anything, run tests, etc. You can just <kbd>M-x</kbd> `cider-jack-in` and the REPL will start normally.
