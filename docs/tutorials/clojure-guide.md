@@ -10,9 +10,6 @@ using both `lsp-mode`, which have a lot of IDE features like **completion**, **r
 **find-references**, **find-definition**, **code lens**, **code actions**... and [cider](https://github.com/clojure-emacs/cider),
 the Emacs package most famous for a Clojure **REPL driven development**. 
 
-I thought about writing a guide on how to configure Emacs with `lsp-mode` for Clojure, but [this guide](https://emacs-lsp.github.io/lsp-mode/tutorials/CPP-guide/)
-cover almost of `lsp-mode` common configurations, if you need to setup `lsp-mode` check this guide before.
-
 ## Why should I try LSP for clojure?
 
 When I started programming for clojure in Emacs coming from Java world, it was really odd to me that 
@@ -29,7 +26,53 @@ but that does not mean you cannot use other packages along with it to improve yo
 After `cider` is running (REPL plugged), you can have a lot of those features too so they may conflict, 
 like `Find definition` for example, you just need to tell Emacs which one is that you want.
 
-Therefore, if you want to have a more *IDEish* experience with Emacs, you should read this guide.
+Therefore, if you want to have a more *IDE-ish* experience with Emacs, you should read this guide.
+
+## lsp-mode configuration
+
+Here is a bare-bones `lsp-mode` configuration template to get you started with your own `lsp-mode` config, 
+or to try out in a separate one-off session. Please note that Emacs configuration frameworks such as 
+**Spacemacs** or **Doom Emacs** often ship with `lsp-mode` settings of their own; should you be using such a framework, 
+and find that `lsp-mode` doesn't behave as intended, please make sure to follow this tutorial from a clean starting point.
+in your config or you could run in separate session.
+
+``` emacs-lisp
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+(package-initialize)
+
+(setq package-selected-packages '(clojure-mode lsp-mode cider yasnippet lsp-treemacs helm-lsp projectile hydra flycheck company avy which-key helm-xref))
+
+(when (cl-find-if-not #'package-installed-p package-selected-packages)
+  (package-refresh-contents)
+  (mapc #'package-install package-selected-packages))
+
+;; sample `helm' configuration use https://github.com/emacs-helm/helm/ for details
+(helm-mode)
+(require 'helm-xref)
+(define-key global-map [remap find-file] #'helm-find-files)
+(define-key global-map [remap execute-extended-command] #'helm-M-x)
+(define-key global-map [remap switch-to-buffer] #'helm-mini)
+
+(which-key-mode)
+(add-hook 'clojure-mode-hook 'lsp)
+(add-hook 'clojurescript-mode-hook 'lsp)
+(add-hook 'clojurec-mode-hook 'lsp)
+
+(setq gc-cons-threshold (* 100 1024 1024)
+      read-process-output-max (* 1024 1024)
+      treemacs-space-between-root-nodes nil
+      company-idle-delay 0.0
+      company-minimum-prefix-length 1
+      lsp-lens-enable t
+      lsp-signature-auto-activate nil)
+
+(with-eval-after-load 'lsp-mode
+  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
+  (yas-global-mode))
+```
+
+For more detailed info on how to setup `lsp-mode`, check [here](https://emacs-lsp.github.io/lsp-mode/page/installation/).
 
 ## Installing the language server
 
