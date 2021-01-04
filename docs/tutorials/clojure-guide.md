@@ -68,7 +68,10 @@ in your config or you could run in separate session.
       company-idle-delay 0.0
       company-minimum-prefix-length 1
       lsp-lens-enable t
-      lsp-signature-auto-activate nil)
+      lsp-signature-auto-activate nil
+      ; lsp-enable-indentation nil ; uncomment to use cider indentation
+      ; lsp-enable-completion-at-point nil ; uncomment to use cider completion
+      )
 
 (with-eval-after-load 'lsp-mode
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
