@@ -3,6 +3,8 @@ author: ericdallo
 disqus: emacs-lsp
 ---
 
+Author: [@ericdallo](https://github.com/ericdallo)
+
 # Configuring `Emacs` as a `Clojure` IDE
 
 In this guide, I will show you how to configure Emacs to develop Clojure
@@ -217,5 +219,3 @@ For an example configuration, check [here](https://github.com/ericdallo/dotfiles
 
 We suggest using both `cider` and `lsp-mode` for Clojure development. 
 I rely on `cider` to use its REPL, evaluate expressions, run tests, and more. You can execute <kbd>M-x</kbd> `cider-jack-in` to start the REPL.
-
-Author: [@ericdallo](https://github.com/ericdallo)
