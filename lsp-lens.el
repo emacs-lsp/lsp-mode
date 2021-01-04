@@ -310,6 +310,7 @@ CALLBACK - callback for the lenses."
           (funcall callback lsp-lens--backend-cache lsp--cur-version)
         (lsp-lens--backend-fetch-missing lsp-lens--backend-cache callback lsp--cur-version)))))
 
+;;;###autoload
 (defun lsp-lens--enable ()
   "Enable lens mode."
   (when (and lsp-lens-enable
