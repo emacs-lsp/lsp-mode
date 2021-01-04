@@ -6,8 +6,11 @@ disqus: emacs-lsp
 # Configuring `Emacs` as a `Clojure` IDE
 
 In this guide, I will show you how to configure emacs to develop for Clojure
-using both `lsp-mode`, which have a lot of IDE features like **completion**, **renaming**
-**find-references**, **find-definition**, **code lens**, **code actions**... and [cider](https://github.com/clojure-emacs/cider),
+using: 
+
+- `lsp-mode`, which have a lot of IDE features like **completion**, **renaming**
+**find-references**, **find-definition**, **code lens**, **code actions**
+- [cider](https://github.com/clojure-emacs/cider),
 the Emacs package most famous for a Clojure **REPL driven development**. 
 
 ## Why should I try LSP for clojure?
@@ -28,7 +31,7 @@ like `Find definition` for example, you just need to tell Emacs which one is tha
 
 Therefore, if you want to have a more *IDE-ish* experience with Emacs, you should read this guide.
 
-## lsp-mode configuration
+## Basic configuration
 
 Here is a bare-bones `lsp-mode` configuration template to get you started with your own `lsp-mode` config, 
 or to try out in a separate one-off session. Please note that Emacs configuration frameworks such as 
@@ -210,8 +213,6 @@ it will use it's cache and you may not notice any performance
 ### Cider integration
 
 Therefore, it turns out that it's possible to use both `cider` and `lsp-mode` features for a clojure-development, both works 
-great together, I rely on `cider` when I really need a REPL, to eval anything, run tests, etc.
-
-Also, It's possible to debug your code using `dap-mode`, but this is something to a next tutorial ;)
+great together, I rely on `cider` when I really need a REPL, to eval anything, run tests, etc. You can just <kbd>M-x</kbd> `cider-jack-in` and the REPL will start normally.
 
 Author: [@ericdallo](https://github.com/ericdallo)
