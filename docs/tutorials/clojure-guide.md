@@ -76,7 +76,7 @@ order for it to work, you have to install a separate _language server_ that
 understands the specifics of your target language. 
 
 For Clojure, we will use [clojure-lsp](https://github.com/clojure-lsp/clojure-lsp) which as of 2021/01, is the only [LSP](https://microsoft.github.io/language-server-protocol/implementors/servers/) 
-server for Clojure, it has a lot of useful features that I will try to show in this guide.
+server for Clojure, and has a lot of useful features that I will try to show in this guide.
 
 ### Via lsp-mode
 
