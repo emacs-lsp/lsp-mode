@@ -477,6 +477,13 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :type 'boolean
   :group 'lsp-mode)
 
+(defcustom lsp-after-apply-edits-hook nil
+  "Hooks to run when text edit is applied.
+It contains the operation source."
+  :type 'hook
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "7.1"))
+
 (defcustom lsp-modeline-code-actions-enable t
   "Whether to show code actions on modeline."
   :type 'boolean
@@ -3691,24 +3698,26 @@ in that particular folder."
            document-changes)
     (error "Document changes cannot be applied")))
 
-(lsp-defun lsp--apply-workspace-edit ((&WorkspaceEdit :document-changes? :changes?))
-  "Apply the WorkspaceEdit object EDIT."
-  (if-let ((document-changes (seq-reverse document-changes?)))
-      (progn
-        (lsp--check-document-changes-version document-changes)
-        (->> document-changes
-             (seq-filter (-lambda ((&CreateFile :kind))
-                           (or (not kind) (equal kind "edit"))))
-             (seq-do #'lsp--apply-text-document-edit))
-        (->> document-changes
-             (seq-filter (-lambda ((&CreateFile :kind))
-                           (not (or (not kind) (equal kind "edit")))))
-             (seq-do #'lsp--apply-text-document-edit)))
-    (lsp-map
-     (lambda (uri text-edits)
-       (with-current-buffer (-> uri lsp--uri-to-path find-file-noselect)
-         (lsp--apply-text-edits text-edits)))
-     changes?)))
+(defun lsp--apply-workspace-edit (workspace-edit &optional operation)
+  "Apply the WorkspaceEdit object WORKSPACE-EDIT.
+OPERATION is symbol representing the source of this text edit."
+  (-let (((&WorkspaceEdit :document-changes? :changes?) workspace-edit))
+    (if-let ((document-changes (seq-reverse document-changes?)))
+        (progn
+          (lsp--check-document-changes-version document-changes)
+          (->> document-changes
+               (seq-filter (-lambda ((&CreateFile :kind))
+                             (or (not kind) (equal kind "edit"))))
+               (seq-do (lambda (change) (lsp--apply-text-document-edit change operation))))
+          (->> document-changes
+               (seq-filter (-lambda ((&CreateFile :kind))
+                             (not (or (not kind) (equal kind "edit")))))
+               (seq-do (lambda (change) (lsp--apply-text-document-edit change operation)))))
+      (lsp-map
+       (lambda (uri text-edits)
+         (with-current-buffer (-> uri lsp--uri-to-path find-file-noselect)
+           (lsp--apply-text-edits text-edits operation)))
+       changes?))))
 
 (defmacro lsp-with-filename (file &rest body)
   "Execute BODY with FILE as a context.
@@ -3719,8 +3728,9 @@ Need to handle the case when FILE indicates virtual buffer."
          ,@body)
      ,@body))
 
-(defun lsp--apply-text-document-edit (edit)
+(defun lsp--apply-text-document-edit (edit &optional operation)
   "Apply the TextDocumentEdit object EDIT.
+OPERATION is symbol representing the source of this text edit.
 If the file is not being visited by any buffer, it is opened with
 `find-file-noselect'.
 Because lsp-mode does not store previous document versions, the edit is only
@@ -3762,7 +3772,7 @@ interface TextDocumentEdit {
                              (lsp--uri-to-path))))
          (lsp-with-current-buffer (find-buffer-visiting file-name)
            (lsp-with-filename file-name
-             (lsp--apply-text-edits (lsp:text-document-edit-edits edit))))))))
+             (lsp--apply-text-edits (lsp:text-document-edit-edits edit) operation)))))))
 
 (lsp-defun lsp--position-compare ((&Position :line left-line
                                              :character left-character)
@@ -3883,8 +3893,9 @@ LSP server result."
      (lsp--to-yasnippet-snippet snippet)
      start end expand-env)))
 
-(defun lsp--apply-text-edits (edits)
-  "Apply the EDITS described in the TextEdit[] object."
+(defun lsp--apply-text-edits (edits &optional operation)
+  "Apply the EDITS described in the TextEdit[] object.
+OPERATION is symbol representing the source of this text edit."
   (unless (seq-empty-p edits)
     (atomic-change-group
       (run-hooks 'lsp-before-apply-edits-hook)
@@ -3908,7 +3919,8 @@ LSP server result."
                            (-when-let ((&SnippetTextEdit :range (&RangeToPoint :start)
                                                          :insert-text-format? :new-text) edit)
                              (when (eq insert-text-format? lsp/insert-text-format-snippet)
-                               (lsp--expand-snippet new-text start (+ start (length new-text)))))))))
+                               (lsp--expand-snippet new-text start (+ start (length new-text))))))
+                         (run-hook-with-args 'lsp-after-apply-edits-hook operation))))
           (undo-amalgamate-change-group change-group)
           (progress-reporter-done reporter))))))
 
@@ -3929,7 +3941,7 @@ Only works when mode is 'tick or 'alive."
                             (> end first-edited))
                           edits))
            (lsp--warn "TextEdits will not be applied since document has been modified before of them.")
-         (lsp--apply-text-edits edits)))
+         (lsp--apply-text-edits edits 'completion-cleanup)))
      (lambda ()
        (remove-hook 'before-change-functions func t)))))
 
@@ -4228,7 +4240,7 @@ Applies on type formatting."
                                     :insert-spaces (if indent-tabs-mode :json-false t))
                           :ch (char-to-string ch)
                           :position (lsp--cur-position))
-                         #'lsp--apply-text-edits
+                         (lambda (data) (lsp--apply-text-edits data 'format))
                          :mode 'tick))))
 
 
@@ -4346,7 +4358,8 @@ if it's closing the last buffer in the workspace."
           (condition-case nil
               (lsp--apply-text-edits
                (lsp-request "textDocument/willSaveWaitUntil"
-                            params))
+                            params)
+               'before-save)
             (error)))))))
 
 (defun lsp--on-auto-save ()
@@ -4951,7 +4964,7 @@ It will show up only if current point has signature help."
       (when text-edit?
         (lsp--apply-text-edit text-edit?))
       (when additional-text-edits?
-        (lsp--apply-text-edits additional-text-edits?)))))
+        (lsp--apply-text-edits additional-text-edits? 'color-presentation)))))
 
 (defun lsp--number->color (number)
   (let ((result (format "%x"
@@ -5089,7 +5102,7 @@ It will show up only if current point has signature help."
 If ACTION is not set it will be selected from `lsp-code-actions-at-point'."
   (interactive (list (lsp--select-action (lsp-code-actions-at-point))))
   (when edit?
-    (lsp--apply-workspace-edit edit?))
+    (lsp--apply-workspace-edit edit? 'code-action))
 
   (cond
    ((stringp command?) (lsp--execute-command action))
@@ -5153,7 +5166,7 @@ If ACTION is not set it will be selected from `lsp-code-actions-at-point'."
                                    (lsp--make-document-formatting-params))))
            (if (seq-empty-p edits)
                (lsp--info "No formatting changes provided")
-             (lsp--apply-text-edits edits))))
+             (lsp--apply-text-edits edits 'format))))
         ((lsp-feature? "textDocument/rangeFormatting")
          (save-restriction
            (widen)
@@ -5168,7 +5181,7 @@ If ACTION is not set it will be selected from `lsp-code-actions-at-point'."
                 (lsp--make-document-range-formatting-params s e))))
     (if (seq-empty-p edits)
         (lsp--info "No formatting changes provided")
-      (lsp--apply-text-edits edits))))
+      (lsp--apply-text-edits edits 'format))))
 
 (defmacro lsp-make-interactive-code-action (func-name code-action-kind)
   "Define an interactive function FUNC-NAME that attempts to
@@ -5490,7 +5503,7 @@ relied upon."
                                  `( :textDocument ,(lsp--text-document-identifier)
                                     :position ,(lsp--cur-position)
                                     :newName ,newname))))
-    (lsp--apply-workspace-edit edits)))
+    (lsp--apply-workspace-edit edits 'rename)))
 
 (defun lsp-show-xrefs (xrefs display-action references?)
   (unless (region-active-p) (push-mark nil t))
@@ -5771,7 +5784,7 @@ WORKSPACE is the active workspace."
                      ((equal method "workspace/applyEdit")
                       (list :applied (condition-case err
                                          (prog1 t
-                                           (lsp--apply-workspace-edit (lsp:apply-workspace-edit-params-edit params)))
+                                           (lsp--apply-workspace-edit (lsp:apply-workspace-edit-params-edit params) 'server-requested))
                                        (error
                                         (lsp--error "Failed to apply edits with message %s"
                                                     (error-message-string err))

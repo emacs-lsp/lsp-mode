@@ -231,7 +231,7 @@ server."
 ;;; CSS
 (lsp-defun lsp-css--apply-code-action ((&Command :arguments?))
   "Apply ACTION as workspace edit command."
-  (lsp--apply-text-edits (cl-caddr arguments?)))
+  (lsp--apply-text-edits (cl-caddr arguments?) 'code-action))
 
 (lsp-dependency 'css-languageserver
                 '(:system "css-languageserver")

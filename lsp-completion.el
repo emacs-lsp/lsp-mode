@@ -529,7 +529,7 @@ Others: CANDIDATES"
         (when lsp-completion-enable-additional-text-edit
           (if (or (get-text-property 0 'lsp-completion-resolved candidate)
                   additional-text-edits?)
-              (lsp--apply-text-edits additional-text-edits?)
+              (lsp--apply-text-edits additional-text-edits? 'completion)
             (-let [(callback cleanup-fn) (lsp--create-apply-text-edits-handlers)]
               (lsp-completion--resolve-async
                item
