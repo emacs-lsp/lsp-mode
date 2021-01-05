@@ -187,6 +187,7 @@ It uses [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs), which you sho
 
 For LSP formatting, `clojure-lsp` use [cljfmt](https://github.com/weavejester/cljfmt) with support for all known `cljfmt` 
 settings.
+You can format a region with `lsp-format-region` or the entire buffer with `lsp-format-buffer`.
 
 ![formatting](images/clojure-formatting.gif "formatting")
 
