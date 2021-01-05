@@ -104,9 +104,10 @@ nav:
   - Changelog:
       - page/CHANGELOG.md
   - Tutorials:
-      - 'Configuring Emacs a C/C++ IDE': tutorials/CPP-guide.md
+      - 'Configuring Emacs as a C/C++ IDE': tutorials/CPP-guide.md
       - 'A guide on disabling/enabling lsp-mode features': tutorials/how-to-turn-off.md
       - 'React JavaScript Tutorial in Emacs': tutorials/reactjs-tutorial.md
+      - 'Configuring Emacs as a Clojure IDE': tutorials/clojure-guide.md
   - Blog:
       - 2020:
           - '7.0 Release': blog/2020/7.0-release.md

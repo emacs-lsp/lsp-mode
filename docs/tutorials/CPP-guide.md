@@ -2,7 +2,7 @@
 disqus: emacs-lsp
 ---
 
-# Configuring `Emacs` a `C/C++` IDE
+# Configuring `Emacs` as a `C/C++` IDE
 
 In this guide, I will show you how to configure `lsp-mode` and `dap-mode` for C/C++ development, using `GNU Emacs` as an example code base. At the end of this tutorial, Emacs should provide you with all the language-aware editor features you'd expect from a modern C++ IDE, such as
 
@@ -171,7 +171,7 @@ Yeah, `lsp-mode` supports mouse!
 
 - `xref-find-definitions`(`M-.` and `s-l g g`) - find definition(s) at point
 - `xref-find-references`(`s-l g r`) - find references to the symbol at point
-![References](images/images/references-helm.png "References helm")
+![References](images/references-helm.png "References helm")
 - `helm-imenu` - browse the symbols in current document
 - `helm-lsp-workspace-symbol` - find symbol in current project
 ![workspace symbols](images/workspace-symbols.png "workspace symbols")
