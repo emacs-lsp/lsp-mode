@@ -65,10 +65,6 @@ in your config or you could run in a separate session.
       ; lsp-enable-indentation nil ; uncomment to use cider indentation instead of lsp
       ; lsp-enable-completion-at-point nil ; uncomment to use cider completion instead of lsp
       )
-
-(with-eval-after-load 'lsp-mode
-  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
-  (yas-global-mode))
 ```
 
 For more detailed info on how to setup `lsp-mode`, check [here](https://emacs-lsp.github.io/lsp-mode/page/installation/).
