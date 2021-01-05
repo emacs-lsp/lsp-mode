@@ -1,0 +1,2433 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Language Server Protocol Support for Emacs">
+      
+      
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/tutorials/clojure-guide/">
+      
+      
+        <meta name="author" content="ericdallo">
+      
+      <link rel="shortcut icon" href="../../examples/logo-mini.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.0.0">
+    
+    
+      
+        <title>Configuring Emacs as a Clojure IDE - LSP Mode - LSP support for Emacs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.1d877a71.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.17bd0b03.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/layout.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/members.css">
+    
+    
+      
+        
+<script>window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-165661257-1","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){if(this.value){var e=document.location.pathname;ga("send","pageview",e+"?q="+this.value)}})}),document.addEventListener("DOMContentSwitch",function(){ga("send","pageview",document.location.pathname)})</script>
+<script async src="https://www.google-analytics.com/analytics.js"></script>
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+      
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#configuring-emacs-as-a-clojure-ide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - LSP support for Emacs" class="md-header-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
+      
+  <img src="../../examples/logo-mini.png" alt="logo">
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            LSP Mode - LSP support for Emacs
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              Configuring Emacs as a Clojure IDE
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header-nav__source">
+        
+<a href="https://github.com/emacs-lsp/lsp-mode/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    emacs-lsp/lsp-mode
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+
+  
+
+<nav class="md-tabs md-tabs--active" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../.." class="md-tabs__link">
+          Home
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../../page/languages/" class="md-tabs__link">
+          Languages
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="https://emacs-lsp.github.io/dap-mode" class="md-tabs__link">
+          Debugging
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../../page/gallery/" class="md-tabs__link">
+          Gallery
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../../page/CHANGELOG/" class="md-tabs__link">
+          Changelog
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../CPP-guide/" class="md-tabs__link md-tabs__link--active">
+          Tutorials
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    
+    
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../../blog/2020/7.0-release/" class="md-tabs__link">
+          Blog
+        </a>
+      
+    </li>
+  
+
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="https://opencollective.com/emacs-lsp" class="md-tabs__link">
+          Support us
+        </a>
+      
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - LSP support for Emacs" class="md-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
+      
+  <img src="../../examples/logo-mini.png" alt="logo">
+
+    </a>
+    LSP Mode - LSP support for Emacs
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/emacs-lsp/lsp-mode/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    emacs-lsp/lsp-mode
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1">
+    
+    <label class="md-nav__link" for="nav-1">
+      Home
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Home" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        <span class="md-nav__icon md-icon"></span>
+        Home
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Overview" class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1-2" type="checkbox" id="nav-1-2">
+    
+    <label class="md-nav__link" for="nav-1-2">
+      Setup
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Setup" data-md-level="2">
+      <label class="md-nav__title" for="nav-1-2">
+        <span class="md-nav__icon md-icon"></span>
+        Setup
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/installation/" title="Installation" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/performance/" title="Performance" class="md-nav__link">
+      Performance
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/main-features/" title="Main features" class="md-nav__link">
+      Main features
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/settings/" title="Settings" class="md-nav__link">
+      Settings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/keybindings/" title="Keybindings" class="md-nav__link">
+      Keybindings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1-6" type="checkbox" id="nav-1-6">
+    
+    <label class="md-nav__link" for="nav-1-6">
+      Extensions
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Extensions" data-md-level="2">
+      <label class="md-nav__title" for="nav-1-6">
+        <span class="md-nav__icon md-icon"></span>
+        Extensions
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/lsp-ui" title="UI" class="md-nav__link">
+      UI
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/emacs-lsp/lsp-treemacs" title="Treemacs" class="md-nav__link">
+      Treemacs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/emacs-lsp/helm-lsp" title="Helm" class="md-nav__link">
+      Helm
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/emacs-lsp/lsp-ivy" title="Ivy" class="md-nav__link">
+      Ivy
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/limitations/" title="Limitations" class="md-nav__link">
+      Limitations
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/remote/" title="Remote" class="md-nav__link">
+      Remote
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/faq/" title="FAQ" class="md-nav__link">
+      FAQ
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/troubleshooting/" title="Troubleshooting" class="md-nav__link">
+      Troubleshooting
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/adding-new-language/" title="Adding new language" class="md-nav__link">
+      Adding new language
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      Languages
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Languages" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        <span class="md-nav__icon md-icon"></span>
+        Languages
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/languages/" title="Languages" class="md-nav__link">
+      Languages
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-ada/" title="Ada" class="md-nav__link">
+      Ada
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-angular/" title="Angular" class="md-nav__link">
+      Angular
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-bash/" title="Bash" class="md-nav__link">
+      Bash
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-ccls/" title="C++ (ccls)" class="md-nav__link">
+      C++ (ccls)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-clangd/" title="C++ (clangd)" class="md-nav__link">
+      C++ (clangd)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-csharp/" title="C#" class="md-nav__link">
+      C#
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-clojure/" title="Clojure" class="md-nav__link">
+      Clojure
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-cmake/" title="CMake" class="md-nav__link">
+      CMake
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-crystal/" title="Crystal" class="md-nav__link">
+      Crystal
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-css/" title="CSS/LessCSS/SASS/SCSS" class="md-nav__link">
+      CSS/LessCSS/SASS/SCSS
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/lsp-dart" title="Dart" class="md-nav__link">
+      Dart
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-dhall/" title="Dhall" class="md-nav__link">
+      Dhall
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-dockerfile/" title="Dockerfile" class="md-nav__link">
+      Dockerfile
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-elixir/" title="Elixir" class="md-nav__link">
+      Elixir
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-elm/" title="Elm" class="md-nav__link">
+      Elm
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-erlang/" title="Erlang" class="md-nav__link">
+      Erlang
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-eslint/" title="Eslint" class="md-nav__link">
+      Eslint
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-fsharp/" title="F#" class="md-nav__link">
+      F#
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-fortran/" title="Fortran" class="md-nav__link">
+      Fortran
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-gdscript/" title="GDScript" class="md-nav__link">
+      GDScript
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-gopls/" title="Go (gopls)" class="md-nav__link">
+      Go (gopls)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-bingo.md" title="Go (bingo)" class="md-nav__link">
+      Go (bingo)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-groovy/" title="Groovy" class="md-nav__link">
+      Groovy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-hack/" title="Hack" class="md-nav__link">
+      Hack
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-html/" title="HTML" class="md-nav__link">
+      HTML
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/lsp-haskell" title="Haskell" class="md-nav__link">
+      Haskell
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-emmy-lua/" title="Lua (EmmyLua)" class="md-nav__link">
+      Lua (EmmyLua)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-lua-language-server/" title="Lua (Lua Language Server)" class="md-nav__link">
+      Lua (Lua Language Server)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-lua-lsp/" title="Lua (Lua-Lsp)" class="md-nav__link">
+      Lua (Lua-Lsp)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/lsp-java" title="Java" class="md-nav__link">
+      Java
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-typescript-javascript/" title="JavaScript/TypeScript (sourcegraph)" class="md-nav__link">
+      JavaScript/TypeScript (sourcegraph)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-typescript/" title="JavaScript/TypeScript (theia-ide)" class="md-nav__link">
+      JavaScript/TypeScript (theia-ide)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-flow/" title="JavaScript Flow" class="md-nav__link">
+      JavaScript Flow
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-json/" title="Json" class="md-nav__link">
+      Json
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-julia/" title="Julia" class="md-nav__link">
+      Julia
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-kotlin/" title="Kotlin" class="md-nav__link">
+      Kotlin
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/lsp-mssql" title="MSSQL" class="md-nav__link">
+      MSSQL
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-nim/" title="Nim" class="md-nav__link">
+      Nim
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-nix/" title="Nix" class="md-nav__link">
+      Nix
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-ocaml/" title="OCaml (ocaml)" class="md-nav__link">
+      OCaml (ocaml)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-ocaml-lsp-server/" title="OCaml (ocaml-lsp)" class="md-nav__link">
+      OCaml (ocaml-lsp)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-pascal/" title="Pascal/Object Pascal" class="md-nav__link">
+      Pascal/Object Pascal
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-perl/" title="Perl" class="md-nav__link">
+      Perl
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-intelephense/" title="PHP (intelephense)" class="md-nav__link">
+      PHP (intelephense)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-serenata/" title="PHP (Serenata)" class="md-nav__link">
+      PHP (Serenata)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-php/" title="PHP (felixbecker)" class="md-nav__link">
+      PHP (felixbecker)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-phpactor/" title="PHP (phpactor)" class="md-nav__link">
+      PHP (phpactor)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-pwsh/" title="Powershell" class="md-nav__link">
+      Powershell
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-prolog/" title="Prolog" class="md-nav__link">
+      Prolog
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-purescript/" title="PureScript" class="md-nav__link">
+      PureScript
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-jedi/" title="Python (Jedi Language Server)" class="md-nav__link">
+      Python (Jedi Language Server)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-pyls/" title="Python (Palantir)" class="md-nav__link">
+      Python (Palantir)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/lsp-pyright" title="Python (Pyright)" class="md-nav__link">
+      Python (Pyright)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/lsp-python-ms" title="Python (Microsoft)" class="md-nav__link">
+      Python (Microsoft)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-r/" title="R" class="md-nav__link">
+      R
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-racket-langserver/" title="Racket (jeapostrophe)" class="md-nav__link">
+      Racket (jeapostrophe)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-racket-language-server/" title="Racket (Theia)" class="md-nav__link">
+      Racket (Theia)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-solargraph/" title="Ruby" class="md-nav__link">
+      Ruby
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-rust/" title="Rust" class="md-nav__link">
+      Rust
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/lsp-metals" title="Scala" class="md-nav__link">
+      Scala
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-sqls/" title="SQL (sqls)" class="md-nav__link">
+      SQL (sqls)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-svelte/" title="Svelte" class="md-nav__link">
+      Svelte
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/lsp-sourcekit" title="Swift" class="md-nav__link">
+      Swift
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-terraform/" title="Terraform" class="md-nav__link">
+      Terraform
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-tex/" title="TeX, LaTeX, etc (digestif)" class="md-nav__link">
+      TeX, LaTeX, etc (digestif)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-texlab/" title="TeX, LaTeX, etc (texlab)" class="md-nav__link">
+      TeX, LaTeX, etc (texlab)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-latex/" title="TeX, LaTeX, etc (texlab, external)" class="md-nav__link">
+      TeX, LaTeX, etc (texlab, external)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-verilog/" title="Verilog/SystemVerilog" class="md-nav__link">
+      Verilog/SystemVerilog
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-vhdl/" title="VHDL" class="md-nav__link">
+      VHDL
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-vim/" title="Vimscript" class="md-nav__link">
+      Vimscript
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-vetur/" title="Vue" class="md-nav__link">
+      Vue
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-xml/" title="XML" class="md-nav__link">
+      XML
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-yaml/" title="YAML" class="md-nav__link">
+      YAML
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Debugging
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Debugging" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        <span class="md-nav__icon md-icon"></span>
+        Debugging
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://emacs-lsp.github.io/dap-mode" title="None" class="md-nav__link">
+      None
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Gallery
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Gallery" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        <span class="md-nav__icon md-icon"></span>
+        Gallery
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/gallery/" title="Gallery" class="md-nav__link">
+      Gallery
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+    
+    <label class="md-nav__link" for="nav-5">
+      Changelog
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Changelog" data-md-level="1">
+      <label class="md-nav__title" for="nav-5">
+        <span class="md-nav__icon md-icon"></span>
+        Changelog
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../page/CHANGELOG/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6" checked>
+    
+    <label class="md-nav__link" for="nav-6">
+      Tutorials
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+      <label class="md-nav__title" for="nav-6">
+        <span class="md-nav__icon md-icon"></span>
+        Tutorials
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../CPP-guide/" title="Configuring Emacs as a C/C++ IDE" class="md-nav__link">
+      Configuring Emacs as a C/C++ IDE
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../how-to-turn-off/" title="A guide on disabling/enabling lsp-mode features" class="md-nav__link">
+      A guide on disabling/enabling lsp-mode features
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../reactjs-tutorial/" title="React JavaScript Tutorial in Emacs" class="md-nav__link">
+      React JavaScript Tutorial in Emacs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Configuring Emacs as a Clojure IDE
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" title="Configuring Emacs as a Clojure IDE" class="md-nav__link md-nav__link--active">
+      Configuring Emacs as a Clojure IDE
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-should-i-try-lsp-for-clojure" class="md-nav__link">
+    Why should I try LSP for Clojure?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-configuration" class="md-nav__link">
+    Basic configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installing-the-language-server" class="md-nav__link">
+    Installing the language server
+  </a>
+  
+    <nav class="md-nav" aria-label="Installing the language server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#via-lsp-mode" class="md-nav__link">
+    Via lsp-mode
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manually" class="md-nav__link">
+    Manually
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-features" class="md-nav__link">
+    LSP features
+  </a>
+  
+    <nav class="md-nav" aria-label="LSP features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax-check" class="md-nav__link">
+    Syntax check
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find-definitionreferences" class="md-nav__link">
+    Find definition/references
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#completion" class="md-nav__link">
+    Completion
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-lens" class="md-nav__link">
+    Code lens
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#call-hierarchy" class="md-nav__link">
+    Call hierarchy
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#formatting" class="md-nav__link">
+    Formatting
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-actions" class="md-nav__link">
+    Code actions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refactorings" class="md-nav__link">
+    Refactorings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#semantic-tokens-experimental" class="md-nav__link">
+    Semantic tokens (Experimental)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    Performance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#server-settings" class="md-nav__link">
+    Server settings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cider-integration" class="md-nav__link">
+    CIDER integration
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
+    
+    <label class="md-nav__link" for="nav-7">
+      Blog
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Blog" data-md-level="1">
+      <label class="md-nav__title" for="nav-7">
+        <span class="md-nav__icon md-icon"></span>
+        Blog
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-7-1" type="checkbox" id="nav-7-1">
+    
+    <label class="md-nav__link" for="nav-7-1">
+      2020
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="2020" data-md-level="2">
+      <label class="md-nav__title" for="nav-7-1">
+        <span class="md-nav__icon md-icon"></span>
+        2020
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../blog/2020/7.0-release/" title="7.0 Release" class="md-nav__link">
+      7.0 Release
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-8" type="checkbox" id="nav-8">
+    
+    <label class="md-nav__link" for="nav-8">
+      Support us
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Support us" data-md-level="1">
+      <label class="md-nav__title" for="nav-8">
+        <span class="md-nav__icon md-icon"></span>
+        Support us
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://opencollective.com/emacs-lsp" title="None" class="md-nav__link">
+      None
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-should-i-try-lsp-for-clojure" class="md-nav__link">
+    Why should I try LSP for Clojure?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-configuration" class="md-nav__link">
+    Basic configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installing-the-language-server" class="md-nav__link">
+    Installing the language server
+  </a>
+  
+    <nav class="md-nav" aria-label="Installing the language server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#via-lsp-mode" class="md-nav__link">
+    Via lsp-mode
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manually" class="md-nav__link">
+    Manually
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-features" class="md-nav__link">
+    LSP features
+  </a>
+  
+    <nav class="md-nav" aria-label="LSP features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syntax-check" class="md-nav__link">
+    Syntax check
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find-definitionreferences" class="md-nav__link">
+    Find definition/references
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#completion" class="md-nav__link">
+    Completion
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-lens" class="md-nav__link">
+    Code lens
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#call-hierarchy" class="md-nav__link">
+    Call hierarchy
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#formatting" class="md-nav__link">
+    Formatting
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-actions" class="md-nav__link">
+    Code actions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refactorings" class="md-nav__link">
+    Refactorings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#semantic-tokens-experimental" class="md-nav__link">
+    Semantic tokens (Experimental)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    Performance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#server-settings" class="md-nav__link">
+    Server settings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cider-integration" class="md-nav__link">
+    CIDER integration
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/tutorials/clojure-guide.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="configuring-emacs-as-a-clojure-ide">Configuring <code>Emacs</code> as a <code>Clojure</code> IDE<a class="headerlink" href="#configuring-emacs-as-a-clojure-ide" title="Permanent link">#</a></h1>
+<p>Author: <a href="https://github.com/ericdallo">@ericdallo</a></p>
+<p>In this guide, I will show you how to configure Emacs to develop Clojure
+using: </p>
+<ul>
+<li><code>lsp-mode</code>, which has many IDE features like <strong>completion</strong>, <strong>renaming</strong>,
+<strong>reference-searching</strong>, <strong>definition-finding</strong>, <strong>code lenses</strong>, and <strong>code actions</strong></li>
+<li><a href="https://github.com/clojure-emacs/cider">CIDER</a>,
+the Emacs package most famous for enabling <strong>REPL-driven development</strong> with Clojure.</li>
+</ul>
+<h2 id="why-should-i-try-lsp-for-clojure">Why should I try LSP for Clojure?<a class="headerlink" href="#why-should-i-try-lsp-for-clojure" title="Permanent link">#</a></h2>
+<p>Coming from the Java world, when I started programming for Clojure in Emacs, it was odd to me that 
+for almost everything you needed to do with Clojure, <strong>you needed a REPL running in your project</strong>, and if you changed anything
+in your project, you would need to reload the modified namespace/code to see the changes in the REPL.
+I also
+missed a lot of features popularized by Java IDEs, like cleaning unused imports, 
+viewing the call hierarchy of a method/function, formatting code automatically, checking syntax in real-time, and using code actions that could, for example, add a missing import.
+Ever since I found <a href="https://github.com/clojure-lsp/clojure-lsp">clojure-lsp</a>, which implements most of those features, I have been using it alongside <code>CIDER</code> without issues.</p>
+<p>While I really like <code>CIDER</code> and believe it is one of the best tools for Clojure development,
+you can complement it with <code>clojure-lsp</code> to make programming in Clojure even better.</p>
+<p>Once it is running (and you are plugged into the REPL), <code>CIDER</code> will provide many of the same features that <code>clojure-lsp</code> does, so you need to tell Emacs how to resolve conflicts.</p>
+<p>Therefore, if you want to have a more <em>IDE-ish</em> experience with Emacs, you should read this guide.</p>
+<h2 id="basic-configuration">Basic configuration<a class="headerlink" href="#basic-configuration" title="Permanent link">#</a></h2>
+<p>Here is a bare-bones <code>lsp-mode</code> configuration template to get you started with your own <code>lsp-mode</code> config, 
+or to try out in a separate one-off session. Please note that Emacs configuration frameworks such as 
+<strong>Spacemacs</strong> or <strong>Doom Emacs</strong> often ship with <code>lsp-mode</code> settings of their own; should you be using such a framework, 
+and find that <code>lsp-mode</code> doesn't behave as intended, please make sure to follow this tutorial from a clean starting point.
+in your config or you could run in a separate session.</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;package</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;package-archives</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;melpa&quot;</span> <span class="o">.</span> <span class="s">&quot;http://melpa.org/packages/&quot;</span><span class="p">)</span> <span class="no">t</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">package-initialize</span><span class="p">)</span>
+
+<span class="p">(</span><span class="k">setq</span> <span class="nv">package-selected-packages</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">clojure-mode</span> <span class="nv">lsp-mode</span> <span class="nv">cider</span> <span class="nv">lsp-treemacs</span> <span class="nv">flycheck</span> <span class="nv">company</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">when</span> <span class="p">(</span><span class="nv">cl-find-if-not</span> <span class="nf">#&#39;</span><span class="nv">package-installed-p</span> <span class="nv">package-selected-packages</span><span class="p">)</span>
+  <span class="p">(</span><span class="nv">package-refresh-contents</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">mapc</span> <span class="nf">#&#39;</span><span class="nv">package-install</span> <span class="nv">package-selected-packages</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;clojure-mode-hook</span> <span class="ss">&#39;lsp</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;clojurescript-mode-hook</span> <span class="ss">&#39;lsp</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;clojurec-mode-hook</span> <span class="ss">&#39;lsp</span><span class="p">)</span>
+
+<span class="p">(</span><span class="k">setq</span> <span class="nv">gc-cons-threshold</span> <span class="p">(</span><span class="nf">*</span> <span class="mi">100</span> <span class="mi">1024</span> <span class="mi">1024</span><span class="p">)</span>
+      <span class="nv">read-process-output-max</span> <span class="p">(</span><span class="nf">*</span> <span class="mi">1024</span> <span class="mi">1024</span><span class="p">)</span>
+      <span class="nv">treemacs-space-between-root-nodes</span> <span class="no">nil</span>
+      <span class="nv">company-idle-delay</span> <span class="mf">0.0</span>
+      <span class="nv">company-minimum-prefix-length</span> <span class="mi">1</span>
+      <span class="nv">lsp-lens-enable</span> <span class="no">t</span>
+      <span class="nv">lsp-signature-auto-activate</span> <span class="no">nil</span> 
+      <span class="c1">; lsp-enable-indentation nil ; uncomment to use cider indentation instead of lsp</span>
+      <span class="c1">; lsp-enable-completion-at-point nil ; uncomment to use cider completion instead of lsp</span>
+      <span class="p">)</span>
+</code></pre></div>
+
+<p>For more detailed info on how to setup <code>lsp-mode</code>, check <a href="https://emacs-lsp.github.io/lsp-mode/page/installation/">here</a>.</p>
+<h2 id="installing-the-language-server">Installing the language server<a class="headerlink" href="#installing-the-language-server" title="Permanent link">#</a></h2>
+<p><code>lsp-mode</code> is a client-server application with <code>Emacs</code> acting as the client. In
+order for it to work, you have to install a separate <em>language server</em> that
+understands the specifics of your target language. </p>
+<p>For Clojure, we will use <a href="https://github.com/clojure-lsp/clojure-lsp">clojure-lsp</a> which as of 2021/01, is the only <a href="https://microsoft.github.io/language-server-protocol/implementors/servers/">LSP</a> 
+server for Clojure, and has a lot of useful features that I will try to show in this guide.</p>
+<h3 id="via-lsp-mode">Via lsp-mode<a class="headerlink" href="#via-lsp-mode" title="Permanent link">#</a></h3>
+<p><code>lsp-mode</code> ships with automatic installation scripts for some of the language servers and clojure-lsp 
+is one of the supported servers, you can install it using <kbd>M-x</kbd> <code>lsp-install-server</code> <kbd>RET</kbd> <code>clojure-lsp</code>. 
+After installed, <code>lsp-mode</code> will automatically initialize it when opening Clojure files.</p>
+<h3 id="manually">Manually<a class="headerlink" href="#manually" title="Permanent link">#</a></h3>
+<p>Check <a href="https://github.com/clojure-lsp/clojure-lsp#installation">here</a> for more information on how to build it manually.</p>
+<p>For a custom path, you can set the path of the server location with:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-clojure-custom-server-command</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;bash&quot;</span> <span class="s">&quot;-c&quot;</span> <span class="s">&quot;/path/to/clojure-lsp&quot;</span><span class="p">))</span>
+</code></pre></div>
+
+<h2 id="lsp-features">LSP features<a class="headerlink" href="#lsp-features" title="Permanent link">#</a></h2>
+<p>This guide will focus on the features of <code>lsp-mode</code> that are most relevant to Clojure development. You can view documentation of all features at the 
+official <a href="https://emacs-lsp.github.io/lsp-mode/page/main-features/">lsp-mode site</a>.</p>
+<h3 id="syntax-check">Syntax check<a class="headerlink" href="#syntax-check" title="Permanent link">#</a></h3>
+<p>It checks for errors and warnings on your code while you write it, it uses <a href="https://github.com/clj-kondo/clj-kondo">clj-kondo</a>, 
+another amazing library that lints Clojure code, in the back-end so it's not required to install <code>clj-kondo</code> since <code>clojure-lsp</code> will
+use it automatically.</p>
+<p>It will also check for public unused functions/variables which is something that, as far as I know, does not exist in 
+any other Clojure library/package:</p>
+<p><img alt="syntax-checker" src="../images/clojure-syntax-checker.png" title="syntax-checker" /></p>
+<h3 id="find-definitionreferences">Find definition/references<a class="headerlink" href="#find-definitionreferences" title="Permanent link">#</a></h3>
+<p>You can find a function definition with <code>lsp-find-definition</code> or find all the references to that 
+symbol, variable or function with <code>lsp-find-references</code> or <code>lsp-ui-peek-find-references</code> if 
+<a href="https://emacs-lsp.github.io/lsp-ui/">lsp-ui</a> is available. </p>
+<p><img alt="find-references" src="../images/clojure-find-references.gif" title="find-references" /></p>
+<details>
+<summary>Doom emacs users</summary>
+
+You may need to remove the lookup handlers conflict from `cider` and/or `clj-refactor` if you want to use this LSP feature.
+
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">use-package!</span> <span class="nv">cider</span>
+  <span class="nb">:after</span> <span class="nv">clojure-mode</span>
+  <span class="nb">:config</span>
+  <span class="p">(</span><span class="nv">set-lookup-handlers!</span> <span class="ss">&#39;cider-mode</span> <span class="no">nil</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nv">use-package!</span> <span class="nv">clj-refactor</span>
+  <span class="nb">:after</span> <span class="nv">clojure-mode</span>
+  <span class="nb">:config</span>
+  <span class="p">(</span><span class="nv">set-lookup-handlers!</span> <span class="ss">&#39;clj-refactor-mode</span> <span class="no">nil</span><span class="p">))</span>
+</code></pre></div>
+
+</details>
+
+<h3 id="completion">Completion<a class="headerlink" href="#completion" title="Permanent link">#</a></h3>
+<p>By default, <code>lsp-mode</code> uses <code>company-mode</code> as its completion front-end. When
+present, <code>company-mode</code> and enabled for <code>lsp-mode</code>, it will be auto-configured and it will just work using the completion items returned by the LSP server. 
+If you do not want LSP completion, It's possible to use <code>cider</code> completion instead with:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-enable-completion-at-point</span> <span class="no">nil</span><span class="p">)</span> <span class="c1">; use cider completion</span>
+</code></pre></div>
+
+<p><img alt="completion" src="../images/clojure-completion.png" title="completion" /></p>
+<p>See also <a href="https://docs.cider.mx/cider/usage/code_completion.html">CIDER code completion</a></p>
+<h3 id="code-lens">Code lens<a class="headerlink" href="#code-lens" title="Permanent link">#</a></h3>
+<p>LSP supports code lenses, actionable text snippets that a server may want to display in a client IDE. <code>clojure-lsp</code> 
+uses it to show the reference count of a function/variable. They are disabled by default so you need to manually enable them via:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-lens-enable</span> <span class="no">t</span><span class="p">)</span>
+</code></pre></div>
+
+<p><img alt="reference code-lens" src="../images/clojure-code-lens.png" title="reference code-lens" /></p>
+<h3 id="call-hierarchy">Call hierarchy<a class="headerlink" href="#call-hierarchy" title="Permanent link">#</a></h3>
+<p>This feature returns the call hierarchy of a function/method.
+As of now, <code>clojure-lsp</code> only supports returning the incoming-call hierarchy.</p>
+<p><img alt="incoming-call hierarchy" src="../images/clojure-call-hierarchy.png" title="incoming-call hierarchy" /></p>
+<p>It uses <a href="https://github.com/emacs-lsp/lsp-treemacs">lsp-treemacs</a>, which you should install to use this feature.</p>
+<h3 id="formatting">Formatting<a class="headerlink" href="#formatting" title="Permanent link">#</a></h3>
+<p>For LSP formatting, <code>clojure-lsp</code> use <a href="https://github.com/weavejester/cljfmt">cljfmt</a> with support for all known <code>cljfmt</code> 
+settings.
+You can format a region with <code>lsp-format-region</code> or the entire buffer with <code>lsp-format-buffer</code>.</p>
+<p><img alt="formatting" src="../images/clojure-formatting.gif" title="formatting" /></p>
+<h3 id="code-actions">Code actions<a class="headerlink" href="#code-actions" title="Permanent link">#</a></h3>
+<p>One of the most important features considered by me is the <strong>code actions</strong> feature provided by the server. they are refactoring actions
+that may change your code after applied, <code>clojure-lsp</code> some of the refactorings from below are suggested by the server depending
+where user cursor is, for example <code>Add missing namespace</code> where <code>clojure-lsp</code> will suggest adding a missing require:</p>
+<p><img alt="add-missing-ns" src="../images/clojure-add-missing-ns.gif" title="add-missing-ns" /></p>
+<h3 id="refactorings">Refactorings<a class="headerlink" href="#refactorings" title="Permanent link">#</a></h3>
+<p><code>clojure-lsp</code> also has a lot of refactorings, some of them can be automatically triggered by 
+code actions like said above and others manually by user, one example of one of the most 
+used by me is <code>clean-ns</code>, which will remove any unused requires and refers:</p>
+<p><img alt="clean-ns" src="../images/clojure-clean-ns.gif" title="clean-ns" /></p>
+<p>Or <code>rename</code> which will rename the symbol at point and all usages/references:</p>
+<p><img alt="rename" src="../images/clojure-rename.gif" title="rename" /></p>
+<p>For more info on all available refactorings, check <a href="https://github.com/clojure-lsp/clojure-lsp#refactorings">here</a>.</p>
+<h3 id="semantic-tokens-experimental">Semantic tokens (Experimental)<a class="headerlink" href="#semantic-tokens-experimental" title="Permanent link">#</a></h3>
+<p>Another feature recently introduced in LSP 3.16, is <strong>semantic tokens</strong>, which consists of the LSP server return to 
+client the tokens and what they mean, with that, <code>lsp-mode</code> can color the tokens according to their meaning on the code:</p>
+<table>
+<thead>
+<tr>
+<th>semantic-tokens OFF</th>
+<th>semantic-tokens ON</th>
+<th>CIDER code evaluated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img src="/tutorials/images/clojure-semantic-tokens-off.png"></td>
+<td><img src="/tutorials/images/clojure-semantic-tokens-on.png"></td>
+<td><img src="/tutorials/images/clojure-semantic-tokens-cider.png"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">#</a></h2>
+<p>For the first time <code>clojure-lsp</code> starts in your project, it will scan all jar dependencies and source code, this can 
+take a while depending on your project size, after started, it should be really fast and for the next time, it will use its cache and you may not notice any performance issues.</p>
+<h2 id="server-settings">Server settings<a class="headerlink" href="#server-settings" title="Permanent link">#</a></h2>
+<p><code>clojure-lsp</code> has a lot of settings for improving your development experience, make sure to check it out the <a href="https://github.com/clojure-lsp/clojure-lsp#settings">settings</a> section.
+For an example configuration, check <a href="https://github.com/ericdallo/dotfiles/blob/master/.lsp/config.edn">here</a>.</p>
+<h2 id="cider-integration">CIDER integration<a class="headerlink" href="#cider-integration" title="Permanent link">#</a></h2>
+<p>We suggest using both <code>cider</code> and <code>lsp-mode</code> for Clojure development. 
+I rely on <code>cider</code> to use its REPL, evaluate expressions, run tests, and more. You can execute <kbd>M-x</kbd> <code>cider-jack-in</code> to start the REPL.</p>
+                
+                  
+                    
+
+<hr>
+<div class="md-source-date">
+  <small>
+    
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 5, 2021</span>
+    
+  </small>
+</div>
+                  
+                
+              
+              
+                
+
+  
+
+
+  <h2 id="__comments">Comments</h2>
+  <div id="disqus_thread"></div>
+  <script>var disqus_config=function(){this.page.url="https://emacs-lsp.github.io/lsp-mode/tutorials/clojure-guide/",this.page.identifier="/tutorials/clojure-guide/"};window.addEventListener("load",function(){var e=document,i=e.createElement("script");i.src="//emacs-lsp.disqus.com/embed.js",i.setAttribute("data-timestamp",+new Date),(e.head||e.body).appendChild(i)})</script>
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../reactjs-tutorial/" title="React JavaScript Tutorial in Emacs" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                React JavaScript Tutorial in Emacs
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../../blog/2020/7.0-release/" title="7.0 Release" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                7.0 Release
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+  <div class="md-footer-social">
+    
+      
+      
+        
+        
+      
+      <a href="https://github.com/emacs-lsp/lsp-mode" target="_blank" rel="noopener" title="github.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://twitter.com/yonchovski" target="_blank" rel="noopener" title="twitter.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://discord.gg/swuxy5AAgT" target="_blank" rel="noopener" title="discord.gg" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M297.216 243.2c0 15.616-11.52 28.416-26.112 28.416-14.336 0-26.112-12.8-26.112-28.416s11.52-28.416 26.112-28.416c14.592 0 26.112 12.8 26.112 28.416zm-119.552-28.416c-14.592 0-26.112 12.8-26.112 28.416s11.776 28.416 26.112 28.416c14.592 0 26.112-12.8 26.112-28.416.256-15.616-11.52-28.416-26.112-28.416zM448 52.736V512c-64.494-56.994-43.868-38.128-118.784-107.776l13.568 47.36H52.48C23.552 451.584 0 428.032 0 398.848V52.736C0 23.552 23.552 0 52.48 0h343.04C424.448 0 448 23.552 448 52.736zm-72.96 242.688c0-82.432-36.864-149.248-36.864-149.248-36.864-27.648-71.936-26.88-71.936-26.88l-3.584 4.096c43.52 13.312 63.744 32.512 63.744 32.512-60.811-33.329-132.244-33.335-191.232-7.424-9.472 4.352-15.104 7.424-15.104 7.424s21.248-20.224 67.328-33.536l-2.56-3.072s-35.072-.768-71.936 26.88c0 0-36.864 66.816-36.864 149.248 0 0 21.504 37.12 78.08 38.912 0 0 9.472-11.52 17.152-21.248-32.512-9.728-44.8-30.208-44.8-30.208 3.766 2.636 9.976 6.053 10.496 6.4 43.21 24.198 104.588 32.126 159.744 8.96 8.96-3.328 18.944-8.192 29.44-15.104 0 0-12.8 20.992-46.336 30.464 7.68 9.728 16.896 20.736 16.896 20.736 56.576-1.792 78.336-38.912 78.336-38.912z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/vendor.c6483021.min.js"></script>
+      <script src="../../assets/javascripts/bundle.e2f7d7a4.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../..",
+          features: ['navigation.tabs'],
+          search: Object.assign({
+            worker: "../../assets/javascripts/worker/search.cbc634e2.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+        <script src="../../js/expanded_nav.js"></script>
+      
+    
+  </body>
+</html>
