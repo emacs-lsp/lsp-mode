@@ -52,23 +52,124 @@
     ;; we can add some options to command. (e.g. "-config")
     base))
 
+
+(defcustom lsp-sqls-timeout 0.5
+  "Timeout to use for `sqls' requests."
+  :type 'number
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-sqls-connections nil
+  "The connections to the SQL server(s)."
+  :type '(repeat (alist :key-type (choice
+                                   (const :tag "Driver" driver)
+                                   (const :tag "Connection String" dataSourceName))
+                        :value-type string)))
+
 (defun lsp-sqls-setup-workspace-configuration ()
   "Setup workspace configuration using json file depending on `lsp-sqls-workspace-config-path'."
-  (when-let ((config-json-path (cond
-                                ((equal lsp-sqls-workspace-config-path "workspace")
-                                 ".sqls/config.json")
-                                ((equal lsp-sqls-workspace-config-path "root")
-                                 (-> (lsp-workspace-root)
-                                     (f-join ".sqls/config.json"))))))
-    (when (file-exists-p config-json-path)
-      (lsp--set-configuration (lsp--read-json-file config-json-path)))))
+
+  (if lsp-sqls-connections
+      (lsp--set-configuration `(:sqls (:connections ,(apply #'vector lsp-sqls-connections))))
+    (when-let ((config-json-path (cond
+                                  ((equal lsp-sqls-workspace-config-path "workspace")
+                                   ".sqls/config.json")
+                                  ((equal lsp-sqls-workspace-config-path "root")
+                                   (-> (lsp-workspace-root)
+                                       (f-join ".sqls/config.json"))))))
+      (when (file-exists-p config-json-path)
+        (lsp--set-configuration (lsp--read-json-file config-json-path))))))
+
+(defun lsp-sqls--show-results (result)
+  (with-current-buffer (get-buffer-create "*sqls results*")
+    (with-help-window (buffer-name)
+      (erase-buffer)
+      (insert result))))
+
+(defun lsp-sql-execute-query (&optional command)
+  "Execute COMMAND on selected region/whole buffer against current database."
+  (interactive)
+  (lsp-sqls--show-results
+   (lsp-request
+    "workspace/executeCommand"
+    (list :command "executeQuery"
+          :arguments (or
+                      (when command
+                        (lsp:command-arguments? command))
+                      (vector (lsp--buffer-uri)))
+          :timeout lsp-sqls-timeout
+          :range (list
+                  :start (lsp--point-to-position
+                          (if (use-region-p)
+                              (region-beginning)
+                            (point-min)))
+                  :end (lsp--point-to-position
+                        (if (use-region-p)
+                            (region-end)
+                          (point-max))))))))
+
+(defun lsp-sql-show-databases (&optional _command)
+  "Show databases."
+  (interactive)
+  (lsp-sqls--show-results
+   (lsp-request
+    "workspace/executeCommand"
+    (list :command "showDatabases" :timeout lsp-sqls-timeout))))
+
+(defun lsp-sql-show-schemas (&optional _command)
+  "Show schemas."
+  (interactive)
+  (lsp-sqls--show-results
+   (lsp-request
+    "workspace/executeCommand"
+    (list :command "showSchemas" :timeout lsp-sqls-timeout))))
+
+(defun lsp-sql-show-connections (&optional _command)
+  "Show connections."
+  (interactive)
+  (lsp-sqls--show-results
+   (lsp-request
+    "workspace/executeCommand"
+    (list :command "showConnections" :timeout lsp-sqls-timeout))))
+
+(defun lsp-sql-switch-database (&optional _command)
+  "Switch database."
+  (interactive)
+  (lsp-workspace-command-execute
+   "switchDatabase"
+   (vector (completing-read
+            "Select database: "
+            (s-lines (lsp-workspace-command-execute "showDatabases"))
+            nil
+            t))))
+
+(defun lsp-sql-switch-connection (&optional _command)
+  "Switch connection."
+  (interactive)
+  (lsp-workspace-command-execute
+   "switchConnections"
+   (vector (cl-first
+            (s-match "\\([[:digit:]]*\\)"
+                     (completing-read
+                      "Select connection: "
+                      (s-lines (lsp-workspace-command-execute  "showConnections"))
+                      nil
+                      t))))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-sqls--make-launch-cmd)
                   :major-modes '(sql-mode)
                   :priority -1
+                  :action-handlers (ht ("executeQuery" #'lsp-sql-execute-query)
+                                       ("showDatabases" #'lsp-sql-show-databases)
+                                       ("showSchemas" #'lsp-sql-show-schemas)
+                                       ("showConnections" #'lsp-sql-show-connections)
+                                       ("switchDatabase" #'lsp-sql-switch-database)
+                                       ("switchConnections" #'lsp-sql-switch-connection))
                   :server-id 'sqls
                   :initialized-fn (lambda (workspace)
+                                    (-> workspace
+                                        (lsp--workspace-server-capabilities)
+                                        (lsp:set-server-capabilities-execute-command-provider? t))
                                     (with-lsp-workspace workspace
                                       (lsp-sqls-setup-workspace-configuration)))))
 

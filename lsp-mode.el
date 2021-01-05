@@ -4132,7 +4132,8 @@ Added to `after-change-functions'."
                                          (lsp--full-change-event)))))
                 (with-lsp-workspace workspace
                   (lsp-notify "textDocument/didChange"
-                              (list :contentChanges (vector (lsp--full-change-event)))))))
+                              (list :contentChanges (vector (lsp--full-change-event))
+                                    :textDocument (lsp--versioned-text-document-identifier))))))
              (2
               (with-lsp-workspace workspace
                 (lsp-notify
@@ -5602,17 +5603,20 @@ REFERENCES? t when METHOD returns references."
   (lsp--execute-command (lsp-make-command :command (symbol-name command)
                                           :arguments? arguments)))
 
-(defun lsp--send-execute-command (command &optional args)
-  "Create and send a 'workspace/executeCommand' message having command COMMAND and optional ARGS."
+(defun lsp-workspace-command-execute (command &optional args)
+  "Execute workspace COMMAND with ARGS."
   (let ((params (if args
                     (list :command command :arguments args)
                   (list :command command))))
-    (condition-case-unless-debug err
-        (lsp-request "workspace/executeCommand" params)
-      (error
-       (lsp--error "Please open an issue in lsp-mode for implementing `%s'.\n\n%S"
-                   command
-                   err)))))
+    (lsp-request "workspace/executeCommand" params)))
+
+(defun lsp--send-execute-command (command &optional args)
+  "Execute workspace COMMAND with ARGS showing error if command is not mapped client-side."
+  (condition-case-unless-debug err
+      (lsp-workspace-command-execute command args)
+    (error
+     (lsp--error "Please open an issue in lsp-mode for implementing `%s'.\n\n%S"
+                 command err))))
 
 (defalias 'lsp-point-to-position #'lsp--point-to-position)
 (defalias 'lsp-text-document-identifier #'lsp--text-document-identifier)
