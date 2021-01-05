@@ -165,7 +165,7 @@ caching purposes.")
          (if (require 'all-the-icons nil t)
              (all-the-icons-material "chevron_right"
                                      :face 'lsp-headerline-breadcrumb-separator-face)
-           (propertize "›" 'face 'lsp-headerline-breadcrumb-separator-face)))))
+           (propertize ">" 'face 'lsp-headerline-breadcrumb-separator-face)))))
 
 (lsp-defun lsp-headerline--symbol-icon ((&DocumentSymbol :kind))
   "Build the SYMBOL icon for headerline breadcrumb."
