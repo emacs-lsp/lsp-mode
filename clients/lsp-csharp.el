@@ -257,7 +257,7 @@ using the `textDocument/references' request."
                                      (when-let ((binary (lsp-csharp--language-server-path)))
                                        (f-exists? binary))))
 
-                  :major-modes '(csharp-mode)
+                  :major-modes '(csharp-mode csharp-tree-sitter-mode)
                   :server-id 'csharp
                   :action-handlers (ht ("omnisharp/client/findReferences" 'lsp-csharp--action-client-find-references))
                   :notification-handlers (ht ("o#/projectadded" 'ignore)
