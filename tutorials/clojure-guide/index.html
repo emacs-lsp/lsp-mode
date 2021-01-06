@@ -2264,6 +2264,25 @@ used by me is <code>clean-ns</code>, which will remove any unused requires and r
 <p>Or <code>rename</code> which will rename the symbol at point and all usages/references:</p>
 <p><img alt="rename" src="../images/clojure-rename.gif" title="rename" /></p>
 <p>For more info on all available refactorings, check <a href="https://github.com/clojure-lsp/clojure-lsp#refactorings">here</a>.</p>
+<details>
+<sumary>Creating new namespaces `clj-refactor` conflict</summary>
+
+`clj-refactor` and `clojure-lsp` have the feature of add the namespace form for new created files like, 
+but they may conflict if both are enable, so you need to choose which one you wants to use:
+
+To disable this feature on `clj-refactor`:
+
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">cljr-add-ns-to-blank-clj-files</span> <span class="no">nil</span><span class="p">)</span> <span class="c1">; disable clj-refactor adding ns to blank files</span>
+</code></pre></div>
+
+or to disable on `clojure-lsp`:
+
+<div class="highlight"><pre><span></span><code><span class="c1">;; on your .lsp/config.edn file</span>
+<span class="p">{</span><span class="ss">:auto-add-ns-to-new-files?</span> <span class="nv">false</span><span class="p">}</span>
+</code></pre></div>
+
+</details>
+
 <h3 id="semantic-tokens-experimental">Semantic tokens (Experimental)<a class="headerlink" href="#semantic-tokens-experimental" title="Permanent link">#</a></h3>
 <p>Another feature recently introduced in LSP 3.16, is <strong>semantic tokens</strong>, which consists of the LSP server return to 
 client the tokens and what they mean, with that, <code>lsp-mode</code> can color the tokens according to their meaning on the code:</p>
