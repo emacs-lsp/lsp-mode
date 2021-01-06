@@ -720,6 +720,7 @@ Changes take effect only when a new session is started."
                                         (erlang-mode . "erlang")
                                         (dockerfile-mode . "dockerfile")
                                         (csharp-mode . "csharp")
+                                        (csharp-tree-sitter-mode . "csharp")
                                         (plain-tex-mode . "plaintex")
                                         (latex-mode . "latex")
                                         (vhdl-mode . "vhdl")
