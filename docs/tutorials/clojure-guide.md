@@ -201,6 +201,27 @@ Or `rename` which will rename the symbol at point and all usages/references:
 
 For more info on all available refactorings, check [here](https://github.com/clojure-lsp/clojure-lsp#refactorings).
 
+<details>
+<sumary>Creating new namespaces `clj-refactor` conflict</summary>
+
+`clj-refactor` and `clojure-lsp` have the feature of add the namespace form for new created files like, 
+but they may conflict if both are enable, so you need to choose which one you wants to use:
+
+To disable this feature on `clj-refactor`:
+
+```elisp
+(setq cljr-add-ns-to-blank-clj-files nil) ; disable clj-refactor adding ns to blank files
+```
+
+or to disable on `clojure-lsp`:
+
+```clojure
+;; on your .lsp/config.edn file
+{:auto-add-ns-to-new-files? false}
+```
+
+</details>
+
 ### Semantic tokens (Experimental)
 
 Another feature recently introduced in LSP 3.16, is **semantic tokens**, which consists of the LSP server return to 
