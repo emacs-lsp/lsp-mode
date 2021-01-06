@@ -202,10 +202,11 @@ Or `rename` which will rename the symbol at point and all usages/references:
 For more info on all available refactorings, check [here](https://github.com/clojure-lsp/clojure-lsp#refactorings).
 
 <details>
-<summary>Creating new namespaces `clj-refactor` conflict</summary>
+<summary>Conflict with <b>clj-refactor</b> when creating new files</summary>
 
-`clj-refactor` and `clojure-lsp` have the feature of add the namespace form for new created files like, 
-but they may conflict if both are enable, so you need to choose which one you wants to use:
+<b>clj-refactor</b> and <b>clojure-lsp</b> have a feature of add the namespace form for new created files, 
+but they may conflict if both are enable, inserting duplicated namespace forms. To fix that, you need to choose which one 
+you wants to use:
 
 To disable this feature on `clj-refactor`:
 
