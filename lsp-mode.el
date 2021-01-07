@@ -5275,15 +5275,20 @@ is in contrast with the spec's recommended behavior."
        lsp--select-action
        lsp-execute-code-action))
 
-(defun lsp-quickfix ()
-  "Execute a \"quickfix\" code action at point."
-  (interactive)
-  (lsp-execute-code-action-by-type "quickfix"))
+(defmacro lsp-make-interactive-code-action-by-type (name kind)
+  "Make interactive function NAME to execute a KIND code action.
+Like `lsp-make-interactive-code-action' but using
+`lsp-execute-code-action-by-type'."
+  `(defun ,name ()
+     ,(format "Execute a %S code action at point." kind)
+     (interactive)
+     (condition-case nil
+         (lsp-execute-code-action-by-kind ,kind)
+       (lsp-no-code-actions
+        (user-error "No %S actions available")))))
 
-(defun lsp-refactor ()
-  "Execute a \"refactor\" code action at point."
-  (interactive)
-  (lsp-execute-code-action-by-type "refactor"))
+(lsp-make-interactive-code-action-by-type lsp-quickfix "quickfix")
+(lsp-make-interactive-code-action-by-type lsp-refactor "refactor")
 
 (defun lsp-auto-fix ()
   "Execute a preferred code action at point."
