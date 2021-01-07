@@ -164,6 +164,11 @@ unless overridden by a more specific face association."
   "Face used for labels."
   :group 'lsp-faces)
 
+(defface lsp-face-semhl-deprecated
+  '((t :strike-through t))
+  "Face used for semantic highlighting scopes matching constant scopes."
+  :group 'lsp-faces)
+
 (defvar lsp-semantic-token-faces
   '(("comment" . lsp-face-semhl-comment)
     ("keyword" . lsp-face-semhl-keyword)
@@ -193,6 +198,7 @@ unless overridden by a more specific face association."
 (defvar lsp-semantic-token-modifier-faces
   ;; TODO: add default definitions
   '(("declaration" . lsp-face-semhl-interface)
+    ("deprecated" . lsp-face-semhl-deprecated)
     ("readonly" . lsp-face-semhl-constant))
   "Semantic tokens modifier faces.
 Faces to use for semantic token modifiers if
