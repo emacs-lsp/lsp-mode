@@ -7534,11 +7534,26 @@ such."
 
 (make-obsolete 'lsp-shutdown-workspace 'lsp-workspace-shutdown "lsp-mode 6.1")
 
+(defcustom lsp-auto-accept-workspace t
+  "Shutdown or restart a single workspace.
+If set and the current buffer has only a single workspace
+associated with it, `lsp-shutdown-workspace' and
+`lsp-restart-workspace' will act on it without asking."
+  :type 'boolean
+  :group 'lsp-mode)
+
+(defun lsp--read-workspace ()
+  "Ask the user to select a workspace.
+Errors if there are none."
+  (pcase (lsp-workspaces)
+    (`nil (error "No workspaces associated with the current buffer"))
+    ((and `(,workspace) (guard lsp-auto-accept-workspace)) workspace)
+    (workspaces (lsp--completing-read "Select workspace: " workspaces
+                                      #'lsp--workspace-print nil t))))
+
 (defun lsp-workspace-shutdown (workspace)
   "Shut the workspace WORKSPACE and the language server associated with it"
-  (interactive (list (lsp--completing-read "Select server: "
-                                           (lsp-workspaces)
-                                           'lsp--workspace-print nil t)))
+  (interactive (list (lsp--read-workspace)))
   (lsp--warn "Stopping %s" (lsp--workspace-print workspace))
   (with-lsp-workspace workspace (lsp--shutdown-workspace)))
 
@@ -7565,9 +7580,7 @@ such."
 
 (defun lsp-workspace-restart (workspace)
   "Restart the workspace WORKSPACE and the language server associated with it"
-  (interactive (list (lsp--completing-read "Select workspace: "
-                                           (lsp-workspaces)
-                                           'lsp--workspace-print nil t)))
+  (interactive (list (lsp--read-workspace)))
   (lsp--warn "Restarting %s" (lsp--workspace-print workspace))
   (with-lsp-workspace workspace (lsp--shutdown-workspace t)))
 
