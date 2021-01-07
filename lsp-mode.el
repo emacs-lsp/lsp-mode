@@ -322,6 +322,10 @@ the server has requested that."
     "[/\\\\]build-aux\\'"
     "[/\\\\]autom4te.cache\\'"
     "[/\\\\]\\.reference\\'"
+    ;; Clojure
+    "[/\\\\]\\.lsp\\'"
+    "[/\\\\]\\.clj-kondo\\'"
+    "[/\\\\]\\.cpcache\\'"
     ;; .Net Core build-output
     "[/\\\\]bin/Debug\\'"
     "[/\\\\]obj\\'")
