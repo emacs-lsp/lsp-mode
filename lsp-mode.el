@@ -7534,7 +7534,7 @@ such."
 
 (make-obsolete 'lsp-shutdown-workspace 'lsp-workspace-shutdown "lsp-mode 6.1")
 
-(defcustom lsp-auto-accept-workspace t
+(defcustom lsp-auto-select-workspace t
   "Shutdown or restart a single workspace.
 If set and the current buffer has only a single workspace
 associated with it, `lsp-shutdown-workspace' and
@@ -7547,7 +7547,7 @@ associated with it, `lsp-shutdown-workspace' and
 Errors if there are none."
   (pcase (lsp-workspaces)
     (`nil (error "No workspaces associated with the current buffer"))
-    ((and `(,workspace) (guard lsp-auto-accept-workspace)) workspace)
+    ((and `(,workspace) (guard lsp-auto-select-workspace)) workspace)
     (workspaces (lsp--completing-read "Select workspace: " workspaces
                                       #'lsp--workspace-print nil t))))
 
