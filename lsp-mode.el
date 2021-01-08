@@ -6794,10 +6794,21 @@ Check `*lsp-install*' and `*lsp-log*' buffer."
       (error
        (done nil (error-message-string err))))))
 
+(defun lsp--require-packages ()
+  "Load `lsp-client-packages' if needed."
+  (when (and lsp-auto-configure (not lsp--client-packages-required))
+    (seq-do (lambda (package)
+              ;; loading client is slow and `lsp' can be called repeatedly
+              (unless (featurep package)
+                (require package nil t)))
+            lsp-client-packages)
+    (setq lsp--client-packages-required t)))
+
 (defun lsp-install-server (update?)
   "Interactively install server.
 When prefix UPDATE? is t force installation even if the server is present."
   (interactive "P")
+  (lsp--require-packages)
   (lsp--install-server-internal
    (lsp--completing-read
     "Select server to install: "
@@ -7603,13 +7614,7 @@ server if there is such. When `lsp' is called with prefix
 argument ask the user to select which language server to start."
   (interactive "P")
 
-  (when (and lsp-auto-configure (not lsp--client-packages-required))
-    (seq-do (lambda (package)
-              ;; loading client is slow and `lsp' can be called repeatedly
-              (unless (featurep package)
-                (require package nil t)))
-            lsp-client-packages)
-    (setq lsp--client-packages-required t))
+  (lsp--require-packages)
 
   (when (buffer-file-name)
     (let (clients
