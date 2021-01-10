@@ -8,7 +8,6 @@ description: Language Server Protocol support with multiples languages support f
 [![](https://discordapp.com/api/guilds/789885435026604033/widget.png?style=shield)](https://discord.gg/swuxy5AAgT)
 [![](https://github.com/emacs-lsp/lsp-mode/workflows/CI/badge.svg)](https://github.com/emacs-lsp/lsp-mode/actions?query=workflow%3ACI)
 
-
 <img src="examples/logo.png" width="240" align="right">
 
 Language Server Protocol Support for Emacs
@@ -113,6 +112,8 @@ The `emacs-lsp` organization has more than **20.000 lines of code**, to keep all
 we need to implement new features and help the community on a lot of issues.
 
 You can help us keep going and improving it by **[supporting the project](https://opencollective.com/emacs-lsp)**
+
+<img src="https://opencollective.com/emacs-lsp/tiers/backer.svg">
 
 ### Members
 
