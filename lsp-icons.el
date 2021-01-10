@@ -38,7 +38,7 @@
 (defun lsp-icons--enabled-for-feature (feature)
   "Check if icons support is enabled for FEATURE."
   (cond
-   ((= feature 'headerline-breadcrumb) lsp-headerline-breadcrumb-icons-enable)
+   ((eq feature 'headerline-breadcrumb) lsp-headerline-breadcrumb-icons-enable)
    (t t)))
 
 (defun lsp-icons--fix-image-background (image)
