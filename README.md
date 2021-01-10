@@ -113,7 +113,7 @@ we need to implement new features and help the community on a lot of issues.
 
 You can help us keep going and improving it by **[supporting the project](https://opencollective.com/emacs-lsp)**
 
-<img src="https://opencollective.com/emacs-lsp/tiers/backer.svg">
+<a href="https://opencollective.com/emacs-lsp"><img src="https://opencollective.com/emacs-lsp/tiers/backer.svg" /></a>
 
 ### Members
 
