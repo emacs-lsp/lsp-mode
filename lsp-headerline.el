@@ -21,6 +21,7 @@
 ;;
 ;;; Code:
 
+(require 'lsp-icons)
 (require 'lsp-mode)
 
 (defcustom lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols)
@@ -136,42 +137,20 @@ is an hints in symbols range."
   "Holds the current breadcrumb path-up-to-project segments for
 caching purposes.")
 
-(declare-function all-the-icons-material "ext:all-the-icons" t t)
-(declare-function lsp-treemacs-symbol-icon "ext:lsp-treemacs" (kind))
-(declare-function lsp-treemacs-get-icon "ext:lsp-treemacs" (icon-name))
-
-(defun lsp-headerline--fix-image-background (image)
-  "Fix IMAGE background if it is a file otherwise return as an icon."
-  (if image
-      (let ((display-image (get-text-property 0 'display image)))
-        (if (and (listp display-image)
-                 (plist-member (cl-copy-list (cl-rest display-image)) :type))
-            (propertize " " 'display
-                        (cl-list* 'image
-                                  (plist-put
-                                   (cl-copy-list
-                                    (cl-rest display-image))
-                                   :background (face-attribute 'header-line :background nil t))))
-          (if (stringp display-image)
-              (replace-regexp-in-string "\s\\|\t" "" display-image)
-            (replace-regexp-in-string "\s\\|\t" "" image))))
-    ""))
-
 (defun lsp-headerline--arrow-icon ()
   "Build the arrow icon for headerline breadcrumb."
   (or
    lsp-headerline-arrow
-   (setq lsp-headerline-arrow
-         (if (require 'all-the-icons nil t)
-             (all-the-icons-material "chevron_right"
-                                     :face 'lsp-headerline-breadcrumb-separator-face)
-           (propertize ">" 'face 'lsp-headerline-breadcrumb-separator-face)))))
+   (setq lsp-headerline-arrow (lsp-icons-all-the-icons-material-icon
+                               "chevron_right"
+                               'lsp-headerline-breadcrumb-separator-face
+                               ">"
+                               'headerline-breadcrumb))))
 
 (lsp-defun lsp-headerline--symbol-icon ((&DocumentSymbol :kind))
   "Build the SYMBOL icon for headerline breadcrumb."
-  (when (require 'lsp-treemacs nil t)
-    (concat (lsp-headerline--fix-image-background (lsp-treemacs-symbol-icon kind))
-            " ")))
+  (concat (lsp-icons-get-by-symbol-kind kind 'headerline-breadcrumb)
+          " "))
 
 (lsp-defun lsp-headerline--go-to-symbol ((&DocumentSymbol
                                           :selection-range (&RangeToPoint :start selection-start)
@@ -276,11 +255,8 @@ PATH is the current folder to be checked."
   "Build the file-segment string for the breadcrumb."
   (let* ((file-path (buffer-file-name))
          (filename (f-filename file-path)))
-    (-if-let* ((file-ext (f-ext file-path))
-               (icon (and file-ext
-                          (require 'lsp-treemacs nil t)
-                          (lsp-treemacs-get-icon file-ext))))
-        (concat (lsp-headerline--fix-image-background icon)
+    (if-let ((file-ext (f-ext file-path)))
+        (concat (lsp-icons-get-by-file-ext file-ext 'headerline-breadcrumb)
                 " "
                 (propertize filename
                             'font-lock-face

@@ -17,6 +17,7 @@
   * Add [[https://github.com/soutaro/steep][Steep Language Server]] for typechecking Ruby code.
   * Rename semantic highlighting -> semantic tokens.
   * Add [[https://github.com/phpactor/phpactor][Phpactor Language server]]
+  * Add ~lsp-headerline-breadcrumb-icons-enable~ to disable breadcrumb icons.
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
   * Safe renamed ~lsp-flycheck-default-level~ -> ~lsp-diagnostics-flycheck-default-level~
