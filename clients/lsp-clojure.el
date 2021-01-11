@@ -81,6 +81,11 @@ If there are more arguments expected after the line and column numbers."
                                                         (current-column)
                                                         additional-args)))
 
+(defun lsp-clojure-add-import-to-namespace (import-name)
+  "Add to IMPORT-NAME to :import form."
+  (interactive "MImport name: ")
+  (lsp-clojure--refactoring-call "add-import-to-namespace" import-name))
+
 (defun lsp-clojure-add-missing-libspec ()
   "Apply add-missing-libspec refactoring at point."
   (interactive)
