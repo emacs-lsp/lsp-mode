@@ -3168,7 +3168,7 @@ disappearing, unset all the variables related to it."
     (lsp-diagnostics--workspace-cleanup lsp--cur-workspace)))
 
 (defun lsp--client-capabilities (&optional custom-capabilities)
-  "Return the client capabilities."
+  "Return the client capabilities appending CUSTOM-CAPABILITIES."
   (append
    `((workspace . ((workspaceEdit . ((documentChanges . t)
                                      (resourceOperations . ["create" "rename" "delete"])))
@@ -3200,7 +3200,9 @@ disappearing, unset all the variables related to it."
                                                                                                   "refactor.inline"
                                                                                                   "refactor.rewrite"
                                                                                                   "source"
-                                                                                                  "source.organizeImports"])))))))
+                                                                                                  "source.organizeImports"])))))
+                                     (resolveSupport . ((properties . ["edit" "command" "kind"])))
+                                     (dataSupport . t)))
                       (completion . ((completionItem . ((snippetSupport . ,(cond
                                                                             ((and lsp-enable-snippet (not (featurep 'yasnippet)) t)
                                                                              (lsp--warn (concat
@@ -5083,11 +5085,12 @@ It will show up only if current point has signature help."
                     ,@(when kind (list :only (vector kind))))))
 
 (defun lsp-code-actions-at-point (&optional kind)
-  "Retrieve the code actions for the active region or the current line."
+  "Retrieve the code actions for the active region or the current line.
+It will filter by KIND if non nil."
   (lsp-request "textDocument/codeAction" (lsp--text-document-code-action-params kind)))
 
 (defun lsp-execute-code-action-by-kind (command-kind)
-  "Execute code action by name."
+  "Execute code action by COMMAND-KIND."
   (if-let ((action (->> (lsp-get-or-calculate-code-actions command-kind)
                         (-filter (-lambda ((&CodeAction :kind?))
                                    (and kind? (equal command-kind kind?))))
@@ -5103,10 +5106,24 @@ It will show up only if current point has signature help."
       (funcall action-handler action)
     (lsp--send-execute-command command arguments?)))
 
-(lsp-defun lsp-execute-code-action ((action &as &CodeAction :command? :edit?))
+(defun lsp-execute-code-action (action)
   "Execute code action ACTION.
-If ACTION is not set it will be selected from `lsp-code-actions-at-point'."
+If ACTION is not set it will be selected from `lsp-code-actions-at-point'.
+Request codeAction/resolve for more info if server supports."
   (interactive (list (lsp--select-action (lsp-code-actions-at-point))))
+  (if (-> (lsp--server-capabilities)
+          (lsp:server-capabilities-code-action-provider?)
+          (lsp:code-action-options-resolve-provider?))
+      (lsp-request-async
+       "codeAction/resolve"
+       action
+       #'lsp--execute-code-action
+       :mode 'unchanged
+       :cancel-token :code-action-resolve)
+    (lsp--execute-code-action action)))
+
+(lsp-defun lsp--execute-code-action ((action &as &CodeAction :command? :edit?))
+  "Execute code action ACTION."
   (when edit?
     (lsp--apply-workspace-edit edit? 'code-action))
 
