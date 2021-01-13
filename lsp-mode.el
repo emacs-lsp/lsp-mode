@@ -755,6 +755,11 @@ directory")
 (defvar lsp-method-requirements
   '(("textDocument/callHierarchy" :capability :callHierarchyProvider)
     ("textDocument/codeAction" :capability :codeActionProvider)
+    ("codeAction/resolve"
+     :check-command (lambda (workspace)
+                      (with-lsp-workspace workspace
+                        (lsp:code-action-options-resolve-provider?
+                         (lsp--capability :codeActionProvider)))))
     ("textDocument/codeLens" :capability :codeLensProvider)
     ("textDocument/completion" :capability :completionProvider)
     ("textDocument/declaration" :capability :declarationProvider)
@@ -5111,9 +5116,7 @@ It will filter by KIND if non nil."
 If ACTION is not set it will be selected from `lsp-code-actions-at-point'.
 Request codeAction/resolve for more info if server supports."
   (interactive (list (lsp--select-action (lsp-code-actions-at-point))))
-  (if (and (-> (lsp--server-capabilities)
-               (lsp:server-capabilities-code-action-provider?)
-               (lsp:code-action-options-resolve-provider?))
+  (if (and (lsp-feature? "codeAction/resolve")
            (not command?)
            (not edit?))
       (lsp--execute-code-action (lsp-request "codeAction/resolve" action))
