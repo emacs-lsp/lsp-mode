@@ -1987,14 +1987,6 @@ WORKSPACE is the workspace that contains the diagnostics."
 
 
 
-(defun lsp--ht-get (tbl &rest keys)
-  "Get nested KEYS in TBL."
-  (let ((val tbl))
-    (while (and keys val)
-      (setq val (ht-get val (cl-first keys)))
-      (setq keys (cl-rest keys)))
-    val))
-
 ;; textDocument/foldingRange support
 
 (cl-defstruct lsp--folding-range beg end kind children)
