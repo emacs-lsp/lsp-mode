@@ -3201,7 +3201,7 @@ disappearing, unset all the variables related to it."
                                                                                                   "refactor.rewrite"
                                                                                                   "source"
                                                                                                   "source.organizeImports"])))))
-                                     (resolveSupport . ((properties . ["edit" "command" "kind"])))
+                                     (resolveSupport . ((properties . ["edit" "command"])))
                                      (dataSupport . t)))
                       (completion . ((completionItem . ((snippetSupport . ,(cond
                                                                             ((and lsp-enable-snippet (not (featurep 'yasnippet)) t)
@@ -5106,20 +5106,17 @@ It will filter by KIND if non nil."
       (funcall action-handler action)
     (lsp--send-execute-command command arguments?)))
 
-(defun lsp-execute-code-action (action)
+(lsp-defun lsp-execute-code-action ((action &as &CodeAction :command? :edit?))
   "Execute code action ACTION.
 If ACTION is not set it will be selected from `lsp-code-actions-at-point'.
 Request codeAction/resolve for more info if server supports."
   (interactive (list (lsp--select-action (lsp-code-actions-at-point))))
-  (if (-> (lsp--server-capabilities)
-          (lsp:server-capabilities-code-action-provider?)
-          (lsp:code-action-options-resolve-provider?))
-      (lsp-request-async
-       "codeAction/resolve"
-       action
-       #'lsp--execute-code-action
-       :mode 'unchanged
-       :cancel-token :code-action-resolve)
+  (if (and (-> (lsp--server-capabilities)
+               (lsp:server-capabilities-code-action-provider?)
+               (lsp:code-action-options-resolve-provider?))
+           (not command?)
+           (not edit?))
+      (lsp--execute-code-action (lsp-request "codeAction/resolve" action))
     (lsp--execute-code-action action)))
 
 (lsp-defun lsp--execute-code-action ((action &as &CodeAction :command? :edit?))
