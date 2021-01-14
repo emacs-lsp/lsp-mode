@@ -1036,6 +1036,9 @@ Deprecated. Use `lsp-repeatable-vector' instead. "
 
 (make-obsolete 'lsp-string-vector nil "lsp-mode 7.1")
 
+(defvar lsp--show-message t
+  "If non-nil, show debug message from `lsp-mode'.")
+
 (defun lsp--message  (format &rest args)
   "Wrapper for `message'
 
@@ -1047,9 +1050,10 @@ minibuffer prompt. The issue with async messages is already fixed
 in emacs 27.
 
 See #2049"
-  (let ((inhibit-message (and (minibufferp)
-                              (version< emacs-version "27.0"))))
-    (apply #'message format args)))
+  (when lsp--show-message
+    (let ((inhibit-message (and (minibufferp)
+                                (version< emacs-version "27.0"))))
+      (apply #'message format args))))
 
 (defun lsp--info (format &rest args)
   "Display lsp info message with FORMAT with ARGS."
