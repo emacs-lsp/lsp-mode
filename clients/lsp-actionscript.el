@@ -97,17 +97,21 @@ See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-S
                 (lsp-actionscript--extension-dir) (lsp-actionscript--extension-dir))
         "com.as3mxml.vscode.Main"))
 
+(defun lsp-actionscript--extension-path-zip ()
+  "Change extension path from .vsix to .zip."
+  (concat (f-no-ext (lsp-actionscript--extension-path)) ".zip"))
+
 (lsp-dependency
  'as3mxml
  '(:system "as3mxml")
  `(:download :url lsp-actionscript-server-download-url
-             :store-path ,(lsp-actionscript--extension-path)))
+             :store-path ,(lsp-actionscript--extension-path-zip)))
 
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection
                    #'lsp-actionscript--server-command
-                   (lambda () (f-exists? (lsp-actionscript--extension-path))))
+                   (lambda () (f-exists? (lsp-actionscript--extension-path-zip))))
   :major-modes '(actionscript-mode)
   :priority -1
   :server-id 'as3mxml-ls
@@ -115,7 +119,7 @@ See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-S
                         (lsp-package-ensure
                          'as3mxml
                          (lambda ()
-                           (lsp-unzip (lsp-actionscript--extension-path)
+                           (lsp-unzip (lsp-actionscript--extension-path-zip)
                                       (lsp-actionscript--extension-root)))
                          error-callback))))
 
