@@ -161,7 +161,7 @@ As defined by the Language Server Protocol 3.16."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-client-packages
-  '(ccls lsp-ada lsp-angular lsp-bash lsp-clangd lsp-clojure lsp-cmake
+  '(ccls lsp-actionscript lsp-ada lsp-angular lsp-bash lsp-clangd lsp-clojure lsp-cmake
          lsp-crystal lsp-csharp lsp-css lsp-dart lsp-dhall lsp-dockerfile lsp-elm
          lsp-elixir lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go
          lsp-hack lsp-groovy lsp-haskell lsp-haxe lsp-java lsp-javascript lsp-json
@@ -744,7 +744,8 @@ Changes take effect only when a new session is started."
                                         (racket-mode . "racket")
                                         (nix-mode . "nix")
                                         (prolog-mode . "prolog")
-                                        (vala-mode . "vala"))
+                                        (vala-mode . "vala")
+                                        (actionscript-mode . "actionscript"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
