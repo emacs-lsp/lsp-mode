@@ -123,6 +123,7 @@ See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-S
                         (lsp-package-ensure
                          'as3mxml
                          (lambda ()
+                           ;; TODO: Error handling when unzip failed
                            (lsp-unzip (lsp-actionscript--extension-path-zip)
                                       (lsp-actionscript--extension-root)))
                          error-callback))))
