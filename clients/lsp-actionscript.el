@@ -27,7 +27,7 @@
 (require 'lsp-mode)
 
 (defgroup lsp-actionscript nil
-  "LSP support for Vala, using vala-language-server"
+  "LSP support for ActionScript."
   :group 'lsp-mode
   :link '(url-link "https://github.com/BowlerHatLLC/vscode-as3mxml")
   :package-version `(lsp-mode . "7.1.0"))
