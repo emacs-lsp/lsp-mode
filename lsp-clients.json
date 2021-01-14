@@ -1,5 +1,13 @@
 [
   {
+    "name": "actionscript",
+    "full-name": "ActionScript",
+    "server-name": "as3mxml",
+    "server-url": "https://github.com/BowlerHatLLC/vscode-as3mxml",
+    "installation-url": "https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Install-the-ActionScript-and-MXML-extension-for-Visual-Studio-Code",
+    "debugger": "Yes"
+  },
+  {
     "name": "ada",
     "full-name": "Ada",
     "server-name": "ada_language_server",
