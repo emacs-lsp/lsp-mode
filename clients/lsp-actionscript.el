@@ -32,18 +32,27 @@
   :link '(url-link "https://github.com/BowlerHatLLC/vscode-as3mxml")
   :package-version `(lsp-mode . "7.1.0"))
 
-(defcustom lsp-clients-actionscript-ls-executable "actionscript-language-server"
-  "Path to the `actionscript-language-server' binary."
+(defcustom lsp-clients-actionscript-language-server-command
+  '("actionscript"
+    "ActionScript & MXML Language Server")
+  "The command that starts the actionscript language server."
   :group 'lsp-actionscript
-  :risky t
-  :type 'file
+  :type '(choice
+          (string :tag "Single string value")
+          (repeat :tag "List of string values" string))
   :package-version `(lsp-mode . "7.1.0"))
 
+(defun lsp-actioscript--startup-command ()
+  "ActionScript startup command."
+  ;; TODO
+  )
+
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-clients-actionscript-ls-executable))
-                  :major-modes '(actionscript-mode)
-                  :priority -1
-                  :server-id 'as-ls))
+ (make-lsp-client
+  :new-connection (lsp-stdio-connection #'lsp-actioscript--startup-command)
+  :major-modes '(actionscript-mode)
+  :priority -1
+  :server-id 'as-ls))
 
 (provide 'lsp-actionscript)
 ;;; lsp-actionscript.el ends here
