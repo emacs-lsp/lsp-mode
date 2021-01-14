@@ -73,15 +73,19 @@ See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-S
   :group 'lsp-actionscript
   :package-version '(lsp-mode . "7.1.0"))
 
+
+(defun lsp-actionscript--extension-root ()
+  "The path that the downloaded extension will extract to."
+  (f-join lsp-actionscript-server-store-path
+          (format "vscode-nextgenas-%s" lsp-actionscript-version)))
+
 (defun lsp-actionscript--extension-path ()
-  ""
+  "Return full path of the downloaded extension."
   (f-join lsp-actionscript-server-store-path lsp-actionscript-extension-name))
 
 (defun lsp-actionscript--extension-dir ()
   "Return as3mxml extension path."
-  (f-join lsp-actionscript-server-store-path
-          (format "vscode-nextgenas-%s" lsp-actionscript-version)
-          "extension"))
+  (f-join (lsp-actionscript--extension-root) "extension"))
 
 (defun lsp-actionscript--server-command ()
   "Startup command for ActionScript language server."
@@ -108,7 +112,12 @@ See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-S
   :priority -1
   :server-id 'as3mxml-ls
   :download-server-fn (lambda (_client callback error-callback _update?)
-                        (lsp-package-ensure 'as3mxml callback error-callback))))
+                        (lsp-package-ensure
+                         'as3mxml
+                         (lambda ()
+                           (lsp-unzip (lsp-actionscript--extension-path)
+                                      (lsp-actionscript--extension-root)))
+                         error-callback))))
 
 (provide 'lsp-actionscript)
 ;;; lsp-actionscript.el ends here
