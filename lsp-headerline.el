@@ -411,7 +411,9 @@ PATH is the current folder to be checked."
   :global nil
   (cond
    (lsp-headerline-breadcrumb-mode
-    (add-to-list 'header-line-format '(t (:eval lsp-headerline--string)))
+    (let ((headerline-content '(t (:eval lsp-headerline--string))))
+      (unless (member headerline-content header-line-format)
+        (setq-local header-line-format (cons headerline-content header-line-format))))
 
     (add-hook 'xref-after-jump-hook #'lsp-headerline--check-breadcrumb nil t)
 
@@ -426,7 +428,7 @@ PATH is the current folder to be checked."
     (remove-hook 'xref-after-jump-hook #'lsp-headerline--check-breadcrumb t)
 
     (setq lsp-headerline--path-up-to-project-segments nil)
-    (setq header-line-format (remove '(t (:eval lsp-headerline--string)) header-line-format)))))
+    (setq-local header-line-format (remove '(t (:eval lsp-headerline--string)) header-line-format)))))
 
 ;;;###autoload
 (defun lsp-breadcrumb-go-to-symbol (symbol-position)
