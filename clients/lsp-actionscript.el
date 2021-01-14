@@ -32,6 +32,11 @@
   :link '(url-link "https://github.com/BowlerHatLLC/vscode-as3mxml")
   :package-version `(lsp-mode . "7.1.0"))
 
+(defcustom lsp-actionscript-java-path "java"
+  "Path of the java executable."
+  :group 'lsp-actionscript
+  :type 'string)
+
 (defcustom lsp-actionscript-sdk-path ""
   "Path to supported SDK.
 See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-SDK-for-the-current-workspace-in-Visual-Studio-Code."
@@ -73,7 +78,6 @@ See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-S
   :group 'lsp-actionscript
   :package-version '(lsp-mode . "7.1.0"))
 
-
 (defun lsp-actionscript--extension-root ()
   "The path that the downloaded extension will extract to."
   (f-join lsp-actionscript-server-store-path
@@ -89,7 +93,7 @@ See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-S
 
 (defun lsp-actionscript--server-command ()
   "Startup command for ActionScript language server."
-  (list "java"
+  (list lsp-actionscript-java-path
         (format "-Droyalelib=%s" lsp-actionscript-sdk-path)
         (format "-Dfile.encoding=%s" lsp-actionscript-option-charset)
         "-cp"
