@@ -115,7 +115,7 @@ See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-S
   :major-modes '(actionscript-mode)
   :priority -1
   :server-id 'as3mxml-ls
-  :download-server-fn (lambda (_client callback error-callback _update?)
+  :download-server-fn (lambda (_client _callback error-callback _update?)
                         (lsp-package-ensure
                          'as3mxml
                          (lambda ()
