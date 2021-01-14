@@ -565,9 +565,12 @@ The command should include `--message=format=json` or similar option."
   (interactive)
   (-if-let* ((workspace (lsp-find-workspace 'rust-analyzer))
              (root (lsp-workspace-root default-directory))
+             (params (lsp-make-rust-analyzer-analyzer-status-params
+                      :text-document (lsp--text-document-identifier)))
              (results (with-lsp-workspace workspace
                         (lsp-send-request (lsp-make-request
-                                           "rust-analyzer/analyzerStatus")))))
+                                           "rust-analyzer/analyzerStatus"
+                                           params)))))
       (let ((buf (get-buffer-create (format "*rust-analyzer status %s*" root)))
             (inhibit-read-only t))
         (with-current-buffer buf
