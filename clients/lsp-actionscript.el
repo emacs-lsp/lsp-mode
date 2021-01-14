@@ -45,9 +45,16 @@ See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-S
   :group 'lsp-actionscript
   :package-version '(lsp-mode . "7.1.0"))
 
+(defcustom lsp-actionscript-extension-name
+  (format "vscode-nextgenas-%s.vsix" lsp-actionscript-version)
+  "File name of the extension file from language server."
+  :type 'string
+  :group 'lsp-actionscript
+  :package-version '(lsp-mode . "7.1.0"))
+
 (defcustom lsp-actionscript-server-download-url
-  (format "https://github.com/BowlerHatLLC/vscode-as3mxml/releases/download/v%s/vscode-nextgenas-%s.vsix"
-          lsp-actionscript-version lsp-actionscript-version)
+  (format "https://github.com/BowlerHatLLC/vscode-as3mxml/releases/download/v%s/%s"
+          lsp-actionscript-version lsp-actionscript-extension-name)
   "Automatic download url for lsp-actionscript."
   :type 'string
   :group 'lsp-actionscript
@@ -65,6 +72,10 @@ See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-S
   :type 'string
   :group 'lsp-actionscript
   :package-version '(lsp-mode . "7.1.0"))
+
+(defun lsp-actionscript--extension-path ()
+  ""
+  (f-join lsp-actionscript-server-store-path lsp-actionscript-extension-name))
 
 (defun lsp-actionscript--extension-dir ()
   "Return as3mxml extension path."
@@ -86,12 +97,13 @@ See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-S
  'as3mxml
  '(:system "as3mxml")
  `(:download :url lsp-actionscript-server-download-url
-             :store-path lsp-actionscript-server-store-path))
+             :store-path ,(lsp-actionscript--extension-path)))
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection #'lsp-actionscript--server-command
-                                        )
+  :new-connection (lsp-stdio-connection
+                   #'lsp-actionscript--server-command
+                   (lambda () (f-exists? (lsp-actionscript--extension-path))))
   :major-modes '(actionscript-mode)
   :priority -1
   :server-id 'as3mxml-ls
