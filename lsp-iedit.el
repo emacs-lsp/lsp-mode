@@ -27,7 +27,8 @@
 
 (declare-function iedit-make-occurrence-overlay "iedit-lib" (begin end))
 (declare-function iedit-start-buffering "iedit-lib" ())
-(declare-function iedit-lib-start "iedit-lib" ())
+(declare-function iedit-lib-start "iedit-lib" (mode-exit-func))
+(declare-function iedit-done "iedit" ())
 (declare-function evil-multiedit-state "evil-multiedit" ())
 
 (defvar iedit-mode)
@@ -53,7 +54,7 @@ from various lsp protocol requests, e.g.
     (setq iedit-mode t)
     (when iedit-auto-buffering
       (iedit-start-buffering))
-    (iedit-lib-start)
+    (iedit-lib-start 'iedit-done)
     (run-hooks 'iedit-mode-hook)
     (add-hook 'before-revert-hook 'iedit-done nil t)
     (add-hook 'kbd-macro-termination-hook 'iedit-done nil t)
