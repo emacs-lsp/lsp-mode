@@ -66,28 +66,37 @@ See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-S
   :group 'lsp-actionscript
   :package-version '(lsp-mode . "7.1.0"))
 
+(defun lsp-actionscript--extension-dir ()
+  "Return as3mxml extension path."
+  (f-join lsp-actionscript-server-store-path
+          (format "vscode-nextgenas-%s" lsp-actionscript-version)
+          "extension"))
+
 (defun lsp-actionscript--server-command ()
   "Startup command for ActionScript language server."
   (list "java"
         (format "-Droyalelib=%s" lsp-actionscript-sdk-path)
         (format "-Dfile.encoding=%s" lsp-actionscript-option-charset)
         "-cp"
-        (format "%s/vscode-as3mxml/bundled-compiler/*;%s/vscode-as3mxml/bin/*"
-                lsp-actionscript-server-store-path lsp-actionscript-server-store-path)
+        (format "%s/bundled-compiler/*;%s/bin/*"
+                (lsp-actionscript--extension-dir) (lsp-actionscript--extension-dir))
         "com.as3mxml.vscode.Main"))
 
 (lsp-dependency
  'as3mxml
- '(:system "lsp-actionscript")
+ '(:system "as3mxml")
  `(:download :url lsp-actionscript-server-download-url
              :store-path lsp-actionscript-server-store-path))
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection #'lsp-actionscript--server-command)
+  :new-connection (lsp-stdio-connection #'lsp-actionscript--server-command
+                                        )
   :major-modes '(actionscript-mode)
   :priority -1
-  :server-id 'as3mxml-ls))
+  :server-id 'as3mxml-ls
+  :download-server-fn (lambda (_client callback error-callback _update?)
+                        (lsp-package-ensure 'as3mxml callback error-callback))))
 
 (provide 'lsp-actionscript)
 ;;; lsp-actionscript.el ends here
