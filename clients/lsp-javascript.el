@@ -44,8 +44,8 @@
 
 (defun lsp-typescript-javascript-tsx-jsx-activate-p (filename &optional _)
   "Check if the javascript-typescript language server should be enabled based on FILENAME."
-  (or (string-match-p (rx (one-or-more anything) "." (or "ts" "js") (opt "x") string-end) filename)
-      (and (derived-mode-p 'js-mode 'js2-mode 'typescript-mode)
+  (or (string-match-p "\\.mjs\\|[jt]sx?\\'" filename)
+      (and (derived-mode-p 'js-mode 'typescript-mode)
            (not (derived-mode-p 'json-mode)))))
 
 (lsp-register-client
