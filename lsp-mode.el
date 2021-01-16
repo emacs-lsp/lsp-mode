@@ -6734,6 +6734,14 @@ should return the command to start the LS server."
   "Create LSP stdio connection named name.
 LOCAL-COMMAND is either list of strings, string or function which
 returns the command to execute."
+  ;; 2.5.0-pre (as built from native-comp branch before M Albinus released tramp-2.5)
+  ;; worked fine
+  (defvar tramp-version)
+  (defvar tramp-connection-properties)
+  (when (version< "2.5.0-pre" tramp-version)
+    (lsp-warn
+     "Your tramp version - %s - might fail to work with remote LSP. Update to tramp-2.5 for tested reliability improvements"
+     tramp-version))
   ;; Force a direct asynchronous process.
   (add-to-list 'tramp-connection-properties
                (list (regexp-quote (file-remote-p default-directory))
