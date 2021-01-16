@@ -33,26 +33,26 @@
 
 (require 'package)
 
-(setq debug-on-error t)
+(setq debug-on-error t
+      no-byte-compile t
+      package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("gnu" . "https://elpa.gnu.org/packages/"))
+      package-user-dir (expand-file-name (make-temp-name "lsp-tmp-elpa")
+                                         user-emacs-directory)
+      custom-file (expand-file-name "custom.el" package-user-dir))
 
-(let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
-                           ("gnu" . "https://elpa.gnu.org/packages/")))
-       (no-byte-compile t)
-       (package-user-dir (expand-file-name (make-temp-name "lsp-tmp-elpa")
-                                           user-emacs-directory))
-       (custom-file (expand-file-name "custom.el" package-user-dir))
-       (pkg-list '(lsp-mode lsp-ui yasnippet lsp-java lsp-python-ms lsp-haskell helm-lsp lsp-treemacs dap-mode lsp-origami lsp-dart company flycheck lsp-pyright
+(let* ((pkg-list '(lsp-mode lsp-ui yasnippet lsp-java lsp-python-ms lsp-haskell helm-lsp lsp-treemacs dap-mode lsp-origami lsp-dart company flycheck lsp-pyright
                             ;; modes
                             rust-mode php-mode scala-mode dart-mode clojure-mode)))
 
   (package-initialize)
   (package-refresh-contents)
 
-  (mapcar (lambda (pkg)
-            (unless (package-installed-p pkg)
-              (package-install pkg))
-            (require pkg))
-          pkg-list)
+  (mapc (lambda (pkg)
+          (unless (package-installed-p pkg)
+            (package-install pkg))
+          (require pkg))
+        pkg-list)
 
   (yas-global-mode)
   (add-hook 'prog-mode-hook 'lsp)
