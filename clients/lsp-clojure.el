@@ -166,6 +166,14 @@ If there are more arguments expected after the line and column numbers."
   (interactive)
   (lsp-clojure--execute-command "server-info"))
 
+(defun lsp-clojure-cursor-info ()
+  "Request cursor info at point."
+  (interactive)
+  (lsp--cur-workspace-check)
+  (lsp-clojure--execute-command "cursor-info" (list (lsp--buffer-uri)
+                                                    (- (line-number-at-pos) 1) ;; clojure-lsp expects line numbers to start at 0
+                                                    (current-column))))
+
 (defun lsp-clojure--library-folders (_workspace)
   "Return the library folders path to analyze for WORKSPACE."
   (when (string-match-p ".m2/repository" (buffer-file-name))
