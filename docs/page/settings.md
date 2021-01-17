@@ -5,7 +5,6 @@ These are `lsp-mode` specific custom settings:
 
 - `lsp-log-io` - If non-nil, print all messages to and from the language server to `*lsp-log*`.
 - `lsp-print-performance` - If non-nil, print performance info. to `*lsp-log*`.
-- `lsp-report-if-no-buffer` - If non nil the errors will be reported even when the file is not open.
 - `lsp-keep-workspace-alive` - If non nil keep workspace alive when the last workspace buffer is closed.
 - `lsp-enable-snippet` - Enable/disable snippet completion support.
 - `lsp-auto-guess-root` - Automatically guess the project root using projectile/project. Do **not** use this setting unless you are familiar with `lsp-mode` internals and you are sure that all of your projects are following `projectile=/=project.el` conventions.
