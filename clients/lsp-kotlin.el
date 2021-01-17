@@ -81,14 +81,14 @@ When enabled a debugger for Kotlin will be available."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-kotlin-external-sources-use-kls-scheme t
-  "[Recommended] Specifies whether URIs inside JARs should be represented \
+  "[Recommended] Specifies whether URIs inside JARs should be represented
 using the 'kls'-scheme."
   :type 'boolean
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-kotlin-external-sources-auto-convert-to-kotlin t
-  "Specifies whether decompiled/external classes should be auto-converted \
+  "Specifies whether decompiled/external classes should be auto-converted
 to Kotlin."
   :type 'boolean
   :group 'lsp-kotlin

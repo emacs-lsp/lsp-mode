@@ -378,8 +378,8 @@ completion items."
   :package-version '(lsp-mode . "7.0"))
 
 (defcustom lsp-pyls-plugins-jedi-completion-include-class-objects t
-  "If enabled, adds class objects to completion in order to avoid snippet with \
-init args.
+  "If enabled, adds class objects to completion in order to avoid snippet \
+with init args.
 
 Has no effect if `lsp-pyls-plugins-jedi-completion-include-params' is disabled.
 Requires pyls >= 0.33.0"

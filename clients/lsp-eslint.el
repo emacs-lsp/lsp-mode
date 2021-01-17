@@ -135,7 +135,7 @@ source.fixAll code action."
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-lint-task-options "."
-  "Command line options applied when running the task for linting the whole \
+  "Command line options applied when running the task for linting the whole
 workspace (see https://eslint.org/docs/user-guide/command-line-interface)."
   :type 'string
   :package-version '(lsp-mode . "6.3"))

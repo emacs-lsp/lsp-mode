@@ -233,7 +233,7 @@ fragment.  If it is set to `0`, this feature can be disabled."
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-hover-view-string t
-  "Hover to view the contents of a string (only if the literal contains an \
+  "Hover to view the contents of a string (only if the literal contains an
 escape character)."
   :type 'boolean
   :package-version '(lsp-mode . "7.1")
