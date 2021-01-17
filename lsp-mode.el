@@ -7037,7 +7037,9 @@ STORE-PATH to make it executable."
 
 (defcustom lsp-gunzip-script (cond ((executable-find "gzip") lsp-ext-gunzip-script)
                                    (t nil))
-  "The script to decompress a gzipped file. Should be a format string with one argument for the file to be decompressed in place."
+  "The script to decompress a gzipped file.
+Should be a format string with one argument for the file to be decompressed
+in place."
   :group 'lsp-mode
   :type 'string
   :package-version '(lsp-mode . "7.1"))
