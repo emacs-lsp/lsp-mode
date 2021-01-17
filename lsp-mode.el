@@ -3895,7 +3895,8 @@ The method uses `replace-buffer-contents'."
                             nil nil 1))
 
 (defvar-local lsp-enable-relative-indentation nil
-  "Enable relative indentation when insert texts, snippets ... from language server.")
+  "Enable relative indentation when insert texts, snippets ...
+from language server.")
 
 (defun lsp--expand-snippet (snippet &optional start end expand-env keep-whitespace)
   "Wrapper of `yas-expand-snippet' with all of it arguments.
@@ -3990,8 +3991,8 @@ Only works when mode is 'tick or 'alive."
        cl-first))
 
 (defvar-local lsp--before-change-vals nil
-  "Store the positions from the `lsp-before-change' function
-  call, for validation and use in the `lsp-on-change' function.")
+  "Store the positions from the `lsp-before-change' function call, for
+validation and use in the `lsp-on-change' function.")
 
 (defun lsp--text-document-content-change-event (start end length)
   "Make a TextDocumentContentChangeEvent body for START to END, of length LENGTH."
