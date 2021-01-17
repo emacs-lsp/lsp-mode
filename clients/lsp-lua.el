@@ -139,7 +139,7 @@
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-completion-display-context 6
-  "Previewing the relevant code snippet of the suggestion may help you \
+  "Previewing the relevant code snippet of the suggestion may help you
 understand the usage of the suggestion.
 
 The number set indicates the number of intercepted lines in the code

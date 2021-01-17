@@ -56,7 +56,7 @@
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-sysroot nil
-  "If non-nil, use the given path as the sysroot for all rustc invocations \
+  "If non-nil, use the given path as the sysroot for all rustc invocations
 instead of trying to detect the sysroot automatically."
   :type '(choice
           (const :tag "None" nil)
