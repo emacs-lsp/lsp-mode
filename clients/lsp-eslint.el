@@ -253,10 +253,30 @@ source.fixAll code action."
         first-argument-exist
       (executable-find (cl-first eslint-server-command)))))
 
-(defun lsp-eslint--confirm-local (_workspace _params)
-  ;; don't bother implementing since it will be dropped in next version of the
-  ;; server
-  t)
+(defvar lsp-eslint--stored-libraries (ht)
+  "Hash table defining if a given path to an ESLint library is allowed to run.
+If the value for a key is t, it will be allowed. If it is any other non-nil
+value, it will not. If it is nil, the user will be prompted to allow or deny it.")
+
+(lsp-defun lsp-eslint--confirm-local (_workspace (&eslint:ConfirmExecutionParams :library-path) callback)
+  (if-let (remembered-answer (gethash library-path lsp-eslint--stored-libraries))
+      (if (eq remembered-answer t)
+          (funcall callback 4)
+        (funcall callback 1))
+    (lsp-ask-question
+     (format "Allow lsp-mode to execute %s?" library-path)
+     '("Always" "Yes" "No" "Never")
+     (lambda (response)
+       (cond ((equal response "Always")
+               (puthash library-path t lsp-eslint--stored-libraries)
+               (funcall callback 4))
+             ((equal response "Yes")
+               (funcall callback 4))
+             ((equal response "No")
+               (funcall callback 1))
+             ((equal response "Never")
+               (puthash library-path 'no lsp-eslint--stored-libraries)
+               (funcall callback 1)))))))
 
 (lsp-register-client
  (make-lsp-client
@@ -276,8 +296,8 @@ source.fixAll code action."
   :multi-root t
   :notification-handlers (ht ("eslint/status" #'lsp-eslint-status-handler))
   :request-handlers (ht ("workspace/configuration" #'lsp-eslint--configuration)
-                        ("eslint/openDoc" #'lsp-eslint--open-doc)
-                        ("eslint/confirmLocalESLint" #'lsp-eslint--confirm-local))
+                        ("eslint/openDoc" #'lsp-eslint--open-doc))
+  :async-request-handlers (ht ("eslint/confirmESLintExecution" #'lsp-eslint--confirm-local))
   :server-id 'eslint
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
@@ -304,7 +324,7 @@ source.fixAll code action."
                                    (funcall callback))
                                (error (funcall error-callback err))))
                            error-callback
-                           :url (lsp-vscode-extension-url "dbaeumer" "vscode-eslint" "2.1.8")
+                           :url (lsp-vscode-extension-url "dbaeumer" "vscode-eslint" "2.1.14")
                            :store-path tmp-zip)))))
 
 (provide 'lsp-eslint)
