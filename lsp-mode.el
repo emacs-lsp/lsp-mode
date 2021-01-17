@@ -2893,7 +2893,8 @@ alist mapping workspace->result."
                :no-merge no-merge))
 
 (defalias 'lsp-send-request 'lsp--send-request
-  "Send BODY as a request to the language server and return the response synchronously.
+  "Send BODY as a request to the language server and return the response
+synchronously.
 \n(fn BODY)")
 
 (cl-defun lsp-request (method params &key no-wait no-merge)
