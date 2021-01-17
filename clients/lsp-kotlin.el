@@ -50,20 +50,20 @@ executable with `exec-path'."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-kotlin-compiler-jvm-target "1.8"
-  "Specifies the JVM target, e.g. \"1.6\" or \"1.8\""
+  "Specifies the JVM target, e.g. \"1.6\" or \"1.8\"."
   :type 'string
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-kotlin-linting-debounce-time 250
-  "[DEBUG] Specifies the debounce time limit. Lower to increase
-responsiveness at the cost of possible stability issues."
+  "[DEBUG] Specifies the debounce time limit.
+Lower to increase responsiveness at the cost of possible stability issues."
   :type 'number
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-kotlin-completion-snippets-enabled t
-  "Specifies whether code completion should provide snippets (true) or \
+  "Specifies whether code completion should provide snippets (true) or
 plain-text items (false)."
   :type 'boolean
   :group 'lsp-kotlin
