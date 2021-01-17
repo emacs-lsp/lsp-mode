@@ -33,17 +33,20 @@
   :link '(url-link "https://github.com/tomi/vscode-rf-language-server"))
 
 (defcustom lsp-rf-language-server-start-command '("~/.nvm/versions/node/v9.11.2/bin/node" "~/.vscode/extensions/tomiturtiainen.rf-intellisense-2.8.0/server/server.js")
-  "Path to the server.js file of the rf-intellisense server. Accepts a list of strings (path/to/interpreter path/to/server.js)"
+  "Path to the server.js file of the rf-intellisense server.
+Accepts a list of strings (path/to/interpreter path/to/server.js)"
   :type 'list
   :group 'lsp-rf)
 
 (defcustom lsp-rf-language-server-include-paths []
-  "An array of files that should be included by the parser. Glob patterns as strings are accepted (eg. *.robot between double quotes)"
+  "An array of files that should be included by the parser.
+Glob patterns as strings are accepted (eg. *.robot between double quotes)"
   :type 'lsp-string-vector
   :group 'lsp-rf)
 
 (defcustom lsp-rf-language-server-exclude-paths []
-  "An array of files that should be ignored by the parser. Glob patterns as strings are accepted (eg. *bad.robot between double quotes)"
+  "An array of files that should be ignored by the parser.
+Glob patterns as strings are accepted (eg. *bad.robot between double quotes)"
   :type 'lsp-string-vector
   :group 'lsp-rf)
 

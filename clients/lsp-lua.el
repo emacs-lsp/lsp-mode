@@ -139,7 +139,11 @@
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-completion-display-context 6
-  "Previewing the relevant code snippet of the suggestion may help you understand the usage of the suggestion. The number set indicates the number of intercepted lines in the code fragment. If it is set to `0`, this feature can be disabled."
+  "Previewing the relevant code snippet of the suggestion may help you \
+understand the usage of the suggestion.
+
+The number set indicates the number of intercepted lines in the code
+fragment.  If it is set to `0`, this feature can be disabled."
   :type 'number
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)

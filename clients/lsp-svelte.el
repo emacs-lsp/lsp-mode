@@ -98,7 +98,8 @@
   :package-version '(lsp-mode . "7.1.0"))
 
 (defcustom lsp-svelte-plugin-css-globals ""
-  "Which css files should be checked for global variables (`--global-var: value;`). These variables are added to the css completions. String of comma-separated file paths or globs relative to workspace root."
+  "Which css files should be checked for global variables (`--global-var: value;`). 
+These variables are added to the css completions. String of comma-separated file paths or globs relative to workspace root."
   :type 'string
   :package-version '(lsp-mode . "7.1.0"))
 

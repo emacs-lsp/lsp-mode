@@ -51,7 +51,8 @@
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-perl-perl-cmd nil
-  "Path to perl interpreter used in Perl Language Server.  Defaults to `perl' if nil."
+  "Path to perl interpreter used in Perl Language Server.
+Defaults to `perl' if nil."
   :type 'string
   :group 'lsp-perl
   :package-version '(lsp-mode . "7.0.1"))
@@ -61,12 +62,14 @@
   :group 'lsp-perl
   :package-version '(lsp-mode . "7.0.1"))
 (defcustom lsp-perl-file-filter nil
-  "A vector of directories filtering perl file.  Defaults to `[\".pm\" \".pl\"]' if nil."
+  "A vector of directories filtering perl file.
+Defaults to `[\".pm\" \".pl\"]' if nil."
   :type 'lsp-string-vector
   :group 'lsp-perl
   :package-version '(lsp-mode . "7.0.1"))
 (defcustom lsp-perl-ignore-dirs nil
-  "A vector of directories to ignore.  Defaults to `[\".vscode\" \".git\" \".svn\"]' if nil."
+  "A vector of directories to ignore.
+Defaults to `[\".vscode\" \".git\" \".svn\"]' if nil."
   :type 'lsp-string-vector
   :group 'lsp-perl
   :package-version '(lsp-mode . "7.0.1"))
@@ -81,7 +84,7 @@
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda ()
                                      (list lsp-perl-language-server-path
-                                           "-MPerl::LanguageServer" "-e" "Perl::LanguageServer::run" "--" 
+                                           "-MPerl::LanguageServer" "-e" "Perl::LanguageServer::run" "--"
                                            (format "--port %d --version %s"
                                                    lsp-perl-language-server-port lsp-perl-language-server-client-version))))
                   :major-modes '(perl-mode cperl-mode)
@@ -94,4 +97,3 @@
 
 (provide 'lsp-perl)
 ;;; lsp-perl.el ends here
-

@@ -63,13 +63,15 @@ responsiveness at the cost of possible stability issues."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-kotlin-completion-snippets-enabled t
-  "Specifies whether code completion should provide snippets (true) or plain-text items (false)."
+  "Specifies whether code completion should provide snippets (true) or \
+plain-text items (false)."
   :type 'boolean
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-kotlin-debug-adapter-enabled t
-  "[Recommended] Specifies whether the debug adapter should be used. When enabled a debugger for Kotlin will be available."
+  "[Recommended] Specifies whether the debug adapter should be used.
+When enabled a debugger for Kotlin will be available."
   :type 'boolean)
 
 (defcustom lsp-kotlin-debug-adapter-path ""
@@ -79,7 +81,8 @@ responsiveness at the cost of possible stability issues."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-kotlin-external-sources-use-kls-scheme t
-  "[Recommended] Specifies whether URIs inside JARs should be represented using the 'kls'-scheme."
+  "[Recommended] Specifies whether URIs inside JARs should be represented \
+using the 'kls'-scheme."
   :type 'boolean
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))

@@ -50,14 +50,16 @@ Disable the feature with 'Disabled'."
 
 (defcustom lsp-pwsh-script-analysis-enable t
   "Enables real-time script analysis from PowerShell Script Analyzer.
-Uses the newest installed version of the PSScriptAnalyzer module or the version bundled with this extension, if it is newer."
+Uses the newest installed version of the PSScriptAnalyzer module or the
+version bundled with this extension, if it is newer."
   :type 'boolean
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-pwsh-script-analysis-settings-path ""
   "Specifies the path to a PowerShell Script Analyzer settings file.
-To override the default settings for all projects, enter an absolute path, or enter a path relative to your workspace."
+To override the default settings for all projects, enter an absolute path,
+or enter a path relative to your workspace."
   :type 'string
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))

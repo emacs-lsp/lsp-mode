@@ -86,7 +86,8 @@ where `:name' is the name of the package and `:location' is the
 directory containing the package. Example:
 \(vector
    \(list :name \"@vsintellicode/typescript-intellicode-plugin\"
-         :location \"<path>.vscode/extensions/visualstudioexptteam.vscodeintellicode-1.1.9/\"))"
+         :location \"<path>.vscode/extensions/visualstudioexptteam.
+                            vscodeintellicode-1.1.9/\"))"
   :group 'lsp-typescript
   :type  '(restricted-sexp :tag "Vector"
                            :match-alternatives

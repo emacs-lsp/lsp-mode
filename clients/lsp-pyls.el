@@ -330,7 +330,8 @@ closing bracket rather than match the indentation."
 
 (defcustom lsp-pyls-plugins-flake8-max-line-length nil
   "Set the maximum length that any line (with some exceptions) may be.
-Exceptions include lines that are either strings or comments which are entirely URLs."
+Exceptions include lines that are either strings or comments which are
+entirely URLs."
   :type 'integer
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.2"))
