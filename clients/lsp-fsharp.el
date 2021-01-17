@@ -62,14 +62,14 @@ The slash is expected at the end."
 
 (defcustom lsp-fsharp-external-autocomplete nil
   "Provides autocompletion for symbols from not opened namespaces/modules; \
-inserts open on accept"
+inserts open on accept."
   :group 'lsp-fsharp
   :type 'bool
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-linter t
   "Enables FSharpLint integration, provides additional warnings and code \
-action fixes"
+action fixes."
   :group 'lsp-fsharp
   :type 'bool
   :package-version '(lsp-mode . "6.2"))

@@ -265,12 +265,14 @@ When nil, all registered clients are considered candidates.")
   "Last request id.")
 
 (defcustom lsp-before-initialize-hook nil
-  "List of functions to be called before a Language Server has been initialized for a new workspace."
+  "List of functions to be called before a Language Server has been initialized \
+for a new workspace."
   :type 'hook
   :group 'lsp-mode)
 
 (defcustom lsp-after-initialize-hook nil
-  "List of functions to be called after a Language Server has been initialized for a new workspace."
+  "List of functions to be called after a Language Server has been initialized \
+for a new workspace."
   :type 'hook
   :group 'lsp-mode)
 
@@ -329,7 +331,8 @@ the server has requested that."
     ;; .Net Core build-output
     "[/\\\\]bin/Debug\\'"
     "[/\\\\]obj\\'")
-  "List of regexps matching directory paths which won't be monitored when creating file watches."
+  "List of regexps matching directory paths which won't be monitored when \
+creating file watches."
   :group 'lsp-mode
   :type '(repeat string)
   :package-version '(lsp-mode . "7.1.0"))
@@ -415,13 +418,15 @@ This flag affects only servers which do not support incremental updates."
   :group 'lsp-mode)
 
 (defcustom lsp-enable-links t
-  "If non-nil, all references to links in a file will be made clickable, if supported by the language server."
+  "If non-nil, all references to links in a file will be made clickable, if \
+supported by the language server."
   :type 'boolean
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-enable-imenu t
-  "If non-nil, automatically enable `imenu' integration when server provides `textDocument/documentSymbol'."
+  "If non-nil, automatically enable `imenu' integration when server provides \
+`textDocument/documentSymbol'."
   :type 'boolean
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.2"))
@@ -462,7 +467,8 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :group 'lsp-mode)
 
 (defcustom lsp-enable-indentation t
-  "Indent regions using the file formatting functionality provided by the language server."
+  "Indent regions using the file formatting functionality provided by the \
+language server."
   :type 'boolean
   :group 'lsp-mode)
 
@@ -477,7 +483,8 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :group 'lsp-mode)
 
 (defcustom lsp-before-save-edits t
-  "If non-nil, `lsp-mode' will apply edits suggested by the language server before saving a document."
+  "If non-nil, `lsp-mode' will apply edits suggested by the language server \
+before saving a document."
   :type 'boolean
   :group 'lsp-mode)
 
@@ -565,7 +572,8 @@ The hook will receive two parameters list of added and removed folders."
   :group 'lsp-imenu)
 
 (defcustom lsp-imenu-container-name-separator "/"
-  "Separator string to use to separate the container name from the symbol while displaying imenu entries."
+  "Separator string to use to separate the container name from the symbol while \
+displaying imenu entries."
   :type 'string
   :group 'lsp-imenu)
 
@@ -612,7 +620,8 @@ are determined by the index of the element."
 
 ;; vibhavp: Should we use a lower value (5)?
 (defcustom lsp-response-timeout 10
-  "Number of seconds to wait for a response from the language server before timing out."
+  "Number of seconds to wait for a response from the language server before \
+timing out."
   :type 'number
   :group 'lsp-mode)
 
@@ -903,9 +912,9 @@ called with nil the signature info must be cleared."
   "If non-nil, `lsp-client-packages' are yet to be required.")
 
 (defvar lsp--tcp-server-port 0
-  "The server socket which is opened when using `lsp-tcp-server' (a server socket
-is opened in Emacs and the language server connects to it). The default
-value of 0 ensures that a random high port is used. Set it to a positive
+  "The server socket which is opened when using `lsp-tcp-server' (a server
+socket is opened in Emacs and the language server connects to it).  The
+default value of 0 ensures that a random high port is used. Set it to a positive
 integer to use a specific port.")
 
 (defvar lsp--tcp-server-wait-seconds 10

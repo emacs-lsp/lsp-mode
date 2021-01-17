@@ -88,7 +88,8 @@ using the 'kls'-scheme."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-kotlin-external-sources-auto-convert-to-kotlin t
-  "Specifies whether decompiled/external classes should be auto-converted to Kotlin."
+  "Specifies whether decompiled/external classes should be auto-converted \
+to Kotlin."
   :type 'boolean
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))

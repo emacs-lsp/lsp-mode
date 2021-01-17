@@ -233,7 +233,8 @@ fragment.  If it is set to `0`, this feature can be disabled."
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-hover-view-string t
-  "Hover to view the contents of a string (only if the literal contains an escape character)."
+  "Hover to view the contents of a string (only if the literal contains an \
+escape character)."
   :type 'boolean
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
@@ -284,8 +285,13 @@ fragment.  If it is set to `0`, this feature can be disabled."
 
 (defcustom lsp-lua-workspace-library nil
   "Load external library.
-This feature can load external Lua files, which can be used for definition, automatic completion and other functions. Note that the language server does not monitor changes in external files and needs to restart if the external files are modified.
-The following example shows loaded files in `C:/lua` and `../lib` ,exclude `../lib/temp`.
+
+This feature can load external Lua files, which can be used for definition,
+automatic completion and other functions. Note that the language server does
+not monitor changes in external files and needs to restart if the external
+files are modified.  The following example shows loaded files in `C:/lua`
+and `../lib` ,exclude `../lib/temp`.
+
 ```json
 \"Lua.workspace.library\": {
 \"C:/lua\": true,
