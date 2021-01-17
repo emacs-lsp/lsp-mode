@@ -6051,7 +6051,8 @@ deserialization.")
                  workspace)))))))))
 
 (defvar-local lsp--line-col-to-point-hash-table nil
-  "Hash table with keys (line . col) and values that are either point positions or markers.")
+  "Hash table with keys (line . col) and values that are either point positions
+or markers.")
 
 (defcustom lsp-imenu-detailed-outline t
   "Whether `lsp-imenu' should include signatures.
