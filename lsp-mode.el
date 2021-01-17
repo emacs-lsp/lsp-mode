@@ -6738,9 +6738,9 @@ returns the command to execute."
   ;; worked fine
   (defvar tramp-version)
   (defvar tramp-connection-properties)
-  (when (version< "2.5.0-pre" tramp-version)
+  (when (version< tramp-version "2.5.0-pre")
     (lsp-warn
-     "Your tramp version - %s - might fail to work with remote LSP. Update to tramp-2.5 for tested reliability improvements"
+     "Your tramp version - %s - might fail to work with remote LSP. Update to version 2.5 or greater (available on elpa)"
      tramp-version))
   ;; Force a direct asynchronous process.
   (add-to-list 'tramp-connection-properties
