@@ -155,7 +155,7 @@ workspace (see https://eslint.org/docs/user-guide/command-line-interface)."
   :type 'alist)
 
 (defcustom lsp-eslint-experimental-incremental-sync t
-  "Controls whether the new incremental text document synchronization should \
+  "Controls whether the new incremental text document synchronization should
 be used."
   :type 'boolean
   :package-version '(lsp-mode . "6.3"))

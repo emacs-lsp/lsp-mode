@@ -61,14 +61,14 @@ The slash is expected at the end."
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-external-autocomplete nil
-  "Provides autocompletion for symbols from not opened namespaces/modules; \
+  "Provides autocompletion for symbols from not opened namespaces/modules;
 inserts open on accept."
   :group 'lsp-fsharp
   :type 'bool
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-linter t
-  "Enables FSharpLint integration, provides additional warnings and code \
+  "Enables FSharpLint integration, provides additional warnings and code
 action fixes."
   :group 'lsp-fsharp
   :type 'bool
@@ -107,7 +107,8 @@ action fixes."
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-interface-stub-generation-object-identifier "this"
-  "Defines object identifier used by interface stub generator, e.g. `this' or `self'."
+  "Defines object identifier used by interface stub generator,
+e.g. `this' or `self'."
   :group 'lsp-fsharp
   :type 'string
   :package-version '(lsp-mode . "6.2"))
@@ -138,7 +139,7 @@ action fixes."
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-resolve-namespaces t
-  "Enables resolve namespace quick fix; adds `open' if symbol is from not yet \
+  "Enables resolve namespace quick fix; adds `open' if symbol is from not yet
 opened module/namespace."
   :group 'lsp-fsharp
   :type 'bool
@@ -160,7 +161,8 @@ with test projects are not autoloaded by FSharpAutoComplete."
   :risky t)
 
 (defun lsp-fsharp--fsac-runtime-cmd ()
-  "Get the command required to run fsautocomplete based off of the current runtime."
+  "Get the command required to run fsautocomplete based off of the
+current runtime."
   (pcase lsp-fsharp-server-runtime
     ('net-core "dotnet")
     ('mono "mono")

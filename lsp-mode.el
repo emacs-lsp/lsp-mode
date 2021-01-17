@@ -265,13 +265,13 @@ When nil, all registered clients are considered candidates.")
   "Last request id.")
 
 (defcustom lsp-before-initialize-hook nil
-  "List of functions to be called before a Language Server has been initialized \
+  "List of functions to be called before a Language Server has been initialized
 for a new workspace."
   :type 'hook
   :group 'lsp-mode)
 
 (defcustom lsp-after-initialize-hook nil
-  "List of functions to be called after a Language Server has been initialized \
+  "List of functions to be called after a Language Server has been initialized
 for a new workspace."
   :type 'hook
   :group 'lsp-mode)
@@ -331,7 +331,7 @@ the server has requested that."
     ;; .Net Core build-output
     "[/\\\\]bin/Debug\\'"
     "[/\\\\]obj\\'")
-  "List of regexps matching directory paths which won't be monitored when \
+  "List of regexps matching directory paths which won't be monitored when
 creating file watches."
   :group 'lsp-mode
   :type '(repeat string)
@@ -418,14 +418,14 @@ This flag affects only servers which do not support incremental updates."
   :group 'lsp-mode)
 
 (defcustom lsp-enable-links t
-  "If non-nil, all references to links in a file will be made clickable, if \
+  "If non-nil, all references to links in a file will be made clickable, if
 supported by the language server."
   :type 'boolean
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-enable-imenu t
-  "If non-nil, automatically enable `imenu' integration when server provides \
+  "If non-nil, automatically enable `imenu' integration when server provides
 `textDocument/documentSymbol'."
   :type 'boolean
   :group 'lsp-mode
@@ -467,7 +467,7 @@ If this is set to nil, `eldoc' will show only the symbol information."
   :group 'lsp-mode)
 
 (defcustom lsp-enable-indentation t
-  "Indent regions using the file formatting functionality provided by the \
+  "Indent regions using the file formatting functionality provided by the
 language server."
   :type 'boolean
   :group 'lsp-mode)
@@ -483,7 +483,7 @@ language server."
   :group 'lsp-mode)
 
 (defcustom lsp-before-save-edits t
-  "If non-nil, `lsp-mode' will apply edits suggested by the language server \
+  "If non-nil, `lsp-mode' will apply edits suggested by the language server
 before saving a document."
   :type 'boolean
   :group 'lsp-mode)

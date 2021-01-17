@@ -122,7 +122,8 @@ For more information about the brace styles please refer to https://github.com/P
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-pwsh-code-formatting-whitespace-before-open-paren t
-  "Adds a space between a keyword (if, elseif, while, switch, etc) and its associated conditional expression."
+  "Adds a space between a keyword (if, elseif, while, switch, etc) and its
+associated conditional expression."
   :type 'boolean
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
@@ -152,7 +153,8 @@ For more information about the brace styles please refer to https://github.com/P
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-pwsh-code-formatting-ignore-one-line-block t
-  "Does not reformat one-line code blocks, such as \"if (...) {...} else {...}\"."
+  "Does not reformat one-line code blocks, such as \"if (...) {...} else
+{...}\"."
   :type 'boolean
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
@@ -179,13 +181,15 @@ Valid values are 'Diagnostic', 'Verbose', 'Normal', 'Warning', and 'Error'"
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-pwsh-developer-editor-services-wait-for-debugger nil
-  "Launches the language service with the /waitForDebugger flag to force it to wait for a .NET debugger to attach before proceeding."
+  "Launches the language service with the /waitForDebugger flag to force it to
+wait for a .NET debugger to attach before proceeding."
   :type 'boolean
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-pwsh-developer-feature-flags nil
-  "An array of strings that enable experimental features in the PowerShell extension."
+  "An array of strings that enable experimental features in the PowerShell
+extension."
   :type
   '(repeat string)
   :group 'lsp-pwsh
