@@ -572,7 +572,7 @@ The hook will receive two parameters list of added and removed folders."
   :group 'lsp-imenu)
 
 (defcustom lsp-imenu-container-name-separator "/"
-  "Separator string to use to separate the container name from the symbol while \
+  "Separator string to use to separate the container name from the symbol while
 displaying imenu entries."
   :type 'string
   :group 'lsp-imenu)
@@ -620,7 +620,7 @@ are determined by the index of the element."
 
 ;; vibhavp: Should we use a lower value (5)?
 (defcustom lsp-response-timeout 10
-  "Number of seconds to wait for a response from the language server before \
+  "Number of seconds to wait for a response from the language server before
 timing out."
   :type 'number
   :group 'lsp-mode)
