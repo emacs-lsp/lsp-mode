@@ -56,8 +56,8 @@
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-sysroot nil
-  "If non-nil, use the given path as the sysroot for all rustc invocations instead of trying
-to detect the sysroot automatically."
+  "If non-nil, use the given path as the sysroot for all rustc invocations
+instead of trying to detect the sysroot automatically."
   :type '(choice
           (const :tag "None" nil)
           (string :tag "Sysroot"))
@@ -87,14 +87,18 @@ to detect the sysroot automatically."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-build-lib nil
-  "If non-nil, checks the project as if you passed the `--lib' argument to cargo.
+  "If non-nil, checks the project as if you passed the `--lib' argument to
+cargo.
+
 Mutually exclusive with, and preferred over, `lsp-rust-build-bin'. (Unstable)"
   :type 'boolean
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-build-bin nil
-  "If non-nil, checks the project as if you passed `-- bin <build_bin>' argument to cargo.
+  "If non-nil, checks the project as if you passed `-- bin <build_bin>'
+argument to cargo.
+
 Mutually exclusive with `lsp-rust-build-lib'. (Unstable)"
   :type '(choice
           (const :tag "None" nil)
@@ -103,7 +107,9 @@ Mutually exclusive with `lsp-rust-build-lib'. (Unstable)"
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-cfg-test nil
-  "If non-nil, checks the project as if you were running `cargo test' rather than cargo build.
+  "If non-nil, checks the project as if you were running `cargo test' rather
+than cargo build.
+
 I.e., compiles (but does not run) test code."
   :type 'boolean
   :group 'lsp-rust
@@ -152,8 +158,7 @@ the latest build duration."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-build-on-save nil
-  "Only index the project when a file is saved and not on
-change."
+  "Only index the project when a file is saved and not on change."
   :type 'boolean
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
@@ -183,12 +188,12 @@ change."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-clippy-preference "opt-in"
-  "Controls eagerness of clippy diagnostics when available. Valid
-  values are (case-insensitive):\n - \"off\": Disable clippy
-  lints.\n - \"opt-in\": Clippy lints are shown when crates
-  specify `#![warn(clippy)]`.\n - \"on\": Clippy lints enabled
-  for all crates in workspace.\nYou need to install clippy via
-  rustup if you haven't already."
+  "Controls eagerness of clippy diagnostics when available.
+Valid values are (case-insensitive):\n - \"off\": Disable clippy
+lints.\n - \"opt-in\": Clippy lints are shown when crates
+specify `#![warn(clippy)]`.\n - \"on\": Clippy lints enabled
+for all crates in workspace.\nYou need to install clippy via
+rustup if you haven't already."
   :type '(choice
           (const "on")
           (const "opt-in")
@@ -323,7 +328,8 @@ PARAMS progress report notification data."
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-rust-analyzer-server-args '()
-  "Args to start rust-analyzer with when rust-analyzer is downloaded automatically."
+  "Args to start rust-analyzer with when rust-analyzer is downloaded \
+automatically."
   :type '(repeat string)
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1"))
@@ -402,7 +408,8 @@ The command should include `--message=format=json` or similar option."
   :package-version '(lsp-mode . "6.2.2"))
 
 (defcustom lsp-rust-analyzer-macro-expansion-method 'lsp-rust-analyzer-macro-expansion-default
-  "Use a different function if you want formatted macro expansion results and syntax highlighting."
+  "Use a different function if you want formatted macro expansion results and
+syntax highlighting."
   :type 'function
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.2.2"))
@@ -414,7 +421,8 @@ The command should include `--message=format=json` or similar option."
   :package-version '(lsp-mode . "6.3.2"))
 
 (defcustom lsp-rust-analyzer-diagnostics-enable-experimental t
-  "Whether to show native rust-analyzer diagnostics that are still experimental (might have more false positives than usual)."
+  "Whether to show native rust-analyzer diagnostics that are still experimental
+(might have more false positives than usual)."
   :type 'boolean
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1.0"))
@@ -426,7 +434,8 @@ The command should include `--message=format=json` or similar option."
   :package-version '(lsp-mode . "7.1.0"))
 
 (defcustom lsp-rust-analyzer-cargo-load-out-dirs-from-check nil
-  "Whether to run `cargo check` on startup to get the correct value for package OUT_DIRs."
+  "Whether to run `cargo check` on startup to get the correct value for
+package OUT_DIRs."
   :type 'boolean
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.3.2"))
@@ -438,7 +447,8 @@ The command should include `--message=format=json` or similar option."
   :package-version '(lsp-mode . "6.3.2"))
 
 (defcustom lsp-rust-analyzer-rustfmt-override-command []
-  "Advanced option, fully override the command rust-analyzer uses for formatting."
+  "Advanced option, fully override the command rust-analyzer uses
+for formatting."
   :type 'lsp-string-vector
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.3.2"))
@@ -468,13 +478,16 @@ The command should include `--message=format=json` or similar option."
   :package-version '(lsp-mode . "6.3.2"))
 
 (defcustom lsp-rust-analyzer-proc-macro-enable nil
-  "Enable Proc macro support; lsp-rust-analyzer-cargo-load-out-dirs-from-check must be enabled."
+  "Enable Proc macro support; lsp-rust-analyzer-cargo-load-out-dirs-from-check
+must be enabled."
   :type 'boolean
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.3.2"))
 
 (defcustom lsp-rust-analyzer-import-merge-behaviour "full"
-  "The strategy to use when inserting new imports or merging imports. Valid values are:\n - \"none\": No merging\n - \"full\": Merge all layers of the import trees\n - \"last\": Only merge the last layer of the import trees"
+  "The strategy to use when inserting new imports or merging imports.
+Valid values are:\n - \"none\": No merging\n - \"full\": Merge all layers of
+the import trees\n - \"last\": Only merge the last layer of the import trees"
   :type '(choice
           (const "none")
           (const "full")
@@ -483,7 +496,13 @@ The command should include `--message=format=json` or similar option."
   :package-version '(lsp-mode . "7.1.0"))
 
 (defcustom lsp-rust-analyzer-import-prefix "plain"
-  "The path structure for newly inserted paths to use. Valid values are:\n - \"plain\": Insert import paths relative to the current module, using up to one `super` prefix if the parent module contains the requested item.\n - \"by_self\": Prefix all import paths with `self` if they don't begin with `self`, `super`, `crate` or a crate name\n - \"by_crate\": Force import paths to be absolute by always starting them with `crate` or the crate name they refer to."
+  "The path structure for newly inserted paths to use.
+Valid values are:\n - \"plain\": Insert import paths relative to the
+current module, using up to one `super` prefix if the parent module
+contains the requested item.\n - \"by_self\": Prefix all import paths
+with `self` if they don't begin with `self`, `super`, `crate` or a crate
+name\n - \"by_crate\": Force import paths to be absolute by always starting
+them with `crate` or the crate name they refer to."
   :type '(choice
           (const "plain")
           (const "by_self")
@@ -676,7 +695,8 @@ Force 12/14 release until we fix https://github.com/emacs-lsp/lsp-mode/issues/24
   :package-version '(lsp-mode . "7.1"))
 
 (defcustom lsp-rust-analyzer-inlay-type-space-format "%s"
-  "Format string for spacing around variable inlays (not part of the inlay face)."
+  "Format string for spacing around variable inlays
+(not part of the inlay face)."
   :type '(string :tag "String")
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1"))
@@ -694,7 +714,8 @@ Force 12/14 release until we fix https://github.com/emacs-lsp/lsp-mode/issues/24
   :package-version '(lsp-mode . "7.1"))
 
 (defcustom lsp-rust-analyzer-inlay-param-space-format "%s "
-  "Format string for spacing around parameter inlays (not part of the inlay face)."
+  "Format string for spacing around parameter inlays
+(not part of the inlay face)."
   :type '(string :tag "String")
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1"))

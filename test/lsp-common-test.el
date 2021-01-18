@@ -48,12 +48,18 @@
                  "will-fail://file-path")))
 
 (ert-deftest lsp--uri-to-path--handle-utf8 ()
-  (let ((lsp--uri-file-prefix "file:///")
-        (system-type 'windows-nt))
-    (should (equal (lsp--uri-to-path "file:///c:/Users/%E4%BD%A0%E5%A5%BD/") "c:/Users/你好/")))
-  (let ((lsp--uri-file-prefix "file://")
-        (system-type 'gnu/linux))
-    (should (equal (lsp--uri-to-path "/root/%E4%BD%A0%E5%A5%BD/%E8%B0%A2%E8%B0%A2") "/root/你好/谢谢"))))
+  ;; In Emacs 26.1, the default coding system on Windows is `cp1252`
+  ;; Set the variable `locale-coding-system' to utf-8 temporarily can resolved
+  ;; this issue.
+  ;;
+  ;; See PR #2533
+  (let ((locale-coding-system 'utf-8))
+    (let ((lsp--uri-file-prefix "file:///")
+          (system-type 'windows-nt))
+      (should (equal (lsp--uri-to-path "file:///c:/Users/%E4%BD%A0%E5%A5%BD/") "c:/Users/你好/")))
+    (let ((lsp--uri-file-prefix "file://")
+          (system-type 'gnu/linux))
+      (should (equal (lsp--uri-to-path "/root/%E4%BD%A0%E5%A5%BD/%E8%B0%A2%E8%B0%A2") "/root/你好/谢谢")))))
 
 (ert-deftest lsp-byte-compilation-test ()
   (seq-doseq (library (-filter
@@ -128,10 +134,10 @@
       (cl-assert (equal (lsp-ht->alist (aref (lsp--build-workspace-configuration-response request) 0))
                         '(("prop1" . 1))))))
 
-    (let ((request (ht ("items" (list (ht ("section" "section1.prop1")))))))
-      (cl-assert (equal (aref (lsp--build-workspace-configuration-response request) 0) "10"))
-      (let ((lsp-prop1 1))
-        (cl-assert (equal (aref (lsp--build-workspace-configuration-response request) 0) 1)))))
+  (let ((request (ht ("items" (list (ht ("section" "section1.prop1")))))))
+    (cl-assert (equal (aref (lsp--build-workspace-configuration-response request) 0) "10"))
+    (let ((lsp-prop1 1))
+      (cl-assert (equal (aref (lsp--build-workspace-configuration-response request) 0) 1)))))
 
 (defcustom lsp-nested-prop1 "10"
   "docs"

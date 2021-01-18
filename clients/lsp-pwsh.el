@@ -50,14 +50,16 @@ Disable the feature with 'Disabled'."
 
 (defcustom lsp-pwsh-script-analysis-enable t
   "Enables real-time script analysis from PowerShell Script Analyzer.
-Uses the newest installed version of the PSScriptAnalyzer module or the version bundled with this extension, if it is newer."
+Uses the newest installed version of the PSScriptAnalyzer module or the
+version bundled with this extension, if it is newer."
   :type 'boolean
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-pwsh-script-analysis-settings-path ""
   "Specifies the path to a PowerShell Script Analyzer settings file.
-To override the default settings for all projects, enter an absolute path, or enter a path relative to your workspace."
+To override the default settings for all projects, enter an absolute path,
+or enter a path relative to your workspace."
   :type 'string
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
@@ -120,7 +122,8 @@ For more information about the brace styles please refer to https://github.com/P
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-pwsh-code-formatting-whitespace-before-open-paren t
-  "Adds a space between a keyword (if, elseif, while, switch, etc) and its associated conditional expression."
+  "Adds a space between a keyword (if, elseif, while, switch, etc) and its
+associated conditional expression."
   :type 'boolean
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
@@ -150,7 +153,8 @@ For more information about the brace styles please refer to https://github.com/P
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-pwsh-code-formatting-ignore-one-line-block t
-  "Does not reformat one-line code blocks, such as \"if (...) {...} else {...}\"."
+  "Does not reformat one-line code blocks, such as \"if (...) {...} else
+{...}\"."
   :type 'boolean
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
@@ -177,13 +181,15 @@ Valid values are 'Diagnostic', 'Verbose', 'Normal', 'Warning', and 'Error'"
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-pwsh-developer-editor-services-wait-for-debugger nil
-  "Launches the language service with the /waitForDebugger flag to force it to wait for a .NET debugger to attach before proceeding."
+  "Launches the language service with the /waitForDebugger flag to force it to
+wait for a .NET debugger to attach before proceeding."
   :type 'boolean
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-pwsh-developer-feature-flags nil
-  "An array of strings that enable experimental features in the PowerShell extension."
+  "An array of strings that enable experimental features in the PowerShell
+extension."
   :type
   '(repeat string)
   :group 'lsp-pwsh

@@ -36,7 +36,8 @@
 (defcustom lsp-elixir-dialyzer-warn-opts '()
   "Dialyzer options to enable or disable warnings.
 
-See Dialyzer's documentation for options. Note that the \"race_conditions\" option is unsupported"
+See Dialyzer's documentation for options. Note that the \"race_conditions\"
+option is unsupported"
   :type '(repeat string)
   :group 'lsp-elixir
   :package-version '(lsp-mode . "7.1"))
@@ -62,7 +63,7 @@ See Dialyzer's documentation for options. Note that the \"race_conditions\" opti
 (defcustom lsp-elixir-project-dir nil
   "Subdirectory containing Mix project if not in the project root.
 
- If value is `\"\"` then defaults to the workspace rootUri."
+If value is `\"\"` then defaults to the workspace rootUri."
   :type 'string
   :group 'lsp-elixir
   :package-version '(lsp-mode . "7.1"))
@@ -74,7 +75,8 @@ See Dialyzer's documentation for options. Note that the \"race_conditions\" opti
   :package-version '(lsp-mode . "7.1"))
 
 (defcustom lsp-elixir-suggest-specs t
-  "Suggest @spec annotations inline using Dialyzer's inferred success typings (Requires Dialyzer)."
+  "Suggest @spec annotations inline using Dialyzer's inferred success typings
+(Requires Dialyzer)."
   :type 'boolean
   :group 'lsp-elixir
   :package-version '(lsp-mode . "7.1"))

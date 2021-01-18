@@ -139,7 +139,11 @@
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-completion-display-context 6
-  "Previewing the relevant code snippet of the suggestion may help you understand the usage of the suggestion. The number set indicates the number of intercepted lines in the code fragment. If it is set to `0`, this feature can be disabled."
+  "Previewing the relevant code snippet of the suggestion may help you
+understand the usage of the suggestion.
+
+The number set indicates the number of intercepted lines in the code
+fragment.  If it is set to `0`, this feature can be disabled."
   :type 'number
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
@@ -169,7 +173,7 @@
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-develop-enable nil
-  "Developer mode. Do not enable, performance will be affected."
+  "Developer mode.  Do not enable, performance will be affected."
   :type 'boolean
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
@@ -229,7 +233,8 @@
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-hover-view-string t
-  "Hover to view the contents of a string (only if the literal contains an escape character)."
+  "Hover to view the contents of a string (only if the literal contains an
+escape character)."
   :type 'boolean
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
@@ -242,7 +247,7 @@
 
 (defcustom lsp-lua-runtime-path
   ["?.lua" "?/init.lua" "?/?.lua"]
-  "`package.path`"
+  "`package.path`."
   :type 'lsp-string-vector
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
@@ -280,8 +285,13 @@
 
 (defcustom lsp-lua-workspace-library nil
   "Load external library.
-This feature can load external Lua files, which can be used for definition, automatic completion and other functions. Note that the language server does not monitor changes in external files and needs to restart if the external files are modified.
-The following example shows loaded files in `C:/lua` and `../lib` ,exclude `../lib/temp`.
+
+This feature can load external Lua files, which can be used for definition,
+automatic completion and other functions.  Note that the language server does
+not monitor changes in external files and needs to restart if the external
+files are modified.  The following example shows loaded files in `C:/lua`
+and `../lib` ,exclude `../lib/temp`.
+
 ```json
 \"Lua.workspace.library\": {
 \"C:/lua\": true,
@@ -313,19 +323,19 @@ The following example shows loaded files in `C:/lua` and `../lib` ,exclude `../l
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-zzzzzz-cat nil
-  "DONT TOUCH ME, LET ME SLEEP >_<"
+  "DONT TOUCH ME, LET ME SLEEP >_<."
   :type 'boolean
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-files-associations nil
-  "files.associations"
+  "Files.associations."
   :type 'alist
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-files-exclude nil
-  "files.exclude"
+  "Files.exclude."
   :type 'alist
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)

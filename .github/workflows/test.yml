@@ -42,7 +42,11 @@ jobs:
         strategy:
             matrix:
                 emacs-version:
+                    - 26.1
+                    - 26.2
+                    - 26.3
                     - 27.1
+                    - snapshot
 
         steps:
             - uses: actions/checkout@v2

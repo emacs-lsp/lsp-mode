@@ -55,110 +55,114 @@ The slash is expected at the end."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-fsharp-keywords-autocomplete t
-  "Provides keywords in autocomplete list"
+  "Provides keywords in autocomplete list."
   :group 'lsp-fsharp
   :type 'bool
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-external-autocomplete nil
-  "Provides autocompletion for symbols from not opened namespaces/modules; inserts open on accept"
+  "Provides autocompletion for symbols from not opened namespaces/modules;
+inserts open on accept."
   :group 'lsp-fsharp
   :type 'bool
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-linter t
-  "Enables FSharpLint integration, provides additional warnings and code action fixes"
+  "Enables FSharpLint integration, provides additional warnings and code
+action fixes."
   :group 'lsp-fsharp
   :type 'bool
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-union-case-stub-generation t
-  "Enablesa  code action to generate pattern matching cases"
+  "Enables a code action to generate pattern matching cases."
   :group 'lsp-fsharp
   :type 'bool
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-union-case-stub-generation-body "failwith \"Not Implemented\""
-  "defines dummy body used by pattern matching generator"
+  "Defines dummy body used by pattern matching generator."
   :group 'lsp-fsharp
   :type 'string
   :risky t
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-record-stub-generation t
-  "Enables code action to generate record stub"
+  "Enables code action to generate record stub."
   :group 'lsp-fsharp
   :type 'bool
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-record-stub-generation-body "failwith \"Not Implemented\""
-  "defines dummy body used by record stub generator"
+  "Defines dummy body used by record stub generator."
   :group 'lsp-fsharp
   :type 'string
   :risky t
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-interface-stub-generation t
-  "Enables code action to generate an interface stub"
+  "Enables code action to generate an interface stub."
   :group 'lsp-fsharp
   :type 'bool
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-interface-stub-generation-object-identifier "this"
-  "Defines object identifier used by interface stub generator, e.g. `this' or `self'"
+  "Defines object identifier used by interface stub generator,
+e.g. `this' or `self'."
   :group 'lsp-fsharp
   :type 'string
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-interface-stub-generation-method-body "failwith \"Not Implemented\""
-  "Defines dummy body used by interface stub generator"
+  "Defines dummy body used by interface stub generator."
   :group 'lsp-fsharp
   :type 'string
   :risky t
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-unused-opens-analyzer t
-  "Enables unused open detection"
+  "Enables unused open detection."
   :group 'lsp-fsharp
   :type 'bool
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-unused-declarations-analyzer t
-  "Enables unused symbol detection"
+  "Enables unused symbol detection."
   :group 'lsp-fsharp
   :type 'bool
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-simplify-name-analyzer nil
-  "Enables simplify name analyzer and remove redundant qualifier quick fix"
+  "Enables simplify name analyzer and remove redundant qualifier quick fix."
   :group 'lsp-fsharp
   :type 'bool
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-resolve-namespaces t
-  "Enables resolve namespace quick fix; adds `open' if symbol is
-from not yet opened module/namespace"
+  "Enables resolve namespace quick fix; adds `open' if symbol is from not yet
+opened module/namespace."
   :group 'lsp-fsharp
   :type 'bool
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-enable-reference-code-lens t
-  "Enables reference count code lenses. It is recommended to
-disable if `--backgorund-service-enabled' is not used"
+  "Enables reference count code lenses.
+It is recommended to disable if `--backgorund-service-enabled' is not used."
   :group 'lsp-fsharp
   :type 'bool
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-auto-workspace-init nil
-  "Enable automatic workspace initialization. Do note that this
-  can cause unexpected or challenging behaviors, as solutions
-  with test projects are not autoloaded by FSharpAutoComplete."
+  "Enable automatic workspace initialization.
+Do note that this can cause unexpected or challenging behaviors, as solutions
+with test projects are not autoloaded by FSharpAutoComplete."
   :group 'lsp-fsharp
   :type 'bool
   :risky t)
 
 (defun lsp-fsharp--fsac-runtime-cmd ()
-  "Get the command required to run fsautocomplete based off of the current runtime."
+  "Get the command required to run fsautocomplete based off of the
+current runtime."
   (pcase lsp-fsharp-server-runtime
     ('net-core "dotnet")
     ('mono "mono")
@@ -194,7 +198,7 @@ disable if `--backgorund-service-enabled' is not used"
              (lsp-fsharp--fetch-json "https://api.github.com/repos/fsharp/FsAutoComplete/releases"))))
 
 (defun lsp-fsharp--server-download-url (version)
-  "Return url for .zip file to download for given VERSION, depending on lsp-fsharp-server-runtime."
+  "Return url for .zip file to download for given VERSION, depending on `lsp-fsharp-server-runtime'."
   (concat "https://github.com/fsharp/FsAutoComplete/releases/download"
           "/" version
           "/" (if (eq lsp-fsharp-server-runtime 'net-core)

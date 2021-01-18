@@ -47,19 +47,31 @@ or manually by cloning the repo and following the installing instructions."
 
 (defcustom lsp-elm-elm-path
   ""
-  "The path to your elm executable.  Should be empty by default, in that case it will assume the name and try to first get it from a local npm installation or a global one.  If you set it manually it will not try to load from the npm folder."
+  "The path to your elm executable.
+
+Should be empty by default, in that case it will assume the name and try
+to first get it from a local npm installation or a global one.  If you
+set it manually it will not try to load from the npm folder."
   :type 'file
   :group 'lsp-elm)
 
 (defcustom lsp-elm-elm-format-path
   ""
-  "The path to your elm-format executable.  Should be empty by default, in that case it will assume the name and try to first get it from a local npm installation or a global one.  If you set it manually it will not try to load from the npm folder."
+  "The path to your elm-format executable.
+
+Should be empty by default, in that case it will assume the name and try
+to first get it from a local npm installation or a global one.  If you
+set it manually it will not try to load from the npm folder."
   :type 'file
   :group 'lsp-elm)
 
 (defcustom lsp-elm-elm-test-path
   ""
-  "The path to your elm-test executable.  Should be empty by default, in that case it will assume the name and try to first get it from a local npm installation or a global one.  If you set it manually it will not try to load from the npm folder."
+  "The path to your elm-test executable.
+
+Should be empty by default, in that case it will assume the name and try
+to first get it from a local npm installation or a global one.  If you
+set it manually it will not try to load from the npm folder."
   :type 'file
   :group 'lsp-elm)
 

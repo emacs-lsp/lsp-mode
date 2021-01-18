@@ -330,7 +330,8 @@ closing bracket rather than match the indentation."
 
 (defcustom lsp-pyls-plugins-flake8-max-line-length nil
   "Set the maximum length that any line (with some exceptions) may be.
-Exceptions include lines that are either strings or comments which are entirely URLs."
+Exceptions include lines that are either strings or comments which are
+entirely URLs."
   :type 'integer
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.2"))
@@ -345,10 +346,11 @@ E431"
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-pyls-plugins-flake8-config nil
-  "A path to a config file that will be the only config file read and
-used. This will cause Flake8 to ignore all other config files that exist.
-NOTE: other parameters as `lsp-pyls-plugins-flake8-max-line-length' take precedence over
-parameters referenced in config."
+  "A path to a config file that will be the only config file read and used.
+This will cause Flake8 to ignore all other config files that exist.
+
+NOTE: other parameters as `lsp-pyls-plugins-flake8-max-line-length' take
+precedence over parameters referenced in config."
   :type 'string
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.3"))
@@ -369,20 +371,26 @@ should be the python executable. This option will be prioritized over
 
 (defcustom lsp-pyls-plugins-jedi-completion-fuzzy nil
   "If enabled, uses fuzzy completion in jedi. Requires pyls >= 0.32.0
-Can hit performance, as well as lsp-mode implements its own fuzzy search on completion items."
+Can hit performance, as well as lsp-mode implements its own fuzzy search on
+completion items."
   :type 'boolean
   :group 'lsp-pyls
   :package-version '(lsp-mode . "7.0"))
 
 (defcustom lsp-pyls-plugins-jedi-completion-include-class-objects t
-  "If enabled, adds class objects to completion in order to avoid snippet with init args.
-Has no effect if `lsp-pyls-plugins-jedi-completion-include-params' is disabled. Requires pyls >= 0.33.0"
+  "If enabled, adds class objects to completion in order to avoid snippet
+with init args.
+
+Has no effect if `lsp-pyls-plugins-jedi-completion-include-params' is disabled.
+Requires pyls >= 0.33.0"
   :type 'boolean
   :group 'lsp-pyls
   :package-version '(lsp-mode . "7.0"))
 
 (defcustom lsp-pyls-rename-backend 'jedi
-  "Choose renaming backend. Jedi is preferred but only works for python >= 3.6 and pyls >= 0.32.0
+  "Choose renaming backend.
+
+Jedi is preferred but only works for python >= 3.6 and pyls >= 0.32.0
 Beware that Jedi is lazy and doesn't scan the whole project.
 So it will rename only references it can find."
   :type '(choice (const :tag "jedi" jedi)

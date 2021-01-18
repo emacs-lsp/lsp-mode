@@ -50,26 +50,28 @@ executable with `exec-path'."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-kotlin-compiler-jvm-target "1.8"
-  "Specifies the JVM target, e.g. \"1.6\" or \"1.8\""
+  "Specifies the JVM target, e.g. \"1.6\" or \"1.8\"."
   :type 'string
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-kotlin-linting-debounce-time 250
-  "[DEBUG] Specifies the debounce time limit. Lower to increase
-responsiveness at the cost of possible stability issues."
+  "[DEBUG] Specifies the debounce time limit.
+Lower to increase responsiveness at the cost of possible stability issues."
   :type 'number
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-kotlin-completion-snippets-enabled t
-  "Specifies whether code completion should provide snippets (true) or plain-text items (false)."
+  "Specifies whether code completion should provide snippets (true) or
+plain-text items (false)."
   :type 'boolean
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-kotlin-debug-adapter-enabled t
-  "[Recommended] Specifies whether the debug adapter should be used. When enabled a debugger for Kotlin will be available."
+  "[Recommended] Specifies whether the debug adapter should be used.
+When enabled a debugger for Kotlin will be available."
   :type 'boolean)
 
 (defcustom lsp-kotlin-debug-adapter-path ""
@@ -79,13 +81,15 @@ responsiveness at the cost of possible stability issues."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-kotlin-external-sources-use-kls-scheme t
-  "[Recommended] Specifies whether URIs inside JARs should be represented using the 'kls'-scheme."
+  "[Recommended] Specifies whether URIs inside JARs should be represented
+using the 'kls'-scheme."
   :type 'boolean
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-kotlin-external-sources-auto-convert-to-kotlin t
-  "Specifies whether decompiled/external classes should be auto-converted to Kotlin."
+  "Specifies whether decompiled/external classes should be auto-converted
+to Kotlin."
   :type 'boolean
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))
