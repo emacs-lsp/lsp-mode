@@ -48,6 +48,11 @@
                  "will-fail://file-path")))
 
 (ert-deftest lsp--uri-to-path--handle-utf8 ()
+  ;; In Emacs 26.1, the default coding system on Windows is `cp1252`
+  ;; Set the variable `locale-coding-system' to utf-8 temporarily can resolved
+  ;; this issue.
+  ;;
+  ;; See PR #2533
   (let ((locale-coding-system 'utf-8))
     (let ((lsp--uri-file-prefix "file:///")
           (system-type 'windows-nt))
