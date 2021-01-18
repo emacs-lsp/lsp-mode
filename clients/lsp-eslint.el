@@ -26,7 +26,6 @@
 
 (require 'lsp-protocol)
 (require 'lsp-mode)
-(require 'desktop)
 
 (defconst lsp-eslint/status-ok 1)
 (defconst lsp-eslint/status-warn 2)
@@ -159,6 +158,18 @@ source.fixAll code action."
   :type 'boolean
   :package-version '(lsp-mode . "6.3"))
 
+(defcustom lsp-eslint-save-library-choices t
+  "Controls whether to remember choices made to permit or deny ESLint libraries
+from running."
+  :type 'boolean
+  :package-version '(lsp-mode . "7.1"))
+
+(defcustom lsp-eslint-library-choices-file (expand-file-name (locate-user-emacs-file ".lsp-eslint-choices"))
+  "The file where choices to permit or deny ESLint libraries from running is
+stored."
+  :type 'string
+  :package-version '(lsp-mode . "7.1"))
+
 (defun lsp--find-eslint ()
   (or
    (when-let ((workspace-folder (lsp-find-session-folder (lsp-session) default-directory)))
@@ -254,19 +265,22 @@ source.fixAll code action."
         first-argument-exist
       (executable-find (cl-first eslint-server-command)))))
 
-(defvar lsp-eslint-stored-libraries (ht)
+(defvar lsp-eslint--stored-libraries (ht)
   "Hash table defining if a given path to an ESLint library is allowed to run.
 If the value for a key is 4, it will be allowed. If it is 1, it will not. If a
 value does not exist for the key, or the value is nil, the user will be prompted
 to allow or deny it.")
-(add-to-list 'desktop-globals-to-save 'lsp-eslint-stored-libraries)
+
+(when (and (file-exists-p lsp-eslint-library-choices-file)
+           lsp-eslint-save-library-choices)
+  (setq lsp-eslint--stored-libraries (lsp--read-from-file lsp-eslint-library-choices-file)))
 
 (lsp-defun lsp-eslint--confirm-local (_workspace (&eslint:ConfirmExecutionParams :library-path) callback)
   (if-let ((option-alist '(("Always" 4 . t)
                            ("Yes" 4 . nil)
                            ("No" 1 . nil)
                            ("Never" 1 . t)))
-           (remembered-answer (gethash library-path lsp-eslint-stored-libraries)))
+           (remembered-answer (gethash library-path lsp-eslint--stored-libraries)))
       (funcall callback remembered-answer)
     (lsp-ask-question
      (format "Allow lsp-mode to execute %s?" library-path)
@@ -274,7 +288,9 @@ to allow or deny it.")
      (lambda (response)
        (let ((option (cdr (assoc response option-alist))))
          (when (cdr option)
-           (puthash library-path (car option) lsp-eslint-stored-libraries))
+           (puthash library-path (car option) lsp-eslint--stored-libraries)
+           (when lsp-eslint-save-library-choices
+             (lsp--persist lsp-eslint-library-choices-file lsp-eslint--stored-libraries)))
          (funcall callback (car option)))))))
 
 (lsp-register-client
