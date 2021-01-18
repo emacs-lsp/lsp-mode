@@ -17,6 +17,7 @@ nav:
         - Treemacs: https://github.com/emacs-lsp/lsp-treemacs
         - Helm: https://github.com/emacs-lsp/helm-lsp
         - Ivy: https://github.com/emacs-lsp/lsp-ivy
+        - Iedit: page/integration/iedit.md
     - Limitations: page/limitations.md
     - Remote: page/remote.md
     - FAQ: page/faq.md
