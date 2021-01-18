@@ -128,10 +128,10 @@
       (cl-assert (equal (lsp-ht->alist (aref (lsp--build-workspace-configuration-response request) 0))
                         '(("prop1" . 1))))))
 
-    (let ((request (ht ("items" (list (ht ("section" "section1.prop1")))))))
-      (cl-assert (equal (aref (lsp--build-workspace-configuration-response request) 0) "10"))
-      (let ((lsp-prop1 1))
-        (cl-assert (equal (aref (lsp--build-workspace-configuration-response request) 0) 1)))))
+  (let ((request (ht ("items" (list (ht ("section" "section1.prop1")))))))
+    (cl-assert (equal (aref (lsp--build-workspace-configuration-response request) 0) "10"))
+    (let ((lsp-prop1 1))
+      (cl-assert (equal (aref (lsp--build-workspace-configuration-response request) 0) 1)))))
 
 (defcustom lsp-nested-prop1 "10"
   "docs"
