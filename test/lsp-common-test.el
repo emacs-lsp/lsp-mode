@@ -49,7 +49,8 @@
 
 (ert-deftest lsp--uri-to-path--handle-utf8 ()
   (let ((lsp--uri-file-prefix "file:///")
-        (system-type 'windows-nt))
+        (system-type 'windows-nt)
+        (locale-coding-system 'utf-8))
     (should (equal (lsp--uri-to-path "file:///c:/Users/%E4%BD%A0%E5%A5%BD/") "c:/Users/你好/")))
   (let ((lsp--uri-file-prefix "file://")
         (system-type 'gnu/linux))

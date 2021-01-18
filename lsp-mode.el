@@ -1570,7 +1570,8 @@ On other systems, returns path without change."
   "Convert URI to a file path."
   (let* ((url (url-generic-parse-url (url-unhex-string uri)))
          (type (url-type url))
-         (file (decode-coding-string (url-filename url) 'utf-8))
+         (file (decode-coding-string (url-filename url)
+                                     (or locale-coding-system 'utf-8)))
          (file-name (if (and type (not (string= type "file")))
                         (if-let ((handler (lsp--get-uri-handler type)))
                             (funcall handler uri)
