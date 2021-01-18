@@ -2385,71 +2385,74 @@ The slash is expected at the end.</p>
 <hr />
 <h3 id="lsp-fsharp-keywords-autocomplete"><code>lsp-fsharp-keywords-autocomplete</code><a class="headerlink" href="#lsp-fsharp-keywords-autocomplete" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
-<p>Provides keywords in autocomplete list</p>
+<p>Provides keywords in autocomplete list.</p>
 <hr />
 <h3 id="lsp-fsharp-external-autocomplete"><code>lsp-fsharp-external-autocomplete</code><a class="headerlink" href="#lsp-fsharp-external-autocomplete" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
-<p>Provides autocompletion for symbols from not opened namespaces/modules; inserts open on accept</p>
+<p>Provides autocompletion for symbols from not opened namespaces/modules;
+inserts open on accept.</p>
 <hr />
 <h3 id="lsp-fsharp-linter"><code>lsp-fsharp-linter</code><a class="headerlink" href="#lsp-fsharp-linter" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
-<p>Enables FSharpLint integration, provides additional warnings and code action fixes</p>
+<p>Enables FSharpLint integration, provides additional warnings and code
+action fixes.</p>
 <hr />
 <h3 id="lsp-fsharp-union-case-stub-generation"><code>lsp-fsharp-union-case-stub-generation</code><a class="headerlink" href="#lsp-fsharp-union-case-stub-generation" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
-<p>Enablesa  code action to generate pattern matching cases</p>
+<p>Enables a code action to generate pattern matching cases.</p>
 <hr />
 <h3 id="lsp-fsharp-union-case-stub-generation-body"><code>lsp-fsharp-union-case-stub-generation-body</code><a class="headerlink" href="#lsp-fsharp-union-case-stub-generation-body" title="Permanent link">#</a></h3>
 <p><em>Default: <code>failwith "Not Implemented"</code></em></p>
-<p>defines dummy body used by pattern matching generator</p>
+<p>Defines dummy body used by pattern matching generator.</p>
 <hr />
 <h3 id="lsp-fsharp-record-stub-generation"><code>lsp-fsharp-record-stub-generation</code><a class="headerlink" href="#lsp-fsharp-record-stub-generation" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
-<p>Enables code action to generate record stub</p>
+<p>Enables code action to generate record stub.</p>
 <hr />
 <h3 id="lsp-fsharp-record-stub-generation-body"><code>lsp-fsharp-record-stub-generation-body</code><a class="headerlink" href="#lsp-fsharp-record-stub-generation-body" title="Permanent link">#</a></h3>
 <p><em>Default: <code>failwith "Not Implemented"</code></em></p>
-<p>defines dummy body used by record stub generator</p>
+<p>Defines dummy body used by record stub generator.</p>
 <hr />
 <h3 id="lsp-fsharp-interface-stub-generation"><code>lsp-fsharp-interface-stub-generation</code><a class="headerlink" href="#lsp-fsharp-interface-stub-generation" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
-<p>Enables code action to generate an interface stub</p>
+<p>Enables code action to generate an interface stub.</p>
 <hr />
 <h3 id="lsp-fsharp-interface-stub-generation-object-identifier"><code>lsp-fsharp-interface-stub-generation-object-identifier</code><a class="headerlink" href="#lsp-fsharp-interface-stub-generation-object-identifier" title="Permanent link">#</a></h3>
 <p><em>Default: <code>this</code></em></p>
-<p>Defines object identifier used by interface stub generator, e.g. ‘this’ or ‘self’</p>
+<p>Defines object identifier used by interface stub generator,
+e.g. ‘this’ or ‘self’.</p>
 <hr />
 <h3 id="lsp-fsharp-interface-stub-generation-method-body"><code>lsp-fsharp-interface-stub-generation-method-body</code><a class="headerlink" href="#lsp-fsharp-interface-stub-generation-method-body" title="Permanent link">#</a></h3>
 <p><em>Default: <code>failwith "Not Implemented"</code></em></p>
-<p>Defines dummy body used by interface stub generator</p>
+<p>Defines dummy body used by interface stub generator.</p>
 <hr />
 <h3 id="lsp-fsharp-unused-opens-analyzer"><code>lsp-fsharp-unused-opens-analyzer</code><a class="headerlink" href="#lsp-fsharp-unused-opens-analyzer" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
-<p>Enables unused open detection</p>
+<p>Enables unused open detection.</p>
 <hr />
 <h3 id="lsp-fsharp-unused-declarations-analyzer"><code>lsp-fsharp-unused-declarations-analyzer</code><a class="headerlink" href="#lsp-fsharp-unused-declarations-analyzer" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
-<p>Enables unused symbol detection</p>
+<p>Enables unused symbol detection.</p>
 <hr />
 <h3 id="lsp-fsharp-simplify-name-analyzer"><code>lsp-fsharp-simplify-name-analyzer</code><a class="headerlink" href="#lsp-fsharp-simplify-name-analyzer" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
-<p>Enables simplify name analyzer and remove redundant qualifier quick fix</p>
+<p>Enables simplify name analyzer and remove redundant qualifier quick fix.</p>
 <hr />
 <h3 id="lsp-fsharp-resolve-namespaces"><code>lsp-fsharp-resolve-namespaces</code><a class="headerlink" href="#lsp-fsharp-resolve-namespaces" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
-<p>Enables resolve namespace quick fix; adds ‘open’ if symbol is
-from not yet opened module/namespace</p>
+<p>Enables resolve namespace quick fix; adds ‘open’ if symbol is from not yet
+opened module/namespace.</p>
 <hr />
 <h3 id="lsp-fsharp-enable-reference-code-lens"><code>lsp-fsharp-enable-reference-code-lens</code><a class="headerlink" href="#lsp-fsharp-enable-reference-code-lens" title="Permanent link">#</a></h3>
 <p><em>Default: <code>t</code></em></p>
-<p>Enables reference count code lenses. It is recommended to
-disable if ‘--backgorund-service-enabled’ is not used</p>
+<p>Enables reference count code lenses.
+It is recommended to disable if ‘--backgorund-service-enabled’ is not used.</p>
 <hr />
 <h3 id="lsp-fsharp-auto-workspace-init"><code>lsp-fsharp-auto-workspace-init</code><a class="headerlink" href="#lsp-fsharp-auto-workspace-init" title="Permanent link">#</a></h3>
 <p><em>Default: <code>nil</code></em></p>
-<p>Enable automatic workspace initialization. Do note that this
-  can cause unexpected or challenging behaviors, as solutions
-  with test projects are not autoloaded by FSharpAutoComplete.</p>
+<p>Enable automatic workspace initialization.
+Do note that this can cause unexpected or challenging behaviors, as solutions
+with test projects are not autoloaded by FSharpAutoComplete.</p>
 <hr />
                 
                   
@@ -2459,7 +2462,7 @@ disable if ‘--backgorund-service-enabled’ is not used</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 17, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 18, 2021</span>
     
   </small>
 </div>
