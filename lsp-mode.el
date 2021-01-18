@@ -7080,7 +7080,7 @@ the next question until the queue is empty."
          (answer (completing-read question options nil t)))
     (pop lsp--question-queue)
     (funcall callback answer)
-    (unless (eq lsp--question-queue nil)
+    (when lsp--question-queue
       (lsp--process-question-queue))))
 
 (defun lsp--matching-clients? (client)

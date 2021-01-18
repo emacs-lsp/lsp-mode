@@ -26,6 +26,7 @@
 
 (require 'lsp-protocol)
 (require 'lsp-mode)
+(require 'desktop)
 
 (defconst lsp-eslint/status-ok 1)
 (defconst lsp-eslint/status-warn 2)
@@ -253,30 +254,28 @@ source.fixAll code action."
         first-argument-exist
       (executable-find (cl-first eslint-server-command)))))
 
-(defvar lsp-eslint--stored-libraries (ht)
+(defvar lsp-eslint-stored-libraries (ht)
   "Hash table defining if a given path to an ESLint library is allowed to run.
-If the value for a key is t, it will be allowed. If it is any other non-nil
-value, it will not. If it is nil, the user will be prompted to allow or deny it.")
+If the value for a key is 4, it will be allowed. If it is 1, it will not. If a
+value does not exist for the key, or the value is nil, the user will be prompted
+to allow or deny it.")
+(add-to-list 'desktop-globals-to-save 'lsp-eslint-stored-libraries)
 
 (lsp-defun lsp-eslint--confirm-local (_workspace (&eslint:ConfirmExecutionParams :library-path) callback)
-  (if-let (remembered-answer (gethash library-path lsp-eslint--stored-libraries))
-      (if (eq remembered-answer t)
-          (funcall callback 4)
-        (funcall callback 1))
+  (if-let ((option-alist '(("Always" 4 . t)
+                           ("Yes" 4 . nil)
+                           ("No" 1 . nil)
+                           ("Never" 1 . t)))
+           (remembered-answer (gethash library-path lsp-eslint-stored-libraries)))
+      (funcall callback remembered-answer)
     (lsp-ask-question
      (format "Allow lsp-mode to execute %s?" library-path)
-     '("Always" "Yes" "No" "Never")
+     (mapcar 'car option-alist)
      (lambda (response)
-       (cond ((equal response "Always")
-               (puthash library-path t lsp-eslint--stored-libraries)
-               (funcall callback 4))
-             ((equal response "Yes")
-               (funcall callback 4))
-             ((equal response "No")
-               (funcall callback 1))
-             ((equal response "Never")
-               (puthash library-path 'no lsp-eslint--stored-libraries)
-               (funcall callback 1)))))))
+       (let ((option (cdr (assoc response option-alist))))
+         (when (cdr option)
+           (puthash library-path (car option) lsp-eslint-stored-libraries))
+         (funcall callback (car option)))))))
 
 (lsp-register-client
  (make-lsp-client
