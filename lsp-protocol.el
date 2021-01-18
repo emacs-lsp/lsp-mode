@@ -358,7 +358,7 @@ See `-let' for a description of the destructuring mechanism."
 
 (lsp-interface (eslint:StatusParams  (:state) nil)
                (eslint:OpenESLintDocParams (:url) nil)
-               (eslint:ConfirmESLintLibraryParams (:scope :file :libraryPath) nil))
+               (eslint:ConfirmExecutionParams (:scope :file :libraryPath) nil))
 
 (lsp-interface (haxe:ProcessStartNotification (:title) nil))
 

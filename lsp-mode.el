@@ -7068,6 +7068,35 @@ VERSION is the version of the extension, defaults to `latest'"
 
 
 
+;; Queueing prompts
+
+(defvar lsp--question-queue nil
+  "List of questions yet to be asked by `lsp-ask-question'.")
+
+(defun lsp-ask-question (question options callback)
+  "Prompt the user to answer the QUESTION with one of the OPTIONS from the
+minibuffer. Once the user selects an option, the CALLBACK function will be
+called, passing the selected option to it.
+
+If the user is currently being shown a question, the question will be stored in
+`lsp--question-queue', and will be asked once the user has answered the current
+question."
+  (add-to-list 'lsp--question-queue `(("question" . ,question)
+                                      ("options" . ,options)
+                                      ("callback" . ,callback)) t)
+  (when (eq (length lsp--question-queue) 1)
+    (lsp--process-question-queue)))
+
+(defun lsp--process-question-queue ()
+  "Take the first question from `lsp--question-queue', process it, then process
+the next question until the queue is empty."
+  (-let* (((&alist "question" "options" "callback") (car lsp--question-queue))
+         (answer (completing-read question options nil t)))
+    (pop lsp--question-queue)
+    (funcall callback answer)
+    (when lsp--question-queue
+      (lsp--process-question-queue))))
+
 (defun lsp--matching-clients? (client)
   (and
    ;; both file and client remote or both local
