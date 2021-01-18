@@ -47,14 +47,6 @@
   (should (equal (lsp--uri-to-path "will-fail://file-path")
                  "will-fail://file-path")))
 
-(ert-deftest lsp--uri-to-path--handle-utf8 ()
-  (when (eq system-type 'windows-nt)
-    (let ((lsp--uri-file-prefix "file:///"))
-      (should (equal (lsp--uri-to-path "file:///c:/Users/%E4%BD%A0%E5%A5%BD/") "c:/Users/你好/"))))
-  (when (eq system-type 'gnu/linux)
-    (let ((lsp--uri-file-prefix "file://"))
-      (should (equal (lsp--uri-to-path "/root/%E4%BD%A0%E5%A5%BD/%E8%B0%A2%E8%B0%A2") "/root/你好/谢谢")))))
-
 (ert-deftest lsp-byte-compilation-test ()
   (seq-doseq (library (-filter
                        (lambda (file)
