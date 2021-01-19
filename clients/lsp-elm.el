@@ -75,12 +75,16 @@ set it manually it will not try to load from the npm folder."
   :type 'file
   :group 'lsp-elm)
 
-(defcustom lsp-elm-elm-analyse-trigger
-  "change"
-  "Elm-analyse executed on 'change', 'save' or 'never' (default: 'change')."
-  :type '(choice (const "change")
-                 (const "save")
-                 (const "never"))
+(defcustom lsp-elm-disable-elmls-diagnostics
+  nil
+  "Enable/Disable linting diagnostics from the language server."
+  :type 'boolean
+  :group 'lsp-elm)
+
+(defcustom lsp-elm-skip-install-package-confirmation
+  nil
+  "Skip confirmation for the Install Package code action."
+  :type 'boolean
   :group 'lsp-elm)
 
 (defcustom lsp-elm-server-args
@@ -101,7 +105,8 @@ set it manually it will not try to load from the npm folder."
   `(:elmPath ,lsp-elm-elm-path
     :elmFormatPath ,lsp-elm-elm-format-path
     :elmTestPath ,lsp-elm-elm-test-path
-    :elmAnalyseTrigger ,lsp-elm-elm-analyse-trigger
+    :disableElmLSDiagnostics ,(lsp-json-bool lsp-elm-disable-elmls-diagnostics)
+    :skipInstallPackageConfirmation ,(lsp-json-bool lsp-elm-skip-install-package-confirmation)
     :trace.server ,(lsp-json-bool lsp-elm-trace-server)))
 
 (lsp-dependency 'elm-language-server
