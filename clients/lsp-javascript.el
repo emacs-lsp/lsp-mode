@@ -193,6 +193,7 @@ there is a .flowconfig file in the folder hierarchy."
   "Check if the Flow language server should be enabled for a
 particular FILE-NAME and MODE."
   (and (derived-mode-p 'js-mode 'web-mode 'js2-mode 'flow-js2-mode 'rjsx-mode)
+       (not (derived-mode-p 'json-mode))
        (or (lsp-clients-flow-project-p file-name)
            (lsp-clients-flow-tag-file-present-p file-name))))
 
