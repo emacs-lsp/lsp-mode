@@ -909,7 +909,7 @@ called with nil the signature info must be cleared."
 (defvar lsp--tcp-port 10000)
 
 (defvar lsp--client-packages-required nil
-  "If non-nil, `lsp-client-packages' are yet to be required.")
+  "If nil, `lsp-client-packages' are yet to be required.")
 
 (defvar lsp--tcp-server-port 0
   "The server socket which is opened when using `lsp-tcp-server' (a server
