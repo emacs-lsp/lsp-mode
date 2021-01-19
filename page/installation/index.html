@@ -2203,15 +2203,15 @@ Then you need to install the specific LSP server for your language.</p>
 </code></pre></div>
 <h4 id="use-package">use-package<a class="headerlink" href="#use-package" title="Permanent link">#</a></h4>
 <p>Replace <code>(require 'lsp-mode)</code> with the following if you use use-package.</p>
-<div class="highlight"><pre><span></span><code><span class="c1">;; set prefix for lsp-command-keymap (few alternatives - &quot;C-l&quot;, &quot;C-c l&quot;)</span>
-<span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-keymap-prefix</span> <span class="s">&quot;s-l&quot;</span><span class="p">)</span>
-
-<span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-mode</span>
-    <span class="nb">:hook</span> <span class="p">(</span><span class="c1">;; replace XXX-mode with concrete major-mode(e. g. python-mode)</span>
-            <span class="p">(</span><span class="nv">XXX-mode</span> <span class="o">.</span> <span class="nv">lsp</span><span class="p">)</span>
-            <span class="c1">;; if you want which-key integration</span>
-            <span class="p">(</span><span class="nv">lsp-mode</span> <span class="o">.</span> <span class="nv">lsp-enable-which-key-integration</span><span class="p">))</span>
-    <span class="nb">:commands</span> <span class="nv">lsp</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-mode</span>
+  <span class="nb">:init</span>
+  <span class="c1">;; set prefix for lsp-command-keymap (few alternatives - &quot;C-l&quot;, &quot;C-c l&quot;)</span>
+  <span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-keymap-prefix</span> <span class="s">&quot;C-c l&quot;</span><span class="p">)</span>
+  <span class="nb">:hook</span> <span class="p">(</span><span class="c1">;; replace XXX-mode with concrete major-mode(e. g. python-mode)</span>
+         <span class="p">(</span><span class="nv">XXX-mode</span> <span class="o">.</span> <span class="nv">lsp</span><span class="p">)</span>
+         <span class="c1">;; if you want which-key integration</span>
+         <span class="p">(</span><span class="nv">lsp-mode</span> <span class="o">.</span> <span class="nv">lsp-enable-which-key-integration</span><span class="p">))</span>
+  <span class="nb">:commands</span> <span class="nv">lsp</span><span class="p">)</span>
 
 <span class="c1">;; optionally</span>
 <span class="p">(</span><span class="nb">use-package</span> <span class="nv">lsp-ui</span> <span class="nb">:commands</span> <span class="nv">lsp-ui-mode</span><span class="p">)</span>
