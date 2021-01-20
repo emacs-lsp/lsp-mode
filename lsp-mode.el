@@ -788,8 +788,8 @@ directory")
                       (with-lsp-workspace workspace
                         (lsp:rename-options-prepare-provider?
                          (or (lsp--capability :renameProvider)
-                             (lsp--registered-capability-options (lsp--registered-capability "textDocument/rename")))))))
-
+                             (when-let ((maybe-capability (lsp--registered-capability "textDocument/rename")))
+                               (lsp--registered-capability-options maybe-capability)))))))
     ("textDocument/rangeFormatting" :capability :documentRangeFormattingProvider)
     ("textDocument/references" :capability :referencesProvider)
     ("textDocument/rename" :capability :renameProvider)
