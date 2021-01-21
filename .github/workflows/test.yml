@@ -4,9 +4,10 @@ on: [push, pull_request]
 
 jobs:
     unix-test:
-        runs-on: ubuntu-latest
+        runs-on: ${{ matrix.os }}
         strategy:
             matrix:
+                os: [ubuntu-latest, macos-latest]
                 emacs-version:
                     - 26.1
                     - 26.2
