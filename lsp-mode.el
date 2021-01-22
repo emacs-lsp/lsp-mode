@@ -5420,7 +5420,7 @@ perform the request synchronously."
          (cons (cons (concat path name) start)
                (lsp--xref-elements-index children? (concat path name " / ")))))
       (t
-       (-let [(&SymbolInformation :name :location (&RangeToPoint :start)) sym]
+       (-let [(&SymbolInformation :name :location (&Location :range (&Range :start))) sym]
          (cons (cons (concat path name)
                      (lsp--position-to-point start))
                (lsp--xref-elements-index nil (concat path name " / ")))))))
