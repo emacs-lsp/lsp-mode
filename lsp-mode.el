@@ -5413,17 +5413,14 @@ perform the request synchronously."
 (defun lsp--xref-elements-index (symbols path)
   (-mapcat
    (-lambda (sym)
-     (cond
-      ((lsp-document-symbol? sym)
-       (-let [(&DocumentSymbol :name :children? :selection-range (&RangeToPoint :start))
-              sym]
-         (cons (cons (concat path name) start)
-               (lsp--xref-elements-index children? (concat path name " / ")))))
-      (t
-       (-let [(&SymbolInformation :name :location (&RangeToPoint :start)) sym]
-         (cons (cons (concat path name)
-                     (lsp--position-to-point start))
-               (lsp--xref-elements-index nil (concat path name " / ")))))))
+     (pcase sym
+       ((DocumentSymbol :name :children? :selection-range (Range :start))
+        (cons (cons (concat path name)
+                    (lsp--position-to-point start))
+              (lsp--xref-elements-index children? (concat path name " / "))))
+       ((SymbolInformation :name :location (Location :range (Range :start)))
+        (list (cons (concat path name)
+                    (lsp--position-to-point start))))))
    symbols))
 
 (defvar-local lsp--symbols-cache nil)
