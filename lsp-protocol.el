@@ -355,7 +355,11 @@ See `-let' for a description of the destructuring mechanism."
                (WorkDoneProgressOptions nil (:workDoneProgress))
                (SemanticTokensOptions (:legend) (:rangeProvider :documentProvider))
                (SemanticTokensLegend (:tokenTypes :tokenModifiers))
-               (SematicTokensPartialResult (:data) nil))
+               (SemanticTokensResult (:resultId) (:data))
+               (SemanticTokensPartialResult nil (:data))
+               (SemanticTokensEdit (:start :deleteCount) (:data))
+               (SemanticTokensDelta (:resultId) (:edits))
+               (SemanticTokensDeltaPartialResult nil (:edits)))
 
 (lsp-interface (v1:ProgressParams (:id :title) (:message :percentage :done)))
 

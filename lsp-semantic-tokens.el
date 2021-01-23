@@ -44,6 +44,23 @@ or modifier type returned by a language server has no face associated with it."
   :group 'lsp-semantic-tokens
   :type 'boolean)
 
+(defcustom lsp-semantic-tokens-allow-ranged-requests t
+  "Whether to use ranged semantic token requests when available.
+
+Note that even when this is set to t, delta requests will
+be preferred whenever possible, unless
+`lsp-semantic-tokens-allow-delta-requests' is false."
+  :group 'lsp-mode
+  :type 'boolean)
+
+(defcustom lsp-semantic-tokens-allow-delta-requests t
+  "Whether to use semantic token delta requests when available.
+
+When supported by the language server, delta requests are always
+preferred over both full and ranged token requests."
+  :group 'lsp-mode
+  :type 'boolean)
+
 (defface lsp-face-semhl-constant
   '((t :inherit font-lock-constant-face))
   "Face used for semantic highlighting scopes matching constant scopes."
@@ -220,52 +237,143 @@ Faces to use for semantic token modifiers if
         (tokenTypes . ,(apply 'vector (mapcar #'car lsp-semantic-token-faces)))
         (formats . ["relative"])))))
 
+
 (defvar lsp--semantic-tokens-idle-timer nil)
-(defvar-local lsp--semantic-tokens-cache nil)
+
+(defvar-local lsp--semantic-tokens-cache nil
+  "Previously returned token set.
+
+When non-nil, `lsp--semantic-tokens-cache' should adhere to the
+following lsp-interface:
+`(_SemanticTokensCache
+  (:_documentVersion :_pars :_ranged)
+  (:response :_region))'.")
+
 (defvar-local lsp--semantic-tokens-teardown nil)
-(defvar-local lsp--semantic-tokens-use-ranged-requests nil)
+
+(defun lsp--semantic-tokens-request-full-token-set-when-idle (fontify-immediately)
+  "Request full token set after an idle timeout of `lsp-idle-delay'.
+
+If FONTIFY-IMMEDIATELY is non-nil, fontification will be performed immediately
+ once the corresponding response is received."
+  (when lsp--semantic-tokens-idle-timer (cancel-timer lsp--semantic-tokens-idle-timer))
+  (let ((buf (current-buffer)))
+    (setq lsp--semantic-tokens-idle-timer
+          (run-with-idle-timer
+           lsp-idle-delay
+           nil
+           (lambda ()
+             (when (buffer-live-p buf)
+               (with-current-buffer buf
+                 (lsp--semantic-tokens-request nil fontify-immediately))))))))
+
+(defun lsp--semantic-tokens-ingest-range-response (response)
+  "Handle RESPONSE to semanticTokens/range request."
+  (lsp-put lsp--semantic-tokens-cache :response response)
+  (lsp-put lsp--semantic-tokens-cache :_ranged t)
+  (lsp--semantic-tokens-request-full-token-set-when-idle nil))
+
+(defun lsp--semantic-tokens-ingest-full-response (response)
+  "Handle RESPONSE to semanticTokens/full request."
+  (lsp-put lsp--semantic-tokens-cache :response response)
+  (lsp-put lsp--semantic-tokens-cache :_ranged nil))
+
+(defsubst lsp--semantic-tokens-apply-delta-edits (old-data edits)
+  "Apply EDITS obtained from full/delta request to OLD-DATA."
+  (let* ((old-token-count (length old-data))
+         (old-token-index 0)
+         (substrings))
+    (cl-loop
+     for edit across edits
+     when (< old-token-index (lsp-get edit :start))
+     do
+     (push (substring old-data old-token-index (lsp-get edit :start)) substrings)
+     (push (lsp-get edit :data) substrings)
+     (setq old-token-index (+ (lsp-get edit :start) (lsp-get edit :deleteCount)))
+     finally do (push (substring old-data old-token-index old-token-count) substrings))
+    (apply #'vconcat (nreverse substrings))))
+
+(defun lsp--semantic-tokens-ingest-full/delta-response (response)
+  "Handle RESPONSE to semanticTokens/full/delta request."
+  (if (lsp-get response :edits)
+      (let ((old-data (--> lsp--semantic-tokens-cache (lsp-get it :response) (lsp-get it :data))))
+        (when old-data
+          (lsp-put response
+                   :data (lsp--semantic-tokens-apply-delta-edits
+                          old-data (lsp-get response :edits)))
+          (lsp-put lsp--semantic-tokens-cache :response response)
+          (lsp-put lsp--semantic-tokens-cache :_ranged nil)))
+    ;; server decided to send full response instead
+    (lsp--semantic-tokens-ingest-full-response response)))
+
+
 
 (defun lsp--semantic-tokens-request (region fontify-immediately)
-  "Request server for semantic tokens.
-If REGION is non-nil, it will request tokens only for given region
-otherwise it will request for whole document.
-If FONTIFY-IMMEDIATELY is non-nil, it will fontify when receive the response
-ignoring the timer."
-  (let* ((semantic-tokenizing-buffer (current-buffer))
-         (request-full-token-set
-          (lambda (fontify-immediately)
-            (when lsp--semantic-tokens-idle-timer
-              (cancel-timer lsp--semantic-tokens-idle-timer))
-            (setq lsp--semantic-tokens-idle-timer
-                  (run-with-idle-timer
-                   lsp-idle-delay
-                   nil
-                   (lambda ()
-                     (when (buffer-live-p semantic-tokenizing-buffer)
-                       (with-current-buffer semantic-tokenizing-buffer
-                         (lsp--semantic-tokens-request nil fontify-immediately)))))))))
-    (when lsp--semantic-tokens-idle-timer
-      (cancel-timer lsp--semantic-tokens-idle-timer))
-    (lsp-request-async
-     (cond
-      (region "textDocument/semanticTokens/range")
-      ((lsp-feature? "textDocument/semanticTokensFull")
-       "textDocument/semanticTokens/full")
-      (t "textDocument/semanticTokens"))
-     `( :textDocument ,(lsp--text-document-identifier)
-        ,@(if region (list :range (lsp--region-to-range (car region) (cdr region))) '()))
+(("Send semantic tokens request to the language server.
+
+A full/delta request will be sent if delta requests are supported by
+the language server, allowed via `lsp-semantic-tokens-allow-delta-requests',
+and if a full set of tokens had previously been received.
+Otherwise, a ranged request will be dispatched if REGION is non-nil,
+ranged requests are supported by the language server, and allowed via
+`lsp-semantic-tokens-allow-delta-requests'. In all other cases, a full
+tokens request will be dispatched.
+
+If FONTIFY-IMMEDIATELY is non-nil, fontification will be performed immediately
+ upon receiving the response."
+  (let ((request-type "textDocument/semanticTokens/full")
+        (request `(:textDocument ,(lsp--text-document-identifier)))
+        (response-handler nil))
+    (cond
+     ((and lsp-semantic-tokens-allow-delta-requests
+           (lsp-feature? "textDocument/semanticTokensFull/Delta")
+           (--> lsp--semantic-tokens-cache
+             (lsp-get it :response)
+             (and (lsp-get it :resultId) (lsp-get it :data) (not (lsp-get it :_ranged)))))
+      (setq request-type "textDocument/semanticTokens/full/delta")
+      (setq response-handler #'lsp--semantic-tokens-ingest-full/delta-response)
+      (plist-put request :previousResultId (lsp-get (lsp-get lsp--semantic-tokens-cache :response) :resultId)))
+     ((and lsp-semantic-tokens-allow-ranged-requests region
+           (lsp-feature? "textDocument/semanticTokensRangeProvider"))
+      (setq request-type "textDocument/semanticTokens/range")
+      (plist-put request :range (lsp--region-to-range (car region) (cdr region)))
+      (setq response-handler #'lsp--semantic-tokens-ingest-range-response))
+     (t (setq response-handler #'lsp--semantic-tokens-ingest-full-response)))
+    (when lsp--semantic-tokens-idle-timer (cancel-timer lsp--semantic-tokens-idle-timer))
+    (lsp-request-async request-type request
      (lambda (response)
-       (setq lsp--semantic-tokens-cache response)
+       (unless lsp--semantic-tokens-cache
+         (setq lsp--semantic-tokens-cache (if lsp-use-plists '() (make-hash-table :test #'equal))))
+       (lsp-put lsp--semantic-tokens-cache :_pars request)
        (lsp-put lsp--semantic-tokens-cache :_documentVersion lsp--cur-version)
-       (lsp-put lsp--semantic-tokens-cache :_region region)
-       (when fontify-immediately (font-lock-flush))
-       ;; request full token set to improve fontification speed when scrolling
-       (when region (funcall request-full-token-set nil)))
-     :error-handler (lambda (&rest _) (funcall request-full-token-set t))
+       (funcall response-handler response)
+       (when fontify-immediately (font-lock-flush)))
+     :error-handler (lambda (&rest _) (lsp--semantic-tokens-request-full-token-set-when-idle t))
      :mode 'tick
      :cancel-token (format "semantic-tokens-%s" (lsp--buffer-uri)))))
 
-(defun lsp-semantic-tokens--fontify (old-fontify-region beg end &optional loudly)
+
+(defun lsp--semantic-tokens-verify ()
+  "Store current token set and compare with the response to a full token request."
+  (interactive)
+  (let ((old-tokens (--> lsp--semantic-tokens-cache (lsp-get it :response) (lsp-get it :data)))
+        (old-version (--> lsp--semantic-tokens-cache (lsp-get it :_documentVersion))))
+    (if (not (equal lsp--cur-version old-version))
+        (message "Stored documentVersion %d differs from current version %d" old-version lsp--cur-version)
+      (lsp-request-async
+       "textDocument/semanticTokens/full" `(:textDocument ,(lsp--text-document-identifier))
+       (lambda (response)
+         (let ((new-tokens (lsp-get response :data)))
+           (if (equal old-tokens new-tokens)
+               (message "New tokens (total count %d) are identical to previously held token set"
+                        (length new-tokens))
+             (message "Newly returned tokens differ from old token set")
+             (print old-tokens)
+             (print new-tokens))))
+       :mode 'tick
+       :cancel-token (format "semantic-tokens-%s" (lsp--buffer-uri))))))
+
+(defun lsp-semantic-tokens--fontify (old-fontify-region beg-orig end-orig &optional loudly)
   "Apply fonts to retrieved semantic tokens.
 OLD-FONTIFY-REGION is the region where it was applied before.
 BEG and END are the regtions.
@@ -274,18 +382,26 @@ If LOUDLY is non-nil, it will build whole tokens."
   (let ((faces (seq-some #'lsp--workspace-semantic-tokens-faces lsp--buffer-workspaces))
         (modifier-faces
          (when lsp-semantic-tokens-apply-modifiers
-           (seq-some #'lsp--workspace-semantic-tokens-modifier-faces lsp--buffer-workspaces))))
+           (seq-some #'lsp--workspace-semantic-tokens-modifier-faces lsp--buffer-workspaces)))
+        old-bounds
+        beg end)
     (cond
-     ((or (eq nil lsp--semantic-tokens-cache) (eq nil faces))
+     ((or (eq nil faces)
+          (eq nil lsp--semantic-tokens-cache)
+          (eq nil (lsp-get lsp--semantic-tokens-cache :response)))
       ;; default to non-semantic highlighting until first response has arrived
-      (funcall old-fontify-region beg end loudly))
+      (funcall old-fontify-region beg-orig end-orig loudly))
      ((not (= lsp--cur-version (lsp-get lsp--semantic-tokens-cache :_documentVersion)))
-      ;; delay fontification until we have fresh tokens to avoid flickering
+      ;; delay fontification until we have fresh tokens
       '(jit-lock-bounds 0 . 0))
      (t
-      (funcall old-fontify-region beg end loudly)
+      (setq old-bounds (funcall old-fontify-region beg-orig end-orig loudly))
+      ;; this is to prevent flickering when semantic token highlighting
+      ;; is layered on top of, e.g., tree-sitter-hl, or clojure-mode's syntax highlighting.
+      (setq beg (min beg-orig (cadr old-bounds))
+            end (max end-orig (cddr old-bounds)))
       (-let* ((inhibit-field-text-motion t)
-              ((&SematicTokensPartialResult :data) lsp--semantic-tokens-cache)
+              (data (lsp-get (lsp-get lsp--semantic-tokens-cache :response) :data))
               (i0 0)
               (i-max (1- (length data)))
               (current-line 1)
@@ -327,7 +443,8 @@ If LOUDLY is non-nil, it will build whole tokens."
                (setq face (aref faces (aref data (+ i 3))))
                (setq text-property-beg (+ line-start-pos column))
                (setq text-property-end (+ text-property-beg (aref data (+ i 2))))
-               (when face (put-text-property text-property-beg text-property-end 'face face))
+               (when face
+                 (put-text-property text-property-beg text-property-end 'face face))
                (cl-loop for j from 0 to (1- (length modifier-faces)) do
                         (when (and (aref modifier-faces j)
                                    (> (logand (aref data (+ i 4)) (lsh 1 j)) 0))
@@ -341,13 +458,10 @@ If LOUDLY is non-nil, it will build whole tokens."
 
 (defun lsp-semantic-tokens--request-update ()
   "Request semantic-tokens update."
-  (lsp--semantic-tokens-request
-   (when lsp--semantic-tokens-use-ranged-requests
-     (cons (window-start) (window-end)))
-   t))
+  (lsp--semantic-tokens-request (cons (window-start) (window-end)) t))
 
 ;;;###autoload
-(defun lsp--semantic-tokens-initialize-buffer (is-range-provider)
+(defun lsp--semantic-tokens-initialize-buffer ()
   "Initialize the buffer for semantic tokens.
 IS-RANGE-PROVIDER is non-nil when server supports range requests."
   (let* ((old-extend-region-functions font-lock-extend-region-functions)
@@ -357,7 +471,7 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
           (if (memq 'font-lock-extend-region-wholelines old-extend-region-functions)
               old-extend-region-functions
             (cons 'font-lock-extend-region-wholelines old-extend-region-functions))))
-    (setq lsp--semantic-tokens-use-ranged-requests is-range-provider)
+    (setq lsp--semantic-tokens-cache nil)
     (setq font-lock-extend-region-functions new-extend-region-functions)
     (add-function :around (local 'font-lock-fontify-region-function) #'lsp-semantic-tokens--fontify)
     (add-hook 'lsp-on-change-hook #'lsp-semantic-tokens--request-update nil t)
@@ -368,7 +482,6 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
             (when lsp--semantic-tokens-idle-timer
               (cancel-timer lsp--semantic-tokens-idle-timer)
               (setq lsp--semantic-tokens-idle-timer nil))
-            (setq lsp--semantic-tokens-use-ranged-requests nil)
             (setq lsp--semantic-tokens-cache nil)
             (remove-function (local 'font-lock-fontify-region-function)
                              #'lsp-semantic-tokens--fontify)
@@ -399,6 +512,15 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
   "Return the semantic token type faces for CLIENT."
   (lsp-semantic-tokens--replace-alist-values lsp-semantic-token-modifier-faces
                                      (plist-get (lsp--client-semantic-tokens-faces-overrides client) :modifiers)))
+
+(defun lsp--semantic-tokens-on-refresh ()
+  "Invoked in response to workspace/semanticTokens/refresh requests."
+  (lsp-foreach-workspace
+   (cl-loop
+    for ws-buffer in (lsp--workspace-buffers lsp--cur-workspace) do
+    (unless (equal (current-buffer) ws-buffer)
+      (setf (buffer-local-value 'lsp--semantic-tokens-cache ws-buffer) nil))))
+  (lsp--semantic-tokens-request-full-token-set-when-idle t))
 
 ;;;###autoload
 (defun lsp--semantic-tokens-initialize-workspace (workspace)
@@ -453,8 +575,7 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
     (lsp-semantic-tokens-mode 1)
     (mapc #'lsp--semantic-tokens-initialize-workspace
           (lsp--find-workspaces-for "textDocument/semanticTokens"))
-    (lsp--semantic-tokens-initialize-buffer
-     (lsp-feature? "textDocument/semanticTokensRangeProvider"))))
+    (lsp--semantic-tokens-initialize-buffer)))
 
 (defun lsp-semantic-tokens--disable ()
   "Disable semantic tokens mode."
@@ -474,8 +595,7 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
     (remove-hook 'lsp-unconfigure-hook #'lsp-semantic-tokens--disable t)
     (setq lsp--semantic-tokens-idle-timer nil
           lsp--semantic-tokens-cache nil
-          lsp--semantic-tokens-teardown nil
-          lsp--semantic-tokens-use-ranged-requests nil))))
+          lsp--semantic-tokens-teardown nil))))
 
 (lsp-consistency-check lsp-semantic-tokens)
 
