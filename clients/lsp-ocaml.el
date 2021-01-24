@@ -73,7 +73,7 @@
  (make-lsp-client
   :new-connection
   (lsp-stdio-connection (lambda () lsp-ocaml-lsp-server-command))
-  :major-modes '(caml-mode tuareg-mode)
+  :major-modes '(reason-mode caml-mode tuareg-mode)
   :priority 0
   :server-id 'ocaml-lsp-server))
 
