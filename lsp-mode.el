@@ -4873,6 +4873,30 @@ RENDER-ALL - nil if only the signature should be rendered."
           (lv-message "%s" message)))
     (lv-delete-window)))
 
+(declare-function posframe-show "ext:posframe")
+(declare-function posframe-hide "ext:posframe")
+(declare-function posframe-poshandler-point-bottom-left-corner-upward "ext:posframe")
+
+(defvar lsp-signature-posframe-params
+  (list :poshandler #'posframe-poshandler-point-bottom-left-corner-upward
+        :background-color (face-attribute 'tooltip :background)
+        :height 6
+        :width 60
+        :min-width 60)
+  "Params for signature and `posframe-show'.")
+
+(defun lsp-signature-posframe (str)
+  (if str
+      (apply #'posframe-show
+             (with-current-buffer (get-buffer-create "*lsp-signature*")
+               (erase-buffer)
+               (insert str)
+               (visual-line-mode 1)
+               (current-buffer))
+             :position (point)
+             lsp-signature-posframe-params)
+    (posframe-hide "*lsp-signature*")))
+
 (defun lsp--handle-signature-update (signature)
   (let ((message
          (if (lsp-signature-help? signature)
