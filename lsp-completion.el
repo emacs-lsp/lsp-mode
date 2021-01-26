@@ -541,8 +541,14 @@ Others: CANDIDATES"
         (when command?
           (lsp--execute-command command?))
 
-        (when (and (or (equal lsp-signature-auto-activate t)
-                       (memq :after-completion lsp-signature-auto-activate))
+        (when (and (or
+                    (equal lsp-signature-auto-activate t)
+                    (memq :after-completion lsp-signature-auto-activate)
+                    (and (memq :on-trigger-char lsp-signature-auto-activate)
+                         (-when-let ((&SignatureHelpOptions? :trigger-characters?)
+                                     (lsp--capability :signatureHelpProvider))
+                           (lsp-completion--looking-back-trigger-characterp
+                            trigger-characters?))))
                    (lsp-feature? "textDocument/signatureHelp"))
           (lsp-signature-activate))
 
