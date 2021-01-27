@@ -93,6 +93,13 @@
 
 (defconst lsp--empty-ht (make-hash-table))
 
+(eval-and-compile
+  (defun dash-expand:&lsp-wks (key source)
+    `(,(intern-soft (format "lsp--workspace-%s" (eval key))) ,source))
+
+  (defun dash-expand:&lsp-cln (key source)
+    `(,(intern-soft (format "lsp--client-%s" (eval key))) ,source)))
+
 (define-obsolete-variable-alias 'lsp-print-io 'lsp-log-io "lsp-mode 6.1")
 
 (defcustom lsp-log-io nil
@@ -1795,8 +1802,57 @@ PARAMS - the data sent from WORKSPACE."
         (completing-read (concat message " ") (seq-into choices 'list) nil t)
       (lsp-log message))))
 
-(lsp-defun lsp--on-progress (workspace (&ProgressParams :token :value
+(defcustom lsp-progress-prefix " ⌛ "
+  "Progress prefix."
+  :group 'lsp-mode
+  :type 'string
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-progress-function #'lsp-on-progress-modeline
+  "Function for handling the progress notifications."
+  :group 'lsp-mode
+  :type '(choice
+          (const :tag "Use modeline" lsp-on-progress-modeline)
+          (const :tag "Legacy(uses either `progress-reporter' or `spinner' based on `lsp-progress-via-spinner')"
+                 lsp-on-progress-legacy)
+          (const ignore :tag "Ignore")
+          (function :tag "Other function"))
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defun lsp--progress-status ()
+  "Returns the status of the progress for the current workspaces."
+  (-let ((progress-status
+          (s-join
+           "|"
+           (-keep
+            (lambda (workspace)
+              (let ((tokens (lsp--workspace-work-done-tokens workspace)))
+                (unless (ht-empty? tokens)
+                  (mapconcat
+                   (-lambda ((&WorkDoneProgressBegin :message? :title :percentage?))
+                     (concat (if percentage?
+                                 (format "%s%%%% " percentage?)
+                               "")
+                             (or message? title)))
+                   (ht-values tokens)
+                   "|"))))
+            (lsp-workspaces)))))
+    (unless (s-blank? progress-status)
+      (concat lsp-progress-prefix progress-status))))
+
+(lsp-defun lsp-on-progress-modeline (workspace (&ProgressParams :token :value
                                                         (value &as &WorkDoneProgress :kind)))
+  "PARAMS contains the progress data.
+WORKSPACE is the workspace that contains the progress token."
+  (add-to-list 'global-mode-string '(t (:eval (lsp--progress-status))))
+  (pcase kind
+    ("begin" (lsp-workspace-set-work-done-token token value workspace))
+    ("report" (lsp-workspace-set-work-done-token token value workspace))
+    ("end" (lsp-workspace-rem-work-done-token token workspace)))
+  (force-mode-line-update))
+
+(lsp-defun lsp-on-progress-legacy (workspace (&ProgressParams :token :value
+                                                              (value &as &WorkDoneProgress :kind)))
   "PARAMS contains the progress data.
 WORKSPACE is the workspace that contains the progress token."
   (pcase kind
@@ -1813,7 +1869,7 @@ WORKSPACE is the workspace that contains the progress token."
                     ;; The progress relates to the server as a whole,
                     ;; display it on all buffers.
                     (mapcar (lambda (buffer)
-                              (with-current-buffer buffer
+                              (lsp-with-current-buffer buffer
                                 (spinner-start spinner-type))
                               buffer)
                             (lsp--workspace-buffers workspace)))
@@ -1832,7 +1888,7 @@ WORKSPACE is the workspace that contains the progress token."
        (if lsp-progress-via-spinner
            (mapc (lambda (buffer)
                    (when (lsp-buffer-live-p buffer)
-                     (with-current-buffer buffer
+                     (lsp-with-current-buffer buffer
                        (spinner-stop))))
                  reporter)
          (progress-reporter-done reporter))
@@ -2725,23 +2781,17 @@ If WORKSPACE is not provided current workspace will be used."
 
 (defalias 'lsp-workspace-get-metadata 'lsp-session-get-metadata)
 
-(defun lsp-workspace-set-work-done-token (token value &optional workspace)
-  "Associate TOKEN with VALUE in the WORKSPACE work-done-tokens.
-If WORKSPACE is not provided current workspace will be used."
-  (puthash token value
-           (lsp--workspace-work-done-tokens (or workspace lsp--cur-workspace))))
+(defun lsp-workspace-set-work-done-token (token value workspace)
+  "Associate TOKEN with VALUE in the WORKSPACE work-done-tokens."
+  (puthash token value (lsp--workspace-work-done-tokens workspace)))
 
-(defun lsp-workspace-get-work-done-token (token &optional workspace)
-  "Lookup TOKEN in the WORKSPACE work-done-tokens.
-If WORKSPACE is not provided current workspace will be used."
-  (gethash token
-           (lsp--workspace-work-done-tokens (or workspace lsp--cur-workspace))))
+(defun lsp-workspace-get-work-done-token (token workspace)
+  "Lookup TOKEN in the WORKSPACE work-done-tokens."
+  (gethash token (lsp--workspace-work-done-tokens workspace)))
 
-(defun lsp-workspace-rem-work-done-token (token &optional workspace)
-  "Remove TOKEN from the WORKSPACE work-done-tokens.
-If WORKSPACE is not provided current workspace will be used."
-  (remhash token
-           (lsp--workspace-work-done-tokens (or workspace lsp--cur-workspace))))
+(defun lsp-workspace-rem-work-done-token (token workspace)
+  "Remove TOKEN from the WORKSPACE work-done-tokens."
+  (remhash token (lsp--workspace-work-done-tokens workspace)))
 
 
 (defun lsp--make-notification (method &optional params)
@@ -4546,13 +4596,6 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
   (run-hooks 'lsp-eldoc-hook)
   eldoc-last-message)
 
-(eval-and-compile
-  (defun dash-expand:&lsp-wks (key source)
-    `(,(intern-soft (format "lsp--workspace-%s" (eval key))) ,source))
-
-  (defun dash-expand:&lsp-cln (key source)
-    `(,(intern-soft (format "lsp--client-%s" (eval key))) ,source)))
-
 (defun lsp--point-on-highlight? ()
   (-some? (lambda (overlay)
             (overlay-get overlay 'lsp-highlight))
@@ -5761,7 +5804,8 @@ textDocument/didOpen for the new file."
       ("textDocument/diagnosticsEnd" #'ignore)
       ("textDocument/diagnosticsBegin" #'ignore)
       ("telemetry/event" #'ignore)
-      ("$/progress" #'lsp--on-progress)))
+      ("$/progress" (lambda (workspace params)
+                      (funcall lsp-progress-function workspace params)))))
 
 (lsp-defun lsp--on-notification (workspace (&JSONNotification :params :method))
   "Call the appropriate handler for NOTIFICATION."
