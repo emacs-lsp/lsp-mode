@@ -7356,12 +7356,12 @@ When ALL is t, erase all log buffers of the running session."
   "Visual representation WORKSPACE."
   (let* ((proc (lsp--workspace-cmd-proc workspace))
          (status (lsp--workspace-status workspace))
-         (server-id (-> workspace lsp--workspace-client lsp--client-server-id symbol-name (propertize 'face 'bold-italic)))
-         (pid (propertize (format "%s" (process-id proc)) 'face 'italic)))
+         (server-id (-> workspace lsp--workspace-client lsp--client-server-id symbol-name))
+         (pid (process-id proc)))
 
     (if (eq 'initialized status)
         (format "%s:%s" server-id pid)
-      (format "%s:%s status:%s" server-id pid status))))
+      (format "%s:%s/%s" server-id pid status))))
 
 (defun lsp--map-tree-widget (m)
   "Build `tree-widget' from a hash-table M."
