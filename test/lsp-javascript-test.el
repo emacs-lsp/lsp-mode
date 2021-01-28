@@ -66,14 +66,14 @@
             (lsp-clients-flow-tag-string-present-p))))
 
 (ert-deftest lsp-flow-wrong-tag-detection ()
-  (should (not (with-temp-buffer
-                 (insert lsp-flow-wrong-tag)
-                 (lsp-clients-flow-tag-string-present-p)))))
+  (should-not (with-temp-buffer
+                (insert lsp-flow-wrong-tag)
+                (lsp-clients-flow-tag-string-present-p))))
 
 (ert-deftest lsp-flow-but-not-in-comment-tag-detection ()
-  (should (not (with-temp-buffer
-                 (insert lsp-flow-but-not-in-comment-tag)
-                 (lsp-clients-flow-tag-string-present-p)))))
+  (should-not (with-temp-buffer
+                (insert lsp-flow-but-not-in-comment-tag)
+                (lsp-clients-flow-tag-string-present-p))))
 
 (ert-deftest lsp-flow-should-activate-on-flow-project ()
   ;; Set `js-mode' ON and check that a Flow project activates the Flow
@@ -87,13 +87,13 @@
 
 (ert-deftest lsp-flow-should-not-activate-if-not-flow-project-or-no-tag ()
   (let ((major-mode 'js-mode))
-    (should (not (lsp-clients-flow-activate-p (concat test-location "fixtures/SampleJsProject/src/sample.js") nil)))))
+    (should-not (lsp-clients-flow-activate-p (concat test-location "fixtures/SampleJsProject/src/sample.js") nil))))
 
 (ert-deftest lsp-flow-should-not-activate-on-typescript-project ()
   ;; Set `js-mode' ON and check that a TypeScript project does not
   ;; activate the Flow LSP client.
   (let ((major-mode 'js-mode))
-    (should (not (lsp-clients-flow-activate-p (concat test-location "fixtures/SampleTypeScriptProject/src/sample.ts") nil)))))
+    (should-not (lsp-clients-flow-activate-p (concat test-location "fixtures/SampleTypeScriptProject/src/sample.ts") nil))))
 
 (ert-deftest lsp-typescript-javascript-activates-based-on-file-extension ()
   (should (lsp-typescript-javascript-tsx-jsx-activate-p "abc.js"))
@@ -102,7 +102,7 @@
   (should (lsp-typescript-javascript-tsx-jsx-activate-p "abc.tsx"))
   (should (lsp-typescript-javascript-tsx-jsx-activate-p "a1.ts"))
   (should (lsp-typescript-javascript-tsx-jsx-activate-p "a1.d.ts"))
-  (should (not (lsp-typescript-javascript-tsx-jsx-activate-p "abc.tsxx")))
-  (should (not (lsp-typescript-javascript-tsx-jsx-activate-p "abc.jss"))))
+  (should-not (lsp-typescript-javascript-tsx-jsx-activate-p "abc.tsxx"))
+  (should-not (lsp-typescript-javascript-tsx-jsx-activate-p "abc.jss")))
 
 ;;; lsp-clients-test.el ends here

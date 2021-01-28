@@ -53,9 +53,9 @@
     (-let (((&MyPosition? :optional?) nil))
       (should (null optional?)))
 
-    (should (not (lsp-my-position? position)))
+    (should-not (lsp-my-position? position))
     (lsp:set-my-position-camel-case position "camel-case")
-    (should (not (lsp-my-position? "xx")))
+    (should-not (lsp-my-position? "xx"))
     (should (lsp-my-position? position))
 
     (-let (((&MyPosition? :line) nil))
