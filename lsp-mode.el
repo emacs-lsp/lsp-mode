@@ -5442,7 +5442,7 @@ perform the request synchronously."
 (defun lsp--xref-elements-index (symbols path)
   (-mapcat
    (-lambda (sym)
-     (pcase sym
+     (pcase-exhaustive sym
        ((DocumentSymbol :name :children? :selection-range (Range :start))
         (cons (cons (concat path name)
                     (lsp--position-to-point start))
