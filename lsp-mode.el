@@ -6256,7 +6256,7 @@ non-pluralized names are preferred, this can be set to
   :type '(alist :key-type integer :value-type string))
 
 (defun lsp--imenu-kind->name (kind)
-  (alist-get kind lsp-imenu-symbol-kinds))
+  (alist-get kind lsp-imenu-symbol-kinds "?"))
 
 (defun lsp-imenu-create-top-level-categorized-index (symbols)
   "Create an `imenu' index categorizing SYMBOLS by type.
