@@ -6334,7 +6334,7 @@ time."
   :group 'lsp-imenu
   :type '(radio
           (const :tag "Categorize by type"
-                 lsp-imenu-create-top-level-categorized-index)
+                 lsp-imenu-create-categorized-index)
           (const :tag "Categorize root symbols by type"
                  lsp-imenu-create-top-levelcategorized-index)
           (const :tag "Uncategorized, inline entries"
