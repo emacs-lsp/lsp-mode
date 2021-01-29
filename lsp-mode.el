@@ -6288,9 +6288,11 @@ The result looks like this: ((\"Variables\" . (...)))."
       (if (seq-empty-p children?)
           (list (list kind (lsp--symbol->imenu sym)))
         (let ((parent (lsp-render-symbol sym lsp-imenu-detailed-outline)))
-          (mapcar (-lambda ((type .  imenu-items))
-                    (list type (cons parent (mapcan #'cdr imenu-items))))
-                  (-group-by #'car (lsp--imenu-create-categorized-index-1 children?)))))))
+          (cons
+           (list kind (lsp--symbol->imenu sym))
+           (mapcar (-lambda ((type .  imenu-items))
+                     (list type (cons parent (mapcan #'cdr imenu-items))))
+                   (-group-by #'car (lsp--imenu-create-categorized-index-1 children?))))))))
    (-group-by #'car)
    (mapcar
     (-lambda ((kind . syms))
