@@ -6255,13 +6255,18 @@ non-pluralized names are preferred, this can be set to
 `lsp-symbol-kinds'."
   :type '(alist :key-type integer :value-type string))
 
-(defun lsp-imenu-create-categorized-index (symbols)
+(defun lsp--imenu-kind->name (kind)
+  (alist-get kind lsp-imenu-symbol-kinds))
+
+(defun lsp-imenu-create-top-level-categorized-index (symbols)
   "Create an `imenu' index categorizing SYMBOLS by type.
+Only root symbols are categorized.
+
 See `lsp-symbol-kinds' to customize the category naming. SYMBOLS
 shall be a list of DocumentSymbols or SymbolInformation."
   (mapcan
    (-lambda ((type . symbols))
-     (let ((cat (cdr (assoc type lsp-imenu-symbol-kinds)))
+     (let ((cat (lsp--imenu-kind->name type))
            (symbols (lsp-imenu-create-uncategorized-index symbols)))
        ;; If there is no :kind (this is being defensive), or we couldn't look it
        ;; up, just display the symbols inline, without categories.
@@ -6269,16 +6274,67 @@ shall be a list of DocumentSymbols or SymbolInformation."
    (sort (seq-group-by #'lsp:document-symbol-kind symbols)
          (-lambda ((kinda) (kindb)) (< kinda kindb)))))
 
+(lsp-defun lsp--symbol->imenu ((sym &as &DocumentSymbol :selection-range (&RangeToPoint :start)))
+  "Convert an `&DocumentSymbol' to an `imenu' entry."
+  (cons (lsp-render-symbol sym lsp-imenu-detailed-outline) start))
+
+(defun lsp--imenu-create-categorized-index-1 (symbols)
+  "Returns an `imenu' index from SYMBOLS categorized by type.
+The result looks like this: ((\"Variables\" . (...)))."
+  (->>
+   symbols
+   (mapcan
+    (-lambda ((sym &as &DocumentSymbol :kind :children?))
+      (if (seq-empty-p children?)
+          (list (list kind (lsp--symbol->imenu sym)))
+        (let ((parent (lsp-render-symbol sym lsp-imenu-detailed-outline)))
+          (mapcar (-lambda ((type .  imenu-items))
+                    (list type (cons parent (mapcan #'cdr imenu-items))))
+                  (-group-by #'car (lsp--imenu-create-categorized-index-1 children?)))))))
+   (-group-by #'car)
+   (mapcar
+    (-lambda ((kind . syms))
+      (cons kind (mapcan #'cdr syms))))))
+
+(defun lsp--imenu-create-categorized-index (symbols)
+  (let ((syms (lsp--imenu-create-categorized-index-1 symbols)))
+    (dolist (sym syms)
+      (setcar sym (lsp--imenu-kind->name (car sym))))
+    syms))
+
+(lsp-defun lsp--symbol-information->imenu ((sym &as &SymbolInformation :location (&Location :range (&RangeToPoint :start))))
+  (cons (lsp-render-symbol-information sym nil) start))
+
+(defun lsp--imenu-create-categorized-index-flat (symbols)
+  "Create a kind-categorized index for SymbolInformation."
+  (mapcar (-lambda ((kind . syms))
+            (cons (lsp--imenu-kind->name kind)
+                  (mapcan (-lambda ((parent . children))
+                            (let ((children (mapcar #'lsp--symbol-information->imenu children)))
+                              (if parent (list (cons parent children)) children)))
+                          (-group-by #'lsp:symbol-information-container-name? syms))))
+          (seq-group-by #'lsp:symbol-information-kind symbols)))
+
+(defun lsp-imenu-create-categorized-index (symbols)
+  (if (lsp--imenu-hierarchical-p symbols)
+      (lsp--imenu-create-categorized-index symbols)
+    (lsp--imenu-create-categorized-index-flat symbols)))
+
 (defcustom lsp-imenu-index-function #'lsp-imenu-create-uncategorized-index
   "Function that should create an `imenu' index.
 It will be called with a list of SymbolInformation or
 DocumentSymbols, whose first level is already filtered. It shall
 then return an appropriate `imenu' index (see
-`imenu-create-index-function')."
+`imenu-create-index-function').
+
+Note that this interface is not stable, and subject to change any
+time."
   :group 'lsp-imenu
   :type '(radio
-          (const :tag "Categorized by type"
-                 lsp-imenu-create-categorized-index)
+          (const :tag "Categorize by type"
+                 lsp-imenu-create-top-level-categorized-index)
+          (const :tag "Categorize root symbols by type"
+                 lsp-imenu-create-top-levelcategorized-index)
           (const :tag "Uncategorized, inline entries"
                  lsp-imenu-create-uncategorized-index)
           (function :tag "Custom function")))
