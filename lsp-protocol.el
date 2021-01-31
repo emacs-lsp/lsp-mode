@@ -364,7 +364,18 @@ See `-let' for a description of the destructuring mechanism."
 
 (lsp-interface (pwsh:ScriptRegion (:StartLineNumber :EndLineNumber :StartColumnNumber :EndColumnNumber :Text) nil))
 
-(lsp-interface (omnisharp:ErrorMessage (:Text :FileName :Line :Column)))
+(lsp-interface (omnisharp:ErrorMessage (:Text :FileName :Line :Column))
+               (omnisharp:CodeStructureRequest (:FileName))
+               (omnisharp:CodeStructureResponse (:Elements))
+               (omnisharp:CodeElement (:Kind :Name :DisplayName :Children :Ranges :Properties))
+               (omnisharp:CodeElementProperties () (:static :accessibility :testMethodName :testFramework))
+               (omnisharp:Range (:Start :End))
+               (omnisharp:RangeList () (:attributes :full :name))
+               (omnisharp:Point (:Line :Column))
+               (omnisharp:RunTestsInClassRequest (:MethodNames :RunSettings :TestFrameworkname :TargetFrameworkVersion :NoBuild :Line :Column :Buffer :FileName))
+               (omnisharp:RunTestResponse (:Results :Pass :Failure :ContextHadNoTests))
+               (omnisharp:TestMessageEvent (:MessageLevel :Message))
+               (omnisharp:DotNetTestResult (:MethodName :Outcome :ErrorMessage :ErrorStackTrace :StandardOutput :StandardError)))
 
 (lsp-interface (rls:Cmd (:args :binary :env :cwd) nil))
 
