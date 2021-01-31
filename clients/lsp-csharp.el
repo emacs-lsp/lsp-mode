@@ -335,13 +335,49 @@ using the `textDocument/references' request."
       (lsp-show-xrefs (lsp--locations-to-xref-items locations-found) nil t)
     (message "No references found")))
 
+(lsp-defun lsp-csharp--omnisharp-metadata-uri-handler (uri)
+  "Handle `omnisharp:/(metadata)' uri from omnisharp-roslyn server.
+
+The uri is parsed and then 'o#/metadata' request is issued to retrieve
+metadata from the server. A cache file is created on project root dir that
+stores this metadata and filename is returned so lsp-mode can display this file."
+  (string-match "^omnisharp:/metadata/Project/\\(.+\\)/Assembly/\\(.+\\)/Symbol/\\(.+\\)\.cs$" uri)
+  (-when-let* ((project-name (url-unhex-string (match-string 1 uri)))
+               (assembly-name (url-unhex-string (match-string 2 uri)))
+               (type-name (url-unhex-string (match-string 3 uri)))
+               (metadata-req (lsp-make-omnisharp-metadata-request :project-name project-name
+                                                                  :assembly-name assembly-name
+                                                                  :type-name type-name))
+               (metadata (lsp-request "o#/metadata" metadata-req))
+               ((&omnisharp:MetadataResponse :source-name :source) metadata)
+               (filename (f-join ".cache"
+                                 "lsp-csharp"
+                                 "metadata"
+                                 "Project" project-name
+                                 "Assembly" assembly-name
+                                 "Symbol" (concat type-name ".cs")))
+               (file-location (expand-file-name filename (lsp--suggest-project-root)))
+               (metadata-file-location (concat file-location ".metadata-uri"))
+               (path (f-dirname file-location)))
+
+    (unless (find-buffer-visiting file-location)
+      (unless (file-directory-p path)
+        (make-directory path t))
+
+      (with-temp-file metadata-file-location
+        (insert uri))
+
+      (with-temp-file file-location
+        (insert source)))
+
+    file-location))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    #'lsp-csharp--language-server-command
                                    (lambda ()
                                      (when-let ((binary (lsp-csharp--language-server-path)))
                                        (f-exists? binary))))
-
                   :major-modes '(csharp-mode csharp-tree-sitter-mode)
                   :server-id 'csharp
                   :action-handlers (ht ("omnisharp/client/findReferences" 'lsp-csharp--action-client-find-references))
@@ -357,6 +393,13 @@ using the `textDocument/references' request."
                                              ("o#/testcompleted" 'lsp-csharp--handle-os-testcompleted)
                                              ("o#/projectconfiguration" 'ignore)
                                              ("o#/projectdiagnosticstatus" 'ignore))
+                  :uri-handlers (lsp-ht ("omnisharp" #'lsp-csharp--omnisharp-metadata-uri-handler))
+                  :before-file-open-fn (lambda (_workspace)
+                                         (let ((metadata-file-name (concat buffer-file-name ".metadata-uri")))
+                                           (setq-local lsp-buffer-uri
+                                                       (when (file-exists-p metadata-file-name)
+                                                         (with-temp-buffer (insert-file-contents metadata-file-name)
+                                                                           (buffer-string))))))
                   :download-server-fn #'lsp-csharp--download-server))
 
 (lsp-consistency-check lsp-csharp)
