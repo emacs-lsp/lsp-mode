@@ -4788,11 +4788,12 @@ In addition, each can have property:
   "Render STR using `major-mode' corresponding to LANGUAGE.
 When language is nil render as markup if `markdown-mode' is loaded."
   (setq str (s-replace "\r" "" (or str "")))
-  (when-let ((mode (-some (-lambda ((mode . lang))
-                            (when (and (equal lang language) (functionp mode))
-                              mode))
-                          lsp-language-id-configuration)))
-    (lsp--fontlock-with-mode str mode)))
+  (if-let ((mode (-some (-lambda ((mode . lang))
+                           (when (and (equal lang language) (functionp mode))
+                             mode))
+                         lsp-language-id-configuration)))
+      (lsp--fontlock-with-mode str mode)
+    str))
 
 (defun lsp--render-element (content)
   "Render CONTENT element."
