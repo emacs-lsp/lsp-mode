@@ -3965,6 +3965,7 @@ LSP server result."
                    (buffer-substring-no-properties
                     (line-beginning-position)
                     (point))))
+         (yas-wrap-around-region nil)
          (yas-indent-line (unless keep-whitespace 'auto))
          (yas-also-auto-indent-first-line nil)
          (indent-line-function (if (or lsp-enable-relative-indentation
