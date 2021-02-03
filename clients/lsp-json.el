@@ -62,9 +62,6 @@
   `(:provideFormatter t
     :handledSchemaProtocols ["file" "http" "https"]))
 
-(defvar lsp-json--major-modes '(json-mode jsonc-mode)
-  "List of supported JSON major modes.")
-
 (defvar lsp-json--schema-associations
   `(:/*.css-data.json ["https://raw.githubusercontent.com/Microsoft/vscode-css-languageservice/master/docs/customData.schema.json"]
     :/package.json ["http://json.schemastore.org/package"]
@@ -110,9 +107,9 @@
   :new-connection
   (lsp-stdio-connection
    (lambda () (list (lsp-package-path 'vscode-json-languageserver) "--stdio")))
-  :major-modes lsp-json--major-modes
+  :activation-fn (lsp-activate-on "json" "jsonc")
   :server-id 'json-ls
-  :priority -1
+  :priority 0
   :multi-root t
   :completion-in-comments? t
   :initialization-options lsp-json--extra-init-params
