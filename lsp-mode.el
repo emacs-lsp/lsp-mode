@@ -681,8 +681,6 @@ Changes take effect only when a new session is started."
                                         (".*\\.lua$" . "lua")
                                         (".*\\.sql$" . "sql")
                                         (".*\\.html$" . "html")
-                                        (".*\\.json$" . "json")
-                                        (".*\\.jsonc$" . "jsonc")
                                         (ada-mode . "ada")
                                         (sql-mode . "sql")
                                         (vimrc-mode . "vim")
@@ -1315,11 +1313,11 @@ return value of `body' or nil if interrupted."
 ;; workspace refers to exactly one client, but there can be multiple workspaces
 ;; for a single client.
 (cl-defstruct lsp--client
-  ;; ‘language-id’ is a function that receives a buffer as a single argument
-  ;; and should return the language identifier for that buffer.  See
+  ;; ‘language-id’ is a string or function that receives a buffer as a single
+  ;; argument and should return the language identifier for that buffer.  See
   ;; https://microsoft.github.io/language-server-protocol/specification#textdocumentitem
-  ;; for a list of language identifiers.  Also consult the documentation for
-  ;; the language server represented by this client to find out what language
+  ;; for a list of language identifiers.  Also consult the documentation for the
+  ;; language server represented by this client to find out what language
   ;; identifiers it supports or expects.
   (language-id nil)
 
@@ -4384,17 +4382,29 @@ Applies on type formatting."
 
 (defun lsp-buffer-language ()
   "Get language corresponding current buffer."
-  (or (->> lsp-language-id-configuration
-           (-first (-lambda ((mode-or-pattern . language))
-                     (cond
-                      ((and (stringp mode-or-pattern)
-                            (s-matches? mode-or-pattern (buffer-file-name))) language)
-                      ((eq mode-or-pattern major-mode) language))))
-           cl-rest)
-      (lsp-warn "Unable to calculate the languageId for current buffer. Take a look at lsp-language-id-configuration.")))
+  (or
+   (when-let ((id (-some-> lsp--cur-workspace
+                    (lsp--workspace-client)
+                    (lsp--client-language-id))))
+     (pcase id
+       ((pred functionp) (funcall id (current-buffer)))
+       ((pred stringp) id)))
+   (lsp--buffer-language lsp-language-id-configuration)
+   (lsp-warn "Unable to calculate the languageId for current buffer. Take a look at lsp-language-id-configuration.")))
+
+(defun lsp--buffer-language (conf)
+  "Get language corresponding current buffer based on CONF table.
+CONF table is formated after `lsp-language-id-configuration.'"
+   (->> conf
+        (-first (-lambda ((mode-or-pattern . language))
+                  (cond
+                   ((and (stringp mode-or-pattern)
+                         (s-matches? mode-or-pattern (buffer-file-name))) language)
+                   ((eq mode-or-pattern major-mode) language))))
+        cl-rest))
 
 (defun lsp-activate-on (&rest languages)
-  "Returns language activation function.
+  "Return language activation function.
 The function will return t when the `lsp-buffer-language' returns
 one of the LANGUAGES."
   (lambda (_file-name _mode)

@@ -299,6 +299,7 @@ Must not nil.")
                                         (lambda ()
                                           (f-exists? lsp-pwsh-dir)))
   :major-modes lsp-pwsh--major-modes
+  :language-id "PowerShell"
   :server-id 'pwsh-ls
   :priority -1
   :multi-root t

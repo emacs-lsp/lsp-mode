@@ -65,9 +65,9 @@ VHDL-tool: A syntax checking, type checking and linting tool (http://vhdltool.co
 HDL Checker: A wrapper for third party tools such as GHDL, ModelSim, Vivado Simulator (https://github.com/suoto/hdl_checker).
 VHDL LS: A complete VHDL language server protocol implementation with diagnostics, navigate to symbol, find all references etc. (https://github.com/kraigher/rust_hdl)."
   :type '(choice (const :tag "VHDL-tool" vhdl-tool)
-		 (const :tag "HDL Checker" hdl-checker)
-		 (const :tag "VHDL LS" vhdl-ls)
-		 (const :tag "GHDL LS" ghdl-ls))
+                 (const :tag "HDL Checker" hdl-checker)
+                 (const :tag "VHDL LS" vhdl-ls)
+                 (const :tag "GHDL LS" ghdl-ls))
   :group 'lsp-vhdl)
 
 (defcustom lsp-vhdl-server-path nil
@@ -83,30 +83,30 @@ VHDL LS: A complete VHDL language server protocol implementation with diagnostic
   (lsp-vhdl--set-server-path)
   (lsp-vhdl--set-server-args)
   (lsp-stdio-connection
-    (lambda () (cons (plist-get lsp-vhdl--params 'server-path) (plist-get lsp-vhdl--params 'server-args)))
-    (lambda () (executable-find (plist-get lsp-vhdl--params 'server-path)))))
+   (lambda () (cons (plist-get lsp-vhdl--params 'server-path) (plist-get lsp-vhdl--params 'server-args)))
+   (lambda () (executable-find (plist-get lsp-vhdl--params 'server-path)))))
 
 (defun lsp-vhdl--set-server-path()
   "Set path to server binary based on selection in lsp-vhdl-server."
   (cond ((eq lsp-vhdl-server 'hdl-checker) (if (eq lsp-vhdl-server-path nil)
-					       (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path hdl-checker-bin-name))
-					     (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path lsp-vhdl-server-path))))
-	((eq lsp-vhdl-server 'vhdl-tool) (if (eq lsp-vhdl-server-path nil)
-					     (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path vhdl-tool-bin-name))
-					   (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path lsp-vhdl-server-path))))
-	((eq lsp-vhdl-server 'vhdl-ls) (if (eq lsp-vhdl-server-path nil)
-					   (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path vhdl-ls-bin-name))
-					 (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path lsp-vhdl-server-path))))
-	((eq lsp-vhdl-server 'ghdl-ls) (if (eq lsp-vhdl-server-path nil)
-					   (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path ghdl-ls-bin-name))
-					 (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path lsp-vhdl-server-path))))))
+                                               (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path hdl-checker-bin-name))
+                                             (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path lsp-vhdl-server-path))))
+        ((eq lsp-vhdl-server 'vhdl-tool) (if (eq lsp-vhdl-server-path nil)
+                                             (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path vhdl-tool-bin-name))
+                                           (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path lsp-vhdl-server-path))))
+        ((eq lsp-vhdl-server 'vhdl-ls) (if (eq lsp-vhdl-server-path nil)
+                                           (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path vhdl-ls-bin-name))
+                                         (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path lsp-vhdl-server-path))))
+        ((eq lsp-vhdl-server 'ghdl-ls) (if (eq lsp-vhdl-server-path nil)
+                                           (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path ghdl-ls-bin-name))
+                                         (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-path lsp-vhdl-server-path))))))
 
 (defun lsp-vhdl--set-server-args()
   "Set server arguments based on server selection."
   (cond ((eq lsp-vhdl-server 'hdl-checker) (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-args '("--lsp"))))
-	((eq lsp-vhdl-server 'vhdl-tool) (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-args '("lsp"))))
-	((eq lsp-vhdl-server 'vhdl-ls) (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-args '())))
-	((eq lsp-vhdl-server 'ghdl-ls) (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-args '())))))
+        ((eq lsp-vhdl-server 'vhdl-tool) (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-args '("lsp"))))
+        ((eq lsp-vhdl-server 'vhdl-ls) (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-args '())))
+        ((eq lsp-vhdl-server 'ghdl-ls) (setq lsp-vhdl--params (plist-put lsp-vhdl--params 'server-args '())))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-vhdl--create-connection)

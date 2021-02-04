@@ -47,7 +47,7 @@
  (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-verilog-executable)
                   :major-modes '(verilog-mode)
                   :language-id "verilog"
-    	          :priority -1
+                  :priority -1
                   :server-id 'lsp-verilog))
 
 (provide 'lsp-verilog)

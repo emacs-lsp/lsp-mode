@@ -5,21 +5,12 @@
 Here it is the minimal configuration that is needed for new language
 server registration. Refer to the documentation of `lsp-mode.el` for
 the additional settings supported on registration time.
-`lsp-language-id-configuration` must be updated to contain the
-corresponding mode -\> language id - in this case `(python-mode .
-"python")`
 
 ``` elisp
-(defvar lsp-language-id-configuration
-  '(...
-    (python-mode . "python")
-    ...))
-;; if you are adding the support for your language server in separate repo use
-;; (add-to-list 'lsp-language-id-configuration '(python-mode . "python"))
-
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection "pyls")
                   :major-modes '(python-mode)
+                  :language-id "python"
                   :server-id 'pyls))
 ```
 
@@ -31,6 +22,7 @@ additional behavior, you can register that by using the
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("bash-language-server" "start"))
                   :major-modes '(sh-mode)
+                  :language-id "shellscript"
                   :priority -1
                   :environment-fn (lambda ()
                                     '(("EXPLAINSHELL_ENDPOINT" . lsp-bash-explainshell-endpoint)

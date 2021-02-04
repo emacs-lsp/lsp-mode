@@ -141,14 +141,14 @@ The returned type provides a tri-state that either:
   - sets element to true (actually, t)
 "
   (let ((list '()))
-	(dolist (v alist)
-	  (push `(cons
-			  :tag ,(cdr v)
-			  (const :format "" ,(car v))
-			  (choice (const :tag "Enable" t) (const :tag "Disable" :json-false)))
-			list))
-	(push 'set list)
-	list))
+    (dolist (v alist)
+      (push `(cons
+              :tag ,(cdr v)
+              (const :format "" ,(car v))
+              (choice (const :tag "Enable" t) (const :tag "Disable" :json-false)))
+            list))
+    (push 'set list)
+    list))
 
 (define-obsolete-variable-alias
   'lsp-gopls-codelens
@@ -217,10 +217,14 @@ $GOPATH/pkg/mod along with the value of
 (defcustom lsp-go-link-target "godoc.org"
   "Which website to use for displaying Go documentation."
   :type '(choice (const "godoc.org")
-		 (const "pkg.go.dev")
-		 (string :tag "A custom website"))
+                 (const "pkg.go.dev")
+                 (string :tag "A custom website"))
   :group 'lsp-go
   :package-version '(lsp-mode "7.0.1"))
+
+(defvar lsp-go--language-id-configuration
+  '((".*\\.go$" . "go")
+    (".*/go.mod$" . "go.mod")))
 
 (lsp-register-custom-settings
  '(("gopls.usePlaceholders" lsp-go-use-placeholders t)
@@ -234,7 +238,9 @@ $GOPATH/pkg/mod along with the value of
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda () (cons lsp-go-gopls-server-path lsp-go-gopls-server-args)))
                   :major-modes '(go-mode go-dot-mod-mode)
-                  :language-id "go"
+                  :language-id (lambda (buf)
+                                 (with-current-buffer buf
+                                   (lsp--buffer-language lsp-go--language-id-configuration)))
                   :priority 0
                   :server-id 'gopls
                   :completion-in-comments? t

@@ -84,6 +84,11 @@
     :/.eslintrc ["http://json.schemastore.org/eslintrc"])
   "Default json schemas.")
 
+(defvar lsp-json--language-id-configuration
+  `((".*/settings.json$" . "jsonc")
+    (".*\\.json$" . "json")
+    (".*\\.jsonc$" . "jsonc")))
+
 (defun lsp-json--get-content (_workspace uri callback)
   "Get content from URI."
   (ignore-errors
@@ -109,6 +114,9 @@
    (lambda () (list (lsp-package-path 'vscode-json-languageserver) "--stdio")))
   :activation-fn (lsp-activate-on "json" "jsonc")
   :server-id 'json-ls
+  :language-id (lambda (buf)
+                 (with-current-buffer buf
+                   (lsp--buffer-language lsp-json--language-id-configuration)))
   :priority 0
   :multi-root t
   :completion-in-comments? t
