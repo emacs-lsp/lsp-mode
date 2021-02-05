@@ -5160,8 +5160,13 @@ It will show up only if current point has signature help."
 (defun lsp--action-trigger-suggest (_command)
   "Handler for editor.action.triggerSuggest."
   (cond
-   ((and company-mode (fboundp 'company-complete))
-    (company-complete))
+   ((and company-mode
+         (fboundp 'company-complete)
+         (fboundp 'company-post-command))
+    (run-at-time nil nil
+                 (lambda ()
+                   (company-complete)
+                   (company-post-command))))
    (t
     (completion-at-point))))
 
