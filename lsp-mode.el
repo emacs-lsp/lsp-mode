@@ -5682,9 +5682,9 @@ REFERENCES? t when METHOD returns references."
 
 (cl-defun lsp-find-references (&optional include-declaration &key display-action)
   "Find references of the symbol under point."
-  (interactive)
+  (interactive "P")
   (lsp-find-locations "textDocument/references"
-                      (list :context `(:includeDeclaration ,(or include-declaration json-false)))
+                      (list :context `(:includeDeclaration ,(lsp-json-bool include-declaration)))
                       :display-action display-action
                       :references? t))
 
