@@ -32,5 +32,10 @@
 
 (add-to-list 'load-path
              (file-name-as-directory (f-parent (f-parent (f-this-file)))))
+;; Add test/ directory to load path to enable each of the test files
+;; to 'require the other test files in test/
+;; useful when sharing utilities
+(add-to-list 'load-path
+             (file-name-as-directory (f-parent (f-this-file))))
 
 ;;; test-helper.el ends here

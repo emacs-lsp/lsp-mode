@@ -23,6 +23,7 @@
 
 (require 'ert)
 (require 'lsp-clangd)
+(require 'lsp-integration-test)
 
 (ert-deftest lsp-clangd-extract-signature-on-hover ()
   (should (string= (lsp-clients-extract-signature-on-hover
@@ -61,5 +62,95 @@
                   int p,
                   int k);")
     (should (string= (lsp-clangd-join-region (point-min) (point-max)) "void foo(int n, int p, int k);"))))
+
+
+;;;
+;;; Integration tests with the sample project
+;;;
+
+(defmacro lsp-in-sample-cpp-project (&rest body)
+  "Creates a macro to wrap test BODY with.
+
+Add the fixtures/SampleCppProject to lsp-workspaces, opens the main.cpp file
+and starts lsp. After the test BODY runs - tidy up."
+  `(progn
+     ;; lsp setup
+     ;; save to temp
+     (setq actual-clangd-args lsp-clients-clangd-args)
+     ;; HACK until https://github.com/emacs-lsp/lsp-mode/issues/2278 lands
+     ;; or we might keep it forever
+     (setq lsp-clients-clangd-args '("--compile-commands-dir=build/" "--log=verbose"))
+
+     ;; snippet complains in logs
+     (setq lsp-enable-snippet nil)
+     (lsp-workspace-folders-add (f-join lsp-test-location "fixtures/SampleCppProject/"))
+     (find-file (f-join lsp-test-location "fixtures/SampleCppProject/src/main.cpp"))
+     ;; initialise the workspace
+     (setq lsp-diagnostic-package :none)
+     (setq lsp-log-io t)
+
+     (lsp)
+     (sleep-for 2)
+
+     (message "The test body will start in %s" (buffer-file-name))
+     ;; run our test body
+     ,@body
+
+     ;; lsp tidy up
+     (find-file (f-join lsp-test-location "fixtures/SampleCppProject/src/main.cpp"))
+     (lsp-workspace-folders-remove (f-join lsp-test-location "fixtures/SampleCppProject/"))
+     (setq lsp-clients-clangd-args actual-clangd-args)))
+
+(ert-deftest lsp-clangd-initialised-workspace ()
+  (skip-unless (memq system-type '(gnu/linux)))
+  (lsp-in-sample-cpp-project
+   (->
+    ;; now check that the workspace has started
+    (lsp-test-wait (eq 'initialized
+                       (lsp--workspace-status (cl-first (lsp-workspaces)))))
+   (deferred:sync!))
+   ))
+
+(ert-deftest lsp-clangd-switch-to-other-from-cpp ()
+  (skip-unless (memq system-type '(gnu/linux)))
+  (lsp-in-sample-cpp-project
+   (->
+    (lsp-test-wait (eq 'initialized
+                       (lsp--workspace-status (cl-first (lsp-workspaces)))))
+
+    (deferred::nextc
+      (should (string= (buffer-name) "main.cpp"))
+      (lsp-clangd-find-other-file)
+      (should (string= (buffer-name) "main.h"))
+      (lsp)
+      ;; give enough time for clangd to respond for main.h
+      ;; otherwise will get errors like
+      ;; The connected server(s) does not support
+      ;; method textDocument/switchSourceHeader.
+      (sleep-for 1)
+      (lsp-clangd-find-other-file)
+
+      (should (string= (buffer-name) "main.cpp")))
+
+    (deferred:sync!))))
+
+(ert-deftest lsp-clangd-switch-to-nonexistent-other ()
+  (skip-unless (memq system-type '(gnu/linux)))
+  (lsp-in-sample-cpp-project
+   (->
+    (lsp-test-wait (eq 'initialized
+                       (lsp--workspace-status (cl-first (lsp-workspaces)))))
+
+    (deferred::nextc
+      (find-file (f-join lsp-test-location "fixtures/SampleCppProject/src/individual_file.cpp"))
+      (should (string= (buffer-name) "individual_file.cpp"))
+      ;; after opening a new buffer - need to make sure we are in the same lsp session
+      (lsp)
+      (sleep-for 1)
+      (should-error (lsp-clangd-find-other-file) :type 'user-error)
+
+      (should (string= (buffer-name) "individual_file.cpp")))
+
+    (deferred:sync!))))
 
 ;;; lsp-clangd-test.el ends here

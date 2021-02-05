@@ -31,7 +31,7 @@ unix-build:
 	$(CASK) install
 
 # TODO: add 'checkdoc' and 'lint' here when they pass
-unix-ci: clean unix-build unix-compile unix-test
+unix-ci: clean unix-build unix-compile prepare_cpp_project unix-test
 
 windows-ci: CASK=
 windows-ci: clean windows-compile windows-test
@@ -42,6 +42,10 @@ unix-compile:
 		-L . -L clients \
 		--eval '(setq byte-compile-error-on-warn t)' \
 		-f batch-byte-compile $(LSP-FILES)
+
+prepare_cpp_project:
+	@echo "Setting up Sample C++ project with CMake and clangd"
+	cd test/fixtures/SampleCppProject/ && mkdir -p build && cd build/ && cmake ..
 
 windows-compile:
 	@echo "Compiling..."
@@ -100,5 +104,7 @@ local-webpage: docs
 
 clean:
 	rm -rf .cask *.elc clients/*.elc
+	rm -rf test/fixtures/SampleCppProject/build test/fixtures/SampleCppProject/.cache
+
 
 .PHONY: all unix-build	 ci unix-compile windows-compile checkdoc lint unix-test windows-test docs local-webpage clean

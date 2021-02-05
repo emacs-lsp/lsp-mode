@@ -242,5 +242,20 @@ returned to avoid that the echo area grows uncomfortably."
          (lsp-cpp-flycheck-clang-tidy-error-explainer e))
         (t (flycheck-error-message e))))
 
+(defun lsp-clangd-find-other-file (&optional new-window)
+  "Switch between the corresponding C/C++ source and header file.
+If NEW-WINDOW (interactively the prefix argument) is non-nil,
+open in a new window.
+
+Only works with clangd."
+  (interactive "P")
+  (let ((other (lsp-send-request (lsp-make-request
+                                  "textDocument/switchSourceHeader"
+                                  (lsp--text-document-identifier)))))
+    (unless (s-present? other)
+      (user-error "Could not find other file"))
+    (funcall (if new-window #'find-file-other-window #'find-file)
+             (lsp--uri-to-path other))))
+
 (provide 'lsp-clangd)
 ;;; lsp-clangd.el ends here
