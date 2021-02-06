@@ -5163,11 +5163,11 @@ It will show up only if current point has signature help."
   "Handler for editor.action.triggerSuggest."
   (cond
    ((and company-mode
-         (fboundp 'company-complete)
+         (fboundp 'company-auto-begin)
          (fboundp 'company-post-command))
     (run-at-time nil nil
                  (lambda ()
-                   (company-complete)
+                   (company-auto-begin)
                    (company-post-command))))
    (t
     (completion-at-point))))
