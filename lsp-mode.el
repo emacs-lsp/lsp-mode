@@ -355,6 +355,8 @@ creating file watches."
 
 (defcustom lsp-file-watch-ignored-files
   '(
+    ;; Flycheck tempfiles
+    "[/\\\\]flycheck_[^/\\\\]+\\'"
     ;; lockfiles
     "[/\\\\]\\.#[^/\\\\]+\\'"
     ;; backup files
