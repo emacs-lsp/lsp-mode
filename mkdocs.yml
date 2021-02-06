@@ -25,6 +25,7 @@ nav:
     - Adding new language: page/adding-new-language.md
   - Languages:
     - page/languages.md
+    - ActionScript: page/lsp-actionscript.md
     - Ada: page/lsp-ada.md
     - Angular: page/lsp-angular.md
     - Bash: page/lsp-bash.md
@@ -92,6 +93,7 @@ nav:
     - TeX, LaTeX, etc (digestif): page/lsp-tex.md
     - TeX, LaTeX, etc (texlab): page/lsp-texlab.md
     - TeX, LaTeX, etc (texlab, external): page/lsp-latex.md
+    - Vala: page/lsp-vala.md
     - Verilog/SystemVerilog: page/lsp-verilog.md
     - VHDL: page/lsp-vhdl.md
     - Vimscript: page/lsp-vim.md
