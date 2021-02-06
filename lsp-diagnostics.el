@@ -34,7 +34,7 @@
     (const :tag "Pick flycheck if present and fallback to flymake" :auto)
     (const :tag "Pick flycheck" :flycheck)
     (const :tag "Pick flymake" :flymake)
-    (const :tag "Use neither flymake nor lsp" :none)
+    (const :tag "Use neither flymake nor flycheck" :none)
     (const :tag "Prefer flymake" t)
     (const :tag "Prefer flycheck" nil))
   :group 'lsp-mode
@@ -309,7 +309,7 @@ See https://github.com/emacs-lsp/lsp-mode."
 ;;;###autoload
 (defun lsp-diagnostics--enable ()
   "Enable LSP checker support."
-  (when (and (member lsp-diagnostics-provider '(:auto :none :flycheck :flymake t nil))
+  (when (and (member lsp-diagnostics-provider '(:auto :flycheck :flymake t nil))
              (not (member major-mode lsp-diagnostics-disabled-modes)))
     (lsp-diagnostics-mode 1)))
 
