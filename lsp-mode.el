@@ -1903,6 +1903,16 @@ WORKSPACE is the workspace that contains the progress token."
 
 ;; diagnostics
 
+(defvar lsp-diagnostic-filter nil
+  "A a function which will be called with
+  `&PublishDiagnosticsParams' and `workspace' which can be used
+  to filter out the diagnostics. The function should return
+  `&PublishDiagnosticsParams'.
+
+Common usecase are:
+1. Filter the diagnostics for a particular language server.
+2. Filter out the diagnostics under specific level.")
+
 (defvar lsp-diagnostic-stats (ht))
 
 (defun lsp-diagnostics (&optional current-workspace?)
@@ -1954,8 +1964,7 @@ The result format is vector [_ errors warnings infos hints] or nil."
                                           (directory-file-name path)))))
       (lsp-diagnostics--update-path path new-stats))))
 
-(lsp-defun lsp--on-diagnostics (workspace (params &as
-                                                  &PublishDiagnosticsParams :uri :diagnostics))
+(defun lsp--on-diagnostics (workspace params)
   "Callback for textDocument/publishDiagnostics.
 interface PublishDiagnosticsParams {
     uri: string;
@@ -1963,10 +1972,15 @@ interface PublishDiagnosticsParams {
 }
 PARAMS contains the diagnostics data.
 WORKSPACE is the workspace that contains the diagnostics."
+  (when lsp-diagnostic-filter
+    (setf params (funcall lsp-diagnostic-filter params workspace)))
+
   (lsp--on-diagnostics-update-stats workspace params)
-  (let* ((lsp--virtual-buffer-mappings (ht))
-         (file (lsp--fix-path-casing (lsp--uri-to-path uri)))
-         (workspace-diagnostics (lsp--workspace-diagnostics workspace)))
+
+  (-let* (((&PublishDiagnosticsParams :uri :diagnostics) params)
+          (lsp--virtual-buffer-mappings (ht))
+          (file (lsp--fix-path-casing (lsp--uri-to-path uri)))
+          (workspace-diagnostics (lsp--workspace-diagnostics workspace)))
 
     (if (seq-empty-p diagnostics)
         (remhash file workspace-diagnostics)
