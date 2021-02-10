@@ -274,12 +274,9 @@ Example: '((css-unused-selector . ignore) (unused-export-let . error))"
                             "svelte"))
   :initialization-options
   (lambda ()
-    ;; XXX: workaround for https://github.com/Wilfred/ht.el/issues/38
-    ;; Use `ht-get*' instead of `lsp--ht-get' when
-    ;; https://github.com/Wilfred/ht.el/pull/39 is merged
-    (list :config (lsp--ht-get (lsp-configuration-section "svelte.plugin")
-                               "svelte"
-                               "plugin")
+    (list :config (ht-get* (lsp-configuration-section "svelte.plugin")
+                           "svelte"
+                           "plugin")
           :prettierConfig (lsp-configuration-section "prettier")
           :emmetConfig (lsp-configuration-section "emmet")
           :typescriptConfig: (list :typescript (lsp-configuration-section "typescript")
