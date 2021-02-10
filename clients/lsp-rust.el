@@ -633,10 +633,10 @@ them with `crate` or the crate name they refer to."
 
 (lsp-dependency
  'rust-analyzer
- '(:system "rust-analyzer")
  `(:download :url lsp-rust-analyzer-download-url
              :store-path lsp-rust-analyzer-store-path
-             :set-executable? t))
+             :set-executable? t)
+ '(:system "rust-analyzer"))
 
 (lsp-defun lsp-rust--analyzer-run-single ((&Command :arguments?))
   (lsp-rust-analyzer-run (lsp-seq-first arguments?)))
