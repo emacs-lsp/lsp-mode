@@ -42,15 +42,23 @@
   :risky t
   :type '(repeat string))
 
-(defcustom lsp-clojure-server-download-url "https://github.com/snoe/clojure-lsp/releases/latest/download/clojure-lsp"
+(defcustom lsp-clojure-server-download-url
+  (format "https://github.com/clojure-lsp/clojure-lsp/releases/latest/download/clojure-lsp-native-%s-amd64.zip"
+          (pcase system-type
+            ('gnu/linux "linux")
+            ('darwin "macos")
+            ('windows-nt "windows")))
   "Automatic download url for lsp-clojure."
   :type 'string
   :group 'lsp-clojure
   :package-version '(lsp-mode . "7.1"))
 
-(defcustom lsp-clojure-server-store-path (f-join lsp-server-install-dir
-                                                "clojure"
-                                                "clojure-lsp")
+(defcustom lsp-clojure-server-store-path
+  (f-join lsp-server-install-dir
+          "clojure"
+          (if (eq system-type 'windows-nt)
+              "clojure-lsp.exe"
+            "clojure-lsp"))
   "The path to the file in which `clojure-lsp' will be stored."
   :type 'file
   :group 'lsp-clojure
@@ -60,10 +68,11 @@
 
 (lsp-dependency
  'clojure-lsp
- '(:system "clojure-lsp")
  `(:download :url lsp-clojure-server-download-url
+             :decompress :zip
              :store-path lsp-clojure-server-store-path
-             :set-executable? t))
+             :set-executable? t)
+ '(:system "clojure-lsp"))
 
 ;; Refactorings
 
