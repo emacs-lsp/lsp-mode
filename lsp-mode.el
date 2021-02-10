@@ -6336,7 +6336,7 @@ time."
           (const :tag "Categorize by type"
                  lsp-imenu-create-categorized-index)
           (const :tag "Categorize root symbols by type"
-                 lsp-imenu-create-top-levelcategorized-index)
+                 lsp-imenu-create-top-level-categorized-index)
           (const :tag "Uncategorized, inline entries"
                  lsp-imenu-create-uncategorized-index)
           (function :tag "Custom function")))
