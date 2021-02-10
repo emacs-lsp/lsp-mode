@@ -7081,7 +7081,7 @@ nil."
                (pcase decompress
                  (:gzip
                   (lsp-gunzip download-path))
-                 (:zip (lsp-unzip download-path store-path)))
+                 (:zip (lsp-unzip download-path (f-parent store-path))))
                (lsp--info "Decompressed %s..." store-path))
              (funcall callback))
          (error (funcall error-callback err)))))))
@@ -7117,7 +7117,7 @@ STORE-PATH to make it executable."
   :package-version '(lsp-mode . "7.1"))
 
 (defun lsp-unzip (zip-file dest)
-  "Get extension from URL and extract to DEST."
+  "Unzip ZIP-FILE to DEST."
   (unless lsp-unzip-script
     (error "Unable to find `unzip' or `powershell' on the path, please customize `lsp-unzip-script'"))
   (shell-command (format lsp-unzip-script zip-file dest)))
@@ -7137,7 +7137,7 @@ in place."
   :package-version '(lsp-mode . "7.1"))
 
 (defun lsp-gunzip (gz-file)
-  "Decompress file in place."
+  "Decompress GZ-FILE in place."
   (unless lsp-gunzip-script
     (error "Unable to find `gzip' on the path, please either customize `lsp-gunzip-script' or manually decompress %s" gz-file))
   (shell-command (format lsp-gunzip-script gz-file)))
