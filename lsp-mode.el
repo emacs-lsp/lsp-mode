@@ -5386,7 +5386,7 @@ A reference is highlighted only if it is visible in a window."
         wins-visible-pos))
      highlights)))
 
-(defconst lsp--symbol-kind
+(defcustom lsp-symbol-kinds
   '((1 . "File")
     (2 . "Module")
     (3 . "Namespace")
@@ -5412,14 +5412,23 @@ A reference is highlighted only if it is visible in a window."
     (23 . "Struct")
     (24 . "Event")
     (25 . "Operator")
-    (26 . "Type Parameter")))
+    (26 . "Type Parameter"))
+  "Alist mapping SymbolKinds to human-readable strings.
+Various Symbol objects in the LSP protocol have an integral type,
+specifying what they are. This alist maps such type integrals to
+readable representations of them. See
+`https://microsoft.github.io/language-server-protocol/specifications/specification-current/',
+namespace SymbolKind."
+  :group 'lsp-mode
+  :type '(alist :key-type integer :value-type string))
+(defalias 'lsp--symbol-kind 'lsp-symbol-kinds)
 
 (lsp-defun lsp--symbol-information-to-xref
   ((&SymbolInformation :kind :name
                        :location (&Location :uri :range (&Range :start
                                                                 (&Position :line :character)))))
   "Return a `xref-item' from SYMBOL information."
-  (xref-make (format "[%s] %s" (alist-get kind lsp--symbol-kind) name)
+  (xref-make (format "[%s] %s" (alist-get kind lsp-symbol-kinds) name)
              (xref-make-file-location (lsp--uri-to-path uri)
                                       line
                                       character)))
@@ -6246,10 +6255,7 @@ an alist
 
 (lsp-defun lsp--get-symbol-type ((&SymbolInformation :kind))
   "The string name of the kind of SYM."
-  (-> kind
-      (assoc lsp--symbol-kind)
-      (cl-rest)
-      (or "Other")))
+  (alist-get kind lsp-symbol-kinds "Other"))
 
 (defun lsp--get-line-and-col (sym)
   "Obtain the line and column corresponding to SYM."
@@ -6297,15 +6303,144 @@ representation to point representation."
                   (< c1 c2))
                  (c1 t)))))
 
-(defun lsp--imenu-create-index ()
-  "Create imenu index from document symbols."
-  (let* ((filtered-symbols (lsp--imenu-filter-symbols (lsp--get-document-symbols)))
-         (lsp--line-col-to-point-hash-table (-> filtered-symbols
+(defun lsp-imenu-create-uncategorized-index (symbols)
+  "Create imenu index from document SYMBOLS.
+This function, unlike `lsp-imenu-create-categorized-index', does
+not categorize by type, but instead returns an `imenu' index
+corresponding to the symbol hierarchy returned by the server
+directly."
+  (let* ((lsp--line-col-to-point-hash-table (-> symbols
                                                 lsp--collect-lines-and-cols
                                                 lsp--convert-line-col-to-points-batch)))
-    (if (lsp--imenu-hierarchical-p filtered-symbols)
-        (lsp--imenu-create-hierarchical-index filtered-symbols)
-      (lsp--imenu-create-non-hierarchical-index filtered-symbols))))
+    (if (lsp--imenu-hierarchical-p symbols)
+        (lsp--imenu-create-hierarchical-index symbols)
+      (lsp--imenu-create-non-hierarchical-index symbols))))
+
+(defcustom lsp-imenu-symbol-kinds
+  '((1 . "Files")
+    (2 . "Modules")
+    (3 . "Namespaces")
+    (4 . "Packages")
+    (5 . "Classes")
+    (6 . "Methods")
+    (7 . "Properties")
+    (8 . "Fields")
+    (9 . "Constructors")
+    (10 . "Enums")
+    (11 . "Interfaces")
+    (12 . "Functions")
+    (13 . "Variables")
+    (14 . "Constants")
+    (15 . "Strings")
+    (16 . "Numbers")
+    (17 . "Booleans")
+    (18 . "Arrays")
+    (19 . "Objects")
+    (20 . "Keys")
+    (21 . "Nulls")
+    (22 . "Enum Members")
+    (23 . "Structs")
+    (24 . "Events")
+    (25 . "Operators")
+    (26 . "Type Parameters"))
+  "`lsp-symbol-kinds', but only used by `imenu'.
+A new variable is needed, as it is `imenu' convention to use
+pluralized categories, which `lsp-symbol-kinds' doesn't. If the
+non-pluralized names are preferred, this can be set to
+`lsp-symbol-kinds'."
+  :type '(alist :key-type integer :value-type string))
+
+(defun lsp--imenu-kind->name (kind)
+  (alist-get kind lsp-imenu-symbol-kinds "?"))
+
+(defun lsp-imenu-create-top-level-categorized-index (symbols)
+  "Create an `imenu' index categorizing SYMBOLS by type.
+Only root symbols are categorized.
+
+See `lsp-symbol-kinds' to customize the category naming. SYMBOLS
+shall be a list of DocumentSymbols or SymbolInformation."
+  (mapcan
+   (-lambda ((type . symbols))
+     (let ((cat (lsp--imenu-kind->name type))
+           (symbols (lsp-imenu-create-uncategorized-index symbols)))
+       ;; If there is no :kind (this is being defensive), or we couldn't look it
+       ;; up, just display the symbols inline, without categories.
+       (if cat (list (cons cat symbols)) symbols)))
+   (sort (seq-group-by #'lsp:document-symbol-kind symbols)
+         (-lambda ((kinda) (kindb)) (< kinda kindb)))))
+
+(lsp-defun lsp--symbol->imenu ((sym &as &DocumentSymbol :selection-range (&RangeToPoint :start)))
+  "Convert an `&DocumentSymbol' to an `imenu' entry."
+  (cons (lsp-render-symbol sym lsp-imenu-detailed-outline) start))
+
+(defun lsp--imenu-create-categorized-index-1 (symbols)
+  "Returns an `imenu' index from SYMBOLS categorized by type.
+The result looks like this: ((\"Variables\" . (...)))."
+  (->>
+   symbols
+   (mapcan
+    (-lambda ((sym &as &DocumentSymbol :kind :children?))
+      (if (seq-empty-p children?)
+          (list (list kind (lsp--symbol->imenu sym)))
+        (let ((parent (lsp-render-symbol sym lsp-imenu-detailed-outline)))
+          (cons
+           (list kind (lsp--symbol->imenu sym))
+           (mapcar (-lambda ((type .  imenu-items))
+                     (list type (cons parent (mapcan #'cdr imenu-items))))
+                   (-group-by #'car (lsp--imenu-create-categorized-index-1 children?))))))))
+   (-group-by #'car)
+   (mapcar
+    (-lambda ((kind . syms))
+      (cons kind (mapcan #'cdr syms))))))
+
+(defun lsp--imenu-create-categorized-index (symbols)
+  (let ((syms (lsp--imenu-create-categorized-index-1 symbols)))
+    (dolist (sym syms)
+      (setcar sym (lsp--imenu-kind->name (car sym))))
+    syms))
+
+(lsp-defun lsp--symbol-information->imenu ((sym &as &SymbolInformation :location (&Location :range (&RangeToPoint :start))))
+  (cons (lsp-render-symbol-information sym nil) start))
+
+(defun lsp--imenu-create-categorized-index-flat (symbols)
+  "Create a kind-categorized index for SymbolInformation."
+  (mapcar (-lambda ((kind . syms))
+            (cons (lsp--imenu-kind->name kind)
+                  (mapcan (-lambda ((parent . children))
+                            (let ((children (mapcar #'lsp--symbol-information->imenu children)))
+                              (if parent (list (cons parent children)) children)))
+                          (-group-by #'lsp:symbol-information-container-name? syms))))
+          (seq-group-by #'lsp:symbol-information-kind symbols)))
+
+(defun lsp-imenu-create-categorized-index (symbols)
+  (if (lsp--imenu-hierarchical-p symbols)
+      (lsp--imenu-create-categorized-index symbols)
+    (lsp--imenu-create-categorized-index-flat symbols)))
+
+(defcustom lsp-imenu-index-function #'lsp-imenu-create-uncategorized-index
+  "Function that should create an `imenu' index.
+It will be called with a list of SymbolInformation or
+DocumentSymbols, whose first level is already filtered. It shall
+then return an appropriate `imenu' index (see
+`imenu-create-index-function').
+
+Note that this interface is not stable, and subject to change any
+time."
+  :group 'lsp-imenu
+  :type '(radio
+          (const :tag "Categorize by type"
+                 lsp-imenu-create-categorized-index)
+          (const :tag "Categorize root symbols by type"
+                 lsp-imenu-create-top-level-categorized-index)
+          (const :tag "Uncategorized, inline entries"
+                 lsp-imenu-create-uncategorized-index)
+          (function :tag "Custom function")))
+
+(defun lsp--imenu-create-index ()
+  "Create an `imenu' index based on the language server.
+Respects `lsp-imenu-index-function'."
+  (let ((symbols (lsp--imenu-filter-symbols (lsp--get-document-symbols))))
+    (funcall lsp-imenu-index-function symbols)))
 
 (defun lsp--imenu-filter-symbols (symbols)
   "Filter out unsupported symbols from SYMBOLS."
