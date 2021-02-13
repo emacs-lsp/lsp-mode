@@ -229,6 +229,13 @@
     "debugger": "Yes (Firefox/Chrome)"
   },
   {
+    "name": "deno",
+    "full-name": "Deno",
+    "server-name": "deno lsp",
+    "server-url": "https://deno.land/#installation",
+    "debugger": "Yes (Chrome)"
+  },
+  {
     "name": "json",
     "full-name": "Json",
     "server-name": "vscode-json-languageserver",

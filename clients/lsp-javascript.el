@@ -206,5 +206,110 @@ particular FILE-NAME and MODE."
                   :activation-fn 'lsp-clients-flow-activate-p
                   :server-id 'flow-ls))
 
+(defgroup lsp-deno nil
+  "LSP support for the Deno language server."
+  :group 'lsp-mode
+  :link '(url-link "https://deno.land/"))
+
+(defcustom lsp-clients-deno-server "deno"
+  "The Deno executable to use.
+Leave as just the executable name to use the default behavior of
+finding the executable with variable `exec-path'."
+  :group 'lsp-deno
+  :risky t
+  :type 'file
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-clients-deno-server-args '("lsp")
+  "Extra arguments for starting the Deno language server."
+  :group 'lsp-deno
+  :risky t
+  :type '(repeat string)
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-clients-deno-enable-lint t
+  "Controls if linting information will be provided by the Deno Language Server."
+  :group 'lsp-deno
+  :risky t
+  :type 'boolean
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-clients-deno-enable-code-lens-references t
+  "Enables or disables the display of code lens information."
+  :group 'lsp-deno
+  :risky t
+  :type 'boolean
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-clients-deno-enable-code-lens-references-all-functions t
+  "Enables or disables the display of code lens information for all functions.
+Setting this variable to `non-nil' implicitly enables
+`lsp-clients-deno-enable-code-lens-references'."
+  :group 'lsp-deno
+  :risky t
+  :type 'boolean
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-clients-deno-enable-code-lens-implementations t
+  "Enables or disables the display of code lens information for implementations."
+  :group 'lsp-deno
+  :risky t
+  :type 'boolean
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-clients-deno-config nil
+  "The file path to a tsconfig.json file.
+The path can be either be relative to the workspace, or an
+absolute path.
+
+Examples: `./tsconfig.json',
+`/path/to/tsconfig.json', `C:\\path\\to\\tsconfig.json'"
+  :group 'lsp-deno
+  :risky t
+  :type 'file
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-clients-deno-import-map nil
+  "The file path to an import map.
+Import maps provide a way to relocate modules based on their
+specifiers.  The path can either be relative to the workspace, or
+an absolute path.
+
+Examples: `./import-map.json',
+`/path/to/import-map.json', `C:\\path\\to\\import-map.json'."
+  :group 'lsp-deno
+  :risky t
+  :type 'file
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-clients-deno-enable-unstable nil
+  "Controls if code will be type checked with Deno's unstable APIs."
+  :group 'lsp-deno
+  :risky t
+  :type 'boolean
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defun lsp-clients-deno--make-init-options ()
+  "Initialization options for the Deno language server."
+  `(:enable t
+    :config ,lsp-clients-deno-config
+    :importMap ,lsp-clients-deno-import-map
+    :lint ,(lsp-json-bool lsp-clients-deno-enable-lint)
+    :unstable ,(lsp-json-bool lsp-clients-deno-enable-unstable)
+    :codeLens (:implementations ,(lsp-json-bool lsp-clients-deno-enable-code-lens-implementations)
+               :references ,(lsp-json-bool (or lsp-clients-deno-enable-code-lens-references
+                                               lsp-clients-deno-enable-code-lens-references-all-functions))
+               :referencesAllFunctions ,(lsp-json-bool lsp-clients-deno-enable-code-lens-references-all-functions))))
+
+(lsp-register-client
+ (make-lsp-client :new-connection
+                  (lsp-stdio-connection (lambda ()
+                                          (cons lsp-clients-deno-server
+                                                lsp-clients-deno-server-args)))
+                  :initialization-options #'lsp-clients-deno--make-init-options
+                  :priority -5
+                  :activation-fn #'lsp-typescript-javascript-tsx-jsx-activate-p
+                  :server-id 'deno-ls))
+
 (provide 'lsp-javascript)
 ;;; lsp-javascript.el ends here
