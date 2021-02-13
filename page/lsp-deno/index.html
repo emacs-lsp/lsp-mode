@@ -13,14 +13,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-gdscript/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-deno/">
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.4">
     
     
       
-        <title>GDScript - LSP Mode - LSP support for Emacs</title>
+        <title>Lsp deno - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#gdscript" class="md-skip">
+        <a href="#deno" class="md-skip">
           Skip to content
         </a>
       
@@ -103,7 +103,7 @@
         <div class="md-header-nav__topic">
           <span class="md-ellipsis">
             
-              GDScript
+              Lsp deno
             
           </span>
         </div>
@@ -185,15 +185,13 @@
         
   
   
-    
-  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../languages/" class="md-tabs__link md-tabs__link--active">
+      <a href="../languages/" class="md-tabs__link">
         Languages
       </a>
     </li>
@@ -648,14 +646,12 @@
       
 
 
-  
-
 
   
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" >
     
     <label class="md-nav__link" for="nav-2">
       Languages
@@ -947,89 +943,11 @@
           
 
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        GDScript
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-    
-    <a href="./" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../lsp-gdscript/" class="md-nav__link">
       GDScript
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-    <nav class="md-nav" aria-label="Installation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-not-available" class="md-nav__link">
-    Debugger: Not available
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-gdscript-port" class="md-nav__link">
-    lsp-gdscript-port
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -2100,8 +2018,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#debugger-not-available" class="md-nav__link">
-    Debugger: Not available
+  <a href="#debugger-yes-chrome" class="md-nav__link">
+    Debugger: Yes (Chrome)
   </a>
   
 </li>
@@ -2120,8 +2038,64 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#lsp-gdscript-port" class="md-nav__link">
-    lsp-gdscript-port
+  <a href="#lsp-clients-deno-server" class="md-nav__link">
+    lsp-clients-deno-server
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-deno-server-args" class="md-nav__link">
+    lsp-clients-deno-server-args
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-deno-enable-lint" class="md-nav__link">
+    lsp-clients-deno-enable-lint
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-deno-enable-code-lens-references" class="md-nav__link">
+    lsp-clients-deno-enable-code-lens-references
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-deno-enable-code-lens-references-all-functions" class="md-nav__link">
+    lsp-clients-deno-enable-code-lens-references-all-functions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-deno-enable-code-lens-implementations" class="md-nav__link">
+    lsp-clients-deno-enable-code-lens-implementations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-deno-config" class="md-nav__link">
+    lsp-clients-deno-config
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-deno-import-map" class="md-nav__link">
+    lsp-clients-deno-import-map
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-deno-enable-unstable" class="md-nav__link">
+    lsp-clients-deno-enable-unstable
   </a>
   
 </li>
@@ -2143,21 +2117,65 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/lsp-gdscript.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/lsp-deno.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
                 
-                <h1 id="gdscript">GDScript<a class="headerlink" href="#gdscript" title="Permanent link">#</a></h1>
+                <h1 id="deno">Deno<a class="headerlink" href="#deno" title="Permanent link">#</a></h1>
 <h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For more information about the LSP server, check <a href="https://github.com/godotengine/godot">godot</a>.</p>
+<p>For more information about the LSP server, check <a href="https://deno.land/#installation">deno lsp</a>.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
-<p>For more instructions on how to install manually, check <a href="https://github.com/godotengine/godot">here</a>.</p>
-<h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
+<h3 id="debugger-yes-chrome">Debugger: Yes (Chrome)<a class="headerlink" href="#debugger-yes-chrome" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<h3 id="lsp-gdscript-port"><code>lsp-gdscript-port</code><a class="headerlink" href="#lsp-gdscript-port" title="Permanent link">#</a></h3>
-<p><em>Default: <code>6008</code></em></p>
-<p>Port to connect server to</p>
+<h3 id="lsp-clients-deno-server"><code>lsp-clients-deno-server</code><a class="headerlink" href="#lsp-clients-deno-server" title="Permanent link">#</a></h3>
+<p><em>Default: <code>deno</code></em></p>
+<p>The Deno executable to use.
+Leave as just the executable name to use the default behavior of
+finding the executable with variable ‘exec-path’.</p>
+<hr />
+<h3 id="lsp-clients-deno-server-args"><code>lsp-clients-deno-server-args</code><a class="headerlink" href="#lsp-clients-deno-server-args" title="Permanent link">#</a></h3>
+<p><em>Default: <code>(lsp)</code></em></p>
+<p>Extra arguments for starting the Deno language server.</p>
+<hr />
+<h3 id="lsp-clients-deno-enable-lint"><code>lsp-clients-deno-enable-lint</code><a class="headerlink" href="#lsp-clients-deno-enable-lint" title="Permanent link">#</a></h3>
+<p><em>Default: <code>t</code></em></p>
+<p>Controls if linting information will be provided by the Deno Language Server.</p>
+<hr />
+<h3 id="lsp-clients-deno-enable-code-lens-references"><code>lsp-clients-deno-enable-code-lens-references</code><a class="headerlink" href="#lsp-clients-deno-enable-code-lens-references" title="Permanent link">#</a></h3>
+<p><em>Default: <code>t</code></em></p>
+<p>Enables or disables the display of code lens information.</p>
+<hr />
+<h3 id="lsp-clients-deno-enable-code-lens-references-all-functions"><code>lsp-clients-deno-enable-code-lens-references-all-functions</code><a class="headerlink" href="#lsp-clients-deno-enable-code-lens-references-all-functions" title="Permanent link">#</a></h3>
+<p><em>Default: <code>t</code></em></p>
+<p>Enables or disables the display of code lens information for all functions.
+Setting this variable to ‘non-nil’ implicitly enables
+‘lsp-clients-deno-enable-code-lens-references’.</p>
+<hr />
+<h3 id="lsp-clients-deno-enable-code-lens-implementations"><code>lsp-clients-deno-enable-code-lens-implementations</code><a class="headerlink" href="#lsp-clients-deno-enable-code-lens-implementations" title="Permanent link">#</a></h3>
+<p><em>Default: <code>t</code></em></p>
+<p>Enables or disables the display of code lens information for implementations.</p>
+<hr />
+<h3 id="lsp-clients-deno-config"><code>lsp-clients-deno-config</code><a class="headerlink" href="#lsp-clients-deno-config" title="Permanent link">#</a></h3>
+<p><em>Default: <code>nil</code></em></p>
+<p>The file path to a tsconfig.json file.
+The path can be either be relative to the workspace, or an
+absolute path.</p>
+<p>Examples: ‘./tsconfig.json’,
+‘/path/to/tsconfig.json’, ‘C:\path\to\tsconfig.json’</p>
+<hr />
+<h3 id="lsp-clients-deno-import-map"><code>lsp-clients-deno-import-map</code><a class="headerlink" href="#lsp-clients-deno-import-map" title="Permanent link">#</a></h3>
+<p><em>Default: <code>nil</code></em></p>
+<p>The file path to an import map.
+Import maps provide a way to relocate modules based on their
+specifiers.  The path can either be relative to the workspace, or
+an absolute path.</p>
+<p>Examples: ‘./import-map.json’,
+‘/path/to/import-map.json’, ‘C:\path\to\import-map.json’.</p>
+<hr />
+<h3 id="lsp-clients-deno-enable-unstable"><code>lsp-clients-deno-enable-unstable</code><a class="headerlink" href="#lsp-clients-deno-enable-unstable" title="Permanent link">#</a></h3>
+<p><em>Default: <code>nil</code></em></p>
+<p>Controls if code will be type checked with Deno’s unstable APIs.</p>
 <hr />
                 
                   
@@ -2190,7 +2208,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../lsp-fortran/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../lsp-css/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -2199,19 +2217,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Fortran
+                None
               </div>
             </div>
           </a>
         
         
-          <a href="../lsp-gopls/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../lsp-dhall/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Go (gopls)
+                None
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
