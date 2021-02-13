@@ -232,20 +232,21 @@ finding the executable with variable `exec-path'."
   :type 'boolean)
 
 (defcustom lsp-clients-deno-enable-code-lens-references t
-  "Enables or disables the display of code lens information for references of items in the code."
+  "Enables or disables the display of code lens information."
   :group 'lsp-deno
   :risky t
   :type 'boolean)
 
 (defcustom lsp-clients-deno-enable-code-lens-references-all-functions t
   "Enables or disables the display of code lens information for all functions.
-Setting this variable to `non-nil' implicitly enables `lsp-clients-deno-enable-code-lens-references'."
+Setting this variable to `non-nil' implicitly enables
+`lsp-clients-deno-enable-code-lens-references'."
   :group 'lsp-deno
   :risky t
   :type 'boolean)
 
 (defcustom lsp-clients-deno-enable-code-lens-implementations t
-  "Enables or disables the display of code lens information for implementations of items in the code."
+  "Enables or disables the display of code lens information for implementations."
   :group 'lsp-deno
   :risky t
   :type 'boolean)
