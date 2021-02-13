@@ -21,6 +21,7 @@
   * Add ActionScript support.
   * Add ~iedit~ integration (=documentHighlights=)
   * Add an interactive =lsp-clangd-find-other-file= method that uses the clangd extension to return the corresponding header/cpp file from cpp/header file respectively.
+  * Add support for [[https://deno.land/][Deno language server]].
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
   * Safe renamed ~lsp-flycheck-default-level~ -> ~lsp-diagnostics-flycheck-default-level~
