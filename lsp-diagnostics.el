@@ -202,9 +202,7 @@ from the language server."
 
 (defvar lsp-diagnostics-mode) ;; properly defined by define-minor-mode below
 
-(defun lsp-diagnostics-flycheck-enable (&rest _)
-  "Enable flycheck integration for the current buffer."
-  (require 'flycheck)
+(defun lsp-diagnostics-lsp-checker-if-needed ()
   (unless (flycheck-valid-checker-p 'lsp)
     (flycheck-define-generic-checker 'lsp
       "A syntax checker using the Language Server Protocol (LSP)
@@ -215,10 +213,15 @@ See https://github.com/emacs-lsp/lsp-mode."
       :predicate (lambda () lsp-diagnostics-mode)
       :error-explainer (lambda (e)
                          (lsp-diagnostics-flycheck-error-explainer
-                          e (lsp--workspace-server-id (car-safe (lsp-workspaces)))))))
+                          e (lsp--workspace-server-id (car-safe (lsp-workspaces))))))))
+
+(defun lsp-diagnostics-flycheck-enable (&rest _)
+  "Enable flycheck integration for the current buffer."
+  (require 'flycheck)
+  (lsp-diagnostics-lsp-checker-if-needed)
   (and (not lsp-diagnostics--flycheck-enabled)
-     (not (eq flycheck-checker 'lsp))
-     (setq lsp-diagnostics--flycheck-checker flycheck-checker))
+       (not (eq flycheck-checker 'lsp))
+       (setq lsp-diagnostics--flycheck-checker flycheck-checker))
   (setq-local lsp-diagnostics--flycheck-enabled t)
   (flycheck-mode 1)
   (flycheck-stop)

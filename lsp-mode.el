@@ -8190,9 +8190,11 @@ This avoids overloading the server with many files when starting Emacs."
 
 (declare-function flycheck-checker-supports-major-mode-p "ext:flycheck")
 (declare-function flycheck-add-mode "ext:flycheck")
+(declare-function lsp-diagnostics-lsp-checker-if-needed "lsp-diagnostics")
 
 (defun lsp-flycheck-add-mode (mode)
   "Register flycheck support for MODE."
+  (lsp-diagnostics-lsp-checker-if-needed)
   (unless (flycheck-checker-supports-major-mode-p 'lsp mode)
     (flycheck-add-mode 'lsp mode)))
 
