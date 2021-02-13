@@ -30,3 +30,6 @@
   ``` elisp
   (advice-add 'lsp :before (lambda (&rest _args) (eval '(setf (lsp-session-server-id->folders (lsp-session)) (ht)))))
   ```
+
+- When using `clojure` with `clojure-lsp` `lsp-mode` is interfering with typing (e. g. deleting whitespace while typing), how to fix that?
+    - The issue is caused by `clojure-lsp` server being more aggressive with formatting(deleting whitespaces) and `aggressive-indent-mode` being on and calling it while typing. The solution is either to disable `aggressive-indent-mode` or to disable `lsp-mode` formatting via `lsp-enable-indentation`.
