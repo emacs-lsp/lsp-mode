@@ -2064,11 +2064,19 @@
 <li><code>Rust Analyzer</code> does not support disabling snippets - see <a href="https://github.com/rust-analyzer/rust-analyzer/issues/2518">https://github.com/rust-analyzer/rust-analyzer/issues/2518</a></li>
 </ul>
 </li>
-<li>How do I force <code>lsp-mode</code> to forget the workspace folders for multi root
-  servers so the workspace folders are added on demand?<ul>
+<li>
+<p>How do I force <code>lsp-mode</code> to forget the workspace folders for multi root
+  servers so the workspace folders are added on demand?</p>
+<ul>
 <li>Use the following snippet:
   <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">advice-add</span> <span class="ss">&#39;lsp</span> <span class="nb">:before</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_args</span><span class="p">)</span> <span class="p">(</span><span class="nf">eval</span> <span class="o">&#39;</span><span class="p">(</span><span class="nb">setf</span> <span class="p">(</span><span class="nv">lsp-session-server-id-&gt;folders</span> <span class="p">(</span><span class="nv">lsp-session</span><span class="p">))</span> <span class="p">(</span><span class="nv">ht</span><span class="p">)))))</span>
 </code></pre></div></li>
+</ul>
+</li>
+<li>
+<p>When using <code>clojure</code> with <code>clojure-lsp</code> <code>lsp-mode</code> is interfering with typing (e. g. deleting whitespace while typing), how to fix that?</p>
+<ul>
+<li>The issue is caused by <code>clojure-lsp</code> server being more aggressive with formatting(deleting whitespaces) and <code>aggressive-indent-mode</code> being on and calling it while typing. The solution is either to disable <code>aggressive-indent-mode</code> or to disable <code>lsp-mode</code> formatting via <code>lsp-enable-indentation</code>.</li>
 </ul>
 </li>
 </ul>
