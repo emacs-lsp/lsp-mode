@@ -369,6 +369,12 @@ should be the python executable. This option will be prioritized over
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.3"))
 
+(defcustom lsp-pyls-plugins-jedi-extra-paths nil
+  "Extra paths for pyls-jedi to consider, like stubs directory, etc."
+  :type '(repeat string)
+  :group 'lsp-pyls
+  :package-version '(lsp-mode . "7.0"))
+
 (defcustom lsp-pyls-plugins-jedi-completion-fuzzy nil
   "If enabled, uses fuzzy completion in jedi. Requires pyls >= 0.32.0
 Can hit performance, as well as lsp-mode implements its own fuzzy search on
@@ -473,6 +479,7 @@ So it will rename only references it can find."
    ("pyls.plugins.jedi_completion.enabled" lsp-pyls-plugins-jedi-completion-enabled t)
    ("pyls.plugins.jedi_completion.include_class_objects" lsp-pyls-plugins-jedi-completion-include-class-objects t)
    ("pyls.plugins.jedi.environment" lsp-pyls-get-pyenv-environment)
+   ("pyls.plugins.jedi.extra_paths" lsp-pyls-plugins-jedi-extra-paths)
    ("pyls.plugins.jedi_completion.fuzzy" lsp-pyls-plugins-jedi-completion-fuzzy t)
    ("pyls.plugins.jedi_rename.enabled" (lambda () (eq lsp-pyls-rename-backend 'jedi)) t)
    ("pyls.configurationSources" lsp-pyls-configuration-sources)))
