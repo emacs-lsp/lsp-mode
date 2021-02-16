@@ -31,7 +31,7 @@
 
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
-       (pkgs '(dash dash-functional f lv ht spinner markdown-mode deferred)))
+       (pkgs '(dash f lv ht spinner markdown-mode deferred)))
   (package-initialize)
   (package-refresh-contents)
 
