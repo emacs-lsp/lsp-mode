@@ -1,7 +1,7 @@
 ;;; lsp-doc.el --- LSP doc converter -*- lexical-binding: t; -*-
 
 ;; Keywords: languages, tool
-;; Package-Requires: ((emacs "25.1") (dash "2.14.1") (dash-functional "2.14.1") (f "0.20.0") (ht "2.0") (spinner "1.7.3") (markdown-mode "2.3") (lv "0"))
+;; Package-Requires: ((emacs "25.1") (dash "2.18.0") (f "0.20.0") (ht "2.0") (spinner "1.7.3") (markdown-mode "2.3") (lv "0"))
 ;; Version: 6.4
 
 ;; URL: https://github.com/emacs-lsp/lsp-mode

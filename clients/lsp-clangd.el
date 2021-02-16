@@ -40,7 +40,6 @@
 (eval-when-compile (require 'subr-x))
 
 (require 'dash)
-(require 'dash-functional)
 (require 's)
 
 (defvar flycheck-explain-error-buffer)

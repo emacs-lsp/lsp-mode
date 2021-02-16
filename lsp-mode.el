@@ -32,7 +32,6 @@
 (require 'cl-lib)
 (require 'compile)
 (require 'dash)
-(require 'dash-functional)
 (require 'ewoc)
 (require 'f)
 (require 'filenotify)
