@@ -4414,9 +4414,10 @@ one of the LANGUAGES."
                (file-name (lsp-f-canonical file-name)))
     (->> (lsp-session)
          (lsp-session-folders)
-         (--first (and (lsp--files-same-host it file-name)
+         (--filter (and (lsp--files-same-host it file-name)
                        (or (lsp-f-ancestor-of? it file-name)
-                           (equal it file-name)))))))
+                           (equal it file-name))))
+         (--max-by (> (length it) (length other))))))
 
 (defun lsp-on-revert ()
   "Executed when a file is reverted.
