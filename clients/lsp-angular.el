@@ -60,7 +60,7 @@
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda () lsp-clients-angular-language-server-command))
                   :activation-fn (lambda (&rest _args)
-                                   (and (string-match-p "\\.html\\'" (buffer-file-name))
+                                   (and (string-match-p "\\(\\.html\\|\\.ts\\)\\'" (buffer-file-name))
                                         (lsp-workspace-root)
                                         (file-exists-p (f-join (lsp-workspace-root) "angular.json"))))
                   :priority -1
