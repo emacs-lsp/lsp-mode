@@ -355,13 +355,13 @@ CALLBACK - callback for the lenses."
     (add-hook 'lsp-configure-hook #'lsp-lens--enable nil t)
     (add-hook 'lsp-on-idle-hook #'lsp-lens--idle-function nil t)
     (add-hook 'lsp-on-change-hook #'lsp-lens--schedule-refresh-modified nil t)
-    (add-hook 'after-save-hook #'lsp-lens--schedule-refresh nil t)
+    (add-hook 'after-save-hook #'lsp-lens--after-save nil t)
     (add-hook 'before-revert-hook #'lsp-lens-hide nil t)
     (lsp-lens-refresh t))
    (t
     (remove-hook 'lsp-on-idle-hook #'lsp-lens--idle-function t)
     (remove-hook 'lsp-on-change-hook #'lsp-lens--schedule-refresh-modified t)
-    (remove-hook 'after-save-hook #'lsp-lens--schedule-refresh t)
+    (remove-hook 'after-save-hook #'lsp-lens--after-save t)
     (remove-hook 'before-revert-hook #'lsp-lens-hide t)
     (when lsp-lens--refresh-timer
       (cancel-timer lsp-lens--refresh-timer))
