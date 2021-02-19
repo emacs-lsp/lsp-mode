@@ -37,23 +37,6 @@ cd my-app
 npm start
 ```
 
->Note: in order to avoid [this issue](https://github.com/eclipse-theia/theia/issues/6720#issuecomment-563488535), you have to add a `jsconfig.json` in the top of the folder:
-
-``` json
-{
-    "compilerOptions": {
-        "module": "commonjs",
-        "target": "es2016",
-        "jsx": "preserve",
-        "allowJs": true,
-        "allowSyntheticDefaultImports": true,
-        "allowNonTsExtensions": true
-    }
-}
-```
-
-<!-- TBD mention yarn and link -->
-
 You should see the React logo and a link to "Learn React" on [http://localhost:3000](http://localhost:3000) in your browser. We'll leave the web server running while we look at the application with Emacs.
 
 ### Emacs configuration
