@@ -297,7 +297,7 @@ to allow or deny it.")
 
 (defun lsp-eslint--probe-failed (_workspace _message)
   "Called when the server detects a misconfiguration in ESLint."
-  (user-error "ESLint is not configured correctly. Please ensure your eslintrc is set up for the languages you are using"))
+  (lsp--error "ESLint is not configured correctly. Please ensure your eslintrc is set up for the languages you are using."))
 
 (lsp-register-client
  (make-lsp-client
