@@ -68,6 +68,18 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/theia-ide/typescript-language-server"))
 
+(defcustom lsp-clients-typescript-tls-path nil
+  "Path to the typescript-language-server binary."
+  :group 'lsp-typescript
+  :risky t
+  :type 'string)
+
+(defcustom lsp-clients-typescript-tsserver-path nil
+  "Path to the tsserver binary."
+  :group 'lsp-typescript
+  :risky t
+  :type 'string)
+
 (defcustom lsp-clients-typescript-server-args '("--stdio")
   "Extra arguments for the typescript-language-server language server."
   :group 'lsp-typescript
@@ -109,9 +121,11 @@ directory containing the package. Example:
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
-                                                          `(,(lsp-package-path 'typescript-language-server)
+                                                          `(,(or lsp-clients-typescript-tls-path
+                                                                 (lsp-package-path 'typescript-language-server))
                                                             "--tsserver-path"
-                                                            ,(lsp-package-path 'typescript)
+                                                            ,(or lsp-clients-typescript-tsserver-path
+                                                                 (lsp-package-path 'typescript))
                                                             ,@lsp-clients-typescript-server-args)))
                   :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
                   :priority -2
