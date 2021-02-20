@@ -108,28 +108,31 @@ directory containing the package. Example:
                        :path "tsserver"))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
-                                                          `(,(lsp-package-path 'typescript-language-server)
-                                                            "--tsserver-path"
-                                                            ,(lsp-package-path 'typescript)
-                                                            ,@lsp-clients-typescript-server-args)))
-                  :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
-                  :priority -2
-                  :completion-in-comments? t
-                  :initialization-options (lambda ()
-                                            (list :plugins lsp-clients-typescript-plugins
-                                                  :logVerbosity lsp-clients-typescript-log-verbosity
-                                                  :tsServerPath (lsp-package-path 'typescript)))
-                  :ignore-messages '("readFile .*? requested by TypeScript but content not available")
-                  :server-id 'ts-ls
-                  :download-server-fn (lambda (_client callback error-callback _update?)
-                                        (lsp-package-ensure
-                                         'typescript
-                                         (-partial #'lsp-package-ensure
-                                                   'typescript-language-server
-                                                   callback
-                                                   error-callback)
-                                         error-callback))))
+ (make-lsp-client
+  :new-connection (lsp-stdio-connection
+                   (lambda ()
+                     `(,(lsp-package-path 'typescript-language-server) "--stdio")))
+  :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
+  :priority -2
+  :completion-in-comments? t
+  :initialization-options (lambda ()
+                            (list :plugins lsp-clients-typescript-plugins
+                                  :logVerbosity lsp-clients-typescript-log-verbosity))
+  :ignore-messages '("readFile .*? requested by TypeScript but content not available")
+  :server-id 'ts-ls
+  :download-server-fn (lambda (_client callback error-callback _update?)
+                        (lsp-package-ensure
+                         'typescript
+                         (-partial #'lsp-package-ensure
+                                   'typescript-language-server
+                                   callback
+                                   error-callback)
+                         error-callback))
+  :environment-fn (lambda ()
+                    `(("PATH" . ,(concat
+                                  (f-parent (lsp-package-path 'typescript))
+                                  (if (eq system-type 'windows-nt) ":" ";")
+                                  (getenv "PATH")))))))
 
 
 (defgroup lsp-flow nil
