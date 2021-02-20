@@ -217,7 +217,7 @@ If there are more arguments expected after the line and column numbers."
   :new-connection (lsp-stdio-connection
                    (lambda ()
                      (or lsp-clojure-custom-server-command
-                         `("bash" "-c" ,(lsp-clojure--server-executable-path))))
+                         `(,(lsp-clojure--server-executable-path))))
                    (lambda ()
                      (or lsp-clojure-custom-server-command
                          (lsp-clojure--server-executable-path))))
