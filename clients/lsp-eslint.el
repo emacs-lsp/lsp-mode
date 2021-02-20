@@ -295,6 +295,10 @@ to allow or deny it.")
              (lsp--persist lsp-eslint-library-choices-file lsp-eslint--stored-libraries)))
          (funcall callback (car option)))))))
 
+(defun lsp-eslint--probe-failed (_workspace _message)
+  "Called when the server detects a misconfiguration in ESLint."
+  (lsp--error "ESLint is not configured correctly. Please ensure your eslintrc is set up for the languages you are using."))
+
 (lsp-register-client
  (make-lsp-client
   :new-connection
@@ -313,7 +317,8 @@ to allow or deny it.")
   :multi-root t
   :notification-handlers (ht ("eslint/status" #'lsp-eslint-status-handler))
   :request-handlers (ht ("workspace/configuration" #'lsp-eslint--configuration)
-                        ("eslint/openDoc" #'lsp-eslint--open-doc))
+                        ("eslint/openDoc" #'lsp-eslint--open-doc)
+                        ("eslint/probeFailed" #'lsp-eslint--probe-failed))
   :async-request-handlers (ht ("eslint/confirmESLintExecution" #'lsp-eslint--confirm-local))
   :server-id 'eslint
   :initialized-fn (lambda (workspace)
