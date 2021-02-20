@@ -173,7 +173,7 @@ find a suitable one. Set this variable before loading lsp."
   "Clang default executable full path when found.
 This must be set only once after loading the clang client.")
 
-(defcustom lsp-clients-clangd-args '()
+(defcustom lsp-clients-clangd-args '("--header-insertion-decorators=0")
   "Extra arguments for the clangd executable."
   :group 'lsp-clangd
   :risky t
