@@ -13,6 +13,7 @@
  "lsp-diagnostics.el"
  "lsp-headerline.el"
  "lsp-iedit.el"
+ "lsp-ido.el"
  "lsp-lens.el"
  "lsp-modeline.el"
  "lsp-semantic-tokens.el"
