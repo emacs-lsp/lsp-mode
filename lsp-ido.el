@@ -121,13 +121,17 @@
     lsp-ido--results))
 
 ;;;###autoload
-(defun lsp-ido-workspace-symbol ()
-  "`ido' for lsp workspace/symbol."
-  (interactive)
+(defun lsp-ido-workspace-symbol (arg)
+  "`ido' for lsp workspace/symbol.
+When called with prefix ARG the default selection will be symbol at point."
+  (interactive "P")
   (let* ((hash-table-candidates (lsp-ido--workspace-symbol (lsp-workspaces)))
 	 (choice (ido-completing-read
 		  "Workspace symbol:"
-		  (hash-table-keys hash-table-candidates))))
+		  (hash-table-keys hash-table-candidates)
+                  nil
+                  nil
+                  (when arg (thing-at-point 'symbol)))))
     (lsp-ido--jump-selected-candidate (gethash choice hash-table-candidates))))
 
 (provide 'lsp-ido)
