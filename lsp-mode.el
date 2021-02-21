@@ -5022,11 +5022,13 @@ It will show up only if current point has signature help."
             (active-signature? (or lsp--signature-last-index active-signature? 0))
             (_ (setq lsp--signature-last-index active-signature?))
             ((signature &as &SignatureInformation? :label :parameters?) (seq-elt signatures active-signature?))
-            (prefix (concat (propertize (format " %s/%s"
-                                                (1+ active-signature?)
-                                                (length signatures))
-                                        'face 'success)
-                            " │ "))
+            (prefix (if (not (cl-rest signatures))
+                        ""
+                      (concat (propertize (format " %s/%s"
+                                                  (1+ active-signature?)
+                                                  (length signatures))
+                                          'face 'success)
+                              " ")))
             (method-docs (when
                              (and lsp-signature-render-documentation
                                   (or (not (numberp lsp-signature-doc-lines)) (< 0 lsp-signature-doc-lines)))
