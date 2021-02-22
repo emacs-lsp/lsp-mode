@@ -106,7 +106,7 @@
   (forward-line line)
   (forward-char character))
 
-(defun lsp-ido--workspace-symbol-2 (workspaces query)
+(defun lsp-ido--workspace-symbol (workspaces query)
   "Search against WORKSPACES based on QUERY."
   (let* ((lsp-ido--results (make-hash-table :test 'equal))
 	 (workspace-root (lsp-workspace-root))
@@ -126,7 +126,7 @@
 When called with prefix ARG the default selection will be symbol at point."
   (interactive "P")
   (let* ((query (if arg "" (read-string "Workspace symbol: ")))
-         (hash-table-candidates (lsp-ido--workspace-symbol-2 (lsp-workspaces) query))
+         (hash-table-candidates (lsp-ido--workspace-symbol (lsp-workspaces) query))
 	 (choice (ido-completing-read
 	          "Workspace symbol:"
 	          (hash-table-keys hash-table-candidates)
