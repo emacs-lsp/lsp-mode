@@ -5022,7 +5022,7 @@ It will show up only if current point has signature help."
             (active-signature? (or lsp--signature-last-index active-signature? 0))
             (_ (setq lsp--signature-last-index active-signature?))
             ((signature &as &SignatureInformation? :label :parameters?) (seq-elt signatures active-signature?))
-            (prefix (if (not (cl-rest signatures))
+            (prefix (if (= (length signatures) 1)
                         ""
                       (concat (propertize (format " %s/%s"
                                                   (1+ active-signature?)
