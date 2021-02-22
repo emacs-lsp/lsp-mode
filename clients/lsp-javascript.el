@@ -68,6 +68,12 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/theia-ide/typescript-language-server"))
 
+(defcustom lsp-clients-typescript-tls-path "typescript-language-server"
+  "Path to the typescript-language-server binary."
+  :group 'lsp-typescript
+  :risky t
+  :type 'string)
+
 (defcustom lsp-clients-typescript-server-args '("--stdio")
   "Extra arguments for the typescript-language-server language server."
   :group 'lsp-typescript
@@ -98,7 +104,7 @@ directory containing the package. Example:
                                                 xs)))))
 
 (lsp-dependency 'typescript-language-server
-                '(:system "typescript-language-server")
+                '(:system lsp-clients-typescript-tls-path)
                 '(:npm :package "typescript-language-server"
                        :path "typescript-language-server"))
 
