@@ -2340,8 +2340,7 @@ npm start
       <span class="nv">read-process-output-max</span> <span class="p">(</span><span class="nf">*</span> <span class="mi">1024</span> <span class="mi">1024</span><span class="p">)</span>
       <span class="nv">company-idle-delay</span> <span class="mf">0.0</span>
       <span class="nv">company-minimum-prefix-length</span> <span class="mi">1</span>
-      <span class="nv">create-lockfiles</span> <span class="no">nil</span> <span class="c1">;; lock files will kill `npm start&#39;</span>
-      <span class="nv">lsp-headerline-breadcrumb-enable</span> <span class="no">t</span><span class="p">)</span>
+      <span class="nv">create-lockfiles</span> <span class="no">nil</span><span class="p">)</span> <span class="c1">;; lock files will kill `npm start&#39;</span>
 <span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-mode</span>
   <span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;dap-chrome</span><span class="p">)</span>
   <span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;lsp-mode-hook</span> <span class="nf">#&#39;</span><span class="nv">lsp-enable-which-key-integration</span><span class="p">)</span>

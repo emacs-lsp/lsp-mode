@@ -2113,9 +2113,7 @@ in your config or you could run in separate session.</p>
       <span class="nv">treemacs-space-between-root-nodes</span> <span class="no">nil</span>
       <span class="nv">company-idle-delay</span> <span class="mf">0.0</span>
       <span class="nv">company-minimum-prefix-length</span> <span class="mi">1</span>
-      <span class="nv">lsp-idle-delay</span> <span class="mf">0.1</span> <span class="c1">;; clangd is fast</span>
-      <span class="c1">;; be more ide-ish</span>
-      <span class="nv">lsp-headerline-breadcrumb-enable</span> <span class="no">t</span><span class="p">)</span>
+      <span class="nv">lsp-idle-delay</span> <span class="mf">0.1</span><span class="p">)</span>  <span class="c1">;; clangd is fast</span>
 
 <span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-mode</span>
   <span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;lsp-mode-hook</span> <span class="nf">#&#39;</span><span class="nv">lsp-enable-which-key-integration</span><span class="p">)</span>
