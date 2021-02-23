@@ -2165,12 +2165,6 @@ Benchmarks show that Emacs 27 is <code>~15 times</code> faster than Emacs when u
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">read-process-output-max</span> <span class="p">(</span><span class="nf">*</span> <span class="mi">1024</span> <span class="mi">1024</span><span class="p">))</span> <span class="c1">;; 1mb</span>
 </code></pre></div>
 <ul>
-<li>Make sure that you are using <code>company-capf</code> as the completion provider with:</li>
-</ul>
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-completion-provider</span> <span class="nb">:capf</span><span class="p">)</span>
-</code></pre></div>
-<p><em>Note:</em> - to verify which <code>company</code> backend implementation you are using do <code>M-x company-diag</code> when performing auto-completion.</p>
-<ul>
 <li>Optional: Disable <code>lsp-ui</code>. Normally, <code>lsp-ui</code> is very fast but in some systems (especially when using <code>Windows</code>) <code>lsp-ui</code> overlays and popups might slow down emacs.</li>
 <li>Optional: fine-tune <code>lsp-idle-delay</code>. This variable determines how often lsp-mode will refresh the highlights, lenses, links, etc while you type.</li>
 </ul>
@@ -2185,7 +2179,7 @@ Also you can disable the file watch feature with:</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-enable-file-watchers</span> <span class="no">nil</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="check-if-logging-is-switched-off">Check if logging is switched off.<a class="headerlink" href="#check-if-logging-is-switched-off" title="Permanent link">#</a></h2>
-<p>Make sure <code>lsp-log-io</code> is <code>nil</code>. You might have forgotten it after a debugging session, for example. It can cause a great performance hit. </p>
+<p>Make sure <code>lsp-log-io</code> is <code>nil</code>. You might have forgotten it after a debugging session, for example. It can cause a great performance hit.</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-log-io</span> <span class="no">nil</span><span class="p">)</span> <span class="c1">; if set to true can cause a performance hit</span>
 </code></pre></div>
 <p>Sometimes you might need to check logging for specific LSP server configuration as well, i.e. for <code>lsp-eslint</code> it is: <code>lsp-eslint-trace-server</code>.</p>
