@@ -8058,9 +8058,6 @@ This avoids overloading the server with many files when starting Emacs."
   (interactive)
   (lsp--doctor
    "Checking for Native JSON support" (functionp 'json-serialize)
-   "Using company-capf" (--find (or (equal it 'company-capf)
-                                    (and (listp it) (-contains? it 'company-capf)))
-                                company-backends)
    "Check emacs supports `read-process-output-max'" (boundp 'read-process-output-max)
    "Check `read-process-output-max' default has been changed from 4k"
    (and (boundp 'read-process-output-max)
