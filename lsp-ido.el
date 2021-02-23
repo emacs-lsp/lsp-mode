@@ -31,31 +31,31 @@
   :group 'lsp-mode)
 
 (defcustom lsp-ido-symbol-kind-to-string
-  ["    "	   ; Unknown - 0
-   "File"	   ; File - 1
-   "Modu"	   ; Module - 2
-   "Nmsp"	   ; Namespace - 3
-   "Pack"	   ; Package - 4
-   "Clss"	   ; Class - 5
+  ["    "          ; Unknown - 0
+   "File"          ; File - 1
+   "Modu"          ; Module - 2
+   "Nmsp"          ; Namespace - 3
+   "Pack"          ; Package - 4
+   "Clss"          ; Class - 5
    "Meth"          ; Method - 6
-   "Prop"	   ; Property - 7
-   "Fld "	   ; Field - 8
+   "Prop"          ; Property - 7
+   "Fld "          ; Field - 8
    "Cons"          ; Constructor - 9
-   "Enum"	   ; Enum - 10
-   "Intf"	   ; Interface - 11
+   "Enum"          ; Enum - 10
+   "Intf"          ; Interface - 11
    "Func"          ; Function - 12
    "Var "          ; Variable - 13
-   "Cnst"	   ; Constant - 14
-   "Str "	   ; String - 15
-   "Num "	   ; Number - 16
-   "Bool "	   ; Boolean - 17
-   "Arr "	   ; Array - 18
-   "Obj "	   ; Object - 19
-   "Key "	   ; Key - 20
-   "Null"	   ; Null - 21
-   "EmMm"	   ; EnumMember - 22
-   "Srct"	   ; Struct - 23
-   "Evnt"	   ; Event - 24
+   "Cnst"          ; Constant - 14
+   "Str "          ; String - 15
+   "Num "          ; Number - 16
+   "Bool "         ; Boolean - 17
+   "Arr "          ; Array - 18
+   "Obj "          ; Object - 19
+   "Key "          ; Key - 20
+   "Null"          ; Null - 21
+   "EmMm"          ; EnumMember - 22
+   "Srct"          ; Struct - 23
+   "Evnt"          ; Event - 24
    "Op  "          ; Operator - 25
    "TPar"]          ; TypeParameter - 26
   "A vector of 26 itens representing the SymbolKind."
@@ -84,17 +84,17 @@
   ((symbol-information &as &SymbolInformation :kind :location (&Location :uri))
    lsp-ido--results project-root)
   (let* ((sanitized-kind (if (< kind (length lsp-ido-symbol-kind-to-string)) kind 0))
-	 (type (elt lsp-ido-symbol-kind-to-string sanitized-kind))
-	 (typestr (if lsp-ido-show-symbol-kind
-		      (format "[%s] " type)
-		    ""))
-	 (pathstr (if lsp-ido-show-symbol-filename
-		      (propertize (format " . %s" (file-relative-name (lsp--uri-to-path uri) project-root))
-				  'face 'font-lock-comment-face)
-		    ""))
-	 (textual-representation
-	  (lsp-render-symbol-information symbol-information "."))
-	 (entry (concat typestr textual-representation pathstr)))
+         (type (elt lsp-ido-symbol-kind-to-string sanitized-kind))
+         (typestr (if lsp-ido-show-symbol-kind
+                      (format "[%s] " type)
+                    ""))
+         (pathstr (if lsp-ido-show-symbol-filename
+                      (propertize (format " . %s" (file-relative-name (lsp--uri-to-path uri) project-root))
+                                  'face 'font-lock-comment-face)
+                    ""))
+         (textual-representation
+          (lsp-render-symbol-information symbol-information "."))
+         (entry (concat typestr textual-representation pathstr)))
     (puthash entry symbol-information lsp-ido--results)))
 
 (lsp-defun lsp-ido--jump-selected-candidate
@@ -109,15 +109,15 @@
 (defun lsp-ido--workspace-symbol (workspaces query)
   "Search against WORKSPACES based on QUERY."
   (let* ((lsp-ido--results (make-hash-table :test 'equal))
-	 (workspace-root (lsp-workspace-root))
-	 (raw-choices
-	  (with-lsp-workspaces workspaces
-	    (lsp-request
-	     "workspace/symbol"
-	     (lsp-make-workspace-symbol-params :query query)))))
+         (workspace-root (lsp-workspace-root))
+         (raw-choices
+          (with-lsp-workspaces workspaces
+            (lsp-request
+             "workspace/symbol"
+             (lsp-make-workspace-symbol-params :query query)))))
     (mapc (lambda (it)
-	    (lsp-ido--transform-candidate it lsp-ido--results workspace-root))
-	  raw-choices)
+            (lsp-ido--transform-candidate it lsp-ido--results workspace-root))
+          raw-choices)
     lsp-ido--results))
 
 ;;;###autoload
@@ -127,9 +127,9 @@ When called with prefix ARG the default selection will be symbol at point."
   (interactive "P")
   (let* ((query (if arg "" (read-string "Workspace symbol: ")))
          (hash-table-candidates (lsp-ido--workspace-symbol (lsp-workspaces) query))
-	 (choice (ido-completing-read
-	          "Workspace symbol:"
-	          (hash-table-keys hash-table-candidates)
+         (choice (ido-completing-read
+                  "Workspace symbol: "
+                  (hash-table-keys hash-table-candidates)
                   nil
                   nil
                   (when arg (thing-at-point 'symbol)))))
