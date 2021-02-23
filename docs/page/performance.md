@@ -26,14 +26,6 @@ Benchmarks show that Emacs 27 is `~15 times` faster than Emacs when using Elisp 
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 ```
 
-- Make sure that you are using `company-capf` as the completion provider with:
-
-``` elisp
-(setq lsp-completion-provider :capf)
-```
-
-*Note:* - to verify which `company` backend implementation you are using do `M-x company-diag` when performing auto-completion.
-
 - Optional: Disable `lsp-ui`. Normally, `lsp-ui` is very fast but in some systems (especially when using `Windows`) `lsp-ui` overlays and popups might slow down emacs.
 - Optional: fine-tune `lsp-idle-delay`. This variable determines how often lsp-mode will refresh the highlights, lenses, links, etc while you type.
 
@@ -56,7 +48,7 @@ Also you can disable the file watch feature with:
 
 ## Check if logging is switched off.
 
-Make sure `lsp-log-io` is `nil`. You might have forgotten it after a debugging session, for example. It can cause a great performance hit. 
+Make sure `lsp-log-io` is `nil`. You might have forgotten it after a debugging session, for example. It can cause a great performance hit.
 
 ```elisp
 (setq lsp-log-io nil) ; if set to true can cause a performance hit
