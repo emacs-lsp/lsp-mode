@@ -18,6 +18,7 @@ nav:
         - Helm: https://github.com/emacs-lsp/helm-lsp
         - Ivy: https://github.com/emacs-lsp/lsp-ivy
         - Iedit: page/integration/iedit.md
+	- Ido: page/integration/ido.md
     - Limitations: page/limitations.md
     - Remote: page/remote.md
     - FAQ: page/faq.md
