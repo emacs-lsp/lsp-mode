@@ -2354,17 +2354,17 @@ active `major-mode', or for all major modes when ALL-MODES is t."
     (apply
      #'which-key-fn
      (lsp--prepend-prefix
-      (nconc
-       '(""    "lsp"
-         "s"   "sessions"
-         "F"   "folders"
-         "="   "formatting"
-         "T"   "toggle"
-         "g"   "goto"
-         "h"   "help"
-         "r"   "refactor"
-         "a"   "code actions"
-         "G"   "peek")
+      (cl-list*
+       ""    "lsp"
+       "s"   "sessions"
+       "F"   "folders"
+       "="   "formatting"
+       "T"   "toggle"
+       "g"   "goto"
+       "h"   "help"
+       "r"   "refactor"
+       "a"   "code actions"
+       "G"   "peek"
        lsp--binding-descriptions)))))
 
 
