@@ -2279,17 +2279,12 @@
 <p><img alt="" src="../../examples/symbol-highlights.gif" /></p>
 <h2 id="formatting">Formatting<a class="headerlink" href="#formatting" title="Permanent link">#</a></h2>
 <p><img alt="" src="../../examples/formatting.gif" /></p>
-<p>In general the formatter settings are language server specific(e. g. <code>JDT LS</code> uses eclipse formatter file and <code>lsp-java-format-settings-url</code> to configure it while clangd uses <code>clangd-format</code> and <code>lsp-dart</code> uses the built-in <code>dartfmt</code> from <code>Dart SDK</code>). The only settings that are controlled on <code>lsp-mode</code> level are indent size and whether the server should use tabs or spaces.</p>
-<ul>
-<li>Use <code>c-basic-offset</code> for <code>cc-mode</code> derived moves(e. g. java, C++) to control the tab size.</li>
-<li>Use <code>tab-width</code> for any other mode to do the same.</li>
-<li>Use <code>indent-tabs-mode</code> for selecting tab/spaces.</li>
-</ul>
+<p>In general the formatter settings are language server specific(e. g. <code>JDT LS</code> uses eclipse formatter file and <code>lsp-java-format-settings-url</code> to configure it while clangd uses <code>clangd-format</code> and <code>lsp-dart</code> uses the built-in <code>dartfmt</code> from <code>Dart SDK</code>). The only settings that are controlled on <code>lsp-mode</code> level are indent size and whether the server should use tabs or spaces. Refer to <code>lsp--formatting-indent-alist</code> to find out what is the variable that is used for the current major mode.</p>
 <h2 id="debugger">Debugger<a class="headerlink" href="#debugger" title="Permanent link">#</a></h2>
 <p><code>lsp-mode</code> integrates with <a href="https://emacs-lsp.github.io/dap-mode/">dap-mode</a> with implements the DAP(Debugger Adapter Protocol), for more information check the <a href="https://emacs-lsp.github.io/dap-mode/"><code>dap-mode</code> documentation</a>.</p>
 <p><img alt="" src="../../examples/lsp-dart-flutter-debug.gif" /></p>
 <h2 id="integrations">Integrations<a class="headerlink" href="#integrations" title="Permanent link">#</a></h2>
-<p><code>lsp-mode</code> supports many integrations for improve the user experience like <a href="https://github.com/emacs-lsp/lsp-treemacs">treemacs</a>, <a href="https://github.com/emacs-lsp/helm-lsp">Helm</a>, <a href="https://github.com/emacs-lsp/lsp-ivy">Ivy</a> and others. </p>
+<p><code>lsp-mode</code> supports many integrations for improve the user experience like <a href="https://github.com/emacs-lsp/lsp-treemacs">treemacs</a>, <a href="https://github.com/emacs-lsp/helm-lsp">Helm</a>, <a href="https://github.com/emacs-lsp/lsp-ivy">Ivy</a> and others.</p>
 <p>For all available integrations, check the <code>Extensions</code> section on the left navigation.</p>
                 
                   
