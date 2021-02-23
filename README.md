@@ -76,6 +76,7 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
     for better discovery
   - [iedit](https://emacs-lsp.github.io/lsp-mode/page/main-features/#iedit)
   - [dired](https://emacs-lsp.github.io/lsp-mode/page/main-features/#dired)
+  - [ido](https://emacs-lsp.github.io/lsp-mode/page/main-features/#integrations)
 
 ## Presentations/demos
   - [System Crafters](https://twitter.com/SystemCrafters) channel
