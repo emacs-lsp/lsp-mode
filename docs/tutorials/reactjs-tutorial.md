@@ -62,8 +62,7 @@ You should see the React logo and a link to "Learn React" on [http://localhost:3
       read-process-output-max (* 1024 1024)
       company-idle-delay 0.0
       company-minimum-prefix-length 1
-      create-lockfiles nil ;; lock files will kill `npm start'
-      lsp-headerline-breadcrumb-enable t)
+      create-lockfiles nil) ;; lock files will kill `npm start'
 (with-eval-after-load 'lsp-mode
   (require 'dap-chrome)
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
