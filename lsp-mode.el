@@ -4365,7 +4365,9 @@ Applies on type formatting."
                             (s-matches? mode-or-pattern (buffer-file-name))) language)
                       ((eq mode-or-pattern major-mode) language))))
            cl-rest)
-      (lsp-warn "Unable to calculate the languageId for current buffer. Take a look at lsp-language-id-configuration.")))
+      (lsp-warn "Unable to calculate the languageId for buffer `%s'. Take a look at `lsp-language-id-configuration'. The `major-mode' is %s"
+                (buffer-name)
+                major-mode)))
 
 (defun lsp-activate-on (&rest languages)
   "Returns language activation function.
