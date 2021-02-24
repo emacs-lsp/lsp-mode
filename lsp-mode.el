@@ -5137,12 +5137,10 @@ It will show up only if current point has signature help."
   "Handler for editor.action.triggerParameterHints."
   (lsp-signature-activate))
 
-(defvar company-mode)
-
 (defun lsp--action-trigger-suggest (_command)
   "Handler for editor.action.triggerSuggest."
   (cond
-   ((and company-mode
+   ((and (bound-and-true-p company-mode)
          (fboundp 'company-auto-begin)
          (fboundp 'company-post-command))
     (run-at-time 0 nil
