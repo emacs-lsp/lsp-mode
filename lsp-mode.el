@@ -4959,22 +4959,30 @@ It will show up only if current point has signature help."
   (add-hook 'post-command-hook #'lsp-signature)
   (lsp-signature-mode t))
 
+(defcustom lsp-signature-cycle t
+  "Whether `lsp-signature-next' and prev should cycle."
+  :type 'boolean
+  :group 'lsp-mode)
+
 (defun lsp-signature-next ()
   "Show next signature."
   (interactive)
-  (when (and lsp--signature-last-index
-             lsp--signature-last
-             (< (1+ lsp--signature-last-index) (length (lsp:signature-help-signatures lsp--signature-last))))
-    (setq lsp--signature-last-index (1+ lsp--signature-last-index))
-    (funcall lsp-signature-function (lsp--signature->message lsp--signature-last))))
+  (let ((nsigs (length (lsp:signature-help-signatures lsp--signature-last))))
+    (when (and lsp--signature-last-index
+               lsp--signature-last
+               (or lsp-signature-cycle (< (1+ lsp--signature-last-index) nsigs)))
+      (setq lsp--signature-last-index (% (1+ lsp--signature-last-index) nsigs))
+      (funcall lsp-signature-function (lsp--signature->message lsp--signature-last)))))
 
 (defun lsp-signature-previous ()
   "Next signature."
   (interactive)
   (when (and lsp--signature-last-index
              lsp--signature-last
-             (not (zerop lsp--signature-last-index)))
-    (setq lsp--signature-last-index (1- lsp--signature-last-index))
+             (or lsp-signature-cycle (not (zerop lsp--signature-last-index))))
+    (setq lsp--signature-last-index (1- (if (zerop lsp--signature-last-index)
+                                            (length (lsp:signature-help-signatures lsp--signature-last))
+                                          lsp--signature-last-index)))
     (funcall lsp-signature-function (lsp--signature->message lsp--signature-last))))
 
 (defun lsp-signature-toggle-full-docs ()
