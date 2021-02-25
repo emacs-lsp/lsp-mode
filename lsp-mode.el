@@ -5145,8 +5145,9 @@ It will show up only if current point has signature help."
          (fboundp 'company-post-command))
     (run-at-time 0 nil
                  (lambda ()
-                   (company-auto-begin)
-                   (let ((this-command 'company-idle-begin))
+                   (let ((this-command 'company-idle-begin)
+                         (company-minimum-prefix-length 0))
+                     (company-auto-begin)
                      (company-post-command)))))
    (t
     (completion-at-point))))
