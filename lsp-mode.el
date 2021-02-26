@@ -71,6 +71,7 @@
 (defvar yas-also-auto-indent-first-line)
 (defvar dap-auto-configure-mode)
 (defvar dap-ui-menu-items)
+(defvar company-minimum-prefix-length)
 
 (defconst lsp--message-type-face
   `((1 . ,compilation-error-face)
