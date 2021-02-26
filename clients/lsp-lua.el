@@ -94,14 +94,22 @@
   :risky t
   :type 'directory)
 
-(defcustom lsp-clients-lua-language-server-bin (f-join lsp-clients-lua-language-server-install-dir "bin/Linux/lua-language-server")
+(defcustom lsp-clients-lua-language-server-bin
+  (f-join lsp-clients-lua-language-server-install-dir
+          "extension/server/bin/"
+          (pcase system-type
+            ('gnu/linux "Linux/lua-language-server")
+            ('darwin "macOS/lua-language-server")
+            ('windows-nt "Windows/lua-language-server.exe")))
   "Location of Lua Language Server."
   :group 'lsp-lua-language-server
   :version "7.1"
   :risky t
   :type 'file)
 
-(defcustom lsp-clients-lua-language-server-main-location (f-join lsp-clients-lua-language-server-install-dir "main.lua")
+(defcustom lsp-clients-lua-language-server-main-location
+  (f-join lsp-clients-lua-language-server-install-dir
+          "extension/server/main.lua")
   "Location of Lua Language Server main.lua."
   :group 'lsp-lua-language-server
   :version "7.1"
@@ -370,6 +378,20 @@ and `../lib` ,exclude `../lib/temp`.
    ("Lua.completion.callSnippet" lsp-lua-completion-call-snippet)
    ("Lua.color.mode" lsp-lua-color-mode)))
 
+(defun lsp-lua-language-server-install (client callback error-callback update?)
+  "Download the latest version of lua-language-server and extract it to
+`lsp-lua-language-server-install-dir'."
+  (ignore client update?)
+  (let ((store-path (expand-file-name "vs-lua" lsp-clients-lua-language-server-install-dir)))
+    (lsp-download-install
+     (lambda (&rest _)
+       (set-file-modes lsp-clients-lua-language-server-bin #o0700)
+       (funcall callback))
+     error-callback
+     :url (lsp-vscode-extension-url "sumneko" "lua" "1.17.0")
+     :store-path store-path
+     :decompress :zip)))
+
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection (lambda () (or lsp-clients-lua-language-server-command
@@ -379,7 +401,8 @@ and `../lib` ,exclude `../lib/temp`.
                                         #'lsp-clients-lua-language-server-test)
   :major-modes '(lua-mode)
   :priority -2
-  :server-id 'lua-language-server))
+  :server-id 'lua-language-server
+  :download-server-fn #'lsp-lua-language-server-install))
 
 
 ;;; lua-lsp
