@@ -113,6 +113,16 @@ directory containing the package. Example:
                 '(:npm :package "typescript"
                        :path "tsserver"))
 
+(defun lsp-javascript--rename (_workspace args)
+  (let ((path (lsp--uri-to-path (lsp-get (lsp-get args :textDocument) :uri))))
+    (if (f-exists? path)
+        (with-current-buffer (find-file path)
+          (goto-char (lsp--position-to-point
+                      (lsp-get args :position))))
+      (error "There is no file %s" path)))
+  (call-interactively #'lsp-rename)
+  nil)
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
                                                           `(,(lsp-package-path 'typescript-language-server)
@@ -128,6 +138,7 @@ directory containing the package. Example:
                                                   :tsServerPath (lsp-package-path 'typescript)))
                   :ignore-messages '("readFile .*? requested by TypeScript but content not available")
                   :server-id 'ts-ls
+                  :request-handlers (ht ("_typescript.rename" #'lsp-javascript--rename))
                   :download-server-fn (lambda (_client callback error-callback _update?)
                                         (lsp-package-ensure
                                          'typescript
