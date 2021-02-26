@@ -3561,6 +3561,10 @@ yet."
                    (memq :on-trigger-char lsp-signature-auto-activate))))
       (remove-hook 'post-self-insert-hook signature-help-handler t)))))
 
+(defun lsp--after-set-visited-file-name ()
+  (lsp-disconnect)
+  (lsp))
+
 (define-minor-mode lsp-managed-mode
   "Mode for source buffers managed by lsp-mode."
   nil nil nil
@@ -3590,6 +3594,7 @@ yet."
     ;; make sure we turn off lsp-mode in case major mode changes, because major
     ;; mode change will wipe the buffer locals.
     (add-hook 'change-major-mode-hook #'lsp-disconnect nil t)
+    (add-hook 'after-set-visited-file-name-hook #'lsp--after-set-visited-file-name nil t)
 
     (let ((buffer (lsp-current-buffer)))
       (run-with-idle-timer
@@ -3626,7 +3631,9 @@ yet."
     (lsp--remove-overlays 'lsp-links)
 
     (remove-hook 'xref-backend-functions #'lsp--xref-backend t)
-    (remove-hook 'change-major-mode-hook #'lsp-disconnect t))))
+    (remove-hook 'change-major-mode-hook #'lsp-disconnect t)
+    (remove-hook 'after-set-visited-file-name-hook #'lsp--after-set-visited-file-name t)
+    (setq-local lsp-buffer-uri nil))))
 
 (defun lsp-configure-buffer ()
   "Configure LSP features for current buffer."
