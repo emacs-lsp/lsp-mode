@@ -109,9 +109,7 @@ in your config or you could run in separate session.
       treemacs-space-between-root-nodes nil
       company-idle-delay 0.0
       company-minimum-prefix-length 1
-      lsp-idle-delay 0.1 ;; clangd is fast
-      ;; be more ide-ish
-      lsp-headerline-breadcrumb-enable t)
+      lsp-idle-delay 0.1)  ;; clangd is fast
 
 (with-eval-after-load 'lsp-mode
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)

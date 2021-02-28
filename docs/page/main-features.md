@@ -1,4 +1,4 @@
-# Main features 
+# Main features
 
 ## Completion at point
 
@@ -82,11 +82,7 @@ In case LSP server supports `hover` feature:
 
 ![](../examples/formatting.gif)
 
-In general the formatter settings are language server specific(e. g. `JDT LS` uses eclipse formatter file and `lsp-java-format-settings-url` to configure it while clangd uses `clangd-format` and `lsp-dart` uses the built-in `dartfmt` from `Dart SDK`). The only settings that are controlled on `lsp-mode` level are indent size and whether the server should use tabs or spaces.
-
-- Use `c-basic-offset` for `cc-mode` derived moves(e. g. java, C++) to control the tab size.
-- Use `tab-width` for any other mode to do the same.
-- Use `indent-tabs-mode` for selecting tab/spaces.
+In general the formatter settings are language server specific(e. g. `JDT LS` uses eclipse formatter file and `lsp-java-format-settings-url` to configure it while clangd uses `clangd-format` and `lsp-dart` uses the built-in `dartfmt` from `Dart SDK`). The only settings that are controlled on `lsp-mode` level are indent size and whether the server should use tabs or spaces. Refer to `lsp--formatting-indent-alist` to find out what is the variable that is used for the current major mode.
 
 ## Debugger
 
@@ -96,6 +92,6 @@ In general the formatter settings are language server specific(e. g. `JDT LS` us
 
 ## Integrations
 
-`lsp-mode` supports many integrations for improve the user experience like [treemacs](https://github.com/emacs-lsp/lsp-treemacs), [Helm](https://github.com/emacs-lsp/helm-lsp), [Ivy](https://github.com/emacs-lsp/lsp-ivy) and others. 
+`lsp-mode` supports many integrations for improve the user experience like [treemacs](https://github.com/emacs-lsp/lsp-treemacs), [Helm](https://github.com/emacs-lsp/helm-lsp), [Ivy](https://github.com/emacs-lsp/lsp-ivy) and others.
 
 For all available integrations, check the `Extensions` section on the left navigation.

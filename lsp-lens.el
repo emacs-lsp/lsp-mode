@@ -23,7 +23,7 @@
 
 (require 'lsp-mode)
 
-(defcustom lsp-lens-debounce-interval 0.2
+(defcustom lsp-lens-debounce-interval 0.001
   "Debounce interval for loading lenses."
   :group 'lsp-mode
   :type 'number)
@@ -85,18 +85,12 @@ Results are meaningful only if FROM and TO are on the same line."
 
 (defun lsp-lens--overlay-ensure-at (pos)
   "Find or create a lens for the line at POS."
-  (or (when-let ((ov (-first (lambda (ov) (lsp-lens--overlay-matches-pos ov pos)) lsp-lens--overlays)))
-        (save-excursion
-          (goto-char pos)
-          (move-overlay ov (point-at-bol) (1+ (point-at-eol))))
-        ov)
-      (let* ((ov (save-excursion
-                   (goto-char pos)
-                   (make-overlay (point-at-bol) (1+ (point-at-eol)) nil t t))))
-        (overlay-put ov 'lsp-lens t)
-        (overlay-put ov 'evaporate t)
-        (overlay-put ov 'lsp-lens-position pos)
-        ov)))
+  (-doto (save-excursion
+           (goto-char pos)
+           (make-overlay (point-at-bol) (1+ (point-at-eol)) nil t t))
+    (overlay-put 'lsp-lens t)
+    (overlay-put 'evaporate t)
+    (overlay-put 'lsp-lens-position pos)))
 
 (defun lsp-lens--show (str pos metadata)
   "Show STR in an inline window at POS including METADATA."
@@ -168,50 +162,42 @@ See `lsp-lens--schedule-refresh' for details."
   "Show LENSES."
   ;; rerender only if there are lenses which are not processed or if their count
   ;; has changed(e. g. delete lens should trigger redisplay).
-  (setq lsp-lens--modified? nil)
-  (when (or (-any? (-lambda ((&CodeLens :_processed processed))
-                     (not processed))
-                   lenses)
-            (eq (length lenses) lsp-lens--last-count)
-            (not lenses))
-    (setq lsp-lens--last-count (length lenses))
-    (let ((overlays
-           (->> lenses
-                (-filter #'lsp:code-lens-command?)
-                (--map (prog1 it (lsp-put it :_processed t)))
-                (-group-by (-compose #'lsp:position-line #'lsp:range-start #'lsp:code-lens-range))
-                (-map
-                 (-lambda ((_ . lenses))
-                   (let* ((sorted (-sort (-on #'< (-compose #'lsp:position-character
-                                                            #'lsp:range-start
-                                                            #'lsp:code-lens-range))
-                                         lenses))
-                          (data (-map
-                                 (-lambda ((lens &as &CodeLens
-                                                 :command? (command &as
-                                                                    &Command :title :_face face)))
-                                   (propertize
-                                    title
-                                    'face (or face 'lsp-lens-face)
-                                    'action (lsp-lens--create-interactive-command command)
-                                    'point 'hand
-                                    'mouse-face 'lsp-lens-mouse-face
-                                    'local-map (lsp-lens--keymap command)))
-                                 sorted)))
-                     (lsp-lens--show
-                      (s-join (propertize "|" 'face 'lsp-lens-face) data)
-                      (-> sorted cl-first lsp:code-lens-range lsp:range-start lsp--position-to-point)
-                      data)))))))
-      (mapc (lambda (overlay)
-              (unless (and (-contains? overlays overlay)
-                           (overlay-start overlay)
-                           ;; buffer narrowed, overlay outside of it
-                           (<= (point-min)
-                               (overlay-get overlay 'lsp-lens-position )
-                               (point-max)))
-                (delete-overlay overlay)))
-            lsp-lens--overlays)
-      (setq lsp-lens--overlays overlays))))
+  (let ((scroll-preserve-screen-position t))
+    (setq lsp-lens--modified? nil)
+    (when (or (-any? (-lambda ((&CodeLens :_processed processed))
+                       (not processed))
+                     lenses)
+              (eq (length lenses) lsp-lens--last-count)
+              (not lenses))
+      (setq lsp-lens--last-count (length lenses))
+      (mapc #'delete-overlay lsp-lens--overlays)
+      (setq lsp-lens--overlays
+            (->> lenses
+                 (-filter #'lsp:code-lens-command?)
+                 (--map (prog1 it (lsp-put it :_processed t)))
+                 (-group-by (-compose #'lsp:position-line #'lsp:range-start #'lsp:code-lens-range))
+                 (-map
+                  (-lambda ((_ . lenses))
+                    (let* ((sorted (-sort (-on #'< (-compose #'lsp:position-character
+                                                             #'lsp:range-start
+                                                             #'lsp:code-lens-range))
+                                          lenses))
+                           (data (-map
+                                  (-lambda ((lens &as &CodeLens
+                                                  :command? (command &as
+                                                                     &Command :title :_face face)))
+                                    (propertize
+                                     title
+                                     'face (or face 'lsp-lens-face)
+                                     'action (lsp-lens--create-interactive-command command)
+                                     'point 'hand
+                                     'mouse-face 'lsp-lens-mouse-face
+                                     'local-map (lsp-lens--keymap command)))
+                                  sorted)))
+                      (lsp-lens--show
+                       (s-join (propertize "|" 'face 'lsp-lens-face) data)
+                       (-> sorted cl-first lsp:code-lens-range lsp:range-start lsp--position-to-point)
+                       data)))))))))
 
 (defun lsp-lens-refresh (buffer-modified? &optional buffer)
   "Refresh lenses using lenses backend.
@@ -355,13 +341,13 @@ CALLBACK - callback for the lenses."
     (add-hook 'lsp-configure-hook #'lsp-lens--enable nil t)
     (add-hook 'lsp-on-idle-hook #'lsp-lens--idle-function nil t)
     (add-hook 'lsp-on-change-hook #'lsp-lens--schedule-refresh-modified nil t)
-    (add-hook 'after-save-hook #'lsp-lens--schedule-refresh nil t)
+    (add-hook 'after-save-hook #'lsp-lens--after-save nil t)
     (add-hook 'before-revert-hook #'lsp-lens-hide nil t)
     (lsp-lens-refresh t))
    (t
     (remove-hook 'lsp-on-idle-hook #'lsp-lens--idle-function t)
     (remove-hook 'lsp-on-change-hook #'lsp-lens--schedule-refresh-modified t)
-    (remove-hook 'after-save-hook #'lsp-lens--schedule-refresh t)
+    (remove-hook 'after-save-hook #'lsp-lens--after-save t)
     (remove-hook 'before-revert-hook #'lsp-lens-hide t)
     (when lsp-lens--refresh-timer
       (cancel-timer lsp-lens--refresh-timer))

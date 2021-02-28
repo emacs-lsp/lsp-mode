@@ -81,6 +81,12 @@ set it manually it will not try to load from the npm folder."
   :type 'boolean
   :group 'lsp-elm)
 
+(defcustom lsp-elm-only-update-diagnostics-on-save
+  nil
+  "Only update compiler diagnostics on save, not on document change."
+  :type 'boolean
+  :group 'lsp-elm)
+
 (defcustom lsp-elm-skip-install-package-confirmation
   nil
   "Skip confirmation for the Install Package code action."
@@ -106,6 +112,7 @@ set it manually it will not try to load from the npm folder."
     :elmFormatPath ,lsp-elm-elm-format-path
     :elmTestPath ,lsp-elm-elm-test-path
     :disableElmLSDiagnostics ,(lsp-json-bool lsp-elm-disable-elmls-diagnostics)
+    :onlyUpdateDiagnosticsOnSave ,(lsp-json-bool lsp-elm-only-update-diagnostics-on-save)
     :skipInstallPackageConfirmation ,(lsp-json-bool lsp-elm-skip-install-package-confirmation)
     :trace.server ,(lsp-json-bool lsp-elm-trace-server)))
 

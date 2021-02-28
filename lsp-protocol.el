@@ -365,6 +365,9 @@ See `-let' for a description of the destructuring mechanism."
 (lsp-interface (pwsh:ScriptRegion (:StartLineNumber :EndLineNumber :StartColumnNumber :EndColumnNumber :Text) nil))
 
 (lsp-interface (omnisharp:ErrorMessage (:Text :FileName :Line :Column))
+               (omnisharp:ProjectInformationRequest (:FileName))
+               (omnisharp:MsBuildProject (:IsUnitProject :IsExe :Platform :Configuration :IntermediateOutputPath :OutputPath :TargetFrameworks :SourceFiles :TargetFramework :TargetPath :AssemblyName :Path :ProjectGuid))
+               (omnisharp:ProjectInformation (:ScriptProject :MsBuildProject))
                (omnisharp:CodeStructureRequest (:FileName))
                (omnisharp:CodeStructureResponse (:Elements))
                (omnisharp:CodeElement (:Kind :Name :DisplayName :Children :Ranges :Properties))
