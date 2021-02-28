@@ -1198,17 +1198,15 @@ the lists according to METHOD."
                                      (-compose #'not #'lsp-empty?)
                                      results)
                                (`(,hover) hover)
-                               (hovers (-reduce-from
-                                        (-lambda ((&Hover :contents) result)
-                                          (lsp:set-hover-contents
-                                           result (append
-                                                   (if (and (sequencep contents)
-                                                            (not (stringp contents)))
-                                                       contents
-                                                     (list contents))
-                                                   (lsp:hover-contents result))))
-                                        (lsp-make-hover)
-                                        hovers))))
+                               (hovers (lsp-make-hover
+                                        :contents
+                                        (-mapcat
+                                         (-lambda ((&Hover :contents))
+                                           (if (and (sequencep contents)
+                                                    (not (stringp contents)))
+                                               (append contents ())
+                                             (list contents)))
+                                         hovers)))))
        ("textDocument/completion"
         (lsp-make-completion-list
          :is-incomplete (seq-some
