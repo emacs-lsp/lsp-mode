@@ -235,6 +235,15 @@ tarball or a zip file (based on a current platform) to TARGET-DIR."
   "Resolves path and arguments to use to start the server."
   (list (lsp-csharp--language-server-path) "-lsp"))
 
+(lsp-defun lsp-csharp-open-project-file ()
+  "Open corresponding project file  (.csproj) for the current file."
+  (interactive)
+  (-let* ((project-info-req (lsp-make-omnisharp-project-information-request :file-name (buffer-file-name)))
+          (project-info (lsp-request "o#/project" project-info-req))
+          ((&omnisharp:ProjectInformation :ms-build-project) project-info)
+          ((&omnisharp:MsBuildProject :path) ms-build-project))
+    (find-file path)))
+
 (lsp-defun lsp-csharp--action-client-find-references ((&Command :arguments?))
   "Read first argument from ACTION as Location and display xrefs for that location
 using the `textDocument/references' request."
