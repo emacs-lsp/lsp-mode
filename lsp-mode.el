@@ -71,6 +71,7 @@
 (defvar yas-also-auto-indent-first-line)
 (defvar dap-auto-configure-mode)
 (defvar dap-ui-menu-items)
+(defvar company-minimum-prefix-length)
 
 (defconst lsp--message-type-face
   `((1 . ,compilation-error-face)
@@ -5152,18 +5153,17 @@ It will show up only if current point has signature help."
   "Handler for editor.action.triggerParameterHints."
   (lsp-signature-activate))
 
-(defvar company-mode)
-
 (defun lsp--action-trigger-suggest (_command)
   "Handler for editor.action.triggerSuggest."
   (cond
-   ((and company-mode
+   ((and (bound-and-true-p company-mode)
          (fboundp 'company-auto-begin)
          (fboundp 'company-post-command))
     (run-at-time 0 nil
                  (lambda ()
-                   (company-auto-begin)
-                   (let ((this-command 'company-idle-begin))
+                   (let ((this-command 'company-idle-begin)
+                         (company-minimum-prefix-length 0))
+                     (company-auto-begin)
                      (company-post-command)))))
    (t
     (completion-at-point))))
