@@ -969,7 +969,8 @@ calling `remove-overlays'.")
 (defvar-local lsp--virtual-buffer-point-max nil)
 
 (cl-defgeneric lsp-execute-command (server command arguments)
-  "Ask SERVER to execute COMMAND with ARGUMENTS.")
+  "Ask SERVER to execute COMMAND with ARGUMENTS."
+  (declare (obsolete "use `make-lsp-client' with :action-handlers instead." "7.1.0")))
 
 (defun lsp-elt (sequence n)
   "Return Nth element of SEQUENCE or nil if N is out of range."
@@ -5208,9 +5209,18 @@ It will filter by KIND if non nil."
 
 (lsp-defun lsp--execute-command ((action &as &Command :command :arguments?))
   "Parse and execute a code ACTION represented as a Command LSP type."
-  (-if-let* ((action-handler (lsp--find-action-handler command)))
-      (funcall action-handler action)
-    (lsp--send-execute-command command arguments?)))
+  (let ((server-id (->> (lsp-workspaces)
+                        (cl-first)
+                        (or lsp--cur-workspace)
+                        (lsp--workspace-client)
+                        (lsp--client-server-id))))
+    (condition-case nil
+        (with-no-warnings
+          (lsp-execute-command server-id (intern command) arguments?))
+      (cl-no-applicable-method
+       (if-let ((action-handler (lsp--find-action-handler command)))
+           (funcall action-handler action)
+         (lsp--send-execute-command command arguments?))))))
 
 (lsp-defun lsp-execute-code-action ((action &as &CodeAction :command? :edit?))
   "Execute code action ACTION.
@@ -5740,7 +5750,7 @@ REFERENCES? t when METHOD returns references."
     (lsp-request "workspace/executeCommand" params)))
 
 (defun lsp--send-execute-command (command &optional args)
-  "Execute workspace COMMAND with ARGS showing error if command is not mapped client-side."
+  "Create and send a 'workspace/executeCommand' message having command COMMAND and optional ARGS."
   (condition-case-unless-debug err
       (lsp-workspace-command-execute command args)
     (error

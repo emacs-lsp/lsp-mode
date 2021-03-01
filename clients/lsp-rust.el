@@ -295,7 +295,7 @@ PARAMS progress report notification data."
         (lsp-workspace-status nil workspace)
       (lsp-workspace-status (format "%s - %s" title (or message? "")) workspace))))
 
-(cl-defmethod lsp-execute-command (_server (_command (eql rls.run)) params)
+(lsp-defun lsp-rust--rls-run ((&Command :arguments? params))
   (-let* (((&rls:Cmd :env :binary :args :cwd) (lsp-seq-first params))
           (default-directory (or cwd (lsp-workspace-root) default-directory) ))
     (compile
@@ -635,6 +635,11 @@ them with `crate` or the crate name they refer to."
 (lsp-defun lsp-rust--analyzer-run-single ((&Command :arguments?))
   (lsp-rust-analyzer-run (lsp-seq-first arguments?)))
 
+(lsp-defun lsp-rust--analyzer-show-references
+  ((&Command :title :arguments? [_uri _filepos references]))
+  (lsp-show-xrefs (lsp--locations-to-xref-items references) nil
+                  (s-contains-p "reference" title)))
+
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection
@@ -648,7 +653,8 @@ them with `crate` or the crate name they refer to."
   :priority (if (eq lsp-rust-server 'rust-analyzer) 1 -1)
   :initialization-options 'lsp-rust-analyzer--make-init-options
   :notification-handlers (ht<-alist lsp-rust-notification-handlers)
-  :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single))
+  :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single)
+                       ("rust-analyzer.showReferences" #'lsp-rust--analyzer-show-references))
   :library-folders-fn (lambda (_workspace) lsp-rust-library-directories)
   :after-open-fn (lambda ()
                    (when lsp-rust-analyzer-server-display-inlay-hints

@@ -144,19 +144,14 @@ See `lsp-lens--schedule-refresh' for details."
     (define-key [mouse-1] (lsp-lens--create-interactive-command command))))
 
 (defun lsp-lens--create-interactive-command (command?)
-  "Create an interactive COMMAND? for the lens."
-  (let ((server-id (->> (lsp-workspaces)
-                        (cl-first)
-                        (or lsp--cur-workspace)
-                        (lsp--workspace-client)
-                        (lsp--client-server-id))))
-    (if (functionp (lsp:command-command command?))
-        (lsp:command-command command?)
-      (lambda ()
-        (interactive)
-        (lsp-execute-command server-id
-                             (intern (lsp:command-command command?))
-                             (lsp:command-arguments? command?))))))
+  "Create an interactive COMMAND? for the lens.
+COMMAND? shall be an `&Command' (e.g. `&CodeLens' :command?) and
+mustn't be nil."
+  (if (functionp (lsp:command-command command?))
+      (lsp:command-command command?)
+    (lambda ()
+      (interactive)
+      (lsp--execute-command command?))))
 
 (defun lsp-lens--display (lenses)
   "Show LENSES."
