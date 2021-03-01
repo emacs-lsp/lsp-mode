@@ -5739,8 +5739,7 @@ REFERENCES? t when METHOD returns references."
 
 (cl-defmethod lsp-execute-command (_server command arguments)
   "Dispatch COMMAND execution."
-  (lsp--execute-command (lsp-make-command :command (symbol-name command)
-                                          :arguments? arguments)))
+  (signal 'cl-no-applicable-method nil))
 
 (defun lsp-workspace-command-execute (command &optional args)
   "Execute workspace COMMAND with ARGS."
