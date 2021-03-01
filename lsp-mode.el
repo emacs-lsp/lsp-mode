@@ -5736,7 +5736,7 @@ REFERENCES? t when METHOD returns references."
 
 (defalias 'lsp-feature? 'lsp--find-workspaces-for)
 
-(cl-defmethod lsp-execute-command (_server command arguments)
+(cl-defmethod lsp-execute-command (_server _command _arguments)
   "Dispatch COMMAND execution."
   (signal 'cl-no-applicable-method nil))
 
