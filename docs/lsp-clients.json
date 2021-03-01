@@ -175,7 +175,7 @@
     "full-name": "Go",
     "server-name": "gopls",
     "server-url": "https://github.com/golang/tools/tree/master/gopls",
-    "installation-url": "https://github.com/golang/tools/blob/master/gopls/doc/user.md#installation",
+    "installation-url": "https://github.com/golang/tools/tree/master/gopls#installation",
     "debugger": "Yes"
   },
   {
