@@ -640,6 +640,11 @@ them with `crate` or the crate name they refer to."
   (lsp-show-xrefs (lsp--locations-to-xref-items references) nil
                   (s-contains-p "reference" title)))
 
+(declare-function dap-debug "ext:dap-mode" (template) t)
+
+(lsp-defun lsp-rust--analyzer-debug-lens ((&Command :arguments? [args]))
+  (lsp-rust-analyzer-debug args))
+
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection
@@ -654,6 +659,7 @@ them with `crate` or the crate name they refer to."
   :initialization-options 'lsp-rust-analyzer--make-init-options
   :notification-handlers (ht<-alist lsp-rust-notification-handlers)
   :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single)
+                       ("rust-analyzer.debugSingle" #'lsp-rust--analyzer-debug-lens)
                        ("rust-analyzer.showReferences" #'lsp-rust--analyzer-show-references))
   :library-folders-fn (lambda (_workspace) lsp-rust-library-directories)
   :after-open-fn (lambda ()
@@ -859,6 +865,46 @@ them with `crate` or the crate name they refer to."
        (if (functionp 'cargo-process-mode) 'cargo-process-mode nil)
        (lambda (_) (concat "*" label "*")))
       (setq lsp-rust-analyzer--last-runnable runnable))))
+
+(defun lsp-rust-analyzer-debug (runnable)
+  "Select and run a runnable action."
+  (interactive (list (lsp-rust-analyzer--select-runnable)))
+  (unless (featurep 'dap-cpptools)
+    (user-error "You must require `dap-cpptools'."))
+  (-let (((&rust-analyzer:Runnable
+           :args (&rust-analyzer:RunnableArgs :cargo-args :workspace-root? :executable-args)
+           :label) runnable))
+    (cl-case (aref cargo-args 0)
+      ("run" (aset cargo-args 0 "build"))
+      ("test" (when (-contains? (append cargo-args ()) "--no-run")
+                (cl-callf append cargo-args (list "--no-run")))))
+    (->> (append (list (executable-find "cargo"))
+                 cargo-args
+                 (list "--message-format=json"))
+         (s-join " ")
+         (shell-command-to-string)
+         (s-lines)
+         (-keep (lambda (s)
+                  (condition-case nil
+                      (-let* ((json-object-type 'plist)
+                              ((msg &as &plist :reason :executable) (json-read-from-string s)))
+                        (when (and executable (string= "compiler-artifact" reason))
+                          executable))
+                    (error))))
+         (funcall
+          (lambda (artifact-spec)
+            (pcase artifact-spec
+              (`() (user-error "No compilation artifacts or obtaining the runnable artifacts failed."))
+              (`(,spec) spec)
+              (_ (user-error "Multiple compilation artifacts are not supported.")))))
+         (list :type "cppdbg"
+               :request "launch"
+               :name label
+               :args executable-args
+               :cwd workspace-root?
+               :sourceLanguages ["rust"]
+               :program)
+         (dap-debug))))
 
 (defun lsp-rust-analyzer-rerun (&optional runnable)
   (interactive (list (or lsp-rust-analyzer--last-runnable
