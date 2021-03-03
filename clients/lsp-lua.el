@@ -168,6 +168,12 @@ fragment.  If it is set to `0`, this feature can be disabled."
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
+(defcustom lsp-lua-completion-workspace-word t
+  "Show words within the workspace."
+  :type 'boolean
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
 (defcustom lsp-lua-develop-debugger-port 11412
   "Listen port of debugger."
   :type 'number
@@ -216,6 +222,18 @@ fragment.  If it is set to `0`, this feature can be disabled."
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
+(defcustom lsp-lua-diagnostics-needed-file-status nil
+  "If you want to check only opened files, choice Opened; else choice Any.
+```json
+\"Lua.diagnostics.neededFileStatus\" : {
+\"ambiguity-1\" : \"Any\",
+\"circle-doc-class\" : \"Opened\"
+}
+```"
+  :type 'alist
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
 (defcustom lsp-lua-diagnostics-severity nil
   "Modified diagnostic severity.
 ```json
@@ -228,9 +246,65 @@ fragment.  If it is set to `0`, this feature can be disabled."
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
+(defcustom lsp-lua-diagnostics-workspace-delay 0
+  "Latency (milliseconds) for workspace diagnostics. When you start the
+workspace, or edit any file, the entire workspace will be re-diagnosed in the
+background. Set to negative to disable workspace diagnostics."
+  :type 'number
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
+(defcustom lsp-lua-diagnostics-workspace-rate 100
+  "Workspace diagnostics run rate (%). Decreasing this value reduces CPU usage,
+but also reduces the speed of workspace diagnostics. The diagnosis of the file
+you are currently editing is always done at full speed and is not affected by
+this setting."
+  :type 'number
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
+(defcustom lsp-lua-hint-enable nil
+  "Enable hint."
+  :type 'boolean
+  :package-version '(lsp-mmode . "7.1")
+  :group 'lsp-lua-language-server)
+
+(defcustom lsp-lua-hint-param-name t
+  "Hint parameter name when the parameter called is literal."
+  :type 'boolean
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
+(defcustom lsp-lua-hint-param-type t
+  "Show type hints at the parameter of the function."
+  :type 'boolean
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
+(defcustom lsp-lua-hint-set-type nil
+  "Hint type at assignment operation."
+  :type 'boolean
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
 (defcustom lsp-lua-hover-enable t
   "Enable hover."
   :type 'boolean
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
+(defcustom lsp-lua-hover-field-infer 3000
+  "When hovering to view a table, type infer will be performed for each field.
+When the accumulated time of type infer reaches the set value (MS), the type
+infer of subsequent fields will be skipped."
+  :type 'number
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
+(defcustom lsp-lua-hover-preview-fields 100
+  "When hovering to view a table, limits the maximum number of previews for
+fields."
+  :type 'number
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
@@ -253,6 +327,28 @@ escape character)."
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
+(defcustom lsp-lua-intelli-sense-search-depth 0
+  "Set the search depth for IntelliSense. Increasing this value increases
+accuracy, but decreases performance. Different workspace have different
+tolerance for this setting. Please adjust it to the appropriate value."
+  :type 'number
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
+(defcustom lsp-lua-runtime-file-encoding "utf8"
+  "File encoding. The 'ansi' option is only available under the 'Windows'
+platform."
+  :type '(choice (:tag "utf8" "ansi"))
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
+(defcustom lsp-lua-runtime-nonstandard-symbol nil
+  "Supports non-standard symbols. Make sure that your runtime environment
+supports these symbols."
+  :type 'lsp-string-vector
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
 (defcustom lsp-lua-runtime-path
   ["?.lua" "?/init.lua" "?/?.lua"]
   "`package.path`."
@@ -260,7 +356,31 @@ escape character)."
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-runtime-version "Lua 5.3"
+(defcustom lsp-lua-runtime-plugin nil
+  "(Proposed) Plugin path. Default is `.vscode/lua/plugin.lua`"
+  :type 'file
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
+(defcustom lsp-lua-runtime-special nil
+  "The custom global variables are regarded as some special built-in variables,
+and the language server will provide special support.
+```json
+\"Lua.runtime.special\" : {
+\"include\" : \"require\"
+}
+```"
+  :type 'alist
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
+(defcustom lsp-lua-runtime-unicode-name nil
+  "Allows Unicode characters in name."
+  :type 'boolean
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
+(defcustom lsp-lua-runtime-version "Lua 5.4"
   "Lua runtime version."
   :type '(choice (:tag "Lua 5.1" "Lua 5.2" "Lua 5.3" "Lua 5.4" "LuaJIT"))
   :package-version '(lsp-mode . "7.1")
@@ -268,6 +388,25 @@ escape character)."
 
 (defcustom lsp-lua-signature-help-enable t
   "Enable signature help."
+  :type 'boolean
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
+(defcustom lsp-lua-telemetry-enable nil
+  "Enable telemetry to send your editor information and error logs over the
+network."
+  :type 'boolean
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
+(defcustom lsp-lua-window-progress-bar t
+  "Show progress bar in status bar."
+  :type 'boolean
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-lua-language-server)
+
+(defcustom lsp-lua-window-status-bar t
+  "Show extension status in status bar."
   :type 'boolean
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
@@ -312,7 +451,7 @@ and `../lib` ,exclude `../lib/temp`.
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-workspace-max-preload 300
+(defcustom lsp-lua-workspace-max-preload 1000
   "Max preloaded files."
   :type 'number
   :package-version '(lsp-mode . "7.1")
@@ -330,12 +469,6 @@ and `../lib` ,exclude `../lib/temp`.
   :package-version '(lsp-mode . "7.1")
   :group 'lsp-lua-language-server)
 
-(defcustom lsp-lua-zzzzzz-cat nil
-  "DONT TOUCH ME, LET ME SLEEP >_<."
-  :type 'boolean
-  :package-version '(lsp-mode . "7.1")
-  :group 'lsp-lua-language-server)
-
 (defcustom lsp-lua-files-associations nil
   "Files.associations."
   :type 'alist
@@ -349,8 +482,7 @@ and `../lib` ,exclude `../lib/temp`.
   :group 'lsp-lua-language-server)
 
 (lsp-register-custom-settings
- '(("Lua.zzzzzz.cat" lsp-lua-zzzzzz-cat t)
-   ("files.associations" lsp-lua-files-associations t)
+ '(("files.associations" lsp-lua-files-associations t)
    ("files.exclude" lsp-lua-files-exclude t)
    ("Lua.workspace.useGitIgnore" lsp-lua-workspace-use-git-ignore t)
    ("Lua.workspace.preloadFileSize" lsp-lua-workspace-preload-file-size)
@@ -358,20 +490,39 @@ and `../lib` ,exclude `../lib/temp`.
    ("Lua.workspace.library" lsp-lua-workspace-library)
    ("Lua.workspace.ignoreSubmodules" lsp-lua-workspace-ignore-submodules t)
    ("Lua.workspace.ignoreDir" lsp-lua-workspace-ignore-dir)
+   ("Lua.window.statusBar" lsp-lua-window-status-bar t)
+   ("Lua.window.progressBar" lsp-lua-window-progress-bar t)
+   ("Lua.telemetry.enable" lsp-lua-telemetry-enable nil)
    ("Lua.signatureHelp.enable" lsp-lua-signature-help-enable t)
    ("Lua.runtime.version" lsp-lua-runtime-version)
+   ("Lua.runtime.unicodeName" lsp-lua-runtime-unicode-name nil)
+   ("Lua.runtime.special" lsp-lua-runtime-special)
+   ("Lua.runtime.plugin" lsp-lua-runtime-plugin)
    ("Lua.runtime.path" lsp-lua-runtime-path)
+   ("Lua.runtime.nonstandardSymbol" lsp-lua-runtime-nonstandard-symbol)
+   ("Lua.runtime.fileEncoding" lsp-lua-runtime-file-encoding)
+   ("Lua.intelliSense.searchDepth" lsp-lua-intelli-sense-search-depth)
    ("Lua.hover.viewStringMax" lsp-lua-hover-view-string-max)
    ("Lua.hover.viewString" lsp-lua-hover-view-string t)
    ("Lua.hover.viewNumber" lsp-lua-hover-view-number t)
+   ("Lua.hover.previewFields" lsp-lua-hover-preview-fields)
+   ("Lua.hover.fieldInfer" lsp-lua-hover-field-infer)
    ("Lua.hover.enable" lsp-lua-hover-enable t)
+   ("Lua.hint.setType" lsp-lua-hint-set-type nil)
+   ("Lua.hint.paramType" lsp-lua-hint-param-type t)
+   ("Lua.hint.paramName" lsp-lua-hint-param-name t)
+   ("Lua.hint.enable" lsp-lua-hint-enable nil)
+   ("Lua.diagnostics.workspaceRate" lsp-lua-diagnostics-workspace-rate)
+   ("Lua.diagnostics.workspaceDelay" lsp-lua-diagnostics-workspace-delay)
    ("Lua.diagnostics.severity" lsp-lua-diagnostics-severity)
+   ("Lua.diagnostics.neededFileStatus" lsp-lua-diagnostics-needed-file-status)
    ("Lua.diagnostics.globals" lsp-lua-diagnostics-globals)
    ("Lua.diagnostics.enable" lsp-lua-diagnostics-enable t)
    ("Lua.diagnostics.disable" lsp-lua-diagnostics-disable)
    ("Lua.develop.enable" lsp-lua-develop-enable t)
    ("Lua.develop.debuggerWait" lsp-lua-develop-debugger-wait t)
    ("Lua.develop.debuggerPort" lsp-lua-develop-debugger-port)
+   ("Lua.completion.workspaceWord" lsp-lua-completion-workspace-word t)
    ("Lua.completion.keywordSnippet" lsp-lua-completion-keyword-snippet)
    ("Lua.completion.enable" lsp-lua-completion-enable t)
    ("Lua.completion.displayContext" lsp-lua-completion-display-context)
@@ -388,7 +539,7 @@ and `../lib` ,exclude `../lib/temp`.
        (set-file-modes lsp-clients-lua-language-server-bin #o0700)
        (funcall callback))
      error-callback
-     :url (lsp-vscode-extension-url "sumneko" "lua" "1.17.0")
+     :url (lsp-vscode-extension-url "sumneko" "lua" "1.17.4")
      :store-path store-path
      :decompress :zip)))
 
