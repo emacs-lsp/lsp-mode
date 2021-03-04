@@ -84,6 +84,11 @@ In case LSP server supports `hover` feature:
 
 In general the formatter settings are language server specific(e. g. `JDT LS` uses eclipse formatter file and `lsp-java-format-settings-url` to configure it while clangd uses `clangd-format` and `lsp-dart` uses the built-in `dartfmt` from `Dart SDK`). The only settings that are controlled on `lsp-mode` level are indent size and whether the server should use tabs or spaces. Refer to `lsp--formatting-indent-alist` to find out what is the variable that is used for the current major mode.
 
+Some language servers, e.g. for C++, Java, etc, can format code as you type and
+the formatting is triggered when the corresponding character is
+pressed(typically, `}`, `RET`). This behaviour is controlled via
+`lsp-enable-on-type-formatting` and it is enabled by default.
+
 ## Debugger
 
 `lsp-mode` integrates with [dap-mode](https://emacs-lsp.github.io/dap-mode/) with implements the DAP(Debugger Adapter Protocol), for more information check the [`dap-mode` documentation](https://emacs-lsp.github.io/dap-mode/).
