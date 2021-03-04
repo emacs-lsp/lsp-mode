@@ -79,7 +79,7 @@
 (defun lsp-clojure--execute-command (command &optional args)
   "Send an executeCommand request for COMMAND with ARGS."
   (lsp--cur-workspace-check)
-  (lsp--send-execute-command command (apply #'vector args)))
+  (lsp-send-execute-command command (apply #'vector args)))
 
 (defun lsp-clojure--refactoring-call (refactor-name &rest additional-args)
   "Send an executeCommand request for REFACTOR-NAME with ADDITIONAL-ARGS.
