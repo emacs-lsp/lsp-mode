@@ -4,7 +4,7 @@
 
 If LSP server supports completion, `lsp-mode` use symbols returned by the server to present the user when completion is triggered via `completion-at-point`.
 
-For the traditional completion popup install [company-mode](https://company-mode.github.io/).
+For the traditional completion popup, install [company-mode](https://company-mode.github.io/).
 
 ![](../examples/completion.gif)
 
