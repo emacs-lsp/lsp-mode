@@ -6999,6 +6999,16 @@ JavaScript file, tsserver.js (the *.js is required for Windows)."
 
 (defvar-local lsp--installation-buffer nil)
 
+(defface lsp-installation-finished-buffer-face '((t :foreground "orange"))
+  "Face used for finished installation buffers.
+Used in `lsp-select-installation-buffer'."
+  :group 'lsp-mode)
+
+(defface lsp-installation-buffer-face '((t :foreground "green"))
+  "Face used for installation buffers still in progress.
+Used in `lsp-select-installation-buffer'."
+  :group 'lsp-mode)
+
 (defun lsp-select-installation-buffer (&optional show-finished)
   "Interactively choose an installation buffer.
 If SHOW-FINISHED is set, leftover (finished) installation buffers
@@ -7011,7 +7021,11 @@ are still shown."
       (`nil (user-error "No installation buffers"))
       (`(,buf) (pop-to-buffer buf))
       (bufs (pop-to-buffer (completing-read "Select installation buffer: "
-                                            (mapcar #'buffer-name bufs)))))))
+                                            (--map (propertize (buffer-name it) 'face
+                                                               (if (get-buffer-process it)
+                                                                   'lsp-installation-buffer-face
+                                                                 'lsp-installation-finished-buffer-face))
+                                                   bufs)))))))
 
 (defun lsp--download-status ()
   (-some--> #'lsp--client-download-in-progress?
