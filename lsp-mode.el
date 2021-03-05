@@ -7241,7 +7241,7 @@ STORE-PATH to make it executable."
 -nologo -ex bypass Expand-Archive -path '%s' -dest '%s'"
   "Powershell script to unzip file.")
 
-(defconst lsp-ext-unzip-script "bash -c 'mkdir -p %2$s && unzip -qq %1$s -d %2$s'"
+(defconst lsp-ext-unzip-script "bash -c 'mkdir -p %2$s && unzip -qq -o %1$s -d %2$s'"
   "Unzip script to unzip file.")
 
 (defcustom lsp-unzip-script (cond ((executable-find "powershell") lsp-ext-pwsh-script)
