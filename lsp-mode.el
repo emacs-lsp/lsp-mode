@@ -6999,11 +6999,13 @@ JavaScript file, tsserver.js (the *.js is required for Windows)."
 
 (defvar-local lsp--installation-buffer nil)
 
-(defun lsp-select-installation-buffer ()
-  "Interactively choose an installation buffer."
-  (interactive)
+(defun lsp-select-installation-buffer (&optional show-finished)
+  "Interactively choose an installation buffer.
+If SHOW-FINISHED is set, leftover (finished) installation buffers
+are still shown."
+  (interactive "P")
   (let ((bufs (--filter (and (buffer-local-value 'lsp--installation-buffer it)
-                             (get-buffer-process it))
+                             (or show-finished (get-buffer-process it)))
                         (buffer-list))))
     (pcase bufs
       (`nil (user-error "No installation buffers"))
