@@ -633,7 +633,7 @@ See `-let' for a description of the destructuring mechanism."
  (WorkspaceClientCapabilities nil (:applyEdit :configuration :didChangeConfiguration :didChangeWatchedFiles :executeCommand :symbol :workspaceEdit :workspaceFolders))
  (WorkspaceEdit nil (:changes :documentChanges :resourceChanges))
  (WorkspaceEditCapabilities nil (:documentChanges :failureHandling :resourceChanges :resourceOperations))
- (WorkspaceFolder (:uri) (:name))
+ (WorkspaceFolder (:uri :name) nil)
  (WorkspaceFoldersChangeEvent (:removed :added) nil)
  (WorkspaceFoldersOptions nil (:changeNotifications :supported))
  (WorkspaceServerCapabilities nil (:workspaceFolders))

@@ -3471,7 +3471,12 @@ yet."
                     (--filter (lsp--client-multi-root (lsp--workspace-client it)))))
     (with-lsp-workspace wks
       (lsp-notify "workspace/didChangeWorkspaceFolders"
-                  `(:event (:removed ,(vector (list :uri (lsp--path-to-uri project-root))))))))
+                  (lsp-make-did-change-workspace-folders-params
+                   :event (lsp-make-workspace-folders-change-event
+                           :removed (vector (lsp-make-workspace-folder
+                                             :uri (lsp--path-to-uri project-root)
+                                             :name (f-filename project-root)))
+                           :added [])))))
 
   ;; turn off servers in the removed directory
   (let* ((session (lsp-session))
@@ -7642,7 +7647,12 @@ When ALL is t, erase all log buffers of the running session."
                                                        (lsp--client-server-id client)))))
       (with-lsp-workspace multi-root-workspace
         (lsp-notify "workspace/didChangeWorkspaceFolders"
-                    `(:event (:added ,(vector (list :uri (lsp--path-to-uri project-root)))))))
+                    (lsp-make-did-change-workspace-folders-params
+                     :event (lsp-make-workspace-folders-change-event
+                             :added (vector (lsp-make-workspace-folder
+                                             :uri (lsp--path-to-uri project-root)
+                                             :name (f-filename project-root)))
+                             :removed []))))
 
       (->> session (lsp-session-folder->servers) (gethash project-root) (cl-pushnew multi-root-workspace))
       (->> session (lsp-session-server-id->folders) (gethash (lsp--client-server-id client)) (cl-pushnew project-root))
@@ -7650,6 +7660,7 @@ When ALL is t, erase all log buffers of the running session."
       (lsp--persist-session session)
 
       (lsp--info "Opened folder %s in workspace %s" project-root (lsp--workspace-print multi-root-workspace))
+      (lsp--open-in-workspace multi-root-workspace)
 
       multi-root-workspace)))
 
@@ -7837,7 +7848,7 @@ such."
             (progn
               ;; update project roots if needed and persist the lsp session
               (unless (-contains? (lsp-session-folders session) project-root)
-                (push project-root (lsp-session-folders session))
+                (cl-pushnew project-root (lsp-session-folders session))
                 (lsp--persist-session session))
               (lsp--ensure-lsp-servers session clients project-root ignore-multi-folder))
           (lsp--warn "%s not in project or it is blacklisted." (buffer-name))
