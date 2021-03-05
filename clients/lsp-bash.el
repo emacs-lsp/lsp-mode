@@ -62,11 +62,20 @@ See instructions at https://marketplace.visualstudio.com/items?itemName=mads-har
                 '(:npm :package "bash-language-server"
                        :path "bash-language-server"))
 
+(defvar sh-shell)
+
+(defun lsp-bash-check-sh-shell (&rest _)
+  "Check whether `sh-shell' is sh or bash.
+
+This prevents the Bash server from being turned on in zsh files."
+  (and (eq major-mode 'sh-mode)
+       (memq sh-shell '(sh bash))))
+
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection #'lsp-bash--bash-ls-server-command)
-  :major-modes '(sh-mode)
   :priority -1
+  :activation-fn #'lsp-bash-check-sh-shell
   :environment-fn (lambda ()
                     '(("EXPLAINSHELL_ENDPOINT" . lsp-bash-explainshell-endpoint)
                       ("HIGHLIGHT_PARSING_ERRORS" . lsp-bash-highlight-parsing-errors)
