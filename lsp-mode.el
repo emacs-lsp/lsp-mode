@@ -6997,6 +6997,20 @@ JavaScript file, tsserver.js (the *.js is required for Windows)."
       (error nil)
       (args-out-of-range nil))))
 
+(defvar-local lsp--installation-buffer nil)
+
+(defun lsp-select-installation-buffer ()
+  "Interactively choose an installation buffer."
+  (interactive)
+  (let ((bufs (--filter (and (buffer-local-value 'lsp--installation-buffer it)
+                             (get-buffer-process it))
+                        (buffer-list))))
+    (pcase bufs
+      (`nil (user-error "No installation buffers"))
+      (`(,buf) (pop-to-buffer buf))
+      (bufs (pop-to-buffer (completing-read "Select installation buffer: "
+                                            (mapcar #'buffer-name bufs)))))))
+
 (defun lsp--download-status ()
   (-some--> #'lsp--client-download-in-progress?
     (lsp--filter-clients it)
@@ -7006,9 +7020,7 @@ JavaScript file, tsserver.js (the *.js is required for Windows)."
     (format " Installing following servers: %s" it)
     (propertize it
                 'local-map (make-mode-line-mouse-map
-                            'mouse-1 (lambda ()
-                                       (interactive)
-                                       (switch-to-buffer (get-buffer-create " *lsp-install*"))))
+                            'mouse-1 #'lsp-select-installation-buffer)
                 'mouse-face 'highlight)))
 
 (defun lsp--install-server-internal (client &optional update?)
@@ -7081,22 +7093,24 @@ When prefix UPDATE? is t force installation even if the server is present."
 
 (defun lsp-async-start-process (callback error-callback &rest command)
   "Start async process COMMAND with CALLBACK and ERROR-CALLBACK."
-  (make-process
-   :name (cl-first command)
-   :command command
-   :sentinel (lambda (proc _)
-               (when (eq 'exit (process-status proc))
-                 (if (zerop (process-exit-status proc))
-                     (condition-case err
-                         (funcall callback)
-                       (error
-                        (funcall error-callback (error-message-string err))))
-                   (display-buffer " *lsp-install*")
-                   (funcall error-callback
-                            (format "Async process '%s' failed with exit code %d"
-                                    (process-name proc) (process-exit-status proc))))))
-   :buffer " *lsp-install*"
-   :noquery t))
+  (let ((name (cl-first command)))
+    (with-current-buffer (compilation-start (combine-and-quote-strings command) t
+                                            (lambda (&rest _)
+                                              (generate-new-buffer-name (format "*lsp-install: %s*" name))))
+      (setq-local lsp--installation-buffer t)
+      (add-hook
+       'compilation-finish-functions
+       (lambda (buf status)
+         (if (string= "finished\n" status)
+             (condition-case err
+                 (funcall callback)
+               (error
+                (funcall error-callback (error-message-string err))))
+           (funcall error-callback
+                    (format "Async process '%s' failed with exit code %d"
+                            name (-> (current-buffer) get-buffer-process
+                                     process-exit-status)))))
+       nil t))))
 
 (defun lsp-resolve-value (value)
   "Resolve VALUE's value.
