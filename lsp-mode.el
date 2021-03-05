@@ -1394,7 +1394,7 @@ return value of `body' or nil if interrupted."
   ;; Function that will be called to decide if this language client
   ;; should manage a particular buffer. The function will be passed
   ;; the file name and major mode to inform the decision. Setting
-  ;; `activation-fn' will override `major-modes' and `remote?', if
+  ;; `activation-fn' will override `major-modes', if
   ;; present.
   activation-fn
   ;; Break the tie when major-mode is supported by multiple clients.
