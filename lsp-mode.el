@@ -3258,6 +3258,7 @@ disappearing, unset all the variables related to it."
                                                                              :json-false)
                                                                             (lsp-enable-snippet t)
                                                                             (t :json-false)))
+                                                        (resolveSupport . ((properties . ["additionalTextEdits"])))
                                                         (documentationFormat . ["markdown"])
                                                         (resolveAdditionalTextEditsSupport . t)))
                                      (contextSupport . t)))
