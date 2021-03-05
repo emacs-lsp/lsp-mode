@@ -7620,7 +7620,6 @@ When ALL is t, erase all log buffers of the running session."
         (buf (get-buffer-create "*lsp session*")))
     (with-current-buffer buf
       (lsp-browser-mode)
-      (cursor-sensor-mode 1)
       (let ((inhibit-read-only t))
         (erase-buffer)
         (--each (lsp-session-folders session)
