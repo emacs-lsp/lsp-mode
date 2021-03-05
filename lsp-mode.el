@@ -1948,7 +1948,7 @@ The result format is vector [_ errors warnings infos hints] or nil."
 
 (lsp-defun lsp--on-diagnostics-update-stats (workspace
                                              (&PublishDiagnosticsParams :uri :diagnostics))
-  (let ((path (lsp--uri-to-path uri))
+  (let ((path (lsp--fix-path-casing (lsp--uri-to-path uri)))
         (new-stats (make-vector 5 0)))
     (mapc (-lambda ((&Diagnostic :severity?))
             (cl-incf (aref new-stats (or severity? 1))))
