@@ -30,6 +30,11 @@
       package-user-dir (expand-file-name (make-temp-name "tmp-elpa")
                                          user-emacs-directory))
 
+(progn  ; Install `lsp-mode' from source
+  (add-to-list 'load-path "./")
+  (add-to-list 'load-path "./clients/")
+  (package-install-file "./"))
+
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
        (pkgs '(lsp-sourcekit)))
