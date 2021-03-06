@@ -4,5 +4,4 @@
 ;; (warn "Replace (require 'lsp) with (require 'lsp-mode)")
 
 (provide 'lsp)
-
 ;;; lsp.el ends here
