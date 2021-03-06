@@ -7009,12 +7009,16 @@ Used in `lsp-select-installation-buffer'."
 Used in `lsp-select-installation-buffer'."
   :group 'lsp-mode)
 
+(defun lsp--installation-buffer? (buf)
+  "Check whether BUF is an `lsp-async-start-process' buffer."
+  (buffer-local-value 'lsp--installation-buffer buf))
+
 (defun lsp-select-installation-buffer (&optional show-finished)
   "Interactively choose an installation buffer.
 If SHOW-FINISHED is set, leftover (finished) installation buffers
 are still shown."
   (interactive "P")
-  (let ((bufs (--filter (and (buffer-local-value 'lsp--installation-buffer it)
+  (let ((bufs (--filter (and (lsp--installation-buffer? it)
                              (or show-finished (get-buffer-process it)))
                         (buffer-list))))
     (pcase bufs
@@ -7026,6 +7030,13 @@ are still shown."
                                                                    'lsp-installation-buffer-face
                                                                  'lsp-installation-finished-buffer-face))
                                                    bufs)))))))
+
+(defun lsp-cleanup-installation-buffers ()
+  "Delete finished *lsp-installation* buffers."
+  (interactive)
+  (dolist (buf (buffer-list))
+    (when (and (lsp--installation-buffer? buf) (not (get-buffer-process buf)))
+      (kill-buffer buf))))
 
 (defun lsp--download-status ()
   (-some--> #'lsp--client-download-in-progress?
