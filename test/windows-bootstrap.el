@@ -1,6 +1,6 @@
 ;;; windows-bootstrap.el --- Windows test bootstrap -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2020 emacs-lsp maintainers
+;; Copyright (C) 2020-2021 emacs-lsp maintainers
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 
 (require 'package)
 
-
 (setq user-emacs-directory (expand-file-name (make-temp-name ".emacs.d")
                                              "~")
       package-user-dir (expand-file-name (make-temp-name "tmp-elpa")
@@ -41,6 +40,9 @@
         pkgs)
 
   (add-hook 'kill-emacs-hook
-            `(lambda () (delete-directory ,user-emacs-directory t))))
+            `(lambda ()
+               (unless (boundp 'emacs-lsp-ci)
+                 (delete-directory ,user-emacs-directory t)))))
+
 
 ;;; windows-bootstrap.el ends here
