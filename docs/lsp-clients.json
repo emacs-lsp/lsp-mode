@@ -22,7 +22,7 @@
     "server-url": "https://github.com/angular/vscode-ng-language-service",
     "installation-url": "https://github.com/emacs-lsp/lsp-mode/wiki/Install-Angular-Language-server",
     "installation": "npm install -g @angular/language-service@next typescript  @angular/language-server",
-      "debugger": "Not relevant"
+    "debugger": "Not relevant"
   },
   {
     "name": "bash",
@@ -177,6 +177,15 @@
     "server-url": "https://github.com/golang/tools/tree/master/gopls",
     "installation-url": "https://github.com/golang/tools/tree/master/gopls#installation",
     "debugger": "Yes"
+  },
+  {
+    "name": "grammarly",
+    "full-name": "Grammarly",
+    "server-name": "unofficial-grammarly-language-server-2",
+    "server-url": "https://github.com/emacs-grammarly/unofficial-grammarly-language-server",
+    "installation-url": "https://github.com/emacs-grammarly/unofficial-grammarly-language-server",
+    "installation": "npm i -g unofficial-grammarly-language-server-2",
+    "debugger": "Not available"
   },
   {
     "name": "groovy",
