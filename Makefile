@@ -63,6 +63,7 @@ test-pkgs:
 	@$(CASK) $(EMACS) -Q --batch \
 		-l $(WIN-BOOTSTRAP) \
 		--eval '(setq byte-compile-error-on-warn t)' \
+		--eval '(setq emacs-lsp-ci t)' \
 		-l $(TEST-PKGS)
 
 checkdoc:
