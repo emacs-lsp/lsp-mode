@@ -37,6 +37,15 @@
   (mapc (lambda (pkg)
           (unless (package-installed-p pkg)
             (package-install pkg)))
-        pkgs))
+        pkgs)
+
+  (add-hook 'kill-emacs-hook
+            `(lambda ()
+               ;; NOTE: If you are testing this on your own PC, then you
+               ;; might want to uncomment the line below to do the clean up
+               ;; after the test.
+               ;;(delete-directory ,user-emacs-directory t)
+               )))
+
 
 ;;; windows-bootstrap.el ends here
