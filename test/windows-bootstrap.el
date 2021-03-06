@@ -23,7 +23,6 @@
 
 (require 'package)
 
-
 (setq user-emacs-directory (expand-file-name (make-temp-name ".emacs.d")
                                              "~")
       package-user-dir (expand-file-name (make-temp-name "tmp-elpa")
@@ -41,6 +40,8 @@
         pkgs)
 
   (add-hook 'kill-emacs-hook
-            `(lambda () (delete-directory ,user-emacs-directory t))))
+            `(lambda ()
+               ;;(delete-directory ,user-emacs-directory t)
+               )))
 
 ;;; windows-bootstrap.el ends here
