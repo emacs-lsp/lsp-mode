@@ -36,14 +36,15 @@
 
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
-       (pkgs '(;;dap-mode
-               ;;helm-lsp
-               ;;lsp-dart
+       (pkgs '(dap-mode
+               helm-lsp
+               lsp-dart
                ;;lsp-docker
                ;;lsp-focus
                ;;lsp-haskell
                ;;lsp-ivy
                ;;lsp-java
+               ;;-----------
                lsp-metals
                lsp-mssql
                lsp-origami
@@ -52,8 +53,7 @@
                lsp-sonarlint
                lsp-sourcekit
                lsp-treemacs
-               lsp-ui
-               )))
+               lsp-ui)))
   (package-initialize)
   (package-refresh-contents)
 
