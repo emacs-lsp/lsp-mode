@@ -62,7 +62,6 @@ test-pkgs:
 	@echo "Test emacs-lsp packages..."
 	@$(CASK) $(EMACS) -Q --batch \
 		-l $(WIN-BOOTSTRAP) \
-		--eval '(setq byte-compile-error-on-warn t)' \
 		--eval '(setq emacs-lsp-ci t)' \
 		-l $(TEST-PKGS)
 
