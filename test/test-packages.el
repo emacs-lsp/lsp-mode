@@ -36,11 +36,13 @@
 
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
-       (pkgs '(dap-mode
+       (pkgs '(ccls
+               dap-mode
                helm-lsp
                lsp-dart
                lsp-docker
                lsp-focus
+               lsp-grammarly
                lsp-haskell
                lsp-ivy
                lsp-java
@@ -51,6 +53,7 @@
                lsp-python-ms
                lsp-sonarlint
                lsp-sourcekit
+               lsp-tailwindcss
                lsp-treemacs
                lsp-ui)))
   (advice-add
