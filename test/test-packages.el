@@ -30,6 +30,10 @@
       package-user-dir (expand-file-name (make-temp-name "tmp-elpa")
                                          user-emacs-directory))
 
+(defun package-version (name)
+  "Get version of the package by NAME."
+  (let ((pkg (cadr (assq name package-archive-contents)))) (when pkg (package-desc-version pkg))))
+
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
        (pkgs '(lsp-sourcekit)))
@@ -39,7 +43,9 @@
   (progn  ; Install `lsp-mode' from source
     (add-to-list 'load-path (expand-file-name "./"))
     (add-to-list 'load-path (expand-file-name "./clients/"))
-    (package-install-file (expand-file-name "./")))
+    (package-install-file (expand-file-name "./"))
+
+    (message "[INFO] `lsp-mode` version: %s" (package-version 'lsp-mode)))
 
   (mapc (lambda (pkg)
           (unless (package-installed-p pkg)
