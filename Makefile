@@ -34,10 +34,10 @@ unix-build:
 	$(CASK) install
 
 # TODO: add 'checkdoc' and 'lint' here when they pass
-unix-ci: clean unix-build unix-compile prepare_cpp_project unix-test test-pkgs
+unix-ci: clean unix-build unix-compile prepare_cpp_project unix-test test-downstream-pkgs
 
 windows-ci: CASK=
-windows-ci: clean windows-compile windows-test test-pkgs
+windows-ci: clean windows-compile windows-test test-downstream-pkgs
 
 unix-compile:
 	@echo "Compiling..."
@@ -58,7 +58,7 @@ windows-compile:
 		--eval '(setq byte-compile-error-on-warn t)' \
 		-f batch-byte-compile $(LSP-FILES)
 
-test-pkgs:
+test-downstream-pkgs:
 	@echo "Test emacs-lsp packages..."
 	@$(CASK) $(EMACS) -Q --batch \
 		-l $(WIN-BOOTSTRAP) \
@@ -117,4 +117,4 @@ clean:
 	rm -rf test/fixtures/SampleCppProject/build test/fixtures/SampleCppProject/.cache
 
 
-.PHONY: all unix-build	 ci unix-compile windows-compile checkdoc lint unix-test windows-test docs local-webpage clean
+.PHONY: all unix-build ci unix-compile windows-compile checkdoc lint unix-test windows-test docs local-webpage clean
