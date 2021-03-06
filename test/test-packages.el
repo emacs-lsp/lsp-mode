@@ -32,7 +32,7 @@
 
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
-       (pkgs '(lsp-source-kit)))
+       (pkgs '(lsp-sourcekit)))
   (package-initialize)
   (package-refresh-contents)
 

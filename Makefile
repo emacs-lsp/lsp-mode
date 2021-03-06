@@ -19,7 +19,10 @@ LSP-FILES := lsp-protocol.el lsp-mode.el lsp.el lsp-completion.el \
 		lsp-diagnostics.el lsp-lens.el lsp-modeline.el \
 		$(wildcard clients/*.el)
 
-TEST-FILES := test/windows-bootstrap.el test/test-helper.el \
+WIN-BOOTSTRAP=test/windows-bootstrap.el
+TEST-PKGS=test/test-packages.el
+
+TEST-FILES := $(WIN-BOOTSTRAP) $(TEST-PKGS) test/test-helper.el \
 		$(shell ls test/lsp-*.el)
 LOAD-FILE = -l $(test-file)
 LOAD-TEST-FILES := $(foreach test-file, $(TEST-FILES), $(LOAD-FILE))
@@ -50,7 +53,7 @@ prepare_cpp_project:
 windows-compile:
 	@echo "Compiling..."
 	@$(CASK) $(EMACS) -Q --batch \
-		-l test/windows-bootstrap.el \
+		-l $(WIN-BOOTSTRAP) \
 		-L . -L clients \
 		--eval '(setq byte-compile-error-on-warn t)' \
 		-f batch-byte-compile $(LSP-FILES)
@@ -83,11 +86,11 @@ lint:
 		$(LSP-FILES)
 
 unix-test:
-	$(CASK) exec ert-runner -L . -L clients  -t '!no-win' -t '!org'
+	$(CASK) exec ert-runner -L . -L clients	 -t '!no-win' -t '!org'
 
 windows-test:
 	@$(EMACS) -Q --batch \
-		-l test/windows-bootstrap.el \
+		-l $(WIN-BOOTSTRAP) \
 		-L . -L clients \
 		$(LOAD-TEST-FILES) \
 		--eval "(ert-run-tests-batch-and-exit \
