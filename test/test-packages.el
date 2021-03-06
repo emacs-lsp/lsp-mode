@@ -37,7 +37,6 @@
   (package-refresh-contents)
 
   (progn  ; Install `lsp-mode' from source
-    (message ">>> %s" (expand-file-name "./"))
     (add-to-list 'load-path (expand-file-name "./"))
     (add-to-list 'load-path (expand-file-name "./clients/"))
     (package-install-file (expand-file-name "./")))
