@@ -34,12 +34,6 @@
   "Get version of the package by NAME."
   (let ((pkg (cadr (assq name package-alist)))) (when pkg (package-desc-version pkg))))
 
-(defun test-packages--install-from-archive (pkg-desc)
-  "Advice execute beofre function `package-install-from-archive'."
-  (setq byte-compile-error-on-warn
-        (ignore-errors (string-prefix-p "lsp-" (symbol-name (package-desc-name pkg-desc))))))
-(advice-add 'package-install-from-archive :before #'test-packages--install-from-archive)
-
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
        (pkgs '(dap-mode
@@ -59,6 +53,12 @@
                lsp-sourcekit
                lsp-treemacs
                lsp-ui)))
+  (advice-add
+   'package-install-from-archive
+   :before (lambda (pkg-desc)
+             (setq byte-compile-error-on-warn
+                   (ignore-errors (memq (package-desc-name pkg-desc) pkgs)))))
+
   (package-initialize)
   (package-refresh-contents)
 
