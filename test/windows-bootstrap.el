@@ -1,6 +1,6 @@
 ;;; windows-bootstrap.el --- Windows test bootstrap -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2020 emacs-lsp maintainers
+;; Copyright (C) 2020-2021 emacs-lsp maintainers
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
