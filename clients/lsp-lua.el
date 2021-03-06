@@ -100,7 +100,8 @@
           (pcase system-type
             ('gnu/linux "Linux/lua-language-server")
             ('darwin "macOS/lua-language-server")
-            ('windows-nt "Windows/lua-language-server.exe")))
+            ('windows-nt "Windows/lua-language-server.exe")
+            (_ "Linux/lua-language-server")))
   "Location of Lua Language Server."
   :group 'lsp-lua-language-server
   :version "7.1"
