@@ -6997,7 +6997,13 @@ JavaScript file, tsserver.js (the *.js is required for Windows)."
       (error nil)
       (args-out-of-range nil))))
 
-(defvar-local lsp--installation-buffer nil)
+(define-minor-mode lsp-installation-buffer-mode
+  "Mode used in *lsp-installation* buffers.
+It can be used to set-up keybindings, etc. Disabling this mode
+detaches the installation buffer from commands like
+`lsp-select-installation-buffer'."
+  :init-value nil
+  :lighter nil)
 
 (defface lsp-installation-finished-buffer-face '((t :foreground "orange"))
   "Face used for finished installation buffers.
@@ -7011,7 +7017,7 @@ Used in `lsp-select-installation-buffer'."
 
 (defun lsp--installation-buffer? (buf)
   "Check whether BUF is an `lsp-async-start-process' buffer."
-  (buffer-local-value 'lsp--installation-buffer buf))
+  (buffer-local-value 'lsp-installation-buffer-mode buf))
 
 (defun lsp-select-installation-buffer (&optional show-finished)
   "Interactively choose an installation buffer.
@@ -7124,7 +7130,7 @@ When prefix UPDATE? is t force installation even if the server is present."
     (with-current-buffer (compilation-start (mapconcat #'shell-quote-argument command " ") t
                                             (lambda (&rest _)
                                               (generate-new-buffer-name (format "*lsp-install: %s*" name))))
-      (setq-local lsp--installation-buffer t)
+      (lsp-installation-buffer-mode +1)
       (add-hook
        'compilation-finish-functions
        (lambda (_buf status)
