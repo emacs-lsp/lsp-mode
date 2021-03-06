@@ -32,7 +32,7 @@
 
 (defun package-version (name)
   "Get version of the package by NAME."
-  (let ((pkg (cadr (assq name package-archive-contents)))) (when pkg (package-desc-version pkg))))
+  (let ((pkg (cadr (assq name package-alist)))) (when pkg (package-desc-version pkg))))
 
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
