@@ -5,6 +5,27 @@ documentation:
   - docs/**/*
   - mkdocs.yml
   - README.md
+  - CHANGELOG.org
+  - examples/**/*
+
+completion:
+  - lsp-completion.el
+  - test/lsp-completion-test.el
+
+diagnostics:
+  - lsp-diagnostics.el
+
+semantic-tokens:
+  - lsp-semantic-tokens.el
+
+CI:
+  - .github/workflows/**/*
 
 client:
   - clients/**/*
+
+dockerfile:
+  - clients/lsp-dockerfile.el
+
+rust:
+  - clients/lsp-rust.el
