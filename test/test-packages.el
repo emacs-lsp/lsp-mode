@@ -44,9 +44,7 @@
     (add-to-list 'load-path (expand-file-name "./"))
     (add-to-list 'load-path (expand-file-name "./clients/"))
     (package-install-file (expand-file-name "./"))
-    (message "[INFO] `lsp-mode` version: %s" (package-version 'lsp-mode))
-    (require 'lsp)
-    (lsp-test-packages))
+    (message "[INFO] `lsp-mode` version: %s" (package-version 'lsp-mode)))
 
   (mapc (lambda (pkg)
           (unless (package-installed-p pkg)
