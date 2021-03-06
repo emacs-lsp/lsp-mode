@@ -57,7 +57,7 @@
    'package-install-from-archive
    :before (lambda (pkg-desc)
              (setq byte-compile-error-on-warn
-                   (ignore-errors (memq (package-desc-name pkg-desc) pkgs)))))
+                   (if (ignore-errors (memq (package-desc-name pkg-desc) pkgs)) t nil))))
 
   (package-initialize)
   (package-refresh-contents)
