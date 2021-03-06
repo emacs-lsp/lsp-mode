@@ -38,8 +38,20 @@
                            ("gnu" . "https://elpa.gnu.org/packages/")))
        (pkgs '(dap-mode
                helm-lsp
-               ;;lsp-dart
-               ;;-----------
+               ;; Right now if you add this you will get the following error
+               ;;
+               ;; ```
+               ;; function lsp-make-notification used to take 0+ arguments, now takes 1-2
+               ;;
+               ;; 1 unexpected results:
+               ;;    FAILED  lsp-byte-compilation-test
+               ;; ```
+               ;;
+               ;; See https://github.com/emacs-lsp/lsp-mode/runs/2046252831
+               ;;
+               ;; P.S. This only occurs in Windows system
+               ;;
+               ;;lsp-dart  ; TODO: Add this after the test has passed.
                lsp-docker
                lsp-focus
                lsp-haskell
