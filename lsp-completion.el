@@ -30,9 +30,7 @@
 (defcustom lsp-completion-provider :capf
   "The completion backend provider."
   :type '(choice
-          (const :tag "Prefer company-capf" :capf)
-          (const :tag "Prefer company-capf" t)
-          (const :tag "None" nil)
+          (const :tag "Use company-capf" :capf)
           (const :tag "None" :none))
   :group 'lsp-mode
   :package-version '(lsp-mode . "7.0.1"))
@@ -693,14 +691,10 @@ The CLEANUP-FN will be called to cleanup."
 
       (cond
        ((equal lsp-completion-provider :none))
-       ((and (member lsp-completion-provider '(:capf nil t))
+       ((and (not (equal lsp-completion-provider :none))
              (fboundp 'company-mode))
         (setq-local company-abort-on-unique-match nil)
         (company-mode 1)
-        (when (or (null lsp-completion-provider)
-                  (member 'company-lsp company-backends))
-          (lsp--warn
-           "`company-lsp' is not supported anymore.  Using `company-capf' as the `lsp-completion-provider'."))
         (add-to-list 'company-backends 'company-capf))
        (t
         (lsp--warn "Unable to autoconfigure company-mode.")))
