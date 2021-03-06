@@ -7110,22 +7110,19 @@ When prefix UPDATE? is t force installation even if the server is present."
 (defun lsp-async-start-process (callback error-callback &rest command)
   "Start async process COMMAND with CALLBACK and ERROR-CALLBACK."
   (let ((name (cl-first command)))
-    (with-current-buffer (compilation-start (combine-and-quote-strings command) t
+    (with-current-buffer (compilation-start (mapconcat #'shell-quote-argument command " ") t
                                             (lambda (&rest _)
                                               (generate-new-buffer-name (format "*lsp-install: %s*" name))))
       (setq-local lsp--installation-buffer t)
       (add-hook
        'compilation-finish-functions
-       (lambda (buf status)
+       (lambda (_buf status)
          (if (string= "finished\n" status)
              (condition-case err
                  (funcall callback)
                (error
                 (funcall error-callback (error-message-string err))))
-           (funcall error-callback
-                    (format "Async process '%s' failed with exit code %d"
-                            name (-> (current-buffer) get-buffer-process
-                                     process-exit-status)))))
+           (funcall error-callback (s-trim-right status))))
        nil t))))
 
 (defun lsp-resolve-value (value)
