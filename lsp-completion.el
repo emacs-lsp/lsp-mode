@@ -528,18 +528,21 @@ Others: CANDIDATES"
 
         (when lsp-completion-enable-additional-text-edit
           (if (or (get-text-property 0 'lsp-completion-resolved candidate)
-                  additional-text-edits?)
+                  (not (seq-empty-p additional-text-edits?)))
               (lsp--apply-text-edits additional-text-edits? 'completion)
             (-let [(callback cleanup-fn) (lsp--create-apply-text-edits-handlers)]
               (lsp-completion--resolve-async
                item
-               (lambda (resolved-item)
-                 (funcall callback
-                          (lsp:completion-item-additional-text-edits? resolved-item)))
+               (-compose callback #'lsp:completion-item-additional-text-edits?)
                cleanup-fn))))
 
-        (when command?
-          (lsp--execute-command command?))
+        (if (or (get-text-property 0 'lsp-completion-resolved candidate)
+                 command?)
+            (when command? (lsp--execute-command command?))
+          (lsp-completion--resolve-async
+           item
+           (-lambda ((&CompletionItem? :command?))
+             (when command? (lsp--execute-command command?)))))
 
         (when (and (or
                     (equal lsp-signature-auto-activate t)
@@ -636,8 +639,7 @@ The return is nil or in range of (0, inf)."
   "Resolve completion ITEM."
   (cl-assert item nil "Completion item must not be nil")
   (or (ignore-errors
-        (when (lsp:completion-options-resolve-provider?
-               (lsp--capability :completionProvider))
+        (when (lsp-feature? "completionItem/resolve")
           (lsp-request "completionItem/resolve" item)))
       item))
 
@@ -646,8 +648,7 @@ The return is nil or in range of (0, inf)."
 The CLEANUP-FN will be called to cleanup."
   (cl-assert item nil "Completion item must not be nil")
   (ignore-errors
-    (if (lsp:completion-options-resolve-provider?
-         (lsp--capability :completionProvider))
+    (if (lsp-feature? "completionItem/resolve")
         (lsp-request-async "completionItem/resolve" item
                            (lambda (result)
                              (funcall callback result)
