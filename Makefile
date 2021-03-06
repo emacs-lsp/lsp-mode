@@ -61,6 +61,7 @@ windows-compile:
 test-pkgs:
 	@echo "Test emacs-lsp packages..."
 	@$(CASK) $(EMACS) -Q --batch \
+		-l $(WIN-BOOTSTRAP) \
 		--eval '(setq byte-compile-error-on-warn t)' \
 		-l $(TEST-PKGS)
 
