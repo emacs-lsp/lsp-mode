@@ -19,6 +19,8 @@
 ;;
 ;;  CI test for emacs-lsp packages
 ;;
+;; See https://github.com/emacs-lsp/lsp-mode/issues/2655 for more information.
+;;
 ;;; Code:
 
 (require 'package)
@@ -37,6 +39,18 @@
   (mapc (lambda (pkg)
           (unless (package-installed-p pkg)
             (package-install pkg)))
-        pkgs))
+        pkgs)
+
+  (add-hook 'kill-emacs-hook
+            `(lambda ()
+               ;; NOTE: If you are testing this on your own PC, then you
+               ;; might want to uncomment the line below to do the clean up
+               ;; after the test. (This will take more time to complete the
+               ;; CI process)
+               ;;
+               ;; Please leave it comment in CI so we don't accidentally install
+               ;; depedencies twice.
+               ;;(delete-directory ,user-emacs-directory t)
+               )))
 
 ;;; test-packages.el ends here
