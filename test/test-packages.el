@@ -37,9 +37,10 @@
   (package-refresh-contents)
 
   (progn  ; Install `lsp-mode' from source
-    (add-to-list 'load-path "./")
-    (add-to-list 'load-path "./clients/")
-    (package-install-file "./"))
+    (message ">>> %s" (expand-file-name "./"))
+    (add-to-list 'load-path (expand-file-name "./"))
+    (add-to-list 'load-path (expand-file-name "./clients/"))
+    (package-install-file (expand-file-name "./")))
 
   (mapc (lambda (pkg)
           (unless (package-installed-p pkg)
