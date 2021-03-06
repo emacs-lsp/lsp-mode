@@ -1,6 +1,6 @@
 ;;; test-packages.el --- CI test for emacs-lsp packages -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2020-2021 emacs-lsp maintainers
+;; Copyright (C) 2021 emacs-lsp maintainers
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
