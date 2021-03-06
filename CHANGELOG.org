@@ -24,6 +24,7 @@
   * Add support for [[https://deno.land/][Deno language server]].
   * Add ~lsp-dired-mode~ - integration between [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Dired.html][dired]] and ~lsp-mode~
   `dired` and `lsp-mode` diagnostics.
+  * Add Grammarly support.
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
   * Safe renamed ~lsp-flycheck-default-level~ -> ~lsp-diagnostics-flycheck-default-level~
