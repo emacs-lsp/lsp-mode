@@ -38,7 +38,7 @@
                            ("gnu" . "https://elpa.gnu.org/packages/")))
        (pkgs '(dap-mode
                helm-lsp
-               ;;lsp-dart  ; TODO: Add this after the test has passed.
+               lsp-dart
                lsp-docker
                lsp-focus
                lsp-haskell
