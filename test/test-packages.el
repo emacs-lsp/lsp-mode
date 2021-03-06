@@ -44,15 +44,16 @@
                lsp-haskell
                lsp-ivy
                lsp-java
-               lsp-metals
-               lsp-mssql
-               lsp-origami
-               lsp-pyright
-               lsp-python-ms
-               lsp-sonarlint
-               lsp-sourcekit
-               lsp-treemacs
-               lsp-ui)))
+               ;;lsp-metals
+               ;;lsp-mssql
+               ;;lsp-origami
+               ;;lsp-pyright
+               ;;lsp-python-ms
+               ;;lsp-sonarlint
+               ;;lsp-sourcekit
+               ;;lsp-treemacs
+               ;;lsp-ui
+               )))
   (package-initialize)
   (package-refresh-contents)
 
