@@ -218,7 +218,7 @@ Return `nil' when fails to guess prefix."
                           :filter-text?
                           :_emacsStartPoint start-point
                           :score?))
-            `(:label ,(or filter-text? label)
+            `( :label ,(or filter-text? label)
                      :item ,item
                      :start-point ,start-point
                      :score ,score?))
