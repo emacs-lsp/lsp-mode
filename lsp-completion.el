@@ -219,9 +219,9 @@ Return `nil' when fails to guess prefix."
                           :_emacsStartPoint start-point
                           :score?))
             `( :label ,(or filter-text? label)
-                     :item ,item
-                     :start-point ,start-point
-                     :score ,score?))
+               :item ,item
+               :start-point ,start-point
+               :score ,score?))
           it)))
 
 (cl-defun lsp-completion--filter-candidates (items &key
