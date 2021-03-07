@@ -786,6 +786,11 @@ directory")
                          (lsp--capability :codeActionProvider)))))
     ("textDocument/codeLens" :capability :codeLensProvider)
     ("textDocument/completion" :capability :completionProvider)
+    ("completionItem/resolve"
+     :check-command (lambda (wk)
+                      (with-lsp-workspace wk
+                        (lsp:completion-options-resolve-provider?
+                         (lsp--capability :completionProvider)))))
     ("textDocument/declaration" :capability :declarationProvider)
     ("textDocument/definition" :capability :definitionProvider)
     ("textDocument/documentColor" :capability :colorProvider)
@@ -3259,7 +3264,13 @@ disappearing, unset all the variables related to it."
                                                                             (lsp-enable-snippet t)
                                                                             (t :json-false)))
                                                         (documentationFormat . ["markdown"])
-                                                        (resolveAdditionalTextEditsSupport . t)))
+                                                        ;; Remove this after jdtls support resolveSupport
+                                                        (resolveAdditionalTextEditsSupport . t)
+                                                        (resolveSupport
+                                                         . ((properties . ["documentation"
+                                                                           "details"
+                                                                           "additionalTextEdits"
+                                                                           "command"])))))
                                      (contextSupport . t)))
                       (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))))
                       (documentLink . ((dynamicRegistration . t)
