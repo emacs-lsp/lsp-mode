@@ -383,14 +383,14 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
     (-let* (((&SemanticTokensOptions :legend) token-capabilities))
       (setf (lsp--workspace-semantic-tokens-faces workspace)
             (lsp--semantic-tokens-build-face-map (lsp:semantic-tokens-legend-token-types legend)
-                                 lsp-semantic-token-faces
-                                 "semantic token"
-                                 "lsp-semantic-token-faces"))
+                                                 lsp-semantic-token-faces
+                                                 "semantic token"
+                                                 "lsp-semantic-token-faces"))
       (setf (lsp--workspace-semantic-tokens-modifier-faces workspace)
             (lsp--semantic-tokens-build-face-map (lsp:semantic-tokens-legend-token-modifiers legend)
-                                 lsp-semantic-token-modifier-faces
-                                 "semantic token modifier"
-                                 "lsp-semantic-token-modifier-faces")))))
+                                                 lsp-semantic-token-modifier-faces
+                                                 "semantic token modifier"
+                                                 "lsp-semantic-token-modifier-faces")))))
 
 ;;;###autoload
 (defun lsp-semantic-tokens--warn-about-deprecated-setting ()
