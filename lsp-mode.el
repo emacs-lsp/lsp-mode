@@ -1621,9 +1621,9 @@ This set of allowed chars is enough for hexifying local file paths.")
 (defun lsp--path-to-uri-1 (path)
   (concat lsp--uri-file-prefix
           (--> path
-               (expand-file-name it)
-               (or (file-remote-p it 'localname t) it)
-               (url-hexify-string it lsp--url-path-allowed-chars))))
+            (expand-file-name it)
+            (or (file-remote-p it 'localname t) it)
+            (url-hexify-string it lsp--url-path-allowed-chars))))
 
 (defun lsp--path-to-uri (path)
   "Convert PATH to a uri."
@@ -1849,7 +1849,7 @@ PARAMS - the data sent from WORKSPACE."
       (concat lsp-progress-prefix progress-status))))
 
 (lsp-defun lsp-on-progress-modeline (workspace (&ProgressParams :token :value
-                                                        (value &as &WorkDoneProgress :kind)))
+                                                                (value &as &WorkDoneProgress :kind)))
   "PARAMS contains the progress data.
 WORKSPACE is the workspace that contains the progress token."
   (add-to-list 'global-mode-string '(t (:eval (lsp--progress-status))))
@@ -2032,25 +2032,25 @@ WORKSPACE is the workspace that contains the diagnostics."
       (setq lsp--cached-folding-ranges
             (cons (buffer-chars-modified-tick)
                   (--> ranges
-                       (seq-map (-lambda ((range &as
-                                                 &FoldingRange :start-line
-                                                 :start-character?
-                                                 :end-line
-                                                 :end-character?
-                                                 :kind?))
-                                  (make-lsp--folding-range
-                                   :beg (ht-get line-col-to-point-map
-                                                (cons start-line start-character?))
-                                   :end (ht-get line-col-to-point-map
-                                                (cons end-line end-character?))
-                                   :kind kind?))
+                    (seq-map (-lambda ((range &as
+                                              &FoldingRange :start-line
+                                              :start-character?
+                                              :end-line
+                                              :end-character?
+                                              :kind?))
+                               (make-lsp--folding-range
+                                :beg (ht-get line-col-to-point-map
+                                             (cons start-line start-character?))
+                                :end (ht-get line-col-to-point-map
+                                             (cons end-line end-character?))
+                                :kind kind?))
+                             it)
+                    (seq-filter (lambda (folding-range)
+                                  (< (lsp--folding-range-beg folding-range)
+                                     (lsp--folding-range-end folding-range)))
                                 it)
-                       (seq-filter (lambda (folding-range)
-                                     (< (lsp--folding-range-beg folding-range)
-                                        (lsp--folding-range-end folding-range)))
-                                   it)
-                       (seq-into it 'list)
-                       (delete-dups it))))))
+                    (seq-into it 'list)
+                    (delete-dups it))))))
   (cdr lsp--cached-folding-ranges))
 
 (defun lsp--get-nested-folding-ranges ()
@@ -4404,8 +4404,8 @@ one of the LANGUAGES."
     (->> (lsp-session)
          (lsp-session-folders)
          (--filter (and (lsp--files-same-host it file-name)
-                       (or (lsp-f-ancestor-of? it file-name)
-                           (equal it file-name))))
+                        (or (lsp-f-ancestor-of? it file-name)
+                            (equal it file-name))))
          (--max-by (> (length it) (length other))))))
 
 (defun lsp-on-revert ()
@@ -4798,9 +4798,9 @@ In addition, each can have property:
 When language is nil render as markup if `markdown-mode' is loaded."
   (setq str (s-replace "\r" "" (or str "")))
   (if-let ((mode (-some (-lambda ((mode . lang))
-                           (when (and (equal lang language) (functionp mode))
-                             mode))
-                         lsp-language-id-configuration)))
+                          (when (and (equal lang language) (functionp mode))
+                            mode))
+                        lsp-language-id-configuration)))
       (lsp--fontlock-with-mode str mode)
     str))
 
@@ -5190,9 +5190,9 @@ It will show up only if current point has signature help."
   "Find action handler for particular COMMAND."
   (or
    (--some (-some->> it
-            (lsp--workspace-client)
-            (lsp--client-action-handlers)
-            (gethash command))
+             (lsp--workspace-client)
+             (lsp--client-action-handlers)
+             (gethash command))
            (lsp-workspaces))
    (gethash command lsp--default-action-handlers)))
 
@@ -5504,14 +5504,14 @@ perform the request synchronously."
 (defun lsp--symbols-informations->document-symbols-hierarchy (symbols-informations current-position)
   "Convert SYMBOLS-INFORMATIONS to symbols hierarchy on CURRENT-POSITION."
   (--> symbols-informations
-       (-keep (-lambda ((symbol &as &SymbolInformation :location (&Location :range)))
-                (when (lsp-point-in-range? current-position range)
-                  (lsp--symbol-information->document-symbol symbol)))
-              it)
-       (sort it (-lambda ((&DocumentSymbol :range (&Range :start a-start-position :end a-end-position))
-                          (&DocumentSymbol :range (&Range :start b-start-position :end b-end-position)))
-                  (and (lsp--position-compare b-start-position a-start-position)
-                       (lsp--position-compare a-end-position b-end-position))))))
+    (-keep (-lambda ((symbol &as &SymbolInformation :location (&Location :range)))
+             (when (lsp-point-in-range? current-position range)
+               (lsp--symbol-information->document-symbol symbol)))
+           it)
+    (sort it (-lambda ((&DocumentSymbol :range (&Range :start a-start-position :end a-end-position))
+                       (&DocumentSymbol :range (&Range :start b-start-position :end b-end-position)))
+               (and (lsp--position-compare b-start-position a-start-position)
+                    (lsp--position-compare a-end-position b-end-position))))))
 
 (defun lsp--symbols->document-symbols-hierarchy (symbols)
   "Convert SYMBOLS to symbols-hierarchy."
@@ -7213,10 +7213,10 @@ nil."
          ;; (decompress (lsp-resolve-value decompress))
          (download-path
           (pcase decompress
-           (:gzip (concat store-path ".gz"))
-           (:zip (concat store-path ".zip"))
-           (`nil store-path)
-           (_ (error ":decompress must be `:gzip', `:zip' or `nil'")))))
+            (:gzip (concat store-path ".gz"))
+            (:zip (concat store-path ".zip"))
+            (`nil store-path)
+            (_ (error ":decompress must be `:gzip', `:zip' or `nil'")))))
     (make-thread
      (lambda ()
        (condition-case err
@@ -7334,7 +7334,7 @@ question."
   "Take the first question from `lsp--question-queue', process it, then process
 the next question until the queue is empty."
   (-let* (((&alist "question" "options" "callback") (car lsp--question-queue))
-         (answer (completing-read question options nil t)))
+          (answer (completing-read question options nil t)))
     (pop lsp--question-queue)
     (funcall callback answer)
     (when lsp--question-queue
