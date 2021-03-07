@@ -115,12 +115,12 @@ g. `error', `warning') and list of LSP TAGS."
                (bitmap (or (get flycheck-level 'flycheck-fringe-bitmaps)
                            (get flycheck-level 'flycheck-fringe-bitmap-double-arrow))))
           (flycheck-define-error-level new-level
-                                       :severity (get flycheck-level 'flycheck-error-severity)
-                                       :compilation-level (get flycheck-level 'flycheck-compilation-level)
-                                       :overlay-category category
-                                       :fringe-bitmap bitmap
-                                       :fringe-face (get flycheck-level 'flycheck-fringe-face)
-                                       :error-list-face face)
+            :severity (get flycheck-level 'flycheck-error-severity)
+            :compilation-level (get flycheck-level 'flycheck-compilation-level)
+            :overlay-category category
+            :fringe-bitmap bitmap
+            :fringe-face (get flycheck-level 'flycheck-fringe-face)
+            :error-list-face face)
           new-level))))
 
 (defun lsp-diagnostics--flycheck-calculate-level (severity tags)
@@ -205,15 +205,15 @@ from the language server."
 (defun lsp-diagnostics-lsp-checker-if-needed ()
   (unless (flycheck-valid-checker-p 'lsp)
     (flycheck-define-generic-checker 'lsp
-                                     "A syntax checker using the Language Server Protocol (LSP)
+      "A syntax checker using the Language Server Protocol (LSP)
 provided by lsp-mode.
 See https://github.com/emacs-lsp/lsp-mode."
-                                     :start #'lsp-diagnostics--flycheck-start
-                                     :modes '(lsp-placeholder-mode) ;; placeholder
-                                     :predicate (lambda () lsp-diagnostics-mode)
-                                     :error-explainer (lambda (e)
-                                                        (lsp-diagnostics-flycheck-error-explainer
-                                                         e (lsp--workspace-server-id (car-safe (lsp-workspaces))))))))
+      :start #'lsp-diagnostics--flycheck-start
+      :modes '(lsp-placeholder-mode) ;; placeholder
+      :predicate (lambda () lsp-diagnostics-mode)
+      :error-explainer (lambda (e)
+                         (lsp-diagnostics-flycheck-error-explainer
+                          e (lsp--workspace-server-id (car-safe (lsp-workspaces))))))))
 
 (defun lsp-diagnostics-flycheck-enable (&rest _)
   "Enable flycheck integration for the current buffer."
