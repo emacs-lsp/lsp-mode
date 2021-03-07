@@ -27,7 +27,6 @@
 
 ;;; Code:
 
-(require 'bindat)
 (require 'cl-generic)
 (require 'cl-lib)
 (require 'compile)
