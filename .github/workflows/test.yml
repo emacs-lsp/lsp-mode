@@ -6,6 +6,7 @@ jobs:
     unix-test:
         runs-on: ${{ matrix.os }}
         strategy:
+            fail-fast: false
             matrix:
                 os: [ubuntu-latest, macos-latest]
                 emacs-version:
@@ -61,6 +62,7 @@ jobs:
     windows-test:
         runs-on: windows-latest
         strategy:
+            fail-fast: false
             matrix:
                 emacs-version:
                     - 26.1
