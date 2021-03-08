@@ -5239,7 +5239,7 @@ It will filter by KIND if non nil."
       (cl-no-applicable-method
        (if-let ((action-handler (lsp--find-action-handler command)))
            (funcall action-handler action)
-         (lsp--send-execute-command command arguments?))))))
+         (lsp-send-execute-command command arguments?))))))
 
 (lsp-defun lsp-execute-code-action ((action &as &CodeAction :command? :edit?))
   "Execute code action ACTION.
@@ -5767,17 +5767,13 @@ REFERENCES? t when METHOD returns references."
                   (list :command command))))
     (lsp-request "workspace/executeCommand" params)))
 
-(defun lsp--send-execute-command (command &optional args)
+(defun lsp-send-execute-command (command &optional args)
   "Create and send a 'workspace/executeCommand' message having command COMMAND and optional ARGS."
-  (condition-case-unless-debug err
-      (lsp-workspace-command-execute command args)
-    (error
-     (lsp--error "Please open an issue in lsp-mode for implementing `%s'.\n\n%S"
-                 command err))))
+  (lsp-workspace-command-execute command args))
 
 (defalias 'lsp-point-to-position #'lsp--point-to-position)
 (defalias 'lsp-text-document-identifier #'lsp--text-document-identifier)
-(defalias 'lsp-send-execute-command #'lsp--send-execute-command)
+(defalias 'lsp--send-execute-command #'lsp-send-execute-command)
 (defalias 'lsp-on-open #'lsp--text-document-did-open)
 (defalias 'lsp-on-save #'lsp--text-document-did-save)
 
