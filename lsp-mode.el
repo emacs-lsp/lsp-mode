@@ -4705,6 +4705,10 @@ Stolen from `org-copy-visible'."
              (s-chop-suffix "\n" (buffer-string)))
       (kill-buffer temp))))
 
+(defvar lsp-buffer-major-mode nil
+  "Holds the major mode when fontification function is running.
+See #2588")
+
 (defun lsp--render-markdown ()
   "Render markdown."
 
@@ -4722,7 +4726,7 @@ Stolen from `org-copy-visible'."
         (gfm-view-mode)
       (gfm-mode))
 
-    (lsp--setup-markdown major-mode)))
+    (lsp--setup-markdown lsp-buffer-major-mode)))
 
 (defvar lsp--display-inline-image-alist
   '((lsp--render-markdown
@@ -4783,15 +4787,16 @@ In addition, each can have property:
 
 (defun lsp--fontlock-with-mode (str mode)
   "Fontlock STR with MODE."
-  (condition-case nil
-      (with-temp-buffer
-        (insert str)
-        (delay-mode-hooks (funcall mode))
-        (cl-flet ((window-body-width () lsp-window-body-width))
-          (font-lock-ensure)
-          (lsp--display-inline-image mode))
-        (lsp--buffer-string-visible))
-    (error str)))
+  (let ((lsp-buffer-major-mode major-mode))
+    (condition-case nil
+        (with-temp-buffer
+          (insert str)
+          (delay-mode-hooks (funcall mode))
+          (cl-flet ((window-body-width () lsp-window-body-width))
+            (font-lock-ensure)
+            (lsp--display-inline-image mode))
+          (lsp--buffer-string-visible))
+      (error str))))
 
 (defun lsp--render-string (str language)
   "Render STR using `major-mode' corresponding to LANGUAGE.
