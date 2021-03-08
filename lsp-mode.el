@@ -5480,11 +5480,8 @@ perform the request synchronously."
 (defun lsp--document-symbols->document-symbols-hierarchy (document-symbols current-position)
   "Convert DOCUMENT-SYMBOLS to symbols hierarchy on CURRENT-POSITION."
   (-let (((symbol &as &DocumentSymbol? :children?)
-          (seq-some (-lambda ((symbol &as &DocumentSymbol :range (&Range :start start-position
-                                                                         :end end-position)))
-                      (when (and (lsp--position-compare current-position start-position)
-                                 (lsp--position-compare end-position current-position))
-                        symbol))
+          (seq-find (-lambda ((&DocumentSymbol :range))
+                      (lsp-point-in-range? current-position range))
                     document-symbols)))
     (if children?
         (cons symbol (lsp--document-symbols->document-symbols-hierarchy children? current-position))
