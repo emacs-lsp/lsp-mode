@@ -56,7 +56,7 @@
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-php--create-connection)
-                  :major-modes '(php-mode)
+                  :activation-fn (lsp-activate-on "php")
                   :priority -3
                   :server-id 'php-ls))
 
@@ -228,7 +228,7 @@ language server."
                                              (cl-first lsp-intelephense-server-command))
                                             (lsp-package-path 'intelephense))
                                        ,@(cl-rest lsp-intelephense-server-command))))
-                  :major-modes '(php-mode)
+                  :activation-fn (lsp-activate-on "php")
                   :priority -1
                   :notification-handlers (ht ("indexingStarted" #'ignore)
                                              ("indexingEnded" #'ignore))
@@ -337,7 +337,7 @@ already present."
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-tcp-connection 'lsp-serenata-server-start-fun)
-  :major-modes '(php-mode)
+  :activation-fn (lsp-activate-on "php")
   :priority -2
   :notification-handlers (ht ("serenata/didProgressIndexing"
                               (lambda (_server data)
@@ -369,7 +369,7 @@ already present."
  (make-lsp-client
   :new-connection (lsp-stdio-connection
                    (lambda () (list lsp-phpactor-path "language-server")))
-  :major-modes '(php-mode)
+  :activation-fn (lsp-activate-on "php")
   ;; `phpactor' is not really that feature-complete: it doesn't support
   ;; `textDocument/showOccurence' and sometimes errors (e.g. find references on
   ;; a global free-standing function).
