@@ -7019,6 +7019,53 @@ JavaScript file, tsserver.js (the *.js is required for Windows)."
       (error nil)
       (args-out-of-range nil))))
 
+(define-minor-mode lsp-installation-buffer-mode
+  "Mode used in *lsp-installation* buffers.
+It can be used to set-up keybindings, etc. Disabling this mode
+detaches the installation buffer from commands like
+`lsp-select-installation-buffer'."
+  :init-value nil
+  :lighter nil)
+
+(defface lsp-installation-finished-buffer-face '((t :foreground "orange"))
+  "Face used for finished installation buffers.
+Used in `lsp-select-installation-buffer'."
+  :group 'lsp-mode)
+
+(defface lsp-installation-buffer-face '((t :foreground "green"))
+  "Face used for installation buffers still in progress.
+Used in `lsp-select-installation-buffer'."
+  :group 'lsp-mode)
+
+(defun lsp--installation-buffer? (buf)
+  "Check whether BUF is an `lsp-async-start-process' buffer."
+  (buffer-local-value 'lsp-installation-buffer-mode buf))
+
+(defun lsp-select-installation-buffer (&optional show-finished)
+  "Interactively choose an installation buffer.
+If SHOW-FINISHED is set, leftover (finished) installation buffers
+are still shown."
+  (interactive "P")
+  (let ((bufs (--filter (and (lsp--installation-buffer? it)
+                             (or show-finished (get-buffer-process it)))
+                        (buffer-list))))
+    (pcase bufs
+      (`nil (user-error "No installation buffers"))
+      (`(,buf) (pop-to-buffer buf))
+      (bufs (pop-to-buffer (completing-read "Select installation buffer: "
+                                            (--map (propertize (buffer-name it) 'face
+                                                               (if (get-buffer-process it)
+                                                                   'lsp-installation-buffer-face
+                                                                 'lsp-installation-finished-buffer-face))
+                                                   bufs)))))))
+
+(defun lsp-cleanup-installation-buffers ()
+  "Delete finished *lsp-installation* buffers."
+  (interactive)
+  (dolist (buf (buffer-list))
+    (when (and (lsp--installation-buffer? buf) (not (get-buffer-process buf)))
+      (kill-buffer buf))))
+
 (defun lsp--download-status ()
   (-some--> #'lsp--client-download-in-progress?
     (lsp--filter-clients it)
@@ -7028,9 +7075,7 @@ JavaScript file, tsserver.js (the *.js is required for Windows)."
     (format " Installing following servers: %s" it)
     (propertize it
                 'local-map (make-mode-line-mouse-map
-                            'mouse-1 (lambda ()
-                                       (interactive)
-                                       (switch-to-buffer (get-buffer-create " *lsp-install*"))))
+                            'mouse-1 #'lsp-select-installation-buffer)
                 'mouse-face 'highlight)))
 
 (defun lsp--install-server-internal (client &optional update?)
@@ -7103,22 +7148,21 @@ When prefix UPDATE? is t force installation even if the server is present."
 
 (defun lsp-async-start-process (callback error-callback &rest command)
   "Start async process COMMAND with CALLBACK and ERROR-CALLBACK."
-  (make-process
-   :name (cl-first command)
-   :command command
-   :sentinel (lambda (proc _)
-               (when (eq 'exit (process-status proc))
-                 (if (zerop (process-exit-status proc))
-                     (condition-case err
-                         (funcall callback)
-                       (error
-                        (funcall error-callback (error-message-string err))))
-                   (display-buffer " *lsp-install*")
-                   (funcall error-callback
-                            (format "Async process '%s' failed with exit code %d"
-                                    (process-name proc) (process-exit-status proc))))))
-   :buffer " *lsp-install*"
-   :noquery t))
+  (let ((name (cl-first command)))
+    (with-current-buffer (compilation-start (mapconcat #'shell-quote-argument command " ") t
+                                            (lambda (&rest _)
+                                              (generate-new-buffer-name (format "*lsp-install: %s*" name))))
+      (lsp-installation-buffer-mode +1)
+      (add-hook
+       'compilation-finish-functions
+       (lambda (_buf status)
+         (if (string= "finished\n" status)
+             (condition-case err
+                 (funcall callback)
+               (error
+                (funcall error-callback (error-message-string err))))
+           (funcall error-callback (s-trim-right status))))
+       nil t))))
 
 (defun lsp-resolve-value (value)
   "Resolve VALUE's value.
