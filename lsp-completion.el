@@ -645,6 +645,14 @@ The return is nil or in range of (0, inf)."
   "Resolve completion ITEM asynchronously with CALLBACK.
 The CLEANUP-FN will be called to cleanup."
   (cl-assert item nil "Completion item must not be nil")
+
+  ;; patch `CompletionItem' for rust-analyzer otherwise resolve will fail
+  ;; see #2675
+  (let ((data (lsp:completion-item-data? item)))
+    (when (lsp-member? data :import_for_trait_assoc_item)
+      (unless (lsp-get data :import_for_trait_assoc_item)
+        (lsp-put data :import_for_trait_assoc_item :json-false))))
+
   (ignore-errors
     (if (lsp-feature? "completionItem/resolve")
         (lsp-request-async "completionItem/resolve" item

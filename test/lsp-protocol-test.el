@@ -159,5 +159,13 @@
                    t)
                   (_ nil)))))
 
+(ert-deftest lsp-test-member? ()
+  (let ((input (if lsp-use-plists
+                   (list :import_for_trait_assoc_item nil)
+                 (ht ("import_for_trait_assoc_item" nil)))))
+    (should (lsp-member? input :import_for_trait_assoc_item))
+    (lsp-put input :import_for_trait_assoc_item :json-false)
+    (should (eq (lsp-get input :import_for_trait_assoc_item) :json-false))))
+
 (provide 'lsp-protocol-test)
 ;;; lsp-protocol-test.el ends here
