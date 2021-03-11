@@ -476,7 +476,7 @@ The MARKERS and PREFIX value will be attached to each candidate."
           ;; retrieve candidates
           ((equal action t) (funcall candidates))))
        :annotation-function #'lsp-completion--annotate
-       :company-candidate-kind #'lsp-completion--candidate-kind
+       :company-kind #'lsp-completion--candidate-kind
        :company-require-match 'never
        :company-prefix-length
        (save-excursion
