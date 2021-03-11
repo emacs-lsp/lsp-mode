@@ -48,7 +48,6 @@ nav:
     - Fortran: page/lsp-fortran.md
     - GDScript: page/lsp-gdscript.md
     - Go (gopls): page/lsp-gopls.md
-    - Go (bingo): page/lsp-bingo.md
     - Grammarly: page/lsp-grammarly.md
     - Groovy: page/lsp-groovy.md
     - Hack: page/lsp-hack.md
