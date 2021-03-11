@@ -1,0 +1,38 @@
+name: Lint
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: purcell/setup-emacs@master
+        with:
+          version: snapshot
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.6"
+          architecture: "x64"
+
+      - uses: conao3/setup-cask@master
+        with:
+          version: 0.8.4
+
+      - name: Resolve dependency
+        run: cask install
+
+      - name: Run Indentation Lint
+        run: |
+          git diff-tree --no-commit-id --name-only -r ${{ github.sha }} \
+          | grep \.el | grep -v \.dir-locals\.el \
+          | xargs -t -I^ cask emacs -q --batch ^ --eval "\
+              (let ((require-final-newline t)) \
+                (require 'flycheck) \
+                (eval-buffer) \
+                (untabify (point-min) (point-max)) \
+                (indent-region (point-min) (point-max)) \
+                (save-buffer))" \
+          ; git diff --exit-code
