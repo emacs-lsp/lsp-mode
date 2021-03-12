@@ -264,8 +264,8 @@ $GOPATH/pkg/mod along with the value of
    ("gopls.env" lsp-go-env)
    ("gopls.linkTarget" lsp-go-link-target)
    ("gopls.codelenses" lsp-go-codelenses)
-   ("gopls.linksInHover" lsp-go-links-in-hover)
-   ("gopls.gofumpt" lsp-go-use-gofumpt)
+   ("gopls.linksInHover" lsp-go-links-in-hover t)
+   ("gopls.gofumpt" lsp-go-use-gofumpt t)
    ("gopls.local" lsp-go-goimports-local)
    ("gopls.directoryFilters" lsp-go-directory-filters)))
 
