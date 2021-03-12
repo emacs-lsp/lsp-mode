@@ -3142,9 +3142,10 @@ CANCEL-TOKEN is the token that can be used to cancel request."
                                (funcall error-callback error)))
              (cancel-callback (when cancel-callback
                                 (pcase mode
-                                  ((or 'alive 'tick) (lambda ()
-                                                       (with-current-buffer buf
-                                                         (funcall cancel-callback))))
+                                  ((or 'alive 'tick 'unchanged)
+                                   (lambda ()
+                                     (with-current-buffer buf
+                                       (funcall cancel-callback))))
                                   (_ cancel-callback))))
              (body (plist-put body :id id)))
 
