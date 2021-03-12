@@ -36,13 +36,15 @@
   :link '(url-link "https://github.com/angular/vscode-ng-language-service"))
 
 (defcustom lsp-clients-angular-language-server-command
-  '("node"
-    "/usr/lib/node_modules/@angular/language-server"
-    "--ngProbeLocations"
-    "/usr/lib/node_modules"
-    "--tsProbeLocations"
-    "/usr/lib/node_modules"
-    "--stdio")
+  (let ((node-modules-path (concat (string-trim (shell-command-to-string "npm config get --global prefix")) "/lib/node_modules")))
+    (list
+     "node"
+     (concat node-modules-path "/@angular/language-server")
+     "--ngProbeLocations"
+     node-modules-path
+     "--tsProbeLocations"
+     node-modules-path
+     "--stdio"))
   "The command that starts the angular language server."
   :group 'lsp-angular
   :type '(choice
