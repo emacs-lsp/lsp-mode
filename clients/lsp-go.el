@@ -92,6 +92,13 @@ completing function calls."
   :risky t
   :package-version '(lsp-mode "6.2"))
 
+(defcustom lsp-go-directory-filters []
+  "A vector of directory filters."
+  :link '(url-link "https://github.com/golang/tools/blob/67e49ef2d0f326051e22a4a55bdf9344ae1a8ed8/gopls/doc/settings.md#directoryfilters-string")
+  :group 'lsp-go
+  :type 'lsp-string-vector
+  :package-version '(lsp-mode "7.1"))
+
 (define-obsolete-variable-alias
   'lsp-gopls-hover-kind
   'lsp-go-hover-kind
@@ -121,14 +128,16 @@ completing function calls."
   "lsp-mode 7.0.1")
 
 (defvar lsp-go-available-codelenses
-  '((generate . "Run `go generate` for a directory")
-    (test . "Run `go test` for a specific test function")
+  '(
+    (gc_details . "Toggle the calculation of gc annotations")
+    (generate . "Run `go generate` for a directory")
+    (regenerate_cgo . "Regenerate cgo definitions")
+    (test . "Run `go test` for a specific set of test or benchmark functions (lgeacy)")
     (tidy . "Run `go mod tidy` for a module")
     (upgrade_dependency . "Upgrade a dependency")
-    (regenerate_cgo . "Regenerate cgo definitions"))
+    (vendor . "Runs `go mod vendor' for a module"))
   "Available codelenses that can be further enabled or disabled
   through `lsp-go-codelenses'.")
-
 
 (defun lsp-go--defcustom-available-as-alist-type (alist)
   "Returns a list suitable for the `:type' field in a `defcustom' used to populate an alist.
@@ -160,7 +169,13 @@ The returned type provides a tri-state that either:
   'lsp-go-codelenses
   "lsp-mode 7.0.1")
 
-(defcustom lsp-go-codelenses '((generate . t) (test . t))
+(defcustom lsp-go-codelenses '((gc_details . nil)
+			       (generate . t)
+			       (regenerate_cgo . t)
+			       (tidy . t)
+			       (upgrade_dependency . t)
+			       (test . t)
+			       (vendor . t))
   "Select what codelenses should be enabled or not.
 
 The codelenses can be found at https://github.com/golang/tools/blob/3fa0e8f87c1aae0a9adc2a63af1a1945d16d9359/internal/lsp/source/options.go#L106-L112."
@@ -222,13 +237,37 @@ $GOPATH/pkg/mod along with the value of
   :group 'lsp-go
   :package-version '(lsp-mode "7.0.1"))
 
+(defcustom lsp-go-links-in-hover t
+  "If non-nil, hover documentation includes links."
+  :type 'boolean
+  :group 'lsp-go
+  :package-version '(lsp-mode "7.1"))
+
+(defcustom lsp-go-use-gofumpt nil
+  "If non-nil, use gofumpt formatting."
+  :type 'boolean
+  :group 'lsp-go
+  :package-version '(lsp-mode "7.1"))
+
+(defcustom lsp-go-goimports-local ""
+  "Equivalent of the goimports -local flag, which puts imports beginning with
+ this string after third-party packages.  It should be the prefix of the import
+ path whose imports should be grouped separately."
+  :type 'string
+  :group 'lsp-go
+  :package-version '(lsp-mode "7.1"))
+
 (lsp-register-custom-settings
  '(("gopls.usePlaceholders" lsp-go-use-placeholders t)
    ("gopls.hoverKind" lsp-go-hover-kind)
    ("gopls.buildFlags" lsp-go-build-flags)
    ("gopls.env" lsp-go-env)
    ("gopls.linkTarget" lsp-go-link-target)
-   ("gopls.codelenses" lsp-go-codelenses)))
+   ("gopls.codelenses" lsp-go-codelenses)
+   ("gopls.linksInHover" lsp-go-links-in-hover t)
+   ("gopls.gofumpt" lsp-go-use-gofumpt t)
+   ("gopls.local" lsp-go-goimports-local)
+   ("gopls.directoryFilters" lsp-go-directory-filters)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
