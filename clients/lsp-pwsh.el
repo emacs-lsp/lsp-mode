@@ -344,20 +344,15 @@ FORCED if specified with prefix argument."
     (unless (and (not update) (f-exists? lsp-pwsh-dir))
       ;; since we know it's installed, use powershell to download the file
       ;; (and avoid url.el bugginess or additional libraries)
+      (when (f-exists? lsp-pwsh-dir) (delete-directory lsp-pwsh-dir 'recursive))
       (lsp-async-start-process
-       (lambda ()
-         (lsp--info "lsp-pwsh: Downloading done!")
-         (when (f-exists? lsp-pwsh-dir) (delete-directory lsp-pwsh-dir 'recursive))
-         (lsp-async-start-process
-          callback
-          error-callback
-          lsp-pwsh-exe "-noprofile" "-noninteractive" "-nologo"
-          "-ex" "bypass" "-command" "Expand-Archive"
-          "-Path" temp-file "-DestinationPath" (file-name-directory lsp-pwsh-dir)))
+       callback
        error-callback
-       lsp-pwsh-exe
-       "-noprofile" "-noninteractive" "-nologo" "-ex" "bypass" "-command"
-       "Invoke-WebRequest" "-UseBasicParsing" "-uri" url "-outfile" temp-file))))
+       lsp-pwsh-exe "-noprofile" "-noninteractive" "-nologo"
+       "-ex" "bypass" "-command"
+       "Invoke-WebRequest" "-UseBasicParsing" "-uri" url "-outfile" temp-file ";"
+       "Expand-Archive" "-Path" temp-file
+       "-DestinationPath" (file-name-directory lsp-pwsh-dir)))))
 
 (provide 'lsp-pwsh)
 ;;; lsp-pwsh.el ends here
