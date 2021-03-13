@@ -3273,6 +3273,7 @@ disappearing, unset all the variables related to it."
                                                         (documentationFormat . ["markdown" "plaintext"])
                                                         ;; Remove this after jdtls support resolveSupport
                                                         (resolveAdditionalTextEditsSupport . t)
+                                                        (insertReplaceSupport . t)
                                                         (resolveSupport
                                                          . ((properties . ["documentation"
                                                                            "details"

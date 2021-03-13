@@ -186,6 +186,14 @@ KEEP-LAST-RESULT if specified."
   (setq lsp-completion--cache nil)
   (unless keep-last-result (setq lsp-completion--last-result nil)))
 
+(defcustom lsp-completion-default-behaviour :replace
+  "Default behaviour of `InsertReplaceEdit'."
+  :type '(choice
+          (const :insert :tag "Default completion inserts")
+          (const :replace :tag "Default completion replaces"))
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "7.1"))
+
 (lsp-defun lsp-completion--guess-prefix ((item &as &CompletionItem :text-edit?))
   "Guess ITEM's prefix start point according to following heuristics:
 - If `textEdit' exists, use insertion range start as prefix start point.
@@ -194,6 +202,8 @@ KEEP-LAST-RESULT if specified."
   - The character before prefix is not word constitute
 Return `nil' when fails to guess prefix."
   (cond
+   ((lsp-insert-replace-edit? text-edit?)
+    (lsp--position-to-point (lsp:range-start (lsp:insert-replace-edit-insert text-edit?))))
    (text-edit?
     (lsp--position-to-point (lsp:range-start (lsp:text-edit-range text-edit?))))
    (t
@@ -519,7 +529,16 @@ Others: CANDIDATES"
          (text-edit?
           (apply #'delete-region markers)
           (insert prefix)
-          (lsp--apply-text-edit text-edit?))
+          (pcase text-edit?
+            ((TextEdit) (lsp--apply-text-edit text-edit?))
+            ((InsertReplaceEdit :insert :replace :new-text)
+             (lsp--apply-text-edit
+              (lsp-make-text-edit
+               :new-text new-text
+               :range (if (or (and current-prefix-arg (eq lsp-completion-default-behaviour :replace))
+                              (and (not current-prefix-arg) (eq lsp-completion-default-behaviour :insert)))
+                          insert
+                        replace))))))
          ((or (unless (lsp-falsy? insert-text?) insert-text?) label)
           (apply #'delete-region markers)
           (insert prefix)
