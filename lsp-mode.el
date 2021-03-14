@@ -107,12 +107,6 @@
   :group 'lsp-mode
   :type 'boolean)
 
-(defcustom lsp-print-performance nil
-  "If non-nil, print performance info in the logs."
-  :group 'lsp-mode
-  :type 'boolean
-  :package-version '(lsp-mode . "6.1"))
-
 (defcustom lsp-log-max message-log-max
   "Maximum number of lines to keep in the log buffer.
 If nil, disable message logging.  If t, log messages but don’t truncate
@@ -6054,56 +6048,21 @@ WORKSPACE is the active workspace."
 (defun lsp--read-json-file (file-path)
   "Read json file."
   (-> file-path
-      (f-read-text)
-      (lsp--read-json)))
-
-(defun lsp--log-request-time (server-id method id start-time before-send received-time after-parsed-time after-processed-time)
-  (when lsp-print-performance
-    (lsp-log "Perf> Request/Response
-  ServerId: %s
-  Request: %s (%s)
-  Serialization took: %.06f
-  ServerTime: %.06f
-  Deserialization: %.06f
-  CallbackTime: %s"
-             server-id
-             method
-             id
-             (float-time (time-subtract before-send start-time))
-             (float-time (time-subtract received-time before-send))
-             (float-time (time-subtract after-parsed-time received-time))
-             (if after-processed-time
-                 (format "%.06f" (float-time (time-subtract after-processed-time after-parsed-time)))
-               "N/A"))))
-
-(defun lsp--log-notification-performance (server-id json-data received-time
-                                                    after-parsed-time before-notification after-processed-time)
-  (when lsp-print-performance
-    (lsp-log "Perf> notification
-  ServerId: %s
-  Notification: %s
-  Deserialization: %.06f
-  Processing: %.06f "
-             server-id
-             (when json-data (lsp:json-notification-method json-data))
-             (float-time (time-subtract after-parsed-time received-time))
-             (float-time (time-subtract after-processed-time before-notification)))))
+    (f-read-text)
+    (lsp--read-json)))
 
 (defun lsp--parser-on-message (json-data workspace)
   "Called when the parser P read a complete MSG from the server."
   (with-demoted-errors "Error processing message %S."
     (with-lsp-workspace workspace
       (let* ((client (lsp--workspace-client workspace))
-             (received-time (current-time))
-             (server-id (lsp--client-server-id client))
-             (after-parsed-time (current-time))
              (id (--when-let (lsp:json-response-id json-data)
                    (if (stringp it) (string-to-number it) it)))
              (data (lsp:json-response-result json-data)))
         (pcase (lsp--get-message-type json-data)
           ('response
            (cl-assert id)
-           (-let [(callback _ method start-time before-send) (gethash id (lsp--client-response-handlers client))]
+           (-let [(callback _ method _ before-send) (gethash id (lsp--client-response-handlers client))]
              (when lsp-print-io
                (lsp--log-entry-new
                 (lsp--make-log-entry method id data 'incoming-resp
@@ -6111,33 +6070,21 @@ WORKSPACE is the active workspace."
                 workspace))
              (when callback
                (funcall callback (lsp:json-response-result json-data))
-               (remhash id (lsp--client-response-handlers client))
-               (lsp--log-request-time server-id method id start-time before-send
-                                      received-time after-parsed-time (current-time)))))
+               (remhash id (lsp--client-response-handlers client)))))
           ('response-error
            (cl-assert id)
-           (-let [(_ callback method start-time before-send) (gethash id (lsp--client-response-handlers client))]
+           (-let [(_ callback method _ before-send) (gethash id (lsp--client-response-handlers client))]
              (when lsp-print-io
                (lsp--log-entry-new
-                (lsp--make-log-entry method id data 'incoming-resp
-                                     (/ (nth 2 (time-since before-send)) 1000))
+                (lsp--make-log-entry method id (lsp:json-response-error-error json-data)
+                                     'incoming-resp (/ (nth 2 (time-since before-send)) 1000))
                 workspace))
              (when callback
                (funcall callback (lsp:json-response-error-error json-data))
-               (remhash id (lsp--client-response-handlers client))
-               (lsp--log-request-time server-id method id start-time before-send
-                                      received-time after-parsed-time (current-time)))))
+               (remhash id (lsp--client-response-handlers client)))))
           ('notification
-           (let ((before-notification (current-time)))
-             (lsp--on-notification workspace json-data)
-             (lsp--log-notification-performance
-              server-id json-data received-time after-parsed-time before-notification (current-time))))
+           (lsp--on-notification workspace json-data))
           ('request (lsp--on-request workspace json-data)))))))
-
-(defun lsp--json-pretty-print (msg)
-  "Convert json MSG string to pretty printed json string."
-  (let ((json-encoding-pretty-print t))
-    (json-encode (json-read-from-string msg))))
 
 (defvar lsp-parsed-message nil
   "This will store the string representation of the json message.
@@ -7509,26 +7456,6 @@ session workspace folder configuration for the server."
     (if (functionp initialization-options-or-fn)
         (funcall initialization-options-or-fn)
       initialization-options-or-fn)))
-
-(defun lsp--plist-delete (prop plist)
-  "Delete by side effect the property PROP from PLIST.
-If PROP is the first property in PLIST, there is no way
-to remove it by side-effect; therefore, write
-\(setq foo (evil-plist-delete :prop foo)) to be sure of
-changing the value of `foo'."
-  (let ((tail plist) elt head)
-    (while tail
-      (setq elt (car tail))
-      (cond
-       ((eq elt prop)
-        (setq tail (cdr (cdr tail)))
-        (if head
-            (setcdr (cdr head) tail)
-          (setq plist tail)))
-       (t
-        (setq head tail
-              tail (cdr (cdr tail))))))
-    plist))
 
 (defvar lsp-client-settings nil
   "For internal use, any external users please use

@@ -344,7 +344,7 @@ See `-let' for a description of the destructuring mechanism."
                (JSONResult nil (:params :id :method))
                (JSONNotification (:params :method) nil)
                (JSONRequest (:params :method) nil)
-               (JSONError (:message :code) nil)
+               (JSONError (:message :code) (:data))
                (ProgressParams (:token :value) nil)
                (Edit (:kind) nil)
                (WorkDoneProgress (:kind) nil)
