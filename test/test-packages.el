@@ -50,6 +50,12 @@
         (setq ver-no (concat ver-no (number-to-string no) "."))))
     (substring ver-no 0 (1- (length ver-no)))))
 
+(defun package-check-emacs-version (pkg)
+  "Return non-nil if PKG is good to be installed.
+
+If PKG does not specify minimum emacs version, return nil."
+  (version<= emacs-version (or (ignore-errors (package-emacs-version pkg)) "0.0")))
+
 
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("celpa" . "https://celpa.conao3.com/packages/")
@@ -91,7 +97,7 @@
 
   (mapc (lambda (pkg)
           (when (and (not (package-installed-p pkg))
-                     (version<= emacs-version (package-emacs-version pkg)))
+                     (package-check-emacs-version pkg))
             (package-install pkg)))
         pkgs)
 
