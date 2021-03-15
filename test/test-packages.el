@@ -35,6 +35,7 @@
   (let ((pkg (cadr (assq name package-alist)))) (when pkg (package-desc-version pkg))))
 
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("celpa" . "https://celpa.conao3.com/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
        (pkgs '(ccls
                dap-mode
