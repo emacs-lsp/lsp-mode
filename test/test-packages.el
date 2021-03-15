@@ -94,9 +94,11 @@
     (message "[INFO] `lsp-mode` version: %s" (package-version 'lsp-mode)))
 
   (mapc (lambda (pkg)
-          (when (and (not (package-installed-p pkg))
-                     (package-check-emacs-version pkg))
-            (package-install pkg)))
+          (unless (package-installed-p pkg)
+            (if (package-check-emacs-version pkg)
+                (package-install pkg)
+              (message "[INFO] Package `%s` is not test, minimum Emacs version %s"
+                       pkg (package-emacs-version pkg)))))
         pkgs)
 
   (add-hook 'kill-emacs-hook
