@@ -51,10 +51,8 @@
     (substring ver-no 0 (1- (length ver-no)))))
 
 (defun package-check-emacs-version (pkg)
-  "Return non-nil if PKG is good to be installed.
-
-If PKG does not specify minimum emacs version, return nil."
-  (version<= emacs-version (or (ignore-errors (package-emacs-version pkg)) "0.0")))
+  "Return non-nil if PKG is good to be installed."
+  (version<= (or (ignore-errors (package-emacs-version pkg)) "0.0") emacs-version))
 
 
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
