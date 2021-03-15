@@ -34,6 +34,23 @@
   "Get version of the package by NAME."
   (let ((pkg (cadr (assq name package-alist)))) (when pkg (package-desc-version pkg))))
 
+(defun package-build-desc (name)
+  "Build package description by PKG-NAME."
+  (cadr (assq name package-alist)))
+
+(defun package-get-reqs (key name)
+  "Return KEY requires from package NAME."
+  (assoc key (package-desc-reqs (package-build-desc name))))
+
+(defun package-emacs-version (name)
+  "Return Emacs version from package NAME."
+  (let ((ver (ignore-errors (cadr (package-get-reqs 'emacs name)))) (ver-no ""))
+    (when ver
+      (dolist (no ver)
+        (setq ver-no (concat ver-no (number-to-string no) "."))))
+    (substring ver-no 0 (1- (length ver-no)))))
+
+
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("celpa" . "https://celpa.conao3.com/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
@@ -73,7 +90,8 @@
     (message "[INFO] `lsp-mode` version: %s" (package-version 'lsp-mode)))
 
   (mapc (lambda (pkg)
-          (unless (package-installed-p pkg)
+          (when (and (not (package-installed-p pkg))
+                     (version<= emacs-version (package-emacs-version pkg)))
             (package-install pkg)))
         pkgs)
 
