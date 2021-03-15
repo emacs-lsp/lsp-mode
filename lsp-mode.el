@@ -222,6 +222,13 @@ following `projectile'/`project.el' conventions."
   :group 'lsp-mode
   :type 'boolean)
 
+(defcustom lsp-project-root nil
+  "The root of the project.
+This will normally be automatically guessed via `projectile'/`project.el',
+but this can sometimes be inconsistent,especially when you have monorepos."
+  :group 'lsp-mode
+  :type 'directory)
+
 (defcustom lsp-restart 'interactive
   "Defines how server-exited events must be handled."
   :group 'lsp-mode
@@ -3429,6 +3436,7 @@ in that particular folder."
 (defun lsp--suggest-project-root ()
   "Get project root."
   (or
+   lsp-project-root
    (when (featurep 'projectile) (condition-case nil
                                     (projectile-project-root)
                                   (error nil)))
