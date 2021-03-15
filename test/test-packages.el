@@ -36,7 +36,7 @@
 
 (defun package-build-desc (name)
   "Build package description by PKG-NAME."
-  (cadr (assq name package-alist)))
+  (cadr (assq name package-archive-contents)))
 
 (defun package-get-reqs (key name)
   "Return KEY requires from package NAME."
@@ -48,11 +48,11 @@
     (when ver
       (dolist (no ver)
         (setq ver-no (concat ver-no (number-to-string no) "."))))
-    (substring ver-no 0 (1- (length ver-no)))))
+    (or (ignore-errors (substring ver-no 0 (1- (length ver-no)))) "0.0")))
 
 (defun package-check-emacs-version (pkg)
   "Return non-nil if PKG is good to be installed."
-  (version<= (or (ignore-errors (package-emacs-version pkg)) "0.0") emacs-version))
+  (version<= (package-emacs-version pkg) emacs-version))
 
 
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
