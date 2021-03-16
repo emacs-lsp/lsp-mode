@@ -36,7 +36,9 @@
   "Path to the `terraform-lsp' binary."
   :group 'lsp-terraform
   :risky t
-  :type 'file
+  :type '(choice
+          (file :tag "File")
+          (repeat string))
   :package-version `(lsp-mode . "6.2"))
 
 (defcustom lsp-terraform-enable-logging nil
@@ -47,7 +49,9 @@
   :package-version `(lsp-mode . "6.2"))
 
 (defun lsp-terraform--make-launch-cmd ()
-  (-let [base `(,lsp-terraform-server)]
+  (-let [base (if (stringp lsp-terraform-server)
+                  `(,lsp-terraform-server)
+                lsp-terraform-server)]
     (when lsp-terraform-enable-logging
       (push "-enable-log-file" base))
     base))
