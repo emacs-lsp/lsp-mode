@@ -6,13 +6,6 @@ disqus: emacs-lsp
 
 In this guide, I will show you how to configure `lsp-mode` and `dap-mode` for C/C++ development, using `GNU Emacs` as an example code base. At the end of this tutorial, Emacs should provide you with all the language-aware editor features you'd expect from a modern C++ IDE, such as
 
-* Code completion...
-environment. The guide is mainly focused on `lsp-mode`/`dap-mode` and the
-features that they have. We will use `GNU Emacs` as a project in order to illustrate each of
-the steps to get `C/C++` project up and running.
-
-Some of the main features that we can expect from a C++ IDE:
-
 * Code completion
 * Real-time syntax checking
 * Code navigation (references/definitions/implementations/symbol search)
@@ -27,19 +20,19 @@ For all `lsp-mode` features, check [here](https://emacs-lsp.github.io/lsp-mode/p
 order for it to work, you have to install a separate _language server_ that
 understands the specifics of your target language. As of late 2020, there are 2
 production-ready language servers for `C/C++` and `Objective-C`,
-[ccls](https://github.com/MaskRay/ccls) and
-[clangd](https://clangd.llvm.org/installation.html), with `ccls`'s precursor
-`cquery` being deprecated. used by `Emacs` as provider for language specific
-features (completion, diagnostics, navigation, etc). For some of the language
-servers `lsp-mode` ships with automatic installation scripts but there is no
-such script for installing `C/C++` language server due to their overall
+[clangd](https://clangd.llvm.org/installation.html), and
+[ccls](https://github.com/MaskRay/ccls) with `ccls`'s precursor
+`cquery` being deprecated.
+
+For some of the language
+servers, `lsp-mode` ships with automatic installation scripts but there is no
+such script for installing a `C/C++` language server due to their overall
 complexity. For this guide we will be using
 `clangd` but most of the steps here apply to `ccls` as well. `lsp-mode` is
 pre-configured and it will be able to find the language server automatically
-when it is installed on the host machine and it is present on the path. In case
+when it is installed on the host machine and it is present on the `PATH`. In case
 `clangd` is not present on the path `clangd` can be installed following their
-[Getting Started](https://clangd.llvm.org/installation.html "Getting Started")
-instructions.
+[Getting Started](https://clangd.llvm.org/installation.html) instructions.
 
 _Note:_ for `Debian` based system use https://apt.llvm.org/
 
@@ -48,9 +41,9 @@ _Note:_ for `Debian` based system use https://apt.llvm.org/
 To understand your source code, `clangd` needs to know the compiler flags that are used to build the project. (This is
 just a fact of life in C++, source files are not self-contained).
 
-By default, `clangd` will assume your code is built as `clang` `some_file.cc`, and
-you’ll probably get spurious errors about missing `#included` files, etc. There
-are a couple of ways to fix this. You may read about them in [installation](https://clangd.llvm.org/installation.html "clangd installation") or in https://sarcasm.github.io/notes/dev/compilation-database.html.
+By default, `clangd` will assume your code is built as `clang some_file.cc`, and
+you’ll probably get spurious errors about missing `#include` files, etc. There
+are a couple of ways to fix this. You may read about them in [clangd installation](https://clangd.llvm.org/installation.html) or in https://sarcasm.github.io/notes/dev/compilation-database.html.
 
 In order to generate `compile_commands.json` for `Emacs` itself I have found
 that [Bear](https://github.com/rizsotto/Bear) works fine.
@@ -131,9 +124,6 @@ Now, if everything was successful you will be asked to select a project root.
 
 _Note:_ the project root is needed by the language server in order to know where to
 start the project discovery from. Typically, this is the git repository root but since exceptions to this rule have caused us a lot of trouble in the past (monorepos come to mind), `lsp-mode` by default asks the user to manually confirm the project root the first time a project is opened.
-mono-repos it might be not. `lsp-mode` by default will ask the user to confirm
-the project root (automatic root selection has caused a lot of trouble for us in
-the past).
 
 ### Completion
 
@@ -145,9 +135,9 @@ present, `company-mode` will be auto-configured and it will just work.
 ### keybindings/`which-key` integration
 
 `lsp-mode` has smart (almost) complete mnemonic keybindings which auto-enable
-itself when a certain feature is supported by the server and when the
-corresponding `Emacs` package is installed. In addition to that, `lsp-mode`
-ships with [which-key](https://github.com/justbur/emacs-which-key "which key url") integration for better discoverability.
+when a certain feature is supported by the server and when the
+corresponding `Emacs` package is installed. In addition, `lsp-mode`
+ships with [which-key](https://github.com/justbur/emacs-which-key) integration for better discoverability.
 By default, `lsp-mode`'s keybindings are available under `s-l` (Super-l), e. g. `s-l h h` will
 show documentation at point. You may change the default prefix by setting
 `lsp-keymap-prefix`.
@@ -170,7 +160,7 @@ Yeah, `lsp-mode` supports mouse!
 - `xref-find-definitions`(`M-.` and `s-l g g`) - find definition(s) at point
 - `xref-find-references`(`s-l g r`) - find references to the symbol at point
 ![References](images/references-helm.png "References helm")
-- `helm-imenu` - browse the symbols in current document
+- `helm-imenu` - browse symbols in the current document
 - `helm-lsp-workspace-symbol` - find symbol in current project
 ![workspace symbols](images/workspace-symbols.png "workspace symbols")
 - `helm-lsp-global-workspaces-symbol` - find symbol in all projects
