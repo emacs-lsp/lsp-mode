@@ -112,6 +112,7 @@ nav:
       - 'A guide on disabling/enabling lsp-mode features': tutorials/how-to-turn-off.md
       - 'React JavaScript Tutorial in Emacs': tutorials/reactjs-tutorial.md
       - 'Configuring Emacs as a Clojure IDE': tutorials/clojure-guide.md
+      - 'Debugging Clojurescript': tutorials/debugging-clojure-script.md
   - Blog:
       - 2020:
           - '7.0 Release': blog/2020/7.0-release.md
