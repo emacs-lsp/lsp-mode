@@ -34,7 +34,29 @@
   "Get version of the package by NAME."
   (let ((pkg (cadr (assq name package-alist)))) (when pkg (package-desc-version pkg))))
 
+(defun package-build-desc (name)
+  "Build package description by PKG-NAME."
+  (cadr (assq name package-archive-contents)))
+
+(defun package-get-reqs (key name)
+  "Return KEY requires from package NAME."
+  (assoc key (package-desc-reqs (package-build-desc name))))
+
+(defun package-emacs-version (name)
+  "Return Emacs version from package NAME."
+  (let ((ver (ignore-errors (cadr (package-get-reqs 'emacs name)))) (ver-no ""))
+    (when ver
+      (dolist (no ver)
+        (setq ver-no (concat ver-no (number-to-string no) "."))))
+    (or (ignore-errors (substring ver-no 0 (1- (length ver-no)))) "0.0")))
+
+(defun package-check-emacs-version (pkg)
+  "Return non-nil if PKG is good to be installed."
+  (version<= (package-emacs-version pkg) emacs-version))
+
+
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("celpa" . "https://celpa.conao3.com/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
        (pkgs '(ccls
                dap-mode
@@ -73,7 +95,10 @@
 
   (mapc (lambda (pkg)
           (unless (package-installed-p pkg)
-            (package-install pkg)))
+            (if (package-check-emacs-version pkg)
+                (package-install pkg)
+              (message "[INFO] Package `%s` is not test, minimum Emacs version %s"
+                       pkg (package-emacs-version pkg)))))
         pkgs)
 
   (add-hook 'kill-emacs-hook
