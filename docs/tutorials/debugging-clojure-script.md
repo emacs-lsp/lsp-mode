@@ -1,3 +1,7 @@
+---
+author: yyoncho
+disqus: emacs-lsp
+---
 # Debugging ClojureScript using dap-mode
 
 In this tutorial, we will cover the steps needed to debug `ClojureScript` in
