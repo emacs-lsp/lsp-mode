@@ -412,7 +412,7 @@
     "full-name": "Python",
     "server-name": "pyls",
     "server-url": "https://github.com/palantir/python-language-server",
-    "installation": "pip install ‘python-language-server[all]’",
+    "installation": "pip install 'python-language-server[all]'",
     "debugger": "Yes"
   },
   {
