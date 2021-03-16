@@ -348,6 +348,10 @@
      <lastmod>2021-03-16</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/tutorials/debugging-clojure-script/</loc>
+     <lastmod>2021-03-16</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
      <loc>https://emacs-lsp.github.io/lsp-mode/blog/2020/7.0-release/</loc>
      <lastmod>2021-03-16</lastmod>
      <changefreq>daily</changefreq>

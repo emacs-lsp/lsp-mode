@@ -2039,10 +2039,30 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    See also
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
     
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../debugging-clojure-script/" class="md-nav__link">
+      Debugging Clojurescript
+    </a>
   </li>
 
         
@@ -2326,6 +2346,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    See also
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2346,7 +2373,7 @@
                 <h1 id="configuring-emacs-as-a-clojure-ide">Configuring <code>Emacs</code> as a <code>Clojure</code> IDE<a class="headerlink" href="#configuring-emacs-as-a-clojure-ide" title="Permanent link">#</a></h1>
 <p>Author: <a href="https://github.com/ericdallo">@ericdallo</a></p>
 <p>In this guide, I will show you how to configure Emacs to develop Clojure
-using: </p>
+using:</p>
 <ul>
 <li><code>lsp-mode</code>, which has many IDE features like <strong>completion</strong>, <strong>renaming</strong>,
 <strong>reference-searching</strong>, <strong>definition-finding</strong>, <strong>code lenses</strong>, and <strong>code actions</strong></li>
@@ -2354,11 +2381,11 @@ using: </p>
 the Emacs package most famous for enabling <strong>REPL-driven development</strong> with Clojure.</li>
 </ul>
 <h2 id="why-should-i-try-lsp-for-clojure">Why should I try LSP for Clojure?<a class="headerlink" href="#why-should-i-try-lsp-for-clojure" title="Permanent link">#</a></h2>
-<p>Coming from the Java world, when I started programming for Clojure in Emacs, it was odd to me that 
+<p>Coming from the Java world, when I started programming for Clojure in Emacs, it was odd to me that
 for almost everything you needed to do with Clojure, <strong>you needed a REPL running in your project</strong>, and if you changed anything
 in your project, you would need to reload the modified namespace/code to see the changes in the REPL.
 I also
-missed a lot of features popularized by Java IDEs, like cleaning unused imports, 
+missed a lot of features popularized by Java IDEs, like cleaning unused imports,
 viewing the call hierarchy of a method/function, formatting code automatically, checking syntax in real-time, and using code actions that could, for example, add a missing import.
 Ever since I found <a href="https://github.com/clojure-lsp/clojure-lsp">clojure-lsp</a>, which implements most of those features, I have been using it alongside <code>CIDER</code> without issues.</p>
 <p>While I really like <code>CIDER</code> and believe it is one of the best tools for Clojure development,
@@ -2366,9 +2393,9 @@ you can complement it with <code>clojure-lsp</code> to make programming in Cloju
 <p>Once it is running (and you are plugged into the REPL), <code>CIDER</code> will provide many of the same features that <code>clojure-lsp</code> does, so you need to tell Emacs how to resolve conflicts.</p>
 <p>Therefore, if you want to have a more <em>IDE-ish</em> experience with Emacs, you should read this guide.</p>
 <h2 id="basic-configuration">Basic configuration<a class="headerlink" href="#basic-configuration" title="Permanent link">#</a></h2>
-<p>Here is a bare-bones <code>lsp-mode</code> configuration template to get you started with your own <code>lsp-mode</code> config, 
-or to try out in a separate one-off session. Please note that Emacs configuration frameworks such as 
-<strong>Spacemacs</strong> or <strong>Doom Emacs</strong> often ship with <code>lsp-mode</code> settings of their own; should you be using such a framework, 
+<p>Here is a bare-bones <code>lsp-mode</code> configuration template to get you started with your own <code>lsp-mode</code> config,
+or to try out in a separate one-off session. Please note that Emacs configuration frameworks such as
+<strong>Spacemacs</strong> or <strong>Doom Emacs</strong> often ship with <code>lsp-mode</code> settings of their own; should you be using such a framework,
 and find that <code>lsp-mode</code> doesn't behave as intended, please make sure to follow this tutorial from a clean starting point.
 in your config or you could run in a separate session.</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;package</span><span class="p">)</span>
@@ -2390,7 +2417,7 @@ in your config or you could run in a separate session.</p>
       <span class="nv">treemacs-space-between-root-nodes</span> <span class="no">nil</span>
       <span class="nv">company-minimum-prefix-length</span> <span class="mi">1</span>
       <span class="nv">lsp-lens-enable</span> <span class="no">t</span>
-      <span class="nv">lsp-signature-auto-activate</span> <span class="no">nil</span> 
+      <span class="nv">lsp-signature-auto-activate</span> <span class="no">nil</span>
       <span class="c1">; lsp-enable-indentation nil ; uncomment to use cider indentation instead of lsp</span>
       <span class="c1">; lsp-enable-completion-at-point nil ; uncomment to use cider completion instead of lsp</span>
       <span class="p">)</span>
@@ -2399,12 +2426,12 @@ in your config or you could run in a separate session.</p>
 <h2 id="installing-the-language-server">Installing the language server<a class="headerlink" href="#installing-the-language-server" title="Permanent link">#</a></h2>
 <p><code>lsp-mode</code> is a client-server application with <code>Emacs</code> acting as the client. In
 order for it to work, you have to install a separate <em>language server</em> that
-understands the specifics of your target language. </p>
-<p>For Clojure, we will use <a href="https://github.com/clojure-lsp/clojure-lsp">clojure-lsp</a> which as of 2021/01, is the only <a href="https://microsoft.github.io/language-server-protocol/implementors/servers/">LSP</a> 
+understands the specifics of your target language.</p>
+<p>For Clojure, we will use <a href="https://github.com/clojure-lsp/clojure-lsp">clojure-lsp</a> which as of 2021/01, is the only <a href="https://microsoft.github.io/language-server-protocol/implementors/servers/">LSP</a>
 server for Clojure, and has a lot of useful features that I will try to show in this guide.</p>
 <h3 id="via-lsp-mode">Via lsp-mode<a class="headerlink" href="#via-lsp-mode" title="Permanent link">#</a></h3>
-<p><code>lsp-mode</code> ships with automatic installation scripts for some of the language servers and clojure-lsp 
-is one of the supported servers, you can install it using <kbd>M-x</kbd> <code>lsp-install-server</code> <kbd>RET</kbd> <code>clojure-lsp</code>. 
+<p><code>lsp-mode</code> ships with automatic installation scripts for some of the language servers and clojure-lsp
+is one of the supported servers, you can install it using <kbd>M-x</kbd> <code>lsp-install-server</code> <kbd>RET</kbd> <code>clojure-lsp</code>.
 After installed, <code>lsp-mode</code> will automatically initialize it when opening Clojure files.</p>
 <h3 id="manually">Manually<a class="headerlink" href="#manually" title="Permanent link">#</a></h3>
 <p>Check <a href="https://github.com/clojure-lsp/clojure-lsp#installation">here</a> for more information on how to build it manually.</p>
@@ -2412,19 +2439,19 @@ After installed, <code>lsp-mode</code> will automatically initialize it when ope
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-clojure-custom-server-command</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;bash&quot;</span> <span class="s">&quot;-c&quot;</span> <span class="s">&quot;/path/to/clojure-lsp&quot;</span><span class="p">))</span>
 </code></pre></div>
 <h2 id="lsp-features">LSP features<a class="headerlink" href="#lsp-features" title="Permanent link">#</a></h2>
-<p>This guide will focus on the features of <code>lsp-mode</code> that are most relevant to Clojure development. You can view documentation of all features at the 
+<p>This guide will focus on the features of <code>lsp-mode</code> that are most relevant to Clojure development. You can view documentation of all features at the
 official <a href="https://emacs-lsp.github.io/lsp-mode/page/main-features/">lsp-mode site</a>.</p>
 <h3 id="syntax-check">Syntax check<a class="headerlink" href="#syntax-check" title="Permanent link">#</a></h3>
-<p>It checks for errors and warnings on your code while you write it, it uses <a href="https://github.com/clj-kondo/clj-kondo">clj-kondo</a>, 
+<p>It checks for errors and warnings on your code while you write it, it uses <a href="https://github.com/clj-kondo/clj-kondo">clj-kondo</a>,
 another amazing library that lints Clojure code, in the back-end so it's not required to install <code>clj-kondo</code> since <code>clojure-lsp</code> will
 use it automatically.</p>
-<p>It will also check for public unused functions/variables which is something that, as far as I know, does not exist in 
+<p>It will also check for public unused functions/variables which is something that, as far as I know, does not exist in
 any other Clojure library/package:</p>
 <p><img alt="syntax-checker" src="../images/clojure-syntax-checker.png" title="syntax-checker" /></p>
 <h3 id="find-definitionreferences">Find definition/references<a class="headerlink" href="#find-definitionreferences" title="Permanent link">#</a></h3>
-<p>You can find a function definition with <code>lsp-find-definition</code> or find all the references to that 
-symbol, variable or function with <code>lsp-find-references</code> or <code>lsp-ui-peek-find-references</code> if 
-<a href="https://emacs-lsp.github.io/lsp-ui/">lsp-ui</a> is available. </p>
+<p>You can find a function definition with <code>lsp-find-definition</code> or find all the references to that
+symbol, variable or function with <code>lsp-find-references</code> or <code>lsp-ui-peek-find-references</code> if
+<a href="https://emacs-lsp.github.io/lsp-ui/">lsp-ui</a> is available.</p>
 <p><img alt="find-references" src="../images/clojure-find-references.gif" title="find-references" /></p>
 <details>
 <summary>Doom emacs users</summary>
@@ -2446,14 +2473,14 @@ You may need to remove the lookup handlers conflict from `cider` and/or `clj-ref
 
 <h3 id="completion">Completion<a class="headerlink" href="#completion" title="Permanent link">#</a></h3>
 <p>By default, <code>lsp-mode</code> uses <code>company-mode</code> as its completion front-end. When
-present, <code>company-mode</code> and enabled for <code>lsp-mode</code>, it will be auto-configured and it will just work using the completion items returned by the LSP server. 
+present, <code>company-mode</code> and enabled for <code>lsp-mode</code>, it will be auto-configured and it will just work using the completion items returned by the LSP server.
 If you do not want LSP completion, It's possible to use <code>cider</code> completion instead with:</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-enable-completion-at-point</span> <span class="no">nil</span><span class="p">)</span> <span class="c1">; use cider completion</span>
 </code></pre></div>
 <p><img alt="completion" src="../images/clojure-completion.png" title="completion" /></p>
 <p>See also <a href="https://docs.cider.mx/cider/usage/code_completion.html">CIDER code completion</a></p>
 <h3 id="code-lens">Code lens<a class="headerlink" href="#code-lens" title="Permanent link">#</a></h3>
-<p>LSP supports code lenses, actionable text snippets that a server may want to display in a client IDE. <code>clojure-lsp</code> 
+<p>LSP supports code lenses, actionable text snippets that a server may want to display in a client IDE. <code>clojure-lsp</code>
 uses it to show the reference count of a function/variable. They are disabled by default so you need to manually enable them via:</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-lens-enable</span> <span class="no">t</span><span class="p">)</span>
 </code></pre></div>
@@ -2464,7 +2491,7 @@ As of now, <code>clojure-lsp</code> only supports returning the incoming-call hi
 <p><img alt="incoming-call hierarchy" src="../images/clojure-call-hierarchy.png" title="incoming-call hierarchy" /></p>
 <p>It uses <a href="https://github.com/emacs-lsp/lsp-treemacs">lsp-treemacs</a>, which you should install to use this feature.</p>
 <h3 id="formatting">Formatting<a class="headerlink" href="#formatting" title="Permanent link">#</a></h3>
-<p>For LSP formatting, <code>clojure-lsp</code> use <a href="https://github.com/weavejester/cljfmt">cljfmt</a> with support for all known <code>cljfmt</code> 
+<p>For LSP formatting, <code>clojure-lsp</code> use <a href="https://github.com/weavejester/cljfmt">cljfmt</a> with support for all known <code>cljfmt</code>
 settings.
 You can format a region with <code>lsp-format-region</code> or the entire buffer with <code>lsp-format-buffer</code>.</p>
 <p><img alt="formatting" src="../images/clojure-formatting.gif" title="formatting" /></p>
@@ -2474,8 +2501,8 @@ that may change your code after applied, <code>clojure-lsp</code> some of the re
 where user cursor is, for example <code>Add missing namespace</code> where <code>clojure-lsp</code> will suggest adding a missing require:</p>
 <p><img alt="add-missing-ns" src="../images/clojure-add-missing-ns.gif" title="add-missing-ns" /></p>
 <h3 id="refactorings">Refactorings<a class="headerlink" href="#refactorings" title="Permanent link">#</a></h3>
-<p><code>clojure-lsp</code> also has a lot of refactorings, some of them can be automatically triggered by 
-code actions like said above and others manually by user, one example of one of the most 
+<p><code>clojure-lsp</code> also has a lot of refactorings, some of them can be automatically triggered by
+code actions like said above and others manually by user, one example of one of the most
 used by me is <code>clean-ns</code>, which will remove any unused requires and refers:</p>
 <p><img alt="clean-ns" src="../images/clojure-clean-ns.gif" title="clean-ns" /></p>
 <p>Or <code>rename</code> which will rename the symbol at point and all usages/references:</p>
@@ -2484,8 +2511,8 @@ used by me is <code>clean-ns</code>, which will remove any unused requires and r
 <details>
 <summary>Conflict with <b>clj-refactor</b> when creating new files</summary>
 
-<b>clj-refactor</b> and <b>clojure-lsp</b> have a feature of add the namespace form for new created files, 
-but they may conflict if both are enable, inserting duplicated namespace forms. To fix that, you need to choose which one 
+<b>clj-refactor</b> and <b>clojure-lsp</b> have a feature of add the namespace form for new created files,
+but they may conflict if both are enable, inserting duplicated namespace forms. To fix that, you need to choose which one
 you wants to use:
 
 To disable this feature on `clj-refactor`:
@@ -2502,7 +2529,7 @@ or to disable on `clojure-lsp`:
 </details>
 
 <h3 id="semantic-tokens-experimental">Semantic tokens (Experimental)<a class="headerlink" href="#semantic-tokens-experimental" title="Permanent link">#</a></h3>
-<p>Another feature recently introduced in LSP 3.16, is <strong>semantic tokens</strong>, which consists of the LSP server return to 
+<p>Another feature recently introduced in LSP 3.16, is <strong>semantic tokens</strong>, which consists of the LSP server return to
 client the tokens and what they mean, with that, <code>lsp-mode</code> can color the tokens according to their meaning on the code:</p>
 <table>
 <thead>
@@ -2526,14 +2553,18 @@ client the tokens and what they mean, with that, <code>lsp-mode</code> can color
 </tbody>
 </table>
 <h2 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">#</a></h2>
-<p>For the first time <code>clojure-lsp</code> starts in your project, it will scan all jar dependencies and source code, this can 
+<p>For the first time <code>clojure-lsp</code> starts in your project, it will scan all jar dependencies and source code, this can
 take a while depending on your project size, after started, it should be really fast and for the next time, it will use its cache and you may not notice any performance issues.</p>
 <h2 id="server-settings">Server settings<a class="headerlink" href="#server-settings" title="Permanent link">#</a></h2>
 <p><code>clojure-lsp</code> has a lot of settings for improving your development experience, make sure to check it out the <a href="https://github.com/clojure-lsp/clojure-lsp#settings">settings</a> section.
 For an example configuration, check <a href="https://github.com/ericdallo/dotfiles/blob/master/.lsp/config.edn">here</a>.</p>
 <h2 id="cider-integration">CIDER integration<a class="headerlink" href="#cider-integration" title="Permanent link">#</a></h2>
-<p>We suggest using both <code>cider</code> and <code>lsp-mode</code> for Clojure development. 
+<p>We suggest using both <code>cider</code> and <code>lsp-mode</code> for Clojure development.
 I rely on <code>cider</code> to use its REPL, evaluate expressions, run tests, and more. You can execute <kbd>M-x</kbd> <code>cider-jack-in</code> to start the REPL.</p>
+<h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="../debugging-clojure-script/">Debugging Clojurescript Tutorial</a></li>
+</ul>
                 
                   
                     
@@ -2586,13 +2617,13 @@ I rely on <code>cider</code> to use its REPL, evaluate expressions, run tests, a
           </a>
         
         
-          <a href="../../blog/2020/7.0-release/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../debugging-clojure-script/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                7.0 Release
+                Debugging Clojurescript
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
