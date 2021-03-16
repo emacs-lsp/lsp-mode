@@ -55,7 +55,8 @@
   (version<= (package-emacs-version pkg) emacs-version))
 
 
-(let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
+(let* ((confirm-kill-processes nil)  ; don't ask to kill process
+       (package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("celpa" . "https://celpa.conao3.com/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
        (pkgs '(ccls
