@@ -55,7 +55,8 @@
   (version<= (package-emacs-version pkg) emacs-version))
 
 
-(let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
+(let* ((confirm-kill-processes nil)  ; don't ask to kill process
+       (package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("celpa" . "https://celpa.conao3.com/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
        (pkgs '(ccls
@@ -96,7 +97,7 @@
   (mapc (lambda (pkg)
           (unless (package-installed-p pkg)
             (if (package-check-emacs-version pkg)
-                (package-install pkg)
+                (progn (package-refresh-contents) (package-install pkg))
               (message "[INFO] Package `%s` is not test, minimum Emacs version %s"
                        pkg (package-emacs-version pkg)))))
         pkgs)
