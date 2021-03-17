@@ -768,7 +768,8 @@ Changes take effect only when a new session is started."
                                         (nix-mode . "nix")
                                         (prolog-mode . "prolog")
                                         (vala-mode . "vala")
-                                        (actionscript-mode . "actionscript"))
+                                        (actionscript-mode . "actionscript")
+                                        (d-mode . "d"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil

@@ -96,6 +96,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "d",
+    "full-name": "D",
+    "server-name": "serve-d",
+    "server-url": "https://github.com/pure-d/serve-d",
+    "installation-url": "https://github.com/pure-d/serve-d#installation",
+    "debugger": "Yes"
+  },
+  {
     "name": "dhall",
     "full-name": "Dhall",
     "server-name": "dhall-lsp-server",
