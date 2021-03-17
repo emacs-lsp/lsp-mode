@@ -635,5 +635,13 @@
     "installation": "npm install -g yaml-language-server",
     "lsp-install-server": "yamlls",
     "debugger": "Not available"
+  },
+  {
+    "name": "zig",
+    "full-name": "Zig",
+    "server-name": "zls",
+    "server-url": "https://github.com/zigtools/zls",
+    "installation-url": "https://github.com/zigtools/zls#installation",
+    "debugger": "Not available"
   }
 ]
