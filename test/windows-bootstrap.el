@@ -36,7 +36,7 @@
 
   (mapc (lambda (pkg)
           (unless (package-installed-p pkg)
-            (package-install pkg)))
+            (package-refresh-contents) (package-install pkg)))
         pkgs)
 
   (add-hook 'kill-emacs-hook
