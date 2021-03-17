@@ -2053,13 +2053,6 @@
                 <h1 id="configuring-emacs-as-a-cc-ide">Configuring <code>Emacs</code> as a <code>C/C++</code> IDE<a class="headerlink" href="#configuring-emacs-as-a-cc-ide" title="Permanent link">#</a></h1>
 <p>In this guide, I will show you how to configure <code>lsp-mode</code> and <code>dap-mode</code> for C/C++ development, using <code>GNU Emacs</code> as an example code base. At the end of this tutorial, Emacs should provide you with all the language-aware editor features you'd expect from a modern C++ IDE, such as</p>
 <ul>
-<li>Code completion...
-environment. The guide is mainly focused on <code>lsp-mode</code>/<code>dap-mode</code> and the
-features that they have. We will use <code>GNU Emacs</code> as a project in order to illustrate each of
-the steps to get <code>C/C++</code> project up and running.</li>
-</ul>
-<p>Some of the main features that we can expect from a C++ IDE:</p>
-<ul>
 <li>Code completion</li>
 <li>Real-time syntax checking</li>
 <li>Code navigation (references/definitions/implementations/symbol search)</li>
@@ -2072,26 +2065,25 @@ the steps to get <code>C/C++</code> project up and running.</li>
 order for it to work, you have to install a separate <em>language server</em> that
 understands the specifics of your target language. As of late 2020, there are 2
 production-ready language servers for <code>C/C++</code> and <code>Objective-C</code>,
-<a href="https://github.com/MaskRay/ccls">ccls</a> and
-<a href="https://clangd.llvm.org/installation.html">clangd</a>, with <code>ccls</code>'s precursor
-<code>cquery</code> being deprecated. used by <code>Emacs</code> as provider for language specific
-features (completion, diagnostics, navigation, etc). For some of the language
-servers <code>lsp-mode</code> ships with automatic installation scripts but there is no
-such script for installing <code>C/C++</code> language server due to their overall
+<a href="https://clangd.llvm.org/installation.html">clangd</a>, and
+<a href="https://github.com/MaskRay/ccls">ccls</a> with <code>ccls</code>'s precursor
+<code>cquery</code> being deprecated.</p>
+<p>For some of the language
+servers, <code>lsp-mode</code> ships with automatic installation scripts but there is no
+such script for installing a <code>C/C++</code> language server due to their overall
 complexity. For this guide we will be using
 <code>clangd</code> but most of the steps here apply to <code>ccls</code> as well. <code>lsp-mode</code> is
 pre-configured and it will be able to find the language server automatically
-when it is installed on the host machine and it is present on the path. In case
+when it is installed on the host machine and it is present on the <code>PATH</code>. In case
 <code>clangd</code> is not present on the path <code>clangd</code> can be installed following their
-<a href="https://clangd.llvm.org/installation.html" title="Getting Started">Getting Started</a>
-instructions.</p>
+<a href="https://clangd.llvm.org/installation.html">Getting Started</a> instructions.</p>
 <p><em>Note:</em> for <code>Debian</code> based system use https://apt.llvm.org/</p>
 <h2 id="project-setup">Project setup<a class="headerlink" href="#project-setup" title="Permanent link">#</a></h2>
 <p>To understand your source code, <code>clangd</code> needs to know the compiler flags that are used to build the project. (This is
 just a fact of life in C++, source files are not self-contained).</p>
-<p>By default, <code>clangd</code> will assume your code is built as <code>clang</code> <code>some_file.cc</code>, and
-you’ll probably get spurious errors about missing <code>#included</code> files, etc. There
-are a couple of ways to fix this. You may read about them in <a href="https://clangd.llvm.org/installation.html" title="clangd installation">installation</a> or in https://sarcasm.github.io/notes/dev/compilation-database.html.</p>
+<p>By default, <code>clangd</code> will assume your code is built as <code>clang some_file.cc</code>, and
+you’ll probably get spurious errors about missing <code>#include</code> files, etc. There
+are a couple of ways to fix this. You may read about them in <a href="https://clangd.llvm.org/installation.html">clangd installation</a> or in https://sarcasm.github.io/notes/dev/compilation-database.html.</p>
 <p>In order to generate <code>compile_commands.json</code> for <code>Emacs</code> itself I have found
 that <a href="https://github.com/rizsotto/Bear">Bear</a> works fine.</p>
 <div class="highlight"><pre><span></span><code>sudo apt-get install bear
@@ -2153,19 +2145,16 @@ in your config or you could run in separate session.</p>
 <p>Now, if everything was successful you will be asked to select a project root.</p>
 <p><img alt="select project root" src="../images/import-project.png" title="Select project root" /></p>
 <p><em>Note:</em> the project root is needed by the language server in order to know where to
-start the project discovery from. Typically, this is the git repository root but since exceptions to this rule have caused us a lot of trouble in the past (monorepos come to mind), <code>lsp-mode</code> by default asks the user to manually confirm the project root the first time a project is opened.
-mono-repos it might be not. <code>lsp-mode</code> by default will ask the user to confirm
-the project root (automatic root selection has caused a lot of trouble for us in
-the past).</p>
+start the project discovery from. Typically, this is the git repository root but since exceptions to this rule have caused us a lot of trouble in the past (monorepos come to mind), <code>lsp-mode</code> by default asks the user to manually confirm the project root the first time a project is opened.</p>
 <h3 id="completion">Completion<a class="headerlink" href="#completion" title="Permanent link">#</a></h3>
 <p>By default, <code>lsp-mode</code> uses <code>company-mode</code> as its completion frontend. When
 present, <code>company-mode</code> will be auto-configured and it will just work.</p>
 <p><img alt="company-mode completion" src="../images/completion.png" title="company-mode completion" /></p>
 <h3 id="keybindingswhich-key-integration">keybindings/<code>which-key</code> integration<a class="headerlink" href="#keybindingswhich-key-integration" title="Permanent link">#</a></h3>
 <p><code>lsp-mode</code> has smart (almost) complete mnemonic keybindings which auto-enable
-itself when a certain feature is supported by the server and when the
-corresponding <code>Emacs</code> package is installed. In addition to that, <code>lsp-mode</code>
-ships with <a href="https://github.com/justbur/emacs-which-key" title="which key url">which-key</a> integration for better discoverability.
+when a certain feature is supported by the server and when the
+corresponding <code>Emacs</code> package is installed. In addition, <code>lsp-mode</code>
+ships with <a href="https://github.com/justbur/emacs-which-key">which-key</a> integration for better discoverability.
 By default, <code>lsp-mode</code>'s keybindings are available under <code>s-l</code> (Super-l), e. g. <code>s-l h h</code> will
 show documentation at point. You may change the default prefix by setting
 <code>lsp-keymap-prefix</code>.</p>
@@ -2184,7 +2173,7 @@ show documentation at point. You may change the default prefix by setting
 <li><code>xref-find-definitions</code>(<code>M-.</code> and <code>s-l g g</code>) - find definition(s) at point</li>
 <li><code>xref-find-references</code>(<code>s-l g r</code>) - find references to the symbol at point
 <img alt="References" src="../images/references-helm.png" title="References helm" /></li>
-<li><code>helm-imenu</code> - browse the symbols in current document</li>
+<li><code>helm-imenu</code> - browse symbols in the current document</li>
 <li><code>helm-lsp-workspace-symbol</code> - find symbol in current project
 <img alt="workspace symbols" src="../images/workspace-symbols.png" title="workspace symbols" /></li>
 <li><code>helm-lsp-global-workspaces-symbol</code> - find symbol in all projects</li>
@@ -2268,7 +2257,7 @@ dap-breakpoint-toggle</code>. Switch to the debugged instance and do</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 16, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 17, 2021</span>
     
   </small>
 </div>
