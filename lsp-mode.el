@@ -175,7 +175,7 @@ As defined by the Language Server Protocol 3.16."
          lsp-kotlin lsp-lua lsp-nim lsp-nix lsp-metals lsp-ocaml lsp-perl lsp-php lsp-pwsh
          lsp-pyls lsp-python-ms lsp-purescript lsp-r lsp-rf lsp-rust lsp-solargraph lsp-sorbet
          lsp-tex lsp-terraform lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript lsp-xml
-         lsp-yaml lsp-sqls lsp-svelte lsp-steep)
+         lsp-yaml lsp-sqls lsp-svelte lsp-steep lsp-zig)
   "List of the clients to be automatically required."
   :group 'lsp-mode
   :type '(repeat symbol))
@@ -769,7 +769,8 @@ Changes take effect only when a new session is started."
                                         (prolog-mode . "prolog")
                                         (vala-mode . "vala")
                                         (actionscript-mode . "actionscript")
-                                        (d-mode . "d"))
+                                        (d-mode . "d")
+                                        (zig-mode . "zig"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil

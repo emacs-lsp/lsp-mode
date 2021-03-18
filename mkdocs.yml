@@ -102,6 +102,7 @@ nav:
     - Vue: page/lsp-vetur.md
     - XML: page/lsp-xml.md
     - YAML: page/lsp-yaml.md
+    - Zig: page/lsp-zig.md
   - Debugging:
       - https://emacs-lsp.github.io/dap-mode
   - Gallery:
