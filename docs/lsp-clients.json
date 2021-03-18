@@ -247,7 +247,7 @@
   },
   {
     "name": "deno",
-    "full-name": "Deno",
+    "full-name": "Javascript/Typescript (deno)",
     "server-name": "deno lsp",
     "server-url": "https://deno.land/#installation",
     "debugger": "Yes (Chrome)"
