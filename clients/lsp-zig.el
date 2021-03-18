@@ -26,9 +26,21 @@
 
 (require 'lsp-mode)
 
+(defgroup lsp-zig nil
+  "LSP support for Zig via zls."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/zigtools/zls"))
+
+(defcustom lsp-clients-zls-executable "zls"
+  "The zls executable to use.
+Leave as just the executable name to use the default behavior of
+finding the executable with variable `exec-path'."
+  :group 'lsp-zig
+  :type 'string)
+
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection "zls")
+  :new-connection (lsp-stdio-connection lsp-clients-zls-executable)
   :activation-fn (lsp-activate-on "zig")
   :server-id 'zls))
 
