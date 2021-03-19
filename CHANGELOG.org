@@ -26,6 +26,7 @@
   * Add Grammarly support.
   * Add D support.
   * Add Zig support.
+  * Rename ~lsp-rust-analyzer-cargo-load-out-dirs-from-check~ to ~lsp-rust-analyzer-cargo-run-build-scripts~ to align with upstream.
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
   * Safe renamed ~lsp-flycheck-default-level~ -> ~lsp-diagnostics-flycheck-default-level~
