@@ -22,7 +22,7 @@
   * Add ~iedit~ integration (=documentHighlights=)
   * Add an interactive =lsp-clangd-find-other-file= method that uses the clangd extension to return the corresponding header/cpp file from cpp/header file respectively.
   * Add support for [[https://deno.land/][Deno language server]].
-  * Add ~lsp-dired-mode~ - integration between [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Dired.html][dired]] and ~lsp-mode~ `dired` and `lsp-mode` diagnostics.
+  * Add ~lsp-dired-mode~ - integration between [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Dired.html][dired]] and ~lsp-mode~
   * Add Grammarly support.
   * Add D support.
   * Add Zig support.
