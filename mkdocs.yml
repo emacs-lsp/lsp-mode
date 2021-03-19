@@ -58,6 +58,7 @@ nav:
     - Lua (Lua Language Server): page/lsp-lua-language-server.md
     - Lua (Lua-Lsp): page/lsp-lua-lsp.md
     - Java: https://emacs-lsp.github.io/lsp-java
+    - Javascript/Typescript (deno): page/lsp-deno.md
     - JavaScript/TypeScript (sourcegraph): page/lsp-typescript-javascript.md
     - JavaScript/TypeScript (theia-ide): page/lsp-typescript.md
     - JavaScript Flow: page/lsp-flow.md
