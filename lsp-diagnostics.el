@@ -53,7 +53,7 @@
   :group 'lsp-mode)
 
 (defcustom lsp-diagnostics-attributes
-  `((unnecessary :foreground "dim gray")
+  `((unnecessary :foreground "gray")
     (deprecated  :strike-through t))
   "The Attributes used on the diagnostics.
 List containing (tag attributes) where tag is the LSP diagnostic tag and
