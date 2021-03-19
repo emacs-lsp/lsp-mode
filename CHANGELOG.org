@@ -26,6 +26,7 @@
   * Add Grammarly support.
   * Add D support.
   * Add Zig support.
+  * Add an interactive ~lsp-rust-analyzer-reload-workspace~ function that reloads the Rust-Analyzer workspace from Cargo.toml
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
   * Safe renamed ~lsp-flycheck-default-level~ -> ~lsp-diagnostics-flycheck-default-level~
