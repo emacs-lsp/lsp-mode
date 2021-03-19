@@ -607,6 +607,7 @@ them with `crate` or the crate name they refer to."
 (defun lsp-rust-analyzer-reload-workspace ()
   "Reload workspace, picking up changes from Cargo.toml"
   (interactive)
+  (lsp--cur-workspace-check)
   (lsp-send-request (lsp-make-request "rust-analyzer/reloadWorkspace")))
 
 (defcustom lsp-rust-analyzer-download-url
