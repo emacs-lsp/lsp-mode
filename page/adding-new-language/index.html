@@ -2178,15 +2178,19 @@ corresponding mode -> language id - in this case <code>(python-mode .
 
 <span class="p">(</span><span class="nv">lsp-register-client</span>
  <span class="p">(</span><span class="nv">make-lsp-client</span> <span class="nb">:new-connection</span> <span class="p">(</span><span class="nv">lsp-stdio-connection</span> <span class="s">&quot;pyls&quot;</span><span class="p">)</span>
-                  <span class="nb">:major-modes</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">python-mode</span><span class="p">)</span>
+                  <span class="nb">:activation-fn</span> <span class="p">(</span><span class="nv">lsp-activate-on</span> <span class="s">&quot;python&quot;</span><span class="p">)</span>
                   <span class="nb">:server-id</span> <span class="ss">&#39;pyls</span><span class="p">))</span>
 </code></pre></div>
+<p><code>lsp-mode</code> is using <code>lsp-language-id-configuration</code> to determine what is the
+buffer language. When the <code>major-mode</code> is not sufficient to determine the
+language (e.g. <code>web-mode</code> is used for <code>javascript</code> and for <code>html</code>) you can put
+regex.</p>
 <p>If the language server supports environment variables to control
 additional behavior, you can register that by using the
 <code>:environment-fn</code> function, like the Bash language client does:</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">lsp-register-client</span>
  <span class="p">(</span><span class="nv">make-lsp-client</span> <span class="nb">:new-connection</span> <span class="p">(</span><span class="nv">lsp-stdio-connection</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;bash-language-server&quot;</span> <span class="s">&quot;start&quot;</span><span class="p">))</span>
-                  <span class="nb">:major-modes</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">sh-mode</span><span class="p">)</span>
+                  <span class="nb">:activation-fn</span> <span class="p">(</span><span class="nv">lsp-activate-on</span> <span class="s">&quot;shellscript&quot;</span><span class="p">)</span>
                   <span class="nb">:priority</span> <span class="mi">-1</span>
                   <span class="nb">:environment-fn</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">()</span>
                                     <span class="o">&#39;</span><span class="p">((</span><span class="s">&quot;EXPLAINSHELL_ENDPOINT&quot;</span> <span class="o">.</span> <span class="nv">lsp-bash-explainshell-endpoint</span><span class="p">)</span>
@@ -2198,6 +2202,23 @@ are language client <code>defcustom</code> that expose supported server environm
 settings in a type-safe way. If you change any of those variables,
 restart the language server with <code>lsp-restart-workspace</code> for the changes
 to be applied.</p>
+<p>Also, if new client support customizing language server path. It's recommended
+to make a wrapper function so the user can customize the value even after the
+client has been loaded.</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">defcustom</span> <span class="nv">lsp-tex-executable</span> <span class="s">&quot;digestif&quot;</span>
+  <span class="s">&quot;Command to start the Digestif language server.&quot;</span>
+  <span class="nb">:group</span> <span class="ss">&#39;lsp-tex</span>
+  <span class="nb">:risky</span> <span class="no">t</span>
+  <span class="nb">:type</span> <span class="ss">&#39;file</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nv">lsp-register-client</span>
+ <span class="p">(</span><span class="nv">make-lsp-client</span>
+  <span class="c1">;; instead of `:new-connection (lsp-stdio-connection lsp-text-executable)` use</span>
+  <span class="nb">:new-connection</span> <span class="p">(</span><span class="nv">lsp-stdio-connection</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">()</span> <span class="nv">lsp-text-executable</span><span class="p">))</span>
+  <span class="nb">:activation-fn</span> <span class="p">(</span><span class="nv">lsp-activate-on</span> <span class="s">&quot;plaintex&quot;</span> <span class="s">&quot;latex&quot;</span><span class="p">)</span>
+  <span class="nb">:priority</span> <span class="mi">-1</span>
+  <span class="nb">:server-id</span> <span class="ss">&#39;digestif</span><span class="p">))</span>
+</code></pre></div>
 <h2 id="sections">Sections<a class="headerlink" href="#sections" title="Permanent link">#</a></h2>
 <p><code>lsp-mode</code> provides tools to bridge emacs <code>defcustom</code> as a language
 configuration sections properties(see <a href="https://microsoft.github.io/language-server-protocol/specification#workspace_configuration">specification
