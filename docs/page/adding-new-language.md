@@ -9,6 +9,7 @@ the additional settings supported on registration time.
 corresponding mode -\> language id - in this case `(python-mode .
 "python")`
 
+
 ``` elisp
 (defvar lsp-language-id-configuration
   '(...
@@ -22,6 +23,11 @@ corresponding mode -\> language id - in this case `(python-mode .
                   :activation-fn (lsp-activate-on "python")
                   :server-id 'pyls))
 ```
+
+`lsp-mode` is using `lsp-language-id-configuration` to determine what is the
+buffer language. When the `major-mode` is not sufficient to determine the
+language (e.g. `web-mode` is used for `javascript` and for `html`) you can put
+regex.
 
 If the language server supports environment variables to control
 additional behavior, you can register that by using the
