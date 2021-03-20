@@ -433,12 +433,16 @@ syntax highlighting."
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1.0"))
 
-(defcustom lsp-rust-analyzer-cargo-load-out-dirs-from-check nil
-  "Whether to run `cargo check` on startup to get the correct value for
-package OUT_DIRs."
+(define-obsolete-variable-alias
+  'lsp-rust-analyzer-cargo-load-out-dirs-from-check
+  'lsp-rust-analyzer-cargo-run-build-scripts
+  "7.1.0")
+
+(defcustom lsp-rust-analyzer-cargo-run-build-scripts t
+  "Whether to run build scripts (`build.rs`) for more precise code analysis."
   :type 'boolean
   :group 'lsp-rust
-  :package-version '(lsp-mode . "6.3.2"))
+  :package-version '(lsp-mode . "7.1.0"))
 
 (defcustom lsp-rust-analyzer-rustfmt-extra-args []
   "Additional arguments to rustfmt."
@@ -478,8 +482,7 @@ for formatting."
   :package-version '(lsp-mode . "6.3.2"))
 
 (defcustom lsp-rust-analyzer-proc-macro-enable nil
-  "Enable Proc macro support; lsp-rust-analyzer-cargo-load-out-dirs-from-check
-must be enabled."
+  "Enable Proc macro support; implies lsp-rust-analyzer-cargo-run-build-scripts"
   :type 'boolean
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.3.2"))
@@ -530,7 +533,9 @@ them with `crate` or the crate name they refer to."
     :cargo (:allFeatures ,(lsp-json-bool lsp-rust-all-features)
             :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
             :features ,lsp-rust-features
-            :loadOutDirsFromCheck ,(lsp-json-bool lsp-rust-analyzer-cargo-load-out-dirs-from-check))
+            :runBuildScripts ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
+            ; Obsolete, but used by old Rust-Analyzer versions
+            :loadOutDirsFromCheck ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts))
     :rustfmt (:extraArgs ,lsp-rust-analyzer-rustfmt-extra-args
               :overrideCommand ,lsp-rust-analyzer-rustfmt-override-command)
     :inlayHints (:typeHints ,(lsp-json-bool lsp-rust-analyzer-server-display-inlay-hints)
