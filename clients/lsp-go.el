@@ -169,7 +169,7 @@ The returned type provides a tri-state that either:
   'lsp-go-codelenses
   "lsp-mode 7.0.1")
 
-(defcustom lsp-go-codelenses '((gc_details . nil)
+(defcustom lsp-go-codelenses '((gc_details . :json-false)
 			       (generate . t)
 			       (regenerate_cgo . t)
 			       (tidy . t)
