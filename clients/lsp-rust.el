@@ -609,6 +609,12 @@ them with `crate` or the crate name they refer to."
          (result (lsp-send-request (lsp-make-request "experimental/joinLines" params))))
     (lsp--apply-text-edits result 'code-action)))
 
+(defun lsp-rust-analyzer-reload-workspace ()
+  "Reload workspace, picking up changes from Cargo.toml"
+  (interactive)
+  (lsp--cur-workspace-check)
+  (lsp-send-request (lsp-make-request "rust-analyzer/reloadWorkspace")))
+
 (defcustom lsp-rust-analyzer-download-url
   (format "https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/%s"
           (pcase system-type
