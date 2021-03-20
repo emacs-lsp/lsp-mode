@@ -9,6 +9,7 @@ the additional settings supported on registration time.
 corresponding mode -\> language id - in this case `(python-mode .
 "python")`
 
+
 ``` elisp
 (defvar lsp-language-id-configuration
   '(...
@@ -19,9 +20,14 @@ corresponding mode -\> language id - in this case `(python-mode .
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection "pyls")
-                  :major-modes '(python-mode)
+                  :activation-fn (lsp-activate-on "python")
                   :server-id 'pyls))
 ```
+
+`lsp-mode` is using `lsp-language-id-configuration` to determine what is the
+buffer language. When the `major-mode` is not sufficient to determine the
+language (e.g. `web-mode` is used for `javascript` and for `html`) you can put
+regex.
 
 If the language server supports environment variables to control
 additional behavior, you can register that by using the
@@ -30,7 +36,7 @@ additional behavior, you can register that by using the
 ``` elisp
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("bash-language-server" "start"))
-                  :major-modes '(sh-mode)
+                  :activation-fn (lsp-activate-on "shellscript")
                   :priority -1
                   :environment-fn (lambda ()
                                     '(("EXPLAINSHELL_ENDPOINT" . lsp-bash-explainshell-endpoint)
@@ -43,6 +49,26 @@ are language client `defcustom` that expose supported server environment
 settings in a type-safe way. If you change any of those variables,
 restart the language server with `lsp-restart-workspace` for the changes
 to be applied.
+
+Also, if new client support customizing language server path. It's recommended
+to make a wrapper function so the user can customize the value even after the
+client has been loaded.
+
+``` elisp
+(defcustom lsp-tex-executable "digestif"
+  "Command to start the Digestif language server."
+  :group 'lsp-tex
+  :risky t
+  :type 'file)
+
+(lsp-register-client
+ (make-lsp-client
+  ;; instead of `:new-connection (lsp-stdio-connection lsp-text-executable)` use
+  :new-connection (lsp-stdio-connection (lambda () lsp-text-executable))
+  :activation-fn (lsp-activate-on "plaintex" "latex")
+  :priority -1
+  :server-id 'digestif))
+```
 
 ## Sections
 
