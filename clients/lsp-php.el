@@ -33,8 +33,17 @@
   :link '(url-link "https://github.com/felixfbecker/php-language-server")
   :group 'lsp-mode)
 
+(defcustom lsp-php-composer-dir
+  (if (eq (shell-command "composer -V") 0)
+      (replace-regexp-in-string "\n$" "" (shell-command-to-string "composer config --global home"))
+    "~/.composer")
+  "Home directory of composer."
+  :group 'lsp-php
+  :type 'string)
+
 (defcustom lsp-clients-php-server-command
-  `("php" ,(expand-file-name "~/.composer/vendor/felixfbecker/language-server/bin/php-language-server.php"))
+  `("php", (expand-file-name
+            (concat lsp-php-composer-dir "/vendor/felixfbecker/language-server/bin/php-language-server.php")))
   "Install directory for php-language-server."
   :group 'lsp-php
   :type '(repeat string))
@@ -360,7 +369,7 @@ already present."
   :link '(url-link "https://github.com/phpactor/phpactor")
   :group 'lsp-mode)
 
-(defcustom lsp-phpactor-path "~/.composer/vendor/phpactor/phpactor/bin/phpactor"
+(defcustom lsp-phpactor-path (concat lsp-php-composer-dir "/vendor/phpactor/phpactor/bin/phpactor")
   "Path to the `phpactor' command."
   :group 'lsp-phpactor
   :type "string")
