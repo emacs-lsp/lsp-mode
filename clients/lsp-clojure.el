@@ -183,6 +183,48 @@ If there are more arguments expected after the line and column numbers."
                                                     (- (line-number-at-pos) 1) ;; clojure-lsp expects line numbers to start at 0
                                                     (current-column))))
 
+(defun lsp-clojure--ask-macro-to-resolve ()
+  "Ask to user the macro to resolve."
+  (lsp--completing-read
+   "Select how LSP should resolve this macro:"
+   '("clojure.core/def"
+     "clojure.core/defn"
+     "clojure.core/let"
+     "clojure.core/for"
+     "clojure.core/->"
+     "clojure.core/->>"
+     "clj-kondo.lint-as/def-catch-all")
+   #'identity
+   nil
+   t))
+
+(defun lsp-clojure--ask-clj-kondo-config-dir ()
+  "Ask to user the clj-kondo config dir path."
+  (lsp--completing-read
+   "Select where LSP should save this setting:"
+   (list (concat (expand-file-name "~/") ".clj-kondo/config.edn")
+         (concat (or (lsp-workspace-root) "project") ".clj-kondo/config.edn"))
+   #'identity
+   nil
+   t))
+
+(defun lsp-clojure-resolve-macro-as ()
+  "Ask to user how the unresolved macro should be resolved."
+  (interactive)
+  (lsp--cur-workspace-check)
+  (lsp-clojure--execute-command "resolve-macro-as"
+                                (list (lsp--buffer-uri)
+                                      (- (line-number-at-pos) 1) ;; clojure-lsp expects line numbers to start at 0
+                                      (current-column)
+                                      (lsp-clojure--ask-macro-to-resolve)
+                                      (lsp-clojure--ask-clj-kondo-config-dir))))
+
+(lsp-defun lsp-clojure--resolve-macro-as ((&Command :command :arguments?))
+  "Intercept resolve-macro-as command and send all necessary data."
+  (let ((chosen-macro (lsp-clojure--ask-macro-to-resolve))
+        (clj-kondo-config-path (lsp-clojure--ask-clj-kondo-config-dir)))
+    (lsp-clojure--execute-command command (append arguments? (list chosen-macro clj-kondo-config-path)))))
+
 (defun lsp-clojure--library-folders (_workspace)
   "Return the library folders path to analyze for WORKSPACE."
   (when (string-match-p ".m2/repository" (buffer-file-name))
@@ -224,6 +266,7 @@ If there are more arguments expected after the line and column numbers."
   :major-modes '(clojure-mode clojurec-mode clojurescript-mode)
   :library-folders-fn #'lsp-clojure--library-folders
   :uri-handlers (lsp-ht ("jar" #'lsp-clojure--file-in-jar))
+  :action-handlers (lsp-ht ("resolve-macro-as" #'lsp-clojure--resolve-macro-as))
   :initialization-options '(:dependency-scheme "jar")
   :server-id 'clojure-lsp))
 
