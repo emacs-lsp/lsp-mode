@@ -34,7 +34,7 @@
   :group 'lsp-mode)
 
 (defcustom lsp-php-composer-dir
-  (if (eq (shell-command "composer -V") 0)
+  (if (executable-find "composer")
       (replace-regexp-in-string "\n$" "" (shell-command-to-string "composer config --global home"))
     "~/.composer")
   "Home directory of composer."
