@@ -60,11 +60,21 @@ Usually this is to be set in your .dir-locals.el on the project root directory."
   :group 'lsp-csharp
   :type 'string)
 
+(defcustom lsp-csharp-auto-update-server t
+  "Update the language server automatically."
+  :type 'boolean
+  :group 'lsp-csharp)
+
+(defcustom lsp-csharp-update-server-without-asking nil
+  "If non-nil, update the language server without asking the user's permission."
+  :type 'boolean
+  :group 'lsp-csharp)
+
 (defun lsp-csharp--version-list-latest (lst)
   (->> lst
-       (-sort (lambda (a b) (not (version<= (substring a 1)
-                                            (substring b 1)))))
-       cl-first))
+    (-sort (lambda (a b) (not (version<= (substring a 1)
+                                         (substring b 1)))))
+    cl-first))
 
 (defun lsp-csharp--latest-installed-version ()
   "Returns latest version of the server installed on the machine (if any)."
@@ -328,7 +338,7 @@ PRESENT-BUFFER will make the buffer be presented to the user."
       (erase-buffer)))
 
   (when present-buffer
-      (display-buffer lsp-csharp-test-run-buffer-name)))
+    (display-buffer lsp-csharp-test-run-buffer-name)))
 
 (defun lsp-csharp--start-tests (test-method-framework test-method-names)
   "Run test(s) identified by TEST-METHOD-NAMES using TEST-METHOD-FRAMEWORK."
@@ -448,6 +458,11 @@ using the `textDocument/references' request."
       (lsp-show-xrefs (lsp--locations-to-xref-items locations-found) nil t)
     (message "No references found")))
 
+(defun lsp-csharp--after-open-fn (&rest _)
+  "Client event, `after-open-fn'."
+  (when lsp-csharp-auto-update-server
+    (lsp-csharp--install-server nil (not lsp-csharp-update-server-without-asking))))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    #'lsp-csharp--language-server-command
@@ -476,7 +491,8 @@ using the `textDocument/references' request."
                         (progn
                           (lsp-csharp--install-server nil nil)
                           (funcall callback))
-                      (error (funcall error-callback (error-message-string err)))))))
+                      (error (funcall error-callback (error-message-string err)))))
+                  :after-open-fn #'lsp-csharp--after-open-fn))
 
 (provide 'lsp-csharp)
 ;;; lsp-csharp.el ends here
