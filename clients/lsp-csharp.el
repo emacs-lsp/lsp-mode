@@ -27,6 +27,7 @@
 (require 'lsp-mode)
 (require 'gnutls)
 (require 'f)
+(require 'ht)
 
 (defgroup lsp-csharp nil
   "LSP support for C#, using the Omnisharp Language Server.
@@ -93,7 +94,9 @@ Usually this is to be set in your .dir-locals.el on the project root directory."
 (defun lsp-csharp--latest-available-version ()
   "Returns latest version of the server available from github."
   (lsp-csharp--version-list-latest
-   (seq-map (lambda (elt) (s-trim (cdr (assq 'name elt))))
+   (seq-map (lambda (elt)
+              (or (ignore-errors (s-trim (cdr (assq 'name elt))))
+                  (ignore-errors (ht-get elt "name"))))
             (lsp-csharp--fetch-json "https://api.github.com/repos/OmniSharp/omnisharp-roslyn/releases"))))
 
 (defun lsp-csharp--server-dir (version)
@@ -175,7 +178,7 @@ available on github and if so, downloads and installs a newer version."
                (or installed-version "(none)")
                target-version)
       (when (or (not ask-confirmation)
-                (yes-or-no-p (format "OmniSharp Roslyn Server %s. Do you want to download and install %s now?"
+                (yes-or-no-p (format "OmniSharp Roslyn Server %s. Do you want to download and install %s now? "
                                      (if installed-version
                                          (format "can be updated, currently installed version is %s" installed-version)
                                        "is not installed")
