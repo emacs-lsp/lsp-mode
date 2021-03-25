@@ -464,6 +464,7 @@ using the `textDocument/references' request."
 (defun lsp-csharp--after-open-fn (&rest _)
   "Client event, `after-open-fn'."
   (when lsp-csharp-auto-update-server
+    (setq lsp-csharp-auto-update-server nil)  ; Disable for one time per session
     (lsp-csharp--install-server nil (not lsp-csharp-update-server-without-asking))))
 
 (lsp-register-client
