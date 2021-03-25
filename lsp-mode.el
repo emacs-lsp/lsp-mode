@@ -4965,13 +4965,16 @@ RENDER-ALL - nil if only the signature should be rendered."
 (declare-function posframe-hide "ext:posframe")
 (declare-function posframe-poshandler-point-bottom-left-corner-upward "ext:posframe")
 
+(defface lsp-signature-posframe
+  '((t :inherit tooltip))
+  "Background and foreground for `lsp-signature-posframe'."
+  :group 'lsp-faces)
+
 (defvar lsp-signature-posframe-params
   (list :poshandler #'posframe-poshandler-point-bottom-left-corner-upward
-        :background-color (face-attribute 'tooltip :background)
         :height 6
         :width 60
         :border-width 10
-        :border-color (face-attribute 'tooltip :background)
         :min-width 60)
   "Params for signature and `posframe-show'.")
 
@@ -4984,8 +4987,12 @@ RENDER-ALL - nil if only the signature should be rendered."
                (insert str)
                (visual-line-mode 1)
                (current-buffer))
-             :position (point)
-             lsp-signature-posframe-params)
+             lsp-signature-posframe-params
+             (list
+              :position (point)
+              :background-color (face-attribute 'lsp-signature-posframe :background)
+              :foreground-color (face-attribute 'lsp-signature-posframe :foreground)
+              :border-color (face-attribute 'lsp-signature-posframe :background)))
     (posframe-hide "*lsp-signature*")))
 
 (defun lsp--handle-signature-update (signature)
