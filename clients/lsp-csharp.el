@@ -28,6 +28,7 @@
 (require 'gnutls)
 (require 'f)
 (require 'ht)
+(require 's)
 
 (defgroup lsp-csharp nil
   "LSP support for C#, using the Omnisharp Language Server.
