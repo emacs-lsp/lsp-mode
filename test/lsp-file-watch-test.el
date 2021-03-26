@@ -40,7 +40,9 @@
                  temp-directory
                  (lambda (event)
                    (message "received: %s" event)
-                   (add-to-list 'events (cdr event)))))
+                   (add-to-list 'events (cdr event)))
+                 lsp-file-watch-ignored-files
+                 lsp-file-watch-ignored-directories))
 
     (write-region "bla" nil matching-file)
 
@@ -111,7 +113,9 @@
   :tags '(no-win)
   (lsp-kill-watch (lsp-watch-root-folder
                    "non-existing-directory"
-                   #'ignore)))
+                   #'ignore
+                   lsp-file-watch-ignored-files
+                   lsp-file-watch-ignored-directories)))
 
 (ert-deftest lsp-file-watch--relative-path-glob-patterns ()
   :tags '(no-win)
@@ -131,7 +135,9 @@
                  temp-directory
                  (lambda (event)
                    (message "received: %s" event)
-                   (add-to-list 'events (cdr event)))))
+                   (add-to-list 'events (cdr event)))
+                 lsp-file-watch-ignored-files
+                 lsp-file-watch-ignored-directories))
 
     (write-region "bla" nil matching-file)
     (sit-for 0.3)
@@ -220,14 +226,17 @@
          (nested-dir (f-join temp-directory "nested"))
          (nested-matching-file (f-join nested-dir "file.ext"))
          (create-lockfiles nil)
-         (lsp-file-watch-ignored-directories '("nested"))
+         (ignored-files lsp-file-watch-ignored-files)
+         (ignored-directories '("nested"))
          events watch)
 
     (mkdir nested-dir)
 
     (setq watch (lsp-watch-root-folder
                  temp-directory
-                 (lambda (event) (add-to-list 'events (cdr event)))))
+                 (lambda (event) (add-to-list 'events (cdr event)))
+                 ignored-files
+                 ignored-directories))
 
     (write-region "bla" nil nested-matching-file)
     (sit-for 0.3)
@@ -241,6 +250,8 @@
          (nested-dir (f-join temp-directory "nested"))
          (nested-matching-file (f-join nested-dir "file.ext"))
          (create-lockfiles nil)
+         (ignored-files lsp-file-watch-ignored-files)
+         (ignored-directories lsp-file-watch-ignored-directories)
          events watch expected-events)
 
     (mkdir nested-dir)
@@ -248,7 +259,9 @@
     (setq watch (lsp-watch-root-folder
                  temp-directory
                  (lambda (event)
-                   (add-to-list 'events (cdr event)))))
+                   (add-to-list 'events (cdr event)))
+                 ignored-files
+                 ignored-directories))
 
     (write-region "bla" nil nested-matching-file)
     (sit-for 0.3)

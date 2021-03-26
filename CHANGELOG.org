@@ -28,6 +28,7 @@
   * Add Zig support.
   * Add an interactive ~lsp-rust-analyzer-reload-workspace~ function that reloads the Rust-Analyzer workspace from Cargo.toml
   * Rename ~lsp-rust-analyzer-cargo-load-out-dirs-from-check~ to ~lsp-rust-analyzer-cargo-run-build-scripts~ to align with upstream.
+  * Allow customization of ~lsp-file-watch-ignored-directories~ and ~lsp-file-watch-ignored-files~ at the root of an lsp workspace.
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
   * Safe renamed ~lsp-flycheck-default-level~ -> ~lsp-diagnostics-flycheck-default-level~
