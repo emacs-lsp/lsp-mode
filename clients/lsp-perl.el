@@ -74,11 +74,27 @@ Defaults to `[\".vscode\" \".git\" \".svn\"]' if nil."
   :group 'lsp-perl
   :package-version '(lsp-mode . "7.0.1"))
 
+(defcustom lsp-perl-show-local-vars nil
+  "If true, show also local variables in symbol view.
+Defaults to false if nil"
+  :type 'boolean
+  :group 'lsp-perl
+  :package-version '(lsp-mode . "7.1"))
+
+(defcustom lsp-perl-log-level nil
+  "Log level 0-2.
+Defaults to 0."
+  :type 'integer
+  :group 'lsp-perl
+  :package-version '(lsp-mode . "7.1"))
+
 (lsp-register-custom-settings
  '(("perl.perlCmd" lsp-perl-perl-cmd)
    ("perl.perlInc" lsp-perl-perl-inc)
    ("perl.fileFilter" lsp-perl-file-filter)
-   ("perl.ignoreDirs" lsp-perl-ignore-dirs)))
+   ("perl.ignoreDirs" lsp-perl-ignore-dirs)
+   ("perl.showLocalVars" lsp-perl-show-local-vars t)
+   ("perl.logLevel" lsp-perl-log-level)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
