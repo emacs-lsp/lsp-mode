@@ -64,6 +64,18 @@
   :group 'lsp-clojure
   :package-version '(lsp-mode . "7.1"))
 
+(defcustom lsp-clojure-workspace-dir (expand-file-name (locate-user-emacs-file "workspace/"))
+  "LSP clojure workspace directory."
+  :group 'lsp-clojure
+  :risky t
+  :type 'directory)
+
+(defcustom lsp-clojure-workspace-cache-dir (expand-file-name ".cache/" lsp-clojure-workspace-dir)
+  "LSP clojure workspace cache directory."
+  :group 'lsp-clojure
+  :risky t
+  :type 'directory)
+
 ;; Internal
 
 (lsp-dependency
@@ -225,27 +237,32 @@ If there are more arguments expected after the line and column numbers."
         (clj-kondo-config-path (lsp-clojure--ask-clj-kondo-config-dir)))
     (lsp-clojure--execute-command command (append arguments? (list chosen-macro clj-kondo-config-path)))))
 
-(defun lsp-clojure--library-folders (_workspace)
-  "Return the library folders path to analyze for WORKSPACE."
-  (when (string-match-p ".m2/repository" (buffer-file-name))
-    (list (file-name-directory (buffer-file-name)))))
+(defun lsp-clojure--ensure-dir (path)
+  "Ensure that directory PATH exists."
+  (unless (file-directory-p path)
+    (make-directory path t)))
+
+(defun lsp-clojure--get-metadata-location (file-location)
+  "Given a FILE-LOCATION return the file containing the metadata for the file."
+  (format "%s.%s.metadata"
+          (file-name-directory file-location)
+          (file-name-base file-location)))
 
 (defun lsp-clojure--file-in-jar (uri)
   "Check URI for a valid jar and include it in workspace."
   (string-match "^\\(jar\\|zip\\):\\(file:.+\\)!/\\(.+\\)" uri)
-  (-when-let* ((entry (match-string 3 uri))
-               (path (lsp--uri-to-path (match-string 2 uri)))
-               (name (format "%s:%s" path entry))
-               (content (lsp-send-request (lsp-make-request "clojure/dependencyContents" (list :uri uri)))))
-    (unless (find-buffer-visiting name)
-      (with-current-buffer (generate-new-buffer name)
-        (insert content)
-        (set-visited-file-name name)
-        (setq-local buffer-read-only t)
-        (set-buffer-modified-p nil)
-        (set-auto-mode)
-        (current-buffer)))
-    name))
+  (let* ((ns-path (match-string 3 uri))
+         (ns (s-replace "/" "." ns-path))
+         (file-location (concat lsp-clojure-workspace-cache-dir ns)))
+    (unless (file-readable-p file-location)
+      (lsp-clojure--ensure-dir (file-name-directory file-location))
+      (with-lsp-workspace (lsp-find-workspace 'clojure-lsp nil)
+        (let ((content (lsp-send-request (lsp-make-request "clojure/dependencyContents" (list :uri uri)))))
+          (with-temp-file file-location
+            (insert content))
+          (with-temp-file (lsp-clojure--get-metadata-location file-location)
+            (insert uri)))))
+    file-location))
 
 (defun lsp-clojure--server-executable-path ()
   "Return the clojure-lsp server command."
@@ -264,7 +281,7 @@ If there are more arguments expected after the line and column numbers."
                      (or lsp-clojure-custom-server-command
                          (lsp-clojure--server-executable-path))))
   :major-modes '(clojure-mode clojurec-mode clojurescript-mode)
-  :library-folders-fn #'lsp-clojure--library-folders
+  :library-folders-fn (lambda (_workspace) (list lsp-clojure-workspace-cache-dir))
   :uri-handlers (lsp-ht ("jar" #'lsp-clojure--file-in-jar))
   :action-handlers (lsp-ht ("resolve-macro-as" #'lsp-clojure--resolve-macro-as))
   :initialization-options '(:dependency-scheme "jar")
