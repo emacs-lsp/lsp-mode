@@ -237,11 +237,6 @@ If there are more arguments expected after the line and column numbers."
         (clj-kondo-config-path (lsp-clojure--ask-clj-kondo-config-dir)))
     (lsp-clojure--execute-command command (append arguments? (list chosen-macro clj-kondo-config-path)))))
 
-(defun lsp-clojure--library-folders (_workspace)
-  "Return the library folders path to analyze for WORKSPACE."
-  (when (string-match-p ".m2/repository" (buffer-file-name))
-    (list (file-name-directory (buffer-file-name)))))
-
 (defun lsp-clojure--ensure-dir (path)
   "Ensure that directory PATH exists."
   (unless (file-directory-p path)
