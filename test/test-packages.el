@@ -70,7 +70,7 @@
                lsp-java
                lsp-metals
                lsp-mssql
-               lsp-origami
+               ;;lsp-origami
                lsp-pyright
                lsp-python-ms
                lsp-sonarlint
