@@ -5789,10 +5789,14 @@ REFERENCES? t when METHOD returns references."
 
 (defun lsp-workspace-command-execute (command &optional args)
   "Execute workspace COMMAND with ARGS."
-  (let ((params (if args
-                    (list :command command :arguments args)
-                  (list :command command))))
-    (lsp-request "workspace/executeCommand" params)))
+  (condition-case-unless-debug err
+      (let ((params (if args
+                        (list :command command :arguments args)
+                      (list :command command))))
+        (lsp-request "workspace/executeCommand" params))
+    (error
+     (lsp--error "`workspace/executeCommand' with `%s' failed.\n\n%S"
+                 command err))))
 
 (defun lsp-send-execute-command (command &optional args)
   "Create and send a 'workspace/executeCommand' message having command COMMAND and optional ARGS."
