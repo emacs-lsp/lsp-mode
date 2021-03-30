@@ -56,7 +56,6 @@
 
 
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
-                           ("celpa" . "https://celpa.conao3.com/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
        (pkgs '(ccls
                dap-mode
@@ -70,7 +69,7 @@
                lsp-java
                lsp-metals
                lsp-mssql
-               ;;lsp-origami
+               lsp-origami
                lsp-pyright
                lsp-python-ms
                lsp-sonarlint
