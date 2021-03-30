@@ -1669,49 +1669,50 @@ This set of allowed chars is enough for hexifying local file paths.")
            (memq event-type '(created deleted changed)))
       (funcall callback event)))))
 
-(defun lsp--directory-files-recursively (dir regexp ignored-directories &optional include-directories)
-  "Copy of `directory-files-recursively' but it skips directories matching any regex in IGNORED-DIRECTORIES."
-  (let* ((result nil)
-         (files nil)
-         (dir (directory-file-name dir))
-         ;; When DIR is "/", remote file names like "/method:" could
-         ;; also be offered.  We shall suppress them.
-         (tramp-mode (and tramp-mode (file-remote-p (expand-file-name dir)))))
-    (dolist (file (sort (file-name-all-completions "" dir)
-                        'string<))
-      (unless (member file '("./" "../"))
-        (if (and (directory-name-p file)
-                 (not (lsp--string-match-any ignored-directories (f-join dir (f-filename file)))))
-            (let* ((leaf (substring file 0 (1- (length file))))
-                   (full-file (f-join dir leaf)))
-              ;; Don't follow symlinks to other directories.
-              (unless (file-symlink-p full-file)
-                (setq result
-                      (nconc result (lsp--directory-files-recursively
-                                     full-file regexp ignored-directories include-directories))))
-              (when (and include-directories
-                         (string-match regexp leaf))
-                (setq result (nconc result (list full-file)))))
-          (when (string-match regexp file)
-            (push (f-join dir file) files)))))
-    (nconc result (nreverse files))))
-
-(defun lsp--ask-about-watching-big-repo (number-of-files dir)
-  "Ask the user if they want to watch NUMBER-OF-FILES from a repository DIR.
+(defun lsp--ask-about-watching-big-repo (number-of-directories dir)
+  "Ask the user if they want to watch NUMBER-OF-DIRECTORIES from a repository DIR.
 This is useful when there is a lot of files in a repository, as
 that may slow Emacs down. Returns t if the user wants to watch
 the entire repository, nil otherwise."
   (prog1
       (yes-or-no-p
        (format
-        "There are %s files in folder %s so watching the repo may slow Emacs down.
+        "Watching all the files in %s would require adding watches to %s directories, so watching the repo may slow Emacs down.
 Do you want to watch all files in %s? "
-        number-of-files
         dir
+        number-of-directories
         dir))
     (lsp--info
      (concat "You can configure this warning with the `lsp-enable-file-watchers' "
              "and `lsp-file-watch-threshold' variables"))))
+
+
+(defun lsp--path-is-watchable-directory (path dir ignored-directories)
+  "Figure out whether PATH (inside of DIR) is meant to have a file watcher set.
+IGNORED-DIRECTORIES is a list of regexes to filter out directories we don't want to watch."
+  (let
+      ((full-path (f-join dir path)))
+    (and (f-dir-p full-path)
+         (not (equal path "."))
+         (not (equal path ".."))
+         (not (lsp--string-match-any ignored-directories full-path)))))
+
+
+(defun lsp--all-watchable-directories (dir ignored-directories)
+  "Traverse DIR recursively and return a list of paths that should have watchers set on them.
+IGNORED-DIRECTORIES will be used for exclusions"
+  (let* ((dir (if (f-symlink? dir)
+                  (file-truename dir)
+                dir)))
+    (apply #'nconc
+           ;; the directory itself is assumed to be part of the set
+           (list dir)
+           ;; collect all subdirectories that are watchable
+           (-map
+            (lambda (path) (lsp--all-watchable-directories (f-join dir path) ignored-directories))
+            ;; but only look at subdirectories that are watchable
+            (-filter (lambda (path) (lsp--path-is-watchable-directory path dir ignored-directories))
+                     (directory-files dir))))))
 
 (defun lsp-watch-root-folder (dir callback ignored-files ignored-directories &optional watch warn-big-repo?)
   "Create recursive file notification watch in DIR.
@@ -1725,41 +1726,30 @@ regex in IGNORED-FILES."
   (let* ((dir (if (f-symlink? dir)
                   (file-truename dir)
                 dir))
-         (watch (or watch (make-lsp-watch :root-directory dir))))
+         (watch (or watch (make-lsp-watch :root-directory dir)))
+         (dirs-to-watch (lsp--all-watchable-directories dir ignored-directories)))
     (lsp-log "Creating watch for %s" dir)
     (when (or
            (not warn-big-repo?)
            (not lsp-file-watch-threshold)
-           (let ((number-of-files (length (lsp--directory-files-recursively dir ".*" ignored-directories t))))
+           (let ((number-of-directories (length dirs-to-watch)))
              (or
-              (< number-of-files lsp-file-watch-threshold)
+              (< number-of-directories lsp-file-watch-threshold)
               (condition-case _err
-                  (lsp--ask-about-watching-big-repo number-of-files dir)
+                  (lsp--ask-about-watching-big-repo number-of-directories dir)
                 ('quit)))))
-      (condition-case err
-          (progn
-            (puthash
-             dir
-             (file-notify-add-watch dir
-                                    '(change)
-                                    (lambda (event)
-                                      (lsp--folder-watch-callback event callback watch
-                                                                  ignored-files
-                                                                  ignored-directories)))
-             (lsp-watch-descriptors watch))
-            (seq-do
-             (-rpartial #'lsp-watch-root-folder callback ignored-files ignored-directories watch)
-             (seq-filter (lambda (f)
-                           (and (file-directory-p f)
-                                (not (gethash (if (f-symlink? f)
-                                                  (file-truename f)
-                                                f)
-                                              (lsp-watch-descriptors watch)))
-                                (not (lsp--string-match-any ignored-directories f))
-                                (not (-contains? '("." "..") (f-filename f)))))
-                         (directory-files dir t))))
-        (error (lsp-log "Failed to create a watch for %s: message" (error-message-string err)))
-        (file-missing (lsp-log "Failed to create a watch for %s: message" (error-message-string err)))))
+      (dolist (current-dir dirs-to-watch)
+        (condition-case err
+            (progn
+              (puthash
+               current-dir
+               (file-notify-add-watch current-dir
+                                      '(change)
+                                      (lambda (event)
+                                        (lsp--folder-watch-callback event callback watch ignored-files ignored-directories)))
+               (lsp-watch-descriptors watch)))
+          (error (lsp-log "Failed to create a watch for %s: message" (error-message-string err)))
+          (file-missing (lsp-log "Failed to create a watch for %s: message" (error-message-string err))))))
     watch))
 
 (defun lsp-kill-watch (watch)
