@@ -129,14 +129,18 @@ This will help minimize popup flickering issue in `company-mode'."
 (declare-function company-doc-buffer "ext:company")
 (declare-function yas-expand-snippet "ext:yasnippet")
 
+(defun lsp-falsy? (val)
+  "Non-nil if VAL is falsy."
+  ;; https://developer.mozilla.org/en-US/docs/Glossary/Falsy
+  (or (not val) (equal val "") (equal val 0)))
+
 (cl-defun lsp-completion--make-item (item &key markers prefix)
   "Make completion item from lsp ITEM and with MARKERS and PREFIX."
   (-let (((&CompletionItem :label
-                           :insert-text?
                            :sort-text?
                            :_emacsStartPoint start-point)
           item))
-    (propertize (or label insert-text?)
+    (propertize label
                 'lsp-completion-item item
                 'lsp-sort-text sort-text?
                 'lsp-completion-start-point start-point
@@ -194,7 +198,7 @@ Return `nil' when fails to guess prefix."
     (lsp--position-to-point (lsp:range-start (lsp:text-edit-range text-edit?))))
    (t
     (-let* (((&CompletionItem :label :insert-text?) item)
-            (text (or insert-text? label))
+            (text (or (unless (lsp-falsy? insert-text?) insert-text?) label))
             (point (point))
             (start (max 1 (- point (length text))))
             (char-before (char-before start))
@@ -216,7 +220,7 @@ Return `nil' when fails to guess prefix."
                           :filter-text?
                           :_emacsStartPoint start-point
                           :score?))
-            `( :label ,(or filter-text? label)
+            `( :label ,(or (unless (lsp-falsy? filter-text?) filter-text?) label)
                :item ,item
                :start-point ,start-point
                :score ,score?))
@@ -511,11 +515,11 @@ Others: CANDIDATES"
           (apply #'delete-region markers)
           (insert prefix)
           (lsp--apply-text-edit text-edit?))
-         ((or insert-text? label)
+         ((or (unless (lsp-falsy? insert-text?) insert-text?) label)
           (apply #'delete-region markers)
           (insert prefix)
           (delete-region start-point (point))
-          (insert (or insert-text? label))))
+          (insert (or (unless (lsp-falsy? insert-text?) insert-text?) label))))
 
         (when (equal insert-text-format? lsp/insert-text-format-snippet)
           (lsp--expand-snippet (buffer-substring start-point (point))
