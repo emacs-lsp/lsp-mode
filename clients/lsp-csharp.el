@@ -102,14 +102,23 @@ Usually this is to be set in your .dir-locals.el on the project root directory."
              :store-path lsp-csharp-omnisharp-roslyn-store-path))
 
 (defun lsp-csharp--download-server (_client callback error-callback _update?)
-  "Download zip package for omnisharp-roslyn and install it."
+  "Download zip package for omnisharp-roslyn and install it.
+Will invoke CALLBACK on success, ERROR-CALLBACK on error."
   (lsp-package-ensure
    'omnisharp-roslyn
    (lambda ()
      (lsp-unzip lsp-csharp-omnisharp-roslyn-store-path
                 lsp-csharp-omnisharp-roslyn-server-dir)
      (unless (eq system-type 'windows-nt)
-       (set-file-modes (f-join lsp-csharp-omnisharp-roslyn-server-dir "run") #o700))
+       (let ((run-script (f-join lsp-csharp-omnisharp-roslyn-server-dir "run")))
+         (when (not (f-exists-p run-script))
+           ; create the `run' script when missing (e.g. when server binaries are extracted from omnisharp-mono.zip)
+           ; NOTE: we do not check for presence or version of mono in the system
+           (with-temp-file run-script
+             (insert "#!/bin/bash\n")
+             (insert "BASEDIR=$(dirname \"$0\")\n")
+             (insert "exec mono $BASEDIR/OmniSharp.exe $@\n")))
+         (set-file-modes run-script #o755)))
      (funcall callback))
    error-callback))
 
