@@ -94,7 +94,10 @@ If value is `\"\"` then defaults to the workspace rootUri."
 
 (define-obsolete-variable-alias 'lsp-clients-elixir-server-executable 'lsp-elixir-server-command "2021-04-05")
 
-(defcustom lsp-elixir-server-command '("elixir-ls")
+(defcustom lsp-elixir-server-command
+  (if (equal system-type 'windows-nt)
+      '("language_server.bat")
+    '("language_server.sh"))
   "Command to start elixir-ls.
 
 Leave as default to let `executable-find' search for it."
