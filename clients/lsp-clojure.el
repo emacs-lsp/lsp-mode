@@ -214,8 +214,8 @@ If there are more arguments expected after the line and column numbers."
   "Ask to user the clj-kondo config dir path."
   (lsp--completing-read
    "Select where LSP should save this setting:"
-   (list (concat (expand-file-name "~/") ".clj-kondo/config.edn")
-         (concat (or (lsp-workspace-root) "project") ".clj-kondo/config.edn"))
+   (list (f-join (expand-file-name "~/") ".clj-kondo/config.edn")
+         (f-join (or (lsp-workspace-root) "project") ".clj-kondo/config.edn"))
    #'identity
    nil
    t))
