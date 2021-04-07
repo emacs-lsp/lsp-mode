@@ -75,8 +75,8 @@ If value is `\"\"` then defaults to the workspace rootUri."
   :package-version '(lsp-mode . "7.1"))
 
 (defcustom lsp-elixir-suggest-specs t
-  "Suggest @spec annotations inline using Dialyzer's inferred success typings
-(Requires Dialyzer)."
+  "Suggest @spec annotations inline using Dialyzer's inferred success typings.
+This requires Dialyzer."
   :type 'boolean
   :group 'lsp-elixir
   :package-version '(lsp-mode . "7.1"))

@@ -422,7 +422,7 @@ syntax highlighting."
 
 (defcustom lsp-rust-analyzer-diagnostics-enable-experimental t
   "Whether to show native rust-analyzer diagnostics that are still experimental
-(might have more false positives than usual)."
+\(might have more false positives than usual)."
   :type 'boolean
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1.0"))
@@ -712,7 +712,7 @@ them with `crate` or the crate name they refer to."
 
 (defcustom lsp-rust-analyzer-inlay-type-space-format "%s"
   "Format string for spacing around variable inlays
-(not part of the inlay face)."
+\(not part of the inlay face)."
   :type '(string :tag "String")
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1"))
@@ -731,7 +731,7 @@ them with `crate` or the crate name they refer to."
 
 (defcustom lsp-rust-analyzer-inlay-param-space-format "%s "
   "Format string for spacing around parameter inlays
-(not part of the inlay face)."
+\(not part of the inlay face)."
   :type '(string :tag "String")
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1"))
