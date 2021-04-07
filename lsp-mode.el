@@ -774,7 +774,8 @@ Changes take effect only when a new session is started."
                                         (vala-mode . "vala")
                                         (actionscript-mode . "actionscript")
                                         (d-mode . "d")
-                                        (zig-mode . "zig"))
+                                        (zig-mode . "zig")
+                                        (text-mode . "plaintext"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
@@ -3275,7 +3276,7 @@ disappearing, unset all the variables related to it."
                                                                              :json-false)
                                                                             (lsp-enable-snippet t)
                                                                             (t :json-false)))
-                                                        (documentationFormat . ["markdown"])
+                                                        (documentationFormat . ["markdown" "plaintext"])
                                                         ;; Remove this after jdtls support resolveSupport
                                                         (resolveAdditionalTextEditsSupport . t)
                                                         (resolveSupport
