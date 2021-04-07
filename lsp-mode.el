@@ -4988,12 +4988,12 @@ RENDER-ALL - nil if only the signature should be rendered."
                (insert str)
                (visual-line-mode 1)
                (current-buffer))
-             lsp-signature-posframe-params
-             (list
-              :position (point)
-              :background-color (face-attribute 'lsp-signature-posframe :background)
-              :foreground-color (face-attribute 'lsp-signature-posframe :foreground)
-              :border-color (face-attribute 'lsp-signature-posframe :background)))
+             (append lsp-signature-posframe-params
+                     (list
+                      :position (point)
+                      :background-color (face-attribute 'lsp-signature-posframe :background nil t)
+                      :foreground-color (face-attribute 'lsp-signature-posframe :foreground nil t)
+                      :border-color (face-attribute 'lsp-signature-posframe :background))))
     (posframe-hide "*lsp-signature*")))
 
 (defun lsp--handle-signature-update (signature)
