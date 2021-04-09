@@ -233,6 +233,7 @@ Newlines and excess whitespace are removed."
                                    (string= (f-ext file-name) "xml"))
                   :priority 0
                   :server-id 'xmlls
+                  :multi-root t
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration (lsp-configuration-section "xml"))))
