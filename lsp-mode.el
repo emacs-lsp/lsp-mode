@@ -6884,6 +6884,16 @@ returns the command to execute."
         (lsp--restart-if-needed workspace))
       (lsp--cleanup-hanging-watches))))
 
+(defun lsp-workspace-folders (workspace)
+  "Return all folders associated with WORKSPACE."
+  (let (result)
+    (->> (lsp-session)
+      (lsp-session-folder->servers)
+      (maphash (lambda (folder workspaces)
+                 (when (-contains? workspaces workspace)
+                   (push folder result)))))
+    result))
+
 (defun lsp--start-workspace (session client-template root &optional initialization-options)
   "Create new workspace for CLIENT-TEMPLATE with project root ROOT.
 INITIALIZATION-OPTIONS are passed to initialize function.
@@ -6978,7 +6988,9 @@ SESSION is the active session."
 
            (with-lsp-workspace workspace
              (run-hooks 'lsp-after-initialize-hook))
-           (lsp--info "%s initialized successfully" (lsp--workspace-print workspace))))
+           (lsp--info "%s initialized successfully in folders: %s"
+                      (lsp--workspace-print workspace)
+                      (lsp-workspace-folders workspace))))
        :mode 'detached))
     workspace))
 
