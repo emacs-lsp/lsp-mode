@@ -862,9 +862,12 @@ them with `crate` or the crate name they refer to."
      (lsp-rust-analyzer--runnables))
    (-lambda ((&rust-analyzer:Runnable :label)) label)))
 
-(defun lsp-rust-analyzer-run (runnable)
-  "Select and run a runnable action."
-  (interactive (list (lsp-rust-analyzer--select-runnable)))
+
+(defun lsp-rust-analyzer--common-runner (runnable)
+  "Execute a given RUNNABLE.
+
+Extract the arguments, prepare the minor mode (cargo-process-mode if possible)
+and run a compilation"
   (-let* (((&rust-analyzer:Runnable :kind :label :args) runnable)
           ((&rust-analyzer:RunnableArgs :cargo-args :executable-args :workspace-root?) args)
           (default-directory (or workspace-root? default-directory)))
@@ -874,14 +877,20 @@ them with `crate` or the crate name they refer to."
        (string-join (append (list "cargo") cargo-args (when executable-args '("--")) executable-args '()) " ")
        ;; cargo-process-mode is nice, but try to work without it...
        (if (functionp 'cargo-process-mode) 'cargo-process-mode nil)
-       (lambda (_) (concat "*" label "*")))
-      (setq lsp-rust-analyzer--last-runnable runnable))))
+       (lambda (_) (concat "*" label "*"))))))
 
-(defun lsp-rust-analyzer-debug (runnable)
+
+(defun lsp-rust-analyzer-run (runnable)
   "Select and run a runnable action."
   (interactive (list (lsp-rust-analyzer--select-runnable)))
+    (if (lsp-rust-analyzer--common-runner runnable)
+      (setq lsp-rust-analyzer--last-runnable runnable)))
+
+(defun lsp-rust-analyzer-debug (runnable)
+  "Select and debug a RUNNABLE action."
+  (interactive (list (lsp-rust-analyzer--select-runnable)))
   (unless (featurep 'dap-cpptools)
-    (user-error "You must require `dap-cpptools'."))
+    (user-error "You must require `dap-cpptools'"))
   (-let (((&rust-analyzer:Runnable
            :args (&rust-analyzer:RunnableArgs :cargo-args :workspace-root? :executable-args)
            :label) runnable))
@@ -905,9 +914,9 @@ them with `crate` or the crate name they refer to."
          (funcall
           (lambda (artifact-spec)
             (pcase artifact-spec
-              (`() (user-error "No compilation artifacts or obtaining the runnable artifacts failed."))
+              (`() (user-error "No compilation artifacts or obtaining the runnable artifacts failed"))
               (`(,spec) spec)
-              (_ (user-error "Multiple compilation artifacts are not supported.")))))
+              (_ (user-error "Multiple compilation artifacts are not supported")))))
          (list :type "cppdbg"
                :request "launch"
                :name label
@@ -927,6 +936,65 @@ them with `crate` or the crate name they refer to."
   "Find parent module of current module."
   (interactive)
   (lsp-find-locations "experimental/parentModule" nil :display-action display-action))
+
+(defun lsp-rust-analyzer-open-cargo-toml (&optional new-window)
+  "Open the closest Cargo.toml from the current file.
+
+   Rust-Analyzer LSP protocol documented here and added in November 2020
+   https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#open-cargotoml
+
+   If NEW-WINDOW (interactively the prefix argument) is non-nil,
+   open in a new window."
+  (interactive "P")
+  (-if-let (workspace (lsp-find-workspace 'rust-analyzer))
+      (-if-let* ((params (lsp-make-rust-analyzer-syntax-tree-params
+                          :text-document (lsp--text-document-identifier)))
+                 ;; REVIEW is there a convention how to define and call rust-analyzer
+                 ;; lsp extension methods?
+                 (cargo-toml-location (with-lsp-workspace workspace
+                                        (lsp-send-request (lsp-make-request
+                                                           "experimental/openCargoToml"
+                                                           params))))
+                 ;; REVIEW is there a more idiomatic to retrieve the :uri key
+                 ;; or default to nil?
+                 (cargo-toml-uri (gethash "uri" cargo-toml-location)))
+          (funcall (if new-window #'find-file-other-window #'find-file)
+                   (lsp--uri-to-path cargo-toml-uri))
+        ;; REVIEW make it an error and/or add more actionable/debuggable info?
+        (lsp--warn "Couldn't find a Cargo.toml file or your version of rust-analyzer doesn't support this extension"))
+    (lsp--warn "Not running rust-analyzer")))
+
+
+(defun lsp-rust-analyzer--related-tests ()
+  "Get runnable test items related to the current TextDocumentPosition.
+Calls a rust-analyzer LSP extension endpoint that returns a wrapper over Runnable[]"
+  (lsp-send-request (lsp-make-request
+                     "rust-analyzer/relatedTests"
+                     (lsp--text-document-position-params))))
+
+(defun lsp-rust-analyzer--select-related-test ()
+  "Call the endpoint and ask for user selection.
+
+Cannot reuse `lsp-rust-analyzer--select-runnable' because the runnables endpoint
+responds with Runnable[], while relatedTests responds with TestInfo[], which is a wrapper
+over runnable. Also, this method doesn't set the `lsp-rust-analyzer--last-runnable' variable"
+    (lsp--completing-read
+     "Select test: "
+     ;; since the endpoint returns a list of hash tables that
+     ;; stores &rust-analyzer:Runnable as a value under key
+     ;; "runnable"
+     ;; we need to unpack them first
+     (mapcar (lambda (runnable) (gethash "runnable" runnable)) (lsp-rust-analyzer--related-tests))
+     (-lambda ((&rust-analyzer:Runnable :label)) label)))
+
+(defun lsp-rust-analyzer-related-tests (runnable)
+  "Execute a RUNNABLE test related to the current document position.
+
+Rust-Analyzer LSP protocol extension
+https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#related-tests"
+  (interactive (list (lsp-rust-analyzer--select-related-test)))
+  (lsp-rust-analyzer--common-runner runnable))
+
 
 (provide 'lsp-rust)
 ;;; lsp-rust.el ends here
