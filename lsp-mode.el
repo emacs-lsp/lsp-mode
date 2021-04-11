@@ -2967,6 +2967,7 @@ Return same value as `lsp--while-no-input' and respecting `non-essential'."
                              :error-handler (lambda (err) (setf resp-error err))
                              :mode 'detached
                              :cancel-token :sync-request)
+          (redisplay)
           (while (not (or resp-error resp-result
                           (and non-essential (input-pending-p))))
             (accept-process-output nil 0.001))
