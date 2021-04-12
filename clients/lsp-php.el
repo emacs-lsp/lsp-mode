@@ -41,9 +41,7 @@
   :group 'lsp-php
   :type 'string)
 
-(defcustom lsp-clients-php-server-command
-  `("php", (expand-file-name
-            (concat lsp-php-composer-dir "/vendor/felixfbecker/language-server/bin/php-language-server.php")))
+(defcustom lsp-clients-php-server-command nil
   "Install directory for php-language-server."
   :group 'lsp-php
   :type '(repeat string))
@@ -51,7 +49,12 @@
 (defun lsp-php--create-connection ()
   "Create lsp connection."
   (lsp-stdio-connection
-   (lambda () lsp-clients-php-server-command)
+   (lambda ()
+     (if (not lsp-clients-php-server-command)
+         (setq lsp-clients-php-server-command
+               `("php",
+                 (expand-file-name
+                  (concat lsp-php-composer-dir "/vendor/felixfbecker/language-server/bin/php-language-server.php"))))))
    (lambda ()
      (if (and (cdr lsp-clients-php-server-command)
               (eq (string-match-p "php[0-9.]*\\'" (car lsp-clients-php-server-command)) 0))
