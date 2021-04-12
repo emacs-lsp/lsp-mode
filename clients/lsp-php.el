@@ -33,8 +33,18 @@
   :link '(url-link "https://github.com/felixfbecker/php-language-server")
   :group 'lsp-mode)
 
-(defcustom lsp-clients-php-server-command
-  `("php" ,(expand-file-name "~/.composer/vendor/felixfbecker/language-server/bin/php-language-server.php"))
+(defun lsp-php-get-composer-dir ()
+  "Get composer home directory if possible."
+  (if (executable-find "composer")
+      (replace-regexp-in-string "\n$" "" (shell-command-to-string "composer config --global home"))
+    "~/.composer"))
+
+(defcustom lsp-php-composer-dir nil
+  "Home directory of composer."
+  :group 'lsp-php
+  :type 'string)
+
+(defcustom lsp-clients-php-server-command nil
   "Install directory for php-language-server."
   :group 'lsp-php
   :type '(repeat string))
@@ -42,7 +52,15 @@
 (defun lsp-php--create-connection ()
   "Create lsp connection."
   (lsp-stdio-connection
-   (lambda () lsp-clients-php-server-command)
+   (lambda ()
+     (unless lsp-php-composer-dir
+       (setq lsp-php-composer-dir (lsp-php-get-composer-dir)))
+     (unless lsp-clients-php-server-command
+       (setq lsp-clients-php-server-command
+             `("php",
+               (expand-file-name
+                (f-join lsp-php-composer-dir "vendor/felixfbecker/language-server/bin/php-language-server.php")))))
+     lsp-clients-php-server-command)
    (lambda ()
      (if (and (cdr lsp-clients-php-server-command)
               (eq (string-match-p "php[0-9.]*\\'" (car lsp-clients-php-server-command)) 0))
@@ -360,7 +378,7 @@ already present."
   :link '(url-link "https://github.com/phpactor/phpactor")
   :group 'lsp-mode)
 
-(defcustom lsp-phpactor-path "~/.composer/vendor/phpactor/phpactor/bin/phpactor"
+(defcustom lsp-phpactor-path nil
   "Path to the `phpactor' command."
   :group 'lsp-phpactor
   :type "string")
@@ -368,7 +386,12 @@ already present."
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection
-                   (lambda () (list lsp-phpactor-path "language-server")))
+                   (lambda ()
+                     (unless lsp-php-composer-dir
+                       (setq lsp-php-composer-dir (lsp-php-get-composer-dir)))
+                     (unless lsp-phpactor-path
+                       (setq lsp-phpactor-path (f-join lsp-php-composer-dir "vendor/phpactor/phpactor/bin/phpactor")))
+                     (list lsp-phpactor-path "language-server")))
   :activation-fn (lsp-activate-on "php")
   ;; `phpactor' is not really that feature-complete: it doesn't support
   ;; `textDocument/showOccurence' and sometimes errors (e.g. find references on
