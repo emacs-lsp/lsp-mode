@@ -881,9 +881,9 @@ and run a compilation"
 
 
 (defun lsp-rust-analyzer-run (runnable)
-  "Select and run a runnable action."
+  "Select and run a RUNNABLE action."
   (interactive (list (lsp-rust-analyzer--select-runnable)))
-    (if (lsp-rust-analyzer--common-runner runnable)
+    (when (lsp-rust-analyzer--common-runner runnable)
       (setq lsp-rust-analyzer--last-runnable runnable)))
 
 (defun lsp-rust-analyzer-debug (runnable)
@@ -940,29 +940,23 @@ and run a compilation"
 (defun lsp-rust-analyzer-open-cargo-toml (&optional new-window)
   "Open the closest Cargo.toml from the current file.
 
-   Rust-Analyzer LSP protocol documented here and added in November 2020
-   https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#open-cargotoml
+Rust-Analyzer LSP protocol documented here and added in November 2020
+https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#open-cargotoml
 
-   If NEW-WINDOW (interactively the prefix argument) is non-nil,
-   open in a new window."
+If NEW-WINDOW (interactively the prefix argument) is non-nil,
+open in a new window."
   (interactive "P")
   (-if-let (workspace (lsp-find-workspace 'rust-analyzer))
-      (-if-let* ((params (lsp-make-rust-analyzer-syntax-tree-params
-                          :text-document (lsp--text-document-identifier)))
-                 ;; REVIEW is there a convention how to define and call rust-analyzer
-                 ;; lsp extension methods?
-                 (cargo-toml-location (with-lsp-workspace workspace
-                                        (lsp-send-request (lsp-make-request
-                                                           "experimental/openCargoToml"
-                                                           params))))
-                 ;; REVIEW is there a more idiomatic to retrieve the :uri key
-                 ;; or default to nil?
-                 (cargo-toml-uri (gethash "uri" cargo-toml-location)))
+      (-if-let* ((response (with-lsp-workspace workspace
+                             (lsp-send-request (lsp-make-request
+                                                "experimental/openCargoToml"
+                                                (lsp-make-rust-analyzer-open-cargo-toml-params
+                                                 :text-document (lsp--text-document-identifier))))))
+                 ((&Location :uri :range) response))
           (funcall (if new-window #'find-file-other-window #'find-file)
-                   (lsp--uri-to-path cargo-toml-uri))
-        ;; REVIEW make it an error and/or add more actionable/debuggable info?
+                   (lsp--uri-to-path uri))
         (lsp--warn "Couldn't find a Cargo.toml file or your version of rust-analyzer doesn't support this extension"))
-    (lsp--warn "Not running rust-analyzer")))
+    (lsp--error "OpenCargoToml is an extension available only with rust-analyzer")))
 
 
 (defun lsp-rust-analyzer--related-tests ()
@@ -978,14 +972,14 @@ Calls a rust-analyzer LSP extension endpoint that returns a wrapper over Runnabl
 Cannot reuse `lsp-rust-analyzer--select-runnable' because the runnables endpoint
 responds with Runnable[], while relatedTests responds with TestInfo[], which is a wrapper
 over runnable. Also, this method doesn't set the `lsp-rust-analyzer--last-runnable' variable"
-    (lsp--completing-read
-     "Select test: "
-     ;; since the endpoint returns a list of hash tables that
-     ;; stores &rust-analyzer:Runnable as a value under key
-     ;; "runnable"
-     ;; we need to unpack them first
-     (mapcar (lambda (runnable) (gethash "runnable" runnable)) (lsp-rust-analyzer--related-tests))
-     (-lambda ((&rust-analyzer:Runnable :label)) label)))
+  (-if-let* ((resp (lsp-rust-analyzer--related-tests))
+             (runnables (seq-map
+                         #'lsp:rust-analyzer-related-tests-runnable
+                         resp)))
+      (lsp--completing-read
+       "Select test: "
+       runnables
+       #'lsp:rust-analyzer-runnable-label)))
 
 (defun lsp-rust-analyzer-related-tests (runnable)
   "Execute a RUNNABLE test related to the current document position.
@@ -993,7 +987,9 @@ over runnable. Also, this method doesn't set the `lsp-rust-analyzer--last-runnab
 Rust-Analyzer LSP protocol extension
 https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#related-tests"
   (interactive (list (lsp-rust-analyzer--select-related-test)))
-  (lsp-rust-analyzer--common-runner runnable))
+  (if runnable
+      (lsp-rust-analyzer--common-runner runnable)
+    (lsp--info "There are no tests related to the symbol at point")))
 
 
 (provide 'lsp-rust)
