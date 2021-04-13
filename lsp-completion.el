@@ -403,6 +403,10 @@ The MARKERS and PREFIX value will be attached to each candidate."
               (lsp--catch 'input
                   (let ((lsp--throw-on-input lsp-completion-use-last-result)
                         (same-session? (and lsp-completion--cache
+                                            ;; Special case for empty prefix and empty result
+                                            (or (cl-second lsp-completion--cache)
+                                                (not (string-empty-p
+                                                      (plist-get (cddr lsp-completion--cache) :prefix))))
                                             (equal (cl-first lsp-completion--cache) bounds-start)
                                             (s-prefix?
                                              (plist-get (cddr lsp-completion--cache) :prefix)
