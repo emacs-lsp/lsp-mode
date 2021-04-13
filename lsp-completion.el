@@ -419,8 +419,9 @@ The MARKERS and PREFIX value will be attached to each candidate."
                                      "textDocument/completion"
                                      (plist-put (lsp--text-document-position-params)
                                                 :context (lsp-completion--get-context trigger-chars))))
-                              (completed (or (and resp (not (lsp-completion-list? resp)))
-                                             (not (lsp:completion-list-is-incomplete resp))))
+                              (completed (and resp
+                                              (not (and (lsp-completion-list? resp)
+                                                        (lsp:completion-list-is-incomplete resp)))))
                               (items (lsp--while-no-input
                                        (--> (cond
                                              ((lsp-completion-list? resp)
