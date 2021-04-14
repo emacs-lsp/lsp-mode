@@ -1729,7 +1729,9 @@ regex in IGNORED-FILES."
                 dir))
          (watch (or watch (make-lsp-watch :root-directory dir)))
          (dirs-to-watch (lsp--all-watchable-directories dir ignored-directories)))
-    (lsp-log "Creating watch for %s" dir)
+    (lsp-log "Creating watchers for following %s folders:\n  %s"
+             (length dirs-to-watch)
+             (s-join "\n  " dirs-to-watch))
     (when (or
            (not warn-big-repo?)
            (not lsp-file-watch-threshold)
