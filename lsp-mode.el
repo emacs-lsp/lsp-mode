@@ -4761,8 +4761,7 @@ See #2588")
         (buffer-substring-no-properties (match-beginning 1) (match-end 1)))
        nil t))))
   "Replaced string regexp and function returning image.
-Each element should be:
-(MODE . (PROPERTY-LIST...))
+Each element should have the form (MODE . (PROPERTY-LIST...)).
 MODE (car) is function which is defined in `lsp-language-id-configuration'.
 Cdr should be list of PROPERTY-LIST.
 
@@ -7544,7 +7543,7 @@ optional flag that should be non-nil for boolean settings, when it is nil the
 property will be ignored if the VALUE is nil.
 
 Example: `(lsp-register-custom-settings '((\"foo.bar.buzz.enabled\" t t)))'
-(note the double parentheses)"
+\(note the double parentheses)"
   (let ((-compare-fn #'lsp--compare-setting-path))
     (setq lsp-client-settings (-uniq (append props lsp-client-settings)))))
 
@@ -8078,7 +8077,7 @@ The server(s) will be started in the buffer when it has finished."
                                                      (-not #'lsp--server-binary-present?)))))
         (lsp--warn "The following servers support current file but do not have automatic installation configuration: %s
 You may find the installation instructions at https://emacs-lsp.github.io/lsp-mode/page/languages.
-(If you have already installed the server check *lsp-log*)."
+\(If you have already installed the server check *lsp-log*)."
                    (mapconcat (lambda (client)
                                 (symbol-name (lsp--client-server-id client)))
                               clients
