@@ -334,6 +334,8 @@ the server has requested that."
     ;; Clojure
     "[/\\\\]\\.lsp\\'"
     "[/\\\\]\\.clj-kondo\\'"
+    "[/\\\\]\\.shadow-cljs\\'"
+    "[/\\\\]\\.babel_cache\\'"
     "[/\\\\]\\.cpcache\\'"
     ;; .Net Core build-output
     "[/\\\\]bin/Debug\\'"
