@@ -13,14 +13,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/limitations/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/file-watchers/">
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.4">
     
     
       
-        <title>Limitations - LSP Mode - LSP support for Emacs</title>
+        <title>File watchers - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#limitations" class="md-skip">
+        <a href="#file-watchers" class="md-skip">
           Skip to content
         </a>
       
@@ -103,7 +103,7 @@
         <div class="md-header-nav__topic">
           <span class="md-ellipsis">
             
-              Limitations
+              File watchers
             
           </span>
         </div>
@@ -603,38 +603,9 @@
       
     
     
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Limitations
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-    
     <a href="./" class="md-nav__link md-nav__link--active">
-      Limitations
+      File watchers
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#file-watches" class="md-nav__link">
-    File watches
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
     
   </li>
 
@@ -2103,21 +2074,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#file-watches" class="md-nav__link">
-    File watches
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -2128,14 +2084,27 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/limitations.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/file-watchers.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
                 
-                <h1 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">#</a></h1>
-<h2 id="file-watches">File watches<a class="headerlink" href="#file-watches" title="Permanent link">#</a></h2>
-<p>When some of the workspaces that are active in the current project requests file notifications via <code>workspace/didChangeWatchedFiles</code>, <code>lsp-mode</code> will start monitoring each of the folders in the workspace for changes. In case your project contains a lot of files you might want to disable file monitoring via <code>lsp-enable-file-watchers</code> (you may use dir-locals).</p>
+                <h1 id="file-watchers">File watchers<a class="headerlink" href="#file-watchers" title="Permanent link">#</a></h1>
+<p>When some of the workspaces that are active in the current project requests file notifications via <code>workspace/didChangeWatchedFiles</code>, <code>lsp-mode</code> will start monitoring each of the folders in the workspace for changes to notify the server about that. </p>
+<p>In case you have issues with file watchers, first, check what folders are being watched, they are logged on <code>*lsp-log*</code> when the server starts, then you may consider check the below:</p>
+<ul>
+<li>If your project has some specific folder that should not be watched, you can exclude it with:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-mode</span>
+  <span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;lsp-file-watch-ignored-directories</span> <span class="s">&quot;[/\\\\]\\.my-folder\\&#39;&quot;</span><span class="p">)</span>
+  <span class="c1">;; or</span>
+  <span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;lsp-file-watch-ignored-files</span> <span class="s">&quot;[/\\\\]\\.my-files\\&#39;&quot;</span><span class="p">))</span>
+</code></pre></div>
+<ul>
+<li>Increase the file watch warning threshold, the default is <code>1000</code>, <code>(setq lsp-file-watch-threshold 2000)</code> </li>
+<li>If the folder is some kind of cache folder or something that should always be excluded for everyone, consider opening a pull request or informing the maintainers to add to the <a href="https://github.com/emacs-lsp/lsp-mode/blob/master/lsp-mode.el#L306">common regex</a>. </li>
+<li>In last case, disable file watchers with <code>(setq lsp-enable-file-watchers nil)</code> (you may use dir-locals).</li>
+</ul>
                 
                   
                     
