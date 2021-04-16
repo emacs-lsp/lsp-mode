@@ -19,7 +19,7 @@ nav:
         - Ivy: https://github.com/emacs-lsp/lsp-ivy
         - Iedit: page/integration/iedit.md
         - Ido: page/integration/ido.md
-    - Limitations: page/limitations.md
+    - File watchers: page/file-watchers.md
     - Remote: page/remote.md
     - FAQ: page/faq.md
     - Troubleshooting: page/troubleshooting.md
