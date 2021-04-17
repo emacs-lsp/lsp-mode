@@ -270,11 +270,14 @@ If LOUDLY is non-nil, it will build whole tokens."
         (modifier-faces
          (when lsp-semantic-tokens-apply-modifiers
            (seq-some #'lsp--workspace-semantic-tokens-modifier-faces lsp--buffer-workspaces))))
-    (if (or (eq nil lsp--semantic-tokens-cache)
-            (eq nil faces)
-            ;; delay fontification until we have fresh tokens
-            (not (= lsp--cur-version (lsp-get lsp--semantic-tokens-cache :_documentVersion))))
-        '(jit-lock-bounds 0 . 0)
+    (cond
+     ((or (eq nil lsp--semantic-tokens-cache) (eq nil faces))
+      ;; default to non-semantic highlighting until first response has arrived
+      (funcall old-fontify-region beg end loudly))
+     ((not (= lsp--cur-version (lsp-get lsp--semantic-tokens-cache :_documentVersion)))
+      ;; delay fontification until we have fresh tokens to avoid flickering
+      '(jit-lock-bounds 0 . 0))
+     (t
       (funcall old-fontify-region beg end loudly)
       (-let* ((inhibit-field-text-motion t)
               ((&SematicTokensPartialResult :data) lsp--semantic-tokens-cache)
@@ -329,7 +332,7 @@ If LOUDLY is non-nil, it will build whole tokens."
       (let ((token-region (lsp-get lsp--semantic-tokens-cache :_region)))
         (if token-region
             `(jit-lock-bounds ,(max beg (car token-region)) . ,(min end (cdr token-region)))
-          `(jit-lock-bounds ,beg . ,end))))))
+          `(jit-lock-bounds ,beg . ,end)))))))
 
 (defun lsp-semantic-tokens--request-update ()
   "Request semantic-tokens update."
