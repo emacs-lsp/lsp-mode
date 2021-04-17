@@ -1,7 +1,8 @@
 * Changelog
 ** Release 7.1
   * Add support for insert/replace when performing completion. When using
-    ~company~ pressing ~C-u RET~ will perform replace.
+    ~company~ pressing ~C-u RET~ will perform the alternative action (the
+    default is replace, but can be changed).
   * Add ~lsp-auto-save-changed-buffers~ which save the changed buffers after any text edit operation by lsp-mode.
   * Safe renamed ~lsp-diagnose~ to ~lsp-doctor~.
   * Add ~lsp-modeline-code-actions-segments~ for a better customization.
