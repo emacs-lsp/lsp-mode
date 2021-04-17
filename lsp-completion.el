@@ -661,9 +661,18 @@ The return is nil or in range of (0, inf)."
     (unless (zerop len)
       (/ score-numerator (1+ score-denominator) 1.0))))
 
+(defun lsp-completion--fix-resolve-data (item)
+  ;; patch `CompletionItem' for rust-analyzer otherwise resolve will fail
+  ;; see #2675
+  (let ((data (lsp:completion-item-data? item)))
+    (when (lsp-member? data :import_for_trait_assoc_item)
+      (unless (lsp-get data :import_for_trait_assoc_item)
+        (lsp-put data :import_for_trait_assoc_item :json-false)))))
+
 (defun lsp-completion--resolve (item)
   "Resolve completion ITEM."
   (cl-assert item nil "Completion item must not be nil")
+  (lsp-completion--fix-resolve-data item)
   (or (ignore-errors
         (when (lsp-feature? "completionItem/resolve")
           (lsp-request "completionItem/resolve" item)))
@@ -673,14 +682,7 @@ The return is nil or in range of (0, inf)."
   "Resolve completion ITEM asynchronously with CALLBACK.
 The CLEANUP-FN will be called to cleanup."
   (cl-assert item nil "Completion item must not be nil")
-
-  ;; patch `CompletionItem' for rust-analyzer otherwise resolve will fail
-  ;; see #2675
-  (let ((data (lsp:completion-item-data? item)))
-    (when (lsp-member? data :import_for_trait_assoc_item)
-      (unless (lsp-get data :import_for_trait_assoc_item)
-        (lsp-put data :import_for_trait_assoc_item :json-false))))
-
+  (lsp-completion--fix-resolve-data item)
   (ignore-errors
     (if (lsp-feature? "completionItem/resolve")
         (lsp-request-async "completionItem/resolve" item
