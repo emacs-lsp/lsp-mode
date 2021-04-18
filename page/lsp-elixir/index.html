@@ -970,6 +970,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-elixir-dialyzer-format" class="md-nav__link">
+    lsp-elixir-dialyzer-format
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-elixir-dialyzer-warn-opts" class="md-nav__link">
     lsp-elixir-dialyzer-warn-opts
   </a>
@@ -977,8 +984,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-elixir-dialyzer-format" class="md-nav__link">
-    lsp-elixir-dialyzer-format
+  <a href="#lsp-elixir-enable-test-lenses" class="md-nav__link">
+    lsp-elixir-enable-test-lenses
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elixir-fetch-deps" class="md-nav__link">
+    lsp-elixir-fetch-deps
   </a>
   
 </li>
@@ -1005,15 +1019,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-elixir-fetch-deps" class="md-nav__link">
-    lsp-elixir-fetch-deps
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elixir-suggest-specs" class="md-nav__link">
-    lsp-elixir-suggest-specs
+  <a href="#lsp-elixir-server-command" class="md-nav__link">
+    lsp-elixir-server-command
   </a>
   
 </li>
@@ -1026,15 +1033,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-elixir-server-command" class="md-nav__link">
-    lsp-elixir-server-command
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elixir-enable-test-lenses" class="md-nav__link">
-    lsp-elixir-enable-test-lenses
+  <a href="#lsp-elixir-suggest-specs" class="md-nav__link">
+    lsp-elixir-suggest-specs
   </a>
   
 </li>
@@ -2275,6 +2275,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-elixir-dialyzer-format" class="md-nav__link">
+    lsp-elixir-dialyzer-format
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-elixir-dialyzer-warn-opts" class="md-nav__link">
     lsp-elixir-dialyzer-warn-opts
   </a>
@@ -2282,8 +2289,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-elixir-dialyzer-format" class="md-nav__link">
-    lsp-elixir-dialyzer-format
+  <a href="#lsp-elixir-enable-test-lenses" class="md-nav__link">
+    lsp-elixir-enable-test-lenses
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-elixir-fetch-deps" class="md-nav__link">
+    lsp-elixir-fetch-deps
   </a>
   
 </li>
@@ -2310,15 +2324,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-elixir-fetch-deps" class="md-nav__link">
-    lsp-elixir-fetch-deps
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elixir-suggest-specs" class="md-nav__link">
-    lsp-elixir-suggest-specs
+  <a href="#lsp-elixir-server-command" class="md-nav__link">
+    lsp-elixir-server-command
   </a>
   
 </li>
@@ -2331,15 +2338,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-elixir-server-command" class="md-nav__link">
-    lsp-elixir-server-command
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-elixir-enable-test-lenses" class="md-nav__link">
-    lsp-elixir-enable-test-lenses
+  <a href="#lsp-elixir-suggest-specs" class="md-nav__link">
+    lsp-elixir-suggest-specs
   </a>
   
 </li>
@@ -2373,54 +2373,54 @@
 <p>For more instructions on how to install manually, check <a href="https://github.com/elixir-lsp/elixir-ls#building-and-running">here</a>.</p>
 <h3 id="debugger-yes">Debugger: Yes<a class="headerlink" href="#debugger-yes" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<h3 id="lsp-elixir-dialyzer-enabled"><code>lsp-elixir-dialyzer-enabled</code><a class="headerlink" href="#lsp-elixir-dialyzer-enabled" title="Permanent link">#</a></h3>
+<h4 id="lsp-elixir-dialyzer-enabled"><code>lsp-elixir-dialyzer-enabled</code><a class="headerlink" href="#lsp-elixir-dialyzer-enabled" title="Permanent link">#</a></h4>
 <p><em>Default: <code>t</code></em></p>
 <p>Run ElixirLS’s rapid Dialyzer when code is saved.</p>
 <hr />
-<h3 id="lsp-elixir-dialyzer-warn-opts"><code>lsp-elixir-dialyzer-warn-opts</code><a class="headerlink" href="#lsp-elixir-dialyzer-warn-opts" title="Permanent link">#</a></h3>
+<h4 id="lsp-elixir-dialyzer-format"><code>lsp-elixir-dialyzer-format</code><a class="headerlink" href="#lsp-elixir-dialyzer-format" title="Permanent link">#</a></h4>
+<p><em>Default: <code>dialyxir_long</code></em></p>
+<p>Formatter to use for Dialyzer warnings.</p>
+<hr />
+<h4 id="lsp-elixir-dialyzer-warn-opts"><code>lsp-elixir-dialyzer-warn-opts</code><a class="headerlink" href="#lsp-elixir-dialyzer-warn-opts" title="Permanent link">#</a></h4>
 <p><em>Default: <code>nil</code></em></p>
 <p>Dialyzer options to enable or disable warnings.</p>
 <p>See Dialyzer’s documentation for options. Note that the "race_conditions"
 option is unsupported</p>
 <hr />
-<h3 id="lsp-elixir-dialyzer-format"><code>lsp-elixir-dialyzer-format</code><a class="headerlink" href="#lsp-elixir-dialyzer-format" title="Permanent link">#</a></h3>
-<p><em>Default: <code>dialyxir_long</code></em></p>
-<p>Formatter to use for Dialyzer warnings.</p>
+<h4 id="lsp-elixir-enable-test-lenses"><code>lsp-elixir-enable-test-lenses</code><a class="headerlink" href="#lsp-elixir-enable-test-lenses" title="Permanent link">#</a></h4>
+<p><em>Default: <code>t</code></em></p>
+<p>Suggest Tests.</p>
 <hr />
-<h3 id="lsp-elixir-mix-env"><code>lsp-elixir-mix-env</code><a class="headerlink" href="#lsp-elixir-mix-env" title="Permanent link">#</a></h3>
+<h4 id="lsp-elixir-fetch-deps"><code>lsp-elixir-fetch-deps</code><a class="headerlink" href="#lsp-elixir-fetch-deps" title="Permanent link">#</a></h4>
+<p><em>Default: <code>t</code></em></p>
+<p>Automatically fetch project dependencies when compiling.</p>
+<hr />
+<h4 id="lsp-elixir-mix-env"><code>lsp-elixir-mix-env</code><a class="headerlink" href="#lsp-elixir-mix-env" title="Permanent link">#</a></h4>
 <p><em>Default: <code>test</code></em></p>
 <p>Mix environment to use for compilation.</p>
 <hr />
-<h3 id="lsp-elixir-mix-target"><code>lsp-elixir-mix-target</code><a class="headerlink" href="#lsp-elixir-mix-target" title="Permanent link">#</a></h3>
+<h4 id="lsp-elixir-mix-target"><code>lsp-elixir-mix-target</code><a class="headerlink" href="#lsp-elixir-mix-target" title="Permanent link">#</a></h4>
 <p><em>Default: <code>nil</code></em></p>
 <p>Mix target to use for compilation (requires Elixir &gt;= 1.8).</p>
 <hr />
-<h3 id="lsp-elixir-project-dir"><code>lsp-elixir-project-dir</code><a class="headerlink" href="#lsp-elixir-project-dir" title="Permanent link">#</a></h3>
+<h4 id="lsp-elixir-project-dir"><code>lsp-elixir-project-dir</code><a class="headerlink" href="#lsp-elixir-project-dir" title="Permanent link">#</a></h4>
 <p><em>Default: <code>nil</code></em></p>
 <p>Subdirectory containing Mix project if not in the project root.</p>
 <p>If value is ‘""‘ then defaults to the workspace rootUri.</p>
 <hr />
-<h3 id="lsp-elixir-fetch-deps"><code>lsp-elixir-fetch-deps</code><a class="headerlink" href="#lsp-elixir-fetch-deps" title="Permanent link">#</a></h3>
-<p><em>Default: <code>t</code></em></p>
-<p>Automatically fetch project dependencies when compiling.</p>
-<hr />
-<h3 id="lsp-elixir-suggest-specs"><code>lsp-elixir-suggest-specs</code><a class="headerlink" href="#lsp-elixir-suggest-specs" title="Permanent link">#</a></h3>
-<p><em>Default: <code>t</code></em></p>
-<p>Suggest @spec annotations inline using Dialyzer’s inferred success typings.
-This requires Dialyzer.</p>
-<hr />
-<h3 id="lsp-elixir-signature-after-complete"><code>lsp-elixir-signature-after-complete</code><a class="headerlink" href="#lsp-elixir-signature-after-complete" title="Permanent link">#</a></h3>
-<p><em>Default: <code>t</code></em></p>
-<p>Show signature help after confirming autocomplete.</p>
-<hr />
-<h3 id="lsp-elixir-server-command"><code>lsp-elixir-server-command</code><a class="headerlink" href="#lsp-elixir-server-command" title="Permanent link">#</a></h3>
+<h4 id="lsp-elixir-server-command"><code>lsp-elixir-server-command</code><a class="headerlink" href="#lsp-elixir-server-command" title="Permanent link">#</a></h4>
 <p><em>Default: <code>(language_server.sh)</code></em></p>
 <p>Command to start elixir-ls.</p>
 <p>Leave as default to let ‘executable-find’ search for it.</p>
 <hr />
-<h3 id="lsp-elixir-enable-test-lenses"><code>lsp-elixir-enable-test-lenses</code><a class="headerlink" href="#lsp-elixir-enable-test-lenses" title="Permanent link">#</a></h3>
+<h4 id="lsp-elixir-signature-after-complete"><code>lsp-elixir-signature-after-complete</code><a class="headerlink" href="#lsp-elixir-signature-after-complete" title="Permanent link">#</a></h4>
 <p><em>Default: <code>t</code></em></p>
-<p>Suggest Tests.</p>
+<p>Show signature help after confirming autocomplete.</p>
+<hr />
+<h4 id="lsp-elixir-suggest-specs"><code>lsp-elixir-suggest-specs</code><a class="headerlink" href="#lsp-elixir-suggest-specs" title="Permanent link">#</a></h4>
+<p><em>Default: <code>t</code></em></p>
+<p>Suggest @spec annotations inline using Dialyzer’s inferred success typings.
+This requires Dialyzer.</p>
 <hr />
                 
                   
