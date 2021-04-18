@@ -57,6 +57,11 @@
 (require 'yasnippet nil t)
 (require 'lsp-protocol)
 
+(defgroup lsp-mode nil
+  "Language Server Protocol client."
+  :group 'tools
+  :tag "Language Server (lsp-mode)")
+
 (declare-function evil-set-command-property "ext:evil-common")
 (declare-function projectile-project-root "ext:projectile")
 (declare-function yas-expand-snippet "ext:yasnippet")
@@ -131,7 +136,7 @@ the buffer when it becomes large."
 
 (defcustom lsp-enable-snippet t
   "Enable/disable snippet completion support."
-  :group 'lsp-mode
+  :group 'lsp-completion
   :type 'boolean)
 
 (defcustom lsp-enable-folding t
@@ -145,7 +150,7 @@ the buffer when it becomes large."
 (defcustom lsp-semantic-tokens-enable nil
   "Enable/disable support for semantic tokens.
 As defined by the Language Server Protocol 3.16."
-  :group 'lsp-mode
+  :group 'lsp-semantic-tokens
   :type 'boolean)
 
 (defcustom lsp-folding-range-limit nil
@@ -403,15 +408,10 @@ This flag affects only servers which do not support incremental updates."
 (defvar lsp--delayed-requests nil)
 (defvar lsp--delay-timer nil)
 
-(defgroup lsp-mode nil
-  "Language Server Protocol client."
-  :group 'tools
-  :tag "Language Server")
-
 (defgroup lsp-faces nil
-  "Faces."
+  "LSP Faces."
   :group 'lsp-mode
-  :tag "Faces")
+  :tag "LSP Faces")
 
 (defcustom lsp-document-sync-method nil
   "How to sync the document with the language server."
@@ -463,7 +463,7 @@ If this is set to nil, `eldoc' will show only the symbol information."
 (defcustom lsp-completion-enable t
   "Enable `completion-at-point' integration."
   :type 'boolean
-  :group 'lsp-mode)
+  :group 'lsp-completion)
 
 (defcustom lsp-enable-symbol-highlighting t
   "Highlight references of the symbol at point."
@@ -507,23 +507,23 @@ It contains the operation source."
 (defcustom lsp-modeline-code-actions-enable t
   "Whether to show code actions on modeline."
   :type 'boolean
-  :group 'lsp-mode)
+  :group 'lsp-modeline)
 
 (defcustom lsp-modeline-diagnostics-enable t
   "Whether to show diagnostics on modeline."
   :type 'boolean
-  :group 'lsp-mode)
+  :group 'lsp-modeline)
 
 (defcustom lsp-modeline-workspace-status-enable t
   "Whether to show workspace status on modeline."
   :type 'boolean
-  :group 'lsp-mode
+  :group 'lsp-modeline
   :package-version '(lsp-mode . "7.1"))
 
 (defcustom lsp-headerline-breadcrumb-enable t
   "Whether to enable breadcrumb on headerline."
   :type 'boolean
-  :group 'lsp-mode)
+  :group 'lsp-headerline)
 
 (defcustom lsp-configure-hook nil
   "Hooks to run when `lsp-configure-buffer' is called."
@@ -571,9 +571,9 @@ The hook will receive two parameters list of added and removed folders."
   :group 'lsp-mode)
 
 (defgroup lsp-imenu nil
-  "Imenu."
+  "LSP Imenu."
   :group 'lsp-mode
-  :tag "Imenu")
+  :tag "LSP Imenu")
 
 (defcustom lsp-imenu-show-container-name t
   "Display the symbol's container name in an imenu entry."
@@ -659,7 +659,7 @@ than the second parameter.")
 Note that when that setting is nil, `lsp-mode' will show stale
 diagnostics until server publishes the new set of diagnostics"
   :type 'boolean
-  :group 'lsp-mode
+  :group 'lsp-diagnostics
   :package-version '(lsp-mode . "7.0.1"))
 
 (defcustom lsp-server-trace nil
@@ -869,7 +869,7 @@ must be used for handling a particular message.")
 
 (defcustom lsp-lens-enable nil
   "Auto enable lenses if server supports."
-  :group 'lsp-mode
+  :group 'lsp-lens
   :type 'boolean
   :package-version '(lsp-mode . "6.3"))
 
@@ -918,7 +918,7 @@ called with nil the signature info must be cleared."
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-keymap-prefix "s-l"
-  "lsp-mode keymap prefix."
+  "LSP-mode keymap prefix."
   :group 'lsp-mode
   :type 'string
   :package-version '(lsp-mode . "6.3"))
@@ -7025,12 +7025,12 @@ detaches the installation buffer from commands like
 (defface lsp-installation-finished-buffer-face '((t :foreground "orange"))
   "Face used for finished installation buffers.
 Used in `lsp-select-installation-buffer'."
-  :group 'lsp-mode)
+  :group 'lsp-faces)
 
 (defface lsp-installation-buffer-face '((t :foreground "green"))
   "Face used for installation buffers still in progress.
 Used in `lsp-select-installation-buffer'."
-  :group 'lsp-mode)
+  :group 'lsp-faces)
 
 (defun lsp--installation-buffer? (buf)
   "Check whether BUF is an `lsp-async-start-process' buffer."

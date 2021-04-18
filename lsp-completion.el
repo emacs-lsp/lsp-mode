@@ -23,6 +23,12 @@
 
 (require 'lsp-mode)
 
+(defgroup lsp-completion nil
+  "LSP support for completion"
+  :prefix "lsp-completion-"
+  :group 'lsp-mode
+  :tag "LSP Completion")
+
 ;;;###autoload
 (define-obsolete-variable-alias 'lsp-prefer-capf
   'lsp-completion-provider  "lsp-mode 7.0.1")
@@ -32,7 +38,7 @@
   :type '(choice
           (const :tag "Use company-capf" :capf)
           (const :tag "None" :none))
-  :group 'lsp-mode
+  :group 'lsp-completion
   :package-version '(lsp-mode . "7.0.1"))
 
 ;;;###autoload
@@ -42,7 +48,7 @@
 (defcustom lsp-completion-enable t
   "Enable `completion-at-point' integration."
   :type 'boolean
-  :group 'lsp-mode)
+  :group 'lsp-completion)
 
 (defcustom lsp-completion-enable-additional-text-edit t
   "Whether or not to apply additional text edit when performing completion.
@@ -51,43 +57,43 @@ If set to non-nil, `lsp-mode' will apply additional text edits
 from the server.  Otherwise, the additional text edits are
 ignored."
   :type 'boolean
-  :group 'lsp-mode
+  :group 'lsp-completion
   :package-version '(lsp-mode . "6.3.2"))
 
 (defcustom lsp-completion-show-kind t
   "Whether or not to show kind of completion candidates."
   :type 'boolean
-  :group 'lsp-mode
+  :group 'lsp-completion
   :package-version '(lsp-mode . "7.0.1"))
 
 (defcustom lsp-completion-show-detail t
   "Whether or not to show detail of completion candidates."
   :type 'boolean
-  :group 'lsp-mode)
+  :group 'lsp-completion)
 
 (defcustom lsp-completion-no-cache nil
   "Whether or not caching the returned completions from server."
   :type 'boolean
-  :group 'lsp-mode
+  :group 'lsp-completion
   :package-version '(lsp-mode . "7.0.1"))
 
 (defcustom lsp-completion-filter-on-incomplete t
   "Whether or not filter incomplete results."
   :type 'boolean
-  :group 'lsp-mode
+  :group 'lsp-completion
   :package-version '(lsp-mode . "7.0.1"))
 
 (defcustom lsp-completion-sort-initial-results t
   "Whether or not filter initial results from server."
   :type 'boolean
-  :group 'lsp-mode
+  :group 'lsp-completion
   :package-version '(lsp-mode . "7.1"))
 
 (defcustom lsp-completion-use-last-result t
   "Temporarily use last server result when interrupted by keyboard.
 This will help minimize popup flickering issue in `company-mode'."
   :type 'boolean
-  :group 'lsp-mode
+  :group 'lsp-completion
   :package-version '(lsp-mode . "7.1"))
 
 (defconst lsp-completion--item-kind
@@ -712,7 +718,7 @@ The CLEANUP-FN will be called to cleanup."
 ;;;###autoload
 (define-minor-mode lsp-completion-mode
   "Toggle LSP completion support."
-  :group 'lsp-mode
+  :group 'lsp-completion
   :global nil
   :lighter ""
   (let ((completion-started-fn (lambda (&rest _)

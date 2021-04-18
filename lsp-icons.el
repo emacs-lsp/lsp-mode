@@ -24,7 +24,7 @@
 (defgroup lsp-icons nil
   "LSP icons"
   :group 'lsp-mode
-  :tag "Icons")
+  :tag "LSP Icons")
 
 (defcustom lsp-headerline-breadcrumb-icons-enable t
   "If non-nil, icons support is enabled for headerline-breadcrumb."
