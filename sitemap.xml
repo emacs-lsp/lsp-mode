@@ -16,10 +16,6 @@
      <lastmod>2021-04-18</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
-     <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/</loc>
-     <lastmod>2021-04-18</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
      <loc>https://emacs-lsp.github.io/lsp-mode/page/keybindings/</loc>
      <lastmod>2021-04-18</lastmod>
      <changefreq>daily</changefreq>
@@ -49,6 +45,50 @@
      <changefreq>daily</changefreq>
     </url><url>
      <loc>https://emacs-lsp.github.io/lsp-mode/page/adding-new-language/</loc>
+     <lastmod>2021-04-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/mode/</loc>
+     <lastmod>2021-04-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/completion/</loc>
+     <lastmod>2021-04-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/diagnostics/</loc>
+     <lastmod>2021-04-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/headerline/</loc>
+     <lastmod>2021-04-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/modeline/</loc>
+     <lastmod>2021-04-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/lens/</loc>
+     <lastmod>2021-04-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/icons/</loc>
+     <lastmod>2021-04-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/semantic-tokens/</loc>
+     <lastmod>2021-04-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/dired/</loc>
+     <lastmod>2021-04-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/iedit/</loc>
+     <lastmod>2021-04-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/ido/</loc>
      <lastmod>2021-04-18</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
