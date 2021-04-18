@@ -305,6 +305,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "markdown",
+    "full-name": "Markdown",
+    "server-name": "unified-language-server",
+    "server-url": "https://github.com/unifiedjs/unified-language-server",
+    "installation": "npm i -g unified-language-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "nim",
     "full-name": "Nim",
     "server-name": "nimlsp",
