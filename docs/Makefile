@@ -4,7 +4,7 @@ deps:
 	cask install
 
 generate: deps
-	@echo "Generating..."
+	@echo "Generating docs..."
 
 	@cask emacs -Q --batch \
 		-L ../ \

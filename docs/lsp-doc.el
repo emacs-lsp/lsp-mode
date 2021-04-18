@@ -1,8 +1,8 @@
-;;; lsp-doc.el --- LSP doc converter -*- lexical-binding: t; -*-
+;;; lsp-doc.el --- LSP doc generator -*- lexical-binding: t; -*-
 
 ;; Keywords: languages, tool
-;; Package-Requires: ((emacs "25.1") (dash "2.18.0") (f "0.20.0") (ht "2.0") (spinner "1.7.3") (markdown-mode "2.3") (lv "0"))
-;; Version: 6.4
+;; Package-Requires: ((emacs "26.1") (lsp-mode "7.0.1") (emacs "26.1") (dash "2.18.0") (f "0.20.0") (ht "2.3") (spinner "1.7.3") (markdown-mode "2.3") (lv "0"))
+;; Version: 7.1.0
 
 ;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; This program is free software; you can redistribute it and/or modify
@@ -25,16 +25,28 @@
 ;;; Code:
 
 (require 'f)
+(require 's)
 (require 'dash)
 (require 'seq)
 (require 'ht)
 (require 'lsp-mode)
+
+;; Clients
 
 (defun lsp-doc--load-all-lsps ()
   "Load all supported LSPs from lsp-mode."
   (seq-do (lambda (package)
             (require package nil t))
           lsp-client-packages))
+
+(defun lsp-doc--load-all-features ()
+  "Load all features from lsp-mode."
+  (->> (f-files "../")
+    (-map #'f-filename)
+    (--filter (and (s-suffix? ".el" it)
+                   (not (s-prefix? "." it))))
+    (-map (lambda (package)
+            (require (intern (f-no-ext package)) nil t)))))
 
 (defun lsp-doc--clients ()
   "Return a list of hash-map of all clients."
@@ -78,7 +90,7 @@
         (_ value))
       ""))
 
-(defun lsp-doc--replace-placeholders (client)
+(defun lsp-doc--replace-client-placeholders (client)
   "Replace found placeholders for a CLIENT."
   (while (re-search-forward "{{\\([][:word:]\\[.-]+\\)}}" nil t)
     (let* ((key (match-string 1))
@@ -86,48 +98,52 @@
            (client-name (gethash "name" client)))
       (replace-match (lsp-doc--decorate-value key value client-name)))))
 
-(defun lsp-doc--variables (client-name)
-  "Return all custom variables for a CLIENT-NAME."
-  (let* ((group (intern (concat "lsp-" client-name)))
+(defun lsp-doc--variables (name)
+  "Return all custom variables for a NAME."
+  (let* ((group (intern (concat "lsp-" name)))
          (custom-group (get group 'custom-group)))
     (seq-map
      (apply-partially #'car)
      (seq-filter (lambda (p)
                    (and (consp p)
-                        (eq (cadr p) 'custom-variable)))
+                        (or (eq (cadr p) 'custom-variable)
+                            (eq (cadr p) 'custom-face))))
                  custom-group))))
 
 (defun lsp-doc--pretty-default-value (variable)
   "Return default value for a VARIABLE formatted."
-  (let ((default (default-value variable))
+  (let ((default (if (facep variable)
+                     (face-default-spec variable)
+                   (default-value variable)))
         (type (get variable 'custom-type)))
     (if (and (memq type '(file directory))
              (stringp default))
         (format "%s" (f-short default))
       (format "%s" default))))
 
-(defun lsp-doc--variable->value (variable key client)
+(defun lsp-doc--variable->value (variable key)
   "Return a decorated value for a VARIABLE, KEY and a CLIENT."
   (pcase key
     ("name" (symbol-name variable))
     ("default" (lsp-doc--pretty-default-value variable))
     ("documentation" (or (documentation-property variable 'variable-documentation)
+                         (documentation-property variable 'face-documentation)
                          ""))
     (_ "")))
 
-(defun lsp-doc--add-variables (client file)
+(defun lsp-doc--add-client-variables (client file)
   "Add CLIENT variables to FILE."
   (-let* (((&hash "name" client-name) client))
     (--each (lsp-doc--variables client-name)
       (with-temp-buffer
-        (insert-file-contents "../template/lsp-client-var.md")
+        (insert-file-contents "../template/lsp-var.md")
         (while (re-search-forward "{{\\([][:word:]\\[.-]+\\)}}" nil t)
           (let* ((key (match-string 1))
-                 (value (lsp-doc--variable->value it key client)))
+                 (value (lsp-doc--variable->value it key)))
             (replace-match value t t)))
         (append-to-file (point-min) (point-max) file)))))
 
-(defun lsp-doc--generate-for (client)
+(defun lsp-doc--generate-for-client (client)
   "Generate documentation for CLIENT."
   (-let* (((&hash "name") client)
          (file (file-truename (concat "page/lsp-" name ".md"))))
@@ -135,16 +151,105 @@
       (copy-file "template/lsp-client.md" file)
       (with-current-buffer (find-file-noselect file)
         (goto-char (point-min))
-        (lsp-doc--replace-placeholders client)
+        (lsp-doc--replace-client-placeholders client)
         (save-buffer 0)
-        (lsp-doc--add-variables client file)))))
+        (lsp-doc--add-client-variables client file)))))
+
+
+;; Features
+
+(defvar lsp-doc--core-features
+  '(("Core" . "mode")
+    ("Completion" . "completion")
+    ("Diagnostics" . "diagnostics")
+    ("Headerline" . "headerline")
+    ("Modeline" . "modeline")
+    ("Lens" . "lens")
+    ("Icons" . "icons")
+    ("Semantic tokens" . "semantic-tokens"))
+  "A list of hash-map of all core features.")
+
+(defvar lsp-doc--extension-features
+  '(("UI" . "https://emacs-lsp.github.io/lsp-ui")
+    ("Treemacs" . "https://emacs-lsp.github.io/lsp-treemacs")
+    ("Helm" . "https://emacs-lsp.github.io/helm-lsp")
+    ("Ivy" . "https://emacs-lsp.github.io/lsp-ivy")
+    ("Dired" . dired)
+    ("Iedit" . iedit)
+    ("Ido" . ido))
+  "A list of hash-map of all extension features.")
+
+(defun lsp-doc--add-feature-variables (group dest-file)
+  "Add FEATURE variables from GROUP to DEST-FILE."
+  (if-let ((variables (lsp-doc--variables group)))
+      (--each variables
+        (with-temp-buffer
+          (insert-file-contents "../template/lsp-var.md")
+          (while (re-search-forward "{{\\([][:word:]\\[.-]+\\)}}" nil t)
+            (let* ((key (match-string 1))
+                   (value (lsp-doc--variable->value it key)))
+              (replace-match value t t)))
+          (append-to-file (point-min) (point-max) dest-file)))
+    (with-temp-buffer
+      (insert "No custom variables available.\n\n")
+      (append-to-file (point-min) (point-max) dest-file))))
+
+(defun lsp-doc--add-feature-core-settings (dest-file)
+  "Append to DEST-FILE the core features settings."
+  (-each lsp-doc--core-features
+    (-lambda ((feature . group))
+      (goto-char (point-max))
+      (with-temp-buffer
+        (insert "### " feature "\n\n")
+        (append-to-file (point-min) (point-max) dest-file))
+      (lsp-doc--add-feature-variables group dest-file))))
+
+(defun lsp-doc--add-feature-extension-settings (dest-file)
+  "Append to DEST-FILE the extension feature settings."
+  (with-temp-buffer
+    (insert "## Extensions\n\n")
+    (append-to-file (point-min) (point-max) dest-file))
+  (-each lsp-doc--extension-features
+    (-lambda ((feature . group-or-link))
+      (goto-char (point-max))
+      (with-temp-buffer
+        (insert "### " feature "\n\n")
+        (append-to-file (point-min) (point-max) dest-file))
+      (if (stringp group-or-link)
+          (with-temp-buffer
+            (insert "This is a optional additional extension package, ")
+            (insert (format "check [%s](%s) for more information.\n\n" feature group-or-link))
+            (append-to-file (point-min) (point-max) dest-file))
+        (lsp-doc--add-feature-variables (symbol-name group-or-link) dest-file)))))
+
+(defun lsp-doc--add-faces-settings (dest-file)
+  "Append to DEST-FILE the faces settings."
+  (with-temp-buffer
+    (insert "## Faces\n\n")
+    (append-to-file (point-min) (point-max) dest-file))
+  (goto-char (point-max))
+  (lsp-doc--add-feature-variables "faces" dest-file))
+
+(defun lsp-doc--generate-feature-settings ()
+  "Generate core documentation for features."
+  (-let ((dest-file (file-truename "page/settings.md")))
+    (with-current-buffer (find-file-noselect dest-file)
+      (lsp-doc--add-feature-core-settings dest-file)
+      (lsp-doc--add-feature-extension-settings dest-file)
+      (lsp-doc--add-faces-settings dest-file)
+      (save-buffer 0))))
+
+
+;; Public
 
 (defun lsp-doc-generate ()
   "Generate documentation for all supported LSPs."
   (interactive)
   (lsp-doc--load-all-lsps)
+  (lsp-doc--load-all-features)
   (seq-doseq (client (lsp-doc--clients))
-    (lsp-doc--generate-for client)))
+    (lsp-doc--generate-for-client client))
+  (lsp-doc--generate-feature-settings))
 
 (provide 'lsp-doc)
 ;;; lsp-doc.el ends here
