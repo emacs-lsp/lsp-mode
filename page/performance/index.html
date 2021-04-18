@@ -2262,11 +2262,6 @@ to be watched for performance reasons, you can add a regexp to that variable exc
 <h2 id="reporting-performance-problems">Reporting performance problems<a class="headerlink" href="#reporting-performance-problems" title="Permanent link">#</a></h2>
 <p>If you have tried all of the non-optional steps from the list and <code>emacs</code> is still not very responsive please open a PR with the following information:</p>
 <ul>
-<li>Collect <strong>lsp-log</strong> data after setting <code>lsp-print-performance</code> to <code>t</code>.</li>
-</ul>
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-print-performance</span> <span class="no">t</span><span class="p">)</span>
-</code></pre></div>
-<ul>
 <li>Include emacs performance report. Use the following step to collect it:</li>
 <li><code>M-x profiler-start</code> and select <code>CPU</code></li>
 <li>Reproduce the slow behavior.</li>
