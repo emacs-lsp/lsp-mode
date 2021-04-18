@@ -27,6 +27,12 @@
 (require 'pcase)
 (require 'lsp-mode)
 
+(defgroup lsp-dired nil
+  "LSP support for dired"
+  :prefix "lsp-dired-"
+  :group 'lsp-mode
+  :tag "LSP Dired")
+
 (defvar lsp-dired--ranger-adjust nil)
 (with-eval-after-load 'ranger (setf lsp-dired--ranger-adjust t))
 
@@ -142,7 +148,7 @@ Will remove the killed subdir from `lsp-dired--covered-subdirs'."
   :require    'lsp-dired
   :init-value nil
   :global     t
-  :group      'lsp-mode
+  :group      'lsp-dired
   (cond
    (lsp-dired-mode
     (add-hook 'dired-after-readin-hook #'lsp-dired--display)

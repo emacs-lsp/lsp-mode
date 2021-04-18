@@ -24,6 +24,12 @@
 (require 'lsp-icons)
 (require 'lsp-mode)
 
+(defgroup lsp-headerline nil
+  "LSP support for headerline"
+  :prefix "lsp-headerline-"
+  :group 'lsp-mode
+  :tag "LSP Headerline")
+
 (defcustom lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols)
   "Face used on breadcrumb text on modeline."
   :type '(repeat
@@ -31,17 +37,17 @@
                   (const :tag "Include the open file name." file)
                   (const :tag "Include the directories up to project." path-up-to-project)
                   (const :tag "Include document symbols if server supports it." symbols)))
-  :group 'lsp-mode)
+  :group 'lsp-headerline)
 
 (defcustom lsp-headerline-breadcrumb-enable-symbol-numbers nil
   "Whether to label symbols with numbers on the breadcrumb."
   :type 'boolean
-  :group 'lsp-mode)
+  :group 'lsp-headerline)
 
 (defcustom lsp-headerline-breadcrumb-enable-diagnostics t
   "If non-nil, apply different face on the breadcrumb based on the errors."
   :type 'boolean
-  :group 'lsp-mode
+  :group 'lsp-headerline
   :package-version '(lsp-mode . "7.1"))
 
 (defface lsp-headerline-breadcrumb-separator-face '((t :inherit shadow :height 0.8))
@@ -407,7 +413,7 @@ PATH is the current folder to be checked."
 ;;;###autoload
 (define-minor-mode lsp-headerline-breadcrumb-mode
   "Toggle breadcrumb on headerline."
-  :group 'lsp-mode
+  :group 'lsp-headerline
   :global nil
   (cond
    (lsp-headerline-breadcrumb-mode

@@ -28,7 +28,8 @@
 
 (defgroup lsp-ido nil
   "LSP support for ido-based symbol completion"
-  :group 'lsp-mode)
+  :group 'lsp-mode
+  :tag "LSP ido")
 
 (defcustom lsp-ido-symbol-kind-to-string
   ["    "          ; Unknown - 0

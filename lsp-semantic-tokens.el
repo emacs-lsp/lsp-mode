@@ -24,18 +24,24 @@
 
 (require 'lsp-mode)
 
+(defgroup lsp-semantic-tokens nil
+  "LSP support for semantic-tokens"
+  :prefix "lsp-semantic-tokens-"
+  :group 'lsp-mode
+  :tag "LSP Semantic tokens")
+
 (define-obsolete-variable-alias 'lsp-semantic-highlighting-warn-on-missing-face 'lsp-semantic-tokens-warn-on-missing-face "lsp-mode 7.1")
 
 (defcustom lsp-semantic-tokens-warn-on-missing-face nil
   "Warning on missing face for token type/modifier.
 When non-nil, this option will emit a warning any time a token
 or modifier type returned by a language server has no face associated with it."
-  :group 'lsp-mode
+  :group 'lsp-semantic-tokens
   :type 'boolean)
 
 (defcustom lsp-semantic-tokens-apply-modifiers nil
   "Whether semantic tokens should take token modifiers into account."
-  :group 'lsp-mode
+  :group 'lsp-semantic-tokens
   :type 'boolean)
 
 (defface lsp-face-semhl-constant
@@ -431,7 +437,7 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
 ;;;###autoload
 (define-minor-mode lsp-semantic-tokens-mode
   "Toggle semantic-tokens support."
-  :group 'lsp-mode
+  :group 'lsp-semantic-tokens
   :global nil
   (cond
    (lsp-semantic-tokens-mode

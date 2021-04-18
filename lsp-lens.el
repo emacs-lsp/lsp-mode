@@ -23,9 +23,15 @@
 
 (require 'lsp-mode)
 
+(defgroup lsp-lens nil
+  "LSP support for lens"
+  :prefix "lsp-lens-"
+  :group 'lsp-mode
+  :tag "LSP Lens")
+
 (defcustom lsp-lens-debounce-interval 0.001
   "Debounce interval for loading lenses."
-  :group 'lsp-mode
+  :group 'lsp-lens
   :type 'number)
 
 (defface lsp-lens-mouse-face
@@ -326,7 +332,7 @@ CALLBACK - callback for the lenses."
 ;;;###autoload
 (define-minor-mode lsp-lens-mode
   "Toggle code-lens overlays."
-  :group 'lsp-mode
+  :group 'lsp-lens
   :global nil
   :init-value nil
   :lighter " Lens"
