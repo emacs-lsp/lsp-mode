@@ -102,13 +102,13 @@
   "Return all custom variables for a NAME."
   (let* ((group (intern (concat "lsp-" name)))
          (custom-group (get group 'custom-group)))
-    (seq-map
-     (apply-partially #'car)
-     (seq-filter (lambda (p)
-                   (and (consp p)
-                        (or (eq (cadr p) 'custom-variable)
-                            (eq (cadr p) 'custom-face))))
-                 custom-group))))
+    (->> custom-group
+      (seq-filter (lambda (p)
+                    (and (consp p)
+                         (or (eq (cadr p) 'custom-variable)
+                             (eq (cadr p) 'custom-face)))))
+      (seq-map (apply-partially #'car))
+      (seq-sort #'string<))))
 
 (defun lsp-doc--pretty-default-value (variable)
   "Return default value for a VARIABLE formatted."
