@@ -777,7 +777,8 @@ Changes take effect only when a new session is started."
                                         (actionscript-mode . "actionscript")
                                         (d-mode . "d")
                                         (zig-mode . "zig")
-                                        (text-mode . "plaintext"))
+                                        (text-mode . "plaintext")
+                                        (markdown-mode . "markdown"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil

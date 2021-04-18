@@ -54,9 +54,6 @@ nav:
     - Hack: page/lsp-hack.md
     - HTML: page/lsp-html.md
     - Haskell: https://emacs-lsp.github.io/lsp-haskell
-    - Lua (EmmyLua): page/lsp-emmy-lua.md
-    - Lua (Lua Language Server): page/lsp-lua-language-server.md
-    - Lua (Lua-Lsp): page/lsp-lua-lsp.md
     - Java: https://emacs-lsp.github.io/lsp-java
     - Javascript/Typescript (deno): page/lsp-deno.md
     - JavaScript/TypeScript (sourcegraph): page/lsp-typescript-javascript.md
@@ -65,6 +62,10 @@ nav:
     - Json: page/lsp-json.md
     - Julia: page/lsp-julia.md
     - Kotlin: page/lsp-kotlin.md
+    - Lua (EmmyLua): page/lsp-emmy-lua.md
+    - Lua (Lua Language Server): page/lsp-lua-language-server.md
+    - Lua (Lua-Lsp): page/lsp-lua-lsp.md
+    - Markdown: page/lsp-markdown.md
     - MSSQL: https://emacs-lsp.github.io/lsp-mssql
     - Nim: page/lsp-nim.md
     - Nix: page/lsp-nix.md
