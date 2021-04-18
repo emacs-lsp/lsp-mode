@@ -85,27 +85,27 @@
 
 (defface lsp-dired-path-face '((t :inherit font-lock-string-face))
   "Face used for breadcrumb paths on headerline."
-  :group 'lsp-faces)
+  :group 'lsp-dired)
 
 (defface lsp-dired-path-error-face
   '((t :underline (:style wave :color "Red1")))
   "Face used for breadcrumb paths on headerline when there is an error under that path"
-  :group 'lsp-faces)
+  :group 'lsp-dired)
 
 (defface lsp-dired-path-warning-face
   '((t :underline (:style wave :color "Yellow")))
   "Face used for breadcrumb paths on headerline when there is an warning under that path"
-  :group 'lsp-faces)
+  :group 'lsp-dired)
 
 (defface lsp-dired-path-info-face
   '((t :underline (:style wave :color "Green")))
   "Face used for breadcrumb paths on headerline when there is an info under that path"
-  :group 'lsp-faces)
+  :group 'lsp-dired)
 
 (defface lsp-dired-path-hint-face
   '((t :underline (:style wave :color "Green")))
   "Face used for breadcrumb paths on headerline when there is an hint under that path"
-  :group 'lsp-faces)
+  :group 'lsp-dired)
 
 (defun lsp-dired--face-for-path (dir)
   "Calculate the face for DIR."

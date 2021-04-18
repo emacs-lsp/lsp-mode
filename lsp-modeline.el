@@ -52,12 +52,12 @@
 (defface lsp-modeline-code-actions-face
   '((t :inherit homoglyph))
   "Face used to code action text on modeline."
-  :group 'lsp-faces)
+  :group 'lsp-modeline)
 
 (defface lsp-modeline-code-actions-preferred-face
   '((t :foreground "yellow"))
   "Face used to code action text on modeline."
-  :group 'lsp-faces)
+  :group 'lsp-modeline)
 
 ;;;###autoload
 (define-obsolete-variable-alias 'lsp-diagnostics-modeline-scope

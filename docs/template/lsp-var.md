@@ -1,6 +1,8 @@
-#### `{{name}}`
+### `{{name}}`
 
-_Default: `{{default}}`_
+_Type:_ `{{type}}`
+
+_Default:_ `{{default}}`
 
 {{documentation}}
 

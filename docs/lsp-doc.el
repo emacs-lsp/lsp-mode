@@ -125,10 +125,14 @@
   "Return a decorated value for a VARIABLE, KEY and a CLIENT."
   (pcase key
     ("name" (symbol-name variable))
+    ("type" (if (facep variable)
+                "face"
+              (format "%s" (get variable 'custom-type))))
     ("default" (lsp-doc--pretty-default-value variable))
-    ("documentation" (or (documentation-property variable 'variable-documentation)
-                         (documentation-property variable 'face-documentation)
-                         ""))
+    ("documentation" (->> (or (documentation-property variable 'variable-documentation)
+                              (documentation-property variable 'face-documentation)
+                              "")
+                       (replace-regexp-in-string "‘\\|’" "`")))
     (_ "")))
 
 (defun lsp-doc--add-client-variables (client file)
@@ -167,24 +171,22 @@
     ("Lens" . "lens")
     ("Icons" . "icons")
     ("Semantic tokens" . "semantic-tokens"))
-  "A list of hash-map of all core features.")
+  "A list of hash-map of all core features.
+Make sure to make mkdocs.yml updated as well.")
 
 (defvar lsp-doc--extension-features
-  '(("UI" . "https://emacs-lsp.github.io/lsp-ui")
-    ("Treemacs" . "https://emacs-lsp.github.io/lsp-treemacs")
-    ("Helm" . "https://emacs-lsp.github.io/helm-lsp")
-    ("Ivy" . "https://emacs-lsp.github.io/lsp-ivy")
-    ("Dired" . dired)
-    ("Iedit" . iedit)
-    ("Ido" . ido))
-  "A list of hash-map of all extension features.")
+  '(("Dired" . "dired")
+    ("Iedit" . "iedit")
+    ("Ido" . "ido"))
+  "A list of hash-map of all extension features.
+Make sure to make mkdocs.yml updated as well.")
 
 (defun lsp-doc--add-feature-variables (group dest-file)
   "Add FEATURE variables from GROUP to DEST-FILE."
   (if-let ((variables (lsp-doc--variables group)))
       (--each variables
         (with-temp-buffer
-          (insert-file-contents "../template/lsp-var.md")
+          (insert-file-contents "../../template/lsp-var.md")
           (while (re-search-forward "{{\\([][:word:]\\[.-]+\\)}}" nil t)
             (let* ((key (match-string 1))
                    (value (lsp-doc--variable->value it key)))
@@ -194,50 +196,40 @@
       (insert "No custom variables available.\n\n")
       (append-to-file (point-min) (point-max) dest-file))))
 
-(defun lsp-doc--add-feature-core-settings (dest-file)
-  "Append to DEST-FILE the core features settings."
+(defun lsp-doc--add-feature-core-settings ()
+  "Add the core features settings."
   (-each lsp-doc--core-features
     (-lambda ((feature . group))
-      (goto-char (point-max))
-      (with-temp-buffer
-        (insert "### " feature "\n\n")
-        (append-to-file (point-min) (point-max) dest-file))
-      (lsp-doc--add-feature-variables group dest-file))))
-
-(defun lsp-doc--add-feature-extension-settings (dest-file)
-  "Append to DEST-FILE the extension feature settings."
-  (with-temp-buffer
-    (insert "## Extensions\n\n")
-    (append-to-file (point-min) (point-max) dest-file))
-  (-each lsp-doc--extension-features
-    (-lambda ((feature . group-or-link))
-      (goto-char (point-max))
-      (with-temp-buffer
-        (insert "### " feature "\n\n")
-        (append-to-file (point-min) (point-max) dest-file))
-      (if (stringp group-or-link)
+      (let* ((filename (concat "page/settings/" group ".md"))
+             (_ (write-region "" nil filename))
+             (dest-file (file-truename filename)))
+        (with-current-buffer (find-file-noselect dest-file)
           (with-temp-buffer
-            (insert "This is a optional additional extension package, ")
-            (insert (format "check [%s](%s) for more information.\n\n" feature group-or-link))
+            (insert "# " feature "\n\n")
             (append-to-file (point-min) (point-max) dest-file))
-        (lsp-doc--add-feature-variables (symbol-name group-or-link) dest-file)))))
+          (lsp-doc--add-feature-variables group dest-file)
+          (save-buffer 0))))))
 
-(defun lsp-doc--add-faces-settings (dest-file)
-  "Append to DEST-FILE the faces settings."
-  (with-temp-buffer
-    (insert "## Faces\n\n")
-    (append-to-file (point-min) (point-max) dest-file))
-  (goto-char (point-max))
-  (lsp-doc--add-feature-variables "faces" dest-file))
+(defun lsp-doc--add-feature-extension-settings ()
+  "Add the extension feature settings."
+  (-each lsp-doc--extension-features
+    (-lambda ((feature . group))
+      (let* ((filename (concat "page/settings/" group ".md"))
+             (_ (write-region "" nil filename))
+             (dest-file (file-truename filename)))
+        (with-current-buffer (find-file-noselect dest-file)
+          (with-temp-buffer
+            (insert "# " feature "\n\n")
+            (append-to-file (point-min) (point-max) dest-file))
+          (lsp-doc--add-feature-variables group dest-file)
+          (save-buffer 0))))))
 
 (defun lsp-doc--generate-feature-settings ()
   "Generate core documentation for features."
-  (-let ((dest-file (file-truename "page/settings.md")))
-    (with-current-buffer (find-file-noselect dest-file)
-      (lsp-doc--add-feature-core-settings dest-file)
-      (lsp-doc--add-feature-extension-settings dest-file)
-      (lsp-doc--add-faces-settings dest-file)
-      (save-buffer 0))))
+  (unless (file-exists-p "page/settings")
+    (make-directory "page/settings" t))
+  (lsp-doc--add-feature-core-settings)
+  (lsp-doc--add-feature-extension-settings))
 
 
 ;; Public

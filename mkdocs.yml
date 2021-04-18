@@ -10,7 +10,6 @@ nav:
         - Installation: page/installation.md
         - Performance: page/performance.md
     - Main features: page/main-features.md
-    - Settings: page/settings.md
     - Keybindings: page/keybindings.md
     - Extensions:
         - UI: https://emacs-lsp.github.io/lsp-ui
@@ -24,6 +23,24 @@ nav:
     - FAQ: page/faq.md
     - Troubleshooting: page/troubleshooting.md
     - Adding new language: page/adding-new-language.md
+  - Settings:
+    - Features:
+      - Core: page/settings/mode.md
+      - Completion: page/settings/completion.md
+      - Diagnostics: page/settings/diagnostics.md
+      - Headerline: page/settings/headerline.md
+      - Modeline: page/settings/modeline.md
+      - Lens: page/settings/lens.md
+      - Icons: page/settings/icons.md
+      - Semantic Tokens: page/settings/semantic-tokens.md
+    - Extensions:
+      - UI: https://emacs-lsp.github.io/lsp-ui
+      - Treemacs: https://github.com/emacs-lsp/lsp-treemacs
+      - Helm: https://github.com/emacs-lsp/helm-lsp
+      - Ivy: https://github.com/emacs-lsp/lsp-ivy
+      - Dired: page/settings/dired.md
+      - Iedit: page/settings/iedit.md
+      - Ido: page/settings/ido.md
   - Languages:
     - page/languages.md
     - ActionScript: page/lsp-actionscript.md

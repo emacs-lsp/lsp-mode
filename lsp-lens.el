@@ -37,12 +37,12 @@
 (defface lsp-lens-mouse-face
   '((t :height 0.8 :inherit link))
   "The face used for code lens overlays."
-  :group 'lsp-faces)
+  :group 'lsp-lens)
 
 (defface lsp-lens-face
   '((t :inherit lsp-details-face))
   "The face used for code lens overlays."
-  :group 'lsp-faces)
+  :group 'lsp-lens)
 
 (defvar-local lsp-lens--modified? nil)
 

@@ -408,11 +408,6 @@ This flag affects only servers which do not support incremental updates."
 (defvar lsp--delayed-requests nil)
 (defvar lsp--delay-timer nil)
 
-(defgroup lsp-faces nil
-  "LSP Faces."
-  :group 'lsp-mode
-  :tag "LSP Faces")
-
 (defcustom lsp-document-sync-method nil
   "How to sync the document with the language server."
   :type '(choice (const :tag "Documents should not be synced at all." nil)
@@ -852,17 +847,17 @@ must be used for handling a particular message.")
 (defface lsp-face-highlight-textual
   '((t :inherit highlight))
   "Face used for textual occurrences of symbols."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (defface lsp-face-highlight-read
   '((t :inherit highlight :underline t))
   "Face used for highlighting symbols being read."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (defface lsp-face-highlight-write
   '((t :inherit highlight :weight bold))
   "Face used for highlighting symbols being written to."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (define-obsolete-variable-alias 'lsp-lens-auto-enable
   'lsp-lens-enable "lsp-mode 7.0.1")
@@ -4958,7 +4953,7 @@ RENDER-ALL - nil if only the signature should be rendered."
 (defface lsp-signature-posframe
   '((t :inherit tooltip))
   "Background and foreground for `lsp-signature-posframe'."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (defvar lsp-signature-posframe-params
   (list :poshandler #'posframe-poshandler-point-bottom-left-corner-upward
@@ -5637,13 +5632,13 @@ language server as the initial input of a new-name prompt."
 (defface lsp-face-rename '((t :underline t))
   "Face used to highlight the identifier being renamed.
 Renaming can be done using `lsp-rename'."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (defface lsp-rename-placeholder-face '((t :inherit font-lock-variable-name-face))
   "Face used to display the rename placeholder in.
 When calling `lsp-rename' interactively, this will be the face of
 the new name."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (defvar lsp-rename-history '()
   "History for `lsp--read-rename'.")
@@ -6165,11 +6160,11 @@ Things like line numbers, signatures, ... are considered
 additional information. Often, additional faces are defined that
 inherit from this face by default, like `lsp-signature-face', and
 they may be customized for finer control."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (defface lsp-signature-face '((t :inherit lsp-details-face))
   "Used to display signatures in `imenu', ...."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (lsp-defun lsp-render-symbol ((&DocumentSymbol :name :detail? :deprecated?)
                               show-detail?)
@@ -7025,12 +7020,12 @@ detaches the installation buffer from commands like
 (defface lsp-installation-finished-buffer-face '((t :foreground "orange"))
   "Face used for finished installation buffers.
 Used in `lsp-select-installation-buffer'."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (defface lsp-installation-buffer-face '((t :foreground "green"))
   "Face used for installation buffers still in progress.
 Used in `lsp-select-installation-buffer'."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (defun lsp--installation-buffer? (buf)
   "Check whether BUF is an `lsp-async-start-process' buffer."
