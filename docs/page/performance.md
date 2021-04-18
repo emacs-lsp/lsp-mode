@@ -57,12 +57,6 @@ Sometimes you might need to check logging for specific LSP server configuration 
 
 If you have tried all of the non-optional steps from the list and `emacs` is still not very responsive please open a PR with the following information:
 
-- Collect **lsp-log** data after setting `lsp-print-performance` to `t`.
-
-``` elisp
-(setq lsp-print-performance t)
-```
-
 - Include emacs performance report. Use the following step to collect it:
   - `M-x profiler-start` and select `CPU`
   - Reproduce the slow behavior.
