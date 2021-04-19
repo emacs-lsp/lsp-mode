@@ -2764,7 +2764,7 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
 <p>URI of schema store that would be fetched to get the list of schemas.</p>
 <hr />
 <h3 id="lsp-yaml-schemas"><code>lsp-yaml-schemas</code><a class="headerlink" href="#lsp-yaml-schemas" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(alist :key-type (symbol :tag schema) :value-type (vector :tag files (glob)))</code></p>
+<p><em>Type:</em> <code>(alist :key-type (symbol :tag schema) :value-type (lsp-string-vector :tag files (glob)))</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Associate schemas to YAML files in a glob pattern.</p>
 <hr />
