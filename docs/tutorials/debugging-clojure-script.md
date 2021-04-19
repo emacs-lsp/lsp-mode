@@ -161,4 +161,4 @@ You may find the complete project sources at https://github.com/yyoncho/dap-debu
 
 ## See also
 - [dap-mode](https://github.com/emacs-lsp/dap-mode)
-- [shadown-cljs](https://github.com/thheller/shadow-cljs)
+- [shadow-cljs](https://github.com/thheller/shadow-cljs)
