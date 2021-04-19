@@ -2692,7 +2692,7 @@ npm start
 <p>You should see the React logo and a link to "Learn React" on <a href="http://localhost:3000">http://localhost:3000</a> in your browser. We'll leave the web server running while we look at the application with Emacs.</p>
 <h3 id="emacs-configuration">Emacs configuration<a class="headerlink" href="#emacs-configuration" title="Permanent link">#</a></h3>
 <p>Here is a minimal configuration to run this tutorial:</p>
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">package-initialize</span><span class="p">)</span>
+<p><div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">package-initialize</span><span class="p">)</span>
 <span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;package-archives</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;melpa&quot;</span> <span class="o">.</span> <span class="s">&quot;http://melpa.org/packages/&quot;</span><span class="p">)</span> <span class="no">t</span><span class="p">)</span>
 <span class="p">(</span><span class="k">setq</span> <span class="nv">package-selected-packages</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">lsp-mode</span> <span class="nv">yasnippet</span> <span class="nv">lsp-treemacs</span> <span class="nv">helm-lsp</span> <span class="nv">projectile</span> <span class="nv">hydra</span> <span class="nv">flycheck</span> <span class="nv">company</span> <span class="nv">avy</span> <span class="nv">which-key</span> <span class="nv">helm-xref</span> <span class="nv">dap-mode</span> <span class="nv">zenburn-theme</span> <span class="nv">json-mode</span><span class="p">))</span>
 <span class="p">(</span><span class="nb">when</span> <span class="p">(</span><span class="nv">cl-find-if-not</span> <span class="nf">#&#39;</span><span class="nv">package-installed-p</span> <span class="nv">package-selected-packages</span><span class="p">)</span>
@@ -2715,6 +2715,10 @@ npm start
   <span class="p">(</span><span class="nb">require</span> <span class="ss">&#39;dap-chrome</span><span class="p">)</span>
   <span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;lsp-mode-hook</span> <span class="nf">#&#39;</span><span class="nv">lsp-enable-which-key-integration</span><span class="p">)</span>
   <span class="p">(</span><span class="nv">yas-global-mode</span><span class="p">))</span>
+</code></pre></div>
+<em>Tip:</em> if you want to use <code>M-.</code> <code>xref-find-definition</code> in <code>js</code> buffers, add the following to your config:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;js</span>
+  <span class="p">(</span><span class="nf">define-key</span> <span class="nv">js-mode-map</span> <span class="p">(</span><span class="nv">kbd</span> <span class="s">&quot;M-.&quot;</span><span class="p">)</span> <span class="no">nil</span><span class="p">))</span>
 </code></pre></div>
 <p>To open your React application in Emacs, open another terminal or command prompt window, navigate to the <code>my-app</code> folder and type:</p>
 <div class="highlight"><pre><span></span><code>emacs my-app/src/index.js
