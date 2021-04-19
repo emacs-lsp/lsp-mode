@@ -6040,7 +6040,7 @@ textDocument/didOpen for the new file."
       ("workspace/semanticTokens/refresh"
        (lambda ()
          (when (and lsp-semantic-tokens-enable
-                    (fboundp #'lsp--semantic-tokens-on-refresh))
+                    (fboundp 'lsp--semantic-tokens-on-refresh))
            (lsp--semantic-tokens-on-refresh))))
       ("textDocument/publishDiagnostics" #'lsp--on-diagnostics)
       ("textDocument/diagnosticsEnd" #'ignore)
