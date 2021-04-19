@@ -68,6 +68,12 @@ You should see the React logo and a link to "Learn React" on [http://localhost:3
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
   (yas-global-mode))
 ```
+_Tip:_ if you want to use `M-.` `xref-find-definition` in `js` buffers, add the following to your config:
+
+``` emacs-lisp
+(with-eval-after-load 'js
+  (define-key js-mode-map (kbd "M-.") nil))
+```
 
 To open your React application in Emacs, open another terminal or command prompt window, navigate to the `my-app` folder and type:
 
