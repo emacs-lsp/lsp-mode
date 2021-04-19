@@ -50,7 +50,7 @@ or modifier type returned by a language server has no face associated with it."
 Note that even when this is set to t, delta requests will
 be preferred whenever possible, unless
 `lsp-semantic-tokens-allow-delta-requests' is false."
-  :group 'lsp-mode
+  :group 'lsp-semantic-tokens
   :type 'boolean)
 
 (defcustom lsp-semantic-tokens-allow-delta-requests t
@@ -58,7 +58,7 @@ be preferred whenever possible, unless
 
 When supported by the language server, delta requests are always
 preferred over both full and ranged token requests."
-  :group 'lsp-mode
+  :group 'lsp-semantic-tokens
   :type 'boolean)
 
 (defface lsp-face-semhl-constant
