@@ -93,9 +93,11 @@ lint:
 		$(LSP-FILES)
 
 unix-test:
+	@echo "Testing..."
 	$(CASK) exec ert-runner -L . -L clients	$(LOAD-TEST-FILES) -t '!no-win' -t '!org'
 
 windows-test:
+	@echo "Testing..."
 	@$(EMACS) -Q --batch \
 		-l $(WIN-BOOTSTRAP) \
 		-L . -L clients \
