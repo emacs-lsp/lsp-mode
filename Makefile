@@ -93,7 +93,7 @@ lint:
 		$(LSP-FILES)
 
 unix-test:
-	$(CASK) exec ert-runner -L . -L clients	 -t '!no-win' -t '!org'
+	$(CASK) exec ert-runner -L . -L clients	$(LOAD-TEST-FILES) -t '!no-win' -t '!org'
 
 windows-test:
 	@$(EMACS) -Q --batch \
