@@ -2,6 +2,7 @@
 
 You need first `lsp-mode`, that is a Emacs client for an LSP server.
 Then you need to install the specific LSP server for your language.
+Finally, use `M-x lsp` to start a new language server.
 
 ## Client
 
