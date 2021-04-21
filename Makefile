@@ -59,7 +59,7 @@ windows-compile:
 		-f batch-byte-compile $(LSP-FILES)
 
 test-downstream-pkgs:
-	@echo "Test emacs-lsp packages..."
+	@echo "Test downstream packages..."
 	@$(CASK) $(EMACS) -Q --batch \
 		-l $(WIN-BOOTSTRAP) \
 		--eval '(setq emacs-lsp-ci t)' \
