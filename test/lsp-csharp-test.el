@@ -63,7 +63,6 @@ Program.cs file and starts lsp. After the test BODY runs - tidy up."
     ;; now check that the workspace has started
     (lsp-test-wait (eq 'initialized
                        (lsp--workspace-status (cl-first (lsp-workspaces)))))
-   (deferred:sync!))
-   ))
+   (deferred:sync!))))
 
 ;;; lsp-csharp-test.el ends here
