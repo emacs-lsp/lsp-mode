@@ -2977,11 +2977,12 @@ Return same value as `lsp--while-no-input' and respecting `non-essential'."
                ((lsp-json-error? resp-error) (error (lsp:json-error-message resp-error)))
                ((lsp-json-error? (cl-first resp-error))
                 (error (lsp:json-error-message (cl-first resp-error))))
-               ((input-pending-p) (when lsp--throw-on-input
-                                    (throw 'input :interrupted)))
-               (t (error "Timeout while waiting for response.  Method: %s" method))))
+               ((not (input-pending-p)) (error "Timeout while waiting for response.  Method: %s" method))
+               (t nil)))
           (unless done?
-            (lsp-cancel-request-by-token :sync-request))))
+            (lsp-cancel-request-by-token :sync-request))
+          (when (and (input-pending-p) lsp--throw-on-input)
+            (throw 'input :interrupted))))
     (lsp-request method params)))
 
 (defvar lsp--cancelable-requests (ht))
