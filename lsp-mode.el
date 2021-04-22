@@ -2931,56 +2931,58 @@ If NO-MERGE is non-nil, don't merge the results but return alist workspace->resu
 If NO-WAIT is non-nil send the request as notification."
   (if no-wait
       (lsp-notify method params)
-    (let* ((send-time (time-to-seconds (current-time)))
-           ;; max time by which we must get a response
-           (expected-time (+ send-time lsp-response-timeout))
-           resp-result resp-error done?)
+    (let* (resp-result resp-error done?)
       (unwind-protect
           (progn
-            (lsp-request-async method params (lambda (res) (setf resp-result (or res :finished)))
-                               :error-handler (lambda (err) (setf resp-error err))
+            (lsp-request-async method params (lambda (res)
+                                               (setf resp-result (or res :finished))
+                                               (throw 'lsp-done '_))
+                               :error-handler (lambda (err)
+                                                (setf resp-error err)
+                                                (throw 'lsp-done '_))
                                :no-merge no-merge
                                :mode 'detached
                                :cancel-token :sync-request)
-            (while (not (or resp-error resp-result))
-              (accept-process-output nil 0.001)
-              (when (< expected-time (time-to-seconds (current-time)))
-                (error "Timeout while waiting for response. Method: %s." method)))
-            (setq done? t)
+            (catch 'lsp-done
+              (accept-process-output nil lsp-response-timeout))
+            (setq done? (or resp-error resp-result))
             (cond
              ((eq resp-result :finished) nil)
              (resp-result resp-result)
              ((lsp-json-error? resp-error) (error (lsp:json-error-message resp-error)))
-             (t (error (lsp:json-error-message (cl-first resp-error))))))
+             ((lsp-json-error? (cl-first resp-error))
+              (error (lsp:json-error-message (cl-first resp-error))))
+             (t (error "Timeout while waiting for response.  Method: %s" method))))
         (unless done?
           (lsp-cancel-request-by-token :sync-request))))))
 
 (cl-defun lsp-request-while-no-input (method params)
   "Send request METHOD with PARAMS and waits until there is no input.
 Return same value as `lsp--while-no-input' and respecting `non-essential'."
-  (let* (resp-result resp-error done?)
-    (unwind-protect
-        (progn
-          (lsp-request-async method
-                             params
-                             (lambda (res) (setf resp-result (or res :finished)))
-                             :error-handler (lambda (err) (setf resp-error err))
-                             :mode 'detached
-                             :cancel-token :sync-request)
-          (redisplay)
-          (while (not (or resp-error resp-result
-                          (and non-essential (input-pending-p))))
-            (accept-process-output nil 0.001))
-          (setq done? t)
-          (cond
-           ((eq resp-result :finished) nil)
-           (resp-result resp-result)
-           ((lsp-json-error? resp-error) (error (lsp:json-error-message resp-error)))
-           ((input-pending-p) (when lsp--throw-on-input
-                                (throw 'input :interrupted)))
-           (t (error (lsp:json-error-message (cl-first resp-error))))))
-      (unless done?
-        (lsp-cancel-request-by-token :sync-request)))))
+  (if non-essential
+      (let* (resp-result resp-error done?)
+        (unwind-protect
+            (progn
+              (lsp-request-async method params
+                                 (lambda (res) (setf resp-result (or res :finished)) (throw 'lsp-done '_))
+                                 :error-handler (lambda (err) (setf resp-error err) (throw 'lsp-done '_))
+                                 :mode 'detached
+                                 :cancel-token :sync-request)
+              (catch 'lsp-done
+                (sit-for lsp-response-timeout))
+              (setq done? (or resp-error resp-result))
+              (cond
+               ((eq resp-result :finished) nil)
+               (resp-result resp-result)
+               ((lsp-json-error? resp-error) (error (lsp:json-error-message resp-error)))
+               ((lsp-json-error? (cl-first resp-error))
+                (error (lsp:json-error-message (cl-first resp-error))))
+               ((input-pending-p) (when lsp--throw-on-input
+                                    (throw 'input :interrupted)))
+               (t (error "Timeout while waiting for response.  Method: %s" method))))
+          (unless done?
+            (lsp-cancel-request-by-token :sync-request))))
+    (lsp-request method params)))
 
 (defvar lsp--cancelable-requests (ht))
 
