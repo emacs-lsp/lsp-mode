@@ -96,6 +96,7 @@ For a complete list of plugins, check:
                                       (lsp--set-configuration (lsp-configuration-section "unified-language-server"))))
                   :major-modes '(markdown-mode)
                   :priority -1
+                  :major-modes '(markdown-mode)
                   :server-id 'unified))
 
 (provide 'lsp-markdown)

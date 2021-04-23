@@ -57,6 +57,11 @@
 (require 'yasnippet nil t)
 (require 'lsp-protocol)
 
+(defgroup lsp-mode nil
+  "Language Server Protocol client."
+  :group 'tools
+  :tag "Language Server (lsp-mode)")
+
 (declare-function evil-set-command-property "ext:evil-common")
 (declare-function projectile-project-root "ext:projectile")
 (declare-function yas-expand-snippet "ext:yasnippet")
@@ -107,12 +112,6 @@
   :group 'lsp-mode
   :type 'boolean)
 
-(defcustom lsp-print-performance nil
-  "If non-nil, print performance info in the logs."
-  :group 'lsp-mode
-  :type 'boolean
-  :package-version '(lsp-mode . "6.1"))
-
 (defcustom lsp-log-max message-log-max
   "Maximum number of lines to keep in the log buffer.
 If nil, disable message logging.  If t, log messages but don’t truncate
@@ -137,7 +136,7 @@ the buffer when it becomes large."
 
 (defcustom lsp-enable-snippet t
   "Enable/disable snippet completion support."
-  :group 'lsp-mode
+  :group 'lsp-completion
   :type 'boolean)
 
 (defcustom lsp-enable-folding t
@@ -151,7 +150,7 @@ the buffer when it becomes large."
 (defcustom lsp-semantic-tokens-enable nil
   "Enable/disable support for semantic tokens.
 As defined by the Language Server Protocol 3.16."
-  :group 'lsp-mode
+  :group 'lsp-semantic-tokens
   :type 'boolean)
 
 (defcustom lsp-folding-range-limit nil
@@ -339,7 +338,10 @@ the server has requested that."
     "[/\\\\]\\.cpcache\\'"
     ;; .Net Core build-output
     "[/\\\\]bin/Debug\\'"
-    "[/\\\\]obj\\'")
+    "[/\\\\]obj\\'"
+    ;; OCaml and Dune
+     "[/\\\\]_opam\\'"
+     "[/\\\\]_build\\'")
   "List of regexps matching directory paths which won't be monitored when
 creating file watches. Customization of this variable is only honored at
 the global level or at a root of an lsp workspace."
@@ -409,16 +411,6 @@ This flag affects only servers which do not support incremental updates."
 (defvar lsp--delayed-requests nil)
 (defvar lsp--delay-timer nil)
 
-(defgroup lsp-mode nil
-  "Language Server Protocol client."
-  :group 'tools
-  :tag "Language Server")
-
-(defgroup lsp-faces nil
-  "Faces."
-  :group 'lsp-mode
-  :tag "Faces")
-
 (defcustom lsp-document-sync-method nil
   "How to sync the document with the language server."
   :type '(choice (const :tag "Documents should not be synced at all." nil)
@@ -469,7 +461,7 @@ If this is set to nil, `eldoc' will show only the symbol information."
 (defcustom lsp-completion-enable t
   "Enable `completion-at-point' integration."
   :type 'boolean
-  :group 'lsp-mode)
+  :group 'lsp-completion)
 
 (defcustom lsp-enable-symbol-highlighting t
   "Highlight references of the symbol at point."
@@ -513,23 +505,23 @@ It contains the operation source."
 (defcustom lsp-modeline-code-actions-enable t
   "Whether to show code actions on modeline."
   :type 'boolean
-  :group 'lsp-mode)
+  :group 'lsp-modeline)
 
 (defcustom lsp-modeline-diagnostics-enable t
   "Whether to show diagnostics on modeline."
   :type 'boolean
-  :group 'lsp-mode)
+  :group 'lsp-modeline)
 
 (defcustom lsp-modeline-workspace-status-enable t
   "Whether to show workspace status on modeline."
   :type 'boolean
-  :group 'lsp-mode
+  :group 'lsp-modeline
   :package-version '(lsp-mode . "7.1"))
 
 (defcustom lsp-headerline-breadcrumb-enable t
   "Whether to enable breadcrumb on headerline."
   :type 'boolean
-  :group 'lsp-mode)
+  :group 'lsp-headerline)
 
 (defcustom lsp-configure-hook nil
   "Hooks to run when `lsp-configure-buffer' is called."
@@ -577,9 +569,9 @@ The hook will receive two parameters list of added and removed folders."
   :group 'lsp-mode)
 
 (defgroup lsp-imenu nil
-  "Imenu."
+  "LSP Imenu."
   :group 'lsp-mode
-  :tag "Imenu")
+  :tag "LSP Imenu")
 
 (defcustom lsp-imenu-show-container-name t
   "Display the symbol's container name in an imenu entry."
@@ -665,7 +657,7 @@ than the second parameter.")
 Note that when that setting is nil, `lsp-mode' will show stale
 diagnostics until server publishes the new set of diagnostics"
   :type 'boolean
-  :group 'lsp-mode
+  :group 'lsp-diagnostics
   :package-version '(lsp-mode . "7.0.1"))
 
 (defcustom lsp-server-trace nil
@@ -858,24 +850,24 @@ must be used for handling a particular message.")
 (defface lsp-face-highlight-textual
   '((t :inherit highlight))
   "Face used for textual occurrences of symbols."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (defface lsp-face-highlight-read
   '((t :inherit highlight :underline t))
   "Face used for highlighting symbols being read."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (defface lsp-face-highlight-write
   '((t :inherit highlight :weight bold))
   "Face used for highlighting symbols being written to."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (define-obsolete-variable-alias 'lsp-lens-auto-enable
   'lsp-lens-enable "lsp-mode 7.0.1")
 
 (defcustom lsp-lens-enable nil
   "Auto enable lenses if server supports."
-  :group 'lsp-mode
+  :group 'lsp-lens
   :type 'boolean
   :package-version '(lsp-mode . "6.3"))
 
@@ -924,7 +916,7 @@ called with nil the signature info must be cleared."
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-keymap-prefix "s-l"
-  "lsp-mode keymap prefix."
+  "LSP-mode keymap prefix."
   :group 'lsp-mode
   :type 'string
   :package-version '(lsp-mode . "6.3"))
@@ -2580,7 +2572,6 @@ and end-of-string meta-characters."
   "Keymap for `lsp-mode'.")
 
 (define-minor-mode lsp-mode ""
-  nil nil nil
   :keymap lsp-mode-map
   :lighter
   (" LSP["
@@ -3274,6 +3265,7 @@ disappearing, unset all the variables related to it."
                                                         (documentationFormat . ["markdown" "plaintext"])
                                                         ;; Remove this after jdtls support resolveSupport
                                                         (resolveAdditionalTextEditsSupport . t)
+                                                        (insertReplaceSupport . t)
                                                         (resolveSupport
                                                          . ((properties . ["documentation"
                                                                            "details"
@@ -3607,7 +3599,7 @@ yet."
 
 (define-minor-mode lsp-managed-mode
   "Mode for source buffers managed by lsp-mode."
-  nil nil nil
+  :lighter nil
   (cond
    (lsp-managed-mode
     (when (lsp-feature? "textDocument/hover")
@@ -4935,7 +4927,6 @@ RENDER-ALL - nil if only the signature should be rendered."
   "Keymap for `lsp-signature-mode-map'")
 
 (define-minor-mode lsp-signature-mode ""
-  nil nil nil
   :keymap lsp-signature-mode-map
   :lighter ""
   :group 'lsp-mode)
@@ -4963,7 +4954,7 @@ RENDER-ALL - nil if only the signature should be rendered."
 (defface lsp-signature-posframe
   '((t :inherit tooltip))
   "Background and foreground for `lsp-signature-posframe'."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (defvar lsp-signature-posframe-params
   (list :poshandler #'posframe-poshandler-point-bottom-left-corner-upward
@@ -5642,13 +5633,13 @@ language server as the initial input of a new-name prompt."
 (defface lsp-face-rename '((t :underline t))
   "Face used to highlight the identifier being renamed.
 Renaming can be done using `lsp-rename'."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (defface lsp-rename-placeholder-face '((t :inherit font-lock-variable-name-face))
   "Face used to display the rename placeholder in.
 When calling `lsp-rename' interactively, this will be the face of
 the new name."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (defvar lsp-rename-history '()
   "History for `lsp--read-rename'.")
@@ -6054,56 +6045,21 @@ WORKSPACE is the active workspace."
 (defun lsp--read-json-file (file-path)
   "Read json file."
   (-> file-path
-      (f-read-text)
-      (lsp--read-json)))
-
-(defun lsp--log-request-time (server-id method id start-time before-send received-time after-parsed-time after-processed-time)
-  (when lsp-print-performance
-    (lsp-log "Perf> Request/Response
-  ServerId: %s
-  Request: %s (%s)
-  Serialization took: %.06f
-  ServerTime: %.06f
-  Deserialization: %.06f
-  CallbackTime: %s"
-             server-id
-             method
-             id
-             (float-time (time-subtract before-send start-time))
-             (float-time (time-subtract received-time before-send))
-             (float-time (time-subtract after-parsed-time received-time))
-             (if after-processed-time
-                 (format "%.06f" (float-time (time-subtract after-processed-time after-parsed-time)))
-               "N/A"))))
-
-(defun lsp--log-notification-performance (server-id json-data received-time
-                                                    after-parsed-time before-notification after-processed-time)
-  (when lsp-print-performance
-    (lsp-log "Perf> notification
-  ServerId: %s
-  Notification: %s
-  Deserialization: %.06f
-  Processing: %.06f "
-             server-id
-             (when json-data (lsp:json-notification-method json-data))
-             (float-time (time-subtract after-parsed-time received-time))
-             (float-time (time-subtract after-processed-time before-notification)))))
+    (f-read-text)
+    (lsp--read-json)))
 
 (defun lsp--parser-on-message (json-data workspace)
   "Called when the parser P read a complete MSG from the server."
   (with-demoted-errors "Error processing message %S."
     (with-lsp-workspace workspace
       (let* ((client (lsp--workspace-client workspace))
-             (received-time (current-time))
-             (server-id (lsp--client-server-id client))
-             (after-parsed-time (current-time))
              (id (--when-let (lsp:json-response-id json-data)
                    (if (stringp it) (string-to-number it) it)))
              (data (lsp:json-response-result json-data)))
         (pcase (lsp--get-message-type json-data)
           ('response
            (cl-assert id)
-           (-let [(callback _ method start-time before-send) (gethash id (lsp--client-response-handlers client))]
+           (-let [(callback _ method _ before-send) (gethash id (lsp--client-response-handlers client))]
              (when lsp-print-io
                (lsp--log-entry-new
                 (lsp--make-log-entry method id data 'incoming-resp
@@ -6111,33 +6067,21 @@ WORKSPACE is the active workspace."
                 workspace))
              (when callback
                (funcall callback (lsp:json-response-result json-data))
-               (remhash id (lsp--client-response-handlers client))
-               (lsp--log-request-time server-id method id start-time before-send
-                                      received-time after-parsed-time (current-time)))))
+               (remhash id (lsp--client-response-handlers client)))))
           ('response-error
            (cl-assert id)
-           (-let [(_ callback method start-time before-send) (gethash id (lsp--client-response-handlers client))]
+           (-let [(_ callback method _ before-send) (gethash id (lsp--client-response-handlers client))]
              (when lsp-print-io
                (lsp--log-entry-new
-                (lsp--make-log-entry method id data 'incoming-resp
-                                     (/ (nth 2 (time-since before-send)) 1000))
+                (lsp--make-log-entry method id (lsp:json-response-error-error json-data)
+                                     'incoming-resp (/ (nth 2 (time-since before-send)) 1000))
                 workspace))
              (when callback
                (funcall callback (lsp:json-response-error-error json-data))
-               (remhash id (lsp--client-response-handlers client))
-               (lsp--log-request-time server-id method id start-time before-send
-                                      received-time after-parsed-time (current-time)))))
+               (remhash id (lsp--client-response-handlers client)))))
           ('notification
-           (let ((before-notification (current-time)))
-             (lsp--on-notification workspace json-data)
-             (lsp--log-notification-performance
-              server-id json-data received-time after-parsed-time before-notification (current-time))))
+           (lsp--on-notification workspace json-data))
           ('request (lsp--on-request workspace json-data)))))))
-
-(defun lsp--json-pretty-print (msg)
-  "Convert json MSG string to pretty printed json string."
-  (let ((json-encoding-pretty-print t))
-    (json-encode (json-read-from-string msg))))
 
 (defvar lsp-parsed-message nil
   "This will store the string representation of the json message.
@@ -6217,11 +6161,11 @@ Things like line numbers, signatures, ... are considered
 additional information. Often, additional faces are defined that
 inherit from this face by default, like `lsp-signature-face', and
 they may be customized for finer control."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (defface lsp-signature-face '((t :inherit lsp-details-face))
   "Used to display signatures in `imenu', ...."
-  :group 'lsp-faces)
+  :group 'lsp-mode)
 
 (lsp-defun lsp-render-symbol ((&DocumentSymbol :name :detail? :deprecated?)
                               show-detail?)
@@ -7509,26 +7453,6 @@ session workspace folder configuration for the server."
     (if (functionp initialization-options-or-fn)
         (funcall initialization-options-or-fn)
       initialization-options-or-fn)))
-
-(defun lsp--plist-delete (prop plist)
-  "Delete by side effect the property PROP from PLIST.
-If PROP is the first property in PLIST, there is no way
-to remove it by side-effect; therefore, write
-\(setq foo (evil-plist-delete :prop foo)) to be sure of
-changing the value of `foo'."
-  (let ((tail plist) elt head)
-    (while tail
-      (setq elt (car tail))
-      (cond
-       ((eq elt prop)
-        (setq tail (cdr (cdr tail)))
-        (if head
-            (setcdr (cdr head) tail)
-          (setq plist tail)))
-       (t
-        (setq head tail
-              tail (cdr (cdr tail))))))
-    plist))
 
 (defvar lsp-client-settings nil
   "For internal use, any external users please use

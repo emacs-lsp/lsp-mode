@@ -23,10 +23,16 @@
 
 (require 'lsp-mode)
 
+(defgroup lsp-modeline nil
+  "LSP support for modeline"
+  :prefix "lsp-modeline-"
+  :group 'lsp-mode
+  :tag "LSP Modeline")
+
 (defcustom lsp-modeline-code-actions-kind-regex "$\\|quickfix.*\\|refactor.*"
   "Regex for the code actions kinds to show in the modeline."
   :type 'string
-  :group 'lsp-mode)
+  :group 'lsp-modeline)
 
 (defcustom lsp-modeline-code-actions-segments '(count icon)
   "Define what should display on the modeline when code actions are available."
@@ -34,24 +40,24 @@
                   (const :tag "Show the lightbulb icon" icon)
                   (const :tag "Show the name of the preferred code action" name)
                   (const :tag "Show the count of how many code actions available" count)))
-  :group 'lsp-mode
+  :group 'lsp-modeline
   :package-version '(lsp-mode . "7.1"))
 
 (defcustom lsp-modeline-code-action-fallback-icon "💡"
   "Define what should display on the modeline when code actions are available."
   :type 'string
-  :group 'lsp-mode
+  :group 'lsp-modeline
   :package-version '(lsp-mode . "7.1"))
 
 (defface lsp-modeline-code-actions-face
   '((t :inherit homoglyph))
   "Face used to code action text on modeline."
-  :group 'lsp-faces)
+  :group 'lsp-modeline)
 
 (defface lsp-modeline-code-actions-preferred-face
   '((t :foreground "yellow"))
   "Face used to code action text on modeline."
-  :group 'lsp-faces)
+  :group 'lsp-modeline)
 
 ;;;###autoload
 (define-obsolete-variable-alias 'lsp-diagnostics-modeline-scope
@@ -59,7 +65,7 @@
 
 (defcustom lsp-modeline-diagnostics-scope :workspace
   "The modeline diagnostics scope."
-  :group 'lsp-mode
+  :group 'lsp-modeline
   :type '(choice (const :tag "File" :file)
                  (const :tag "Project" :workspace)
                  (const :tag "All Projects" :global))
@@ -183,7 +189,7 @@
 ;;;###autoload
 (define-minor-mode lsp-modeline-code-actions-mode
   "Toggle code actions on modeline."
-  :group 'lsp-mode
+  :group 'lsp-modeline
   :global nil
   :lighter ""
   (cond
@@ -294,7 +300,7 @@ The `:global' workspace is global one.")
 ;;;###autoload
 (define-minor-mode lsp-modeline-diagnostics-mode
   "Toggle diagnostics modeline."
-  :group 'lsp-mode
+  :group 'lsp-modeline
   :global nil
   :lighter ""
   (cond
@@ -331,7 +337,7 @@ The `:global' workspace is global one.")
 ;;;###autoload
 (define-minor-mode lsp-modeline-workspace-status-mode
   "Toggle workspace status on modeline."
-  :group 'lsp-mode
+  :group 'lsp-modeline
   :global nil
   :lighter ""
   (cond

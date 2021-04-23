@@ -59,7 +59,7 @@ windows-compile:
 		-f batch-byte-compile $(LSP-FILES)
 
 test-downstream-pkgs:
-	@echo "Test emacs-lsp packages..."
+	@echo "Test downstream packages..."
 	@$(CASK) $(EMACS) -Q --batch \
 		-l $(WIN-BOOTSTRAP) \
 		--eval '(setq emacs-lsp-ci t)' \
@@ -93,9 +93,11 @@ lint:
 		$(LSP-FILES)
 
 unix-test:
-	$(CASK) exec ert-runner -L . -L clients	 -t '!no-win' -t '!org'
+	@echo "Testing..."
+	$(CASK) exec ert-runner -L . -L clients	$(LOAD-TEST-FILES) -t '!no-win' -t '!org'
 
 windows-test:
+	@echo "Testing..."
 	@$(EMACS) -Q --batch \
 		-l $(WIN-BOOTSTRAP) \
 		-L . -L clients \

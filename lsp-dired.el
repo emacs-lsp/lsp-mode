@@ -27,6 +27,12 @@
 (require 'pcase)
 (require 'lsp-mode)
 
+(defgroup lsp-dired nil
+  "LSP support for dired"
+  :prefix "lsp-dired-"
+  :group 'lsp-mode
+  :tag "LSP Dired")
+
 (defvar lsp-dired--ranger-adjust nil)
 (with-eval-after-load 'ranger (setf lsp-dired--ranger-adjust t))
 
@@ -79,27 +85,27 @@
 
 (defface lsp-dired-path-face '((t :inherit font-lock-string-face))
   "Face used for breadcrumb paths on headerline."
-  :group 'lsp-faces)
+  :group 'lsp-dired)
 
 (defface lsp-dired-path-error-face
   '((t :underline (:style wave :color "Red1")))
   "Face used for breadcrumb paths on headerline when there is an error under that path"
-  :group 'lsp-faces)
+  :group 'lsp-dired)
 
 (defface lsp-dired-path-warning-face
   '((t :underline (:style wave :color "Yellow")))
   "Face used for breadcrumb paths on headerline when there is an warning under that path"
-  :group 'lsp-faces)
+  :group 'lsp-dired)
 
 (defface lsp-dired-path-info-face
   '((t :underline (:style wave :color "Green")))
   "Face used for breadcrumb paths on headerline when there is an info under that path"
-  :group 'lsp-faces)
+  :group 'lsp-dired)
 
 (defface lsp-dired-path-hint-face
   '((t :underline (:style wave :color "Green")))
   "Face used for breadcrumb paths on headerline when there is an hint under that path"
-  :group 'lsp-faces)
+  :group 'lsp-dired)
 
 (defun lsp-dired--face-for-path (dir)
   "Calculate the face for DIR."
@@ -142,7 +148,7 @@ Will remove the killed subdir from `lsp-dired--covered-subdirs'."
   :require    'lsp-dired
   :init-value nil
   :global     t
-  :group      'lsp-mode
+  :group      'lsp-dired
   (cond
    (lsp-dired-mode
     (add-hook 'dired-after-readin-hook #'lsp-dired--display)

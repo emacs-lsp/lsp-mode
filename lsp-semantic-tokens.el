@@ -24,150 +24,156 @@
 
 (require 'lsp-mode)
 
+(defgroup lsp-semantic-tokens nil
+  "LSP support for semantic-tokens"
+  :prefix "lsp-semantic-tokens-"
+  :group 'lsp-mode
+  :tag "LSP Semantic tokens")
+
 (define-obsolete-variable-alias 'lsp-semantic-highlighting-warn-on-missing-face 'lsp-semantic-tokens-warn-on-missing-face "lsp-mode 7.1")
 
 (defcustom lsp-semantic-tokens-warn-on-missing-face nil
   "Warning on missing face for token type/modifier.
 When non-nil, this option will emit a warning any time a token
 or modifier type returned by a language server has no face associated with it."
-  :group 'lsp-mode
+  :group 'lsp-semantic-tokens
   :type 'boolean)
 
 (defcustom lsp-semantic-tokens-apply-modifiers nil
   "Whether semantic tokens should take token modifiers into account."
-  :group 'lsp-mode
+  :group 'lsp-semantic-tokens
   :type 'boolean)
 
 (defface lsp-face-semhl-constant
   '((t :inherit font-lock-constant-face))
   "Face used for semantic highlighting scopes matching constant scopes."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-variable
   '((t :inherit font-lock-variable-name-face))
   "Face used for semantic highlighting scopes matching variable.*,
 unless overridden by a more specific face association."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-function
   '((t :inherit font-lock-function-name-face))
   "Face used for semantic highlighting scopes matching entity.name.function.*,
 unless overridden by a more specific face association."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-method
   '((t :inherit lsp-face-semhl-function))
   "Face used for semantic highlighting scopes matching entity.name.function.method.*,
 unless overridden by a more specific face association."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-namespace
   '((t :inherit font-lock-type-face :weight bold))
   "Face used for semantic highlighting scopes matching entity.name.namespace.*,
 unless overridden by a more specific face association."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-comment
   '((t (:inherit font-lock-comment-face)))
   "Face used for comments."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-keyword
   '((t (:inherit font-lock-keyword-face)))
   "Face used for keywords."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-string
   '((t (:inherit font-lock-string-face)))
   "Face used for keywords."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-number
   '((t (:inherit font-lock-constant-face)))
   "Face used for numbers."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-regexp
   '((t (:inherit font-lock-string-face :slant italic)))
   "Face used for regexps."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-operator
   '((t (:inherit font-lock-function-name-face)))
   "Face used for operators."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-namespace
   '((t (:inherit font-lock-keyword-face)))
   "Face used for namespaces."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-type
   '((t (:inherit font-lock-type-face)))
   "Face used for types."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-struct
   '((t (:inherit font-lock-type-face)))
   "Face used for structs."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-class
   '((t (:inherit font-lock-type-face)))
   "Face used for classes."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-interface
   '((t (:inherit font-lock-type-face)))
   "Face used for interfaces."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-enum
   '((t (:inherit font-lock-variable-name-face)))
   "Face used for enums."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-type-parameter
   '((t (:inherit font-lock-type-face)))
   "Face used for type parameters."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 ;; function face already defined, move here when support
 ;; for theia highlighting gets removed
 (defface lsp-face-semhl-member
   '((t (:inherit font-lock-variable-name-face)))
   "Face used for members."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-property
   '((t (:inherit font-lock-variable-name-face)))
   "Face used for properties."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-macro
   '((t (:inherit font-lock-preprocessor-face)))
   "Face used for macros."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-variable
   '((t (:inherit font-lock-variable-name-face)))
   "Face used for variables."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-parameter
   '((t (:inherit font-lock-variable-name-face)))
   "Face used for parameters."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-label
   '((t (:inherit font-lock-comment-face)))
   "Face used for labels."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-deprecated
   '((t :strike-through t))
   "Face used for semantic highlighting scopes matching constant scopes."
-  :group 'lsp-faces)
+  :group 'lsp-semantic-tokens)
 
 (defvar lsp-semantic-token-faces
   '(("comment" . lsp-face-semhl-comment)
@@ -264,11 +270,14 @@ If LOUDLY is non-nil, it will build whole tokens."
         (modifier-faces
          (when lsp-semantic-tokens-apply-modifiers
            (seq-some #'lsp--workspace-semantic-tokens-modifier-faces lsp--buffer-workspaces))))
-    (if (or (eq nil lsp--semantic-tokens-cache)
-            (eq nil faces)
-            ;; delay fontification until we have fresh tokens
-            (not (= lsp--cur-version (lsp-get lsp--semantic-tokens-cache :_documentVersion))))
-        '(jit-lock-bounds 0 . 0)
+    (cond
+     ((or (eq nil lsp--semantic-tokens-cache) (eq nil faces))
+      ;; default to non-semantic highlighting until first response has arrived
+      (funcall old-fontify-region beg end loudly))
+     ((not (= lsp--cur-version (lsp-get lsp--semantic-tokens-cache :_documentVersion)))
+      ;; delay fontification until we have fresh tokens to avoid flickering
+      '(jit-lock-bounds 0 . 0))
+     (t
       (funcall old-fontify-region beg end loudly)
       (-let* ((inhibit-field-text-motion t)
               ((&SematicTokensPartialResult :data) lsp--semantic-tokens-cache)
@@ -323,7 +332,7 @@ If LOUDLY is non-nil, it will build whole tokens."
       (let ((token-region (lsp-get lsp--semantic-tokens-cache :_region)))
         (if token-region
             `(jit-lock-bounds ,(max beg (car token-region)) . ,(min end (cdr token-region)))
-          `(jit-lock-bounds ,beg . ,end))))))
+          `(jit-lock-bounds ,beg . ,end)))))))
 
 (defun lsp-semantic-tokens--request-update ()
   "Request semantic-tokens update."
@@ -431,7 +440,7 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
 ;;;###autoload
 (define-minor-mode lsp-semantic-tokens-mode
   "Toggle semantic-tokens support."
-  :group 'lsp-mode
+  :group 'lsp-semantic-tokens
   :global nil
   (cond
    (lsp-semantic-tokens-mode
