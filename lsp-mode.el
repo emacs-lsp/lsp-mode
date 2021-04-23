@@ -2572,7 +2572,6 @@ and end-of-string meta-characters."
   "Keymap for `lsp-mode'.")
 
 (define-minor-mode lsp-mode ""
-  nil nil nil
   :keymap lsp-mode-map
   :lighter
   (" LSP["
@@ -3600,7 +3599,7 @@ yet."
 
 (define-minor-mode lsp-managed-mode
   "Mode for source buffers managed by lsp-mode."
-  nil nil nil
+  :lighter nil
   (cond
    (lsp-managed-mode
     (when (lsp-feature? "textDocument/hover")
@@ -4928,7 +4927,6 @@ RENDER-ALL - nil if only the signature should be rendered."
   "Keymap for `lsp-signature-mode-map'")
 
 (define-minor-mode lsp-signature-mode ""
-  nil nil nil
   :keymap lsp-signature-mode-map
   :lighter ""
   :group 'lsp-mode)

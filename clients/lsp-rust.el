@@ -808,7 +808,7 @@ them with `crate` or the crate name they refer to."
 
 (define-minor-mode lsp-rust-analyzer-inlay-hints-mode
   "Mode for displaying inlay hints."
-  nil nil nil
+  :lighter nil
   (cond
    (lsp-rust-analyzer-inlay-hints-mode
     (lsp-rust-analyzer-update-inlay-hints (current-buffer))
