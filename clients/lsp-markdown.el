@@ -40,8 +40,37 @@
   :package-version '(lsp-mode . "7.1"))
 
 (defcustom lsp-markdown-server-command-args '("--parser=remark-parse" "--stdio")
-  "commandline-arguments for the markdown lsp server."
+  "Command-line arguments for the markdown lsp server."
   :type '(repeat 'string)
+  :group 'lsp-markdown
+  :package-version '(lsp-mode . "7.1"))
+
+(defcustom lsp-markdown-remark-plugins [["#remark-preset-lint-markdown-style-guide"]]
+  "The JSON configuration object for plugins.
+
+For a complete list of plugins, check:
+ https://github.com/unifiedjs/unified-language-server/blob/main/CONFIGURATION.md#re-using-settings"
+  :type 'lsp-string-vector
+  :group 'lsp-markdown
+  :package-version '(lsp-mode . "7.1"))
+
+(defcustom lsp-markdown-remark-check-text-with-setting "retext-english"
+  "Configure `checkTextWith' subproperty.
+
+For a complete list of plugins, check:
+ https://github.com/unifiedjs/unified-language-server/blob/main/CONFIGURATION.md#re-using-settings"
+  :type '(choice (
+                  (const "retext-english")
+                  (const "remark-parse")))
+  :group 'lsp-markdown
+  :package-version '(lsp-mode . "7.1"))
+
+(defcustom lsp-markdown-remark-check-text-with-mutator ["#remark-retext" "#parse-latin"]
+  "Vector of additional mutators.
+
+For a complete list of plugins, check:
+ https://github.com/unifiedjs/unified-language-server/blob/main/CONFIGURATION.md#re-using-settings"
+  :type 'lsp-string-vector
   :group 'lsp-markdown
   :package-version '(lsp-mode . "7.1"))
 
@@ -50,6 +79,11 @@
                 '(:npm :package "unified-language-server"
                        :path "unified-language-server"))
 
+(lsp-register-custom-settings
+ `(("unified-language-server.remark-parse.plugins" lsp-markdown-remark-plugins)
+   ("unified-language-server.remark-parse.checkTextWith.setting" lsp-markdown-remark-check-text-with-setting)
+   ("unified-language-server.remark-parse.checkTextWith.mutator" lsp-markdown-remark-check-text-with-mutator)))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda ()
@@ -57,6 +91,11 @@
                                               (lsp-package-path 'unified-language-server))
                                            lsp-markdown-server-command-args)))
                   :activation-fn (lsp-activate-on "markdown")
+                  :initialized-fn (lambda (workspace)
+                                    (with-lsp-workspace workspace
+                                      (lsp--set-configuration (lsp-configuration-section "unified-language-server"))))
+                  :major-modes '(markdown-mode)
+                  :priority -1
                   :major-modes '(markdown-mode)
                   :server-id 'unified))
 
