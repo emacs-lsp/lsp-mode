@@ -31,6 +31,7 @@
 (require 'cl-lib)
 (require 'compile)
 (require 'dash)
+(require 'epg)
 (require 'ewoc)
 (require 'f)
 (require 'filenotify)
@@ -6999,6 +7000,12 @@ SESSION is the active session."
   :package-version '(lsp-mode . "6.3")
   :group 'lsp-mode)
 
+(defcustom lsp-verify-signature t
+  "Whether to check GPG signatures of downloaded files."
+  :type 'boolean
+  :package-version '(lsp-mode . "7.1")
+  :group 'lsp-mode)
+
 (defvar lsp--dependencies (ht))
 
 (defun lsp-dependency (name &rest definitions)
@@ -7262,7 +7269,7 @@ nil."
 
 
 ;; Download URL handling
-(cl-defun lsp-download-install (callback error-callback &key url store-path decompress &allow-other-keys)
+(cl-defun lsp-download-install (callback error-callback &key url asc-url pgp-key store-path decompress &allow-other-keys)
   (let* ((url (lsp-resolve-value url))
          (store-path (lsp-resolve-value store-path))
          ;; (decompress (lsp-resolve-value decompress))
@@ -7282,6 +7289,30 @@ nil."
              (mkdir (f-parent download-path) t)
              (url-copy-file url download-path)
              (lsp--info "Finished downloading %s..." download-path)
+             (when (and lsp-verify-signature asc-url pgp-key)
+               (if (executable-find epg-gpg-program)
+                   (let ((asc-download-path (concat download-path ".asc"))
+                         (context (epg-make-context))
+                         (fingerprint)
+                         (signature))
+                     (when (f-exists? asc-download-path)
+                       (f-delete asc-download-path))
+                     (lsp--info "Starting to download %s to %s..." asc-url asc-download-path)
+                     (url-copy-file asc-url asc-download-path)
+                     (lsp--info "Finished downloading %s..." asc-download-path)
+                     (epg-import-keys-from-string context pgp-key)
+                     (setq fingerprint (epg-import-status-fingerprint
+                                        (car
+                                         (epg-import-result-imports
+                                          (epg-context-result-for context 'import)))))
+                     (lsp--info "Verifying signature %s..." asc-download-path)
+                     (epg-verify-file context asc-download-path download-path)
+                     (setq signature (car (epg-context-result-for context 'verify)))
+                     (unless (and
+                              (eq (epg-signature-status signature) 'good)
+                              (equal (epg-signature-fingerprint signature) fingerprint))
+                       (error "Failed to verify GPG signature: %s" (epg-signature-to-string signature))))
+                 (lsp--warn "GPG is not installed, skipping the signature check.")))
              (when decompress
                (lsp--info "Decompressing %s..." download-path)
                (pcase decompress
