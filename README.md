@@ -69,6 +69,7 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
   - Helm integration -
     [helm-lsp](https://github.com/emacs-lsp/helm-lsp/)
   - Ivy integration - [lsp-ivy](https://github.com/emacs-lsp/lsp-ivy/)
+  - Consult integration - [consult-lsp](https://github.com/gagbo/consult-lsp)
   - Treemacs integration -
     [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs)
   - Semantic tokens as defined by LSP 3.16 (compatible language servers include recent development builds of clangd and rust-analyzer)
