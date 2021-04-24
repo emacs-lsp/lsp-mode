@@ -102,7 +102,7 @@
 
 (defcustom lsp-yaml-custom-tags nil
   "Custom tags for the parser to use."
-  :type '(repeat string)
+  :type '(lsp-repeatable-vector string)
   :group 'lsp-yaml
   :package-version '(lsp-mode . "6.2"))
 
