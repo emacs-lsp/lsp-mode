@@ -15,17 +15,17 @@ configured `lsp-command-map` which is bound to `lsp-keymap-prefix`
 | `s-l s D`  | Disconnect the buffer from the language server keeping the server running.                                                          |
 | `s-l = =`  | Ask the server to format this document.                                                                                             |
 | `s-l = r`  | Ask the server to format the region, or if none is selected, the current line.                                                      |
-| `s-l F a`  | Add new project root to the list of workspace folders.                                                                              |
-| `s-l F r`  | Remove project root from the list of workspace folders.                                                                             |
-| `s-l F b`  | Remove project root from the workspace blacklist.                                                                                   |
-| `s-l T l`  | Toggle code-lens overlays.                                                                                                          |
-| `s-l T L`  | Toggle client-server protocol logging.                                                                                              |
-| `s-l T h`  | Toggle symbol highlighting.                                                                                                         |
-| `s-l T S`  | Toggle minor mode for showing information for current line in sideline. (requires `lsp-ui`)                                         |
-| `s-l T d`  | Toggle minor mode for showing hover information in child frame. (requires `lsp-ui`)                                                 |
-| `s-l T s`  | Toggle signature auto activate.                                                                                                     |
-| `s-l T f`  | Toggle on type formatting.                                                                                                          |
-| `s-l T T`  | Toggle global minor mode for synchronizing `lsp-mode` workspace folders and `treemacs` projects. (requires `lsp-treemacs`)          |
+| `s-l f a`  | Add new project root to the list of workspace folders.                                                                              |
+| `s-l f r`  | Remove project root from the list of workspace folders.                                                                             |
+| `s-l f b`  | Remove project root from the workspace blacklist.                                                                                   |
+| `s-l t l`  | Toggle code-lens overlays.                                                                                                          |
+| `s-l t L`  | Toggle client-server protocol logging.                                                                                              |
+| `s-l t h`  | Toggle symbol highlighting.                                                                                                         |
+| `s-l t S`  | Toggle minor mode for showing information for current line in sideline. (requires `lsp-ui`)                                         |
+| `s-l t d`  | Toggle minor mode for showing hover information in child frame. (requires `lsp-ui`)                                                 |
+| `s-l t s`  | Toggle signature auto activate.                                                                                                     |
+| `s-l t f`  | Toggle on type formatting.                                                                                                          |
+| `s-l t T`  | Toggle global minor mode for synchronizing `lsp-mode` workspace folders and `treemacs` projects. (requires `lsp-treemacs`)          |
 | `s-l g g`  | Find definitions of the symbol under point.                                                                                         |
 | `s-l g r`  | Find references of the symbol under point.                                                                                          |
 | `s-l g i`  | Find implementations of the symbol under point.                                                                                     |
@@ -41,10 +41,10 @@ configured `lsp-command-map` which is bound to `lsp-keymap-prefix`
 | `s-l a a`  | Execute code action.                                                                                                                |
 | `s-l a l`  | Click lsp lens using ‘avy’ package.                                                                                                 |
 | `s-l a h`  | Highlight symbol at point.                                                                                                          |
-| `s-l G g`  | Peek definitions to the identifier at point. (requires `lsp-ui`)                                                                    |
-| `s-l G r`  | Peek references to the identifier at point. (requires `lsp-ui`)                                                                     |
-| `s-l G i`  | Peek implementation locations of the symbol at point. (requires `lsp-ui`)                                                           |
-| `s-l G s`  | Peek symbols in the workspace. (requires `lsp-ui`)                                                                                  |
+| `s-l p g`  | Peek definitions to the identifier at point. (requires `lsp-ui`)                                                                    |
+| `s-l p r`  | Peek references to the identifier at point. (requires `lsp-ui`)                                                                     |
+| `s-l p i`  | Peek implementation locations of the symbol at point. (requires `lsp-ui`)                                                           |
+| `s-l p s`  | Peek symbols in the workspace. (requires `lsp-ui`)                                                                                  |
 | `C-u RET`  | When inserting `C-u` will change the behaviour from insert to replace or vice versa depending on `lsp-completion-default-behaviour` |
 
 ## which-key integration

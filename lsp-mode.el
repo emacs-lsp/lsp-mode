@@ -2283,26 +2283,26 @@ BINDINGS is a list of (key def desc cond)."
       "=r" lsp-format-region "format region" (lsp-feature? "textDocument/rangeFormatting")
 
       ;; folders
-      "Fa" lsp-workspace-folders-add "add folder" t
-      "Fb" lsp-workspace-blacklist-remove "un-blacklist folder" t
-      "Fr" lsp-workspace-folders-remove "remove folder" t
+      "fa" lsp-workspace-folders-add "add folder" t
+      "fb" lsp-workspace-blacklist-remove "un-blacklist folder" t
+      "fr" lsp-workspace-folders-remove "remove folder" t
 
       ;; toggles
-      "TD" lsp-modeline-diagnostics-mode "toggle modeline diagnostics" (lsp-feature?
+      "tD" lsp-modeline-diagnostics-mode "toggle modeline diagnostics" (lsp-feature?
                                                                         "textDocument/publishDiagnostics")
-      "TL" lsp-toggle-trace-io "toggle log io" t
-      "TS" lsp-ui-sideline-mode "toggle sideline" (featurep 'lsp-ui-sideline)
-      "TT" lsp-treemacs-sync-mode "toggle treemacs integration" (featurep 'lsp-treemacs)
-      "Ta" lsp-modeline-code-actions-mode "toggle modeline code actions" (lsp-feature?
+      "tL" lsp-toggle-trace-io "toggle log io" t
+      "tS" lsp-ui-sideline-mode "toggle sideline" (featurep 'lsp-ui-sideline)
+      "tT" lsp-treemacs-sync-mode "toggle treemacs integration" (featurep 'lsp-treemacs)
+      "ta" lsp-modeline-code-actions-mode "toggle modeline code actions" (lsp-feature?
                                                                           "textDocument/codeAction")
-      "Tb" lsp-headerline-breadcrumb-mode "toggle breadcrumb" (lsp-feature?
+      "tb" lsp-headerline-breadcrumb-mode "toggle breadcrumb" (lsp-feature?
                                                                "textDocument/documentSymbol")
-      "Td" lsp-ui-doc-mode "toggle documentation popup" (featurep 'lsp-ui-doc)
-      "Tf" lsp-toggle-on-type-formatting "toggle on type formatting" (lsp-feature?
+      "td" lsp-ui-doc-mode "toggle documentation popup" (featurep 'lsp-ui-doc)
+      "tf" lsp-toggle-on-type-formatting "toggle on type formatting" (lsp-feature?
                                                                       "textDocument/onTypeFormatting")
-      "Th" lsp-toggle-symbol-highlight "toggle highlighting" (lsp-feature? "textDocument/documentHighlight")
-      "Tl" lsp-lens-mode "toggle lenses" (lsp-feature? "textDocument/codeLens")
-      "Ts" lsp-toggle-signature-auto-activate "toggle signature" (lsp-feature? "textDocument/signatureHelp")
+      "th" lsp-toggle-symbol-highlight "toggle highlighting" (lsp-feature? "textDocument/documentHighlight")
+      "tl" lsp-lens-mode "toggle lenses" (lsp-feature? "textDocument/codeLens")
+      "ts" lsp-toggle-signature-auto-activate "toggle signature" (lsp-feature? "textDocument/signatureHelp")
 
       ;; goto
       "ga" xref-find-apropos "find symbol in workspace" (lsp-feature? "workspace/symbol")
@@ -2331,14 +2331,14 @@ BINDINGS is a list of (key def desc cond)."
       "al" lsp-avy-lens "lens" (and (bound-and-true-p lsp-lens-mode) (featurep 'avy))
 
       ;; peeks
-      "Gg" lsp-ui-peek-find-definitions "peek definitions" (and (lsp-feature? "textDocument/definition")
+      "pg" lsp-ui-peek-find-definitions "peek definitions" (and (lsp-feature? "textDocument/definition")
                                                                 (fboundp 'lsp-ui-peek-find-definitions))
-      "Gi" lsp-ui-peek-find-implementation "peek implementations" (and
+      "pi" lsp-ui-peek-find-implementation "peek implementations" (and
                                                                    (fboundp 'lsp-ui-peek-find-implementation)
                                                                    (lsp-feature? "textDocument/implementation"))
-      "Gr" lsp-ui-peek-find-references "peek references" (and (fboundp 'lsp-ui-peek-find-references)
+      "pr" lsp-ui-peek-find-references "peek references" (and (fboundp 'lsp-ui-peek-find-references)
                                                               (lsp-feature? "textDocument/references"))
-      "Gs" lsp-ui-peek-find-workspace-symbol "peek workspace symbol" (and (fboundp
+      "ps" lsp-ui-peek-find-workspace-symbol "peek workspace symbol" (and (fboundp
                                                                            'lsp-ui-peek-find-workspace-symbol)
                                                                           (lsp-feature? "workspace/symbol")))))
 
