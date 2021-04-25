@@ -68,7 +68,6 @@
 (declare-function dap-mode "ext:dap-mode")
 (declare-function dap-auto-configure-mode "ext:dap-mode")
 
-(defvar company-backends)
 (defvar yas-inhibit-overlay-modification-protection)
 (defvar yas-indent-line)
 (defvar yas-wrap-around-region)
@@ -8078,16 +8077,6 @@ This avoids overloading the server with many files when starting Emacs."
   (or (lsp-virtual-buffer-call :real->virtual-line line)
       line))
 
-;; (defun lsp-virtual-buffer-line (line)
-;;   "Translate LINE taking into account virtual buffers."
-;;   (or (lsp-virtual-buffer-call :real<-virtual-line line)
-;;       line))
-
-;; (defun lsp-buffer-column (column)
-;;   "Translate COLUMN taking into account virtual buffers."
-;;   (or (lsp-virtual-buffer-call :real<-virtual-char column)
-;;       column))
-
 
 ;; lsp internal validation.
 
@@ -8104,8 +8093,6 @@ This avoids overloading the server with many files when starting Emacs."
                                        (res (propertize "OK" 'face 'success))
                                        (t (propertize "ERROR" 'face 'error)))))))
                  (-partition 2 checks))))))
-
-(defvar company-backends)
 
 (define-obsolete-function-alias 'lsp-diagnose
   'lsp-doctor "lsp-mode 7.1")
