@@ -309,7 +309,7 @@ If FONTIFY-IMMEDIATELY is non-nil, fontification will be performed immediately
 
 
 (defun lsp--semantic-tokens-request (region fontify-immediately)
-(("Send semantic tokens request to the language server.
+  "Send semantic tokens request to the language server.
 
 A full/delta request will be sent if delta requests are supported by
 the language server, allowed via `lsp-semantic-tokens-allow-delta-requests',
@@ -341,37 +341,17 @@ If FONTIFY-IMMEDIATELY is non-nil, fontification will be performed immediately
      (t (setq response-handler #'lsp--semantic-tokens-ingest-full-response)))
     (when lsp--semantic-tokens-idle-timer (cancel-timer lsp--semantic-tokens-idle-timer))
     (lsp-request-async request-type request
-     (lambda (response)
-       (unless lsp--semantic-tokens-cache
-         (setq lsp--semantic-tokens-cache (if lsp-use-plists '() (make-hash-table :test #'equal))))
-       (lsp-put lsp--semantic-tokens-cache :_pars request)
-       (lsp-put lsp--semantic-tokens-cache :_documentVersion lsp--cur-version)
-       (funcall response-handler response)
-       (when fontify-immediately (font-lock-flush)))
-     :error-handler (lambda (&rest _) (lsp--semantic-tokens-request-full-token-set-when-idle t))
-     :mode 'tick
-     :cancel-token (format "semantic-tokens-%s" (lsp--buffer-uri)))))
+                       (lambda (response)
+                         (unless lsp--semantic-tokens-cache
+                           (setq lsp--semantic-tokens-cache (if lsp-use-plists '() (make-hash-table :test #'equal))))
+                         (lsp-put lsp--semantic-tokens-cache :_pars request)
+                         (lsp-put lsp--semantic-tokens-cache :_documentVersion lsp--cur-version)
+                         (funcall response-handler response)
+                         (when fontify-immediately (font-lock-flush)))
+                       :error-handler (lambda (&rest _) (lsp--semantic-tokens-request-full-token-set-when-idle t))
+                       :mode 'tick
+                       :cancel-token (format "semantic-tokens-%s" (lsp--buffer-uri)))))
 
-
-(defun lsp--semantic-tokens-verify ()
-  "Store current token set and compare with the response to a full token request."
-  (interactive)
-  (let ((old-tokens (--> lsp--semantic-tokens-cache (lsp-get it :response) (lsp-get it :data)))
-        (old-version (--> lsp--semantic-tokens-cache (lsp-get it :_documentVersion))))
-    (if (not (equal lsp--cur-version old-version))
-        (message "Stored documentVersion %d differs from current version %d" old-version lsp--cur-version)
-      (lsp-request-async
-       "textDocument/semanticTokens/full" `(:textDocument ,(lsp--text-document-identifier))
-       (lambda (response)
-         (let ((new-tokens (lsp-get response :data)))
-           (if (equal old-tokens new-tokens)
-               (message "New tokens (total count %d) are identical to previously held token set"
-                        (length new-tokens))
-             (message "Newly returned tokens differ from old token set")
-             (print old-tokens)
-             (print new-tokens))))
-       :mode 'tick
-       :cancel-token (format "semantic-tokens-%s" (lsp--buffer-uri))))))
 
 (defun lsp-semantic-tokens--fontify (old-fontify-region beg-orig end-orig &optional loudly)
   "Apply fonts to retrieved semantic tokens.
@@ -506,12 +486,12 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
 (defun lsp-semantic-tokens--type-faces-for (client)
   "Return the semantic token type faces for CLIENT."
   (lsp-semantic-tokens--replace-alist-values lsp-semantic-token-faces
-                                     (plist-get (lsp--client-semantic-tokens-faces-overrides client) :types)))
+                                             (plist-get (lsp--client-semantic-tokens-faces-overrides client) :types)))
 
 (defun lsp-semantic-tokens--modifier-faces-for (client)
   "Return the semantic token type faces for CLIENT."
   (lsp-semantic-tokens--replace-alist-values lsp-semantic-token-modifier-faces
-                                     (plist-get (lsp--client-semantic-tokens-faces-overrides client) :modifiers)))
+                                             (plist-get (lsp--client-semantic-tokens-faces-overrides client) :modifiers)))
 
 (defun lsp--semantic-tokens-on-refresh ()
   "Invoked in response to workspace/semanticTokens/refresh requests."
@@ -596,6 +576,72 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
     (setq lsp--semantic-tokens-idle-timer nil
           lsp--semantic-tokens-cache nil
           lsp--semantic-tokens-teardown nil))))
+
+;; debugging helpers
+(defun lsp--semantic-tokens-verify ()
+  "Store current token set and compare with the response to a full token request."
+  (interactive)
+  (let ((old-tokens (--> lsp--semantic-tokens-cache (lsp-get it :response) (lsp-get it :data)))
+        (old-version (--> lsp--semantic-tokens-cache (lsp-get it :_documentVersion))))
+    (if (not (equal lsp--cur-version old-version))
+        (message "Stored documentVersion %d differs from current version %d" old-version lsp--cur-version)
+      (lsp-request-async
+       "textDocument/semanticTokens/full" `(:textDocument ,(lsp--text-document-identifier))
+       (lambda (response)
+         (let ((new-tokens (lsp-get response :data)))
+           (if (equal old-tokens new-tokens)
+               (message "New tokens (total count %d) are identical to previously held token set"
+                        (length new-tokens))
+             (message "Newly returned tokens differ from old token set")
+             (print old-tokens)
+             (print new-tokens))))
+       :mode 'tick
+       :cancel-token (format "semantic-tokens-%s" (lsp--buffer-uri))))))
+(defvar-local lsp-semantic-tokens--log '())
+
+(defun lsp-semantic-tokens--log-buffer-contents (tag)
+  (save-restriction
+    (save-excursion
+      (widen) (push `(:tag ,tag :buffer-contents ,(buffer-substring (point-min) (point-max)))
+                    lsp-semantic-tokens--log))))
+
+(defun lsp-semantic-tokens-enable-log ()
+  (setq lsp-semantic-tokens--log '())
+  (defadvice lsp-semantic-tokens--fontify (around advice-tokens-fontify activate)
+    (lsp-semantic-tokens--log-buffer-contents 'before)
+    (let ((result ad-do-it))
+      (lsp-semantic-tokens--log-buffer-contents 'after)
+      result)))
+
+(defun lsp-semantic-tokens-disable-log ()
+  (ad-unadvise 'lsp-semantic-tokens--fontify))
+
+(defun lsp-semantic-tokens-export-log ()
+  (require 'htmlize)
+  (let* ((outdir (f-join "/tmp" "semantic-token-snapshots"))
+         (progress-reporter
+          (make-progress-reporter
+           (format "Writing buffer snapshots to %s..." outdir)
+           0 (length lsp-semantic-tokens--log))))
+    (--each-indexed lsp-semantic-tokens--log
+      (-let* (((&plist :tag tag :buffer-contents buffer-contents) it)
+              (html-buffer))
+        ;; FIXME: doesn't update properly; sit-for helps... somewhat,
+        ;; but unreliably
+        (when (= (% it-index 5) 0)
+          (progress-reporter-update progress-reporter it-index)
+          (sit-for 0.01))
+        (with-temp-buffer
+          (insert buffer-contents)
+          (setq html-buffer (htmlize-buffer))
+          (with-current-buffer html-buffer
+            ;; some configs such as emacs-doom may autoformat on save; switch to
+            ;; fundamental-mode to avoid this
+            (fundamental-mode)
+            (f-mkdir outdir)
+            (write-file (f-join outdir (format "buffer_%d_%s.html" (/ it-index 2) tag)))))
+        (kill-buffer html-buffer)))
+    (progress-reporter-done progress-reporter)))
 
 (lsp-consistency-check lsp-semantic-tokens)
 
