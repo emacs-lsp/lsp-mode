@@ -25,7 +25,7 @@ configured `lsp-command-map` which is bound to `lsp-keymap-prefix`
 | `s-l t d`  | Toggle minor mode for showing hover information in child frame. (requires `lsp-ui`)                                                 |
 | `s-l t s`  | Toggle signature auto activate.                                                                                                     |
 | `s-l t f`  | Toggle on type formatting.                                                                                                          |
-| `s-l t T`  | Toggle global minor mode for synchronizing `lsp-mode` workspace folders and `treemacs` projects. (requires `lsp-treemacs`)          |
+| `s-l t t`  | Toggle global minor mode for synchronizing `lsp-mode` workspace folders and `treemacs` projects. (requires `lsp-treemacs`)          |
 | `s-l g g`  | Find definitions of the symbol under point.                                                                                         |
 | `s-l g r`  | Find references of the symbol under point.                                                                                          |
 | `s-l g i`  | Find implementations of the symbol under point.                                                                                     |

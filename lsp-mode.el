@@ -2292,7 +2292,6 @@ BINDINGS is a list of (key def desc cond)."
                                                                         "textDocument/publishDiagnostics")
       "tL" lsp-toggle-trace-io "toggle log io" t
       "tS" lsp-ui-sideline-mode "toggle sideline" (featurep 'lsp-ui-sideline)
-      "tT" lsp-treemacs-sync-mode "toggle treemacs integration" (featurep 'lsp-treemacs)
       "ta" lsp-modeline-code-actions-mode "toggle modeline code actions" (lsp-feature?
                                                                           "textDocument/codeAction")
       "tb" lsp-headerline-breadcrumb-mode "toggle breadcrumb" (lsp-feature?
@@ -2303,6 +2302,7 @@ BINDINGS is a list of (key def desc cond)."
       "th" lsp-toggle-symbol-highlight "toggle highlighting" (lsp-feature? "textDocument/documentHighlight")
       "tl" lsp-lens-mode "toggle lenses" (lsp-feature? "textDocument/codeLens")
       "ts" lsp-toggle-signature-auto-activate "toggle signature" (lsp-feature? "textDocument/signatureHelp")
+      "tt" lsp-treemacs-sync-mode "toggle treemacs integration" (featurep 'lsp-treemacs)
 
       ;; goto
       "ga" xref-find-apropos "find symbol in workspace" (lsp-feature? "workspace/symbol")
