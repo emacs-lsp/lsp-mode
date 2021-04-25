@@ -3367,15 +3367,21 @@ disappearing, unset all the variables related to it."
    (make-lsp--registered-capability :id id :method method :options register-options?)
    (lsp--workspace-registered-server-capabilities lsp--cur-workspace)))
 
+(defmacro lsp--with-workspace-temp-buffer (workspace-root &rest body)
+  "With a temp-buffer under `WORKSPACE-ROOT' and evaluate `BODY', useful to access dir-local variables."
+  (declare (indent 1) (debug t))
+  `(with-temp-buffer
+     ;; Set the buffer's name to something under the root so that we can hack the local variables
+     ;; This file doesn't need to exist and will not be created due to this.
+     (setq-local buffer-file-name (expand-file-name "lsp-mode-temp" (expand-file-name ,workspace-root)))
+     (hack-local-variables)
+     ,@body))
+
 (defun lsp--get-ignored-regexes-for-workspace-root (workspace-root)
   "Return a list of the form (lsp-file-watch-ignored-files lsp-file-watch-ignored-directories) for the given WORKSPACE-ROOT."
   ;; The intent of this function is to provide per-root workspace-level customization of the
   ;; lsp-file-watch-ignored-directories and lsp-file-watch-ignored-files variables.
-  (with-temp-buffer
-    ;; Set the buffer's name to something under the root so that we can hack the local variables
-    ;; This file doesn't need to exist and will not be created due to this.
-    (setq-local buffer-file-name (expand-file-name "lsp-mode-temp" (expand-file-name workspace-root)))
-    (hack-local-variables)
+  (lsp--with-workspace-temp-buffer workspace-root
     (list lsp-file-watch-ignored-files lsp-file-watch-ignored-directories)))
 
 
@@ -5973,7 +5979,11 @@ WORKSPACE is the active workspace."
                                         :json-false))))
                      ((equal method "workspace/configuration")
                       (with-lsp-workspace workspace
-                        (lsp--build-workspace-configuration-response params)))
+                        (if-let ((buf (car buffers)))
+                            (lsp-with-current-buffer buf
+                              (lsp--build-workspace-configuration-response params))
+                          (lsp--with-workspace-temp-buffer (lsp--workspace-root workspace)
+                            (lsp--build-workspace-configuration-response params)))))
                      ((equal method "workspace/workspaceFolders")
                       (let ((folders (or (-> workspace
                                              (lsp--workspace-client)
