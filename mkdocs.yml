@@ -38,6 +38,7 @@ nav:
       - Treemacs: https://github.com/emacs-lsp/lsp-treemacs
       - Helm: https://github.com/emacs-lsp/helm-lsp
       - Ivy: https://github.com/emacs-lsp/lsp-ivy
+      - Consult: https://github.com/gagbo/consult-lsp
       - Dired: page/settings/dired.md
       - Iedit: page/settings/iedit.md
       - Ido: page/settings/ido.md
