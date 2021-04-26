@@ -3389,7 +3389,8 @@ disappearing, unset all the variables related to it."
      ;; This file doesn't need to exist and will not be created due to this.
      (setq-local buffer-file-name (expand-file-name "lsp-mode-temp" (expand-file-name ,workspace-root)))
      (hack-local-variables)
-     ,@body))
+     (prog1 ,@body
+       (setq-local buffer-file-name nil))))
 
 (defun lsp--get-ignored-regexes-for-workspace-root (workspace-root)
   "Return a list of the form (lsp-file-watch-ignored-files lsp-file-watch-ignored-directories) for the given WORKSPACE-ROOT."
@@ -4458,21 +4459,14 @@ Added to `after-revert-hook'."
 If KEEP-WORKSPACE-ALIVE is non-nil, do not shutdown the workspace
 if it's closing the last buffer in the workspace."
   (lsp-foreach-workspace
-   (with-demoted-errors "Error on ‘lsp--text-document-did-close’: %S"
-     (let ((old-buffers (lsp--workspace-buffers lsp--cur-workspace)))
-       ;; remove buffer from the current workspace's list of buffers
-       ;; do a sanity check first
-       (when (memq (lsp-current-buffer) old-buffers)
-         (setf (lsp--workspace-buffers lsp--cur-workspace)
-               (delq (lsp-current-buffer) old-buffers))
-         (with-demoted-errors "Error sending didClose notification in ‘lsp--text-document-did-close’: %S"
-           (lsp-notify
-            "textDocument/didClose"
-            `(:textDocument ,(lsp--text-document-identifier))))
-         (when (and (not lsp-keep-workspace-alive)
-                    (not keep-workspace-alive)
-                    (not (lsp--workspace-buffers lsp--cur-workspace)))
-           (lsp--shutdown-workspace)))))))
+   (cl-callf2 delq (lsp-current-buffer) (lsp--workspace-buffers lsp--cur-workspace))
+   (with-demoted-errors "Error sending didClose notification in ‘lsp--text-document-did-close’: %S"
+     (lsp-notify "textDocument/didClose"
+                 `(:textDocument ,(lsp--text-document-identifier))))
+   (when (and (not lsp-keep-workspace-alive)
+              (not keep-workspace-alive)
+              (not (lsp--workspace-buffers lsp--cur-workspace)))
+     (lsp--shutdown-workspace))))
 
 (defun lsp--will-save-text-document-params (reason)
   (list :textDocument (lsp--text-document-identifier)
@@ -6951,6 +6945,7 @@ SESSION is the active session."
 
            (when initialized-fn (funcall initialized-fn workspace))
 
+           (cl-callf2 -filter #'lsp-buffer-live-p (lsp--workspace-buffers workspace))
            (->> workspace
                 (lsp--workspace-buffers)
                 (mapc (lambda (buffer)
