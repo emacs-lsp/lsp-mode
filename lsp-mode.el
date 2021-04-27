@@ -2271,12 +2271,12 @@ BINDINGS is a list of (key def desc cond)."
 (defvar lsp-command-map
   (-doto (make-sparse-keymap)
     (lsp-define-conditional-key
-      ;; sessions
-      "sD" lsp-disconnect "disconnect" (lsp-workspaces)
-      "sd" lsp-describe-session "describe session" t
-      "sq" lsp-workspace-shutdown "shutdown server" (lsp-workspaces)
-      "sr" lsp-workspace-restart "restart server" (lsp-workspaces)
-      "ss" lsp "start server" t
+      ;; workspaces
+      "wD" lsp-disconnect "disconnect" (lsp-workspaces)
+      "wd" lsp-describe-session "describe session" t
+      "wq" lsp-workspace-shutdown "shutdown server" (lsp-workspaces)
+      "wr" lsp-workspace-restart "restart server" (lsp-workspaces)
+      "ws" lsp "start server" t
 
       ;; formatting
       "==" lsp-format-buffer "format buffer" (or (lsp-feature? "textDocument/rangeFormatting")
@@ -2360,7 +2360,7 @@ active `major-mode', or for all major modes when ALL-MODES is t."
      (lsp--prepend-prefix
       (cl-list*
        ""    "lsp"
-       "s"   "sessions"
+       "w"   "workspaces"
        "F"   "folders"
        "="   "formatting"
        "T"   "toggle"

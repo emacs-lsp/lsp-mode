@@ -1,5 +1,6 @@
 * Changelog
 ** Release 7.1
+  * Breaking change: bindings for commands under ~s~ (like ~lsp-workspace-shutdown~) were moved under ~w~ for better compatibility with =Spacemacs=
   * removed ~lsp-print-performance~
   * Add support for insert/replace when performing completion. When using
     ~company~ pressing ~C-u RET~ will perform the alternative action (the

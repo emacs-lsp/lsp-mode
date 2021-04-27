@@ -8,11 +8,11 @@ configured `lsp-command-map` which is bound to `lsp-keymap-prefix`
 
 | Keybinding | Description                                                                                                                         |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------          |
-| `s-l s s`  | Entry point for the server startup.                                                                                                 |
-| `s-l s r`  | Restart language server                                                                                                             |
-| `s-l s q`  | Shutdown language server                                                                                                            |
-| `s-l s d`  | Describes current session                                                                                                           |
-| `s-l s D`  | Disconnect the buffer from the language server keeping the server running.                                                          |
+| `s-l w s`  | Entry point for the server startup.                                                                                                 |
+| `s-l w r`  | Restart language server                                                                                                             |
+| `s-l w q`  | Shutdown language server                                                                                                            |
+| `s-l w d`  | Describes current session                                                                                                           |
+| `s-l w D`  | Disconnect the buffer from the language server keeping the server running.                                                          |
 | `s-l = =`  | Ask the server to format this document.                                                                                             |
 | `s-l = r`  | Ask the server to format the region, or if none is selected, the current line.                                                      |
 | `s-l F a`  | Add new project root to the list of workspace folders.                                                                              |
