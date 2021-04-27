@@ -7098,27 +7098,33 @@ are still shown."
   (add-to-list 'global-mode-string '(t (:eval (lsp--download-status))))
   (cl-flet ((done
              (success? &optional error-message)
-             (-let [(&lsp-cln 'server-id 'buffers) client]
-               (setf (lsp--client-download-in-progress? client) nil
-                     (lsp--client-buffers client) nil)
-               (if success?
-                   (lsp--info "Server %s downloaded, auto-starting in %s buffers." server-id
-                              (length buffers))
-                 (lsp--error "Server %s install process failed with the following error message: %s.
+             ;; run with idle timer to make sure the lsp command is executed in
+             ;; the main thread, see #2739.
+             (run-with-timer
+              0.0
+              nil
+              (lambda ()
+                (-let [(&lsp-cln 'server-id 'buffers) client]
+                  (setf (lsp--client-download-in-progress? client) nil
+                        (lsp--client-buffers client) nil)
+                  (if success?
+                      (lsp--info "Server %s downloaded, auto-starting in %s buffers." server-id
+                                 (length buffers))
+                    (lsp--error "Server %s install process failed with the following error message: %s.
 Check `*lsp-install*' and `*lsp-log*' buffer."
-                             server-id
-                             error-message))
-               (seq-do
-                (lambda (buffer)
-                  (when (buffer-live-p buffer)
-                    (with-current-buffer buffer
-                      (setq global-mode-string (-remove-item '(t (:eval (lsp--download-status)))
-                                                             global-mode-string))
-                      (when success? (lsp)))))
-                buffers)
-               (unless (lsp--filter-clients #'lsp--client-download-in-progress?)
-                 (setq global-mode-string (-remove-item '(t (:eval (lsp--download-status)))
-                                                        global-mode-string))))))
+                                server-id
+                                error-message))
+                  (seq-do
+                   (lambda (buffer)
+                     (when (lsp-buffer-live-p buffer)
+                       (lsp-with-current-buffer buffer
+                         (cl-callf2 -remove-item '(t (:eval (lsp--download-status)))
+                                    global-mode-string)
+                         (when success? (lsp)))))
+                   buffers)
+                  (unless (lsp--filter-clients #'lsp--client-download-in-progress?)
+                    (cl-callf2 -remove-item '(t (:eval (lsp--download-status)))
+                               global-mode-string)))))))
     (lsp--info "Download %s started." (lsp--client-server-id client))
     (condition-case err
         (funcall
