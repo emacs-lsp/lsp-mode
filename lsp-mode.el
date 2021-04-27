@@ -7140,25 +7140,26 @@ Check `*lsp-install*' and `*lsp-log*' buffer."
             lsp-client-packages)
     (setq lsp--client-packages-required t)))
 
-(defun lsp-install-server (update?)
+(defun lsp-install-server (update? &optional server-id)
   "Interactively install server.
 When prefix UPDATE? is t force installation even if the server is present."
   (interactive "P")
   (lsp--require-packages)
   (lsp--install-server-internal
-   (lsp--completing-read
-    "Select server to install: "
-    (or (->> lsp-clients
-             (ht-values)
-             (-filter (-andfn
-                       (-orfn (-not #'lsp--server-binary-present?)
-                              (-const update?))
-                       (-not #'lsp--client-download-in-progress?)
-                       #'lsp--client-download-server-fn)))
-        (user-error "There are no servers with automatic installation"))
-    (-compose #'symbol-name #'lsp--client-server-id)
-    nil
-    t)
+   (or (gethash server-id lsp-clients)
+       (lsp--completing-read
+        "Select server to install: "
+        (or (->> lsp-clients
+                 (ht-values)
+                 (-filter (-andfn
+                           (-orfn (-not #'lsp--server-binary-present?)
+                                  (-const update?))
+                           (-not #'lsp--client-download-in-progress?)
+                           #'lsp--client-download-server-fn)))
+            (user-error "There are no servers with automatic installation"))
+        (-compose #'symbol-name #'lsp--client-server-id)
+        nil
+        t))
    update?))
 
 (defun lsp-async-start-process (callback error-callback &rest command)
