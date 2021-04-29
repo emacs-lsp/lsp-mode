@@ -53,196 +53,197 @@ Example usage with `dash`.
   failure-reason?)
 
 \(fn (INTERFACE-NAME-1 REQUIRED-FIELDS-1 OPTIONAL-FIELDS-1) (INTERFACE-NAME-2 REQUIRED-FIELDS-2 OPTIONAL-FIELDS-2) ...)"
-  (->> interfaces
-       (-map (-lambda ((interface required optional))
-               (let ((params (nconc
-                              (-map (lambda (param-name)
-                                      (cons
-                                       (intern (concat ":" (s-dashed-words (symbol-name param-name)) "?"))
-                                       param-name))
-                                    optional)
-                              (-map (lambda (param-name)
-                                      (cons (intern (concat ":" (s-dashed-words (symbol-name param-name))))
-                                            param-name))
-                                    required))))
-                 (cl-list*
-                  `(defun ,(intern (format "dash-expand:&%s" interface)) (key source)
-                     (unless (or (member key ',(-map #'cl-first params))
-                                 (s-starts-with? ":_" (symbol-name key)))
-                       (error "Unknown key: %s.  Available keys: %s" key ',(-map #'cl-first params)))
-                     ,(if lsp-use-plists
-                          ``(plist-get ,source
-                                       ,(if (s-starts-with? ":_" (symbol-name key))
-                                            key
-                                          (cl-rest (assoc key ',params))))
-                        ``(gethash ,(if (s-starts-with? ":_" (symbol-name key))
-                                        (substring (symbol-name key) 1)
-                                      (substring (symbol-name
-                                                  (cl-rest (assoc key ',params)))
-                                                 1))
-                                   ,source)))
-                  `(defun ,(intern (format "dash-expand:&%s?" interface)) (key source)
-                     (unless (member key ',(-map #'cl-first params))
-                       (error "Unknown key: %s.  Available keys: %s" key ',(-map #'cl-first params)))
-                     ,(if lsp-use-plists
-                          ``(plist-get ,source
-                                       ,(if (s-starts-with? ":_" (symbol-name key))
-                                            key
-                                          (cl-rest (assoc key ',params))))
-                        ``(when (ht? ,source)
-                            (gethash ,(substring (symbol-name
-                                                  (cl-rest (assoc key ',params)))
-                                                 1)
-                                     ,source))))
+  (with-case-table ascii-case-table
+    (->> interfaces
+         (-map (-lambda ((interface required optional))
+                 (let ((params (nconc
+                                (-map (lambda (param-name)
+                                        (cons
+                                         (intern (concat ":" (s-dashed-words (symbol-name param-name)) "?"))
+                                         param-name))
+                                      optional)
+                                (-map (lambda (param-name)
+                                        (cons (intern (concat ":" (s-dashed-words (symbol-name param-name))))
+                                              param-name))
+                                      required))))
+                   (cl-list*
+                    `(defun ,(intern (format "dash-expand:&%s" interface)) (key source)
+                       (unless (or (member key ',(-map #'cl-first params))
+                                   (s-starts-with? ":_" (symbol-name key)))
+                         (error "Unknown key: %s.  Available keys: %s" key ',(-map #'cl-first params)))
+                       ,(if lsp-use-plists
+                            ``(plist-get ,source
+                                         ,(if (s-starts-with? ":_" (symbol-name key))
+                                              key
+                                            (cl-rest (assoc key ',params))))
+                          ``(gethash ,(if (s-starts-with? ":_" (symbol-name key))
+                                          (substring (symbol-name key) 1)
+                                        (substring (symbol-name
+                                                    (cl-rest (assoc key ',params)))
+                                                   1))
+                                     ,source)))
+                    `(defun ,(intern (format "dash-expand:&%s?" interface)) (key source)
+                       (unless (member key ',(-map #'cl-first params))
+                         (error "Unknown key: %s.  Available keys: %s" key ',(-map #'cl-first params)))
+                       ,(if lsp-use-plists
+                            ``(plist-get ,source
+                                         ,(if (s-starts-with? ":_" (symbol-name key))
+                                              key
+                                            (cl-rest (assoc key ',params))))
+                          ``(when (ht? ,source)
+                              (gethash ,(substring (symbol-name
+                                                    (cl-rest (assoc key ',params)))
+                                                   1)
+                                       ,source))))
 
-                  `(defun ,(intern (format "lsp-%s?" (s-dashed-words (symbol-name interface)))) (object)
-                     (cond
-                      ((ht? object)
-                       (-all? (let ((keys (ht-keys object)))
-                                (lambda (prop)
-                                  (member prop keys)))
-                              ',(-map (lambda (field-name)
-                                        (substring (symbol-name field-name) 1))
-                                      required)))
-                      ((listp object) (-all? (lambda (prop)
-                                               (plist-member object prop))
-                                             ',required))))
-                  `(cl-defun ,(intern (format "lsp-make-%s" (s-dashed-words (symbol-name interface))))
-                       (&rest plist &key ,@(-map (-lambda ((key))
-                                                   (intern (substring (symbol-name key) 1))) params)
-                              &allow-other-keys)
-                     (ignore ,@(-map (-lambda ((key))
-                                       (intern (substring (symbol-name key) 1))) params))
-                     ,(format "Constructs %s from `plist.'
+                    `(defun ,(intern (format "lsp-%s?" (s-dashed-words (symbol-name interface)))) (object)
+                       (cond
+                        ((ht? object)
+                         (-all? (let ((keys (ht-keys object)))
+                                  (lambda (prop)
+                                    (member prop keys)))
+                                ',(-map (lambda (field-name)
+                                          (substring (symbol-name field-name) 1))
+                                        required)))
+                        ((listp object) (-all? (lambda (prop)
+                                                 (plist-member object prop))
+                                               ',required))))
+                    `(cl-defun ,(intern (format "lsp-make-%s" (s-dashed-words (symbol-name interface))))
+                         (&rest plist &key ,@(-map (-lambda ((key))
+                                                     (intern (substring (symbol-name key) 1))) params)
+                                &allow-other-keys)
+                       (ignore ,@(-map (-lambda ((key))
+                                         (intern (substring (symbol-name key) 1))) params))
+                       ,(format "Constructs %s from `plist.'
 Allowed params: %s" interface (reverse (-map #'cl-first params)))
-                     ,(if lsp-use-plists
-                          `(-mapcat (-lambda ((key value))
-                                      (list (or (cl-rest (assoc key ',params)) key) value))
-                                    (-partition 2 plist))
-                        `(let (($$result (ht)))
-                           (mapc (-lambda ((key value))
-                                   (puthash (lsp-keyword->string (or (cl-rest (assoc key ',params))
-                                                                     key))
-                                            value
-                                            $$result))
-                                 (-partition 2 plist))
-                           $$result)))
-                  `(pcase-defmacro ,interface (&rest property-bindings)
-                     ,(if lsp-use-plists
+                       ,(if lsp-use-plists
+                            `(-mapcat (-lambda ((key value))
+                                        (list (or (cl-rest (assoc key ',params)) key) value))
+                                      (-partition 2 plist))
+                          `(let (($$result (ht)))
+                             (mapc (-lambda ((key value))
+                                     (puthash (lsp-keyword->string (or (cl-rest (assoc key ',params))
+                                                                       key))
+                                              value
+                                              $$result))
+                                   (-partition 2 plist))
+                             $$result)))
+                    `(pcase-defmacro ,interface (&rest property-bindings)
+                       ,(if lsp-use-plists
+                            ``(and
+                               (pred listp)
+                               ;; Check if all the types required by the
+                               ;; interface exist in the expr-val.
+                               ,@(-map
+                                  (lambda (key)
+                                    `(pred
+                                      (lambda (plist)
+                                        (plist-member plist ,key))))
+                                  ',required)
+                               ;; Recursively generate the bindings.
+                               ,@(let ((current-list property-bindings)
+                                       (output-bindings nil))
+                                   ;; Invariant: while current-list is
+                                   ;; non-nil, the car of current-list is
+                                   ;; always of the form :key, while the
+                                   ;; cadr of current-list is either a)
+                                   ;; nil, b) of the form :key-next or c)
+                                   ;; a pcase pattern that can
+                                   ;; recursively match an expression.
+                                   (while current-list
+                                     (-let* (((curr-binding-as-keyword next-entry . _) current-list)
+                                             (curr-binding-as-camelcased-symbol
+                                              (or (alist-get curr-binding-as-keyword ',params)
+                                                  (error "Unknown key: %s.  Available keys: %s"
+                                                         (symbol-name curr-binding-as-keyword)
+                                                         ',(-map #'cl-first params))))
+                                             (bound-name (lsp-keyword->symbol curr-binding-as-keyword))
+                                             (next-entry-is-key-or-nil
+                                              (and (symbolp next-entry)
+                                                   (or (null next-entry)
+                                                       (s-starts-with? ":" (symbol-name next-entry))))))
+                                       (cond
+                                        ;; If the next-entry is either a
+                                        ;; plist-key or nil, then bind to
+                                        ;; bound-name the value corresponding
+                                        ;; to the camelcased symbol.  Pop
+                                        ;; current-list once.
+                                        (next-entry-is-key-or-nil
+                                         (push `(app (lambda (plist)
+                                                       (plist-get plist ,curr-binding-as-camelcased-symbol))
+                                                     ,bound-name)
+                                               output-bindings)
+                                         (setf current-list (cdr current-list)))
+                                        ;; Otherwise, next-entry is a pcase
+                                        ;; pattern we recursively match to the
+                                        ;; expression. This can in general
+                                        ;; create additional bindings that we
+                                        ;; persist in the top level of
+                                        ;; bindings.  We pop current-list
+                                        ;; twice.
+                                        (t
+                                         (push `(app (lambda (plist)
+                                                       (plist-get plist ,curr-binding-as-camelcased-symbol))
+                                                     ,next-entry)
+                                               output-bindings)
+                                         (setf current-list (cddr current-list))))))
+                                   output-bindings))
                           ``(and
-                             (pred listp)
-                             ;; Check if all the types required by the
-                             ;; interface exist in the expr-val.
+                             (pred ht?)
                              ,@(-map
                                 (lambda (key)
                                   `(pred
-                                    (lambda (plist)
-                                      (plist-member plist ,key))))
+                                    (lambda (hash-table)
+                                      (ht-contains? hash-table ,(lsp-keyword->string key)))))
                                 ',required)
-                             ;; Recursively generate the bindings.
                              ,@(let ((current-list property-bindings)
                                      (output-bindings nil))
-                                 ;; Invariant: while current-list is
-                                 ;; non-nil, the car of current-list is
-                                 ;; always of the form :key, while the
-                                 ;; cadr of current-list is either a)
-                                 ;; nil, b) of the form :key-next or c)
-                                 ;; a pcase pattern that can
-                                 ;; recursively match an expression.
                                  (while current-list
                                    (-let* (((curr-binding-as-keyword next-entry . _) current-list)
-                                           (curr-binding-as-camelcased-symbol
-                                            (or (alist-get curr-binding-as-keyword ',params)
-                                                (error "Unknown key: %s.  Available keys: %s"
-                                                       (symbol-name curr-binding-as-keyword)
-                                                       ',(-map #'cl-first params))))
+                                           (curr-binding-as-camelcased-string
+                                            (lsp-keyword->string (or (alist-get curr-binding-as-keyword ',params)
+                                                                     (error "Unknown key: %s.  Available keys: %s"
+                                                                            (symbol-name curr-binding-as-keyword)
+                                                                            ',(-map #'cl-first params)))))
                                            (bound-name (lsp-keyword->symbol curr-binding-as-keyword))
                                            (next-entry-is-key-or-nil
                                             (and (symbolp next-entry)
                                                  (or (null next-entry)
                                                      (s-starts-with? ":" (symbol-name next-entry))))))
                                      (cond
-                                      ;; If the next-entry is either a
-                                      ;; plist-key or nil, then bind to
-                                      ;; bound-name the value corresponding
-                                      ;; to the camelcased symbol.  Pop
-                                      ;; current-list once.
                                       (next-entry-is-key-or-nil
-                                       (push `(app (lambda (plist)
-                                                     (plist-get plist ,curr-binding-as-camelcased-symbol))
+                                       (push `(app (lambda (hash-table)
+                                                     (ht-get hash-table ,curr-binding-as-camelcased-string))
                                                    ,bound-name)
                                              output-bindings)
                                        (setf current-list (cdr current-list)))
-                                      ;; Otherwise, next-entry is a pcase
-                                      ;; pattern we recursively match to the
-                                      ;; expression. This can in general
-                                      ;; create additional bindings that we
-                                      ;; persist in the top level of
-                                      ;; bindings.  We pop current-list
-                                      ;; twice.
                                       (t
-                                       (push `(app (lambda (plist)
-                                                     (plist-get plist ,curr-binding-as-camelcased-symbol))
+                                       (push `(app (lambda (hash-table)
+                                                     (ht-get hash-table ,curr-binding-as-camelcased-string))
                                                    ,next-entry)
                                              output-bindings)
                                        (setf current-list (cddr current-list))))))
-                                 output-bindings))
-                        ``(and
-                           (pred ht?)
-                           ,@(-map
-                              (lambda (key)
-                                `(pred
-                                  (lambda (hash-table)
-                                    (ht-contains? hash-table ,(lsp-keyword->string key)))))
-                              ',required)
-                           ,@(let ((current-list property-bindings)
-                                   (output-bindings nil))
-                               (while current-list
-                                 (-let* (((curr-binding-as-keyword next-entry . _) current-list)
-                                         (curr-binding-as-camelcased-string
-                                          (lsp-keyword->string (or (alist-get curr-binding-as-keyword ',params)
-                                                                   (error "Unknown key: %s.  Available keys: %s"
-                                                                          (symbol-name curr-binding-as-keyword)
-                                                                          ',(-map #'cl-first params)))))
-                                         (bound-name (lsp-keyword->symbol curr-binding-as-keyword))
-                                         (next-entry-is-key-or-nil
-                                          (and (symbolp next-entry)
-                                               (or (null next-entry)
-                                                   (s-starts-with? ":" (symbol-name next-entry))))))
-                                   (cond
-                                    (next-entry-is-key-or-nil
-                                     (push `(app (lambda (hash-table)
-                                                   (ht-get hash-table ,curr-binding-as-camelcased-string))
-                                                 ,bound-name)
-                                           output-bindings)
-                                     (setf current-list (cdr current-list)))
-                                    (t
-                                     (push `(app (lambda (hash-table)
-                                                   (ht-get hash-table ,curr-binding-as-camelcased-string))
-                                                 ,next-entry)
-                                           output-bindings)
-                                     (setf current-list (cddr current-list))))))
-                               output-bindings))))
-                  (-mapcat (-lambda ((label . name))
-                             (list
-                              `(defun ,(intern (format "lsp:%s-%s"
-                                                       (s-dashed-words (symbol-name interface))
-                                                       (substring (symbol-name label) 1)))
-                                   (object)
-                                 ,(if lsp-use-plists
-                                      `(plist-get object ,name)
-                                    `(when (ht? object) (gethash ,(lsp-keyword->string name) object))))
-                              `(defun ,(intern (format "lsp:set-%s-%s"
-                                                       (s-dashed-words (symbol-name interface))
-                                                       (substring (symbol-name label) 1)))
-                                   (object value)
-                                 ,@(if lsp-use-plists
-                                       `((plist-put object ,name value))
-                                     `((puthash ,(lsp-keyword->string name) value object)
-                                       object)))))
-                           params)))))
-       (apply #'append)
-       (cl-list* 'progn)))
+                                 output-bindings))))
+                    (-mapcat (-lambda ((label . name))
+                               (list
+                                `(defun ,(intern (format "lsp:%s-%s"
+                                                         (s-dashed-words (symbol-name interface))
+                                                         (substring (symbol-name label) 1)))
+                                     (object)
+                                   ,(if lsp-use-plists
+                                        `(plist-get object ,name)
+                                      `(when (ht? object) (gethash ,(lsp-keyword->string name) object))))
+                                `(defun ,(intern (format "lsp:set-%s-%s"
+                                                         (s-dashed-words (symbol-name interface))
+                                                         (substring (symbol-name label) 1)))
+                                     (object value)
+                                   ,@(if lsp-use-plists
+                                         `((plist-put object ,name value))
+                                       `((puthash ,(lsp-keyword->string name) value object)
+                                         object)))))
+                             params)))))
+         (apply #'append)
+         (cl-list* 'progn))))
 
 (if lsp-use-plists
     (progn
