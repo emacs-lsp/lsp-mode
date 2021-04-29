@@ -208,6 +208,7 @@ from the language server."
 
 (defvar lsp-diagnostics-mode) ;; properly defined by define-minor-mode below
 
+;;;###autoload
 (defun lsp-diagnostics-lsp-checker-if-needed ()
   (unless (flycheck-valid-checker-p 'lsp)
     (flycheck-define-generic-checker 'lsp
