@@ -198,10 +198,13 @@ features `lsp-mode` provides a project-wide error list via
 
 ## Debugging
 
-Just like `lsp-mode` provides editing features through the editor-independent [Language Server Protocol](https://microsoft.github.io/language-server-protocol/), its sister package `dap-mode` provides debugging features through the editor-independent [Debug Adapter Protocol](https://microsoft.github.io/debug-adapter-protocol/) and language-specific debugging servers called _debug adapters_.
-front-end of the sister [Debug Adapter Protocol](https://microsoft.github.io/debug-adapter-protocol/). It is again client server
-like `Language Sever Protocol`. `dap-mode` provides all of the traditional
-debugger features - breakpoints(conditions, hit count, etc), threads, locals,
+Just like `lsp-mode` provides editing features through the editor-independent
+[Language Server Protocol](https://microsoft.github.io/language-server-protocol/), its sister package `dap-mode` provides debugging
+features through the editor-independent [Debug Adapter Protocol](https://microsoft.github.io/debug-adapter-protocol/) and
+language-specific debugging servers called _debug adapters_. front-end of the
+sister [Debug Adapter Protocol](https://microsoft.github.io/debug-adapter-protocol/). It is again client server like `Language
+Sever Protocol`. `dap-mode` provides all of the traditional debugger features -
+breakpoints(conditions, hit count, etc), threads, locals.
 
 ### Installation
 
@@ -210,6 +213,7 @@ tutorial we will use the [vscode-cpptools](https://github.com/microsoft/vscode-c
 do `M-x dap-cpptools-setup`.
 
 _Note:_ you should have `gdb` on path.
+_Note:_ on linux you should install [mono](https://www.mono-project.com/).
 
 ### Creating debug configuration
 
