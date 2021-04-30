@@ -2558,15 +2558,19 @@ features <code>lsp-mode</code> provides a project-wide error list via
 <code>lsp-treemacs-errors-list</code>.</p>
 <p><img alt="errors list" src="../images/errors-list.png" /></p>
 <h2 id="debugging">Debugging<a class="headerlink" href="#debugging" title="Permanent link">#</a></h2>
-<p>Just like <code>lsp-mode</code> provides editing features through the editor-independent <a href="https://microsoft.github.io/language-server-protocol/">Language Server Protocol</a>, its sister package <code>dap-mode</code> provides debugging features through the editor-independent <a href="https://microsoft.github.io/debug-adapter-protocol/">Debug Adapter Protocol</a> and language-specific debugging servers called <em>debug adapters</em>.
-front-end of the sister <a href="https://microsoft.github.io/debug-adapter-protocol/">Debug Adapter Protocol</a>. It is again client server
-like <code>Language Sever Protocol</code>. <code>dap-mode</code> provides all of the traditional
-debugger features - breakpoints(conditions, hit count, etc), threads, locals,</p>
+<p>Just like <code>lsp-mode</code> provides editing features through the editor-independent
+<a href="https://microsoft.github.io/language-server-protocol/">Language Server Protocol</a>, its sister package <code>dap-mode</code> provides debugging
+features through the editor-independent <a href="https://microsoft.github.io/debug-adapter-protocol/">Debug Adapter Protocol</a> and
+language-specific debugging servers called <em>debug adapters</em>. front-end of the
+sister <a href="https://microsoft.github.io/debug-adapter-protocol/">Debug Adapter Protocol</a>. It is again client server like <code>Language
+Sever Protocol</code>. <code>dap-mode</code> provides all of the traditional debugger features -
+breakpoints(conditions, hit count, etc), threads, locals.</p>
 <h3 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h3>
 <p><code>dap-mode</code> provides installation commands for most of the debug adapters. In this
 tutorial we will use the <a href="https://github.com/microsoft/vscode-cpptools">vscode-cpptools</a> debug adapter. To install the adapter
 do <code>M-x dap-cpptools-setup</code>.</p>
-<p><em>Note:</em> you should have <code>gdb</code> on path.</p>
+<p><em>Note:</em> you should have <code>gdb</code> on path.
+<em>Note:</em> on linux you should install <a href="https://www.mono-project.com/">mono</a>.</p>
 <h3 id="creating-debug-configuration">Creating debug configuration<a class="headerlink" href="#creating-debug-configuration" title="Permanent link">#</a></h3>
 <p><code>dap-mode</code> introduces the notion of debug configuration and debug template. The
 debug configuration is the settings that are needed by the debug adapter to
@@ -2614,7 +2618,7 @@ dap-breakpoint-toggle</code>. Switch to the debugged instance and do</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 29, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 30, 2021</span>
     
   </small>
 </div>
