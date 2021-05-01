@@ -604,12 +604,17 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
              (print new-tokens))))
        :mode 'tick
        :cancel-token (format "semantic-tokens-%s" (lsp--buffer-uri))))))
+
 (defvar-local lsp-semantic-tokens--log '())
+
+(defvar-local lsp-semantic-tokens--prev-response nil)
 
 (defun lsp-semantic-tokens--log-buffer-contents (tag)
   (save-restriction
     (save-excursion
-      (widen) (push `(:tag ,tag :buffer-contents ,(buffer-substring (point-min) (point-max)))
+      (widen) (push `(:tag ,tag
+                      :buffer-contents ,(buffer-substring (point-min) (point-max))
+                      :prev-response ,lsp-semantic-tokens--prev-response)
                     lsp-semantic-tokens--log))))
 
 (defun lsp-semantic-tokens-enable-log ()
@@ -618,10 +623,28 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
     (lsp-semantic-tokens--log-buffer-contents 'before)
     (let ((result ad-do-it))
       (lsp-semantic-tokens--log-buffer-contents 'after)
-      result)))
+      result))
+  (defadvice lsp--semantic-tokens-ingest-full/delta-response
+      (before log-delta-response (response) activate)
+    (setq lsp-semantic-tokens--prev-response `(:request-type "delta"
+                                               :response ,response
+                                               :version ,lsp--cur-version)))
+  (defadvice lsp--semantic-tokens-ingest-full-response
+      (before log-full-response (response) activate)
+    (setq lsp-semantic-tokens--prev-response `(:request-type "full"
+                                               :response ,response
+                                               :version ,lsp--cur-version)))
+  (defadvice lsp--semantic-tokens-ingest-range-response
+      (before log-range-response (response) activate)
+    (setq lsp-semantic-tokens--prev-response `(:request-type "range"
+                                               :response ,response
+                                               :version ,lsp--cur-version))))
 
 (defun lsp-semantic-tokens-disable-log ()
-  (ad-unadvise 'lsp-semantic-tokens--fontify))
+  (ad-unadvise 'lsp-semantic-tokens--fontify)
+  (ad-unadvise 'lsp--semantic-tokens-ingest-full/delta-response)
+  (ad-unadvise 'lsp--semantic-tokens-ingest-full-response)
+  (ad-unadvise 'lsp--semantic-tokens-ingest-range-response))
 
 (defun lsp-semantic-tokens-export-log ()
   (require 'htmlize)
@@ -630,14 +653,23 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
           (make-progress-reporter
            (format "Writing buffer snapshots to %s..." outdir)
            0 (length lsp-semantic-tokens--log))))
-    (--each-indexed lsp-semantic-tokens--log
-      (-let* (((&plist :tag tag :buffer-contents buffer-contents) it)
+    (f-mkdir outdir)
+    (--each-indexed (reverse lsp-semantic-tokens--log)
+      (-let* (((&plist :tag tag
+                       :buffer-contents buffer-contents
+                       :prev-response prev-response) it)
               (html-buffer))
         ;; FIXME: doesn't update properly; sit-for helps... somewhat,
         ;; but unreliably
         (when (= (% it-index 5) 0)
           (progress-reporter-update progress-reporter it-index)
           (sit-for 0.01))
+        ;; we're emitting 2 snapshots (before & after) per update, so request
+        ;; parameters should only change on every 2nd invocation
+        (when (cl-evenp it-index)
+          (with-temp-buffer
+            (insert (prin1-to-string prev-response))
+            (write-file (f-join outdir (format "parameters_%d.el" (/ it-index 2))))))
         (with-temp-buffer
           (insert buffer-contents)
           (setq html-buffer (htmlize-buffer))
@@ -645,7 +677,6 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
             ;; some configs such as emacs-doom may autoformat on save; switch to
             ;; fundamental-mode to avoid this
             (fundamental-mode)
-            (f-mkdir outdir)
             (write-file (f-join outdir (format "buffer_%d_%s.html" (/ it-index 2) tag)))))
         (kill-buffer html-buffer)))
     (progress-reporter-done progress-reporter)))
