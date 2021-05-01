@@ -246,7 +246,7 @@ Faces to use for semantic token modifiers if
 When non-nil, `lsp--semantic-tokens-cache' should adhere to the
 following lsp-interface:
 `(_SemanticTokensCache
-  (:_documentVersion :_pars :_ranged)
+  (:_documentVersion :_ranged)
   (:response :_region))'.")
 
 (defsubst lsp--semantic-tokens-putcache (k v)
@@ -352,7 +352,6 @@ If FONTIFY-IMMEDIATELY is non-nil, fontification will be performed immediately
      (lambda (response)
        (unless (or lsp--semantic-tokens-cache lsp-use-plists)
          (setq lsp--semantic-tokens-cache (make-hash-table :test #'equal)))
-       (lsp--semantic-tokens-putcache :_pars request)
        (lsp--semantic-tokens-putcache :_documentVersion lsp--cur-version)
        (funcall response-handler response)
        (when fontify-immediately (font-lock-flush)))
