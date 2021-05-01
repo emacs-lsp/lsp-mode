@@ -249,6 +249,11 @@ following lsp-interface:
   (:_documentVersion :_pars :_ranged)
   (:response :_region))'.")
 
+(defsubst lsp--semantic-tokens-putcache (k v)
+  "Set key K of `lsp--semantic-tokens-cache' to V."
+  (setq lsp--semantic-tokens-cache
+        (lsp-put lsp--semantic-tokens-cache k v)))
+
 (defvar-local lsp--semantic-tokens-teardown nil)
 
 (defun lsp--semantic-tokens-request-full-token-set-when-idle (fontify-immediately)
@@ -269,14 +274,14 @@ If FONTIFY-IMMEDIATELY is non-nil, fontification will be performed immediately
 
 (defun lsp--semantic-tokens-ingest-range-response (response)
   "Handle RESPONSE to semanticTokens/range request."
-  (lsp-put lsp--semantic-tokens-cache :response response)
-  (lsp-put lsp--semantic-tokens-cache :_ranged t)
+  (lsp--semantic-tokens-putcache :response response)
+  (lsp--semantic-tokens-putcache :_ranged t)
   (lsp--semantic-tokens-request-full-token-set-when-idle nil))
 
 (defun lsp--semantic-tokens-ingest-full-response (response)
   "Handle RESPONSE to semanticTokens/full request."
-  (lsp-put lsp--semantic-tokens-cache :response response)
-  (lsp-put lsp--semantic-tokens-cache :_ranged nil))
+  (lsp--semantic-tokens-putcache :response response)
+  (lsp--semantic-tokens-putcache :_ranged nil))
 
 (defsubst lsp--semantic-tokens-apply-delta-edits (old-data edits)
   "Apply EDITS obtained from full/delta request to OLD-DATA."
@@ -298,14 +303,13 @@ If FONTIFY-IMMEDIATELY is non-nil, fontification will be performed immediately
   (if (lsp-get response :edits)
       (let ((old-data (--> lsp--semantic-tokens-cache (lsp-get it :response) (lsp-get it :data))))
         (when old-data
-          (lsp-put response
-                   :data (lsp--semantic-tokens-apply-delta-edits
-                          old-data (lsp-get response :edits)))
-          (lsp-put lsp--semantic-tokens-cache :response response)
-          (lsp-put lsp--semantic-tokens-cache :_ranged nil)))
+          (lsp--semantic-tokens-putcache
+           :response (lsp-put response
+                              :data (lsp--semantic-tokens-apply-delta-edits
+                                     old-data (lsp-get response :edits))))
+          (lsp--semantic-tokens-putcache :_ranged nil)))
     ;; server decided to send full response instead
     (lsp--semantic-tokens-ingest-full-response response)))
-
 
 
 (defun lsp--semantic-tokens-request (region fontify-immediately)
@@ -340,17 +344,18 @@ If FONTIFY-IMMEDIATELY is non-nil, fontification will be performed immediately
       (setq response-handler #'lsp--semantic-tokens-ingest-range-response))
      (t (setq response-handler #'lsp--semantic-tokens-ingest-full-response)))
     (when lsp--semantic-tokens-idle-timer (cancel-timer lsp--semantic-tokens-idle-timer))
-    (lsp-request-async request-type request
-                       (lambda (response)
-                         (unless lsp--semantic-tokens-cache
-                           (setq lsp--semantic-tokens-cache (if lsp-use-plists '() (make-hash-table :test #'equal))))
-                         (lsp-put lsp--semantic-tokens-cache :_pars request)
-                         (lsp-put lsp--semantic-tokens-cache :_documentVersion lsp--cur-version)
-                         (funcall response-handler response)
-                         (when fontify-immediately (font-lock-flush)))
-                       :error-handler (lambda (&rest _) (lsp--semantic-tokens-request-full-token-set-when-idle t))
-                       :mode 'tick
-                       :cancel-token (format "semantic-tokens-%s" (lsp--buffer-uri)))))
+    (lsp-request-async
+     request-type request
+     (lambda (response)
+       (unless (or lsp--semantic-tokens-cache lsp-use-plists)
+         (setq lsp--semantic-tokens-cache (make-hash-table :test #'equal)))
+       (lsp--semantic-tokens-putcache :_pars request)
+       (lsp--semantic-tokens-putcache :_documentVersion lsp--cur-version)
+       (funcall response-handler response)
+       (when fontify-immediately (font-lock-flush)))
+     :error-handler (lambda (&rest _) (lsp--semantic-tokens-request-full-token-set-when-idle t))
+     :mode 'tick
+     :cancel-token (format "semantic-tokens-%s" (lsp--buffer-uri)))))
 
 
 (defun lsp-semantic-tokens--fontify (old-fontify-region beg-orig end-orig &optional loudly)
