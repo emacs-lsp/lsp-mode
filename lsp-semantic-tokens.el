@@ -336,11 +336,14 @@ If FONTIFY-IMMEDIATELY is non-nil, fontification will be performed immediately
              (and (lsp-get it :resultId) (lsp-get it :data) (not (lsp-get it :_ranged)))))
       (setq request-type "textDocument/semanticTokens/full/delta")
       (setq response-handler #'lsp--semantic-tokens-ingest-full/delta-response)
-      (plist-put request :previousResultId (lsp-get (lsp-get lsp--semantic-tokens-cache :response) :resultId)))
+      (setq request
+            (plist-put request :previousResultId
+                       (lsp-get (lsp-get lsp--semantic-tokens-cache :response) :resultId))))
      ((and lsp-semantic-tokens-allow-ranged-requests region
            (lsp-feature? "textDocument/semanticTokensRangeProvider"))
       (setq request-type "textDocument/semanticTokens/range")
-      (plist-put request :range (lsp--region-to-range (car region) (cdr region)))
+      (setq request
+            (plist-put request :range (lsp--region-to-range (car region) (cdr region))))
       (setq response-handler #'lsp--semantic-tokens-ingest-range-response))
      (t (setq response-handler #'lsp--semantic-tokens-ingest-full-response)))
     (when lsp--semantic-tokens-idle-timer (cancel-timer lsp--semantic-tokens-idle-timer))
