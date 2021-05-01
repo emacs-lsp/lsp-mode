@@ -111,6 +111,7 @@ nav:
     - SQL (sqls): page/lsp-sqls.md
     - Svelte: page/lsp-svelte.md
     - Swift: https://emacs-lsp.github.io/lsp-sourcekit
+    - Systemverilog: page/lsp-svlangserver.md
     - Terraform: page/lsp-terraform.md
     - TeX, LaTeX, etc (digestif): page/lsp-tex.md
     - TeX, LaTeX, etc (texlab): page/lsp-texlab.md
