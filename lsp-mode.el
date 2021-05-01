@@ -6059,6 +6059,23 @@ WORKSPACE is the active workspace."
            (json-false nil))
        (json-read-from-string ,str))))
 
+(defmacro lsp-json-read-buffer ()
+  "Read json from the current buffer."
+  (if (progn
+        (require 'json)
+        (fboundp 'json-parse-string))
+      `(json-parse-buffer :object-type (if lsp-use-plists
+                                           'plist
+                                         'hash-table)
+                          :null-object nil
+                          :false-object nil)
+    `(let ((json-array-type 'vector)
+           (json-object-type (if lsp-use-plists
+                                 'plist
+                               'hash-table))
+           (json-false nil))
+       (json-read))))
+
 (defun lsp--read-json-file (file-path)
   "Read json file."
   (-> file-path
@@ -6111,8 +6128,10 @@ deserialization.")
   (let ((body-received 0)
         leftovers body-length body chunk)
     (lambda (_proc input)
-      (setf chunk (concat leftovers (encode-coding-string input 'utf-8 'nocopy)))
-      (while (not (equal chunk ""))
+      (setf chunk (if (s-blank? leftovers)
+                      input
+                    (concat leftovers input)))
+      (while (not (s-blank? chunk))
         (if (not body-length)
             ;; Read headers
             (if-let ((body-sep-pos (string-match-p "\r\n\r\n" chunk)))
@@ -6120,46 +6139,51 @@ deserialization.")
                 (setf body-length (lsp--get-body-length
                                    (mapcar #'lsp--parse-header
                                            (split-string
-                                            (substring chunk
+                                            (substring-no-properties chunk
                                                        (or (string-match-p "Content-Length" chunk)
                                                            (error "Unable to find Content-Length header."))
                                                        body-sep-pos)
                                             "\r\n")))
                       body-received 0
                       leftovers nil
-                      chunk (substring chunk (+ body-sep-pos 4)))
+                      chunk (substring-no-properties chunk (+ body-sep-pos 4)))
 
               ;; Haven't found the end of the headers yet. Save everything
               ;; for when the next chunk arrives and await further input.
               (setf leftovers chunk
-                    chunk ""))
+                    chunk nil))
           (let* ((chunk-length (string-bytes chunk))
                  (left-to-receive (- body-length body-received))
                  (this-body (if (< left-to-receive chunk-length)
-                                (prog1 (substring chunk 0 left-to-receive)
-                                  (setf chunk (substring chunk left-to-receive)))
+                                (prog1 (substring-no-properties chunk 0 left-to-receive)
+                                  (setf chunk (substring-no-properties chunk left-to-receive)))
                               (prog1 chunk
-                                (setf chunk ""))))
+                                (setf chunk nil))))
                  (body-bytes (string-bytes this-body)))
             (push this-body body)
             (setf body-received (+ body-received body-bytes))
             (when (>= chunk-length left-to-receive)
-              (let ((lsp-parsed-message (decode-coding-string
-                                         (apply #'concat
-                                                (nreverse
-                                                 (prog1 body
-                                                   (setf leftovers nil
-                                                         body-length nil
-                                                         body-received nil
-                                                         body nil)))) 'utf-8)))
-                (lsp--parser-on-message
-                 (condition-case err
-                     (lsp--read-json lsp-parsed-message)
-                   (error
-                    (lsp-warn "Failed to parse the following chunk:\n'''\n%s\n'''\nwith message %s"
-                              (concat leftovers input)
-                              err)))
-                 workspace)))))))))
+              (lsp--parser-on-message
+               (condition-case err
+                   (with-temp-buffer
+                     (apply #'insert
+                            (nreverse
+                             (prog1 body
+                               (setf leftovers nil
+                                     body-length nil
+                                     body-received nil
+                                     body nil))))
+                     (decode-coding-region (point-min)
+                                           (point-max)
+                                           'utf-8)
+                     (goto-char (point-min))
+                     (lsp-json-read-buffer))
+
+                 (error
+                  (lsp-warn "Failed to parse the following chunk:\n'''\n%s\n'''\nwith message %s"
+                            (concat leftovers input)
+                            err)))
+               workspace))))))))
 
 (defvar-local lsp--line-col-to-point-hash-table nil
   "Hash table with keys (line . col) and values that are either point positions
