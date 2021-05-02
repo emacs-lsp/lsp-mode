@@ -445,6 +445,67 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
   "Request semantic-tokens update."
   (lsp--semantic-tokens-request (cons (window-start) (window-end)) t))
 
+(defun lsp--semantic-tokens-as-defined-by-workspace (workspace)
+  "Returns plist of token-types and token-modifiers defined by WORKSPACE, or nil if none are defined."
+  (when-let ((token-capabilities
+              (or
+               (-some->
+                   (lsp--registered-capability "textDocument/semanticTokens")
+                 (lsp--registered-capability-options))
+               (lsp:server-capabilities-semantic-tokens-provider?
+                (lsp--workspace-server-capabilities workspace)))))
+    (-let* (((&SemanticTokensOptions :legend) token-capabilities))
+      `(:token-types ,(lsp:semantic-tokens-legend-token-types legend)
+        :token-modifiers ,(lsp:semantic-tokens-legend-token-modifiers legend)))))
+
+(defun lsp-semantic-tokens-suggest-overrides ()
+  (interactive)
+  "Suggest face overrides that best match the faces chosen by `font-lock-fontify-region'."
+  (-when-let* ((token-info (-some #'lsp--semantic-tokens-as-defined-by-workspace lsp--buffer-workspaces))
+               ((&plist :token-types token-types :token-modifiers token-modifiers) token-info))
+    (let* ((tokens (lsp-request
+                    "textDocument/semanticTokens/full"
+                    `(:textDocument, (lsp--text-document-identifier))))
+           (inhibit-field-text-motion t)
+           (data (lsp-get tokens :data))
+           (associated-faces '())
+           (line-delta)
+           ;; KLUDGE: clear cache so our font-lock advice won't apply semantic-token faces
+           (old-cache lsp--semantic-tokens-cache)
+           (face-or-faces))
+      (setq lsp--semantic-tokens-cache nil)
+      (save-restriction
+        (save-excursion
+          (widen)
+          (font-lock-fontify-region (point-min) (point-max) t)
+          (save-mark-and-excursion
+            (save-restriction
+              (widen)
+              (goto-char (point-min))
+              (cl-loop
+               for i from 0 to (1- (length data)) by 5 do
+               (setq line-delta (aref data i))
+               (unless (= line-delta 0) (forward-line line-delta))
+               (forward-char (aref data (+ i 1)))
+               (setq face-or-faces (get-text-property (point) 'face))
+               ;; TODO: consider modifiers?
+               (when face-or-faces
+                 (--each (if (listp face-or-faces) face-or-faces (list face-or-faces))
+                   (cl-pushnew `(,(aref data (+ i 3)) . ,it) associated-faces :test #'equal))))
+              (setq lsp--semantic-tokens-cache old-cache)
+              (font-lock-flush)))))
+      (switch-to-buffer (get-buffer-create "*Suggested Overrides*"))
+      (insert "(")
+      ;; TODO: sort alternatives by frequency
+      (--each-indexed (-group-by #'car associated-faces)
+        (insert (if (= it-index 0) "(" "\n ("))
+        (insert (format "%s . " (aref token-types (car it))))
+        (--each-indexed (mapcar #'cdr (cdr it))
+          (insert (if (= it-index 0) (format "%s)" (prin1-to-string it))
+                    (format " ; Alternative: %s" (prin1-to-string it))))))
+      (insert ")"))))
+
+
 ;;;###autoload
 (defun lsp--semantic-tokens-initialize-buffer ()
   "Initialize the buffer for semantic tokens.
@@ -511,25 +572,17 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
 (defun lsp--semantic-tokens-initialize-workspace (workspace)
   "Initialize semantic tokens for WORKSPACE."
   (cl-assert workspace)
-  (when-let ((token-capabilities
-              (or
-               (-some->
-                   (lsp--registered-capability "textDocument/semanticTokens")
-                 (lsp--registered-capability-options))
-               (lsp:server-capabilities-semantic-tokens-provider?
-                (lsp--workspace-server-capabilities workspace)))))
-    (-let* (((&SemanticTokensOptions :legend) token-capabilities)
-            (client (lsp--workspace-client workspace)))
-      (setf (lsp--workspace-semantic-tokens-faces workspace)
-            (lsp--semantic-tokens-build-face-map (lsp:semantic-tokens-legend-token-types legend)
-                                                 (lsp-semantic-tokens--type-faces-for client)
-                                                 "semantic token"
-                                                 "lsp-semantic-token-faces"))
-      (setf (lsp--workspace-semantic-tokens-modifier-faces workspace)
-            (lsp--semantic-tokens-build-face-map (lsp:semantic-tokens-legend-token-modifiers legend)
-                                                 (lsp-semantic-tokens--modifier-faces-for client)
-                                                 "semantic token modifier"
-                                                 "lsp-semantic-token-modifier-faces")))))
+  (-let (((&plist :token-types types :token-modifiers modifiers)
+          (lsp--semantic-tokens-as-defined-by-workspace workspace))
+         (client (lsp--workspace-client workspace)))
+    (setf (lsp--workspace-semantic-tokens-faces workspace)
+          (lsp--semantic-tokens-build-face-map
+           types (lsp-semantic-tokens--type-faces-for client)
+           "semantic token" "lsp-semantic-token-faces"))
+    (setf (lsp--workspace-semantic-tokens-modifier-faces workspace)
+          (lsp--semantic-tokens-build-face-map
+           modifiers (lsp-semantic-tokens--modifier-faces-for client)
+           "semantic token modifier" "lsp-semantic-token-modifier-faces"))))
 
 ;;;###autoload
 (defun lsp-semantic-tokens--warn-about-deprecated-setting ()
