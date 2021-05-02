@@ -2589,23 +2589,31 @@ and end-of-string meta-characters."
   (easy-menu-create-menu
    nil
    `(["Go to definition" lsp-find-definition
-      :active (lsp--find-workspaces-for "textDocument/definition")]
+      :active (lsp-feature? "textDocument/definition")]
      ["Find references" lsp-find-references
-      :active (lsp--find-workspaces-for "textDocument/references")]
+      :active (lsp-feature? "textDocument/references")]
      ["Find implementations" lsp-find-implementation
-      :active (lsp--find-workspaces-for "textDocument/implementation")]
+      :active (lsp-feature? "textDocument/implementation")]
      ["Find declarations" lsp-find-declaration
-      :active (lsp--find-workspaces-for "textDocument/declaration")]
+      :active (lsp-feature? "textDocument/declaration")]
      ["Go to type declaration" lsp-find-type-definition
-      :active (lsp--find-workspaces-for "textDocument/typeDefinition")]
+      :active (lsp-feature? "textDocument/typeDefinition")]
      "--"
      ["Describe" lsp-describe-thing-at-point]
      ["Code action" lsp-execute-code-action]
      ["Format" lsp-format-buffer]
      ["Highlight references" lsp-document-highlight]
+     ["Type Hierarchy" lsp-java-type-hierarchy
+      :visible (lsp-can-execute-command? "java.navigate.resolveTypeHierarchy")]
+     ["Type Hierarchy" lsp-treemacs-type-hierarchy
+      :visible (and (not (lsp-can-execute-command? "java.navigate.resolveTypeHierarchy"))
+                    (functionp 'lsp-treemacs-type-hierarchy)
+                    (lsp-feature? "textDocument/typeHierarchy"))]
+     ["Call Hierarchy" lsp-treemacs-call-hierarchy
+      :visible (and (functionp 'lsp-treemacs-call-hierarchy)
+                    (lsp-feature? "textDocument/callHierarchy"))]
      ["Rename" lsp-rename
-      :active (or (lsp--capability :renameProvider)
-                  (lsp--registered-capability "textDocument/rename"))]
+      :active (lsp-feature? "textDocument/rename")]
      "--"
      ("Session"
       ["View logs" lsp-workspace-show-log]
@@ -5789,6 +5797,16 @@ REFERENCES? t when METHOD returns references."
               (and (not capability) (not check-command))))
            (lsp-workspaces)))
       (lsp-workspaces))))
+
+(defun lsp-can-execute-command? (command-name)
+  "Returns non-nil if current language server(s) can execute COMMAND-NAME.
+The command is executed via `workspace/executeCommand'"
+  (cl-position
+   command-name
+   (lsp:execute-command-options-commands
+    (lsp:server-capabilities-execute-command-provider?
+     (lsp--server-capabilities)))
+   :test #'equal))
 
 (defalias 'lsp-feature? 'lsp--find-workspaces-for)
 
