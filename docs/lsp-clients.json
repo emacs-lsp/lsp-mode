@@ -560,7 +560,7 @@
   },
   {
     "name": "svlangserver",
-    "full-name": "SystemVerilog Language Server",
+    "full-name": "Verilog/SystemVerilog",
     "server-name": "svlangserver",
     "server-url": "https://github.com/imc-trading/svlangserver",
     "installation-url": "https://github.com/imc-trading/svlangserver#installation",
