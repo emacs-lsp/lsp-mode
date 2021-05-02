@@ -20,13 +20,13 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;; LSP client support for Verilog. Right now, the only supported LSP server
-;; is HDL CHecker. See https://github.com/suoto/hdl_checker
+;; LSP client support for Verilog/SystemVerilog. Two language servers
+;; are available:
+;;   1) HDL Checker. See https://github.com/suoto/hdl_checker
+;;   2) SVLangserver. See https://github.com/imc-trading/svlangserver
 ;;
 ;; This file is based on the lsp-vhdl.el file.
 ;;
-;; Set the lsp-verilog-server-path to the binary directory if it is not
-;; in the User path;
 
 ;;; Code:
 
@@ -54,25 +54,25 @@
 (defcustom lsp-clients-svlangserver-workspace-additional-dirs nil
   "Additional directories to be managed by this instance of svlangserver"
   :group 'lsp-svlangserver
-  :type '(repeat string)
+  :type '(lsp-repeatable-vector string)
   :safe (lambda (x) (seq-every-p #'stringp x)))
 
 (defcustom lsp-clients-svlangserver-includeIndexing '("**/*.{sv,svh}")
   "Files included for indexing (glob pattern)"
   :group 'lsp-svlangserver
-  :type '(repeat string)
+  :type '(lsp-repeatable-vector string)
   :safe (lambda (x) (seq-every-p #'stringp x)))
 
 (defcustom lsp-clients-svlangserver-excludeIndexing '("test/**/*.{sv,svh}")
   "Files excluded for indexing (glob pattern)"
   :group 'lsp-svlangserver
-  :type '(repeat string)
+  :type '(lsp-repeatable-vector string)
   :safe (lambda (x) (seq-every-p #'stringp x)))
 
 (defcustom lsp-clients-svlangserver-defines '()
   "Defines needed for linting"
   :group 'lsp-svlangserver
-  :type '(repeat string)
+  :type '(lsp-repeatable-vector string)
   :safe (lambda (x) (seq-every-p #'stringp x)))
 
 (defcustom lsp-clients-svlangserver-launchConfiguration "verilator -sv --lint-only -Wall"
