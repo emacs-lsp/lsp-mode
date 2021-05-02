@@ -1413,6 +1413,8 @@ return value of `body' or nil if interrupted."
   multi-root
   ;; Initialization options or a function that returns initialization options.
   initialization-options
+  ;; Overrides semantic tokens faces for specific clients
+  semantic-tokens-faces-overrides
   ;; Provides support for registering LSP Server specific capabilities.
   custom-capabilities
   ;; Function which returns the folders that are considered to be not projects but library files.

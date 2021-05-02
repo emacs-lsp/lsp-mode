@@ -273,6 +273,8 @@ If there are more arguments expected after the line and column numbers."
  (make-lsp-client
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'clojure-lsp callback error-callback))
+  :semantic-tokens-faces-overrides '(:types (("macro" . font-lock-keyword-face)
+                                             ("keyword" . clojure-keyword-face)))
   :new-connection (lsp-stdio-connection
                    (lambda ()
                      (or lsp-clojure-custom-server-command
