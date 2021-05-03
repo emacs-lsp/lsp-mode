@@ -559,6 +559,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "svlangserver",
+    "full-name": "Verilog/SystemVerilog",
+    "server-name": "svlangserver",
+    "server-url": "https://github.com/imc-trading/svlangserver",
+    "installation-url": "https://github.com/imc-trading/svlangserver#installation",
+    "debugger": "Not available"
+  },
+  {
     "name": "terraform",
     "full-name": "Terraform",
     "server-name": "terraform-lsp",
