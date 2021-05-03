@@ -5343,6 +5343,7 @@ Request codeAction/resolve for more info if server supports."
     (scala-mode         . scala-indent:step)         ; Scala
     (powershell-mode    . powershell-indent)         ; PowerShell
     (ess-mode           . ess-indent-offset)         ; ESS (R)
+    (yaml-mode          . yaml-indent-offset)        ; YAML
 
     (default            . standard-indent))          ; default fallback
   "A mapping from `major-mode' to its indent variable.")
