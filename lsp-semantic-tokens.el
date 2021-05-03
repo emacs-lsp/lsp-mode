@@ -379,7 +379,7 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
                                  category id varname)) maybe-face)) identifiers)))
 
 (defun lsp-semantic-tokens--replace-alist-values (a b)
-  "Replace alist A values with B ones if exists."
+  "Replace alist A values with B ones where available."
   (-map
    (-lambda ((ak . av))
      (cons ak (alist-get ak b av nil #'string=)))
