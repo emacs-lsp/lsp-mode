@@ -786,7 +786,10 @@ directory")
      :check-command (lambda (workspace)
                       (with-lsp-workspace workspace
                         (lsp:code-action-options-resolve-provider?
-                         (lsp--capability :codeActionProvider)))))
+                         (or (lsp--capability :codeActionProvider)
+                             (when-let ((maybe-capability (lsp--registered-capability "textDocument/codeAction"))
+                                        (capability-options (lsp--registered-capability-options maybe-capability)))
+                               capability-options))))))
     ("textDocument/codeLens" :capability :codeLensProvider)
     ("textDocument/completion" :capability :completionProvider)
     ("completionItem/resolve"
