@@ -57,19 +57,19 @@
   :type '(lsp-repeatable-vector string)
   :safe (lambda (x) (seq-every-p #'stringp x)))
 
-(defcustom lsp-clients-svlangserver-includeIndexing '("**/*.{sv,svh}")
+(defcustom lsp-clients-svlangserver-includeIndexing '["**/*.{sv,svh}"]
   "Files included for indexing (glob pattern)"
   :group 'lsp-svlangserver
   :type '(lsp-repeatable-vector string)
   :safe (lambda (x) (seq-every-p #'stringp x)))
 
-(defcustom lsp-clients-svlangserver-excludeIndexing '("test/**/*.{sv,svh}")
+(defcustom lsp-clients-svlangserver-excludeIndexing '["test/**/*.{sv,svh}"]
   "Files excluded for indexing (glob pattern)"
   :group 'lsp-svlangserver
   :type '(lsp-repeatable-vector string)
   :safe (lambda (x) (seq-every-p #'stringp x)))
 
-(defcustom lsp-clients-svlangserver-defines '()
+(defcustom lsp-clients-svlangserver-defines nil
   "Defines needed for linting"
   :group 'lsp-svlangserver
   :type '(lsp-repeatable-vector string)
