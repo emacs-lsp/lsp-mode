@@ -35,6 +35,7 @@
   * Rename ~lsp-rust-analyzer-cargo-load-out-dirs-from-check~ to ~lsp-rust-analyzer-cargo-run-build-scripts~ to align with upstream.
   * Allow customization of ~lsp-file-watch-ignored-directories~ and ~lsp-file-watch-ignored-files~ at the root of an lsp workspace.
   * Add client for markdown language server (called [[https://github.com/unifiedjs/unified-language-server][unified-language-server]])
+  * Add client for SystemVerilog language server (called [[https://github.com/imc-trading/svlangserver]])
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
   * Safe renamed ~lsp-flycheck-default-level~ -> ~lsp-diagnostics-flycheck-default-level~
