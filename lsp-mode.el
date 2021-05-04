@@ -305,6 +305,8 @@ the server has requested that."
 (defcustom lsp-file-watch-ignored-directories
   '(; SCM tools
     "[/\\\\]\\.git\\'"
+    "[/\\\\]\\.github\\'"
+    "[/\\\\]\\.circleci\\'"
     "[/\\\\]\\.hg\\'"
     "[/\\\\]\\.bzr\\'"
     "[/\\\\]_darcs\\'"
