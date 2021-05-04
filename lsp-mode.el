@@ -340,8 +340,10 @@ the server has requested that."
     "[/\\\\]bin/Debug\\'"
     "[/\\\\]obj\\'"
     ;; OCaml and Dune
-     "[/\\\\]_opam\\'"
-     "[/\\\\]_build\\'")
+    "[/\\\\]_opam\\'"
+    "[/\\\\]_build\\'"
+    ;; nix-direnv
+    "[/\\\\]\\.direnv\\'")
   "List of regexps matching directory paths which won't be monitored when
 creating file watches. Customization of this variable is only honored at
 the global level or at a root of an lsp workspace."
