@@ -35,7 +35,6 @@
 (defgroup lsp-svlangserver nil
   "Settings for the SystemVerilog language server client."
   :group 'lsp-mode
-  :tag "Language Server"
   :link '(url-link "https://github.com/imc-trading/svlangserver")
   :package-version '(lsp-mode . "7.1"))
 
