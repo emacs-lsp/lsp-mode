@@ -30,7 +30,7 @@
 (defgroup lsp-bash nil
   "Settings for the Bash Language Server."
   :group 'lsp-mode
-  :tag "Language Server"
+  :link '(url-link "https://github.com/bash-lsp/bash-language-server")
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-bash-explainshell-endpoint nil
