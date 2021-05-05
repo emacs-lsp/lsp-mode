@@ -902,10 +902,11 @@ They are added to `markdown-code-lang-modes'")
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.2"))
 
-(defcustom lsp-signature-auto-activate '(:on-trigger-char)
+(defcustom lsp-signature-auto-activate '(:on-trigger-char :on-server-request)
   "Auto activate signature conditions."
   :type '(repeat (choice (const :tag "On trigger chars pressed." :on-trigger-char)
-                         (const :tag "After selected completion." :after-completion)))
+                         (const :tag "After selected completion." :after-completion)
+                         (const :tag "When the server has sent show signature help." :on-server-request)))
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.2"))
 
@@ -5222,7 +5223,8 @@ It will show up only if current point has signature help."
 
 (defun lsp--action-trigger-parameter-hints (_command)
   "Handler for editor.action.triggerParameterHints."
-  (lsp-signature-activate))
+  (when (member :on-server-request lsp-signature-auto-activate)
+    (lsp-signature-activate)))
 
 (defun lsp--action-trigger-suggest (_command)
   "Handler for editor.action.triggerSuggest."
