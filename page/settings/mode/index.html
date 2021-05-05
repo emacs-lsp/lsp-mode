@@ -3995,8 +3995,8 @@ Changes take effect only when a new session is started.</p>
 <p>File where session information is stored.</p>
 <hr />
 <h3 id="lsp-signature-auto-activate"><code>lsp-signature-auto-activate</code><a class="headerlink" href="#lsp-signature-auto-activate" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(repeat (choice (const :tag On trigger chars pressed. :on-trigger-char) (const :tag After selected completion. :after-completion)))</code></p>
-<p><em>Default:</em> <code>(:on-trigger-char)</code></p>
+<p><em>Type:</em> <code>(repeat (choice (const :tag On trigger chars pressed. :on-trigger-char) (const :tag After selected completion. :after-completion) (const :tag When the server has sent show signature help. :on-server-request)))</code></p>
+<p><em>Default:</em> <code>(:on-trigger-char :on-server-request)</code></p>
 <p>Auto activate signature conditions.</p>
 <hr />
 <h3 id="lsp-signature-cycle"><code>lsp-signature-cycle</code><a class="headerlink" href="#lsp-signature-cycle" title="Permanent link">#</a></h3>
