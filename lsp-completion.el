@@ -740,7 +740,7 @@ The CLEANUP-FN will be called to cleanup."
              (fboundp 'company-mode))
         (setq-local company-abort-on-unique-match nil)
         (company-mode 1)
-        (add-to-list 'company-backends 'company-capf))
+        (setq-local company-backends (cl-adjoin 'company-capf company-backends :test #'equal)))
        (t
         (lsp--warn "Unable to autoconfigure company-mode.")))
 
