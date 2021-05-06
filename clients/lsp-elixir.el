@@ -111,10 +111,8 @@ Leave as default to let `executable-find' search for it."
   "Elixir-ls local server Directory")
 
 (defcustom lsp-elixir-local-server-command
-  (let ((file (f-join lsp-elixir-ls-server-dir
-                      (cl-first lsp-elixir-server-command))))
-    (when (f-exists? file)
-      file))
+  (f-join lsp-elixir-ls-server-dir
+          (cl-first lsp-elixir-server-command))
   "Command to start local elixir-ls binary."
   :group 'lsp-elixir
   :type '(repeat string)
