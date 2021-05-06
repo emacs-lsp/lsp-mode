@@ -29,7 +29,6 @@
 (defgroup lsp-rf nil
   "Settings for Robot Framework Language Server."
   :group 'lsp-mode
-  :tag "Language Server"
   :link '(url-link "https://github.com/tomi/vscode-rf-language-server"))
 
 (defcustom lsp-rf-language-server-start-command '("~/.nvm/versions/node/v9.11.2/bin/node" "~/.vscode/extensions/tomiturtiainen.rf-intellisense-2.8.0/server/server.js")
