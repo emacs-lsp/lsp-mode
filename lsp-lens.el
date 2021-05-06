@@ -191,7 +191,7 @@ mustn't be nil."
                                      title
                                      'face (or face 'lsp-lens-face)
                                      'action (lsp-lens--create-interactive-command command)
-                                     'point 'hand
+                                     'pointer 'hand
                                      'mouse-face 'lsp-lens-mouse-face
                                      'local-map (lsp-lens--keymap command)))
                                   sorted)))
