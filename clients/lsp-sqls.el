@@ -85,8 +85,10 @@
       (erase-buffer)
       (insert result))))
 
-(defun lsp-sql-execute-query (&optional command)
-  "Execute COMMAND on selected region/whole buffer against current database."
+(defun lsp-sql-execute-query (&optional command start end)
+  "Execute COMMAND on buffer text against current database.
+Buffer text is between START and END.  If START and END are nil,
+use the current region if set, otherwise the entire buffer."
   (interactive)
   (lsp-sqls--show-results
    (lsp-request
@@ -99,13 +101,22 @@
           :timeout lsp-sqls-timeout
           :range (list
                   :start (lsp--point-to-position
-                          (if (use-region-p)
-                              (region-beginning)
-                            (point-min)))
+                          (cond
+                           (start start)
+                           ((use-region-p) (region-beginning))
+                            (t (point-min))))
                   :end (lsp--point-to-position
-                        (if (use-region-p)
-                            (region-end)
-                          (point-max))))))))
+                        (cond
+                         (end end)
+                         ((use-region-p) (region-end))
+                         (t (point-max)))))))))
+
+(defun lsp-sql-execute-paragraph (&optional command)
+  "Execute COMMAND on paragraph against current database."
+  (interactive)
+  (let ((start (save-excursion (backward-paragraph) (point)))
+        (end (save-excursion (forward-paragraph) (point))))
+    (lsp-sql-execute-query command start end)))
 
 (defun lsp-sql-show-databases (&optional _command)
   "Show databases."
