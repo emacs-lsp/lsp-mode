@@ -699,6 +699,7 @@ Changes take effect only when a new session is started."
                                         (clojurec-mode . "clojure")
                                         (clojurescript-mode . "clojurescript")
                                         (java-mode . "java")
+                                        (jdee-mode . "java")
                                         (groovy-mode . "groovy")
                                         (python-mode . "python")
                                         (cython-mode . "python")

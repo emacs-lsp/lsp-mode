@@ -30,7 +30,7 @@
 (defgroup lsp-markdown nil
   "Settings for the markdown language server client."
   :group 'lsp-mode
-  :tag "Language Server"
+  :link '(url-link "https://github.com/unifiedjs/unified-language-server")
   :package-version '(lsp-mode . "7.1"))
 
 (defcustom lsp-markdown-server-command "unified-language-server"
