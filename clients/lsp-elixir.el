@@ -165,7 +165,8 @@ Leave as default to let `executable-find' search for it."
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda ()
-                                     `(,(or lsp-elixir-local-server-command
+                                     `(,(or (when (f-exists? lsp-elixir-local-server-command)
+                                              lsp-elixir-local-server-command)
                                             (or (executable-find
                                                  (cl-first lsp-elixir-server-command))
                                                 (lsp-package-path 'elixir-ls)))
