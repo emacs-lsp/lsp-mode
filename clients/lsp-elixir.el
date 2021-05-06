@@ -1,6 +1,6 @@
 ;;; lsp-elixir.el --- description -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 emacs-lsp maintainers
+;; Copyright (C) 2021 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp, elixir
@@ -105,6 +105,21 @@ Leave as default to let `executable-find' search for it."
   :type '(repeat string)
   :package-version '(lsp-mode . "7.1"))
 
+
+(defconst lsp-elixir-ls-server-dir
+  (f-join lsp-server-install-dir "elixir-ls")
+  "Elixir-ls local server Directory")
+
+(defcustom lsp-elixir-local-server-command
+  (let ((file (f-join lsp-elixir-ls-server-dir
+                      (cl-first lsp-elixir-server-command))))
+    (when (f-exists? file)
+      file))
+  "Command to start local elixir-ls binary."
+  :group 'lsp-elixir
+  :type '(repeat string)
+  :package-version '(lsp-mode . "7.1"))
+
 (defcustom lsp-elixir-enable-test-lenses t
   "Suggest Tests."
   :type 'boolean
@@ -150,9 +165,10 @@ Leave as default to let `executable-find' search for it."
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda ()
-                                     `(,(or (executable-find
-                                            (cl-first lsp-elixir-server-command))
-                                           (lsp-package-path 'elixir-ls))
+                                     `(,(or lsp-elixir-local-server-command
+                                            (or (executable-find
+                                                 (cl-first lsp-elixir-server-command))
+                                                (lsp-package-path 'elixir-ls)))
                                        ,@(cl-rest lsp-elixir-server-command))))
                   :major-modes '(elixir-mode)
                   :priority -1
