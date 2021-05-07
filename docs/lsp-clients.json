@@ -441,7 +441,7 @@
   },
   {
     "name": "pyls",
-    "full-name": "Python (Palantir)",
+    "full-name": "Python (deprecated Palantir version)",
     "server-name": "pyls",
     "server-url": "https://github.com/palantir/python-language-server",
     "installation": "pip install 'python-language-server[all]'",
