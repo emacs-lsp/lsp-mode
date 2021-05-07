@@ -425,15 +425,23 @@
   },
   {
     "name": "jedi",
-    "full-name": "Python(Jedi-language-server)",
+    "full-name": "Python (Jedi-language-server)",
     "server-name": "jedi",
     "server-url": "https://github.com/pappasam/jedi-language-server",
     "installation-url": "https://github.com/fredcamps/lsp-jedi",
     "debugger": "Not available"
   },
   {
-    "name": "pyls",
+    "name": "pylsp",
     "full-name": "Python",
+    "server-name": "pylsp",
+    "server-url": "https://github.com/python-lsp/python-lsp-server",
+    "installation": "pip install 'python-lsp-server[all]'",
+    "debugger": "Yes"
+  },
+  {
+    "name": "pyls",
+    "full-name": "Python (Palantir)",
     "server-name": "pyls",
     "server-url": "https://github.com/palantir/python-language-server",
     "installation": "pip install 'python-language-server[all]'",
@@ -441,7 +449,7 @@
   },
   {
     "name": "pyright",
-    "full-name": "Python(Pyright)",
+    "full-name": "Python (Pyright)",
     "server-name": "pyright-langserver",
     "server-url": "https://github.com/microsoft/pyright",
     "client-name": "lsp-pyright",
@@ -451,7 +459,7 @@
   },
   {
     "name": "python-ms",
-    "full-name": "Python(Microsoft)",
+    "full-name": "Python (Microsoft)",
     "server-name": "Microsoft Python Language Server",
     "server-url": "https://github.com/Microsoft/python-language-server",
     "client-name": "lsp-python-ms",
