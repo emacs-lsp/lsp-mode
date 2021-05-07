@@ -5426,7 +5426,10 @@ execute a CODE-ACTION-KIND action."
   "Highlight all relevant references to the symbol under point."
   (interactive)
   (lsp--remove-overlays 'lsp-highlight) ;; clear any previous highlights
-  (lsp--document-highlight))
+  (setq lsp--have-document-highlights nil
+        lsp--symbol-bounds-of-last-highlight-invocation nil)
+  (let ((lsp-enable-symbol-highlighting t))
+    (lsp--document-highlight)))
 
 (defun lsp--document-highlight-callback (highlights)
   "Create a callback to process the reply of a
