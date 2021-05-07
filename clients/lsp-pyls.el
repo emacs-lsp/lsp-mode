@@ -481,10 +481,13 @@ So it will rename only references it can find."
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda () lsp-clients-python-command))
                   :major-modes '(python-mode cython-mode)
-                  :priority -1
+                  :priority -2
                   :server-id 'pyls
                   :library-folders-fn (lambda (_workspace) lsp-clients-python-library-directories)
                   :initialized-fn (lambda (workspace)
+                                    (warn (concat "The palantir python-language-server (pyls) is unmaintained; "
+                                                  "a maintained fork is the python-lsp-server (pylsp) project; "
+                                                  "you can install it with pip via: pip install python-lsp-server"))
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration (lsp-configuration-section "pyls"))))))
 
