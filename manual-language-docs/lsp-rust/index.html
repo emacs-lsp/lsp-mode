@@ -2494,6 +2494,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#open-cargotoml" class="md-nav__link">
+    Open Cargo.toml
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find-and-execute-tests-related-to-current-position" class="md-nav__link">
+    Find and execute tests related to current position
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#caveats" class="md-nav__link">
     Caveats
   </a>
@@ -2592,6 +2606,17 @@
 <h3 id="auto-import">auto-import<a class="headerlink" href="#auto-import" title="Permanent link">#</a></h3>
 <p>Get a list of possible auto import candidates with <code>lsp-execute-code-action</code></p>
 <p><img alt="" src="../../examples/lsp-rust-analyzer-auto-import.png" /></p>
+<h3 id="open-cargotoml">Open Cargo.toml<a class="headerlink" href="#open-cargotoml" title="Permanent link">#</a></h3>
+<p><code>lsp-rust-analyzer-open-cargo-toml</code> opens the Cargo.toml closest to the current file. Calling it with a universal argument will open the Cargo.toml in another window.</p>
+<p>Corresponds to <a href="https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#open-cargotoml">the rust-analyzer LSP extension</a> </p>
+<p><img alt="" src="./manual-language-docs/lsp-rust-analyzer-open-cargo-toml.gif" /></p>
+<h3 id="find-and-execute-tests-related-to-current-position">Find and execute tests related to current position<a class="headerlink" href="#find-and-execute-tests-related-to-current-position" title="Permanent link">#</a></h3>
+<p><code>lsp-rust-analyzer-related-tests</code> find all tests related to the current position, asks for user completion and executes the selected test in a compilation buffer.</p>
+<p>Corresponds to <a href="https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#related-tests">the rust-analyzer LSP extension</a> </p>
+<p>In the example below, first you see that
+   + On the left, the function <code>check_infer</code> is defined, on the right another file is opened with many test functions, some of which call <code>check_infer</code>. With the cursor on <code>check_infer</code>, call <code>lsp-rust-analyzer-related-tests</code> and select <code>infer_pattern_match_slice</code> with fuzzy matching. The test is executed on the right with compilation major mode
+   + Move the cursor to <code>fn ellipsize</code> and attempt to find related tests to no avail. Confirm that the function is indeed untested by using swiper and finding one place in the file, where the function is called</p>
+<p><img alt="" src="./manual-language-docs/lsp-rust-analyzer-find-related-tests.gif" /></p>
 <h3 id="caveats">Caveats<a class="headerlink" href="#caveats" title="Permanent link">#</a></h3>
 <ul>
 <li>Rust Analyzer does not support disabling snippets - https://github.com/rust-analyzer/rust-analyzer/issues/2518</li>
@@ -2625,7 +2650,7 @@ modifying the signature that is displayed by eldoc.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 7, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 8, 2021</span>
     
   </small>
 </div>
