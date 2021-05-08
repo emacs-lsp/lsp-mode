@@ -38,6 +38,8 @@
   * Add client for SystemVerilog language server (called [[https://github.com/imc-trading/svlangserver]])
   * Add client for python-lsp-server, pylsp (https://github.com/python-lsp/python-lsp-server)
   * Deprecate the Palantir Python language server, pyls.
+  * Add 2 rust-analyzer LSP extension function ~lsp-rust-analyzer-related-tests~ and
+    ~lsp-rust-analyzer-open-cargo-toml~
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
   * Safe renamed ~lsp-flycheck-default-level~ -> ~lsp-diagnostics-flycheck-default-level~

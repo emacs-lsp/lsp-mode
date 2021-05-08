@@ -81,6 +81,26 @@ Get a list of possible auto import candidates with `lsp-execute-code-action`
 
 ![](../examples/lsp-rust-analyzer-auto-import.png)
 
+### Open Cargo.toml
+
+`lsp-rust-analyzer-open-cargo-toml` opens the Cargo.toml closest to the current file. Calling it with a universal argument will open the Cargo.toml in another window.
+
+Corresponds to [the rust-analyzer LSP extension](https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#open-cargotoml) 
+
+![](./manual-language-docs/lsp-rust-analyzer-open-cargo-toml.gif)
+
+### Find and execute tests related to current position
+
+`lsp-rust-analyzer-related-tests` find all tests related to the current position, asks for user completion and executes the selected test in a compilation buffer.
+
+Corresponds to [the rust-analyzer LSP extension](https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#related-tests) 
+
+In the example below, first you see that
+   + On the left, the function `check_infer` is defined, on the right another file is opened with many test functions, some of which call `check_infer`. With the cursor on `check_infer`, call `lsp-rust-analyzer-related-tests` and select `infer_pattern_match_slice` with fuzzy matching. The test is executed on the right with compilation major mode
+   + Move the cursor to `fn ellipsize` and attempt to find related tests to no avail. Confirm that the function is indeed untested by using swiper and finding one place in the file, where the function is called
+
+![](./manual-language-docs/lsp-rust-analyzer-find-related-tests.gif)
+
 ### Caveats
 
 - Rust Analyzer does not support disabling snippets - https://github.com/rust-analyzer/rust-analyzer/issues/2518
