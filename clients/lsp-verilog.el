@@ -38,24 +38,6 @@
   :link '(url-link "https://github.com/imc-trading/svlangserver")
   :package-version '(lsp-mode . "7.1"))
 
-(defcustom lsp-clients-svlangserver-node-command "node"
-  "node binary path"
-  :group 'lsp-svlangserver
-  :type 'string
-  :safe (lambda (x) (stringp x)))
-
-(defcustom lsp-clients-svlangserver-module-path "svlangserver.js"
-  "svlangserver module path"
-  :group 'lsp-svlangserver
-  :type 'string
-  :safe (lambda (x) (stringp x)))
-
-(defcustom lsp-clients-svlangserver-workspace-additional-dirs nil
-  "Additional directories to be managed by this instance of svlangserver"
-  :group 'lsp-svlangserver
-  :type '(lsp-repeatable-vector string)
-  :safe (lambda (x) (seq-every-p #'stringp x)))
-
 (defcustom lsp-clients-svlangserver-includeIndexing '["**/*.{sv,svh}"]
   "Files included for indexing (glob pattern)"
   :group 'lsp-svlangserver
@@ -116,13 +98,51 @@
   :type 'boolean
   :safe (lambda (x) (booleanp x)))
 
-(defun lsp-clients-svlangserver-command ()
-  (if (file-exists-p lsp-clients-svlangserver-module-path)
-    `(,lsp-clients-svlangserver-node-command ,lsp-clients-svlangserver-module-path ,"--stdio")
-    lsp-clients-svlangserver-module-path))
+(defcustom lsp-clients-svlangserver-workspace-additional-dirs nil
+  "Additional directories to be managed by this instance of svlangserver"
+  :group 'lsp-svlangserver
+  :type '(lsp-repeatable-vector string)
+  :safe (lambda (x) (seq-every-p #'stringp x)))
+
+(defcustom lsp-clients-svlangserver-bin-path "svlangserver"
+  "svlangserver binary path"
+  :group 'lsp-svlangserver
+  :type 'string
+  :safe (lambda (x) (stringp x)))
+
+(defcustom lsp-clients-svlangserver-bin-args nil
+  "command line arguments for svlangserver binary"
+  :group 'lsp-svlangserver
+  :type '(lsp-repeatable-vector string)
+  :safe (lambda (x) (seq-every-p #'stringp x)))
+
+(defcustom lsp-clients-svlangserver-node-command "node"
+  "node binary path"
+  :group 'lsp-svlangserver
+  :type 'string
+  :safe (lambda (x) (stringp x)))
+
+(defcustom lsp-clients-svlangserver-module-path "svlangserver.js"
+  "svlangserver module path"
+  :group 'lsp-svlangserver
+  :type 'string
+  :safe (lambda (x) (stringp x)))
+
+(lsp-dependency 'svlangserver
+                '(:system "svlangserver"))
 
 (defun lsp-clients-svlangserver-get-workspace-additional-dirs (_workspace)
   lsp-clients-svlangserver-workspace-additional-dirs)
+
+(defun lsp-clients-svlangserver-command ()
+  (let ((svlangserver-bin-path (lsp-package-path 'svlangserver)))
+    (if svlangserver-bin-path
+      (cons svlangserver-bin-path lsp-clients-svlangserver-bin-args)
+      (if (file-exists-p lsp-clients-svlangserver-bin-path)
+        (cons lsp-clients-svlangserver-bin-path lsp-clients-svlangserver-bin-args)
+        (if (file-exists-p lsp-clients-svlangserver-module-path)
+          `(,lsp-clients-svlangserver-node-command ,lsp-clients-svlangserver-module-path ,"--stdio")
+          `(,"svlangserver"))))))
 
 (lsp-register-client
     (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-clients-svlangserver-command)
