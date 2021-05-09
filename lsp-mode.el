@@ -7317,14 +7317,20 @@ nil."
 
 (cl-defun lsp--npm-dependency-install (callback error-callback &key package &allow-other-keys)
   (if-let ((npm-binary (executable-find "npm")))
-      (lsp-async-start-process callback
-                               error-callback
-                               npm-binary
-                               "-g"
-                               "--prefix"
-                               (f-join lsp-server-install-dir "npm" package)
-                               "install"
-                               package)
+      (progn
+        ;; Explicitly `make-directory' to work around NPM bug in
+        ;; versions 7.0.0 through 7.4.1. See
+        ;; https://github.com/emacs-lsp/lsp-mode/issues/2364 for
+        ;; discussion.
+        (make-directory (f-join lsp-server-install-dir "npm" package "lib") 'parents)
+        (lsp-async-start-process callback
+                                 error-callback
+                                 npm-binary
+                                 "-g"
+                                 "--prefix"
+                                 (f-join lsp-server-install-dir "npm" package)
+                                 "install"
+                                 package))
     (lsp-log "Unable to install %s via `npm' because it is not present" package)
     nil))
 
