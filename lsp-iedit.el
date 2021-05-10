@@ -24,6 +24,7 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'dash)
 
 (declare-function iedit-make-occurrence-overlay "iedit-lib" (begin end))
 (declare-function iedit-start-buffering "iedit-lib" ())
@@ -73,8 +74,12 @@ language server doesn't support renaming.
 See also `lsp-enable-symbol-highlighting'."
   (interactive)
   (let ((highlights (lsp-request "textDocument/documentHighlight"
-                                 (lsp--text-document-position-params))))
-    (lsp-iedit--on-ranges (mapcar #'lsp:document-highlight-range highlights))))
+                                 (lsp--text-document-position-params)))
+        (-compare-fn (-lambda ((&Location :range (&Range :start l-start :end l-end))
+                                          (&Location :range (&Range :start r-start :end r-end)))
+                               (and (lsp--position-equal l-start r-start)
+                                    (lsp--position-equal l-end   r-end)))))
+    (lsp-iedit--on-ranges (mapcar #'lsp:document-highlight-range (-distinct highlights)))))
 
 ;;;###autoload
 (defun lsp-evil-multiedit-highlights ()
