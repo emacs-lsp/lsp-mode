@@ -327,13 +327,6 @@ PARAMS progress report notification data."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.2"))
 
-(defcustom lsp-rust-analyzer-server-args '()
-  "Args to start rust-analyzer with when rust-analyzer is downloaded \
-automatically."
-  :type '(repeat string)
-  :group 'lsp-rust
-  :package-version '(lsp-mode . "7.1"))
-
 (defcustom lsp-rust-analyzer-server-display-inlay-hints nil
   "Show inlay hints."
   :type 'boolean
@@ -664,7 +657,7 @@ them with `crate` or the crate name they refer to."
                              (cl-first lsp-rust-analyzer-server-command))
                             (lsp-package-path 'rust-analyzer)
                             "rust-analyzer")
-                       ,@(cl-rest lsp-rust-analyzer-server-args))))
+                       ,@(cl-rest lsp-rust-analyzer-server-command))))
   :major-modes '(rust-mode rustic-mode)
   :priority (if (eq lsp-rust-server 'rust-analyzer) 1 -1)
   :initialization-options 'lsp-rust-analyzer--make-init-options
