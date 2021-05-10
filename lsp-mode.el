@@ -6811,8 +6811,9 @@ returns the command to execute."
                                                                         (cl-incf lsp--stderr-index)))))))
                           (process-environment
                            (lsp--compute-process-environment environment-fn)))
-                     (let ((proc (apply 'start-file-process-shell-command process-name
-                                        (format "*%s*" process-name) wrapped-command)))
+                     (let ((proc (start-file-process-shell-command process-name
+                                                                   (format "*%s*" process-name)
+                                                                   wrapped-command)))
                        (set-process-sentinel proc sentinel)
                        (set-process-filter proc filter)
                        (set-process-query-on-exit-flag proc nil)
