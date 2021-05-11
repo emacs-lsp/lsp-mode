@@ -6801,14 +6801,16 @@ returns the command to execute."
                    (let* ((final-command (lsp-resolve-final-function local-command))
                           ;; wrap with stty to disable converting \r to \n
                           (process-name (generate-new-buffer-name name))
-                          (wrapped-command (append '("stty" "raw" ";")
-                                                   final-command
-                                                   (list
-                                                    (concat "2>"
-                                                            (or (when generate-error-file-fn
-                                                                  (funcall generate-error-file-fn name))
-                                                                (format "/tmp/%s-%s-stderr" name
-                                                                        (cl-incf lsp--stderr-index)))))))
+                          (wrapped-command (s-join
+                                            " "
+                                            (append '("stty" "raw" ";")
+                                                    final-command
+                                                    (list
+                                                     (concat "2>"
+                                                             (or (when generate-error-file-fn
+                                                                   (funcall generate-error-file-fn name))
+                                                                 (format "/tmp/%s-%s-stderr" name
+                                                                         (cl-incf lsp--stderr-index))))))))
                           (process-environment
                            (lsp--compute-process-environment environment-fn)))
                      (let ((proc (start-file-process-shell-command process-name
