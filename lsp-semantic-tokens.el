@@ -230,15 +230,18 @@ If REGION is non-nil, it will request tokens only for given region
 otherwise it will request for whole document.
 If FONTIFY-IMMEDIATELY is non-nil, it will fontify when receive the response
 ignoring the timer."
-  (let ((request-full-token-set
-         (lambda (fontify-immediately)
-           (when lsp--semantic-tokens-idle-timer
-             (cancel-timer lsp--semantic-tokens-idle-timer))
-           (setq lsp--semantic-tokens-idle-timer
-                 (run-with-idle-timer
-                  lsp-idle-delay
-                  nil
-                  (lambda () (lsp--semantic-tokens-request nil fontify-immediately)))))))
+  (let* ((semantic-tokenizing-buffer (current-buffer))
+         (request-full-token-set
+          (lambda (fontify-immediately)
+            (when lsp--semantic-tokens-idle-timer
+              (cancel-timer lsp--semantic-tokens-idle-timer))
+            (setq lsp--semantic-tokens-idle-timer
+                  (run-with-idle-timer
+                   lsp-idle-delay
+                   nil
+                   (lambda ()
+                     (with-current-buffer semantic-tokenizing-buffer
+                       (lsp--semantic-tokens-request nil fontify-immediately))))))))
     (when lsp--semantic-tokens-idle-timer
       (cancel-timer lsp--semantic-tokens-idle-timer))
     (lsp-request-async
@@ -250,12 +253,13 @@ ignoring the timer."
      `( :textDocument ,(lsp--text-document-identifier)
         ,@(if region (list :range (lsp--region-to-range (car region) (cdr region))) '()))
      (lambda (response)
-       (setq lsp--semantic-tokens-cache response)
-       (lsp-put lsp--semantic-tokens-cache :_documentVersion lsp--cur-version)
-       (lsp-put lsp--semantic-tokens-cache :_region region)
-       (when fontify-immediately (font-lock-flush))
-       ;; request full token set to improve fontification speed when scrolling
-       (when region (funcall request-full-token-set nil)))
+       (with-current-buffer semantic-tokenizing-buffer
+         (setq lsp--semantic-tokens-cache response)
+         (lsp-put lsp--semantic-tokens-cache :_documentVersion lsp--cur-version)
+         (lsp-put lsp--semantic-tokens-cache :_region region)
+         (when fontify-immediately (font-lock-flush))
+         ;; request full token set to improve fontification speed when scrolling
+         (when region (funcall request-full-token-set nil))))
      :error-handler (lambda (&rest _) (funcall request-full-token-set t))
      :mode 'tick
      :cancel-token (format "semantic-tokens-%s" (lsp--buffer-uri)))))
