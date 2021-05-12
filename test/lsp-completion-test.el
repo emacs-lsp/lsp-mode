@@ -26,6 +26,7 @@
 
 (require 'lsp-completion)
 (require 'ert)
+(require 'el-mock)
 
 (ert-deftest lsp-completion-test-candidate-kind ()
   (should (eq (lsp-completion--candidate-kind
@@ -78,6 +79,27 @@
     (do-test "F"
              '("F" "daFo" "safo")
              '("F" "daFo" "safo"))))
+
+(ert-deftest lsp-completion-test-get-context ()
+  (cl-labels ((do-get-context (command)
+                              (let ((last-command command))
+                                (lsp-completion--get-context '("_"))))
+              (do-test-trigger-kind (command)
+                                    (lsp:completion-context-trigger-kind
+                                     (do-get-context command)))
+              (do-test-trigger-character (command)
+                                         (lsp:completion-context-trigger-character?
+                                          (do-get-context command))))
+    (mocklet ((lsp-completion--looking-back-trigger-characterp))
+      (should (equal (do-test-trigger-kind 'next-line) 1))
+      (should (equal (do-test-trigger-character 'next-line) nil))
+      (should (equal (do-test-trigger-kind 'self-insert-command) 1))
+      (should (equal (do-test-trigger-character 'self-insert-command) nil)))
+    (mocklet ((lsp-completion--looking-back-trigger-characterp => "_"))
+      (should (equal (do-test-trigger-kind 'next-line) 1))
+      (should (equal (do-test-trigger-character 'next-line) nil))
+      (should (equal (do-test-trigger-kind 'self-insert-command) 2))
+      (should (equal (do-test-trigger-character 'self-insert-command) "_")))))
 
 (provide 'lsp-completion-test)
 ;;; lsp-completion-test.el ends here
