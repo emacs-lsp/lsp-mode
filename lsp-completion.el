@@ -370,10 +370,12 @@ The MARKERS and PREFIX value will be attached to each candidate."
 
 (defun lsp-completion--get-context (trigger-characters)
   "Get completion context with provided TRIGGER-CHARACTERS."
-  (let* (trigger-char
+  (let* ((triggered-by-char (equal last-command 'self-insert-command))
+         (trigger-char (when triggered-by-char
+                           (lsp-completion--looking-back-trigger-characterp
+                            trigger-characters)))
          (trigger-kind (cond
-                        ((setq trigger-char (lsp-completion--looking-back-trigger-characterp
-                                             trigger-characters))
+                        (trigger-char
                          lsp/completion-trigger-kind-trigger-character)
                         ((equal (cl-second lsp-completion--cache) :incomplete)
                          lsp/completion-trigger-kind-trigger-for-incomplete-completions)

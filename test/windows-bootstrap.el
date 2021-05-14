@@ -30,7 +30,7 @@
 
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
-       (pkgs '(dash f lv ht spinner markdown-mode deferred)))
+       (pkgs '(dash f lv ht spinner markdown-mode deferred el-mock)))
   (package-initialize)
   (package-refresh-contents)
 
