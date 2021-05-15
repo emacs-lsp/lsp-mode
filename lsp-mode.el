@@ -4759,6 +4759,8 @@ Stolen from `org-copy-visible'."
   "Holds the major mode when fontification function is running.
 See #2588")
 
+(defvar view-inhibit-help-message)
+
 (defun lsp--render-markdown ()
   "Render markdown."
 
