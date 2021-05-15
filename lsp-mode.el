@@ -4759,6 +4759,8 @@ Stolen from `org-copy-visible'."
   "Holds the major mode when fontification function is running.
 See #2588")
 
+(defvar view-inhibit-help-message)
+
 (defun lsp--render-markdown ()
   "Render markdown."
 
@@ -4773,7 +4775,8 @@ See #2588")
 
     ;; markdown-mode v2.3 does not yet provide gfm-view-mode
     (if (fboundp 'gfm-view-mode)
-        (gfm-view-mode)
+        (let ((view-inhibit-help-message t))
+          (gfm-view-mode))
       (gfm-mode))
 
     (lsp--setup-markdown lsp-buffer-major-mode)))
