@@ -88,8 +88,10 @@ Results are meaningful only if FROM and TO are on the same line."
                                        (save-excursion
                                          (beginning-of-line-text)
                                          (point))))
-         (str (concat (make-string offset ?\s)
-                      (overlay-get ov 'lsp--lens-contents))))
+         (str (if (eq 'end-of-line lsp-lens-place-position)
+                  (overlay-get ov 'lsp--lens-contents)
+                (concat (make-string offset ?\s)
+                        (overlay-get ov 'lsp--lens-contents)))))
     (save-excursion
       (goto-char (overlay-start ov))
       (if (eq 'end-of-line lsp-lens-place-position)
