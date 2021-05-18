@@ -253,13 +253,12 @@ ignoring the timer."
      `( :textDocument ,(lsp--text-document-identifier)
         ,@(if region (list :range (lsp--region-to-range (car region) (cdr region))) '()))
      (lambda (response)
-       (with-current-buffer semantic-tokenizing-buffer
-         (setq lsp--semantic-tokens-cache response)
-         (lsp-put lsp--semantic-tokens-cache :_documentVersion lsp--cur-version)
-         (lsp-put lsp--semantic-tokens-cache :_region region)
-         (when fontify-immediately (font-lock-flush))
-         ;; request full token set to improve fontification speed when scrolling
-         (when region (funcall request-full-token-set nil))))
+       (setq lsp--semantic-tokens-cache response)
+       (lsp-put lsp--semantic-tokens-cache :_documentVersion lsp--cur-version)
+       (lsp-put lsp--semantic-tokens-cache :_region region)
+       (when fontify-immediately (font-lock-flush))
+       ;; request full token set to improve fontification speed when scrolling
+       (when region (funcall request-full-token-set nil)))
      :error-handler (lambda (&rest _) (funcall request-full-token-set t))
      :mode 'tick
      :cancel-token (format "semantic-tokens-%s" (lsp--buffer-uri)))))
