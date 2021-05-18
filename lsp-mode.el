@@ -7820,7 +7820,8 @@ IGNORE-MULTI-FOLDER to ignore multi folder server."
            (lsp--find-workspace session client project-root)
            (unless ignore-multi-folder
              (lsp--find-multiroot-workspace session client project-root))
-           (lsp--start-connection session client project-root)))
+           (lsp--start-connection session client project-root))
+          (lsp--find-workspace session client project-root))
         clients))
 
 (defun lsp--spinner-stop ()
