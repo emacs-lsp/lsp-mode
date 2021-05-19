@@ -122,10 +122,14 @@
                     '(("section1" ("prop1" . "10")))))
   (let ((lsp-prop1 1))
     (cl-assert (equal (lsp-ht->alist (lsp-configuration-section "section1"))
-                      '(("section1" ("prop1" . 1)))))))
+                      '(("section1" ("prop1" . 1))))))
+  (let ((lsp-prop1 (-const 10)))
+    (cl-assert (lsp-ht->alist (lsp-configuration-section "section1")))))
 
 (ert-deftest lsp--build-workspace-configuration-response-test ()
-  (let ((request (ht ("items" (list (ht ("section" "section1")))))))
+  (let ((request
+          (lsp-make-configuration-params
+           :items (list (lsp-make-configuration-item :section "section1")))))
 
     (cl-assert (equal (lsp-ht->alist (aref (lsp--build-workspace-configuration-response request) 0))
                       '(("prop1" . "10"))))
@@ -134,7 +138,8 @@
       (cl-assert (equal (lsp-ht->alist (aref (lsp--build-workspace-configuration-response request) 0))
                         '(("prop1" . 1))))))
 
-  (let ((request (ht ("items" (list (ht ("section" "section1.prop1")))))))
+  (let ((request (lsp-make-configuration-params
+                  :items (list (lsp-make-configuration-item :section "section1.prop1")))))
     (cl-assert (equal (aref (lsp--build-workspace-configuration-response request) 0) "10"))
     (let ((lsp-prop1 1))
       (cl-assert (equal (aref (lsp--build-workspace-configuration-response request) 0) 1)))))
@@ -157,7 +162,8 @@
                     '(("section2" ("nested" ("prop1" . "10") ("prop2" . "20")))))))
 
 (ert-deftest lsp--build-workspace-configuration-response-test ()
-  (-let* ((request (ht ("items" (list (ht ("section" "section2.nested"))))))
+  (-let* ((request (lsp-make-configuration-params
+                    :items (list (lsp-make-configuration-item :section "section2.nested"))))
           (result (aref (lsp--build-workspace-configuration-response request) 0)))
     (cl-assert (equal (ht-get result "prop2") "20"))
     (cl-assert (equal (ht-get result "prop1") "10"))))
