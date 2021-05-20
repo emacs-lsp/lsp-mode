@@ -7620,12 +7620,9 @@ TBL - a hash table, PATHS is the path to the nested VALUE."
   (let ((ret (ht-create)))
     (mapc (-lambda ((path variable boolean?))
             (when (s-matches? (concat section "\\..*") path)
-              (let* ((symbol-value (if (symbolp variable)
-                                       (if (fboundp variable)
-                                           (funcall variable)
-                                         (symbol-value variable))
-                                     (if (functionp variable)
-                                         (funcall variable) variable)))
+              (let* ((symbol-value (-> variable
+                                       lsp-resolve-value
+                                       lsp-resolve-value))
                      (value (if (and boolean? (not symbol-value))
                                 :json-false
                               symbol-value)))
