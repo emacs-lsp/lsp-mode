@@ -55,5 +55,7 @@ finding the executable with `exec-path'."
                   :priority -1
                   :server-id 'fortls))
 
+(lsp-consistency-check lsp-fortran)
+
 (provide 'lsp-fortran)
 ;;; lsp-fortran.el ends here

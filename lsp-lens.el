@@ -419,5 +419,7 @@ CALLBACK - callback for the lenses."
                             lsp-lens--overlays))))))
     (when action (funcall-interactively action))))
 
+(lsp-consistency-check lsp-lens)
+
 (provide 'lsp-lens)
 ;;; lsp-lens.el ends here

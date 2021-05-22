@@ -60,5 +60,7 @@
                                         (lsp-package-ensure 'docker-langserver
                                                             callback error-callback))))
 
+(lsp-consistency-check lsp-dockerfile)
+
 (provide 'lsp-dockerfile)
 ;;; lsp-dockerfile.el ends here

@@ -498,5 +498,7 @@ So it will rename only references it can find."
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration (lsp-configuration-section "pyls"))))))
 
+(lsp-consistency-check lsp-pyls)
+
 (provide 'lsp-pyls)
 ;;; lsp-pyls.el ends here

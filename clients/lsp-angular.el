@@ -76,5 +76,7 @@
                   :server-id 'angular-ls))
 
 
+(lsp-consistency-check lsp-angular)
+
 (provide 'lsp-angular)
 ;;; lsp-angular.el ends here

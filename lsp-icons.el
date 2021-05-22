@@ -89,5 +89,7 @@ if its enabled."
                               :face face)
     (propertize fallback 'face face)))
 
+(lsp-consistency-check lsp-icons)
+
 (provide 'lsp-icons)
 ;;; lsp-icons.el ends here

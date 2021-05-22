@@ -62,5 +62,7 @@
                   :priority -1
                   :server-id 'tfls))
 
+(lsp-consistency-check lsp-terraform)
+
 (provide 'lsp-terraform)
 ;;; lsp-terraform.el ends here

@@ -54,6 +54,8 @@
                   :major-modes '(gdscript-mode)
                   :server-id 'gdscript))
 
-(provide 'lsp-gdscript)
+
+(lsp-consistency-check lsp-gdscript)(provide 'lsp-gdscript)
+
 
 ;;; lsp-gdscript.el ends here

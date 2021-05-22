@@ -71,5 +71,7 @@
                   :notification-handlers (ht ("racket/colorize" #'lsp-racket-language-server-colorize-handler))
                   :server-id 'racket-language-server))
 
+(lsp-consistency-check lsp-racket)
+
 (provide 'lsp-racket)
 ;;; lsp-racket.el ends here

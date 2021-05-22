@@ -359,5 +359,7 @@ using the `textDocument/references' request."
                                              ("o#/projectdiagnosticstatus" 'ignore))
                   :download-server-fn #'lsp-csharp--download-server))
 
+(lsp-consistency-check lsp-csharp)
+
 (provide 'lsp-csharp)
 ;;; lsp-csharp.el ends here

@@ -128,5 +128,7 @@ See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-S
                                       (lsp-actionscript--extension-root)))
                          error-callback))))
 
+(lsp-consistency-check lsp-actionscript)
+
 (provide 'lsp-actionscript)
 ;;; lsp-actionscript.el ends here

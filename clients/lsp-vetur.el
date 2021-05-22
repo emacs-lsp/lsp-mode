@@ -863,5 +863,7 @@ Code's JavaScript and TypeScript support."
                                         (lsp-package-ensure 'vetur-language-server
                                                             callback error-callback))))
 
+(lsp-consistency-check lsp-vetur)
+
 (provide 'lsp-vetur)
 ;;; lsp-vetur.el ends here

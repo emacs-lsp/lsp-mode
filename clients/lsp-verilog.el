@@ -180,5 +180,7 @@
     	          :priority -2
                   :server-id 'lsp-verilog))
 
+(lsp-consistency-check lsp-verilog)
+
 (provide 'lsp-verilog)
 ;;; lsp-verilog.el ends here

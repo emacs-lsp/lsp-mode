@@ -31,5 +31,7 @@
                   :major-modes '(d-mode)
                   :server-id 'serve-d))
 
+(lsp-consistency-check lsp-d)
+
 (provide 'lsp-d)
 ;;; lsp-d.el ends here

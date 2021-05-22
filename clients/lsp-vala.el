@@ -45,5 +45,7 @@
                   :priority -1
                   :server-id 'valals))
 
+(lsp-consistency-check lsp-vala)
+
 (provide 'lsp-vala)
 ;;; lsp-vala.el ends here

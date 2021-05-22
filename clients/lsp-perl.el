@@ -111,5 +111,7 @@ Defaults to 0."
                   :priority -1
                   :server-id 'perl-language-server))
 
+(lsp-consistency-check lsp-perl)
+
 (provide 'lsp-perl)
 ;;; lsp-perl.el ends here

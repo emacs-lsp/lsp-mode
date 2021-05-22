@@ -131,5 +131,7 @@ set it manually it will not try to load from the npm folder."
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'elm-language-server callback error-callback))))
 
+(lsp-consistency-check lsp-elm)
+
 (provide 'lsp-elm)
 ;;; lsp-elm.el ends here

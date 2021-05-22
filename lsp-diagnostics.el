@@ -363,5 +363,7 @@ See https://github.com/emacs-lsp/lsp-mode."
                                 (when lsp-auto-configure
                                   (lsp-diagnostics--enable))))
 
+(lsp-consistency-check lsp-diagnostics)
+
 (provide 'lsp-diagnostics)
 ;;; lsp-diagnostics.el ends here

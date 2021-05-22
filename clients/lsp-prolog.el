@@ -49,5 +49,7 @@
   :multi-root t
   :server-id 'prolog-lsp))
 
+(lsp-consistency-check lsp-prolog)
+
 (provide 'lsp-prolog)
 ;;; lsp-prolog.el ends here

@@ -61,5 +61,7 @@
                   :priority -1
                   :server-id 'erlang-ls))
 
+(lsp-consistency-check lsp-erlang)
+
 (provide 'lsp-erlang)
 ;;; lsp-erlang.el ends here

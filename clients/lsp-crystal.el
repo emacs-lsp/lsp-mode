@@ -42,5 +42,7 @@
                   :major-modes '(crystal-mode)
                   :server-id 'scry))
 
+(lsp-consistency-check lsp-crystal)
+
 (provide 'lsp-crystal)
 ;;; lsp-crystal.el ends here

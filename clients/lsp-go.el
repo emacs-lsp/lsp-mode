@@ -282,5 +282,7 @@ $GOPATH/pkg/mod along with the value of
                                    ;; https://github.com/golang/tools/commit/b2d8b0336
                                    (setq-local lsp-completion-filter-on-incomplete nil))))
 
+(lsp-consistency-check lsp-go)
+
 (provide 'lsp-go)
 ;;; lsp-go.el ends here

@@ -160,5 +160,7 @@
                       (lsp--set-configuration
                        (lsp-configuration-section "solargraph"))))))
 
+(lsp-consistency-check lsp-solargraph)
+
 (provide 'lsp-solargraph)
 ;;; lsp-solargraph.el ends here

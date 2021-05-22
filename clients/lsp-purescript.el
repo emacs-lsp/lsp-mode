@@ -66,5 +66,7 @@
                         (lsp-package-ensure 'purescript-language-server callback error-callback))))
 
 
+(lsp-consistency-check lsp-purescript)
+
 (provide 'lsp-purescript)
 ;;; lsp-purescript.el ends here

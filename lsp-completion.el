@@ -775,5 +775,7 @@ The CLEANUP-FN will be called to cleanup."
                                            lsp-completion-enable)
                                   (lsp-completion--enable))))
 
+(lsp-consistency-check lsp-completion)
+
 (provide 'lsp-completion)
 ;;; lsp-completion.el ends here

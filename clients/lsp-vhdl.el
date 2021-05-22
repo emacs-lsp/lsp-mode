@@ -115,5 +115,7 @@ VHDL LS: A complete VHDL language server protocol implementation with diagnostic
                   :priority -1
                   :server-id 'lsp-vhdl))
 
+(lsp-consistency-check lsp-vhdl)
+
 (provide 'lsp-vhdl)
 ;;; lsp-vhdl.el ends here

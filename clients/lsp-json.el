@@ -125,5 +125,7 @@
   (lambda (_client callback error-callback _update?)
     (lsp-package-ensure 'vscode-json-languageserver callback error-callback))))
 
+(lsp-consistency-check lsp-json)
+
 (provide 'lsp-json)
 ;;; lsp-json.el ends here

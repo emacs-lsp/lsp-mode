@@ -171,6 +171,8 @@ Will remove the killed subdir from `lsp-dired--covered-subdirs'."
         (when (derived-mode-p 'dired-mode)
           (dired-revert)))))))
 
-(provide 'lsp-dired)
+
+(lsp-consistency-check lsp-dired)(provide 'lsp-dired)
+
 
 ;;; lsp-dired.el ends here

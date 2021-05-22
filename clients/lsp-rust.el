@@ -985,5 +985,7 @@ https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensio
     (lsp--info "There are no tests related to the symbol at point")))
 
 
+(lsp-consistency-check lsp-rust)
+
 (provide 'lsp-rust)
 ;;; lsp-rust.el ends here

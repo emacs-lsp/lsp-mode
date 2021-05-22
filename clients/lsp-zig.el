@@ -44,5 +44,7 @@ finding the executable with variable `exec-path'."
   :activation-fn (lsp-activate-on "zig")
   :server-id 'zls))
 
+(lsp-consistency-check lsp-zig)
+
 (provide 'lsp-zig)
 ;;; lsp-zig.el ends here

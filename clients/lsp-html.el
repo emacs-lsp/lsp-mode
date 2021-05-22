@@ -192,5 +192,7 @@ styles."
                                          'html-language-server callback
                                          error-callback))))
 
+(lsp-consistency-check lsp-html)
+
 (provide 'lsp-html)
 ;;; lsp-html.el ends here

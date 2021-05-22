@@ -39,5 +39,7 @@
                   :server-id 'nimls))
 
 
+(lsp-consistency-check lsp-nim)
+
 (provide 'lsp-nim)
 ;;; lsp-nim.el ends here

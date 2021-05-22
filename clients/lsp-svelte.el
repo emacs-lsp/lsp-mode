@@ -301,5 +301,7 @@ Example: '((css-unused-selector . ignore) (unused-export-let . error))"
                             (vector (lsp-make-file-system-watcher :glob-pattern "**/*.js")
                                     (lsp-make-file-system-watcher :glob-pattern "**/*.ts")))))))))
 
+(lsp-consistency-check lsp-svelte)
+
 (provide 'lsp-svelte)
 ;;; lsp-svelte.el ends here

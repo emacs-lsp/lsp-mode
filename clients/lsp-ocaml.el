@@ -78,5 +78,7 @@
   :server-id 'ocaml-lsp-server))
 
 
+(lsp-consistency-check lsp-ocaml)
+
 (provide 'lsp-ocaml)
 ;;; lsp-ocaml.el ends here

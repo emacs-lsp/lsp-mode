@@ -428,5 +428,7 @@ So it will rename only references it can find."
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration (lsp-configuration-section "pylsp"))))))
 
+(lsp-consistency-check lsp-pylsp)
+
 (provide 'lsp-pylsp)
 ;;; lsp-pylsp.el ends here

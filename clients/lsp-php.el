@@ -427,5 +427,7 @@ https://phpactor.readthedocs.io/en/develop/extensions.html."
    (lambda (_mode)
      (format "*Phpactor install %s*" extension))))
 
+(lsp-consistency-check lsp-php)
+
 (provide 'lsp-php)
 ;;; lsp-php.el ends here

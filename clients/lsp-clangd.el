@@ -1,6 +1,6 @@
 ;;; lsp-clangd.el --- LSP clients for the C Languages Family -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 Daniel MartÃ­n & emacs-lsp maintainers
+;; Copyright (C) 2020 Daniel Martín & emacs-lsp maintainers
 ;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; Keywords: languages, c, cpp, clang
 
@@ -255,6 +255,8 @@ Only works with clangd."
       (user-error "Could not find other file"))
     (funcall (if new-window #'find-file-other-window #'find-file)
              (lsp--uri-to-path other))))
+
+(lsp-consistency-check lsp-clangd)
 
 (provide 'lsp-clangd)
 ;;; lsp-clangd.el ends here

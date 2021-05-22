@@ -220,5 +220,7 @@
           ("haxe/didChangeRequestQueue" 'ignore)
           ("haxe/cacheBuildFailed" 'ignore))))
 
+(lsp-consistency-check lsp-haxe)
+
 (provide 'lsp-haxe)
 ;;; lsp-haxe.el ends here

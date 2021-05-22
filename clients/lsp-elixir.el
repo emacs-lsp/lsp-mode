@@ -168,5 +168,7 @@ Leave as default to let `executable-find' search for it."
                                          ("change" 2))
                                      (lsp--workspace-server-capabilities workspace)))))
 
+(lsp-consistency-check lsp-elixir)
+
 (provide 'lsp-elixir)
 ;;; lsp-elixir.el ends here

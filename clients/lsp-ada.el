@@ -68,5 +68,7 @@
                                        (lsp-configuration-section "ada"))))
                   :server-id 'ada-ls))
 
+(lsp-consistency-check lsp-ada)
+
 (provide 'lsp-ada)
 ;;; lsp-ada.el ends here

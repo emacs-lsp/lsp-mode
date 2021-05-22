@@ -593,5 +593,7 @@ and `../lib` ,exclude `../lib/temp`.
   :server-id 'lsp-lua-lsp))
 
 
+(lsp-consistency-check lsp-lua)
+
 (provide 'lsp-lua)
 ;;; lsp-lua.el ends here

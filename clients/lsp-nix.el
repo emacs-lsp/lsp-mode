@@ -42,5 +42,7 @@
                   :major-modes '(nix-mode)
                   :server-id 'rnix-lsp))
 
+(lsp-consistency-check lsp-nix)
+
 (provide 'lsp-nix)
 ;;; lsp-nix.el ends here

@@ -354,5 +354,7 @@ FORCED if specified with prefix argument."
        "Expand-Archive" "-Path" temp-file
        "-DestinationPath" (file-name-directory lsp-pwsh-dir)))))
 
+(lsp-consistency-check lsp-pwsh)
+
 (provide 'lsp-pwsh)
 ;;; lsp-pwsh.el ends here

@@ -239,5 +239,7 @@ Newlines and excess whitespace are removed."
                   :download-server-fn (lambda (_client callback error-callback _update?)
                                         (lsp-package-ensure 'xmlls callback error-callback))))
 
+(lsp-consistency-check lsp-xml)
+
 (provide 'lsp-xml)
 ;;; lsp-xml.el ends here

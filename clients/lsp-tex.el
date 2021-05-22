@@ -62,5 +62,7 @@
                   :priority (if (eq lsp-tex-server 'texlab) 1 -1)
                   :server-id 'texlab))
 
+(lsp-consistency-check lsp-tex)
+
 (provide 'lsp-tex)
 ;;; lsp-tex.el ends here

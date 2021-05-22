@@ -69,5 +69,7 @@
                                         (lsp-package-ensure 'vim-language-server
                                                             callback error-callback))))
 
+(lsp-consistency-check lsp-vimscript)
+
 (provide 'lsp-vimscript)
 ;;; lsp-vimscript.el ends here

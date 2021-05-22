@@ -43,5 +43,7 @@
                   :server-id 'lsp-r))
 
 
+(lsp-consistency-check lsp-r)
+
 (provide 'lsp-r)
 ;;; lsp-r.el ends here

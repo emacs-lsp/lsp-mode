@@ -467,5 +467,7 @@ PATH is the current folder to be checked."
         (lsp--info "Server does not support breadcrumb."))
     (lsp--info "Call this function with a number representing the symbol position on breadcrumb")))
 
+(lsp-consistency-check lsp-headerline)
+
 (provide 'lsp-headerline)
 ;;; lsp-headerline.el ends here

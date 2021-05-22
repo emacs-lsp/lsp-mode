@@ -348,5 +348,7 @@ The `:global' workspace is global one.")
     (remove-hook 'lsp-configure-hook #'lsp-modeline--enable-workspace-status t)
     (remove-hook 'lsp-unconfigure-hook #'lsp-modeline--disable-workspace-status t))))
 
+(lsp-consistency-check lsp-modeline)
+
 (provide 'lsp-modeline)
 ;;; lsp-modeline.el ends here

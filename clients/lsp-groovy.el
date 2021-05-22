@@ -60,5 +60,7 @@
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration (lsp-configuration-section "groovy"))))))
 
+(lsp-consistency-check lsp-groovy)
+
 (provide 'lsp-groovy)
 ;;; lsp-groovy.el ends here

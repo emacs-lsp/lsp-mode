@@ -141,5 +141,7 @@ Glob patterns as strings are accepted (eg. *bad.robot between double quotes)"
 
 
 
+(lsp-consistency-check lsp-rf)
+
 (provide 'lsp-rf)
 ;;; lsp-rf.el ends here

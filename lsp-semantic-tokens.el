@@ -477,5 +477,7 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
           lsp--semantic-tokens-teardown nil
           lsp--semantic-tokens-use-ranged-requests nil))))
 
+(lsp-consistency-check lsp-semantic-tokens)
+
 (provide 'lsp-semantic-tokens)
 ;;; lsp-semantic-tokens.el ends here

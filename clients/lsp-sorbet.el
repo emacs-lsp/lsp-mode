@@ -53,5 +53,7 @@
   :major-modes '(ruby-mode enh-ruby-mode)
   :server-id 'sorbet-ls))
 
+(lsp-consistency-check lsp-sorbet)
+
 (provide 'lsp-sorbet)
 ;;; lsp-sorbet.el ends here

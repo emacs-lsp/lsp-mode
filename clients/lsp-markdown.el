@@ -99,5 +99,7 @@ For a complete list of plugins, check:
                   :major-modes '(markdown-mode)
                   :server-id 'unified))
 
+(lsp-consistency-check lsp-markdown)
+
 (provide 'lsp-markdown)
 ;;; lsp-markdown.el ends here

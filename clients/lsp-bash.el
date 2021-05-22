@@ -84,5 +84,7 @@ This prevents the Bash server from being turned on in zsh files."
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'bash-language-server callback error-callback))))
 
+(lsp-consistency-check lsp-bash)
+
 (provide 'lsp-bash)
 ;;; lsp-bash.el ends here

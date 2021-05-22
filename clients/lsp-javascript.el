@@ -328,5 +328,7 @@ Examples: `./import-map.json',
                   :activation-fn #'lsp-typescript-javascript-tsx-jsx-activate-p
                   :server-id 'deno-ls))
 
+(lsp-consistency-check lsp-javascript)
+
 (provide 'lsp-javascript)
 ;;; lsp-javascript.el ends here

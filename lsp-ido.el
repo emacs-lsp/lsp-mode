@@ -136,5 +136,7 @@ When called with prefix ARG the default selection will be symbol at point."
                   (when arg (thing-at-point 'symbol)))))
     (lsp-ido--jump-selected-candidate (gethash choice hash-table-candidates))))
 
+(lsp-consistency-check lsp-ido)
+
 (provide 'lsp-ido)
 ;;; lsp-ido.el ends here

@@ -248,5 +248,7 @@ server."
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'css-languageserver callback error-callback))))
 
+(lsp-consistency-check lsp-css)
+
 (provide 'lsp-css)
 ;;; lsp-css.el ends here

@@ -115,5 +115,7 @@ to Kotlin."
                     (with-lsp-workspace workspace
                       (lsp--set-configuration (lsp-configuration-section "kotlin"))))))
 
+(lsp-consistency-check lsp-kotlin)
+
 (provide 'lsp-kotlin)
 ;;; lsp-kotlin.el ends here

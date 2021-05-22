@@ -37,5 +37,7 @@
                   :priority -1
                   :server-id 'cmakels))
 
+(lsp-consistency-check lsp-cmake)
+
 (provide 'lsp-cmake)
 ;;; lsp-cmake.el ends here

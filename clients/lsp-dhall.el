@@ -37,5 +37,7 @@
                   :priority -1
                   :server-id 'dhallls))
 
+(lsp-consistency-check lsp-dhall)
+
 (provide 'lsp-dhall)
 ;;; lsp-dhall.el ends here

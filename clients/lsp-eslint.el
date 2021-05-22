@@ -349,5 +349,7 @@ to allow or deny it.")
                            :url (lsp-vscode-extension-url "dbaeumer" "vscode-eslint" "2.1.14")
                            :store-path tmp-zip)))))
 
+(lsp-consistency-check lsp-eslint)
+
 (provide 'lsp-eslint)
 ;;; lsp-eslint.el ends here

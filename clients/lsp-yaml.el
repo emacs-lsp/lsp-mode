@@ -226,5 +226,7 @@ Set FORCE-DOWNLOADING to non-nil to force re-download the database."
           (vconcat (-filter (lambda (p) (not (equal p glob)))
                             (append patterns nil)) nil))))
 
+(lsp-consistency-check lsp-yaml)
+
 (provide 'lsp-yaml)
 ;;; lsp-yaml.el ends here

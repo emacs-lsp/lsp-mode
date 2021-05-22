@@ -48,5 +48,7 @@
                   :request-handlers (lsp-ht ("window/showStatus" 'ignore))))
 
 
+(lsp-consistency-check lsp-hack)
+
 (provide 'lsp-hack)
 ;;; lsp-hack.el ends here

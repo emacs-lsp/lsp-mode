@@ -289,5 +289,7 @@ If there are more arguments expected after the line and column numbers."
   :initialization-options '(:dependency-scheme "jar")
   :server-id 'clojure-lsp))
 
+(lsp-consistency-check lsp-clojure)
+
 (provide 'lsp-clojure)
 ;;; lsp-clojure.el ends here

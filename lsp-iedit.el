@@ -95,5 +95,7 @@ See also `lsp-enable-symbol-highlighting'."
   (lsp-iedit-highlights)
   (evil-multiedit-state))
 
+(lsp-consistency-check lsp-iedit)
+
 (provide 'lsp-iedit)
 ;;; lsp-iedit.el ends here

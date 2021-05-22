@@ -61,5 +61,7 @@
   :priority -3
   :server-id 'steep-ls))
 
+(lsp-consistency-check lsp-steep)
+
 (provide 'lsp-steep)
 ;;; lsp-steep.el ends here

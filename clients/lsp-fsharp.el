@@ -299,5 +299,7 @@ current runtime."
                   :server-id 'fsac
                   :download-server-fn #'lsp-fsharp--fsac-install))
 
+(lsp-consistency-check lsp-fsharp)
+
 (provide 'lsp-fsharp)
 ;;; lsp-fsharp.el ends here

@@ -173,5 +173,7 @@
                                     (with-lsp-workspace workspace
                                       (lsp-sqls-setup-workspace-configuration)))))
 
+(lsp-consistency-check lsp-sqls)
+
 (provide 'lsp-sqls)
 ;;; lsp-sqls.el ends here

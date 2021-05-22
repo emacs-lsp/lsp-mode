@@ -1783,6 +1783,46 @@ regex in IGNORED-FILES."
            (indent 1))
   `(let ((lsp--buffer-workspaces ,workspaces)) ,@body))
 
+
+
+(defconst lsp-downstream-deps
+  '(;; external packages
+    ccls consult-lsp dap-mode helm-lsp lsp-dart lsp-docker lsp-focus lsp-grammarly
+    lsp-haskell lsp-ivy lsp-java lsp-javacomp lsp-jedi lsp-julia lsp-latex
+    lsp-metals lsp-mssql lsp-origami lsp-p4 lsp-pascal lsp-pyre lsp-pyright
+    lsp-python-ms lsp-rescript lsp-sonarlint lsp-sourcekit lsp-tailwindcss lsp-treemacs
+    lsp-ui swift-helpful
+    ;; clients
+    lsp-actionscript lsp-ada lsp-angular lsp-bash lsp-clangd
+    lsp-clojure lsp-cmake lsp-crystal lsp-csharp lsp-css lsp-d lsp-dhall
+    lsp-dockerfile lsp-elixir lsp-elm lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript
+    lsp-go lsp-groovy lsp-hack lsp-haxe lsp-html lsp-javascript lsp-json lsp-kotlin lsp-lua
+    lsp-markdown lsp-nim lsp-nix lsp-ocaml lsp-perl lsp-php lsp-prolog lsp-purescript lsp-pwsh
+    lsp-pyls lsp-pylsp lsp-racket lsp-r lsp-rf lsp-rust lsp-solargraph lsp-sorbet lsp-sqls
+    lsp-steep lsp-svelte lsp-terraform lsp-tex lsp-vala lsp-verilog lsp-vetur lsp-vhdl
+    lsp-vimscript lsp-xml lsp-yaml lsp-zig)
+  "List of downstream deps.")
+
+(defmacro lsp-consistency-check (package)
+  `(defconst ,(intern (concat (symbol-name package)
+                              "-plist-value-when-compiled"))
+     (eval-when-compile lsp-use-plists)))
+
+;; (mapc
+;;  (lambda (package)
+;;    (with-eval-after-load package
+;;      (let ((symbol-name (intern
+;;                          (concat (symbol-name package)
+;;                                  "-plist-value-when-compiled"))))
+;;        (cond
+;;         ((not (boundp symbol-name))
+;;          (warn "We have detected that you are using version of %s that is not compatible with current version of lsp-mode.el, please update it." (propertize (symbol-name package)
+;;                                                                                                                                                              'face 'bold)))
+;;         ((not (eq (symbol-value symbol-name) lsp-use-plists))
+;;          (warn "Package %s is inconsistent with lsp-mode.el. This is indication of race during installation. In order to solve that please delete all packages related to lsp-mode, restar Emacs and install them again." (propertize (symbol-name package) 'face 'bold)))))))
+;;  lsp-downstream-deps)
+
+
 (defmacro lsp-foreach-workspace (&rest body)
   "Execute BODY for each of the current workspaces."
   (declare (debug (form body)))
