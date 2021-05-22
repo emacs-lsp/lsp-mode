@@ -8330,6 +8330,8 @@ This avoids overloading the server with many files when starting Emacs."
 (declare-function flycheck-add-mode "ext:flycheck")
 (declare-function lsp-diagnostics-lsp-checker-if-needed "lsp-diagnostics")
 
+(defalias 'lsp-client-download-server-fn 'lsp--client-download-server-fn)
+
 (defun lsp-flycheck-add-mode (mode)
   "Register flycheck support for MODE."
   (lsp-diagnostics-lsp-checker-if-needed)
