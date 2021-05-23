@@ -88,7 +88,7 @@ that issue:
 ![Turn Off 3](images/turn-off-3.png "turn off 3")
 12. Signature help
 ``` elisp
-(setq lsp-signature-auto-activate nil) ;; you could manually requiest them via `lsp-signature-activate`
+(setq lsp-signature-auto-activate nil) ;; you could manually request them via `lsp-signature-activate`
 ```
 13. Signature help documentation (keep the signatures)
 ``` elisp
