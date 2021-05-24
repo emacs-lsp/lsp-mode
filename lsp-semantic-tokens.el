@@ -190,6 +190,7 @@ unless overridden by a more specific face association."
     ("enum" . lsp-face-semhl-enum)
     ("typeParameter" . lsp-face-semhl-type-parameter)
     ("function" . lsp-face-semhl-function)
+    ("method" . lsp-face-semhl-method)
     ("member" . lsp-face-semhl-member)
     ("property" . lsp-face-semhl-property)
     ("macro" . lsp-face-semhl-macro)
