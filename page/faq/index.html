@@ -2475,6 +2475,21 @@
 <li>The issue is caused by <code>clojure-lsp</code> server being more aggressive with formatting(deleting whitespaces) and <code>aggressive-indent-mode</code> being on and calling it while typing. The solution is either to disable <code>aggressive-indent-mode</code> or to disable <code>lsp-mode</code> formatting via <code>lsp-enable-indentation</code>.</li>
 </ul>
 </li>
+<li>
+<p>How do I disable automatic installation for particular language server?</p>
+<ul>
+<li>Solution:
+Disable for one client:
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-bash</span>
+   <span class="p">(</span><span class="nb">setf</span> <span class="p">(</span><span class="nv">lsp-client-download-server-fn</span> <span class="p">(</span><span class="nf">gethash</span> <span class="ss">&#39;bash-ls</span> <span class="nv">lsp-clients</span><span class="p">))</span> <span class="no">nil</span><span class="p">))</span>
+</code></pre></div>
+Disable for all clients:
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;lsp-mode-hook</span>
+   <span class="p">(</span><span class="nb">lambda</span> <span class="p">()</span> <span class="p">(</span><span class="nf">mapc</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="nv">client</span><span class="p">)</span> <span class="p">(</span><span class="nb">setf</span> <span class="p">(</span><span class="nv">lsp-client-download-server-fn</span> <span class="nv">client</span><span class="p">)</span> <span class="no">nil</span><span class="p">))</span>
+                    <span class="p">(</span><span class="nv">ht-values</span> <span class="nv">lsp-clients</span><span class="p">))))</span>
+</code></pre></div></li>
+</ul>
+</li>
 </ul>
                 
                   
@@ -2484,7 +2499,7 @@
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 22, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 25, 2021</span>
     
   </small>
 </div>
