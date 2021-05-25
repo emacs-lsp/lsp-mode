@@ -33,3 +33,17 @@
 
 - When using `clojure` with `clojure-lsp` `lsp-mode` is interfering with typing (e. g. deleting whitespace while typing), how to fix that?
     - The issue is caused by `clojure-lsp` server being more aggressive with formatting(deleting whitespaces) and `aggressive-indent-mode` being on and calling it while typing. The solution is either to disable `aggressive-indent-mode` or to disable `lsp-mode` formatting via `lsp-enable-indentation`.
+
+- How do I disable automatic installation for particular language server?
+    - Solution:
+    Disable for one client:
+    ``` elisp
+    (with-eval-after-load 'lsp-bash
+       (setf (lsp-client-download-server-fn (gethash 'bash-ls lsp-clients)) nil))
+    ```
+    Disable for all clients:
+    ``` elisp
+    (add-hook 'lsp-mode-hook
+       (lambda () (mapc (lambda (client) (setf (lsp-client-download-server-fn client) nil))
+                        (ht-values lsp-clients))))
+    ```
