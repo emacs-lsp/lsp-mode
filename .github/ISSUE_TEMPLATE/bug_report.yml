@@ -19,7 +19,7 @@ body:
 - type: checkboxes
   id: questions
   attributes:
-    label: Please make sure that:
+    label: Please make sure that you check the options below
   options:
     - label: I have tested with the latest melpa version
       required: true
