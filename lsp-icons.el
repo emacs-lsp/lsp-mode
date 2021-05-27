@@ -20,6 +20,7 @@
 ;;  LSP icons management
 ;;
 ;;; Code:
+(require 'lsp-mode)
 
 (defgroup lsp-icons nil
   "LSP icons"
