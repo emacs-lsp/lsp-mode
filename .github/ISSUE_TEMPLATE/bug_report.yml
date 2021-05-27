@@ -5,7 +5,8 @@ body:
 - type: checkboxes
   id: requirements
   attributes:
-    label: Thank you for the bug report, please check the requiments below
+    label: Thank you for the bug report
+    description: Please check the suggestion below before proceeding:
     options:
       - label: I am using the latest version of `lsp-mode` related packages.
         required: true
