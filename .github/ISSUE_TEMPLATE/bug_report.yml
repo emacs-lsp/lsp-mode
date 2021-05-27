@@ -16,6 +16,14 @@ body:
           Alternatively, in will be great if you can reproduce the issue using [lsp-docker](https://github.com/emacs-lsp/lsp-docker/) which provides the minimal configurations for `lsp-mode` and ships with most of the language servers.
           3. Check FAQ and Troubleshooting section (https://emacs-lsp.github.io/lsp-mode/page/faq/ and https://emacs-lsp.github.io/lsp-mode/page/troubleshooting/)
           4. Consider providing a minimal project to reproduce the issue with. Note that `lsp-mode` supports 30+ languages and the maintainers of the project are not familiar with all of the languages and a sample project + full steps to reproduce will help a lot.
+- type: checkboxes
+  id: questions
+  attributes:
+    label: Please make sure that:
+  options:
+    - label: I have tested with the latest melpa version
+      required: true
+    - label: I have tested with [lsp-start-plain.el](https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-start-plain.el#L21-L30)
 - type: textarea
   id: bug-description
   attributes:
@@ -44,11 +52,15 @@ body:
     description: Mention which server/language did you use (e. g. lsp-python, lsp-ccls, lsp-java, etc)
   validations:
     required: true
-- type: textarea
+- type: dropdown
   id: which-os
   attributes:
     label: OS
     description: Which os do you use?
+    options:
+      - Linux
+      - MacOS
+      - Windows
   validations:
     required: true
 - type: textarea
@@ -63,6 +75,7 @@ body:
       ``` emacs-lisp
       (setq lsp-print-io t)
       ```
+    render: "emacs-lisp"
 - type: textarea
   id: anything-else
   attributes:
