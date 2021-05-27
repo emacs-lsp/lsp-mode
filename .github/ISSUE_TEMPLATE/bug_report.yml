@@ -20,10 +20,10 @@ body:
   id: questions
   attributes:
     label: Please make sure that you check the options below
-  options:
-    - label: I have tested with the latest melpa version
-      required: true
-    - label: I have tested with [lsp-start-plain.el](https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-start-plain.el#L21-L30)
+    options:
+      - label: I have tested with the latest melpa version
+        required: true
+      - label: I have tested with [lsp-start-plain.el](https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-start-plain.el#L21-L30)
 - type: textarea
   id: bug-description
   attributes:
