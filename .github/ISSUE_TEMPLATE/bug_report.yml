@@ -6,7 +6,7 @@ body:
   id: requirements
   attributes:
     label: Thank you for the bug report
-    description: Please check the suggestion below before proceeding:
+    description: Please check the suggestion below before proceeding
     options:
       - label: I am using the latest version of `lsp-mode` related packages.
         required: true
