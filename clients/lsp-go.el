@@ -257,6 +257,52 @@ $GOPATH/pkg/mod along with the value of
   :group 'lsp-go
   :package-version '(lsp-mode "7.1"))
 
+(defcustom lsp-go-analyses (make-hash-table)
+  "Specify analyses that the user would like to enable or disable. A map of the
+  names of analysis passes that should be enabled/disabled. A full list of
+  analyzers that gopls uses can be found at
+  https://github.com/golang/tools/blob/master/gopls/doc/analyzers.md"
+  :type '(alist :key-type (string :tag "env var name") :value-type (boolean :tag "value"))
+  :group 'lsp-go
+  :risky t
+  :package-version '(lsp-mode "7.1"))
+
+(defcustom lsp-go-import-shortcut "Both"
+  "Specifies whether import statements should link to documentation or go to 
+  definitions."
+  :type '(choice (const "Both")
+                 (const "Link")
+                 (const "Definition"))
+  :group 'lsp-go
+  :risky t
+  :package-version '(lsp-mode "7.1"))
+
+(defcustom lsp-go-symbol-matcher "Fuzzy"
+  "Sets the algorithm that is used when finding workspace symbols."
+  :type '(choice (const "Fuzzy")
+                 (const "CaseInsensitive")
+                 (const "CaseSensitive"))
+  :group 'lsp-go
+  :risky t
+  :package-version '(lsp-mode "7.1"))
+
+(defcustom lsp-go-symbol-style "Dynamic"
+  "Controls how symbols are qualified in symbol responses.
+
+  'Dynamic' uses whichever qualifier results in the highest scoring match for
+  the given symbol query. Here a 'qualifier' is any '/' or '.' delimited suffix
+  of the fully qualified symbol. i.e. 'to/pkg.Foo.Field' or just 'Foo.Field'.
+
+  'Full' is fully qualified symbols, i.e. 'path/to/pkg.Foo.Field'.
+
+  'Package' is package qualified symbols i.e. 'pkg.Foo.Field'."
+  :type '(choice (const "Dynamic")
+                 (const "Full")
+                 (const "Package"))
+  :group 'lsp-go
+  :risky t
+  :package-version '(lsp-mode "7.1"))
+
 (lsp-register-custom-settings
  '(("gopls.usePlaceholders" lsp-go-use-placeholders t)
    ("gopls.hoverKind" lsp-go-hover-kind)
@@ -267,7 +313,11 @@ $GOPATH/pkg/mod along with the value of
    ("gopls.linksInHover" lsp-go-links-in-hover t)
    ("gopls.gofumpt" lsp-go-use-gofumpt t)
    ("gopls.local" lsp-go-goimports-local)
-   ("gopls.directoryFilters" lsp-go-directory-filters)))
+   ("gopls.directoryFilters" lsp-go-directory-filters)
+   ("gopls.analyses" lsp-go-analyses)
+   ("gopls.importShortcut" lsp-go-import-shortcut)
+   ("gopls.symbolMatcher" lsp-go-symbol-matcher)
+   ("gopls.symbolStyle" lsp-go-symbol-style)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
