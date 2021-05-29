@@ -7006,7 +7006,7 @@ SESSION is the active session."
         (list :processId nil
               :rootPath (lsp-file-local-name (expand-file-name root))
               :clientInfo (list :name "emacs"
-                                :version (emacs-version))
+                                :version (string-trim emacs-version))
               :rootUri (lsp--path-to-uri root)
               :capabilities (lsp--client-capabilities custom-capabilities)
               :initializationOptions initialization-options
