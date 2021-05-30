@@ -82,7 +82,7 @@ completing function calls."
   'lsp-go-env
   "lsp-mode 7.0.1")
 
-(defcustom lsp-go-env (make-hash-table)
+(defcustom lsp-go-env nil
   "`gopls' has the unusual ability to set environment variables,
   intended to affect the behavior of commands invoked by `gopls'
   on the user's behalf. This variable takes a hash table of env
@@ -257,7 +257,7 @@ $GOPATH/pkg/mod along with the value of
   :group 'lsp-go
   :package-version '(lsp-mode "7.1"))
 
-(defcustom lsp-go-analyses (make-hash-table)
+(defcustom lsp-go-analyses nil
   "Specify analyses that the user would like to enable or disable. A map of the
   names of analysis passes that should be enabled/disabled. A full list of
   analyzers that gopls uses can be found at
