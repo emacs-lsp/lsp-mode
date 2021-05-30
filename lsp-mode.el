@@ -3342,7 +3342,8 @@ disappearing, unset all the variables related to it."
                                                          . ((properties . ["documentation"
                                                                            "details"
                                                                            "additionalTextEdits"
-                                                                           "command"])))))
+                                                                           "command"])))
+                                                        (insertTextModeSupport . ((valueSet . [1 2])))))
                                      (contextSupport . t)))
                       (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))))
                       (documentLink . ((dynamicRegistration . t)
@@ -4049,29 +4050,48 @@ The method uses `replace-buffer-contents'."
   "Enable relative indentation when insert texts, snippets ...
 from language server.")
 
-(defun lsp--expand-snippet (snippet &optional start end expand-env keep-whitespace)
+(defun lsp--expand-snippet (snippet &optional start end expand-env)
   "Wrapper of `yas-expand-snippet' with all of it arguments.
 The snippet will be convert to LSP style and indent according to
 LSP server result."
   (let* ((inhibit-field-text-motion t)
-         (offset (save-excursion
-                   (goto-char start)
-                   (back-to-indentation)
-                   (buffer-substring-no-properties
-                    (line-beginning-position)
-                    (point))))
          (yas-wrap-around-region nil)
-         (yas-indent-line (unless keep-whitespace 'auto))
-         (yas-also-auto-indent-first-line nil)
-         (indent-line-function (if (or lsp-enable-relative-indentation
-                                       (derived-mode-p 'org-mode))
-                                   (lambda () (save-excursion
-                                                (forward-line 0)
-                                                (insert offset)))
-                                 indent-line-function)))
+         (yas-indent-line 'none)
+         (yas-also-auto-indent-first-line nil))
     (yas-expand-snippet
      (lsp--to-yasnippet-snippet snippet)
      start end expand-env)))
+
+(defun lsp--indent-lines (start end &optional insert-text-mode?)
+  "Indent from START to END based on INSERT-TEXT-MODE? value.
+- When INSERT-TEXT-MODE? is provided
+  - if it's `lsp/insert-text-mode-as-it', do no editor indentation.
+  - if it's `lsp/insert-text-mode-adjust-indentation', adjust leading
+    whitespaces to match the line where text is inserted.
+- When it's not provided, using `indent-line-function' for each line."
+  (save-excursion
+    (goto-char end)
+    (let* ((end-line (line-number-at-pos))
+           (offset (save-excursion
+                     (goto-char start)
+                     (current-indentation)))
+           (indent-line-function
+            (cond ((equal insert-text-mode? lsp/insert-text-mode-as-it)
+                   #'ignore)
+                  ((or (equal insert-text-mode? lsp/insert-text-mode-adjust-indentation)
+                       lsp-enable-relative-indentation
+                       ;; Indenting snippets is extremely slow in `org-mode' buffers
+                       ;; since it has to calculate indentation based on SRC block
+                       ;; position.  Thus we use relative indentation as default.
+                       (derived-mode-p 'org-mode))
+                   (lambda () (save-excursion
+                                (beginning-of-line)
+                                (indent-to-column offset))))
+                  (t indent-line-function))))
+      (goto-char start)
+      (while (and (equal (forward-line 1) 0)
+                  (<= (line-number-at-pos) end-line))
+        (funcall indent-line-function)))))
 
 (defun lsp--apply-text-edits (edits &optional operation)
   "Apply the EDITS described in the TextEdit[] object.
@@ -4099,7 +4119,10 @@ OPERATION is symbol representing the source of this text edit."
                            (-when-let ((&SnippetTextEdit :range (&RangeToPoint :start)
                                                          :insert-text-format? :new-text) edit)
                              (when (eq insert-text-format? lsp/insert-text-format-snippet)
-                               (lsp--expand-snippet new-text start (+ start (length new-text))))))
+                               ;; No `save-excursion' needed since expand snippet will change point anyway
+                               (goto-char (+ start (length new-text)))
+                               (lsp--indent-lines start (point))
+                               (lsp--expand-snippet new-text start (point)))))
                          (run-hook-with-args 'lsp-after-apply-edits-hook operation))))
           (undo-amalgamate-change-group change-group)
           (progress-reporter-done reporter))))))
