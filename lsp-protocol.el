@@ -472,6 +472,10 @@ See `-let' for a description of the destructuring mechanism."
   [nil PlainText Snippet])
 (defconst lsp/insert-text-format-plain-text 1)
 (defconst lsp/insert-text-format-snippet 2)
+(defvar lsp/insert-text-mode-lookup
+  [nil AsIs AdjustIndentation])
+(defconst lsp/insert-text-mode-as-it 1)
+(defconst lsp/insert-text-mode-adjust-indentation 2)
 (defvar lsp/message-type-lookup
   [nil Error Warning Info Log])
 (defconst lsp/message-type-error 1)
@@ -559,7 +563,7 @@ See `-let' for a description of the destructuring mechanism."
  (Command (:title :command) (:arguments))
  (CompletionCapabilities nil (:completionItem :completionItemKind :contextSupport :dynamicRegistration))
  (CompletionContext (:triggerKind) (:triggerCharacter))
- (CompletionItem (:label) (:additionalTextEdits :command :commitCharacters :data :deprecated :detail :documentation :filterText :insertText :insertTextFormat :kind :preselect :sortText :tags :textEdit :score :keepWhitespace))
+ (CompletionItem (:label) (:additionalTextEdits :command :commitCharacters :data :deprecated :detail :documentation :filterText :insertText :insertTextFormat :insertTextMode :kind :preselect :sortText :tags :textEdit :score))
  (CompletionItemCapabilities nil (:commitCharactersSupport :deprecatedSupport :documentationFormat :preselectSupport :snippetSupport :tagSupport :insertReplaceSupport :resolveSupport))
  (CompletionItemKindCapabilities nil (:valueSet))
  (CompletionItemTagSupportCapabilities (:valueSet) nil)

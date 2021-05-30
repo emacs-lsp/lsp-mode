@@ -530,8 +530,7 @@ Others: CANDIDATES"
                        'lsp-completion-prefix prefix)
                (text-properties-at 0 candidate))
               ((&CompletionItem? :label :insert-text? :text-edit? :insert-text-format?
-                                 :additional-text-edits? :keep-whitespace?
-                                 :command?)
+                                 :additional-text-edits? :insert-text-mode? :command?)
                item))
         (cond
          (text-edit?
@@ -553,12 +552,11 @@ Others: CANDIDATES"
           (delete-region start-point (point))
           (insert (or (unless (lsp-falsy? insert-text?) insert-text?) label))))
 
+        (lsp--indent-lines start-point (point) insert-text-mode?)
         (when (equal insert-text-format? lsp/insert-text-format-snippet)
           (lsp--expand-snippet (buffer-substring start-point (point))
                                start-point
-                               (point)
-                               nil
-                               keep-whitespace?))
+                               (point)))
 
         (when lsp-completion-enable-additional-text-edit
           (if (or (get-text-property 0 'lsp-completion-resolved candidate)
