@@ -262,7 +262,7 @@ $GOPATH/pkg/mod along with the value of
   names of analysis passes that should be enabled/disabled. A full list of
   analyzers that gopls uses can be found at
   https://github.com/golang/tools/blob/master/gopls/doc/analyzers.md"
-  :type '(alist :key-type (string :tag "env var name") :value-type (boolean :tag "value"))
+  :type '(alist :key-type (string :tag "analyzer name") :value-type (boolean :tag "value"))
   :group 'lsp-go
   :risky t
   :package-version '(lsp-mode "7.1"))
