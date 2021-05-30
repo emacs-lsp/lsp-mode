@@ -7398,6 +7398,8 @@ nil."
            (progn
              (when (f-exists? download-path)
                (f-delete download-path))
+             (when (f-exists? store-path)
+               (f-delete store-path))
              (lsp--info "Starting to download %s to %s..." url download-path)
              (mkdir (f-parent download-path) t)
              (url-copy-file url download-path)

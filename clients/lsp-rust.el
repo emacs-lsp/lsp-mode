@@ -611,9 +611,9 @@ them with `crate` or the crate name they refer to."
 (defcustom lsp-rust-analyzer-download-url
   (format "https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/%s"
           (pcase system-type
-            ('gnu/linux "rust-analyzer-linux")
-            ('darwin "rust-analyzer-mac")
-            ('windows-nt "rust-analyzer-windows.exe")))
+            ('gnu/linux "rust-analyzer-x86_64-unknown-linux-gnu.gz")
+            ('darwin "rust-analyzer-x86_64-apple-darwin.gz")
+            ('windows-nt "rust-analyzer-x86_64-pc-windows-msvc.gz")))
   "Automatic download url for Rust Analyzer"
   :type 'string
   :group 'lsp-rust
@@ -632,6 +632,7 @@ them with `crate` or the crate name they refer to."
 (lsp-dependency
  'rust-analyzer
  `(:download :url lsp-rust-analyzer-download-url
+             :decompress :gzip
              :store-path lsp-rust-analyzer-store-path
              :set-executable? t)
  '(:system "rust-analyzer"))
