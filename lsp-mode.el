@@ -1788,7 +1788,7 @@ regex in IGNORED-FILES."
 (defconst lsp-downstream-deps
   '(;; external packages
     ccls consult-lsp dap-mode helm-lsp lsp-dart lsp-docker lsp-focus lsp-grammarly
-         lsp-haskell lsp-ivy lsp-java lsp-javacomp lsp-jedi lsp-julia lsp-latex lsp-ltex
+    lsp-haskell lsp-ivy lsp-java lsp-javacomp lsp-jedi lsp-julia lsp-latex lsp-ltex
     lsp-metals lsp-mssql lsp-origami lsp-p4 lsp-pascal lsp-pyre lsp-pyright
     lsp-python-ms lsp-rescript lsp-sonarlint lsp-sourcekit lsp-tailwindcss lsp-treemacs
     lsp-ui swift-helpful
