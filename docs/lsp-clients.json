@@ -288,6 +288,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "languagetool",
+    "full-name": "LanguageTool",
+    "server-name": "LTEX",
+    "server-url": "https://github.com/valentjn/ltex-ls",
+    "installation-url": "https://github.com/valentjn/ltex-ls#installation",
+    "debugger": "Not available"
+  },
+  {
     "name": "emmy-lua",
     "full-name": "Lua",
     "server-name": "EmmyLua",
