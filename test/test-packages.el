@@ -67,6 +67,7 @@
                lsp-haskell
                lsp-ivy
                lsp-java
+               lsp-ltex
                lsp-metals
                lsp-mssql
                lsp-origami
