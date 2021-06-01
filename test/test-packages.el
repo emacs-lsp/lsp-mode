@@ -80,7 +80,7 @@
                lsp-ui)))
   (package-initialize)
   (package-refresh-contents)
-  
+
   (advice-add
    'package-install-from-archive
    :before (lambda (pkg-desc)
