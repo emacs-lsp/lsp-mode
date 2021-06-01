@@ -27,7 +27,7 @@
 
 (setq user-emacs-directory (expand-file-name (make-temp-name ".emacs.d")
                                              "~")
-      package-user-dir (expand-file-name (make-temp-name "tmp-elpa-2")
+      package-user-dir (expand-file-name (make-temp-name "tmp-elpa")
                                          user-emacs-directory))
 
 (defun package-version (name)
@@ -78,8 +78,8 @@
                lsp-tailwindcss
                lsp-treemacs
                lsp-ui)))
-  (package-initialize)
-  (package-refresh-contents)
+  ;;(package-initialize)
+  ;;(package-refresh-contents)
 
   (advice-add
    'package-install-from-archive
