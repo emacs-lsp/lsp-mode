@@ -36,7 +36,7 @@ unix-build:
 unix-ci: clean unix-build unix-compile prepare_cpp_project unix-test test-downstream-pkgs
 
 windows-ci: CASK=
-windows-ci: windows-compile clean windows-test test-downstream-pkgs
+windows-ci: clean windows-compile windows-test test-downstream-pkgs
 
 unix-compile:
 	@echo "Compiling..."
@@ -53,9 +53,7 @@ windows-compile:
 	@echo "Compiling..."
 	@$(CASK) $(EMACS) -Q --batch \
 		-l $(WIN-BOOTSTRAP) \
-		-L . -L clients \
-		--eval '(setq byte-compile-error-on-warn t)' \
-		-f batch-byte-compile $(LSP-FILES)
+		-L . -L clients
 
 test-downstream-pkgs:
 	@echo "Test downstream packages..."
