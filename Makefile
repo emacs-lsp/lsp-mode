@@ -61,6 +61,7 @@ windows-compile:
 test-downstream-pkgs:
 	@echo "Test downstream packages..."
 	@$(CASK) $(EMACS) -Q --batch \
+		--eval '(setq emacs-lsp-ci t)' \
 		-l $(WIN-BOOTSTRAP) \
 		-l $(TEST-PKGS)
 
@@ -98,6 +99,7 @@ unix-test:
 windows-test:
 	@echo "Testing..."
 	@$(EMACS) -Q --batch \
+		--eval '(setq emacs-lsp-ci t)' \
 		-l $(WIN-BOOTSTRAP) \
 		-L . -L clients \
 		$(LOAD-TEST-FILES) \
