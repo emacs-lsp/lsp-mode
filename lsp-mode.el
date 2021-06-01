@@ -5999,7 +5999,7 @@ textDocument/didOpen for the new file."
     (if-let ((handler (or (gethash method (lsp--client-notification-handlers client))
                           (gethash method lsp--default-notification-handlers))))
         (funcall handler workspace params)
-      (unless (string-prefix-p "$" method)
+      (when (and method (not (string-prefix-p "$" method)))
         (lsp-warn "Unknown notification: %s" method)))))
 
 (lsp-defun lsp--build-workspace-configuration-response ((&ConfigurationParams :items))
