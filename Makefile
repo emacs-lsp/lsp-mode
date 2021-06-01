@@ -103,7 +103,8 @@ windows-test:
 	@$(EMACS) -Q --batch \
 		--eval '(setq emacs-lsp-ci t)' \
 		-l $(WIN-BOOTSTRAP) \
-		-L . -L clients
+		-L . -L clients \
+		$(LOAD-TEST-FILES)
 
 docs:
 	make -C docs/ generate
