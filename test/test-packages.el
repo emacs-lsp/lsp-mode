@@ -27,7 +27,7 @@
 
 (setq user-emacs-directory (expand-file-name (make-temp-name ".emacs.d")
                                              "~")
-      package-user-dir (expand-file-name (make-temp-name "tmp-elpa")
+      package-user-dir (expand-file-name (make-temp-name "tmp-elpa-2")
                                          user-emacs-directory))
 
 (defun package-version (name)
