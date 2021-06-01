@@ -22,8 +22,7 @@ LSP-FILES := lsp-protocol.el lsp-mode.el lsp.el lsp-completion.el \
 WIN-BOOTSTRAP=test/windows-bootstrap.el
 TEST-PKGS=test/test-packages.el
 
-TEST-FILES := $(WIN-BOOTSTRAP) $(TEST-PKGS) test/test-helper.el \
-		$(shell ls test/lsp-*.el)
+TEST-FILES := test/test-helper.el $(shell ls test/lsp-*.el)
 LOAD-FILE = -l $(test-file)
 LOAD-TEST-FILES := $(foreach test-file, $(TEST-FILES), $(LOAD-FILE))
 
