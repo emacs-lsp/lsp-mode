@@ -36,8 +36,7 @@ unix-build:
 unix-ci: clean unix-build unix-compile prepare_cpp_project unix-test test-downstream-pkgs
 
 windows-ci: CASK=
-#windows-ci: clean windows-compile windows-test test-downstream-pkgs
-windows-ci: windows-test
+windows-ci: clean windows-compile windows-test test-downstream-pkgs
 
 unix-compile:
 	@echo "Compiling..."
