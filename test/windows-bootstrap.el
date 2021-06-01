@@ -39,5 +39,4 @@
                (unless (boundp 'emacs-lsp-ci)
                  (delete-directory ,user-emacs-directory t)))))
 
-
 ;;; windows-bootstrap.el ends here
