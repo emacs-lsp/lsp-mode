@@ -39,8 +39,6 @@
             (package-refresh-contents) (package-install pkg)))
         pkgs)
 
-  (message ">>> Done install dependencies")  ; test log
-
   (add-hook 'kill-emacs-hook
             `(lambda ()
                (unless (boundp 'emacs-lsp-ci)
