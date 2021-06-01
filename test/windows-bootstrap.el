@@ -23,11 +23,6 @@
 
 (require 'package)
 
-(setq user-emacs-directory (expand-file-name (make-temp-name ".emacs.d")
-                                             "~")
-      package-user-dir (expand-file-name (make-temp-name "tmp-elpa")
-                                         user-emacs-directory))
-
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
        package-enable-at-startup package-check-signature
