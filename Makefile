@@ -99,6 +99,7 @@ unix-test:
 windows-test:
 	@echo "Testing..."
 	@$(EMACS) -Q --batch \
+		-l $(WIN-BOOTSTRAP) \
 		-L . -L clients \
 		$(LOAD-TEST-FILES) \
 		--eval "(ert-run-tests-batch-and-exit \
