@@ -25,11 +25,6 @@
 
 (require 'package)
 
-(setq user-emacs-directory (expand-file-name (make-temp-name ".emacs.d")
-                                             "~")
-      package-user-dir (expand-file-name (make-temp-name "tmp-elpa")
-                                         user-emacs-directory))
-
 (defun package-version (name)
   "Get version of the package by NAME."
   (let ((pkg (cadr (assq name package-alist)))) (when pkg (package-desc-version pkg))))
@@ -57,6 +52,7 @@
 
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
+       package-enable-at-startup package-check-signature
        (pkgs '(ccls
                dap-mode
                helm-lsp
@@ -77,14 +73,13 @@
                lsp-tailwindcss
                lsp-treemacs
                lsp-ui)))
+  (package-initialize)
+
   (advice-add
    'package-install-from-archive
    :before (lambda (pkg-desc)
              (setq byte-compile-error-on-warn
                    (if (ignore-errors (memq (package-desc-name pkg-desc) pkgs)) t nil))))
-
-  (package-initialize)
-  (package-refresh-contents)
 
   (progn  ; Install `lsp-mode' from source
     (add-to-list 'load-path (expand-file-name "./"))

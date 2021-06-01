@@ -23,16 +23,11 @@
 
 (require 'package)
 
-(setq user-emacs-directory (expand-file-name (make-temp-name ".emacs.d")
-                                             "~")
-      package-user-dir (expand-file-name (make-temp-name "tmp-elpa")
-                                         user-emacs-directory))
-
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
+       package-enable-at-startup package-check-signature
        (pkgs '(dash f lv ht spinner markdown-mode deferred el-mock)))
   (package-initialize)
-  (package-refresh-contents)
 
   (mapc (lambda (pkg)
           (unless (package-installed-p pkg)
@@ -43,6 +38,5 @@
             `(lambda ()
                (unless (boundp 'emacs-lsp-ci)
                  (delete-directory ,user-emacs-directory t)))))
-
 
 ;;; windows-bootstrap.el ends here

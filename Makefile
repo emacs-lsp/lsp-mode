@@ -22,8 +22,7 @@ LSP-FILES := lsp-protocol.el lsp-mode.el lsp.el lsp-completion.el \
 WIN-BOOTSTRAP=test/windows-bootstrap.el
 TEST-PKGS=test/test-packages.el
 
-TEST-FILES := $(WIN-BOOTSTRAP) $(TEST-PKGS) test/test-helper.el \
-		$(shell ls test/lsp-*.el)
+TEST-FILES := test/test-helper.el $(shell ls test/lsp-*.el)
 LOAD-FILE = -l $(test-file)
 LOAD-TEST-FILES := $(foreach test-file, $(TEST-FILES), $(LOAD-FILE))
 
@@ -53,6 +52,7 @@ prepare_cpp_project:
 windows-compile:
 	@echo "Compiling..."
 	@$(CASK) $(EMACS) -Q --batch \
+		--eval '(setq emacs-lsp-ci t)' \
 		-l $(WIN-BOOTSTRAP) \
 		-L . -L clients \
 		--eval '(setq byte-compile-error-on-warn t)' \
@@ -61,8 +61,8 @@ windows-compile:
 test-downstream-pkgs:
 	@echo "Test downstream packages..."
 	@$(CASK) $(EMACS) -Q --batch \
-		-l $(WIN-BOOTSTRAP) \
 		--eval '(setq emacs-lsp-ci t)' \
+		-l $(WIN-BOOTSTRAP) \
 		-l $(TEST-PKGS)
 
 checkdoc:
@@ -99,6 +99,7 @@ unix-test:
 windows-test:
 	@echo "Testing..."
 	@$(EMACS) -Q --batch \
+		--eval '(setq emacs-lsp-ci t)' \
 		-l $(WIN-BOOTSTRAP) \
 		-L . -L clients \
 		$(LOAD-TEST-FILES) \
