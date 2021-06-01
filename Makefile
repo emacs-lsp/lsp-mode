@@ -103,7 +103,9 @@ windows-test:
 		--eval '(setq emacs-lsp-ci t)' \
 		-l $(WIN-BOOTSTRAP) \
 		-L . -L clients \
-		$(LOAD-TEST-FILES)
+		$(LOAD-TEST-FILES) \
+		--eval "(ert-run-tests-batch-and-exit \
+		'(and (not (tag no-win)) (not (tag org))))"
 
 docs:
 	make -C docs/ generate
