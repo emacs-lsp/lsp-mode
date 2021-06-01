@@ -79,6 +79,7 @@
                lsp-treemacs
                lsp-ui)))
   (package-initialize)
+  (package-refresh-contents)
 
   (advice-add
    'package-install-from-archive
