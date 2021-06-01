@@ -55,8 +55,9 @@
   (version<= (package-emacs-version pkg) emacs-version))
 
 
-(let* ((package-archives '(("melpa" . "http://melpa.org/packages/")
+(let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
+       package-enable-at-startup package-check-signature
        (pkgs '(ccls
                dap-mode
                helm-lsp
