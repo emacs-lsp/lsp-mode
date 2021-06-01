@@ -52,6 +52,7 @@ prepare_cpp_project:
 windows-compile:
 	@echo "Compiling..."
 	@$(CASK) $(EMACS) -Q --batch \
+		--eval '(setq emacs-lsp-ci t)' \
 		-l $(WIN-BOOTSTRAP) \
 		-L . -L clients \
 		--eval '(setq byte-compile-error-on-warn t)' \
