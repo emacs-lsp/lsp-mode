@@ -37,8 +37,7 @@ unix-build:
 unix-ci: clean unix-build unix-compile prepare_cpp_project unix-test test-downstream-pkgs
 
 windows-ci: CASK=
-#windows-ci: clean windows-compile windows-test test-downstream-pkgs
-windows-ci: windows-test
+windows-ci: clean windows-compile windows-test test-downstream-pkgs
 
 unix-compile:
 	@echo "Compiling..."
@@ -102,7 +101,11 @@ windows-test:
 	@echo "Testing..."
 	@$(EMACS) -Q --batch \
 		--eval '(setq emacs-lsp-ci t)' \
-		-l $(WIN-BOOTSTRAP)
+		-l $(WIN-BOOTSTRAP) \
+		-L . -L clients \
+		$(LOAD-TEST-FILES) \
+		--eval "(ert-run-tests-batch-and-exit \
+		'(and (not (tag no-win)) (not (tag org))))"
 
 docs:
 	make -C docs/ generate
