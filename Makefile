@@ -51,9 +51,6 @@ prepare_cpp_project:
 
 windows-compile:
 	@echo "Compiling..."
-	@$(CASK) $(EMACS) -Q --batch \
-		-l $(WIN-BOOTSTRAP) \
-		-L . -L clients
 
 test-downstream-pkgs:
 	@echo "Test downstream packages..."
