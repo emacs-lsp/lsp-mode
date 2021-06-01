@@ -78,13 +78,13 @@
                lsp-tailwindcss
                lsp-treemacs
                lsp-ui)))
+  (package-initialize)
+
   (advice-add
    'package-install-from-archive
    :before (lambda (pkg-desc)
              (setq byte-compile-error-on-warn
                    (if (ignore-errors (memq (package-desc-name pkg-desc) pkgs)) t nil))))
-
-  (package-initialize)
 
   (progn  ; Install `lsp-mode' from source
     (add-to-list 'load-path (expand-file-name "./"))
