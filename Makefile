@@ -61,6 +61,7 @@ windows-compile:
 test-downstream-pkgs:
 	@echo "Test downstream packages..."
 	@$(CASK) $(EMACS) -Q --batch \
+		-l $(WIN-BOOTSTRAP) \
 		-l $(TEST-PKGS)
 
 checkdoc:
