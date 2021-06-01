@@ -51,6 +51,11 @@ prepare_cpp_project:
 
 windows-compile:
 	@echo "Compiling..."
+	@$(CASK) $(EMACS) -Q --batch \
+		-l $(WIN-BOOTSTRAP) \
+		-L . -L clients \
+		--eval '(setq byte-compile-error-on-warn t)' \
+		-f batch-byte-compile $(LSP-FILES)
 
 test-downstream-pkgs:
 	@echo "Test downstream packages..."

@@ -43,6 +43,7 @@
   (add-hook 'kill-emacs-hook
             `(lambda ()
                (unless (boundp 'emacs-lsp-ci)
+                 (message ">>> Clean up")
                  (delete-directory ,user-emacs-directory t)))))
 
 
