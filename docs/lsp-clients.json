@@ -288,7 +288,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "languagetool",
+    "name": "ltex",
     "full-name": "LanguageTool",
     "server-name": "LTEX",
     "server-url": "https://github.com/valentjn/ltex-ls",
