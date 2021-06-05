@@ -47,12 +47,17 @@
   :safe #'booleanp
   :group 'lsp-steep)
 
+(defcustom lsp-steep-server-path nil
+  "Path of the Steep language server executable.
+If specified, `lsp-steep-use-bundler' is ignored."
+  :type 'file
+  :group 'lsp-steep)
+
 (defun lsp-steep--build-command ()
   "Build a command to start the Steep language server."
   (append
-    (if lsp-steep-use-bundler '("bundle" "exec"))
-    '("steep" "langserver")
-    (list (concat "--log-level=" lsp-steep-log-level))))
+   (if (and lsp-steep-use-bundler (not lsp-steep-server-path)) '("bundle" "exec"))
+   (list (or lsp-steep-server-path "steep") "langserver" "--log-level" lsp-steep-log-level)))
 
 (lsp-register-client
  (make-lsp-client
