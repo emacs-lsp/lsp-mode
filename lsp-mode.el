@@ -2306,11 +2306,12 @@ BINDINGS is a list of (key def desc cond)."
 
 (defvar lsp--describe-buffer nil)
 
-(defun lsp-describe-buffer-bindings-advice (buffer &optional _prefix _menus)
-  (setq lsp--describe-buffer buffer))
+(defun lsp-describe-buffer-bindings-advice (fn buffer &optional prefix menus)
+  (let ((lsp--describe-buffer buffer))
+    (funcall fn buffer prefix menus)))
 
 (advice-add 'describe-buffer-bindings
-            :before
+            :around
             #'lsp-describe-buffer-bindings-advice)
 
 (defun lsp--prepend-prefix (mappings)
