@@ -175,6 +175,12 @@ the latest build duration."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-rust-analyzer-cargo-target nil
+  "Compilation target (target triple)."
+  :type 'string
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1"))
+
 (defcustom lsp-rust-no-default-features nil
   "Do not enable default Cargo features."
   :type 'boolean
@@ -526,6 +532,7 @@ them with `crate` or the crate name they refer to."
     :cargo (:allFeatures ,(lsp-json-bool lsp-rust-all-features)
             :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
             :features ,lsp-rust-features
+            :target ,lsp-rust-analyzer-cargo-target
             :runBuildScripts ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
             ; Obsolete, but used by old Rust-Analyzer versions
             :loadOutDirsFromCheck ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts))
