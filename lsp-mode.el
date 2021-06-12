@@ -4476,7 +4476,12 @@ Applies on type formatting."
   (let* ((parsed-url (url-generic-parse-url (url-unhex-string url)))
          (type (url-type parsed-url)))
     (pcase type
-      ("file" (find-file (lsp--uri-to-path url)))
+      ("file"
+       (find-file (lsp--uri-to-path url))
+       (-when-let ((_ line column) (s-match (rx "#" (group (1+ num)) "," (group (1+ num))) url))
+         (goto-char (lsp--position-to-point
+                     (lsp-make-position :character (1- (string-to-number column))
+                                        :line (1- (string-to-number line)))))))
       ((or "http" "https") (browse-url url))
       (type (if-let ((handler (lsp--get-uri-handler type)))
                 (funcall handler url)
