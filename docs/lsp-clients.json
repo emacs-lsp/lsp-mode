@@ -34,7 +34,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "beancoun",
+    "name": "beancount",
     "full-name": "Beancount",
     "server-name": "beancount-langserver",
     "server-url": "https://github.com/polarmutex/beancount-language-server",
