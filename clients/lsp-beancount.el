@@ -38,16 +38,14 @@
   :group 'lsp-beancount
   :package-version '(lsp-mode . "7.1.0"))
 
-(defcustom lsp-beancount-journal-file nil
-  "Pathg to Beancount journal file."
+(defcustom lsp-beancount-python-interpreter nil
+  "Path to Python executable."
   :type 'string
   :group 'lsp-beancount
   :package-version '(lsp-mode . "7.1.0"))
 
-(defcustom lsp-beancount-python-interpreter
-  (or (executable-find "python3")
-      (executable-find "python"))
-  "Path to Python executable."
+(defcustom lsp-beancount-journal-file nil
+  "Pathg to Beancount journal file."
   :type 'string
   :group 'lsp-beancount
   :package-version '(lsp-mode . "7.1.0"))
@@ -55,7 +53,12 @@
 (lsp-register-client
  (make-lsp-client
   :new-connection
-  (lsp-stdio-connection `(,lsp-beancount-langserver-executable "--stdio"))
+  (lsp-stdio-connection
+   (lambda ()
+     (when (null lsp-beancount-python-interpreter)
+       (setq lsp-beancount-python-interpreter (or (executable-find "python3")
+                                                  (executable-find "python"))))
+     `(,lsp-beancount-langserver-executable "--stdio")))
   :major-modes '(beancount-mode)
   :initialization-options
   `((journalFile . ,lsp-beancount-journal-file)
