@@ -48,6 +48,7 @@ nav:
     - Ada: page/lsp-ada.md
     - Angular: page/lsp-angular.md
     - Bash: page/lsp-bash.md
+    - Beancount: page/lsp-beancount.md
     - C++ (ccls): page/lsp-ccls.md
     - C++ (clangd): page/lsp-clangd.md
     - C#: page/lsp-csharp.md

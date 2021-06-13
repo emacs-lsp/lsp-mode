@@ -44,6 +44,7 @@
   * Work around bug in NPM versions 7.0.0 through 7.4.1 that prevented ~lsp-install-server~ from working for NPM-based language servers.
   * Add ~lsp-lens-place-position~ with option to place code lens at end of line.
   * Add LanguageTool support.
+  * Add Beancount support.
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
   * Safe renamed ~lsp-flycheck-default-level~ -> ~lsp-diagnostics-flycheck-default-level~
