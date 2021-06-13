@@ -34,6 +34,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "beancoun",
+    "full-name": "Beancount",
+    "server-name": "beancount-langserver",
+    "server-url": "https://github.com/polarmutex/beancount-language-server",
+    "installation": "npm install -g beancount-langserver",
+    "lsp-install-server": "beancount-ls",
+    "debugger": "Not available"
+  },
+  {
     "name": "csharp",
     "full-name": "C#",
     "server-name": "OmniSharp-Roslyn",

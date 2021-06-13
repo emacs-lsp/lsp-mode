@@ -167,7 +167,7 @@ As defined by the Language Server Protocol 3.16."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-client-packages
-  '(ccls lsp-actionscript lsp-ada lsp-angular lsp-bash lsp-clangd lsp-clojure lsp-cmake
+  '(ccls lsp-actionscript lsp-ada lsp-angular lsp-bash lsp-beancount lsp-clangd lsp-clojure lsp-cmake
          lsp-crystal lsp-csharp lsp-css lsp-d lsp-dart lsp-dhall lsp-dockerfile lsp-elm
          lsp-elixir lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go
          lsp-hack lsp-grammarly lsp-groovy lsp-haskell lsp-haxe lsp-java lsp-javascript lsp-json
@@ -778,7 +778,8 @@ Changes take effect only when a new session is started."
                                         (d-mode . "d")
                                         (zig-mode . "zig")
                                         (text-mode . "plaintext")
-                                        (markdown-mode . "markdown"))
+                                        (markdown-mode . "markdown")
+                                        (beancount-mode . "beancount"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
@@ -1795,7 +1796,7 @@ regex in IGNORED-FILES."
     lsp-python-ms lsp-rescript lsp-sonarlint lsp-sourcekit lsp-tailwindcss lsp-treemacs
     lsp-ui swift-helpful
     ;; clients
-    lsp-actionscript lsp-ada lsp-angular lsp-bash lsp-clangd
+    lsp-actionscript lsp-ada lsp-angular lsp-bash lsp-beancount lsp-clangd
     lsp-clojure lsp-cmake lsp-crystal lsp-csharp lsp-css lsp-d lsp-dhall
     lsp-dockerfile lsp-elixir lsp-elm lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript
     lsp-go lsp-groovy lsp-hack lsp-haxe lsp-html lsp-javascript lsp-json lsp-kotlin lsp-lua
