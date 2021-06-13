@@ -241,7 +241,7 @@ server."
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection #'lsp-css--server-command)
-  :major-modes '(css-mode less-mode less-css-mode sass-mode scss-mode)
+  :activation-fn (lsp-activate-on "css")
   :priority -1
   :action-handlers (lsp-ht ("_css.applyCodeAction" #'lsp-css--apply-code-action))
   :server-id 'css-ls
