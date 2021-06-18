@@ -510,6 +510,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "roblox-lua",
+    "full-name": "Roblox Lua",
+    "server-name": "roblox-lua-language-server",
+    "installation-url": "https://github.com/NightrainsRbx/RobloxLsp",
+    "server-url": "https://github.com/NightrainsRbx/RobloxLsp",
+    "debugger": "Not available"
+  },
+  {
     "name": "robot",
     "full-name": "robot framework",
     "server-name": "rf-intellisense",
