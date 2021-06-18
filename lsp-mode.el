@@ -1826,6 +1826,35 @@ regex in IGNORED-FILES."
 ;;  lsp-downstream-deps)
 
 
+;; loading code-workspace files
+
+;;;###autoload
+(defun lsp-load-vscode-workspace (file)
+  "Load vscode workspace from FILE"
+  (interactive "fSelect file to import: ")
+  (mapc #'lsp-workspace-folders-remove (lsp-session-folders (lsp-session)))
+
+  (let ((dir (f-dirname file)))
+    (->> file
+         (json-read-file)
+         (alist-get 'folders)
+         (-map (-lambda ((&alist 'path))
+                 (lsp-workspace-folders-add (expand-file-name path dir)))))))
+
+;;;###autoload
+(defun lsp-save-vscode-workspace (file)
+  "Save vscode workspace to FILE"
+  (interactive "FSelect file to save to: ")
+
+  (let ((json-encoding-pretty-print t))
+    (f-write-text (json-encode
+                   `((folders . ,(->> (lsp-session)
+                                      (lsp-session-folders)
+                                      (--map `((path . ,it)))))))
+                  'utf-8
+                  file)))
+
+
 (defmacro lsp-foreach-workspace (&rest body)
   "Execute BODY for each of the current workspaces."
   (declare (debug (form body)))
