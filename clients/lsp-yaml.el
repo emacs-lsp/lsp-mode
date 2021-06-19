@@ -142,7 +142,7 @@
 
 (lsp-dependency 'yaml-language-server
                 '(:system "yaml-language-server")
-                '(:npm :package "yaml-language-server"
+                '(:npm :package "yaml-language-server@0.18.0"
                        :path "yaml-language-server"))
 
 (lsp-register-client
