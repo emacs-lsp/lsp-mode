@@ -330,6 +330,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "lua-roblox",
+    "full-name": "Lua Roblox",
+    "server-name": "lua-roblox-language-server",
+    "installation-url": "https://github.com/NightrainsRbx/RobloxLsp",
+    "server-url": "https://github.com/NightrainsRbx/RobloxLsp",
+    "debugger": "Not available"
+  },
+  {
     "name": "markdown",
     "full-name": "Markdown",
     "server-name": "unified-language-server",
@@ -507,14 +515,6 @@
     "server-name": "racket-language-server",
     "server-url": "https://github.com/theia-ide/racket-language-server",
     "installation": "raco pkg install racket-language-server",
-    "debugger": "Not available"
-  },
-  {
-    "name": "roblox-lua",
-    "full-name": "Roblox Lua",
-    "server-name": "roblox-lua-language-server",
-    "installation-url": "https://github.com/NightrainsRbx/RobloxLsp",
-    "server-url": "https://github.com/NightrainsRbx/RobloxLsp",
     "debugger": "Not available"
   },
   {

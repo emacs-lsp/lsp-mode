@@ -593,72 +593,80 @@ and `../lib` ,exclude `../lib/temp`.
   :server-id 'lsp-lua-lsp))
 
 ;;; lua-roblox-language-server
-(defgroup lsp-roblox-lua-language-server nil
+(defgroup lsp-lua-roblox-language-server nil
   "Roblox Lua LSP client, provided by the Roblox Lua Language Server."
   :group 'lsp-mode
   :version "7.1"
   :link '(url-link "https://github.com/NightrainsRbx/RobloxLsp"))
 
-(defcustom lsp-clients-roblox-lua-language-server-install-dir (f-join lsp-server-install-dir "roblox-lua-language-server/")
+(defcustom lsp-lua-roblox-language-server-install-dir (f-join lsp-server-install-dir "lua-roblox-language-server/")
   "Installation directory for Lua Language Server."
-  :group 'lsp-roblox-lua-language-server
+  :group 'lsp-lua-roblox-language-server
   :version "7.1"
   :risky t
   :type 'directory)
 
-(defcustom lsp-clients-roblox-lua-language-server-bin
-  (f-join lsp-clients-roblox-lua-language-server-install-dir
+(defcustom lsp-lua-roblox-language-server-bin
+  (f-join lsp-lua-roblox-language-server-install-dir
           "extension/server/bin/"
           (pcase system-type
             ('gnu/linux "Linux/lua-language-server")
             ('darwin "macOS/lua-language-server")
             ('windows-nt "Windows/lua-language-server.exe")
             (_ "Linux/lua-language-server")))
-  "Location of Lua Language Server."
-  :group 'lsp-roblox-lua-language-server
-  :version "7.1"
-  :risky t
-  :type 'fil)
-
-(defcustom lsp-clients-roblox-lua-language-server-main-location
-  (f-join lsp-clients-roblox-lua-language-server-install-dir
-          "extension/server/main.lua")
-  "Location of Roblox Lua Language Server main.lua."
-  :group 'lsp-roblox-lua-language-server
+  "Location of Roblox Lua Language Server."
+  :group 'lsp-lua-roblox-language-server
   :version "7.1"
   :risky t
   :type 'file)
 
-(defun lsp-clients-roblox-lua-language-server-test ()
-  "Test Lua language server binaries and files."
-  (and (f-exists? lsp-clients-roblox-lua-language-server-main-location)
-       (f-exists? lsp-clients-roblox-lua-language-server-bin)))
+(defcustom lsp-lua-roblox-language-server-main-location
+  (f-join lsp-lua-roblox-language-server-install-dir
+          "extension/server/main.lua")
+  "Location of Roblox Lua Language Server main.lua."
+  :group 'lsp-lua-roblox-language-server
+  :version "7.1"
+  :risky t
+  :type 'file)
 
-(defun lsp-roblox-lua-language-server-install (client callback error-callback update?)
-  "Download the latest version of roblox-lua-language-server and extract it to
-`lsp-roblox-lua-language-server-install-dir'."
-  (ignore client update?)
-  (let ((store-path (expand-file-name "vs-roblox-lua" lsp-clients-roblox-lua-language-server-install-dir)))
-    (lsp-download-install
-     (lambda (&rest _)
-       (set-file-modes lsp-clients-roblox-lua-language-server-bin #o0700)
-       (funcall callback))
-     error-callback
-     :url (lsp-vscode-extension-url "Nightrains" "robloxlsp" "0.15.8")
-     :store-path store-path
-     :decompress :zip)))
+(defcustom lsp-lua-roblox-server-download-url
+  (lsp-vscode-extension-url "Nightrains" "robloxlsp" "0.15.8")
+  "Download url for Roblox Lua vscode extension"
+  :group 'lsp-lua-roblox-language-server
+  :version "7.1"
+  :type 'string)
+
+(defcustom lsp-lua-roblox-server-store-url
+  (expand-file-name "vs-lua-roblox" lsp-lua-roblox-language-server-install-dir)
+  "Server file name for the vscode extension"
+  :group 'lsp-lua-roblox-language-server
+  :version "7.1"
+  :type 'string)
+
+(defun lsp-lua-roblox-language-server-test ()
+  "Test Lua language server binaries and files."
+  (and (f-exists? lsp-lua-roblox-language-server-main-location)
+       (f-exists? lsp-lua-roblox-language-server-bin)))
+
+(lsp-dependency
+ 'lua-roblox-lsp
+ `(:download :url lsp-lua-roblox-server-download-url
+   :store-path lsp-lua-roblox-server-store-url
+   :decompress :zip)
+ '(:system "lua-roblox-language-server"))
 
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection (lambda () (or lsp-clients-lua-language-server-command
-                                                       `(,lsp-clients-roblox-lua-language-server-bin
+                                                       `(,lsp-lua-roblox-language-server-bin
                                                          ,@lsp-clients-lua-language-server-args
-                                                         ,lsp-clients-roblox-lua-language-server-main-location)))
-                                        #'lsp-clients-roblox-lua-language-server-test)
+                                                         ,lsp-lua-roblox-language-server-main-location)))
+                                        #'lsp-lua-roblox-language-server-test)
   :major-modes '(lua-mode)
   :priority -4
-  :server-id 'roblox-lua-language-server
-  :download-server-fn #'lsp-roblox-lua-language-server-install))
+  :server-id 'lua-roblox-language-server
+  :download-server-fn (lambda (_client callback error-callback _update?)
+                        (lsp-package-ensure 'lsp-lua-roblox-language-server callback error-callback))))
 
 (lsp-consistency-check lsp-lua)
 
