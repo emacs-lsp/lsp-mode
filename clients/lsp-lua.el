@@ -652,8 +652,9 @@ and `../lib` ,exclude `../lib/temp`.
  'lua-roblox-lsp
  `(:download :url lsp-lua-roblox-server-download-url
    :store-path lsp-lua-roblox-server-store-url
+   :set-executable? t
    :decompress :zip)
- '(:system "lua-roblox-language-server"))
+ '(:system "lua-roblox-lsp"))
 
 (lsp-register-client
  (make-lsp-client
@@ -666,7 +667,7 @@ and `../lib` ,exclude `../lib/temp`.
   :priority -4
   :server-id 'lua-roblox-language-server
   :download-server-fn (lambda (_client callback error-callback _update?)
-                        (lsp-package-ensure 'lsp-lua-roblox-language-server callback error-callback))))
+                        (lsp-package-ensure 'lua-roblox-lsp callback error-callback))))
 
 (lsp-consistency-check lsp-lua)
 
