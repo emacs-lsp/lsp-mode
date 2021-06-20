@@ -7693,7 +7693,7 @@ TBL - a hash table, PATHS is the path to the nested VALUE."
   "Get settings for SECTION."
   (let ((ret (ht-create)))
     (mapc (-lambda ((path variable boolean?))
-            (when (s-matches? (concat section "\\..*") path)
+            (when (s-matches? (concat (regexp-quote section) "\\..*") path)
               (let* ((symbol-value (-> variable
                                        lsp-resolve-value
                                        lsp-resolve-value))
