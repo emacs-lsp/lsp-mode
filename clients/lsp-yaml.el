@@ -107,7 +107,7 @@
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-yaml-schema-store-uri "https://www.schemastore.org/api/json/catalog.json"
-  "URI of schema store that would be fetched to get the list of schemas."
+  "URL of schema store catalog to use."
   :type 'string
   :group 'lsp-yaml)
 
@@ -117,6 +117,14 @@
   "Cached databse of schema store."
   :type 'file
   :group 'lsp-yaml)
+
+(defcustom lsp-yaml-max-items-computed 5000
+  "The maximum number of outline symbols and folding regions computed.
+Limited for performance reasons."
+  :type 'number
+  :group 'lsp-yaml
+  :package-version '(lsp-mode . "7.1"))
+
 
 (defvar lsp-yaml--schema-store-schemas-alist nil
   "A list of schemas fetched from schema stores.")
@@ -132,7 +140,9 @@
    ("yaml.completion" lsp-yaml-completion t)
    ("yaml.schemas" lsp-yaml-schemas)
    ("yaml.schemaStore.enable" lsp-yaml-schema-store-enable t)
-   ("yaml.customTags" lsp-yaml-custom-tags)))
+   ("yaml.schemaStore.url" lsp-yaml-schema-store-uri)
+   ("yaml.customTags" lsp-yaml-custom-tags)
+   ("yaml.maxItemsComputed" lsp-yaml-max-items-computed)))
 
 (defcustom lsp-yaml-server-command '("yaml-language-server" "--stdio")
   "Command to start yaml-languageserver."
