@@ -631,14 +631,14 @@ and `../lib` ,exclude `../lib/temp`.
 
 (defcustom lsp-lua-roblox-server-download-url
   (lsp-vscode-extension-url "Nightrains" "robloxlsp" "0.15.8")
-  "Download url for Roblox Lua vscode extension"
+  "Download url for Roblox Lua vscode extension."
   :group 'lsp-lua-roblox-language-server
   :version "7.1"
   :type 'string)
 
-(defcustom lsp-lua-roblox-server-store-url
+(defcustom lsp-lua-roblox-server-store-path
   (expand-file-name "vs-lua-roblox" lsp-lua-roblox-language-server-install-dir)
-  "Server file name for the vscode extension"
+  "Server file name for the vscode extension."
   :group 'lsp-lua-roblox-language-server
   :version "7.1"
   :type 'string)
@@ -648,13 +648,17 @@ and `../lib` ,exclude `../lib/temp`.
   (and (f-exists? lsp-lua-roblox-language-server-main-location)
        (f-exists? lsp-lua-roblox-language-server-bin)))
 
-(lsp-dependency
- 'lua-roblox-lsp
- `(:download :url lsp-lua-roblox-server-download-url
-   :store-path lsp-lua-roblox-server-store-url
-   :set-executable? t
-   :decompress :zip)
- '(:system "lua-roblox-lsp"))
+(defun lsp-lua-roblox-language-server-install (_client callback error-callback _update?)
+  "Download the latest version of lua-language-server and extract it to
+`lsp-lua-roblox-language-server-download-url'."
+  (lsp-download-install
+    (lambda (&rest _)
+     (set-file-modes lsp-lua-roblox-language-server-bin #o0700)
+     (funcall callback))
+     error-callback
+     :url lsp-lua-roblox-server-download-url
+     :store-path lsp-lua-roblox-server-store-path
+     :decompress :zip))
 
 (lsp-register-client
  (make-lsp-client
@@ -666,8 +670,7 @@ and `../lib` ,exclude `../lib/temp`.
   :major-modes '(lua-mode)
   :priority -4
   :server-id 'lua-roblox-language-server
-  :download-server-fn (lambda (_client callback error-callback _update?)
-                        (lsp-package-ensure 'lua-roblox-lsp callback error-callback))))
+  :download-server-fn #'lsp-lua-roblox-language-server-install))
 
 (lsp-consistency-check lsp-lua)
 
