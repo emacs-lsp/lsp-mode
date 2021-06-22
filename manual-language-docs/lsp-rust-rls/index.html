@@ -13,14 +13,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/template/lsp-var/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/manual-language-docs/lsp-rust-rls/">
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.4">
     
     
       
-        <title>Lsp var - LSP Mode - LSP support for Emacs</title>
+        <title>Lsp rust rls - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#name" class="md-skip">
+        <a href="#rls" class="md-skip">
           Skip to content
         </a>
       
@@ -103,7 +103,7 @@
         <div class="md-header-nav__topic">
           <span class="md-ellipsis">
             
-              Lsp var
+              Lsp rust rls
             
           </span>
         </div>
@@ -2436,9 +2436,29 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#name" class="md-nav__link">
-    {{name}}
+  <a href="#rls" class="md-nav__link">
+    RLS
   </a>
+  
+    <nav class="md-nav" aria-label="RLS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#customization" class="md-nav__link">
+    Customization
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rustfmt" class="md-nav__link">
+    rustfmt
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2454,18 +2474,31 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/template/lsp-var.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/manual-language-docs/lsp-rust-rls.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
                 
-                  <h1>Lsp var</h1>
+                  <h1>Lsp rust rls</h1>
                 
-                <h3 id="name"><code>{{name}}</code><a class="headerlink" href="#name" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>{{type}}</code></p>
-<p><em>Default:</em> <code>{{default}}</code></p>
-<p>{{documentation}}</p>
-<hr />
+                <h2 id="rls">RLS<a class="headerlink" href="#rls" title="Permanent link">#</a></h2>
+<h3 id="customization">Customization<a class="headerlink" href="#customization" title="Permanent link">#</a></h3>
+<p>This is an incomplete list of the available options</p>
+<ul>
+<li>
+<p><code>lsp-rust-rls-server-command</code> change command to start RLS</p>
+</li>
+<li>
+<p><code>lsp-rust-show-hover-context</code> turn off hover tooltips</p>
+</li>
+</ul>
+<h3 id="rustfmt">rustfmt<a class="headerlink" href="#rustfmt" title="Permanent link">#</a></h3>
+<p>Code formatting with <a href="https://github.com/rust-lang/rustfmt">rustfmt</a> can be configured with:</p>
+<p><code>lsp-rust-rustfmt-path</code> change default path for rustfmt executable</p>
+<p>To enable automatic code format on save, add this to your <code>init.el</code> (<code>rust-mode</code> is assumed to be installed):</p>
+<div class="highlight"><pre><span></span><code>(add-hook &#39;before-save-hook (lambda () (when (eq &#39;rust-mode major-mode)
+                                           (lsp-format-buffer))))
+</code></pre></div>
                 
                   
                     
@@ -2497,7 +2530,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../lsp-client/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../lsp-rust-analyzer/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -2506,19 +2539,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Lsp client
+                Lsp rust analyzer
               </div>
             </div>
           </a>
         
         
-          <a href="../../tutorials/CPP-guide/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../lsp-sqls/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                None
+                Sample configuration:
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">

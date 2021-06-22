@@ -13,14 +13,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/manual-language-docs/lsp-rust/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/manual-language-docs/lsp-rust-analyzer/">
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.4">
     
     
       
-        <title>Lsp rust - LSP Mode - LSP support for Emacs</title>
+        <title>Lsp rust analyzer - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -103,7 +103,7 @@
         <div class="md-header-nav__topic">
           <span class="md-ellipsis">
             
-              Lsp rust
+              Lsp rust analyzer
             
           </span>
         </div>
@@ -1835,8 +1835,21 @@
 
 
   <li class="md-nav__item">
-    <a href="../../page/lsp-rust/" class="md-nav__link">
-      Rust
+    <a href="../../page/lsp-rust-analyzer/" class="md-nav__link">
+      Rust (rust-analyzer)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+
+  <li class="md-nav__item">
+    <a href="../../page/lsp-rust-rls/" class="md-nav__link">
+      Rust (rls)
     </a>
   </li>
 
@@ -2430,33 +2443,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#rls" class="md-nav__link">
-    RLS
-  </a>
-  
-    <nav class="md-nav" aria-label="RLS">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#customization" class="md-nav__link">
-    Customization
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#rustfmt" class="md-nav__link">
-    rustfmt
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#rust-analyzer" class="md-nav__link">
     rust-analyzer
   </a>
@@ -2571,12 +2557,12 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/manual-language-docs/lsp-rust.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/manual-language-docs/lsp-rust-analyzer.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
                 
-                  <h1>Lsp rust</h1>
+                  <h1>Lsp rust analyzer</h1>
                 
                 <h2 id="server-note">Server note<a class="headerlink" href="#server-note" title="Permanent link">#</a></h2>
 <p>NOTE: If you are using <code>rustic-mode</code>, you have to change <code>rustic-lsp-server</code> instead of <code>lsp-rust-server</code>, since it also supports eglot as a lightweight alternative to lsp-mode.</p>
@@ -2588,24 +2574,6 @@
 <p><code>lsp-rust-switch-server</code> Switch priorities of lsp servers</p>
 </li>
 </ul>
-<h2 id="rls">RLS<a class="headerlink" href="#rls" title="Permanent link">#</a></h2>
-<h3 id="customization">Customization<a class="headerlink" href="#customization" title="Permanent link">#</a></h3>
-<p>This is an incomplete list of the available options</p>
-<ul>
-<li>
-<p><code>lsp-rust-rls-server-command</code> change command to start RLS</p>
-</li>
-<li>
-<p><code>lsp-rust-show-hover-context</code> turn off hover tooltips</p>
-</li>
-</ul>
-<h2 id="rustfmt">rustfmt<a class="headerlink" href="#rustfmt" title="Permanent link">#</a></h2>
-<p>Code formatting with <a href="https://github.com/rust-lang/rustfmt">rustfmt</a> can be configured with:</p>
-<p><code>lsp-rust-rustfmt-path</code> change default path for rustfmt executable</p>
-<p>To enable automatic code format on save, add this to your <code>init.el</code> (<code>rust-mode</code> is assumed to be installed):</p>
-<div class="highlight"><pre><span></span><code>(add-hook &#39;before-save-hook (lambda () (when (eq &#39;rust-mode major-mode)
-                                           (lsp-format-buffer))))
-</code></pre></div>
 <h2 id="rust-analyzer">rust-analyzer<a class="headerlink" href="#rust-analyzer" title="Permanent link">#</a></h2>
 <h3 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">#</a></h3>
 <h4 id="lsp-rust-analyzer-syntax-tree"><code>lsp-rust-analyzer-syntax-tree</code><a class="headerlink" href="#lsp-rust-analyzer-syntax-tree" title="Permanent link">#</a></h4>
@@ -2635,14 +2603,22 @@
 <h3 id="open-cargotoml">Open Cargo.toml<a class="headerlink" href="#open-cargotoml" title="Permanent link">#</a></h3>
 <p><code>lsp-rust-analyzer-open-cargo-toml</code> opens the Cargo.toml closest to the current file. Calling it with a universal argument will open the Cargo.toml in another window.</p>
 <p>Corresponds to <a href="https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#open-cargotoml">the rust-analyzer LSP extension</a> </p>
-<p><img alt="" src="./manual-language-docs/lsp-rust-analyzer-open-cargo-toml.gif" /></p>
+<p><img alt="" src="../../examples/lsp-rust-analyzer-open-cargo-toml.gif" /></p>
 <h3 id="find-and-execute-tests-related-to-current-position">Find and execute tests related to current position<a class="headerlink" href="#find-and-execute-tests-related-to-current-position" title="Permanent link">#</a></h3>
 <p><code>lsp-rust-analyzer-related-tests</code> find all tests related to the current position, asks for user completion and executes the selected test in a compilation buffer.</p>
 <p>Corresponds to <a href="https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#related-tests">the rust-analyzer LSP extension</a> </p>
-<p>In the example below, first you see that
-   + On the left, the function <code>check_infer</code> is defined, on the right another file is opened with many test functions, some of which call <code>check_infer</code>. With the cursor on <code>check_infer</code>, call <code>lsp-rust-analyzer-related-tests</code> and select <code>infer_pattern_match_slice</code> with fuzzy matching. The test is executed on the right with compilation major mode
-   + Move the cursor to <code>fn ellipsize</code> and attempt to find related tests to no avail. Confirm that the function is indeed untested by using swiper and finding one place in the file, where the function is called</p>
-<p><img alt="" src="./manual-language-docs/lsp-rust-analyzer-find-related-tests.gif" /></p>
+<p>In the example below, first you see that:
+   + On the left, the function <code>check_infer</code> is defined, on the right another
+     file is opened with many test functions, some of which call <code>check_infer</code>.
+     With the cursor on <code>check_infer</code>, call <code>lsp-rust-analyzer-related-tests</code>
+     and select <code>infer_pattern_match_slice</code> with fuzzy matching. The test is
+     executed on the right with compilation major mode</p>
+<ul>
+<li>Move the cursor to <code>fn ellipsize</code> and attempt to find related tests to no
+     avail. Confirm that the function is indeed untested by using swiper and
+     finding one place in the file, where the function is called</li>
+</ul>
+<p><img alt="" src="../../examples/lsp-rust-analyzer-find-related-tests.gif" /></p>
 <h3 id="caveats">Caveats<a class="headerlink" href="#caveats" title="Permanent link">#</a></h3>
 <ul>
 <li>Rust Analyzer does not support disabling snippets - https://github.com/rust-analyzer/rust-analyzer/issues/2518</li>
@@ -2714,13 +2690,13 @@ modifying the signature that is displayed by eldoc.</p>
           </a>
         
         
-          <a href="../lsp-sqls/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../lsp-rust-rls/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Sample configuration:
+                Lsp rust rls
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">

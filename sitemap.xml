@@ -328,7 +328,11 @@
      <lastmod>2021-06-22</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
-     <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-rust/</loc>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/</loc>
+     <lastmod>2021-06-22</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
+     <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-rls/</loc>
      <lastmod>2021-06-22</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
