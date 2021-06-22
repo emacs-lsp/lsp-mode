@@ -47,6 +47,45 @@
 (declare-function flycheck-error-group "ext:flycheck" (err) t)
 (declare-function flycheck-error-message "ext:flycheck" (err) t)
 
+(defcustom lsp-clangd-version "12.0.0"
+  "Clangd version to download.
+It has to be set before `lsp-clangd.el' is loaded and it has to
+be available here: https://github.com/clangd/clangd/releases/"
+  :type 'string
+  :group 'lsp-clangd
+  :package-version '(lsp-mode . "7.1"))
+
+(defcustom lsp-clangd-download-url
+  (format (pcase system-type
+            ('gnu/linux "https://github.com/clangd/clangd/releases/download/%s/clangd-linux-%s.zip")
+            ('darwin "https://github.com/clangd/clangd/releases/download/%s/clangd-mac-%s.zip")
+            ('windows-nt "https://github.com/clangd/clangd/releases/download/%s/clangd-windows-%s.zip"))
+          lsp-clangd-version
+          lsp-clangd-version)
+  "Automatic download url for clangd"
+  :type 'string
+  :group 'lsp-clangd
+  :package-version '(lsp-mode . "7.1"))
+
+(defcustom lsp-clangd-binary-path
+  (f-join lsp-server-install-dir (format "clangd/clangd_%s/bin"
+                                         lsp-clangd-version)
+          (pcase system-type
+            ('windows-nt "clangd.exe")
+            (_ "clangd")))
+  "The path to `clangd' binary."
+  :type 'file
+  :group 'lsp-clangd
+  :package-version '(lsp-mode . "7.1"))
+
+(lsp-dependency
+ 'clangd
+ `(:download :url lsp-clangd-download-url
+             :decompress :zip
+             :store-path ,(f-join lsp-server-install-dir "clangd" "clangd.zip")
+             :binary-path lsp-clangd-binary-path
+             :set-executable? t))
+
 (defun lsp-cpp-flycheck-clang-tidy--skip-http-headers ()
   "Position point just after HTTP headers."
   (re-search-forward "^$"))
@@ -183,7 +222,8 @@ This must be set only once after loading the clang client.")
   "Generate the language server startup command."
   (unless lsp-clients--clangd-default-executable
     (setq lsp-clients--clangd-default-executable
-          (or (-first #'executable-find
+          (or (lsp-package-path 'clangd)
+              (-first #'executable-find
                       (-map (lambda (version)
                               (concat "clangd" version))
                             '("" "-12" "-11" "-10" "-9" "-8" "-7" "-6")))
@@ -198,7 +238,9 @@ This must be set only once after loading the clang client.")
                                    'lsp-clients--clangd-command)
                   :activation-fn (lsp-activate-on "c" "cpp" "objective-c")
                   :priority -1
-                  :server-id 'clangd))
+                  :server-id 'clangd
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure 'clangd callback error-callback))))
 
 (defun lsp-clangd-join-region (beg end)
   "Apply join-line from BEG to END.
