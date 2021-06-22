@@ -3461,7 +3461,7 @@ disappearing, unset all the variables related to it."
   ;; The intent of this function is to provide per-root workspace-level customization of the
   ;; lsp-file-watch-ignored-directories and lsp-file-watch-ignored-files variables.
   (lsp--with-workspace-temp-buffer workspace-root
-    (list lsp-file-watch-ignored-files lsp-file-watch-ignored-directories)))
+    (list lsp-file-watch-ignored-files (lsp-file-watch-ignored-directories))))
 
 
 (defun lsp--cleanup-hanging-watches ()
