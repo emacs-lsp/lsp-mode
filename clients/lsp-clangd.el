@@ -196,7 +196,7 @@ This must be set only once after loading the clang client.")
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    'lsp-clients--clangd-command)
-                  :major-modes '(c-mode c++-mode objc-mode)
+                  :activation-fn (lsp-activate-on "c" "cpp" "objective-c")
                   :priority -1
                   :server-id 'clangd))
 
