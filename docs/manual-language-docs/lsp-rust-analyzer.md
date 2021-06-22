@@ -6,29 +6,6 @@ NOTE: If you are using `rustic-mode`, you have to change `rustic-lsp-server` ins
 
 - `lsp-rust-switch-server` Switch priorities of lsp servers
 
-## RLS
-
-### Customization
-
-This is an incomplete list of the available options
-
-- `lsp-rust-rls-server-command` change command to start RLS
-
-- `lsp-rust-show-hover-context` turn off hover tooltips
-
-## rustfmt
-
-Code formatting with [rustfmt](https://github.com/rust-lang/rustfmt) can be configured with:
-
-`lsp-rust-rustfmt-path` change default path for rustfmt executable
-
-To enable automatic code format on save, add this to your `init.el` (`rust-mode` is assumed to be installed):
-
-```
-(add-hook 'before-save-hook (lambda () (when (eq 'rust-mode major-mode)
-                                           (lsp-format-buffer))))
-```
-
 ## rust-analyzer
 
 ### Commands
@@ -87,7 +64,7 @@ Get a list of possible auto import candidates with `lsp-execute-code-action`
 
 Corresponds to [the rust-analyzer LSP extension](https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#open-cargotoml) 
 
-![](./manual-language-docs/lsp-rust-analyzer-open-cargo-toml.gif)
+![](../examples/lsp-rust-analyzer-open-cargo-toml.gif)
 
 ### Find and execute tests related to current position
 
@@ -95,11 +72,18 @@ Corresponds to [the rust-analyzer LSP extension](https://github.com/rust-analyze
 
 Corresponds to [the rust-analyzer LSP extension](https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#related-tests) 
 
-In the example below, first you see that
-   + On the left, the function `check_infer` is defined, on the right another file is opened with many test functions, some of which call `check_infer`. With the cursor on `check_infer`, call `lsp-rust-analyzer-related-tests` and select `infer_pattern_match_slice` with fuzzy matching. The test is executed on the right with compilation major mode
-   + Move the cursor to `fn ellipsize` and attempt to find related tests to no avail. Confirm that the function is indeed untested by using swiper and finding one place in the file, where the function is called
+In the example below, first you see that:
+   + On the left, the function `check_infer` is defined, on the right another
+     file is opened with many test functions, some of which call `check_infer`.
+     With the cursor on `check_infer`, call `lsp-rust-analyzer-related-tests`
+     and select `infer_pattern_match_slice` with fuzzy matching. The test is
+     executed on the right with compilation major mode
 
-![](./manual-language-docs/lsp-rust-analyzer-find-related-tests.gif)
+   + Move the cursor to `fn ellipsize` and attempt to find related tests to no
+     avail. Confirm that the function is indeed untested by using swiper and
+     finding one place in the file, where the function is called
+
+![](../examples/lsp-rust-analyzer-find-related-tests.gif)
 
 ### Caveats
 
