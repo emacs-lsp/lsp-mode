@@ -5122,13 +5122,24 @@ RENDER-ALL - nil if only the signature should be rendered."
   (funcall lsp-signature-function nil)
   (lsp-signature-mode -1))
 
+(declare-function page-break-lines--update-display-tables "ext:page-break-lines")
+
+(defun lsp--setup-page-break-mode-if-present ()
+  "Enable `page-break-lines-mode' in current buffer."
+  (when (fboundp 'page-break-lines-mode)
+    (page-break-lines-mode)
+    ;; force page-break-lines-mode to update the display tables.
+    (page-break-lines--update-display-tables)))
+
 (defun lsp-lv-message (message)
+  (add-hook 'lv-window-hook #'lsp--setup-page-break-mode-if-present)
   (if message
       (progn
         (setq lsp--signature-last-buffer (current-buffer))
         (let ((lv-force-update t))
           (lv-message "%s" message)))
-    (lv-delete-window)))
+    (lv-delete-window)
+    (remove-hook 'lv-window-hook #'lsp--setup-page-break-mode-if-present)))
 
 (declare-function posframe-show "ext:posframe")
 (declare-function posframe-hide "ext:posframe")
@@ -5141,9 +5152,9 @@ RENDER-ALL - nil if only the signature should be rendered."
 
 (defvar lsp-signature-posframe-params
   (list :poshandler #'posframe-poshandler-point-bottom-left-corner-upward
-        :height 6
+        :height 10
         :width 60
-        :border-width 10
+        :border-width 1
         :min-width 60)
   "Params for signature and `posframe-show'.")
 
@@ -5151,18 +5162,19 @@ RENDER-ALL - nil if only the signature should be rendered."
   "Use posframe to show the STR signatureHelp string."
   (if str
       (apply #'posframe-show
-             (with-current-buffer (get-buffer-create "*lsp-signature*")
+             (with-current-buffer (get-buffer-create " *lsp-signature*")
                (erase-buffer)
                (insert str)
                (visual-line-mode 1)
+               (lsp--setup-page-break-mode-if-present)
                (current-buffer))
-             (append lsp-signature-posframe-params
-                     (list
-                      :position (point)
-                      :background-color (face-attribute 'lsp-signature-posframe :background nil t)
-                      :foreground-color (face-attribute 'lsp-signature-posframe :foreground nil t)
-                      :border-color (face-attribute 'lsp-signature-posframe :background nil t))))
-    (posframe-hide "*lsp-signature*")))
+             (append
+              lsp-signature-posframe-params
+              (list :position (point)
+                    :background-color (face-attribute 'lsp-signature-posframe :background nil t)
+                    :foreground-color (face-attribute 'lsp-signature-posframe :foreground nil t)
+                    :border-color (face-attribute 'font-lock-comment-face :foreground nil t))))
+    (posframe-hide " *lsp-signature*")))
 
 (defun lsp--handle-signature-update (signature)
   (let ((message
@@ -5245,6 +5257,9 @@ It will show up only if current point has signature help."
                              (when (s-present? docs)
                                (concat
                                 "\n"
+                                (if (fboundp 'page-break-lines-mode)
+                                    "\n"
+                                  "")
                                 (if (and (numberp lsp-signature-doc-lines)
                                          (> (length (s-lines docs)) lsp-signature-doc-lines))
                                     (concat (s-join "\n" (-take lsp-signature-doc-lines (s-lines docs)))
