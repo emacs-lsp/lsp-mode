@@ -167,7 +167,8 @@ Leave as default to let `executable-find' search for it."
                                               lsp-elixir-local-server-command)
                                             (or (executable-find
                                                  (cl-first lsp-elixir-server-command))
-                                                (lsp-package-path 'elixir-ls)))
+                                                (lsp-package-path 'elixir-ls))
+                                            "language_server.bat")
                                        ,@(cl-rest lsp-elixir-server-command))))
                   :major-modes '(elixir-mode)
                   :priority -1
