@@ -7277,6 +7277,10 @@ are still shown."
                 'mouse-face 'highlight)))
 
 (defun lsp--install-server-internal (client &optional update?)
+  (unless (lsp--client-download-server-fn client)
+    (user-error "There is no automatic installation for `%s', you have to install it manually following lsp-mode's documentation."
+                (lsp--client-server-id client)))
+
   (setf (lsp--client-download-in-progress? client) t)
   (add-to-list 'global-mode-string '(t (:eval (lsp--download-status))))
   (cl-flet ((done
@@ -7329,6 +7333,7 @@ Check `*lsp-install*' and `*lsp-log*' buffer."
             lsp-client-packages)
     (setq lsp--client-packages-required t)))
 
+;;;###autoload
 (defun lsp-install-server (update? &optional server-id)
   "Interactively install server.
 When prefix UPDATE? is t force installation even if the server is present."
@@ -7350,6 +7355,16 @@ When prefix UPDATE? is t force installation even if the server is present."
         nil
         t))
    update?))
+
+;;;###autoload
+(defun lsp-ensure-server (server-id)
+  "Ensure server SERVER-ID"
+  (lsp--require-packages)
+  (if-let ((client (gethash server-id lsp-clients)))
+      (unless (lsp--server-binary-present? client)
+        (lsp--info "Server `%s' is not preset, installing..." server-id)
+        (lsp-install-server nil server-id))
+    (warn "Unable to find server registration with id %s" server-id)))
 
 (defun lsp-async-start-process (callback error-callback &rest command)
   "Start async process COMMAND with CALLBACK and ERROR-CALLBACK."
