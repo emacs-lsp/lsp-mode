@@ -634,6 +634,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "v",
+    "full-name": "V",
+    "server-name": "vls",
+    "server-url": "https://github.com/vlang/vls/tree/master",
+    "installation-url": "https://github.com/vlang/vls/tree/master#installation",
+    "debugger": "Not available"
+  },
+  {
     "name": "vala",
     "full-name": "Vala",
     "server-name": "vala-language-server",
