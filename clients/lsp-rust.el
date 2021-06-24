@@ -621,7 +621,7 @@ them with `crate` or the crate name they refer to."
             :runBuildScripts ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
             ; Obsolete, but used by old Rust-Analyzer versions
             :loadOutDirsFromCheck ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
-            :autoreload ,lsp-rust-analyzer-cargo-auto-reload
+            :autoreload ,(lsp-json-bool lsp-rust-analyzer-cargo-auto-reload)
             :useRustcWrapperForBuildScripts ,(lsp-json-bool lsp-rust-analyzer-use-rustc-wrapper-for-build-scripts))
     :rustfmt (:extraArgs ,lsp-rust-analyzer-rustfmt-extra-args
               :overrideCommand ,lsp-rust-analyzer-rustfmt-override-command)
