@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'lsp-protocol)
 (require 'cl-lib)
 
 (defgroup lsp-clojure nil
@@ -77,6 +78,9 @@
   :type 'directory)
 
 ;; Internal
+
+(lsp-interface
+ (Clojure:CursorInfoParams (:textDocument :position) nil))
 
 (lsp-dependency
  'clojure-lsp
@@ -185,15 +189,24 @@ If there are more arguments expected after the line and column numbers."
 (defun lsp-clojure-server-info ()
   "Request server info."
   (interactive)
-  (lsp-clojure--execute-command "server-info"))
+  (lsp--cur-workspace-check)
+  (lsp-notify "clojure/serverInfo/log" nil))
+
+(defun lsp-clojure-server-info-raw ()
+  "Request server info raw data."
+  (interactive)
+  (lsp--cur-workspace-check)
+  (message "%s" (lsp--json-serialize (lsp-request "clojure/serverInfo/raw" nil))))
 
 (defun lsp-clojure-cursor-info ()
   "Request cursor info at point."
   (interactive)
   (lsp--cur-workspace-check)
-  (lsp-clojure--execute-command "cursor-info" (list (lsp--buffer-uri)
-                                                    (- (line-number-at-pos) 1) ;; clojure-lsp expects line numbers to start at 0
-                                                    (current-column))))
+  (lsp-notify "clojure/cursorInfo/log"
+              (lsp-make-clojure-cursor-info-params
+               :textDocument (lsp-make-text-document-identifier :uri (lsp--buffer-uri))
+               :position (lsp-make-position :line (- (line-number-at-pos) 1)
+                                            :character (current-column)))))
 
 (defun lsp-clojure--ask-macro-to-resolve ()
   "Ask to user the macro to resolve."
@@ -214,7 +227,7 @@ If there are more arguments expected after the line and column numbers."
   "Ask to user the clj-kondo config dir path."
   (lsp--completing-read
    "Select where LSP should save this setting:"
-   (list (f-join (expand-file-name "~/") ".clj-kondo/config.edn")
+   (list (f-join (expand-file-name "~/") ".config/clj-kondo/config.edn")
          (f-join (or (lsp-workspace-root) "project") ".clj-kondo/config.edn"))
    #'identity
    nil
