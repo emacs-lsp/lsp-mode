@@ -91,7 +91,10 @@
   (mapc (lambda (pkg)
           (unless (package-installed-p pkg)
             (if (package-check-emacs-version pkg)
-                (progn (package-refresh-contents) (package-install pkg))
+                (progn
+                  (package-refresh-contents)
+                  (package-refresh-contents)
+                  (package-install pkg))
               (message "[INFO] Package `%s` is not test, minimum Emacs version %s"
                        pkg (package-emacs-version pkg)))))
         pkgs)
