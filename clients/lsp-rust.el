@@ -512,6 +512,12 @@ them with `crate` or the crate name they refer to."
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1.0"))
 
+(defcustom lsp-rust-analyzer-rustc-source nil
+  "Path to the Cargo.toml of the rust compiler workspace."
+  :type 'string
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1.0"))
+
 (defun lsp-rust-analyzer--make-init-options ()
   "Init options for rust-analyzer"
   `(:diagnostics (:enable ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable)
@@ -546,7 +552,8 @@ them with `crate` or the crate name they refer to."
                  :addCallArgumentSnippets ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-argument-snippets)
                  :postfix (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-postfix-enable)))
     :callInfo (:full ,(lsp-json-bool lsp-rust-analyzer-call-info-full))
-    :procMacro (:enable ,(lsp-json-bool lsp-rust-analyzer-proc-macro-enable))))
+    :procMacro (:enable ,(lsp-json-bool lsp-rust-analyzer-proc-macro-enable))
+    :rustcSource ,lsp-rust-analyzer-rustc-source))
 
 (defconst lsp-rust-notification-handlers
   '(("rust-analyzer/publishDecorations" . (lambda (_w _p)))))
