@@ -34,7 +34,7 @@
   :group 'lsp-lens
   :type 'number)
 
-(defcustom lsp-lens-place-position 'above-line
+(defcustom lsp-lens-place-position 'end-of-line
   "The position to place lens relative to returned lens position."
   :group 'lsp-lens
   :type '(choice (const above-line)
@@ -95,7 +95,7 @@ Results are meaningful only if FROM and TO are on the same line."
     (save-excursion
       (goto-char (overlay-start ov))
       (if (eq 'end-of-line lsp-lens-place-position)
-          (overlay-put ov 'after-string (concat " " str))
+          (overlay-put ov 'after-string (propertize (concat " " str) 'cursor t))
         (overlay-put ov 'before-string (concat str "\n")))
       (overlay-put ov 'lsp-original str))))
 
