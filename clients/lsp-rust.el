@@ -499,7 +499,8 @@ for formatting."
   :package-version '(lsp-mode . "6.3.2"))
 
 (defcustom lsp-rust-analyzer-proc-macro-enable nil
-  "Enable Proc macro support; implies lsp-rust-analyzer-cargo-run-build-scripts"
+  "Enable Proc macro support.
+Implies `lsp-rust-analyzer-cargo-run-build-scripts'"
   :type 'boolean
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.3.2"))
@@ -547,20 +548,23 @@ them with `crate` or the crate name they refer to."
   :package-version '(lsp-mode . "7.1.0"))
 
 (defcustom lsp-rust-analyzer-use-rustc-wrapper-for-build-scripts t
-  "Use `RUSTC_WRAPPER=rust-analyzer' when running build scripts to avoid compiling unnecessary things."
+  "Use `RUSTC_WRAPPER=rust-analyzer' when running build scripts to avoid
+compiling unnecessary things."
   :type 'boolean
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1.0"))
 
 (defcustom lsp-rust-analyzer-completion-auto-import-enable t
-  "Toggles the additional completions that automatically add imports when completed.
-`lsp-completion-enable-additional-text-edit' must be non-nil for this feature to be fully enabled."
+  "Toggles the additional completions that automatically add imports when
+completed. `lsp-completion-enable-additional-text-edit' must be non-nil
+ for this feature to be fully enabled."
   :type 'boolean
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1.0"))
 
 (defcustom lsp-rust-analyzer-completion-auto-self-enable t
-  "Toggles the additional completions that automatically show method calls and field accesses with self prefixed to them when inside a method."
+  "Toggles the additional completions that automatically show method calls
+and field accesses with self prefixed to them when inside a method."
   :type 'boolean
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1.0"))
@@ -573,7 +577,8 @@ them with `crate` or the crate name they refer to."
   :package-version '(lsp-mode . "7.1.0"))
 
 (defcustom lsp-rust-analyzer-import-group t
-  "Group inserted imports by the following order: https://rust-analyzer.github.io/manual.html#auto-import.
+  "Group inserted imports by the following order:
+https://rust-analyzer.github.io/manual.html#auto-import.
  Groups are separated by newlines."
   :type 'boolean
   :group 'lsp-rust
