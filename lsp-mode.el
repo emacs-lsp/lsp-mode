@@ -756,7 +756,7 @@ Changes take effect only when a new session is started."
                                         (csharp-tree-sitter-mode . "csharp")
                                         (plain-tex-mode . "plaintex")
                                         (latex-mode . "latex")
-                                        (v-mode, "v")
+                                        (v-mode . "v")
                                         (vhdl-mode . "vhdl")
                                         (verilog-mode . "verilog")
                                         (terraform-mode . "terraform")
