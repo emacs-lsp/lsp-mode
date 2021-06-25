@@ -96,7 +96,7 @@ For a custom path, you can set the path of the server location with:
 ## LSP features
 
 This guide will focus on the features of `lsp-mode` that are most relevant to Clojure development. You can view documentation of all features at the
-official [lsp-mode site](https://emacs-lsp.github.io/lsp-mode/page/main-features/).
+official [lsp-mode site](https://emacs-lsp.github.io/lsp-mode/page/main-features/) or [clojure-lsp features section](https://clojure-lsp.github.io/clojure-lsp/features/).
 
 ### Syntax check
 
@@ -140,6 +140,7 @@ You may need to remove the lookup handlers conflict from `cider` and/or `clj-ref
 
 By default, `lsp-mode` uses `company-mode` as its completion front-end. When
 present, `company-mode` and enabled for `lsp-mode`, it will be auto-configured and it will just work using the completion items returned by the LSP server.
+`clojure-lsp` also has completion snippets, for more information check [here](https://clojure-lsp.github.io/clojure-lsp/features/#snippets).
 If you do not want LSP completion, It's possible to use `cider` completion instead with:
 
 ```elisp
@@ -207,17 +208,43 @@ For more info on all available refactorings, check [here](https://github.com/clo
 but they may conflict if both are enable, inserting duplicated namespace forms. To fix that, you need to choose which one
 you wants to use:
 
-To disable this feature on `clj-refactor`:
+To disable this feature on <b>clj-refactor</b>:
 
 ```elisp
 (setq cljr-add-ns-to-blank-clj-files nil) ; disable clj-refactor adding ns to blank files
 ```
 
-or to disable on `clojure-lsp`:
+or to disable on <b>clojure-lsp</b>:
 
 ```clojure
 ;; on your .lsp/config.edn file
 {:auto-add-ns-to-new-files? false}
+```
+
+</details>
+
+### Hover
+
+This feature shows the function/var signature on minibuffer about the symbol at cursor, it's a really useful feature which avoid the need 
+to find definition all the time to check its signature.
+
+![hover](images/clojure-hover.png "hover")
+
+<details>
+<summary>Conflict with <b>CIDER</b></summary>
+
+<b>clojure-lsp</b> and <b>CIDER</b> have this same feature where it uses <b>eldoc</b> to show the signature on minibuffer and you should choose which one you want enabled during your development. Both work similar but remember that LSP doesn't need the REPL plugged in to work.
+
+To disable this feature on <b>CIDER</b>:
+
+```elisp
+(setq cider-eldoc-display-for-symbol-at-point nil) ; disable cider showing eldoc during symbol at point
+```
+
+or to disable on <b>clojure-lsp</b>:
+
+```elisp
+(setq lsp-eldoc-enable-hover nil) ; disable lsp-mode showing eldoc during symbol at point
 ```
 
 </details>
