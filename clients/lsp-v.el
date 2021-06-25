@@ -41,8 +41,8 @@ finding the executable with variable `exec-path'."
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection (lambda () lsp-v-vls-executable))
-  :activation-fn (lsp-activate-on "V")
-  :server-id 'v-ls))
+  :major-modes '(v-mode)
+  :server-id 'vls))
 
 (lsp-consistency-check lsp-v)
 
