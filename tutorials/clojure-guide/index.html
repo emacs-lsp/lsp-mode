@@ -2429,6 +2429,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#hover" class="md-nav__link">
+    Hover
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#semantic-tokens-experimental" class="md-nav__link">
     Semantic tokens (Experimental)
   </a>
@@ -2736,6 +2743,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#hover" class="md-nav__link">
+    Hover
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#semantic-tokens-experimental" class="md-nav__link">
     Semantic tokens (Experimental)
   </a>
@@ -2862,7 +2876,7 @@ After installed, <code>lsp-mode</code> will automatically initialize it when ope
 </code></pre></div>
 <h2 id="lsp-features">LSP features<a class="headerlink" href="#lsp-features" title="Permanent link">#</a></h2>
 <p>This guide will focus on the features of <code>lsp-mode</code> that are most relevant to Clojure development. You can view documentation of all features at the
-official <a href="https://emacs-lsp.github.io/lsp-mode/page/main-features/">lsp-mode site</a>.</p>
+official <a href="https://emacs-lsp.github.io/lsp-mode/page/main-features/">lsp-mode site</a> or <a href="https://clojure-lsp.github.io/clojure-lsp/features/">clojure-lsp features section</a>.</p>
 <h3 id="syntax-check">Syntax check<a class="headerlink" href="#syntax-check" title="Permanent link">#</a></h3>
 <p>It checks for errors and warnings on your code while you write it, it uses <a href="https://github.com/clj-kondo/clj-kondo">clj-kondo</a>,
 another amazing library that lints Clojure code, in the back-end so it's not required to install <code>clj-kondo</code> since <code>clojure-lsp</code> will
@@ -2896,6 +2910,7 @@ You may need to remove the lookup handlers conflict from `cider` and/or `clj-ref
 <h3 id="completion">Completion<a class="headerlink" href="#completion" title="Permanent link">#</a></h3>
 <p>By default, <code>lsp-mode</code> uses <code>company-mode</code> as its completion front-end. When
 present, <code>company-mode</code> and enabled for <code>lsp-mode</code>, it will be auto-configured and it will just work using the completion items returned by the LSP server.
+<code>clojure-lsp</code> also has completion snippets, for more information check <a href="https://clojure-lsp.github.io/clojure-lsp/features/#snippets">here</a>.
 If you do not want LSP completion, It's possible to use <code>cider</code> completion instead with:</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-enable-completion-at-point</span> <span class="no">nil</span><span class="p">)</span> <span class="c1">; use cider completion</span>
 </code></pre></div>
@@ -2937,15 +2952,36 @@ used by me is <code>clean-ns</code>, which will remove any unused requires and r
 but they may conflict if both are enable, inserting duplicated namespace forms. To fix that, you need to choose which one
 you wants to use:
 
-To disable this feature on `clj-refactor`:
+To disable this feature on <b>clj-refactor</b>:
 
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">cljr-add-ns-to-blank-clj-files</span> <span class="no">nil</span><span class="p">)</span> <span class="c1">; disable clj-refactor adding ns to blank files</span>
 </code></pre></div>
 
-or to disable on `clojure-lsp`:
+or to disable on <b>clojure-lsp</b>:
 
 <div class="highlight"><pre><span></span><code><span class="c1">;; on your .lsp/config.edn file</span>
 <span class="p">{</span><span class="ss">:auto-add-ns-to-new-files?</span> <span class="nv">false</span><span class="p">}</span>
+</code></pre></div>
+
+</details>
+
+<h3 id="hover">Hover<a class="headerlink" href="#hover" title="Permanent link">#</a></h3>
+<p>This feature shows the function/var signature on minibuffer about the symbol at cursor, it's a really useful feature which avoid the need 
+to find definition all the time to check its signature.</p>
+<p><img alt="hover" src="../images/clojure-hover.png" title="hover" /></p>
+<details>
+<summary>Conflict with <b>CIDER</b></summary>
+
+<b>clojure-lsp</b> and <b>CIDER</b> have this same feature where it uses <b>eldoc</b> to show the signature on minibuffer and you should choose which one you want enabled during your development. Both work similar but remember that LSP doesn't need the REPL plugged in to work.
+
+To disable this feature on <b>CIDER</b>:
+
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">cider-eldoc-display-for-symbol-at-point</span> <span class="no">nil</span><span class="p">)</span> <span class="c1">; disable cider showing eldoc during symbol at point</span>
+</code></pre></div>
+
+or to disable on <b>clojure-lsp</b>:
+
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-eldoc-enable-hover</span> <span class="no">nil</span><span class="p">)</span> <span class="c1">; disable lsp-mode showing eldoc during symbol at point</span>
 </code></pre></div>
 
 </details>
@@ -2995,7 +3031,7 @@ I rely on <code>cider</code> to use its REPL, evaluate expressions, run tests, a
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 24, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 25, 2021</span>
     
   </small>
 </div>
