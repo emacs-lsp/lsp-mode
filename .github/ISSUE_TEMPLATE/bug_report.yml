@@ -18,7 +18,6 @@ body:
           emacs -q -l lsp-start-plain.el
           ```
           where `lsp-start-plain.el` can be downloaded [here](https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-start-plain.el).
-          Alternatively, it will be great if you can reproduce the issue using [lsp-docker](https://github.com/emacs-lsp/lsp-docker/) which provides the minimal configurations for `lsp-mode` and ships with most of the language servers.
 - type: textarea
   id: bug-description
   attributes:
