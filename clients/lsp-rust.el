@@ -438,13 +438,13 @@ syntax highlighting."
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1.0"))
 
-(defcustom lsp-rst-analyzer-diagnostics-warnings-as-hint []
+(defcustom lsp-rust-analyzer-diagnostics-warnings-as-hint []
   "List of warnings that should be displayed with hint severity."
   :type 'lsp-string-vector
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1.0"))
 
-(defcustom lsp-rst-analyzer-diagnostics-warnings-as-info []
+(defcustom lsp-rust-analyzer-diagnostics-warnings-as-info []
   "List of warnings that should be displayed with info severity."
   :type 'lsp-string-vector
   :group 'lsp-rust
@@ -601,8 +601,8 @@ https://rust-analyzer.github.io/manual.html#auto-import.
   `(:diagnostics (:enable ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable)
                   :enableExperimental ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable-experimental)
                   :disabled ,lsp-rust-analyzer-diagnostics-disabled
-                  :warningsAsHint ,lsp-rst-analyzer-diagnostics-warnings-as-hint
-                  :warningsAsInfo ,lsp-rst-analyzer-diagnostics-warnings-as-info)
+                  :warningsAsHint ,lsp-rust-analyzer-diagnostics-warnings-as-hint
+                  :warningsAsInfo ,lsp-rust-analyzer-diagnostics-warnings-as-info)
     :assist (:importMergeBehaviour ,lsp-rust-analyzer-import-merge-behaviour
              :importPrefix ,lsp-rust-analyzer-import-prefix
              :importGranularity ,lsp-rust-analyzer-import-granularity
