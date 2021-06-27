@@ -406,6 +406,12 @@ The command should include `--message=format=json` or similar option."
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.2.2"))
 
+(defcustom lsp-rust-analyzer-exclude-dirs []
+  "These directories will be ignored by rust-analyzer."
+  :type 'lsp-string-vector
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1.0"))
+
 (defcustom lsp-rust-analyzer-macro-expansion-method 'lsp-rust-analyzer-macro-expansion-default
   "Use a different function if you want formatted macro expansion results and
 syntax highlighting."
@@ -428,6 +434,18 @@ syntax highlighting."
 
 (defcustom lsp-rust-analyzer-diagnostics-disabled []
   "List of native rust-analyzer diagnostics to disable."
+  :type 'lsp-string-vector
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-rust-analyzer-diagnostics-warnings-as-hint []
+  "List of warnings that should be displayed with hint severity."
+  :type 'lsp-string-vector
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-rust-analyzer-diagnostics-warnings-as-info []
+  "List of warnings that should be displayed with info severity."
   :type 'lsp-string-vector
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1.0"))
@@ -481,7 +499,8 @@ for formatting."
   :package-version '(lsp-mode . "6.3.2"))
 
 (defcustom lsp-rust-analyzer-proc-macro-enable nil
-  "Enable Proc macro support; implies lsp-rust-analyzer-cargo-run-build-scripts"
+  "Enable Proc macro support.
+Implies `lsp-rust-analyzer-cargo-run-build-scripts'"
   :type 'boolean
   :group 'lsp-rust
   :package-version '(lsp-mode . "6.3.2"))
@@ -512,6 +531,65 @@ them with `crate` or the crate name they refer to."
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1.0"))
 
+(defcustom lsp-rust-analyzer-import-granularity "crate"
+  "How imports should be grouped into use statements."
+  :type '(choice
+	  (const "crate" :doc "Merge imports from the same crate into a single use statement. This kind of nesting is only supported in Rust versions later than 1.24.")
+	  (const "module" :doc "Merge imports from the same module into a single use statement.")
+	  (const "item" :doc "Don’t merge imports at all, creating one import per item.")
+	  (const "preserve" :doc "Do not change the granularity of any imports. For auto-import this has the same effect as `\"item\"'"))
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-rust-analyzer-cargo-auto-reload t
+  "Automatically refresh project info via `cargo metadata' on `Cargo.toml' changes."
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-rust-analyzer-use-rustc-wrapper-for-build-scripts t
+  "Use `RUSTC_WRAPPER=rust-analyzer' when running build scripts to avoid
+compiling unnecessary things."
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-rust-analyzer-completion-auto-import-enable t
+  "Toggles the additional completions that automatically add imports when
+completed. `lsp-completion-enable-additional-text-edit' must be non-nil
+ for this feature to be fully enabled."
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-rust-analyzer-completion-auto-self-enable t
+  "Toggles the additional completions that automatically show method calls
+and field accesses with self prefixed to them when inside a method."
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-rust-analyzer-import-enforce-granularity nil
+  "Whether to enforce the import granularity setting for all files.
+ If set to nil rust-analyzer will try to keep import styles consistent per file."
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-rust-analyzer-import-group t
+  "Group inserted imports by the following order:
+https://rust-analyzer.github.io/manual.html#auto-import.
+ Groups are separated by newlines."
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1.0"))
+
+(defcustom lsp-rust-analyzer-highlighting-strings t
+  "Use semantic tokens for strings."
+  :type 'boolean
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1.0"))
+
 (defcustom lsp-rust-analyzer-rustc-source nil
   "Path to the Cargo.toml of the rust compiler workspace."
   :type 'string
@@ -522,9 +600,14 @@ them with `crate` or the crate name they refer to."
   "Init options for rust-analyzer"
   `(:diagnostics (:enable ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable)
                   :enableExperimental ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable-experimental)
-                  :disabled ,lsp-rust-analyzer-diagnostics-disabled)
+                  :disabled ,lsp-rust-analyzer-diagnostics-disabled
+                  :warningsAsHint ,lsp-rust-analyzer-diagnostics-warnings-as-hint
+                  :warningsAsInfo ,lsp-rust-analyzer-diagnostics-warnings-as-info)
     :assist (:importMergeBehaviour ,lsp-rust-analyzer-import-merge-behaviour
-             :importPrefix ,lsp-rust-analyzer-import-prefix)
+             :importPrefix ,lsp-rust-analyzer-import-prefix
+             :importGranularity ,lsp-rust-analyzer-import-granularity
+             :importEnforceGranularity ,(lsp-json-bool lsp-rust-analyzer-import-enforce-granularity)
+             :importGroup ,(lsp-json-bool lsp-rust-analyzer-import-group))
     :lruCapacity ,lsp-rust-analyzer-lru-capacity
     :checkOnSave (:enable ,(lsp-json-bool lsp-rust-analyzer-cargo-watch-enable)
                   :command ,lsp-rust-analyzer-cargo-watch-command
@@ -534,14 +617,17 @@ them with `crate` or the crate name they refer to."
     :files (:exclude ,lsp-rust-analyzer-exclude-globs
             :watcher ,(lsp-json-bool (if lsp-rust-analyzer-use-client-watching
                                          "client"
-                                       "notify")))
+                                       "notify"))
+            :excludeDirs ,lsp-rust-analyzer-exclude-dirs)
     :cargo (:allFeatures ,(lsp-json-bool lsp-rust-all-features)
             :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
             :features ,lsp-rust-features
             :target ,lsp-rust-analyzer-cargo-target
             :runBuildScripts ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
             ; Obsolete, but used by old Rust-Analyzer versions
-            :loadOutDirsFromCheck ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts))
+            :loadOutDirsFromCheck ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
+            :autoreload ,(lsp-json-bool lsp-rust-analyzer-cargo-auto-reload)
+            :useRustcWrapperForBuildScripts ,(lsp-json-bool lsp-rust-analyzer-use-rustc-wrapper-for-build-scripts))
     :rustfmt (:extraArgs ,lsp-rust-analyzer-rustfmt-extra-args
               :overrideCommand ,lsp-rust-analyzer-rustfmt-override-command)
     :inlayHints (:typeHints ,(lsp-json-bool lsp-rust-analyzer-server-display-inlay-hints)
@@ -550,10 +636,13 @@ them with `crate` or the crate name they refer to."
                  :maxLength ,lsp-rust-analyzer-max-inlay-hint-length)
     :completion (:addCallParenthesis ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-parenthesis)
                  :addCallArgumentSnippets ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-argument-snippets)
-                 :postfix (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-postfix-enable)))
+                 :postfix (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-postfix-enable))
+                 :autoimport (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-auto-import-enable))
+                 :autoself (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-auto-self-enable)))
     :callInfo (:full ,(lsp-json-bool lsp-rust-analyzer-call-info-full))
     :procMacro (:enable ,(lsp-json-bool lsp-rust-analyzer-proc-macro-enable))
-    :rustcSource ,lsp-rust-analyzer-rustc-source))
+    :rustcSource ,lsp-rust-analyzer-rustc-source
+    :highlighting (:strings ,(lsp-json-bool lsp-rust-analyzer-highlighting-strings))))
 
 (defconst lsp-rust-notification-handlers
   '(("rust-analyzer/publishDecorations" . (lambda (_w _p)))))
