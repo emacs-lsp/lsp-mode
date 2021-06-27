@@ -561,11 +561,10 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
 
 (defun lsp--semantic-tokens-on-refresh ()
   "Invoked in response to workspace/semanticTokens/refresh requests."
-  (lsp-foreach-workspace
-   (cl-loop
-    for ws-buffer in (lsp--workspace-buffers lsp--cur-workspace) do
-    (unless (equal (current-buffer) ws-buffer)
-      (setf (buffer-local-value 'lsp--semantic-tokens-cache ws-buffer) nil))))
+  (cl-loop for workspace in (lsp-workspaces)
+           for ws-buffer in (lsp--workspace-buffers workspace) do
+           (unless (equal (current-buffer) ws-buffer)
+             (setf (buffer-local-value 'lsp--semantic-tokens-cache ws-buffer) nil)))
   (lsp--semantic-tokens-request-full-token-set-when-idle t))
 
 ;;;###autoload
@@ -669,6 +668,9 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
                     lsp-semantic-tokens--log))))
 
 (defun lsp-semantic-tokens-enable-log ()
+  "Enable logging of intermediate fontification states.
+
+This is a debugging tool, and may incur significant performance penalties."
   (setq lsp-semantic-tokens--log '())
   (defadvice lsp-semantic-tokens--fontify (around advice-tokens-fontify activate)
     (lsp-semantic-tokens--log-buffer-contents 'before)
@@ -692,12 +694,16 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
                                                :version ,lsp--cur-version))))
 
 (defun lsp-semantic-tokens-disable-log ()
+  "Disable logging of intermediate fontification states."
   (ad-unadvise 'lsp-semantic-tokens--fontify)
   (ad-unadvise 'lsp--semantic-tokens-ingest-full/delta-response)
   (ad-unadvise 'lsp--semantic-tokens-ingest-full-response)
   (ad-unadvise 'lsp--semantic-tokens-ingest-range-response))
 
+(declare-function htmlize-buffer "ext:htmlize")
+
 (defun lsp-semantic-tokens-export-log ()
+  "Write HTML-formatted snapshots of previous fontification results to /tmp."
   (require 'htmlize)
   (let* ((outdir (f-join "/tmp" "semantic-token-snapshots"))
          (progress-reporter
