@@ -7515,12 +7515,15 @@ nil."
              (funcall callback))
          (error (funcall error-callback err)))))))
 
-(cl-defun lsp-download-path (&key store-path set-executable? &allow-other-keys)
+(cl-defun lsp-download-path (&key store-path binary-path set-executable? &allow-other-keys)
   "Download URL and store it into STORE-PATH.
 
 SET-EXECUTABLE? when non-nil change the executable flags of
-STORE-PATH to make it executable."
-  (let ((store-path (lsp-resolve-value store-path)))
+STORE-PATH to make it executable. BINARY-PATH can be specified
+when the binary to start does not match the name of the
+archieve(e. g. when the archieve has multiple files)"
+  (let ((store-path (or (lsp-resolve-value binary-path)
+                        (lsp-resolve-value store-path))))
     (cond
      ((executable-find store-path) store-path)
      ((and set-executable? (f-exists? store-path))
