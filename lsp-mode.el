@@ -6037,11 +6037,6 @@ textDocument/didOpen for the new file."
 (defconst lsp--default-notification-handlers
   (ht ("window/showMessage" #'lsp--window-show-message)
       ("window/logMessage" #'lsp--window-log-message)
-      ("workspace/semanticTokens/refresh"
-       (lambda ()
-         (when (and lsp-semantic-tokens-enable
-                    (fboundp 'lsp--semantic-tokens-on-refresh))
-           (lsp--semantic-tokens-on-refresh))))
       ("textDocument/publishDiagnostics" #'lsp--on-diagnostics)
       ("textDocument/diagnosticsEnd" #'ignore)
       ("textDocument/diagnosticsBegin" #'ignore)
@@ -6165,6 +6160,11 @@ WORKSPACE is the active workspace."
                      ((equal method "window/workDoneProgress/create")
                       nil ;; no specific reply, no processing required
                       )
+                     ((equal method "workspace/semanticTokens/refresh")
+                      (when (and lsp-semantic-tokens-enable
+                                 (fboundp 'lsp--semantic-tokens-on-refresh))
+                        (lsp--semantic-tokens-on-refresh))
+                      nil)
                      (t (lsp-warn "Unknown request method: %s" method) nil))))
     ;; Send response to the server.
     (unless (eq response 'delay-response)
