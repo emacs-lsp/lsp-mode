@@ -1151,6 +1151,27 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#lsp-clangd-binary-path" class="md-nav__link">
+    lsp-clangd-binary-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clangd-download-url" class="md-nav__link">
+    lsp-clangd-download-url
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clangd-version" class="md-nav__link">
+    lsp-clangd-version
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-clients-clangd-args" class="md-nav__link">
     lsp-clients-clangd-args
   </a>
@@ -2575,6 +2596,27 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#lsp-clangd-binary-path" class="md-nav__link">
+    lsp-clangd-binary-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clangd-download-url" class="md-nav__link">
+    lsp-clangd-download-url
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clangd-version" class="md-nav__link">
+    lsp-clangd-version
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-clients-clangd-args" class="md-nav__link">
     lsp-clients-clangd-args
   </a>
@@ -2617,6 +2659,23 @@
 <p>For more instructions on how to install manually, check <a href="https://clangd.llvm.org/installation.html">here</a>.</p>
 <h3 id="debugger-yes-gdb-or-lldb">Debugger: Yes (gdb or lldb)<a class="headerlink" href="#debugger-yes-gdb-or-lldb" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
+<h3 id="lsp-clangd-binary-path"><code>lsp-clangd-binary-path</code><a class="headerlink" href="#lsp-clangd-binary-path" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>file</code></p>
+<p><em>Default:</em> <code>~/.emacs.d/.cache/lsp/clangd/clangd_12.0.0/bin/clangd</code></p>
+<p>The path to <code>clangd</code> binary.</p>
+<hr />
+<h3 id="lsp-clangd-download-url"><code>lsp-clangd-download-url</code><a class="headerlink" href="#lsp-clangd-download-url" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> <code>https://github.com/clangd/clangd/releases/download/12.0.0/clangd-linux-12.0.0.zip</code></p>
+<p>Automatic download url for clangd</p>
+<hr />
+<h3 id="lsp-clangd-version"><code>lsp-clangd-version</code><a class="headerlink" href="#lsp-clangd-version" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> <code>12.0.0</code></p>
+<p>Clangd version to download.
+It has to be set before <code>lsp-clangd.el</code> is loaded and it has to
+be available here: https://github.com/clangd/clangd/releases/</p>
+<hr />
 <h3 id="lsp-clients-clangd-args"><code>lsp-clients-clangd-args</code><a class="headerlink" href="#lsp-clients-clangd-args" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(repeat string)</code></p>
 <p><em>Default:</em> <code>(--header-insertion-decorators=0)</code></p>
