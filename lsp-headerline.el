@@ -31,7 +31,7 @@
   :tag "LSP Headerline")
 
 (defcustom lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols)
-  "Face used on breadcrumb text on modeline."
+  "Segments used in breadcrumb text on headerline."
   :type '(repeat
           (choice (const :tag "Include the project name." project)
                   (const :tag "Include the open file name." file)
