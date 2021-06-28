@@ -47,7 +47,7 @@
     "full-name": "C#",
     "server-name": "OmniSharp-Roslyn",
     "server-url": "https://github.com/OmniSharp/omnisharp-roslyn",
-    "installation": "Supports automatic installation. Use M-x lsp-csharp-update-server to update to latest.",
+    "installation": "Supports automatic installation.",
     "lsp-install-server": "csharp",
     "debugger": "Not available"
   },
