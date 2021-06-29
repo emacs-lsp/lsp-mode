@@ -225,7 +225,7 @@ Set FORCE-DOWNLOADING to non-nil to force re-download the database."
   (let* ((schema (lsp--completing-read "Select buffer schema: "
                                        (lsp-yaml--get-supported-schemas)
                                        (lambda (schema)
-                                         (alist-get 'name schema))
+                                         (format "%s: %s" (alist-get 'name schema)(alist-get 'description schema)))
                                        nil t))
          (uri (alist-get 'url schema)))
     (lsp-yaml-set-buffer-schema uri)))
