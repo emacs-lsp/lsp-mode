@@ -57,9 +57,9 @@ be available here: https://github.com/clangd/clangd/releases/"
 
 (defcustom lsp-clangd-download-url
   (format (pcase system-type
-            ('gnu/linux "https://github.com/clangd/clangd/releases/download/%s/clangd-linux-%s.zip")
             ('darwin "https://github.com/clangd/clangd/releases/download/%s/clangd-mac-%s.zip")
-            ('windows-nt "https://github.com/clangd/clangd/releases/download/%s/clangd-windows-%s.zip"))
+            ('windows-nt "https://github.com/clangd/clangd/releases/download/%s/clangd-windows-%s.zip")
+            (_ "https://github.com/clangd/clangd/releases/download/%s/clangd-linux-%s.zip"))
           lsp-clangd-version
           lsp-clangd-version)
   "Automatic download url for clangd"
