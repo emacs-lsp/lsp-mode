@@ -5072,10 +5072,12 @@ RENDER-ALL - nil if only the signature should be rendered."
     (define-key (kbd "M-n") #'lsp-signature-next)
     (define-key (kbd "M-p") #'lsp-signature-previous)
     (define-key (kbd "M-a") #'lsp-signature-toggle-full-docs)
-    (define-key (kbd "C-c C-k") #'lsp-signature-stop))
-  "Keymap for `lsp-signature-mode-map'")
+    (define-key (kbd "C-c C-k") #'lsp-signature-stop)
+    (define-key (kbd "C-g") #'lsp-signature-stop))
+  "Keymap for `lsp-signature-mode-map'.")
 
-(define-minor-mode lsp-signature-mode ""
+(define-minor-mode lsp-signature-mode
+  "Mode used to show signature popup."
   :keymap lsp-signature-mode-map
   :lighter ""
   :group 'lsp-mode)
