@@ -1679,7 +1679,12 @@ This set of allowed chars is enough for hexifying local file paths.")
      ((and (not (file-directory-p file-name))
            (not (lsp--string-match-any ignored-files file-name))
            (memq event-type '(created deleted changed)))
-      (funcall callback event)))))
+      (funcall callback event))
+     ((and (not (file-directory-p file-name))
+           (not (lsp--string-match-any ignored-files file-name))
+           (memq event-type '(renamed)))
+      (funcall callback `(,(cl-first event) deleted ,(cl-third event)))
+      (funcall callback `(,(cl-first event) created ,(cl-fourth event)))))))
 
 (defun lsp--ask-about-watching-big-repo (number-of-directories dir)
   "Ask the user if they want to watch NUMBER-OF-DIRECTORIES from a repository DIR.
