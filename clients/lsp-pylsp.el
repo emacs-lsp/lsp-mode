@@ -45,7 +45,7 @@
 
 (defcustom lsp-pylsp-configuration-sources ["flake8"]
   "List of configuration sources to use."
-  :type '(repeat string)
+  :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-jedi-completion-enabled t
@@ -119,7 +119,7 @@ complexity."
 
 (defcustom lsp-pylsp-plugins-preload-modules nil
   "List of modules to import on startup"
-  :type '(repeat string)
+  :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-pylint-enabled nil
@@ -140,23 +140,23 @@ complexity."
 
 (defcustom lsp-pylsp-plugins-pycodestyle-exclude nil
   "Exclude files or directories which match these patterns."
-  :type '(repeat string)
+  :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-pycodestyle-filename nil
   "When parsing directories, only check filenames matching these
 patterns."
-  :type '(repeat string)
+  :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-pycodestyle-select nil
   "Select errors and warnings"
-  :type '(repeat string)
+  :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-pycodestyle-ignore nil
   "Ignore errors and warnings"
-  :type '(repeat string)
+  :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-pycodestyle-hang-closing nil
@@ -184,23 +184,23 @@ existing convention."
 (defcustom lsp-pylsp-plugins-pydocstyle-add-ignore nil
   "Ignore errors and warnings in addition to the specified
 convention."
-  :type '(repeat string)
+  :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-pydocstyle-add-select nil
   "Select errors and warnings in addition to the specified
 convention."
-  :type '(repeat string)
+  :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-pydocstyle-ignore nil
   "Ignore errors and warnings"
-  :type '(repeat string)
+  :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-pydocstyle-select nil
   "Select errors and warnings"
-  :type '(repeat string)
+  :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-pydocstyle-match "(?!test_).*\\.py"
@@ -247,7 +247,7 @@ imported and inspected by rope."
   "The name of the folder in which rope stores project
 configurations and data. Pass `nil` for not using such a folder
 at all."
-  :type '(repeat string)
+  :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-flake8-enabled t
@@ -257,12 +257,12 @@ at all."
 
 (defcustom lsp-pylsp-plugins-flake8-exclude nil
   "List of glob patterns to exclude from checks."
-  :type '(repeat string)
+  :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-flake8-filename nil
   "List of glob patterns to include for checks."
-  :type '(repeat string)
+  :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-flake8-hang-closing nil
@@ -274,7 +274,7 @@ closing bracket rather than match the indentation."
 
 (defcustom lsp-pylsp-plugins-flake8-ignore nil
   "A list of codes to ignore."
-  :type '(repeat string)
+  :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-flake8-max-line-length nil
@@ -289,7 +289,7 @@ entirely URLs."
 `lsp-pylsp-plugins-flake8-ignore'. You can specify a portion of an error code to
 get all that start with that string. For example, you can use E, E4, E43, and
 E431"
-  :type '(repeat string)
+  :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-flake8-config nil
