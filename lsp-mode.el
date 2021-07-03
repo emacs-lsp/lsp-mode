@@ -691,6 +691,7 @@ Changes take effect only when a new session is started."
                                         (".*\\.json$" . "json")
                                         (".*\\.jsonc$" . "jsonc")
                                         (".*\\.php$" . "php")
+                                        (".*\\.svelte$" . "svelte")
                                         (ada-mode . "ada")
                                         (nxml-mode . "xml")
                                         (sql-mode . "sql")
