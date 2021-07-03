@@ -1,9 +1,14 @@
-;;; lsp-use-package.el --- use-package integration   -*- lexical-binding: t; -*-
+;;; lsp-use-package.el --- Integration with `use-package' -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021  Ivan Yonchovski
 
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>
 ;; Keywords: convenience
+
+;; Package-Requires: ((use-package "2.4.1") (emacs "26.1") (lsp-mode "7.0"))
+;; Version: 0.0.1
+
+;; URL: https://github.com/emacs-lsp/lsp-mode
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -27,13 +32,14 @@
 
 ;;; Code:
 
-(declare-function use-package-process-keywords "ext:use-package")
-(declare-function use-package-concat "ext:use-package")
-(declare-function use-package-non-nil-symbolp "ext:use-package")
-(declare-function use-package-error "ext:use-package")
-(declare-function use-package-as-one "ext:use-package")
+(require 'use-package)
 
 (defun use-package-handler/:ensure-servers (name _keyword arg rest state)
+  "The `:ensure-servers' handler.
+NAME of the section.
+ARG - the value in that section
+STATE - current state of the `use-package' expansion.
+REST - the remaining content."
   (let ((body (use-package-process-keywords name rest state)))
     (use-package-concat
      (mapcar (lambda (var)
@@ -43,9 +49,9 @@
 
 ;;;###autoload
 (defun use-package-normalize-ensure-servers (_name label arg &optional _recursed)
-  "Normalize the arguments to diminish down to a list of one of two forms:
-     SYMBOL
-     (SYMBOL . STRING)"
+  "Normalize the arguments to diminish down to a list of symbols.
+LABEL - the label for the section.
+ARG - keyword value to normalize."
   (cond
    ((use-package-non-nil-symbolp arg)
     (list arg))
@@ -57,6 +63,8 @@
 
 ;;;###autoload
 (defun use-package-normalize/:ensure-servers (name keyword args)
+  "Normalize ARGS under KEYWORD section.
+NAME is the name of the section."
   (use-package-as-one (symbol-name keyword) args
     (apply-partially #'use-package-normalize-ensure-servers name) t))
 
