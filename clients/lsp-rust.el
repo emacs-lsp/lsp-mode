@@ -195,11 +195,12 @@ the latest build duration."
 
 (defcustom lsp-rust-clippy-preference "opt-in"
   "Controls eagerness of clippy diagnostics when available.
-Valid values are (case-insensitive):\n - \"off\": Disable clippy
-lints.\n - \"opt-in\": Clippy lints are shown when crates
-specify `#![warn(clippy)]`.\n - \"on\": Clippy lints enabled
-for all crates in workspace.\nYou need to install clippy via
-rustup if you haven't already."
+Valid values are (case-insensitive):
+ - \"off\": Disable clippy lints.
+ - \"opt-in\": Clippy lints are shown when crates specify `#![warn(clippy)]'.
+ - \"on\": Clippy lints enabled for all crates in workspace.
+
+You need to install clippy via rustup if you haven't already."
   :type '(choice
           (const "on")
           (const "opt-in")
@@ -242,11 +243,12 @@ instead of the bundled one"
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-build-command nil
-  "EXPERIMENTAL (requires `unstable_features`)\nIf set, executes
-a given program responsible for rebuilding save-analysis to be
-loaded by the RLS. The program given should output a list of
-resulting .json files on stdout. \nImplies `rust.build_on_save`:
-true."
+  "EXPERIMENTAL (requires `rust.unstable_features')
+If set, executes a given program responsible for rebuilding save-analysis to be
+loaded by the RLS. The program given should output a list of resulting .json
+files on stdout.
+
+Implies `rust.build_on_save': true."
   :type '(choice
           (const :tag "None" nil)
           (string :tag "Command"))
@@ -507,8 +509,10 @@ Implies `lsp-rust-analyzer-cargo-run-build-scripts'"
 
 (defcustom lsp-rust-analyzer-import-merge-behaviour "full"
   "The strategy to use when inserting new imports or merging imports.
-Valid values are:\n - \"none\": No merging\n - \"full\": Merge all layers of
-the import trees\n - \"last\": Only merge the last layer of the import trees"
+Valid values are:
+ - \"none\": No merging
+ - \"full\": Merge all layers of the import trees
+ - \"last\": Only merge the last layer of the import trees"
   :type '(choice
           (const "none")
           (const "full")
@@ -518,12 +522,13 @@ the import trees\n - \"last\": Only merge the last layer of the import trees"
 
 (defcustom lsp-rust-analyzer-import-prefix "plain"
   "The path structure for newly inserted paths to use.
-Valid values are:\n - \"plain\": Insert import paths relative to the
-current module, using up to one `super` prefix if the parent module
-contains the requested item.\n - \"by_self\": Prefix all import paths
-with `self` if they don't begin with `self`, `super`, `crate` or a crate
-name\n - \"by_crate\": Force import paths to be absolute by always starting
-them with `crate` or the crate name they refer to."
+Valid values are:
+ - \"plain\": Insert import paths relative to the current module, using up to
+one `super' prefix if the parent module contains the requested item.
+ - \"by_self\": Prefix all import paths with `self' if they don't begin with
+`self', `super', `crate' or a crate name.
+ - \"by_crate\": Force import paths to be absolute by always starting
+them with `crate' or the crate name they refer to."
   :type '(choice
           (const "plain")
           (const "by_self")
