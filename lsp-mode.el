@@ -4965,6 +4965,10 @@ In addition, each can have property:
           (insert str)
           (delay-mode-hooks (funcall mode))
           (cl-flet ((window-body-width () lsp-window-body-width))
+            ;; This can go wrong in some cases, and the fontification would
+            ;; not work as expected.
+            ;;
+            ;; See #2984
             (ignore-errors (font-lock-ensure))
             (lsp--display-inline-image mode))
           (lsp--buffer-string-visible))
