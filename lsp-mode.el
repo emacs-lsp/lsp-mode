@@ -4965,7 +4965,7 @@ In addition, each can have property:
           (insert str)
           (delay-mode-hooks (funcall mode))
           (cl-flet ((window-body-width () lsp-window-body-width))
-            (font-lock-ensure)
+            (ignore-errors (font-lock-ensure))
             (lsp--display-inline-image mode))
           (lsp--buffer-string-visible))
       (error str))))
