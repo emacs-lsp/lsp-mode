@@ -129,7 +129,7 @@ unless overridden by a more specific face association."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-enum
-  '((t (:inherit font-lock-variable-name-face)))
+  '((t (:inherit font-lock-type-face)))
   "Face used for enums."
   :group 'lsp-semantic-tokens)
 
