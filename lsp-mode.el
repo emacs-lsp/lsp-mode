@@ -5924,7 +5924,7 @@ REFERENCES? t when METHOD returns references."
   (evil-set-command-property 'lsp-find-type-definition :jump t))
 
 (defun lsp--find-workspaces-for (msg-or-method)
-  "Find all workspaces in the current that can handle MSG."
+  "Find all workspaces in the current project that can handle MSG."
   (let ((method (if (stringp msg-or-method)
                     msg-or-method
                   (plist-get msg-or-method :method))))
