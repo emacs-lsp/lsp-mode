@@ -5480,6 +5480,7 @@ Request codeAction/resolve for more info if server supports."
     (powershell-mode    . powershell-indent)         ; PowerShell
     (ess-mode           . ess-indent-offset)         ; ESS (R)
     (yaml-mode          . yaml-indent-offset)        ; YAML
+    (hack-mode          . hack-indent-offset)        ; Hack
 
     (default            . standard-indent))          ; default fallback
   "A mapping from `major-mode' to its indent variable.")
