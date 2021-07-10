@@ -1008,6 +1008,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-semantic-tokens-allow-delta-requests" class="md-nav__link">
+    lsp-semantic-tokens-allow-delta-requests
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-semantic-tokens-allow-ranged-requests" class="md-nav__link">
+    lsp-semantic-tokens-allow-ranged-requests
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-semantic-tokens-apply-modifiers" class="md-nav__link">
     lsp-semantic-tokens-apply-modifiers
   </a>
@@ -2831,6 +2845,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-semantic-tokens-allow-delta-requests" class="md-nav__link">
+    lsp-semantic-tokens-allow-delta-requests
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-semantic-tokens-allow-ranged-requests" class="md-nav__link">
+    lsp-semantic-tokens-allow-ranged-requests
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-semantic-tokens-apply-modifiers" class="md-nav__link">
     lsp-semantic-tokens-apply-modifiers
   </a>
@@ -2988,6 +3016,21 @@ unless overridden by a more specific face association.</p>
 <p>Face used for semantic highlighting scopes matching variable.*,
 unless overridden by a more specific face association.</p>
 <hr />
+<h3 id="lsp-semantic-tokens-allow-delta-requests"><code>lsp-semantic-tokens-allow-delta-requests</code><a class="headerlink" href="#lsp-semantic-tokens-allow-delta-requests" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Whether to use semantic token delta requests when available.</p>
+<p>When supported by the language server, delta requests are always
+preferred over both full and ranged token requests.</p>
+<hr />
+<h3 id="lsp-semantic-tokens-allow-ranged-requests"><code>lsp-semantic-tokens-allow-ranged-requests</code><a class="headerlink" href="#lsp-semantic-tokens-allow-ranged-requests" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Whether to use ranged semantic token requests when available.</p>
+<p>Note that even when this is set to t, delta requests will
+be preferred whenever possible, unless
+<code>lsp-semantic-tokens-allow-delta-requests</code> is false.</p>
+<hr />
 <h3 id="lsp-semantic-tokens-apply-modifiers"><code>lsp-semantic-tokens-apply-modifiers</code><a class="headerlink" href="#lsp-semantic-tokens-apply-modifiers" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
@@ -3014,7 +3057,7 @@ or modifier type returned by a language server has no face associated with it.</
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 9, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 10, 2021</span>
     
   </small>
 </div>
