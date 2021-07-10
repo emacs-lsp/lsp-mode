@@ -833,8 +833,12 @@ directory")
     ("textDocument/semanticTokensFull"
      :check-command (lambda (workspace)
                       (with-lsp-workspace workspace
-                        (lsp-get (lsp--capability :semanticTokensProvider)
-                                 :full))))
+                        (lsp-get (lsp--capability :semanticTokensProvider) :full))))
+    ("textDocument/semanticTokensFull/Delta"
+     :check-command (lambda (workspace)
+                      (with-lsp-workspace workspace
+                        (let ((capFull (lsp-get (lsp--capability :semanticTokensProvider) :full)))
+                          (and (not (booleanp capFull)) (lsp-get capFull :delta))))))
     ("textDocument/semanticTokensRangeProvider"
      :check-command (lambda (workspace)
                       (with-lsp-workspace workspace
@@ -3341,7 +3345,7 @@ disappearing, unset all the variables related to it."
                    ,@(when lsp-enable-file-watchers '((didChangeWatchedFiles . ((dynamicRegistration . t)))))
                    (workspaceFolders . t)
                    (configuration . t)
-                   ,@(when lsp-semantic-tokens-enable '((semanticTokens . ((refreshSupport . :json-false)))))
+                   ,@(when lsp-semantic-tokens-enable '((semanticTokens . ((refreshSupport . t)))))
                    ,@(when lsp-lens-enable '((codeLens . ((refreshSupport . :json-false)))))
                    (fileOperations . ((didCreate . :json-false)
                                       (willCreate . :json-false)
@@ -6046,7 +6050,6 @@ textDocument/didOpen for the new file."
 (defconst lsp--default-notification-handlers
   (ht ("window/showMessage" #'lsp--window-show-message)
       ("window/logMessage" #'lsp--window-log-message)
-      ("workspace/semanticTokens/refresh" #'ignore)
       ("textDocument/publishDiagnostics" #'lsp--on-diagnostics)
       ("textDocument/diagnosticsEnd" #'ignore)
       ("textDocument/diagnosticsBegin" #'ignore)
@@ -6170,6 +6173,11 @@ WORKSPACE is the active workspace."
                      ((equal method "window/workDoneProgress/create")
                       nil ;; no specific reply, no processing required
                       )
+                     ((equal method "workspace/semanticTokens/refresh")
+                      (when (and lsp-semantic-tokens-enable
+                                 (fboundp 'lsp--semantic-tokens-on-refresh))
+                        (lsp--semantic-tokens-on-refresh))
+                      nil)
                      (t (lsp-warn "Unknown request method: %s" method) nil))))
     ;; Send response to the server.
     (unless (eq response 'delay-response)
