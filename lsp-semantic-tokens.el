@@ -25,7 +25,7 @@
 (require 'lsp-mode)
 
 (defgroup lsp-semantic-tokens nil
-  "LSP support for semantic-tokens"
+  "LSP support for semantic-tokens."
   :prefix "lsp-semantic-tokens-"
   :group 'lsp-mode
   :tag "LSP Semantic tokens")
@@ -68,26 +68,26 @@ preferred over both full and ranged token requests."
 
 (defface lsp-face-semhl-variable
   '((t :inherit font-lock-variable-name-face))
-  "Face used for semantic highlighting scopes matching variable.*,
-unless overridden by a more specific face association."
+  "Face used for semantic highlighting scopes matching variable.*.
+Unless overridden by a more specific face association."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-function
   '((t :inherit font-lock-function-name-face))
-  "Face used for semantic highlighting scopes matching entity.name.function.*,
-unless overridden by a more specific face association."
+  "Face used for semantic highlighting scopes matching entity.name.function.*.
+Unless overridden by a more specific face association."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-method
   '((t :inherit lsp-face-semhl-function))
-  "Face used for semantic highlighting scopes matching entity.name.function.method.*,
-unless overridden by a more specific face association."
+  "Face used for semantic highlighting scopes matching entity.name.method.*.
+Unless overridden by a more specific face association."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-namespace
   '((t :inherit font-lock-type-face :weight bold))
-  "Face used for semantic highlighting scopes matching entity.name.namespace.*,
-unless overridden by a more specific face association."
+  "Face used for semantic highlighting scopes matching entity.name.namespace.*.
+Unless overridden by a more specific face association."
   :group 'lsp-semantic-tokens)
 
 (defface lsp-face-semhl-comment
@@ -360,8 +360,10 @@ If FONTIFY-IMMEDIATELY is non-nil, fontification will be performed immediately
 
 (defun lsp-semantic-tokens--fontify (old-fontify-region beg-orig end-orig &optional loudly)
   "Apply fonts to retrieved semantic tokens.
-OLD-FONTIFY-REGION is the underlying region fontification function, e.g., `font-lock-fontify-region'.
-BEG-ORIG and END-ORIG deliminate the requested fontification region and may be modified by OLD-FONTIFY-REGION.
+OLD-FONTIFY-REGION is the underlying region fontification function,
+e.g., `font-lock-fontify-region'.
+BEG-ORIG and END-ORIG deliminate the requested fontification region and maybe
+modified by OLD-FONTIFY-REGION.
 LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
   ;; TODO: support multiple language servers per buffer?
   (let ((faces (seq-some #'lsp--workspace-semantic-tokens-faces lsp--buffer-workspaces))
@@ -446,7 +448,7 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
   (lsp--semantic-tokens-request (cons (window-start) (window-end)) t))
 
 (defun lsp--semantic-tokens-as-defined-by-workspace (workspace)
-  "Returns plist of token-types and token-modifiers defined by WORKSPACE, or nil if none are defined."
+  "Return plist of token-types and token-modifiers defined by WORKSPACE, or nil if none are defined."
   (when-let ((token-capabilities
               (or
                (-some->
@@ -459,8 +461,8 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
         :token-modifiers ,(lsp:semantic-tokens-legend-token-modifiers legend)))))
 
 (defun lsp-semantic-tokens-suggest-overrides ()
-  (interactive)
   "Suggest face overrides that best match the faces chosen by `font-lock-fontify-region'."
+  (interactive)
   (-when-let* ((token-info (-some #'lsp--semantic-tokens-as-defined-by-workspace lsp--buffer-workspaces))
                ((&plist :token-types token-types :token-modifiers token-modifiers) token-info))
     (let* ((tokens (lsp-request
@@ -626,10 +628,14 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
   (cond
    (lsp-semantic-tokens-mode
     (add-hook 'lsp-configure-hook #'lsp-semantic-tokens--enable nil t)
-    (add-hook 'lsp-unconfigure-hook #'lsp-semantic-tokens--disable nil t))
+    (add-hook 'lsp-unconfigure-hook #'lsp-semantic-tokens--disable nil t)
+    (lsp--semantic-tokens-initialize-buffer))
    (t
     (remove-hook 'lsp-configure-hook #'lsp-semantic-tokens--enable t)
     (remove-hook 'lsp-unconfigure-hook #'lsp-semantic-tokens--disable t)
+    (when lsp--semantic-tokens-teardown
+      (funcall lsp--semantic-tokens-teardown))
+    (lsp-semantic-tokens--request-update)
     (setq lsp--semantic-tokens-idle-timer nil
           lsp--semantic-tokens-cache nil
           lsp--semantic-tokens-teardown nil))))
@@ -660,6 +666,7 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
 (defvar-local lsp-semantic-tokens--prev-response nil)
 
 (defun lsp-semantic-tokens--log-buffer-contents (tag)
+  "Log buffer contents for TAG."
   (save-restriction
     (save-excursion
       (widen) (push `(:tag ,tag
