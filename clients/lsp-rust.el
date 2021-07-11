@@ -1114,8 +1114,8 @@ https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensio
                              (lsp--region-to-range (region-beginning) (region-end))
                            (lsp--region-to-range (point) (point)))
                   :direction direction))
-         (result (lsp-send-request (lsp-make-request "experimental/moveItem" params))))
-    (lsp--apply-text-edits result 'code-action)))
+         (edits (lsp-request "experimental/moveItem" params)))
+    (lsp--apply-text-edits edits 'code-action)))
 
 (defun lsp-rust-analyzer-move-item-up ()
   "Move item under cursor or selection up"
