@@ -1107,7 +1107,7 @@ https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensio
     (lsp--info "There are no tests related to the symbol at point")))
 
 (defun lsp-rust-analyzer-move-item (direction)
-  "Move item under cursor or selection in some direction"
+  "Move item under cursor or selection in some DIRECTION"
   (let* ((params (lsp-make-rust-analyzer-move-item-params
                   :text-document (lsp--text-document-identifier)
                   :range (if (use-region-p)
