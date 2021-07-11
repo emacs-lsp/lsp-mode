@@ -1120,12 +1120,12 @@ https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensio
 (defun lsp-rust-analyzer-move-item-up ()
   "Move item under cursor or selection up"
   (interactive)
-  (funcall 'lsp-rust-analyzer-move-item "Up"))
+  (lsp-rust-analyzer-move-item "Up"))
 
 (defun lsp-rust-analyzer-move-item-down ()
   "Move item under cursor or selection down"
   (interactive)
-  (funcall 'lsp-rust-analyzer-move-item "Down"))
+  (lsp-rust-analyzer-move-item "Down"))
 
 (lsp-consistency-check lsp-rust)
 
