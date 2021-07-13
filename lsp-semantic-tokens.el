@@ -561,13 +561,19 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
   (lsp-semantic-tokens--replace-alist-values lsp-semantic-token-modifier-faces
                                              (plist-get (lsp--client-semantic-tokens-faces-overrides client) :modifiers)))
 
-(defun lsp--semantic-tokens-on-refresh ()
-  "Invoked in response to workspace/semanticTokens/refresh requests."
-  (cl-loop for workspace in (lsp-workspaces)
-           for ws-buffer in (lsp--workspace-buffers workspace) do
-           (unless (equal (current-buffer) ws-buffer)
-             (setf (buffer-local-value 'lsp--semantic-tokens-cache ws-buffer) nil)))
-  (lsp--semantic-tokens-request-full-token-set-when-idle t))
+(defun lsp--semantic-tokens-on-refresh (workspace)
+  "Clear semantic tokens within all buffers of WORKSPACE, refresh in currently active buffer."
+  (cl-assert (not (eq nil workspace)))
+  (cl-loop
+   for ws-buffer in (lsp--workspace-buffers workspace) do
+   (if (equal (current-buffer) ws-buffer)
+       ;; if this is the currently active buffer, we'll defer cache clearing
+       ;; until the response to our full token request returns
+       (lsp--semantic-tokens-request-full-token-set-when-idle t)
+     ;; if this is not the currently active buffer, we might want to proactively request tokens, too,
+     ;; but in a workspace with many buffers that might possibly cause very annoying latency outliers
+     ;; (not benchmarked yet, though)
+     (setf (buffer-local-value 'lsp--semantic-tokens-cache ws-buffer) nil))))
 
 ;;;###autoload
 (defun lsp--semantic-tokens-initialize-workspace (workspace)
