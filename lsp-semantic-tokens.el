@@ -61,6 +61,15 @@ preferred over both full and ranged token requests."
   :group 'lsp-semantic-tokens
   :type 'boolean)
 
+(defcustom lsp-semantic-tokens-honor-refresh-requests nil
+  "Whether to honor semanticTokens/refresh requests.
+
+When set to nil, refresh requests will be silently discarded.
+When set to t, semantic tokens will be re-requested for all buffers
+associated with the requesting language server."
+  :group 'lsp-semantic-tokens
+  :type 'boolean)
+
 (defface lsp-face-semhl-constant
   '((t :inherit font-lock-constant-face))
   "Face used for semantic highlighting scopes matching constant scopes."
@@ -564,16 +573,11 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
 (defun lsp--semantic-tokens-on-refresh (workspace)
   "Clear semantic tokens within all buffers of WORKSPACE, refresh in currently active buffer."
   (cl-assert (not (eq nil workspace)))
-  (cl-loop
-   for ws-buffer in (lsp--workspace-buffers workspace) do
-   (if (equal (current-buffer) ws-buffer)
-       ;; if this is the currently active buffer, we'll defer cache clearing
-       ;; until the response to our full token request returns
-       (lsp--semantic-tokens-request-full-token-set-when-idle t)
-     ;; if this is not the currently active buffer, we might want to proactively request tokens, too,
-     ;; but in a workspace with many buffers that might possibly cause very annoying latency outliers
-     ;; (not benchmarked yet, though)
-     (setf (buffer-local-value 'lsp--semantic-tokens-cache ws-buffer) nil))))
+  (when lsp-semantic-tokens-honor-refresh-requests
+    (cl-loop
+     for ws-buffer in (lsp--workspace-buffers workspace) do
+     (let ((fontify-immediately (equal (current-buffer) ws-buffer)))
+       (with-current-buffer ws-buffer (lsp--semantic-tokens-request nil fontify-immediately))))))
 
 ;;;###autoload
 (defun lsp--semantic-tokens-initialize-workspace (workspace)
