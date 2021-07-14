@@ -621,10 +621,7 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
   (when (and lsp-semantic-tokens-enable
              (lsp-feature? "textDocument/semanticTokens"))
     (lsp-semantic-tokens--warn-about-deprecated-setting)
-    (lsp-semantic-tokens-mode 1)
-    (mapc #'lsp--semantic-tokens-initialize-workspace
-          (lsp--find-workspaces-for "textDocument/semanticTokens"))
-    (lsp--semantic-tokens-initialize-buffer)))
+    (lsp-semantic-tokens-mode 1)))
 
 (defun lsp-semantic-tokens--disable ()
   "Disable semantic tokens mode."
@@ -639,6 +636,8 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
    (lsp-semantic-tokens-mode
     (add-hook 'lsp-configure-hook #'lsp-semantic-tokens--enable nil t)
     (add-hook 'lsp-unconfigure-hook #'lsp-semantic-tokens--disable nil t)
+    (mapc #'lsp--semantic-tokens-initialize-workspace
+          (lsp--find-workspaces-for "textDocument/semanticTokens"))
     (lsp--semantic-tokens-initialize-buffer))
    (t
     (remove-hook 'lsp-configure-hook #'lsp-semantic-tokens--enable t)
