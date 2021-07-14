@@ -8070,7 +8070,6 @@ Returns nil if the project should not be added to the current SESSION."
 (defun lsp--try-open-in-library-workspace ()
   "Try opening current file as library file in any of the active workspace.
 The library folders are defined by each client for each of the active workspace."
-
   (when-let ((workspace (->> (lsp-session)
                              (lsp--session-workspaces)
                              ;; Sort the last active workspaces first as they are more likely to be
@@ -8078,8 +8077,10 @@ The library folders are defined by each client for each of the active workspace.
                              (-sort (lambda (a _b)
                                       (-contains? lsp--last-active-workspaces a)))
                              (--first
-                              (and (-contains? (-> it lsp--workspace-client lsp--client-major-modes)
-                                               major-mode)
+                              (and (or (-contains? (-> it lsp--workspace-client lsp--client-major-modes)
+                                                   major-mode)
+                                       (when-let ((activation-fn (-> it lsp--workspace-client lsp--client-activation-fn)))
+                                         (funcall activation-fn (buffer-file-name) major-mode)))
                                    (when-let ((library-folders-fn
                                                (-> it lsp--workspace-client lsp--client-library-folders-fn)))
                                      (-first (lambda (library-folder)
