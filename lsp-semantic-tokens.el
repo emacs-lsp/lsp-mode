@@ -565,9 +565,9 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
   "Invoked in response to workspace/semanticTokens/refresh requests."
   (cl-loop for workspace in (lsp-workspaces)
            for ws-buffer in (lsp--workspace-buffers workspace) do
-           (unless (equal (current-buffer) ws-buffer)
-             (setf (buffer-local-value 'lsp--semantic-tokens-cache ws-buffer) nil)))
-  (lsp--semantic-tokens-request-full-token-set-when-idle t))
+           (if (equal (current-buffer) ws-buffer)
+               (lsp--semantic-tokens-request-full-token-set-when-idle t)
+             (setf (buffer-local-value 'lsp--semantic-tokens-cache ws-buffer) nil))))
 
 ;;;###autoload
 (defun lsp--semantic-tokens-initialize-workspace (workspace)
