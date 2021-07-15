@@ -1,7 +1,8 @@
 * Changelog
-** Unreleased
+** Unreleased 8.0.1
   * Add [[https://github.com/graphql/graphiql/tree/main/packages/graphql-language-service-cli#readme][GraphQL Language Server]] for autocomplete graphql query
-
+  * Added ~lsp-auto-touch-files~. When it is non-nil it will auto-create the
+    file on the disk before sending ~textDocument/didOpen~.
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.
