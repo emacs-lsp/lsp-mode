@@ -8077,10 +8077,7 @@ The library folders are defined by each client for each of the active workspace.
                              (-sort (lambda (a _b)
                                       (-contains? lsp--last-active-workspaces a)))
                              (--first
-                              (and (or (-contains? (-> it lsp--workspace-client lsp--client-major-modes)
-                                                   major-mode)
-                                       (when-let ((activation-fn (-> it lsp--workspace-client lsp--client-activation-fn)))
-                                         (funcall activation-fn (buffer-file-name) major-mode)))
+                              (and (-> it lsp--workspace-client lsp--matching-clients?)
                                    (when-let ((library-folders-fn
                                                (-> it lsp--workspace-client lsp--client-library-folders-fn)))
                                      (-first (lambda (library-folder)
