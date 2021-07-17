@@ -167,6 +167,11 @@ Unless overridden by a more specific face association."
   "Face used for properties."
   :group 'lsp-semantic-tokens)
 
+(defface lsp-face-semhl-event
+  '((t (:inherit font-lock-variable-name-face)))
+  "Face used for event properties."
+  :group 'lsp-semantic-tokens)
+
 (defface lsp-face-semhl-macro
   '((t (:inherit font-lock-preprocessor-face)))
   "Face used for macros."
@@ -210,11 +215,13 @@ Unless overridden by a more specific face association."
     ("method" . lsp-face-semhl-method)
     ("member" . lsp-face-semhl-member)
     ("property" . lsp-face-semhl-property)
+    ("event" . lsp-face-semhl-event)
     ("macro" . lsp-face-semhl-macro)
     ("variable" . lsp-face-semhl-variable)
     ("parameter" . lsp-face-semhl-parameter)
     ("label" . lsp-face-semhl-label)
     ("enumConstant" . lsp-face-semhl-constant)
+    ("enumMember" . lsp-face-semhl-constant)
     ("dependent" . lsp-face-semhl-type)
     ("concept" . lsp-face-semhl-interface))
   "Faces to use for semantic tokens.")
