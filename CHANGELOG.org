@@ -45,6 +45,13 @@
   * Add ~lsp-lens-place-position~ with option to place code lens at end of line as default.
   * Add LanguageTool support.
   * Add Beancount support.
+  * Update the ESLint server to 2.1.23
+  * Add ~lsp-eslint-warn-on-ignored-files~ and ~lsp-eslint-rules-customizations~
+    options to the ESLint client
+  * Change interface for configuring ESLint code actions - see documentation of
+    ~lsp-eslint-code-action-disable-rule-comment~ and
+    ~lsp-eslint-code-action-show-documentation~ for details
+
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
   * Safe renamed ~lsp-flycheck-default-level~ -> ~lsp-diagnostics-flycheck-default-level~
