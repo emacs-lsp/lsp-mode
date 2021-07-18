@@ -99,8 +99,7 @@
   :type 'boolean
   :package-version '(lsp-mode . "6.3"))
 
-(defcustom lsp-eslint-fix-all-problem-type
-  "all"
+(defcustom lsp-eslint-fix-all-problem-type "all"
   "Determines which problems are fixed when running the
 source.fixAll code action."
   :type '(choice
@@ -145,14 +144,58 @@ workspace (see https://eslint.org/docs/user-guide/command-line-interface)."
   :type '(repeat string)
   :package-version '(lsp-mode . "6.3"))
 
-(defcustom lsp-eslint-code-action-disable-rule-comment '((enable . t) (location . "separateLine"))
-  ""
-  :type 'alist
+(defcustom lsp-eslint-code-action-disable-rule-comment t
+  "Controls whether code actions to add a rule-disabling comment should be shown."
+  :type 'bool
   :package-version '(lsp-mode . "6.3"))
 
-(defcustom lsp-eslint-code-action-show-documentation '((enable . t))
-  ""
-  :type 'alist)
+(defcustom lsp-eslint-code-action-disable-rule-comment-location "separateLine"
+  "Controls where the disable rule code action places comments.
+
+Accepts the following values:
+- \"separateLine\": Add the comment above the line to be disabled (default).
+- \"sameLine\": Add the comment on the same line that will be disabled."
+  :type '(choice
+          (const "separateLine")
+          (const "sameLine"))
+  :package-version '(lsp-mode . "7.1"))
+
+(defcustom lsp-eslint-code-action-show-documentation t
+  "Controls whether code actions to show documentation for an eslint rule should
+be shown."
+  :type 'bool
+  :package-version '(lsp-mode . "7.1"))
+
+(defcustom lsp-eslint-warn-on-ignored-files nil
+  "Controls whether a warning should be emitted when a file is ignored."
+  :type 'bool
+  :package-version '(lsp-mode . "7.1"))
+
+(defcustom lsp-eslint-rules-customizations []
+  "Controls severity overrides for eslint rules.
+
+The value is a vector of alists, with each alist containing the following keys:
+- rule - The rule to match. Can match wildcards with *, or be prefixed with !
+  to negate the match.
+- severity - The severity to report this rule as. Can be one of the following:
+  - \"off\": Disable the rule.
+  - \"info\": Report as informational.
+  - \"warn\": Report as a warning.
+  - \"error\": Report as an error.
+  - \"upgrade\": Increase by 1 severity level (eg. warning -> error).
+  - \"downgrade\": Decrease by 1 severity level (eg. warning -> info).
+  - \"default\": Report as the same severity specified in the eslint config."
+  :type '(lsp-repeatable-vector
+          (alist :options ((rule string)
+                           (severity (choice
+                                      (const "off")
+                                      (const "info")
+                                      (const "warn")
+                                      (const "error")
+                                      (const "upgrade")
+                                      (const "downgrade")
+                                      (const "default"))))))
+  :package-version '(lsp-mode . "7.1"))
 
 (defcustom lsp-eslint-experimental-incremental-sync t
   "Controls whether the new incremental text document synchronization should
@@ -213,22 +256,23 @@ stored."
                     (with-current-buffer buffer
                       (list :validate "probe"
                             :packageManager lsp-eslint-package-manager
-                            :codeActionOnSave (list :enable t
+                            :codeAction (list
+                                         :disableRuleComment (list
+                                                              :enable (lsp-json-bool lsp-eslint-code-action-disable-rule-comment)
+                                                              :location lsp-eslint-code-action-disable-rule-comment-location)
+                                         :showDocumentation (list
+                                                             :enable (lsp-json-bool lsp-eslint-code-action-show-documentation)))
+                            :codeActionOnSave (list :enable (lsp-json-bool lsp-eslint-auto-fix-on-save)
                                                     :mode lsp-eslint-fix-all-problem-type)
                             :format (lsp-json-bool lsp-eslint-format)
-                            :options (or lsp-eslint-options (ht))
-                            :run (or lsp-eslint-run "onType")
-                            :nodePath lsp-eslint-node-path
-                            :onIgnoredFiles "off"
                             :quiet (lsp-json-bool lsp-eslint-quiet)
+                            :onIgnoredFiles (if lsp-eslint-warn-on-ignored-files "warn" "off")
+                            :options (or lsp-eslint-options (ht))
+                            :rulesCustomizations lsp-eslint-rules-customizations
+                            :run lsp-eslint-run
+                            :nodePath lsp-eslint-node-path
                             :workspaceFolder (list :uri (lsp--path-to-uri workspace-folder)
-                                                   :name (f-filename workspace-folder))
-                            :codeAction (list
-                                         :disableRuleComment (or lsp-eslint-code-action-disable-rule-comment
-                                                                 (list :enable t
-                                                                       :location "separateLine"))
-                                         :showDocumentation (or lsp-eslint-code-action-show-documentation
-                                                                (list :enable t))))))))
+                                                   :name (f-filename workspace-folder)))))))
        (apply #'vector)))
 
 (lsp-defun lsp-eslint--open-doc (_workspace (&eslint:OpenESLintDocParams :url))
