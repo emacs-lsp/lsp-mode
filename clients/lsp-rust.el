@@ -1024,6 +1024,7 @@ and run a compilation"
                :name label
                :args executable-args
                :cwd workspace-root?
+               :stopAtEntry t
                :sourceLanguages ["rust"]
                :program)
          (dap-debug))))
