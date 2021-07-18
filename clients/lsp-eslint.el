@@ -36,7 +36,7 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/Microsoft/vscode-eslint"))
 
-(defcustom lsp-eslint-unzipped-path (f-join lsp-server-install-dir "eslint/unzipped")
+(defcustom lsp-eslint-unzipped-path (f-join lsp-server-install-dir "eslint-2.1.23/unzipped")
   "The path to the file in which `eslint' will be stored."
   :type 'file
   :group 'lsp-eslint
