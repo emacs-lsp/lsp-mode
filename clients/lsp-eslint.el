@@ -118,10 +118,10 @@ source.fixAll code action."
   :type 'lsp-string-vector
   :package-version '(lsp-mode . "6.3"))
 
-(defcustom lsp-eslint-validate ["javascript" "javascriptreact"]
-  "An array of language ids which should be validated by ESLint"
-  :type 'lsp-string-vector
-  :package-version '(lsp-mode . "6.3"))
+(defcustom lsp-eslint-validate '()
+  "An array of language ids which should always be validated by eslint."
+  :type '(repeat string)
+  :package-version '(lsp-mode . "7.1"))
 
 (defcustom lsp-eslint-provide-lint-task nil
   "Controls whether a task for linting the whole workspace will be available."
@@ -254,7 +254,7 @@ stored."
                                (buffer (find-buffer-visiting file))
                                (workspace-folder (lsp-find-session-folder (lsp-session) file)))
                     (with-current-buffer buffer
-                      (list :validate "probe"
+                      (list :validate (if (member (lsp-buffer-language) lsp-eslint-validate) "on" "probe")
                             :packageManager lsp-eslint-package-manager
                             :codeAction (list
                                          :disableRuleComment (list
