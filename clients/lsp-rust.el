@@ -1031,15 +1031,14 @@ and run a compilation"
               (`() (user-error "No compilation artifacts or obtaining the runnable artifacts failed"))
               (`(,spec) spec)
               (_ (user-error "Multiple compilation artifacts are not supported")))))
-         (append
-          lsp-rust-analyzer-debug-lens-extra-dap-args
-          (list :type "cppdbg"
-                :request "launch"
-                :name label
-                :args executable-args
-                :cwd workspace-root?
-                :sourceLanguages ["rust"]
-                :program))
+         (list :type "cppdbg"
+               :request "launch"
+               :name label
+               :args executable-args
+               :cwd workspace-root?
+               :sourceLanguages ["rust"]
+               :program)
+         (append lsp-rust-analyzer-debug-lens-extra-dap-args)
          (dap-debug))))
 
 (defun lsp-rust-analyzer-rerun (&optional runnable)
