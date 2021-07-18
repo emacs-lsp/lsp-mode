@@ -1043,6 +1043,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-semantic-tokens-honor-refresh-requests" class="md-nav__link">
+    lsp-semantic-tokens-honor-refresh-requests
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-semantic-tokens-warn-on-missing-face" class="md-nav__link">
     lsp-semantic-tokens-warn-on-missing-face
   </a>
@@ -2887,6 +2894,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-semantic-tokens-honor-refresh-requests" class="md-nav__link">
+    lsp-semantic-tokens-honor-refresh-requests
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-semantic-tokens-warn-on-missing-face" class="md-nav__link">
     lsp-semantic-tokens-warn-on-missing-face
   </a>
@@ -3060,6 +3074,14 @@ be preferred whenever possible, unless
 <p><em>Default:</em> <code>nil</code></p>
 <p>Enable/disable support for semantic tokens.
 As defined by the Language Server Protocol 3.16.</p>
+<hr />
+<h3 id="lsp-semantic-tokens-honor-refresh-requests"><code>lsp-semantic-tokens-honor-refresh-requests</code><a class="headerlink" href="#lsp-semantic-tokens-honor-refresh-requests" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Whether to honor semanticTokens/refresh requests.</p>
+<p>When set to nil, refresh requests will be silently discarded.
+When set to t, semantic tokens will be re-requested for all buffers
+associated with the requesting language server.</p>
 <hr />
 <h3 id="lsp-semantic-tokens-warn-on-missing-face"><code>lsp-semantic-tokens-warn-on-missing-face</code><a class="headerlink" href="#lsp-semantic-tokens-warn-on-missing-face" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
