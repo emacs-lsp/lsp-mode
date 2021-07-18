@@ -6176,7 +6176,7 @@ WORKSPACE is the active workspace."
                      ((equal method "workspace/semanticTokens/refresh")
                       (when (and lsp-semantic-tokens-enable
                                  (fboundp 'lsp--semantic-tokens-on-refresh))
-                        (lsp--semantic-tokens-on-refresh))
+                        (lsp--semantic-tokens-on-refresh workspace))
                       nil)
                      (t (lsp-warn "Unknown request method: %s" method) nil))))
     ;; Send response to the server.

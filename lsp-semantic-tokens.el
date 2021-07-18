@@ -61,6 +61,15 @@ preferred over both full and ranged token requests."
   :group 'lsp-semantic-tokens
   :type 'boolean)
 
+(defcustom lsp-semantic-tokens-honor-refresh-requests nil
+  "Whether to honor semanticTokens/refresh requests.
+
+When set to nil, refresh requests will be silently discarded.
+When set to t, semantic tokens will be re-requested for all buffers
+associated with the requesting language server."
+  :group 'lsp-semantic-tokens
+  :type 'boolean)
+
 (defface lsp-face-semhl-constant
   '((t :inherit font-lock-constant-face))
   "Face used for semantic highlighting scopes matching constant scopes."
@@ -568,13 +577,14 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
   (lsp-semantic-tokens--replace-alist-values lsp-semantic-token-modifier-faces
                                              (plist-get (lsp--client-semantic-tokens-faces-overrides client) :modifiers)))
 
-(defun lsp--semantic-tokens-on-refresh ()
-  "Invoked in response to workspace/semanticTokens/refresh requests."
-  (cl-loop for workspace in (lsp-workspaces)
-           for ws-buffer in (lsp--workspace-buffers workspace) do
-           (unless (equal (current-buffer) ws-buffer)
-             (setf (buffer-local-value 'lsp--semantic-tokens-cache ws-buffer) nil)))
-  (lsp--semantic-tokens-request-full-token-set-when-idle t))
+(defun lsp--semantic-tokens-on-refresh (workspace)
+  "Clear semantic tokens within all buffers of WORKSPACE, refresh in currently active buffer."
+  (cl-assert (not (eq nil workspace)))
+  (when lsp-semantic-tokens-honor-refresh-requests
+    (cl-loop
+     for ws-buffer in (lsp--workspace-buffers workspace) do
+     (let ((fontify-immediately (equal (current-buffer) ws-buffer)))
+       (with-current-buffer ws-buffer (lsp--semantic-tokens-request nil fontify-immediately))))))
 
 ;;;###autoload
 (defun lsp--semantic-tokens-initialize-workspace (workspace)
@@ -618,10 +628,7 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
   (when (and lsp-semantic-tokens-enable
              (lsp-feature? "textDocument/semanticTokens"))
     (lsp-semantic-tokens--warn-about-deprecated-setting)
-    (lsp-semantic-tokens-mode 1)
-    (mapc #'lsp--semantic-tokens-initialize-workspace
-          (lsp--find-workspaces-for "textDocument/semanticTokens"))
-    (lsp--semantic-tokens-initialize-buffer)))
+    (lsp-semantic-tokens-mode 1)))
 
 (defun lsp-semantic-tokens--disable ()
   "Disable semantic tokens mode."
@@ -636,6 +643,8 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
    (lsp-semantic-tokens-mode
     (add-hook 'lsp-configure-hook #'lsp-semantic-tokens--enable nil t)
     (add-hook 'lsp-unconfigure-hook #'lsp-semantic-tokens--disable nil t)
+    (mapc #'lsp--semantic-tokens-initialize-workspace
+          (lsp--find-workspaces-for "textDocument/semanticTokens"))
     (lsp--semantic-tokens-initialize-buffer))
    (t
     (remove-hook 'lsp-configure-hook #'lsp-semantic-tokens--enable t)
