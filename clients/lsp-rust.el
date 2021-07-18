@@ -862,6 +862,18 @@ https://rust-analyzer.github.io/manual.html#auto-import.
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1"))
 
+(defcustom lsp-rust-analyzer-debug-lens-extra-dap-args
+  '(:MIMode "gdb" :miDebuggerPath "gdb" :stopAtEntry t :externalConsole :json-false)
+  "Extra arguments to pass to DAP template when debugging a test from code lens.
+
+As a rule of the thumb, do not add extra keys to this plist unless you exactly what
+you are doing, it might break the \"Debug test\" lens otherwise.
+
+See dap-mode documentation and cpptools documentation for the extra variables meaning."
+  :type 'plist
+  :group 'lsp-rust
+  :package-version '(lsp-mode . "7.1"))
+
 (defun lsp-rust-analyzer-update-inlay-hints (buffer)
   (if (and (lsp-rust-analyzer-initialized?)
            (eq buffer (current-buffer)))
@@ -880,23 +892,23 @@ https://rust-analyzer.github.io/manual.html#auto-import.
              (cond
               ((equal kind lsp/rust-analyzer-inlay-hint-kind-type-hint)
                (overlay-put overlay 'after-string
-                (format lsp-rust-analyzer-inlay-type-space-format
-                 (propertize (format lsp-rust-analyzer-inlay-type-format label)
-                  'font-lock-face 'lsp-rust-analyzer-inlay-type-face))))
+                            (format lsp-rust-analyzer-inlay-type-space-format
+                                    (propertize (format lsp-rust-analyzer-inlay-type-format label)
+                                                'font-lock-face 'lsp-rust-analyzer-inlay-type-face))))
 
               ((equal kind lsp/rust-analyzer-inlay-hint-kind-param-hint)
                (overlay-put overlay 'before-string
-                (format lsp-rust-analyzer-inlay-param-space-format
-                 (propertize (format lsp-rust-analyzer-inlay-param-format label)
-                  'font-lock-face 'lsp-rust-analyzer-inlay-param-face))))
+                            (format lsp-rust-analyzer-inlay-param-space-format
+                                    (propertize (format lsp-rust-analyzer-inlay-param-format label)
+                                                'font-lock-face 'lsp-rust-analyzer-inlay-param-face))))
 
               ((equal kind lsp/rust-analyzer-inlay-hint-kind-chaining-hint)
                (overlay-put overlay 'after-string
-                (format lsp-rust-analyzer-inlay-chain-space-format
-                 (propertize (format lsp-rust-analyzer-inlay-chain-format label)
-                  'font-lock-face 'lsp-rust-analyzer-inlay-chain-face))))))))
+                            (format lsp-rust-analyzer-inlay-chain-space-format
+                                    (propertize (format lsp-rust-analyzer-inlay-chain-format label)
+                                                'font-lock-face 'lsp-rust-analyzer-inlay-chain-face))))))))
        :mode 'tick))
- nil)
+  nil)
 
 (defun lsp-rust-analyzer-initialized? ()
   (when-let ((workspace (lsp-find-workspace 'rust-analyzer (buffer-file-name))))
@@ -1019,13 +1031,15 @@ and run a compilation"
               (`() (user-error "No compilation artifacts or obtaining the runnable artifacts failed"))
               (`(,spec) spec)
               (_ (user-error "Multiple compilation artifacts are not supported")))))
-         (list :type "cppdbg"
-               :request "launch"
-               :name label
-               :args executable-args
-               :cwd workspace-root?
-               :sourceLanguages ["rust"]
-               :program)
+         (append
+          lsp-rust-analyzer-debug-lens-extra-dap-args
+          (list :type "cppdbg"
+                :request "launch"
+                :name label
+                :args executable-args
+                :cwd workspace-root?
+                :sourceLanguages ["rust"]
+                :program))
          (dap-debug))))
 
 (defun lsp-rust-analyzer-rerun (&optional runnable)
