@@ -118,7 +118,7 @@ source.fixAll code action."
   :type 'lsp-string-vector
   :package-version '(lsp-mode . "6.3"))
 
-(defcustom lsp-eslint-validate '()
+(defcustom lsp-eslint-validate '("svelte")
   "An array of language ids which should always be validated by eslint."
   :type '(repeat string)
   :package-version '(lsp-mode . "7.1"))
@@ -352,9 +352,9 @@ to allow or deny it.")
   :activation-fn (lambda (filename &optional _)
                    (when lsp-eslint-enable
                      (or (string-match-p (rx (one-or-more anything) "."
-                                             (or "ts" "js" "jsx" "tsx" "html" "vue")eos)
+                                             (or "ts" "js" "jsx" "tsx" "html" "vue" "svelte")eos)
                                          filename)
-                         (derived-mode-p 'js-mode 'js2-mode 'typescript-mode 'html-mode))))
+                         (derived-mode-p 'js-mode 'js2-mode 'typescript-mode 'html-mode 'svelte-mode))))
   :priority -1
   :completion-in-comments? t
   :add-on? t
