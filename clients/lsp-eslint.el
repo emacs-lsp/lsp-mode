@@ -329,7 +329,9 @@ to allow or deny it.")
            (remembered-answer (gethash library-path lsp-eslint--stored-libraries)))
       (funcall callback remembered-answer)
     (lsp-ask-question
-     (format "Allow lsp-mode to execute %s?" library-path)
+     (format
+      "Allow lsp-mode to execute %s? Note: The latest versions of the ESLint language server no longer create this prompt."
+      library-path)
      (mapcar 'car option-alist)
      (lambda (response)
        (let ((option (cdr (assoc response option-alist))))
