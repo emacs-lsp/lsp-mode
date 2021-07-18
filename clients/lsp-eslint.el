@@ -390,7 +390,7 @@ to allow or deny it.")
                                    (funcall callback))
                                (error (funcall error-callback err))))
                            error-callback
-                           :url (lsp-vscode-extension-url "dbaeumer" "vscode-eslint" "2.1.14")
+                           :url (lsp-vscode-extension-url "dbaeumer" "vscode-eslint" "2.1.23")
                            :store-path tmp-zip)))))
 
 (lsp-consistency-check lsp-eslint)
