@@ -51,6 +51,7 @@
   * Change interface for configuring ESLint code actions - see documentation of
     ~lsp-eslint-code-action-disable-rule-comment~ and
     ~lsp-eslint-code-action-show-documentation~ for details
+  * Add interactive ~lsp-rust-analyzer-move-item-up~ and ~lsp-rust-analyzer-move-item-down~ functions to move Rust items / statements
 
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.

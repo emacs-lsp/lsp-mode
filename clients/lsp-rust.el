@@ -1106,6 +1106,26 @@ https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensio
       (lsp-rust-analyzer--common-runner runnable)
     (lsp--info "There are no tests related to the symbol at point")))
 
+(defun lsp-rust-analyzer-move-item (direction)
+  "Move item under cursor or selection in some DIRECTION"
+  (let* ((params (lsp-make-rust-analyzer-move-item-params
+                  :text-document (lsp--text-document-identifier)
+                  :range (if (use-region-p)
+                             (lsp--region-to-range (region-beginning) (region-end))
+                           (lsp--region-to-range (point) (point)))
+                  :direction direction))
+         (edits (lsp-request "experimental/moveItem" params)))
+    (lsp--apply-text-edits edits 'code-action)))
+
+(defun lsp-rust-analyzer-move-item-up ()
+  "Move item under cursor or selection up"
+  (interactive)
+  (lsp-rust-analyzer-move-item "Up"))
+
+(defun lsp-rust-analyzer-move-item-down ()
+  "Move item under cursor or selection down"
+  (interactive)
+  (lsp-rust-analyzer-move-item "Down"))
 
 (lsp-consistency-check lsp-rust)
 

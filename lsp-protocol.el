@@ -405,6 +405,7 @@ See `-let' for a description of the destructuring mechanism."
                (rust-analyzer:OpenCargoTomlParams (:textDocument) nil)
                (rust-analyzer:ResovedCodeActionParams (:id :codeActionParams) nil)
                (rust-analyzer:JoinLinesParams (:textDocument :ranges) nil)
+               (rust-analyzer:MoveItemParams (:textDocument :range :direction) nil)
                (rust-analyzer:RunnablesParams (:textDocument) (:position))
                (rust-analyzer:Runnable (:label :kind :args) (:location))
                (rust-analyzer:RunnableArgs (:cargoArgs :executableArgs) (:workspaceRoot))
