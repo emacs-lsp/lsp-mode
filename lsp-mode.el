@@ -1720,18 +1720,23 @@ IGNORED-DIRECTORIES is a list of regexes to filter out directories we don't want
          (not (lsp--string-match-any ignored-directories full-path)))))
 
 
-(defun lsp--all-watchable-directories (dir ignored-directories)
+(defun lsp--all-watchable-directories (dir ignored-directories visited)
   "Traverse DIR recursively and return a list of paths that should have watchers set on them.
-IGNORED-DIRECTORIES will be used for exclusions"
+IGNORED-DIRECTORIES will be used for exclusions. Visited keeps
+track of visited paths to avoid infinite recursion when encountering symlink loops"
   (let* ((dir (if (f-symlink? dir)
                   (file-truename dir)
                 dir)))
+    (puthash dir t visited)
     (apply #'nconc
            ;; the directory itself is assumed to be part of the set
            (list dir)
            ;; collect all subdirectories that are watchable
            (-map
-            (lambda (path) (lsp--all-watchable-directories (f-join dir path) ignored-directories))
+            (lambda (path)
+              (let ((subpath (f-join dir path)))
+                (if (not (gethash subpath visited nil))
+                    (lsp--all-watchable-directories subpath ignored-directories visited))))
             ;; but only look at subdirectories that are watchable
             (-filter (lambda (path) (lsp--path-is-watchable-directory path dir ignored-directories))
                      (directory-files dir))))))
@@ -1749,7 +1754,7 @@ regex in IGNORED-FILES."
                   (file-truename dir)
                 dir))
          (watch (or watch (make-lsp-watch :root-directory dir)))
-         (dirs-to-watch (lsp--all-watchable-directories dir ignored-directories)))
+         (dirs-to-watch (lsp--all-watchable-directories dir ignored-directories (make-hash-table))))
     (lsp-log "Creating watchers for following %s folders:\n  %s"
              (length dirs-to-watch)
              (s-join "\n  " dirs-to-watch))
