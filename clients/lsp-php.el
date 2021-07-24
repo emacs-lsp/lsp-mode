@@ -378,20 +378,15 @@ already present."
   :link '(url-link "https://github.com/phpactor/phpactor")
   :group 'lsp-mode)
 
-(defcustom lsp-phpactor-path nil
+(defcustom lsp-phpactor-path (or (executable-find "phpactor")
+                                 (f-join (lsp-php-get-composer-dir) "vendor/phpactor/phpactor/bin/phpactor"))
   "Path to the `phpactor' command."
   :group 'lsp-phpactor
   :type "string")
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection
-                   (lambda ()
-                     (unless lsp-php-composer-dir
-                       (setq lsp-php-composer-dir (lsp-php-get-composer-dir)))
-                     (unless lsp-phpactor-path
-                       (setq lsp-phpactor-path (f-join lsp-php-composer-dir "vendor/phpactor/phpactor/bin/phpactor")))
-                     (list lsp-phpactor-path "language-server")))
+  :new-connection (lsp-stdio-connection `(,lsp-phpactor-path "language-server"))
   :activation-fn (lsp-activate-on "php")
   ;; `phpactor' is not really that feature-complete: it doesn't support
   ;; `textDocument/showOccurence' and sometimes errors (e.g. find references on
