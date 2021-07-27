@@ -5452,41 +5452,43 @@ Request codeAction/resolve for more info if server supports."
 
 (defvar lsp--formatting-indent-alist
   ;; Taken from `dtrt-indent-mode'
-  '((c-mode             . c-basic-offset)            ; C
-    (c++-mode           . c-basic-offset)            ; C++
-    (d-mode             . c-basic-offset)            ; D
-    (java-mode          . c-basic-offset)            ; Java
-    (jde-mode           . c-basic-offset)            ; Java (JDE)
-    (js-mode            . js-indent-level)           ; JavaScript
-    (js2-mode           . js2-basic-offset)          ; JavaScript-IDE
-    (js3-mode           . js3-indent-level)          ; JavaScript-IDE
-    (json-mode          . js-indent-level)           ; JSON
-    (lua-mode           . lua-indent-level)          ; Lua
-    (objc-mode          . c-basic-offset)            ; Objective C
-    (php-mode           . c-basic-offset)            ; PHP
-    (perl-mode          . perl-indent-level)         ; Perl
-    (cperl-mode         . cperl-indent-level)        ; Perl
-    (raku-mode          . raku-indent-offset)        ; Perl6/Raku
-    (erlang-mode        . erlang-indent-level)       ; Erlang
-    (ada-mode           . ada-indent)                ; Ada
-    (sgml-mode          . sgml-basic-offset)         ; SGML
-    (nxml-mode          . nxml-child-indent)         ; XML
-    (pascal-mode        . pascal-indent-level)       ; Pascal
-    (typescript-mode    . typescript-indent-level)   ; Typescript
-    (sh-mode            . sh-basic-offset)           ; Shell Script
-    (ruby-mode          . ruby-indent-level)         ; Ruby
-    (enh-ruby-mode      . enh-ruby-indent-level)     ; Ruby
-    (crystal-mode       . crystal-indent-level)      ; Crystal (Ruby)
-    (css-mode           . css-indent-offset)         ; CSS
-    (rust-mode          . rust-indent-offset)        ; Rust
-    (rustic-mode        . rustic-indent-offset)      ; Rust
-    (scala-mode         . scala-indent:step)         ; Scala
-    (powershell-mode    . powershell-indent)         ; PowerShell
-    (ess-mode           . ess-indent-offset)         ; ESS (R)
-    (yaml-mode          . yaml-indent-offset)        ; YAML
-    (hack-mode          . hack-indent-offset)        ; Hack
+  '((c-mode                     . c-basic-offset)                   ; C
+    (c++-mode                   . c-basic-offset)                   ; C++
+    (csharp-mode                . c-basic-offset)                   ; C#
+    (csharp-tree-sitter-mode    . csharp-tree-sitter-indent-offset) ; C#
+    (d-mode                     . c-basic-offset)                   ; D
+    (java-mode                  . c-basic-offset)                   ; Java
+    (jde-mode                   . c-basic-offset)                   ; Java (JDE)
+    (js-mode                    . js-indent-level)                  ; JavaScript
+    (js2-mode                   . js2-basic-offset)                 ; JavaScript-IDE
+    (js3-mode                   . js3-indent-level)                 ; JavaScript-IDE
+    (json-mode                  . js-indent-level)                  ; JSON
+    (lua-mode                   . lua-indent-level)                 ; Lua
+    (objc-mode                  . c-basic-offset)                   ; Objective C
+    (php-mode                   . c-basic-offset)                   ; PHP
+    (perl-mode                  . perl-indent-level)                ; Perl
+    (cperl-mode                 . cperl-indent-level)               ; Perl
+    (raku-mode                  . raku-indent-offset)               ; Perl6/Raku
+    (erlang-mode                . erlang-indent-level)              ; Erlang
+    (ada-mode                   . ada-indent)                       ; Ada
+    (sgml-mode                  . sgml-basic-offset)                ; SGML
+    (nxml-mode                  . nxml-child-indent)                ; XML
+    (pascal-mode                . pascal-indent-level)              ; Pascal
+    (typescript-mode            . typescript-indent-level)          ; Typescript
+    (sh-mode                    . sh-basic-offset)                  ; Shell Script
+    (ruby-mode                  . ruby-indent-level)                ; Ruby
+    (enh-ruby-mode              . enh-ruby-indent-level)            ; Ruby
+    (crystal-mode               . crystal-indent-level)             ; Crystal (Ruby)
+    (css-mode                   . css-indent-offset)                ; CSS
+    (rust-mode                  . rust-indent-offset)               ; Rust
+    (rustic-mode                . rustic-indent-offset)             ; Rust
+    (scala-mode                 . scala-indent:step)                ; Scala
+    (powershell-mode            . powershell-indent)                ; PowerShell
+    (ess-mode                   . ess-indent-offset)                ; ESS (R)
+    (yaml-mode                  . yaml-indent-offset)               ; YAML
+    (hack-mode                  . hack-indent-offset)               ; Hack
 
-    (default            . standard-indent))          ; default fallback
+    (default                    . standard-indent))                 ; default fallback
   "A mapping from `major-mode' to its indent variable.")
 
 (defun lsp--get-indent-width (mode)
