@@ -539,10 +539,10 @@ them with `crate' or the crate name they refer to."
 (defcustom lsp-rust-analyzer-import-granularity "crate"
   "How imports should be grouped into use statements."
   :type '(choice
-	  (const "crate" :doc "Merge imports from the same crate into a single use statement. This kind of nesting is only supported in Rust versions later than 1.24.")
-	  (const "module" :doc "Merge imports from the same module into a single use statement.")
-	  (const "item" :doc "Don’t merge imports at all, creating one import per item.")
-	  (const "preserve" :doc "Do not change the granularity of any imports. For auto-import this has the same effect as `\"item\"'"))
+      (const "crate" :doc "Merge imports from the same crate into a single use statement. This kind of nesting is only supported in Rust versions later than 1.24.")
+      (const "module" :doc "Merge imports from the same module into a single use statement.")
+      (const "item" :doc "Don’t merge imports at all, creating one import per item.")
+      (const "preserve" :doc "Do not change the granularity of any imports. For auto-import this has the same effect as `\"item\"'"))
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1.0"))
 
@@ -866,10 +866,11 @@ https://rust-analyzer.github.io/manual.html#auto-import.
   '(:MIMode "gdb" :miDebuggerPath "gdb" :stopAtEntry t :externalConsole :json-false)
   "Extra arguments to pass to DAP template when debugging a test from code lens.
 
-As a rule of the thumb, do not add extra keys to this plist unless you exactly what
-you are doing, it might break the \"Debug test\" lens otherwise.
+As a rule of the thumb, do not add extra keys to this plist unless you exactly
+what you are doing, it might break the \"Debug test\" lens otherwise.
 
-See dap-mode documentation and cpptools documentation for the extra variables meaning."
+See dap-mode documentation and cpptools documentation for the extra variables
+meaning."
   :type 'plist
   :group 'lsp-rust
   :package-version '(lsp-mode . "7.1"))
