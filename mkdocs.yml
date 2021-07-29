@@ -89,7 +89,6 @@ nav:
     - MSSQL: https://emacs-lsp.github.io/lsp-mssql
     - Nim: page/lsp-nim.md
     - Nix: page/lsp-nix.md
-    - OCaml (ocaml): page/lsp-ocaml.md
     - OCaml (ocaml-lsp): page/lsp-ocaml-lsp-server.md
     - Pascal/Object Pascal: page/lsp-pascal.md
     - Perl: page/lsp-perl.md
