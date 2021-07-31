@@ -307,7 +307,7 @@ precedence over parameters referenced in config."
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-jedi-environment nil
-  "Specify the environment that jedi runs on where <environmeent>/bin/python
+  "Specify the environment that jedi runs on where <environment>/bin/python
 should be the python executable. This option will be prioritized over
 `lsp-pylsp-plugins-jedi-use-pyenv-environment'."
   :type 'string
