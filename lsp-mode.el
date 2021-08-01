@@ -716,6 +716,7 @@ Changes take effect only when a new session is started."
                                         (less-css-mode . "less")
                                         (lua-mode . "lua")
                                         (sass-mode . "sass")
+                                        (ssass-mode . "sass")
                                         (scss-mode . "scss")
                                         (xml-mode . "xml")
                                         (c-mode . "c")
