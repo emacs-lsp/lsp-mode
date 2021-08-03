@@ -11,17 +11,18 @@ corresponding mode -\> language id - in this case `(python-mode .
 
 
 ``` elisp
-(defvar lsp-language-id-configuration
-  '(...
-    (python-mode . "python")
-    ...))
-;; if you are adding the support for your language server in separate repo use
-;; (add-to-list 'lsp-language-id-configuration '(python-mode . "python"))
+(with-eval-after-load 'lsp-mode
+  (defvar lsp-language-id-configuration
+    '(...
+      (python-mode . "python")
+      ...))
+  ;; if you are adding the support for your language server in separate repo use
+  ;; (add-to-list 'lsp-language-id-configuration '(python-mode . "python"))
 
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "pyls")
-                  :activation-fn (lsp-activate-on "python")
-                  :server-id 'pyls))
+  (lsp-register-client
+    (make-lsp-client :new-connection (lsp-stdio-connection "pyls")
+                     :activation-fn (lsp-activate-on "python")
+                     :server-id 'pyls)))
 ```
 
 `lsp-mode` is using `lsp-language-id-configuration` to determine what is the
