@@ -30,6 +30,20 @@ buffer language. When the `major-mode` is not sufficient to determine the
 language (e.g. `web-mode` is used for `javascript`, `html`, and `css`) you can put
 regex.
 
+Here's an example of how to specify a filetype along with web-mode. In this case it's Shopify `.liquid` files.
+
+```elisp
+;; Shopify template lsp with theme-check
+(with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-language-id-configuration
+    '(web-mode . "\\.liquid\\'"))
+
+  (lsp-register-client
+    (make-lsp-client :new-connection (lsp-stdio-connection "theme-check-language-server")
+                     :activation-fn (lsp-activate-on "\\.liquid\\'")
+                     :server-id 'theme-check)))
+```
+
 If the language server supports environment variables to control
 additional behavior, you can register that by using the
 `:environment-fn` function, like the Bash language client does:
