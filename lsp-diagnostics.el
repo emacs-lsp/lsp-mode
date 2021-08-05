@@ -179,17 +179,17 @@ CALLBACK is the status callback passed by Flycheck."
   (remove-hook 'lsp-on-idle-hook #'lsp-diagnostics--flycheck-buffer t)
   (flycheck-buffer))
 
-(defun lsp-diagnostics--flycheck-report ()
-  "Report flycheck.
+(defun lsp-diagnostics--flycheck-report (&optional workspace?)
+  "Report flycheck in the WORKSPACE.
 This callback is invoked when new diagnostics are received
 from the language server."
   (when (and (or (memq 'idle-change flycheck-check-syntax-automatically)
                  (and (memq 'save flycheck-check-syntax-automatically)
                       (not (buffer-modified-p))))
-             lsp--cur-workspace)
+             (or workspace? lsp--cur-workspace))
     ;; make sure diagnostics are published even if the diagnostics
     ;; have been received after idle-change has been triggered
-    (->> lsp--cur-workspace
+    (->> (or workspace? lsp--cur-workspace)
          (lsp--workspace-buffers)
          (mapc (lambda (buffer)
                  (when (and (lsp-buffer-live-p buffer)
@@ -235,7 +235,7 @@ See https://github.com/emacs-lsp/lsp-mode."
   (setq-local flycheck-checker 'lsp)
   (lsp-flycheck-add-mode major-mode)
   (add-to-list 'flycheck-checkers 'lsp)
-  (add-hook 'lsp-diagnostics-updated-hook #'lsp-diagnostics--flycheck-report nil t)
+  (add-hook 'lsp-diagnostics-updated-functions #'lsp-diagnostics--flycheck-report nil t)
   (add-hook 'lsp-managed-mode-hook #'lsp-diagnostics--flycheck-report nil t))
 
 (defun lsp-diagnostics-flycheck-disable ()
@@ -263,11 +263,11 @@ See https://github.com/emacs-lsp/lsp-mode."
   "Setup flymake."
   (setq lsp-diagnostics--flymake-report-fn nil)
   (add-hook 'flymake-diagnostic-functions 'lsp-diagnostics--flymake-backend nil t)
-  (add-hook 'lsp-diagnostics-updated-hook 'lsp-diagnostics--flymake-after-diagnostics nil t)
+  (add-hook 'lsp-diagnostics-updated-functions 'lsp-diagnostics--flymake-after-diagnostics nil t)
   (flymake-mode 1))
 
 (defun lsp-diagnostics--flymake-after-diagnostics ()
-  "Handler for `lsp-diagnostics-updated-hook'."
+  "Handler for `lsp-diagnostics-updated-functions'."
   (cond
    ((and lsp-diagnostics--flymake-report-fn flymake-mode)
     (lsp-diagnostics--flymake-update-diagnostics))

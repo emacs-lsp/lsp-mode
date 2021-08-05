@@ -541,7 +541,7 @@ It contains the operation source."
 (defcustom lsp-after-diagnostics-hook nil
   "Hooks to run after diagnostics are received.
 Note: it runs only if the receiving buffer is open. Use
-`lsp-diagnostics-updated-hook'if you want to be notified when
+`lsp-diagnostics-updated-functions'if you want to be notified when
 diagnostics have changed."
   :type 'hook
   :group 'lsp-mode)
@@ -550,6 +550,14 @@ diagnostics have changed."
   'lsp-diagnostics-updated-hook "lsp-mode 6.4")
 
 (defcustom lsp-diagnostics-updated-hook nil
+  "Hooks to run after diagnostics are received."
+  :type 'hook
+  :group 'lsp-mode)
+
+(make-obsolete-variable
+ 'lsp-diagnostics-updated-hook "lsp-diagnostics-updated-functions" "7.1" 'set)
+
+(defcustom lsp-diagnostics-updated-functions nil
   "Hooks to run after diagnostics are received."
   :type 'hook
   :group 'lsp-mode)
@@ -2084,7 +2092,8 @@ WORKSPACE is the workspace that contains the diagnostics."
         (remhash file workspace-diagnostics)
       (puthash file (append diagnostics nil) workspace-diagnostics))
 
-    (run-hooks 'lsp-diagnostics-updated-hook)))
+    (run-hooks 'lsp-diagnostics-updated-hook)
+    (run-hook-with-args 'lsp-diagnostics-updated-functions workspace)))
 
 (defun lsp-diagnostics--workspace-cleanup (workspace)
   (->> workspace

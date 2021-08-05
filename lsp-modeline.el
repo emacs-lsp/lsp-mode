@@ -253,9 +253,9 @@ The `:global' workspace is global one.")
                                  (make-mode-line-mouse-map
                                   'mouse-1 #'lsp-treemacs-errors-list))))))
 
-(defun lsp-modeline--diagnostics-reset-modeline-cache ()
-  "Reset the modeline diagnostics cache."
-  (plist-put lsp-modeline--diagnostics-wks->strings (car (lsp-workspaces)) nil)
+(defun lsp-modeline--diagnostics-reset-modeline-cache (workspace)
+  "Reset the modeline diagnostics cache in the WORKSPACE."
+  (plist-put lsp-modeline--diagnostics-wks->strings workspace nil)
   (plist-put lsp-modeline--diagnostics-wks->strings :global nil)
   (setq lsp-modeline--diagnostics-string nil))
 
@@ -308,11 +308,11 @@ The `:global' workspace is global one.")
     (add-hook 'lsp-configure-hook #'lsp-modeline--enable-diagnostics nil t)
     (add-hook 'lsp-unconfigure-hook #'lsp-modeline--disable-diagnostics nil t)
     (add-to-list 'global-mode-string '(t (:eval (lsp-modeline--diagnostics-update-modeline))))
-    (add-hook 'lsp-diagnostics-updated-hook 'lsp-modeline--diagnostics-reset-modeline-cache))
+    (add-hook 'lsp-diagnostics-updated-functions 'lsp-modeline--diagnostics-reset-modeline-cache))
    (t
     (remove-hook 'lsp-configure-hook #'lsp-modeline--enable-diagnostics t)
     (remove-hook 'lsp-unconfigure-hook #'lsp-modeline--disable-diagnostics t)
-    (remove-hook 'lsp-diagnostics-updated-hook 'lsp-modeline--diagnostics-reset-modeline-cache)
+    (remove-hook 'lsp-diagnostics-updated-functions 'lsp-modeline--diagnostics-reset-modeline-cache)
     (setq global-mode-string (remove '(t (:eval (lsp-modeline--diagnostics-update-modeline))) global-mode-string)))))
 
 
