@@ -27,6 +27,7 @@
 (require 'lsp-mode)
 (require 'lsp-protocol)
 (require 'cl-lib)
+(require 'lsp-semantic-tokens)
 
 (defgroup lsp-clojure nil
   "LSP support for Clojure."
@@ -303,6 +304,19 @@ If there are more arguments expected after the line and column numbers."
   :server-id 'clojure-lsp))
 
 (lsp-consistency-check lsp-clojure)
+
+;; Cider integration
+
+(defun lsp-clojure-semantic-tokens-refresh ()
+  "Force refresh semantic tokens."
+  (when (and lsp-semantic-tokens-enable
+             (lsp-find-workspace 'clojure-lsp (buffer-file-name)))
+    (lsp-semantic-tokens--enable)))
+
+(with-eval-after-load 'cider
+  (when lsp-semantic-tokens-enable
+    ;; refresh tokens as cider flush font-faces after disconnected
+    (add-hook 'cider-mode-hook #'lsp-clojure-semantic-tokens-refresh)))
 
 (provide 'lsp-clojure)
 ;;; lsp-clojure.el ends here
