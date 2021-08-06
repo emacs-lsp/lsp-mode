@@ -304,5 +304,19 @@ If there are more arguments expected after the line and column numbers."
 
 (lsp-consistency-check lsp-clojure)
 
+;; Cider integration
+
+(declare-function lsp-semantic-tokens--enable "lsp-semantic-tokens")
+
+(defun lsp-clojure-semantic-tokens-refresh ()
+  "Force refresh semantic tokens."
+  (when (lsp-workspaces)
+    (lsp-semantic-tokens--enable)))
+
+(with-eval-after-load 'cider
+  (when lsp-semantic-tokens-enable
+    ;; refresh tokens as cider flush font-faces after disconnected
+    (add-hook 'cider-mode-hook #'lsp-clojure-semantic-tokens-refresh)))
+
 (provide 'lsp-clojure)
 ;;; lsp-clojure.el ends here
