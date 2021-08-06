@@ -309,7 +309,8 @@ If there are more arguments expected after the line and column numbers."
 
 (defun lsp-clojure-semantic-tokens-refresh ()
   "Force refresh semantic tokens."
-  (when (lsp-workspaces)
+  (when (and lsp-semantic-tokens-enable
+             (lsp-find-workspace 'clojure-lsp (buffer-file-name)))
     (lsp-semantic-tokens--enable)))
 
 (with-eval-after-load 'cider
