@@ -27,6 +27,7 @@
 (require 'lsp-mode)
 (require 'lsp-protocol)
 (require 'cl-lib)
+(require 'lsp-semantic-tokens)
 
 (defgroup lsp-clojure nil
   "LSP support for Clojure."
@@ -305,8 +306,6 @@ If there are more arguments expected after the line and column numbers."
 (lsp-consistency-check lsp-clojure)
 
 ;; Cider integration
-
-(declare-function lsp-semantic-tokens--enable "lsp-semantic-tokens")
 
 (defun lsp-clojure-semantic-tokens-refresh ()
   "Force refresh semantic tokens."
