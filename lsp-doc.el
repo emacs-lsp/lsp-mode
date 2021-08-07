@@ -55,16 +55,6 @@
       (json-false nil))
        (json-read-file "lsp-clients.json")))
 
-(defun lsp-doc--client->variables (client)
-  "Return all available custom variables from a CLIENT."
-  (let ((custom-group (get client 'custom-group)))
-    (seq-map
-     (apply-partially #'car)
-     (seq-filter (lambda (p)
-                   (and (consp p)
-                        (eq (cadr p) 'custom-variable)))
-                 custom-group))))
-
 (defun lsp-doc--build-manual-doc (client-name)
   "Build manual documentation for CLIENT-NAME."
   (let ((manual-doc-file (file-truename (concat "../manual-language-docs/lsp-" client-name ".md"))))
@@ -137,8 +127,11 @@
 
 (defun lsp-doc--add-client-variables (client file)
   "Add CLIENT variables to FILE."
-  (-let* (((&hash "name" client-name) client))
-    (--each (lsp-doc--variables client-name)
+  (-let* (((&hash "name" client-name "common-group-name" common-group-name) client)
+          (client-variables (append (when common-group-name
+                                      (lsp-doc--variables common-group-name))
+                                    (lsp-doc--variables client-name))))
+    (--each client-variables
       (with-temp-buffer
         (insert-file-contents "../template/lsp-var.md")
         (while (re-search-forward "{{\\([][:word:]\\[.-]+\\)}}" nil t)
