@@ -528,6 +528,7 @@
   },
   {
     "name": "rust-analyzer",
+    "common-group-name": "rust",
     "full-name": "Rust",
     "server-name": "rust-analyzer",
     "server-url": "https://github.com/rust-analyzer/rust-analyzer",
@@ -536,6 +537,7 @@
   },
   {
     "name": "rust-rls",
+    "common-group-name": "rust",
     "full-name": "Rust",
     "server-name": "rls",
     "server-url": "https://github.com/rust-lang/rls",
