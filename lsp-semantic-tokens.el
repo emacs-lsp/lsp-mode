@@ -369,7 +369,12 @@ If FONTIFY-IMMEDIATELY is non-nil, fontification will be performed immediately
        (lsp--semantic-tokens-putcache :_documentVersion lsp--cur-version)
        (funcall response-handler response)
        (when fontify-immediately (font-lock-flush)))
-     :error-handler (lambda (&rest _) (lsp--semantic-tokens-request-full-token-set-when-idle t))
+     :error-handler ;; buffer is not captured in `error-handler', it is in `callback'
+     (let ((buf (current-buffer)))
+       (lambda (&rest _)
+         (when (buffer-live-p buf)
+           (with-current-buffer buf
+             (lsp--semantic-tokens-request-full-token-set-when-idle t)))))
      :mode 'tick
      :cancel-token (format "semantic-tokens-%s" (lsp--buffer-uri)))))
 
