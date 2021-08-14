@@ -3929,7 +3929,7 @@ yet."
                                    lsp--uri-to-path))
                      (version (lsp:versioned-text-document-identifier-version? text-document)))
                 (with-current-buffer (find-file-noselect filename)
-                  (or (null version) (zerop version)
+                  (or (null version) (zerop version) (= -1 version)
                       (equal version lsp--cur-version))))))
            document-changes)
     (error "Document changes cannot be applied")))
