@@ -652,9 +652,66 @@
       
     
     
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Troubleshooting
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
     <a href="./" class="md-nav__link md-nav__link--active">
       Troubleshooting
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-log" class="md-nav__link">
+    lsp-log
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#server-path" class="md-nav__link">
+    Server path
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#log-client-server-json" class="md-nav__link">
+    Log client&lt;-&gt;server json
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#check-project-roots" class="md-nav__link">
+    Check project roots
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#updating-packageel-packages" class="md-nav__link">
+    Updating package.el packages
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
     
   </li>
 
@@ -2444,6 +2501,49 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-log" class="md-nav__link">
+    lsp-log
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#server-path" class="md-nav__link">
+    Server path
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#log-client-server-json" class="md-nav__link">
+    Log client&lt;-&gt;server json
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#check-project-roots" class="md-nav__link">
+    Check project roots
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#updating-packageel-packages" class="md-nav__link">
+    Updating package.el packages
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2460,24 +2560,24 @@
                 
                 
                 <h1 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">#</a></h1>
-<ul>
-<li>Check <code>*lsp-log*</code> buffer and verify that <code>lsp-mode</code> is able to find the server. If <code>lsp-mode</code> is unable to find the binary but it is on the path it is probably caused by the fact that emacs is running with different path. You may check the current path by executing <kbd>M-:</kbd> <code>(getenv "PATH")</code>. If this is the case, you have several options to fix the issue.</li>
-<li>make sure that emacs is using the proper path by running emacs from terminal.</li>
-<li>Modify the path using <code>setpath</code>.</li>
-<li>Look for <code>lsp-mode</code> variable to customize server path. Usually, you may find the variable by doing:
-      <kbd>M-x</kbd> <code>customize-group</code> <kbd>RET</kbd> <code>lsp-LANGUAGE-SERVER-ID</code>.</li>
-<li>Set <code>lsp-log-io</code> to <code>t</code> to inspect communication between client and the server. Use <code>lsp-workspace-show-log</code> to switch to the corresponding log buffer.</li>
-<li>
+<h4 id="lsp-log">lsp-log<a class="headerlink" href="#lsp-log" title="Permanent link">#</a></h4>
+<p>Check <code>*lsp-log*</code> buffer and verify that <code>lsp-mode</code> is able to find the server. If <code>lsp-mode</code> is unable to find the binary but it is on the path it is probably caused by the fact that emacs is running with different path. You may check the current path by executing <kbd>M-:</kbd> <code>(getenv "PATH")</code>. If this is the case, you have several options to fix the issue.</p>
+<p>Make sure that emacs is using the proper path by running emacs from terminal.
+Modify the path using <code>setpath</code> function.</p>
+<h4 id="server-path">Server path<a class="headerlink" href="#server-path" title="Permanent link">#</a></h4>
+<p>Look for <code>lsp-mode</code> variable to customize server path. Usually, you may find the variable by doing: <kbd>M-x</kbd> <code>customize-group</code> <kbd>RET</kbd> <code>lsp-LANGUAGE-SERVER-ID</code>.</p>
+<h4 id="log-client-server-json">Log client&lt;-&gt;server json<a class="headerlink" href="#log-client-server-json" title="Permanent link">#</a></h4>
+<p>Set <code>lsp-log-io</code> to <code>t</code> to inspect communication between client and the server. Use <code>lsp-workspace-show-log</code> to switch to the corresponding log buffer.</p>
+<h4 id="check-project-roots">Check project roots<a class="headerlink" href="#check-project-roots" title="Permanent link">#</a></h4>
 <p><code>lsp-describe-session</code> will show the current projects roots + the started servers and allows inspecting the server capabilities:</p>
-<p><img alt="Describe session" src="../../examples/describe.png" />
-- If you manage your Emacs packages with the built-in <code>package.el</code>, we recommend the following procedure to update your packages:</p>
+<p><img alt="Describe session" src="../../examples/describe.png" /></p>
+<h4 id="updating-packageel-packages">Updating package.el packages<a class="headerlink" href="#updating-packageel-packages" title="Permanent link">#</a></h4>
+<p>If you manage your Emacs packages with the built-in <code>package.el</code>, we recommend the following procedure to update your packages:</p>
 <ol>
 <li>Delete your LSP-related packages</li>
 <li>Restart Emacs</li>
 <li>Install the new versions of the packages.</li>
 </ol>
-</li>
-</ul>
                 
                   
                     
