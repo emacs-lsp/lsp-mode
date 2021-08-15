@@ -62,14 +62,14 @@ Has no effects when `lsp-clients-angular-language-server-command' is set."
                                    (lambda () (if lsp-clients-angular-language-server-command
                                                   lsp-clients-angular-language-server-command
                                                 (let ((node-modules-path
-                                                       (concat (string-trim (shell-command-to-string lsp-clients-angular-node-get-prefix-command))
-                                                               "/lib/node_modules")))
+                                                       (f-join (string-trim (shell-command-to-string lsp-clients-angular-node-get-prefix-command))
+                                                               "lib/node_modules")))
                                                   ;; The shell command takes a significant time to run,
                                                   ;; so we "cache" its results after running once
                                                   (setq lsp-clients-angular-language-server-command
                                                         (list
                                                          "node"
-                                                         (concat node-modules-path "/@angular/language-server")
+                                                         (f-join node-modules-path "@angular/language-server")
                                                          "--ngProbeLocations"
                                                          node-modules-path
                                                          "--tsProbeLocations"
