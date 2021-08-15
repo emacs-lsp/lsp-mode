@@ -1,5 +1,7 @@
 * Changelog
 ** Release 7.1
+  * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
+  * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.
   * Add ~lsp-sql-execute-paragraph~ to execute the current paragraph (like ~sql-send-paragraph~).
   * Breaking change: bindings for commands under ~s~ (like ~lsp-workspace-shutdown~) were moved under ~w~ for better compatibility with =Spacemacs=
   * removed ~lsp-print-performance~

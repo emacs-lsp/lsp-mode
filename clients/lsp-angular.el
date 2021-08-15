@@ -44,6 +44,13 @@
           (repeat :tag "List of string values"
                   string)))
 
+(defcustom lsp-clients-angular-node-get-prefix-command
+  "npm config get --global prefix"
+  "The shell command that returns the path of NodeJS's prefix.
+Has no effects when `lsp-clients-angular-language-server-command' is set."
+  :group 'lsp-angular
+  :type 'string)
+
 (defun lsp-client--angular-start-loading (_workspace params)
   (lsp--info "Started loading project %s" params))
 
@@ -55,16 +62,20 @@
                                    (lambda () (if lsp-clients-angular-language-server-command
                                                   lsp-clients-angular-language-server-command
                                                 (let ((node-modules-path
-                                                       (concat (string-trim (shell-command-to-string "npm config get --global prefix"))
+                                                       (concat (string-trim (shell-command-to-string lsp-clients-angular-node-get-prefix-command))
                                                                "/lib/node_modules")))
-                                                  (list
-                                                   "node"
-                                                   (concat node-modules-path "/@angular/language-server")
-                                                   "--ngProbeLocations"
-                                                   node-modules-path
-                                                   "--tsProbeLocations"
-                                                   node-modules-path
-                                                   "--stdio")))))
+                                                  ;; The shell command takes a significant time to run,
+                                                  ;; so we "cache" its results after running once
+                                                  (setq lsp-clients-angular-language-server-command
+                                                        (list
+                                                         "node"
+                                                         (concat node-modules-path "/@angular/language-server")
+                                                         "--ngProbeLocations"
+                                                         node-modules-path
+                                                         "--tsProbeLocations"
+                                                         node-modules-path
+                                                         "--stdio"))
+                                                  lsp-clients-angular-language-server-command))))
                   :activation-fn (lambda (&rest _args)
                                    (and (string-match-p "\\(\\.html\\|\\.ts\\)\\'" (buffer-file-name))
                                         (lsp-workspace-root)
