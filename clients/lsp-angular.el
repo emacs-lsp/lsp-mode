@@ -44,6 +44,13 @@
           (repeat :tag "List of string values"
                   string)))
 
+(defcustom lsp-clients-angular-node-get-prefix-command
+  "npm config get --global prefix"
+  "The shell command that returns the path of NodeJS's prefix.
+Has no effects when `lsp-clients-angular-language-server-command' is set."
+  :group 'lsp-angular
+  :type 'string)
+
 (defun lsp-client--angular-start-loading (_workspace params)
   (lsp--info "Started loading project %s" params))
 
@@ -51,29 +58,40 @@
   (lsp--info "Finished loading project %s" params))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda () (if lsp-clients-angular-language-server-command
-                                                  lsp-clients-angular-language-server-command
-                                                (let ((node-modules-path
-                                                       (concat (string-trim (shell-command-to-string "npm config get --global prefix"))
-                                                               "/lib/node_modules")))
-                                                  (list
-                                                   "node"
-                                                   (concat node-modules-path "/@angular/language-server")
-                                                   "--ngProbeLocations"
-                                                   node-modules-path
-                                                   "--tsProbeLocations"
-                                                   node-modules-path
-                                                   "--stdio")))))
-                  :activation-fn (lambda (&rest _args)
-                                   (and (string-match-p "\\(\\.html\\|\\.ts\\)\\'" (buffer-file-name))
-                                        (lsp-workspace-root)
-                                        (file-exists-p (f-join (lsp-workspace-root) "angular.json"))))
-                  :priority -1
-                  :notification-handlers (ht ("angular/projectLoadingStart" #'lsp-client--angular-start-loading)
-                                             ("angular/projectLoadingFinish" #'lsp-client--angular-finished-loading))
-                  :add-on? t
-                  :server-id 'angular-ls))
+ (make-lsp-client
+  :new-connection
+  (lsp-stdio-connection
+   (lambda ()
+     (if lsp-clients-angular-language-server-command
+         lsp-clients-angular-language-server-command
+       (let ((node-modules-path
+              (f-join
+               (string-trim
+                (shell-command-to-string lsp-clients-angular-node-get-prefix-command))
+               "lib/node_modules")))
+         ;; The shell command takes a significant time to run,
+         ;; so we "cache" its results after running once
+         (setq lsp-clients-angular-language-server-command
+               (list
+                "node"
+                (f-join node-modules-path "@angular/language-server")
+                "--ngProbeLocations"
+                node-modules-path
+                "--tsProbeLocations"
+                node-modules-path
+                "--stdio"))
+         lsp-clients-angular-language-server-command))))
+  :activation-fn
+  (lambda (&rest _args)
+    (and (string-match-p "\\(\\.html\\|\\.ts\\)\\'" (buffer-file-name))
+         (lsp-workspace-root)
+         (file-exists-p (f-join (lsp-workspace-root) "angular.json"))))
+  :priority -1
+  :notification-handlers
+  (ht ("angular/projectLoadingStart" #'lsp-client--angular-start-loading)
+      ("angular/projectLoadingFinish" #'lsp-client--angular-finished-loading))
+  :add-on? t
+  :server-id 'angular-ls))
 
 
 (lsp-consistency-check lsp-angular)
