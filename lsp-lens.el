@@ -309,6 +309,13 @@ CALLBACK - callback for the lenses."
           (funcall callback lsp-lens--backend-cache lsp--cur-version)
         (lsp-lens--backend-fetch-missing lsp-lens--backend-cache callback lsp--cur-version)))))
 
+(defun lsp--lens-on-refresh (workspace)
+  "Clear lens within all buffers of WORKSPACE, refreshing all workspace buffers."
+  (cl-assert (not (eq nil workspace)))
+  (cl-loop
+   for ws-buffer in (lsp--workspace-buffers workspace) do
+   (lsp-lens-refresh t ws-buffer)))
+
 ;;;###autoload
 (defun lsp-lens--enable ()
   "Enable lens mode."

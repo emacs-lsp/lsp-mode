@@ -3347,7 +3347,7 @@ disappearing, unset all the variables related to it."
                    (workspaceFolders . t)
                    (configuration . t)
                    ,@(when lsp-semantic-tokens-enable '((semanticTokens . ((refreshSupport . t)))))
-                   ,@(when lsp-lens-enable '((codeLens . ((refreshSupport . :json-false)))))
+                   ,@(when lsp-lens-enable '((codeLens . ((refreshSupport . t)))))
                    (fileOperations . ((didCreate . :json-false)
                                       (willCreate . :json-false)
                                       (didRename . :json-false)
@@ -6180,6 +6180,11 @@ WORKSPACE is the active workspace."
                       (when (and lsp-semantic-tokens-enable
                                  (fboundp 'lsp--semantic-tokens-on-refresh))
                         (lsp--semantic-tokens-on-refresh workspace))
+                      nil)
+                     ((equal method "workspace/codeLens/refresh")
+                      (when (and lsp-lens-enable
+                                 (fboundp 'lsp--lens-on-refresh))
+                        (lsp--lens-on-refresh workspace))
                       nil)
                      (t (lsp-warn "Unknown request method: %s" method) nil))))
     ;; Send response to the server.
