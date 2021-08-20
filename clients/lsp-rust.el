@@ -614,6 +614,12 @@ https://rust-analyzer.github.io/manual.html#auto-import.
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "7.1.0"))
 
+(defcustom lsp-rust-analyzer-experimental-proc-attr-macros nil
+  "Whether to enable experimental support for expanding proc macro attributes."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "7.1.0"))
+
 (defun lsp-rust-analyzer--make-init-options ()
   "Init options for rust-analyzer"
   `(:diagnostics (:enable ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable)
@@ -660,7 +666,8 @@ https://rust-analyzer.github.io/manual.html#auto-import.
     :callInfo (:full ,(lsp-json-bool lsp-rust-analyzer-call-info-full))
     :procMacro (:enable ,(lsp-json-bool lsp-rust-analyzer-proc-macro-enable))
     :rustcSource ,lsp-rust-analyzer-rustc-source
-    :highlighting (:strings ,(lsp-json-bool lsp-rust-analyzer-highlighting-strings))))
+    :highlighting (:strings ,(lsp-json-bool lsp-rust-analyzer-highlighting-strings))
+    :experimental (:procAttrMacros ,(lsp-json-bool lsp-rust-analyzer-experimental-proc-attr-macros))))
 
 (defconst lsp-rust-notification-handlers
   '(("rust-analyzer/publishDecorations" . (lambda (_w _p)))))
