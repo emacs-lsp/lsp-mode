@@ -26,8 +26,23 @@ corresponding mode -\> language id - in this case `(python-mode .
 
 `lsp-mode` is using `lsp-language-id-configuration` to determine what is the
 buffer language. When the `major-mode` is not sufficient to determine the
-language (e.g. `web-mode` is used for `javascript`, `html`, and `css`) you can put
-regex.
+language (e.g. `web-mode` is used for `javascript`, `html`, and `css`) you can put regex.
+
+Here's an example of how to set up a custom language server in your `init.el` file:
+
+```elisp
+;; Use shopify-cli / theme-check-language-server for Shopify's liquid syntax
+(with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-language-id-configuration
+    '(shopify-mode . "shopify"))
+
+  (lsp-register-client
+    (make-lsp-client :new-connection (lsp-stdio-connection "theme-check-language-server")
+                     :activation-fn (lsp-activate-on "shopify")
+                     :server-id 'theme-check)))
+```
+
+**Note:** This example assumes that you've already set up a major mode of your own either by [deriving it](https://www.gnu.org/software/emacs/manual/html_node/elisp/Derived-Modes.html) from `web-mode` or perhaps by writing it yourself.
 
 If the language server supports environment variables to control
 additional behavior, you can register that by using the
