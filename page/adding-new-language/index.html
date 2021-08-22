@@ -2553,8 +2553,19 @@ corresponding mode -> language id - in this case <code>(python-mode .
 </code></pre></div>
 <p><code>lsp-mode</code> is using <code>lsp-language-id-configuration</code> to determine what is the
 buffer language. When the <code>major-mode</code> is not sufficient to determine the
-language (e.g. <code>web-mode</code> is used for <code>javascript</code>, <code>html</code>, and <code>css</code>) you can put
-regex.</p>
+language (e.g. <code>web-mode</code> is used for <code>javascript</code>, <code>html</code>, and <code>css</code>) you can put regex.</p>
+<p>Here's an example of how to set up a custom language server in your <code>init.el</code> file:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">;; Use shopify-cli / theme-check-language-server for Shopify&#39;s liquid syntax</span>
+<span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-mode</span>
+  <span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;lsp-language-id-configuration</span>
+    <span class="o">&#39;</span><span class="p">(</span><span class="nv">shopify-mode</span> <span class="o">.</span> <span class="s">&quot;shopify&quot;</span><span class="p">))</span>
+
+  <span class="p">(</span><span class="nv">lsp-register-client</span>
+    <span class="p">(</span><span class="nv">make-lsp-client</span> <span class="nb">:new-connection</span> <span class="p">(</span><span class="nv">lsp-stdio-connection</span> <span class="s">&quot;theme-check-language-server&quot;</span><span class="p">)</span>
+                     <span class="nb">:activation-fn</span> <span class="p">(</span><span class="nv">lsp-activate-on</span> <span class="s">&quot;shopify&quot;</span><span class="p">)</span>
+                     <span class="nb">:server-id</span> <span class="ss">&#39;theme-check</span><span class="p">)))</span>
+</code></pre></div>
+<p><strong>Note:</strong> This example assumes that you've already set up a major mode of your own either by <a href="https://www.gnu.org/software/emacs/manual/html_node/elisp/Derived-Modes.html">deriving it</a> from <code>web-mode</code> or perhaps by writing it yourself.</p>
 <p>If the language server supports environment variables to control
 additional behavior, you can register that by using the
 <code>:environment-fn</code> function, like the Bash language client does:</p>
@@ -2620,7 +2631,7 @@ Example:</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 20, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 22, 2021</span>
     
   </small>
 </div>
