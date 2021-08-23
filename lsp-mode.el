@@ -8325,11 +8325,11 @@ This avoids overloading the server with many files when starting Emacs."
   (let ((buffer (current-buffer)))
     ;; Avoid false positives as desktop-mode restores buffers by deferring
     ;; visibility check until the stack clears.
-    (run-with-timer 0 nil (lambda ()
-                            (when (buffer-live-p buffer)
-                              (with-current-buffer buffer
-                                (unless (lsp--init-if-visible)
-                                  (add-hook 'window-configuration-change-hook #'lsp--init-if-visible nil t))))))))
+    (run-with-idle-timer 0 nil (lambda ()
+                                 (when (buffer-live-p buffer)
+                                   (with-current-buffer buffer
+                                     (unless (lsp--init-if-visible)
+                                       (add-hook 'window-configuration-change-hook #'lsp--init-if-visible nil t))))))))
 
 
 
