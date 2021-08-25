@@ -259,7 +259,7 @@ PATH is the current folder to be checked."
 
 (defun lsp-headerline--build-file-string ()
   "Build the file-segment string for the breadcrumb."
-  (let* ((file-path (buffer-file-name))
+  (let* ((file-path (or (buffer-file-name) ""))
          (filename (f-filename file-path)))
     (if-let ((file-ext (f-ext file-path)))
         (concat (lsp-icons-get-by-file-ext file-ext 'headerline-breadcrumb)
