@@ -38,6 +38,8 @@ after:
 
 `lsp-rust-analyzer-inlay-hints-mode` enables displaying of inlay hints
 
+Additionally, `lsp-rust-analyzer-inlay-hints-mode` must be set in order for inlay hints to render.
+
 NOTE: the inlay hints interact badly with the lsp-ui sideline, because it doesn't seem to consider the overlays in its width calculation, which often leads to lines wrapping around.
 
 ![](../examples/lsp-rust-analyzer-inlay-hints.png)
