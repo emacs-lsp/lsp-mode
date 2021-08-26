@@ -709,6 +709,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#check-if-any-package-or-wrong-config-could-be-causing-the-issue" class="md-nav__link">
+    Check if any package or wrong config could be causing the issue
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2542,6 +2549,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#check-if-any-package-or-wrong-config-could-be-causing-the-issue" class="md-nav__link">
+    Check if any package or wrong config could be causing the issue
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2578,6 +2592,10 @@ Modify the path using <code>setpath</code> function.</p>
 <li>Restart Emacs</li>
 <li>Install the new versions of the packages.</li>
 </ol>
+<h4 id="check-if-any-package-or-wrong-config-could-be-causing-the-issue">Check if any package or wrong config could be causing the issue<a class="headerlink" href="#check-if-any-package-or-wrong-config-could-be-causing-the-issue" title="Permanent link">#</a></h4>
+<p>Try to repro the issue with our <a href="https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-start-plain.el">lsp-start-plain.el</a> file, which has just the necessary config/packages for lsp-mode work.</p>
+<div class="highlight"><pre><span></span><code>emacs -q -l lsp-start-plain.el
+</code></pre></div>
                 
                   
                     
@@ -2586,7 +2604,7 @@ Modify the path using <code>setpath</code> function.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 25, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 26, 2021</span>
     
   </small>
 </div>
