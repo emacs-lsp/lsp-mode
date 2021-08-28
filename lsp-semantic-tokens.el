@@ -306,9 +306,9 @@ If FONTIFY-IMMEDIATELY is non-nil, fontification will be performed immediately
          (substrings))
     (cl-loop
      for edit across edits
-     when (< old-token-index (lsp-get edit :start))
      do
-     (push (substring old-data old-token-index (lsp-get edit :start)) substrings)
+     (when (< old-token-index (lsp-get edit :start))
+       (push (substring old-data old-token-index (lsp-get edit :start)) substrings))
      (push (lsp-get edit :data) substrings)
      (setq old-token-index (+ (lsp-get edit :start) (lsp-get edit :deleteCount)))
      finally do (push (substring old-data old-token-index old-token-count) substrings))
