@@ -205,6 +205,16 @@ current runtime."
                   "fsautocomplete.netcore.zip"
                 "fsautocomplete.zip")))
 
+(defun lsp-fsharp--change-permissions (install-dir-full)
+  (unless (eq system-type 'windows-nt) ; Windows does not have chmod
+    (progn
+      (message "Altering permissions")
+      (dolist (file (directory-files-recursively install-dir-full ""))
+	(if (file-directory-p file)
+	    (chmod file #o755)
+	  (chmod file #o644)))
+      (message "Finished altering permissions"))))
+
 (defun lsp-fsharp--fsac-install (_client callback _error-callback _update?)
   "Download the latest version of fsautocomplete and extract it to `lsp-fsharp-server-install-dir'."
   (let* ((temp-file (make-temp-file "fsautocomplete" nil ".zip"))
@@ -216,6 +226,7 @@ current runtime."
          (server-download-url (lsp-fsharp--server-download-url latest-version)))
     (url-copy-file server-download-url temp-file t)
     (shell-command unzip-script)
+    (lsp-fsharp--change-permissions install-dir-full)
     (shell-command (format "%s %s --version" (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-cmd)))
     (funcall callback)))
 
