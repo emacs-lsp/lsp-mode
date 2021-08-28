@@ -3346,7 +3346,10 @@ disappearing, unset all the variables related to it."
                    ,@(when lsp-enable-file-watchers '((didChangeWatchedFiles . ((dynamicRegistration . t)))))
                    (workspaceFolders . t)
                    (configuration . t)
-                   ,@(when lsp-semantic-tokens-enable '((semanticTokens . ((refreshSupport . t)))))
+                   ,@(when lsp-semantic-tokens-enable
+                       `((semanticTokens . ((refreshSupport . ,(or (and (boundp 'lsp-semantic-tokens-honor-refresh-requests)
+                                                                        lsp-semantic-tokens-honor-refresh-requests)
+                                                                   :json-false))))))
                    ,@(when lsp-lens-enable '((codeLens . ((refreshSupport . t)))))
                    (fileOperations . ((didCreate . :json-false)
                                       (willCreate . :json-false)
