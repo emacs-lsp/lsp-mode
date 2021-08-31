@@ -1961,6 +1961,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#open-external-documentation" class="md-nav__link">
+    Open external documentation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#find-and-execute-tests-related-to-current-position" class="md-nav__link">
     Find and execute tests related to current position
   </a>
@@ -3105,6 +3112,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#open-external-documentation" class="md-nav__link">
+    Open external documentation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#find-and-execute-tests-related-to-current-position" class="md-nav__link">
     Find and execute tests related to current position
   </a>
@@ -3589,11 +3603,14 @@
 <p><img alt="" src="../../examples/lsp-rust-analyzer-auto-import.png" /></p>
 <h3 id="open-cargotoml">Open Cargo.toml<a class="headerlink" href="#open-cargotoml" title="Permanent link">#</a></h3>
 <p><code>lsp-rust-analyzer-open-cargo-toml</code> opens the Cargo.toml closest to the current file. Calling it with a universal argument will open the Cargo.toml in another window.</p>
-<p>Corresponds to <a href="https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#open-cargotoml">the rust-analyzer LSP extension</a> </p>
+<p>Corresponds to <a href="https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#open-cargotoml">the rust-analyzer LSP extension</a></p>
 <p><img alt="" src="../../examples/lsp-rust-analyzer-open-cargo-toml.gif" /></p>
+<h3 id="open-external-documentation">Open external documentation<a class="headerlink" href="#open-external-documentation" title="Permanent link">#</a></h3>
+<p><code>lsp-rust-analyzer-open-external-docs</code> opens external documentation related to the current position in a browser.</p>
+<p>Corresponds to <a href="https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#open-external-documentation">the rust-analyzer LSP extension</a></p>
 <h3 id="find-and-execute-tests-related-to-current-position">Find and execute tests related to current position<a class="headerlink" href="#find-and-execute-tests-related-to-current-position" title="Permanent link">#</a></h3>
 <p><code>lsp-rust-analyzer-related-tests</code> find all tests related to the current position, asks for user completion and executes the selected test in a compilation buffer.</p>
-<p>Corresponds to <a href="https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#related-tests">the rust-analyzer LSP extension</a> </p>
+<p>Corresponds to <a href="https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#related-tests">the rust-analyzer LSP extension</a></p>
 <p>In the example below, first you see that:
    + On the left, the function <code>check_infer</code> is defined, on the right another
      file is opened with many test functions, some of which call <code>check_infer</code>.
