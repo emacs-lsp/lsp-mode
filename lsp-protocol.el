@@ -403,6 +403,7 @@ See `-let' for a description of the destructuring mechanism."
                (rust-analyzer:ExpandedMacro (:name :expansion) nil)
                (rust-analyzer:MatchingBraceParams (:textDocument :positions) nil)
                (rust-analyzer:OpenCargoTomlParams (:textDocument) nil)
+               (rust-analyzer:OpenExternalDocsParams (:textDocument :position) nil)
                (rust-analyzer:ResovedCodeActionParams (:id :codeActionParams) nil)
                (rust-analyzer:JoinLinesParams (:textDocument :ranges) nil)
                (rust-analyzer:MoveItemParams (:textDocument :range :direction) nil)
