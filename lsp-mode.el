@@ -6280,8 +6280,8 @@ WORKSPACE is the active workspace."
                                      (/ (nth 2 (time-since before-send)) 1000))
                 workspace))
              (when callback
-               (funcall callback (lsp:json-response-result json-data))
-               (remhash id (lsp--client-response-handlers client)))))
+               (remhash id (lsp--client-response-handlers client))
+               (funcall callback (lsp:json-response-result json-data)))))
           ('response-error
            (cl-assert id)
            (-let [(_ callback method _ before-send) (gethash id (lsp--client-response-handlers client))]
@@ -6291,8 +6291,8 @@ WORKSPACE is the active workspace."
                                      'incoming-resp (/ (nth 2 (time-since before-send)) 1000))
                 workspace))
              (when callback
-               (funcall callback (lsp:json-response-error-error json-data))
-               (remhash id (lsp--client-response-handlers client)))))
+               (remhash id (lsp--client-response-handlers client))
+               (funcall callback (lsp:json-response-error-error json-data)))))
           ('notification
            (lsp--on-notification workspace json-data))
           ('request (lsp--on-request workspace json-data)))))))
