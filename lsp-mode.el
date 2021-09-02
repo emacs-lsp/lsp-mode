@@ -7076,18 +7076,24 @@ returns the command to execute."
   (when (functionp 'lsp-ui-mode)
     (lsp-ui-mode))
 
-  (when lsp-headerline-breadcrumb-enable
-    (add-hook 'lsp-configure-hook 'lsp-headerline-breadcrumb-mode))
-  (when lsp-modeline-code-actions-enable
-    (add-hook 'lsp-configure-hook 'lsp-modeline-code-actions-mode))
-  (when lsp-modeline-diagnostics-enable
-    (add-hook 'lsp-configure-hook 'lsp-modeline-diagnostics-mode))
-  (when lsp-modeline-workspace-status-enable
-    (add-hook 'lsp-configure-hook 'lsp-modeline-workspace-status-mode))
-  (when lsp-lens-enable
-    (add-hook 'lsp-configure-hook 'lsp-lens--enable))
-  (when lsp-semantic-tokens-enable
-    (add-hook 'lsp-configure-hook 'lsp-semantic-tokens--enable))
+  (if lsp-headerline-breadcrumb-enable
+      (add-hook 'lsp-configure-hook 'lsp-headerline-breadcrumb-mode)
+    (remove-hook 'lsp-configure-hook 'lsp-headerline-breadcrumb-mode))
+  (if lsp-modeline-code-actions-enable
+      (add-hook 'lsp-configure-hook 'lsp-modeline-code-actions-mode)
+    (remove-hook 'lsp-configure-hook 'lsp-modeline-code-actions-mode))
+  (if lsp-modeline-diagnostics-enable
+      (add-hook 'lsp-configure-hook 'lsp-modeline-diagnostics-mode)
+    (remove-hook 'lsp-configure-hook 'lsp-modeline-diagnostics-mode))
+  (if lsp-modeline-workspace-status-enable
+      (add-hook 'lsp-configure-hook 'lsp-modeline-workspace-status-mode)
+    (remove-hook 'lsp-configure-hook 'lsp-modeline-workspace-status-mode))
+  (if lsp-lens-enable
+      (add-hook 'lsp-configure-hook 'lsp-lens--enable)
+    (remove-hook 'lsp-configure-hook 'lsp-lens--enable))
+  (if lsp-semantic-tokens-enable
+      (add-hook 'lsp-configure-hook 'lsp-semantic-tokens--enable)
+    (remove-hook 'lsp-configure-hook 'lsp-semantic-tokens--enable))
 
   ;; yas-snippet config
   (setq-local yas-inhibit-overlay-modification-protection t))
