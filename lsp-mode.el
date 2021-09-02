@@ -3871,6 +3871,8 @@ yet."
                                  (lsp--cur-workspace (list lsp--cur-workspace))))
         lsp--cur-workspace)
     (when lsp-auto-configure
+      (lsp--auto-configure)
+
       (when (and lsp-enable-text-document-color
                  (lsp-feature? "textDocument/documentColor"))
         (add-hook 'lsp-on-change-hook #'lsp--document-color nil t))
