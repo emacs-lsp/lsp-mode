@@ -2230,8 +2230,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#release-71" class="md-nav__link">
-    Release 7.1
+  <a href="#release-800" class="md-nav__link">
+    Release 8.0.0
   </a>
   
 </li>
@@ -2556,8 +2556,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#release-71" class="md-nav__link">
-    Release 7.1
+  <a href="#release-800" class="md-nav__link">
+    Release 8.0.0
   </a>
   
 </li>
@@ -2656,7 +2656,7 @@
                 
                 
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">#</a></h1>
-<h2 id="release-71">Release 7.1<a class="headerlink" href="#release-71" title="Permanent link">#</a></h2>
+<h2 id="release-800">Release 8.0.0<a class="headerlink" href="#release-800" title="Permanent link">#</a></h2>
 <ul>
 <li>Add <code>lsp-clients-angular-node-get-prefix-command</code> to get the Angular
     server from another location which is still has <code>/lib/node_modules</code>
@@ -2683,6 +2683,7 @@
 <li>Add Nix support.</li>
 <li>Add Racket support.</li>
 <li>Provided automatic installers for `lsp-clojure` (`clojure-lsp`).</li>
+<li>Provided automatic installers for clangd.</li>
 <li>Added <code>lsp-modeline-workspace-status-mode</code> and option to disable it
     via <code>lsp-modeline-workspace-status-enable</code>.</li>
 <li>Automatically download <a href="https://github.com/eclipse/lemminx">XML language server
@@ -2732,6 +2733,7 @@
     of line as default.</li>
 <li>Add LanguageTool support.</li>
 <li>Add Beancount support.</li>
+<li>Add Nix language server support.</li>
 <li>Update the ESLint server to 2.1.23</li>
 <li>Add <code>lsp-eslint-warn-on-ignored-files</code> and
     <code>lsp-eslint-rules-customizations</code> options to the ESLint client</li>
@@ -2741,6 +2743,15 @@
 <li>Add interactive <code>lsp-rust-analyzer-move-item-up</code> and
     <code>lsp-rust-analyzer-move-item-down</code> functions to move Rust items /
     statements</li>
+<li>Fix memory leak when handling server response. #3062</li>
+<li>Improve support for SemanticTokens adding support for delta and
+    range semantic tokens.</li>
+<li>Allow override specific semantic tokens faces per client.</li>
+<li>Mention new lsp-mode integration package <code>consult-lsp</code>.</li>
+<li>Reorganized lsp-mode code moving features and clients to separated
+    files. #2067</li>
+<li>Add support for signatureHelp using <code>posframe</code>. #1999</li>
+<li>Add <code>iedit</code> integration. #2478</li>
 </ul>
 <h2 id="release-701">Release 7.0.1<a class="headerlink" href="#release-701" title="Permanent link">#</a></h2>
 <ul>

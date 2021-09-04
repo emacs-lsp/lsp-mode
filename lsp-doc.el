@@ -2,7 +2,7 @@
 
 ;; Keywords: languages, tool
 ;; Package-Requires: ((emacs "26.1") (lsp-mode "7.0.1") (emacs "26.1") (dash "2.18.0") (f "0.20.0") (ht "2.3") (spinner "1.7.3") (markdown-mode "2.3") (lv "0"))
-;; Version: 7.1.0
+;; Version: 8.0.0
 
 ;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; This program is free software; you can redistribute it and/or modify
