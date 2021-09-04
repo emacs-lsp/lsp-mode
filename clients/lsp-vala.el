@@ -30,14 +30,14 @@
   "LSP support for Vala, using vala-language-server"
   :group 'lsp-mode
   :link '(url-link "https://github.com/benwaffle/vala-language-server")
-  :package-version `(lsp-mode . "7.1.0"))
+  :package-version `(lsp-mode . "8.0.0"))
 
 (defcustom lsp-clients-vala-ls-executable "vala-language-server"
   "Path to the `vala-language-server' binary."
   :group 'lsp-vala
   :risky t
   :type 'file
-  :package-version `(lsp-mode . "7.1.0"))
+  :package-version `(lsp-mode . "8.0.0"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-clients-vala-ls-executable))

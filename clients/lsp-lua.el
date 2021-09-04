@@ -31,34 +31,34 @@
 (defgroup lsp-emmy-lua nil
   "Lua LSP client, provided by the EmmyLua Language Server."
   :group 'lsp-mode
-  :version "7.1"
+  :version "8.0.0"
   :link '(url-link "https://github.com/EmmyLua/EmmyLua-LanguageServer"))
 
 (defcustom lsp-clients-emmy-lua-java-path "java"
   "Java Runtime binary location."
   :group 'lsp-emmy-lua
-  :version "7.1"
+  :version "8.0.0"
   :risky t
   :type 'file)
 
 (defcustom lsp-clients-emmy-lua-jar-path (f-join lsp-server-install-dir "EmmyLua-LS-all.jar")
   "Emmy Lua language server jar file."
   :group 'lsp-emmy-lua
-  :version "7.1"
+  :version "8.0.0"
   :risky t
   :type 'file)
 
 (defcustom lsp-clients-emmy-lua-args '("-jar")
   "Arguments to the Lua Language server."
   :group 'lsp-emmy-lua
-  :version "7.1"
+  :version "8.0.0"
   :risky t
   :type  '(repeat string))
 
 (defcustom lsp-clients-emmy-lua-command nil
   "Final command to call the Lua Language server."
   :group 'lsp-emmy-lua
-  :version "7.1"
+  :version "8.0.0"
   :risky t
   :type '(repeat string))
 
@@ -84,13 +84,13 @@
 (defgroup lsp-lua-language-server nil
   "Lua LSP client, provided by the Lua Language Server."
   :group 'lsp-mode
-  :version "7.1"
+  :version "8.0.0"
   :link '(url-link "https://github.com/sumneko/lua-language-server"))
 
 (defcustom lsp-clients-lua-language-server-install-dir (f-join lsp-server-install-dir "lua-language-server/")
   "Installation directory for Lua Language Server."
   :group 'lsp-lua-language-server
-  :version "7.1"
+  :version "8.0.0"
   :risky t
   :type 'directory)
 
@@ -104,7 +104,7 @@
             (_ "Linux/lua-language-server")))
   "Location of Lua Language Server."
   :group 'lsp-lua-language-server
-  :version "7.1"
+  :version "8.0.0"
   :risky t
   :type 'file)
 
@@ -113,14 +113,14 @@
           "extension/server/main.lua")
   "Location of Lua Language Server main.lua."
   :group 'lsp-lua-language-server
-  :version "7.1"
+  :version "8.0.0"
   :risky t
   :type 'file)
 
 (defcustom lsp-clients-lua-language-server-args '("-E")
   "Arguments to run the Lua Language server."
   :group 'lsp-lua-language-server
-  :version "7.1"
+  :version "8.0.0"
   :risky t
   :type '(repeat string))
 
@@ -138,13 +138,13 @@
 (defcustom lsp-lua-color-mode "Semantic"
   "Color mode."
   :type '(choice (:tag "Grammar" "Semantic"))
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-completion-call-snippet "Disable"
   "Shows function call snippets."
   :type '(choice (:tag "Disable" "Both" "Replace"))
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-completion-display-context 6
@@ -154,43 +154,43 @@ understand the usage of the suggestion.
 The number set indicates the number of intercepted lines in the code
 fragment.  If it is set to `0`, this feature can be disabled."
   :type 'number
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-completion-enable t
   "Enable completion."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-completion-keyword-snippet "Replace"
   "Shows keyword syntax snippets."
   :type '(choice (:tag "Disable" "Both" "Replace"))
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-completion-workspace-word t
   "Show words within the workspace."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-develop-debugger-port 11412
   "Listen port of debugger."
   :type 'number
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-develop-debugger-wait nil
   "Suspend before debugger connects."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-develop-enable nil
   "Developer mode.  Do not enable, performance will be affected."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-diagnostics-disable nil
@@ -202,13 +202,13 @@ fragment.  If it is set to `0`, this feature can be disabled."
 ]
 ```"
   :type 'lsp-string-vector
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-diagnostics-enable t
   "Enable diagnostics."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-diagnostics-globals nil
@@ -220,7 +220,7 @@ fragment.  If it is set to `0`, this feature can be disabled."
 ]
 ```"
   :type 'lsp-string-vector
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-diagnostics-needed-file-status nil
@@ -232,7 +232,7 @@ fragment.  If it is set to `0`, this feature can be disabled."
 }
 ```"
   :type 'alist
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-diagnostics-severity nil
@@ -244,7 +244,7 @@ fragment.  If it is set to `0`, this feature can be disabled."
 }
 ```"
   :type 'alist
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-diagnostics-workspace-delay 0
@@ -252,7 +252,7 @@ fragment.  If it is set to `0`, this feature can be disabled."
 workspace, or edit any file, the entire workspace will be re-diagnosed in the
 background. Set to negative to disable workspace diagnostics."
   :type 'number
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-diagnostics-workspace-rate 100
@@ -261,37 +261,37 @@ but also reduces the speed of workspace diagnostics. The diagnosis of the file
 you are currently editing is always done at full speed and is not affected by
 this setting."
   :type 'number
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-hint-enable nil
   "Enable hint."
   :type 'boolean
-  :package-version '(lsp-mmode . "7.1")
+  :package-version '(lsp-mmode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-hint-param-name t
   "Hint parameter name when the parameter called is literal."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-hint-param-type t
   "Show type hints at the parameter of the function."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-hint-set-type nil
   "Hint type at assignment operation."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-hover-enable t
   "Enable hover."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-hover-field-infer 3000
@@ -299,33 +299,33 @@ this setting."
 When the accumulated time of type infer reaches the set value (MS), the type
 infer of subsequent fields will be skipped."
   :type 'number
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-hover-preview-fields 100
   "When hovering to view a table, limits the maximum number of previews for
 fields."
   :type 'number
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-hover-view-number t
   "Hover to view numeric content (only if literal is not decimal)."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-hover-view-string t
   "Hover to view the contents of a string (only if the literal contains an
 escape character)."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-hover-view-string-max 1000
   "The maximum length of a hover to view the contents of a string."
   :type 'number
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-intelli-sense-search-depth 0
@@ -333,34 +333,34 @@ escape character)."
 accuracy, but decreases performance. Different workspace have different
 tolerance for this setting. Please adjust it to the appropriate value."
   :type 'number
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-runtime-file-encoding "utf8"
   "File encoding. The 'ansi' option is only available under the 'Windows'
 platform."
   :type '(choice (:tag "utf8" "ansi"))
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-runtime-nonstandard-symbol nil
   "Supports non-standard symbols. Make sure that your runtime environment
 supports these symbols."
   :type 'lsp-string-vector
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-runtime-path
   ["?.lua" "?/init.lua" "?/?.lua"]
   "`package.path`."
   :type 'lsp-string-vector
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-runtime-plugin nil
   "(Proposed) Plugin path. Default is `.vscode/lua/plugin.lua`"
   :type 'file
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-runtime-special nil
@@ -372,44 +372,44 @@ and the language server will provide special support.
 }
 ```"
   :type 'alist
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-runtime-unicode-name nil
   "Allows Unicode characters in name."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-runtime-version "Lua 5.4"
   "Lua runtime version."
   :type '(choice (:tag "Lua 5.1" "Lua 5.2" "Lua 5.3" "Lua 5.4" "LuaJIT"))
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-signature-help-enable t
   "Enable signature help."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-telemetry-enable nil
   "Enable telemetry to send your editor information and error logs over the
 network."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-window-progress-bar t
   "Show progress bar in status bar."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-window-status-bar t
   "Show extension status in status bar."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-workspace-ignore-dir
@@ -422,13 +422,13 @@ network."
 ]
 ```"
   :type 'lsp-string-vector
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-workspace-ignore-submodules t
   "Ignore submodules."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-workspace-library nil
@@ -449,37 +449,37 @@ and `../lib` ,exclude `../lib/temp`.
 }
 ```"
   :type 'alist
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-workspace-max-preload 1000
   "Max preloaded files."
   :type 'number
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-workspace-preload-file-size 100
   "Skip files larger than this value (KB) when preloading."
   :type 'number
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-workspace-use-git-ignore t
   "Ignore files list in `.gitignore` ."
   :type 'boolean
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-files-associations nil
   "Files.associations."
   :type 'alist
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-files-exclude nil
   "Files.exclude."
   :type 'alist
-  :package-version '(lsp-mode . "7.1")
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
 (lsp-register-custom-settings
@@ -561,20 +561,20 @@ and `../lib` ,exclude `../lib/temp`.
 (defgroup lsp-lua-lsp nil
   "Lua LSP client, provided by the Lua-Lsp."
   :group 'lsp-mode
-  :version "7.1"
+  :version "8.0.0"
   :link '(url-link "https://github.com/Alloyed/lua-lsp"))
 
 (defcustom lsp-clients-luarocks-bin-dir (f-join (getenv "HOME") ".luarocks/bin/")
   "LuaRocks bin directory."
   :group 'lsp-lua-lsp
-  :version "7.1"
+  :version "8.0.0"
   :risky t
   :type 'directory)
 
 (defcustom lsp-clients-lua-lsp-server-install-dir nil
   "Installation directory for Lua-Lsp Language Server."
   :group 'lsp-lua-lsp
-  :version "7.1"
+  :version "8.0.0"
   :risky t
   :type 'file)
 
@@ -596,13 +596,13 @@ and `../lib` ,exclude `../lib/temp`.
 (defgroup lsp-lua-roblox-language-server nil
   "Roblox Lua LSP client, provided by the Roblox Lua Language Server."
   :group 'lsp-mode
-  :version "7.1"
+  :version "8.0.0"
   :link '(url-link "https://github.com/NightrainsRbx/RobloxLsp"))
 
 (defcustom lsp-lua-roblox-language-server-install-dir (f-join lsp-server-install-dir "lua-roblox-language-server/")
   "Installation directory for Lua Language Server."
   :group 'lsp-lua-roblox-language-server
-  :version "7.1"
+  :version "8.0.0"
   :risky t
   :type 'directory)
 
@@ -616,7 +616,7 @@ and `../lib` ,exclude `../lib/temp`.
             (_ "Linux/lua-language-server")))
   "Location of Roblox Lua Language Server."
   :group 'lsp-lua-roblox-language-server
-  :version "7.1"
+  :version "8.0.0"
   :risky t
   :type 'file)
 
@@ -625,7 +625,7 @@ and `../lib` ,exclude `../lib/temp`.
           "extension/server/main.lua")
   "Location of Roblox Lua Language Server main.lua."
   :group 'lsp-lua-roblox-language-server
-  :version "7.1"
+  :version "8.0.0"
   :risky t
   :type 'file)
 
@@ -633,14 +633,14 @@ and `../lib` ,exclude `../lib/temp`.
   (lsp-vscode-extension-url "Nightrains" "robloxlsp" "0.15.8")
   "Download url for Roblox Lua vscode extension."
   :group 'lsp-lua-roblox-language-server
-  :version "7.1"
+  :version "8.0.0"
   :type 'string)
 
 (defcustom lsp-lua-roblox-server-store-path
   (expand-file-name "vs-lua-roblox" lsp-lua-roblox-language-server-install-dir)
   "Server file name for the vscode extension."
   :group 'lsp-lua-roblox-language-server
-  :version "7.1"
+  :version "8.0.0"
   :type 'string)
 
 (defun lsp-lua-roblox-language-server-test ()

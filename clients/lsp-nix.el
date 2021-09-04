@@ -35,7 +35,7 @@
   "Executable path for the server."
   :group 'lsp-nix
   :type 'string
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-nix-server-path))

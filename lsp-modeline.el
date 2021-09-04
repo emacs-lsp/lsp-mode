@@ -41,13 +41,13 @@
                   (const :tag "Show the name of the preferred code action" name)
                   (const :tag "Show the count of how many code actions available" count)))
   :group 'lsp-modeline
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-modeline-code-action-fallback-icon "💡"
   "Define what should display on the modeline when code actions are available."
   :type 'string
   :group 'lsp-modeline
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defface lsp-modeline-code-actions-face
   '((t :inherit homoglyph))

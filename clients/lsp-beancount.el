@@ -30,25 +30,25 @@
   "Settings for the Beancount Language Server."
   :group 'lsp-mode
   :link '(url-link "https://github.com/polarmutex/beancount-language-server")
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-beancount-langserver-executable "beancount-langserver"
   "Command to start Beancount language server."
   :type 'string
   :group 'lsp-beancount
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-beancount-python-interpreter nil
   "Path to Python executable."
   :type 'string
   :group 'lsp-beancount
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-beancount-journal-file nil
   "Pathg to Beancount journal file."
   :type 'string
   :group 'lsp-beancount
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (lsp-register-client
  (make-lsp-client

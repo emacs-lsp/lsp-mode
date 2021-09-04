@@ -36,7 +36,7 @@
   "Settings for the SystemVerilog language server client."
   :group 'lsp-mode
   :link '(url-link "https://github.com/imc-trading/svlangserver")
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-clients-svlangserver-includeIndexing '["**/*.{sv,svh}"]
   "Files included for indexing (glob pattern)"

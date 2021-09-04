@@ -36,7 +36,7 @@
   :tag "Lsp Clojure")
 
 (define-obsolete-variable-alias 'lsp-clojure-server-command
-  'lsp-clojure-custom-server-command  "lsp-mode 7.1")
+  'lsp-clojure-custom-server-command  "lsp-mode 8.0.0")
 
 (defcustom lsp-clojure-custom-server-command nil
   "The clojure-lisp server command."
@@ -53,7 +53,7 @@
   "Automatic download url for lsp-clojure."
   :type 'string
   :group 'lsp-clojure
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-clojure-server-store-path
   (f-join lsp-server-install-dir
@@ -64,7 +64,7 @@
   "The path to the file in which `clojure-lsp' will be stored."
   :type 'file
   :group 'lsp-clojure
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-clojure-workspace-dir (expand-file-name (locate-user-emacs-file "workspace/"))
   "LSP clojure workspace directory."

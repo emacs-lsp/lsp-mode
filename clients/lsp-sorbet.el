@@ -30,13 +30,13 @@
   "LSP support for Ruby, using the Sorbet language server."
   :group 'lsp-mode
   :link '(url-link "https://github.com/sorbet/sorbet")
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-sorbet-use-bundler nil
   "Run sorbet under bundler"
   :type 'boolean
   :group 'lsp-sorbet
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defun lsp-sorbet--build-command ()
   "Build sorbet command"

@@ -87,14 +87,14 @@ ignored."
   "Whether or not filter initial results from server."
   :type 'boolean
   :group 'lsp-completion
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-completion-use-last-result t
   "Temporarily use last server result when interrupted by keyboard.
 This will help minimize popup flickering issue in `company-mode'."
   :type 'boolean
   :group 'lsp-completion
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defconst lsp-completion--item-kind
   [nil
@@ -198,7 +198,7 @@ KEEP-LAST-RESULT if specified."
           (const :insert :tag "Default completion inserts")
           (const :replace :tag "Default completion replaces"))
   :group 'lsp-mode
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (lsp-defun lsp-completion--guess-prefix ((item &as &CompletionItem :text-edit?))
   "Guess ITEM's prefix start point according to following heuristics:

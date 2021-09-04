@@ -53,7 +53,7 @@ It has to be set before `lsp-clangd.el' is loaded and it has to
 be available here: https://github.com/clangd/clangd/releases/"
   :type 'string
   :group 'lsp-clangd
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-clangd-download-url
   (format (pcase system-type
@@ -65,7 +65,7 @@ be available here: https://github.com/clangd/clangd/releases/"
   "Automatic download url for clangd"
   :type 'string
   :group 'lsp-clangd
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-clangd-binary-path
   (f-join lsp-server-install-dir (format "clangd/clangd_%s/bin"
@@ -76,7 +76,7 @@ be available here: https://github.com/clangd/clangd/releases/"
   "The path to `clangd' binary."
   :type 'file
   :group 'lsp-clangd
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (lsp-dependency
  'clangd

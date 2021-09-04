@@ -39,7 +39,7 @@
   :group 'lsp-lens
   :type '(choice (const above-line)
                  (const end-of-line))
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defface lsp-lens-mouse-face
   '((t :height 0.8 :inherit link))

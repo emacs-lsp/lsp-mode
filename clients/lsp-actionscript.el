@@ -30,7 +30,7 @@
   "LSP support for ActionScript."
   :group 'lsp-mode
   :link '(url-link "https://github.com/BowlerHatLLC/vscode-as3mxml")
-  :package-version `(lsp-mode . "7.1.0"))
+  :package-version `(lsp-mode . "8.0.0"))
 
 (defcustom lsp-actionscript-java-path "java"
   "Path of the java executable."
@@ -42,20 +42,20 @@
 See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-SDK-for-the-current-workspace-in-Visual-Studio-Code."
   :type 'string
   :group 'lsp-actionscript
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-actionscript-version "1.5.0"
   "Version of ActionScript language server."
   :type 'string
   :group 'lsp-actionscript
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-actionscript-extension-name
   (format "vscode-nextgenas-%s.vsix" lsp-actionscript-version)
   "File name of the extension file from language server."
   :type 'string
   :group 'lsp-actionscript
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-actionscript-server-download-url
   (format "https://github.com/BowlerHatLLC/vscode-as3mxml/releases/download/v%s/%s"
@@ -63,20 +63,20 @@ See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-S
   "Automatic download url for lsp-actionscript."
   :type 'string
   :group 'lsp-actionscript
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-actionscript-server-store-path
   (f-join lsp-server-install-dir "as3mxml")
   "The path to the file in which `lsp-actionscript' will be stored."
   :type 'file
   :group 'lsp-actionscript
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-actionscript-option-charset "UTF8"
   "The charset to use by the ActionScript Language server."
   :type 'string
   :group 'lsp-actionscript
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defun lsp-actionscript--extension-root ()
   "The path that the downloaded extension will extract to."

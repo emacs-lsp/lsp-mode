@@ -159,7 +159,7 @@ Newlines and excess whitespace are removed."
   "Enable/disable resolution (downloading) of external entities from the internet."
   :type 'boolean
   :group 'lsp-xml
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-xml-validation-schema t
   "Enable/disable schema based validation. Ignored if
@@ -208,7 +208,7 @@ Newlines and excess whitespace are removed."
   "Automatic download url for lsp-xml."
   :type 'string
   :group 'lsp-xml
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (lsp-dependency
  'xmlls

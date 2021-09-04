@@ -1,5 +1,5 @@
 * Changelog
-** Release 7.1
+** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.
   * Add ~lsp-sql-execute-paragraph~ to execute the current paragraph (like ~sql-send-paragraph~).
@@ -16,6 +16,7 @@
   * Add Nix support.
   * Add Racket support.
   * Provided automatic installers for `lsp-clojure` (`clojure-lsp`).
+  * Provided automatic installers for clangd.
   * Added ~lsp-modeline-workspace-status-mode~ and option to disable it via ~lsp-modeline-workspace-status-enable~.
   * Automatically download [[https://github.com/eclipse/lemminx][XML language server Lemminx]]
   * Add Vala support.
@@ -47,6 +48,7 @@
   * Add ~lsp-lens-place-position~ with option to place code lens at end of line as default.
   * Add LanguageTool support.
   * Add Beancount support.
+  * Add Nix language server support.
   * Update the ESLint server to 2.1.23
   * Add ~lsp-eslint-warn-on-ignored-files~ and ~lsp-eslint-rules-customizations~
     options to the ESLint client
@@ -54,6 +56,13 @@
     ~lsp-eslint-code-action-disable-rule-comment~ and
     ~lsp-eslint-code-action-show-documentation~ for details
   * Add interactive ~lsp-rust-analyzer-move-item-up~ and ~lsp-rust-analyzer-move-item-down~ functions to move Rust items / statements
+  * Fix memory leak when handling server response. #3062
+  * Improve support for SemanticTokens adding support for delta and range semantic tokens.
+  * Allow override specific semantic tokens faces per client.
+  * Mention new lsp-mode integration package ~consult-lsp~.
+  * Reorganized lsp-mode code moving features and clients to separated files. #2067
+  * Add support for signatureHelp using ~posframe~. #1999
+  * Add ~iedit~ integration. #2478
 
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.

@@ -31,7 +31,7 @@
   "Run ElixirLS's rapid Dialyzer when code is saved."
   :type 'boolean
   :group 'lsp-elixir
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-elixir-dialyzer-warn-opts '()
   "Dialyzer options to enable or disable warnings.
@@ -40,25 +40,25 @@ See Dialyzer's documentation for options. Note that the \"race_conditions\"
 option is unsupported"
   :type '(repeat string)
   :group 'lsp-elixir
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-elixir-dialyzer-format "dialyxir_long"
   "Formatter to use for Dialyzer warnings."
   :type 'string
   :group 'lsp-elixir
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-elixir-mix-env "test"
   "Mix environment to use for compilation."
   :type 'string
   :group 'lsp-elixir
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-elixir-mix-target nil
   "Mix target to use for compilation (requires Elixir >= 1.8)."
   :type 'string
   :group 'lsp-elixir
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-elixir-project-dir nil
   "Subdirectory containing Mix project if not in the project root.
@@ -66,26 +66,26 @@ option is unsupported"
 If value is `\"\"` then defaults to the workspace rootUri."
   :type 'string
   :group 'lsp-elixir
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-elixir-fetch-deps t
   "Automatically fetch project dependencies when compiling."
   :type 'boolean
   :group 'lsp-elixir
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-elixir-suggest-specs t
   "Suggest @spec annotations inline using Dialyzer's inferred success typings.
 This requires Dialyzer."
   :type 'boolean
   :group 'lsp-elixir
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-elixir-signature-after-complete t
   "Show signature help after confirming autocomplete."
   :type 'boolean
   :group 'lsp-elixir
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defgroup lsp-elixir nil
   "LSP support for Elixir, using elixir-ls."
@@ -103,12 +103,12 @@ This requires Dialyzer."
 Leave as default to let `executable-find' search for it."
   :group 'lsp-elixir
   :type '(repeat string)
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 
 (defconst lsp-elixir-ls-server-dir
   (f-join lsp-server-install-dir "elixir-ls")
-  "Elixir-ls local server Directory")
+  "Elixir-ls local server Directory.")
 
 (defcustom lsp-elixir-local-server-command
   (f-join lsp-elixir-ls-server-dir
@@ -116,13 +116,13 @@ Leave as default to let `executable-find' search for it."
   "Command to start local elixir-ls binary."
   :group 'lsp-elixir
   :type '(repeat string)
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-elixir-enable-test-lenses t
   "Suggest Tests."
   :type 'boolean
   :group 'lsp-elixir
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defun lsp-elixir--build-test-command (argument)
   "Builds the test command from the ARGUMENT."

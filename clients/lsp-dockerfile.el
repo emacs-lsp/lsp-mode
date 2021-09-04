@@ -32,7 +32,7 @@
 (defgroup lsp-dockerfile nil
   "Dockerfile LSP client, provided by the Dockerfile Language Server."
   :group 'lsp-mode
-  :version "7.1"
+  :version "8.0.0"
   :link '(url-link "https://github.com/rcjsuen/dockerfile-language-server-nodejs"))
 
 (defcustom lsp-dockerfile-language-server-command

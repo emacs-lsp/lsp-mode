@@ -32,7 +32,7 @@
 (defgroup lsp-angular nil
   "Angular LSP client, provided by the Angular Language Service Server."
   :group 'lsp-mode
-  :version "7.1"
+  :version "8.0.0"
   :link '(url-link "https://github.com/angular/vscode-ng-language-service"))
 
 (defcustom lsp-clients-angular-language-server-command

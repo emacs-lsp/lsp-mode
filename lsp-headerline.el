@@ -48,7 +48,7 @@
   "If non-nil, apply different face on the breadcrumb based on the errors."
   :type 'boolean
   :group 'lsp-headerline
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defface lsp-headerline-breadcrumb-separator-face '((t :inherit shadow :height 0.8))
   "Face used for breadcrumb separator on headerline."

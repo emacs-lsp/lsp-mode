@@ -79,14 +79,14 @@ Defaults to `[\".vscode\" \".git\" \".svn\"]' if nil."
 Defaults to false if nil"
   :type 'boolean
   :group 'lsp-perl
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-perl-log-level nil
   "Log level 0-2.
 Defaults to 0."
   :type 'integer
   :group 'lsp-perl
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (lsp-register-custom-settings
  '(("perl.perlCmd" lsp-perl-perl-cmd)

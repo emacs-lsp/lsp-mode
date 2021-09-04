@@ -56,7 +56,7 @@
 (defcustom lsp-sqls-timeout 0.5
   "Timeout to use for `sqls' requests."
   :type 'number
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-sqls-connections nil
   "The connections to the SQL server(s)."

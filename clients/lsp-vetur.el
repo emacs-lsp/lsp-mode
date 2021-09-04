@@ -78,7 +78,7 @@ TypeScript."
   "Enable/disable code actions."
   :type 'boolean
   :group 'lsp-vetur
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-vetur-validation-style t
   "Validate css/scss/less/postcss in <style>"

@@ -72,7 +72,7 @@ on top the flycheck face for that error level."
   "A list of major models for which `lsp-diagnostics-mode' should be disabled."
   :type '(repeat symbol)
   :group 'lsp-diagnostics
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 ;; Flycheck integration
 

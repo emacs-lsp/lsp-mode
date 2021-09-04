@@ -30,7 +30,7 @@
   :group 'lsp-mode
   :tag "LSP Semantic tokens")
 
-(define-obsolete-variable-alias 'lsp-semantic-highlighting-warn-on-missing-face 'lsp-semantic-tokens-warn-on-missing-face "lsp-mode 7.1")
+(define-obsolete-variable-alias 'lsp-semantic-highlighting-warn-on-missing-face 'lsp-semantic-tokens-warn-on-missing-face "lsp-mode 8.0.0")
 
 (defcustom lsp-semantic-tokens-warn-on-missing-face nil
   "Warning on missing face for token type/modifier.

@@ -123,7 +123,7 @@
 Limited for performance reasons."
   :type 'number
   :group 'lsp-yaml
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 
 (defvar lsp-yaml--schema-store-schemas-alist nil

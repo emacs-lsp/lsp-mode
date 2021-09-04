@@ -48,7 +48,7 @@
   "Disable Palantir python-language-server deprecation warning"
   :group 'lsp-pyls
   :type 'boolean
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-pyls-server-command '("pyls")
   "Command to start pyls."

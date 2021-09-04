@@ -235,28 +235,28 @@ finding the executable with variable `exec-path'."
   :group 'lsp-deno
   :risky t
   :type 'file
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-clients-deno-server-args '("lsp")
   "Extra arguments for starting the Deno language server."
   :group 'lsp-deno
   :risky t
   :type '(repeat string)
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-clients-deno-enable-lint t
   "Controls if linting information will be provided by the Deno Language Server."
   :group 'lsp-deno
   :risky t
   :type 'boolean
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-clients-deno-enable-code-lens-references t
   "Enables or disables the display of code lens information."
   :group 'lsp-deno
   :risky t
   :type 'boolean
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-clients-deno-enable-code-lens-references-all-functions t
   "Enables or disables the display of code lens information for all functions.
@@ -265,14 +265,14 @@ Setting this variable to `non-nil' implicitly enables
   :group 'lsp-deno
   :risky t
   :type 'boolean
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-clients-deno-enable-code-lens-implementations t
   "Enables or disables the display of code lens information for implementations."
   :group 'lsp-deno
   :risky t
   :type 'boolean
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-clients-deno-config nil
   "The file path to a tsconfig.json file.
@@ -284,7 +284,7 @@ Examples: `./tsconfig.json',
   :group 'lsp-deno
   :risky t
   :type 'file
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-clients-deno-import-map nil
   "The file path to an import map.
@@ -297,14 +297,14 @@ Examples: `./import-map.json',
   :group 'lsp-deno
   :risky t
   :type 'file
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-clients-deno-enable-unstable nil
   "Controls if code will be type checked with Deno's unstable APIs."
   :group 'lsp-deno
   :risky t
   :type 'boolean
-  :package-version '(lsp-mode . "7.1.0"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defun lsp-clients-deno--make-init-options ()
   "Initialization options for the Deno language server."

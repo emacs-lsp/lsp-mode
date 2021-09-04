@@ -52,7 +52,7 @@
 If specified, `lsp-steep-use-bundler' is ignored."
   :type 'file
   :group 'lsp-steep
-  :package-version '(lsp-mode . "7.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defun lsp-steep--build-command ()
   "Build a command to start the Steep language server."
