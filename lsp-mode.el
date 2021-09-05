@@ -4764,7 +4764,7 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
    (->> lsp--cur-workspace lsp--workspace-client lsp--client-response-handlers (remhash id))
    (lsp-notify "$/cancelRequest" `(:id ,id))))
 
-(defun lsp-eldoc-function (cb &optional _ignore)
+(defun lsp-eldoc-function (cb &rest _ignored)
   "`lsp-mode' eldoc function to display hover info (based on `textDocument/signatureHelp')."
   (if (and lsp--hover-saved-bounds
            (lsp--point-in-bounds-p lsp--hover-saved-bounds))
