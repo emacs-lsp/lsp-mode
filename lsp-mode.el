@@ -3765,7 +3765,7 @@ yet."
    (t
     (lsp-unconfig-buffer)
 
-    (remove-hook 'eldoc-documentation-functions #'lsp-eldoc-function nil t)
+    (remove-hook 'eldoc-documentation-functions #'lsp-eldoc-function t)
     (remove-hook 'post-command-hook #'lsp--post-command t)
     (remove-hook 'after-change-functions #'lsp-on-change t)
     (remove-hook 'after-revert-hook #'lsp-on-revert t)
