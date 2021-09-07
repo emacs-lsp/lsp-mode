@@ -36,6 +36,12 @@
   :link '(url-link "https://github.com/graphql/graphiql/tree/main/packages/graphql-language-service-cli#readme")
   :group 'lsp-mode)
 
+(defcustom lsp-clients-graphql-server-args '("server" "--method=stream")
+  "CLI arguments for graphql language server."
+  :type '(repeat string)
+  :risky t
+  :group 'lsp-graphql)
+
 (add-to-list 'lsp-language-id-configuration '(graphql-mode . "graphql"))
 
 (defun lsp-graphql-activate-p (filename &optional _)
@@ -48,9 +54,8 @@
 
 (lsp-register-client
   (make-lsp-client :new-connection (lsp-stdio-connection (lambda()
-                                                           `(,(lsp-package-path 'graphql-language-service-cli)
-                                                              "server"
-                                                              "--method=stream")))
+                                                           (cons (lsp-package-path 'graphql-language-service-cli)
+                                                                 lsp-clients-graphql-server-args)))
                    :major-modes '(graphql-mode)
                    :language-id "graphql"
                    :server-id 'graphql-lsp
