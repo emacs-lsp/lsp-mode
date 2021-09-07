@@ -312,7 +312,8 @@ CALLBACK - callback for the lenses."
 (defun lsp-lens--refresh-buffer ()
   "Trigger lens refresh on buffer."
   (remove-hook 'lsp-on-idle-hook #'lsp-lens--refresh-buffer t)
-  (lsp-lens-refresh t (current-buffer)))
+  (when (bound-and-true-p lsp-lens-mode)
+    (lsp-lens-refresh t)))
 
 (defun lsp--lens-on-refresh (workspace)
   "Clear lens within all buffers of WORKSPACE, refreshing all workspace buffers."
@@ -320,8 +321,12 @@ CALLBACK - callback for the lenses."
   (->> (lsp--workspace-buffers workspace)
        (mapc (lambda (buffer)
                (lsp-with-current-buffer buffer
-                 (add-hook 'lsp-on-idle-hook #'lsp-lens--refresh-buffer nil t)
-                 (lsp--idle-reschedule (current-buffer)))))))
+                 (if (lsp--buffer-visible-p)
+                     (when (bound-and-true-p lsp-lens-mode)
+                       (lsp-lens-refresh t))
+                   (progn
+                     (add-hook 'lsp-on-idle-hook #'lsp-lens--refresh-buffer nil t)
+                     (lsp--idle-reschedule (current-buffer)))))))))
 
 ;;;###autoload
 (defun lsp-lens--enable ()

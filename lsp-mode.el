@@ -8306,10 +8306,14 @@ This issue might be caused by:
 5. You have disabled the `lsp-mode' clients for that file. (Check `lsp-enabled-clients' and `lsp-disabled-clients')."
                     major-mode major-mode major-mode))))))
 
+(defun lsp--buffer-visible-p ()
+  "Return non nil if current buffer is visible."
+  (or (buffer-modified-p) (get-buffer-window nil t)))
+
 (defun lsp--init-if-visible ()
   "Run `lsp' for the current buffer if the buffer is visible.
-Returns `t' if `lsp' was run for the buffer."
-  (when (or (buffer-modified-p) (get-buffer-window nil t))
+Returns non nil if `lsp' was run for the buffer."
+  (when (lsp--buffer-visible-p)
     (remove-hook 'window-configuration-change-hook #'lsp--init-if-visible t)
     (lsp)
     t))
