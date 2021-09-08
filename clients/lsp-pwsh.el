@@ -231,7 +231,7 @@ extension."
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
 
-(defcustom lsp-pwsh-dir (expand-file-name "PowerShellEditorServices" lsp-pwsh-ext-path)
+(defcustom lsp-pwsh-dir lsp-pwsh-ext-path
   "Path to PowerShellEditorServices without last slash."
   :type 'string
   :group 'lsp-pwsh
