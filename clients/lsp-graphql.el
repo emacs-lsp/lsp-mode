@@ -42,8 +42,6 @@
   :risky t
   :group 'lsp-graphql)
 
-(add-to-list 'lsp-language-id-configuration '(graphql-mode . "graphql"))
-
 (defun lsp-graphql-activate-p (filename &optional _)
   "Check if the GraphQL language server should be enabled based on FILENAME."
   (or (string-match-p (rx (one-or-more anything) "."

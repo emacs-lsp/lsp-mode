@@ -727,6 +727,7 @@ Changes take effect only when a new session is started."
                                         (mhtml-mode . "html")
                                         (go-dot-mod-mode . "go.mod")
                                         (go-mode . "go")
+                                        (graphql-mode . "graphql")
                                         (haskell-mode . "haskell")
                                         (hack-mode . "hack")
                                         (php-mode . "php")
