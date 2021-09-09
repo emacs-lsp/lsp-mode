@@ -213,6 +213,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "graphql",
+    "full-name": "GraphQL",
+    "server-name": "graphql-language-service-cli",
+    "server-url": "https://github.com/graphql/graphiql/tree/main/packages/graphql-language-service-cli#readme",
+    "installation-url": "https://github.com/graphql/graphiql/tree/main/packages/graphql-language-service-cli#installation-and-usage",
+    "installation": "npm i -g graphql-language-service-cli",
+    "debugger": "Not available"
+  },
+  {
     "name": "groovy",
     "full-name": "Groovy",
     "server-name": "groovy-language-server",
