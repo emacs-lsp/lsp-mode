@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased
+  * Add [[https://github.com/graphql/graphiql/tree/main/packages/graphql-language-service-cli#readme][GraphQL Language Server]] for autocomplete graphql query
 
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.

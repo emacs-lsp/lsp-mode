@@ -169,7 +169,7 @@ As defined by the Language Server Protocol 3.16."
 (defcustom lsp-client-packages
   '(ccls lsp-actionscript lsp-ada lsp-angular lsp-bash lsp-beancount lsp-clangd lsp-clojure lsp-cmake
          lsp-crystal lsp-csharp lsp-css lsp-d lsp-dart lsp-dhall lsp-dockerfile lsp-elm
-         lsp-elixir lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go
+         lsp-elixir lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go lsp-graphql
          lsp-hack lsp-grammarly lsp-groovy lsp-haskell lsp-haxe lsp-java lsp-javascript lsp-json
          lsp-kotlin lsp-ltex lsp-lua lsp-markdown lsp-nim lsp-nix lsp-metals lsp-ocaml lsp-perl lsp-php lsp-pwsh
          lsp-pyls lsp-pylsp lsp-python-ms lsp-purescript lsp-r lsp-rf lsp-rust lsp-solargraph lsp-sorbet
@@ -727,6 +727,7 @@ Changes take effect only when a new session is started."
                                         (mhtml-mode . "html")
                                         (go-dot-mod-mode . "go.mod")
                                         (go-mode . "go")
+                                        (graphql-mode . "graphql")
                                         (haskell-mode . "haskell")
                                         (hack-mode . "hack")
                                         (php-mode . "php")
@@ -1811,7 +1812,7 @@ regex in IGNORED-FILES."
     lsp-actionscript lsp-ada lsp-angular lsp-bash lsp-beancount lsp-clangd
     lsp-clojure lsp-cmake lsp-crystal lsp-csharp lsp-css lsp-d lsp-dhall
     lsp-dockerfile lsp-elixir lsp-elm lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript
-    lsp-go lsp-groovy lsp-hack lsp-haxe lsp-html lsp-javascript lsp-json lsp-kotlin lsp-lua
+    lsp-go lsp-graphql lsp-groovy lsp-hack lsp-haxe lsp-html lsp-javascript lsp-json lsp-kotlin lsp-lua
     lsp-markdown lsp-nim lsp-nix lsp-ocaml lsp-perl lsp-php lsp-prolog lsp-purescript lsp-pwsh
     lsp-pyls lsp-pylsp lsp-racket lsp-r lsp-rf lsp-rust lsp-solargraph lsp-sorbet lsp-sqls
     lsp-steep lsp-svelte lsp-terraform lsp-tex lsp-v lsp-vala lsp-verilog lsp-vetur lsp-vhdl

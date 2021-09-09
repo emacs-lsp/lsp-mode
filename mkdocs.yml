@@ -69,6 +69,7 @@ nav:
     - GDScript: page/lsp-gdscript.md
     - Go (gopls): page/lsp-gopls.md
     - Grammarly: page/lsp-grammarly.md
+    - GraphQL: page/lsp-graphql.md
     - Groovy: page/lsp-groovy.md
     - Hack: page/lsp-hack.md
     - HTML: page/lsp-html.md
