@@ -641,7 +641,7 @@
     "full-name": "TeX, LaTeX, etc.",
     "server-name": "texlab",
     "server-url": "https://github.com/latex-lsp/texlab",
-    "installation": "cargo install --git https://github.com/latex-lsp/texlab.git",
+    "installation": "cargo install --locked --git https://github.com/latex-lsp/texlab.git",
     "debugger": "Not available"
   },
   {
