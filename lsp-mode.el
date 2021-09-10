@@ -328,6 +328,7 @@ the server has requested that."
     "[/\\\\]target\\'"
     "[/\\\\]\\.ccls-cache\\'"
     "[/\\\\]\\.vscode\\'"
+    "[/\\\\]\\.venv\\'"
     ;; Autotools output
     "[/\\\\]\\.deps\\'"
     "[/\\\\]build-aux\\'"
