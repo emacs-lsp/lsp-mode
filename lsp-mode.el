@@ -4837,6 +4837,8 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
    (->> lsp--cur-workspace lsp--workspace-client lsp--client-response-handlers (remhash id))
    (lsp-notify "$/cancelRequest" `(:id ,id))))
 
+(defvar-local lsp--hover-saved-bounds nil)
+
 (defun lsp-eldoc-function (cb &rest _ignored)
   "`lsp-mode' eldoc function to display hover info (based on `textDocument/signatureHelp')."
   (if (and lsp--hover-saved-bounds
@@ -5428,36 +5430,6 @@ It will show up only if current point has signature help."
         result))
      :mode 'unchanged
      :cancel-token :document-color-token)))
-
-
-;; hover
-
-(defvar-local lsp--hover-saved-bounds nil)
-
-(defun lsp-hover ()
-  "Display hover info (based on `textDocument/signatureHelp')."
-  (if (and lsp--hover-saved-bounds
-           (lsp--point-in-bounds-p lsp--hover-saved-bounds))
-      (lsp--eldoc-message lsp--eldoc-saved-message)
-    (setq lsp--hover-saved-bounds nil
-          lsp--eldoc-saved-message nil)
-    (if (looking-at "[[:space:]\n]")
-        (lsp--eldoc-message nil)
-      (when (and lsp-eldoc-enable-hover (lsp--capability :hoverProvider))
-        (lsp-request-async
-         "textDocument/hover"
-         (lsp--text-document-position-params)
-         (-lambda ((hover &as &Hover? :range? :contents))
-           (when hover
-             (when range?
-               (setq lsp--hover-saved-bounds (lsp--range-to-region range?)))
-             (lsp--eldoc-message (and contents
-                                      (lsp--render-on-hover-content
-                                       contents
-                                       lsp-eldoc-render-all)))))
-         :error-handler #'ignore
-         :mode 'tick
-         :cancel-token :eldoc-hover)))))
 
 
 
