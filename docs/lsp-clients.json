@@ -260,7 +260,7 @@
     "server-name": "javascript-typescript-stdio",
     "server-url": "https://github.com/sourcegraph/javascript-typescript-langserver",
     "installation": "npm i -g javascript-typescript-langserver",
-    "lsp-install-server": "js-ts",
+    "lsp-install-server": "jsts-ls",
     "debugger": "Yes (Firefox/Chrome)"
   },
   {
