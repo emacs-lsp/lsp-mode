@@ -251,6 +251,7 @@
     "server-name": "typescript-language-server (recommended)",
     "server-url": "https://github.com/theia-ide/typescript-language-server",
     "installation": "npm i -g typescript-language-server; npm i -g typescript",
+    "lsp-install-server": "ts-ls",
     "debugger": "Yes (Firefox/Chrome)"
   },
   {
