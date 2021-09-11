@@ -678,7 +678,8 @@ Changes take effect only when a new session is started."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-auto-touch-files t
-  "If non-nil ensure the files exist before sending textDocument/didOpen notification."
+  "If non-nil ensure the files exist before sending
+`textDocument/didOpen' notification."
   :type 'boolean
   :group 'lsp-mode
   :package-version '(lsp-mode . "8.0.1"))
