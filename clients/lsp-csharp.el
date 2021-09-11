@@ -384,11 +384,11 @@ is returned so lsp-mode can display this file."
                                  "projects" project-name
                                  "assemblies" assembly-name
                                  (concat symbol-name ".cs")))
-               (file-location (expand-file-name filename (lsp--suggest-project-root)))
+               (file-location (expand-file-name filename (lsp-workspace-root)))
                (metadata-file-location (concat file-location ".metadata-uri"))
                (path (f-dirname file-location)))
 
-    (unless (find-buffer-visiting file-location)
+    (unless (file-exists-p file-location)
       (unless (file-directory-p path)
         (make-directory path t))
 
