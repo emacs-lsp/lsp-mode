@@ -5,7 +5,7 @@
 ;; Author: Vibhav Pant, Fangrui Song, Ivan Yonchovski
 ;; Keywords: languages
 ;; Package-Requires: ((emacs "26.1") (dash "2.18.0") (f "0.20.0") (ht "2.3") (spinner "1.7.3") (markdown-mode "2.3") (lv "0"))
-;; Version: 8.0.0
+;; Version: 8.0.1
 
 ;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; This program is free software; you can redistribute it and/or modify
@@ -676,6 +676,12 @@ Changes take effect only when a new session is started."
                  (const :tag "Default (disabled)" nil))
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
+
+(defcustom lsp-auto-touch-files t
+  "If non-nil ensure the files exist before sending textDocument/didOpen notification."
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "8.0.1"))
 
 (defvar lsp-language-id-configuration '((".*\\.vue$" . "vue")
                                         (".*\\.tsx$" . "typescriptreact")
@@ -3863,6 +3869,11 @@ yet."
 (defun lsp--text-document-did-open ()
   "'document/didOpen' event."
   (run-hooks 'lsp-before-open-hook)
+  (when (and lsp-auto-touch-files
+             (not (f-exists? (lsp--uri-to-path (lsp--buffer-uri)))))
+    (lsp--info "Saving file '%s' because it is not present on the disk." (lsp--buffer-uri))
+    (save-buffer))
+
   (setq lsp--cur-version (or lsp--cur-version 0))
   (cl-pushnew (lsp-current-buffer) (lsp--workspace-buffers lsp--cur-workspace))
   (lsp-notify
