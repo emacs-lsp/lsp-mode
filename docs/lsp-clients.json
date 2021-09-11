@@ -256,7 +256,7 @@
   },
   {
     "name": "typescript-javascript",
-    "full-name": "JavaScript/TypeScript (sourcegraph)",
+    "full-name": "JavaScript/TypeScript (sourcegraph - UNMAINTAINED)",
     "server-name": "javascript-typescript-stdio",
     "server-url": "https://github.com/sourcegraph/javascript-typescript-langserver",
     "installation": "npm i -g javascript-typescript-langserver",
