@@ -265,19 +265,20 @@
   },
   {
     "name": "typescript",
-    "full-name": "JavaScript/TypeScript (theia-ide)",
-    "server-name": "typescript-language-server (recommended)",
-    "server-url": "https://github.com/theia-ide/typescript-language-server",
+    "full-name": "JavaScript/TypeScript (RECOMMENDED)",
+    "server-name": "typescript-language-server (formerly theia-ide / TypeFox)",
+    "server-url": "https://github.com/typescript-language-server/typescript-language-server",
     "installation": "npm i -g typescript-language-server; npm i -g typescript",
+    "lsp-install-server": "ts-ls",
     "debugger": "Yes (Firefox/Chrome)"
   },
   {
     "name": "typescript-javascript",
-    "full-name": "JavaScript/TypeScript (sourcegraph)",
+    "full-name": "JavaScript/TypeScript (sourcegraph - UNMAINTAINED)",
     "server-name": "javascript-typescript-stdio",
     "server-url": "https://github.com/sourcegraph/javascript-typescript-langserver",
     "installation": "npm i -g javascript-typescript-langserver",
-    "lsp-install-server": "js-ts",
+    "lsp-install-server": "jsts-ls",
     "debugger": "Yes (Firefox/Chrome)"
   },
   {
