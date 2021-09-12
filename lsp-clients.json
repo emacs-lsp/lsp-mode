@@ -43,12 +43,21 @@
     "debugger": "Not available"
   },
   {
-    "name": "csharp",
-    "full-name": "C#",
+    "name": "csharp-ls",
+    "full-name": "C# (csharp-ls)",
+    "server-name": "csharp-ls",
+    "server-url": "https://github.com/razzmatazz/csharp-language-server",
+    "installation": "Automatic by lsp-mode with `dotnet tool install -g`",
+    "lsp-install-server": "csharp-ls",
+    "debugger": "Not available"
+  },
+  {
+    "name": "omnisharp",
+    "full-name": "C# (Omnisharp-Roslyn)",
     "server-name": "OmniSharp-Roslyn",
     "server-url": "https://github.com/OmniSharp/omnisharp-roslyn",
     "installation": "Supports automatic installation.",
-    "lsp-install-server": "csharp",
+    "lsp-install-server": "omnisharp",
     "debugger": "Not available"
   },
   {
