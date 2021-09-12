@@ -48,6 +48,7 @@
       (and (derived-mode-p 'js-mode 'typescript-mode)
            (not (derived-mode-p 'json-mode)))))
 
+;; Unmaintained sourcegraph server
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
                                                           (cons (lsp-package-path 'javascript-typescript-langserver)
@@ -60,8 +61,10 @@
                                         (lsp-package-ensure
                                          'javascript-typescript-langserver
                                          callback
-                                         error-callback))))
-
+                                         error-callback))
+                  :initialized-fn (lambda (_workspace)
+                                    (warn (concat "The javascript-typescript-langserver (jsts-ls) is unmaintained; "
+                                                  "it is recommended to use ts-ls or deno-ls instead.")))))
 
 (defgroup lsp-typescript nil
   "LSP support for TypeScript, using Theia/Typefox's TypeScript Language Server."
