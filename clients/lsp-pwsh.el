@@ -352,7 +352,7 @@ FORCED if specified with prefix argument."
        "-ex" "bypass" "-command"
        "Invoke-WebRequest" "-UseBasicParsing" "-uri" url "-outfile" temp-file ";"
        "Expand-Archive" "-Path" temp-file
-       "-DestinationPath" (file-name-directory lsp-pwsh-dir)))))
+       "-DestinationPath" lsp-pwsh-dir))))
 
 (lsp-consistency-check lsp-pwsh)
 
