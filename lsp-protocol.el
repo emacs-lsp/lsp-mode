@@ -392,6 +392,9 @@ See `-let' for a description of the destructuring mechanism."
                (omnisharp:TestMessageEvent (:MessageLevel :Message))
                (omnisharp:DotNetTestResult (:MethodName :Outcome :ErrorMessage :ErrorStackTrace :StandardOutput :StandardError)))
 
+(lsp-interface (csharp-ls:CSharpMetadata (:textDocument))
+               (csharp-ls:CSharpMetadataResponse (:source :projectName :assemblyName :symbolName)))
+
 (lsp-interface (rls:Cmd (:args :binary :env :cwd) nil))
 
 (defconst lsp/rust-analyzer-inlay-hint-kind-type-hint "TypeHint")
