@@ -364,7 +364,7 @@ using the `textDocument/references' request."
 ;; Alternative "csharp-ls" language server support
 ;; see https://github.com/razzmatazz/csharp-language-server
 ;;
-(lsp-defun lsp-csharp--csharp-ls-metadata-uri-handler (uri)
+(lsp-defun lsp-csharp--cls-metadata-uri-handler (uri)
   "Handle `csharp:/(metadata)' uri from csharp-ls server.
 
 'csharp/metadata' request is issued to retrieve metadata from the server.
@@ -400,7 +400,7 @@ is returned so lsp-mode can display this file."
 
     file-location))
 
-(defun lsp-csharp--csharp-ls-before-file-open (_workspace)
+(defun lsp-csharp--cls-before-file-open (_workspace)
   "Set `lsp-buffer-uri' variable after C# file is open from *.metadata-uri file."
 
   (let ((metadata-file-name (concat buffer-file-name ".metadata-uri")))
@@ -409,24 +409,23 @@ is returned so lsp-mode can display this file."
                   (with-temp-buffer (insert-file-contents metadata-file-name)
                                     (buffer-string))))))
 
+(defun lsp-csharp--cls-download-server (_client callback error-callback update?)
+  "Install/update csharp-ls language server using `dotnet tool'.
+
+Will invoke CALLBACK or ERROR-CALLBACK based on result. Will update if UPDATE? is t"
+  (lsp-async-start-process
+   callback
+   error-callback
+   "dotnet" "tool" (if update? "update" "install") "-g" "csharp-ls"))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '(lambda () "csharp-ls"))
                   :priority -2
                   :server-id 'csharp-ls
                   :major-modes '(csharp-mode csharp-tree-sitter-mode)
-                  :before-file-open-fn #'lsp-csharp--csharp-ls-before-file-open
-                  :uri-handlers (ht ("csharp" #'lsp-csharp--csharp-ls-metadata-uri-handler))
-                  :download-server-fn (lambda (_client callback error-callback update?)
-                                        (let* ((csharp-ls-version "0.1.1-alpha")
-                                               (exit-code (call-process "dotnet" nil nil nil
-                                                                        "tool"
-                                                                        (if update? "update" "install")
-                                                                        "-g"
-                                                                        "csharp-ls"
-                                                                        "--version" csharp-ls-version)))
-                                          (if (zerop exit-code)
-                                              (funcall callback)
-                                            (funcall error-callback))))))
+                  :before-file-open-fn #'lsp-csharp--cls-before-file-open
+                  :uri-handlers (ht ("csharp" #'lsp-csharp--cls-metadata-uri-handler))
+                  :download-server-fn #'lsp-csharp--cls-download-server))
 
 (lsp-consistency-check lsp-csharp)
 
