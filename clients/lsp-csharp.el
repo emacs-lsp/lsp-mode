@@ -413,13 +413,10 @@ is returned so lsp-mode can display this file."
   "Install/update csharp-ls language server using `dotnet tool'.
 
 Will invoke CALLBACK or ERROR-CALLBACK based on result. Will update if UPDATE? is t"
-  (let ((exit-code (call-process "dotnet" nil nil nil
-                                 "tool"
-                                 (if update? "update" "install")
-                                 "-g" "csharp-ls")))
-    (if (zerop exit-code)
-        (funcall callback)
-      (funcall error-callback))))
+  (lsp-async-start-process
+   callback
+   error-callback
+   "dotnet" "tool" (if update? "update" "install") "-g" "csharp-ls"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '(lambda () "csharp-ls"))
