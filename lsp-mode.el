@@ -112,6 +112,12 @@
   :group 'lsp-mode
   :type 'boolean)
 
+(defcustom lsp-log-io-allowlist-methods '()
+  "The methods to filter before print to lsp-log-io."
+  :group 'lsp-mode
+  :type '(repeat string)
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defcustom lsp-log-max message-log-max
   "Maximum number of lines to keep in the log buffer.
 If nil, disable message logging.  If t, log messages but don’t truncate
@@ -2285,14 +2291,20 @@ WORKSPACE is the workspace that contains the diagnostics."
 (put 'lsp--range 'bounds-of-thing-at-point
      #'lsp--range-at-point-bounds)
 
+(defun lsp--log-io-p (method)
+  "Return non nil if should log for METHOD."
+  (and lsp-log-io
+       (or (not lsp-log-io-allowlist-methods)
+           (member method lsp-log-io-allowlist-methods))))
+
 
 ;; toggles
 
 (defun lsp-toggle-trace-io ()
   "Toggle client-server protocol logging."
   (interactive)
-  (setq lsp-print-io (not lsp-print-io))
-  (lsp--info "Server logging %s." (if lsp-print-io "enabled" "disabled")))
+  (setq lsp-log-io (not lsp-log-io))
+  (lsp--info "Server logging %s." (if lsp-log-io "enabled" "disabled")))
 
 (defun lsp-toggle-signature-auto-activate ()
   "Toggle signature auto activate."
@@ -3007,7 +3019,7 @@ TYPE can either be 'incoming or 'outgoing"
 (defun lsp--send-notification (body)
   "Send BODY as a notification to the language server."
   (lsp-foreach-workspace
-   (when lsp-print-io
+   (when (lsp--log-io-p (plist-get body :method))
      (lsp--log-entry-new (lsp--make-log-entry
                           (plist-get body :method)
                           nil (plist-get body :params) 'outgoing-notif)
@@ -3288,7 +3300,7 @@ CANCEL-TOKEN is the token that can be used to cancel request."
           (puthash cancel-token (cons id target-workspaces) lsp--cancelable-requests))
 
         (seq-doseq (workspace target-workspaces)
-          (when lsp-log-io
+          (when (lsp--log-io-p method)
             (lsp--log-entry-new (lsp--make-log-entry method id
                                                      (plist-get body :params)
                                                      'outgoing-req)
@@ -6095,7 +6107,7 @@ textDocument/didOpen for the new file."
 (lsp-defun lsp--on-notification (workspace (&JSONNotification :params :method))
   "Call the appropriate handler for NOTIFICATION."
   (-let ((client (lsp--workspace-client workspace)))
-    (when lsp-print-io
+    (when (lsp--log-io-p method)
       (lsp--log-entry-new (lsp--make-log-entry method nil params 'incoming-notif)
                           lsp--cur-workspace))
     (if-let ((handler (or (gethash method (lsp--client-notification-handlers client))
@@ -6130,13 +6142,13 @@ PARAMS are the `workspace/configuration' request params"
   (-let* (((&JSONResponse :params :method :id) request)
           (process (lsp--workspace-proc workspace))
           (response (lsp--make-response id response))
-          (req-entry (and lsp-print-io
+          (req-entry (and lsp-log-io
                           (lsp--make-log-entry method id params 'incoming-req)))
-          (resp-entry (and lsp-print-io
+          (resp-entry (and lsp-log-io
                            (lsp--make-log-entry method id response 'outgoing-resp
                                                 (/ (nth 2 (time-since recv-time)) 1000)))))
     ;; Send response to the server.
-    (when lsp-print-io
+    (when (lsp--log-io-p method)
       (lsp--log-entry-new req-entry workspace)
       (lsp--log-entry-new resp-entry workspace))
     (lsp--send-no-wait (lsp--make-message response) process)))
@@ -6306,7 +6318,7 @@ WORKSPACE is the active workspace."
           ('response
            (cl-assert id)
            (-let [(callback _ method _ before-send) (gethash id (lsp--client-response-handlers client))]
-             (when lsp-print-io
+             (when (lsp--log-io-p method)
                (lsp--log-entry-new
                 (lsp--make-log-entry method id data 'incoming-resp
                                      (/ (nth 2 (time-since before-send)) 1000))
@@ -6317,7 +6329,7 @@ WORKSPACE is the active workspace."
           ('response-error
            (cl-assert id)
            (-let [(_ callback method _ before-send) (gethash id (lsp--client-response-handlers client))]
-             (when lsp-print-io
+             (when (lsp--log-io-p method)
                (lsp--log-entry-new
                 (lsp--make-log-entry method id (lsp:json-response-error-error json-data)
                                      'incoming-resp (/ (nth 2 (time-since before-send)) 1000))
@@ -7858,7 +7870,7 @@ SESSION is the active session."
 (defun lsp-workspace-show-log (workspace)
   "Display the log buffer of WORKSPACE."
   (interactive
-   (list (if lsp-print-io
+   (list (if lsp-log-io
              (if (eq (length (lsp-workspaces)) 1)
                  (cl-first (lsp-workspaces))
                (lsp--completing-read "Workspace: " (lsp-workspaces)
