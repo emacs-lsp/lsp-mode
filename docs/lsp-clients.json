@@ -49,7 +49,7 @@
     "server-url": "https://github.com/razzmatazz/csharp-language-server",
     "installation": "Automatic by lsp-mode with `dotnet tool install -g`",
     "lsp-install-server": "csharp-ls",
-    "debugger": "Not available"
+    "debugger": "Yes (netcoredbg)"
   },
   {
     "name": "omnisharp",
@@ -58,7 +58,7 @@
     "server-url": "https://github.com/OmniSharp/omnisharp-roslyn",
     "installation": "Supports automatic installation.",
     "lsp-install-server": "omnisharp",
-    "debugger": "Not available"
+    "debugger": "Yes (netcoredbg)"
   },
   {
     "name": "ccls",
@@ -178,7 +178,7 @@
     "server-url": "https://github.com/fsharp/FsAutoComplete",
     "installation": "Automatic by lsp-mode",
     "lsp-install-server": "fsac",
-    "debugger": "Not available"
+    "debugger": "Yes (netcoredbg)"
   },
   {
     "name": "fortran",
