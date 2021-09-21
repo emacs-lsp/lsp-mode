@@ -34,30 +34,37 @@ Version 1.34.3 minimum is required."
   :group 'lsp-mode
   :link '(url-link "https://github.com/OmniSharp/omnisharp-roslyn"))
 
+(defgroup lsp-csharp-omnisharp nil
+  "LSP support for C#, using the Omnisharp Language Server.
+Version 1.34.3 minimum is required."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/OmniSharp/omnisharp-roslyn")
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defcustom lsp-csharp-server-install-dir
   (f-join lsp-server-install-dir "omnisharp-roslyn/")
   "Installation directory for OmniSharp Roslyn server."
-  :group 'lsp-csharp
+  :group 'lsp-csharp-omnisharp
   :type 'directory)
 
 (defcustom lsp-csharp-server-path
   nil
   "The path to the OmniSharp Roslyn language-server binary.
 Set this if you have the binary installed or have it built yourself."
-  :group 'lsp-csharp
+  :group 'lsp-csharp-omnisharp
   :type '(string :tag "Single string value or nil"))
 
 (defcustom lsp-csharp-test-run-buffer-name
   "*lsp-csharp test run*"
   "The name of buffer used for outputing lsp-csharp test run results."
-  :group 'lsp-csharp
+  :group 'lsp-csharp-omnisharp
   :type 'string)
 
 (defcustom lsp-csharp-solution-file
   nil
   "Solution to load when starting the server.
 Usually this is to be set in your .dir-locals.el on the project root directory."
-  :group 'lsp-csharp
+  :group 'lsp-csharp-omnisharp
   :type 'string)
 
 (defcustom lsp-csharp-omnisharp-roslyn-download-url
@@ -81,19 +88,19 @@ Usually this is to be set in your .dir-locals.el on the project root directory."
 
                 (t "omnisharp-mono.zip")))
   "Automatic download url for omnisharp-roslyn."
-  :group 'lsp-csharp
+  :group 'lsp-csharp-omnisharp
   :type 'string)
 
 (defcustom lsp-csharp-omnisharp-roslyn-store-path
   (f-join lsp-csharp-server-install-dir "latest" "omnisharp-roslyn.zip")
   "The path where omnisharp-roslyn .zip archive will be stored."
-  :group 'lsp-csharp
+  :group 'lsp-csharp-omnisharp
   :type 'file)
 
 (defcustom lsp-csharp-omnisharp-roslyn-server-dir
   (f-join lsp-csharp-server-install-dir "latest" "omnisharp-roslyn")
   "The path where omnisharp-roslyn .zip archive will be extracted."
-  :group 'lsp-csharp
+  :group 'lsp-csharp-omnisharp
   :type 'file)
 
 (lsp-dependency
@@ -131,7 +138,7 @@ Will invoke CALLBACK on success, ERROR-CALLBACK on error."
         (f-join server-dir (cond ((eq system-type 'windows-nt) "OmniSharp.exe")
                                  (t "run")))))))
 
-(defun lsp-csharp--language-server-command ()
+(defun lsp-csharp-solution-file ()
   "Resolves path and arguments to use to start the server."
   (append
    (list (lsp-csharp--language-server-path) "-lsp")
@@ -337,7 +344,7 @@ using the `textDocument/references' request."
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
-                                   #'lsp-csharp--language-server-command
+                                   #'lsp-csharp-solution-file
                                    (lambda ()
                                      (when-let ((binary (lsp-csharp--language-server-path)))
                                        (f-exists? binary))))
