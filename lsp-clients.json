@@ -44,6 +44,7 @@
   },
   {
     "name": "csharp-ls",
+    "common-group-name": "csharp",
     "full-name": "C# (csharp-ls)",
     "server-name": "csharp-ls",
     "server-url": "https://github.com/razzmatazz/csharp-language-server",
@@ -52,7 +53,8 @@
     "debugger": "Yes (netcoredbg)"
   },
   {
-    "name": "omnisharp",
+    "name": "csharp-omnisharp",
+    "common-group-name": "csharp",
     "full-name": "C# (Omnisharp-Roslyn)",
     "server-name": "OmniSharp-Roslyn",
     "server-url": "https://github.com/OmniSharp/omnisharp-roslyn",
