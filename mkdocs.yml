@@ -51,7 +51,8 @@ nav:
     - Beancount: page/lsp-beancount.md
     - C++ (ccls): page/lsp-ccls.md
     - C++ (clangd): page/lsp-clangd.md
-    - C#: page/lsp-csharp.md
+    - C# (omnisharp): page/lsp-omnisharp.md
+    - C# (csharp-ls): page/lsp-csharp-ls.md
     - Clojure: page/lsp-clojure.md
     - CMake: page/lsp-cmake.md
     - Crystal: page/lsp-crystal.md
