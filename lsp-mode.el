@@ -3176,12 +3176,22 @@ ID is the request id. "
                      results
                    (lsp--merge-results (-map #'cl-rest results) method)))))))
 
+(defcustom lsp-default-create-error-handler-fn nil
+  "Default error handler customization.
+Handler should give METHOD as argument and return function of one argument
+ERROR."
+  :type 'function
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defun lsp--create-default-error-handler (method)
   "Default error handler.
 METHOD is the executed method."
-  (lambda (error)
-    (lsp--warn "%s" (or (lsp--error-string error)
-                        (format "%s Request has failed" method)))))
+  (if lsp-default-create-error-handler-fn
+      (funcall lsp-default-create-error-handler-fn method)
+    (lambda (error)
+      (lsp--warn "%s" (or (lsp--error-string error)
+                          (format "%s Request has failed" method))))))
 
 (defvar lsp--request-cleanup-hooks (ht))
 
