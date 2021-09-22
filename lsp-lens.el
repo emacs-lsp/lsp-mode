@@ -309,12 +309,24 @@ CALLBACK - callback for the lenses."
           (funcall callback lsp-lens--backend-cache lsp--cur-version)
         (lsp-lens--backend-fetch-missing lsp-lens--backend-cache callback lsp--cur-version)))))
 
+(defun lsp-lens--refresh-buffer ()
+  "Trigger lens refresh on buffer."
+  (remove-hook 'lsp-on-idle-hook #'lsp-lens--refresh-buffer t)
+  (when (bound-and-true-p lsp-lens-mode)
+    (lsp-lens-refresh t)))
+
 (defun lsp--lens-on-refresh (workspace)
   "Clear lens within all buffers of WORKSPACE, refreshing all workspace buffers."
   (cl-assert (not (eq nil workspace)))
-  (cl-loop
-   for ws-buffer in (lsp--workspace-buffers workspace) do
-   (lsp-lens-refresh t ws-buffer)))
+  (->> (lsp--workspace-buffers workspace)
+       (mapc (lambda (buffer)
+               (lsp-with-current-buffer buffer
+                 (if (lsp--buffer-visible-p)
+                     (when (bound-and-true-p lsp-lens-mode)
+                       (lsp-lens-refresh t))
+                   (progn
+                     (add-hook 'lsp-on-idle-hook #'lsp-lens--refresh-buffer nil t)
+                     (lsp--idle-reschedule (current-buffer)))))))))
 
 ;;;###autoload
 (defun lsp-lens--enable ()
