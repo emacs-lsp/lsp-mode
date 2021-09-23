@@ -8082,6 +8082,7 @@ Returns nil if the project should not be added to the current SESSION."
 
 %s==>Import project root %s.
 %s==>Import project by selecting root directory interactively.
+%s==>Import project at current directory %s.
 %s==>Do not ask again for the current project by adding %s to lsp-session-folders-blacklist.
 %s==>Do not ask again for the current project by selecting ignore path interactively.
 %s==>Do nothing: ask again when opening other files from the current project."
@@ -8089,6 +8090,8 @@ Returns nil if the project should not be added to the current SESSION."
                                 (propertize "i" 'face 'success)
                                 (propertize project-root-suggestion 'face 'bold)
                                 (propertize "I" 'face 'success)
+                                (propertize "." 'face 'success)
+                                (propertize default-directory 'face 'bold)
                                 (propertize "d" 'face 'warning)
                                 (propertize project-root-suggestion 'face 'bold)
                                 (propertize "D" 'face 'warning)
@@ -8100,6 +8103,7 @@ Returns nil if the project should not be added to the current SESSION."
                                    (or project-root-suggestion default-directory)
                                    nil
                                    t))
+          (?. default-directory)
           (?d (push project-root-suggestion (lsp-session-folders-blacklist session))
               (lsp--persist-session session)
               nil)
