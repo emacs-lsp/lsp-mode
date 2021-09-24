@@ -306,6 +306,22 @@ current runtime."
                                          (lsp-configuration-section "fsharp"))
                                         (lsp-fsharp--workspace-load
                                          (lsp-fsharp--project-list)))))
+                  :after-open-fn ;; workaround https://github.com/fsharp/FsAutoComplete/issues/833
+                  (lambda ()
+                    (setq-local lsp-default-create-error-handler-fn
+                                (lambda (method)
+                                  (lambda (error)
+                                    (when
+                                        (not
+                                         (seq-find (lambda (s)
+                                                     (string= s (lsp-get error :message)))
+                                                   '("Index was outside the bounds of the array."
+                                                     "No symbol information found"
+                                                     "No ident at this location")))
+                                      (lsp--warn
+                                       "%s"
+                                       (or (lsp--error-string error)
+                                           (format "%s Request has failed" method))))))))
                   :server-id 'fsac
                   :download-server-fn #'lsp-fsharp--fsac-install))
 
