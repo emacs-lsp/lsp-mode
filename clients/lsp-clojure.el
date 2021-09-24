@@ -316,7 +316,8 @@ and the third the column."
   :uri-handlers (lsp-ht ("jar" #'lsp-clojure--file-in-jar))
   :action-handlers (lsp-ht ("resolve-macro-as" #'lsp-clojure--resolve-macro-as)
                            ("code-lens-references" #'lsp-clojure--show-references))
-  :initialization-options '(:dependency-scheme "jar")
+  :initialization-options '(:dependency-scheme "jar"
+                            :show-docs-arity-on-same-line? t)
   :server-id 'clojure-lsp))
 
 (lsp-consistency-check lsp-clojure)
