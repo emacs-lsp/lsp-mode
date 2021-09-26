@@ -41,7 +41,7 @@
     "Convert a KEYWORD to string."
     (substring (symbol-name keyword) 1))
 
-  (defvar lsp-use-plists nil))
+  (defvar lsp-use-plists (getenv "LSP_USE_PLISTS")))
 
 (defmacro lsp-interface (&rest interfaces)
   "Generate LSP bindings from INTERFACES triplet.
