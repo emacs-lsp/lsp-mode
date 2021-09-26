@@ -3640,7 +3640,7 @@ yet."
   (let ((print-length nil)
         (print-level nil))
     ;; Create all parent directories:
-    (apply #'f-mkdir (f-split (f-parent file-name)))
+    (make-directory (f-parent file-name) t)
     (f-write-text (prin1-to-string to-persist) 'utf-8 file-name)))
 
 (defun lsp-workspace-folders-add (project-root)
