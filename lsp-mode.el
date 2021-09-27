@@ -1950,7 +1950,9 @@ PARAMS - the data sent from WORKSPACE."
                   (mapconcat
                    (-lambda ((&WorkDoneProgressBegin :message? :title :percentage?))
                      (concat (if percentage?
-                                 (format "%s%%%% " percentage?)
+                                 (if (numberp percentage?)
+                                     (format "%.0f%%%% " percentage?)
+                                   (format "%s%%%% " percentage?))
                                "")
                              (or message? title)))
                    (ht-values tokens)
