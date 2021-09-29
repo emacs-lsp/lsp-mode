@@ -42,6 +42,12 @@
   :group 'lsp-eslint
   :package-version '(lsp-mode . "8.0.0"))
 
+(defcustom lsp-eslint-download-url "https://github.com/emacs-lsp/lsp-server-binaries/blob/master/dbaeumer.vscode-eslint-2.1.13.vsix"
+  "Eslint language server download url."
+  :type 'string
+  :group 'lsp-eslint
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defcustom lsp-eslint-server-command `("node"
                                        "~/server/out/eslintServer.js"
                                        "--stdio")
@@ -392,7 +398,7 @@ to allow or deny it.")
                                    (funcall callback))
                                (error (funcall error-callback err))))
                            error-callback
-                           :url (lsp-vscode-extension-url "dbaeumer" "vscode-eslint" "2.1.23")
+                           :url lsp-eslint-download-url
                            :store-path tmp-zip)))))
 
 (lsp-consistency-check lsp-eslint)
