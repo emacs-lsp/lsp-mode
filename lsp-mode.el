@@ -3494,10 +3494,13 @@ disappearing, unset all the variables related to it."
                            lsp--registered-capability-options
                            (lsp:did-change-watched-files-registration-options-watchers)
                            (seq-find
-                            (-lambda ((&FileSystemWatcher :glob-pattern :kind?))
+                            (-lambda ((fs-watcher &as &FileSystemWatcher :glob-pattern :kind? :_cachedRegexp cached-regexp))
                               (when (or (null kind?)
                                         (> (logand kind? watch-bit) 0))
-                                (-let [regexes (lsp-glob-to-regexps glob-pattern)]
+                                (-let [regexes (or cached-regexp
+                                                   (let ((regexp (lsp-glob-to-regexps glob-pattern)))
+                                                     (lsp-put fs-watcher :_cachedRegexp regexp)
+                                                     regexp))]
                                   (-any? (lambda (re)
                                            (or (string-match re changed-file)
                                                (string-match re rel-changed-file)))
