@@ -23,6 +23,8 @@
 
 (require 'package)
 
+(setq network-security-level 'low)
+
 (let* ((package-archives '(("melpa" . "https://melpa.org/packages/")
                            ("gnu" . "https://elpa.gnu.org/packages/")))
        package-enable-at-startup package-check-signature
