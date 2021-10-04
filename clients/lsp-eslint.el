@@ -36,13 +36,13 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/Microsoft/vscode-eslint"))
 
-(defcustom lsp-eslint-unzipped-path (f-join lsp-server-install-dir "eslint-2.1.23/unzipped")
+(defcustom lsp-eslint-unzipped-path (f-join lsp-server-install-dir "eslint/unzipped")
   "The path to the file in which `eslint' will be stored."
   :type 'file
   :group 'lsp-eslint
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-eslint-download-url "https://github.com/emacs-lsp/lsp-server-binaries/blob/master/dbaeumer.vscode-eslint-2.1.13.vsix"
+(defcustom lsp-eslint-download-url "https://github.com/emacs-lsp/lsp-server-binaries/blob/master/dbaeumer.vscode-eslint-2.1.13.vsix?raw=true"
   "Eslint language server download url."
   :type 'string
   :group 'lsp-eslint
