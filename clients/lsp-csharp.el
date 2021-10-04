@@ -138,12 +138,6 @@ Will invoke CALLBACK on success, ERROR-CALLBACK on error."
         (f-join server-dir (cond ((eq system-type 'windows-nt) "OmniSharp.exe")
                                  (t "run")))))))
 
-(defun lsp-csharp-solution-file ()
-  "Resolves path and arguments to use to start the server."
-  (append
-   (list (lsp-csharp--language-server-path) "-lsp")
-   (when lsp-csharp-solution-file (list "-s" (expand-file-name lsp-csharp-solution-file)))))
-
 (lsp-defun lsp-csharp-open-project-file ()
   "Open corresponding project file  (.csproj) for the current file."
   (interactive)
@@ -343,12 +337,16 @@ using the `textDocument/references' request."
     (message "No references found")))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection
-                                   #'lsp-csharp-solution-file
-                                   (lambda ()
-                                     (when-let ((binary (lsp-csharp--language-server-path)))
-                                       (f-exists? binary))))
-
+ (make-lsp-client :new-connection
+                  (lsp-stdio-connection
+                   #'(lambda ()
+                       (append
+                        (list (lsp-csharp--language-server-path) "-lsp")
+                        (when lsp-csharp-solution-file
+                          (list "-s" (expand-file-name lsp-csharp-solution-file)))))
+                   #'(lambda ()
+                       (when-let ((binary (lsp-csharp--language-server-path)))
+                         (f-exists? binary))))
                   :major-modes '(csharp-mode csharp-tree-sitter-mode)
                   :server-id 'omnisharp
                   :priority -1
@@ -426,7 +424,12 @@ Will invoke CALLBACK or ERROR-CALLBACK based on result. Will update if UPDATE? i
    "dotnet" "tool" (if update? "update" "install") "-g" "csharp-ls"))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '(lambda () "csharp-ls"))
+ (make-lsp-client :new-connection
+                  (lsp-stdio-connection
+                   #'(lambda ()
+                       (append (list "csharp-ls")
+                               (when lsp-csharp-solution-file
+                                 (list "-s" lsp-csharp-solution-file)))))
                   :priority -2
                   :server-id 'csharp-ls
                   :major-modes '(csharp-mode csharp-tree-sitter-mode)
