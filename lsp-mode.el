@@ -4412,7 +4412,10 @@ Added to `after-change-functions'."
   ;; So (47 54 0) means add    7 chars starting at pos 47
   ;; So (47 47 7) means delete 7 chars starting at pos 47
   (save-match-data
-    (let ((inhibit-quit t))
+    (let ((inhibit-quit t)
+          ;; make sure that `lsp-on-change' is called in multi-workspace context
+          ;; see #2901
+          lsp--cur-workspace)
       ;; A (revert-buffer) call with the 'preserve-modes parameter (eg, as done
       ;; by auto-revert-mode) will cause this handler to get called with a nil
       ;; buffer-file-name. We need the buffer-file-name to send notifications;
