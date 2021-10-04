@@ -4845,20 +4845,21 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
   most recently requested highlights.")
 
 (defun lsp--document-highlight ()
-  (let ((curr-sym-bounds (bounds-of-thing-at-point 'symbol)))
-    (unless (or (looking-at "[[:space:]\n]")
-                (not lsp-enable-symbol-highlighting)
-                (and lsp--have-document-highlights
-                     curr-sym-bounds
-                     (equal curr-sym-bounds
-                            lsp--symbol-bounds-of-last-highlight-invocation)))
-      (setq lsp--symbol-bounds-of-last-highlight-invocation
-            curr-sym-bounds)
-      (lsp-request-async "textDocument/documentHighlight"
-                         (lsp--text-document-position-params)
-                         #'lsp--document-highlight-callback
-                         :mode 'tick
-                         :cancel-token :highlights))))
+  (when (lsp-feature? "textDocument/documentHighlight")
+    (let ((curr-sym-bounds (bounds-of-thing-at-point 'symbol)))
+      (unless (or (looking-at "[[:space:]\n]")
+                  (not lsp-enable-symbol-highlighting)
+                  (and lsp--have-document-highlights
+                       curr-sym-bounds
+                       (equal curr-sym-bounds
+                              lsp--symbol-bounds-of-last-highlight-invocation)))
+        (setq lsp--symbol-bounds-of-last-highlight-invocation
+              curr-sym-bounds)
+        (lsp-request-async "textDocument/documentHighlight"
+                           (lsp--text-document-position-params)
+                           #'lsp--document-highlight-callback
+                           :mode 'tick
+                           :cancel-token :highlights)))))
 
 (defun lsp-describe-thing-at-point ()
   "Display the type signature and documentation of the thing at
