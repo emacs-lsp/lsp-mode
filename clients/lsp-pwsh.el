@@ -219,7 +219,7 @@ extension."
    ("powershell.helpCompletion" lsp-pwsh-help-completion)))
 
 ;; lsp-pwsh custom variables
-(defcustom lsp-pwsh-ext-path (f-join lsp-server-install-dir "pwsh")
+(defcustom lsp-pwsh-ext-path (expand-file-name "pwsh" lsp-server-install-dir)
   "The path to powershell vscode extension."
   :type 'string
   :group 'lsp-pwsh
@@ -237,6 +237,10 @@ extension."
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
 
+(defvar lsp-pwsh-pses-script (expand-file-name "PowerShellEditorServices/Start-EditorServices.ps1"
+                                               lsp-pwsh-dir)
+  "Main script to start PSES.")
+
 (defvar lsp-pwsh-log-path (expand-file-name "logs" lsp-pwsh-ext-path)
   "Path to directory where server will write log files.
 Must not nil.")
@@ -245,19 +249,18 @@ Must not nil.")
 
 (defun lsp-pwsh--command ()
   "Return the command to start server."
-
   `(,lsp-pwsh-exe "-NoProfile" "-NonInteractive" "-NoLogo"
                   ,@(if (eq system-type 'windows-nt) '("-ExecutionPolicy" "Bypass"))
                   "-OutputFormat" "Text"
                   "-File"
-                  ,(f-join lsp-pwsh-dir "PowerShellEditorServices/Start-EditorServices.ps1")
+                  ,lsp-pwsh-pses-script
                   "-HostName" "\"Emacs Host\""
                   "-HostProfileId" "'Emacs.LSP'"
-                  "-HostVersion" "0.1"
-                  "-LogPath" ,(f-join lsp-pwsh-log-path "emacs-powershell.log")
+                  "-HostVersion" "8.0.1"
+                  "-LogPath" ,(expand-file-name "emacs-powershell.log" lsp-pwsh-log-path)
                   "-LogLevel" ,lsp-pwsh-developer-editor-services-log-level
-                  "-SessionDetailsPath"
-                  ,(format "%s/PSES-VSCode-%d" lsp-pwsh-log-path lsp-pwsh--sess-id)
+                  "-SessionDetailsPath" ,(expand-file-name (format "PSES-VSCode-%d" lsp-pwsh--sess-id)
+                                                           lsp-pwsh-log-path)
                   ;; "-AdditionalModules" "@('PowerShellEditorServices.VSCode')"
                   "-Stdio"
                   "-BundledModulesPath" ,lsp-pwsh-dir
@@ -297,7 +300,7 @@ Must not nil.")
  (make-lsp-client
   :new-connection (lsp-stdio-connection #'lsp-pwsh--command
                                         (lambda ()
-                                          (f-exists? lsp-pwsh-dir)))
+                                          (f-exists? lsp-pwsh-pses-script)))
   :major-modes lsp-pwsh--major-modes
   :server-id 'pwsh-ls
   :priority -1
@@ -341,7 +344,7 @@ FORCED if specified with prefix argument."
         (temp-file (make-temp-file "ext" nil ".zip")))
     (unless (f-exists? lsp-pwsh-log-path)
       (mkdir lsp-pwsh-log-path 'create-parent))
-    (unless (and (not update) (f-exists? lsp-pwsh-dir))
+    (unless (and (not update) (f-exists? lsp-pwsh-pses-script))
       ;; since we know it's installed, use powershell to download the file
       ;; (and avoid url.el bugginess or additional libraries)
       (when (f-exists? lsp-pwsh-dir) (delete-directory lsp-pwsh-dir 'recursive))
