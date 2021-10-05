@@ -89,9 +89,9 @@
   :type 'string)
 
 (defcustom lsp-clients-typescript-init-opts nil
-  "Internal tsserver preferences."
+  "Configuration options provided to tsserver."
   :group 'lsp-typescript
-  :type '(plist :key-type symbol :value-type string))
+  :type 'plist)
 
 (defcustom lsp-clients-typescript-plugins (vector)
   "The list of plugins to load.
