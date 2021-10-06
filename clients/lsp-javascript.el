@@ -89,7 +89,8 @@
   :type 'string)
 
 (defcustom lsp-clients-typescript-init-opts nil
-  "Configuration options provided to tsserver."
+  "Configuration options provided to tsserver.
+See the UserPreferences interface at https://github.com/microsoft/TypeScript/blob/main/lib/protocol.d.ts for the list of options available in the latest version of TypeScript."
   :group 'lsp-typescript
   :type 'plist)
 
