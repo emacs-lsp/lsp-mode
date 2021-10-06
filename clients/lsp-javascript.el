@@ -88,6 +88,12 @@
   :group 'lsp-typescript
   :type 'string)
 
+(defcustom lsp-clients-typescript-init-opts nil
+  "Configuration options provided to tsserver.
+See the UserPreferences interface at https://github.com/microsoft/TypeScript/blob/main/lib/protocol.d.ts for the list of options available in the latest version of TypeScript."
+  :group 'lsp-typescript
+  :type 'plist)
+
 (defcustom lsp-clients-typescript-plugins (vector)
   "The list of plugins to load.
 It should be a vector of plist with keys `:location' and `:name'
@@ -138,7 +144,8 @@ directory containing the package. Example:
                   :initialization-options (lambda ()
                                             (list :plugins lsp-clients-typescript-plugins
                                                   :logVerbosity lsp-clients-typescript-log-verbosity
-                                                  :tsServerPath (lsp-package-path 'typescript)))
+                                                  :tsServerPath (lsp-package-path 'typescript)
+                                                  :preferences lsp-clients-typescript-init-opts))
                   :ignore-messages '("readFile .*? requested by TypeScript but content not available")
                   :server-id 'ts-ls
                   :request-handlers (ht ("_typescript.rename" #'lsp-javascript--rename))
