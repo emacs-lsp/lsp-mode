@@ -346,6 +346,7 @@ the server has requested that."
     "[/\\\\]\\.shadow-cljs\\'"
     "[/\\\\]\\.babel_cache\\'"
     "[/\\\\]\\.cpcache\\'"
+    "[/\\\\]\\checkouts\\'"
     ;; .Net Core build-output
     "[/\\\\]bin/Debug\\'"
     "[/\\\\]obj\\'"
