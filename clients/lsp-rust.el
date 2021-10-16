@@ -958,12 +958,11 @@ meaning."
   (-if-let* ((params (lsp-make-rust-analyzer-expand-macro-params
                       :text-document (lsp--text-document-identifier)
                       :position (lsp--cur-position)))
-             (response (lsp-send-request (lsp-make-request
-                                          "rust-analyzer/expandMacro"
-                                          params)))
-             ((&rust-analyzer:ExpandedMacro :expansion) response))
+             ((&rust-analyzer:ExpandedMacro :expansion) (lsp-request
+                                                         "rust-analyzer/expandMacro"
+                                                         params)))
       (funcall lsp-rust-analyzer-macro-expansion-method expansion)
-    (message "No macro found at point, or it could not be expanded.")))
+    (lsp--error "No macro found at point, or it could not be expanded.")))
 
 (defun lsp-rust-analyzer-macro-expansion-default (result)
   "Default method for displaying macro expansion."
@@ -972,9 +971,9 @@ meaning."
     (with-current-buffer buf
       (let ((inhibit-read-only t))
         (erase-buffer)
-        (insert result)
+        (insert (lsp--render-string result "rust"))
         (special-mode)))
-    (display-buffer buf)))
+    (pop-to-buffer buf)))
 
 ;; runnables
 (defvar lsp-rust-analyzer--last-runnable nil)
