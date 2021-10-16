@@ -798,6 +798,7 @@ Changes take effect only when a new session is started."
                                         (zig-mode . "zig")
                                         (text-mode . "plaintext")
                                         (markdown-mode . "markdown")
+                                        (gfm-mode . "markdown")
                                         (beancount-mode . "beancount"))
   "Language id configuration.")
 

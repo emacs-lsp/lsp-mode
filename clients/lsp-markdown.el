@@ -88,15 +88,13 @@ For a complete list of plugins, check:
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda ()
                                      (cons (or (executable-find lsp-markdown-server-command)
-                                              (lsp-package-path 'unified-language-server))
+                                               (lsp-package-path 'unified-language-server))
                                            lsp-markdown-server-command-args)))
                   :activation-fn (lsp-activate-on "markdown")
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration (lsp-configuration-section "unified-language-server"))))
-                  :major-modes '(markdown-mode)
                   :priority -1
-                  :major-modes '(markdown-mode)
                   :server-id 'unified))
 
 (lsp-consistency-check lsp-markdown)
