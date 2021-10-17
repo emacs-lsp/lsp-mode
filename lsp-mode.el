@@ -6511,7 +6511,7 @@ an alist
       (cons signature
             (lsp--imenu-create-hierarchical-index filtered-children)))))
 
-(lsp-defun lsp--symbol-ignore ((&SymbolInformation :kind :location))
+(lsp-defun lsp--symbol-ignore ((&SymbolInformation :kind))
   "Determine if SYM is for the current document and is to be shown."
   ;; It's a SymbolInformation or DocumentSymbol, which is always in the
   ;; current buffer file.
