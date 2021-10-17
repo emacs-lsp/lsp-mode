@@ -6515,19 +6515,13 @@ an alist
   "Determine if SYM is for the current document and is to be shown."
   ;; It's a SymbolInformation or DocumentSymbol, which is always in the
   ;; current buffer file.
-  (or (and lsp-imenu-index-symbol-kinds
-           (numberp kind)
-           (let ((clamped-kind (if (< 0 kind (length lsp/symbol-kind-lookup))
-                                   kind
-                                 0)))
-             (not (memql (aref lsp/symbol-kind-lookup clamped-kind)
-                         lsp-imenu-index-symbol-kinds))))
-      (and location
-           (not (eq (->> location
-                         (lsp:location-uri)
-                         (lsp--uri-to-path)
-                         (find-buffer-visiting))
-                    (current-buffer))))))
+  (and lsp-imenu-index-symbol-kinds
+       (numberp kind)
+       (let ((clamped-kind (if (< 0 kind (length lsp/symbol-kind-lookup))
+                               kind
+                             0)))
+         (not (memql (aref lsp/symbol-kind-lookup clamped-kind)
+                     lsp-imenu-index-symbol-kinds)))))
 
 (lsp-defun lsp--get-symbol-type ((&SymbolInformation :kind))
   "The string name of the kind of SYM."
