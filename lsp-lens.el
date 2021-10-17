@@ -404,6 +404,9 @@ CALLBACK - callback for the lenses."
   (unless lsp-lens--overlays
     (user-error "No lenses in current buffer"))
   (let* ((avy-action 'identity)
+         (position (if (eq lsp-lens-place-position 'end-of-line)
+                       'after-string
+                     'before-string))
          (action (cl-third
                   (avy-process
                    (-mapcat
@@ -418,7 +421,7 @@ CALLBACK - callback for the lenses."
                      (let* ((path (mapcar #'avy--key-to-char path))
                             (str (propertize (string (car (last path)))
                                              'face 'avy-lead-face))
-                            (old-str (overlay-get ov 'before-string))
+                            (old-str (overlay-get ov position))
                             (old-str-tokens (s-split "|" old-str))
                             (old-token (seq-elt old-str-tokens index))
                             (tokens `(,@(-take index old-str-tokens)
@@ -428,12 +431,13 @@ CALLBACK - callback for the lenses."
                                          (concat str old-token))
                                       ,@(-drop (1+ index) old-str-tokens)))
                             (new-str (s-join (propertize "|" 'face 'lsp-lens-face) tokens))
-                            (new-str (if (s-ends-with? "\n" new-str)
+                            (new-str (if (or (s-ends-with? "\n" new-str)
+                                             (eq lsp-lens-place-position 'end-of-line))
                                          new-str
                                        (concat new-str "\n"))))
-                       (overlay-put ov 'before-string new-str)))
+                       (overlay-put ov position new-str)))
                    (lambda ()
-                     (--map (overlay-put it 'before-string
+                     (--map (overlay-put it position
                                          (overlay-get it 'lsp-original))
                             lsp-lens--overlays))))))
     (when action (funcall-interactively action))))
