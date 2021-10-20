@@ -201,7 +201,7 @@ language server."
   "Optional absolute path to global storage dir."
   :type 'directory
   :group 'lsp-intelephense
-  :package-version '(lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-intelephense-clear-cache nil
   "Optional flag to clear server state."
