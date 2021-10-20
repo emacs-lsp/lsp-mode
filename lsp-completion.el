@@ -319,6 +319,10 @@ The MARKERS and PREFIX value will be attached to each candidate."
   (alist-get (lsp:completion-item-kind? (get-text-property 0 'lsp-completion-item item))
              lsp-completion--kind->symbol))
 
+(defun lsp-completion--candidate-deprecated (item)
+  "Return if ITEM is deprecated."
+  (lsp:completion-item-deprecated? (get-text-property 0 'lsp-completion-item item)))
+
 (defun lsp-completion--company-match (candidate)
   "Return highlight of typed prefix inside CANDIDATE."
   (let* ((prefix (downcase
@@ -504,6 +508,7 @@ The MARKERS and PREFIX value will be attached to each candidate."
           ((equal action t) (funcall candidates))))
        :annotation-function #'lsp-completion--annotate
        :company-kind #'lsp-completion--candidate-kind
+       :company-deprecated #'lsp-completion--candidate-deprecated
        :company-require-match 'never
        :company-prefix-length
        (save-excursion
