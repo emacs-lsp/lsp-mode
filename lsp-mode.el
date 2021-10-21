@@ -3429,6 +3429,7 @@ disappearing, unset all the variables related to it."
                                                         ;; Remove this after jdtls support resolveSupport
                                                         (resolveAdditionalTextEditsSupport . t)
                                                         (insertReplaceSupport . t)
+                                                        (deprecatedSupport . t)
                                                         (resolveSupport
                                                          . ((properties . ["documentation"
                                                                            "details"
