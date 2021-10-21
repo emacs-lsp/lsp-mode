@@ -489,12 +489,13 @@ The MARKERS and PREFIX value will be attached to each candidate."
       (list
        bounds-start
        (point)
-       (lambda (probe _pred action)
+       (lambda (probe pred action)
          (cond
           ;; metadata
           ((equal action 'metadata)
            `(metadata (category . lsp-capf)
-                      (display-sort-function . identity)))
+                      (display-sort-function . identity)
+                      (cycle-sort-function . identity)))
           ;; boundaries
           ((equal (car-safe action) 'boundaries) nil)
           ;; try-completion
@@ -505,7 +506,8 @@ The MARKERS and PREFIX value will be attached to each candidate."
           ;; always be shown
           ((equal action 'lambda) nil)
           ;; retrieve candidates
-          ((equal action t) (funcall candidates))))
+          ((equal action t)
+           (all-completions probe (funcall candidates) pred))))
        :annotation-function #'lsp-completion--annotate
        :company-kind #'lsp-completion--candidate-kind
        :company-deprecated #'lsp-completion--candidate-deprecated
@@ -720,6 +722,10 @@ The CLEANUP-FN will be called to cleanup."
   "Disable LSP completion support."
   (lsp-completion-mode -1))
 
+(defun lsp-completion-passthrough-all-completions (_string table pred _point)
+  "Like `completion-basic-all-completions' but have prefix ignored."
+  (completion-basic-all-completions "" table pred 0))
+
 ;;;###autoload
 (define-minor-mode lsp-completion-mode
   "Toggle LSP completion support."
@@ -736,8 +742,13 @@ The CLEANUP-FN will be called to cleanup."
      (lsp-completion-mode
       (setq-local completion-at-point-functions nil)
       (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t)
-      (setq-local completion-category-defaults
-                  (add-to-list 'completion-category-defaults '(lsp-capf (styles basic))))
+      (make-local-variable 'completion-category-defaults)
+      (setf (alist-get 'lsp-capf completion-category-defaults) '((styles . (lsp-passthrough))))
+      (make-local-variable 'completion-styles-alist)
+      (setf (alist-get 'lsp-passthrough completion-styles-alist)
+            '(completion-basic-try-completion
+              lsp-completion-passthrough-all-completions
+              "Passthrough completion."))
 
       (cond
        ((equal lsp-completion-provider :none))
@@ -763,6 +774,8 @@ The CLEANUP-FN will be called to cleanup."
       (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t)
       (setq-local completion-category-defaults
                   (cl-remove 'lsp-capf completion-category-defaults :key #'cl-first))
+      (setq-local completion-styles-alist
+                  (cl-remove 'lsp-passthrough completion-styles-alist :key #'cl-first))
       (remove-hook 'lsp-unconfigure-hook #'lsp-completion--disable t)
       (when (featurep 'company)
         (remove-hook 'company-completion-started-hook
