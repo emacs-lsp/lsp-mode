@@ -31,6 +31,7 @@
 (declare-function iedit-lib-start "iedit-lib" (mode-exit-func))
 (declare-function iedit-done "iedit" ())
 (declare-function evil-multiedit-state "evil-multiedit" ())
+(declare-function evil-iedit-state "evil-iedit-state" ())
 
 (defvar iedit-mode)
 (defvar iedit-auto-buffering)
@@ -64,6 +65,8 @@ from various lsp protocol requests, e.g.
     (message "%d occurrences of \"%s\""
              (seq-length ranges)
              (lsp--range-text (lsp-seq-first ranges)))))
+
+;; iedit
 
 ;;;###autoload
 (defun lsp-iedit-highlights ()
@@ -76,10 +79,25 @@ See also `lsp-enable-symbol-highlighting'."
   (let ((highlights (lsp-request "textDocument/documentHighlight"
                                  (lsp--text-document-position-params)))
         (-compare-fn (-lambda ((&Location :range (&Range :start l-start :end l-end))
-                                          (&Location :range (&Range :start r-start :end r-end)))
-                               (and (lsp--position-equal l-start r-start)
-                                    (lsp--position-equal l-end   r-end)))))
+                               (&Location :range (&Range :start r-start :end r-end)))
+                       (and (lsp--position-equal l-start r-start)
+                            (lsp--position-equal l-end   r-end)))))
     (lsp-iedit--on-ranges (mapcar #'lsp:document-highlight-range (-distinct highlights)))))
+
+;;;###autoload
+(defun lsp-iedit-linked-ranges ()
+  "Start an `iedit' for `textDocument/linkedEditingRange'"
+  (interactive)
+  (unless (lsp-feature? "textDocument/linkedEditingRange")
+    (user-error "`textDocument/linkedEditingRange' is not supported by current server"))
+
+  (-> (lsp-request "textDocument/linkedEditingRange" (lsp--text-document-position-params))
+      (lsp:linked-editing-ranges-ranges)
+      (or (user-error "No editing ranges found"))
+      (lsp-iedit--on-ranges)))
+
+
+;; evil-multi-edit
 
 ;;;###autoload
 (defun lsp-evil-multiedit-highlights ()
@@ -94,6 +112,36 @@ See also `lsp-enable-symbol-highlighting'."
   (setq evil-multiedit--dont-recall t)
   (lsp-iedit-highlights)
   (evil-multiedit-state))
+
+;;;###autoload
+(defun lsp-evil-multiedit-linked-ranges ()
+  "Start an `evil-multiedit' for `textDocument/linkedEditingRange'"
+  (interactive)
+  (require 'evil-multiedit)
+  (when (fboundp 'ahs-clear) (ahs-clear))
+  (setq evil-multiedit--dont-recall t)
+  (lsp-iedit-linked-ranges)
+  (evil-multiedit-state))
+
+;; evil-evil-state
+
+;;;###autoload
+(defun lsp-evil-state-highlights ()
+  "Start `iedit-mode'. for `textDocument/documentHighlight'"
+  (interactive "P")
+  (if (fboundp 'ahs-clear) (ahs-clear))
+  (lsp-iedit-highlights)
+  (evil-iedit-state))
+
+;;;###autoload
+(defun lsp-evil-state-linked-ranges ()
+  "Start `iedit-mode'. for `textDocument/linkedEditingRange'"
+  (interactive "P")
+  (if (fboundp 'ahs-clear) (ahs-clear))
+  (lsp-iedit-linked-ranges)
+  (evil-iedit-state))
+
+
 
 (lsp-consistency-check lsp-iedit)
 

@@ -189,7 +189,7 @@ Newlines and excess whitespace are removed."
   ("xml.catalogs" lsp-xml-catalogs)
   ("xml.trace.server" lsp-xml-trace-server)))
 
-(defconst lsp-xml-jar-version "0.13.1")
+(defconst lsp-xml-jar-version "0.18.0")
 
 (defconst lsp-xml-jar-name (format "org.eclipse.lemminx-%s-uber.jar" lsp-xml-jar-version))
 
