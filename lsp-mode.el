@@ -7420,9 +7420,9 @@ Check `*lsp-install*' and `*lsp-log*' buffer."
     (setq lsp--client-packages-required t)))
 
 ;;;###autoload
-(defun lsp-install-server (&optional server-id)
+(defun lsp-install-server (update? &optional server-id)
   "Interactively install or re-install server."
-  (interactive)
+  (interactive "P")
   (lsp--require-packages)
   (let* ((chosen-client (or (gethash server-id lsp-clients)
                             (lsp--completing-read
@@ -7440,8 +7440,31 @@ Check `*lsp-install*' and `*lsp-log*' buffer."
                                    server-name)))
                              nil
                              t)))
-         (update? (lsp--server-binary-present? chosen-client)))
+         (update? (or update?
+                      (and (not (lsp--client-download-in-progress? chosen-client))
+                           (lsp--server-binary-present? chosen-client)))))
     (lsp--install-server-internal chosen-client update?)))
+
+;;;###autoload
+(defun lsp-update-server (&optional server-id)
+  "Interactively update a server."
+  (interactive)
+  (lsp--require-packages)
+  (let ((chosen-client (or (gethash server-id lsp-clients)
+                           (lsp--completing-read
+                            "Select server to update (if not on the list, probably you need to `lsp-install-server`): "
+                            (or (->> lsp-clients
+                                     (ht-values)
+                                     (-filter (-andfn
+                                               (-not #'lsp--client-download-in-progress?)
+                                               #'lsp--client-download-server-fn
+                                               #'lsp--server-binary-present?)))
+                                (user-error "There are no servers to update"))
+                            (lambda (client)
+                              (-> client lsp--client-server-id symbol-name))
+                            nil
+                            t))))
+    (lsp--install-server-internal chosen-client t)))
 
 ;;;###autoload
 (defun lsp-ensure-server (server-id)
