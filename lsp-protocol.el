@@ -604,6 +604,7 @@ See `-let' for a description of the destructuring mechanism."
  (FormattingOptions (:tabSize :insertSpaces) (:trimTrailingWhitespace :insertFinalNewline :trimFinalNewlines))
  (HoverCapabilities nil (:contentFormat :dynamicRegistration))
  (ImplementationCapabilities nil (:dynamicRegistration :linkSupport))
+ (LinkedEditingRanges (:ranges) (:wordPattern))
  (Location (:range :uri) nil)
  (MarkedString (:language :value) nil)
  (MarkupContent (:kind :value) nil)
