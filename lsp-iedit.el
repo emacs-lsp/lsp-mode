@@ -30,7 +30,7 @@
 (declare-function iedit-start-buffering "iedit-lib" ())
 (declare-function iedit-lib-start "iedit-lib" (mode-exit-func))
 (declare-function iedit-done "iedit" ())
-(declare-function evil-multiedit-state "evil-multiedit" ())
+(declare-function evil-multiedit-mode "evil-multiedit" (mode))
 (declare-function evil-iedit-state "evil-iedit-state" ())
 
 (defvar iedit-mode)
@@ -111,7 +111,7 @@ See also `lsp-enable-symbol-highlighting'."
   (when (fboundp 'ahs-clear) (ahs-clear))
   (setq evil-multiedit--dont-recall t)
   (lsp-iedit-highlights)
-  (evil-multiedit-state))
+  (evil-multiedit-mode +1))
 
 ;;;###autoload
 (defun lsp-evil-multiedit-linked-ranges ()
@@ -121,7 +121,7 @@ See also `lsp-enable-symbol-highlighting'."
   (when (fboundp 'ahs-clear) (ahs-clear))
   (setq evil-multiedit--dont-recall t)
   (lsp-iedit-linked-ranges)
-  (evil-multiedit-state))
+  (evil-multiedit-mode +1))
 
 ;; evil-evil-state
 
