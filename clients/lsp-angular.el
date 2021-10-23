@@ -89,7 +89,8 @@ Has no effects when `lsp-clients-angular-language-server-command' is set."
   :priority -1
   :notification-handlers
   (ht ("angular/projectLoadingStart" #'lsp-client--angular-start-loading)
-      ("angular/projectLoadingFinish" #'lsp-client--angular-finished-loading))
+      ("angular/projectLoadingFinish" #'lsp-client--angular-finished-loading)
+      ("angular/projectLanguageService" #'ignore))
   :add-on? t
   :server-id 'angular-ls))
 
