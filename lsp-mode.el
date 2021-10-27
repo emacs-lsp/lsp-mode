@@ -7421,7 +7421,8 @@ Check `*lsp-install*' and `*lsp-log*' buffer."
 
 ;;;###autoload
 (defun lsp-install-server (update? &optional server-id)
-  "Interactively install or re-install server."
+  "Interactively install or re-install server.
+When prefix UPDATE? is t force installation even if the server is present."
   (interactive "P")
   (lsp--require-packages)
   (let* ((chosen-client (or (gethash server-id lsp-clients)
