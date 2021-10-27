@@ -32,31 +32,29 @@
   :tag "Language Server"
   :package-version '(lsp-mode . "6.2"))
 
-(defcustom lsp-ada-project-file "default.gpr"
+(defcustom-lsp lsp-ada-project-file "default.gpr"
   "Set the project file full path to configure the language server with.
   The ~ prefix (for the user home directory) is supported.
   See https://github.com/AdaCore/ada_language_server for a per-project
   configuration example."
   :type 'string
   :group 'lsp-ada
-  :package-version '(lsp-mode . "6.2"))
+  :package-version '(lsp-mode . "6.2")
+  :lsp-path "ada.projectFile")
 
-(defcustom lsp-ada-option-charset "UTF-8"
+(defcustom-lsp lsp-ada-option-charset "UTF-8"
   "The charset to use by the Ada Language server. Defaults to 'UTF-8'."
   :type 'string
   :group 'lsp-ada
-  :package-version '(lsp-mode . "6.2"))
+  :package-version '(lsp-mode . "6.2")
+  :lsp-path "ada.defaultCharset")
 
-(defcustom lsp-ada-enable-diagnostics t
+(defcustom-lsp lsp-ada-enable-diagnostics t
   "A boolean to disable diagnostics. Defaults to true."
   :type 'boolean
   :group 'lsp-ada
-  :package-version '(lsp-mode . "6.2"))
-
-(lsp-register-custom-settings
- '(("ada.projectFile" lsp-ada-project-file)
-   ("ada.enableDiagnostics" lsp-ada-enable-diagnostics)
-   ("ada.defaultCharset" lsp-ada-option-charset)))
+  :package-version '(lsp-mode . "6.2")
+  :lsp-path "ada.enableDiagnostics")
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("ada_language_server"))
@@ -66,7 +64,8 @@
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
                                        (lsp-configuration-section "ada"))))
-                  :server-id 'ada-ls))
+                  :server-id 'ada-ls
+                  :synchronize-sections '("ada")))
 
 (lsp-consistency-check lsp-ada)
 

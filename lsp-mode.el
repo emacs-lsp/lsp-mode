@@ -1496,7 +1496,8 @@ return value of `body' or nil if interrupted."
   (async-request-handlers (make-hash-table :test 'equal))
   download-server-fn
   download-in-progress?
-  buffers)
+  buffers
+  synchronize-sections)
 
 (defun lsp-clients-executable-find (find-command &rest args)
   "Finds an executable by invoking a search command.
@@ -7840,6 +7841,31 @@ TBL - a hash table, PATHS is the path to the nested VALUE."
                                              (ht-set! tbl path temp-tbl)
                                              temp-tbl))))
                        (lsp-ht-set nested-tbl rst value)))))
+
+;; sections
+
+(defmacro defcustom-lsp (symbol standard doc &rest args)
+  "Defines `lsp-mode' server property."
+  (let ((path (plist-get args :lsp-path)))
+    (cl-remf args :lsp-path)
+    `(progn
+       (lsp-register-custom-settings
+        (quote ((,path ,symbol ,(equal ''boolean (plist-get args :type))))))
+
+       (defcustom ,symbol ,standard ,doc
+         :set (lambda (sym val)
+                (lsp--set-custom-property sym val ,path))
+         ,@args))))
+
+(defun lsp--set-custom-property (sym val path)
+  (set sym val)
+  (let ((section (cl-first (s-split "\\." path))))
+    (mapc (lambda (workspace)
+            (when (-contains? (lsp--client-synchronize-sections (lsp--workspace-client workspace))
+                              section)
+              (with-lsp-workspace workspace
+                (lsp--set-configuration (lsp-configuration-section section)))))
+          (lsp--session-workspaces (lsp-session)))))
 
 (defun lsp-configuration-section (section)
   "Get settings for SECTION."
@@ -7857,6 +7883,7 @@ TBL - a hash table, PATHS is the path to the nested VALUE."
           lsp-client-settings)
     ret))
 
+
 (defun lsp--start-connection (session client project-root)
   "Initiates connection created from CLIENT for PROJECT-ROOT.
 SESSION is the active session."
