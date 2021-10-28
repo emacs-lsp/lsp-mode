@@ -6039,8 +6039,8 @@ The command is executed via `workspace/executeCommand'"
                       (list :command command))))
         (lsp-request "workspace/executeCommand" params))
     (error
-     (lsp--error "`workspace/executeCommand' with `%s' failed.\n\n%S"
-                 command err))))
+     (error "`workspace/executeCommand' with `%s' failed.\n\n%S"
+            command err))))
 
 (defun lsp-send-execute-command (command &optional args)
   "Create and send a 'workspace/executeCommand' message having command COMMAND and optional ARGS."
