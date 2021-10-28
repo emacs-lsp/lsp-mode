@@ -902,7 +902,7 @@ must be used for handling a particular message.")
 (define-obsolete-variable-alias 'lsp-lens-auto-enable
   'lsp-lens-enable "lsp-mode 7.0.1")
 
-(defcustom lsp-lens-enable nil
+(defcustom lsp-lens-enable t
   "Auto enable lenses if server supports."
   :group 'lsp-lens
   :type 'boolean
