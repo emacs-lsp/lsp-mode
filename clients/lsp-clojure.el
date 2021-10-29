@@ -308,7 +308,8 @@ and the third the column."
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'clojure-lsp callback error-callback))
   :semantic-tokens-faces-overrides '(:types (("macro" . font-lock-keyword-face)
-                                             ("keyword" . clojure-keyword-face)))
+                                             ("keyword" . clojure-keyword-face)
+                                             ("event" . default)))
   :new-connection (lsp-stdio-connection
                    (lambda ()
                      (or lsp-clojure-custom-server-command
