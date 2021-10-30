@@ -568,6 +568,25 @@ chosen by `font-lock-fontify-region'."
                     (format " ; Alternative: %s" (prin1-to-string it))))))
       (insert ")"))))
 
+(declare-function tree-sitter-hl-mode "ext:tree-sitter-hl")
+
+(with-eval-after-load 'tree-sitter-hl
+  (add-hook
+   'tree-sitter-hl-mode-hook
+   (lambda ()
+     (when (and lsp-mode lsp--semantic-tokens-teardown
+                (boundp 'tree-sitter-hl-mode) tree-sitter-hl-mode)
+       (lsp-warn "It seems you have configured tree-sitter-hl to activate after lsp-mode.
+To prevent tree-sitter-hl from overriding lsp-mode's semantic token highlighting, lsp-mode
+will now disable both semantic highlighting and tree-sitter-hl mode and subsequently re-enable both,
+starting with tree-sitter-hl-mode.
+
+Please adapt your config to prevent unnecessary mode reinitialization in the future.")
+       (tree-sitter-hl-mode -1)
+       (funcall lsp--semantic-tokens-teardown)
+       (setq lsp--semantic-tokens-teardown nil)
+       (tree-sitter-hl-mode t)
+       (lsp--semantic-tokens-initialize-buffer)))))
 
 ;;;###autoload
 (defun lsp--semantic-tokens-initialize-buffer ()
