@@ -4536,6 +4536,8 @@ Added to `after-change-functions'."
     (run-hooks 'lsp-on-change-hook)))
 
 (defun lsp--after-change (buffer)
+  (when (fboundp 'lsp--semantic-tokens-refresh-if-enabled)
+    (lsp--semantic-tokens-refresh-if-enabled buffer))
   (when lsp--on-change-timer
     (cancel-timer lsp--on-change-timer))
   (setq lsp--on-change-timer (run-with-idle-timer
