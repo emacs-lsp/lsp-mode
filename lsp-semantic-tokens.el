@@ -39,7 +39,7 @@ or modifier type returned by a language server has no face associated with it."
   :group 'lsp-semantic-tokens
   :type 'boolean)
 
-(defcustom lsp-semantic-tokens-apply-modifiers nil
+(defcustom lsp-semantic-tokens-apply-modifiers t
   "Whether semantic tokens should take token modifiers into account."
   :group 'lsp-semantic-tokens
   :type 'boolean)
@@ -206,6 +206,21 @@ Unless overridden by a more specific face association."
   "Face used for semantic highlighting scopes matching constant scopes."
   :group 'lsp-semantic-tokens)
 
+(defface lsp-face-semhl-definition
+  '((t :inherit font-lock-function-name-face :weight bold))
+  "Face used for definition modifier."
+  :group 'lsp-semantic-tokens)
+
+(defface lsp-face-semhl-default-library
+  '((t :inherit font-lock-builtin-face))
+  "Face used for defaultLibrary modifier."
+  :group 'lsp-semantic-tokens)
+
+(defface lsp-face-semhl-static
+  '((t :inherit font-lock-keyword-face))
+  "Face used for static modifier."
+  :group 'lsp-semantic-tokens)
+
 (defvar lsp-semantic-token-faces
   '(("comment" . lsp-face-semhl-comment)
     ("keyword" . lsp-face-semhl-keyword)
@@ -236,10 +251,16 @@ Unless overridden by a more specific face association."
   "Faces to use for semantic tokens.")
 
 (defvar lsp-semantic-token-modifier-faces
-  ;; TODO: add default definitions
   '(("declaration" . lsp-face-semhl-interface)
+    ("definition" . lsp-face-semhl-definition)
+    ("readonly" . lsp-face-semhl-constant)
+    ("static" . lsp-face-semhl-static)
     ("deprecated" . lsp-face-semhl-deprecated)
-    ("readonly" . lsp-face-semhl-constant))
+    ("abstract" . lsp-face-semhl-keyword)
+    ("async" . lsp-face-semhl-macro)
+    ("modification" . lsp-face-semhl-operator)
+    ("documentation" . lsp-face-semhl-comment)
+    ("defaultLibrary" . lsp-face-semhl-default-library))
   "Semantic tokens modifier faces.
 Faces to use for semantic token modifiers if
 `lsp-semantic-tokens-apply-modifiers' is non-nil.")
@@ -249,7 +270,8 @@ Faces to use for semantic token modifiers if
      . ((dynamicRegistration . t)
         (requests . ((range . t) (full . t)))
         (tokenModifiers . ,(if lsp-semantic-tokens-apply-modifiers
-                               (apply 'vector (mapcar #'car lsp-semantic-token-modifier-faces)) []))
+                               (apply 'vector (mapcar #'car lsp-semantic-token-modifier-faces))
+                             []))
         (tokenTypes . ,(apply 'vector (mapcar #'car lsp-semantic-token-faces)))
         (formats . ["relative"])))))
 
@@ -469,7 +491,8 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
   (lsp--semantic-tokens-request (cons (window-start) (window-end)) t))
 
 (defun lsp--semantic-tokens-as-defined-by-workspace (workspace)
-  "Return plist of token-types and token-modifiers defined by WORKSPACE, or nil if none are defined."
+  "Return plist of token-types and token-modifiers defined by WORKSPACE,
+or nil if none are defined."
   (when-let ((token-capabilities
               (or
                (-some->
@@ -482,7 +505,8 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
         :token-modifiers ,(lsp:semantic-tokens-legend-token-modifiers legend)))))
 
 (defun lsp-semantic-tokens-suggest-overrides ()
-  "Suggest face overrides that best match the faces chosen by `font-lock-fontify-region'."
+  "Suggest face overrides that best match the faces
+chosen by `font-lock-fontify-region'."
   (interactive)
   (-when-let* ((token-info (-some #'lsp--semantic-tokens-as-defined-by-workspace lsp--buffer-workspaces))
                ((&plist :token-types token-types :token-modifiers token-modifiers) token-info))
@@ -583,7 +607,8 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
                                              (plist-get (lsp--client-semantic-tokens-faces-overrides client) :modifiers)))
 
 (defun lsp--semantic-tokens-on-refresh (workspace)
-  "Clear semantic tokens within all buffers of WORKSPACE, refresh in currently active buffer."
+  "Clear semantic tokens within all buffers of WORKSPACE,
+refresh in currently active buffer."
   (cl-assert (not (eq nil workspace)))
   (when lsp-semantic-tokens-honor-refresh-requests
     (cl-loop
