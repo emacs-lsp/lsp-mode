@@ -737,6 +737,8 @@ See `-let' for a description of the destructuring mechanism."
  (ResourceOperationKind nil nil)
  (SelectionRangeParams (:textDocument :positions) nil)
  (SemanticHighlightingParams (:textDocument :lines) nil)
+ (ShowDocumentParams (:uri) (:external :takeFocus :selection))
+ (ShowDocumentResult (:success) nil)
  (ShowMessageRequestParams (:type :message) (:actions))
  (SignatureHelpParams (:textDocument :position) (:context :uri))
  (SignatureHelpRegistrationOptions nil (:documentSelector :triggerCharacters))

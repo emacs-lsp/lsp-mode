@@ -1925,6 +1925,15 @@ PARAMS - the data sent from WORKSPACE."
         (completing-read (concat message " ") (seq-into choices 'list) nil t)
       (lsp-log message))))
 
+(lsp-defun lsp--window-show-document ((&ShowDocumentParams :uri :selection?))
+  "Show document URI in a buffer and go to SELECTION if any."
+  (let ((path (lsp--uri-to-path uri)))
+    (when (f-exists? path)
+      (with-current-buffer (find-file path)
+        (when selection?
+          (goto-char (lsp--position-to-point (lsp:range-start selection?))))
+        t))))
+
 (defcustom lsp-progress-prefix " ⌛ "
   "Progress prefix."
   :group 'lsp-mode
@@ -3456,7 +3465,7 @@ disappearing, unset all the variables related to it."
                       (linkedEditingRange . ((dynamicRegistration . t)))))
      (window . ((workDoneProgress . t)
                 (showMessage . nil)
-                (showDocument . nil))))
+                (showDocument . ((support . t))))))
    custom-capabilities))
 
 (defun lsp-find-roots-for-workspace (workspace session)
@@ -6204,6 +6213,10 @@ WORKSPACE is the active workspace."
                      ((equal method "window/showMessageRequest")
                       (let ((choice (lsp--window-log-message-request params)))
                         `(:title ,choice)))
+                     ((equal method "window/showDocument")
+                      (let ((success? (lsp--window-show-document params)))
+                        (lsp-make-show-document-result :success (or success?
+                                                                    :json-false))))
                      ((equal method "client/unregisterCapability")
                       (mapc #'lsp--server-unregister-capability
                             (lsp:unregistration-params-unregisterations params))
