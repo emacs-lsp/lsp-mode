@@ -61,6 +61,7 @@ If you have tried all of the non-optional steps from the list and `emacs` is sti
   - `M-x profiler-start` and select `CPU`
   - Reproduce the slow behavior.
   - `M-x profiler-stop`
+  - `M-x profiler-report` to create a report
   - In the profiler report expand all nodes by doing `C-u TAB`.
 
   *Note:* - `lsp-mode` is just a frontend and the performance depends on server as well. Some servers (e. g. Palantir's Python Language Server) might be slow when performing auto-completion.
