@@ -7489,7 +7489,7 @@ When prefix UPDATE? is t force installation even if the server is present."
   (if-let ((client (gethash server-id lsp-clients)))
       (unless (lsp--server-binary-present? client)
         (lsp--info "Server `%s' is not preset, installing..." server-id)
-        (lsp-install-server server-id))
+        (lsp-install-server nil server-id))
     (warn "Unable to find server registration with id %s" server-id)))
 
 (defun lsp-async-start-process (callback error-callback &rest command)
