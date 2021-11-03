@@ -5982,7 +5982,10 @@ REFERENCES? t when METHOD returns references."
 (cl-defun lsp-find-implementation (&key display-action)
   "Find implementations of the symbol under point."
   (interactive)
-  (lsp-find-locations "textDocument/implementation" nil :display-action display-action))
+  (lsp-find-locations "textDocument/implementation"
+                      nil
+                      :display-action display-action
+                      :references? t))
 
 (cl-defun lsp-find-references (&optional include-declaration &key display-action)
   "Find references of the symbol under point."
