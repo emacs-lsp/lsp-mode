@@ -279,9 +279,9 @@ Faces to use for semantic token modifiers if
 (defvar lsp--semantic-tokens-pending-full-token-requests '()
   "Buffers which should have their semantic tokens refreshed on idle.
 
-This is an alist of the form ((buffer_i . fontify_immediately_i) ...); entries with
-fontify_immediately set to t will immediately refontify once their token
-request is answered.")
+This is an alist of the form ((buffer_i . fontify_immediately_i) ...); entries
+with fontify_immediately set to t will immediately refontify once their
+token request is answered.")
 
 ;; NOTE: doesn't keep track of outstanding requests, so might still produce large latency outliers
 ;; if the language server doesn't process all outstanding token requests within one lsp-idle-delay
@@ -406,7 +406,7 @@ If FONTIFY-IMMEDIATELY is non-nil, fontification will be performed immediately
   (let ((request-type "textDocument/semanticTokens/full")
         (request `(:textDocument ,(lsp--text-document-identifier)))
         (response-handler nil)
-        (_region nil))
+        (final-region nil))
     (cond
      ((and lsp-semantic-tokens-allow-delta-requests
            (lsp-feature? "textDocument/semanticTokensFull/Delta")
@@ -422,16 +422,16 @@ If FONTIFY-IMMEDIATELY is non-nil, fontification will be performed immediately
      ((and lsp-semantic-tokens-allow-ranged-requests region
            (lsp-feature? "textDocument/semanticTokensRangeProvider"))
       (setq request-type "textDocument/semanticTokens/range")
-      (setq _region region)
+      (setq final-region region)
       (setq request
-            (plist-put request :range (lsp--region-to-range (car _region) (cdr _region))))
+            (plist-put request :range (lsp--region-to-range (car final-region) (cdr final-region))))
       (setq response-handler #'lsp--semantic-tokens-ingest-range-response))
      (t (setq response-handler #'lsp--semantic-tokens-ingest-full-response)))
     (lsp-request-async
      request-type request
      (lambda (response)
        (lsp--semantic-tokens-putcache :_documentVersion lsp--cur-version)
-       (lsp--semantic-tokens-putcache :_region _region)
+       (lsp--semantic-tokens-putcache :_region final-region)
        (funcall response-handler response)
        (when (or fontify-immediately (plist-get lsp--semantic-tokens-cache :_truncated)) (font-lock-flush)))
      :error-handler ;; buffer is not captured in `error-handler', it is in `callback'
