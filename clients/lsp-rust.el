@@ -413,7 +413,7 @@ The command should include `--message=format=json` or similar option."
   "force rust-analyzer to unset `#[cfg(test)]` for the specified crates."
   :type 'lsp-string-vector
   :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "6.2.2"))
+  :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-rust-analyzer-use-client-watching t
   "Use client watching"
