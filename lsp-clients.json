@@ -438,8 +438,7 @@
     "full-name": "Phpactor",
     "server-name": "phpactor",
     "server-url": "https://github.com/phpactor/phpactor",
-    "installation-url": "https://phpactor.readthedocs.io/en/develop/usage/standalone.html#installation-global",
-    "installation": "composer g require phpactor/phpactor",
+    "installation-url": "https://phpactor.readthedocs.io/en/master/usage/standalone.html#installation-global",
     "debugger": "yes"
   },
   {
