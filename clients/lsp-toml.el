@@ -117,7 +117,8 @@
   :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-toml-formatter-array-auto-collapse t
-  "Collapse arrays that don't exceed the maximum column width and don't contain comments."
+  "Collapse arrays that don't exceed the maximum column width and
+don't contain comments."
   :type 'boolean
   :group 'lsp-toml
   :package-version '(lsp-mode . "8.0.1"))
@@ -141,13 +142,15 @@
   :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-toml-formatter-column-width 80
-  "Maximum column width in characters, affects array expansion and collapse, this doesn't take whitespace into account."
+  "Maximum column width in characters, affects array expansion
+and collapse, this doesn't take whitespace into account."
   :type 'number
   :group 'lsp-toml
   :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-toml-formatter-indent-tables nil
-  "Indent based on tables and arrays of tables and their subtables, subtables out of order are not indented."
+  "Indent based on tables and arrays of tables and their
+subtables, subtables out of order are not indented."
   :type 'boolean
   :group 'lsp-toml
   :package-version '(lsp-mode . "8.0.1"))
@@ -159,7 +162,9 @@
   :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-toml-formatter-indent-string nil
-  "The substring that is used for indentation, should be tabs or spaces, but technically can be anything.  Uses the IDE setting if not set."
+  "The substring that is used for indentation, should be tabs or
+spaces, but technically can be anything.  Uses the IDE setting if
+not set."
   :type '(repeat string)
   :group 'lsp-toml
   :package-version '(lsp-mode . "8.0.1"))
@@ -171,7 +176,9 @@
   :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-toml-formatter-allowed-blank-lines 2
-  "Maximum amount of allowed consecutive blank lines.  This does not affect the whitespace at the end of the document, as it is always stripped."
+  "Maximum amount of allowed consecutive blank lines.
+This does not affect the whitespace at the end of the document,
+as it is always stripped."
   :type 'number
   :group 'lsp-toml
   :package-version '(lsp-mode . "8.0.1"))
