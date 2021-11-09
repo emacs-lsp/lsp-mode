@@ -657,6 +657,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "toml",
+    "full-name": "TOML",
+    "server-name": "taplo-lsp",
+    "server-url": "https://github.com/tamasfe/taplo/tree/master/taplo-lsp",
+    "installation-url": "https://taplo.tamasfe.dev/lsp/",
+    "installation": "cargo install taplo-lsp",
+    "debugger": "Not available"
+  },
+  {
     "name": "v",
     "full-name": "V",
     "server-name": "vls",
