@@ -13,14 +13,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/keybindings/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-toml/">
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.4">
     
     
       
-        <title>Keybindings - LSP Mode - LSP support for Emacs</title>
+        <title>TOML - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#keybindings" class="md-skip">
+        <a href="#toml" class="md-skip">
           Skip to content
         </a>
       
@@ -103,7 +103,7 @@
         <div class="md-header-nav__topic">
           <span class="md-ellipsis">
             
-              Keybindings
+              TOML
             
           </span>
         </div>
@@ -169,15 +169,13 @@
         
   
   
-    
-  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link md-tabs__link--active">
+      <a href="../.." class="md-tabs__link">
         Home
       </a>
     </li>
@@ -210,13 +208,15 @@
         
   
   
+    
+  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../languages/" class="md-tabs__link">
+      <a href="../languages/" class="md-tabs__link md-tabs__link--active">
         Languages
       </a>
     </li>
@@ -376,14 +376,12 @@
       
 
 
-  
-
 
   
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" checked>
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" >
     
     <label class="md-nav__link" for="nav-1">
       Home
@@ -483,49 +481,11 @@
           
 
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Keybindings
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-    
-    <a href="./" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../keybindings/" class="md-nav__link">
       Keybindings
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#which-key-integration" class="md-nav__link">
-    which-key integration
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -1006,12 +966,14 @@
       
 
 
+  
+
 
   
-  <li class="md-nav__item md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" >
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
     
     <label class="md-nav__link" for="nav-3">
       Languages
@@ -2018,11 +1980,257 @@
           
 
 
+  
 
-  <li class="md-nav__item">
-    <a href="../lsp-toml/" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        TOML
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" class="md-nav__link md-nav__link--active">
       TOML
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#server" class="md-nav__link">
+    Server
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-configurations" class="md-nav__link">
+    Available configurations
+  </a>
+  
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-cache-path" class="md-nav__link">
+    lsp-toml-cache-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-command" class="md-nav__link">
+    lsp-toml-command
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-align-comments" class="md-nav__link">
+    lsp-toml-formatter-align-comments
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-align-entries" class="md-nav__link">
+    lsp-toml-formatter-align-entries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-allowed-blank-lines" class="md-nav__link">
+    lsp-toml-formatter-allowed-blank-lines
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-array-auto-collapse" class="md-nav__link">
+    lsp-toml-formatter-array-auto-collapse
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-array-auto-expand" class="md-nav__link">
+    lsp-toml-formatter-array-auto-expand
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-array-trailing-comma" class="md-nav__link">
+    lsp-toml-formatter-array-trailing-comma
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-column-width" class="md-nav__link">
+    lsp-toml-formatter-column-width
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-compact-arrays" class="md-nav__link">
+    lsp-toml-formatter-compact-arrays
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-compact-entries" class="md-nav__link">
+    lsp-toml-formatter-compact-entries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-compact-inline-tables" class="md-nav__link">
+    lsp-toml-formatter-compact-inline-tables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-crlf" class="md-nav__link">
+    lsp-toml-formatter-crlf
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-indent-entries" class="md-nav__link">
+    lsp-toml-formatter-indent-entries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-indent-string" class="md-nav__link">
+    lsp-toml-formatter-indent-string
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-indent-tables" class="md-nav__link">
+    lsp-toml-formatter-indent-tables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-reorder-keys" class="md-nav__link">
+    lsp-toml-formatter-reorder-keys
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-trailing-newline" class="md-nav__link">
+    lsp-toml-formatter-trailing-newline
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-schema-associations" class="md-nav__link">
+    lsp-toml-schema-associations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-schema-enabled" class="md-nav__link">
+    lsp-toml-schema-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-schema-links" class="md-nav__link">
+    lsp-toml-schema-links
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-schema-repository-enabled" class="md-nav__link">
+    lsp-toml-schema-repository-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-schema-repository-url" class="md-nav__link">
+    lsp-toml-schema-repository-url
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-taplo-config" class="md-nav__link">
+    lsp-toml-taplo-config
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-taplo-config-enabled" class="md-nav__link">
+    lsp-toml-taplo-config-enabled
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -2519,9 +2727,217 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#which-key-integration" class="md-nav__link">
-    which-key integration
+  <a href="#server" class="md-nav__link">
+    Server
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-configurations" class="md-nav__link">
+    Available configurations
+  </a>
+  
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-cache-path" class="md-nav__link">
+    lsp-toml-cache-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-command" class="md-nav__link">
+    lsp-toml-command
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-align-comments" class="md-nav__link">
+    lsp-toml-formatter-align-comments
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-align-entries" class="md-nav__link">
+    lsp-toml-formatter-align-entries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-allowed-blank-lines" class="md-nav__link">
+    lsp-toml-formatter-allowed-blank-lines
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-array-auto-collapse" class="md-nav__link">
+    lsp-toml-formatter-array-auto-collapse
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-array-auto-expand" class="md-nav__link">
+    lsp-toml-formatter-array-auto-expand
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-array-trailing-comma" class="md-nav__link">
+    lsp-toml-formatter-array-trailing-comma
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-column-width" class="md-nav__link">
+    lsp-toml-formatter-column-width
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-compact-arrays" class="md-nav__link">
+    lsp-toml-formatter-compact-arrays
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-compact-entries" class="md-nav__link">
+    lsp-toml-formatter-compact-entries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-compact-inline-tables" class="md-nav__link">
+    lsp-toml-formatter-compact-inline-tables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-crlf" class="md-nav__link">
+    lsp-toml-formatter-crlf
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-indent-entries" class="md-nav__link">
+    lsp-toml-formatter-indent-entries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-indent-string" class="md-nav__link">
+    lsp-toml-formatter-indent-string
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-indent-tables" class="md-nav__link">
+    lsp-toml-formatter-indent-tables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-reorder-keys" class="md-nav__link">
+    lsp-toml-formatter-reorder-keys
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-formatter-trailing-newline" class="md-nav__link">
+    lsp-toml-formatter-trailing-newline
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-schema-associations" class="md-nav__link">
+    lsp-toml-schema-associations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-schema-enabled" class="md-nav__link">
+    lsp-toml-schema-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-schema-links" class="md-nav__link">
+    lsp-toml-schema-links
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-schema-repository-enabled" class="md-nav__link">
+    lsp-toml-schema-repository-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-schema-repository-url" class="md-nav__link">
+    lsp-toml-schema-repository-url
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-taplo-config" class="md-nav__link">
+    lsp-toml-taplo-config
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-toml-taplo-config-enabled" class="md-nav__link">
+    lsp-toml-taplo-config-enabled
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2537,191 +2953,151 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/keybindings.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/lsp-toml.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
                 
-                <h1 id="keybindings">Keybindings<a class="headerlink" href="#keybindings" title="Permanent link">#</a></h1>
-<p>When using <code>lsp-mode</code> most of the features depend on server
-capabilities. <code>lsp-mode</code> provides default bindings which are dynamically
-enabled/disabled based on the server functionality. All the commands are
-configured <code>lsp-command-map</code> which is bound to <code>lsp-keymap-prefix</code>
-(default <code>s-l</code>).</p>
-<table>
-<thead>
-<tr>
-<th>Keybinding</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>s-l w s</code></td>
-<td>Entry point for the server startup.</td>
-</tr>
-<tr>
-<td><code>s-l w r</code></td>
-<td>Restart language server</td>
-</tr>
-<tr>
-<td><code>s-l w q</code></td>
-<td>Shutdown language server</td>
-</tr>
-<tr>
-<td><code>s-l w d</code></td>
-<td>Describes current session</td>
-</tr>
-<tr>
-<td><code>s-l w D</code></td>
-<td>Disconnect the buffer from the language server keeping the server running.</td>
-</tr>
-<tr>
-<td><code>s-l = =</code></td>
-<td>Ask the server to format this document.</td>
-</tr>
-<tr>
-<td><code>s-l = r</code></td>
-<td>Ask the server to format the region, or if none is selected, the current line.</td>
-</tr>
-<tr>
-<td><code>s-l F a</code></td>
-<td>Add new project root to the list of workspace folders.</td>
-</tr>
-<tr>
-<td><code>s-l F r</code></td>
-<td>Remove project root from the list of workspace folders.</td>
-</tr>
-<tr>
-<td><code>s-l F b</code></td>
-<td>Remove project root from the workspace blacklist.</td>
-</tr>
-<tr>
-<td><code>s-l T l</code></td>
-<td>Toggle code-lens overlays.</td>
-</tr>
-<tr>
-<td><code>s-l T L</code></td>
-<td>Toggle client-server protocol logging.</td>
-</tr>
-<tr>
-<td><code>s-l T h</code></td>
-<td>Toggle symbol highlighting.</td>
-</tr>
-<tr>
-<td><code>s-l T S</code></td>
-<td>Toggle minor mode for showing information for current line in sideline. (requires <code>lsp-ui</code>)</td>
-</tr>
-<tr>
-<td><code>s-l T d</code></td>
-<td>Toggle minor mode for showing hover information in child frame. (requires <code>lsp-ui</code>)</td>
-</tr>
-<tr>
-<td><code>s-l T s</code></td>
-<td>Toggle signature auto activate.</td>
-</tr>
-<tr>
-<td><code>s-l T f</code></td>
-<td>Toggle on type formatting.</td>
-</tr>
-<tr>
-<td><code>s-l T T</code></td>
-<td>Toggle global minor mode for synchronizing <code>lsp-mode</code> workspace folders and <code>treemacs</code> projects. (requires <code>lsp-treemacs</code>)</td>
-</tr>
-<tr>
-<td><code>s-l g g</code></td>
-<td>Find definitions of the symbol under point.</td>
-</tr>
-<tr>
-<td><code>s-l g r</code></td>
-<td>Find references of the symbol under point.</td>
-</tr>
-<tr>
-<td><code>s-l g i</code></td>
-<td>Find implementations of the symbol under point.</td>
-</tr>
-<tr>
-<td><code>s-l g t</code></td>
-<td>Find type definitions of the symbol under point.</td>
-</tr>
-<tr>
-<td><code>s-l g d</code></td>
-<td>Find declarations of the symbol under point.</td>
-</tr>
-<tr>
-<td><code>s-l g h</code></td>
-<td>Show the incoming call hierarchy for the symbol at point. (requires <code>lsp-treemacs</code>)</td>
-</tr>
-<tr>
-<td><code>s-l g a</code></td>
-<td>Find all meaningful symbols that match pattern.</td>
-</tr>
-<tr>
-<td><code>s-l h h</code></td>
-<td>Display the type signature and documentation of the thing at</td>
-</tr>
-<tr>
-<td><code>s-l h s</code></td>
-<td>Activate signature help.</td>
-</tr>
-<tr>
-<td><code>s-l h g</code></td>
-<td>Trigger display hover information popup and hide it on next typing.</td>
-</tr>
-<tr>
-<td><code>s-l r r</code></td>
-<td>Rename the symbol (and all references to it).</td>
-</tr>
-<tr>
-<td><code>s-l r o</code></td>
-<td>Perform the source.organizeImports code action, if available.</td>
-</tr>
-<tr>
-<td><code>s-l a a</code></td>
-<td>Execute code action.</td>
-</tr>
-<tr>
-<td><code>s-l a l</code></td>
-<td>Click lsp lens using ‘avy’ package.</td>
-</tr>
-<tr>
-<td><code>s-l a h</code></td>
-<td>Highlight symbol at point.</td>
-</tr>
-<tr>
-<td><code>s-l G g</code></td>
-<td>Peek definitions to the identifier at point. (requires <code>lsp-ui</code>)</td>
-</tr>
-<tr>
-<td><code>s-l G r</code></td>
-<td>Peek references to the identifier at point. (requires <code>lsp-ui</code>)</td>
-</tr>
-<tr>
-<td><code>s-l G i</code></td>
-<td>Peek implementation locations of the symbol at point. (requires <code>lsp-ui</code>)</td>
-</tr>
-<tr>
-<td><code>s-l G s</code></td>
-<td>Peek symbols in the workspace. (requires <code>lsp-ui</code>)</td>
-</tr>
-<tr>
-<td><code>C-u RET</code></td>
-<td>When inserting <code>C-u</code> will change the behaviour from insert to replace or vice versa depending on <code>lsp-completion-default-behaviour</code></td>
-</tr>
-</tbody>
-</table>
-<h2 id="which-key-integration">which-key integration<a class="headerlink" href="#which-key-integration" title="Permanent link">#</a></h2>
-<p>To enable <a href="https://github.com/justbur/emacs-which-key/">which-key</a>
-integration in the active major mode for <code>lsp-mode-map</code> you will need to
-call the <code>lsp-enable-which-key-integration</code> function. This could be done
-when <code>lsp-mode</code> starts with the following:</p>
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-mode</span>
-  <span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;lsp-mode-hook</span> <span class="nf">#&#39;</span><span class="nv">lsp-enable-which-key-integration</span><span class="p">))</span>
-</code></pre></div>
-<p>You can also enable which-key integration for all major modes by passing
-<code>t</code> as a parameter. This is useful for buffers that can use multiple
-major modes like those using <code>vue-mode</code>.</p>
-<p><img alt="" src="../../examples/which-key.png" /></p>
+                <h1 id="toml">TOML<a class="headerlink" href="#toml" title="Permanent link">#</a></h1>
+<h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
+<p>For more information about the LSP server, check <a href="https://github.com/tamasfe/taplo/tree/master/taplo-lsp">taplo-lsp</a>.</p>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
+<p><code>cargo install taplo-lsp</code></p>
+<p>For more instructions on how to install manually, check <a href="https://taplo.tamasfe.dev/lsp/">here</a>.</p>
+<h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
+<h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
+<h3 id="lsp-toml-cache-path"><code>lsp-toml-cache-path</code><a class="headerlink" href="#lsp-toml-cache-path" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> <code>/home/runner/.emacs.d/.cache/lsp-toml</code></p>
+<p>Path to cache.</p>
+<hr />
+<h3 id="lsp-toml-command"><code>lsp-toml-command</code><a class="headerlink" href="#lsp-toml-command" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> <code>taplo-lsp</code></p>
+<p>Path to taplo-lsp command.</p>
+<hr />
+<h3 id="lsp-toml-formatter-align-comments"><code>lsp-toml-formatter-align-comments</code><a class="headerlink" href="#lsp-toml-formatter-align-comments" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Align comments vertically after entries and array values.</p>
+<hr />
+<h3 id="lsp-toml-formatter-align-entries"><code>lsp-toml-formatter-align-entries</code><a class="headerlink" href="#lsp-toml-formatter-align-entries" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Align consecutive entries vertically.</p>
+<hr />
+<h3 id="lsp-toml-formatter-allowed-blank-lines"><code>lsp-toml-formatter-allowed-blank-lines</code><a class="headerlink" href="#lsp-toml-formatter-allowed-blank-lines" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>number</code></p>
+<p><em>Default:</em> <code>2</code></p>
+<p>Maximum amount of allowed consecutive blank lines.
+This does not affect the whitespace at the end of the document,
+as it is always stripped.</p>
+<hr />
+<h3 id="lsp-toml-formatter-array-auto-collapse"><code>lsp-toml-formatter-array-auto-collapse</code><a class="headerlink" href="#lsp-toml-formatter-array-auto-collapse" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Collapse arrays that don<code>t exceed the maximum column width and
+don</code>t contain comments.</p>
+<hr />
+<h3 id="lsp-toml-formatter-array-auto-expand"><code>lsp-toml-formatter-array-auto-expand</code><a class="headerlink" href="#lsp-toml-formatter-array-auto-expand" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Expand arrays to multiple lines that exceed the maximum column width.</p>
+<hr />
+<h3 id="lsp-toml-formatter-array-trailing-comma"><code>lsp-toml-formatter-array-trailing-comma</code><a class="headerlink" href="#lsp-toml-formatter-array-trailing-comma" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Append trailing commas for multi-line arrays.</p>
+<hr />
+<h3 id="lsp-toml-formatter-column-width"><code>lsp-toml-formatter-column-width</code><a class="headerlink" href="#lsp-toml-formatter-column-width" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>number</code></p>
+<p><em>Default:</em> <code>80</code></p>
+<p>Maximum column width in characters, affects array expansion
+and collapse, this doesn`t take whitespace into account.</p>
+<hr />
+<h3 id="lsp-toml-formatter-compact-arrays"><code>lsp-toml-formatter-compact-arrays</code><a class="headerlink" href="#lsp-toml-formatter-compact-arrays" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Omit white space padding from single-line arrays.</p>
+<hr />
+<h3 id="lsp-toml-formatter-compact-entries"><code>lsp-toml-formatter-compact-entries</code><a class="headerlink" href="#lsp-toml-formatter-compact-entries" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Omit white space padding around <code>=</code> for entries.</p>
+<hr />
+<h3 id="lsp-toml-formatter-compact-inline-tables"><code>lsp-toml-formatter-compact-inline-tables</code><a class="headerlink" href="#lsp-toml-formatter-compact-inline-tables" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Omit white space padding from the start and end of inline tables.</p>
+<hr />
+<h3 id="lsp-toml-formatter-crlf"><code>lsp-toml-formatter-crlf</code><a class="headerlink" href="#lsp-toml-formatter-crlf" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Use CRLF for line endings.</p>
+<hr />
+<h3 id="lsp-toml-formatter-indent-entries"><code>lsp-toml-formatter-indent-entries</code><a class="headerlink" href="#lsp-toml-formatter-indent-entries" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Indent entries under tables.</p>
+<hr />
+<h3 id="lsp-toml-formatter-indent-string"><code>lsp-toml-formatter-indent-string</code><a class="headerlink" href="#lsp-toml-formatter-indent-string" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(repeat string)</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>The substring that is used for indentation, should be tabs or
+spaces, but technically can be anything.  Uses the IDE setting if
+not set.</p>
+<hr />
+<h3 id="lsp-toml-formatter-indent-tables"><code>lsp-toml-formatter-indent-tables</code><a class="headerlink" href="#lsp-toml-formatter-indent-tables" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Indent based on tables and arrays of tables and their
+subtables, subtables out of order are not indented.</p>
+<hr />
+<h3 id="lsp-toml-formatter-reorder-keys"><code>lsp-toml-formatter-reorder-keys</code><a class="headerlink" href="#lsp-toml-formatter-reorder-keys" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Alphabetically reorder keys that are not separated by empty lines.</p>
+<hr />
+<h3 id="lsp-toml-formatter-trailing-newline"><code>lsp-toml-formatter-trailing-newline</code><a class="headerlink" href="#lsp-toml-formatter-trailing-newline" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Add trailing newline at the end of the file if not present.</p>
+<hr />
+<h3 id="lsp-toml-schema-associations"><code>lsp-toml-schema-associations</code><a class="headerlink" href="#lsp-toml-schema-associations" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(alist :key-type symbol :value-type string)</code></p>
+<p><em>Default:</em> <code>((^(.*(/|\\)\.?taplo\.toml|\.?taplo\.toml)$ . taplo://taplo.toml))</code></p>
+<p>Document and schema associations.</p>
+<hr />
+<h3 id="lsp-toml-schema-enabled"><code>lsp-toml-schema-enabled</code><a class="headerlink" href="#lsp-toml-schema-enabled" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Enable completion and validation based on JSON schemas.</p>
+<hr />
+<h3 id="lsp-toml-schema-links"><code>lsp-toml-schema-links</code><a class="headerlink" href="#lsp-toml-schema-links" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Enable editor links.</p>
+<hr />
+<h3 id="lsp-toml-schema-repository-enabled"><code>lsp-toml-schema-repository-enabled</code><a class="headerlink" href="#lsp-toml-schema-repository-enabled" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Whether to use schemas from the provided schema repository.</p>
+<hr />
+<h3 id="lsp-toml-schema-repository-url"><code>lsp-toml-schema-repository-url</code><a class="headerlink" href="#lsp-toml-schema-repository-url" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> <code>https://taplo.tamasfe.dev/schema_index.json</code></p>
+<p>A HTTP(S) URL that points to a schema index.</p>
+<hr />
+<h3 id="lsp-toml-taplo-config"><code>lsp-toml-taplo-config</code><a class="headerlink" href="#lsp-toml-taplo-config" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>file</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>An absolute, or workspace relative path to the Taplo configuration file.</p>
+<hr />
+<h3 id="lsp-toml-taplo-config-enabled"><code>lsp-toml-taplo-config-enabled</code><a class="headerlink" href="#lsp-toml-taplo-config-enabled" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Whether to enable the usage of a Taplo configuration file.</p>
+<hr />
                 
                   
                     
@@ -2753,7 +3129,7 @@ major modes like those using <code>vue-mode</code>.</p>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../main-features/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../lsp-latex/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -2762,19 +3138,19 @@ major modes like those using <code>vue-mode</code>.</p>
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Main features
+                TeX, LaTeX, etc (texlab, external)
               </div>
             </div>
           </a>
         
         
-          <a href="../integration/iedit/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../lsp-v/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Iedit
+                V
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
