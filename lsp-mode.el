@@ -4206,9 +4206,11 @@ LSP server result."
                                 (indent-to-column offset))))
                   (t indent-line-function))))
       (goto-char start)
-      (while (and (equal (forward-line 1) 0)
+      (forward-line)
+      (while (and (not (eobp))
                   (<= (line-number-at-pos) end-line))
-        (funcall indent-line-function)))))
+        (funcall indent-line-function)
+        (forward-line)))))
 
 (defun lsp--apply-text-edits (edits &optional operation)
   "Apply the EDITS described in the TextEdit[] object.
