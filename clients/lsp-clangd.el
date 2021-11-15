@@ -218,6 +218,13 @@ This must be set only once after loading the clang client.")
   :risky t
   :type '(repeat string))
 
+(defcustom lsp-clients-clangd-library-directories '("/usr")
+  "List of directories which will be considered to be libraries."
+  :risky t
+  :type '(repeat string)
+  :group 'lsp-clangd
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defun lsp-clients--clangd-command ()
   "Generate the language server startup command."
   (unless lsp-clients--clangd-default-executable
@@ -239,6 +246,7 @@ This must be set only once after loading the clang client.")
                   :activation-fn (lsp-activate-on "c" "cpp" "objective-c")
                   :priority -1
                   :server-id 'clangd
+                  :library-folders-fn (lambda (_workspace) lsp-clients-clangd-library-directories)
                   :download-server-fn (lambda (_client callback error-callback _update?)
                                         (lsp-package-ensure 'clangd callback error-callback))))
 
