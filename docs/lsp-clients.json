@@ -482,6 +482,9 @@
     "server-name": "pylsp",
     "server-url": "https://github.com/python-lsp/python-lsp-server",
     "installation": "pip install 'python-lsp-server[all]'",
+    "installation-url": "https://github.com/AnselmC/lsp-py",
+    "client-url": "https://github.com/AnselmC/lsp-py",
+    "client-name": "lsp-py",
     "debugger": "Yes"
   },
   {
