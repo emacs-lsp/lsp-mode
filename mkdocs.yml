@@ -101,8 +101,9 @@ nav:
     - Powershell: page/lsp-pwsh.md
     - Prolog: page/lsp-prolog.md
     - PureScript: page/lsp-purescript.md
+    - Python (Pylsp): page/lsp-pylsp.md
     - Python (Jedi Language Server): page/lsp-jedi.md
-    - Python (Palantir): page/lsp-pyls.md
+    - Python (Palantir deprecated): page/lsp-pyls.md
     - Python (Pyright): https://emacs-lsp.github.io/lsp-pyright
     - Python (Microsoft): https://emacs-lsp.github.io/lsp-python-ms
     - R: page/lsp-r.md
