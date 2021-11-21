@@ -46,11 +46,21 @@ TypeScript."
   :group 'lsp-vetur
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-vetur-completion-use-scaffold-snippets t
-  "Enable/disable Vetur's built-in scaffolding snippets"
-  :type 'boolean
+(defcustom lsp-vetur-completion-scaffold-snippet-sources
+  '((workspace . "(W)")
+    (user . "(U)")
+    (vetur . "(V)"))
+  "Where Vetur source Scaffold Snippets from and how to indicate them.
+- workspace: <WORKSPACE>/.vscode/vetur/snippets.
+- user: <USER-DATA-DIR>/User/snippets/vetur.
+- vetur: Bundled in Vetur.
+The source value can be a string \"(User)\" or an emoji \"✌\".
+Set a source to \"\" to disable it.
+"
+  :type 'alist
   :group 'lsp-vetur
-  :package-version '(lsp-mode . "6.1"))
+  :link '(url-link "https://vuejs.github.io/vetur/guide/snippet.html")
+  :package-version '(lsp-mode. "8.0.1"))
 
 (defcustom lsp-vetur-completion-tag-casing "kebab"
   "Casing conversion for tag completion"
@@ -803,7 +813,7 @@ Code's JavaScript and TypeScript support."
    ("vetur.languageFeatures.codeActions" lsp-vetur-language-features-code-actions t)
    ("vetur.grammar.customBlocks" lsp-vetur-grammar-custom-blocks)
    ("vetur.completion.tagCasing" lsp-vetur-completion-tag-casing)
-   ("vetur.completion.useScaffoldSnippets" lsp-vetur-completion-use-scaffold-snippets t)
+   ("vetur.completion.scaffoldSnippetSources" lsp-vetur-completion-scaffold-snippet-sources)
    ("vetur.completion.autoImport" lsp-vetur-completion-auto-import t)
    ("vetur.useWorkspaceDependencies" lsp-vetur-use-workspace-dependencies t)
    ("vetur.dev.vlsPath" lsp-vetur-dev-vls-path)
