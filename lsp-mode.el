@@ -8244,7 +8244,21 @@ Returns nil if the project should not be added to the current SESSION."
       (lsp--suggest-project-root))
     (lsp-find-session-folder session file-name)
     (unless lsp-auto-guess-root
-      (lsp--find-root-interactively session)))))
+      (when-let ((root-folder (lsp--find-root-interactively session)))
+        (if (or (not (f-equal? root-folder (expand-file-name "~/")))
+                (yes-or-no-p
+                 (concat
+                  (propertize "[WARNING] " 'face 'warning)
+                  "You are trying to import your home folder as project root. This may cause performance issue because some language servers (python, lua, etc) will try to scan all files under project root. To avoid that you may:
+
+1. Use `I' option from the interactive project import to select subfolder(e. g. `~/foo/bar' instead of `~/').
+2. If your file is under `~/' then create a subfolder and move that file in this folder.
+
+Type `No' to go back to project selection.
+Type `Yes' to confirm `HOME' as project root.
+Type `C-g' to cancel project import process and stop `lsp'")))
+            root-folder
+          (lsp--calculate-root session file-name)))))))
 
 (defun lsp--try-open-in-library-workspace ()
   "Try opening current file as library file in any of the active workspace.
