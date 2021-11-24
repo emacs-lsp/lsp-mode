@@ -2663,15 +2663,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-completion-tag-casing" class="md-nav__link">
-    lsp-vetur-completion-tag-casing
+  <a href="#lsp-vetur-completion-scaffold-snippet-sources" class="md-nav__link">
+    lsp-vetur-completion-scaffold-snippet-sources
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-completion-use-scaffold-snippets" class="md-nav__link">
-    lsp-vetur-completion-use-scaffold-snippets
+  <a href="#lsp-vetur-completion-tag-casing" class="md-nav__link">
+    lsp-vetur-completion-tag-casing
   </a>
   
 </li>
@@ -3832,15 +3832,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-completion-tag-casing" class="md-nav__link">
-    lsp-vetur-completion-tag-casing
+  <a href="#lsp-vetur-completion-scaffold-snippet-sources" class="md-nav__link">
+    lsp-vetur-completion-scaffold-snippet-sources
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-vetur-completion-use-scaffold-snippets" class="md-nav__link">
-    lsp-vetur-completion-use-scaffold-snippets
+  <a href="#lsp-vetur-completion-tag-casing" class="md-nav__link">
+    lsp-vetur-completion-tag-casing
   </a>
   
 </li>
@@ -4490,15 +4490,20 @@ or newer in the workspace.</p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Include completion for module export and auto import them</p>
 <hr />
+<h3 id="lsp-vetur-completion-scaffold-snippet-sources"><code>lsp-vetur-completion-scaffold-snippet-sources</code><a class="headerlink" href="#lsp-vetur-completion-scaffold-snippet-sources" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>alist</code></p>
+<p><em>Default:</em> <code>((workspace . (W)) (user . (U)) (vetur . (V)))</code></p>
+<p>Where Vetur source Scaffold Snippets from and how to indicate them.
+- workspace: <WORKSPACE>/.vscode/vetur/snippets.
+- user: <USER-DATA-DIR>/User/snippets/vetur.
+- vetur: Bundled in Vetur.
+The source value can be a string "(User)" or an emoji "✌".
+Set a source to "" to disable it.</p>
+<hr />
 <h3 id="lsp-vetur-completion-tag-casing"><code>lsp-vetur-completion-tag-casing</code><a class="headerlink" href="#lsp-vetur-completion-tag-casing" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const initial) (const kebab))</code></p>
 <p><em>Default:</em> <code>kebab</code></p>
 <p>Casing conversion for tag completion</p>
-<hr />
-<h3 id="lsp-vetur-completion-use-scaffold-snippets"><code>lsp-vetur-completion-use-scaffold-snippets</code><a class="headerlink" href="#lsp-vetur-completion-use-scaffold-snippets" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable/disable Vetur`s built-in scaffolding snippets</p>
 <hr />
 <h3 id="lsp-vetur-dev-log-level"><code>lsp-vetur-dev-log-level</code><a class="headerlink" href="#lsp-vetur-dev-log-level" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const INFO) (const DEBUG))</code></p>
@@ -4651,7 +4656,7 @@ TypeScript.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 19, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 24, 2021</span>
     
   </small>
 </div>
