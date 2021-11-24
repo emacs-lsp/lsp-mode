@@ -321,7 +321,10 @@ The MARKERS and PREFIX value will be attached to each candidate."
 
 (defun lsp-completion--candidate-deprecated (item)
   "Return if ITEM is deprecated."
-  (lsp:completion-item-deprecated? (get-text-property 0 'lsp-completion-item item)))
+  (let ((completion-item (get-text-property 0 'lsp-completion-item item)))
+    (or (lsp:completion-item-deprecated? completion-item)
+        (seq-position (lsp:completion-item-tags? completion-item)
+                      lsp/completion-item-tag-deprecated))))
 
 (defun lsp-completion--company-match (candidate)
   "Return highlight of typed prefix inside CANDIDATE."
