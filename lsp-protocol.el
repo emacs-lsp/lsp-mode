@@ -467,6 +467,9 @@ See `-let' for a description of the destructuring mechanism."
   [nil Unnecessary Deprecated])
 (defconst lsp/diagnostic-tag-unnecessary 1)
 (defconst lsp/diagnostic-tag-deprecated 2)
+(defvar lsp/completion-item-tag-lookup
+  [nil Deprecated])
+(defconst lsp/completion-item-tag-deprecated 1)
 (defvar lsp/document-highlight-kind-lookup
   [nil Text Read Write])
 (defconst lsp/document-highlight-kind-text 1)
