@@ -132,8 +132,17 @@ This will help minimize popup flickering issue in `company-mode'."
   "Dont do client-side reordering completion items when set.")
 
 (declare-function company-mode "ext:company")
-(declare-function company-doc-buffer "ext:company")
 (declare-function yas-expand-snippet "ext:yasnippet")
+
+(defun lsp-doc-buffer (&optional string)
+  (with-current-buffer (get-buffer-create "*lsp-documentation*")
+    (erase-buffer)
+    (fundamental-mode)
+    (when string
+      (save-excursion
+        (insert string)
+        (visual-line-mode)))
+    (current-buffer)))
 
 (defun lsp-falsy? (val)
   "Non-nil if VAL is falsy."
@@ -520,7 +529,7 @@ The MARKERS and PREFIX value will be attached to each candidate."
          (goto-char bounds-start)
          (and (lsp-completion--looking-back-trigger-characterp trigger-chars) t))
        :company-match #'lsp-completion--company-match
-       :company-doc-buffer (-compose #'company-doc-buffer
+       :company-doc-buffer (-compose #'lsp-doc-buffer
                                      #'lsp-completion--get-documentation)
        :exit-function
        (-rpartial #'lsp-completion--exit-fn candidates)))))
