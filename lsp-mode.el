@@ -5016,6 +5016,12 @@ In addition, each can have property:
   :group 'lsp-mode
   :type 'boolean)
 
+(defcustom lsp-enable-suggest-server-download t
+  "When non-nil enable server downloading suggestions."
+  :group 'lsp-mode
+  :type 'boolean
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defun lsp--display-inline-image (mode)
   "Add image property if available."
   (let ((plist-list (cdr (assq mode lsp--display-inline-image-alist))))
@@ -7784,7 +7790,7 @@ the next question until the queue is empty."
     (when lsp--question-queue
       (lsp--process-question-queue))))
 
-(defun lsp--matching-clients? (client)
+(defun lsp--supports-buffer? (client)
   (and
    ;; both file and client remote or both local
    (eq (---truthy? (file-remote-p (buffer-file-name)))
@@ -7812,7 +7818,7 @@ the next question until the queue is empty."
 SESSION is the currently active session. The function will also
 pick only remote enabled clients in case the FILE-NAME is on
 remote machine and vice versa."
-  (-when-let (matching-clients (lsp--filter-clients (-andfn #'lsp--matching-clients?
+  (-when-let (matching-clients (lsp--filter-clients (-andfn #'lsp--supports-buffer?
                                                             #'lsp--server-binary-present?)))
     (lsp-log "Found the following clients for %s: %s"
              (buffer-file-name)
@@ -8283,7 +8289,7 @@ The library folders are defined by each client for each of the active workspace.
                              (-sort (lambda (a _b)
                                       (-contains? lsp--last-active-workspaces a)))
                              (--first
-                              (and (-> it lsp--workspace-client lsp--matching-clients?)
+                              (and (-> it lsp--workspace-client lsp--supports-buffer?)
                                    (when-let ((library-folders-fn
                                                (-> it lsp--workspace-client lsp--client-library-folders-fn)))
                                      (-first (lambda (library-folder)
@@ -8408,7 +8414,7 @@ argument ask the user to select which language server to start."
   (when (buffer-file-name)
     (let (clients
           (matching-clients (lsp--filter-clients
-                             (-andfn #'lsp--matching-clients?
+                             (-andfn #'lsp--supports-buffer?
                                      #'lsp--server-binary-present?))))
       (cond
        (matching-clients
@@ -8426,7 +8432,7 @@ argument ask the user to select which language server to start."
                      (apply 'concat (--map (format "[%s]" (lsp--workspace-print it))
                                            lsp--buffer-workspaces)))))
        ;; look for servers which are currently being downloaded.
-       ((setq clients (lsp--filter-clients (-andfn #'lsp--matching-clients?
+       ((setq clients (lsp--filter-clients (-andfn #'lsp--supports-buffer?
                                                    #'lsp--client-download-in-progress?)))
         (lsp--info "There are language server(%s) installation in progress.
 The server(s) will be started in the buffer when it has finished."
@@ -8435,9 +8441,11 @@ The server(s) will be started in the buffer when it has finished."
                   (cl-pushnew (current-buffer) (lsp--client-buffers client)))
                 clients))
        ;; look for servers to install
-       ((setq clients (lsp--filter-clients (-andfn #'lsp--matching-clients?
-                                                   #'lsp--client-download-server-fn
-                                                   (-not #'lsp--client-download-in-progress?))))
+       ((setq clients (lsp--filter-clients
+                       (-andfn #'lsp--supports-buffer?
+                               (-const lsp-enable-suggest-server-download)
+                               #'lsp--client-download-server-fn
+                               (-not #'lsp--client-download-in-progress?))))
         (let ((client (lsp--completing-read
                        (concat "Unable to find installed server supporting this file. "
                                "The following servers could be installed automatically: ")
@@ -8447,11 +8455,23 @@ The server(s) will be started in the buffer when it has finished."
                        t)))
           (cl-pushnew (current-buffer) (lsp--client-buffers client))
           (lsp--install-server-internal client)))
+       ;; automatic installation disabled
+       ((setq clients (unless matching-clients
+                        (lsp--filter-clients (-andfn #'lsp--supports-buffer?
+                                                     #'lsp--client-download-server-fn
+                                                     (-not (-const lsp-enable-suggest-server-download))
+                                                     (-not #'lsp--server-binary-present?)))))
+        (lsp--warn "The following servers support current file but automatic download is disabled: %s
+\(If you have already installed the server check *lsp-log*)."
+                   (mapconcat (lambda (client)
+                                (symbol-name (lsp--client-server-id client)))
+                              clients
+                              " ")))
        ;; no clients present
        ((setq clients (unless matching-clients
-                        (lsp--filter-clients (-andfn #'lsp--matching-clients?
+                        (lsp--filter-clients (-andfn #'lsp--supports-buffer?
                                                      (-not #'lsp--server-binary-present?)))))
-        (lsp--warn "The following servers support current file but do not have automatic installation configuration: %s
+        (lsp--warn "The following servers support current file but do not have automatic installation: %s
 You may find the installation instructions at https://emacs-lsp.github.io/lsp-mode/page/languages.
 \(If you have already installed the server check *lsp-log*)."
                    (mapconcat (lambda (client)
@@ -8459,7 +8479,7 @@ You may find the installation instructions at https://emacs-lsp.github.io/lsp-mo
                               clients
                               " ")))
        ;; no matches
-       ((-> #'lsp--matching-clients? lsp--filter-clients not)
+       ((-> #'lsp--supports-buffer? lsp--filter-clients not)
         (lsp--error "There are no language servers supporting current mode `%s' registered with `lsp-mode'.
 This issue might be caused by:
 1. The language you are trying to use does not have built-in support in `lsp-mode'. You must install the required support manually. Examples of this are `lsp-java' or `lsp-metals'.

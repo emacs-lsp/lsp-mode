@@ -64,17 +64,8 @@ The issue is caused by `clojure-lsp` server being more aggressive with formattin
 
 
 ---
-### :grey_question: How do I disable automatic installation for particular language server?
+### :grey_question: How do I disable automatic installation?
 
-Solution:
-    Disable for one client:
     ``` elisp
-    (with-eval-after-load 'lsp-bash
-       (setf (lsp-client-download-server-fn (gethash 'bash-ls lsp-clients)) nil))
-    ```
-    Disable for all clients:
-    ``` elisp
-    (add-hook 'lsp-mode-hook
-       (lambda () (mapc (lambda (client) (setf (lsp-client-download-server-fn client) nil))
-                        (ht-values lsp-clients))))
+    (setq lsp-enable-server-download nil)
     ```
