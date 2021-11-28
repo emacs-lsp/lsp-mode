@@ -187,6 +187,11 @@ If there are more arguments expected after the line and column numbers."
   (interactive)
   (lsp-clojure--refactoring-call "unwind-thread"))
 
+(defun lsp-clojure-create-function ()
+  "Apply create-function refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "create-function"))
+
 (defun lsp-clojure-create-test ()
   "Apply create-test refactoring at point."
   (interactive)
