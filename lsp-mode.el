@@ -803,7 +803,7 @@ Changes take effect only when a new session is started."
                                         (gfm-mode . "markdown")
                                         (beancount-mode . "beancount")
                                         (conf-toml-mode . "toml")
-                                        (org-mode . "org"))
+                                        (org-mode . "plaintext"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
