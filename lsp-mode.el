@@ -4002,12 +4002,17 @@ OPERATION is symbol representing the source of this text edit."
         (progn
           (lsp--check-document-changes-version document-changes)
           (->> document-changes
-               (seq-filter (-lambda ((&CreateFile :kind))
-                             (or (not kind) (equal kind "edit"))))
+               (seq-filter (-lambda ((&CreateFile :kind)) (equal kind "create")))
                (seq-do (lambda (change) (lsp--apply-text-document-edit change operation))))
           (->> document-changes
                (seq-filter (-lambda ((&CreateFile :kind))
-                             (not (or (not kind) (equal kind "edit")))))
+                             (and (or (not kind) (equal kind "edit"))
+                                  (not (equal kind "create")))))
+               (seq-do (lambda (change) (lsp--apply-text-document-edit change operation))))
+          (->> document-changes
+               (seq-filter (-lambda ((&CreateFile :kind))
+                             (and (not (or (not kind) (equal kind "edit")))
+                                  (not (equal kind "create")))))
                (seq-do (lambda (change) (lsp--apply-text-document-edit change operation)))))
       (lsp-map
        (lambda (uri text-edits)
@@ -4043,7 +4048,8 @@ interface TextDocumentEdit {
                 (mkdir (f-dirname file-name) t)
                 (f-touch file-name)
                 (when (lsp:create-file-options-overwrite? options?)
-                  (f-write-text "" nil file-name))))
+                  (f-write-text "" nil file-name))
+                (find-file-noselect file-name)))
     ("delete" (-let (((&DeleteFile :uri :options? (&DeleteFileOptions? :recursive?)) edit))
                 (f-delete (lsp--uri-to-path uri) recursive?)))
     ("rename" (-let* (((&RenameFile :old-uri :new-uri :options? (&RenameFileOptions? :overwrite?)) edit)
