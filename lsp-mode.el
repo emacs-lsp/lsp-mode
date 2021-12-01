@@ -7513,6 +7513,7 @@ When prefix UPDATE? is t force installation even if the server is present."
                                             (lambda (&rest _)
                                               (generate-new-buffer-name (format "*lsp-install: %s*" name))))
       (lsp-installation-buffer-mode +1)
+      (view-mode +1)
       (add-hook
        'compilation-finish-functions
        (lambda (_buf status)
