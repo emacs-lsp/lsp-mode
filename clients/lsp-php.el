@@ -88,7 +88,7 @@
 (defcustom lsp-intelephense-php-version "8.0.1"
   "Minimum version of PHP to refer to. Affects code actions, diagnostic & completions."
   :type 'string
-  :group 'lsp-mode
+  :group 'lsp-intelephense
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-files-max-size 1000000
