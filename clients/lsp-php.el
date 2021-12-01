@@ -85,6 +85,12 @@
   :link '(url-link "https://github.com/bmewburn/vscode-intelephense")
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-intelephense-php-version "8.0.1"
+  "Minimum version of PHP to refer to. Affects code actions, diagnostic & completions."
+  :type 'string
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "6.1"))
+
 (defcustom lsp-intelephense-files-max-size 1000000
   "Maximum file size in bytes."
   :type 'number
@@ -216,7 +222,8 @@ language server."
   :package-version '(lsp-mode . "6.3"))
 
 (lsp-register-custom-settings
- '(("intelephense.trace.server" lsp-intelephense-trace-server)
+ '(("intelephense.environment.phpVersion" lsp-intelephense-php-version)
+   ("intelephense.trace.server" lsp-intelephense-trace-server)
    ("intelephense.rename.exclude" lsp-intelephense-rename-exclude)
    ("intelephense.telemetry.enabled" lsp-intelephense-telemetry-enabled t)
    ("intelephense.format.enable" lsp-intelephense-format-enable t)
