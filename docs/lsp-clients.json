@@ -367,6 +367,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "nginx",
+    "full-name": "Nginx",
+    "server-name": "nginx-lsp",
+    "server-url": "https://github.com/pappasam/nginx-language-server",
+    "installation": "pip install -U nginx-language-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "nim",
     "full-name": "Nim",
     "server-name": "nimlsp",
