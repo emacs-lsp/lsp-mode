@@ -177,7 +177,7 @@ As defined by the Language Server Protocol 3.16."
          lsp-crystal lsp-csharp lsp-css lsp-d lsp-dart lsp-dhall lsp-dockerfile lsp-elm
          lsp-elixir lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go lsp-graphql
          lsp-hack lsp-grammarly lsp-groovy lsp-haskell lsp-haxe lsp-java lsp-javascript lsp-json
-         lsp-kotlin lsp-ltex lsp-lua lsp-markdown lsp-nim lsp-nix lsp-metals lsp-ocaml lsp-perl lsp-php lsp-pwsh
+         lsp-kotlin lsp-ltex lsp-lua lsp-markdown lsp-nginx lsp-nim lsp-nix lsp-metals lsp-ocaml lsp-perl lsp-php lsp-pwsh
          lsp-pyls lsp-pylsp lsp-python-ms lsp-purescript lsp-r lsp-rf lsp-rust lsp-solargraph lsp-sorbet
          lsp-tex lsp-terraform lsp-toml lsp-v lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript lsp-xml
          lsp-yaml lsp-sqls lsp-svelte lsp-steep lsp-zig)
@@ -803,7 +803,8 @@ Changes take effect only when a new session is started."
                                         (gfm-mode . "markdown")
                                         (beancount-mode . "beancount")
                                         (conf-toml-mode . "toml")
-                                        (org-mode . "plaintext"))
+                                        (org-mode . "plaintext")
+                                        (nginx-mode . "nginx"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
@@ -1835,7 +1836,7 @@ regex in IGNORED-FILES."
     lsp-clojure lsp-cmake lsp-crystal lsp-csharp lsp-css lsp-d lsp-dhall
     lsp-dockerfile lsp-elixir lsp-elm lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript
     lsp-go lsp-graphql lsp-groovy lsp-hack lsp-haxe lsp-html lsp-javascript lsp-json lsp-kotlin lsp-lua
-    lsp-markdown lsp-nim lsp-nix lsp-ocaml lsp-perl lsp-php lsp-prolog lsp-purescript lsp-pwsh
+    lsp-markdown lsp-nginx lsp-nim lsp-nix lsp-ocaml lsp-perl lsp-php lsp-prolog lsp-purescript lsp-pwsh
     lsp-pyls lsp-pylsp lsp-racket lsp-r lsp-rf lsp-rust lsp-solargraph lsp-sorbet lsp-sqls
     lsp-steep lsp-svelte lsp-terraform lsp-tex lsp-toml lsp-v lsp-vala lsp-verilog lsp-vetur lsp-vhdl
     lsp-vimscript lsp-xml lsp-yaml lsp-zig)

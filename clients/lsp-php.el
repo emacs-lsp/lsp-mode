@@ -86,7 +86,8 @@
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-intelephense-php-version "8.0.1"
-  "Minimum version of PHP to refer to. Affects code actions, diagnostic & completions."
+  "Minimum version of PHP to refer to. Affects code actions, diagnostic &
+completions."
   :type 'string
   :group 'lsp-intelephense
   :package-version '(lsp-mode . "6.1"))

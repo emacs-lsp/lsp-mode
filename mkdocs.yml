@@ -89,6 +89,7 @@ nav:
     - Lua (Lua-Lsp): page/lsp-lua-lsp.md
     - Markdown: page/lsp-markdown.md
     - MSSQL: https://emacs-lsp.github.io/lsp-mssql
+    - Nginx: page/lsp-nginx.md
     - Nim: page/lsp-nim.md
     - Nix: page/lsp-nix.md
     - OCaml (ocaml-lsp): page/lsp-ocaml-lsp-server.md
