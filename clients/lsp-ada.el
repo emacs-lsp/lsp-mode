@@ -56,8 +56,14 @@
   :package-version '(lsp-mode . "6.2")
   :lsp-path "ada.enableDiagnostics")
 
+(defcustom lsp-ada-als-executable "ada_language_server"
+  "Command to start the Ada language server."
+  :group 'lsp-ada
+  :risky t
+  :type 'file)
+
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '("ada_language_server"))
+ (make-lsp-client :new-connection (lsp-stdio-connection lsp-ada-als-executable)
                   :major-modes '(ada-mode)
                   :priority -1
                   :initialized-fn (lambda (workspace)
