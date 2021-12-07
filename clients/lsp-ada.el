@@ -62,6 +62,32 @@
   :risky t
   :type 'file)
 
+(defcustom lsp-ada-alira-executable "alr"
+  "The alire executable to run when a project is detected."
+  :type 'string
+  :group 'lsp-ada
+  :package-version '(lsp-mode "8.0.1"))
+
+(defun lsp-ada--environment ()
+  "Add environmental variables if needed."
+  (let ((project-root (lsp-workspace-root)))
+    ;; When there is an alire project, include its environment
+    (when (file-exists-p
+           (concat (file-name-as-directory project-root)
+                   "alire.toml"))
+      (let ((alr-executable (executable-find lsp-ada-alira-executable)))
+        (if alr-executable
+            ;; Transform output variables to environment
+            (let ((env-output (shell-command-to-string (concat alr-executable " printenv --unix"))))
+              (let ((var-strings (split-string env-output "\n")))
+                (mapcar (lambda (string)
+                          (if (string-match (rx "export" space (group (one-or-more ascii)) "=" "\"" (group (one-or-more ascii)) "\"") string)
+                              (let ((var-name (match-string 1 string))
+                                    (var-value (match-string 2 string)))
+                                (cons var-name var-value))))
+                        var-strings)))
+          (lsp--error "Found alire.toml but the executable %s could not be found" alr-executable))))))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection lsp-ada-als-executable)
                   :major-modes '(ada-mode)
@@ -71,7 +97,8 @@
                                       (lsp--set-configuration
                                        (lsp-configuration-section "ada"))))
                   :server-id 'ada-ls
-                  :synchronize-sections '("ada")))
+                  :synchronize-sections '("ada")
+                  :environment-fn 'lsp-ada--environment))
 
 (lsp-consistency-check lsp-ada)
 
