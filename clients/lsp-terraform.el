@@ -26,6 +26,9 @@
 
 (require 'lsp-mode)
 
+
+;; terraform-lsp
+
 (defgroup lsp-terraform nil
   "LSP support for Terraform, using terraform-lsp"
   :group 'lsp-mode
@@ -48,6 +51,7 @@
   :type 'boolean
   :package-version `(lsp-mode . "6.2"))
 
+
 (defun lsp-terraform--make-launch-cmd ()
   (-let [base (if (stringp lsp-terraform-server)
                   `(,lsp-terraform-server)
@@ -61,6 +65,33 @@
                   :major-modes '(terraform-mode)
                   :priority -1
                   :server-id 'tfls))
+
+
+;; terraform-ls
+
+(defgroup lsp-terraform-ls nil
+  "LSP support for Terraform, using terraform-ls from Hashicorp."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/hashicorp/terraform-ls")
+  :package-version `(lsp-mode . "8.0.1"))
+
+(defcustom lsp-terraform-ls-server "terraform-ls"
+  "Path to the `terraform-ls' binary."
+  :group 'lsp-terraform-ls
+  :risky t
+  :type '(choice
+          (file :tag "File")
+          (repeat string))
+  :package-version `(lsp-mode . "8.0.1"))
+
+(defun lsp-terraform-ls--make-launch-cmd ()
+  `(,lsp-terraform-ls-server "serve"))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-terraform-ls--make-launch-cmd)
+                  :major-modes '(terraform-mode)
+                  :priority 1
+                  :server-id 'tfmls))
 
 (lsp-consistency-check lsp-terraform)
 
