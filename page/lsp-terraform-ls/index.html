@@ -13,14 +13,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-ccls/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-terraform-ls/">
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.4">
     
     
       
-        <title>C++ (ccls) - LSP Mode - LSP support for Emacs</title>
+        <title>Lsp terraform ls - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#c" class="md-skip">
+        <a href="#terraform-lsp" class="md-skip">
           Skip to content
         </a>
       
@@ -103,7 +103,7 @@
         <div class="md-header-nav__topic">
           <span class="md-ellipsis">
             
-              C++ (ccls)
+              Lsp terraform ls
             
           </span>
         </div>
@@ -208,15 +208,13 @@
         
   
   
-    
-  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../languages/" class="md-tabs__link md-tabs__link--active">
+      <a href="../languages/" class="md-tabs__link">
         Languages
       </a>
     </li>
@@ -966,14 +964,12 @@
       
 
 
-  
-
 
   
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" >
     
     <label class="md-nav__link" for="nav-3">
       Languages
@@ -1070,76 +1066,11 @@
           
 
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        C++ (ccls)
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-    
-    <a href="./" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../lsp-ccls/" class="md-nav__link">
       C++ (ccls)
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-    <nav class="md-nav" aria-label="Installation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-yes-gdb-or-lldb" class="md-nav__link">
-    Debugger: Yes (gdb or lldb)
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -2587,8 +2518,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#debugger-yes-gdb-or-lldb" class="md-nav__link">
-    Debugger: Yes (gdb or lldb)
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
   </a>
   
 </li>
@@ -2602,6 +2533,19 @@
   <a href="#available-configurations" class="md-nav__link">
     Available configurations
   </a>
+  
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-terraform-ls-server" class="md-nav__link">
+    lsp-terraform-ls-server
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2617,18 +2561,23 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/lsp-ccls.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/page/lsp-terraform-ls.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
                 
-                <h1 id="c">C++<a class="headerlink" href="#c" title="Permanent link">#</a></h1>
+                <h1 id="terraform-lsp">Terraform LSP<a class="headerlink" href="#terraform-lsp" title="Permanent link">#</a></h1>
 <h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For more information about the LSP server, check <a href="https://github.com/MaskRay/ccls">ccls</a>.</p>
+<p>For more information about the LSP server, check <a href="https://github.com/hashicorp/terraform-ls">terraform-ls</a>.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
-<p>For more instructions on how to install manually, check <a href="https://github.com/MaskRay/ccls">here</a>.</p>
-<h3 id="debugger-yes-gdb-or-lldb">Debugger: Yes (gdb or lldb)<a class="headerlink" href="#debugger-yes-gdb-or-lldb" title="Permanent link">#</a></h3>
+<p>For more instructions on how to install manually, check <a href="https://github.com/hashicorp/terraform-ls">here</a>.</p>
+<h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
+<h3 id="lsp-terraform-ls-server"><code>lsp-terraform-ls-server</code><a class="headerlink" href="#lsp-terraform-ls-server" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(choice (file :tag File) (repeat string))</code></p>
+<p><em>Default:</em> <code>terraform-ls</code></p>
+<p>Path to the <code>terraform-ls</code> binary.</p>
+<hr />
                 
                   
                     
@@ -2660,7 +2609,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../lsp-beancount/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../lsp-svlangserver/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -2669,19 +2618,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Beancount
+                None
               </div>
             </div>
           </a>
         
         
-          <a href="../lsp-clangd/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../lsp-terraform/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                C++ (clangd)
+                None
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
