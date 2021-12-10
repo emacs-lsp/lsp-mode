@@ -9,6 +9,7 @@
   * Enable `lsp-lens-enable` by default.
   * Add TOML support.
   * Add Nginx support.
+  * Disable noisy features from ~lsp-ui~: ~lsp-ui-sideline-show-code-actions~ and ~lsp-ui-doc-show-with-cursor~.
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.
