@@ -638,6 +638,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "terraform-ls",
+    "full-name": "Terraform LSP",
+    "server-name": "terraform-ls",
+    "server-url": "https://github.com/hashicorp/terraform-ls",
+    "installation-url": "https://github.com/hashicorp/terraform-ls",
+    "debugger": "Not available"
+  },
+  {
     "name": "latex",
     "full-name": "TeX, LaTeX, etc.",
     "server-name": "texlab",
