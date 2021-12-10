@@ -78,6 +78,12 @@
   :risky t
   :type 'directory)
 
+(defcustom lsp-clojure-test-tree-position-params nil
+  "The optional test tree position params.
+Defaults to side following treemacs default."
+  :type 'list
+  :group 'lsp-clojure)
+
 ;; Internal
 
 (lsp-interface
@@ -86,9 +92,9 @@
 (lsp-dependency
  'clojure-lsp
  `(:download :url lsp-clojure-server-download-url
-             :decompress :zip
-             :store-path lsp-clojure-server-store-path
-             :set-executable? t)
+   :decompress :zip
+   :store-path lsp-clojure-server-store-path
+   :set-executable? t)
  '(:system "clojure-lsp"))
 
 ;; Refactorings
@@ -308,6 +314,85 @@ and the third the column."
    t
    t))
 
+(defvar-local lsp-clojure--test-tree-data nil)
+(defconst lsp-clojure--test-tree-buffer-name "*Clojure Test Tree*")
+
+(defvar treemacs-position)
+(defvar treemacs-width)
+(declare-function lsp-treemacs-render "ext:lsp-treemacs" (tree title expand-depth &optional buffer-name))
+(declare-function lsp-treemacs--open-file-in-mru "ext:lsp-treemacs" (file))
+
+(defun lsp-clojure--test-tree-ret-action (uri range)
+  "Build the ret action for an item in the test tree view.
+URI is the source of the item.
+RANGE is the range of positions to where this item should point."
+  (interactive)
+  (lsp-treemacs--open-file-in-mru (lsp--uri-to-path uri))
+  (goto-char (lsp--position-to-point (lsp:range-start range)))
+  (run-hooks 'xref-after-jump-hook))
+
+(lsp-defun lsp-clojure--test-tree-data->tree (uri tests)
+  "Builds a test tree.
+URI is the source of the test tree.
+TESTS are all tests items."
+  (seq-map
+   (-lambda ((&clojure-lsp:TestTreeNode :name :range :kind :children?))
+     (-let* ((deftest? (eq 1 kind))
+             (icon (if deftest? 'method 'field))
+             (base-tree (list :key name
+                              :label name
+                              :icon icon
+                              :ret-action (lambda (&rest _) (lsp-clojure--test-tree-ret-action uri range))
+                              :uri uri)))
+       (if (seq-empty-p children?)
+           base-tree
+         (plist-put base-tree :children (lambda (&rest _) (lsp-clojure--test-tree-data->tree uri children?))))))
+   tests))
+
+(lsp-defun lsp-clojure--render-test-tree ((&clojure-lsp:TestTreeParams :uri :tests))
+  "Render a test tree view for current test tree buffer data."
+  (save-excursion
+    (lsp-treemacs-render
+     (lsp-clojure--test-tree-data->tree uri tests)
+     "Clojure Test Tree"
+     t
+     lsp-clojure--test-tree-buffer-name)))
+
+(defun lsp-clojure--show-test-tree (ignore-focus?)
+  "Show a test tree for current buffer.
+Focus on it if IGNORE-FOCUS? is nil."
+  (if lsp-clojure--test-tree-data
+      (-let* ((tree-buffer (lsp-clojure--render-test-tree lsp-clojure--test-tree-data))
+              (position-params (or lsp-clojure-test-tree-position-params
+                                   `((side . ,treemacs-position)
+                                     (slot . 2)
+                                     (window-width . ,treemacs-width))))
+              (window (display-buffer-in-side-window tree-buffer position-params)))
+        (unless ignore-focus?
+          (select-window window)
+          (set-window-dedicated-p window t)))
+    (unless ignore-focus?
+      (lsp-log "No Clojure test tree data found."))))
+
+(lsp-defun lsp-clojure--handle-test-tree (_workspace (notification &as &clojure-lsp:TestTreeParams :uri))
+  "Test tree notification handler for workspace WORKSPACE.
+NOTIFICATION is the test tree notification data received from server.
+It updates the test tree view data."
+  (when (require 'lsp-treemacs nil t)
+    (when-let (buffer (find-buffer-visiting (lsp--uri-to-path uri)))
+      (with-current-buffer buffer
+        (setq lsp-clojure--test-tree-data notification)
+        (when (get-buffer-window lsp-clojure--test-tree-buffer-name)
+          (lsp-clojure--show-test-tree t))))))
+
+;;;###autoload
+(defun lsp-clojure-show-test-tree (ignore-focus?)
+  "Show a test tree and focus on it if IGNORE-FOCUS? is nil."
+  (interactive "P")
+  (if (require 'lsp-treemacs nil t)
+      (lsp-clojure--show-test-tree ignore-focus?)
+    (error "lsp-treemacs not installed.")))
+
 (lsp-register-client
  (make-lsp-client
   :download-server-fn (lambda (_client callback error-callback _update?)
@@ -327,8 +412,10 @@ and the third the column."
   :uri-handlers (lsp-ht ("jar" #'lsp-clojure--file-in-jar))
   :action-handlers (lsp-ht ("resolve-macro-as" #'lsp-clojure--resolve-macro-as)
                            ("code-lens-references" #'lsp-clojure--show-references))
+  :notification-handlers (lsp-ht ("clojure/textDocument/testTree" #'lsp-clojure--handle-test-tree))
   :initialization-options '(:dependency-scheme "jar"
                             :show-docs-arity-on-same-line? t)
+  :custom-capabilities '((experimental . ((testTree . t))))
   :server-id 'clojure-lsp))
 
 (lsp-consistency-check lsp-clojure)
