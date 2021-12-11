@@ -335,6 +335,7 @@ the server has requested that."
     "[/\\\\]\\.ccls-cache\\'"
     "[/\\\\]\\.vscode\\'"
     "[/\\\\]\\.venv\\'"
+    "[/\\\\]\\.mypy_cache\\'"
     ;; Autotools output
     "[/\\\\]\\.deps\\'"
     "[/\\\\]build-aux\\'"
