@@ -331,29 +331,29 @@ RANGE is the range of positions to where this item should point."
   (goto-char (lsp--position-to-point (lsp:range-start range)))
   (run-hooks 'xref-after-jump-hook))
 
-(lsp-defun lsp-clojure--test-tree-data->tree (uri tests)
+(lsp-defun lsp-clojure--test-tree-data->tree (uri (&clojure-lsp:TestTreeNode :name :range :kind :children?))
   "Builds a test tree.
 URI is the source of the test tree.
-TESTS are all tests items."
-  (seq-map
-   (-lambda ((&clojure-lsp:TestTreeNode :name :range :kind :children?))
-     (-let* ((deftest? (eq 1 kind))
-             (icon (if deftest? 'method 'field))
-             (base-tree (list :key name
-                              :label name
-                              :icon icon
-                              :ret-action (lambda (&rest _) (lsp-clojure--test-tree-ret-action uri range))
-                              :uri uri)))
-       (if (seq-empty-p children?)
-           base-tree
-         (plist-put base-tree :children (lambda (&rest _) (lsp-clojure--test-tree-data->tree uri children?))))))
-   tests))
+NODE is the node with all test children data."
+  (-let* ((icon (cl-case kind
+                  (1 'namespace)
+                  (2 'method)
+                  (3 'field)))
+          (base-tree (list :key name
+                           :label name
+                           :icon icon
+                           :ret-action (lambda (&rest _) (lsp-clojure--test-tree-ret-action uri range))
+                           :uri uri)))
+    (if (seq-empty-p children?)
+        base-tree
+      base-tree
+      (plist-put base-tree :children (seq-map (-partial #'lsp-clojure--test-tree-data->tree uri) children?)))))
 
-(lsp-defun lsp-clojure--render-test-tree ((&clojure-lsp:TestTreeParams :uri :tests))
+(lsp-defun lsp-clojure--render-test-tree ((&clojure-lsp:TestTreeParams :uri :tree))
   "Render a test tree view for current test tree buffer data."
   (save-excursion
     (lsp-treemacs-render
-     (lsp-clojure--test-tree-data->tree uri tests)
+     (list (lsp-clojure--test-tree-data->tree uri tree))
      "Clojure Test Tree"
      t
      lsp-clojure--test-tree-buffer-name)))
