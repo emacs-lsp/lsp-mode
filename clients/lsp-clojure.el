@@ -415,7 +415,7 @@ It updates the test tree view data."
   :notification-handlers (lsp-ht ("clojure/textDocument/testTree" #'lsp-clojure--handle-test-tree))
   :initialization-options '(:dependency-scheme "jar"
                             :show-docs-arity-on-same-line? t)
-  :custom-capabilities '((experimental . ((testTree . t))))
+  :custom-capabilities '((experimental . ((testTree . (require 'lsp-treemacs nil t)))))
   :server-id 'clojure-lsp))
 
 (lsp-consistency-check lsp-clojure)
