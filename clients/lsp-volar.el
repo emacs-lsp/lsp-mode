@@ -63,7 +63,7 @@
                (locate-dominating-file (buffer-file-name) "vite.cofnig.js")
                (and (lsp-workspace-root) (f-file-p (f-join (lsp-workspace-root) "vite.config.ts")))
                (locate-dominating-file (buffer-file-name) "vite.config.ts")
-               (f-file-p (f-join (cdr (project-current)) ".volarrc")))
+               (f-file-p (f-join (lsp-workspace-root) ".volarrc")))
            (or (or (string-match-p "\\.mjs\\|\\.[jt]sx?\\'" filename)
                    (and (derived-mode-p 'js-mode 'typescript-mode)
                         (not (derived-mode-p 'json-mode))))
@@ -71,7 +71,7 @@
     (string= (file-name-extension filename) "vue")))
 
 (lsp-register-custom-settings
- '(("typescript.serverPath" (lambda () (if-let ((project-root (cdr (project-current)))
+ '(("typescript.serverPath" (lambda () (if-let ((project-root (lsp-workspace-root))
                                                 (server-path (concat project-root "node_modules/typescript/lib/tsserverlibrary.js"))
                                                 (is-exist (file-exists-p server-path)))
                                            server-path
