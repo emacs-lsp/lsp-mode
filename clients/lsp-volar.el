@@ -71,7 +71,7 @@
     (string= (file-name-extension filename) "vue")))
 
 (lsp-register-custom-settings
- '(("typescript.serverPath" (lambda () (if-let ((project-root ((cdr (project-current))))
+ '(("typescript.serverPath" (lambda () (if-let ((project-root (cdr (project-current)))
                                                 (server-path (concat project-root "node_modules/typescript/lib/tsserverlibrary.js"))
                                                 (is-exist (file-exists-p server-path)))
                                            server-path
