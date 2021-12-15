@@ -10,7 +10,6 @@
   * Add TOML support.
   * Add Nginx support.
   * Disable noisy features from ~lsp-ui~: ~lsp-ui-sideline-show-code-actions~ and ~lsp-ui-doc-show-with-cursor~.
-  * Add Volar support.
   * Fix org mode support. #3258
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
