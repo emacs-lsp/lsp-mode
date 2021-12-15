@@ -723,21 +723,12 @@
   },
   {
     "name": "vetur",
-    "full-name": "Vue 2",
+    "full-name": "Vue",
     "server-name": "vue-language-server",
     "server-url": "https://github.com/vuejs/vetur/tree/master/server",
     "installation": "npm install -g vls",
     "lsp-install-server": "vls",
     "debugger": "Yes (Firefox/Chrome)"
-  },
-  {
-    "name": "volar",
-    "full-name": "Vue 3",
-    "server-name": "volar-language-server",
-    "server-url": "https://github.com/johnsoncodehk/volar",
-    "installation": "npm install -g @volar/server",
-    "lsp-install-server": "volar-ls",
-    "debugger": "Not available"
   },
   {
     "name": "xml",
