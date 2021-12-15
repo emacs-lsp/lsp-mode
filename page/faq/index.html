@@ -732,8 +732,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#how-do-i-disable-automatic-installation-for-particular-language-server" class="md-nav__link">
-    How do I disable automatic installation for particular language server?
+  <a href="#how-do-i-disable-automatic-installation" class="md-nav__link">
+    How do I disable automatic installation?
   </a>
   
 </li>
@@ -2685,8 +2685,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#how-do-i-disable-automatic-installation-for-particular-language-server" class="md-nav__link">
-    How do I disable automatic installation for particular language server?
+  <a href="#how-do-i-disable-automatic-installation" class="md-nav__link">
+    How do I disable automatic installation?
   </a>
   
 </li>
@@ -2748,17 +2748,11 @@
 <h3 id="when-using-clojure-with-clojure-lsp-lsp-mode-is-interfering-with-typing-e-g-deleting-whitespace-while-typing-how-to-fix-that"><img alt="❔" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/2754.svg" title=":grey_question:" /> When using <code>clojure</code> with <code>clojure-lsp</code> <code>lsp-mode</code> is interfering with typing (e. g. deleting whitespace while typing), how to fix that?<a class="headerlink" href="#when-using-clojure-with-clojure-lsp-lsp-mode-is-interfering-with-typing-e-g-deleting-whitespace-while-typing-how-to-fix-that" title="Permanent link">#</a></h3>
 <p>The issue is caused by <code>clojure-lsp</code> server being more aggressive with formatting(deleting whitespaces) and <code>aggressive-indent-mode</code> being on and calling it while typing. The solution is either to disable <code>aggressive-indent-mode</code> or to disable <code>lsp-mode</code> formatting via <code>lsp-enable-indentation</code>.</p>
 <hr />
-<h3 id="how-do-i-disable-automatic-installation-for-particular-language-server"><img alt="❔" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/2754.svg" title=":grey_question:" /> How do I disable automatic installation for particular language server?<a class="headerlink" href="#how-do-i-disable-automatic-installation-for-particular-language-server" title="Permanent link">#</a></h3>
-<p>Solution:
-    Disable for one client:
-    <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-bash</span>
-   <span class="p">(</span><span class="nb">setf</span> <span class="p">(</span><span class="nv">lsp-client-download-server-fn</span> <span class="p">(</span><span class="nf">gethash</span> <span class="ss">&#39;bash-ls</span> <span class="nv">lsp-clients</span><span class="p">))</span> <span class="no">nil</span><span class="p">))</span>
+<h3 id="how-do-i-disable-automatic-installation"><img alt="❔" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/2754.svg" title=":grey_question:" /> How do I disable automatic installation?<a class="headerlink" href="#how-do-i-disable-automatic-installation" title="Permanent link">#</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="err">```</span> <span class="n">elisp</span>
+<span class="p">(</span><span class="n">setq</span> <span class="n">lsp</span><span class="o">-</span><span class="n">enable</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">download</span> <span class="n">nil</span><span class="p">)</span>
+<span class="err">```</span>
 </code></pre></div>
-    Disable for all clients:
-    <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;lsp-mode-hook</span>
-   <span class="p">(</span><span class="nb">lambda</span> <span class="p">()</span> <span class="p">(</span><span class="nf">mapc</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="nv">client</span><span class="p">)</span> <span class="p">(</span><span class="nb">setf</span> <span class="p">(</span><span class="nv">lsp-client-download-server-fn</span> <span class="nv">client</span><span class="p">)</span> <span class="no">nil</span><span class="p">))</span>
-                    <span class="p">(</span><span class="nv">ht-values</span> <span class="nv">lsp-clients</span><span class="p">))))</span>
-</code></pre></div></p>
                 
                   
                     
