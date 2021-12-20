@@ -2662,12 +2662,24 @@ Benchmarks show that Emacs 27 is <code>~15 times</code> faster than Emacs when u
 <p>Increase the amount of data which Emacs reads from the process. Again the emacs default is too low 4k considering that the some of the language server responses are in 800k - 3M range.</p>
 </li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">read-process-output-max</span> <span class="p">(</span><span class="nf">*</span> <span class="mi">1024</span> <span class="mi">1024</span><span class="p">))</span> <span class="c1">;; 1mb</span>
+<p><div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">read-process-output-max</span> <span class="p">(</span><span class="nf">*</span> <span class="mi">1024</span> <span class="mi">1024</span><span class="p">))</span> <span class="c1">;; 1mb</span>
 </code></pre></div>
-<ul>
+- Use <code>plists</code> for deserialization. <code>lsp-mode</code> can be compiled in 2 modes <code>plist</code> and <code>hash-table</code> based <code>lsp-use-plists</code> flag. <code>plist</code>s provide better performance in serialization and also put less presure than <code>hash-table</code>s. To switch to <code>plist</code> you have to perform 2 steps:</p>
+<ol>
+<li>Put the following in your config:
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-use-plists</span> <span class="no">t</span><span class="p">)</span>
+</code></pre></div></li>
+<li>Recompile <code>lsp-mode</code> and related packages. One way to achieve that is to perform the following steps:</li>
+<li>Delete <code>elc</code> files.
+<div class="highlight"><pre><span></span><code>find ~/.emacs.d/elpa -name <span class="s2">&quot;*.elc&quot;</span> -delete
+</code></pre></div></li>
+<li>Restart emacs and do:
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">byte-recompile-directory</span> <span class="p">(</span><span class="nf">expand-file-name</span> <span class="s">&quot;~/.emacs.d/elpa/&quot;</span><span class="p">)</span> <span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+<em>NB:</em> make sure that <code>lsp-use-plist</code> is <code>t</code> when you are performing the compilation.</li>
 <li>Optional: Disable <code>lsp-ui</code>. Normally, <code>lsp-ui</code> is very fast but in some systems (especially when using <code>Windows</code>) <code>lsp-ui</code> overlays and popups might slow down emacs.</li>
 <li>Optional: fine-tune <code>lsp-idle-delay</code>. This variable determines how often lsp-mode will refresh the highlights, lenses, links, etc while you type.</li>
-</ul>
+</ol>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-idle-delay</span> <span class="mf">0.500</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="gccemacs">gccemacs<a class="headerlink" href="#gccemacs" title="Permanent link">#</a></h3>
