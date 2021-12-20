@@ -42,7 +42,7 @@
   :group 'lsp-eslint
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-eslint-download-url "https://github.com/emacs-lsp/lsp-server-binaries/blob/master/dbaeumer.vscode-eslint-2.1.13.vsix?raw=true"
+(defcustom lsp-eslint-download-url "https://github.com/emacs-lsp/lsp-server-binaries/blob/master/dbaeumer.vscode-eslint-2.2.2.vsix?raw=true"
   "Eslint language server download url."
   :type 'string
   :group 'lsp-eslint
