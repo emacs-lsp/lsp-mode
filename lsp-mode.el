@@ -8563,7 +8563,7 @@ This avoids overloading the server with many files when starting Emacs."
                                     (let ((res (with-current-buffer buf
                                                  ,form)))
                                       (cond
-                                       ((eq res :optional) (propertize "NOT AVAILABLE (OPTIONAL)" 'face 'warning))
+                                       ((eq res :optional) (propertize "OPTIONAL" 'face 'warning))
                                        (res (propertize "OK" 'face 'success))
                                        (t (propertize "ERROR" 'face 'error)))))))
                  (-partition 2 checks))))))
@@ -8586,6 +8586,7 @@ This avoids overloading the server with many files when starting Emacs."
               nil)
      (error t))
    "`gc-cons-threshold' increased?" (> gc-cons-threshold 800000)
+   "Using `plist' for deserialized objects?" (or lsp-use-plists :optional)
    "Using gccemacs with emacs lisp native compilation (https://akrl.sdf.org/gccemacs.html)"
    (or (and (fboundp 'native-comp-available-p)
             (native-comp-available-p))
