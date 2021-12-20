@@ -87,7 +87,7 @@ completing function calls."
   intended to affect the behavior of commands invoked by `gopls'
   on the user's behalf. This variable takes a hash table of env
   var names to desired values."
-  :type '(alist :key-type (string :tag "env var name") :value-type (string :tag "value"))
+  :type '(alist :key-type (symbol :tag "env var name") :value-type (string :tag "value"))
   :group 'lsp-go
   :risky t
   :package-version '(lsp-mode "6.2"))
