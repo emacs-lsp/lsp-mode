@@ -356,6 +356,8 @@ the server has requested that."
     ;; OCaml and Dune
     "[/\\\\]_opam\\'"
     "[/\\\\]_build\\'"
+    ;; Elixir
+    "[/\\\\]\\.elixir_ls\\'"
     ;; nix-direnv
     "[/\\\\]\\.direnv\\'")
   "List of regexps matching directory paths which won't be monitored when
