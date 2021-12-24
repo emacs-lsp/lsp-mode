@@ -4,7 +4,7 @@
 
 ;; Author: Vibhav Pant, Fangrui Song, Ivan Yonchovski
 ;; Keywords: languages
-;; Package-Requires: ((emacs "26.1") (dash "2.18.0") (f "0.20.0") (ht "2.3") (spinner "1.7.3") (markdown-mode "2.3") (lv "0"))
+;; Package-Requires: ((emacs "26.3") (dash "2.18.0") (f "0.20.0") (ht "2.3") (spinner "1.7.3") (markdown-mode "2.3") (lv "0") (eldoc "1.11"))
 ;; Version: 8.0.1
 
 ;; URL: https://github.com/emacs-lsp/lsp-mode
@@ -576,10 +576,7 @@ The hook will receive two parameters list of added and removed folders."
   :type 'hook
   :group 'lsp-mode)
 
-(defcustom lsp-eldoc-hook '(lsp-hover)
-  "Hooks to run for eldoc."
-  :type 'hook
-  :group 'lsp-mode)
+(make-obsolete 'lsp-eldoc-hook 'eldoc-documentation-functions "lsp-mode 8.0.0")
 
 (defcustom lsp-before-apply-edits-hook nil
   "Hooks to run before applying edits."
@@ -1142,17 +1139,6 @@ See #2049"
 (defun lsp--error (format &rest args)
   "Display lsp error message with FORMAT with ARGS."
   (lsp--message "%s :: %s" (propertize "LSP" 'face 'error) (apply #'format format args)))
-
-(defun lsp--eldoc-message (&optional msg)
-  "Show MSG in eldoc."
-  (setq lsp--eldoc-saved-message msg)
-  (run-with-idle-timer 0 nil (lambda ()
-                               ;; XXX: new eldoc in Emacs 28
-                               ;; recommends running the hook variable
-                               ;; `eldoc-documentation-functions'
-                               ;; instead of using eldoc-message
-                               (with-no-warnings
-                                 (eldoc-message msg)))))
 
 (defun lsp-log (format &rest args)
   "Log message to the ’*lsp-log*’ buffer.
@@ -3800,7 +3786,7 @@ yet."
   (cond
    (lsp-managed-mode
     (when (lsp-feature? "textDocument/hover")
-      (add-function :before-until (local 'eldoc-documentation-function) #'lsp-eldoc-function)
+      (add-hook 'eldoc-documentation-functions #'lsp-eldoc-function nil t)
       (eldoc-mode 1))
 
     (add-hook 'after-change-functions #'lsp-on-change nil t)
@@ -3835,8 +3821,8 @@ yet."
              (lsp--on-idle buffer)))))))
    (t
     (lsp-unconfig-buffer)
-    (remove-function (local 'eldoc-documentation-function) #'lsp-eldoc-function)
 
+    (remove-hook 'eldoc-documentation-functions #'lsp-eldoc-function t)
     (remove-hook 'post-command-hook #'lsp--post-command t)
     (remove-hook 'after-change-functions #'lsp-on-change t)
     (remove-hook 'after-revert-hook #'lsp-on-revert t)
@@ -4853,10 +4839,33 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
    (->> lsp--cur-workspace lsp--workspace-client lsp--client-response-handlers (remhash id))
    (lsp-notify "$/cancelRequest" `(:id ,id))))
 
-(defun lsp-eldoc-function ()
-  "`lsp-mode' eldoc function."
-  (run-hooks 'lsp-eldoc-hook)
-  eldoc-last-message)
+(defvar-local lsp--hover-saved-bounds nil)
+
+(defun lsp-eldoc-function (cb &rest _ignored)
+  "`lsp-mode' eldoc function to display hover info (based on `textDocument/hover')."
+  (if (and lsp--hover-saved-bounds
+           (lsp--point-in-bounds-p lsp--hover-saved-bounds))
+      lsp--eldoc-saved-message
+    (setq lsp--hover-saved-bounds nil
+          lsp--eldoc-saved-message nil)
+    (if (looking-at "[[:space:]\n]")
+        (setq lsp--eldoc-saved-message nil) ; And returns nil.
+      (when (and lsp-eldoc-enable-hover (lsp--capability :hoverProvider))
+        (lsp-request-async
+         "textDocument/hover"
+         (lsp--text-document-position-params)
+         (-lambda ((hover &as &Hover? :range? :contents))
+           (when hover
+             (when range?
+               (setq lsp--hover-saved-bounds (lsp--range-to-region range?)))
+             (let ((msg (and contents
+                             (lsp--render-on-hover-content
+                              contents
+                              lsp-eldoc-render-all))))
+               (funcall cb (setq lsp--eldoc-saved-message msg)))))
+         :error-handler #'ignore
+         :mode 'tick
+         :cancel-token :eldoc-hover)))))
 
 (defun lsp--point-on-highlight? ()
   (-some? (lambda (overlay)
@@ -5423,36 +5432,6 @@ It will show up only if current point has signature help."
         result))
      :mode 'unchanged
      :cancel-token :document-color-token)))
-
-
-;; hover
-
-(defvar-local lsp--hover-saved-bounds nil)
-
-(defun lsp-hover ()
-  "Display hover info (based on `textDocument/signatureHelp')."
-  (if (and lsp--hover-saved-bounds
-           (lsp--point-in-bounds-p lsp--hover-saved-bounds))
-      (lsp--eldoc-message lsp--eldoc-saved-message)
-    (setq lsp--hover-saved-bounds nil
-          lsp--eldoc-saved-message nil)
-    (if (looking-at "[[:space:]\n]")
-        (lsp--eldoc-message nil)
-      (when (and lsp-eldoc-enable-hover (lsp--capability :hoverProvider))
-        (lsp-request-async
-         "textDocument/hover"
-         (lsp--text-document-position-params)
-         (-lambda ((hover &as &Hover? :range? :contents))
-           (when hover
-             (when range?
-               (setq lsp--hover-saved-bounds (lsp--range-to-region range?)))
-             (lsp--eldoc-message (and contents
-                                      (lsp--render-on-hover-content
-                                       contents
-                                       lsp-eldoc-render-all)))))
-         :error-handler #'ignore
-         :mode 'tick
-         :cancel-token :eldoc-hover)))))
 
 
 
