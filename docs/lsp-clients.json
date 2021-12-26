@@ -359,14 +359,6 @@
     "debugger": "Not available"
   },
   {
-    "name": "markdown",
-    "full-name": "Markdown",
-    "server-name": "unified-language-server",
-    "server-url": "https://github.com/unifiedjs/unified-language-server",
-    "installation": "npm i -g unified-language-server",
-    "debugger": "Not available"
-  },
-  {
     "name": "nginx",
     "full-name": "Nginx",
     "server-name": "nginx-lsp",
@@ -543,6 +535,14 @@
     "server-name": "racket-language-server",
     "server-url": "https://github.com/theia-ide/racket-language-server",
     "installation": "raco pkg install racket-language-server",
+    "debugger": "Not available"
+  },
+  {
+    "name": "remark",
+    "full-name": "Remark",
+    "server-name": "remark-language-server",
+    "server-url": "https://github.com/remarkjs/remark-language-server",
+    "installation": "npm i -g remark-language-server",
     "debugger": "Not available"
   },
   {
