@@ -67,5 +67,5 @@ The issue is caused by `clojure-lsp` server being more aggressive with formattin
 ### :grey_question: How do I disable automatic installation?
 
     ``` elisp
-    (setq lsp-enable-server-download nil)
+    (setq lsp-enable-suggest-server-download nil)
     ```
