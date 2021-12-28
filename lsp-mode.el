@@ -2376,7 +2376,7 @@ BINDINGS is a list of (key def desc cond)."
                             item))))
                     (when (stringp ,key)
                       (setq lsp--binding-descriptions
-                            (nconc lsp--binding-descriptions '(,key ,desc)))))))
+                            (append lsp--binding-descriptions '(,key ,desc)))))))
        macroexp-progn))
 
 (defvar lsp--describe-buffer nil)
