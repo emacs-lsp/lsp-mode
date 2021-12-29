@@ -60,7 +60,7 @@
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration (lsp-configuration-section "remark-language-server"))))
-                  :priority -1
+                  :priority 0
                   :server-id 'remark))
 
 (lsp-consistency-check lsp-remark)
