@@ -13,11 +13,7 @@ body:
       - label: "I checked [FAQ](https://emacs-lsp.github.io/lsp-mode/page/faq/) and [Troubleshooting](https://emacs-lsp.github.io/lsp-mode/page/troubleshooting/) sections"
         required: true
       - label: |
-          You may also try reproduce the issue using clean environment using the following command
-          ```bash
-          emacs -q -l lsp-start-plain.el
-          ```
-          where `lsp-start-plain.el` can be downloaded [here](https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-start-plain.el).
+          You may also try reproduce the issue using clean environment using the following command: `M-x lsp-start-plain`
 - type: textarea
   id: bug-description
   attributes:

@@ -32,8 +32,4 @@ If you manage your Emacs packages with the built-in `package.el`, we recommend t
 
 #### Check if any package or wrong config could be causing the issue
 
-Try to repro the issue with our [lsp-start-plain.el](https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-start-plain.el) file, which has just the necessary config/packages for lsp-mode work.
-
-```bash
-emacs -q -l lsp-start-plain.el
-```
+Try to repro the issue with our [lsp-start-plain.el](https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-start-plain.el) file, which has just the necessary config/packages for lsp-mode work using `M-x lsp-start-plain`.
