@@ -965,9 +965,10 @@ meaning."
   (-if-let* ((params (lsp-make-rust-analyzer-expand-macro-params
                       :text-document (lsp--text-document-identifier)
                       :position (lsp--cur-position)))
-             ((&rust-analyzer:ExpandedMacro :expansion) (lsp-request
-                                                         "rust-analyzer/expandMacro"
-                                                         params)))
+             (response (lsp-request
+                        "rust-analyzer/expandMacro"
+                        params))
+             ((&rust-analyzer:ExpandedMacro :expansion) response))
       (funcall lsp-rust-analyzer-macro-expansion-method expansion)
     (lsp--error "No macro found at point, or it could not be expanded.")))
 
