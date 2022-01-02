@@ -4857,14 +4857,13 @@ If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
          "textDocument/hover"
          (lsp--text-document-position-params)
          (-lambda ((hover &as &Hover? :range? :contents))
-           (when hover
-             (when range?
-               (setq lsp--hover-saved-bounds (lsp--range-to-region range?)))
-             (let ((msg (and contents
-                             (lsp--render-on-hover-content
-                              contents
-                              lsp-eldoc-render-all))))
-               (funcall cb (setq lsp--eldoc-saved-message msg)))))
+           (setq lsp--hover-saved-bounds (when range?
+                                           (lsp--range-to-region range?)))
+           (funcall cb (setq lsp--eldoc-saved-message
+                             (when contents
+                               (lsp--render-on-hover-content
+                                contents
+                                lsp-eldoc-render-all)))))
          :error-handler #'ignore
          :mode 'tick
          :cancel-token :eldoc-hover)))))
