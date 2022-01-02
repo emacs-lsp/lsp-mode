@@ -36,7 +36,10 @@
   'lsp-clients-kotlin-server-executable
   "lsp-mode 6.4")
 
-(defcustom lsp-clients-kotlin-server-executable "kotlin-language-server"
+(defcustom lsp-clients-kotlin-server-executable
+  (if (eq system-type 'windows-nt)
+      "kotlin-language-server.bat"
+    "kotlin-language-server")
   "The kotlin-language-server executable to use.
 Leave as just the executable name to use the default behavior of finding the
 executable with `exec-path'."
@@ -94,6 +97,13 @@ to Kotlin."
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-kotlin-server-download-url
+  "https://github.com/fwcd/kotlin-language-server/releases/download/latest/server.zip"
+  "The URL for the language server download."
+  :type 'string
+  :group 'lsp-kotlin
+  :package-version '(lsp-mode . "8.0.1"))
+
 (lsp-register-custom-settings
  '(("kotlin.externalSources.autoConvertToKotlin" lsp-kotlin-external-sources-auto-convert-to-kotlin t)
    ("kotlin.externalSources.useKlsScheme" lsp-kotlin-external-sources-use-kls-scheme t)
@@ -105,6 +115,22 @@ to Kotlin."
    ("kotlin.trace.server" lsp-kotlin-trace-server)
    ("kotlin.languageServer.path" lsp-clients-kotlin-server-executable)))
 
+(defvar lsp-kotlin--language-server-path
+  (f-join lsp-server-install-dir
+          "kotlin" "server" "bin" (if (eq system-type 'windows-nt)
+                                      "kotlin-language-server.bat"
+                                    "kotlin-language-server"))
+  "The path to store the language server at if necessary.")
+
+(lsp-dependency
+ 'kotlin-language-server
+ `(:system ,lsp-clients-kotlin-server-executable)
+ `(:download :url lsp-kotlin-server-download-url
+             :decompress :zip
+             :store-path ,(f-join lsp-server-install-dir "kotlin" "kotlin-language-server")
+             :binary-path lsp-kotlin--language-server-path
+             :set-executable? t))
+
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection lsp-clients-kotlin-server-executable)
@@ -113,7 +139,9 @@ to Kotlin."
   :server-id 'kotlin-ls
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
-                      (lsp--set-configuration (lsp-configuration-section "kotlin"))))))
+                      (lsp--set-configuration (lsp-configuration-section "kotlin"))))
+  :download-server-fn (lambda (_client callback error-callback _update?)
+                        (lsp-package-ensure 'kotlin-language-server callback error-callback))))
 
 (lsp-consistency-check lsp-kotlin)
 
