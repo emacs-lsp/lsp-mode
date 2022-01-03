@@ -2774,8 +2774,8 @@
 <li>Add support for insert/replace when performing completion. When
     using <code>company</code> pressing <code>C-u RET</code> will perform the alternative
     action (the default is replace, but can be changed).</li>
-<li>Add <code>lsp-auto-save-changed-buffers</code> which save the changed buffers
-    after any text edit operation by lsp-mode.</li>
+<li>Add <code>lsp-after-apply-edits-hook</code> that run after every workspace edit
+    is applied.</li>
 <li>Safe renamed <code>lsp-diagnose</code> to <code>lsp-doctor</code>.</li>
 <li>Add <code>lsp-modeline-code-actions-segments</code> for a better customization.</li>
 <li>Add <a href="https://github.com/sumneko/lua-language-server">Lua Language
