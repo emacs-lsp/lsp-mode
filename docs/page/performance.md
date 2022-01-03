@@ -56,7 +56,7 @@ _NB:_ make sure that `lsp-use-plist` is `t` when you are performing the compilat
 If the server supports watch files, by default `lsp-mode` tries to watch all files and folders of the project ignoring the regexp from `lsp-file-watch-ignored`. If you don't want some file or folder
 to be watched for performance reasons, you can add a regexp to that variable excluding the file or folder.
 
-Check the [file watchers section](../file-watchers) for details.
+Check the [file watchers section](file-watchers.md) for details.
 
 ## Check if logging is switched off.
 
