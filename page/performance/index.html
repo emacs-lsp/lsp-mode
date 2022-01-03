@@ -2687,7 +2687,7 @@ Benchmarks show that Emacs 27 is <code>~15 times</code> faster than Emacs when u
 <h2 id="ignore-watch-foldersfiles">Ignore watch folders/files<a class="headerlink" href="#ignore-watch-foldersfiles" title="Permanent link">#</a></h2>
 <p>If the server supports watch files, by default <code>lsp-mode</code> tries to watch all files and folders of the project ignoring the regexp from <code>lsp-file-watch-ignored</code>. If you don't want some file or folder
 to be watched for performance reasons, you can add a regexp to that variable excluding the file or folder.</p>
-<p>Check the <a href="../file-watchers">file watchers section</a> for details.</p>
+<p>Check the <a href="../file-watchers/">file watchers section</a> for details.</p>
 <h2 id="check-if-logging-is-switched-off">Check if logging is switched off.<a class="headerlink" href="#check-if-logging-is-switched-off" title="Permanent link">#</a></h2>
 <p>Make sure <code>lsp-log-io</code> is <code>nil</code>. You might have forgotten it after a debugging session, for example. It can cause a great performance hit.</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-log-io</span> <span class="no">nil</span><span class="p">)</span> <span class="c1">; if set to true can cause a performance hit</span>
@@ -2712,7 +2712,7 @@ to be watched for performance reasons, you can add a regexp to that variable exc
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 2, 2022</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 3, 2022</span>
     
   </small>
 </div>
