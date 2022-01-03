@@ -23,7 +23,7 @@
   * Add support for insert/replace when performing completion. When using
     ~company~ pressing ~C-u RET~ will perform the alternative action (the
     default is replace, but can be changed).
-  * Add ~lsp-auto-save-changed-buffers~ which save the changed buffers after any text edit operation by lsp-mode.
+  * Add ~lsp-after-apply-edits-hook~ that run after every workspace edit is applied.
   * Safe renamed ~lsp-diagnose~ to ~lsp-doctor~.
   * Add ~lsp-modeline-code-actions-segments~ for a better customization.
   * Add [[https://github.com/sumneko/lua-language-server][Lua Language Server]], [[https://github.com/Alloyed/lua-lsp][Lua-LSP]] and improve EmmyLua.
