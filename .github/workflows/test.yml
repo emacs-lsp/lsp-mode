@@ -14,6 +14,8 @@ jobs:
             matrix:
                 os: [ubuntu-latest, macos-latest]
                 emacs-version:
+                    - 26.1
+                    - 26.2
                     - 26.3
                     - 27.1
                     - 27.2
@@ -68,6 +70,8 @@ jobs:
             fail-fast: false
             matrix:
                 emacs-version:
+                    - 26.1
+                    - 26.2
                     - 26.3
                     - 27.1
                     - 27.2
