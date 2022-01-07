@@ -2703,6 +2703,54 @@ and end-of-string meta-characters."
          (when choice
            (call-interactively action)))))))
 
+(defcustom lsp-lighter-delay nil
+  "Delay to shorten lighter in seconds; nil means never shorten lighter."
+  :type '(choice (const :tag "Never Hide" nil)
+                 (number :tag "Seconds"))
+  :group 'lsp-mode)
+
+(defcustom lsp-lighter-format "[%s]"
+  "Lighter displays infront and behind workspaces."
+  :type 'string
+  :group 'lsp-mode)
+
+(defcustom lsp-lighter-separator "]["
+  "Lighter separator between each workspace."
+  :type 'string
+  :group 'lsp-mode)
+
+(defcustom lsp-lighter-shorten-replacement "..."
+  "Replacement string for shorten workspace in the lighter."
+  :type 'string
+  :group 'lsp-mode)
+
+(defvar-local lsp--shorten-lighter nil
+  "If true, show full lighter.")
+
+(defun lsp--lighter ()
+  "Lighter for `lsp-mode'."
+  (concat
+   " LSP"  ; Show the base if nothing is connected
+   (when lsp--buffer-workspaces
+     (format lsp-lighter-format
+             (if lsp--shorten-lighter lsp-lighter-shorten-replacement
+               (mapconcat #'lsp--workspace-print lsp--buffer-workspaces
+                          lsp-lighter-separator))))))
+
+(defvar-local lsp--lighter-timer nil
+  "Timer to shotern the lighter display.")
+
+(defun lsp--run-lighter-timer ()
+  "Start lighter timer."
+  (when lsp-lighter-delay
+    (setq lsp--shorten-lighter nil)  ; reveal full lighter
+    (when (timerp lsp--lighter-timer) (cancel-timer lsp--lighter-timer))
+    (setq lsp--lighter-timer  ; start timer so it will be shorten later on
+          (run-with-idle-timer lsp-lighter-delay nil
+                               (lambda ()
+                                 (setq lsp--shorten-lighter t)
+                                 (force-mode-line-update))))))
+
 (defvar lsp-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-<down-mouse-1>") #'lsp-find-definition-mouse)
@@ -2716,12 +2764,7 @@ and end-of-string meta-characters."
 
 (define-minor-mode lsp-mode ""
   :keymap lsp-mode-map
-  :lighter
-  (" LSP["
-   (lsp--buffer-workspaces
-    (:eval (mapconcat #'lsp--workspace-print lsp--buffer-workspaces "]["))
-    (:propertize "Disconnected" face warning))
-   "]")
+  :lighter (:eval (lsp--lighter))
   :group 'lsp-mode)
 
 (defvar lsp-mode-menu
@@ -3864,7 +3907,8 @@ yet."
     (remove-hook 'xref-backend-functions #'lsp--xref-backend t)
     (remove-hook 'change-major-mode-hook #'lsp-disconnect t)
     (remove-hook 'after-set-visited-file-name-hook #'lsp--after-set-visited-file-name t)
-    (setq-local lsp-buffer-uri nil))))
+    (setq-local lsp-buffer-uri nil)))
+  (lsp--run-lighter-timer))
 
 (defun lsp-configure-buffer ()
   "Configure LSP features for current buffer."
