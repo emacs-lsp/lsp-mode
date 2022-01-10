@@ -233,7 +233,10 @@ This must be set only once after loading the clang client.")
               (-first #'executable-find
                       (-map (lambda (version)
                               (concat "clangd" version))
-                            '("" "-12" "-11" "-10" "-9" "-8" "-7" "-6")))
+                            ;; Prefer `clangd` without a version number appended.
+                            (append (list "") (-map
+                                               (lambda (vernum) (format "-%d" vernum))
+                                               (number-sequence 14 6 -1)))))
               (lsp-clients-executable-find "xcodebuild" "-find-executable" "clangd")
               (lsp-clients-executable-find "xcrun" "--find" "clangd"))))
 
