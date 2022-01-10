@@ -234,9 +234,9 @@ This must be set only once after loading the clang client.")
                       (-map (lambda (version)
                               (concat "clangd" version))
                             ;; Prefer `clangd` without a version number appended.
-                            (append (list "") (-map
-                                               (lambda (vernum) (format "-%d" vernum))
-                                               (number-sequence 14 6 -1)))))
+                            (cl-list* "" (-map
+                                          (lambda (vernum) (format "-%d" vernum))
+                                          (number-sequence 14 6 -1)))))
               (lsp-clients-executable-find "xcodebuild" "-find-executable" "clangd")
               (lsp-clients-executable-find "xcrun" "--find" "clangd"))))
 
