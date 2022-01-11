@@ -35,15 +35,17 @@
 
 (setq debug-on-error t
       no-byte-compile t
+      inhibit-startup-screen t
       package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("gnu" . "https://elpa.gnu.org/packages/"))
-      package-user-dir (expand-file-name (make-temp-name "lsp-tmp-elpa")
-                                         user-emacs-directory)
+      package-user-dir (make-temp-file "lsp-tmp-elpa")
       custom-file (expand-file-name "custom.el" package-user-dir))
+
+(delete-file package-user-dir)
 
 (let* ((pkg-list '(lsp-mode lsp-ui yasnippet lsp-java lsp-python-ms lsp-haskell helm-lsp lsp-treemacs dap-mode lsp-origami lsp-dart company flycheck lsp-pyright
                             ;; modes
-                            rust-mode php-mode scala-mode dart-mode clojure-mode typescript-mode)))
+                            rust-mode php-mode scala-mode dart-mode clojure-mode typescript-mode csharp-mode)))
 
   (package-initialize)
   (package-refresh-contents)
