@@ -35,6 +35,7 @@
 
 (setq debug-on-error t
       no-byte-compile t
+      byte-compile-warnings nil
       inhibit-startup-screen t
       package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("gnu" . "https://elpa.gnu.org/packages/"))
