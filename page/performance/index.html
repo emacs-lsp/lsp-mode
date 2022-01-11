@@ -2666,22 +2666,19 @@ Benchmarks show that Emacs 27 is <code>~15 times</code> faster than Emacs when u
 </code></pre></div>
 - Use <code>plists</code> for deserialization. <code>lsp-mode</code> can be compiled in 2 modes <code>plist</code> and <code>hash-table</code> based <code>lsp-use-plists</code> flag. <code>plist</code>s provide better performance in serialization and also put less presure than <code>hash-table</code>s. To switch to <code>plist</code> you have to perform 2 steps:</p>
 <ol>
-<li>Put the following in your config:
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-use-plists</span> <span class="no">t</span><span class="p">)</span>
+<li>Configure the following env variable. Make sure that <code>Emacs</code> can see that variable (best way to do that is to start <code>Emacs</code> from the shell, not from the icon).
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">LSP_USE_PLISTS</span><span class="o">=</span><span class="nb">true</span>
 </code></pre></div></li>
-<li>Recompile <code>lsp-mode</code> and related packages. One way to achieve that is to perform the following steps:</li>
-<li>Delete <code>elc</code> files.
-<div class="highlight"><pre><span></span><code>find ~/.emacs.d/elpa -name <span class="s2">&quot;*.elc&quot;</span> -delete
+<li>Delete <code>lsp-mode</code> related packages.</li>
+<li>Restart <code>Emacs</code> and install again <code>lsp-mode</code> related packages.
+<div class="highlight"><pre><span></span><code>_NB:_ make sure that `lsp-use-plist` is `t` when you are performing the compilation.
+- Optional: Disable `lsp-ui`. Normally, `lsp-ui` is very fast but in some systems (especially when using `Windows`) `lsp-ui` overlays and popups might slow down emacs.
+- Optional: fine-tune `lsp-idle-delay`. This variable determines how often lsp-mode will refresh the highlights, lenses, links, etc while you type.
+
+``` elisp
+(setq lsp-idle-delay 0.500)
 </code></pre></div></li>
-<li>Restart emacs and do:
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">byte-recompile-directory</span> <span class="p">(</span><span class="nf">expand-file-name</span> <span class="s">&quot;~/.emacs.d/elpa/&quot;</span><span class="p">)</span> <span class="mi">0</span><span class="p">)</span>
-</code></pre></div>
-<em>NB:</em> make sure that <code>lsp-use-plist</code> is <code>t</code> when you are performing the compilation.</li>
-<li>Optional: Disable <code>lsp-ui</code>. Normally, <code>lsp-ui</code> is very fast but in some systems (especially when using <code>Windows</code>) <code>lsp-ui</code> overlays and popups might slow down emacs.</li>
-<li>Optional: fine-tune <code>lsp-idle-delay</code>. This variable determines how often lsp-mode will refresh the highlights, lenses, links, etc while you type.</li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-idle-delay</span> <span class="mf">0.500</span><span class="p">)</span>
-</code></pre></div>
 <h3 id="gccemacs">gccemacs<a class="headerlink" href="#gccemacs" title="Permanent link">#</a></h3>
 <p><a href="https://akrl.sdf.org/gccemacs.html">gccemacs</a> is a bleeding-edge version of <code>Emacs</code> that compiles elisp to native code, resulting in more than 200% speedup. For everyone looking for optimal performance, <code>gccemacs</code> is the way to go.</p>
 <h2 id="ignore-watch-foldersfiles">Ignore watch folders/files<a class="headerlink" href="#ignore-watch-foldersfiles" title="Permanent link">#</a></h2>
@@ -2712,7 +2709,7 @@ to be watched for performance reasons, you can add a regexp to that variable exc
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 10, 2022</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 11, 2022</span>
     
   </small>
 </div>
