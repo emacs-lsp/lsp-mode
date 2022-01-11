@@ -3103,7 +3103,9 @@ If NO-WAIT is non-nil send the request as notification."
                                :cancel-token :sync-request)
             (while (not (or resp-error resp-result))
               (catch 'lsp-done
-                (accept-process-output nil (and expected-time (- expected-time send-time))))
+                (accept-process-output
+                 nil
+                 (if expected-time (- expected-time send-time) 1)))
               (setq send-time (time-to-seconds (current-time)))
               (when (and expected-time (< expected-time send-time))
                 (error "Timeout while waiting for response.  Method: %s" method)))
