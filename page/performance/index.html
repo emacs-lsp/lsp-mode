@@ -2719,14 +2719,18 @@ Benchmarks show that Emacs 27 is <code>~15 times</code> faster than Emacs when u
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">read-process-output-max</span> <span class="p">(</span><span class="nf">*</span> <span class="mi">1024</span> <span class="mi">1024</span><span class="p">))</span> <span class="c1">;; 1mb</span>
 </code></pre></div>
 <h3 id="use-plists-for-deserialization">Use <code>plists</code> for deserialization.<a class="headerlink" href="#use-plists-for-deserialization" title="Permanent link">#</a></h3>
-<p><code>lsp-mode</code> can be compiled in 2 modes <code>plist</code> and <code>hash-table</code> based <code>lsp-use-plists</code> flag. <code>plist</code>s provide better performance in serialization and also put less presure than <code>hash-table</code>s. To switch to <code>plist</code> you have to perform 2 steps:</p>
+<p><code>lsp-mode</code> can be compiled in 2 modes <code>plist</code> and <code>hash-table</code> based <code>lsp-use-plists</code> flag. <code>plist</code>s provide better performance in deserialization and also put less presure than <code>hash-table</code>s. To switch to <code>plist</code> you have to perform 2 steps:</p>
 <ol>
 <li>Configure the following env variable. Make sure that <code>Emacs</code> can see that variable (best way to do that is to start <code>Emacs</code> from the shell, not from the icon).
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">LSP_USE_PLISTS</span><span class="o">=</span><span class="nb">true</span>
 </code></pre></div></li>
 <li>Delete <code>lsp-mode</code> related packages.</li>
+<li>Make sure that <code>lsp-use-plists</code> is non-nil.</li>
 <li>Restart <code>Emacs</code> and install again <code>lsp-mode</code> related packages.
-<div class="highlight"><pre><span></span><code>_NB:_ make sure that `lsp-use-plist` is `t` when you are performing the compilation.
+<div class="highlight"><pre><span></span><code>_NB:_ make sure that `lsp-use-plist` does not change after you compile the file.
+
+### Optional steps
+
 - Optional: Disable `lsp-ui`. Normally, `lsp-ui` is very fast but in some systems (especially when using `Windows`) `lsp-ui` overlays and popups might slow down emacs.
 - Optional: fine-tune `lsp-idle-delay`. This variable determines how often lsp-mode will refresh the highlights, lenses, links, etc while you type.
 
