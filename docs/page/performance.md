@@ -7,10 +7,12 @@ Use `M-x lsp-doctor` to validate if your `lsp-mode` is properly configured. In t
 
 When configured properly `lsp-mode`'s performance is on par with mainstream LSP clients (e. g. `VScode`, `Theia`, etc). Here are steps to achieve optimal results.
 
+### JSON native serialization/deserialization
 - Use Emacs 27+ with native json support. (Note: this requires that you have [libjansson](http://www.digip.org/jansson/) installed, and that emacs was compiled with \`–with-json\` passed to \`./configure\`.) You can check your installation for native json support by running <kbd>M-:</kbd> `(functionp 'json-serialize)` <kbd>RET</kbd>.
 Benchmarks show that Emacs 27 is `~15 times` faster than Emacs when using Elisp json parser implementation.
 
-- Adjust `gc-cons-threshold`. The default setting is too low for `lsp-mode`'s needs due to the fact that client/server communication generates a lot of memory/garbage. You have two options:
+### Adjust `gc-cons-threshold`
+The default setting is too low for `lsp-mode`'s needs due to the fact that client/server communication generates a lot of memory/garbage. You have two options:
 
     - Set it to big number(100mb) like most of the popular starter kits like Spacemacs/Doom/Prelude, etc do:
 
@@ -20,12 +22,15 @@ Benchmarks show that Emacs 27 is `~15 times` faster than Emacs when using Elisp 
 
     - Follow the method recommended by Gnu Emacs Maintainer Eli Zaretskii: "My suggestion is to repeatedly multiply gc-cons-threshold by 2 until you stop seeing significant improvements in responsiveness, and in any case not to increase by a factor larger than 100 or somesuch. If even a 100-fold increase doesn't help, there's some deeper problem with the Lisp code which produces so much garbage, or maybe GC is not the reason for slowdown." Source: <https://www.reddit.com/r/emacs/comments/brc05y/is_lspmode_too_slow_to_use_for_anyone_else/eofulix/>
 
-- Increase the amount of data which Emacs reads from the process. Again the emacs default is too low 4k considering that the some of the language server responses are in 800k - 3M range.
+### Increase the amount of data which Emacs reads from the process
+Again the emacs default is too low 4k considering that the some of the language server responses are in 800k - 3M range.
 
 ``` elisp
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 ```
-- Use `plists` for deserialization. `lsp-mode` can be compiled in 2 modes `plist` and `hash-table` based `lsp-use-plists` flag. `plist`s provide better performance in serialization and also put less presure than `hash-table`s. To switch to `plist` you have to perform 2 steps:
+
+### Use `plists` for deserialization.
+`lsp-mode` can be compiled in 2 modes `plist` and `hash-table` based `lsp-use-plists` flag. `plist`s provide better performance in serialization and also put less presure than `hash-table`s. To switch to `plist` you have to perform 2 steps:
 
 1. Configure the following env variable. Make sure that `Emacs` can see that variable (best way to do that is to start `Emacs` from the shell, not from the icon).
 ``` bash
