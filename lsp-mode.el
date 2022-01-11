@@ -8590,8 +8590,8 @@ This avoids overloading the server with many files when starting Emacs."
               nil)
      (error t))
    "`gc-cons-threshold' increased?" (> gc-cons-threshold 800000)
-   "Using `plist' for deserialized objects?" (or lsp-use-plists :optional)
-   "Using gccemacs with emacs lisp native compilation (https://akrl.sdf.org/gccemacs.html)"
+   "Using `plist' for deserialized objects? (refer to https://emacs-lsp.github.io/lsp-mode/page/performance/#use-plists-for-deserialization)" (or lsp-use-plists :optional)
+   "Using emacs 28+ with native compilation?"
    (or (and (fboundp 'native-comp-available-p)
             (native-comp-available-p))
        :optional)))

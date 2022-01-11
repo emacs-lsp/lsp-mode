@@ -30,16 +30,20 @@ Again the emacs default is too low 4k considering that the some of the language 
 ```
 
 ### Use `plists` for deserialization.
-`lsp-mode` can be compiled in 2 modes `plist` and `hash-table` based `lsp-use-plists` flag. `plist`s provide better performance in serialization and also put less presure than `hash-table`s. To switch to `plist` you have to perform 2 steps:
+`lsp-mode` can be compiled in 2 modes `plist` and `hash-table` based `lsp-use-plists` flag. `plist`s provide better performance in deserialization and also put less presure than `hash-table`s. To switch to `plist` you have to perform 2 steps:
 
 1. Configure the following env variable. Make sure that `Emacs` can see that variable (best way to do that is to start `Emacs` from the shell, not from the icon).
 ``` bash
 export LSP_USE_PLISTS=true
 ```
 2. Delete `lsp-mode` related packages.
-3. Restart `Emacs` and install again `lsp-mode` related packages.
+3. Make sure that `lsp-use-plists` is non-nil.
+4. Restart `Emacs` and install again `lsp-mode` related packages.
 ```
-_NB:_ make sure that `lsp-use-plist` is `t` when you are performing the compilation.
+_NB:_ make sure that `lsp-use-plist` does not change after you compile the file.
+
+### Optional steps
+
 - Optional: Disable `lsp-ui`. Normally, `lsp-ui` is very fast but in some systems (especially when using `Windows`) `lsp-ui` overlays and popups might slow down emacs.
 - Optional: fine-tune `lsp-idle-delay`. This variable determines how often lsp-mode will refresh the highlights, lenses, links, etc while you type.
 
