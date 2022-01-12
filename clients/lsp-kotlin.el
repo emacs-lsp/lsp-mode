@@ -98,7 +98,7 @@ to Kotlin."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-kotlin-server-download-url
-  "https://github.com/fwcd/kotlin-language-server/releases/download/latest/server.zip"
+  "https://github.com/fwcd/kotlin-language-server/releases/latest/download/server.zip"
   "The URL for the language server download."
   :type 'string
   :group 'lsp-kotlin
