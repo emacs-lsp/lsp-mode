@@ -4150,10 +4150,10 @@ too slow, in which case this variable may be set to nil.
 the symbol to rename at point.</p>
 <hr />
 <h3 id="lsp-response-timeout"><code>lsp-response-timeout</code><a class="headerlink" href="#lsp-response-timeout" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>number</code></p>
+<p><em>Type:</em> <code>(choice (number :tag Seconds) (const :tag No timeout nil))</code></p>
 <p><em>Default:</em> <code>10</code></p>
 <p>Number of seconds to wait for a response from the language server before
-timing out.</p>
+timing out. Nil if no timeout.</p>
 <hr />
 <h3 id="lsp-restart"><code>lsp-restart</code><a class="headerlink" href="#lsp-restart" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const interactive) (const auto-restart) (const ignore))</code></p>
