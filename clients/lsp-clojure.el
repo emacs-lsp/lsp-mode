@@ -203,6 +203,21 @@ If there are more arguments expected after the line and column numbers."
   (interactive)
   (lsp-clojure--refactoring-call "create-test"))
 
+(defun lsp-clojure-sort-map ()
+  "Apply sort-map refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "sort-map"))
+
+(defun lsp-clojure-move-coll-entry-up ()
+  "Apply move coll entry up refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "move-coll-entry-up"))
+
+(defun lsp-clojure-move-coll-entry-down ()
+  "Apply move coll entry down refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "move-coll-entry-down"))
+
 (defun lsp-clojure-server-info ()
   "Request server info."
   (interactive)
