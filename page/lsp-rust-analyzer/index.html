@@ -2006,6 +2006,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#snippet-insertionrefactor" class="md-nav__link">
+    Snippet insertion/refactor
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#open-cargotoml" class="md-nav__link">
     Open Cargo.toml
   </a>
@@ -3177,6 +3184,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#snippet-insertionrefactor" class="md-nav__link">
+    Snippet insertion/refactor
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#open-cargotoml" class="md-nav__link">
     Open Cargo.toml
   </a>
@@ -3681,6 +3695,16 @@
 <h3 id="auto-import">auto-import<a class="headerlink" href="#auto-import" title="Permanent link">#</a></h3>
 <p>Get a list of possible auto import candidates with <code>lsp-execute-code-action</code></p>
 <p><img alt="" src="../../examples/lsp-rust-analyzer-auto-import.png" /></p>
+<h3 id="snippet-insertionrefactor">Snippet insertion/refactor<a class="headerlink" href="#snippet-insertionrefactor" title="Permanent link">#</a></h3>
+<p>To support refactorings that require snippet insertion(eg. generating
+derive clause etc), make sure that you have enabled <code>yasnippet</code> and
+<code>yas-minor-mode</code>. If you are using <code>use-package</code>, you can do something
+like this:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">use-package</span> <span class="nv">yasnippet</span>
+  <span class="nb">:ensure</span> <span class="no">t</span>
+  <span class="nb">:hook</span> <span class="p">((</span><span class="nv">lsp-mode</span> <span class="o">.</span> <span class="nv">yasnippet</span><span class="p">)</span>
+         <span class="p">(</span><span class="nv">lsp-mode</span> <span class="o">.</span> <span class="nv">yas-minor-mode</span><span class="p">)))</span>
+</code></pre></div>
 <h3 id="open-cargotoml">Open Cargo.toml<a class="headerlink" href="#open-cargotoml" title="Permanent link">#</a></h3>
 <p><code>lsp-rust-analyzer-open-cargo-toml</code> opens the Cargo.toml closest to the current file. Calling it with a universal argument will open the Cargo.toml in another window.</p>
 <p>Corresponds to <a href="https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#open-cargotoml">the rust-analyzer LSP extension</a></p>
@@ -4040,7 +4064,7 @@ compiling unnecessary things.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 15, 2022</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 22, 2022</span>
     
   </small>
 </div>
