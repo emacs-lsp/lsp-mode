@@ -60,11 +60,12 @@ Get a list of possible auto import candidates with `lsp-execute-code-action`
 
 ![](../examples/lsp-rust-analyzer-auto-import.png)
 
-### Generate derive
+### Snippet insertion/refactor
 
-For generating a `#[derive()]` clause to a struct or enum, make sure
-that you have enabled `yasnippet` and `yas-minor-mode`. If you are
-using `use-package`, you can do something like this:
+To support refactorings that require snippet insertion(eg. generating
+derive clause etc), make sure that you have enabled `yasnippet` and
+`yas-minor-mode`. If you are using `use-package`, you can do something
+like this:
 
 ``` emacs-lisp
 (use-package yasnippet
