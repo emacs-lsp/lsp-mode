@@ -60,6 +60,19 @@ Get a list of possible auto import candidates with `lsp-execute-code-action`
 
 ![](../examples/lsp-rust-analyzer-auto-import.png)
 
+### Generate derive
+
+For generating a `#[derive()]` clause to a struct or enum, make sure
+that you have enabled `yasnippet` and `yas-minor-mode`. If you are
+using `use-package`, you can do something like this:
+
+``` emacs-lisp
+(use-package yasnippet
+  :ensure t
+  :hook ((lsp-mode . yasnippet)
+         (lsp-mode . yas-minor-mode)))
+```
+
 ### Open Cargo.toml
 
 `lsp-rust-analyzer-open-cargo-toml` opens the Cargo.toml closest to the current file. Calling it with a universal argument will open the Cargo.toml in another window.
