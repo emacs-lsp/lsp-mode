@@ -33,6 +33,12 @@
   :link '(url-link "https://github.com/vuejs/vetur/tree/master/server")
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-vetur-ignore-project-warning nil
+  "Ignore projects without jsconfig.json or tsconfig.json warnings."
+  :type 'boolean
+  :group 'lsp-vetur
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defcustom lsp-vetur-use-workspace-dependencies nil
   "Use dependencies from workspace. Currently only for
 TypeScript."
@@ -793,6 +799,7 @@ Code's JavaScript and TypeScript support."
    ("typescript.updateImportsOnFileMove.enabled" lsp-typescript-update-imports-on-file-move-enabled)
    ("typescript.validate.enable" lsp-typescript-validate-enable t)
    ("vetur.trace.server" lsp-vetur-trace-server)
+   ("vetur.ignoreProjectWarning" lsp-vetur-ignore-project-warning t)
    ("vetur.format.scriptInitialIndent" lsp-vetur-format-script-initial-indent t)
    ("vetur.format.styleInitialIndent" lsp-vetur-format-style-initial-indent t)
    ("vetur.format.defaultFormatterOptions" lsp-vetur-format-default-formatter-options)
