@@ -70,8 +70,7 @@ like this:
 ``` emacs-lisp
 (use-package yasnippet
   :ensure t
-  :hook ((lsp-mode . yasnippet)
-         (lsp-mode . yas-minor-mode)))
+  :hook ((lsp-mode . yas-minor-mode)))
 ```
 
 ### Open Cargo.toml
