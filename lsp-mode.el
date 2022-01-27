@@ -1249,7 +1249,7 @@ FORMAT and ARGS i the same as for `message'."
 
 (defun lsp-f-canonical (file-name)
   "Return the canonical FILE-NAME, without a trailing slash."
-  (directory-file-name (expand-file-name file-name)))
+  (directory-file-name file-name))
 
 (defalias 'lsp-canonical-file-name 'lsp-f-canonical)
 
@@ -1259,8 +1259,8 @@ Symlinks are not followed."
   (when (and (f-exists? path-a)
              (f-exists? path-b))
     (equal
-     (lsp-f-canonical (directory-file-name (f-expand path-a)))
-     (lsp-f-canonical (directory-file-name (f-expand path-b))))))
+     (lsp-f-canonical (f-expand path-a))
+     (lsp-f-canonical (f-expand path-b)))))
 
 (defun lsp-f-parent (path)
   "Return the parent directory to PATH.
@@ -3816,17 +3816,19 @@ If any filters, checks if it applies for PATH."
 
 (defun lsp--suggest-project-root ()
   "Get project root."
-  (or
-   (when (featurep 'projectile) (condition-case nil
-                                    (projectile-project-root)
-                                  (error nil)))
-   (when (featurep 'project)
-     (when-let ((project (project-current)))
-       (if (fboundp 'project-root)
-           (project-root project)
-         (car (with-no-warnings
-                (project-roots project))))))
-   default-directory))
+  (-> (or
+       (when (featurep 'projectile) (condition-case nil
+                                        (projectile-project-root)
+                                      (error nil)))
+       (when (featurep 'project)
+         (when-let ((project (project-current)))
+           (if (fboundp 'project-root)
+               (project-root project)
+             (car (with-no-warnings
+                    (project-roots project))))))
+       default-directory)
+      (lsp-f-canonical)
+      (expand-file-name)))
 
 (defun lsp--read-from-file (file)
   "Read FILE content."
@@ -8746,6 +8748,7 @@ Select action: "
     (when lsp-auto-guess-root
       (lsp--suggest-project-root))
     (lsp-find-session-folder session file-name)
+    (lsp-find-session-folder session (lsp-file-truename file-name))
     (unless lsp-auto-guess-root
       (when-let ((root-folder (lsp--find-root-interactively session)))
         (if (or (not (f-equal? root-folder (expand-file-name "~/")))
@@ -9024,6 +9027,12 @@ This avoids overloading the server with many files when starting Emacs."
                                 lsp-file-truename-cache))))
            ,@body)
        (fset 'file-truename old-fn))))
+
+(defun lsp-file-truename (file-name)
+  (or (gethash file-name lsp-file-truename-cache)
+      (puthash file-name (file-truename file-name)
+               lsp-file-truename-cache)))
+
 
 
 (defun lsp-virtual-buffer-call (key &rest args)
