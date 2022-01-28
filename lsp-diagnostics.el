@@ -285,8 +285,7 @@ See https://github.com/emacs-lsp/lsp-mode."
 (defun lsp-diagnostics--flymake-update-diagnostics ()
   "Report new diagnostics to flymake."
   (funcall lsp-diagnostics--flymake-report-fn
-           (-some->> (lsp-diagnostics t)
-             (gethash (lsp--fix-path-casing buffer-file-name))
+           (-some->> (lsp--get-buffer-diagnostics)
              (--map (-let* (((&Diagnostic :message :severity?
                                           :range (range &as &Range
                                                         :start (&Position :line start-line :character)

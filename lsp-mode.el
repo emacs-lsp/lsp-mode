@@ -4967,10 +4967,11 @@ identifier and the position respectively."
 
 (defun lsp--get-buffer-diagnostics ()
   "Return buffer diagnostics."
-  (gethash (or
-            (plist-get lsp--virtual-buffer :buffer-file-name)
-            (lsp--fix-path-casing (buffer-file-name)))
-           (lsp-diagnostics t)))
+  (let* ((file (or (plist-get lsp--virtual-buffer :buffer-file-name)
+                   (lsp--fix-path-casing (buffer-file-name))))
+         (diags (lsp-diagnostics t)))
+    (or (gethash (lsp--fix-path-casing file) diags)
+        (gethash (lsp--fix-path-casing (lsp-file-truename file)) diags))))
 
 (defun lsp-cur-line-diagnostics ()
   "Return any diagnostics that apply to the current line."
@@ -8714,13 +8715,13 @@ Select action: "
 
 (defun lsp-find-session-folder (session file-name)
   "Look in the current SESSION for folder containing FILE-NAME."
-  (let ((file-name-canonical (lsp-f-canonical file-name)))
+  (let ((file (lsp-f-canonical file-name)))
     (->> session
          (lsp-session-folders)
-         (--filter (and (lsp--files-same-host it file-name-canonical)
-                        (or (lsp-f-same? it file-name-canonical)
+         (--filter (and (lsp--files-same-host it file)
+                        (or (lsp-f-same? it file)
                             (and (f-dir? it)
-                                 (lsp-f-ancestor-of? it file-name-canonical)))))
+                                 (lsp-f-ancestor-of? it file)))))
          (--max-by (> (length it)
                       (length other))))))
 
