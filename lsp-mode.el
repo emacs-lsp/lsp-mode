@@ -200,6 +200,9 @@ Takes a value accepted by `spinner-start'."
                  ,@(mapcar (lambda (c) (list 'const (car c)))
                            spinner-types)))
 
+(defvar-local lsp-use-workspace-root-for-server-default-directory nil
+  "Use `lsp-workspace-root' for `default-directory' when starting LSP process.")
+
 (defvar-local lsp--cur-workspace nil)
 
 (defvar-local lsp--cur-version 0)
@@ -7021,6 +7024,16 @@ Ignore non-boolean keys whose value is nil."
                                                       (eval value))))
                     process-environment))))
 
+(defun lsp--default-directory-for-connection (&optional path)
+  "Return path to be used for the working directory of a LSP process.
+
+If `lsp-use-workspace-root-for-server-default-directory' is
+non-nil, uses `lsp-workspace-root' to find the directory
+corresponding to PATH, else returns `default-directory'."
+  (if lsp-use-workspace-root-for-server-default-directory
+      (lsp-workspace-root path)
+    default-directory))
+
 (defun lsp-stdio-connection (command &optional test-command)
   "Returns a connection property list using COMMAND.
 COMMAND can be: A string, denoting the command to launch the
@@ -7045,6 +7058,7 @@ returned by COMMAND is available via `executable-find'"
                          (process-environment
                           (lsp--compute-process-environment environment-fn)))
                      (let* ((stderr-buf (format "*%s::stderr*" process-name))
+                            (default-directory (lsp--default-directory-for-connection))
                             (proc (make-process
                                    :name process-name
                                    :connection-type 'pipe
