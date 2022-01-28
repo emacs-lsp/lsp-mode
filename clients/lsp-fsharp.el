@@ -57,27 +57,27 @@ The slash is expected at the end."
 (defcustom lsp-fsharp-keywords-autocomplete t
   "Provides keywords in autocomplete list."
   :group 'lsp-fsharp
-  :type 'bool
+  :type 'boolean
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-external-autocomplete nil
   "Provides autocompletion for symbols from not opened namespaces/modules;
 inserts open on accept."
   :group 'lsp-fsharp
-  :type 'bool
+  :type 'boolean
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-linter t
   "Enables FSharpLint integration, provides additional warnings and code
 action fixes."
   :group 'lsp-fsharp
-  :type 'bool
+  :type 'boolean
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-union-case-stub-generation t
   "Enables a code action to generate pattern matching cases."
   :group 'lsp-fsharp
-  :type 'bool
+  :type 'boolean
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-union-case-stub-generation-body "failwith \"Not Implemented\""
@@ -90,7 +90,7 @@ action fixes."
 (defcustom lsp-fsharp-record-stub-generation t
   "Enables code action to generate record stub."
   :group 'lsp-fsharp
-  :type 'bool
+  :type 'boolean
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-record-stub-generation-body "failwith \"Not Implemented\""
@@ -103,7 +103,7 @@ action fixes."
 (defcustom lsp-fsharp-interface-stub-generation t
   "Enables code action to generate an interface stub."
   :group 'lsp-fsharp
-  :type 'bool
+  :type 'boolean
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-interface-stub-generation-object-identifier "this"
@@ -123,33 +123,33 @@ e.g. `this' or `self'."
 (defcustom lsp-fsharp-unused-opens-analyzer t
   "Enables unused open detection."
   :group 'lsp-fsharp
-  :type 'bool
+  :type 'boolean
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-unused-declarations-analyzer t
   "Enables unused symbol detection."
   :group 'lsp-fsharp
-  :type 'bool
+  :type 'boolean
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-simplify-name-analyzer nil
   "Enables simplify name analyzer and remove redundant qualifier quick fix."
   :group 'lsp-fsharp
-  :type 'bool
+  :type 'boolean
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-resolve-namespaces t
   "Enables resolve namespace quick fix; adds `open' if symbol is from not yet
 opened module/namespace."
   :group 'lsp-fsharp
-  :type 'bool
+  :type 'boolean
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-enable-reference-code-lens t
   "Enables reference count code lenses.
-It is recommended to disable if `--backgorund-service-enabled' is not used."
+It is recommended to disable if `--background-service-enabled' is not used."
   :group 'lsp-fsharp
-  :type 'bool
+  :type 'boolean
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-auto-workspace-init nil
@@ -157,7 +157,7 @@ It is recommended to disable if `--backgorund-service-enabled' is not used."
 Do note that this can cause unexpected or challenging behaviors, as solutions
 with test projects are not autoloaded by FSharpAutoComplete."
   :group 'lsp-fsharp
-  :type 'bool
+  :type 'boolean
   :risky t)
 
 (defun lsp-fsharp--fsac-runtime-cmd ()
