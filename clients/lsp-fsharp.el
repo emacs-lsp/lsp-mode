@@ -160,6 +160,12 @@ with test projects are not autoloaded by FSharpAutoComplete."
   :type 'boolean
   :risky t)
 
+(defcustom lsp-fsharp-generate-binlog nil
+  "Generate a binlog for debugging project cracking."
+  :group 'lsp-fsharp
+  :type 'boolean
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defun lsp-fsharp--fsac-runtime-cmd ()
   "Get the command required to run fsautocomplete based off of the
 current runtime."
@@ -286,7 +292,8 @@ current runtime."
    ("FSharp.UnusedDeclarationsAnalyzer" lsp-fsharp-unused-declarations-analyzer t)
    ("FSharp.SimplifyNameAnalyzer" lsp-fsharp-simplify-name-analyzer t)
    ("FSharp.ResolveNamespaces" lsp-fsharp-resolve-namespaces t)
-   ("FSharp.EnableReferenceCodeLens" lsp-fsharp-enable-reference-code-lens t)))
+   ("FSharp.EnableReferenceCodeLens" lsp-fsharp-enable-reference-code-lens t)
+   ("FSharp.GenerateBinlog" lsp-fsharp-generate-binlog t)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
