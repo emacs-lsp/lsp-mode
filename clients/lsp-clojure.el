@@ -240,31 +240,6 @@ If there are more arguments expected after the line and column numbers."
                :position (lsp-make-position :line (- (line-number-at-pos) 1)
                                             :character (current-column)))))
 
-(defun lsp-clojure--ask-macro-to-resolve ()
-  "Ask to user the macro to resolve."
-  (lsp--completing-read
-   "Select how LSP should resolve this macro:"
-   '("clojure.core/def"
-     "clojure.core/defn"
-     "clojure.core/let"
-     "clojure.core/for"
-     "clojure.core/->"
-     "clojure.core/->>"
-     "clj-kondo.lint-as/def-catch-all")
-   #'identity
-   nil
-   t))
-
-(defun lsp-clojure--ask-clj-kondo-config-dir ()
-  "Ask to user the clj-kondo config dir path."
-  (lsp--completing-read
-   "Select where LSP should save this setting:"
-   (list (f-join (expand-file-name "~/") ".config/clj-kondo/config.edn")
-         (f-join (or (lsp-workspace-root) "project") ".clj-kondo/config.edn"))
-   #'identity
-   nil
-   t))
-
 (defun lsp-clojure-resolve-macro-as ()
   "Ask to user how the unresolved macro should be resolved."
   (interactive)
@@ -272,15 +247,7 @@ If there are more arguments expected after the line and column numbers."
   (lsp-clojure--execute-command "resolve-macro-as"
                                 (list (lsp--buffer-uri)
                                       (- (line-number-at-pos) 1) ;; clojure-lsp expects line numbers to start at 0
-                                      (current-column)
-                                      (lsp-clojure--ask-macro-to-resolve)
-                                      (lsp-clojure--ask-clj-kondo-config-dir))))
-
-(lsp-defun lsp-clojure--resolve-macro-as ((&Command :command :arguments?))
-  "Intercept resolve-macro-as command and send all necessary data."
-  (let ((chosen-macro (lsp-clojure--ask-macro-to-resolve))
-        (clj-kondo-config-path (lsp-clojure--ask-clj-kondo-config-dir)))
-    (lsp-clojure--execute-command command (append arguments? (list chosen-macro clj-kondo-config-path)))))
+                                      (current-column))))
 
 (defun lsp-clojure--ensure-dir (path)
   "Ensure that directory PATH exists."
@@ -406,7 +373,7 @@ It updates the test tree view data."
   (interactive "P")
   (if (require 'lsp-treemacs nil t)
       (lsp-clojure--show-test-tree ignore-focus?)
-    (error "lsp-treemacs not installed.")))
+    (error "The package lsp-treemacs is not installed")))
 
 (lsp-register-client
  (make-lsp-client
@@ -425,8 +392,7 @@ It updates the test tree view data."
   :major-modes '(clojure-mode clojurec-mode clojurescript-mode)
   :library-folders-fn (lambda (_workspace) (list lsp-clojure-workspace-cache-dir))
   :uri-handlers (lsp-ht ("jar" #'lsp-clojure--file-in-jar))
-  :action-handlers (lsp-ht ("resolve-macro-as" #'lsp-clojure--resolve-macro-as)
-                           ("code-lens-references" #'lsp-clojure--show-references))
+  :action-handlers (lsp-ht ("code-lens-references" #'lsp-clojure--show-references))
   :notification-handlers (lsp-ht ("clojure/textDocument/testTree" #'lsp-clojure--handle-test-tree))
   :initialization-options '(:dependency-scheme "jar"
                             :show-docs-arity-on-same-line? t)
