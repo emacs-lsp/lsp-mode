@@ -1320,14 +1320,18 @@ the lists according to METHOD."
 (defun lsp--completing-read (prompt collection transform-fn &optional predicate
                                     require-match initial-input
                                     hist def inherit-input-method)
-  "Wrap `completing-read' to provide transformation function.
+  "Wrap `completing-read' to provide transformation function and disable sort.
 
 TRANSFORM-FN will be used to transform each of the items before displaying.
 
 PROMPT COLLECTION PREDICATE REQUIRE-MATCH INITIAL-INPUT HIST DEF
 INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
   (let* ((col (--map (cons (funcall transform-fn it) it) collection))
-         (completion (completing-read prompt col
+         (completion (completing-read prompt
+                                      (lambda (string pred action)
+                                        (if (eq action 'metadata)
+                                            `(metadata (display-sort-function . identity))
+                                          (complete-with-action action col string pred)))
                                       predicate require-match initial-input hist
                                       def inherit-input-method)))
     (cdr (assoc completion col))))
