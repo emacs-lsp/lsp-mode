@@ -373,7 +373,7 @@ the global level or at a root of an lsp workspace."
   lsp-file-watch-ignored-directories)
 
 ;; Allow lsp-file-watch-ignored-directories as a file or directory-local variable
-(put 'lsp-file-watch-ignored-directories 'safe-local-variable 'lsp--string-listp)
+;;;###autoload(put 'lsp-file-watch-ignored-directories 'safe-local-variable 'lsp--string-listp)
 
 (defcustom lsp-file-watch-ignored-files
   '(
@@ -399,7 +399,7 @@ level or at a root of an lsp workspace."
   :package-version '(lsp-mode . "8.0.0"))
 
 ;; Allow lsp-file-watch-ignored-files as a file or directory-local variable
-(put 'lsp-file-watch-ignored-files 'safe-local-variable 'lsp--string-listp)
+;;;###autoload(put 'lsp-file-watch-ignored-files 'safe-local-variable 'lsp--string-listp)
 
 (defcustom lsp-after-uninitialized-functions nil
   "List of functions to be called after a Language Server has been uninitialized."
@@ -1045,6 +1045,7 @@ calling `remove-overlays'.")
   "Return a sequence of the elements of SEQUENCE except the first one."
   (seq-drop sequence 1))
 
+;;;###autoload
 (defun lsp--string-listp (sequence)
   "Return t if all elements of SEQUENCE are strings, else nil."
   (not (seq-find (lambda (x) (not (stringp x))) sequence)))
