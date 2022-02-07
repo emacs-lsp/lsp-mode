@@ -1914,6 +1914,29 @@ regex in IGNORED-FILES."
            (indent 1))
   `(when-let ((lsp--cur-workspace ,workspace)) ,@body))
 
+(lsp-defun lsp--window-show-quick-pick (_workspace (&ShowQuickPickParams :place-holder :can-pick-many :items))
+  (if-let* ((selectfunc (if can-pick-many #'completing-read-multiple #'completing-read))
+            (itemLabels (cl-map 'list
+                                (-lambda ((item &as &QuickPickItem :label)) (format "%s" label))
+                                items))
+            (result (funcall-interactively
+                     selectfunc
+                     (format "%s%s " place-holder (if can-pick-many " (* for all)" "")) itemLabels))
+            (choices (if (listp result)
+                         (if (equal result '("*"))
+                             itemLabels
+                           result)
+                       (list result))))
+      (vconcat (seq-filter #'identity (cl-map 'list
+                                              (-lambda ((item &as &QuickPickItem :label :picked :user-data))
+                                                (if (member label choices)
+                                                    (lsp-make-quick-pick-item :label label :picked t :user-data user-data)
+                                                  nil))
+                                              items)))))
+
+(lsp-defun lsp--window-show-input-box (_workspace (&ShowInputBoxParams :prompt :value?))
+  (read-string (format "%s: " prompt) (or value? "")))
+
 (lsp-defun lsp--window-show-message (_workspace (&ShowMessageRequestParams :message :type))
   "Send the server's messages to log.
 PARAMS - the data sent from _WORKSPACE."
@@ -6174,6 +6197,8 @@ textDocument/didOpen for the new file."
 (defconst lsp--default-notification-handlers
   (ht ("window/showMessage" #'lsp--window-show-message)
       ("window/logMessage" #'lsp--window-log-message)
+      ("window/showInputBox" #'lsp--window-input-box)
+      ("window/showQuickPick" #'lsp--window-show-quick-pick)
       ("textDocument/publishDiagnostics" #'lsp--on-diagnostics)
       ("textDocument/diagnosticsEnd" #'ignore)
       ("textDocument/diagnosticsBegin" #'ignore)
