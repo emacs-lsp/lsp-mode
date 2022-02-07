@@ -17,6 +17,7 @@
   * Fix csharp-ls startup on emacs@master (and emacs@emacs-28 on macOS) due to a switch posix_spawn and not setting proper sigmask on child processes.
   * Fix incorrect ~lsp-fsharp~ defcustom types.
   * Add ~lsp-fsharp-generate-binlog~.
+  * Update installation mechanism for fsautocomplete (lsp-fsharp) to use ~dotnet tool install -g~.
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.
