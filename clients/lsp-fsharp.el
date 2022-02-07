@@ -32,14 +32,6 @@
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-fsharp-server-runtime 'net-core
-  "The .NET runtime to use."
-  :group 'lsp-fsharp
-  :type '(choice (const :tag "Use .Net Core" net-core)
-                 (const :tag "Use Mono" mono)
-                 (const :tag "Use .Net Framework" net-framework))
-  :package-version '(lsp-mode . "6.1"))
-
 (defcustom lsp-fsharp-server-install-dir (f-join lsp-server-install-dir "fsautocomplete/")
   "Install directory for fsautocomplete server.
 The slash is expected at the end."
@@ -166,86 +158,24 @@ with test projects are not autoloaded by FSharpAutoComplete."
   :type 'boolean
   :package-version '(lsp-mode . "8.0.1"))
 
-(defun lsp-fsharp--fsac-runtime-cmd ()
-  "Get the command required to run fsautocomplete based off of the
-current runtime."
-  (pcase lsp-fsharp-server-runtime
-    ('net-core "dotnet")
-    ('mono "mono")
-    ('net-framework nil)))
+(defun lsp-fsharp--fsac-install (_client callback error-callback update?)
+  "Install/update fsautocomplete language server using `dotnet tool'.
 
-(defun lsp-fsharp--fsac-cmd ()
-  "The location of fsautocomplete executable."
-  (let ((file-ext (if (eq lsp-fsharp-server-runtime 'net-core)
-                      ".dll"
-                    ".exe")))
-    (expand-file-name (concat "fsautocomplete" file-ext) lsp-fsharp-server-install-dir)))
-
-(defun lsp-fsharp--version-list-latest (lst)
-  "Return latest version from LST (if any)."
-  (->> lst
-       (-map (lambda (x) (car (s-split " " x))))
-       (-filter (lambda (x) (> (length x) 0)))
-       (-sort (lambda (a b) (not (version<= (substring a 1)
-                                            (substring b 1)))))
-       cl-first))
-
-(defun lsp-fsharp--fetch-json (url)
-  "Retrieve and parse JSON from URL."
-  (with-temp-buffer
-    (url-insert-file-contents url)
-    (let ((json-false :false))
-      (json-read))))
-
-(defun lsp-fsharp--latest-version-from-github ()
-  "Return latest version of the server available from github."
-   (lsp-fsharp--version-list-latest
-    (seq-map (lambda (elt) (s-trim (cdr (assq 'name elt))))
-             (lsp-fsharp--fetch-json "https://api.github.com/repos/fsharp/FsAutoComplete/releases"))))
-
-(defun lsp-fsharp--server-download-url (version)
-  "Return url for .zip file to download for given VERSION, depending on `lsp-fsharp-server-runtime'."
-  (concat "https://github.com/fsharp/FsAutoComplete/releases/download"
-          "/" version
-          "/" (if (eq lsp-fsharp-server-runtime 'net-core)
-                  "fsautocomplete.netcore.zip"
-                "fsautocomplete.zip")))
-
-(defun lsp-fsharp--change-permissions (install-dir-full)
-  (unless (eq system-type 'windows-nt) ; Windows does not have chmod
-      (lsp--info "Altering permissions")
-      (dolist (file (directory-files-recursively install-dir-full ""))
-	(if (file-directory-p file)
-	    (chmod file #o755)
-	  (chmod file #o644)))
-      (lsp--info "Finished altering permissions")))
-
-(defun lsp-fsharp--fsac-install (_client callback _error-callback _update?)
-  "Download the latest version of fsautocomplete and extract it to `lsp-fsharp-server-install-dir'."
-  (let* ((temp-file (make-temp-file "fsautocomplete" nil ".zip"))
-         (install-dir-full (expand-file-name lsp-fsharp-server-install-dir))
-         (unzip-script (cond ((executable-find "unzip") (format "mkdir -p %s && unzip -qq %s -d %s" install-dir-full temp-file install-dir-full))
-                             ((executable-find "powershell") (format "powershell -noprofile -noninteractive -nologo -ex bypass Expand-Archive -path '%s' -dest '%s'" temp-file install-dir-full))
-                             (t (user-error (format "Unable to unzip server - file %s cannot be extracted, please extract it manually" temp-file)))))
-         (latest-version (lsp-fsharp--latest-version-from-github))
-         (server-download-url (lsp-fsharp--server-download-url latest-version)))
-    (url-copy-file server-download-url temp-file t)
-    (shell-command unzip-script)
-    (lsp-fsharp--change-permissions install-dir-full)
-    (shell-command (format "%s %s --version" (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-cmd)))
-    (funcall callback)))
-
-(defun lsp-fsharp-update-fsac ()
-  "Update fsautocomplete to the latest version."
-  (interactive)
-  (-let [install-dir (f-expand lsp-fsharp-server-install-dir)]
-    (f-delete install-dir t)
-    (lsp-fsharp--fsac-install nil #'ignore #'lsp--error t)))
+Will invoke CALLBACK or ERROR-CALLBACK based on result. Will update if UPDATE? is t"
+  (lsp-async-start-process
+   callback
+   error-callback
+   "dotnet" "tool" (if update? "update" "install") "-g" "fsautocomplete"))
 
 (defun lsp-fsharp--make-launch-cmd ()
   "Build the command required to launch fsautocomplete."
-  (append (list (lsp-fsharp--fsac-runtime-cmd) (lsp-fsharp--fsac-cmd) "--background-service-enabled")
+  (append (list "fsautocomplete" "--background-service-enabled")
           lsp-fsharp-server-args))
+
+(defun lsp-fsharp--test-fsautocomplete-present ()
+  "Return non-nil if dotnet tool fsautocomplete is installed globally."
+  (string-match-p "fsautocomplete"
+                  (shell-command-to-string "dotnet tool list -g")))
 
 (defun lsp-fsharp--project-list ()
   "Get the list of files we need to send to fsharp/workspaceLoad."
@@ -298,7 +228,7 @@ current runtime."
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    #'lsp-fsharp--make-launch-cmd
-                                   (lambda () (f-exists? (lsp-fsharp--fsac-cmd))))
+                                   #'lsp-fsharp--test-fsautocomplete-present)
                   :major-modes '(fsharp-mode)
                   :notification-handlers (ht ("fsharp/notifyCancel" #'ignore)
                                              ("fsharp/notifyWorkspace" #'ignore)
