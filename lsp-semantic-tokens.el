@@ -212,6 +212,11 @@ Unless overridden by a more specific face association."
   "Face used for definition modifier."
   :group 'lsp-semantic-tokens)
 
+(defface lsp-face-semhl-implementation
+  '((t :inherit font-lock-function-name-face :weight bold))
+  "Face used for implementation modifier."
+  :group 'lsp-semantic-tokens)
+
 (defface lsp-face-semhl-default-library
   '((t :inherit font-lock-builtin-face))
   "Face used for defaultLibrary modifier."
@@ -254,6 +259,7 @@ Unless overridden by a more specific face association."
 (defvar lsp-semantic-token-modifier-faces
   '(("declaration" . lsp-face-semhl-interface)
     ("definition" . lsp-face-semhl-definition)
+    ("implementation" . lsp-face-semhl-implementation)
     ("readonly" . lsp-face-semhl-constant)
     ("static" . lsp-face-semhl-static)
     ("deprecated" . lsp-face-semhl-deprecated)
