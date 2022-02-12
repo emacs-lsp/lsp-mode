@@ -414,6 +414,29 @@ is returned so lsp-mode can display this file."
                   (with-temp-buffer (insert-file-contents metadata-file-name)
                                     (buffer-string))))))
 
+(defun lsp-csharp--cls-make-launch-cmd ()
+  "Return command line to invoke csharp-ls."
+
+  ;; latest emacs-28 (on macOS) and master (as of Sat Feb 12 EET 2022) has an issue
+  ;; that it launches processes using posix_spawn but does not reset sigmask properly
+  ;; thus causing dotnet runtime to lockup awaiting a SIGCHLD signal that never comes
+  ;; from subprocesses that quit
+  ;;
+  ;; as a workaround we will wrap csharp-ls invocation in "/usr/bin/env --default-signal"
+  ;; (on linux) and "/bin/ksh -c" (on macos) so it launches with proper sigmask
+  ;;
+  ;; see https://lists.gnu.org/archive/html/emacs-devel/2022-02/msg00461.html
+
+  (let ((startup-wrapper (pcase system-type
+                           ('gnu/linux (list "/usr/bin/env" "--default-signal"))
+                           ('darwin (list "/bin/ksh" "-c"))
+                           (_ nil)))
+        (solution-file-params (when lsp-csharp-solution-file
+                                (list "-s" lsp-csharp-solution-file))))
+    (append startup-wrapper
+            (list "csharp-ls")
+            solution-file-params)))
+
 (defun lsp-csharp--cls-download-server (_client callback error-callback update?)
   "Install/update csharp-ls language server using `dotnet tool'.
 
@@ -424,12 +447,7 @@ Will invoke CALLBACK or ERROR-CALLBACK based on result. Will update if UPDATE? i
    "dotnet" "tool" (if update? "update" "install") "-g" "csharp-ls"))
 
 (lsp-register-client
- (make-lsp-client :new-connection
-                  (lsp-stdio-connection
-                   #'(lambda ()
-                       (append (list "csharp-ls")
-                               (when lsp-csharp-solution-file
-                                 (list "-s" lsp-csharp-solution-file)))))
+ (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-csharp--cls-make-launch-cmd)
                   :priority -2
                   :server-id 'csharp-ls
                   :major-modes '(csharp-mode csharp-tree-sitter-mode)
