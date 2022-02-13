@@ -442,6 +442,11 @@ is returned so lsp-mode can display this file."
             (list "csharp-ls")
             solution-file-params)))
 
+(defun lsp-csharp--cls-test-csharp-ls-present ()
+  "Return non-nil if dotnet tool csharp-ls is installed globally."
+  (string-match-p "csharp-ls"
+                  (shell-command-to-string "dotnet tool list -g")))
+
 (defun lsp-csharp--cls-download-server (_client callback error-callback update?)
   "Install/update csharp-ls language server using `dotnet tool'.
 
@@ -452,7 +457,8 @@ Will invoke CALLBACK or ERROR-CALLBACK based on result. Will update if UPDATE? i
    "dotnet" "tool" (if update? "update" "install") "-g" "csharp-ls"))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-csharp--cls-make-launch-cmd)
+ (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-csharp--cls-make-launch-cmd
+                                                        #'lsp-csharp--cls-test-csharp-ls-present)
                   :priority -2
                   :server-id 'csharp-ls
                   :major-modes '(csharp-mode csharp-tree-sitter-mode)
