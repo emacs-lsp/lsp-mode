@@ -36,6 +36,12 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/sourcegraph/javascript-typescript-langserver"))
 
+;; Original name can be confused with initializationOptions. Preferences is just one option of initializationOptions.
+(define-obsolete-variable-alias
+  'lsp-clients-typescript-init-opts
+  'lsp-clients-typescript-preferences
+  "lsp-mode 8.0.1")
+
 (defcustom lsp-clients-typescript-javascript-server-args '()
   "Extra arguments for the typescript-language-server language server."
   :group 'lsp-typescript-javascript
@@ -83,16 +89,35 @@
   :risky t
   :type '(repeat string))
 
+(defcustom lsp-clients-typescript-disable-automatic-typing-acquisition nil
+  "Disables tsserver from automatically fetching missing type
+definitions (@types packages) for external modules."
+  :group 'lsp-typescript
+  :type 'boolean)
+
 (defcustom lsp-clients-typescript-log-verbosity "info"
-  "The server log verbosity."
+  "The verbosity level of the information printed in the log by tsserver."
+  :group 'lsp-typescript
+  :type '(choice
+          (const "off")
+          (const "terse")
+          (const "normal")
+          (const "requesttime")
+          (const "verbose")))
+
+(defcustom lsp-clients-typescript-max-ts-server-memory nil
+  "The maximum size of the V8's old memory section in megabytes (for
+example 4096 means 4GB). The default value is dynamically configured
+by Node so can differ per system. Increase for very big projects that
+exceed allowed memory usage."
+  :group 'lsp-typescript
+  :type 'integer)
+
+(defcustom lsp-clients-typescript-npm-location nil
+  "Specifies the path to the NPM executable used for Automatic Type
+Acquisition."
   :group 'lsp-typescript
   :type 'string)
-
-(defcustom lsp-clients-typescript-init-opts nil
-  "Configuration options provided to tsserver.
-See the UserPreferences interface at https://github.com/microsoft/TypeScript/blob/main/lib/protocol.d.ts for the list of options available in the latest version of TypeScript."
-  :group 'lsp-typescript
-  :type 'plist)
 
 (defcustom lsp-clients-typescript-plugins (vector)
   "The list of plugins to load.
@@ -111,6 +136,12 @@ directory containing the package. Example:
                                                 (-lambda ((&plist :name :location))
                                                   (and name location))
                                                 xs)))))
+
+(defcustom lsp-clients-typescript-preferences nil
+  "Preferences passed to the Typescript (tsserver) process.
+See https://github.com/typescript-language-server/typescript-language-server#initializationoptions for the list of preferences available in the latest version of TypeScript."
+  :group 'lsp-typescript
+  :type 'plist)
 
 (lsp-dependency 'typescript-language-server
                 '(:system lsp-clients-typescript-tls-path)
@@ -169,10 +200,12 @@ directory containing the package. Example:
                   :priority -2
                   :completion-in-comments? t
                   :initialization-options (lambda ()
-                                            (list :plugins lsp-clients-typescript-plugins
+                                            (list :disableAutomaticTypingAcquisition lsp-clients-typescript-disable-automatic-typing-acquisition
                                                   :logVerbosity lsp-clients-typescript-log-verbosity
-                                                  :tsServerPath (lsp-package-path 'typescript)
-                                                  :preferences lsp-clients-typescript-init-opts))
+                                                  :maxTsServerMemory lsp-clients-typescript-max-ts-server-memory
+                                                  :npmLocation lsp-clients-typescript-npm-location
+                                                  :plugins lsp-clients-typescript-plugins
+                                                  :preferences lsp-clients-typescript-preferences))
                   :ignore-messages '("readFile .*? requested by TypeScript but content not available")
                   :server-id 'ts-ls
                   :request-handlers (ht ("_typescript.rename" #'lsp-javascript--rename))
