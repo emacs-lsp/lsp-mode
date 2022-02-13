@@ -427,10 +427,15 @@ is returned so lsp-mode can display this file."
   ;;
   ;; see https://lists.gnu.org/archive/html/emacs-devel/2022-02/msg00461.html
 
-  (let ((startup-wrapper (pcase system-type
-                           ('gnu/linux (list "/usr/bin/env" "--default-signal"))
-                           ('darwin (list "/bin/ksh" "-c"))
-                           (_ nil)))
+  (let ((startup-wrapper (cond ((and (eq 'darwin system-type)
+                                     (version<= "28.0" emacs-version))
+                                (list "/bin/ksh" "-c"))
+
+                               ((and (eq 'gnu/linux system-type)
+                                     (version<= "29.0" emacs-version))
+                                (list "/usr/bin/env" "--default-signal"))
+
+                               (t nil)))
         (solution-file-params (when lsp-csharp-solution-file
                                 (list "-s" lsp-csharp-solution-file))))
     (append startup-wrapper
