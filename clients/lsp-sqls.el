@@ -170,7 +170,8 @@ use the current region if set, otherwise the entire buffer."
  (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-sqls--make-launch-cmd)
                   :major-modes '(sql-mode)
                   :priority -1
-                  :action-handlers (ht ("executeQuery" #'lsp-sql-execute-query)
+                  :action-handlers (ht ("executeParagraph" #'lsp-sql-execute-paragraph)
+                                       ("executeQuery" #'lsp-sql-execute-query)
                                        ("showDatabases" #'lsp-sql-show-databases)
                                        ("showSchemas" #'lsp-sql-show-schemas)
                                        ("showConnections" #'lsp-sql-show-connections)
