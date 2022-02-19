@@ -15,6 +15,7 @@
   * Deprecate unified-languge-server in favor of remark-language-server
   * Made it possible to disable ~lsp-response-timeout~ entirely.
   * Fix csharp-ls startup on emacs@master (and emacs@emacs-28 on macOS) due to a switch posix_spawn and not setting proper sigmask on child processes.
+  * Add TypeProf support.
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.

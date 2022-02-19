@@ -689,6 +689,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "typeprof",
+    "full-name": "Ruby (TypeProf)",
+    "server-name": "typeprof",
+    "server-url": "https://github.com/ruby/typeprof",
+    "installation": "It is included in Ruby >= 3.1",
+    "debugger": "Not available"
+  },
+  {
     "name": "v",
     "full-name": "V",
     "server-name": "vls",
