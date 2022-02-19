@@ -74,7 +74,7 @@ FILE-NAME is path to package.json vscode manifest."
                        (t default))
                      ,(or description markdownDescription)
                      :type ',type
-                     :package-version '(lsp-mode . "8.0.0"))))
+                     :package-version '(lsp-mode . "8.0.1"))))
               )
             properties)
      `((lsp-register-custom-settings ',props-to-register)))))
