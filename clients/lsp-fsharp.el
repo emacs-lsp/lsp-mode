@@ -179,6 +179,10 @@ Will invoke CALLBACK or ERROR-CALLBACK based on result. Will update if UPDATE? i
   ;; (on linux) and "/bin/ksh -c" (on macos) so it launches with proper sigmask
   ;;
   ;; see https://lists.gnu.org/archive/html/emacs-devel/2022-02/msg00461.html
+  ;; --
+  ;; we also try to resolve full path to fsautocomplete using `executable-find' as
+  ;; our `startup-wrapper' may use $PATH to interpret the location of fsautocomplete
+  ;; and we want to actually use `exec-path' here
 
   (let ((startup-wrapper (cond ((and (eq 'darwin system-type)
                                      (version<= "28.0" emacs-version))
@@ -188,9 +192,11 @@ Will invoke CALLBACK or ERROR-CALLBACK based on result. Will update if UPDATE? i
                                      (version<= "29.0" emacs-version))
                                 (list "/usr/bin/env" "--default-signal"))
 
-                               (t nil))))
+                               (t nil)))
+        (fsautocomplete-exec (or (executable-find "fsautocomplete")
+                                 "fsautocomplete")))
     (append startup-wrapper
-            (list "fsautocomplete" "--background-service-enabled")
+            (list fsautocomplete-exec "--background-service-enabled")
             lsp-fsharp-server-args)))
 
 (defun lsp-fsharp--test-fsautocomplete-present ()
