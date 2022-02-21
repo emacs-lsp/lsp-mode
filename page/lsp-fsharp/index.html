@@ -1367,6 +1367,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-fsharp-generate-binlog" class="md-nav__link">
+    lsp-fsharp-generate-binlog
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-fsharp-interface-stub-generation" class="md-nav__link">
     lsp-fsharp-interface-stub-generation
   </a>
@@ -1432,13 +1439,6 @@
           <li class="md-nav__item">
   <a href="#lsp-fsharp-server-install-dir" class="md-nav__link">
     lsp-fsharp-server-install-dir
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-server-runtime" class="md-nav__link">
-    lsp-fsharp-server-runtime
   </a>
   
 </li>
@@ -2767,6 +2767,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-fsharp-generate-binlog" class="md-nav__link">
+    lsp-fsharp-generate-binlog
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-fsharp-interface-stub-generation" class="md-nav__link">
     lsp-fsharp-interface-stub-generation
   </a>
@@ -2832,13 +2839,6 @@
           <li class="md-nav__item">
   <a href="#lsp-fsharp-server-install-dir" class="md-nav__link">
     lsp-fsharp-server-install-dir
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-server-runtime" class="md-nav__link">
-    lsp-fsharp-server-runtime
   </a>
   
 </li>
@@ -2910,26 +2910,31 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
 <h3 id="debugger-yes-netcoredbg">Debugger: Yes (netcoredbg)<a class="headerlink" href="#debugger-yes-netcoredbg" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
 <h3 id="lsp-fsharp-auto-workspace-init"><code>lsp-fsharp-auto-workspace-init</code><a class="headerlink" href="#lsp-fsharp-auto-workspace-init" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>bool</code></p>
+<p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Enable automatic workspace initialization.
 Do note that this can cause unexpected or challenging behaviors, as solutions
 with test projects are not autoloaded by FSharpAutoComplete.</p>
 <hr />
 <h3 id="lsp-fsharp-enable-reference-code-lens"><code>lsp-fsharp-enable-reference-code-lens</code><a class="headerlink" href="#lsp-fsharp-enable-reference-code-lens" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>bool</code></p>
+<p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Enables reference count code lenses.
-It is recommended to disable if <code>--backgorund-service-enabled</code> is not used.</p>
+It is recommended to disable if <code>--background-service-enabled</code> is not used.</p>
 <hr />
 <h3 id="lsp-fsharp-external-autocomplete"><code>lsp-fsharp-external-autocomplete</code><a class="headerlink" href="#lsp-fsharp-external-autocomplete" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>bool</code></p>
+<p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Provides autocompletion for symbols from not opened namespaces/modules;
 inserts open on accept.</p>
 <hr />
+<h3 id="lsp-fsharp-generate-binlog"><code>lsp-fsharp-generate-binlog</code><a class="headerlink" href="#lsp-fsharp-generate-binlog" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Generate a binlog for debugging project cracking.</p>
+<hr />
 <h3 id="lsp-fsharp-interface-stub-generation"><code>lsp-fsharp-interface-stub-generation</code><a class="headerlink" href="#lsp-fsharp-interface-stub-generation" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>bool</code></p>
+<p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Enables code action to generate an interface stub.</p>
 <hr />
@@ -2945,18 +2950,18 @@ inserts open on accept.</p>
 e.g. <code>this</code> or <code>self</code>.</p>
 <hr />
 <h3 id="lsp-fsharp-keywords-autocomplete"><code>lsp-fsharp-keywords-autocomplete</code><a class="headerlink" href="#lsp-fsharp-keywords-autocomplete" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>bool</code></p>
+<p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Provides keywords in autocomplete list.</p>
 <hr />
 <h3 id="lsp-fsharp-linter"><code>lsp-fsharp-linter</code><a class="headerlink" href="#lsp-fsharp-linter" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>bool</code></p>
+<p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Enables FSharpLint integration, provides additional warnings and code
 action fixes.</p>
 <hr />
 <h3 id="lsp-fsharp-record-stub-generation"><code>lsp-fsharp-record-stub-generation</code><a class="headerlink" href="#lsp-fsharp-record-stub-generation" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>bool</code></p>
+<p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Enables code action to generate record stub.</p>
 <hr />
@@ -2966,7 +2971,7 @@ action fixes.</p>
 <p>Defines dummy body used by record stub generator.</p>
 <hr />
 <h3 id="lsp-fsharp-resolve-namespaces"><code>lsp-fsharp-resolve-namespaces</code><a class="headerlink" href="#lsp-fsharp-resolve-namespaces" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>bool</code></p>
+<p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Enables resolve namespace quick fix; adds <code>open</code> if symbol is from not yet
 opened module/namespace.</p>
@@ -2982,18 +2987,13 @@ opened module/namespace.</p>
 <p>Install directory for fsautocomplete server.
 The slash is expected at the end.</p>
 <hr />
-<h3 id="lsp-fsharp-server-runtime"><code>lsp-fsharp-server-runtime</code><a class="headerlink" href="#lsp-fsharp-server-runtime" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const :tag Use .Net Core net-core) (const :tag Use Mono mono) (const :tag Use .Net Framework net-framework))</code></p>
-<p><em>Default:</em> <code>net-core</code></p>
-<p>The .NET runtime to use.</p>
-<hr />
 <h3 id="lsp-fsharp-simplify-name-analyzer"><code>lsp-fsharp-simplify-name-analyzer</code><a class="headerlink" href="#lsp-fsharp-simplify-name-analyzer" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>bool</code></p>
+<p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Enables simplify name analyzer and remove redundant qualifier quick fix.</p>
 <hr />
 <h3 id="lsp-fsharp-union-case-stub-generation"><code>lsp-fsharp-union-case-stub-generation</code><a class="headerlink" href="#lsp-fsharp-union-case-stub-generation" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>bool</code></p>
+<p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Enables a code action to generate pattern matching cases.</p>
 <hr />
@@ -3003,12 +3003,12 @@ The slash is expected at the end.</p>
 <p>Defines dummy body used by pattern matching generator.</p>
 <hr />
 <h3 id="lsp-fsharp-unused-declarations-analyzer"><code>lsp-fsharp-unused-declarations-analyzer</code><a class="headerlink" href="#lsp-fsharp-unused-declarations-analyzer" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>bool</code></p>
+<p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Enables unused symbol detection.</p>
 <hr />
 <h3 id="lsp-fsharp-unused-opens-analyzer"><code>lsp-fsharp-unused-opens-analyzer</code><a class="headerlink" href="#lsp-fsharp-unused-opens-analyzer" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>bool</code></p>
+<p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Enables unused open detection.</p>
 <hr />

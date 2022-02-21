@@ -2760,6 +2760,13 @@
 <li>Fix csharp-ls startup on emacs@master (and emacs@emacs-28 on macOS)
     due to a switch posix<sub>spawn</sub> and not setting proper sigmask
     on child processes.</li>
+<li>Fix incorrect <code>lsp-fsharp</code> defcustom types.</li>
+<li>Add <code>lsp-fsharp-generate-binlog</code>.</li>
+<li>Update installation mechanism for fsautocomplete (lsp-fsharp) to use
+    <code>dotnet tool install -g</code>.</li>
+<li>Fix fsautocomplete (lsp-fsharp) startup on emacs@master (and
+    emacs@emacs-28 on macOS) due to a switch <code>posix_spawn</code> and not
+    setting proper sigmask on child processes.</li>
 </ul>
 <h2 id="release-800">Release 8.0.0<a class="headerlink" href="#release-800" title="Permanent link">#</a></h2>
 <ul>
