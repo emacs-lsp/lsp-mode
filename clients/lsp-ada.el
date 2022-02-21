@@ -62,7 +62,7 @@
   :risky t
   :type 'file)
 
-(defcustom lsp-ada-alira-executable "alr"
+(defcustom lsp-ada-alire-executable "alr"
   "The alire executable to run when a project is detected."
   :type 'string
   :group 'lsp-ada
@@ -75,7 +75,7 @@
     (when (file-exists-p
            (concat (file-name-as-directory project-root)
                    "alire.toml"))
-      (let ((alr-executable (executable-find lsp-ada-alira-executable)))
+      (let ((alr-executable (executable-find lsp-ada-alire-executable)))
         (if alr-executable
             ;; Transform output variables to environment
             (let ((env-output (shell-command-to-string (concat alr-executable " printenv --unix"))))
