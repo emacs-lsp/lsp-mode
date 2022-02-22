@@ -194,7 +194,8 @@ Will invoke CALLBACK or ERROR-CALLBACK based on result. Will update if UPDATE? i
 
                                (t nil)))
         (fsautocomplete-exec (or (executable-find "fsautocomplete")
-                                 "fsautocomplete")))
+                                 (f-join (or (getenv "USERPROFILE") (getenv "HOME"))
+                                         ".dotnet" "tools" "fsautocomplete"))))
     (append startup-wrapper
             (list fsautocomplete-exec "--background-service-enabled")
             lsp-fsharp-server-args)))
