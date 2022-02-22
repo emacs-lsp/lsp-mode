@@ -130,7 +130,8 @@ nav:
     - Verilog/SystemVerilog (svlangserver): page/lsp-svlangserver.md
     - VHDL: page/lsp-vhdl.md
     - Vimscript: page/lsp-vim.md
-    - Vue: page/lsp-vetur.md
+    - Vue 2: page/lsp-vetur.md
+    - Vue 3: page/lsp-volar.md
     - XML: page/lsp-xml.md
     - YAML: page/lsp-yaml.md
     - Zig: page/lsp-zig.md
