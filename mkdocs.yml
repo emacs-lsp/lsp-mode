@@ -110,8 +110,10 @@ nav:
     - R: page/lsp-r.md
     - Racket (jeapostrophe): page/lsp-racket-langserver.md
     - Racket (Theia): page/lsp-racket-language-server.md
-    - Ruby: page/lsp-solargraph.md
-    - Ruby: page/lsp-typeprof.md
+    - Ruby (Solargraph): page/lsp-solargraph.md
+    - Ruby (Sorbet): page/lsp-sorbet.md
+    - Ruby (Steep): page/lsp-steep.md
+    - Ruby (TypeProf): page/lsp-typeprof.md
     - Rust (rust-analyzer): page/lsp-rust-analyzer.md
     - Rust (rls): page/lsp-rust-rls.md
     - Scala: https://emacs-lsp.github.io/lsp-metals
