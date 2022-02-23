@@ -41,7 +41,7 @@
           (const "debug"))
   :group 'lsp-steep)
 
-(defcustom lsp-steep-use-bundler t
+(defcustom lsp-steep-use-bundler nil
   "Run Steep using Bunder."
   :type 'boolean
   :safe #'booleanp
