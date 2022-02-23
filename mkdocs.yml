@@ -123,6 +123,7 @@ nav:
     - TeX, LaTeX, etc (texlab): page/lsp-texlab.md
     - TeX, LaTeX, etc (texlab, external): page/lsp-latex.md
     - TOML: page/lsp-toml.md
+    - TTCN3: page/lsp-ttcn3.md
     - V: page/lsp-v.md
     - Vala: page/lsp-vala.md
     - Verilog/SystemVerilog (hdl-checker): page/lsp-verilog.md

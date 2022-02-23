@@ -697,6 +697,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "ttcn3",
+    "full-name": "TTCN3",
+    "server-name": "ntt",
+    "server-url": "https://github.com/nokia/ntt",
+    "installation-url": "https://github.com/nokia/ntt#install",
+    "debugger": "Not available"
+  },
+  {
     "name": "v",
     "full-name": "V",
     "server-name": "vls",
