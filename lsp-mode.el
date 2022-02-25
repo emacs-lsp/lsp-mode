@@ -176,7 +176,7 @@ As defined by the Language Server Protocol 3.16."
   '(ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-bash lsp-beancount lsp-clangd lsp-clojure
          lsp-cmake lsp-crystal lsp-csharp lsp-css lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile
          lsp-elm lsp-elixir lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go lsp-graphql
-         lsp-hack lsp-grammarly lsp-groovy lsp-haskell lsp-haxe lsp-java lsp-javascript lsp-json
+         lsp-hack lsp-grammarly lsp-groovy lsp-haskell lsp-haxe lsp-idris lsp-java lsp-javascript lsp-json
          lsp-kotlin lsp-latex lsp-ltex lsp-lua lsp-markdown lsp-nginx lsp-nim lsp-nix lsp-magik
          lsp-metals lsp-mssql lsp-ocaml lsp-pascal lsp-perl lsp-php lsp-pwsh lsp-pyls lsp-pylsp
          lsp-pyright lsp-python-ms lsp-purescript lsp-r lsp-remark lsp-rf lsp-rust lsp-solargraph
@@ -815,7 +815,9 @@ Changes take effect only when a new session is started."
                                         (conf-toml-mode . "toml")
                                         (org-mode . "org")
                                         (nginx-mode . "nginx")
-                                        (magik-mode . "magik"))
+                                        (magik-mode . "magik")
+                                        (idris-mode . "idris")
+                                        (idris2-mode . "idris2"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
@@ -1851,7 +1853,7 @@ regex in IGNORED-FILES."
     lsp-actionscript lsp-ada lsp-angular lsp-bash lsp-beancount lsp-clangd
     lsp-clojure lsp-cmake lsp-crystal lsp-csharp lsp-css lsp-d lsp-dhall
     lsp-dockerfile lsp-elixir lsp-elm lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript
-    lsp-go lsp-graphql lsp-groovy lsp-hack lsp-haxe lsp-html lsp-javascript lsp-json lsp-kotlin lsp-lua
+    lsp-go lsp-graphql lsp-groovy lsp-hack lsp-haxe lsp-html lsp-idris lsp-javascript lsp-json lsp-kotlin lsp-lua
     lsp-markdown lsp-nginx lsp-nim lsp-nix lsp-ocaml lsp-perl lsp-php lsp-prolog lsp-purescript lsp-pwsh
     lsp-pyls lsp-pylsp lsp-racket lsp-r lsp-rf lsp-rust lsp-solargraph lsp-sorbet lsp-sqls
     lsp-steep lsp-svelte lsp-terraform lsp-tex lsp-toml lsp-ttcn3 lsp-typeprof lsp-v lsp-vala lsp-verilog
