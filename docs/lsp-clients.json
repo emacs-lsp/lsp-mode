@@ -590,7 +590,7 @@
   },
   {
     "name": "solargraph",
-    "full-name": "Ruby",
+    "full-name": "Ruby (Solargraph)",
     "server-name": "solargraph",
     "server-url": "https://github.com/castwide/solargraph",
     "installation": "gem install solargraph",
