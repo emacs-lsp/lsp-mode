@@ -1036,7 +1036,7 @@ and run a compilation"
   (-let (((&rust-analyzer:Runnable
            :args (&rust-analyzer:RunnableArgs :cargo-args :workspace-root? :executable-args)
            :label) runnable))
-    (cl-case (aref cargo-args 0)
+    (pcase (aref cargo-args 0)
       ("run" (aset cargo-args 0 "build"))
       ("test" (when (-contains? (append cargo-args ()) "--no-run")
                 (cl-callf append cargo-args (list "--no-run")))))
