@@ -359,6 +359,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "magik",
+    "full-name": "GE Smallworld Magik",
+    "server-name": "magik-language-server",
+    "server-url": "https://github.com/StevenLooman/magik-tools",
+    "installation": "https://github.com/StevenLooman/magik-tools/releases",
+    "debugger": "Not implemented"
+  },
+  {
     "name": "markdown",
     "full-name": "Markdown",
     "server-name": "unified-language-server (deprecated in favor of remark-language-server)",
@@ -590,7 +598,7 @@
   },
   {
     "name": "solargraph",
-    "full-name": "Ruby",
+    "full-name": "Ruby (Solargraph)",
     "server-name": "solargraph",
     "server-url": "https://github.com/castwide/solargraph",
     "installation": "gem install solargraph",
