@@ -21,6 +21,7 @@
   * Fix fsautocomplete (lsp-fsharp) startup on emacs@master (and emacs@emacs-28 on macOS) due to
     a switch ~posix_spawn~ and not setting proper sigmask on child processes.
   * Add TypeProf support.
+  * Add Volar support.
   * Disable ~lsp-steep-use-bundler~ by default.
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
