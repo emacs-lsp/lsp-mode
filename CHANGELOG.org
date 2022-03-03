@@ -22,6 +22,7 @@
     a switch ~posix_spawn~ and not setting proper sigmask on child processes.
   * Add TypeProf support.
   * Add Volar support.
+  * Add Ansible support.
   * Disable ~lsp-steep-use-bundler~ by default.
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.

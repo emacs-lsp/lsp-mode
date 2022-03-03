@@ -47,6 +47,7 @@ nav:
     - ActionScript: page/lsp-actionscript.md
     - Ada: page/lsp-ada.md
     - Angular: page/lsp-angular.md
+    - Ansible: page/lsp-ansible.md
     - Bash: page/lsp-bash.md
     - Beancount: page/lsp-beancount.md
     - C++ (ccls): page/lsp-ccls.md
