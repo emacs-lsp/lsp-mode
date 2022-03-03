@@ -25,6 +25,15 @@
     "debugger": "Not relevant"
   },
   {
+    "name": "ansible",
+    "full-name": "Ansible",
+    "server-name": "ansible-language-server",
+    "server-url": "https://github.com/ansible/ansible-language-server",
+    "installation": "npm i -g @ansible/ansible-language-server",
+    "lsp-install-server": "ansible-ls",
+    "debugger": "Not available"
+  },
+  {
     "name": "bash",
     "full-name": "Bash",
     "server-name": "bash-language-server",
