@@ -159,8 +159,6 @@ Python virtual environment."
    ("ansible.python.interpreterPath")
    ("ansible.python.activationScript" lsp-ansible-python-activation-script)))
 
-(defvar ansible)
-
 (defun lsp-ansible-check-ansible-minor-mode (&rest _)
   "Check whether ansible minor mode is active.
 This prevents the Ansible server from being turned on in all yaml files."
