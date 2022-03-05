@@ -102,7 +102,7 @@
    ("documentFeatures.documentSymbol" t t)
    ("documentFeatures.documentColor" t t)
    ("documentFeatures.documentFormatting.defaultPrintWidth" 100 t)
-   ("documentFeatures.documentFormatting.getDocumentPrintWidthRequest" t t)))
+   ("documentFeatures.documentFormatting.getDocumentPrintWidthRequest" nil t)))
 
 (defun lsp-volar--vue-project-p (workspace-root)
   "Check if the 'vue' package is present in the package.json file
@@ -170,8 +170,8 @@ in the WORKSPACE-ROOT."
                                                                                  (ht ("documentLink" t))
                                                                                  (ht ("codeLens" (ht ("showReferencesNotification" t))))
                                                                                  (ht ("semanticTokens" t))
-                                                                                 (ht ("diagnostics" (ht ("getDocumentVersionRequest" t))))
-                                                                                 (ht ("schemaRequestService" (ht ("getDocumentContentRequest" t)))))))))
+                                                                                 (ht ("diagnostics" (ht ("getDocumentVersionRequest" nil))))
+                                                                                 (ht ("schemaRequestService" (ht ("getDocumentContentRequest" nil)))))))))
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--server-register-capability
