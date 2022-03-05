@@ -24,6 +24,7 @@
   * Add Volar support.
   * Add Ansible support.
   * Disable ~lsp-steep-use-bundler~ by default.
+  * Add [[https://github.com/idris-community/idris2-lsp][idris2-lsp]]
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.

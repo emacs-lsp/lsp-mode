@@ -76,6 +76,7 @@ nav:
     - Hack: page/lsp-hack.md
     - HTML: page/lsp-html.md
     - Haskell: https://emacs-lsp.github.io/lsp-haskell
+    - Idris: page/lsp-idris.md
     - Java: https://emacs-lsp.github.io/lsp-java
     - Javascript/Typescript (deno): page/lsp-deno.md
     - JavaScript/TypeScript (sourcegraph): page/lsp-typescript-javascript.md
