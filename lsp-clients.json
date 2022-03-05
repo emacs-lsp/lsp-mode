@@ -267,6 +267,13 @@
     "debugger": "Not available"
   },
   {
+    "name": "idris",
+    "full-name": "Idris",
+    "server-name": "idris2-lsp",
+    "installation-url": "https://github.com/idris-community/idris2-lsp",
+    "debugger": "Not available"
+  },
+  {
     "name": "flow",
     "full-name": "JavaScript Flow",
     "server-name": "flow",
