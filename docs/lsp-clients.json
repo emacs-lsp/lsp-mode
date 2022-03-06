@@ -167,6 +167,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "emmet",
+    "full-name": "Emmet",
+    "server-name": "emmet-ls",
+    "server-url": "https://github.com/aca/emmet-ls",
+    "installation": "npm i -g emmet-ls",
+    "lsp-install-server": "emmet-ls",
+    "debugger": "Not available"
+  },
+  {
     "name": "erlang",
     "full-name": "Erlang",
     "server-name": "erlang_ls",

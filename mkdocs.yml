@@ -64,6 +64,7 @@ nav:
     - Dockerfile: page/lsp-dockerfile.md
     - Elixir: page/lsp-elixir.md
     - Elm: page/lsp-elm.md
+    - Emmet: page/lsp-emmet.md
     - Erlang: page/lsp-erlang.md
     - Eslint: page/lsp-eslint.md
     - F#: page/lsp-fsharp.md
