@@ -1554,8 +1554,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#lsp-clients-typescript-init-opts" class="md-nav__link">
-    lsp-clients-typescript-init-opts
+  <a href="#lsp-clients-typescript-disable-automatic-typing-acquisition" class="md-nav__link">
+    lsp-clients-typescript-disable-automatic-typing-acquisition
   </a>
   
 </li>
@@ -1568,8 +1568,29 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-max-ts-server-memory" class="md-nav__link">
+    lsp-clients-typescript-max-ts-server-memory
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-npm-location" class="md-nav__link">
+    lsp-clients-typescript-npm-location
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-clients-typescript-plugins" class="md-nav__link">
     lsp-clients-typescript-plugins
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-preferences" class="md-nav__link">
+    lsp-clients-typescript-preferences
   </a>
   
 </li>
@@ -2765,8 +2786,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#lsp-clients-typescript-init-opts" class="md-nav__link">
-    lsp-clients-typescript-init-opts
+  <a href="#lsp-clients-typescript-disable-automatic-typing-acquisition" class="md-nav__link">
+    lsp-clients-typescript-disable-automatic-typing-acquisition
   </a>
   
 </li>
@@ -2779,8 +2800,29 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-max-ts-server-memory" class="md-nav__link">
+    lsp-clients-typescript-max-ts-server-memory
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-npm-location" class="md-nav__link">
+    lsp-clients-typescript-npm-location
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-clients-typescript-plugins" class="md-nav__link">
     lsp-clients-typescript-plugins
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-typescript-preferences" class="md-nav__link">
+    lsp-clients-typescript-preferences
   </a>
   
 </li>
@@ -2830,16 +2872,30 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
 <p><code>npm i -g typescript-language-server; npm i -g typescript</code></p>
 <h3 id="debugger-yes-firefoxchrome">Debugger: Yes (Firefox/Chrome)<a class="headerlink" href="#debugger-yes-firefoxchrome" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<h3 id="lsp-clients-typescript-init-opts"><code>lsp-clients-typescript-init-opts</code><a class="headerlink" href="#lsp-clients-typescript-init-opts" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>plist</code></p>
+<h3 id="lsp-clients-typescript-disable-automatic-typing-acquisition"><code>lsp-clients-typescript-disable-automatic-typing-acquisition</code><a class="headerlink" href="#lsp-clients-typescript-disable-automatic-typing-acquisition" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Configuration options provided to tsserver.
-See the UserPreferences interface at https://github.com/microsoft/TypeScript/blob/main/lib/protocol.d.ts for the list of options available in the latest version of TypeScript.</p>
+<p>Disables tsserver from automatically fetching missing type
+definitions (@types packages) for external modules.</p>
 <hr />
 <h3 id="lsp-clients-typescript-log-verbosity"><code>lsp-clients-typescript-log-verbosity</code><a class="headerlink" href="#lsp-clients-typescript-log-verbosity" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
+<p><em>Type:</em> <code>(choice (const off) (const terse) (const normal) (const requesttime) (const verbose))</code></p>
 <p><em>Default:</em> <code>info</code></p>
-<p>The server log verbosity.</p>
+<p>The verbosity level of the information printed in the log by tsserver.</p>
+<hr />
+<h3 id="lsp-clients-typescript-max-ts-server-memory"><code>lsp-clients-typescript-max-ts-server-memory</code><a class="headerlink" href="#lsp-clients-typescript-max-ts-server-memory" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>integer</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>The maximum size of the V8`s old memory section in megabytes (for
+example 4096 means 4GB). The default value is dynamically configured
+by Node so can differ per system. Increase for very big projects that
+exceed allowed memory usage.</p>
+<hr />
+<h3 id="lsp-clients-typescript-npm-location"><code>lsp-clients-typescript-npm-location</code><a class="headerlink" href="#lsp-clients-typescript-npm-location" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Specifies the path to the NPM executable used for Automatic Type
+Acquisition.</p>
 <hr />
 <h3 id="lsp-clients-typescript-plugins"><code>lsp-clients-typescript-plugins</code><a class="headerlink" href="#lsp-clients-typescript-plugins" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(restricted-sexp :tag Vector :match-alternatives (lambda (xs) (and (vectorp xs) (seq-every-p (-lambda ((&amp;plist :name :location)) (and name location)) xs))))</code></p>
@@ -2852,6 +2908,12 @@ directory containing the package. Example:
    (list :name "@vsintellicode/typescript-intellicode-plugin"
          :location "<path>.vscode/extensions/visualstudioexptteam.
                             vscodeintellicode-1.1.9/"))</p>
+<hr />
+<h3 id="lsp-clients-typescript-preferences"><code>lsp-clients-typescript-preferences</code><a class="headerlink" href="#lsp-clients-typescript-preferences" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>plist</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Preferences passed to the Typescript (tsserver) process.
+See https://github.com/typescript-language-server/typescript-language-server#initializationoptions for the list of preferences available in the latest version of TypeScript.</p>
 <hr />
 <h3 id="lsp-clients-typescript-server-args"><code>lsp-clients-typescript-server-args</code><a class="headerlink" href="#lsp-clients-typescript-server-args" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(repeat string)</code></p>
