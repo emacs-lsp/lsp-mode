@@ -523,6 +523,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#optional-steps" class="md-nav__link">
+    Optional steps
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#gccemacs" class="md-nav__link">
     gccemacs
   </a>
@@ -2762,6 +2769,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#optional-steps" class="md-nav__link">
+    Optional steps
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#gccemacs" class="md-nav__link">
     gccemacs
   </a>
@@ -2843,18 +2857,16 @@ Benchmarks show that Emacs 27 is <code>~15 times</code> faster than Emacs when u
 </code></pre></div></li>
 <li>Delete <code>lsp-mode</code> related packages.</li>
 <li>Make sure that <code>lsp-use-plists</code> is non-nil.</li>
-<li>Restart <code>Emacs</code> and install again <code>lsp-mode</code> related packages.
-<div class="highlight"><pre><span></span><code>_NB:_ make sure that `lsp-use-plist` does not change after you compile the file.
-
-### Optional steps
-
-- Optional: Disable `lsp-ui`. Normally, `lsp-ui` is very fast but in some systems (especially when using `Windows`) `lsp-ui` overlays and popups might slow down emacs.
-- Optional: fine-tune `lsp-idle-delay`. This variable determines how often lsp-mode will refresh the highlights, lenses, links, etc while you type.
-
-``` elisp
-(setq lsp-idle-delay 0.500)
-</code></pre></div></li>
+<li>Restart <code>Emacs</code> and install again <code>lsp-mode</code> related packages.</li>
 </ol>
+<p><em>NB:</em> make sure that <code>lsp-use-plist</code> does not change after you compile the file.</p>
+<h3 id="optional-steps">Optional steps<a class="headerlink" href="#optional-steps" title="Permanent link">#</a></h3>
+<ul>
+<li>Optional: Disable <code>lsp-ui</code>. Normally, <code>lsp-ui</code> is very fast but in some systems (especially when using <code>Windows</code>) <code>lsp-ui</code> overlays and popups might slow down emacs.</li>
+<li>Optional: fine-tune <code>lsp-idle-delay</code>. This variable determines how often lsp-mode will refresh the highlights, lenses, links, etc while you type.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-idle-delay</span> <span class="mf">0.500</span><span class="p">)</span>
+</code></pre></div>
 <h3 id="gccemacs">gccemacs<a class="headerlink" href="#gccemacs" title="Permanent link">#</a></h3>
 <p><a href="https://akrl.sdf.org/gccemacs.html">gccemacs</a> is a bleeding-edge version of <code>Emacs</code> that compiles elisp to native code, resulting in more than 200% speedup. For everyone looking for optimal performance, <code>gccemacs</code> is the way to go.</p>
 <h2 id="ignore-watch-foldersfiles">Ignore watch folders/files<a class="headerlink" href="#ignore-watch-foldersfiles" title="Permanent link">#</a></h2>
@@ -2885,7 +2897,7 @@ to be watched for performance reasons, you can add a regexp to that variable exc
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 6, 2022</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 8, 2022</span>
     
   </small>
 </div>
