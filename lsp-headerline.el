@@ -417,6 +417,11 @@ PATH is the current folder to be checked."
   :global nil
   (cond
    (lsp-headerline-breadcrumb-mode
+    ;; make sure header-line-format, if non-nil, is a list.  as
+    ;; mode-line-format says: "The value may be nil, a string, a
+    ;; symbol or a list."
+    (unless (listp header-line-format)
+      (setq header-line-format (list header-line-format)))
     (add-to-list 'header-line-format '(t (:eval lsp-headerline--string)))
 
     (add-hook 'xref-after-jump-hook #'lsp-headerline--check-breadcrumb nil t)
