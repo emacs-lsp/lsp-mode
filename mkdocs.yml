@@ -98,7 +98,8 @@ nav:
     - Nix: page/lsp-nix.md
     - OCaml (ocaml-lsp): page/lsp-ocaml-lsp-server.md
     - Pascal/Object Pascal: page/lsp-pascal.md
-    - Perl: page/lsp-perl.md
+    - Perl (Perl::LanguageServer): page/lsp-perl.md
+    - Perl (Navigator): page/lsp-perlnavigator.md
     - PHP (intelephense): page/lsp-intelephense.md
     - PHP (Serenata): page/lsp-serenata.md
     - PHP (felixbecker): page/lsp-php.md
