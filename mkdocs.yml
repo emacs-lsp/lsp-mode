@@ -150,6 +150,7 @@ nav:
       - page/CHANGELOG.md
   - Tutorials:
       - 'Configuring Emacs as a C/C++ IDE': tutorials/CPP-guide.md
+      - 'Configuring Emacs as a PHP IDE': tutorials/php-guide.md
       - 'A guide on disabling/enabling lsp-mode features': tutorials/how-to-turn-off.md
       - 'React JavaScript Tutorial in Emacs': tutorials/reactjs-tutorial.md
       - 'Configuring Emacs as a Clojure IDE': tutorials/clojure-guide.md
