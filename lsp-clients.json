@@ -479,7 +479,7 @@
     "full-name": "PHP(recommended)",
     "server-name": "intelephense",
     "server-url": "https://github.com/bmewburn/vscode-intelephense",
-    "installation": "npm i intelephense -g",
+    "installation": "Automatic or manual by `npm i intelephense -g`",
     "debugger": "Yes"
   },
   {
