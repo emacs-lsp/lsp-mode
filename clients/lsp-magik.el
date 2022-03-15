@@ -89,6 +89,12 @@
   :group `lsp-magik
   :package-version '(lsp-mode . "8.0.1"))
 
+(defcustom lsp-magik-lint-override-config-file nil
+  "Override path to magiklintrc.properties."
+  :type 'string
+  :group `lsp-magik
+  :package-version '(lsp-mode . "8.0.1"))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda ()
@@ -109,7 +115,8 @@
                                 ("magik.environment" lsp-magik-environment)
                                 ("magik.typing.typeDatabasePaths" lsp-magik-typing-type-database-paths)
                                 ("magik.typing.enableChecks" lsp-magik-typing-enable-checks)
-                                ("magik.trace.server" lsp-magik-trace-server)))
+                                ("magik.trace.server" lsp-magik-trace-server)
+                                ("magik.lint.overrideConfigFile" lsp-magik-lint-override-config-file)))
 
 (lsp-consistency-check lsp-magik)
 
