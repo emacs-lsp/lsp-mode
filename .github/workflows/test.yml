@@ -19,7 +19,8 @@ jobs:
                     - 26.3
                     - 27.1
                     - 27.2
-                    - snapshot
+                    # TODO: activate when cask works with emacs snapshot
+                    # - snapshot
 
         steps:
             - uses: actions/checkout@v2
@@ -75,7 +76,8 @@ jobs:
                     - 26.3
                     - 27.1
                     - 27.2
-                    - snapshot
+                    # TODO: activate when cask works with emacs snapshot
+                    # - snapshot
 
         steps:
             - uses: actions/checkout@v2
