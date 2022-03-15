@@ -28,7 +28,9 @@
   (let ((lsp--uri-file-prefix "file:///"))
     (should (equal (lsp--path-to-uri "c:/Users/?/") "file:///c:/Users/%3F/")))
   (let ((lsp--uri-file-prefix "file://"))
-    (should (equal (lsp--path-to-uri "/root/file/hallo welt") "file:///root/file/hallo%20welt"))))
+    (should (equal (lsp--path-to-uri "/root/file/hallo welt") "file:///root/file/hallo%20welt")))
+  (should (equal (lsp--uri-to-path "file:///home/nim-%23devel")
+                 "/home/nim-#devel")))
 
 (ert-deftest lsp--path-to-uri ()
   (let ((lsp--uri-file-prefix "file:///")
