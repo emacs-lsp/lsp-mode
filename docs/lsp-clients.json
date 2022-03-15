@@ -458,6 +458,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "perlnavigator",
+    "full-name": "Perl Navigator",
+    "server-name": "perlnavigator",
+    "server-url": "https://github.com/bscan/PerlNavigator",
+    "installation": "https://github.com/bscan/PerlNavigator/releases",
+    "debugger": "Not available"
+  },
+  {
     "name": "php",
     "full-name": "PHP",
     "server-name": "php-language-server",
@@ -471,7 +479,7 @@
     "full-name": "PHP(recommended)",
     "server-name": "intelephense",
     "server-url": "https://github.com/bmewburn/vscode-intelephense",
-    "installation": "npm i intelephense -g",
+    "installation": "Automatic or manual by `npm i intelephense -g`",
     "debugger": "Yes"
   },
   {

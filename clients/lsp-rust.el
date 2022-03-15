@@ -188,12 +188,6 @@ the latest build duration."
   :group 'lsp-rust-rls
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-rust-analyzer-cargo-target nil
-  "Compilation target (target triple)."
-  :type 'string
-  :group 'lsp-rust-rls
-  :package-version '(lsp-mode . "8.0.0"))
-
 (defcustom lsp-rust-no-default-features nil
   "Do not enable default Cargo features."
   :type 'boolean
@@ -377,6 +371,14 @@ PARAMS progress report notification data."
   :type 'integer
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "6.2.2"))
+
+(defcustom lsp-rust-analyzer-cargo-target nil
+  "Compilation target (target triple)."
+  :type '(choice
+          (string :tag "Target")
+          (const :tag "None" nil))
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-rust-analyzer-cargo-watch-enable t
   "Enable Cargo watch."
@@ -616,7 +618,9 @@ https://rust-analyzer.github.io/manual.html#auto-import.
 
 (defcustom lsp-rust-analyzer-rustc-source nil
   "Path to the Cargo.toml of the rust compiler workspace."
-  :type 'string
+  :type '(choice
+          (file :tag "Path")
+          (const :tag "None" nil))
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 

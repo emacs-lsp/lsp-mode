@@ -178,7 +178,7 @@ As defined by the Language Server Protocol 3.16."
          lsp-elm lsp-elixir lsp-emmet lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go
          lsp-graphql lsp-hack lsp-grammarly lsp-groovy lsp-haskell lsp-haxe lsp-idris lsp-java lsp-javascript
          lsp-json lsp-kotlin lsp-latex lsp-ltex lsp-lua lsp-markdown lsp-nginx lsp-nim lsp-nix lsp-magik
-         lsp-metals lsp-mssql lsp-ocaml lsp-pascal lsp-perl lsp-php lsp-pwsh lsp-pyls lsp-pylsp
+         lsp-metals lsp-mssql lsp-ocaml lsp-pascal lsp-perl lsp-perlnavigator lsp-php lsp-pwsh lsp-pyls lsp-pylsp
          lsp-pyright lsp-python-ms lsp-purescript lsp-r lsp-remark lsp-rf lsp-rust lsp-solargraph
          lsp-sorbet lsp-sourcekit lsp-sonarlint lsp-tailwindcss lsp-tex lsp-terraform lsp-toml
          lsp-ttcn3 lsp-typeprof lsp-v lsp-vala lsp-verilog lsp-vetur lsp-volar lsp-vhdl lsp-vimscript
@@ -1653,8 +1653,12 @@ On other systems, returns path without change."
   "Convert URI to a file path."
   (let* ((url (url-generic-parse-url (url-unhex-string uri)))
          (type (url-type url))
-         (file (decode-coding-string (url-filename url)
-                                     (or locale-coding-system 'utf-8)))
+         (target (url-target url))
+         (file
+          (concat (decode-coding-string (url-filename url)
+                                        (or locale-coding-system 'utf-8))
+                  (when target
+                    (concat "#" target))))
          (file-name (if (and type (not (string= type "file")))
                         (if-let ((handler (lsp--get-uri-handler type)))
                             (funcall handler uri)
@@ -1854,7 +1858,7 @@ regex in IGNORED-FILES."
     lsp-clojure lsp-cmake lsp-crystal lsp-csharp lsp-css lsp-d lsp-dhall
     lsp-dockerfile lsp-elixir lsp-elm lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript
     lsp-go lsp-graphql lsp-groovy lsp-hack lsp-haxe lsp-html lsp-idris lsp-javascript lsp-json lsp-kotlin lsp-lua
-    lsp-markdown lsp-nginx lsp-nim lsp-nix lsp-ocaml lsp-perl lsp-php lsp-prolog lsp-purescript lsp-pwsh
+    lsp-markdown lsp-nginx lsp-nim lsp-nix lsp-ocaml lsp-perl lsp-perlnavigator lsp-php lsp-prolog lsp-purescript lsp-pwsh
     lsp-pyls lsp-pylsp lsp-racket lsp-r lsp-rf lsp-rust lsp-solargraph lsp-sorbet lsp-sqls
     lsp-steep lsp-svelte lsp-terraform lsp-tex lsp-toml lsp-ttcn3 lsp-typeprof lsp-v lsp-vala lsp-verilog
     lsp-vetur lsp-volar lsp-vhdl lsp-vimscript lsp-xml lsp-yaml lsp-zig)
@@ -5202,10 +5206,12 @@ RENDER-ALL - nil if only the signature should be rendered."
       (if render-all
           contents
         ;; Only render contents that have an available renderer.
-        (seq-filter
-         (-andfn #'lsp-marked-string?
-                 (-compose #'lsp-get-renderer #'lsp:marked-string-language))
-         contents)))
+        (seq-take
+         (seq-filter
+          (-andfn #'lsp-marked-string?
+                  (-compose #'lsp-get-renderer #'lsp:marked-string-language))
+          contents)
+         1)))
      (if (bound-and-true-p page-break-lines-mode)
          "\n\n"
        "\n")))))
