@@ -47,37 +47,39 @@ ENUM is the value of enum key in vscode manifest."
         ("array" 'lsp-string-vector)
         (`(,type . ,_rest) `(repeat ,(lsp--convert-type type nil)))))))
 
-(defun lsp-generate-settings (file-name)
+(defun lsp-generate-settings (file-name group)
   "Generate settings for SERVER.
 FILE-NAME is path to package.json vscode manifest."
-  (let* ((json-array-type 'list)
-         (parsed (json-read-file file-name))
-         (properties (->> parsed
-                          (assoc 'contributes)
-                          cl-rest
-                          (assoc 'configuration)
-                          cl-rest
-                          (assoc 'properties)
-                          cl-rest))
-         props-to-register)
-    (append
-     (-keep (-lambda ((prop-name . (&alist 'type 'default 'enum 'description 'markdownDescription)))
-              (let ((type (lsp--convert-type type enum))
-                    (prop-symbol (intern (format "lsp-%s" (s-dashed-words (symbol-name prop-name)))) ))
-                (unless (boundp prop-symbol)
-                  (push (append (list (symbol-name prop-name) prop-symbol) (when (equal type 'boolean) (list t)))
-                        props-to-register)
-                  `(defcustom ,prop-symbol
-                     ,(cond
-                       ((equal default :json-false) nil)
-                       ((and default (listp default)) (apply 'vector default))
-                       (t default))
-                     ,(or description markdownDescription)
-                     :type ',type
-                     :package-version '(lsp-mode . "8.0.1"))))
-              )
-            properties)
-     `((lsp-register-custom-settings ',props-to-register)))))
+  (let ((json-array-type 'list))
+    (->> (json-read-file file-name)
+         (assoc 'contributes)
+         cl-rest
+         (assoc 'configuration)
+         cl-rest
+         (assoc 'properties)
+         cl-rest
+         (-keep
+          (-lambda ((prop-name . (&alist 'type 'default 'enum 'description 'markdownDescription)))
+            (let ((type (lsp--convert-type type enum))
+                  (prop-symbol (intern (format "lsp-%s" (s-dashed-words (symbol-name prop-name)))) ))
+              (unless (boundp prop-symbol)
+                (format "(lsp-defcustom %s %s
+  \"%s\"
+  :type '%s
+  :group '%s
+  :package-version '(lsp-mode . \"8.0.1\")
+  :lsp-path \"%s\")"
+                        prop-symbol
+                        (prin1-to-string
+                         (cond
+                          ((equal default :json-false) nil)
+                          ((and default (listp default)) (apply 'vector default))
+                          (t default)))
+                        (or description markdownDescription)
+                        type
+                        group
+                        (symbol-name prop-name))))))
+         (s-join "\n\n")))))
 
 (provide 'lsp-generate-settings)
 

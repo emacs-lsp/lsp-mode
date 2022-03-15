@@ -89,21 +89,17 @@ client has been loaded.
 
 `lsp-mode` provides tools to bridge emacs `defcustom` as a language
 configuration sections properties(see [specification
-workspace/configuration](https://microsoft.github.io/language-server-protocol/specification#workspace_configuration)).
-In addition you may use `lsp-generate-settings` from [Generate Settings
-script](https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-generate-settings.el)
-to generate `defcustom` from `package.json` VScode plugin manifest.
-Example:
+workspace/configuration](https://microsoft.github.io/language-server-protocol/specification#workspace_configuration)). In addition you may use `lsp-generate-settings`
+from [Generate Settings script](https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-generate-settings.el) to generate `lsp-defcustom` from `package.json`
+VScode plugin manifest. Example:
 
 ``` elisp
-(defcustom lsp-foo-language-server-property "bar"
+(defcustom-lsp lsp-foo-language-server-property "bar"
   "Demo property."
   :group 'foo-ls
-  :risky t)
+  :lsp-path "foo.section.property")
 
-(lsp-register-custom-settings '(("foo.section.property" lsp-foo-language-server-property)))
-
-(lsp-configuration-section  "foo")
+(lsp-configuration-section "foo")
 ;; =>  (("foo" ("settings" ("property" . "bar"))))
 ```
 
@@ -111,4 +107,3 @@ Example:
 
   - Add the new language server to the [lsp-clients.json](https://github.com/emacs-lsp/lsp-mode/blob/master/docs/lsp-clients.json) file sorted by the `full-name` key alphabetically.
   - Create a new navigation entry in [mkdocs.yml](https://github.com/emacs-lsp/lsp-mode/blob/master/mkdocs.yml#L4) file.
-
