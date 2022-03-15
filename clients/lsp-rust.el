@@ -850,7 +850,7 @@ https://rust-analyzer.github.io/manual.html#auto-import.
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-rust-analyzer-inlay-type-format ": %s"
+(defcustom lsp-rust-analyzer-inlay-type-format "%s"
   "Format string for variable inlays (part of the inlay face)."
   :type '(string :tag "String")
   :group 'lsp-rust-analyzer
@@ -869,7 +869,7 @@ https://rust-analyzer.github.io/manual.html#auto-import.
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-rust-analyzer-inlay-param-format "%s:"
+(defcustom lsp-rust-analyzer-inlay-param-format "%s"
   "Format string for parameter inlays (part of the inlay face)."
   :type '(string :tag "String")
   :group 'lsp-rust-analyzer
@@ -910,20 +910,20 @@ meaning."
   (if (and (lsp-rust-analyzer-initialized?)
            (eq buffer (current-buffer)))
       (lsp-request-async
-       "rust-analyzer/inlayHints"
+       "experimental/inlayHints"
        (lsp-make-rust-analyzer-inlay-hints-params
         :text-document (lsp--text-document-identifier))
        (lambda (res)
          (remove-overlays (point-min) (point-max) 'lsp-rust-analyzer-inlay-hint t)
          (dolist (hint res)
-           (-let* (((&rust-analyzer:InlayHint :range :label :kind) hint)
-                   ((&RangeToPoint :start :end) range)
-                   (overlay (make-overlay start end nil 'front-advance 'end-advance)))
+           (-let* (((&rust-analyzer:InlayHint :position :label :kind) hint)
+                   (pos (lsp--position-to-point position))
+                   (overlay (make-overlay pos (+ pos 1) nil 'front-advance 'end-advance)))
              (overlay-put overlay 'lsp-rust-analyzer-inlay-hint t)
              (overlay-put overlay 'evaporate t)
              (cond
               ((equal kind lsp/rust-analyzer-inlay-hint-kind-type-hint)
-               (overlay-put overlay 'after-string
+               (overlay-put overlay 'before-string
                             (format lsp-rust-analyzer-inlay-type-space-format
                                     (propertize (format lsp-rust-analyzer-inlay-type-format label)
                                                 'font-lock-face 'lsp-rust-analyzer-inlay-type-face))))
@@ -935,7 +935,7 @@ meaning."
                                                 'font-lock-face 'lsp-rust-analyzer-inlay-param-face))))
 
               ((equal kind lsp/rust-analyzer-inlay-hint-kind-chaining-hint)
-               (overlay-put overlay 'after-string
+               (overlay-put overlay 'before-string
                             (format lsp-rust-analyzer-inlay-chain-space-format
                                     (propertize (format lsp-rust-analyzer-inlay-chain-format label)
                                                 'font-lock-face 'lsp-rust-analyzer-inlay-chain-face))))))))
