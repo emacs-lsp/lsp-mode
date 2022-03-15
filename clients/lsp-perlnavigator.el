@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
@@ -51,7 +51,8 @@
   :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-perlnavigator-perlcritic-profile nil
-  "Path to perl critic profile.  Otherwise perlcritic itself will default to ~/.perlcriticrc.  (no aliases, .bat files or ~/)."
+  "Path to perl critic profile. Otherwise perlcritic itself will
+default to ~/.perlcriticrc. (no aliases, .bat files or ~/)."
   :type 'string
   :group 'lsp-perlnavigator
   :package-version '(lsp-mode . "8.0.1"))
@@ -135,13 +136,13 @@
   (let ((x86_64 (eq (string-match "^x86_64" system-configuration) 0)))
     (cond ((and x86_64 (eq system-type 'windows-nt))
            "-win-x86_64")
-          
+
           ((and x86_64 (eq system-type 'darwin))
            "-macos-x86_64")
 
           ((and x86_64 (eq system-type 'gnu/linux))
            "-linux-x86_64")))
-  
+
   "The suffix used to specify the download for this operating system.")
 
 (defcustom lsp-perlnavigator-download-url
@@ -162,7 +163,7 @@
 (defvar lsp-perlnavigator--autoinstall-store-path
   (f-join lsp-perlnavigator-autoinstall-dir "latest" (concat "perlnavigator" lsp-perlnavigator--os-suffix ".zip"))
   "The path where the downloaded PerlNavigator .zip archive will be stored.")
-  
+
 
 (defvar lsp-perlnavigator--autoinstall-binary-path
     (let ((exe-name (if (eq system-type 'windows-nt) "perlnavigator.exe" "perlnavigator")))
