@@ -2811,19 +2811,15 @@ client has been loaded.</p>
 <h2 id="sections">Sections<a class="headerlink" href="#sections" title="Permanent link">#</a></h2>
 <p><code>lsp-mode</code> provides tools to bridge emacs <code>defcustom</code> as a language
 configuration sections properties(see <a href="https://microsoft.github.io/language-server-protocol/specification#workspace_configuration">specification
-workspace/configuration</a>).
-In addition you may use <code>lsp-generate-settings</code> from <a href="https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-generate-settings.el">Generate Settings
-script</a>
-to generate <code>defcustom</code> from <code>package.json</code> VScode plugin manifest.
-Example:</p>
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">defcustom</span> <span class="nv">lsp-foo-language-server-property</span> <span class="s">&quot;bar&quot;</span>
+workspace/configuration</a>). In addition you may use <code>lsp-generate-settings</code>
+from <a href="https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-generate-settings.el">Generate Settings script</a> to generate <code>lsp-defcustom</code> from <code>package.json</code>
+VScode plugin manifest. Example:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">defcustom-lsp</span> <span class="nv">lsp-foo-language-server-property</span> <span class="s">&quot;bar&quot;</span>
   <span class="s">&quot;Demo property.&quot;</span>
   <span class="nb">:group</span> <span class="ss">&#39;foo-ls</span>
-  <span class="nb">:risky</span> <span class="no">t</span><span class="p">)</span>
+  <span class="nb">:lsp-path</span> <span class="s">&quot;foo.section.property&quot;</span><span class="p">)</span>
 
-<span class="p">(</span><span class="nv">lsp-register-custom-settings</span> <span class="o">&#39;</span><span class="p">((</span><span class="s">&quot;foo.section.property&quot;</span> <span class="nv">lsp-foo-language-server-property</span><span class="p">)))</span>
-
-<span class="p">(</span><span class="nv">lsp-configuration-section</span>  <span class="s">&quot;foo&quot;</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">lsp-configuration-section</span> <span class="s">&quot;foo&quot;</span><span class="p">)</span>
 <span class="c1">;; =&gt;  ((&quot;foo&quot; (&quot;settings&quot; (&quot;property&quot; . &quot;bar&quot;))))</span>
 </code></pre></div>
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">#</a></h2>
