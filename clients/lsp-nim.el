@@ -32,6 +32,13 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/PMunch/nimlsp"))
 
+(defcustom-lsp lsp-nim-nimsuggest-mapping []
+  "The charset to use by the Ada Language server. Defaults to 'UTF-8'."
+  :type 'plist
+  :group 'lsp-nim
+  :package-version '(lsp-mode . "6.2")
+  :lsp-path "nim.rootConfig")
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection "nimlsp")
                   :major-modes '(nim-mode)
