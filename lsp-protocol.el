@@ -399,7 +399,6 @@ See `-let' for a description of the destructuring mechanism."
 
 (defconst lsp/rust-analyzer-inlay-hint-kind-type-hint 1)
 (defconst lsp/rust-analyzer-inlay-hint-kind-param-hint 2)
-(defconst lsp/rust-analyzer-inlay-hint-kind-chaining-hint nil)
 (lsp-interface (rust-analyzer:AnalyzerStatusParams (:textDocument))
                (rust-analyzer:SyntaxTreeParams (:textDocument) (:range))
                (rust-analyzer:ExpandMacroParams (:textDocument :position) nil)
