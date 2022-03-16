@@ -361,7 +361,8 @@ PARAMS progress report notification data."
   :package-version '(lsp-mode . "6.2.2"))
 
 (defcustom lsp-rust-analyzer-display-chaining-hints nil
-  "Whether to show inlay type hints for method chains."
+  "Whether to show inlay type hints for method chains.  These hints will be
+formatted with the type hint formatting options."
   :type 'boolean
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "6.2.2"))
@@ -665,7 +666,8 @@ https://rust-analyzer.github.io/manual.html#auto-import.
             :unsetTest ,lsp-rust-analyzer-cargo-unset-test)
     :rustfmt (:extraArgs ,lsp-rust-analyzer-rustfmt-extra-args
               :overrideCommand ,lsp-rust-analyzer-rustfmt-override-command)
-    :inlayHints (:typeHints ,(lsp-json-bool lsp-rust-analyzer-server-display-inlay-hints)
+    :inlayHints (:renderColons ,(lsp-json-bool nil)
+                 :typeHints ,(lsp-json-bool lsp-rust-analyzer-server-display-inlay-hints)
                  :chainingHints ,(lsp-json-bool lsp-rust-analyzer-display-chaining-hints)
                  :parameterHints ,(lsp-json-bool lsp-rust-analyzer-display-parameter-hints)
                  :maxLength ,lsp-rust-analyzer-max-inlay-hint-length)
@@ -850,7 +852,7 @@ https://rust-analyzer.github.io/manual.html#auto-import.
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-rust-analyzer-inlay-type-format "%s"
+(defcustom lsp-rust-analyzer-inlay-type-format ": %s"
   "Format string for variable inlays (part of the inlay face)."
   :type '(string :tag "String")
   :group 'lsp-rust-analyzer
@@ -869,26 +871,8 @@ https://rust-analyzer.github.io/manual.html#auto-import.
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-rust-analyzer-inlay-param-format "%s"
+(defcustom lsp-rust-analyzer-inlay-param-format "%s:"
   "Format string for parameter inlays (part of the inlay face)."
-  :type '(string :tag "String")
-  :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "8.0.0"))
-
-(defface lsp-rust-analyzer-inlay-chain-face
-  '((t :inherit lsp-rust-analyzer-inlay-face))
-  "Face for inlay chaining hints (e.g. inferred chain intermediate types)."
-  :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "8.0.0"))
-
-(defcustom lsp-rust-analyzer-inlay-chain-space-format "%s"
-  "Format string for spacing around chain inlays (not part of the inlay face)."
-  :type '(string :tag "String")
-  :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "8.0.0"))
-
-(defcustom lsp-rust-analyzer-inlay-chain-format ": %s"
-  "Format string for chain inlays (part of the inlay face)."
   :type '(string :tag "String")
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
@@ -932,13 +916,7 @@ meaning."
                (overlay-put overlay 'before-string
                             (format lsp-rust-analyzer-inlay-param-space-format
                                     (propertize (format lsp-rust-analyzer-inlay-param-format label)
-                                                'font-lock-face 'lsp-rust-analyzer-inlay-param-face))))
-
-              ((equal kind lsp/rust-analyzer-inlay-hint-kind-chaining-hint)
-               (overlay-put overlay 'before-string
-                            (format lsp-rust-analyzer-inlay-chain-space-format
-                                    (propertize (format lsp-rust-analyzer-inlay-chain-format label)
-                                                'font-lock-face 'lsp-rust-analyzer-inlay-chain-face))))))))
+                                                'font-lock-face 'lsp-rust-analyzer-inlay-param-face))))))))
        :mode 'tick))
   nil)
 
