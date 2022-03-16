@@ -206,6 +206,13 @@ See https://github.com/typescript-language-server/typescript-language-server#ini
                                                   :npmLocation lsp-clients-typescript-npm-location
                                                   :plugins lsp-clients-typescript-plugins
                                                   :preferences lsp-clients-typescript-preferences))
+                  ;; vls shares the same configurations with ts-ls,
+                  ;; those options are actually defined in lsp-vetur.el.
+                  :initialized-fn (lambda (workspace)
+                                    (with-lsp-workspace workspace
+                                      (lsp--set-configuration
+                                       (ht-merge (lsp-configuration-section "javascript")
+                                                 (lsp-configuration-section "typescript")))))
                   :ignore-messages '("readFile .*? requested by TypeScript but content not available")
                   :server-id 'ts-ls
                   :request-handlers (ht ("_typescript.rename" #'lsp-javascript--rename))
