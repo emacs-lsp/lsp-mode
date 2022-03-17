@@ -30,7 +30,6 @@
 (require 'seq)
 (require 'ht)
 (require 'lsp-mode)
-(require 'project)
 
 ;; Clients
 
@@ -152,9 +151,9 @@
         (goto-char (point-min))
         (-if-let* ((base-file (or (symbol-file (intern (format "lsp-%s" (or name common-group-name))))
                                   (when common-group-name
-                                    (expand-file-name (format "clients/lsp-%s.el" common-group-name) (project-root (project-current))))
-                                  (expand-file-name (format "clients/lsp-%s.el" name) (project-root (project-current))))))
-            (insert (format "---\nroot_file: %s\n---\n" (file-relative-name base-file (project-root (project-current))))))
+                                    (expand-file-name (format "clients/lsp-%s.el" common-group-name) ".."))
+                                  (expand-file-name (format "clients/lsp-%s.el" name) ".."))))
+            (insert (format "---\nroot_file: %s\n---\n" (file-relative-name base-file ".."))))
         (lsp-doc--replace-client-placeholders client)
         (save-buffer 0)
         (lsp-doc--add-client-variables client file)))))
@@ -206,7 +205,7 @@ Make sure to make mkdocs.yml updated as well.")
         (with-current-buffer (find-file-noselect dest-file)
           (with-temp-buffer
             (-if-let* ((base-file (symbol-file (car (lsp-doc--variables group)))))
-                (insert (format "---\nroot_file: %s\n---\n" (file-relative-name base-file (project-root (project-current))))))
+                (insert (format "---\nroot_file: %s\n---\n" (file-relative-name base-file ".."))))
             (insert "# " feature "\n\n")
             (append-to-file (point-min) (point-max) dest-file))
           (lsp-doc--add-feature-variables group dest-file)
@@ -222,7 +221,7 @@ Make sure to make mkdocs.yml updated as well.")
         (with-current-buffer (find-file-noselect dest-file)
           (with-temp-buffer
             (-if-let* ((base-file (symbol-file (car (lsp-doc--variables group)))))
-                (insert (format "---\nroot_file: %s\n---\n" (file-relative-name base-file (project-root (project-current))))))
+                (insert (format "---\nroot_file: %s\n---\n" (file-relative-name base-file ".."))))
             (insert "# " feature "\n\n")
             (append-to-file (point-min) (point-max) dest-file))
           (lsp-doc--add-feature-variables group dest-file)
