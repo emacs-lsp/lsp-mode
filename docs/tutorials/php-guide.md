@@ -134,12 +134,12 @@ emacs -Q -l emacs-php.el /tmp/lsp/test.php
 
 After opening the file, you should be prompted to install a language server:
 
-![select server](images/php-select-server.php "Select server")
+![select server](images/php-select-server.png "Select server")
 
 Type "iph" (or tab-complete it) and hit enter. Once your compilation looks
 similar to the below, close and reopen emacs and open the file again.
 
-![successful install](images/php-successful-instal.php "Successful install")
+![successful install](images/php-successful-instal.png "Successful install")
 
 Now, if everything was successful you will be asked to select a project root.
 
