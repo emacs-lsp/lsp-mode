@@ -174,7 +174,7 @@ This prevents the Ansible server from being turned on in all yaml files."
                              (cl-first lsp-ansible-language-server-command))
                             (lsp-package-path 'ansible-language-server))
                        ,@(cl-rest lsp-ansible-language-server-command))))
-  :priority -1
+  :priority 1
   :activation-fn #'lsp-ansible-check-ansible-minor-mode
   :server-id 'ansible-ls
   :download-server-fn (lambda (_client callback error-callback _update?)
