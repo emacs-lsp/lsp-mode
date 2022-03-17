@@ -30,6 +30,7 @@
 (require 'seq)
 (require 'ht)
 (require 'lsp-mode)
+(require 'project)
 
 ;; Clients
 
