@@ -1,3 +1,6 @@
+---
+root_file: docs/page/keybindings.md
+---
 # Keybindings
 
 When using `lsp-mode` most of the features depend on server

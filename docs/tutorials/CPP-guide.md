@@ -1,5 +1,6 @@
 ---
 disqus: emacs-lsp
+root_file: docs/tutorials/CPP-guide.md
 ---
 
 # Configuring `Emacs` as a `C/C++` IDE

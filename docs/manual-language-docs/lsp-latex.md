@@ -1,3 +1,6 @@
+---
+root_file: docs/manual-language-docs/lsp-latex.md
+---
 ## Available functions
 ### `lsp-latex-build`
 Build .tex files with texlab.

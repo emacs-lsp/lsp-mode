@@ -1,3 +1,8 @@
+---
+author: yyoncho
+disqus: emacs-lsp
+root_file: docs/manual-language-docs/lsp-rust-analyzer.md
+---
 ## Server note
 
 NOTE: If you are using `rustic-mode`, you have to change `rustic-lsp-server` instead of `lsp-rust-server`, since it also supports eglot as a lightweight alternative to lsp-mode.

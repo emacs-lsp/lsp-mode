@@ -1,3 +1,6 @@
+---
+root_file: docs/page/languages.md
+---
 # Languages
 
 On left, you can find all currently supported languages.

@@ -7,6 +7,7 @@ PageTitle: React JavaScript Tutorial in Emacs
 DateApproved: 9/10/2020
 MetaDescription: React JavaScript tutorial showing IntelliSense, debugging, and code navigation support in the Emacs editor.
 disqus: emacs-lsp
+root_file: docs/tutorials/reactjs-tutorial.md
 ---
 # Using React in Emacs
 

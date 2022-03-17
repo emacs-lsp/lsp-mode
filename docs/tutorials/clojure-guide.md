@@ -1,6 +1,7 @@
 ---
 author: ericdallo
 disqus: emacs-lsp
+root_file: docs/tutorials/clojure-guide.md
 ---
 
 # Configuring `Emacs` as a `Clojure` IDE

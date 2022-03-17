@@ -1,3 +1,6 @@
+---
+root_file: docs/page/faq.md
+---
 # FAQ
 
 ### :grey_question: How do I troubleshoot `"Server FOO-LS:pid exited with status signal. Do you want to restart it? (y or n)"`?

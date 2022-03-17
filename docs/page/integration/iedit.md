@@ -1,3 +1,6 @@
+---
+root_file: docs/page/integration/iedit.md
+---
 # iedit
 
 `lsp-mode` can leverage [`iedit`](https://github.com/victorhge/iedit) to edit

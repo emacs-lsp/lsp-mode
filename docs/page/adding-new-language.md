@@ -1,3 +1,6 @@
+---
+root_file: docs/page/adding-new-language.md
+---
 # Adding support for languages
 
 ## Registering server

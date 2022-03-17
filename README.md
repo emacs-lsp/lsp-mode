@@ -1,6 +1,7 @@
 ---
 title: LSP Mode - Language Server Protocol support for Emacs
 description: Language Server Protocol support with multiples languages support for Emacs
+root_file: README.md
 ---
 
 [![](https://melpa.org/packages/lsp-mode-badge.svg)](https://melpa.org/#/lsp-mode)
@@ -108,7 +109,15 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
 
 ## Contributions
 
-Contributions are very much welcome.
+Contributions are very much welcome!
+
+**NOTE** 
+Documentation for clients is generated from doc comments in the clients
+themselves (see
+[lsp-doc.el](https://github.com/emacs-lsp/lsp-mode/blob/master/docs/lsp-doc.el))
+and some metadata (see
+[lsp-clients.json](https://github.com/emacs-lsp/lsp-mode/blob/master/docs/lsp-clients.json))
+so please submit corrections accordingly.
 
 ## Support the project
 

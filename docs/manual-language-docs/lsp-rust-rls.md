@@ -1,3 +1,6 @@
+---
+root_file: docs/manual-language-docs/lsp-rust-rls.md
+---
 ## RLS
 
 ### Customization
