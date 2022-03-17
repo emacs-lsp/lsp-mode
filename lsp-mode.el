@@ -814,6 +814,7 @@ Changes take effect only when a new session is started."
                                         (beancount-mode . "beancount")
                                         (conf-toml-mode . "toml")
                                         (org-mode . "org")
+                                        (org-journal-mode . "org")
                                         (nginx-mode . "nginx")
                                         (magik-mode . "magik")
                                         (idris-mode . "idris")
