@@ -2,6 +2,7 @@ site_name: LSP Mode - LSP support for Emacs
 site_description: Language Server Protocol Support for Emacs
 site_url: https://emacs-lsp.github.io/lsp-mode
 site_author: ercdll1337@gmail.com
+base_url: https://github.com/emacs-lsp/lsp-mode
 
 nav:
   - Home:
@@ -136,7 +137,7 @@ nav:
     - Verilog/SystemVerilog (hdl-checker): page/lsp-verilog.md
     - Verilog/SystemVerilog (svlangserver): page/lsp-svlangserver.md
     - VHDL: page/lsp-vhdl.md
-    - Vimscript: page/lsp-vim.md
+    - Vimscript: page/lsp-vimscript.md
     - Vue 2: page/lsp-vetur.md
     - Vue 3: page/lsp-volar.md
     - XML: page/lsp-xml.md
@@ -170,6 +171,7 @@ extra_javascript:
 
 theme:
   name: material
+  custom_dir: theme/
   logo: examples/logo-mini.png
   favicon: examples/logo-mini.png
   icon:

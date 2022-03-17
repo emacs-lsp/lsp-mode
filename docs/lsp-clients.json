@@ -284,6 +284,7 @@
   },
   {
     "name": "flow",
+    "common-group-name": "javascript",
     "full-name": "JavaScript Flow",
     "server-name": "flow",
     "server-url": "https://flow.org",
@@ -292,6 +293,7 @@
   },
   {
     "name": "typescript",
+    "common-group-name": "javascript",
     "full-name": "JavaScript/TypeScript (RECOMMENDED)",
     "server-name": "typescript-language-server (formerly theia-ide / TypeFox)",
     "server-url": "https://github.com/typescript-language-server/typescript-language-server",
@@ -301,6 +303,7 @@
   },
   {
     "name": "typescript-javascript",
+    "common-group-name": "javascript",
     "full-name": "JavaScript/TypeScript (sourcegraph - UNMAINTAINED)",
     "server-name": "javascript-typescript-stdio",
     "server-url": "https://github.com/sourcegraph/javascript-typescript-langserver",
@@ -310,6 +313,7 @@
   },
   {
     "name": "deno",
+    "common-group-name": "javascript",
     "full-name": "Javascript/Typescript (deno)",
     "server-name": "deno lsp",
     "server-url": "https://deno.land/#installation",
@@ -352,6 +356,7 @@
   },
   {
     "name": "emmy-lua",
+    "common-group-name": "lua",
     "full-name": "Lua",
     "server-name": "EmmyLua",
     "server-url": "https://github.com/EmmyLua/EmmyLua-LanguageServer",
@@ -360,6 +365,7 @@
   },
   {
     "name": "lua-language-server",
+    "common-group-name": "lua",
     "full-name": "Lua",
     "server-name": "lua-language-server",
     "installation-url": "https://github.com/sumneko/lua-language-server/wiki/Build-and-Run-(Standalone)",
@@ -368,6 +374,7 @@
   },
   {
     "name": "lua-lsp",
+    "common-group-name": "lua",
     "full-name": "Lua",
     "server-name": "lua-lsp",
     "installation-url": "https://luarocks.org/modules/alloyed/lua-lsp",
@@ -377,6 +384,7 @@
   },
   {
     "name": "lua-roblox",
+    "common-group-name": "lua",
     "full-name": "Lua Roblox",
     "server-name": "lua-roblox-language-server",
     "installation-url": "https://github.com/NightrainsRbx/RobloxLsp",
@@ -467,6 +475,7 @@
   },
   {
     "name": "php",
+    "common-group-name": "php",
     "full-name": "PHP",
     "server-name": "php-language-server",
     "server-url": "https://github.com/felixfbecker/php-language-server",
@@ -476,6 +485,7 @@
   },
   {
     "name": "intelephense",
+    "common-group-name": "php",
     "full-name": "PHP(recommended)",
     "server-name": "intelephense",
     "server-url": "https://github.com/bmewburn/vscode-intelephense",
@@ -484,6 +494,7 @@
   },
   {
     "name": "phpactor",
+    "common-group-name": "php",
     "full-name": "Phpactor",
     "server-name": "phpactor",
     "server-url": "https://github.com/phpactor/phpactor",
@@ -623,6 +634,7 @@
   },
   {
     "name": "serenata",
+    "common-group-name": "php",
     "full-name": "PHP (Serenata)",
     "server-name": "Serenata",
     "server-url": "https://gitlab.com/Serenata/Serenata",
@@ -672,6 +684,7 @@
   },
   {
     "name": "svlangserver",
+    "common-group-name": "verilog",
     "full-name": "Verilog/SystemVerilog",
     "server-name": "svlangserver",
     "server-url": "https://github.com/imc-trading/svlangserver",
@@ -763,6 +776,7 @@
   },
   {
     "name": "verilog",
+    "common-group-name": "verilog",
     "full-name": "Verilog/SystemVerilog",
     "server-name": "hdl_checker",
     "server-url": "https://github.com/suoto/hdl_checker",
@@ -778,7 +792,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "vim",
+    "name": "vimscript",
     "full-name": "Vimscript",
     "server-name": "vim-language-server",
     "server-url": "https://github.com/iamcco/vim-language-server",

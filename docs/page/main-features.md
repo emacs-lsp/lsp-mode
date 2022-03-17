@@ -1,3 +1,6 @@
+---
+root_file: docs/page/main-features.md
+---
 # Main features
 
 ## Completion at point

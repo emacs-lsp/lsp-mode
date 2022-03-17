@@ -1,3 +1,6 @@
+---
+root_file: docs/page/troubleshooting.md
+---
 Troubleshooting
 ===============
 

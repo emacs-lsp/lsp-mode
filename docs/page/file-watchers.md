@@ -1,3 +1,6 @@
+---
+root_file: docs/page/file-watchers.md
+---
 # File watchers
 
 When some of the workspaces that are active in the current project requests file notifications via `workspace/didChangeWatchedFiles`, `lsp-mode` will start monitoring each of the folders in the workspace for changes to notify the server about that. 

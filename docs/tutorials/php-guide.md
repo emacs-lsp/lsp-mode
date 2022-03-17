@@ -1,6 +1,7 @@
 ---
 disqus: emacs-lsp
 author: elken
+root_file: docs/tutorials/php-guide.md
 ---
 
 # Configuring `Emacs` as a `PHP` IDE
@@ -139,7 +140,7 @@ After opening the file, you should be prompted to install a language server:
 Type "iph" (or tab-complete it) and hit enter. Once your compilation looks
 similar to the below, close and reopen emacs and open the file again.
 
-![successful install](images/php-successful-instal.png "Successful install")
+![successful install](images/php-successful-install.png "Successful install")
 
 Now, if everything was successful you will be asked to select a project root.
 

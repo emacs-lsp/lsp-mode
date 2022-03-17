@@ -1,3 +1,6 @@
+---
+root_file: docs/page/integration/ido.md
+---
 # Ido integration
 
 `lsp-mode` provides integration with `ido` for `workspace-symbol`

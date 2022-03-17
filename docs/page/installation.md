@@ -1,3 +1,6 @@
+---
+root_file: docs/page/installation.md
+---
 # Installation
 
 You need first `lsp-mode`, that is a Emacs client for an LSP server.

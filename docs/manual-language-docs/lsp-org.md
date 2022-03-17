@@ -1,3 +1,6 @@
+---
+root_file: docs/manual-language-docs/lsp-org.md
+---
 # Literate programming using LSP and org-mode(alpha)
 `lsp-mode` provides **experimental** support for running the language servers
 inside of [org-mode](https://orgmode.org/) source blocks. `lsp-mode` is

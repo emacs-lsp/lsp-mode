@@ -1,6 +1,7 @@
 ---
 author: yyoncho
 disqus: emacs-lsp
+root_file: docs/tutorials/debugging-clojure-script.md
 ---
 # Debugging ClojureScript using dap-mode
 
