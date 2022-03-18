@@ -25,6 +25,22 @@ jobs:
         with:
           version: 0.8.4
 
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+          architecture: 'x64'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install mkdocs mkdocs-material \
+          mkdocs-awesome-pages-plugin>=2.2.1 \
+          mkdocs-git-revision-date-localized-plugin>=0.4 \
+          mkdocs-minify-plugin>=0.3 \
+          mkdocs-redirects>=1.0 \
+          mkdocs-rss-plugin>=0.6.1
+
       - name: Generate LSPs docs
         run: 'make docs'
 
@@ -32,8 +48,7 @@ jobs:
         run: |
           cp -rf README.md examples docs
 
-          docker login docker.pkg.github.com --username $GITHUB_ACTOR --password ${{ secrets.GITHUB_TOKEN }}
-          docker run --rm -v ${PWD}:/docs docker.pkg.github.com/emacs-lsp/docs-image/docs-image -- build
+          mkdocs build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
