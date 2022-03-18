@@ -624,6 +624,14 @@ https://rust-analyzer.github.io/manual.html#auto-import.
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
+(defcustom lsp-rust-analyzer-linked-projects []
+  "Disable project auto-discovery in favor of explicitly specified set of
+projects. Elements must be paths pointing to `Cargo.toml`, `rust-project.json`,
+or JSON objects in `rust-project.json` format."
+  :type 'lsp-string-vector
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.0"))
+
 (defcustom lsp-rust-analyzer-experimental-proc-attr-macros nil
   "Whether to enable experimental support for expanding proc macro attributes."
   :type 'boolean
@@ -677,6 +685,7 @@ https://rust-analyzer.github.io/manual.html#auto-import.
     :callInfo (:full ,(lsp-json-bool lsp-rust-analyzer-call-info-full))
     :procMacro (:enable ,(lsp-json-bool lsp-rust-analyzer-proc-macro-enable))
     :rustcSource ,lsp-rust-analyzer-rustc-source
+    :linkedProjects ,lsp-rust-analyzer-linked-projects
     :highlighting (:strings ,(lsp-json-bool lsp-rust-analyzer-highlighting-strings))
     :experimental (:procAttrMacros ,(lsp-json-bool lsp-rust-analyzer-experimental-proc-attr-macros))))
 
