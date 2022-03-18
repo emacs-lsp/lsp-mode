@@ -630,7 +630,7 @@ projects. Elements must be paths pointing to `Cargo.toml`, `rust-project.json`,
 or JSON objects in `rust-project.json` format."
   :type 'lsp-string-vector
   :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "8.0.0"))
+  :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-rust-analyzer-experimental-proc-attr-macros nil
   "Whether to enable experimental support for expanding proc macro attributes."
