@@ -14,7 +14,7 @@ jobs:
 
       - uses: purcell/setup-emacs@master
         with:
-          version: 0.8.4
+          version: 27.1
 
       - uses: actions/setup-python@v2
         with:
