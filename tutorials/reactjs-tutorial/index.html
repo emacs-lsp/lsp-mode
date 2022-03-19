@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/tutorials/reactjs-tutorial/">
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.4">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-6.2.4">
     
     
       
@@ -85,7 +85,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - LSP support for Emacs" class="md-header-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
+    <a href="https://emacs-lsp.github.io/lsp-mode/" title="LSP Mode - LSP support for Emacs" class="md-header-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
@@ -348,7 +348,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - LSP support for Emacs" class="md-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
+    <a href="https://emacs-lsp.github.io/lsp-mode/" title="LSP Mode - LSP support for Emacs" class="md-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
@@ -3023,11 +3023,11 @@ npm start
 </blockquote>
 <h2 id="hello-world">Hello World!<a class="headerlink" href="#hello-world" title="Permanent link">#</a></h2>
 <p>Let's update the sample application to "Hello World!". Add the link to declare a new H1 header and replace the <code>&lt;App /&gt;</code> tag in <code>ReactDOM.render</code> with <code>element</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
-<span class="kr">import</span> <span class="nx">ReactDOM</span> <span class="nx">from</span> <span class="s1">&#39;react-dom&#39;</span><span class="p">;</span>
-<span class="kr">import</span> <span class="s1">&#39;./index.css&#39;</span><span class="p">;</span>
-<span class="kr">import</span> <span class="nx">App</span> <span class="nx">from</span> <span class="s1">&#39;./App&#39;</span><span class="p">;</span>
-<span class="kr">import</span> <span class="nx">reportWebVitals</span> <span class="nx">from</span> <span class="s1">&#39;./reportWebVitals&#39;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><span class="k">import</span> <span class="nx">React</span> <span class="kr">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">ReactDOM</span> <span class="kr">from</span> <span class="s1">&#39;react-dom&#39;</span><span class="p">;</span>
+<span class="k">import</span> <span class="s1">&#39;./index.css&#39;</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">App</span> <span class="kr">from</span> <span class="s1">&#39;./App&#39;</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">reportWebVitals</span> <span class="kr">from</span> <span class="s1">&#39;./reportWebVitals&#39;</span><span class="p">;</span>
 
 <span class="kd">var</span> <span class="nx">element</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;h1&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">className</span><span class="o">:</span> <span class="s1">&#39;greeting&#39;</span> <span class="p">},</span> <span class="s1">&#39;Hello, world!&#39;</span><span class="p">);</span>
 <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">));</span>
@@ -3047,18 +3047,18 @@ npm start
 <p><img alt="Set a breakpoint" src="../images/reactjs/breakpoint.png" /></p>
 <h3 id="configure-the-chrome-debugger">Configure the Chrome debugger<a class="headerlink" href="#configure-the-chrome-debugger" title="Permanent link">#</a></h3>
 <p>We need to initially configure the <a href="https://github.com/emacs-lsp/dap-mode">debugger</a>. To do so, create a <code>launch.json</code> file in the <code>.vscode/</code> subfolder of the project root with a configuration to launch the website:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-    <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.2.0&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;configurations&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;chrome&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;request&quot;</span><span class="p">:</span> <span class="s2">&quot;launch&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Launch Chrome against localhost&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:3000&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;webRoot&quot;</span><span class="p">:</span> <span class="s2">&quot;${workspaceFolder}&quot;</span>
-        <span class="p">}</span>
-    <span class="p">]</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.2.0&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;configurations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;chrome&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Launch Chrome against localhost&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:3000&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;webRoot&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${workspaceFolder}&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">]</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <p>Ensure that your development server is running (<code>npm start</code>). Then type <code>M-x dap-debug</code> or use <code>Debug</code> -&gt; <code>Start</code> menu. The source code where the breakpoint is set runs on startup before the debugger was attached, so we won't hit the breakpoint until we refresh the web page. Refresh the page and you should hit your breakpoint.</p>
 <p><img alt="Debugger hitting breakpoint" src="../images/reactjs/hit-breakpoint.png" /></p>
@@ -3123,7 +3123,7 @@ npm start
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 18, 2022</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 19, 2022</span>
     
   </small>
 </div>
@@ -3138,7 +3138,7 @@ npm start
 
   <h2 id="__comments">Comments</h2>
   <div id="disqus_thread"></div>
-  <script>var disqus_config=function(){this.page.url="https://emacs-lsp.github.io/lsp-mode/tutorials/reactjs-tutorial/",this.page.identifier="/tutorials/reactjs-tutorial/"};window.addEventListener("load",function(){var e=document,i=e.createElement("script");i.src="//emacs-lsp.disqus.com/embed.js",i.setAttribute("data-timestamp",+new Date),(e.head||e.body).appendChild(i)})</script>
+  <script>var disqus_config=function(){this.page.url="https://emacs-lsp.github.io/lsp-mode/tutorials/reactjs-tutorial/",this.page.identifier="tutorials/reactjs-tutorial/"};window.addEventListener("load",function(){var e=document,i=e.createElement("script");i.src="//emacs-lsp.disqus.com/embed.js",i.setAttribute("data-timestamp",+new Date),(e.head||e.body).appendChild(i)})</script>
 
               
             </article>

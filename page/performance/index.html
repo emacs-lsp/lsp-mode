@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/performance/">
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.4">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-6.2.4">
     
     
       
@@ -85,7 +85,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - LSP support for Emacs" class="md-header-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
+    <a href="https://emacs-lsp.github.io/lsp-mode/" title="LSP Mode - LSP support for Emacs" class="md-header-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
@@ -348,7 +348,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - LSP support for Emacs" class="md-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
+    <a href="https://emacs-lsp.github.io/lsp-mode/" title="LSP Mode - LSP support for Emacs" class="md-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
@@ -2862,13 +2862,13 @@ Benchmarks show that Emacs 27 is <code>~15 times</code> faster than Emacs when u
 </ul>
 <h3 id="adjust-gc-cons-threshold">Adjust <code>gc-cons-threshold</code><a class="headerlink" href="#adjust-gc-cons-threshold" title="Permanent link">#</a></h3>
 <p>The default setting is too low for <code>lsp-mode</code>'s needs due to the fact that client/server communication generates a lot of memory/garbage. You have two options:</p>
-<div class="codehilite"><pre><span></span><code><span class="o">-</span> <span class="k">Set</span> <span class="n">it</span> <span class="k">to</span> <span class="n">big</span> <span class="nb">number</span><span class="p">(</span><span class="mi">100</span><span class="n">mb</span><span class="p">)</span> <span class="k">like</span> <span class="n">most</span> <span class="k">of</span> <span class="n">the</span> <span class="n">popular</span> <span class="n">starter</span> <span class="n">kits</span> <span class="k">like</span> <span class="n">Spacemacs</span><span class="o">/</span><span class="n">Doom</span><span class="o">/</span><span class="n">Prelude</span><span class="p">,</span> <span class="n">etc</span> <span class="k">do</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="o">-</span> <span class="nv">Set</span> <span class="nv">it</span> <span class="nv">to</span> <span class="nv">big</span> <span class="nv">number</span><span class="ss">(</span><span class="mi">100</span><span class="nv">mb</span><span class="ss">)</span> <span class="nv">like</span> <span class="nv">most</span> <span class="nv">of</span> <span class="nv">the</span> <span class="nv">popular</span> <span class="nv">starter</span> <span class="nv">kits</span> <span class="nv">like</span> <span class="nv">Spacemacs</span><span class="o">/</span><span class="nv">Doom</span><span class="o">/</span><span class="nv">Prelude</span>, <span class="nv">etc</span> <span class="k">do</span>:
 
-<span class="o">```</span><span class="n">elisp</span>
-<span class="p">(</span><span class="n">setq</span> <span class="n">gc</span><span class="o">-</span><span class="n">cons</span><span class="o">-</span><span class="n">threshold</span> <span class="mi">100000000</span><span class="p">)</span>
-<span class="o">```</span>
+```<span class="nv">elisp</span>
+<span class="ss">(</span><span class="nv">setq</span> <span class="nv">gc</span><span class="o">-</span><span class="nv">cons</span><span class="o">-</span><span class="nv">threshold</span> <span class="mi">100000000</span><span class="ss">)</span>
+```
 
-<span class="o">-</span> <span class="n">Follow</span> <span class="n">the</span> <span class="k">method</span> <span class="n">recommended</span> <span class="k">by</span> <span class="n">Gnu</span> <span class="n">Emacs</span> <span class="n">Maintainer</span> <span class="n">Eli</span> <span class="n">Zaretskii</span><span class="p">:</span> <span class="ss">&quot;My suggestion is to repeatedly multiply gc-cons-threshold by 2 until you stop seeing significant improvements in responsiveness, and in any case not to increase by a factor larger than 100 or somesuch. If even a 100-fold increase doesn&#39;t help, there&#39;s some deeper problem with the Lisp code which produces so much garbage, or maybe GC is not the reason for slowdown.&quot;</span> <span class="k">Source</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="p">.</span><span class="n">reddit</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">r</span><span class="o">/</span><span class="n">emacs</span><span class="o">/</span><span class="n">comments</span><span class="o">/</span><span class="n">brc05y</span><span class="o">/</span><span class="n">is_lspmode_too_slow_to_use_for_anyone_else</span><span class="o">/</span><span class="n">eofulix</span><span class="o">/&gt;</span>
+<span class="o">-</span> <span class="nv">Follow</span> <span class="nv">the</span> <span class="nv">method</span> <span class="nv">recommended</span> <span class="nv">by</span> <span class="nv">Gnu</span> <span class="nv">Emacs</span> <span class="nv">Maintainer</span> <span class="nv">Eli</span> <span class="nv">Zaretskii</span>: <span class="s2">&quot;</span><span class="s">My suggestion is to repeatedly multiply gc-cons-threshold by 2 until you stop seeing significant improvements in responsiveness, and in any case not to increase by a factor larger than 100 or somesuch. If even a 100-fold increase doesn&#39;t help, there&#39;s some deeper problem with the Lisp code which produces so much garbage, or maybe GC is not the reason for slowdown.</span><span class="s2">&quot;</span> <span class="nv">Source</span>: <span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">www</span>.<span class="nv">reddit</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">r</span><span class="o">/</span><span class="nv">emacs</span><span class="o">/</span><span class="nv">comments</span><span class="o">/</span><span class="nv">brc05y</span><span class="o">/</span><span class="nv">is_lspmode_too_slow_to_use_for_anyone_else</span><span class="o">/</span><span class="nv">eofulix</span><span class="o">/&gt;</span>
 </code></pre></div>
 
 <h3 id="increase-the-amount-of-data-which-emacs-reads-from-the-process">Increase the amount of data which Emacs reads from the process<a class="headerlink" href="#increase-the-amount-of-data-which-emacs-reads-from-the-process" title="Permanent link">#</a></h3>
@@ -2923,7 +2923,7 @@ to be watched for performance reasons, you can add a regexp to that variable exc
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 18, 2022</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 19, 2022</span>
     
   </small>
 </div>

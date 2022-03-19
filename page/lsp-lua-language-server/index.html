@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-lua-language-server/">
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.4">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-6.2.4">
     
     
       
@@ -85,7 +85,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - LSP support for Emacs" class="md-header-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
+    <a href="https://emacs-lsp.github.io/lsp-mode/" title="LSP Mode - LSP support for Emacs" class="md-header-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
@@ -348,7 +348,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - LSP support for Emacs" class="md-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
+    <a href="https://emacs-lsp.github.io/lsp-mode/" title="LSP Mode - LSP support for Emacs" class="md-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
@@ -3575,10 +3575,10 @@ fragment.  If it is set to <code>0</code>, this feature can be disabled.</p>
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Disabled diagnostic (Use code in hover brackets).
-<div class="highlight"><pre><span></span><code><span class="nt">&quot;Lua.diagnostics.disable&quot;</span> <span class="p">:</span> <span class="p">[</span>
-<span class="s2">&quot;unused-local&quot;</span><span class="p">,</span>
-<span class="s2">&quot;lowercase-global&quot;</span>
-<span class="p">]</span>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Lua.diagnostics.disable&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="s2">&quot;unused-local&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="s2">&quot;lowercase-global&quot;</span><span class="w"></span>
+<span class="p">]</span><span class="w"></span>
 </code></pre></div></p>
 <hr />
 <h3 id="lsp-lua-diagnostics-enable"><code>lsp-lua-diagnostics-enable</code><a class="headerlink" href="#lsp-lua-diagnostics-enable" title="Permanent link">#</a></h3>
@@ -3590,30 +3590,30 @@ fragment.  If it is set to <code>0</code>, this feature can be disabled.</p>
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Defined global variables.
-<div class="highlight"><pre><span></span><code><span class="nt">&quot;Lua.diagnostics.globals&quot;</span> <span class="p">:</span> <span class="p">[</span>
-<span class="s2">&quot;GLOBAL1&quot;</span><span class="p">,</span>
-<span class="s2">&quot;GLOBAL2&quot;</span>
-<span class="p">]</span>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Lua.diagnostics.globals&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="s2">&quot;GLOBAL1&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="s2">&quot;GLOBAL2&quot;</span><span class="w"></span>
+<span class="p">]</span><span class="w"></span>
 </code></pre></div></p>
 <hr />
 <h3 id="lsp-lua-diagnostics-needed-file-status"><code>lsp-lua-diagnostics-needed-file-status</code><a class="headerlink" href="#lsp-lua-diagnostics-needed-file-status" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>alist</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>If you want to check only opened files, choice Opened; else choice Any.
-<div class="highlight"><pre><span></span><code><span class="nt">&quot;Lua.diagnostics.neededFileStatus&quot;</span> <span class="p">:</span> <span class="p">{</span>
-<span class="nt">&quot;ambiguity-1&quot;</span> <span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">,</span>
-<span class="nt">&quot;circle-doc-class&quot;</span> <span class="p">:</span> <span class="s2">&quot;Opened&quot;</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Lua.diagnostics.neededFileStatus&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="nt">&quot;ambiguity-1&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Any&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="nt">&quot;circle-doc-class&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Opened&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div></p>
 <hr />
 <h3 id="lsp-lua-diagnostics-severity"><code>lsp-lua-diagnostics-severity</code><a class="headerlink" href="#lsp-lua-diagnostics-severity" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>alist</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Modified diagnostic severity.
-<div class="highlight"><pre><span></span><code><span class="nt">&quot;Lua.diagnostics.severity&quot;</span> <span class="p">:</span> <span class="p">{</span>
-<span class="nt">&quot;redefined-local&quot;</span> <span class="p">:</span> <span class="s2">&quot;Warning&quot;</span><span class="p">,</span>
-<span class="nt">&quot;emmy-lua&quot;</span> <span class="p">:</span> <span class="s2">&quot;Hint&quot;</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Lua.diagnostics.severity&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="nt">&quot;redefined-local&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Warning&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="nt">&quot;emmy-lua&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Hint&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div></p>
 <hr />
 <h3 id="lsp-lua-diagnostics-workspace-delay"><code>lsp-lua-diagnostics-workspace-delay</code><a class="headerlink" href="#lsp-lua-diagnostics-workspace-delay" title="Permanent link">#</a></h3>
@@ -3729,9 +3729,9 @@ supports these symbols.</p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>The custom global variables are regarded as some special built-in variables,
 and the language server will provide special support.
-<div class="highlight"><pre><span></span><code><span class="nt">&quot;Lua.runtime.special&quot;</span> <span class="p">:</span> <span class="p">{</span>
-<span class="nt">&quot;include&quot;</span> <span class="p">:</span> <span class="s2">&quot;require&quot;</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Lua.runtime.special&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="nt">&quot;include&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;require&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div></p>
 <hr />
 <h3 id="lsp-lua-runtime-unicode-name"><code>lsp-lua-runtime-unicode-name</code><a class="headerlink" href="#lsp-lua-runtime-unicode-name" title="Permanent link">#</a></h3>
@@ -3769,10 +3769,10 @@ network.</p>
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
 <p><em>Default:</em> <code>[.vscode]</code></p>
 <p>Ignored directories (Use <code>.gitignore</code> grammar).
-<div class="highlight"><pre><span></span><code><span class="nt">&quot;Lua.workspace.ignoreDir&quot;</span> <span class="p">:</span> <span class="p">[</span>
-<span class="s2">&quot;temp/*.*&quot;</span><span class="p">,</span>
-<span class="s2">&quot;!temp/*.lua&quot;</span>
-<span class="p">]</span>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Lua.workspace.ignoreDir&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="s2">&quot;temp/*.*&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="s2">&quot;!temp/*.lua&quot;</span><span class="w"></span>
+<span class="p">]</span><span class="w"></span>
 </code></pre></div></p>
 <hr />
 <h3 id="lsp-lua-workspace-ignore-submodules"><code>lsp-lua-workspace-ignore-submodules</code><a class="headerlink" href="#lsp-lua-workspace-ignore-submodules" title="Permanent link">#</a></h3>
@@ -3789,12 +3789,12 @@ automatic completion and other functions.  Note that the language server does
 not monitor changes in external files and needs to restart if the external
 files are modified.  The following example shows loaded files in <code>C:/lua</code>
 and <code>../lib</code> ,exclude <code>../lib/temp</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">&quot;Lua.workspace.library&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="nt">&quot;C:/lua&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-<span class="nt">&quot;../lib&quot;</span><span class="p">:</span> <span class="p">[</span>
-<span class="s2">&quot;temp/*&quot;</span>
-<span class="p">]</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;Lua.workspace.library&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="nt">&quot;C:/lua&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
+<span class="nt">&quot;../lib&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="s2">&quot;temp/*&quot;</span><span class="w"></span>
+<span class="p">]</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <hr />
 <h3 id="lsp-lua-workspace-max-preload"><code>lsp-lua-workspace-max-preload</code><a class="headerlink" href="#lsp-lua-workspace-max-preload" title="Permanent link">#</a></h3>
@@ -3820,7 +3820,7 @@ and <code>../lib</code> ,exclude <code>../lib/temp</code>.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 18, 2022</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 19, 2022</span>
     
   </small>
 </div>

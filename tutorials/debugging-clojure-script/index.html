@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/tutorials/debugging-clojure-script/">
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.4">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-6.2.4">
     
     
       
@@ -85,7 +85,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - LSP support for Emacs" class="md-header-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
+    <a href="https://emacs-lsp.github.io/lsp-mode/" title="LSP Mode - LSP support for Emacs" class="md-header-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
@@ -348,7 +348,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - LSP support for Emacs" class="md-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
+    <a href="https://emacs-lsp.github.io/lsp-mode/" title="LSP Mode - LSP support for Emacs" class="md-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
@@ -2759,7 +2759,7 @@ features check <a href="../clojure-guide/">Clojure Guide</a>.</p>
 <ul>
 <li>Create the sample project
 <div class="highlight"><pre><span></span><code>$ npx create-cljs-project dap-debug-app
-npx: installed <span class="m">1</span> in <span class="m">1</span>.764s
+npx: installed <span class="m">1</span> <span class="k">in</span> <span class="m">1</span>.764s
 shadow-cljs - creating project: /home/yyoncho/Sources/dap-debug-app
 Creating: /home/yyoncho/Sources/dap-debug-app/package.json
 Creating: /home/yyoncho/Sources/dap-debug-app/shadow-cljs.edn
@@ -2767,11 +2767,11 @@ Creating: /home/yyoncho/Sources/dap-debug-app/.gitignore
 Creating: /home/yyoncho/Sources/dap-debug-app/src/main
 Creating: /home/yyoncho/Sources/dap-debug-app/src/test
 ----
-Installing shadow-cljs in project.
+Installing shadow-cljs <span class="k">in</span> project.
 
 npm notice created a lockfile as package-lock.json. You should commit this file.
 + shadow-cljs@2.11.23
-added <span class="m">100</span> packages from <span class="m">106</span> contributors and audited <span class="m">100</span> packages in <span class="m">4</span>.831s
+added <span class="m">100</span> packages from <span class="m">106</span> contributors and audited <span class="m">100</span> packages <span class="k">in</span> <span class="m">4</span>.831s
 
 <span class="m">3</span> packages are looking <span class="k">for</span> funding
   run <span class="sb">`</span>npm fund<span class="sb">`</span> <span class="k">for</span> details
@@ -2815,22 +2815,22 @@ opening the above URL the Browser Console should show "Hello World".</p>
 <h2 id="debugging">Debugging<a class="headerlink" href="#debugging" title="Permanent link">#</a></h2>
 <p>The first step is install <a href="https://github.com/microsoft/vscode-chrome-debug">Google Chrome Debug Adapter</a> via <strong>M-x dap-chrome-setup</strong>. This is one time operation.</p>
 <p>Then create file <code>launch.json</code> with the following content:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-    <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.2.0&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;configurations&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;chrome&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;request&quot;</span><span class="p">:</span> <span class="s2">&quot;launch&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;DAP clojurescript&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8080&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;sourceMaps&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-            <span class="nt">&quot;webRoot&quot;</span><span class="p">:</span> <span class="s2">&quot;${workspaceFolder}&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;sourceMapPathOverrides&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="nt">&quot;*&quot;</span><span class="p">:</span> <span class="s2">&quot;${workspaceFolder}/src/main/*&quot;</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">]</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.2.0&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;configurations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;chrome&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DAP clojurescript&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:8080&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;sourceMaps&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;webRoot&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${workspaceFolder}&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;sourceMapPathOverrides&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;*&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${workspaceFolder}/src/main/*&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">]</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <p>Then open <code>app.cljs</code> and place some breakpoints either by clicking in the fringe
 or by doing <code>M-x dap-breakpoint-toggle</code>.</p>
@@ -2850,7 +2850,7 @@ or by doing <code>M-x dap-breakpoint-toggle</code>.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 18, 2022</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 19, 2022</span>
     
   </small>
 </div>
@@ -2865,7 +2865,7 @@ or by doing <code>M-x dap-breakpoint-toggle</code>.</p>
 
   <h2 id="__comments">Comments</h2>
   <div id="disqus_thread"></div>
-  <script>var disqus_config=function(){this.page.url="https://emacs-lsp.github.io/lsp-mode/tutorials/debugging-clojure-script/",this.page.identifier="/tutorials/debugging-clojure-script/"};window.addEventListener("load",function(){var e=document,i=e.createElement("script");i.src="//emacs-lsp.disqus.com/embed.js",i.setAttribute("data-timestamp",+new Date),(e.head||e.body).appendChild(i)})</script>
+  <script>var disqus_config=function(){this.page.url="https://emacs-lsp.github.io/lsp-mode/tutorials/debugging-clojure-script/",this.page.identifier="tutorials/debugging-clojure-script/"};window.addEventListener("load",function(){var e=document,i=e.createElement("script");i.src="//emacs-lsp.disqus.com/embed.js",i.setAttribute("data-timestamp",+new Date),(e.head||e.body).appendChild(i)})</script>
 
               
             </article>

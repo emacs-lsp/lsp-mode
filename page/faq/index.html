@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/faq/">
       
       <link rel="shortcut icon" href="../../examples/logo-mini.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.4">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-6.2.4">
     
     
       
@@ -85,7 +85,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - LSP support for Emacs" class="md-header-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
+    <a href="https://emacs-lsp.github.io/lsp-mode/" title="LSP Mode - LSP support for Emacs" class="md-header-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
@@ -348,7 +348,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="https://emacs-lsp.github.io/lsp-mode" title="LSP Mode - LSP support for Emacs" class="md-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
+    <a href="https://emacs-lsp.github.io/lsp-mode/" title="LSP Mode - LSP support for Emacs" class="md-nav__button md-logo" aria-label="LSP Mode - LSP support for Emacs">
       
   <img src="../../examples/logo-mini.png" alt="logo">
 
@@ -2892,9 +2892,9 @@
 <p>The issue is caused by <code>clojure-lsp</code> server being more aggressive with formatting(deleting whitespaces) and <code>aggressive-indent-mode</code> being on and calling it while typing. The solution is either to disable <code>aggressive-indent-mode</code> or to disable <code>lsp-mode</code> formatting via <code>lsp-enable-indentation</code>.</p>
 <hr />
 <h3 id="how-do-i-disable-automatic-installation"><img alt="❔" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/2754.svg" title=":grey_question:" /> How do I disable automatic installation?<a class="headerlink" href="#how-do-i-disable-automatic-installation" title="Permanent link">#</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="err">```</span> <span class="n">elisp</span>
-<span class="p">(</span><span class="n">setq</span> <span class="n">lsp</span><span class="o">-</span><span class="n">enable</span><span class="o">-</span><span class="n">suggest</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">download</span> <span class="n">nil</span><span class="p">)</span>
-<span class="err">```</span>
+<div class="codehilite"><pre><span></span><code><span class="err">```</span><span class="w"> </span><span class="n">elisp</span><span class="w"></span>
+<span class="p">(</span><span class="n">setq</span><span class="w"> </span><span class="n">lsp</span><span class="o">-</span><span class="n">enable</span><span class="o">-</span><span class="n">suggest</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">download</span><span class="w"> </span><span class="n">nil</span><span class="p">)</span><span class="w"></span>
+<span class="err">```</span><span class="w"></span>
 </code></pre></div>
                 
                   
@@ -2904,7 +2904,7 @@
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 18, 2022</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 19, 2022</span>
     
   </small>
 </div>
