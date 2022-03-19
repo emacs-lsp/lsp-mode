@@ -171,7 +171,7 @@ extra_javascript:
 
 theme:
   name: material
-  custom_dir: theme/
+  custom_dir: overrides
   logo: examples/logo-mini.png
   favicon: examples/logo-mini.png
   icon:
