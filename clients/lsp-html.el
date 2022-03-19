@@ -18,14 +18,16 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+;;; Commentary:
+
 ;;; Code:
 
 (require 'lsp-mode)
 
 (defgroup lsp-html nil
-  "LSP support for HTML, using vscode-html-languageserver."
+  "LSP support for HTML, using vscode's built-in language server."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/vscode-langservers/vscode-html-languageserver")
+  :link '(url-link "https://github.com/microsoft/vscode/tree/main/extensions/html-language-features/server")
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-html-experimental-custom-data nil
@@ -170,9 +172,9 @@ styles."
   :package-version '(lsp-mode . "6.3"))
 
 (lsp-dependency 'html-language-server
-                '(:system "html-languageserver")
-                '(:npm :package "vscode-html-languageserver-bin"
-                       :path "html-languageserver"))
+                '(:system "vscode-html-language-server")
+                '(:npm :package "vscode-langservers-extracted"
+                       :path "vscode-html-language-server"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection

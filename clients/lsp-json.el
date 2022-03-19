@@ -30,9 +30,9 @@
 (require 'url-util)
 
 (defgroup lsp-json nil
-  "LSP support for JSON, using vscode-json-languageserver."
+  "LSP support for JSON, using vscode's built-in language server."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/vscode-langservers/vscode-json-languageserver")
+  :link '(url-link "https://github.com/microsoft/vscode/tree/main/extensions/json-language-features/server")
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-json-schemas nil
@@ -98,9 +98,9 @@
                   (list callback))))
 
 (lsp-dependency 'vscode-json-languageserver
-                '(:system "vscode-json-languageserver")
-                '(:npm :package "vscode-json-languageserver"
-                       :path "vscode-json-languageserver"))
+                '(:system "vscode-json-language-server")
+                '(:npm :package "vscode-langservers-extracted"
+                       :path "vscode-json-language-server"))
 
 (lsp-register-client
  (make-lsp-client
