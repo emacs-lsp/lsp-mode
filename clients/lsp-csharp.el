@@ -132,7 +132,7 @@ Will invoke CALLBACK on success, ERROR-CALLBACK on error."
 (defun lsp-csharp--language-server-path ()
   "Resolve path to use to start the server."
   (if lsp-csharp-server-path
-      lsp-csharp-server-path
+      (executable-find lsp-csharp-server-path)
     (let ((server-dir lsp-csharp-omnisharp-roslyn-server-dir))
       (when (f-exists? server-dir)
         (f-join server-dir (cond ((eq system-type 'windows-nt) "OmniSharp.exe")
