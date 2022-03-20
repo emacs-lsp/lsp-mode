@@ -31,7 +31,7 @@
   "LSP support for CSS."
   :group 'lsp-mode
   :link '(url-link
-          "https://github.com/vscode-langservers/vscode-css-languageserver-bin"))
+          "https://github.com/microsoft/vscode/tree/main/extensions/css-language-features/server"))
 
 (defcustom lsp-css-experimental-custom-data nil
   "A list of JSON file paths that define custom CSS data that
@@ -234,9 +234,9 @@ server."
   (lsp--apply-text-edits (cl-caddr arguments?) 'code-action))
 
 (lsp-dependency 'css-languageserver
-                '(:system "css-languageserver")
-                '(:npm :package "vscode-css-languageserver-bin"
-                       :path "css-languageserver"))
+                '(:system "vscode-css-language-server")
+                '(:npm :package "vscode-langservers-extracted"
+                       :path "vscode-css-language-server"))
 
 (lsp-register-client
  (make-lsp-client
