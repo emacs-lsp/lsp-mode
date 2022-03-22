@@ -27,13 +27,19 @@ jobs:
 
       - name: Generate LSPs docs
         run: 'make docs'
-
+        
+      - name: Docker Login
+        uses: docker/login-action@v1.14.1
+        with:
+          registry: ghcr.io
+          username: $GITHUB_ACTOR
+          password: ${{ secrets.GITHUB_TOKEN }}
+    
       - name: MkDocs
         run: |
           cp -rf README.md examples docs
 
-          docker login docker.pkg.github.com --username $GITHUB_ACTOR --password ${{ secrets.GITHUB_TOKEN }}
-          docker run --rm -v ${PWD}:/docs docker.pkg.github.com/emacs-lsp/docs-image/docs-image -- build
+          docker run --rm -v ${PWD}:/docs ghcr.io/emacs-lsp/docs-image/docs-image:latest -- build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
