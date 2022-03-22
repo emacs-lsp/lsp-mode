@@ -342,6 +342,13 @@ PARAMS progress report notification data."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "6.2"))
 
+(defcustom lsp-rust-analyzer-server-format-inlay-hints t
+  "Whether to ask rust-analyzer to format inlay hints itself.  If
+active, the various inlay format settings are not used."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defcustom lsp-rust-analyzer-server-display-inlay-hints nil
   "Show inlay hints."
   :type 'boolean
@@ -354,18 +361,41 @@ PARAMS progress report notification data."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "6.2.2"))
 
+(defcustom lsp-rust-analyzer-display-chaining-hints nil
+  "Whether to show inlay type hints for method chains.  These
+hints will be formatted with the type hint formatting options, if
+the mode is not configured to ask the server to format them."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "6.2.2"))
+
+(defcustom lsp-rust-analyzer-display-lifetime-elision-hints "never"
+  "Whether to show elided lifetime inlay hints."
+  :type '(choice
+          (const "never")
+          (const "always")
+          (const "skip_trivial"))
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-display-closure-return-type-hints nil
+  "Whether to show closure return type inlay hints for closures
+with block bodies."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defcustom lsp-rust-analyzer-display-parameter-hints nil
   "Whether to show function parameter name inlay hints at the call site."
   :type 'boolean
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "6.2.2"))
 
-(defcustom lsp-rust-analyzer-display-chaining-hints nil
-  "Whether to show inlay type hints for method chains.  These hints will be
-formatted with the type hint formatting options."
+(defcustom lsp-rust-analyzer-display-reborrow-hints nil
+  "Whether to show reborrowing inlay hints."
   :type 'boolean
   :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "6.2.2"))
+  :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-rust-analyzer-lru-capacity nil
   "Number of syntax trees rust-analyzer keeps in memory."
@@ -674,10 +704,13 @@ or JSON objects in `rust-project.json` format."
             :unsetTest ,lsp-rust-analyzer-cargo-unset-test)
     :rustfmt (:extraArgs ,lsp-rust-analyzer-rustfmt-extra-args
               :overrideCommand ,lsp-rust-analyzer-rustfmt-override-command)
-    :inlayHints (:renderColons ,(lsp-json-bool nil)
+    :inlayHints (:renderColons ,(lsp-json-bool lsp-rust-analyzer-server-format-inlay-hints)
                  :typeHints ,(lsp-json-bool lsp-rust-analyzer-server-display-inlay-hints)
                  :chainingHints ,(lsp-json-bool lsp-rust-analyzer-display-chaining-hints)
+                 :closureReturnTypeHints ,(lsp-json-bool lsp-rust-analyzer-display-closure-return-type-hints)
+                 :lifetimeElisionHints ,lsp-rust-analyzer-display-lifetime-elision-hints
                  :parameterHints ,(lsp-json-bool lsp-rust-analyzer-display-parameter-hints)
+                 :reborrowHints ,(lsp-json-bool lsp-rust-analyzer-display-reborrow-hints)
                  :maxLength ,lsp-rust-analyzer-max-inlay-hint-length)
     :completion (:addCallParenthesis ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-parenthesis)
                  :addCallArgumentSnippets ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-argument-snippets)
@@ -855,14 +888,17 @@ or JSON objects in `rust-project.json` format."
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-rust-analyzer-inlay-type-space-format "%s"
-  "Format string for spacing around variable inlays
-\(not part of the inlay face)."
+  "Format string for spacing around variable inlays \(not part of
+the inlay face, used whether or not
+lsp-rust-analyzer-server-format-inlay-hints is non-nil)."
   :type '(string :tag "String")
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-rust-analyzer-inlay-type-format ": %s"
-  "Format string for variable inlays (part of the inlay face)."
+  "Format string for variable inlays (part of the inlay face,
+used only if lsp-rust-analyzer-server-format-inlay-hints is
+non-nil)."
   :type '(string :tag "String")
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
@@ -874,17 +910,42 @@ or JSON objects in `rust-project.json` format."
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-rust-analyzer-inlay-param-space-format "%s "
-  "Format string for spacing around parameter inlays
-\(not part of the inlay face)."
+  "Format string for spacing around parameter inlays \(not part
+of the inlay face, used whether or not
+lsp-rust-analyzer-server-format-inlay-hints is non-nil)."
   :type '(string :tag "String")
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-rust-analyzer-inlay-param-format "%s:"
-  "Format string for parameter inlays (part of the inlay face)."
+  "Format string for parameter inlays (part of the inlay face,
+used only if lsp-rust-analyzer-server-format-inlay-hints is
+non-nil)."
   :type '(string :tag "String")
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
+
+(defface lsp-rust-analyzer-inlay-nonstandard-face
+  '((t :inherit lsp-rust-analyzer-inlay-face))
+  "Face for non-standard inlay hints (e.g. reborrow hints)."
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-inlay-nonstandard-space-format "%s"
+  "Format string for spacing around non-standard inlays \(not part
+of the inlay face, used whether or not
+lsp-rust-analyzer-server-format-inlay-hints is non-nil)."
+  :type '(string :tag "String")
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-inlay-nonstandard-format "%s"
+  "Format string for non-standard inlays (part of the inlay face,
+used only if lsp-rust-analyzer-server-format-inlay-hints is
+non-nil)."
+  :type '(string :tag "String")
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-rust-analyzer-debug-lens-extra-dap-args
   '(:MIMode "gdb" :miDebuggerPath "gdb" :stopAtEntry t :externalConsole :json-false)
@@ -909,23 +970,35 @@ meaning."
        (lambda (res)
          (remove-overlays (point-min) (point-max) 'lsp-rust-analyzer-inlay-hint t)
          (dolist (hint res)
-           (-let* (((&rust-analyzer:InlayHint :position :label :kind) hint)
+           (-let* (((&rust-analyzer:InlayHint :position :label :kind :padding-left :padding-right) hint)
                    (pos (lsp--position-to-point position))
                    (overlay (make-overlay pos (+ pos 1) nil 'front-advance 'end-advance)))
              (overlay-put overlay 'lsp-rust-analyzer-inlay-hint t)
              (overlay-put overlay 'evaporate t)
-             (cond
-              ((equal kind lsp/rust-analyzer-inlay-hint-kind-type-hint)
-               (overlay-put overlay 'before-string
-                            (format lsp-rust-analyzer-inlay-type-space-format
-                                    (propertize (format lsp-rust-analyzer-inlay-type-format label)
-                                                'font-lock-face 'lsp-rust-analyzer-inlay-type-face))))
+             (if lsp-rust-analyzer-server-format-inlay-hints
+                 (overlay-put overlay 'before-string
+                              (format "%s%s%s"
+                                      (if padding-left " " "")
+                                      (propertize label 'font-lock-face 'lsp-rust-analyzer-inlay-face)
+                                      (if padding-right " " "")))
+               (cond
+                ((equal kind lsp/rust-analyzer-inlay-hint-kind-type-hint)
+                 (overlay-put overlay 'before-string
+                              (format lsp-rust-analyzer-inlay-type-space-format
+                                      (propertize (format lsp-rust-analyzer-inlay-type-format label)
+                                                  'font-lock-face 'lsp-rust-analyzer-inlay-type-face))))
 
-              ((equal kind lsp/rust-analyzer-inlay-hint-kind-param-hint)
-               (overlay-put overlay 'before-string
-                            (format lsp-rust-analyzer-inlay-param-space-format
-                                    (propertize (format lsp-rust-analyzer-inlay-param-format label)
-                                                'font-lock-face 'lsp-rust-analyzer-inlay-param-face))))))))
+                ((equal kind lsp/rust-analyzer-inlay-hint-kind-param-hint)
+                 (overlay-put overlay 'before-string
+                              (format lsp-rust-analyzer-inlay-param-space-format
+                                      (propertize (format lsp-rust-analyzer-inlay-param-format label)
+                                                  'font-lock-face 'lsp-rust-analyzer-inlay-param-face))))
+
+                ((equal kind lsp/rust-analyzer-inlay-hint-kind-nonstandard-hint)
+                 (overlay-put overlay 'before-string
+                              (format lsp-rust-analyzer-inlay-nonstandard-space-format
+                                      (propertize (format lsp-rust-analyzer-inlay-nonstandard-format label)
+                                                  'font-lock-face 'lsp-rust-analyzer-inlay-nonstandard-face)))))))))
        :mode 'tick))
   nil)
 
