@@ -184,7 +184,7 @@ Set FORCE-DOWNLOADING to non-nil to force re-download the database."
   (interactive "P")
   (when (or force-downloading (not (file-exists-p lsp-yaml-schema-store-local-db)))
     (unless (file-directory-p (file-name-directory lsp-yaml-schema-store-local-db))
-      (mkdir (file-name-directory lsp-yaml-schema-store-local-db)))
+      (mkdir (file-name-directory lsp-yaml-schema-store-local-db) t))
     (url-copy-file lsp-yaml-schema-store-uri lsp-yaml-schema-store-local-db force-downloading)))
 
 (defun lsp-yaml--get-supported-schemas ()
