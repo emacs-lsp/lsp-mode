@@ -933,9 +933,8 @@ meaning."
          (dolist (hint res)
            (-let* (((&rust-analyzer:InlayHint :position :label :kind :padding-left :padding-right) hint)
                    (pos (lsp--position-to-point position))
-                   (overlay (make-overlay pos (+ pos 1) nil 'front-advance 'end-advance)))
+                   (overlay (make-overlay pos pos nil 'front-advance 'end-advance)))
              (overlay-put overlay 'lsp-rust-analyzer-inlay-hint t)
-             (overlay-put overlay 'evaporate t)
              (overlay-put overlay 'before-string
                           (format "%s%s%s"
                                   (if padding-left " " "")
