@@ -369,12 +369,19 @@ the mode is not configured to ask the server to format them."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "6.2.2"))
 
-(defcustom lsp-rust-analyzer-display-lifetime-elision-hints "never"
+(defcustom lsp-rust-analyzer-display-lifetime-elision-hints-enable "never"
   "Whether to show elided lifetime inlay hints."
   :type '(choice
           (const "never")
           (const "always")
           (const "skip_trivial"))
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil
+  "When showing elided lifetime inlay hints, whether to use
+parameter names or numeric placeholder names for the lifetimes."
+  :type 'boolean
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.1"))
 
@@ -700,7 +707,8 @@ https://rust-analyzer.github.io/manual.html#auto-import.
                  :typeHints ,(lsp-json-bool lsp-rust-analyzer-server-display-inlay-hints)
                  :chainingHints ,(lsp-json-bool lsp-rust-analyzer-display-chaining-hints)
                  :closureReturnTypeHints ,(lsp-json-bool lsp-rust-analyzer-display-closure-return-type-hints)
-                 :lifetimeElisionHints ,lsp-rust-analyzer-display-lifetime-elision-hints
+                 :lifetimeElisionHints (:enable ,lsp-rust-analyzer-display-lifetime-elision-hints-enable
+                                        :useParameterNames ,(lsp-json-bool lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names))
                  :parameterHints ,(lsp-json-bool lsp-rust-analyzer-display-parameter-hints)
                  :reborrowHints ,(lsp-json-bool lsp-rust-analyzer-display-reborrow-hints)
                  :maxLength ,lsp-rust-analyzer-max-inlay-hint-length)
