@@ -71,8 +71,8 @@
                        :path "tsserver"))
 
 (lsp-dependency 'volar-language-server
-                '(:system "volar-server")
-                '(:npm :package "@volar/server" :path "volar-server"))
+                '(:system "vue-language-server")
+                '(:npm :package "@volar/vue-language-server" :path "vue-language-server"))
 
 (lsp-register-custom-settings
  '(("typescript.serverPath" (lambda () (if-let ((project-root (lsp-workspace-root))
@@ -81,6 +81,7 @@
                                            server-path
                                         (lsp-volar-get-typescript-server-path))) t)
    ("languageFeatures.references" t t)
+   ("languageFeatures.implementation" t t)
    ("languageFeatures.definition" t t)
    ("languageFeatures.typeDefinition" t t)
    ("languageFeatures.callHierarchy" t t)
