@@ -164,7 +164,7 @@ Python virtual environment."
 This prevents the Ansible server from being turned on in all yaml files."
   (and (eq major-mode 'yaml-mode)
        ;; emacs-ansible provides ansible, not ansible-mode
-       (bound-and-true-p ansible)))
+       (with-no-warnings (bound-and-true-p ansible))))
 
 (lsp-register-client
  (make-lsp-client
