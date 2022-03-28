@@ -128,6 +128,14 @@
   :type 'string
   :safe (lambda (x) (stringp x)))
 
+(defun lsp-clients-svlangserver-build-index ()
+  (interactive)
+  (lsp-send-execute-command "systemverilog.build_index"))
+
+(defun lsp-clients-svlangserver-report-hierarchy (container-name)
+  (interactive (list (read-string "Module/interface: " (cond ((use-region-p) (buffer-substring (region-beginning) (region-end))) (t "")))))
+  (lsp-send-execute-command "systemverilog.report_hierarchy" (vector container-name)))
+
 (lsp-dependency 'svlangserver
                 '(:system "svlangserver"))
 
