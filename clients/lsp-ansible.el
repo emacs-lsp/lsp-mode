@@ -156,7 +156,7 @@ Python virtual environment."
    ("ansible.executionEnvironment.enabled" lsp-ansible-execution-environment-enabled t)
    ("ansible.executionEnvironment.image" lsp-ansible-execution-environment-image)
    ("ansible.executionEnvironment.pullPolicy" lsp-ansible-execution-environment-pull-policy)
-   ("ansible.python.interpreterPath")
+   ("ansible.python.interpreterPath" lsp-ansible-python-interpreter-path)
    ("ansible.python.activationScript" lsp-ansible-python-activation-script)))
 
 (defun lsp-ansible-check-ansible-minor-mode (&rest _)
