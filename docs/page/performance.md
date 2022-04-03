@@ -43,7 +43,7 @@ export LSP_USE_PLISTS=true
 3. Make sure that `lsp-use-plists` is non-nil.
 4. Restart `Emacs` and install again `lsp-mode` related packages.
 
-_NB:_ make sure that `lsp-use-plist` does not change after you compile the file.
+_NB:_ make sure that `lsp-use-plists` does not change after you compile the file.
 
 ### Optional steps
 
