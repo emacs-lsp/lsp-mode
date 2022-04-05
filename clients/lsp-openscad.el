@@ -1,6 +1,6 @@
 ;;; lsp-openscad.el --- openscad client         -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2021 Len Trigg
+;; Copyright (C) 2022 Len Trigg
 
 ;; Author: Len Trigg
 ;; Keywords: openscad lsp
