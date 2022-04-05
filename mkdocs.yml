@@ -98,6 +98,7 @@ nav:
     - Nim: page/lsp-nim.md
     - Nix: page/lsp-nix.md
     - OCaml (ocaml-lsp): page/lsp-ocaml-lsp-server.md
+    - OpenSCAD: page/lsp-openscad.md
     - Pascal/Object Pascal: page/lsp-pascal.md
     - Perl (Perl::LanguageServer): page/lsp-perl.md
     - Perl (Navigator): page/lsp-perlnavigator.md
