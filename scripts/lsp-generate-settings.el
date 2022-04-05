@@ -79,7 +79,7 @@ FILE-NAME is path to package.json vscode manifest."
                         type
                         group
                         (symbol-name prop-name))))))
-         (s-join "\n\n")))))
+         (s-join "\n\n"))))
 
 (provide 'lsp-generate-settings)
 
