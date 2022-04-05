@@ -44,7 +44,7 @@ lsp:
 ### Registering a language server using a .dir-locals file:
 Just refer to the source code and general conventions of using .dir-locals. The variable you need is lsp-docker-persistent-default-config, its content is merged with the lsp section from a configuration file (if present).
 
-## Components: Debug Server / DAP
+## Components: Debugger / DAP
   
 *Note: this info is based on the readme in the original project, take a look at [dap-mode](https://github.com/emacs-lsp/dap-mode) for additional info.*
 
@@ -71,3 +71,91 @@ lsp:
     launch_command: <an explicit command if you want to override a default one provided by the debug provider>
     # e.g. if you have installed a debug server in a different directory, not used with 'container' subtype debuggers
 ```
+## Examples
+Let's develop and debug a simple Ruby application (that uses bundler nonetheless).  
+In the project folder we have at least the actual code and `Gemfile` with `Gemfile.lock`.
+
+First of all we have to build the images and containers. Let's stick with an image for a language server and a container for debug. In order to have LSP support in Ruby we have to place `solargraph` in `Gemfile`.
+### Building: Language Server 
+So it is easy to use something like this as a `Dockerfile` for a language server (using `debian-slim` as a base image, but it is a matter of personal taste):
+``` Dockerfile
+FROM ruby:3.1.1-slim-bullseye as app
+
+# What if your gems use native extensions?
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# You may decide not to create a user, it is ok to delete these lines
+RUN addgroup --gid 1000 user && \
+    adduser --disabled-password --gecos '' --uid 1000 --gid 1000 user
+
+# Just an appropriate folder, a matter of taste again
+RUN mkdir /app && chown user:user /app
+WORKDIR /app
+
+# Install all the gems, INCLUDING the language server
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+# Use the created user, remove this line if you deleted the user creation lines
+USER user
+```
+You may build it with something like this `docker build -t lsp-docker-ruby-server .` while you are in the project folder.  
+
+### Building: Debugger
+
+With the debugger it is a bit more complicated: first of all you need `node` to run the DAP server (as it is a VSCode extension) and second you need to place the extension into the container. You can download the extension (take the latest version) from the [VSCode marketplace](https://marketplace.visualstudio.com/items?itemName=rebornix.Ruby) and place it in your project folder (`vspackage.zip` for convenience).  
+In this case your `Dockerfile` may look like this:
+``` Dockerfile
+FROM ruby:3.1.1-slim-bullseye as app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    nodejs \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create a folder for the debugger
+RUN mkdir /debugger
+WORKDIR /debugger
+COPY vspackage.zip .
+RUN unzip vspackage.zip -d .
+
+RUN addgroup --gid 1000 user && \
+    adduser --disabled-password --gecos '' --uid 1000 --gid 1000 user
+
+RUN mkdir /app && chown user:user /app
+WORKDIR /app
+
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+USER user
+```
+Again you may build it with something like this `docker build -t dap-docker-ruby-server .` while you are in the project folder. But as we decided to stick with a container for the debugger, we need to create one! It is easy (but take note that we **have to specify the folder mappings when creating a container!**): ``docker create -i -v `pwd`:/app -w /app --name dap-docker-ruby-server dap-docker-ruby-server node /debugger/extension/dist/debugger/main.js``.  
+  
+### Configuration
+Lets use a `yaml` persistent configuration, we may use something like this (in `.lsp-docker.yml` in the project folder):
+``` yaml
+lsp:
+  server:
+    type: docker
+    subtype: image
+    name: lsp-docker-ruby-server
+    server: ruby-ls
+    launch_command: "bundle exec solargraph stdio"
+  mappings:
+    - source: "."
+      destination: "/app"
+  debug:
+    type: docker
+    subtype: container
+    name: dap-docker-ruby-server
+    enabled: true
+    provider: "Ruby"
+    template: "Ruby::Run"
+    launch_command: "node /debugger/extension/dist/debugger/main.js" # It is meaningless as we use a container, but still
+```
+Next we have to register both language server and debugger when the project is opened in Emacs: use `lsp-docker-register` and `dap-docker-register` interactive functions.  
+If everything is fine you may launch a language server by a simple `lsp` invocation and DAP by `dap-debug` and selecting a dockerized debug template.
