@@ -33,8 +33,8 @@
   :group 'lsp-mode
   :link '(url-link "https://taplo.tamasfe.dev/lsp/"))
 
-(defcustom lsp-toml-command "taplo-lsp"
-  "Path to taplo-lsp command."
+(defcustom lsp-toml-command "taplo"
+  "Path to taplo command."
   :type 'string
   :group 'lsp-toml
   :package-version '(lsp-mode . "8.0.1"))
@@ -244,7 +244,7 @@ as it is always stripped."
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection (lambda () (list lsp-toml-command "run")))
+  :new-connection (lsp-stdio-connection (lambda () (list lsp-toml-command "lsp" "stdio")))
   :activation-fn (lsp-activate-on "toml")
   :initialized-fn #'lsp-toml--initialized
   :initialization-options #'lsp-toml--initialization-options
