@@ -23,7 +23,7 @@
 ;; Functions for generating settings from package.json file
 
 ;; Usage
-;; (lsp-generate-settings "/home/kyoncho/Sources/vscode-java/package.json")
+;; (lsp-generate-settings "/home/kyoncho/Sources/vscode-java/package.json" 'lsp-java)
 
 ;;; Code:
 
