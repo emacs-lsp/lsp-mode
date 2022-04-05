@@ -43,3 +43,31 @@ lsp:
 
 ### Registering a language server using a .dir-locals file:
 Just refer to the source code and general conventions of using .dir-locals. The variable you need is lsp-docker-persistent-default-config, its content is merged with the lsp section from a configuration file (if present).
+
+## Components: Debug Server / DAP
+  
+*Note: this info is based on the readme in the original project, take a look at [dap-mode](https://github.com/emacs-lsp/dap-mode) for additional info.*
+
+Configure it either with a `.dir-locals` file or drop an `.lsp-docker.yml` configuration file (use `lsp-docker` for general reference). Basically you have one function `dap-docker-register` that performs all the heavy lifting (finding the original debug template, patching it, registering a debug provider e.t.c). This function examines a configuration file or falls back to the default configuration (which can be patched using the `.dir-locals` approach, take a note that the default configuration doesn’t provide any sane defaults for debugging) and then operates on the combination of the two. This mechanism is the same as in `lsp-docker`.  
+
+*Note: currently you cannot use this mode when using a network connection to connect to debuggers (this part is yet to be implemented). Still want to talk to debuggers over network? In order to do so you have to look at the launch-args patching done by `dap-docker--dockerize-start-file-args`, you have to somehow assign `nil` to `dap-server-path` before it is passed further into session creation.*
+
+If you want to stick to a configuration file, take a look at the example below:
+``` yaml
+lsp:
+  server:
+    # 'lsp-docker' fields
+  mappings:
+    - source: "/your/host/source/path" # used both by 'lsp-docker' and 'dap-docker'
+      destination: "/your/local/path/inside/a/container" # used both by 'lsp-docker' and 'dap-docker'
+  debug:
+    type: docker # only docker is supported
+    subtype: image # or 'container'
+    name: <docker image or container that has the debugger in> # you can omit this field
+    # in this case the 'lsp-docker' ('server' section) image name is used
+    enabled: true # you can explicitly disable 'dap-docker' by using 'false'
+    provider: <your default language debug provider, double quoted string>
+    template: <your default language debug template, double quoted string>
+    launch_command: <an explicit command if you want to override a default one provided by the debug provider>
+    # e.g. if you have installed a debug server in a different directory, not used with 'container' subtype debuggers
+```
