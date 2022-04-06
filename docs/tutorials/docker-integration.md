@@ -3,8 +3,8 @@
 Author: [@factyy](https://github.com/factyy)
 
 ## Reason
-You can use docker-wrapped both the language server and debug server and connect to them using LSP/DAP.
-Imagine that you have a short-time project (or a sideproject) and don't want to bring any software packages to your local machine.
+You can use docker-wrapped both the language server and debugger and connect to them using LSP/DAP.
+Imagine that you have a short-time project (or a sideproject) and you don't want to bring any software packages to your local machine.
 Now it is simple: wrap the language server and debugger you need in `docker` and use `lsp-docker` for LSP and `dap-mode` for DAP.
 
 ## Features
@@ -13,7 +13,7 @@ Most of the `lsp-mode` and `dap-mode` features, but with the ability to use cont
 *Note: some of the features may yet to be tested, so any help finding and fixing any bugs in them is highly appreciated!*
 
 ## Components: Language Server / LSP support
-You can use manually built language containers or images hosting language server(s), just follow a few simple rules (shown below).  
+You can use manually built containers or images hosting language server(s), just follow a few simple rules (shown below).  
   
 *Note: this info is based on the readme in the original project, take a look at [lsp-docker](https://github.com/emacs-lsp/lsp-docker) for additional info.*
 
@@ -77,7 +77,8 @@ lsp:
 Let's develop and debug a simple Ruby application (that uses bundler nonetheless).  
 In the project folder we have at least the actual code and `Gemfile` with `Gemfile.lock`.
 
-First of all we have to build the images and containers. Let's stick with an image for a language server and a container for debug. In order to have LSP support in Ruby we have to place `solargraph` in `Gemfile`.
+First of all we have to build the images and containers. Let's stick with an image for a language server and a container for debugging. In order to have LSP support in Ruby we have to place `solargraph` in `Gemfile`.
+
 ### Building: Language Server 
 So it is easy to use something like this as a `Dockerfile` for a language server (using `debian-slim` as a base image, but it is a matter of personal taste):
 ``` Dockerfile
@@ -107,7 +108,7 @@ You may build it with something like this `docker build -t lsp-docker-ruby-serve
 
 ### Building: Debugger
 
-With the debugger it is a bit more complicated: first of all you need `node` to run the DAP server (as it is a VSCode extension) and second you need to place the extension into the container. You can download the extension (take the latest version) from the [VSCode marketplace](https://marketplace.visualstudio.com/items?itemName=rebornix.Ruby) and place it in your project folder (`vspackage.zip` for convenience).  
+With a debugger it is a bit more complicated: first of all you need `node` to run the DAP server (as it is a VSCode extension) and second you need to place the extension into the container. You can download the extension (take the latest version) from the [VSCode marketplace](https://marketplace.visualstudio.com/items?itemName=rebornix.Ruby) and place it in your project folder (`vspackage.zip` for convenience).  
 In this case your `Dockerfile` may look like this:
 ``` Dockerfile
 FROM ruby:3.1.1-slim-bullseye as app
