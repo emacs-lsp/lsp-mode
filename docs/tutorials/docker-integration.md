@@ -20,8 +20,8 @@ You can use manually built containers or images hosting language server(s), just
 ### Building a container (or an image):
 You have 2 constraints:
 
-A language server must be launched in stdio mode (other types of communication are yet to be supported)
-A docker container (only container subtype, see the configuration below) must have your language server as an entrypoint (basically you have to be able to launch it with `docker start -i <container_name>` as it is launched this way with `lsp-docker`)
+A language server must be launched in stdio mode (other types of communication are yet to be supported).
+A docker container (only container subtype, see the configuration below) must have your language server as an entrypoint (basically you have to be able to launch it with `docker start -i <container_name>` as it is launched this way with `lsp-docker`).
 When you have sucessfully built a language server, you have to register it with either a configuration file or a .dir-locals file.
 
 ### Registering a language server using a persistent configuration file:
