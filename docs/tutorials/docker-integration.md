@@ -1,5 +1,7 @@
 # Docker integration
 
+Author: [@factyy](https://github.com/factyy)
+
 ## Reason
 You can use docker-wrapped both the language server and debug server and connect to them using LSP/DAP.
 Imagine that you have a short-time project (or a sideproject) and don't want to bring any software packages to your local machine.
