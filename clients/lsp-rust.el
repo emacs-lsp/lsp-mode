@@ -486,7 +486,7 @@ syntax highlighting."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "6.3.2"))
 
-(defcustom lsp-rust-analyzer-diagnostics-enable-experimental t
+(defcustom lsp-rust-analyzer-diagnostics-enable-experimental nil
   "Whether to show native rust-analyzer diagnostics that are still experimental
 \(might have more false positives than usual)."
   :type 'boolean
@@ -559,7 +559,7 @@ for formatting."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "6.3.2"))
 
-(defcustom lsp-rust-analyzer-proc-macro-enable nil
+(defcustom lsp-rust-analyzer-proc-macro-enable t
   "Enable Proc macro support.
 Implies `lsp-rust-analyzer-cargo-run-build-scripts'"
   :type 'boolean
@@ -670,7 +670,7 @@ or JSON objects in `rust-project.json` format."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom lsp-rust-analyzer-experimental-proc-attr-macros nil
+(defcustom lsp-rust-analyzer-experimental-proc-attr-macros t
   "Whether to enable experimental support for expanding proc macro attributes."
   :type 'boolean
   :group 'lsp-rust-analyzer
