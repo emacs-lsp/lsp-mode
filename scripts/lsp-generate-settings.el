@@ -23,7 +23,7 @@
 ;; Functions for generating settings from package.json file
 
 ;; Usage
-;; (lsp-generate-settings "/home/kyoncho/Sources/vscode-java/package.json")
+;; (lsp-generate-settings "/home/kyoncho/Sources/vscode-java/package.json" 'lsp-java)
 
 ;;; Code:
 
@@ -63,7 +63,7 @@ FILE-NAME is path to package.json vscode manifest."
             (let ((type (lsp--convert-type type enum))
                   (prop-symbol (intern (format "lsp-%s" (s-dashed-words (symbol-name prop-name)))) ))
               (unless (boundp prop-symbol)
-                (format "(lsp-defcustom %s %s
+                (format "(defcustom-lsp %s %s
   \"%s\"
   :type '%s
   :group '%s
@@ -79,7 +79,7 @@ FILE-NAME is path to package.json vscode manifest."
                         type
                         group
                         (symbol-name prop-name))))))
-         (s-join "\n\n")))))
+         (s-join "\n\n"))))
 
 (provide 'lsp-generate-settings)
 
