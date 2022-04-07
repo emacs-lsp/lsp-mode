@@ -747,7 +747,7 @@
     "full-name": "TOML",
     "server-name": "taplo",
     "server-url": "https://github.com/tamasfe/taplo",
-    "installation": "cargo install taplo",
+    "installation": "cargo install taplo-cli",
     "debugger": "Not available"
   },
   {
