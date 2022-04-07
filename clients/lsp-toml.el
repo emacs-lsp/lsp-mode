@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; Client for taplo-lsp.
+;; Client for taplo.
 
 ;;; Code:
 
@@ -29,12 +29,12 @@
 (require 'f)
 
 (defgroup lsp-toml nil
-  "LSP support for TOML, using taplo-lsp."
+  "LSP support for TOML, using Taplo."
   :group 'lsp-mode
-  :link '(url-link "https://taplo.tamasfe.dev/lsp/"))
+  :link '(url-link "https://github.com/tamasfe/taplo"))
 
-(defcustom lsp-toml-command "taplo-lsp"
-  "Path to taplo-lsp command."
+(defcustom lsp-toml-command "taplo"
+  "Path to taplo command."
   :type 'string
   :group 'lsp-toml
   :package-version '(lsp-mode . "8.0.1"))
@@ -46,194 +46,101 @@
   :group 'lsp-toml
   :package-version '(lsp-mode . "8.0.1"))
 
-
-(defcustom lsp-toml-taplo-config nil
+(defcustom-lsp lsp-toml-taplo-config-file-path nil
   "An absolute, or workspace relative path to the Taplo configuration file."
-  :type 'file
+  :type 'string
   :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "evenBetterToml.taplo.configFile.path")
 
-(defcustom lsp-toml-taplo-config-enabled t
+(defcustom-lsp lsp-toml-taplo-config-file-enabled t
   "Whether to enable the usage of a Taplo configuration file."
   :type 'boolean
   :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "evenBetterToml.taplo.configFile.enabled")
 
+(defcustom-lsp lsp-toml-semantic-tokens nil
+  "Enable semantic tokens for inline table and array keys."
+  :type 'boolean
+  :group 'lsp-toml
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "evenBetterToml.semanticTokens")
 
-(defcustom lsp-toml-schema-enabled t
+(defcustom-lsp lsp-toml-schema-enabled t
   "Enable completion and validation based on JSON schemas."
   :type 'boolean
   :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "evenBetterToml.schema.enabled")
 
-(defcustom lsp-toml-schema-links nil
-  "Enable editor links."
+(defcustom-lsp lsp-toml-schema-links nil
+  "Whether to show clickable links for keys in the editor."
   :type 'boolean
   :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "evenBetterToml.schema.links")
 
-(defcustom lsp-toml-schema-repository-enabled t
-  "Whether to use schemas from the provided schema repository."
-  :type 'boolean
+(defcustom-lsp lsp-toml-schema-catalogs
+  ["https://taplo.tamasfe.dev/schema_index.json"
+   "https://www.schemastore.org/api/json/catalog.json"]
+  "A list of URLs to schema catalogs where schemas and associations
+can be fetched from"
+  :type 'lsp-string-vector
   :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "evenBetterToml.schema.catalogs")
 
-(defcustom lsp-toml-schema-repository-url "https://taplo.tamasfe.dev/schema_index.json"
-  "A HTTP(S) URL that points to a schema index."
-  :type 'string
-  :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
+(defcustom-lsp lsp-toml-schema-associations nil
+  "Additional document and schema associations.
 
-(defcustom lsp-toml-schema-associations
-  `((,(make-symbol "^(.*(/|\\\\)\\.?taplo\\.toml|\\.?taplo\\.toml)$") . "taplo://taplo.toml"))
-  "Document and schema associations."
+The key must be a regular expression, this pattern is used to
+associate schemas with absolute document URIs.
+
+The value must be an absolute URI to the JSON schema"
   :type '(alist :key-type symbol :value-type string)
   :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "evenBetterToml.schema.associations")
 
-
-(defcustom lsp-toml-formatter-align-entries nil
-  "Align consecutive entries vertically."
-  :type 'boolean
-  :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-toml-formatter-align-comments t
-  "Align comments vertically after entries and array values."
-  :type 'boolean
-  :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-toml-formatter-array-trailing-comma t
-  "Append trailing commas for multi-line arrays."
-  :type 'boolean
-  :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-toml-formatter-array-auto-expand t
-  "Expand arrays to multiple lines that exceed the maximum column width."
-  :type 'boolean
-  :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-toml-formatter-array-auto-collapse t
-  "Collapse arrays that don't exceed the maximum column width and
-don't contain comments."
-  :type 'boolean
-  :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-toml-formatter-compact-arrays t
-  "Omit white space padding from single-line arrays."
-  :type 'boolean
-  :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-toml-formatter-compact-inline-tables nil
-  "Omit white space padding from the start and end of inline tables."
-  :type 'boolean
-  :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-toml-formatter-compact-entries nil
-  "Omit white space padding around `=` for entries."
-  :type 'boolean
-  :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-toml-formatter-column-width 80
-  "Maximum column width in characters, affects array expansion
-and collapse, this doesn't take whitespace into account."
+(defcustom-lsp lsp-toml-schema-cache-memory-expiration 60
+  "The amount of seconds after which schemas will be invalidated from memory."
   :type 'number
   :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "evenBetterToml.schema.cache.memoryExpiration")
 
-(defcustom lsp-toml-formatter-indent-tables nil
-  "Indent based on tables and arrays of tables and their
-subtables, subtables out of order are not indented."
-  :type 'boolean
-  :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-toml-formatter-indent-entries nil
-  "Indent entries under tables."
-  :type 'boolean
-  :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-toml-formatter-indent-string nil
-  "The substring that is used for indentation, should be tabs or
-spaces, but technically can be anything.  Uses the IDE setting if
-not set."
-  :type '(repeat string)
-  :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-toml-formatter-reorder-keys nil
-  "Alphabetically reorder keys that are not separated by empty lines."
-  :type 'boolean
-  :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-toml-formatter-allowed-blank-lines 2
-  "Maximum amount of allowed consecutive blank lines.
-This does not affect the whitespace at the end of the document,
-as it is always stripped."
+(defcustom-lsp lsp-toml-schema-cache-disk-expiration 600
+  "The amount of seconds after which cached catalogs and schemas
+expire and will be attempted to be fetched again."
   :type 'number
   :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "evenBetterToml.schema.cache.diskExpiration")
 
-(defcustom lsp-toml-formatter-trailing-newline t
-  "Add trailing newline at the end of the file if not present."
+(defcustom-lsp lsp-toml-completion-max-keys 5
+  "The maximum amount of keys in a dotted key to display during
+completion, 0 effectively disables key completions."
+  :type 'number
+  :group 'lsp-toml
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "evenBetterToml.completion.maxKeys")
+
+(defcustom-lsp lsp-toml-syntax-semantic-tokens t
+  "Whether to enable semantic tokens for tables and arrays."
   :type 'boolean
   :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "evenBetterToml.syntax.semanticTokens")
 
-(defcustom lsp-toml-formatter-crlf nil
-  "Use CRLF for line endings."
-  :type 'boolean
-  :group 'lsp-toml
-  :package-version '(lsp-mode . "8.0.1"))
-
-
-(lsp-register-custom-settings
- '(
-   ("evenBetterToml.taploConfig" lsp-toml-taplo-config)
-   ("evenBetterToml.taploConfigEnabled" lsp-toml-taplo-config-enabled t)
-
-   ("evenBetterToml.schema.enabled" lsp-toml-schema-enabled t)
-   ("evenBetterToml.schema.links" lsp-toml-schema-links t)
-   ("evenBetterToml.schema.repositoryEnabled" lsp-toml-schema-repository-enabled t)
-   ("evenBetterToml.schema.repositoryUrl" lsp-toml-schema-repository-url)
-   ("evenBetterToml.schema.associations" lsp-toml-schema-associations)
-
-   ("evenBetterToml.formatter.alignEntries" lsp-toml-formatter-align-entries t)
-   ("evenBetterToml.formatter.alignComments" lsp-toml-formatter-align-comments t)
-   ("evenBetterToml.formatter.arrayTrailingComma" lsp-toml-formatter-array-trailing-comma t)
-   ("evenBetterToml.formatter.arrayAutoExpand" lsp-toml-formatter-array-auto-expand t)
-   ("evenBetterToml.formatter.arrayAutoCollapse" lsp-toml-formatter-array-auto-collapse t)
-   ("evenBetterToml.formatter.compactArrays" lsp-toml-formatter-compact-arrays t)
-   ("evenBetterToml.formatter.compactInlineTables" lsp-toml-formatter-compact-inline-tables t)
-   ("evenBetterToml.formatter.compactEntries" lsp-toml-formatter-compact-entries t)
-   ("evenBetterToml.formatter.columnWidth" lsp-toml-formatter-column-width)
-   ("evenBetterToml.formatter.indentTables" lsp-toml-formatter-indent-tables t)
-   ("evenBetterToml.formatter.indentEntries" lsp-toml-formatter-indent-entries t)
-   ("evenBetterToml.formatter.indentString" lsp-toml-formatter-indent-string)
-   ("evenBetterToml.formatter.reorderKeys" lsp-toml-formatter-reorder-keys t)
-   ("evenBetterToml.formatter.allowedBlankLines" lsp-toml-formatter-allowed-blank-lines)
-   ("evenBetterToml.formatter.trailingNewline" lsp-toml-formatter-trailing-newline t)
-   ("evenBetterToml.formatter.crlf" lsp-toml-formatter-crlf t)))
-
-
-(defun lsp-toml--initialized (workspace)
-  (with-lsp-workspace workspace
-    (lsp--set-configuration (lsp-configuration-section "evenBetterToml"))
-    (lsp-notify "taplo/cachePath" `(:path ,lsp-toml-cache-path))))
 
 (defun lsp-toml--initialization-options ()
-  (list :configuration (ht-get (lsp-configuration-section "evenBetterToml") "evenBetterToml")))
+  "Initialization options for taplo."
+  (list :configurationSection "evenBetterToml"
+        :cachePath lsp-toml-cache-path))
 
-(defun lsp-toml--message-with-output (_workspace params)
+(defun lsp-toml--handle-message-with-output (_workspace params)
+  "Handle taplo/messageWithOutput notification with PARAMS."
   (funcall (pcase (ht-get params "kind")
              ("error" 'lsp--error)
              ("warn" 'lsp--warn)
@@ -242,14 +149,21 @@ as it is always stripped."
            "lsp-toml: %s"
            (ht-get params "message")))
 
+(defun lsp-toml--check-enabled (_file-name _mode)
+  "Check if the taplo language server should be enabled in this buffer."
+  (when (string= (lsp-buffer-language) "toml")
+    (make-directory lsp-toml-cache-path t)
+    t))
+
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection (lambda () (list lsp-toml-command "run")))
-  :activation-fn (lsp-activate-on "toml")
-  :initialized-fn #'lsp-toml--initialized
+  :new-connection (lsp-stdio-connection (lambda () (list lsp-toml-command "lsp" "stdio")))
+  :activation-fn #'lsp-toml--check-enabled
   :initialization-options #'lsp-toml--initialization-options
-  :notification-handlers (ht ("taplo/messageWithOutput" #'lsp-toml--message-with-output))
-  :server-id 'taplo-lsp
+  :notification-handlers (ht ("taplo/messageWithOutput" #'lsp-toml--handle-message-with-output)
+                             ("taplo/didChangeSchemaAssociation" #'ignore))
+  :multi-root t
+  :server-id 'taplo
   :priority -1))
 
 (lsp-consistency-check lsp-toml)
