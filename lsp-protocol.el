@@ -421,6 +421,12 @@ See `-let' for a description of the destructuring mechanism."
                (rust-analyzer:CommandLink (:title :command) (:arguments :tooltip))
                (rust-analyzer:CommandLinkGroup (:commands) (:title)))
 
+(defconst lsp/javascript-inlay-hint-kind-type-hint "Type")
+(defconst lsp/javascript-inlay-hint-kind-parameter-hint "Parameter")
+(defconst lsp/javascript-inlay-hint-kind-enum-hint "Enum")
+(lsp-interface (javascript:InlayHint (:text :position :kind) (:whitespaceBefore :whitespaceAfter))
+               (javascript:InlayHintsParams (:textDocument) (:range)))
+
 (lsp-interface (clojure-lsp:TestTreeParams (:uri :tree) nil)
                (clojure-lsp:TestTreeNode (:name :range :nameRange :kind) (:children)))
 
