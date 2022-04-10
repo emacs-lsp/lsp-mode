@@ -139,8 +139,8 @@ to Kotlin."
      (list :command "resolveMain"
            :arguments (vector (lsp--buffer-uri)))
      (lambda (mainInfo)
-       ;; TODO: range becomes null now.. whyy??? the other don't...
-       (-let [(&hash :mainClass main-class :projectRoot project-root :range range) mainInfo]
+       ;; range became nil when using -let, so using lsp-get for it below instead
+       (-let [(&hash :mainClass main-class :projectRoot project-root) mainInfo]
          (funcall callback
                   (list (lsp-make-code-lens :range (lsp-get mainInfo :range)
                                             :command
@@ -158,9 +158,6 @@ to Kotlin."
                                                         (lsp-kotlin-run-main main-class project-root t)))))
                   lsp--cur-version)))
      :mode 'tick))
-
-;; TODO: best way to set local lens backend?
-(setq lsp-lens-backends (cl-pushnew #'lsp-kotlin-lens-backend lsp-lens-backends))
 
 
 (lsp-dependency
@@ -187,7 +184,11 @@ to Kotlin."
                     (with-lsp-workspace workspace
                       (lsp--set-configuration (lsp-configuration-section "kotlin"))))
   :download-server-fn (lambda (_client callback error-callback _update?)
-                        (lsp-package-ensure 'kotlin-language-server callback error-callback))))
+                        (lsp-package-ensure 'kotlin-language-server callback error-callback))
+  :after-open-fn (lambda ()
+                   ;; set lens backends so they are available is lsp-lens-mode is activated
+                   ;; backend does not support lenses, and block our other ones from showing. When backend support lenses again, we can use cl-pushnew to add it to lsp-lens-backends instead of overwriting
+                   (setq-local lsp-lens-backends (list #'lsp-kotlin-lens-backend)))))
 
 (lsp-consistency-check lsp-kotlin)
 
