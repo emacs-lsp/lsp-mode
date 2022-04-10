@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'cl-lib)
 
 (defgroup lsp-kotlin nil
   "LSP support for Kotlin, using KotlinLanguageServer."
@@ -121,6 +122,46 @@ to Kotlin."
                                       "kotlin-language-server.bat"
                                     "kotlin-language-server"))
   "The path to store the language server at if necessary.")
+
+
+;; Debug and running
+(defun lsp-kotlin-run-main (main-class project-root debug?)
+  (require 'dap-kotlin)
+  (dap-debug (list :type "kotlin"
+                   :request "launch"
+                   :mainClass main-class
+                   :projectRoot project-root
+                   :noDebug (not debug?))))
+
+(defun lsp-kotlin-lens-backend (_modified? callback)
+  (lsp-request-async
+     "workspace/executeCommand"
+     (list :command "resolveMain"
+           :arguments (vector (lsp--buffer-uri)))
+     (lambda (mainInfo)
+       ;; TODO: range becomes null now.. whyy??? the other don't...
+       (-let [(&hash :mainClass main-class :projectRoot project-root :range range) mainInfo]
+         (funcall callback
+                  (list (lsp-make-code-lens :range (lsp-get mainInfo :range)
+                                            :command
+                                            (lsp-make-command
+                                             :title "Run"
+                                             :command (lambda ()
+                                                        (interactive)
+                                                        (lsp-kotlin-run-main main-class project-root nil))))
+                        (lsp-make-code-lens :range (lsp-get mainInfo :range)
+                                            :command
+                                            (lsp-make-command
+                                             :title "Debug"
+                                             :command (lambda ()
+                                                        (interactive)
+                                                        (lsp-kotlin-run-main main-class project-root t)))))
+                  lsp--cur-version)))
+     :mode 'tick))
+
+;; TODO: best way to set local lens backend?
+(setq lsp-lens-backends (cl-pushnew #'lsp-kotlin-lens-backend lsp-lens-backends))
+
 
 (lsp-dependency
  'kotlin-language-server
