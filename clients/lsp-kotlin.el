@@ -134,7 +134,9 @@ to Kotlin."
                    :noDebug (not debug?))))
 
 (defun lsp-kotlin-lens-backend (_modified? callback)
-  (lsp-request-async
+  ;; Only makes sense when a debug adapter path to be used are supplied
+  (when (not (string= "" lsp-kotlin-debug-adapter-path))
+    (lsp-request-async
      "workspace/executeCommand"
      (list :command "resolveMain"
            :arguments (vector (lsp--buffer-uri)))
@@ -157,7 +159,7 @@ to Kotlin."
                                                         (interactive)
                                                         (lsp-kotlin-run-main main-class project-root t)))))
                   lsp--cur-version)))
-     :mode 'tick))
+     :mode 'tick)))
 
 
 (lsp-dependency
