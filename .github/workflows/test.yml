@@ -68,8 +68,10 @@ jobs:
               run: "clangd-9 --version"
 
             - uses: actions/checkout@v2
-
+              
+            - name: Grant execution permission
+              if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+              run: chmod -R 777 ./
+              
             - name: Run tests
-              run: |
-                chmod -R 777 ./
-                make ci
+              run: make ci
