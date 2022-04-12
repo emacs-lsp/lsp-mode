@@ -26,9 +26,6 @@ TEST-FILES := test/test-helper.el $(shell ls test/lsp-*.el)
 LOAD-FILE = -l $(test-file)
 LOAD-TEST-FILES := $(foreach test-file, $(TEST-FILES), $(LOAD-FILE))
 
-all:
-	$(CASK) build
-
 build:
 	$(EASK) package
 	$(EASK) install
@@ -51,11 +48,11 @@ test-downstream-pkgs:
 
 checkdoc:
 	@echo "Run checkdoc..."
-    $(EASK) checkdoc
+	$(EASK) checkdoc
 
 lint:
 	@echo "package linting..."
-    $(EASK) lint
+	$(EASK) lint
 
 test:
 	@echo "Testing..."
@@ -76,4 +73,4 @@ clean:
 	rm -rf test/fixtures/SampleCppProject/build test/fixtures/SampleCppProject/.cache
 
 
-.PHONY: all build ci compile checkdoc lint test docs local-webpage clean
+.PHONY: build ci compile checkdoc lint test docs local-webpage clean
