@@ -43,7 +43,8 @@ prepare_cpp_project:
 
 test-downstream-pkgs:
 	@echo "Test downstream packages..."
-	mv ./dist ./test/downstream/dist/
+	mv ./dist/* ./test/downstream/
+	tree
 	cd ./test/downstream
 	$(EASK) install
 	$(EASK) install-deps --dev
