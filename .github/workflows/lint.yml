@@ -16,11 +16,6 @@ jobs:
         with:
           version: 27.1
 
-      - uses: actions/setup-python@v2
-        with:
-          python-version: "3.6"
-          architecture: "x64"
-
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
