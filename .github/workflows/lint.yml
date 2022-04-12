@@ -21,12 +21,16 @@ jobs:
           python-version: "3.6"
           architecture: "x64"
 
-      - uses: conao3/setup-cask@master
+      - uses: actions/setup-node@v2
         with:
-          version: 0.8.4
+          node-version: '14'
+
+      - uses: emacs-eask/setup-eask@master
+        with:
+          version: '0.4.25'
 
       - name: Resolve dependency
-        run: cask install
+        run: eask install-deps --dev
 
       - name: Run Indentation Lint
         run: |
