@@ -3,4 +3,4 @@
 cd $(dirname "$0")
 
 eask install
-eask install-deps --dev
+eask install-deps --dev --allow-error
