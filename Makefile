@@ -3,23 +3,10 @@ SHELL := /usr/bin/env bash
 EMACS ?= emacs
 EASK ?= eask
 
-INIT="(progn \
-  (require 'package) \
-  (push '(\"melpa\" . \"https://melpa.org/packages/\") package-archives) \
-  (package-initialize) \
-  (package-refresh-contents))"
-
-LINT="(progn \
-		(unless (package-installed-p 'package-lint) \
-		  (package-install 'package-lint)) \
-		(require 'package-lint) \
-		(package-lint-batch-and-exit))"
-
 LSP-FILES := lsp-protocol.el lsp-mode.el lsp.el lsp-completion.el \
 		lsp-diagnostics.el lsp-lens.el lsp-modeline.el \
 		$(wildcard clients/*.el)
 
-WIN-BOOTSTRAP=test/windows-bootstrap.el
 TEST-PKGS=test/test-packages.el
 
 TEST-FILES := test/test-helper.el $(shell ls test/lsp-*.el)
@@ -57,7 +44,7 @@ lint:
 test:
 	@echo "Testing..."
 	$(EASK) install-deps --dev
-	#$(EASK) exec ert-runner -L . -L clients	$(LOAD-TEST-FILES) -t '!no-win' -t '!org'
+	$(EASK) exec ert-runner -L . -L clients	$(LOAD-TEST-FILES) -t '!no-win' -t '!org'
 
 docs:
 	make -C docs/ generate
