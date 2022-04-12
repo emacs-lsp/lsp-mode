@@ -424,6 +424,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "nim",
+    "full-name": "nimlangserver",
+    "server-name": "nimlangserver",
+    "server-url": "https://github.com/nim-lang/langserver",
+    "installation": "nimble install nimlangserver",
+    "debugger": "Not available"
+  },
+  {
     "name": "ocaml-lsp-server",
     "full-name": "OCaml",
     "server-name": "ocaml-lsp-server",
