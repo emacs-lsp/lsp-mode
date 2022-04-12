@@ -24,13 +24,6 @@ jobs:
                     # - snapshot
 
         steps:
-            - uses: actions/checkout@v2
-
-            - uses: actions/setup-python@v2
-              with:
-                  python-version: "3.6"
-                  architecture: "x64"
-
             - uses: purcell/setup-emacs@master
               if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
               with:
@@ -74,6 +67,7 @@ jobs:
               if: runner.os == 'Linux'
               run: "clangd-9 --version"
 
+            - uses: actions/checkout@v2
+
             - name: Run tests
-              run:
-                make ci
+              run: make ci
