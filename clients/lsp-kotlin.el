@@ -134,8 +134,7 @@ to Kotlin."
                    :noDebug (not debug?))))
 
 (defun lsp-kotlin-lens-backend (_modified? callback)
-  ;; Only makes sense when a debug adapter path to be used are supplied
-  (when (not (string= "" lsp-kotlin-debug-adapter-path))
+  (when lsp-kotlin-debug-adapter-enabled
     (lsp-request-async
      "workspace/executeCommand"
      (list :command "resolveMain"
