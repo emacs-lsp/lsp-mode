@@ -2,9 +2,15 @@
 
 ;; FIXME: prefer Emacs 28's `lisp-data-mode' over `emacs-lisp-mode'
 
-(source gnu)
-(source melpa)
+(package "lsp-mode"
+         "8.0.1"
+         "LSP mode")
+
 (package-file "lsp-mode.el")
+
+(source "gnu")
+(source "melpa")
+
 (files
  "lsp-protocol.el"
  "lsp-mode.el"
@@ -18,6 +24,8 @@
  "lsp-modeline.el"
  "lsp-semantic-tokens.el"
  "clients/*.el")
+
+(depends-on "emacs" "26.3")
 
 (development
  (depends-on "flycheck")
