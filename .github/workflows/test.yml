@@ -70,4 +70,6 @@ jobs:
             - uses: actions/checkout@v2
 
             - name: Run tests
-              run: make ci
+              run: |
+                chmod -R 777 ./
+                make ci
