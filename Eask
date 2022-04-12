@@ -8,6 +8,8 @@
 
 (package-file "lsp-mode.el")
 
+(load-paths "./test/")
+
 (source "gnu")
 (source "melpa")
 
@@ -25,7 +27,13 @@
  "lsp-semantic-tokens.el"
  "clients/*.el")
 
-(depends-on "emacs" "26.3")
+(depends-on "emacs" "26.1")
+(depends-on "dash")
+(depends-on "f")
+(depends-on "ht")
+(depends-on "spinner")
+(depends-on "markdown-mode")
+(depends-on "lv")
 
 (development
  (depends-on "flycheck")
