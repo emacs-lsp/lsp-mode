@@ -1,7 +1,3 @@
-;; -*- mode: emacs-lisp -*-
-
-;; FIXME: prefer Emacs 28's `lisp-data-mode' over `emacs-lisp-mode'
-
 (package "lsp-mode"
          "8.0.1"
          "LSP mode")
@@ -37,7 +33,7 @@
 
 (development
  (depends-on "flycheck")
- (depends-on "ert-runner")
+ ;;(depends-on "ert-runner")
  (depends-on "espuds")
  (depends-on "ecukes")
  (depends-on "undercover")

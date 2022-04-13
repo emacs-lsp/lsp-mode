@@ -37,8 +37,8 @@ lint:
 
 test:
 	@echo "Testing..."
-	$(EASK) install-deps --dev
-	$(EASK) load *.el clients/*.el $(TEST-FILES) ./test/entry.el
+	$(EASK) install --dev
+	$(EASK) ert $(TEST-FILES)
 
 docs:
 	make -C docs/ generate
