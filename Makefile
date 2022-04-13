@@ -38,7 +38,7 @@ lint:
 test:
 	@echo "Testing..."
 	$(EASK) install-deps --dev
-	$(EASK) ert $(LOAD-TEST-FILES)
+	$(EASK) ert $(TEST-FILES)
 
 docs:
 	make -C docs/ generate
