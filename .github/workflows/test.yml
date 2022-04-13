@@ -40,7 +40,7 @@ jobs:
 
             - uses: emacs-eask/setup-eask@master
               with:
-                  version: '0.4.26'
+                  version: '0.4.28'
 
             - name: Setup cmake
               if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
