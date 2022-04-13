@@ -416,7 +416,7 @@ See `-let' for a description of the destructuring mechanism."
                (rust-analyzer:RelatedTestsParams (:textDocument :position) nil)
                (rust-analyzer:RelatedTests (:runnable) nil)
                (rust-analyzer:InlayHint (:position :label :kind :paddingLeft :paddingRight) nil)
-               (rust-analyzer:InlayHintsParams (:textDocument) nil)
+               (rust-analyzer:InlayHintsParams (:textDocument :range) nil)
                (rust-analyzer:SsrParams (:query :parseOnly) nil)
                (rust-analyzer:CommandLink (:title :command) (:arguments :tooltip))
                (rust-analyzer:CommandLinkGroup (:commands) (:title)))
