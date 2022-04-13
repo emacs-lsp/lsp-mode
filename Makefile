@@ -32,16 +32,13 @@ checkdoc:
 	$(EASK) checkdoc
 
 lint:
-	@echo "package linting..."
+	@echo "Package linting..."
 	$(EASK) lint
 
 test:
 	@echo "Testing..."
 	$(EASK) install-deps --dev
-	@$(EMACS) -Q --batch \
-		-L . -L clients \
-		$(LOAD-TEST-FILES) \
-		--eval "(eask-start (eask-pkg-init) (ert-run-tests-batch-and-exit '(and (not (tag no-win)) (not (tag org)))))"
+	$(EASK) load *.el clients/*.el $(TEST-FILES) ./test/entry.el
 
 docs:
 	make -C docs/ generate
