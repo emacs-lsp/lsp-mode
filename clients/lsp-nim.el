@@ -32,19 +32,48 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/PMunch/nimlsp"))
 
-(defcustom-lsp lsp-nim-nimsuggest-mapping []
-  "The charset to use by the Ada Language server. Defaults to 'UTF-8'."
-  :type 'plist
+(defcustom-lsp lsp-nim-project-mapping []
+  "Nimsuggest project mapping. Sample value
+
+[(:projectFile \"root.nim\"
+  :fileRegex \".*\\.nim\")]"
+
+  :type '(lsp-repeatable-vector plist)
   :group 'lsp-nim
-  :package-version '(lsp-mode . "6.2")
-  :lsp-path "nim.rootConfig")
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "nim.projectMapping")
+
+(defcustom-lsp lsp-nim-timeout 120000
+  "Timeout for restarting `nimsuggest'"
+  :type 'number
+  :group 'lsp-nim
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "nim.timeout")
+
+(defcustom-lsp lsp-nim-nimsuggest-path "nimsuggest"
+  "Path to `nimsuggest' to use."
+  :type 'number
+  :group 'lsp-nim
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "nim.nimsuggestPath")
+
+(defcustom lsp-nim-langserver "nimlangserver"
+  "Path to `nimlangserver'"
+  :type 'number
+  :group 'lsp-nim
+  :package-version '(lsp-mode . "8.0.1"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection "nimlsp")
-                  :major-modes '(nim-mode)
+                  :activation-fn (lsp-activate-on "nim")
                   :priority -1
                   :server-id 'nimls))
 
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (lambda () lsp-nim-langserver))
+                  :activation-fn (lsp-activate-on "nim")
+                  :server-id 'nimlangserver))
 
 (lsp-consistency-check lsp-nim)
 

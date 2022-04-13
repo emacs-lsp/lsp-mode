@@ -121,7 +121,7 @@ so please submit corrections accordingly.
 
 ## Support the project
 
-The `emacs-lsp` organization has more than **20.000 lines of code**, to keep all of this working,
+The `emacs-lsp` organization has more than **20,000 lines of code**, to keep all of this working,
 we need to implement new features and help the community on a lot of issues.
 
 You can help us keep going and improving it by **[supporting the project](https://github.com/sponsors/emacs-lsp)**
