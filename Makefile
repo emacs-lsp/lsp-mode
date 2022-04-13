@@ -41,7 +41,7 @@ test:
 	@$(EMACS) -Q --batch \
 		-L . -L clients \
 		$(LOAD-TEST-FILES) \
-		--eval "(ert-run-tests-batch-and-exit '(and (not (tag no-win)) (not (tag org))))"
+		--eval "(eask-start (eask-pkg-init) (ert-run-tests-batch-and-exit '(and (not (tag no-win)) (not (tag org)))))"
 
 docs:
 	make -C docs/ generate
