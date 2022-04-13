@@ -8,7 +8,7 @@
 
 (package-file "lsp-mode.el")
 
-(load-paths "./test/")
+(load-paths "./" "./clients/" "./test/")
 
 (source "gnu")
 (source "melpa")

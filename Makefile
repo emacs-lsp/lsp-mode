@@ -3,12 +3,6 @@ SHELL := /usr/bin/env bash
 EMACS ?= emacs
 EASK ?= eask
 
-LSP-FILES := lsp-protocol.el lsp-mode.el lsp.el lsp-completion.el \
-		lsp-diagnostics.el lsp-lens.el lsp-modeline.el \
-		$(wildcard clients/*.el)
-
-TEST-PKGS=test/test-packages.el
-
 TEST-FILES := test/test-helper.el $(shell ls test/lsp-*.el)
 LOAD-FILE = -l $(test-file)
 LOAD-TEST-FILES := $(foreach test-file, $(TEST-FILES), $(LOAD-FILE))
