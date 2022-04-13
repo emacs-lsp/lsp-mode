@@ -38,7 +38,7 @@ lint:
 test:
 	@echo "Testing..."
 	$(EASK) install-deps --dev
-	$(EASK) exec ert-runner -L . -L clients	$(LOAD-TEST-FILES) -t '!no-win' -t '!org'
+	$(EASK) ert
 
 docs:
 	make -C docs/ generate
