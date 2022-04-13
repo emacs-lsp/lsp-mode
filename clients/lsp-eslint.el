@@ -54,11 +54,13 @@
   "Command to start eslint server."
   :risky t
   :type '(repeat string)
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-enable t
   "Controls whether eslint is enabled for JavaScript files or not."
   :type 'boolean
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-package-manager "npm"
@@ -72,37 +74,44 @@
 (defcustom lsp-eslint-format t
   "Whether to perform format."
   :type 'boolean
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-node-path nil
   "A path added to NODE_PATH when resolving the eslint module."
   :type '(repeat string)
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-node "node"
   "Path to nodejs."
   :type 'file
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-eslint-options nil
   "The eslint options object to provide args normally passed to
   eslint when executed from a command line (see
   http://eslint.org/docs/developer-guide/nodejs-api#cliengine)."
-  :type 'alist)
+  :type 'alist
+  :group 'lsp-eslint)
 
 (defcustom lsp-eslint-trace-server "off"
   "Traces the communication between VSCode and the eslint linter service."
-  :type 'string)
+  :type 'string
+  :group 'lsp-eslint)
 
 (defcustom lsp-eslint-run "onType"
   "Run the linter on save (onSave) or on type (onType)"
   :type '(choice (const :tag "onSave" "onSave")
                  (const :tag "onType" "onType"))
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-auto-fix-on-save nil
   "Turns auto fix on save on or off."
   :type 'boolean
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-fix-all-problem-type "all"
@@ -112,47 +121,56 @@ source.fixAll code action."
           (const "all")
           (const "problems")
           string)
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "7.0.1"))
 
 (defcustom lsp-eslint-quiet nil
   "Turns on quiet mode, which ignores warnings."
   :type 'boolean
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-working-directories []
   ""
   :type 'lsp-string-vector
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-validate '("svelte")
   "An array of language ids which should always be validated by eslint."
   :type '(repeat string)
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-eslint-provide-lint-task nil
   "Controls whether a task for linting the whole workspace will be available."
   :type 'boolean
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-lint-task-enable nil
   "Controls whether a task for linting the whole workspace will be available."
   :type 'boolean
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-lint-task-options "."
   "Command line options applied when running the task for linting the whole
 workspace (see https://eslint.org/docs/user-guide/command-line-interface)."
   :type 'string
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-runtime nil
   "The location of the node binary to run ESLint under."
   :type '(repeat string)
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-code-action-disable-rule-comment t
   "Controls whether code actions to add a rule-disabling comment should be shown."
   :type 'bool
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-code-action-disable-rule-comment-location "separateLine"
@@ -164,17 +182,20 @@ Accepts the following values:
   :type '(choice
           (const "separateLine")
           (const "sameLine"))
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-eslint-code-action-show-documentation t
   "Controls whether code actions to show documentation for an eslint rule should
 be shown."
   :type 'bool
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-eslint-warn-on-ignored-files nil
   "Controls whether a warning should be emitted when a file is ignored."
   :type 'bool
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-eslint-rules-customizations []
@@ -201,24 +222,28 @@ The value is a vector of alists, with each alist containing the following keys:
                                       (const "upgrade")
                                       (const "downgrade")
                                       (const "default"))))))
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-eslint-experimental-incremental-sync t
   "Controls whether the new incremental text document synchronization should
 be used."
   :type 'boolean
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-save-library-choices t
   "Controls whether to remember choices made to permit or deny ESLint libraries
 from running."
   :type 'boolean
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-eslint-library-choices-file (expand-file-name (locate-user-emacs-file ".lsp-eslint-choices"))
   "The file where choices to permit or deny ESLint libraries from running is
 stored."
   :type 'string
+  :group 'lsp-eslint
   :package-version '(lsp-mode . "8.0.0"))
 
 (defun lsp--find-eslint ()
