@@ -173,7 +173,8 @@ This will help minimize popup flickering issue in `company-mode'."
                 (format " (%s)" kind-name))))))
 
 (defun lsp-completion--looking-back-trigger-characterp (trigger-characters)
-  "Return trigger character if text before point match any of the TRIGGER-CHARACTERS."
+  "Return trigger character if text before point match any of the
+TRIGGER-CHARACTERS."
   (unless (= (point) (point-at-bol))
     (seq-some
      (lambda (trigger-char)
