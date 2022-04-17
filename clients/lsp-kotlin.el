@@ -127,13 +127,18 @@ to Kotlin."
  `(:system ,lsp-clients-kotlin-server-executable)
  `(:download :url lsp-kotlin-server-download-url
              :decompress :zip
-             :store-path ,(f-join lsp-server-install-dir "kotlin" "kotlin-language-server")
-             :binary-path lsp-kotlin--language-server-path
+             :store-path ,(f-join lsp-server-install-dir "kotlin" "kotlin-language-server.zip")
+             :binary-path lsp-clients-kotlin-server-executable
              :set-executable? t))
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection lsp-clients-kotlin-server-executable)
+  :new-connection (lsp-stdio-connection (lambda ()
+                                          `(,(or (when (f-exists? lsp-kotlin--language-server-path)
+                                                   lsp-kotlin--language-server-path)
+                                                 (or (executable-find lsp-clients-kotlin-server-executable)
+                                                     (lsp-package-path 'kotlin-language-server))
+                                                 "kotlin-language-server"))))
   :major-modes '(kotlin-mode)
   :priority -1
   :server-id 'kotlin-ls
