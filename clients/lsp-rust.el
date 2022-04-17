@@ -934,9 +934,12 @@ meaning."
   (if (and (lsp-rust-analyzer-initialized?)
            (eq buffer (current-buffer)))
       (lsp-request-async
-       "experimental/inlayHints"
+       "textDocument/inlayHint"
        (lsp-make-rust-analyzer-inlay-hints-params
-        :text-document (lsp--text-document-identifier))
+        :text-document (lsp--text-document-identifier)
+        :range (if (use-region-p)
+                   (lsp--region-to-range (region-beginning) (region-end))
+                 (lsp--region-to-range (point-min) (point-max))))
        (lambda (res)
          (remove-overlays (point-min) (point-max) 'lsp-rust-analyzer-inlay-hint t)
          (dolist (hint res)
