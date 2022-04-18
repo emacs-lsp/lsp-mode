@@ -261,7 +261,9 @@ Will invoke CALLBACK or ERROR-CALLBACK based on result. Will update if UPDATE? i
                   :notification-handlers (ht ("fsharp/notifyCancel" #'ignore)
                                              ("fsharp/notifyWorkspace" #'ignore)
                                              ("fsharp/fileParsed" #'ignore)
-                                             ("fsharp/notifyWorkspacePeek" #'ignore))
+                                             ("fsharp/notifyWorkspacePeek" #'ignore)
+                                             ("fsharp/documentAnalyzed" #'ignore)
+                                             ("fsharp/testDetected" #'ignore))
                   :initialization-options 'lsp-fsharp--make-init-options
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
