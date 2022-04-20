@@ -286,7 +286,7 @@ start the program to debug. Debug template is a template for such configuration
 which will be populated by the user or by `dap-mode`. There are two ways to
 manage debug configuration - using `emacs lisp` via `dap-debug-edit-template`
 and `dap-register-debug-template`. The second way is using `launch.json`. Put it
-in project root and `dap-mode` will pick it up.
+in project root under a `.vscode` folder and `dap-mode` will pick it up.
 
 ``` json
 {
