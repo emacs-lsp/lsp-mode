@@ -1121,7 +1121,7 @@ https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensio
 If NEW-WINDOW (interactively the prefix argument) is non-nil,
 open in a new window."
   (interactive "P")
-  (-if-let (workspace (lsp-find-workspace 'rust-analyzer))
+  (-if-let (workspace (lsp-find-workspace 'rust-analyzer (buffer-file-name)))
       (-if-let* ((response (with-lsp-workspace workspace
                              (lsp-send-request (lsp-make-request
                                                 "experimental/openCargoToml"
