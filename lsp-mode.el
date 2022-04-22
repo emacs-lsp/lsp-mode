@@ -3698,12 +3698,24 @@ in that particular folder."
        (lsp:text-document-sync-options-save?)
        (lsp:text-document-save-registration-options-include-text?)))
 
-(defun lsp--send-will-rename-files-p ()
-  "Return whether willRenameFiles request should be sent to the server."
-  (-> (lsp--server-capabilities)
-      (lsp:server-capabilities-workspace?)
-      (lsp:workspace-server-capabilities-file-operations?)
-      (lsp:workspace-file-operations-will-rename?)))
+(defun lsp--send-will-rename-files-p (path)
+  "Return whether willRenameFiles request should be sent to the server.
+If any filters, checks if it applies for PATH."
+  (let* ((will-rename (-> (lsp--server-capabilities)
+                          (lsp:server-capabilities-workspace?)
+                          (lsp:workspace-server-capabilities-file-operations?)
+                          (lsp:workspace-file-operations-will-rename?)))
+         (filters (seq-into (lsp:file-operation-registration-options-filters will-rename) 'list)))
+    (and will-rename
+         (or (seq-empty-p filters)
+             (-any? (-lambda ((&FileOperationFilter :scheme? :pattern (&FileOperationPattern :glob)))
+                      (-let [regexes (lsp-glob-to-regexps glob)]
+                        (and (or (not scheme?)
+                                 (string-prefix-p scheme? (lsp--path-to-uri path)))
+                             (-any? (lambda (re)
+                                      (string-match re path))
+                                    regexes))))
+                    filters)))))
 
 (defun lsp--send-did-rename-files-p ()
   "Return whether didRenameFiles notification should be sent to the server."
@@ -6043,7 +6055,7 @@ Applies OLD-FUNC with OLD-NAME, NEW-NAME and OK-IF-ALREADY-EXISTS?.
 This advice sends workspace/willRenameFiles before renaming file
 to check if server wants to apply any workspaceEdits after renamed."
   (if (and lsp-apply-edits-after-file-operations
-           (lsp--send-will-rename-files-p))
+           (lsp--send-will-rename-files-p old-name))
       (let ((params (lsp-make-rename-files-params
                      :files (vector (lsp-make-file-rename
                                      :oldUri (lsp--path-to-uri old-name)
