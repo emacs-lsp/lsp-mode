@@ -841,6 +841,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-apply-edits-after-file-operations" class="md-nav__link">
+    lsp-apply-edits-after-file-operations
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-auto-configure" class="md-nav__link">
     lsp-auto-configure
   </a>
@@ -3559,6 +3566,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-apply-edits-after-file-operations" class="md-nav__link">
+    lsp-apply-edits-after-file-operations
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-auto-configure" class="md-nav__link">
     lsp-auto-configure
   </a>
@@ -4207,6 +4221,14 @@ for a new workspace.</p>
 <p><em>Type:</em> <code>hook</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>List of functions to be called after a Language Server has been uninitialized.</p>
+<hr />
+<h3 id="lsp-apply-edits-after-file-operations"><code>lsp-apply-edits-after-file-operations</code><a class="headerlink" href="#lsp-apply-edits-after-file-operations" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Whether to apply edits returned by server after file operations if any.
+Applicable only if server supports workspace.fileOperations for operations:
+<code>workspace/willRenameFiles</code>, <code>workspace/willCreateFiles</code> and
+<code>workspace/willDeleteFiles</code>.</p>
 <hr />
 <h3 id="lsp-auto-configure"><code>lsp-auto-configure</code><a class="headerlink" href="#lsp-auto-configure" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
