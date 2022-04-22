@@ -522,6 +522,14 @@ It contains the operation source."
   :group 'lsp-mode
   :package-version '(lsp-mode . "8.0.0"))
 
+(defcustom lsp-apply-edits-after-file-operations t
+  "Whether to apply edits returned by server after file operations if any.
+Applicable only if server supports workspace.fileOperations for operations:
+`workspace/willRenameFiles', `workspace/willCreateFiles' and
+`workspace/willDeleteFiles'."
+  :group 'lsp-mode
+  :type 'boolean)
+
 (defcustom lsp-modeline-code-actions-enable t
   "Whether to show code actions on modeline."
   :type 'boolean
@@ -3122,7 +3130,8 @@ synchronously.
 
 (cl-defun lsp-request (method params &key no-wait no-merge)
   "Send request METHOD with PARAMS.
-If NO-MERGE is non-nil, don't merge the results but return alist workspace->result.
+If NO-MERGE is non-nil, don't merge the results but return alist
+workspace->result.
 If NO-WAIT is non-nil send the request as notification."
   (if no-wait
       (lsp-notify method params)
@@ -3460,8 +3469,8 @@ disappearing, unset all the variables related to it."
                    ,@(when lsp-lens-enable '((codeLens . ((refreshSupport . t)))))
                    (fileOperations . ((didCreate . :json-false)
                                       (willCreate . :json-false)
-                                      (didRename . :json-false)
-                                      (willRename . :json-false)
+                                      (didRename . t)
+                                      (willRename . t)
                                       (didDelete . :json-false)
                                       (willDelete . :json-false)))))
      (textDocument . ((declaration . ((linkSupport . t)))
@@ -3688,6 +3697,20 @@ in that particular folder."
        (lsp:server-capabilities-text-document-sync?)
        (lsp:text-document-sync-options-save?)
        (lsp:text-document-save-registration-options-include-text?)))
+
+(defun lsp--send-will-rename-files-p ()
+  "Return whether willRenameFiles request should be sent to the server."
+  (-> (lsp--server-capabilities)
+      (lsp:server-capabilities-workspace?)
+      (lsp:workspace-server-capabilities-file-operations?)
+      (lsp:workspace-file-operations-will-rename?)))
+
+(defun lsp--send-did-rename-files-p ()
+  "Return whether didRenameFiles notification should be sent to the server."
+  (-> (lsp--server-capabilities)
+      (lsp:server-capabilities-workspace?)
+      (lsp:workspace-server-capabilities-file-operations?)
+      (lsp:workspace-file-operations-did-rename?)))
 
 (declare-function project-roots "ext:project" (project) t)
 (declare-function project-root "ext:project" (project) t)
@@ -6012,6 +6035,27 @@ relied upon."
                                     :position ,(lsp--cur-position)
                                     :newName ,newname))))
     (lsp--apply-workspace-edit edits 'rename)))
+
+(defun lsp--on-rename-file (old-func old-name new-name &optional ok-if-already-exists?)
+  "Advice around function `rename-file'.
+Applies OLD-FUNC with OLD-NAME, NEW-NAME and OK-IF-ALREADY-EXISTS?.
+
+This advice sends workspace/willRenameFiles before renaming file
+to check if server wants to apply any workspaceEdits after renamed."
+  (if (and lsp-apply-edits-after-file-operations
+           (lsp--send-will-rename-files-p))
+      (let ((params (lsp-make-rename-files-params
+                     :files (vector (lsp-make-file-rename
+                                     :oldUri (lsp--path-to-uri old-name)
+                                     :newUri (lsp--path-to-uri new-name))))))
+        (when-let ((edits (lsp-request "workspace/willRenameFiles" params)))
+          (lsp--apply-workspace-edit edits 'rename-file)
+          (funcall old-func old-name new-name ok-if-already-exists?)
+          (when (lsp--send-did-rename-files-p)
+            (lsp-notify "workspace/didRenameFiles" params))))
+    (funcall old-func old-name new-name ok-if-already-exists?)))
+
+(advice-add 'rename-file :around #'lsp--on-rename-file)
 
 (defun lsp-show-xrefs (xrefs display-action references?)
   (unless (region-active-p) (push-mark nil t))
