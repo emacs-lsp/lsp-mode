@@ -12,14 +12,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/manual-language-docs/lsp-org/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/manual-language-docs/lsp-gopls/">
       
       <link rel="icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.0">
     
     
       
-        <title>Literate programming using LSP and org-mode(alpha) - LSP Mode - LSP support for Emacs</title>
+        <title>Go (gopls) - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#literate-programming-using-lsp-and-org-modealpha" class="md-skip">
+        <a href="#go-gopls" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Literate programming using LSP and org-mode(alpha)
+              Go (gopls)
             
           </span>
         </div>
@@ -223,13 +223,15 @@
         
   
   
+    
+  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../../page/languages/" class="md-tabs__link">
+      <a href="../../page/languages/" class="md-tabs__link md-tabs__link--active">
         Languages
       </a>
     </li>
@@ -1036,12 +1038,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
       
       
       
@@ -1440,11 +1444,65 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../lsp-gopls/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Go (gopls)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Go (gopls)
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    Troubleshooting
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#working-with-nested-gomod-files" class="md-nav__link">
+    Working with nested go.mod files
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2882,44 +2940,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#demo" class="md-nav__link">
-    Demo
+  <a href="#troubleshooting" class="md-nav__link">
+    Troubleshooting
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#working-with-nested-gomod-files" class="md-nav__link">
+    Working with nested go.mod files
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#commands" class="md-nav__link">
-    Commands
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-works" class="md-nav__link">
-    What works
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#known-limitations" class="md-nav__link">
-    Known limitations
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-does-not-work" class="md-nav__link">
-    What does not work
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#whats-next" class="md-nav__link">
-    What's next
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2959,7 +2995,7 @@
 <!-- Edit button -->
 
 <a
-  href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/manual-language-docs/lsp-org.md"
+  href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/manual-language-docs/lsp-gopls.md"
   title="Edit this page"
   class="md-content__button md-icon"
 >
@@ -2978,57 +3014,36 @@
 
 
 <!-- Markdown content -->
-<h1 id="literate-programming-using-lsp-and-org-modealpha">Literate programming using LSP and org-mode(alpha)<a class="headerlink" href="#literate-programming-using-lsp-and-org-modealpha" title="Permanent link">#</a></h1>
-<p><code>lsp-mode</code> provides <strong>experimental</strong> support for running the language servers
-inside of <a href="https://orgmode.org/">org-mode</a> source blocks. <code>lsp-mode</code> is
-achieving this by obtaining the information about the source block from the
-source block header(language + <code>:tangle</code>) then translating the point to the LSP
-positions back and forth so the language server thinks that Emacs has opened the
-original file. In order that to work the files has to be present on the disk as
-well because the server expects to find them.</p>
-<p>Here it is a sample source block:</p>
-<div class="highlight"><pre><span></span><code>#+BEGIN_SRC python :tangle &quot;python.py&quot;
-print &quot;Hello!&quot;
-#+END_SRC
-</code></pre></div>
-<h2 id="demo">Demo<a class="headerlink" href="#demo" title="Permanent link">#</a></h2>
-<p><img alt="Demo" src="../../examples/org-mode.gif" /></p>
-<h2 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">#</a></h2>
+<h1 id="go-gopls">Go (gopls)<a class="headerlink" href="#go-gopls" title="Permanent link">#</a></h1>
+<p><code>lsp-mode</code> provides Go language support via the
+<a href="https://github.com/golang/tools/tree/master/gopls">gopls</a> language
+server. See
+<a href="https://github.com/golang/tools/tree/master/gopls#installation">upstream</a>
+for gopls installation instructions.</p>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">#</a></h2>
+<h3 id="working-with-nested-gomod-files">Working with nested go.mod files<a class="headerlink" href="#working-with-nested-gomod-files" title="Permanent link">#</a></h3>
+<p>If you encounter an error like one of these:</p>
 <ul>
-<li><code>lsp-org</code> start <code>lsp-mode</code> in source buffer. Must be executed with cursor
-  being source block.</li>
-<li><code>lsp-virtual-buffer-disconnect</code> turn off <code>lsp-mode</code>.</li>
+<li><code>errors loading workspace: You are working in a nested module.
+  Please open it as a separate workspace folder</code></li>
+<li><code>This file is in %s, which is a nested module in the %s module.
+  gopls currently requires one module per workspace folder. Please
+  open %s as a separate workspace folder</code></li>
 </ul>
-<h2 id="what-works">What works<a class="headerlink" href="#what-works" title="Permanent link">#</a></h2>
-<ul>
-<li><code>lsp-mode</code> core features (finding references, going to definitions, completion, lenses, highlighting, etc)</li>
-<li><code>company-mode</code></li>
-<li><code>flycheck</code></li>
-<li><code>lsp-treemacs-symbols</code></li>
-<li><code>lsp-treemacs-errors-list</code></li>
-</ul>
-<h2 id="known-limitations">Known limitations<a class="headerlink" href="#known-limitations" title="Permanent link">#</a></h2>
-<ul>
-<li>Incremental updates are performed by sending the whole
-  buffer each time(they simulate full updates).</li>
-<li>Deleting content that spans across the source block and the content of the org
-  document is not handled.</li>
-<li>Opening and editing the actual file from the disk might cause undefined
-  behaviour because the server expects file to be open only once.</li>
-</ul>
-<h2 id="what-does-not-work">What does not work<a class="headerlink" href="#what-does-not-work" title="Permanent link">#</a></h2>
-<ul>
-<li><code>dap-mode</code></li>
-<li><code>lsp-ui</code></li>
-<li><code>flymake</code>(?)</li>
-</ul>
-<h2 id="whats-next">What's next<a class="headerlink" href="#whats-next" title="Permanent link">#</a></h2>
-<ul>
-<li>Finishing the virtual buffers <code>API</code>.</li>
-<li><code>lsp-ui</code> support</li>
-<li><code>dap-mode</code> support</li>
-<li><code>markdown-mode</code> integration</li>
-</ul>
+<p>Then the problem is most likely because <code>lsp-mode</code> has not started
+gopls with the correct root directory. By default <code>lsp-mode</code> will pick
+the root of your whole Git repository (or whatever else Projectile
+turns up) for all language servers started inside the repo. However,
+if you have nested <code>go.mod</code> files, you need to have <code>lsp-mode</code> start
+<em>separate</em> instances of gopls for each nested <code>go.mod</code>, and use the
+appropriate one for each file. You can make this work by manually
+invoking <code>M-x lsp-workspace-folders-add</code> and adding each nested
+<code>go.mod</code> directory as a workspace folder. Then reloading LSP with <code>M-x
+lsp</code> in an affected file (or restarting Emacs) will cause the file to
+be re-associated with a gopls process running under the correct
+project workspace.</p>
+<p>See <a href="https://github.com/emacs-lsp/lsp-mode/issues/3473">#3473</a> for a
+bit more discussion of this particular issue.</p>
 
 <!-- Source file information -->
 
@@ -3051,6 +3066,41 @@ print &quot;Hello!&quot;
       </main>
       
         <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../../page/lsp-gdscript/" class="md-footer__link md-footer__link--prev" aria-label="Previous: GDScript" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              GDScript
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../../page/lsp-grammarly/" class="md-footer__link md-footer__link--next" aria-label="Next: Grammarly" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Grammarly
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
