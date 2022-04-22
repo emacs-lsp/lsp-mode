@@ -522,6 +522,14 @@ It contains the operation source."
   :group 'lsp-mode
   :package-version '(lsp-mode . "8.0.0"))
 
+(defcustom lsp-apply-edits-after-file-operations t
+  "Whether to apply edits returned by server after file operations if any.
+Applicable only if server supports workspace.fileOperations for operations:
+`workspace/willRenameFiles', `workspace/willCreateFiles' and
+`workspace/willDeleteFiles'."
+  :group 'lsp-mode
+  :type 'boolean)
+
 (defcustom lsp-modeline-code-actions-enable t
   "Whether to show code actions on modeline."
   :type 'boolean
@@ -6034,7 +6042,8 @@ Applies OLD-FUNC with OLD-NAME, NEW-NAME and OK-IF-ALREADY-EXISTS?.
 
 This advice sends workspace/willRenameFiles before renaming file
 to check if server wants to apply any workspaceEdits after renamed."
-  (if (lsp--send-will-rename-files-p)
+  (if (and lsp-apply-edits-after-file-operations
+           (lsp--send-will-rename-files-p))
       (let ((params (lsp-make-rename-files-params
                      :files (vector (lsp-make-file-rename
                                      :oldUri (lsp--path-to-uri old-name)
