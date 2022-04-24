@@ -3513,7 +3513,7 @@ disappearing, unset all the variables related to it."
                                                         (deprecatedSupport . t)
                                                         (resolveSupport
                                                          . ((properties . ["documentation"
-                                                                           "details"
+                                                                           "detail"
                                                                            "additionalTextEdits"
                                                                            "command"])))
                                                         (insertTextModeSupport . ((valueSet . [1 2])))))
