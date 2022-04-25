@@ -682,6 +682,11 @@ name (e.g. `data' variable passed as `data' parameter)."
   :type 'boolean
   :package-version '(lsp-mode . "8.0.1"))
 
+(defcustom lsp-javascript-update-inlay-hints-on-scroll t
+  "Update inlay hints immediately when scrolling or modifying window sizes."
+  :type 'boolean
+  :package-version '(lsp-mode . "8.0.1"))
+
 (lsp-register-custom-settings
  '(("javascript.autoClosingTags" lsp-javascript-auto-closing-tags t)
    ("javascript.implicitProjectConfig.checkJs" lsp-javascript-implicit-project-config-check-js t)
@@ -817,27 +822,48 @@ name (e.g. `data' variable passed as `data' parameter)."
       (lsp)
       (lsp--info "Renamed '%s' to '%s'." name (file-name-nondirectory new)))))
 
+(defun lsp-javascript-update-inlay-hints-scroll-function (window start)
+  (lsp-javascript--update-inlay-hints start (window-end window t)))
+
 (defun lsp-javascript-update-inlay-hints ()
+  (lsp-javascript--update-inlay-hints (window-start) (window-end nil t)))
+
+(defun lsp-javascript--update-inlay-hints (start end)
   (if (lsp-javascript-initialized?)
       (lsp-request-async
        "typescript/inlayHints"
        (lsp-make-javascript-inlay-hints-params
-        :text-document (lsp--text-document-identifier))
+        :text-document (lsp--text-document-identifier)
+        :range (lsp-make-range :start
+                               (lsp-point-to-position start)
+                               :end
+                               (lsp-point-to-position end)))
        (lambda (res)
          (lsp--remove-overlays 'lsp-javascript-inlay-hint)
-         (-each (gethash "inlayHints" res)
-           #'(lambda (hint)
-               (-let* (((&javascript:InlayHint :text :position :kind :whitespace-before? :whitespace-after?) hint)
-                       (pos (lsp--position-to-point position))
-                       (overlay (make-overlay pos pos nil 'front-advance 'end-advance)))
-                 (overlay-put overlay 'lsp-javascript-inlay-hint t)
-                 (overlay-put overlay 'before-string
-                              (format "%s%s%s"
-                                      (if (and whitespace-before? (not (string= kind lsp/javascript-inlay-hint-kind-type-hint))) " " "")
-                                      (propertize (lsp-javascript-format-inlay text kind)
-                                                  'font-lock-face (lsp-javascript-face-for-inlay kind))
-                                      (if whitespace-after? " " ""))))))))
-    :mode 'tick))
+         (let ((hints (lsp-get res :inlayHints)))
+           (unless (seq-empty-p hints)
+             (overlay-recenter
+              (-let* (([hint] hints)
+                      ((&javascript:InlayHint :position) hint))
+                (lsp--position-to-point position))))
+           (-each hints
+             (lambda (hint)
+                 (-let* (((&javascript:InlayHint :text :position :kind :whitespace-before? :whitespace-after?) hint)
+                         (pos (lsp--position-to-point position))
+                         (overlay (make-overlay pos pos nil 'front-advance 'end-advance)))
+                   (overlay-put overlay 'lsp-javascript-inlay-hint t)
+                   (overlay-put overlay 'before-string
+                                (format "%s%s%s"
+                                        (if (and whitespace-before? (not (string= kind lsp/javascript-inlay-hint-kind-type-hint))) " " "")
+                                        (propertize (lsp-javascript-format-inlay text kind)
+                                                    'font-lock-face (lsp-javascript-face-for-inlay kind))
+                                        (if whitespace-after? " " ""))))))))
+       :mode 'tick)))
+
+(defun lsp-javascript-column-at-pos (pos)
+  (save-excursion
+    (goto-char pos)
+    (current-column)))
 
 (defun lsp-javascript-format-inlay (text kind)
   (cond
@@ -862,10 +888,14 @@ name (e.g. `data' variable passed as `data' parameter)."
   (cond
    (lsp-javascript-inlay-hints-mode
     (lsp-javascript-update-inlay-hints)
-    (add-hook 'lsp-on-idle-hook #'lsp-javascript-update-inlay-hints nil t))
+    (add-hook 'lsp-on-idle-hook #'lsp-javascript-update-inlay-hints nil t)
+    (when lsp-javascript-update-inlay-hints-on-scroll
+      (add-to-list (make-local-variable 'window-scroll-functions) #'lsp-javascript-update-inlay-hints-scroll-function)))
    (t
     (lsp--remove-overlays 'lsp-javascript-inlay-hint)
-    (remove-hook 'lsp-on-idle-hook #'lsp-javascript-update-inlay-hints t))))
+    (remove-hook 'lsp-on-idle-hook #'lsp-javascript-update-inlay-hints t)
+    (when lsp-javascript-update-inlay-hints-on-scroll
+      (setf window-scroll-functions (delete #'lsp-javascript-update-inlay-hints-scroll-function window-scroll-functions))))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
