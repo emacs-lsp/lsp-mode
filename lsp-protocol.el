@@ -425,7 +425,8 @@ See `-let' for a description of the destructuring mechanism."
 (defconst lsp/javascript-inlay-hint-kind-parameter-hint "Parameter")
 (defconst lsp/javascript-inlay-hint-kind-enum-hint "Enum")
 (lsp-interface (javascript:InlayHint (:text :position :kind) (:whitespaceBefore :whitespaceAfter))
-               (javascript:InlayHintsParams (:textDocument) (:range)))
+               (javascript:InlayHintsParams (:textDocument) (:range))
+               (javascript:Range (:start :end)))
 
 (lsp-interface (clojure-lsp:TestTreeParams (:uri :tree) nil)
                (clojure-lsp:TestTreeNode (:name :range :nameRange :kind) (:children)))

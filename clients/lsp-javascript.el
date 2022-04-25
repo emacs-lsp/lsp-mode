@@ -818,26 +818,44 @@ name (e.g. `data' variable passed as `data' parameter)."
       (lsp--info "Renamed '%s' to '%s'." name (file-name-nondirectory new)))))
 
 (defun lsp-javascript-update-inlay-hints ()
+  (lsp-javascript--update-inlay-hints (window-start) (window-end nil t)))
+
+(defun lsp-javascript--update-inlay-hints (start end)
   (if (lsp-javascript-initialized?)
       (lsp-request-async
        "typescript/inlayHints"
        (lsp-make-javascript-inlay-hints-params
-        :text-document (lsp--text-document-identifier))
+        :text-document (lsp--text-document-identifier)
+        :range (lsp-make-javascript-range :start
+                                          (lsp-point-to-position start)
+                                          :end
+                                          (lsp-point-to-position end)))
        (lambda (res)
          (lsp--remove-overlays 'lsp-javascript-inlay-hint)
-         (-each (lsp-get res :inlayHints)
-           #'(lambda (hint)
-               (-let* (((&javascript:InlayHint :text :position :kind :whitespace-before? :whitespace-after?) hint)
-                       (pos (lsp--position-to-point position))
-                       (overlay (make-overlay pos pos nil 'front-advance 'end-advance)))
-                 (overlay-put overlay 'lsp-javascript-inlay-hint t)
-                 (overlay-put overlay 'before-string
-                              (format "%s%s%s"
-                                      (if (and whitespace-before? (not (string= kind lsp/javascript-inlay-hint-kind-type-hint))) " " "")
-                                      (propertize (lsp-javascript-format-inlay text kind)
-                                                  'font-lock-face (lsp-javascript-face-for-inlay kind))
-                                      (if whitespace-after? " " ""))))))))
+         (let ((hints (lsp-get res :inlayHints)))
+           (unless (seq-empty-p hints)
+             (overlay-recenter
+              (-let* (([hint] hints)
+                      ((&javascript:InlayHint :position) hint))
+                (lsp--position-to-point position))))
+           (-each hints
+             (lambda (hint)
+                 (-let* (((&javascript:InlayHint :text :position :kind :whitespace-before? :whitespace-after?) hint)
+                         (pos (lsp--position-to-point position))
+                         (overlay (make-overlay pos pos nil 'front-advance 'end-advance)))
+                   (overlay-put overlay 'lsp-javascript-inlay-hint t)
+                   (overlay-put overlay 'before-string
+                                (format "%s%s%s"
+                                        (if (and whitespace-before? (not (string= kind lsp/javascript-inlay-hint-kind-type-hint))) " " "")
+                                        (propertize (lsp-javascript-format-inlay text kind)
+                                                    'font-lock-face (lsp-javascript-face-for-inlay kind))
+                                        (if whitespace-after? " " "")))))))))
     :mode 'tick))
+
+(defun lsp-javascript-column-at-pos (pos)
+  (save-excursion
+    (goto-char pos)
+    (current-column)))
 
 (defun lsp-javascript-format-inlay (text kind)
   (cond
