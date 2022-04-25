@@ -825,7 +825,7 @@ name (e.g. `data' variable passed as `data' parameter)."
         :text-document (lsp--text-document-identifier))
        (lambda (res)
          (lsp--remove-overlays 'lsp-javascript-inlay-hint)
-         (-each (gethash "inlayHints" res)
+         (-each (lsp-get res :inlayHints)
            #'(lambda (hint)
                (-let* (((&javascript:InlayHint :text :position :kind :whitespace-before? :whitespace-after?) hint)
                        (pos (lsp--position-to-point position))
