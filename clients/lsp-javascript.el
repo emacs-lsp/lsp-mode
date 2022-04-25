@@ -857,8 +857,8 @@ name (e.g. `data' variable passed as `data' parameter)."
                                         (if (and whitespace-before? (not (string= kind lsp/javascript-inlay-hint-kind-type-hint))) " " "")
                                         (propertize (lsp-javascript-format-inlay text kind)
                                                     'font-lock-face (lsp-javascript-face-for-inlay kind))
-                                        (if whitespace-after? " " "")))))))))
-    :mode 'tick))
+                                        (if whitespace-after? " " ""))))))))
+       :mode 'tick)))
 
 (defun lsp-javascript-column-at-pos (pos)
   (save-excursion
