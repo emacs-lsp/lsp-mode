@@ -8284,30 +8284,42 @@ IGNORE-MULTI-FOLDER to ignore multi folder server."
     (lsp--open-in-workspace workspace)
     workspace))
 
+(defun lsp--read-char (prompt &optional options)
+  "Wrapper for `read-char-from-minibuffer' if Emacs +27.
+Fallback to `read-key' otherwise.
+PROMPT is the message and OPTIONS the available options."
+  (if (fboundp 'read-char-from-minibuffer)
+      (read-char-from-minibuffer prompt options)
+    (read-key prompt)))
+
 (defun lsp--find-root-interactively (session)
   "Find project interactively.
 Returns nil if the project should not be added to the current SESSION."
   (condition-case nil
       (let* ((project-root-suggestion (or (lsp--suggest-project-root) default-directory))
-             (action (read-key (format
-                                "%s is not part of any project. Select action:
+             (action (lsp--read-char
+                      (format
+                       "%s is not part of any project.
 
-%s==>Import project root %s.
-%s==>Import project by selecting root directory interactively.
-%s==>Import project at current directory %s.
-%s==>Do not ask again for the current project by adding %s to lsp-session-folders-blacklist.
-%s==>Do not ask again for the current project by selecting ignore path interactively.
-%s==>Do nothing: ask again when opening other files from the current project."
-                                (propertize (buffer-name) 'face 'bold)
-                                (propertize "i" 'face 'success)
-                                (propertize project-root-suggestion 'face 'bold)
-                                (propertize "I" 'face 'success)
-                                (propertize "." 'face 'success)
-                                (propertize default-directory 'face 'bold)
-                                (propertize "d" 'face 'warning)
-                                (propertize project-root-suggestion 'face 'bold)
-                                (propertize "D" 'face 'warning)
-                                (propertize "n" 'face 'warning)))))
+%s ==> Import project root %s
+%s ==> Import project by selecting root directory interactively
+%s ==> Import project at current directory %s
+%s ==> Do not ask again for the current project by adding %s to lsp-session-folders-blacklist
+%s ==> Do not ask again for the current project by selecting ignore path interactively
+%s ==> Do nothing: ask again when opening other files from the current project
+
+Select action: "
+                       (propertize (buffer-name) 'face 'bold)
+                       (propertize "i" 'face 'success)
+                       (propertize project-root-suggestion 'face 'bold)
+                       (propertize "I" 'face 'success)
+                       (propertize "." 'face 'success)
+                       (propertize default-directory 'face 'bold)
+                       (propertize "d" 'face 'warning)
+                       (propertize project-root-suggestion 'face 'bold)
+                       (propertize "D" 'face 'warning)
+                       (propertize "n" 'face 'warning))
+                      '(?i ?\r ?I ?. ?d ?D ?n))))
         (cl-case action
           (?i project-root-suggestion)
           (?\r project-root-suggestion)
