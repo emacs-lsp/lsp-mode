@@ -8290,7 +8290,7 @@ Fallback to `read-key' otherwise.
 PROMPT is the message and OPTIONS the available options."
   (if (fboundp 'read-char-from-minibuffer)
       (read-char-from-minibuffer prompt options)
-    (read-key prompt t)))
+    (read-key prompt)))
 
 (defun lsp--find-root-interactively (session)
   "Find project interactively.
