@@ -50,6 +50,20 @@
             (lsp-package-path 'purescript-language-server))
         lsp-purescript-server-args))
 
+(defcustom-lsp lsp-purescript-add-spago-sources t
+  "Whether to add spago sources to the globs passed to the IDE server for source locations."
+  :type 'boolean
+  :group 'lsp-purescript
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "purescript.addSpagoSources")
+
+(defcustom-lsp lsp-purescript-add-npm-path nil
+  "Whether to add the local npm bin directory to the PATH."
+  :type 'boolean
+  :group 'lsp-purescript
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "purescript.addNpmPath")
+
 (lsp-dependency 'purescript-language-server
                 '(:system "purescript-language-server")
                 '(:npm :package "purescript-language-server"
