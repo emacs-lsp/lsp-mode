@@ -157,6 +157,7 @@ nav:
       - 'React JavaScript Tutorial in Emacs': tutorials/reactjs-tutorial.md
       - 'Configuring Emacs as a Clojure IDE': tutorials/clojure-guide.md
       - 'Debugging Clojurescript': tutorials/debugging-clojure-script.md
+      - 'Python, debbuging with poetry + pyenv': https://emacs-lsp.github.io/dap-mode/page/python-poetry-pyenv/
   - Blog:
       - 2020:
           - '7.0 Release': blog/2020/7.0-release.md
