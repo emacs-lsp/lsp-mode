@@ -2,707 +2,707 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/blog/2020/7.0-release/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/manual-language-docs/lsp-gopls/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/manual-language-docs/lsp-latex/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/manual-language-docs/lsp-org/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/manual-language-docs/lsp-rust-analyzer/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/manual-language-docs/lsp-rust-rls/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/manual-language-docs/lsp-sqls/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/CHANGELOG/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/adding-new-language/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/faq/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/file-watchers/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/gallery/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/installation/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/keybindings/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/languages/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-actionscript/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-ada/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-angular/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-ansible/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-bash/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-beancount/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-ccls/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-clangd/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-clojure/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-cmake/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-crystal/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-csharp-ls/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-csharp-omnisharp/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-css/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-d/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-deno/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-dhall/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-dockerfile/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-elixir/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-elm/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-emmet/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-emmy-lua/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-erlang/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-eslint/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-flow/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-fortran/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-fsharp/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-gdscript/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-gettext/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-gopls/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-grammarly/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-graphql/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-groovy/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-hack/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-html/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-idris/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-intelephense/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-jedi/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-json/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-julia/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-kotlin/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-latex/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-ltex/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-lua-language-server/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-lua-lsp/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-lua-roblox/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-magik/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-markdown/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-nginx/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-nim/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-nix/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-ocaml-lsp-server/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-ocaml/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-openscad/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-pascal/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-perl/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-perlnavigator/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-php/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-phpactor/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-prolog/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-purescript/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-pwsh/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-pyls/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-pylsp/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-pyright/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-python-ms/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-r/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-racket-langserver/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-racket-language-server/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-remark/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-robot/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-rls/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-serenata/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-solargraph/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-sorbet/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-sqls/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-steep/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-svelte/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-svlangserver/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-terraform-ls/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-terraform/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-tex/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-texlab/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-toml/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-ttcn3/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-typeprof/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript-javascript/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-typescript/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-v/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-vala/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-verilog/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-vetur/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-vhdl/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-vimscript/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-volar/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-xml/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-yaml/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-zig/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/main-features/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/performance/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/remote/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/troubleshooting/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/integration/dired/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/integration/ido/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/integration/iedit/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/completion/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/diagnostics/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/dired/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/headerline/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/icons/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/ido/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/iedit/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/lens/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/mode/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/modeline/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/settings/semantic-tokens/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/template/lsp-client/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/template/lsp-var/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/tutorials/CPP-guide/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/tutorials/clojure-guide/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/tutorials/debugging-clojure-script/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/tutorials/php-guide/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/tutorials/reactjs-tutorial/</loc>
-         <lastmod>2022-04-29</lastmod>
+         <lastmod>2022-04-30</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
