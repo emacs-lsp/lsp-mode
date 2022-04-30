@@ -218,11 +218,41 @@ If there are more arguments expected after the line and column numbers."
   (interactive)
   (lsp-clojure--refactoring-call "move-coll-entry-down"))
 
+(defun lsp-clojure-move-form ()
+  "Apply move-form refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "move-form" "/home/greg/dev/clojure-lsp/lib/src/clojure_lsp/shared.clj"))
+
 (defun lsp-clojure-server-info ()
   "Request server info."
   (interactive)
   (lsp--cur-workspace-check)
   (lsp-notify "clojure/serverInfo/log" nil))
+
+(defvar lsp-clojure-server-buffer-name "*lsp-clojure-server-log*")
+
+(defun lsp-clojure--server-log-revert-function (original-file-log-buffer &rest _)
+  "Spit contents to ORIGINAL-FILE-LOG-BUFFER."
+  (with-current-buffer (get-buffer-create lsp-clojure-server-buffer-name)
+    (erase-buffer)
+    (insert (with-current-buffer original-file-log-buffer (buffer-string)))
+    (goto-char (point-max))
+    (read-only-mode)))
+
+(defun lsp-clojure-server-log ()
+  "Open a buffer with the server logs."
+  (interactive)
+  (lsp--cur-workspace-check)
+  (let* ((log-path (-> (lsp--json-serialize (lsp-request "clojure/serverInfo/raw" nil))
+                       (lsp--read-json)
+                       (lsp-get :log-path)))
+         (original-file-log-buffer (find-file-noselect log-path)))
+    (with-current-buffer original-file-log-buffer
+      (add-hook 'after-revert-hook (-partial #'lsp-clojure--server-log-revert-function original-file-log-buffer) nil t)
+      (auto-revert-tail-mode)
+      (read-only-mode))
+    (lsp-clojure--server-log-revert-function original-file-log-buffer)
+    (switch-to-buffer lsp-clojure-server-buffer-name)))
 
 (defun lsp-clojure-server-info-raw ()
   "Request server info raw data."

@@ -522,6 +522,14 @@ It contains the operation source."
   :group 'lsp-mode
   :package-version '(lsp-mode . "8.0.0"))
 
+(defcustom lsp-apply-edits-after-file-operations t
+  "Whether to apply edits returned by server after file operations if any.
+Applicable only if server supports workspace.fileOperations for operations:
+`workspace/willRenameFiles', `workspace/willCreateFiles' and
+`workspace/willDeleteFiles'."
+  :group 'lsp-mode
+  :type 'boolean)
+
 (defcustom lsp-modeline-code-actions-enable t
   "Whether to show code actions on modeline."
   :type 'boolean
@@ -717,6 +725,7 @@ Changes take effect only when a new session is started."
                                         (".*\\.php$" . "php")
                                         (".*\\.svelte$" . "svelte")
                                         (".*\\.ebuild$" . "shellscript")
+                                        (".*/PKGBUILD$" . "shellscript")
                                         (".*\\.ttcn3$" . "ttcn3")
                                         (ada-mode . "ada")
                                         (nxml-mode . "xml")
@@ -724,6 +733,7 @@ Changes take effect only when a new session is started."
                                         (vimrc-mode . "vim")
                                         (sh-mode . "shellscript")
                                         (ebuild-mode . "shellscript")
+                                        (pkgbuild-mode . "shellscript")
                                         (scala-mode . "scala")
                                         (julia-mode . "julia")
                                         (clojure-mode . "clojure")
@@ -3121,7 +3131,8 @@ synchronously.
 
 (cl-defun lsp-request (method params &key no-wait no-merge)
   "Send request METHOD with PARAMS.
-If NO-MERGE is non-nil, don't merge the results but return alist workspace->result.
+If NO-MERGE is non-nil, don't merge the results but return alist
+workspace->result.
 If NO-WAIT is non-nil send the request as notification."
   (if no-wait
       (lsp-notify method params)
@@ -3459,8 +3470,8 @@ disappearing, unset all the variables related to it."
                    ,@(when lsp-lens-enable '((codeLens . ((refreshSupport . t)))))
                    (fileOperations . ((didCreate . :json-false)
                                       (willCreate . :json-false)
-                                      (didRename . :json-false)
-                                      (willRename . :json-false)
+                                      (didRename . t)
+                                      (willRename . t)
                                       (didDelete . :json-false)
                                       (willDelete . :json-false)))))
      (textDocument . ((declaration . ((linkSupport . t)))
@@ -3503,7 +3514,7 @@ disappearing, unset all the variables related to it."
                                                         (deprecatedSupport . t)
                                                         (resolveSupport
                                                          . ((properties . ["documentation"
-                                                                           "details"
+                                                                           "detail"
                                                                            "additionalTextEdits"
                                                                            "command"])))
                                                         (insertTextModeSupport . ((valueSet . [1 2])))))
@@ -3687,6 +3698,32 @@ in that particular folder."
        (lsp:server-capabilities-text-document-sync?)
        (lsp:text-document-sync-options-save?)
        (lsp:text-document-save-registration-options-include-text?)))
+
+(defun lsp--send-will-rename-files-p (path)
+  "Return whether willRenameFiles request should be sent to the server.
+If any filters, checks if it applies for PATH."
+  (let* ((will-rename (-> (lsp--server-capabilities)
+                          (lsp:server-capabilities-workspace?)
+                          (lsp:workspace-server-capabilities-file-operations?)
+                          (lsp:workspace-file-operations-will-rename?)))
+         (filters (seq-into (lsp:file-operation-registration-options-filters will-rename) 'list)))
+    (and will-rename
+         (or (seq-empty-p filters)
+             (-any? (-lambda ((&FileOperationFilter :scheme? :pattern (&FileOperationPattern :glob)))
+                      (-let [regexes (lsp-glob-to-regexps glob)]
+                        (and (or (not scheme?)
+                                 (string-prefix-p scheme? (lsp--path-to-uri path)))
+                             (-any? (lambda (re)
+                                      (string-match re path))
+                                    regexes))))
+                    filters)))))
+
+(defun lsp--send-did-rename-files-p ()
+  "Return whether didRenameFiles notification should be sent to the server."
+  (-> (lsp--server-capabilities)
+      (lsp:server-capabilities-workspace?)
+      (lsp:workspace-server-capabilities-file-operations?)
+      (lsp:workspace-file-operations-did-rename?)))
 
 (declare-function project-roots "ext:project" (project) t)
 (declare-function project-root "ext:project" (project) t)
@@ -6012,6 +6049,27 @@ relied upon."
                                     :newName ,newname))))
     (lsp--apply-workspace-edit edits 'rename)))
 
+(defun lsp--on-rename-file (old-func old-name new-name &optional ok-if-already-exists?)
+  "Advice around function `rename-file'.
+Applies OLD-FUNC with OLD-NAME, NEW-NAME and OK-IF-ALREADY-EXISTS?.
+
+This advice sends workspace/willRenameFiles before renaming file
+to check if server wants to apply any workspaceEdits after renamed."
+  (if (and lsp-apply-edits-after-file-operations
+           (lsp--send-will-rename-files-p old-name))
+      (let ((params (lsp-make-rename-files-params
+                     :files (vector (lsp-make-file-rename
+                                     :oldUri (lsp--path-to-uri old-name)
+                                     :newUri (lsp--path-to-uri new-name))))))
+        (when-let ((edits (lsp-request "workspace/willRenameFiles" params)))
+          (lsp--apply-workspace-edit edits 'rename-file)
+          (funcall old-func old-name new-name ok-if-already-exists?)
+          (when (lsp--send-did-rename-files-p)
+            (lsp-notify "workspace/didRenameFiles" params))))
+    (funcall old-func old-name new-name ok-if-already-exists?)))
+
+(advice-add 'rename-file :around #'lsp--on-rename-file)
+
 (defun lsp-show-xrefs (xrefs display-action references?)
   (unless (region-active-p) (push-mark nil t))
   (if (boundp 'xref-show-definitions-function)
@@ -8227,30 +8285,42 @@ IGNORE-MULTI-FOLDER to ignore multi folder server."
     (lsp--open-in-workspace workspace)
     workspace))
 
+(defun lsp--read-char (prompt &optional options)
+  "Wrapper for `read-char-from-minibuffer' if Emacs +27.
+Fallback to `read-key' otherwise.
+PROMPT is the message and OPTIONS the available options."
+  (if (fboundp 'read-char-from-minibuffer)
+      (read-char-from-minibuffer prompt options)
+    (read-key prompt)))
+
 (defun lsp--find-root-interactively (session)
   "Find project interactively.
 Returns nil if the project should not be added to the current SESSION."
   (condition-case nil
       (let* ((project-root-suggestion (or (lsp--suggest-project-root) default-directory))
-             (action (read-key (format
-                                "%s is not part of any project. Select action:
+             (action (lsp--read-char
+                      (format
+                       "%s is not part of any project.
 
-%s==>Import project root %s.
-%s==>Import project by selecting root directory interactively.
-%s==>Import project at current directory %s.
-%s==>Do not ask again for the current project by adding %s to lsp-session-folders-blacklist.
-%s==>Do not ask again for the current project by selecting ignore path interactively.
-%s==>Do nothing: ask again when opening other files from the current project."
-                                (propertize (buffer-name) 'face 'bold)
-                                (propertize "i" 'face 'success)
-                                (propertize project-root-suggestion 'face 'bold)
-                                (propertize "I" 'face 'success)
-                                (propertize "." 'face 'success)
-                                (propertize default-directory 'face 'bold)
-                                (propertize "d" 'face 'warning)
-                                (propertize project-root-suggestion 'face 'bold)
-                                (propertize "D" 'face 'warning)
-                                (propertize "n" 'face 'warning)))))
+%s ==> Import project root %s
+%s ==> Import project by selecting root directory interactively
+%s ==> Import project at current directory %s
+%s ==> Do not ask again for the current project by adding %s to lsp-session-folders-blacklist
+%s ==> Do not ask again for the current project by selecting ignore path interactively
+%s ==> Do nothing: ask again when opening other files from the current project
+
+Select action: "
+                       (propertize (buffer-name) 'face 'bold)
+                       (propertize "i" 'face 'success)
+                       (propertize project-root-suggestion 'face 'bold)
+                       (propertize "I" 'face 'success)
+                       (propertize "." 'face 'success)
+                       (propertize default-directory 'face 'bold)
+                       (propertize "d" 'face 'warning)
+                       (propertize project-root-suggestion 'face 'bold)
+                       (propertize "D" 'face 'warning)
+                       (propertize "n" 'face 'warning))
+                      '(?i ?\r ?I ?. ?d ?D ?n))))
         (cl-case action
           (?i project-root-suggestion)
           (?\r project-root-suggestion)

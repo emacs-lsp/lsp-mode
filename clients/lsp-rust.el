@@ -695,9 +695,7 @@ or JSON objects in `rust-project.json` format."
                   :allTargets ,(lsp-json-bool lsp-rust-analyzer-cargo-all-targets)
                   :overrideCommand ,lsp-rust-analyzer-cargo-override-command)
     :files (:exclude ,lsp-rust-analyzer-exclude-globs
-            :watcher ,(lsp-json-bool (if lsp-rust-analyzer-use-client-watching
-                                         "client"
-                                       "notify"))
+            :watcher ,(if lsp-rust-analyzer-use-client-watching "client" "notify")
             :excludeDirs ,lsp-rust-analyzer-exclude-dirs)
     :cargo (:allFeatures ,(lsp-json-bool lsp-rust-all-features)
             :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
@@ -934,9 +932,12 @@ meaning."
   (if (and (lsp-rust-analyzer-initialized?)
            (eq buffer (current-buffer)))
       (lsp-request-async
-       "experimental/inlayHints"
+       "textDocument/inlayHint"
        (lsp-make-rust-analyzer-inlay-hints-params
-        :text-document (lsp--text-document-identifier))
+        :text-document (lsp--text-document-identifier)
+        :range (if (use-region-p)
+                   (lsp--region-to-range (region-beginning) (region-end))
+                 (lsp--region-to-range (point-min) (point-max))))
        (lambda (res)
          (remove-overlays (point-min) (point-max) 'lsp-rust-analyzer-inlay-hint t)
          (dolist (hint res)
@@ -1118,7 +1119,7 @@ https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensio
 If NEW-WINDOW (interactively the prefix argument) is non-nil,
 open in a new window."
   (interactive "P")
-  (-if-let (workspace (lsp-find-workspace 'rust-analyzer))
+  (-if-let (workspace (lsp-find-workspace 'rust-analyzer (buffer-file-name)))
       (-if-let* ((response (with-lsp-workspace workspace
                              (lsp-send-request (lsp-make-request
                                                 "experimental/openCargoToml"
