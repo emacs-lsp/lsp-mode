@@ -71,6 +71,12 @@ ignored."
   :type 'boolean
   :group 'lsp-completion)
 
+(defcustom lsp-completion-show-label-description t
+  "Whether or not to show description of completion candidates."
+  :type 'boolean
+  :group 'lsp-completion
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defcustom lsp-completion-no-cache nil
   "Whether or not caching the returned completions from server."
   :type 'boolean
@@ -164,10 +170,13 @@ This will help minimize popup flickering issue in `company-mode'."
 
 (defun lsp-completion--annotate (item)
   "Annotate ITEM detail."
-  (-let (((&CompletionItem :detail? :kind?) (plist-get (text-properties-at 0 item)
+  (-let (((&CompletionItem :detail? :kind? :label-details?) (plist-get (text-properties-at 0 item)
                                                        'lsp-completion-item)))
     (concat (when (and lsp-completion-show-detail detail?)
               (concat " " (s-replace "\r" "" detail?)))
+            (when (and lsp-completion-show-label-description label-details?)
+              (when-let ((description (and label-details? (lsp:label-details-description label-details?))))
+                (format " %s" description)))
             (when lsp-completion-show-kind
               (when-let ((kind-name (and kind? (aref lsp-completion--item-kind kind?))))
                 (format " (%s)" kind-name))))))
