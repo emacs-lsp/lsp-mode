@@ -175,7 +175,7 @@ This will help minimize popup flickering issue in `company-mode'."
     (concat (when (and lsp-completion-show-detail detail?)
               (concat " " (s-replace "\r" "" detail?)))
             (when (and lsp-completion-show-label-description label-details?)
-              (when-let ((description (and label-details? (gethash "description" label-details?))))
+              (when-let ((description (and label-details? (lsp:label-details-description label-details?))))
                 (format " %s" description)))
             (when lsp-completion-show-kind
               (when-let ((kind-name (and kind? (aref lsp-completion--item-kind kind?))))
