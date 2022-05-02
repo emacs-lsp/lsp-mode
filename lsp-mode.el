@@ -2764,7 +2764,7 @@ and end-of-string meta-characters."
     map)
   "Keymap for `lsp-mode'.")
 
-(define-minor-mode lsp-mode ""
+(define-minor-mode lsp-mode "Mode for LSP interaction."
   :keymap lsp-mode-map
   :lighter
   (" LSP["
