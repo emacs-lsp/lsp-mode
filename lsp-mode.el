@@ -5621,7 +5621,7 @@ It will filter by KIND if non nil."
            (funcall action-handler action)
          (lsp-send-execute-command command arguments?))))))
 
-(lsp-defun lsp-execute-code-action ((action &as &CodeAction :command? :edit?))
+(lsp-defun lsp-execute-code-action ((action &as &CodeAction :command? :edit? :data? :kind?))
   "Execute code action ACTION.
 If ACTION is not set it will be selected from `lsp-code-actions-at-point'.
 Request codeAction/resolve for more info if server supports."
@@ -5632,7 +5632,7 @@ Request codeAction/resolve for more info if server supports."
       (lsp--execute-code-action (lsp-request "codeAction/resolve" action))
     (lsp--execute-code-action action)))
 
-(lsp-defun lsp--execute-code-action ((action &as &CodeAction :command? :edit?))
+(lsp-defun lsp--execute-code-action ((action &as &CodeAction :command? :edit? :data? :kind?))
   "Execute code action ACTION."
   (when edit?
     (lsp--apply-workspace-edit edit? 'code-action))
