@@ -37,7 +37,7 @@ lint:
 
 test:
 	@echo "Testing..."
-	$(EASK) install --dev
+	$(EASK) install-deps --dev
 	$(EASK) ert $(TEST-FILES)
 
 docs:

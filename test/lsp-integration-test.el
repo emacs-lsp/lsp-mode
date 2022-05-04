@@ -647,7 +647,7 @@
   (with-current-buffer (find-file-noselect "./test/fixtures/org-mode/demo.org")
     (goto-char (point-min))
     (search-forward "import org_demo_file_2")
-    (lsp-workspace-folders-add (f-expand "fixtures/org-mode"))
+    (lsp-workspace-folders-add (f-expand "./test/fixtures/org-mode"))
     (lsp-org)
     (-> (lsp-test-wait
          (eq 'initialized (lsp--workspace-status
