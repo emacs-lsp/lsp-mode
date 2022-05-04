@@ -111,11 +111,11 @@
 
 (ert-deftest lsp-file-watch--non-existing ()
   :tags '(no-win)
-  (lsp-kill-watch (lsp-watch-root-folder
-                   "non-existing-directory"
-                   #'ignore
-                   lsp-file-watch-ignored-files
-                   lsp-file-watch-ignored-directories)))
+  (should-error (lsp-kill-watch (lsp-watch-root-folder
+                                 "non-existing-directory"
+                                 #'ignore
+                                 lsp-file-watch-ignored-files
+                                 lsp-file-watch-ignored-directories))))
 
 (ert-deftest lsp-file-watch--relative-path-glob-patterns ()
   :tags '(no-win)
@@ -135,15 +135,15 @@
                  temp-directory
                  (lambda (event)
                    (message "received: %s" event)
-                   (add-to-list 'events (cdr event)))
+                   (push (cdr event) events))
                  lsp-file-watch-ignored-files
                  lsp-file-watch-ignored-directories))
 
     (write-region "bla" nil matching-file)
     (sit-for 0.3)
 
-    (add-to-list 'expected-events (list 'created matching-file))
-    (add-to-list 'expected-events (list 'changed matching-file))
+    (push (list 'created matching-file) expected-events)
+    (push (list 'changed matching-file) expected-events)
 
     (should (equal expected-events events))
     (lsp-kill-watch watch)))
@@ -286,7 +286,9 @@
 
 (defun lsp-notify-collect (_ method params)
   (push (list (--map (-> it lsp--workspace-client lsp--client-server-id)
-                     (lsp-workspaces)) method params) lsp--test-events))
+                     (lsp-workspaces))
+              method params)
+        lsp--test-events))
 
 (ert-deftest lsp-file-notifications-test ()
   :tags '(no-win)
@@ -300,7 +302,7 @@
 
     (setq lsp--test-events nil)
 
-    (advice-add 'lsp-notify :around 'lsp-notify-collect)
+    (advice-add 'lsp-notify :around #'lsp-notify-collect)
 
     (lsp--server-register-capability
      (lsp-make-registration
@@ -320,7 +322,7 @@
 
     (sit-for 0.3)
 
-    (advice-remove 'lsp-notify 'lsp-notify-collect)
+    (advice-remove 'lsp-notify #'lsp-notify-collect)
 
     (should (equal lsp--test-events
                    `(((workspace-1) "workspace/didChangeWatchedFiles"
