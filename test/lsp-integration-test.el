@@ -28,6 +28,7 @@
 (require 'dash)
 (require 'ert)
 (require 'f)
+(require 'org)
 
 (require 'lsp-mode)
 (require 'lsp-lens)
