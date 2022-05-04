@@ -644,7 +644,7 @@
 
 (ert-deftest lsp-org-test-current-org-mode-content ()
   :tags '(no-win)
-  (with-current-buffer (find-file-noselect "fixtures/org-mode/demo.org")
+  (with-current-buffer (find-file-noselect "./test/fixtures/org-mode/demo.org")
     (goto-char (point-min))
     (search-forward "import org_demo_file_2")
     (lsp-workspace-folders-add (f-expand "fixtures/org-mode"))
