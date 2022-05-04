@@ -29,6 +29,7 @@
 (require 'ert)
 (require 'f)
 (require 'org)
+(require 'org-src)
 
 (require 'lsp-mode)
 (require 'lsp-lens)
@@ -645,10 +646,10 @@
 
 (ert-deftest lsp-org-test-current-org-mode-content ()
   :tags '(no-win)
-  (with-current-buffer (find-file-noselect "./test/fixtures/org-mode/demo.org")
+  (with-current-buffer (find-file-noselect (f-join lsp-test-location "fixtures/org-mode/demo.org"))
     (goto-char (point-min))
     (search-forward "import org_demo_file_2")
-    (lsp-workspace-folders-add (f-expand "./test/fixtures/org-mode"))
+    (lsp-workspace-folders-add (f-join lsp-test-location "fixtures/org-mode"))
     (lsp-org)
     (-> (lsp-test-wait
          (eq 'initialized (lsp--workspace-status
