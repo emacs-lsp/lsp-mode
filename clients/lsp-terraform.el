@@ -93,6 +93,29 @@
                   :priority 1
                   :server-id 'tfmls))
 
+(defun lsp-terraform-ls-validate ()
+  "Execute terraform validate on project root."
+  (interactive)
+  (lsp-request
+   "workspace/executeCommand"
+   (list :command "terraform-ls.terraform.validate"
+         :arguments (vector (format "uri=%s" (lsp--path-to-uri (lsp-workspace-root))))
+         )
+   :no-wait t
+   :no-merge t))
+
+(defun lsp-terraform-ls-init ()
+  "Execute terraform init on project root.
+
+This is a synchronous action."
+  (interactive)
+  (lsp-request
+     "workspace/executeCommand"
+     (list :command "terraform-ls.terraform.init"
+           :arguments (vector (format "uri=%s" (lsp--path-to-uri (lsp-workspace-root)))))
+     :no-wait nil
+     :no-merge t))
+
 (lsp-consistency-check lsp-terraform)
 
 (provide 'lsp-terraform)
