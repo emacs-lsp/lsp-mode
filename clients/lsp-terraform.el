@@ -94,7 +94,7 @@
                   :server-id 'tfmls))
 
 (defun lsp-terraform-ls-validate ()
-  "Execute terraform validate on `default-directory'."
+  "Execute terraform validate on project root."
   (interactive)
   (lsp-request
    "workspace/executeCommand"
@@ -105,7 +105,7 @@
    :no-merge t))
 
 (defun lsp-terraform-ls-init ()
-  "Execute terraform init on `default-directory'.
+  "Execute terraform init on project root.
 
 This is a synchronous action."
   (interactive)
