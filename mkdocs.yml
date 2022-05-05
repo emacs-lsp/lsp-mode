@@ -71,6 +71,7 @@ nav:
     - F#: page/lsp-fsharp.md
     - Fortran: page/lsp-fortran.md
     - GDScript: page/lsp-gdscript.md
+    - Gleam: page/lsp-gleam.md
     - Go (gopls): manual-language-docs/lsp-gopls.md
     - Grammarly: page/lsp-grammarly.md
     - GraphQL: page/lsp-graphql.md
