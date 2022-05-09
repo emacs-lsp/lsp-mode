@@ -29,7 +29,7 @@
 (defgroup lsp-openscad nil
   "LSP support for openscad."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/dzhu/openscad-language-server"))
+  :link '(url-link "https://github.com/Leathong/openscad-LSP"))
 
 (defcustom lsp-openscad-server
   "openscad-language-server"
@@ -38,9 +38,23 @@
   :risky t
   :type 'file)
 
+(defcustom lsp-openscad-server-connection-type
+  'tcp
+  "Type of connection to use with the OpenSCAD Language Server: tcp or stdio"
+  :group 'lsp-openscad
+  :risky t
+  :type 'symbol)
+
+(defun lsp-openscad-server-start-fun (port)
+  `(,lsp-openscad-server "--port" ,(number-to-string port)))
+
+(defun lsp-openscad-server-connection ()
+  (if (eq lsp-openscad-server-connection-type 'tcp)
+      (lsp-tcp-connection 'lsp-openscad-server-start-fun)
+    (lsp-stdio-connection `(,lsp-openscad-server))))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection lsp-openscad-server)
+ (make-lsp-client :new-connection (lsp-openscad-server-connection)
                   :major-modes '(scad-mode)
                   :priority -1
                   :server-id 'openscad))
