@@ -48,7 +48,7 @@
   'lsp-go-gopls-server-args
   "lsp-mode 7.0.1")
 
-(defcustom lsp-go-gopls-server-args nil
+(defcustom lsp-go-gopls-server-args '("-remote=auto")
   "Extra CLI arguments for gopls."
   :type '(repeat string)
   :group 'lsp-go)
