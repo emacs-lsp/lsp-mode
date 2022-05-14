@@ -26,7 +26,13 @@
 
 (require 'lsp-mode)
 
-
+(defcustom lsp-tf-server 'terraform-ls
+  "Choose LSP server for terraform."
+  :type '(choice (const :tag "terraform-lsp" terraform-lsp)
+                 (const :tag "terraform-ls" terraform-ls))
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "8.0.1"))
+
 ;; terraform-lsp
 
 (defgroup lsp-terraform nil
@@ -63,10 +69,9 @@
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-terraform--make-launch-cmd)
                   :major-modes '(terraform-mode)
-                  :priority -1
+                  :priority (if (eq lsp-tf-server 'terraform-lsp) 1 -1)
                   :server-id 'tfls))
 
-
 ;; terraform-ls
 
 (defgroup lsp-terraform-ls nil
@@ -90,7 +95,7 @@
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-terraform-ls--make-launch-cmd)
                   :major-modes '(terraform-mode)
-                  :priority 1
+                  :priority (if (eq lsp-tf-server 'terraform-ls) 1 -1)
                   :server-id 'tfmls))
 
 (defun lsp-terraform-ls-validate ()
