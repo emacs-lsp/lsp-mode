@@ -218,10 +218,12 @@ If there are more arguments expected after the line and column numbers."
   (interactive)
   (lsp-clojure--refactoring-call "move-coll-entry-down"))
 
-(defun lsp-clojure-move-form ()
-  "Apply move-form refactoring at point."
-  (interactive)
-  (lsp-clojure--refactoring-call "move-form" "/home/greg/dev/clojure-lsp/lib/src/clojure_lsp/shared.clj"))
+(defun lsp-clojure-move-form (dest-filename)
+  "Apply move-form refactoring at point to DEST-FILENAME."
+  (interactive
+   (list (or (read-file-name "Move form to: ")
+             (user-error "No filename selected. Aborting"))))
+  (lsp-clojure--refactoring-call "move-form" (expand-file-name dest-filename)))
 
 (defun lsp-clojure-server-info ()
   "Request server info."
