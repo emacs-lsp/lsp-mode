@@ -97,7 +97,7 @@ language server."
 (defun lsp-terraform-ls--make-launch-cmd ()
   `(,lsp-terraform-ls-server "serve"))
 
-(lsp-defun lsp-terraform-ls--show-references ((&Command :arguments? :command :title))
+(lsp-defun lsp-terraform-ls--show-references ((&Command :arguments?))
   "Show references for command with ARGS."
   (lsp-show-xrefs
      (lsp--locations-to-xref-items
