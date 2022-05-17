@@ -109,9 +109,8 @@ language server."
 
 (defun lsp-terraform-ls--custom-capabilities ()
   "Construct custom capabilities for the language server."
-  (if lsp-terraform-ls-enable-show-reference
-      '((experimental . ((showReferencesCommandId . "client.showReferences"))))
-    nil))
+  (when lsp-terraform-ls-enable-show-reference
+      '((experimental . ((showReferencesCommandId . "client.showReferences"))))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-terraform-ls--make-launch-cmd)
