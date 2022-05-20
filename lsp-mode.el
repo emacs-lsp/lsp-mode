@@ -1150,8 +1150,9 @@ in emacs 27.
 
 See #2049"
   (when lsp--show-message
-    (let ((inhibit-message (and (minibufferp)
-                                (version< emacs-version "27.0"))))
+    (let ((inhibit-message (or inhibit-message
+                               (and (minibufferp)
+                                    (version< emacs-version "27.0")))))
       (apply #'message format args))))
 
 (defun lsp--info (format &rest args)
