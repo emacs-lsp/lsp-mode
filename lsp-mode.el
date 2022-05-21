@@ -3483,8 +3483,8 @@ disappearing, unset all the variables related to it."
                       (formatting . ((dynamicRegistration . t)))
                       (rangeFormatting . ((dynamicRegistration . t)))
                       ,@(when (and lsp-semantic-tokens-enable
-                                   (boundp 'lsp-semantic-tokens-capabilities))
-                          lsp-semantic-tokens-capabilities)
+                                   (functionp 'lsp--semantic-tokens-capabilities))
+                          (lsp--semantic-tokens-capabilities))
                       (rename . ((dynamicRegistration . t) (prepareSupport . t)))
                       (codeAction . ((dynamicRegistration . t)
                                      (isPreferredSupport . t)
