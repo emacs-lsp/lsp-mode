@@ -113,7 +113,8 @@ language server."
   (when lsp-terraform-ls-enable-show-reference
     '((experimental . ((showReferencesCommandId . "client.showReferences"))))))
 
-(setq lsp-semantic-token-faces
+(defun lsp-terraform-ls--set-tokens ()
+  (setq lsp-semantic-token-faces
       '(("namespace" . lsp-face-semhl-namespace)
         ("type" . lsp-face-semhl-type)
         ("class" . lsp-face-semhl-class)
@@ -148,8 +149,7 @@ language server."
         ("hcl-traversalStep" . lsp-face-semhl-label)
         ("hcl-typeCapsule" . lsp-face-semhl-type)
         ("hcl-typePrimitive" . lsp-face-semhl-type)))
-
-(setq lsp-semantic-token-modifier-faces
+  (setq lsp-semantic-token-modifier-faces
       '(("declaration" . lsp-face-semhl-class)
         ("definition" . lsp-face-semhl-definition)
         ("readonly" . lsp-face-semhl-constant)
@@ -174,7 +174,7 @@ language server."
         ("terraform-backend" . lsp-face-semhl-definition)
         ("terraform-name" . lsp-face-semhl-label)
         ("terraform-type" . lsp-face-semhl-type)
-        ("terraform-requiredProviders" . lsp-face-semhl-default-library)))
+        ("terraform-requiredProviders" . lsp-face-semhl-default-library))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-terraform-ls--make-launch-cmd)
@@ -208,6 +208,11 @@ This is a synchronous action."
      :no-merge t))
 
 (lsp-consistency-check lsp-terraform)
+
+(with-eval-after-load 'terraform-mode
+  (when lsp-semantic-tokens-enable
+    (lsp-terraform-ls--set-tokens)
+    (add-hook 'terraform-mode-hook #'lsp-terraform-ls--set-tokens)))
 
 (provide 'lsp-terraform)
 ;;; lsp-terraform.el ends here
