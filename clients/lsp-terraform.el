@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'lsp-semantic-tokens)
 
 
 ;; terraform-lsp
@@ -110,7 +111,70 @@ language server."
 (defun lsp-terraform-ls--custom-capabilities ()
   "Construct custom capabilities for the language server."
   (when lsp-terraform-ls-enable-show-reference
-      '((experimental . ((showReferencesCommandId . "client.showReferences"))))))
+    '((experimental . ((showReferencesCommandId . "client.showReferences"))))))
+
+(defun lsp-terraform-ls--set-tokens ()
+  (setq lsp-semantic-token-faces
+      '(("namespace" . lsp-face-semhl-namespace)
+        ("type" . lsp-face-semhl-type)
+        ("class" . lsp-face-semhl-class)
+        ("enum" . lsp-face-semhl-enum)
+        ("interface" . lsp-face-semhl-interface)
+        ("struct" . lsp-face-semhl-struct)
+        ("typeParameter" . lsp-face-semhl-type-parameter)
+        ("parameter" . lsp-face-semhl-parameter)
+        ("variable" . lsp-face-semhl-variable)
+        ("property" . lsp-face-semhl-property)
+        ("enumMember" . lsp-face-semhl-constant)
+        ("event" . lsp-face-semhl-event)
+        ("function" . lsp-face-semhl-function)
+        ("method" . lsp-face-semhl-method)
+        ("macro" . lsp-face-semhl-macro)
+        ("keyword" . lsp-face-semhl-keyword)
+        ("modifier" . lsp-face-semhl-member)
+        ("comment" . lsp-face-semhl-comment)
+        ("string" . lsp-face-semhl-string)
+        ("number" . lsp-face-semhl-number)
+        ("regexp" . lsp-face-semhl-regexp)
+        ("operator" . lsp-face-semhl-operator)
+        ("hcl-attrName" . lsp-face-semhl-member)
+        ("hcl-blockType" . lsp-face-semhl-struct)
+        ("hcl-blockLabel" . lsp-face-semhl-member)
+        ("hcl-bool" . lsp-face-semhl-constant)
+        ("hcl-string" . lsp-face-semhl-string)
+        ("hcl-number" . lsp-face-semhl-number)
+        ("hcl-objectKey" . lsp-face-semhl-label)
+        ("hcl-mapKey" . lsp-face-semhl-label)
+        ("hcl-keyword" . lsp-face-semhl-keyword)
+        ("hcl-traversalStep" . lsp-face-semhl-label)
+        ("hcl-typeCapsule" . lsp-face-semhl-type)
+        ("hcl-typePrimitive" . lsp-face-semhl-type)))
+  (setq lsp-semantic-token-modifier-faces
+      '(("declaration" . lsp-face-semhl-class)
+        ("definition" . lsp-face-semhl-definition)
+        ("readonly" . lsp-face-semhl-constant)
+        ("static" . lsp-face-semhl-static)
+        ("deprecated" . lsp-face-semhl-deprecated)
+        ("abstract" . lsp-face-semhl-keyword)
+        ("async" . lsp-face-semhl-macro)
+        ("modification" . lsp-face-semhl-operator)
+        ("documentation" . lsp-face-semhl-comment)
+        ("defaultLibrary" . lsp-face-semhl-default-library)
+        ("hcl-dependent" . lsp-face-semhl-constant)
+        ("terraform-data" . lsp-face-semhl-constant)
+        ("terraform-locals" . lsp-face-semhl-variable)
+        ("terraform-module" . lsp-face-semhl-namespace)
+        ("terraform-output" . lsp-face-semhl-constant)
+        ("terraform-provider" . lsp-face-semhl-class)
+        ("terraform-resource" . lsp-face-semhl-interface)
+        ("terraform-provisioner" . lsp-face-semhl-default-library)
+        ("terraform-connection" . lsp-face-semhl-constant)
+        ("terraform-variable" . lsp-face-semhl-variable)
+        ("terraform-terraform" . lsp-face-semhl-constant)
+        ("terraform-backend" . lsp-face-semhl-definition)
+        ("terraform-name" . lsp-face-semhl-label)
+        ("terraform-type" . lsp-face-semhl-type)
+        ("terraform-requiredProviders" . lsp-face-semhl-default-library))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-terraform-ls--make-launch-cmd)
@@ -144,6 +208,11 @@ This is a synchronous action."
      :no-merge t))
 
 (lsp-consistency-check lsp-terraform)
+
+(with-eval-after-load 'terraform-mode
+  (when lsp-semantic-tokens-enable
+    (lsp-terraform-ls--set-tokens)
+    (add-hook 'terraform-mode-hook #'lsp-terraform-ls--set-tokens)))
 
 (provide 'lsp-terraform)
 ;;; lsp-terraform.el ends here

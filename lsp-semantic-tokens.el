@@ -227,7 +227,7 @@ Unless overridden by a more specific face association."
   "Face used for static modifier."
   :group 'lsp-semantic-tokens)
 
-(defvar lsp-semantic-token-faces
+(defvar-local lsp-semantic-token-faces
   '(("comment" . lsp-face-semhl-comment)
     ("keyword" . lsp-face-semhl-keyword)
     ("string" . lsp-face-semhl-string)
@@ -256,7 +256,7 @@ Unless overridden by a more specific face association."
     ("concept" . lsp-face-semhl-interface))
   "Faces to use for semantic tokens.")
 
-(defvar lsp-semantic-token-modifier-faces
+(defvar-local lsp-semantic-token-modifier-faces
   '(("declaration" . lsp-face-semhl-interface)
     ("definition" . lsp-face-semhl-definition)
     ("implementation" . lsp-face-semhl-implementation)
@@ -272,7 +272,7 @@ Unless overridden by a more specific face association."
 Faces to use for semantic token modifiers if
 `lsp-semantic-tokens-apply-modifiers' is non-nil.")
 
-(defvar lsp-semantic-tokens-capabilities
+(defun lsp--semantic-tokens-capabilities ()
   `((semanticTokens
      . ((dynamicRegistration . t)
         (requests . ((range . t) (full . t)))
