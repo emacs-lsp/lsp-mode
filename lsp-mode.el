@@ -6463,7 +6463,7 @@ WORKSPACE is the active workspace."
   "Read json from the current buffer."
   (if (progn
         (require 'json)
-        (fboundp 'json-parse-string))
+        (fboundp 'json-parse-buffer))
       `(json-parse-buffer :object-type (if lsp-use-plists
                                            'plist
                                          'hash-table)
