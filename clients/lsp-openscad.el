@@ -40,15 +40,17 @@
 
 (defcustom lsp-openscad-server-connection-type
   'tcp
-  "Type of connection to use with the OpenSCAD Language Server: tcp or stdio"
+  "Type of connection to use with the OpenSCAD Language Server: tcp or stdio."
   :group 'lsp-openscad
   :risky t
   :type 'symbol)
 
 (defun lsp-openscad-server-start-fun (port)
+  "Create arguments to start openscad language server in TCP mode on PORT."
   `(,lsp-openscad-server "--port" ,(number-to-string port)))
 
 (defun lsp-openscad-server-connection ()
+  "Create command line arguments to start openscad language server."
   (if (eq lsp-openscad-server-connection-type 'tcp)
       (lsp-tcp-connection 'lsp-openscad-server-start-fun)
     (lsp-stdio-connection `(,lsp-openscad-server))))
