@@ -45,6 +45,26 @@
   :risky t
   :type 'symbol)
 
+(defcustom lsp-openscad-search-paths ""
+  "Customized search path."
+  :type 'string
+  :group 'lsp-openscad)
+
+(defcustom lsp-openscad-format-exe "clang-format"
+  "Path to the clang-format executable."
+  :type 'string
+  :group 'lsp-openscad)
+
+(defcustom lsp-openscad-format-style "file"
+  "Style argument to use with clang-format."
+  :type 'string
+  :group 'lsp-openscad)
+
+(lsp-register-custom-settings
+ '(("openscad.search_paths" lsp-openscad-search-paths)
+   ("openscad.fmt_exe" lsp-openscad-format-exe)
+   ("openscad.fmt_style" lsp-openscad-format-style)))
+
 (defun lsp-openscad-server-start-fun (port)
   "Create arguments to start openscad language server in TCP mode on PORT."
   `(,lsp-openscad-server "--port" ,(number-to-string port)))
@@ -59,6 +79,10 @@
  (make-lsp-client :new-connection (lsp-openscad-server-connection)
                   :major-modes '(scad-mode)
                   :priority -1
+                  :initialized-fn (lambda (workspace)
+                                    (with-lsp-workspace workspace
+                                      (lsp--set-configuration
+                                       (lsp-configuration-section "openscad"))))
                   :server-id 'openscad))
 
 (provide 'lsp-openscad)
