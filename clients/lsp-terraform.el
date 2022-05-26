@@ -1,8 +1,8 @@
 ;;; lsp-terraform.el --- Terraform Client settings         -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2019 Ross Donaldson
+;; Copyright (C) 2019 Ross Donaldson, Sibi Prabakaran
 
-;; Author: Ross Donaldson
+;; Author: Ross Donaldson, Sibi Prabakaran
 ;; Keywords: terraform lsp
 
 ;; This program is free software; you can redistribute it and/or modify

@@ -271,5 +271,16 @@ primary working on/responsible for.
         lsp-mode core | iedit
       </div>
     </td>
+    <td align="center">
+      <div>
+        <a href="https://github.com/psibi">
+          <img src="https://github.com/psibi.png" width="100px;" style="border-radius: 50%;" alt="psibi"/>
+          <br/>
+          <sub><b>psibi</b></sub>
+        </a>
+        <br/>
+        Terraform
+      </div>
+    </td>
   </tr>
 </table>
