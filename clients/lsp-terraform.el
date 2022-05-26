@@ -26,6 +26,7 @@
 
 (require 'lsp-mode)
 (require 'lsp-semantic-tokens)
+(require 'dash)
 
 
 ;; terraform-lsp
@@ -93,6 +94,13 @@ attributes.  This is an experimental feature provided by the
 language server."
   :group 'lsp-terraform-ls
   :type 'boolean
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-terraform-ls-providers-position-params nil
+  "The optional providers tree position params.
+Defaults to side following treemacs default."
+  :type 'list
+  :group 'lsp-terraform-ls
   :package-version '(lsp-mode . "8.0.1"))
 
 (defun lsp-terraform-ls--make-launch-cmd ()
@@ -208,6 +216,83 @@ This is a synchronous action."
      :no-merge t))
 
 (lsp-consistency-check lsp-terraform)
+
+(defvar treemacs-position)
+(defvar treemacs-width)
+(declare-function lsp-treemacs-render "ext:lsp-treemacs" (tree title expand-depth &optional buffer-name))
+
+(defvar-local lsp-terraform-ls--providers-tree-data nil)
+(defconst lsp-terraform-ls--providers-buffer-name "*Terraform Providers*")
+
+(cl-defstruct tf-package display-name doc-link installed-version version-constraint)
+
+(defun construct-tf-package (provider installed-version)
+  "Construct `TF-PACKAGE' using PROVIDER and INSTALLED-VERSION."
+  (make-tf-package :display-name (gethash "display_name" provider)
+                   :doc-link (gethash "docs_link" provider)
+                   :installed-version installed-version
+                   :version-constraint (gethash "version_constraint" provider)))
+
+(defun lsp-terraform-ls--providers-to-tf-package (providers-tree-data)
+  "Convert PROVIDERS-TREE-DATA to list of `tf-package'."
+  (let* ((json-object-type 'hash-table)
+         (json-key-type 'string)
+         (installed-providers (gethash "installed_providers" providers-tree-data))
+         (provider-requirements (gethash "provider_requirements" providers-tree-data))
+         (provider-requirements-keys (hash-table-keys provider-requirements))
+         (installed-versions (mapcar (lambda (x) (gethash x installed-providers))  provider-requirements-keys))
+         (providers (mapcar (lambda (x) (gethash x provider-requirements)) provider-requirements-keys))
+         (tf-packages (-zip-with (lambda (x y) (construct-tf-package x y)) providers installed-versions) )
+         )
+    tf-packages))
+
+(defun lsp-terraform-ls--fetch-providers ()
+  "Fetch providers data and set it in `lsp-terraform-ls--providers-tree-data'."
+  (let* ((tree-data (lsp-request
+                     "workspace/executeCommand"
+                     (list :command "terraform-ls.module.providers"
+                           :arguments (vector (format "uri=%s" (lsp--path-to-uri (lsp-workspace-root)))))
+                     :no-wait nil
+                     :no-merge nil))
+         (tf-packages (lsp-terraform-ls--providers-to-tf-package tree-data)))
+    (setq lsp-terraform-ls--providers-tree-data tf-packages)))
+
+(defun lsp-terraform-ls--tf-packages-to-treemacs (tf-packages)
+  "Convert list of `TF-PACKAGES' to treemacs compatible data."
+  (mapcar (lambda (package) (list :label (format "%s %s" (tf-package-display-name package) (tf-package-installed-version package))
+                                  :icon 'package
+                                  :key (tf-package-display-name package)
+                                  :children (list (list
+                                                   :icon 'library
+                                                   :label (tf-package-version-constraint package)))
+                                  :ret-action (lambda (&rest _) (browse-url (tf-package-doc-link package))))) tf-packages))
+
+(defun lsp-terraform-ls--show-providers (ignore-focus?)
+  "Show terraform providers and focus on it if IGNORE-FOCUS? is nil."
+  (unless lsp-terraform-ls--providers-tree-data
+    (lsp-terraform-ls--fetch-providers))
+  (let* ((lsp-terraform-treemacs
+          (lsp-terraform-ls--tf-packages-to-treemacs lsp-terraform-ls--providers-tree-data))
+         (buffer (lsp-treemacs-render lsp-terraform-treemacs
+                                      lsp-terraform-ls--providers-buffer-name
+                                      t
+                                      "Terraform Providers"))
+         (position-params (or lsp-terraform-ls-providers-position-params
+                              `((side . ,treemacs-position)
+                                (slot . 2)
+                                (window-width . ,treemacs-width))))
+         (window
+          (display-buffer-in-side-window buffer position-params)))
+    (unless ignore-focus?
+      (select-window window)
+      (set-window-dedicated-p window t))))
+
+(defun lsp-terraform-ls-providers (&optional ignore-focus?)
+  "Show terraform providers with focus on it if IGNORE-FOCUS? is nil."
+  (interactive)
+  (if (require 'lsp-treemacs nil t)
+      (lsp-terraform-ls--show-providers ignore-focus?)
+    (error "The package lsp-treemacs is not installed")))
 
 (with-eval-after-load 'terraform-mode
   (when lsp-semantic-tokens-enable
