@@ -32,7 +32,7 @@
   :link '(url-link "https://github.com/Leathong/openscad-LSP"))
 
 (defcustom lsp-openscad-server
-  "openscad-language-server"
+  "openscad-lsp"
   "Path to the openscad language server."
   :group 'lsp-openscad
   :risky t
