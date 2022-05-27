@@ -1151,8 +1151,9 @@ in emacs 27.
 
 See #2049"
   (when lsp--show-message
-    (let ((inhibit-message (and (minibufferp)
-                                (version< emacs-version "27.0"))))
+    (let ((inhibit-message (or inhibit-message
+                               (and (minibufferp)
+                                    (version< emacs-version "27.0")))))
       (apply #'message format args))))
 
 (defun lsp--info (format &rest args)
@@ -8527,6 +8528,11 @@ Errors if there are none."
   (lsp--warn "Restarting %s" (lsp--workspace-print workspace))
   (with-lsp-workspace workspace (lsp--shutdown-workspace t)))
 
+(defcustom lsp-warn-no-matched-clients t
+  "Don't show message when there are no supported clients."
+  :group 'lsp-mode
+  :type 'boolean)
+
 ;;;###autoload
 (defun lsp (&optional arg)
   "Entry point for the server startup.
@@ -8607,14 +8613,16 @@ You may find the installation instructions at https://emacs-lsp.github.io/lsp-mo
                               clients
                               " ")))
        ;; no matches
-       ((-> #'lsp--supports-buffer? lsp--filter-clients not)
+       ((and lsp-warn-no-matched-clients
+             (-> #'lsp--supports-buffer? lsp--filter-clients not))
         (lsp--error "There are no language servers supporting current mode `%s' registered with `lsp-mode'.
 This issue might be caused by:
 1. The language you are trying to use does not have built-in support in `lsp-mode'. You must install the required support manually. Examples of this are `lsp-java' or `lsp-metals'.
 2. The language server that you expect to run is not configured to run for major mode `%s'. You may check that by checking the `:major-modes' that are passed to `lsp-register-client'.
 3. `lsp-mode' doesn't have any integration for the language behind `%s'. Refer to https://emacs-lsp.github.io/lsp-mode/page/languages and https://langserver.org/ .
 4. You are over `tramp'. In this case follow https://emacs-lsp.github.io/lsp-mode/page/remote/.
-5. You have disabled the `lsp-mode' clients for that file. (Check `lsp-enabled-clients' and `lsp-disabled-clients')."
+5. You have disabled the `lsp-mode' clients for that file. (Check `lsp-enabled-clients' and `lsp-disabled-clients').
+You can customize `lsp-warn-no-matched-clients' to disable this message."
                     major-mode major-mode major-mode))))))
 
 (defun lsp--buffer-visible-p ()
