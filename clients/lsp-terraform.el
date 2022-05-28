@@ -251,9 +251,7 @@ This is a synchronous action."
                   :source-type source-type
                   :dependent-modules dependent-modules))
 
-
-
-(lsp-defun lsp-terraform-ls--providers-to-tf-package ((&terraform-ls:Providers :v :provider-requirements :installed-providers))
+(lsp-defun lsp-terraform-ls--providers-to-tf-package ((&terraform-ls:Providers :provider-requirements :installed-providers))
   "Convert PROVIDERS-TREE-DATA to list of `tf-package'."
   (let* ((provider-requirements-keys (hash-table-keys provider-requirements))
          (installed-versions (mapcar (lambda (x) (gethash x installed-providers)) provider-requirements-keys))
@@ -261,7 +259,7 @@ This is a synchronous action."
          (tf-packages (-zip-with (lambda (x y) (construct-tf-package x y)) providers installed-versions)))
     tf-packages))
 
-(lsp-defun lsp-terraform-ls--modules-to-tf-module ((&terraform-ls:ModuleCalls :v :module-calls))
+(lsp-defun lsp-terraform-ls--modules-to-tf-module ((&terraform-ls:ModuleCalls :module-calls))
   "Convert MODULES-TREE-DATA to list of `TF-MODULE'."
   (let* ((modules (-map (lambda (x) (construct-tf-module x)) module-calls)))
     modules))
