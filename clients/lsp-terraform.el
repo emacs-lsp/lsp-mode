@@ -243,36 +243,31 @@ This is a synchronous action."
                    :installed-version installed-version
                    :version-constraint (gethash "version_constraint" provider)))
 
-(defun construct-tf-module (module)
+(lsp-defun construct-tf-module ((&terraform-ls:Module :name :docs-link :version :source-type :dependent-modules))
   "Construct `TF-MODULE' using MODULE."
-  (make-tf-module :name (gethash "name" module)
-                  :doc-link (gethash "docs_link" module)
-                  :version (gethash "version" module)
-                  :source-type (gethash "source_type" module)
-                  :dependent-modules (gethash "dependent_modules" module)))
+  (make-tf-module :name name
+                  :doc-link docs-link
+                  :version version
+                  :source-type source-type
+                  :dependent-modules dependent-modules))
 
-(defun lsp-terraform-ls--providers-to-tf-package (providers-tree-data)
+
+
+(lsp-defun lsp-terraform-ls--providers-to-tf-package ((&terraform-ls:Providers :v :provider-requirements :installed-providers))
   "Convert PROVIDERS-TREE-DATA to list of `tf-package'."
-  (let* ((json-object-type 'hash-table)
-         (json-key-type 'string)
-         (installed-providers (gethash "installed_providers" providers-tree-data))
-         (provider-requirements (gethash "provider_requirements" providers-tree-data))
-         (provider-requirements-keys (hash-table-keys provider-requirements))
-         (installed-versions (mapcar (lambda (x) (gethash x installed-providers))  provider-requirements-keys))
+  (let* ((provider-requirements-keys (hash-table-keys provider-requirements))
+         (installed-versions (mapcar (lambda (x) (gethash x installed-providers)) provider-requirements-keys))
          (providers (mapcar (lambda (x) (gethash x provider-requirements)) provider-requirements-keys))
          (tf-packages (-zip-with (lambda (x y) (construct-tf-package x y)) providers installed-versions)))
     tf-packages))
 
-(defun lsp-terraform-ls--modules-to-tf-module (modules-tree-data)
+(lsp-defun lsp-terraform-ls--modules-to-tf-module ((&terraform-ls:ModuleCalls :v :module-calls))
   "Convert MODULES-TREE-DATA to list of `TF-MODULE'."
-  (let* ((json-object-type 'hash-table)
-         (json-key-type 'string)
-         (module-calls (gethash "module_calls" modules-tree-data))
-         (modules (-map (lambda (x) (construct-tf-module x)) module-calls)))
+  (let* ((modules (-map (lambda (x) (construct-tf-module x)) module-calls)))
     modules))
 
 (defun lsp-terraform-ls--fetch-modules-data ()
-  "Fetch providers data and set it in `lsp-terraform-ls--modules-call-tree-data'."
+  "Fetch modules data and set it in `lsp-terraform-ls--modules-call-tree-data'."
   (let* ((tree-data (lsp-request
                      "workspace/executeCommand"
                      (list :command "terraform-ls.module.calls"
