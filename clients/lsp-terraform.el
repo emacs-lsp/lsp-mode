@@ -238,10 +238,10 @@ This is a synchronous action."
 
 (defun construct-tf-package (provider installed-version)
   "Construct `TF-PACKAGE' using PROVIDER and INSTALLED-VERSION."
-  (make-tf-package :display-name (gethash "display_name" provider)
-                   :doc-link (gethash "docs_link" provider)
+  (make-tf-package :display-name (lsp-get provider :display_name)
+                   :doc-link (lsp-get provider :docs_link)
                    :installed-version installed-version
-                   :version-constraint (gethash "version_constraint" provider)))
+                   :version-constraint (lsp-get provider :version_constraint)))
 
 (lsp-defun construct-tf-module ((&terraform-ls:Module :name :docs-link :version :source-type :dependent-modules))
   "Construct `TF-MODULE' using MODULE."
