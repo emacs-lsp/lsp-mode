@@ -254,8 +254,8 @@ This is a synchronous action."
 (lsp-defun lsp-terraform-ls--providers-to-tf-package ((&terraform-ls:Providers :provider-requirements :installed-providers))
   "Convert PROVIDERS-TREE-DATA to list of `tf-package'."
   (let* ((provider-requirements-keys (hash-table-keys provider-requirements))
-         (installed-versions (mapcar (lambda (x) (gethash x installed-providers)) provider-requirements-keys))
-         (providers (mapcar (lambda (x) (gethash x provider-requirements)) provider-requirements-keys))
+         (installed-versions (mapcar (lambda (x) (lsp-get installed-providers (make-symbol (format ":%s" x)))) provider-requirements-keys))
+         (providers (mapcar (lambda (x) (lsp-get provider-requirements (make-symbol (format ":%s" x)))) provider-requirements-keys))
          (tf-packages (-zip-with (lambda (x y) (construct-tf-package x y)) providers installed-versions)))
     tf-packages))
 
