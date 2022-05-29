@@ -128,8 +128,8 @@ nav:
     - SQL (sqls): page/lsp-sqls.md
     - Svelte: page/lsp-svelte.md
     - Swift: https://emacs-lsp.github.io/lsp-sourcekit
-    - Terraform: page/lsp-terraform.md
-    - Terraform-ls: page/lsp-terraform-ls.md
+    - Terraform (terraform-lsp): page/lsp-terraform.md
+    - Terraform (terraform-ls): page/lsp-terraform-ls.md
     - TeX, LaTeX, etc (digestif): page/lsp-tex.md
     - TeX, LaTeX, etc (texlab): page/lsp-texlab.md
     - TeX, LaTeX, etc (texlab, external): page/lsp-latex.md
