@@ -12,14 +12,14 @@
         <meta name="author" content="psibi">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/manual-language-docs/lsp-terraform/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/manual-language-docs/lsp-terraform-ls/">
       
       <link rel="icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.0">
     
     
       
-        <title>Lsp terraform - LSP Mode - LSP support for Emacs</title>
+        <title>Lsp terraform ls - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Lsp terraform
+              Lsp terraform ls
             
           </span>
         </div>
@@ -2241,7 +2241,7 @@
   
     <li class="md-nav__item">
       <a href="../../page/lsp-terraform/" class="md-nav__link">
-        Terraform
+        Terraform (terraform-lsp)
       </a>
     </li>
   
@@ -2255,7 +2255,7 @@
   
     <li class="md-nav__item">
       <a href="../../page/lsp-terraform-ls/" class="md-nav__link">
-        Terraform-ls
+        Terraform (terraform-ls)
       </a>
     </li>
   
@@ -2963,6 +2963,47 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#code-lens" class="md-nav__link">
+    Code Lens
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#semantic-token-support" class="md-nav__link">
+    Semantic token support
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#treeview-controls" class="md-nav__link">
+    Treeview controls
+  </a>
+  
+    <nav class="md-nav" aria-label="Treeview controls">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#providers-widget" class="md-nav__link">
+    Providers widget
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-calls-widget" class="md-nav__link">
+    Module calls widget
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3004,7 +3045,7 @@
 <!-- Edit button -->
 
 <a
-  href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/manual-language-docs/lsp-terraform.md"
+  href="https://github.com/emacs-lsp/lsp-mode/edit/master/docs/manual-language-docs/lsp-terraform-ls.md"
   title="Edit this page"
   class="md-content__button md-icon"
 >
@@ -3021,7 +3062,7 @@
   as the main headline.
 -->
 
-  <h1>Lsp terraform</h1>
+  <h1>Lsp terraform ls</h1>
 
 
 <!-- Markdown content -->
@@ -3042,6 +3083,31 @@ published back in the buffer.</p>
 to make sure that that proper credentials are there.</p>
 <p>Note that this is a synchronous action and will timeout after a
 certain amount of time.</p>
+<h3 id="code-lens">Code Lens<a class="headerlink" href="#code-lens" title="Permanent link">#</a></h3>
+<p>This is an experimental feature which can be enabled via the option
+<code>lsp-terraform-ls-enable-show-reference</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-terraform-ls-enable-show-reference</span> <span class="no">t</span><span class="p">)</span>
+</code></pre></div>
+<p>This gif demonstrates how this feature is used:</p>
+<p><img alt="" src="../../examples/lsp-terraform-code-lens-refs.gif" /></p>
+<h3 id="semantic-token-support">Semantic token support<a class="headerlink" href="#semantic-token-support" title="Permanent link">#</a></h3>
+<p>Make sure to enable these two variables to ensure that you have
+semantic token support for terraform mode:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-semantic-tokens-enable</span> <span class="no">t</span><span class="p">)</span>
+<span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-semantic-tokens-honor-refresh-requests</span> <span class="no">t</span><span class="p">)</span>
+</code></pre></div>
+<p>This is how the code looks without semantic tokens support:</p>
+<p><img alt="" src="../../examples/lsp-terraform-without-semantic-token.png" /></p>
+<p>And with semantic token support you get more contextual information
+via different faces:</p>
+<p><img alt="" src="../../examples/lsp-terraform-with-semantic-token.png" /></p>
+<h3 id="treeview-controls">Treeview controls<a class="headerlink" href="#treeview-controls" title="Permanent link">#</a></h3>
+<p>For this feature to work, make sure that you have <a href="https://github.com/emacs-lsp/lsp-treemacs">lsp-treemacs</a>
+installed.</p>
+<h4 id="providers-widget">Providers widget<a class="headerlink" href="#providers-widget" title="Permanent link">#</a></h4>
+<p><img alt="" src="../../examples/lsp-terraform-providers-treemacs.png" /></p>
+<h4 id="module-calls-widget">Module calls widget<a class="headerlink" href="#module-calls-widget" title="Permanent link">#</a></h4>
+<p><img alt="" src="../../examples/lsp-terraform-modules-treemacs.png" /></p>
 
 <!-- Source file information -->
 
