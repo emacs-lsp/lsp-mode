@@ -227,7 +227,7 @@
   {
     "name": "gleam",
     "full-name": "Gleam",
-    "server-name": "gleam"
+    "server-name": "gleam",
     "server-url": "https://github.com/gleam-lang/gleam",
     "installation-url": "https://github.com/gleam-lang/gleam",
     "debugger": "Not available"
