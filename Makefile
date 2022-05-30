@@ -43,13 +43,7 @@ unix-test:
 
 windows-test:
 	@echo "Testing..."
-	@$(EMACS) -Q --batch \
-		--eval '(setq emacs-lsp-ci t)' \
-		-l $(WIN-BOOTSTRAP) \
-		-L . -L clients \
-		$(LOAD-TEST-FILES) \
-		--eval "(ert-run-tests-batch-and-exit \
-		'(and (not (tag no-win)) (not (tag org))))"
+	$(EASK) ert ./test/*.el
 
 docs:
 	make -C docs/ generate
