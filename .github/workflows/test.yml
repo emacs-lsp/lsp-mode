@@ -19,7 +19,7 @@ jobs:
           - 26.3
           - 27.1
           - 27.2
-          - 28.1
+          #- 28.1
           # TODO: activate when cask works with emacs snapshot
           # - snapshot
 
@@ -67,5 +67,8 @@ jobs:
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
       run: chmod -R 777 ./
               
-    - name: Run tests
-      run: make ci
+    - name: Run tests (Unix)
+      run: make unix-ci
+
+    - name: Run tests (Windows)
+      run: make windows-ci

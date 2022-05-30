@@ -12,7 +12,8 @@ build:
 	$(EASK) install
 
 # TODO: add 'checkdoc' and 'lint' here when they pass
-ci: clean build compile prepare_cpp_project test test-downstream-pkgs
+unix-ci: clean build compile prepare_cpp_project unix-test test-downstream-pkgs
+windows-ci: clean build compile prepare_cpp_project windows-test test-downstream-pkgs
 
 compile:
 	@echo "Compiling..."
@@ -35,10 +36,20 @@ lint:
 	@echo "Package linting..."
 	$(EASK) lint
 
-test:
+unix-test:
 	@echo "Testing..."
 	$(EASK) install-deps --dev
 	$(EASK) exec ert-runner -L . -L clients	$(LOAD-TEST-FILES) -t '!no-win' -t '!org'
+
+windows-test:
+	@echo "Testing..."
+	@$(EMACS) -Q --batch \
+		--eval '(setq emacs-lsp-ci t)' \
+		-l $(WIN-BOOTSTRAP) \
+		-L . -L clients \
+		$(LOAD-TEST-FILES) \
+		--eval "(ert-run-tests-batch-and-exit \
+		'(and (not (tag no-win)) (not (tag org))))"
 
 docs:
 	make -C docs/ generate
