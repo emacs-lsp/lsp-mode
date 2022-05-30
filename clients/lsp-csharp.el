@@ -417,29 +417,30 @@ is returned so lsp-mode can display this file."
 (defun lsp-csharp--cls-make-launch-cmd ()
   "Return command line to invoke csharp-ls."
 
-  ;; latest emacs-28 (on macOS) and master (as of Sat Feb 12 EET 2022) has an issue
+  ;; emacs-28.1 on macOS has an issue
   ;; that it launches processes using posix_spawn but does not reset sigmask properly
   ;; thus causing dotnet runtime to lockup awaiting a SIGCHLD signal that never comes
   ;; from subprocesses that quit
   ;;
-  ;; as a workaround we will wrap csharp-ls invocation in "/usr/bin/env --default-signal"
-  ;; (on linux) and "/bin/ksh -c" (on macos) so it launches with proper sigmask
+  ;; as a workaround we will wrap csharp-ls invocation in "/bin/ksh -c" on macos
+  ;; so it launches with proper sigmask
   ;;
   ;; see https://lists.gnu.org/archive/html/emacs-devel/2022-02/msg00461.html
 
   (let ((startup-wrapper (cond ((and (eq 'darwin system-type)
-                                     (version<= "28.0" emacs-version))
+                                     (version= "28.1" emacs-version))
                                 (list "/bin/ksh" "-c"))
 
-                               ((and (eq 'gnu/linux system-type)
-                                     (version<= "29.0" emacs-version))
-                                (list "/usr/bin/env" "--default-signal"))
-
                                (t nil)))
+
+        (csharp-ls-exec (or (executable-find "csharp-ls")
+                                 (f-join (or (getenv "USERPROFILE") (getenv "HOME"))
+                                         ".dotnet" "tools" "csharp-ls")))
+
         (solution-file-params (when lsp-csharp-solution-file
                                 (list "-s" lsp-csharp-solution-file))))
     (append startup-wrapper
-            (list "csharp-ls")
+            (list csharp-ls-exec)
             solution-file-params)))
 
 (defun lsp-csharp--cls-test-csharp-ls-present ()
