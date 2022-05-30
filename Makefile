@@ -43,6 +43,7 @@ unix-test:
 
 windows-test:
 	@echo "Testing..."
+	$(EASK) install-deps --dev
 	$(EASK) exec ert-runner
 
 docs:
