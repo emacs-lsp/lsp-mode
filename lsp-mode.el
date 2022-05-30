@@ -5863,7 +5863,8 @@ perform the request synchronously."
                              (setq lsp--document-symbols document-symbols
                                    lsp--document-symbols-tick tick)
                              (lsp--imenu-refresh))
-                           :mode 'alive)
+                           :mode 'alive
+                           :cancel-token :document-symbols)
         lsp--document-symbols))))
 
 (advice-add 'imenu-update-menubar :around
