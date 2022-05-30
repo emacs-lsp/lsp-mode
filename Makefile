@@ -43,7 +43,7 @@ unix-test:
 
 windows-test:
 	@echo "Testing..."
-	$(EASK) ert ./test/*.el
+	$(EASK) exec ert-runner
 
 docs:
 	make -C docs/ generate
