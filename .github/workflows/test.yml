@@ -68,7 +68,9 @@ jobs:
       run: chmod -R 777 ./
               
     - name: Run tests (Unix)
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
       run: make unix-ci
 
     - name: Run tests (Windows)
+      if: matrix.os == 'windows-latest'
       run: make windows-ci
