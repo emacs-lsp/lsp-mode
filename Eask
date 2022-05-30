@@ -33,7 +33,7 @@
 
 (development
  (depends-on "flycheck")
- ;;(depends-on "ert-runner")
+ (depends-on "ert-runner")
  (depends-on "espuds")
  (depends-on "ecukes")
  (depends-on "undercover")
