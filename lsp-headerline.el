@@ -147,11 +147,13 @@ caching purposes.")
   "Build the arrow icon for headerline breadcrumb."
   (or
    lsp-headerline-arrow
-   (setq lsp-headerline-arrow (lsp-icons-all-the-icons-material-icon
-                               "chevron_right"
-                               'lsp-headerline-breadcrumb-separator-face
-                               ">"
-                               'headerline-breadcrumb))))
+   (setq lsp-headerline-arrow (let ((all-the-icons-scale-factor 1.0)
+                                    (all-the-icons-default-adjust 0))
+                                (lsp-icons-all-the-icons-material-icon
+                                 "chevron_right"
+                                 'lsp-headerline-breadcrumb-separator-face
+                                 ">"
+                                 'headerline-breadcrumb)))))
 
 (lsp-defun lsp-headerline--symbol-icon ((&DocumentSymbol :kind))
   "Build the SYMBOL icon for headerline breadcrumb."
