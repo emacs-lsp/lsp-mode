@@ -143,6 +143,10 @@ is an hints in symbols range."
   "Holds the current breadcrumb path-up-to-project segments for
 caching purposes.")
 
+;; Redefine local vars of `all-the-icons' to avoid bytecode compilation errors.
+(defvar all-the-icons-default-adjust)
+(defvar all-the-icons-scale-factor)
+
 (defun lsp-headerline--arrow-icon ()
   "Build the arrow icon for headerline breadcrumb."
   (or
