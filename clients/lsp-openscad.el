@@ -65,15 +65,19 @@
    ("openscad.fmt_exe" lsp-openscad-format-exe)
    ("openscad.fmt_style" lsp-openscad-format-style)))
 
-(defun lsp-openscad-server-start-fun (port)
+(defun lsp-openscad-server-stdio-start-fun ()
+  "Create arguments to start openscad language server in stdio mode."
+  `(,lsp-openscad-server "--stdio" ))
+
+(defun lsp-openscad-server-tcp-start-fun (port)
   "Create arguments to start openscad language server in TCP mode on PORT."
   `(,lsp-openscad-server "--port" ,(number-to-string port)))
 
 (defun lsp-openscad-server-connection ()
   "Create command line arguments to start openscad language server."
   (if (eq lsp-openscad-server-connection-type 'tcp)
-      (lsp-tcp-connection 'lsp-openscad-server-start-fun)
-    (lsp-stdio-connection `(,lsp-openscad-server))))
+      (lsp-tcp-connection 'lsp-openscad-server-tcp-start-fun)
+    (lsp-stdio-connection 'lsp-openscad-server-stdio-start-fun)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-openscad-server-connection)
