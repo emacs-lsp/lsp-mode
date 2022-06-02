@@ -192,6 +192,14 @@ As defined by the Language Server Protocol 3.16."
   :group 'lsp-mode
   :type 'boolean)
 
+(defcustom lsp-progress-spinner-type 'progress-bar
+  "Holds the type of spinner to be used in the mode-line.
+Takes a value accepted by `spinner-start'."
+  :group 'lsp-mode
+  :type `(choice :tag "Choose a spinner by name"
+                 ,@(mapcar (lambda (c) (list 'const (car c)))
+                           spinner-types)))
+
 (defvar-local lsp--cur-workspace nil)
 
 (defvar-local lsp--cur-version 0)
@@ -1328,7 +1336,7 @@ the lists according to METHOD."
 
 (defun lsp--spinner-start ()
   "Start spinner indication."
-  (condition-case _err (spinner-start 'progress-bar-filled) (error)))
+  (condition-case _err (spinner-start (lsp-progress-spinner-type)) (error)))
 
 (defun lsp--propertize (str type)
   "Propertize STR as per TYPE."
@@ -2056,7 +2064,7 @@ WORKSPACE is the workspace that contains the progress token."
      (-let* (((&WorkDoneProgressBegin :title :percentage?) value)
              (reporter
               (if lsp-progress-via-spinner
-                  (let* ((spinner-strings (alist-get 'progress-bar spinner-types))
+                  (let* ((spinner-strings (alist-get (lsp-progress-spinner-type) spinner-types))
                          ;; Set message as a tooltip for the spinner strings
                          (propertized-strings
                           (seq-map (lambda (string) (propertize string 'help-echo title))
@@ -8825,6 +8833,10 @@ This avoids overloading the server with many files when starting Emacs."
   (lsp-diagnostics-lsp-checker-if-needed)
   (unless (flycheck-checker-supports-major-mode-p 'lsp mode)
     (flycheck-add-mode 'lsp mode)))
+
+(defun lsp-progress-spinner-type ()
+  "Retrive the spinner type value, if value is not a symbol of `spinner-types defaults to 'progress-bar."
+  (or (car (assoc lsp-progress-spinner-type spinner-types)) 'progress-bar))
 
 (defun lsp-org ()
   (interactive)
