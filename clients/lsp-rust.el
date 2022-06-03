@@ -349,6 +349,20 @@ active, the various inlay format settings are not used."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.1"))
 
+(defcustom lsp-rust-analyzer-hide-closure-initialization nil
+  "Whether to hide inlay type hints for `let` statements that initialize
+to a closure.ppOnly applies to closures with blocks, same as
+`#rust-analyzer.inlayHints.closureReturnTypeHints.enable#`."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-hide-named-constructor nil
+  "Whether to hide inlay type hints for constructors."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defcustom lsp-rust-analyzer-server-display-inlay-hints nil
   "Show inlay hints."
   :type 'boolean
@@ -398,9 +412,32 @@ with block bodies."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "6.2.2"))
 
-(defcustom lsp-rust-analyzer-display-reborrow-hints nil
-  "Whether to show reborrowing inlay hints."
+(defcustom lsp-rust-analyzer-display-reborrow-hints "never"
+  "Whether to show inlay type hints for compiler inserted reborrows."
+  :type '(choice
+          (const "always")
+          (const "never")
+          (const "mutable"))
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-binding-mode-hints nil
+  "Whether to show inlay type hints for binding modes."
   :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-closing-brace-hints t
+  "Whether to show inlay hints after a closing `}` to indicate what item it
+belongs to."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-closing-brace-hints-min-lines 25
+  "Minimum number of lines required before the `}` until the hint is shown
+\(set to 0 or 1 to always show them)."
+  :type 'integer
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.1"))
 
@@ -709,15 +746,20 @@ or JSON objects in `rust-project.json` format."
             :unsetTest ,lsp-rust-analyzer-cargo-unset-test)
     :rustfmt (:extraArgs ,lsp-rust-analyzer-rustfmt-extra-args
               :overrideCommand ,lsp-rust-analyzer-rustfmt-override-command)
-    :inlayHints (:renderColons ,(lsp-json-bool lsp-rust-analyzer-server-format-inlay-hints)
-                 :typeHints ,(lsp-json-bool lsp-rust-analyzer-server-display-inlay-hints)
+    :inlayHints (:bindingModeHints ,(lsp-json-bool lsp-rust-analyzer-binding-mode-hints)
                  :chainingHints ,(lsp-json-bool lsp-rust-analyzer-display-chaining-hints)
+                 :closingBraceHints (:enable ,(lsp-json-bool lsp-rust-analyzer-closing-brace-hints)
+                                     :minLines ,lsp-rust-analyzer-closing-brace-hints-min-lines)
                  :closureReturnTypeHints ,(lsp-json-bool lsp-rust-analyzer-display-closure-return-type-hints)
                  :lifetimeElisionHints (:enable ,lsp-rust-analyzer-display-lifetime-elision-hints-enable
                                         :useParameterNames ,(lsp-json-bool lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names))
+                 :maxLength ,lsp-rust-analyzer-max-inlay-hint-length
                  :parameterHints ,(lsp-json-bool lsp-rust-analyzer-display-parameter-hints)
                  :reborrowHints ,(lsp-json-bool lsp-rust-analyzer-display-reborrow-hints)
-                 :maxLength ,lsp-rust-analyzer-max-inlay-hint-length)
+                 :renderColons ,(lsp-json-bool lsp-rust-analyzer-server-format-inlay-hints)
+                 :typeHints (:enable ,(lsp-json-bool lsp-rust-analyzer-server-display-inlay-hints)
+                             :hideClosureInitialization ,(lsp-json-bool lsp-rust-analyzer-hide-closure-initialization)
+                             :hideNamedConstructor ,(lsp-json-bool lsp-rust-analyzer-hide-named-constructor)))
     :completion (:addCallParenthesis ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-parenthesis)
                  :addCallArgumentSnippets ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-argument-snippets)
                  :postfix (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-postfix-enable))
