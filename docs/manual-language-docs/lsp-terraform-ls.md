@@ -72,8 +72,15 @@ installed.
 
 #### Providers widget
 
+This widget can be invoked by `lsp-terraform-ls-providers`.
+
 ![](../examples/lsp-terraform-providers-treemacs.png)
 
 #### Module calls widget
+
+This widget can be invoked by `lsp-terraform-ls-module-calls`.
+
+If the modules data is empty, you might need to do `terraform init`
+for the project.
 
 ![](../examples/lsp-terraform-modules-treemacs.png)
