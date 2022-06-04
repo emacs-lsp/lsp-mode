@@ -328,6 +328,8 @@ This is a synchronous action."
   "Show terraform modules and focus on it if IGNORE-FOCUS? is nil."
   (unless lsp-terraform-ls--modules-call-tree-data
     (lsp-terraform-ls--fetch-modules-data))
+  (unless lsp-terraform-ls--modules-call-tree-data
+    (error "Modules data is empty"))
   (let* ((lsp-terraform-treemacs
           (lsp-terraform-ls--tf-modules-to-treemacs lsp-terraform-ls--modules-call-tree-data))
          (buffer (lsp-treemacs-render lsp-terraform-treemacs
