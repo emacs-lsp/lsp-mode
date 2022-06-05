@@ -2360,6 +2360,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-binding-mode-hints" class="md-nav__link">
+    lsp-rust-analyzer-binding-mode-hints
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-call-info-full" class="md-nav__link">
     lsp-rust-analyzer-call-info-full
   </a>
@@ -2425,6 +2432,20 @@
           <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-cargo-watch-enable" class="md-nav__link">
     lsp-rust-analyzer-cargo-watch-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-closing-brace-hints" class="md-nav__link">
+    lsp-rust-analyzer-closing-brace-hints
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-closing-brace-hints-min-lines" class="md-nav__link">
+    lsp-rust-analyzer-closing-brace-hints-min-lines
   </a>
   
 </li>
@@ -2572,6 +2593,20 @@
           <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-experimental-proc-attr-macros" class="md-nav__link">
     lsp-rust-analyzer-experimental-proc-attr-macros
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-hide-closure-initialization" class="md-nav__link">
+    lsp-rust-analyzer-hide-closure-initialization
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-hide-named-constructor" class="md-nav__link">
+    lsp-rust-analyzer-hide-named-constructor
   </a>
   
 </li>
@@ -3691,6 +3726,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-binding-mode-hints" class="md-nav__link">
+    lsp-rust-analyzer-binding-mode-hints
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-call-info-full" class="md-nav__link">
     lsp-rust-analyzer-call-info-full
   </a>
@@ -3756,6 +3798,20 @@
           <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-cargo-watch-enable" class="md-nav__link">
     lsp-rust-analyzer-cargo-watch-enable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-closing-brace-hints" class="md-nav__link">
+    lsp-rust-analyzer-closing-brace-hints
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-closing-brace-hints-min-lines" class="md-nav__link">
+    lsp-rust-analyzer-closing-brace-hints-min-lines
   </a>
   
 </li>
@@ -3903,6 +3959,20 @@
           <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-experimental-proc-attr-macros" class="md-nav__link">
     lsp-rust-analyzer-experimental-proc-attr-macros
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-hide-closure-initialization" class="md-nav__link">
+    lsp-rust-analyzer-hide-closure-initialization
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-hide-named-constructor" class="md-nav__link">
+    lsp-rust-analyzer-hide-named-constructor
   </a>
   
 </li>
@@ -4252,6 +4322,11 @@ modifying the signature that is displayed by eldoc.</p>
 <p><em>Default:</em> <code>rust-analyzer</code></p>
 <p>Choose LSP server.</p>
 <hr />
+<h3 id="lsp-rust-analyzer-binding-mode-hints"><code>lsp-rust-analyzer-binding-mode-hints</code><a class="headerlink" href="#lsp-rust-analyzer-binding-mode-hints" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Whether to show inlay type hints for binding modes.</p>
+<hr />
 <h3 id="lsp-rust-analyzer-call-info-full"><code>lsp-rust-analyzer-call-info-full</code><a class="headerlink" href="#lsp-rust-analyzer-call-info-full" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
@@ -4302,6 +4377,18 @@ The command should include <code>--message=format=json</code> or similar option.
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Enable Cargo watch.</p>
+<hr />
+<h3 id="lsp-rust-analyzer-closing-brace-hints"><code>lsp-rust-analyzer-closing-brace-hints</code><a class="headerlink" href="#lsp-rust-analyzer-closing-brace-hints" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Whether to show inlay hints after a closing <code>}</code> to indicate what item it
+belongs to.</p>
+<hr />
+<h3 id="lsp-rust-analyzer-closing-brace-hints-min-lines"><code>lsp-rust-analyzer-closing-brace-hints-min-lines</code><a class="headerlink" href="#lsp-rust-analyzer-closing-brace-hints-min-lines" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>integer</code></p>
+<p><em>Default:</em> <code>25</code></p>
+<p>Minimum number of lines required before the <code>}</code> until the hint is shown
+(set to 0 or 1 to always show them).</p>
 <hr />
 <h3 id="lsp-rust-analyzer-completion-add-call-argument-snippets"><code>lsp-rust-analyzer-completion-add-call-argument-snippets</code><a class="headerlink" href="#lsp-rust-analyzer-completion-add-call-argument-snippets" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4396,9 +4483,9 @@ parameter names or numeric placeholder names for the lifetimes.</p>
 <p>Whether to show function parameter name inlay hints at the call site.</p>
 <hr />
 <h3 id="lsp-rust-analyzer-display-reborrow-hints"><code>lsp-rust-analyzer-display-reborrow-hints</code><a class="headerlink" href="#lsp-rust-analyzer-display-reborrow-hints" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Whether to show reborrowing inlay hints.</p>
+<p><em>Type:</em> <code>(choice (const always) (const never) (const mutable))</code></p>
+<p><em>Default:</em> <code>never</code></p>
+<p>Whether to show inlay type hints for compiler inserted reborrows.</p>
 <hr />
 <h3 id="lsp-rust-analyzer-download-url"><code>lsp-rust-analyzer-download-url</code><a class="headerlink" href="#lsp-rust-analyzer-download-url" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
@@ -4419,6 +4506,18 @@ parameter names or numeric placeholder names for the lifetimes.</p>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Whether to enable experimental support for expanding proc macro attributes.</p>
+<hr />
+<h3 id="lsp-rust-analyzer-hide-closure-initialization"><code>lsp-rust-analyzer-hide-closure-initialization</code><a class="headerlink" href="#lsp-rust-analyzer-hide-closure-initialization" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Whether to hide inlay type hints for <code>let</code> statements that initialize
+to a closure.ppOnly applies to closures with blocks, same as
+<code>#rust-analyzer.inlayHints.closureReturnTypeHints.enable#</code>.</p>
+<hr />
+<h3 id="lsp-rust-analyzer-hide-named-constructor"><code>lsp-rust-analyzer-hide-named-constructor</code><a class="headerlink" href="#lsp-rust-analyzer-hide-named-constructor" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Whether to hide inlay type hints for constructors.</p>
 <hr />
 <h3 id="lsp-rust-analyzer-highlighting-strings"><code>lsp-rust-analyzer-highlighting-strings</code><a class="headerlink" href="#lsp-rust-analyzer-highlighting-strings" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
