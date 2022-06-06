@@ -401,6 +401,8 @@ This is a synchronous action."
 (defun lsp-terraform-ls--modules-refresh ()
   "Refresh terraform modules data."
   (interactive)
+  (unless (buffer-live-p lsp-tf--modules-control-buffer)
+    (error "Original buffer not present.  Do M-x lsp-terraform-ls-module-calls"))
   (with-current-buffer lsp-tf--modules-control-buffer
     (lsp-terraform-ls--refresh-module-calls)))
 
