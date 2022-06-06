@@ -68,7 +68,8 @@ NAME is the name of the section."
   (use-package-as-one (symbol-name keyword) args
     (apply-partially #'use-package-normalize-ensure-servers name) t))
 
-;;;###autoload (with-eval-after-load 'use-package (add-to-list 'use-package-keywords :ensure-servers t))
+;;;###autoload
+(with-eval-after-load 'use-package (add-to-list 'use-package-keywords :ensure-servers t))
 
 (provide 'lsp-use-package)
 ;;; lsp-use-package.el ends here
