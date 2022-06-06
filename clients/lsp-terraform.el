@@ -373,7 +373,6 @@ This is a synchronous action."
                                       lsp-terraform-ls--modules-buffer-name
                                       t
                                       "Terraform Modules"))
-         (modules-buffer (current-buffer))
          (position-params (or lsp-terraform-ls-module-calls-position-params
                               `((side . ,treemacs-position)
                                 (slot . 1)
