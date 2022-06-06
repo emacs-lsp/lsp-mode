@@ -52,6 +52,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "camel",
+    "full-name": "CAMEL",
+    "server-name": "camells",
+    "server-url": "https://github.com/camel-tooling/camel-language-server/",
+    "installation": "Automatic by lsp-mode with `lsp-install-server`",
+    "lsp-install-server": "camells",
+    "debugger": "Not available"
+  },
+  {
     "name": "csharp-ls",
     "common-group-name": "csharp",
     "full-name": "C# (csharp-ls)",
