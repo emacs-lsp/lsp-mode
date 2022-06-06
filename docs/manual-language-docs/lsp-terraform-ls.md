@@ -83,4 +83,10 @@ This widget can be invoked by `lsp-terraform-ls-module-calls`.
 If the modules data is empty, you might need to do `terraform init`
 for the project.
 
+The widget has a minor mode named
+`lsp-terraform-modules-mode`. Following keybinding are available
+within the mode:
+
+- `g`: Refresh modules view
+
 ![](../examples/lsp-terraform-modules-treemacs.png)
