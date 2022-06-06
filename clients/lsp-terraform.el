@@ -238,7 +238,7 @@ This is a synchronous action."
   (let ((m (make-sparse-keymap)))
     (define-key m (kbd "g") 'lsp-terraform-ls--modules-refresh)
     m)
-  "Keymap for `lsp-treemacs-modules-mode'.")
+  "Keymap for `lsp-terraform-modules-mode'.")
 
 (define-minor-mode lsp-terraform-modules-mode "LSP Treemacs mode for terraform modules."
   :keymap lsp-terraform-modules-mode-map
