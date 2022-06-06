@@ -51,6 +51,7 @@ nav:
     - Ansible: page/lsp-ansible.md
     - Bash: page/lsp-bash.md
     - Beancount: page/lsp-beancount.md
+    - Camel: page/lsp-camel.md
     - C++ (ccls): page/lsp-ccls.md
     - C++ (clangd): page/lsp-clangd.md
     - C# (omnisharp-roslyn): page/lsp-csharp-omnisharp.md
