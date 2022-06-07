@@ -26,6 +26,7 @@
 
 (require 'lsp-mode)
 (require 'lsp-semantic-tokens)
+(require 'lsp-protocol)
 (require 'dash)
 
 ;; terraform-lsp
@@ -229,8 +230,19 @@ This is a synchronous action."
 
 (defvar-local lsp-terraform-ls--providers-tree-data nil)
 (defvar-local lsp-terraform-ls--modules-call-tree-data nil)
+(defvar-local lsp-tf--modules-control-buffer nil)
 (defconst lsp-terraform-ls--providers-buffer-name "*Terraform Providers*")
 (defconst lsp-terraform-ls--modules-buffer-name "*Terraform Modules*")
+
+(defvar lsp-terraform-modules-mode-map
+  (let ((m (make-sparse-keymap)))
+    (define-key m (kbd "g") 'lsp-terraform-ls--modules-refresh)
+    m)
+  "Keymap for `lsp-terraform-modules-mode'.")
+
+(define-minor-mode lsp-terraform-modules-mode "LSP Treemacs mode for terraform modules."
+  :keymap lsp-terraform-modules-mode-map
+  :group 'lsp-terraform-ls)
 
 (cl-defstruct tf-package display-name doc-link installed-version version-constraint)
 
@@ -264,12 +276,12 @@ This is a synchronous action."
   (let* ((modules (-map (lambda (x) (construct-tf-module x)) module-calls)))
     modules))
 
-(defun lsp-terraform-ls--fetch-modules-data ()
+(defun lsp-terraform-ls--fetch-modules-data (project-root)
   "Fetch modules data and set it in `lsp-terraform-ls--modules-call-tree-data'."
   (let* ((tree-data (lsp-request
                      "workspace/executeCommand"
                      (list :command "terraform-ls.module.calls"
-                           :arguments (vector (format "uri=%s" (lsp--path-to-uri (lsp-workspace-root)))))
+                           :arguments (vector (format "uri=%s" (lsp--path-to-uri project-root))))
                      :no-wait nil
                      :no-merge nil))
          (modules (lsp-terraform-ls--modules-to-tf-module tree-data)))
@@ -324,10 +336,35 @@ This is a synchronous action."
       (select-window window)
       (set-window-dedicated-p window t))))
 
-(defun lsp-terraform-ls--show-module-calls (ignore-focus?)
+(defun lsp-terraform-ls--show-module-calls (ignore-focus? project-root)
   "Show terraform modules and focus on it if IGNORE-FOCUS? is nil."
   (unless lsp-terraform-ls--modules-call-tree-data
-    (lsp-terraform-ls--fetch-modules-data))
+    (lsp-terraform-ls--fetch-modules-data project-root))
+  (unless lsp-terraform-ls--modules-call-tree-data
+    (error "Modules data is empty"))
+  (let* ((lsp-terraform-treemacs
+          (lsp-terraform-ls--tf-modules-to-treemacs lsp-terraform-ls--modules-call-tree-data))
+         (buffer (lsp-treemacs-render lsp-terraform-treemacs
+                                      lsp-terraform-ls--modules-buffer-name
+                                      t
+                                      "Terraform Modules"))
+         (modules-buffer (current-buffer))
+         (position-params (or lsp-terraform-ls-module-calls-position-params
+                              `((side . ,treemacs-position)
+                                (slot . 1)
+                                (window-width . ,treemacs-width))))
+         (window
+          (display-buffer-in-side-window buffer position-params)))
+    (select-window window)
+    (setq-local lsp-tf--modules-control-buffer modules-buffer)
+    (lsp-terraform-modules-mode t)
+    (set-window-dedicated-p window t)
+    (when ignore-focus?
+      (select-window (previous-window)))))
+
+(defun lsp-terraform-ls--refresh-module-calls ()
+  "Refresh terraform modules."
+  (lsp-terraform-ls--fetch-modules-data (lsp-workspace-root))
   (unless lsp-terraform-ls--modules-call-tree-data
     (error "Modules data is empty"))
   (let* ((lsp-terraform-treemacs
@@ -342,9 +379,10 @@ This is a synchronous action."
                                 (window-width . ,treemacs-width))))
          (window
           (display-buffer-in-side-window buffer position-params)))
-    (unless ignore-focus?
-      (select-window window)
-      (set-window-dedicated-p window t))))
+    (select-window window)
+    (lsp-terraform-modules-mode t)
+    (set-window-dedicated-p window t)
+    (lsp--info "Refresh completed")))
 
 (defun lsp-terraform-ls-providers (&optional ignore-focus?)
   "Show terraform providers with focus on it if IGNORE-FOCUS? is nil."
@@ -357,8 +395,16 @@ This is a synchronous action."
   "Show terraform modules with focus on it if IGNORE-FOCUS? is nil."
   (interactive)
   (if (require 'lsp-treemacs nil t)
-      (lsp-terraform-ls--show-module-calls ignore-focus?)
+      (lsp-terraform-ls--show-module-calls ignore-focus? (lsp-workspace-root))
     (error "The package lsp-treemacs is not installed")))
+
+(defun lsp-terraform-ls--modules-refresh ()
+  "Refresh terraform modules data."
+  (interactive)
+  (unless (buffer-live-p lsp-tf--modules-control-buffer)
+    (error "Original buffer not present.  Do M-x lsp-terraform-ls-module-calls"))
+  (with-current-buffer lsp-tf--modules-control-buffer
+    (lsp-terraform-ls--refresh-module-calls)))
 
 (with-eval-after-load 'terraform-mode
   (when lsp-semantic-tokens-enable
