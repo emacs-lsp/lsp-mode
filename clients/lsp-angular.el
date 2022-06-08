@@ -68,7 +68,9 @@ Has no effects when `lsp-clients-angular-language-server-command' is set."
               (f-join
                (string-trim
                 (shell-command-to-string lsp-clients-angular-node-get-prefix-command))
-               "lib/node_modules")))
+               (if (eq system-type 'windows-nt)
+                   "node_modules"
+                 "lib/node_modules"))))
          ;; The shell command takes a significant time to run,
          ;; so we "cache" its results after running once
          (setq lsp-clients-angular-language-server-command
