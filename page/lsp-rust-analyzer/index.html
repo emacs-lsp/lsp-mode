@@ -2703,6 +2703,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-library-directories" class="md-nav__link">
+    lsp-rust-analyzer-library-directories
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-linked-projects" class="md-nav__link">
     lsp-rust-analyzer-linked-projects
   </a>
@@ -4069,6 +4076,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-library-directories" class="md-nav__link">
+    lsp-rust-analyzer-library-directories
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-linked-projects" class="md-nav__link">
     lsp-rust-analyzer-linked-projects
   </a>
@@ -4323,7 +4337,7 @@ modifying the signature that is displayed by eldoc.</p>
     :initialization-options &#39;lsp-rust-analyzer--make-init-options
     :notification-handlers (ht&lt;-alist lsp-rust-notification-handlers)
     :action-handlers (ht (&quot;rust-analyzer.runSingle&quot; #&#39;lsp-rust--analyzer-run-single))
-    :library-folders-fn (lambda (_workspace) lsp-rust-library-directories)
+    :library-folders-fn (lambda (_workspace) lsp-rust-analyzer-library-directories)
     :after-open-fn (lambda ()
                      (when lsp-rust-analyzer-server-display-inlay-hints
                        (lsp-rust-analyzer-inlay-hints-mode)))
@@ -4604,6 +4618,11 @@ non-nil).</p>
 <p>Format string for variable inlays (part of the inlay face,
 used only if lsp-rust-analyzer-server-format-inlay-hints is
 non-nil).</p>
+<hr />
+<h3 id="lsp-rust-analyzer-library-directories"><code>lsp-rust-analyzer-library-directories</code><a class="headerlink" href="#lsp-rust-analyzer-library-directories" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(repeat string)</code></p>
+<p><em>Default:</em> <code>(~/.cargo/registry/src ~/.rustup/toolchains)</code></p>
+<p>List of directories which will be considered to be libraries.</p>
 <hr />
 <h3 id="lsp-rust-analyzer-linked-projects"><code>lsp-rust-analyzer-linked-projects</code><a class="headerlink" href="#lsp-rust-analyzer-linked-projects" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
