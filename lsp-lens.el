@@ -245,13 +245,15 @@ version."
   version)
 
 (lsp-defun lsp--lens-backend-not-loaded? ((&CodeLens :range
-                                                     (&Range :start)
+                                                     (range &as &Range :start)
                                                      :command?
                                                      :_pending pending))
   "Return t if LENS has to be loaded."
-  (and (< (window-start) (lsp--position-to-point start) (window-end))
-       (not command?)
-       (not pending)))
+  (let ((window (get-buffer-window (current-buffer))))
+    ;; (window-start/end) does not consider current window buffer if not passed manually
+    (and (< (window-start window) (lsp--position-to-point start) (window-end window))
+         (not command?)
+         (not pending))))
 
 (lsp-defun lsp--lens-backend-present? ((&CodeLens :range (&Range :start) :command?))
   "Return t if LENS has to be loaded."
