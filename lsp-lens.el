@@ -245,7 +245,7 @@ version."
   version)
 
 (lsp-defun lsp--lens-backend-not-loaded? ((&CodeLens :range
-                                                     (range &as &Range :start)
+                                                     (&Range :start)
                                                      :command?
                                                      :_pending pending))
   "Return t if LENS has to be loaded."
