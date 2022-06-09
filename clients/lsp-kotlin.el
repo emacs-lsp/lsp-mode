@@ -136,9 +136,8 @@ to Kotlin."
 (defun lsp-kotlin-lens-backend (_modified? callback)
   (when lsp-kotlin-debug-adapter-enabled
     (lsp-request-async
-     "workspace/executeCommand"
-     (list :command "resolveMain"
-           :arguments (vector (lsp--buffer-uri)))
+     "kotlin/mainClass"
+     (list :uri (vector (lsp--buffer-uri)))
      (lambda (mainInfo)
        ;; range became nil when using -let, so using lsp-get for it below instead
        (-let [(&hash :mainClass main-class :projectRoot project-root) mainInfo]
