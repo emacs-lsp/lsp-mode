@@ -342,6 +342,13 @@ PARAMS progress report notification data."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "6.2"))
 
+(defcustom lsp-rust-analyzer-library-directories '("~/.cargo/registry/src" "~/.rustup/toolchains")
+  "List of directories which will be considered to be libraries."
+  :risky t
+  :type '(repeat string)
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defcustom lsp-rust-analyzer-server-format-inlay-hints t
   "Whether to ask rust-analyzer to format inlay hints itself.  If
 active, the various inlay format settings are not used."
@@ -897,7 +904,7 @@ or JSON objects in `rust-project.json` format."
   :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single)
                        ("rust-analyzer.debugSingle" #'lsp-rust--analyzer-debug-lens)
                        ("rust-analyzer.showReferences" #'lsp-rust--analyzer-show-references))
-  :library-folders-fn (lambda (_workspace) lsp-rust-library-directories)
+  :library-folders-fn (lambda (_workspace) lsp-rust-analyzer-library-directories)
   :after-open-fn (lambda ()
                    (when lsp-rust-analyzer-server-display-inlay-hints
                      (lsp-rust-analyzer-inlay-hints-mode)))

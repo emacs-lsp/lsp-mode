@@ -134,7 +134,7 @@ The following is an example configuration for using lsp-mode with a remote rust-
     :initialization-options 'lsp-rust-analyzer--make-init-options
     :notification-handlers (ht<-alist lsp-rust-notification-handlers)
     :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single))
-    :library-folders-fn (lambda (_workspace) lsp-rust-library-directories)
+    :library-folders-fn (lambda (_workspace) lsp-rust-analyzer-library-directories)
     :after-open-fn (lambda ()
                      (when lsp-rust-analyzer-server-display-inlay-hints
                        (lsp-rust-analyzer-inlay-hints-mode)))
