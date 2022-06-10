@@ -547,9 +547,10 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
   ;; which should minimize those occasions where font-lock region extension extends beyond the
   ;; region covered by our freshly requested tokens (see lsp-mode issue #3154), while still limiting
   ;; requests to fairly small regions even if the underlying buffer is large
-  (lsp--semantic-tokens-request
-   (cons (max (point-min) (- (window-start) (* 5 jit-lock-chunk-size)))
-         (min (point-max) (+ (window-end) (* 5 jit-lock-chunk-size)))) t))
+  (when (lsp-feature? "textDocument/semanticTokens")
+    (lsp--semantic-tokens-request
+     (cons (max (point-min) (- (window-start) (* 5 jit-lock-chunk-size)))
+           (min (point-max) (+ (window-end) (* 5 jit-lock-chunk-size)))) t)))
 
 (defun lsp--semantic-tokens-as-defined-by-workspace (workspace)
   "Return plist of token-types and token-modifiers defined by WORKSPACE,
