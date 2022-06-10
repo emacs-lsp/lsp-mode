@@ -1,6 +1,6 @@
 ---
 author: ericdallo
-disqus: emacs-lsp
+template: comment.html
 root_file: docs/tutorials/clojure-guide.md
 ---
 

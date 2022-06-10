@@ -1,6 +1,6 @@
 ---
 author: yyoncho
-disqus: emacs-lsp
+template: comment.html
 root_file: docs/manual-language-docs/lsp-rust-analyzer.md
 ---
 ## Server note

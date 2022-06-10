@@ -6,7 +6,7 @@ ContentId: 2dd2eeff-2eb3-4a0c-a59d-ea9a0b10c468
 PageTitle: React JavaScript Tutorial in Emacs
 DateApproved: 9/10/2020
 MetaDescription: React JavaScript tutorial showing IntelliSense, debugging, and code navigation support in the Emacs editor.
-disqus: emacs-lsp
+template: comment.html
 root_file: docs/tutorials/reactjs-tutorial.md
 ---
 # Using React in Emacs

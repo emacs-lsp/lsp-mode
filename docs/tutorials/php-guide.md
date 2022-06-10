@@ -1,5 +1,5 @@
 ---
-disqus: emacs-lsp
+template: comment.html
 author: elken
 root_file: docs/tutorials/php-guide.md
 ---

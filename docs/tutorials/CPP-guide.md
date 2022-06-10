@@ -1,5 +1,5 @@
 ---
-disqus: emacs-lsp
+template: comment.html
 root_file: docs/tutorials/CPP-guide.md
 ---
 

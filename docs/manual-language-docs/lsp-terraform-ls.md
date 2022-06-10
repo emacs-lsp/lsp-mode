@@ -1,6 +1,6 @@
 ---
 author: psibi
-disqus: emacs-lsp
+template: comment.html
 root_file: docs/manual-language-docs/lsp-terraform-ls.md
 ---
 
