@@ -4095,7 +4095,7 @@ yet."
                   (or (null version) (zerop version) (= -1 version)
                       (equal version lsp--cur-version))))))
            document-changes)
-    (error "Document changes cannot be applied")))
+    (error "Document changes cannot be applied due to different document version")))
 
 (defun lsp--apply-workspace-edit (workspace-edit &optional operation)
   "Apply the WorkspaceEdit object WORKSPACE-EDIT.
