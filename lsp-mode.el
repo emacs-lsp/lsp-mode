@@ -7634,6 +7634,19 @@ When prefix UPDATE? is t force installation even if the server is present."
     (lsp--install-server-internal chosen-client t)))
 
 ;;;###autoload
+(defun lsp-update-servers ()
+  "Update all installed servers."
+  (interactive)
+  (lsp--require-packages)
+  (cl-loop for client in
+           (-filter (-andfn
+                     (-not #'lsp--client-download-in-progress?)
+                     #'lsp--client-download-server-fn
+                     #'lsp--server-binary-present?) (hash-table-values lsp-clients))
+           do (lsp--install-server-internal client t))
+  )
+
+;;;###autoload
 (defun lsp-ensure-server (server-id)
   "Ensure server SERVER-ID"
   (lsp--require-packages)
