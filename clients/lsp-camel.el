@@ -51,7 +51,7 @@
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-camel--create-connection)
-		  :activation-fn (lsp-activate-on "xml")
+		  :activation-fn (lsp-activate-on "xml" "java")
 		  :priority 0
 		  :server-id 'camells
 		  :add-on? t
