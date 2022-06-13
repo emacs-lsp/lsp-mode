@@ -1195,7 +1195,8 @@ https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/dev/lsp-extensio
 
 (defun lsp-rust-analyzer--related-tests ()
   "Get runnable test items related to the current TextDocumentPosition.
-Calls a rust-analyzer LSP extension endpoint that returns a wrapper over Runnable[]"
+Calls a rust-analyzer LSP extension endpoint that returns a wrapper over
+Runnable[]."
   (lsp-send-request (lsp-make-request
                      "rust-analyzer/relatedTests"
                      (lsp--text-document-position-params))))
@@ -1204,8 +1205,9 @@ Calls a rust-analyzer LSP extension endpoint that returns a wrapper over Runnabl
   "Call the endpoint and ask for user selection.
 
 Cannot reuse `lsp-rust-analyzer--select-runnable' because the runnables endpoint
-responds with Runnable[], while relatedTests responds with TestInfo[], which is a wrapper
-over runnable. Also, this method doesn't set the `lsp-rust-analyzer--last-runnable' variable"
+responds with Runnable[], while relatedTests responds with TestInfo[],
+which is a wrapper over runnable. Also, this method doesn't set
+the `lsp-rust-analyzer--last-runnable' variable."
   (-if-let* ((resp (lsp-rust-analyzer--related-tests))
              (runnables (seq-map
                          #'lsp:rust-analyzer-related-tests-runnable

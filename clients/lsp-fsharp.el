@@ -160,8 +160,8 @@ with test projects are not autoloaded by FSharpAutoComplete."
 
 (defun lsp-fsharp--fsac-install (_client callback error-callback update?)
   "Install/update fsautocomplete language server using `dotnet tool'.
-
-Will invoke CALLBACK or ERROR-CALLBACK based on result. Will update if UPDATE? is t"
+Will invoke CALLBACK or ERROR-CALLBACK based on result. Will update if
+UPDATE? is t."
   (lsp-async-start-process
    callback
    error-callback

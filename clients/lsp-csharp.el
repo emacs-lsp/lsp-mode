@@ -285,12 +285,11 @@ PRESENT-BUFFER will make the buffer be presented to the user."
     (message "lsp-csharp: No test method(s) found to be ran previously on this workspace")))
 
 (lsp-defun lsp-csharp--handle-os-error (_workspace (&omnisharp:ErrorMessage :file-name :text))
-  "Handle the 'o#/error' (interop) notification by displaying a message with lsp-warn."
+  "Handle the 'o#/error' (interop) notification displaying a message."
   (lsp-warn "%s: %s" file-name text))
 
 (lsp-defun lsp-csharp--handle-os-testmessage (_workspace (&omnisharp:TestMessageEvent :message))
-  "Handle the 'o#/testmessage and display test message on lsp-csharp
-test output buffer."
+  "Handle the 'o#/testmessage and display test message on test output buffer."
   (lsp-csharp--test-message message))
 
 (lsp-defun lsp-csharp--handle-os-testcompleted (_workspace (&omnisharp:DotNetTestResult

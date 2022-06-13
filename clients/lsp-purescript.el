@@ -51,7 +51,8 @@
         lsp-purescript-server-args))
 
 (defcustom-lsp lsp-purescript-add-spago-sources t
-  "Whether to add spago sources to the globs passed to the IDE server for source locations."
+  "Whether to add spago sources to the globs.
+Passed to the IDE server for source locations."
   :type 'boolean
   :group 'lsp-purescript
   :package-version '(lsp-mode . "8.0.1")

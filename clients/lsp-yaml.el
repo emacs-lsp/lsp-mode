@@ -179,7 +179,7 @@ Limited for performance reasons."
     (fileMatch . ["*-k8s.yaml" "*-k8s.yml"])))
 
 (defun lsp-yaml-download-schema-store-db (&optional force-downloading)
-  "Download the remote schema store at `lsp-yaml-schema-store-uri' into local cache.
+  "Download remote schema store at `lsp-yaml-schema-store-uri' into local cache.
 Set FORCE-DOWNLOADING to non-nil to force re-download the database."
   (interactive "P")
   (when (or force-downloading (not (file-exists-p lsp-yaml-schema-store-local-db)))

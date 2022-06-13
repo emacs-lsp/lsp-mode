@@ -24,7 +24,7 @@
 (require 'lsp-mode)
 
 (defgroup lsp-completion nil
-  "LSP support for completion"
+  "LSP support for completion."
   :prefix "lsp-completion-"
   :group 'lsp-mode
   :tag "LSP Completion")
@@ -141,6 +141,7 @@ This will help minimize popup flickering issue in `company-mode'."
 (declare-function yas-expand-snippet "ext:yasnippet")
 
 (defun lsp-doc-buffer (&optional string)
+  "Return doc for STRING."
   (with-current-buffer (get-buffer-create "*lsp-documentation*")
     (erase-buffer)
     (fundamental-mode)
@@ -182,7 +183,7 @@ This will help minimize popup flickering issue in `company-mode'."
                 (format " (%s)" kind-name))))))
 
 (defun lsp-completion--looking-back-trigger-characterp (trigger-characters)
-  "Return trigger character if text before point match any of the TRIGGER-CHARACTERS."
+  "Return character if text before point match any of the TRIGGER-CHARACTERS."
   (unless (= (point) (point-at-bol))
     (seq-some
      (lambda (trigger-char)
@@ -696,8 +697,8 @@ The return is nil or in range of (0, inf)."
       (/ score-numerator (1+ score-denominator) 1.0))))
 
 (defun lsp-completion--fix-resolve-data (item)
-  ;; patch `CompletionItem' for rust-analyzer otherwise resolve will fail
-  ;; see #2675
+  "Patch `CompletionItem' ITEM for rust-analyzer otherwise resolve will fail.
+See #2675"
   (let ((data (lsp:completion-item-data? item)))
     (when (lsp-member? data :import_for_trait_assoc_item)
       (unless (lsp-get data :import_for_trait_assoc_item)
@@ -744,7 +745,8 @@ The CLEANUP-FN will be called to cleanup."
   (lsp-completion-mode -1))
 
 (defun lsp-completion-passthrough-all-completions (_string table pred _point)
-  "Like `completion-basic-all-completions' but have prefix ignored."
+  "Like `completion-basic-all-completions' but have prefix ignored.
+TABLE PRED"
   (completion-basic-all-completions "" table pred 0))
 
 ;;;###autoload

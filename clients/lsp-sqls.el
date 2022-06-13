@@ -27,7 +27,7 @@
 (require 'lsp-mode)
 
 (defgroup lsp-sqls nil
-  "LSP support for SQL, using sqls"
+  "LSP support for SQL, using sqls."
   :group 'lsp-mode
   :link '(url-link "https://github.com/lighttiger2505/sqls")
   :package-version `(lsp-mode . "7.0"))
@@ -66,7 +66,8 @@
                         :value-type string)))
 
 (defun lsp-sqls-setup-workspace-configuration ()
-  "Setup workspace configuration using json file depending on `lsp-sqls-workspace-config-path'."
+  "Setup workspace configuration using json file.
+Depending on `lsp-sqls-workspace-config-path'."
 
   (if lsp-sqls-connections
       (lsp--set-configuration `(:sqls (:connections ,(apply #'vector lsp-sqls-connections))))
