@@ -4352,8 +4352,8 @@ call-site).</p>
 <h3 id="lsp-clients-typescript-disable-automatic-typing-acquisition"><code>lsp-clients-typescript-disable-automatic-typing-acquisition</code><a class="headerlink" href="#lsp-clients-typescript-disable-automatic-typing-acquisition" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Disables tsserver from automatically fetching missing type
-definitions (@types packages) for external modules.</p>
+<p>Disable tsserver from automatically fetching missing type definitions.
+(@types packages) for external modules.</p>
 <hr />
 <h3 id="lsp-clients-typescript-log-verbosity"><code>lsp-clients-typescript-log-verbosity</code><a class="headerlink" href="#lsp-clients-typescript-log-verbosity" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const off) (const terse) (const normal) (const requesttime) (const verbose))</code></p>
@@ -4363,16 +4363,15 @@ definitions (@types packages) for external modules.</p>
 <h3 id="lsp-clients-typescript-max-ts-server-memory"><code>lsp-clients-typescript-max-ts-server-memory</code><a class="headerlink" href="#lsp-clients-typescript-max-ts-server-memory" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>integer</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>The maximum size of the V8`s old memory section in megabytes (for
-example 4096 means 4GB). The default value is dynamically configured
+<p>The maximum size of the V8`s old memory section in megabytes.
+(for example 4096 means 4GB). The default value is dynamically configured
 by Node so can differ per system. Increase for very big projects that
 exceed allowed memory usage.</p>
 <hr />
 <h3 id="lsp-clients-typescript-npm-location"><code>lsp-clients-typescript-npm-location</code><a class="headerlink" href="#lsp-clients-typescript-npm-location" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Specifies the path to the NPM executable used for Automatic Type
-Acquisition.</p>
+<p>Specifies the path to the NPM exec used for Automatic Type Acquisition.</p>
 <hr />
 <h3 id="lsp-clients-typescript-plugins"><code>lsp-clients-typescript-plugins</code><a class="headerlink" href="#lsp-clients-typescript-plugins" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(restricted-sexp :tag Vector :match-alternatives (lambda (xs) (and (vectorp xs) (seq-every-p (-lambda ((&amp;plist :name :location)) (and name location)) xs))))</code></p>
@@ -4462,51 +4461,44 @@ name (e.g. <code>data</code> variable passed as <code>data</code> parameter).</p
 <h3 id="lsp-javascript-format-insert-space-after-constructor"><code>lsp-javascript-format-insert-space-after-constructor</code><a class="headerlink" href="#lsp-javascript-format-insert-space-after-constructor" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Defines space handling after the constructor keyword. Requires
-using TypeScript 2.3.0 or newer in the workspace.</p>
+<p>Defines space handling after the constructor keyword.
+Requires using TypeScript 2.3.0 or newer in the workspace.</p>
 <hr />
 <h3 id="lsp-javascript-format-insert-space-after-function-keyword-for-anonymous-functions"><code>lsp-javascript-format-insert-space-after-function-keyword-for-anonymous-functions</code><a class="headerlink" href="#lsp-javascript-format-insert-space-after-function-keyword-for-anonymous-functions" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Defines space handling after function keyword for anonymous
-functions.</p>
+<p>Defines space handling after function keyword for anonymous functions.</p>
 <hr />
 <h3 id="lsp-javascript-format-insert-space-after-keywords-in-control-flow-statements"><code>lsp-javascript-format-insert-space-after-keywords-in-control-flow-statements</code><a class="headerlink" href="#lsp-javascript-format-insert-space-after-keywords-in-control-flow-statements" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Defines space handling after keywords in a control flow
-statement.</p>
+<p>Defines space handling after keywords in a control flow statement.</p>
 <hr />
 <h3 id="lsp-javascript-format-insert-space-after-opening-and-before-closing-jsx-expression-braces"><code>lsp-javascript-format-insert-space-after-opening-and-before-closing-jsx-expression-braces</code><a class="headerlink" href="#lsp-javascript-format-insert-space-after-opening-and-before-closing-jsx-expression-braces" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Defines space handling after opening and before closing JSX
-expression braces.</p>
+<p>Defines space handling after opening/before closing JSX expression braces.</p>
 <hr />
 <h3 id="lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-braces"><code>lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-braces</code><a class="headerlink" href="#lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-braces" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Defines space handling after opening and before closing
-non-empty braces. Requires using TypeScript 2.3.0 or newer in the
-workspace.</p>
+<p>Defines space handling after opening and before closing non-empty braces.
+Requires using TypeScript 2.3.0 or newer in the workspace.</p>
 <hr />
 <h3 id="lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-brackets"><code>lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-brackets</code><a class="headerlink" href="#lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-brackets" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Defines space handling after opening and before closing
-non-empty brackets.</p>
+<p>Defines space handling after opening and before closing non-empty brackets.</p>
 <hr />
 <h3 id="lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-parenthesis"><code>lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-parenthesis</code><a class="headerlink" href="#lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-parenthesis" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Defines space handling after opening and before closing
-non-empty parenthesis.</p>
+<p>Defines space handling after opening and before closing non-empty parenthesis.</p>
 <hr />
 <h3 id="lsp-javascript-format-insert-space-after-opening-and-before-closing-template-string-braces"><code>lsp-javascript-format-insert-space-after-opening-and-before-closing-template-string-braces</code><a class="headerlink" href="#lsp-javascript-format-insert-space-after-opening-and-before-closing-template-string-braces" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Defines space handling after opening and before closing
-template string braces.</p>
+<p>Defines space handling after opening/before closing template string braces.</p>
 <hr />
 <h3 id="lsp-javascript-format-insert-space-after-semicolon-in-for-statements"><code>lsp-javascript-format-insert-space-after-semicolon-in-for-statements</code><a class="headerlink" href="#lsp-javascript-format-insert-space-after-semicolon-in-for-statements" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4526,20 +4518,18 @@ template string braces.</p>
 <h3 id="lsp-javascript-format-place-open-brace-on-new-line-for-control-blocks"><code>lsp-javascript-format-place-open-brace-on-new-line-for-control-blocks</code><a class="headerlink" href="#lsp-javascript-format-place-open-brace-on-new-line-for-control-blocks" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Defines whether an open brace is put onto a new line for
-control blocks or not.</p>
+<p>Defines whether an open brace is put onto a new line for control blocks or not.</p>
 <hr />
 <h3 id="lsp-javascript-format-place-open-brace-on-new-line-for-functions"><code>lsp-javascript-format-place-open-brace-on-new-line-for-functions</code><a class="headerlink" href="#lsp-javascript-format-place-open-brace-on-new-line-for-functions" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Defines whether an open brace is put onto a new line for
-functions or not.</p>
+<p>Defines whether an open brace is put onto a new line for functions or not.</p>
 <hr />
 <h3 id="lsp-javascript-implicit-project-config-check-js"><code>lsp-javascript-implicit-project-config-check-js</code><a class="headerlink" href="#lsp-javascript-implicit-project-config-check-js" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Enable/disable semantic checking of JavaScript files. Existing
-jsconfig.json or tsconfig.json files override this setting.
+<p>Enable/disable semantic checking of JavaScript files.
+Existing jsconfig.json or tsconfig.json files override this setting.
 Requires using TypeScript 2.3.1 or newer in the workspace.</p>
 <hr />
 <h3 id="lsp-javascript-implicit-project-config-experimental-decorators"><code>lsp-javascript-implicit-project-config-experimental-decorators</code><a class="headerlink" href="#lsp-javascript-implicit-project-config-experimental-decorators" title="Permanent link">#</a></h3>
@@ -4565,8 +4555,8 @@ in the workspace.</p>
 <h3 id="lsp-javascript-suggest-auto-imports"><code>lsp-javascript-suggest-auto-imports</code><a class="headerlink" href="#lsp-javascript-suggest-auto-imports" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Enable/disable auto import suggestions. Requires using
-TypeScript 2.6.1 or newer in the workspace.</p>
+<p>Enable/disable auto import suggestions.
+Requires using TypeScript 2.6.1 or newer in the workspace.</p>
 <hr />
 <h3 id="lsp-javascript-suggest-complete-function-calls"><code>lsp-javascript-suggest-complete-function-calls</code><a class="headerlink" href="#lsp-javascript-suggest-complete-function-calls" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4586,14 +4576,12 @@ TypeScript 2.6.1 or newer in the workspace.</p>
 <h3 id="lsp-javascript-suggest-names"><code>lsp-javascript-suggest-names</code><a class="headerlink" href="#lsp-javascript-suggest-names" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Enable/disable including unique names from the file in
-JavaScript suggestions.</p>
+<p>Enable/disable including unique names from the file in JavaScript suggestions.</p>
 <hr />
 <h3 id="lsp-javascript-suggest-paths"><code>lsp-javascript-suggest-paths</code><a class="headerlink" href="#lsp-javascript-suggest-paths" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Enable/disable suggestions for paths in import statements and
-require calls.</p>
+<p>Enable/disable suggestions for paths in import statements and require calls.</p>
 <hr />
 <h3 id="lsp-javascript-suggestion-actions-enabled"><code>lsp-javascript-suggestion-actions-enabled</code><a class="headerlink" href="#lsp-javascript-suggestion-actions-enabled" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4636,51 +4624,44 @@ TypeScript 3.0 or newer in the workspace.</p>
 <h3 id="lsp-typescript-format-insert-space-after-constructor"><code>lsp-typescript-format-insert-space-after-constructor</code><a class="headerlink" href="#lsp-typescript-format-insert-space-after-constructor" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Defines space handling after the constructor keyword. Requires
-using TypeScript 2.3.0 or newer in the workspace.</p>
+<p>Defines space handling after the constructor keyword.
+Requires using TypeScript 2.3.0 or newer in the workspace.</p>
 <hr />
 <h3 id="lsp-typescript-format-insert-space-after-function-keyword-for-anonymous-functions"><code>lsp-typescript-format-insert-space-after-function-keyword-for-anonymous-functions</code><a class="headerlink" href="#lsp-typescript-format-insert-space-after-function-keyword-for-anonymous-functions" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Defines space handling after function keyword for anonymous
-functions.</p>
+<p>Defines space handling after function keyword for anonymous functions.</p>
 <hr />
 <h3 id="lsp-typescript-format-insert-space-after-keywords-in-control-flow-statements"><code>lsp-typescript-format-insert-space-after-keywords-in-control-flow-statements</code><a class="headerlink" href="#lsp-typescript-format-insert-space-after-keywords-in-control-flow-statements" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Defines space handling after keywords in a control flow
-statement.</p>
+<p>Defines space handling after keywords in a control flow statement.</p>
 <hr />
 <h3 id="lsp-typescript-format-insert-space-after-opening-and-before-closing-jsx-expression-braces"><code>lsp-typescript-format-insert-space-after-opening-and-before-closing-jsx-expression-braces</code><a class="headerlink" href="#lsp-typescript-format-insert-space-after-opening-and-before-closing-jsx-expression-braces" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Defines space handling after opening and before closing JSX
-expression braces.</p>
+<p>Defines space handling after opening/before closing JSX expression braces.</p>
 <hr />
 <h3 id="lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-braces"><code>lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-braces</code><a class="headerlink" href="#lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-braces" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Defines space handling after opening and before closing
-non-empty braces. Requires using TypeScript 2.3.0 or newer in the
-workspace.</p>
+<p>Defines space handling after opening and before closing non-empty braces.
+Requires using TypeScript 2.3.0 or newer in the workspace.</p>
 <hr />
 <h3 id="lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-brackets"><code>lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-brackets</code><a class="headerlink" href="#lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-brackets" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Defines space handling after opening and before closing
-non-empty brackets.</p>
+<p>Defines space handling after opening and before closing non-empty brackets.</p>
 <hr />
 <h3 id="lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-parenthesis"><code>lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-parenthesis</code><a class="headerlink" href="#lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-parenthesis" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Defines space handling after opening and before closing
-non-empty parenthesis.</p>
+<p>Defines space handling after opening/before closing non-empty parenthesis.</p>
 <hr />
 <h3 id="lsp-typescript-format-insert-space-after-opening-and-before-closing-template-string-braces"><code>lsp-typescript-format-insert-space-after-opening-and-before-closing-template-string-braces</code><a class="headerlink" href="#lsp-typescript-format-insert-space-after-opening-and-before-closing-template-string-braces" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Defines space handling after opening and before closing
-template string braces.</p>
+<p>Defines space handling after opening/before closing template string braces.</p>
 <hr />
 <h3 id="lsp-typescript-format-insert-space-after-semicolon-in-for-statements"><code>lsp-typescript-format-insert-space-after-semicolon-in-for-statements</code><a class="headerlink" href="#lsp-typescript-format-insert-space-after-semicolon-in-for-statements" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4706,14 +4687,12 @@ Requires using TypeScript 2.4 or newer in the workspace.</p>
 <h3 id="lsp-typescript-format-place-open-brace-on-new-line-for-control-blocks"><code>lsp-typescript-format-place-open-brace-on-new-line-for-control-blocks</code><a class="headerlink" href="#lsp-typescript-format-place-open-brace-on-new-line-for-control-blocks" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Defines whether an open brace is put onto a new line for
-control blocks or not.</p>
+<p>Defines whether an open brace is put onto a newline for control blocks.</p>
 <hr />
 <h3 id="lsp-typescript-format-place-open-brace-on-new-line-for-functions"><code>lsp-typescript-format-place-open-brace-on-new-line-for-functions</code><a class="headerlink" href="#lsp-typescript-format-place-open-brace-on-new-line-for-functions" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Defines whether an open brace is put onto a new line for
-functions or not.</p>
+<p>Defines whether an open brace is put onto a new line for functions or not.</p>
 <hr />
 <h3 id="lsp-typescript-locale"><code>lsp-typescript-locale</code><a class="headerlink" href="#lsp-typescript-locale" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const de) (const es) (const en) (const fr) (const it) (const ja) (const ko) (const ru) (const zh-CN) (const zh-TW) nil)</code></p>
@@ -4764,8 +4743,7 @@ TypeScript 2.6.1 or newer in the workspace.</p>
 <h3 id="lsp-typescript-suggest-paths"><code>lsp-typescript-suggest-paths</code><a class="headerlink" href="#lsp-typescript-suggest-paths" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Enable/disable suggestions for paths in import statements and
-require calls.</p>
+<p>Enable/disable suggestions for paths in import statements and require calls.</p>
 <hr />
 <h3 id="lsp-typescript-suggestion-actions-enabled"><code>lsp-typescript-suggestion-actions-enabled</code><a class="headerlink" href="#lsp-typescript-suggestion-actions-enabled" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4788,15 +4766,15 @@ Code`s JavaScript and TypeScript support.</p>
 <h3 id="lsp-typescript-tsserver-plugin-paths"><code>lsp-typescript-tsserver-plugin-paths</code><a class="headerlink" href="#lsp-typescript-tsserver-plugin-paths" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(repeat string)</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Additional paths to discover Typescript Language Service
-plugins. Requires using TypeScript 2.3.0 or newer in the
+<p>Additional paths to discover Typescript Language Service plugins.
+Requires using TypeScript 2.3.0 or newer in the
 workspace.</p>
 <hr />
 <h3 id="lsp-typescript-tsserver-trace"><code>lsp-typescript-tsserver-trace</code><a class="headerlink" href="#lsp-typescript-tsserver-trace" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const off) (const messages) (const verbose))</code></p>
 <p><em>Default:</em> <code>off</code></p>
-<p>Enables tracing of messages sent to the TS server. This trace
-can be used to diagnose TS Server issues. The trace may contain
+<p>Enables tracing of messages sent to the TS server.
+This trace can be used to diagnose TS Server issues. The trace may contain
 file paths, source code, and other potentially sensitive
 information from your project.</p>
 <hr />
