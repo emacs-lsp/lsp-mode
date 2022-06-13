@@ -4003,7 +4003,11 @@ yet."
 
   (lsp--remove-overlays 'lsp-color)
   (when (eq indent-region-function #'lsp-format-region)
-    (setq-local indent-region-function nil))
+    (kill-local-variable 'indent-region-function))
+  (when (eq imenu-create-index-function #'lsp--imenu-create-index)
+    (kill-local-variable 'imenu-create-index-function)
+    (kill-local-variable 'imenu-menubar-modified-tick)
+    (kill-local-variable 'imenu--index-alist))
   (remove-hook 'lsp-on-change-hook #'lsp--document-color t)
   (remove-hook 'lsp-on-idle-hook #'lsp--document-highlight t)
   (remove-hook 'lsp-on-idle-hook #'lsp--document-links t))
