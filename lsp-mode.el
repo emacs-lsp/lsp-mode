@@ -1989,7 +1989,7 @@ PARAMS - the data sent from WORKSPACE."
        (lsp-log "%s" (lsp--propertize message type))))))
 
 (lsp-defun lsp--window-log-message-request ((&ShowMessageRequestParams :message :type :actions?))
-  "Display a message request to the user and send the user's selection back to the server."
+  "Display a message request to user sending the user selection back to server."
   (let* ((message (lsp--propertize message type))
          (choices (seq-map #'lsp:message-action-item-title actions?)))
     (if choices

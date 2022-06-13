@@ -372,8 +372,8 @@ using the `textDocument/references' request."
   "Handle `csharp:/(metadata)' uri from csharp-ls server.
 
 'csharp/metadata' request is issued to retrieve metadata from the server.
-A cache file is created on project root dir that stores this metadata and filename
-is returned so lsp-mode can display this file."
+A cache file is created on project root dir that stores this metadata and
+filename is returned so lsp-mode can display this file."
 
   (-when-let* ((metadata-req (lsp-make-csharp-ls-c-sharp-metadata
                               :text-document (lsp-make-text-document-identifier :uri uri)))
