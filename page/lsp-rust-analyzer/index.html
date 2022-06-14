@@ -2654,15 +2654,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-import-merge-behaviour" class="md-nav__link">
-    lsp-rust-analyzer-import-merge-behaviour
+  <a href="#lsp-rust-analyzer-import-prefix" class="md-nav__link">
+    lsp-rust-analyzer-import-prefix
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-import-prefix" class="md-nav__link">
-    lsp-rust-analyzer-import-prefix
+  <a href="#lsp-rust-analyzer-imports-merge-glob" class="md-nav__link">
+    lsp-rust-analyzer-imports-merge-glob
   </a>
   
 </li>
@@ -4027,15 +4027,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-import-merge-behaviour" class="md-nav__link">
-    lsp-rust-analyzer-import-merge-behaviour
+  <a href="#lsp-rust-analyzer-import-prefix" class="md-nav__link">
+    lsp-rust-analyzer-import-prefix
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-import-prefix" class="md-nav__link">
-    lsp-rust-analyzer-import-prefix
+  <a href="#lsp-rust-analyzer-imports-merge-glob" class="md-nav__link">
+    lsp-rust-analyzer-imports-merge-glob
   </a>
   
 </li>
@@ -4570,15 +4570,6 @@ to a closure.ppOnly applies to closures with blocks, same as
 https://rust-analyzer.github.io/manual.html#auto-import.
  Groups are separated by newlines.</p>
 <hr />
-<h3 id="lsp-rust-analyzer-import-merge-behaviour"><code>lsp-rust-analyzer-import-merge-behaviour</code><a class="headerlink" href="#lsp-rust-analyzer-import-merge-behaviour" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const none) (const full) (const last))</code></p>
-<p><em>Default:</em> <code>full</code></p>
-<p>The strategy to use when inserting new imports or merging imports.
-Valid values are:
- - "none": No merging
- - "full": Merge all layers of the import trees
- - "last": Only merge the last layer of the import trees</p>
-<hr />
 <h3 id="lsp-rust-analyzer-import-prefix"><code>lsp-rust-analyzer-import-prefix</code><a class="headerlink" href="#lsp-rust-analyzer-import-prefix" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const plain) (const by_self) (const by_crate))</code></p>
 <p><em>Default:</em> <code>plain</code></p>
@@ -4589,6 +4580,11 @@ one <code>super</code> prefix if the parent module contains the requested item.
  - "by_self": Prefix all import paths with <code>self</code> if they don<code>t begin with</code>self<code>,</code>super<code>,</code>crate<code>or a crate name.
  - "by_crate": Force import paths to be absolute by always starting
 them with</code>crate` or the crate name they refer to.</p>
+<hr />
+<h3 id="lsp-rust-analyzer-imports-merge-glob"><code>lsp-rust-analyzer-imports-merge-glob</code><a class="headerlink" href="#lsp-rust-analyzer-imports-merge-glob" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Whether to allow import insertion to merge new imports into single path glob imports like <code>use std::fmt::*;</code>.</p>
 <hr />
 <h3 id="lsp-rust-analyzer-inlay-face"><code>lsp-rust-analyzer-inlay-face</code><a class="headerlink" href="#lsp-rust-analyzer-inlay-face" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>face</code></p>
@@ -4709,7 +4705,7 @@ compiling unnecessary things.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 13, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 14, 2022</span>
       
     
   </small>
