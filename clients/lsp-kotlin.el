@@ -125,6 +125,8 @@ to Kotlin."
 
 
 ;; Debug and running
+(declare-function dap-debug "ext:dap-mode" (template) t)
+
 (defun lsp-kotlin-run-main (main-class project-root debug?)
   (require 'dap-kotlin)
   (dap-debug (list :type "kotlin"
@@ -137,19 +139,20 @@ to Kotlin."
   (when lsp-kotlin-debug-adapter-enabled
     (lsp-request-async
      "kotlin/mainClass"
-     (list :uri (vector (lsp--buffer-uri)))
+     (list :uri (lsp--buffer-uri))
      (lambda (mainInfo)
-       ;; range became nil when using -let, so using lsp-get for it below instead
-       (-let [(&hash :mainClass main-class :projectRoot project-root) mainInfo]
+       (let ((main-class (lsp-get mainInfo :mainClass))
+             (project-root (lsp-get mainInfo :projectRoot))
+             (range (lsp-get mainInfo :range)))
          (funcall callback
-                  (list (lsp-make-code-lens :range (lsp-get mainInfo :range)
+                  (list (lsp-make-code-lens :range range
                                             :command
                                             (lsp-make-command
                                              :title "Run"
                                              :command (lambda ()
                                                         (interactive)
                                                         (lsp-kotlin-run-main main-class project-root nil))))
-                        (lsp-make-code-lens :range (lsp-get mainInfo :range)
+                        (lsp-make-code-lens :range range
                                             :command
                                             (lsp-make-command
                                              :title "Debug"
@@ -158,6 +161,24 @@ to Kotlin."
                                                         (lsp-kotlin-run-main main-class project-root t)))))
                   lsp--cur-version)))
      :mode 'tick)))
+
+(defvar lsp-lens-backends)
+(declare-function lsp-lens-refresh "lsp-lens" (buffer-modified? &optional buffer))
+
+(define-minor-mode lsp-kotlin-lens-mode
+  "Toggle run/debug overlays."
+  :group 'lsp-kotlin
+  :global nil
+  :init-value nil
+  :lighter nil
+  (cond
+   (lsp-kotlin-lens-mode
+    (require 'lsp-lens)
+    ;; set lens backends so they are available is lsp-lens-mode is activated
+    ;; backend does not support lenses, and block our other ones from showing. When backend support lenses again, we can use cl-pushnew to add it to lsp-lens-backends instead of overwriting
+    (setq-local lsp-lens-backends (list #'lsp-kotlin-lens-backend))
+    (lsp-lens-refresh t))
+   (t (setq-local lsp-lens-backends (delete #'lsp-kotlin-lens-backend lsp-lens-backends)))))
 
 
 (lsp-dependency
@@ -184,11 +205,7 @@ to Kotlin."
                     (with-lsp-workspace workspace
                       (lsp--set-configuration (lsp-configuration-section "kotlin"))))
   :download-server-fn (lambda (_client callback error-callback _update?)
-                        (lsp-package-ensure 'kotlin-language-server callback error-callback))
-  :after-open-fn (lambda ()
-                   ;; set lens backends so they are available is lsp-lens-mode is activated
-                   ;; backend does not support lenses, and block our other ones from showing. When backend support lenses again, we can use cl-pushnew to add it to lsp-lens-backends instead of overwriting
-                   (setq-local lsp-lens-backends (list #'lsp-kotlin-lens-backend)))))
+                        (lsp-package-ensure 'kotlin-language-server callback error-callback))))
 
 (lsp-consistency-check lsp-kotlin)
 
