@@ -672,7 +672,8 @@ and field accesses with self prefixed to them when inside a method."
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-rust-analyzer-imports-merge-glob t
-  "Whether to allow import insertion to merge new imports into single path glob imports like `use std::fmt::*;`."
+  "Whether to allow import insertion to merge new imports into single path
+glob imports like `use std::fmt::*;`."
   :type 'boolean
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.1"))

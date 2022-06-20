@@ -450,7 +450,8 @@ filename is returned so lsp-mode can display this file."
 (defun lsp-csharp--cls-download-server (_client callback error-callback update?)
   "Install/update csharp-ls language server using `dotnet tool'.
 
-Will invoke CALLBACK or ERROR-CALLBACK based on result. Will update if UPDATE? is t"
+Will invoke CALLBACK or ERROR-CALLBACK based on result.
+Will update if UPDATE? is t"
   (lsp-async-start-process
    callback
    error-callback
