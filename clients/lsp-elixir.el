@@ -191,7 +191,7 @@ be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
                                                 (lsp-package-path 'elixir-ls))
                                             "language_server.bat")
                                        ,@(cl-rest lsp-elixir-server-command))))
-                  :major-modes '(elixir-mode)
+                  :activation-fn (lsp-activate-on "elixir")
                   :priority -1
                   :server-id 'elixir-ls
                   :action-handlers (ht ("elixir.lens.test.run" 'lsp-elixir--run-test))

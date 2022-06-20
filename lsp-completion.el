@@ -763,8 +763,10 @@ TABLE PRED"
                                (setq-local lsp-inhibit-lsp-hooks nil))))
     (cond
      (lsp-completion-mode
-      (setq-local completion-at-point-functions nil)
-      (add-hook 'completion-at-point-functions #'lsp-completion-at-point nil t)
+      (make-local-variable 'completion-at-point-functions)
+      ;; Ensure that `lsp-completion-at-point' the first CAPF to be tried,
+      ;; unless user has put it elsewhere in the list by their own
+      (add-to-list 'completion-at-point-functions #'lsp-completion-at-point)
       (make-local-variable 'completion-category-defaults)
       (setf (alist-get 'lsp-capf completion-category-defaults) '((styles . (lsp-passthrough))))
       (make-local-variable 'completion-styles-alist)
