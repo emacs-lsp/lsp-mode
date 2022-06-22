@@ -565,7 +565,7 @@ Applicable only if server supports workspace.fileOperations for operations:
   :group 'lsp-mode)
 
 (defcustom lsp-unconfigure-hook nil
-  "Hooks to run when `lsp-unconfig-buffer' is called."
+  "Hooks to run when `lsp-unconfig-buffer' is finished."
   :type 'hook
   :group 'lsp-mode)
 
@@ -3999,8 +3999,6 @@ yet."
 
 (defun lsp-unconfig-buffer ()
   "Unconfigure LSP features for buffer."
-  (run-hooks 'lsp-unconfigure-hook)
-
   (lsp--remove-overlays 'lsp-color)
   (when (eq indent-region-function #'lsp-format-region)
     (kill-local-variable 'indent-region-function))
@@ -4010,7 +4008,8 @@ yet."
     (kill-local-variable 'imenu--index-alist))
   (remove-hook 'lsp-on-change-hook #'lsp--document-color t)
   (remove-hook 'lsp-on-idle-hook #'lsp--document-highlight t)
-  (remove-hook 'lsp-on-idle-hook #'lsp--document-links t))
+  (remove-hook 'lsp-on-idle-hook #'lsp--document-links t)
+  (run-hooks 'lsp-unconfigure-hook))
 
 (defun lsp--buffer-content ()
   (lsp-save-restriction-and-excursion
