@@ -2723,7 +2723,8 @@ an Elisp regexp."
 
 ;; See https://github.com/emacs-lsp/lsp-mode/issues/2365
 (defun lsp-glob-unbrace-at-top-level (glob-pattern)
-  "If GLOB-PATTERN does not start with a brace, return a singleton list containing GLOB-PATTERN.
+  "If GLOB-PATTERN does not start with a brace, return a singleton list
+containing GLOB-PATTERN.
 
 If GLOB-PATTERN does start with a brace, return a list of the
 comma-separated globs within the top-level braces."
