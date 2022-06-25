@@ -832,6 +832,39 @@ or JSON objects in `rust-project.json` format."
         (insert results)
         (pop-to-buffer buf)))))
 
+(defun lsp-rust-analyzer-view-item-tree ()
+  "Show item tree of rust file."
+  (interactive)
+  (-let* ((params (lsp-make-rust-analyzer-view-item-tree
+                   :text-document (lsp--text-document-identifier)))
+          (results (lsp-send-request (lsp-make-request
+                                      "rust-analyzer/viewItemTree"
+                                      params))))
+    (let ((buf (get-buffer-create "*rust-analyzer item tree*")))
+      (inhibit-read-only t))
+    (with-current-buffer buf
+      (special-mode)
+      (erase-buffer)
+      (insert (lsp--render-string results "rust"))
+      (pop-to-buffer buf)))))
+
+(defun lsp-rust-analyzer-view-hir ()
+  "View Hir of function at point."
+  (interactive)
+  (-let* ((params (lsp-make-rust-analyzer-expand-macro-params
+                   :text-document (lsp--text-document-identifier)
+                   :position (lsp--cur-position)))
+          (results (lsp-send-request (lsp-make-request
+                                      "rust-analyzer/viewHir"
+                                      params))))
+    (let ((buf (get-buffer-create "*rust-analyzer hir*"))
+          (inhibit-read-only t))
+      (with-current-buffer buf
+        (special-mode)
+        (erase-buffer)
+        (insert results)
+        (pop-to-buffer buf)))))
+
 (defun lsp-rust-analyzer-join-lines ()
   "Join selected lines into one, smartly fixing up whitespace and trailing commas."
   (interactive)
