@@ -402,6 +402,8 @@ See `-let' for a description of the destructuring mechanism."
 (defconst lsp/rust-analyzer-inlay-hint-kind-nonstandard-hint nil)
 (lsp-interface (rust-analyzer:AnalyzerStatusParams (:textDocument))
                (rust-analyzer:SyntaxTreeParams (:textDocument) (:range))
+               (rust-analyzer:ViewHir (:textDocument :position))
+               (rust-analyzer:ViewItemTree (:textDocument))
                (rust-analyzer:ExpandMacroParams (:textDocument :position) nil)
                (rust-analyzer:ExpandedMacro (:name :expansion) nil)
                (rust-analyzer:MatchingBraceParams (:textDocument :positions) nil)
