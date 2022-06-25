@@ -7620,7 +7620,7 @@ When prefix UPDATE? is t force installation even if the server is present."
 
 ;;;###autoload
 (defun lsp-update-server (&optional server-id)
-  "Interactively update a server."
+  "Interactively update (reinstall) a server."
   (interactive)
   (lsp--require-packages)
   (let ((chosen-client (or (gethash server-id lsp-clients)
@@ -7638,6 +7638,17 @@ When prefix UPDATE? is t force installation even if the server is present."
                             nil
                             t))))
     (lsp--install-server-internal chosen-client t)))
+
+;;;###autoload
+(defun lsp-update-servers ()
+  "Update (reinstall) all installed servers."
+  (interactive)
+  (lsp--require-packages)
+  (mapc (lambda (client) (lsp--install-server-internal client t))
+        (-filter (-andfn
+                  (-not #'lsp--client-download-in-progress?)
+                  #'lsp--client-download-server-fn
+                  #'lsp--server-binary-present?) (hash-table-values lsp-clients))))
 
 ;;;###autoload
 (defun lsp-ensure-server (server-id)
