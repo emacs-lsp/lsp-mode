@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'cl-lib)
 
 (defgroup lsp-kotlin nil
   "LSP support for Kotlin, using KotlinLanguageServer."
@@ -121,6 +122,64 @@ to Kotlin."
                                       "kotlin-language-server.bat"
                                     "kotlin-language-server"))
   "The path to store the language server at if necessary.")
+
+
+;; Debug and running
+(declare-function dap-debug "ext:dap-mode" (template) t)
+
+(defun lsp-kotlin-run-main (main-class project-root debug?)
+  (require 'dap-kotlin)
+  (dap-debug (list :type "kotlin"
+                   :request "launch"
+                   :mainClass main-class
+                   :projectRoot project-root
+                   :noDebug (not debug?))))
+
+(defun lsp-kotlin-lens-backend (_modified? callback)
+  (when lsp-kotlin-debug-adapter-enabled
+    (lsp-request-async
+     "kotlin/mainClass"
+     (list :uri (lsp--buffer-uri))
+     (lambda (mainInfo)
+       (let ((main-class (lsp-get mainInfo :mainClass))
+             (project-root (lsp-get mainInfo :projectRoot))
+             (range (lsp-get mainInfo :range)))
+         (funcall callback
+                  (list (lsp-make-code-lens :range range
+                                            :command
+                                            (lsp-make-command
+                                             :title "Run"
+                                             :command (lambda ()
+                                                        (interactive)
+                                                        (lsp-kotlin-run-main main-class project-root nil))))
+                        (lsp-make-code-lens :range range
+                                            :command
+                                            (lsp-make-command
+                                             :title "Debug"
+                                             :command (lambda ()
+                                                        (interactive)
+                                                        (lsp-kotlin-run-main main-class project-root t)))))
+                  lsp--cur-version)))
+     :mode 'tick)))
+
+(defvar lsp-lens-backends)
+(declare-function lsp-lens-refresh "lsp-lens" (buffer-modified? &optional buffer))
+
+(define-minor-mode lsp-kotlin-lens-mode
+  "Toggle run/debug overlays."
+  :group 'lsp-kotlin
+  :global nil
+  :init-value nil
+  :lighter nil
+  (cond
+   (lsp-kotlin-lens-mode
+    (require 'lsp-lens)
+    ;; set lens backends so they are available is lsp-lens-mode is activated
+    ;; backend does not support lenses, and block our other ones from showing. When backend support lenses again, we can use cl-pushnew to add it to lsp-lens-backends instead of overwriting
+    (setq-local lsp-lens-backends (list #'lsp-kotlin-lens-backend))
+    (lsp-lens-refresh t))
+   (t (setq-local lsp-lens-backends (delete #'lsp-kotlin-lens-backend lsp-lens-backends)))))
+
 
 (lsp-dependency
  'kotlin-language-server
