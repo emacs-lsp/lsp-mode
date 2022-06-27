@@ -260,26 +260,44 @@ stored."
                                (buffer (find-buffer-visiting file))
                                (workspace-folder (lsp-find-session-folder (lsp-session) file)))
                     (with-current-buffer buffer
-                      (list :validate (if (member (lsp-buffer-language) lsp-eslint-validate) "on" "probe")
-                            :packageManager lsp-eslint-package-manager
-                            :codeAction (list
-                                         :disableRuleComment (list
-                                                              :enable (lsp-json-bool lsp-eslint-code-action-disable-rule-comment)
-                                                              :location lsp-eslint-code-action-disable-rule-comment-location)
-                                         :showDocumentation (list
-                                                             :enable (lsp-json-bool lsp-eslint-code-action-show-documentation)))
-                            :codeActionOnSave (list :enable (lsp-json-bool lsp-eslint-auto-fix-on-save)
-                                                    :mode lsp-eslint-fix-all-problem-type)
-                            :format (lsp-json-bool lsp-eslint-format)
-                            :quiet (lsp-json-bool lsp-eslint-quiet)
-                            :onIgnoredFiles (if lsp-eslint-warn-on-ignored-files "warn" "off")
-                            :options (or lsp-eslint-options (ht))
-                            :rulesCustomizations lsp-eslint-rules-customizations
-                            :run lsp-eslint-run
-                            :nodePath lsp-eslint-node-path
-                            :workspaceFolder (list :uri (lsp--path-to-uri workspace-folder)
-                                                   :name (f-filename workspace-folder)))))))
+                      (let ((working-directory (lsp--working-directory workspace-folder file)))
+                        (list :validate (if (member (lsp-buffer-language) lsp-eslint-validate) "on" "probe")
+                              :packageManager lsp-eslint-package-manager
+                              :codeAction (list
+                                           :disableRuleComment (list
+                                                                :enable (lsp-json-bool lsp-eslint-code-action-disable-rule-comment)
+                                                                :location lsp-eslint-code-action-disable-rule-comment-location)
+                                           :showDocumentation (list
+                                                               :enable (lsp-json-bool lsp-eslint-code-action-show-documentation)))
+                              :codeActionOnSave (list :enable (lsp-json-bool lsp-eslint-auto-fix-on-save)
+                                                      :mode lsp-eslint-fix-all-problem-type)
+                              :format (lsp-json-bool lsp-eslint-format)
+                              :quiet (lsp-json-bool lsp-eslint-quiet)
+                              :onIgnoredFiles (if lsp-eslint-warn-on-ignored-files "warn" "off")
+                              :options (or lsp-eslint-options (ht))
+                              :rulesCustomizations lsp-eslint-rules-customizations
+                              :run lsp-eslint-run
+                              :nodePath lsp-eslint-node-path
+                              :workingDirectory (when working-directory
+                                                  (list
+                                                   :directory working-directory
+                                                   :!cwd :json-false))
+                              :workspaceFolder (list :uri (lsp--path-to-uri workspace-folder)
+                                                     :name (f-filename workspace-folder))))))))
        (apply #'vector)))
+
+(defun lsp--working-directory (workspace current-file)
+  (let* ((found)
+         (i 0))
+    (while (and (< i (length lsp-eslint-working-directories))
+                (not found))
+      (let ((res (lsp-resolve-value (elt lsp-eslint-working-directories i))))
+        (when (not (f-absolute? res))
+          (setq res (f-join workspace res)))
+        (if (string-match-p res current-file)
+            (setq found res)
+          (setq i (1+ i)))))
+    found))
 
 (lsp-defun lsp-eslint--open-doc (_workspace (&eslint:OpenESLintDocParams :url))
   "Open documentation."
