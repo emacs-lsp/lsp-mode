@@ -846,7 +846,7 @@ or JSON objects in `rust-project.json` format."
       (special-mode)
       (erase-buffer)
       (insert (lsp--render-string results "rust"))
-      (pop-to-buffer buf)))))
+      (pop-to-buffer buf))))
 
 (defun lsp-rust-analyzer-view-hir ()
   "View Hir of function at point."
