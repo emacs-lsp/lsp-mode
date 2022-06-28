@@ -8858,7 +8858,8 @@ This avoids overloading the server with many files when starting Emacs."
     (flycheck-add-mode 'lsp mode)))
 
 (defun lsp-progress-spinner-type ()
-  "Retrive the spinner type value, if value is not a symbol of `spinner-types defaults to 'progress-bar."
+  "Retrive the spinner type value, if value is not a symbol of `spinner-types
+defaults to 'progress-bar."
   (or (car (assoc lsp-progress-spinner-type spinner-types)) 'progress-bar))
 
 (defun lsp-org ()
