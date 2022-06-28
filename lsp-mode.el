@@ -3260,8 +3260,8 @@ CANCEL-TOKEN is the token that can be used to cancel request."
   "Create async handler expecting COUNT results, merge them and call CALLBACK.
 MODE determines when the callback will be called depending on the
 condition of the original buffer. METHOD is the invoked method.
-If NO-MERGE is non-nil, don't merge the results but return alist workspace->result.
-ID is the request id. "
+If NO-MERGE is non-nil, don't merge the results but return alist
+workspace->result. ID is the request id."
   (let (results errors)
     (lambda (result)
       (push (cons lsp--cur-workspace result)
@@ -3633,7 +3633,8 @@ disappearing, unset all the variables related to it."
    (lsp--workspace-registered-server-capabilities lsp--cur-workspace)))
 
 (defmacro lsp--with-workspace-temp-buffer (workspace-root &rest body)
-  "With a temp-buffer under `WORKSPACE-ROOT' and evaluate `BODY', useful to access dir-local variables."
+  "With a temp-buffer under `WORKSPACE-ROOT' and evaluate `BODY', useful to
+access dir-local variables."
   (declare (indent 1) (debug t))
   `(with-temp-buffer
      ;; Set the buffer's name to something under the root so that we can hack the local variables
@@ -3644,7 +3645,9 @@ disappearing, unset all the variables related to it."
        (setq-local buffer-file-name nil))))
 
 (defun lsp--get-ignored-regexes-for-workspace-root (workspace-root)
-  "Return a list of the form (lsp-file-watch-ignored-files lsp-file-watch-ignored-directories) for the given WORKSPACE-ROOT."
+  "Return a list of the form
+(lsp-file-watch-ignored-files lsp-file-watch-ignored-directories) for the given
+WORKSPACE-ROOT."
   ;; The intent of this function is to provide per-root workspace-level customization of the
   ;; lsp-file-watch-ignored-directories and lsp-file-watch-ignored-files variables.
   (lsp--with-workspace-temp-buffer workspace-root
@@ -4830,8 +4833,8 @@ if it's closing the last buffer in the workspace."
 
 (defun lsp--text-document-position-params (&optional identifier position)
   "Make TextDocumentPositionParams for the current point in the current document.
-If IDENTIFIER and POSITION are non-nil, they will be used as the document identifier
-and the position respectively."
+If IDENTIFIER and POSITION are non-nil, they will be used as the document
+identifier and the position respectively."
   (list :textDocument (or identifier (lsp--text-document-identifier))
         :position (or position (lsp--cur-position))))
 
@@ -6207,7 +6210,8 @@ The command is executed via `workspace/executeCommand'"
             command err))))
 
 (defun lsp-send-execute-command (command &optional args)
-  "Create and send a 'workspace/executeCommand' message having command COMMAND and optional ARGS."
+  "Create and send a 'workspace/executeCommand' message having command COMMAND
+and optional ARGS."
   (lsp-workspace-command-execute command args))
 
 (defalias 'lsp-point-to-position #'lsp--point-to-position)
@@ -6343,8 +6347,8 @@ PARAMS are the `workspace/configuration' request params"
     (lsp--send-no-wait (lsp--make-message response) process)))
 
 (lsp-defun lsp--on-request (workspace (request &as &JSONRequest :params :method))
-  "Call the appropriate handler for REQUEST, and send the return value to the server.
-WORKSPACE is the active workspace."
+  "Call the appropriate handler for REQUEST, and send the return value to the
+server. WORKSPACE is the active workspace."
   (-let* ((recv-time (current-time))
           (client (lsp--workspace-client workspace))
           (buffers (lsp--workspace-buffers workspace))
@@ -6992,7 +6996,8 @@ Return a nested alist keyed by symbol names. e.g.
       (ignore (lsp-log "Command \"%s\" is not present on the path." (s-join " " final-command)))))
 
 (defun lsp--value-to-string (value)
-  "Convert VALUE to a string that can be set as value in an environment variable."
+  "Convert VALUE to a string that can be set as value in an environment
+variable."
   (cond
    ((stringp value) value)
    ((booleanp value) (if value
@@ -8244,7 +8249,8 @@ When ALL is t, erase all log buffers of the running session."
   (-> session lsp-session-folder->servers hash-table-values -flatten -uniq))
 
 (defun lsp--find-multiroot-workspace (session client project-root)
-  "Look for a multiroot connection in SESSION created from CLIENT for PROJECT-ROOT and BUFFER-MAJOR-MODE."
+  "Look for a multiroot connection in SESSION created from CLIENT for
+PROJECT-ROOT and BUFFER-MAJOR-MODE."
   (when (lsp--client-multi-root client)
     (-when-let (multi-root-workspace (->> session
                                           (lsp--session-workspaces)
@@ -8852,7 +8858,8 @@ This avoids overloading the server with many files when starting Emacs."
     (flycheck-add-mode 'lsp mode)))
 
 (defun lsp-progress-spinner-type ()
-  "Retrive the spinner type value, if value is not a symbol of `spinner-types defaults to 'progress-bar."
+  "Retrive the spinner type value, if value is not a symbol of `spinner-types
+defaults to 'progress-bar."
   (or (car (assoc lsp-progress-spinner-type spinner-types)) 'progress-bar))
 
 (defun lsp-org ()
@@ -9016,7 +9023,8 @@ This avoids overloading the server with many files when starting Emacs."
 
 ;;;###autoload
 (defun lsp-start-plain ()
-  "Start `lsp-mode' using mininal configuration using the latest `melpa' version of the packages.
+  "Start `lsp-mode' using mininal configuration using the latest `melpa' version
+of the packages.
 
 In case the major-mode that you are using for "
   (interactive)
