@@ -260,7 +260,7 @@ stored."
                                (buffer (find-buffer-visiting file))
                                (workspace-folder (lsp-find-session-folder (lsp-session) file)))
                     (with-current-buffer buffer
-                      (let ((working-directory (lsp--working-directory workspace-folder file)))
+                      (let ((working-directory (lsp-eslint--working-directory workspace-folder file)))
                         (list :validate (if (member (lsp-buffer-language) lsp-eslint-validate) "on" "probe")
                               :packageManager lsp-eslint-package-manager
                               :codeAction (list
@@ -286,18 +286,15 @@ stored."
                                                      :name (f-filename workspace-folder))))))))
        (apply #'vector)))
 
-(defun lsp--working-directory (workspace current-file)
-  (let* ((found)
-         (i 0))
-    (while (and (< i (length lsp-eslint-working-directories))
-                (not found))
-      (let ((res (lsp-resolve-value (elt lsp-eslint-working-directories i))))
-        (when (not (f-absolute? res))
-          (setq res (f-join workspace res)))
-        (if (string-match-p res current-file)
-            (setq found res)
-          (setq i (1+ i)))))
-    found))
+(defun lsp-eslint--working-directory (workspace current-file)
+  "Find the first directory in the parameter config.workingDirectories which
+contains the current file"
+  (let ((directories (-map (lambda (dir)
+                             (let ((dir (lsp-resolve-value dir)))
+                               (when (not (f-absolute? dir))
+                                 (setq dir (f-join workspace dir)))))
+                           (append lsp-eslint-working-directories nil))))
+    (-first (lambda (dir) (f-ancestor-of-p dir current-file)) directories)))
 
 (lsp-defun lsp-eslint--open-doc (_workspace (&eslint:OpenESLintDocParams :url))
   "Open documentation."
