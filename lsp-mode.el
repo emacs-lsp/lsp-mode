@@ -3534,12 +3534,12 @@ disappearing, unset all the variables related to it."
                       (documentLink . ((dynamicRegistration . t)
                                        (tooltipSupport . t)))
                       (hover . ((contentFormat . ["markdown" "plaintext"])))
-                      (foldingRange . ,(when lsp-enable-folding
-                                         `((dynamicRegistration . t)
-                                           ,@(when lsp-folding-range-limit
-                                               `((rangeLimit . ,lsp-folding-range-limit)))
-                                           ,@(when lsp-folding-line-folding-only
-                                               `((lineFoldingOnly . t))))))
+                      ,@(when lsp-enable-folding
+                          `((foldingRange . ((dynamicRegistration . t)
+                                             ,@(when lsp-folding-range-limit
+                                                 `((rangeLimit . ,lsp-folding-range-limit)))
+                                             ,@(when lsp-folding-line-folding-only
+                                                 `((lineFoldingOnly . t)))))))
                       (callHierarchy . ((dynamicRegistration . :json-false)))
                       (publishDiagnostics . ((relatedInformation . t)
                                              (tagSupport . ((valueSet . [1 2])))
