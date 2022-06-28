@@ -840,13 +840,13 @@ or JSON objects in `rust-project.json` format."
           (results (lsp-send-request (lsp-make-request
                                       "rust-analyzer/viewItemTree"
                                       params))))
-    (let ((buf (get-buffer-create "*rust-analyzer item tree*")))
-      (inhibit-read-only t))
-    (with-current-buffer buf
-      (special-mode)
-      (erase-buffer)
-      (insert (lsp--render-string results "rust"))
-      (pop-to-buffer buf))))
+    (let ((buf (get-buffer-create "*rust-analyzer item tree*"))
+          (inhibit-read-only t))
+      (with-current-buffer buf
+        (special-mode)
+        (erase-buffer)
+        (insert (lsp--render-string results "rust"))
+        (pop-to-buffer buf)))))
 
 (defun lsp-rust-analyzer-view-hir ()
   "View Hir of function at point."
