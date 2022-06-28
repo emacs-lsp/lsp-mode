@@ -3260,8 +3260,8 @@ CANCEL-TOKEN is the token that can be used to cancel request."
   "Create async handler expecting COUNT results, merge them and call CALLBACK.
 MODE determines when the callback will be called depending on the
 condition of the original buffer. METHOD is the invoked method.
-If NO-MERGE is non-nil, don't merge the results but return alist workspace->result.
-ID is the request id. "
+If NO-MERGE is non-nil, don't merge the results but return alist
+workspace->result. ID is the request id."
   (let (results errors)
     (lambda (result)
       (push (cons lsp--cur-workspace result)
