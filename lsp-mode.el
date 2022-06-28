@@ -8249,7 +8249,8 @@ When ALL is t, erase all log buffers of the running session."
   (-> session lsp-session-folder->servers hash-table-values -flatten -uniq))
 
 (defun lsp--find-multiroot-workspace (session client project-root)
-  "Look for a multiroot connection in SESSION created from CLIENT for PROJECT-ROOT and BUFFER-MAJOR-MODE."
+  "Look for a multiroot connection in SESSION created from CLIENT for
+PROJECT-ROOT and BUFFER-MAJOR-MODE."
   (when (lsp--client-multi-root client)
     (-when-let (multi-root-workspace (->> session
                                           (lsp--session-workspaces)
