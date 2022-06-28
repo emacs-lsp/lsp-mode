@@ -4833,8 +4833,8 @@ if it's closing the last buffer in the workspace."
 
 (defun lsp--text-document-position-params (&optional identifier position)
   "Make TextDocumentPositionParams for the current point in the current document.
-If IDENTIFIER and POSITION are non-nil, they will be used as the document identifier
-and the position respectively."
+If IDENTIFIER and POSITION are non-nil, they will be used as the document
+identifier and the position respectively."
   (list :textDocument (or identifier (lsp--text-document-identifier))
         :position (or position (lsp--cur-position))))
 
@@ -6210,7 +6210,8 @@ The command is executed via `workspace/executeCommand'"
             command err))))
 
 (defun lsp-send-execute-command (command &optional args)
-  "Create and send a 'workspace/executeCommand' message having command COMMAND and optional ARGS."
+  "Create and send a 'workspace/executeCommand' message having command COMMAND
+and optional ARGS."
   (lsp-workspace-command-execute command args))
 
 (defalias 'lsp-point-to-position #'lsp--point-to-position)
@@ -6995,7 +6996,8 @@ Return a nested alist keyed by symbol names. e.g.
       (ignore (lsp-log "Command \"%s\" is not present on the path." (s-join " " final-command)))))
 
 (defun lsp--value-to-string (value)
-  "Convert VALUE to a string that can be set as value in an environment variable."
+  "Convert VALUE to a string that can be set as value in an environment
+variable."
   (cond
    ((stringp value) value)
    ((booleanp value) (if value
@@ -9019,7 +9021,8 @@ This avoids overloading the server with many files when starting Emacs."
 
 ;;;###autoload
 (defun lsp-start-plain ()
-  "Start `lsp-mode' using mininal configuration using the latest `melpa' version of the packages.
+  "Start `lsp-mode' using mininal configuration using the latest `melpa' version
+of the packages.
 
 In case the major-mode that you are using for "
   (interactive)
