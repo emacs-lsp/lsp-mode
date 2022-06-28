@@ -6347,8 +6347,8 @@ PARAMS are the `workspace/configuration' request params"
     (lsp--send-no-wait (lsp--make-message response) process)))
 
 (lsp-defun lsp--on-request (workspace (request &as &JSONRequest :params :method))
-  "Call the appropriate handler for REQUEST, and send the return value to the server.
-WORKSPACE is the active workspace."
+  "Call the appropriate handler for REQUEST, and send the return value to the
+server. WORKSPACE is the active workspace."
   (-let* ((recv-time (current-time))
           (client (lsp--workspace-client workspace))
           (buffers (lsp--workspace-buffers workspace))
