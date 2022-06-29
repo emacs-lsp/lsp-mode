@@ -35,6 +35,7 @@
   * Add Gleam support
   * Drop deprecated rust-analyzer variable lsp-rust-analyzer-import-merge-behaviour
   * Added run and debug code lenses to ~lsp-kotlin~
+  * Add setting UPDATE_EXPECT=1 when running `expect!` tests ~lsp-rust~
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.

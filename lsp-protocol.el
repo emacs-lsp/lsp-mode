@@ -414,7 +414,7 @@ See `-let' for a description of the destructuring mechanism."
                (rust-analyzer:MoveItemParams (:textDocument :range :direction) nil)
                (rust-analyzer:RunnablesParams (:textDocument) (:position))
                (rust-analyzer:Runnable (:label :kind :args) (:location))
-               (rust-analyzer:RunnableArgs (:cargoArgs :executableArgs) (:workspaceRoot))
+               (rust-analyzer:RunnableArgs (:cargoArgs :executableArgs) (:workspaceRoot :expectTest))
                (rust-analyzer:RelatedTestsParams (:textDocument :position) nil)
                (rust-analyzer:RelatedTests (:runnable) nil)
                (rust-analyzer:InlayHint (:position :label :kind :paddingLeft :paddingRight) nil)
