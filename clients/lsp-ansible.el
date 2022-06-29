@@ -75,15 +75,15 @@ $PATH is searched for the executable."
   :group 'lsp-ansible
   :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom lsp-ansible-ansible-navigator-path "ansible-navigator"
-  "Path to the ansible-navigator executable."
-  :type 'string
+(defcustom lsp-ansible-completion-provide-redirect-modules t
+  "Toggle redirected module provider when completing modules."
+  :type 'boolean
   :group 'lsp-ansible
   :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom lsp-ansible-ansible-playbook-path "ansible-playbook"
-  "Path to the ansible-playbook executable."
-  :type 'string
+(defcustom lsp-ansible-completion-provide-module-option-aliases t
+  "Toggle alias provider when completing module options."
+  :type 'boolean
   :group 'lsp-ansible
   :package-version '(lsp-mode . "8.0.1"))
 
@@ -123,6 +123,32 @@ if not locally available."
   :group 'lsp-ansible
   :package-version '(lsp-mode . "8.0.1"))
 
+(defcustom lsp-ansible-execution-environment-pull-arguments ""
+  "Specify any additional parameters for the pull command.
+Example: ‘--tls-verify=false’"
+  :type 'string
+  :group 'lsp-ansible
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-ansible-execution-environment-container-options ""
+  "Extra parameters passed to the container engine command.
+Example: ‘-–net=host’"
+  :type 'string
+  :group 'lsp-ansible
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-ansible-execution-environment-volume-mounts []
+  "Additonnal volumes to mount in container.
+The value is a vector of plists.  Expected properties are:
+- src: the name of the local volume or path to be mounted within execution
+  environment
+- dest: the path where the file or directory are mounted in the container
+- options: the property is optional, and is a comma-separated list of options.
+  Example: ro,Z"
+  :type '(lsp-repeatable-vector plist)
+  :group 'lsp-ansible
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defcustom lsp-ansible-python-interpreter-path ""
   "Path to the python/python3 executable.
 This setting may be used to make the extension work with ansible and
@@ -150,12 +176,15 @@ Python virtual environment."
    ("ansible.ansibleLint.arguments" lsp-ansible-ansible-lint-arguments)
    ("ansible.ansibleLint.enabled" lsp-ansible-ansible-lint-enabled t)
    ("ansible.ansibleLint.path" lsp-ansible-ansible-lint-path)
-   ("ansible.ansibleNavigator.path" lsp-ansible-ansible-navigator-path)
-   ("ansible.ansiblePlaybook.path" lsp-ansible-ansible-playbook-path)
+   ("ansible.completion.provideRedirectModules" lsp-ansible-completion-provide-redirect-modules t)
+   ("ansible.completion.provideModuleOptionAliases" lsp-ansible-completion-provide-module-option-aliases t)
    ("ansible.executionEnvironment.containerEngine" lsp-ansible-execution-environment-container-engine)
    ("ansible.executionEnvironment.enabled" lsp-ansible-execution-environment-enabled t)
    ("ansible.executionEnvironment.image" lsp-ansible-execution-environment-image)
-   ("ansible.executionEnvironment.pullPolicy" lsp-ansible-execution-environment-pull-policy)
+   ("ansible.executionEnvironment.pull.policy" lsp-ansible-execution-environment-pull-policy)
+   ("ansible.executionEnvironment.pull.arguments" lsp-ansible-execution-environment-pull-arguments)
+   ("ansible.executionEnvironment.containerOptions" lsp-ansible-execution-environment-container-options)
+   ("ansible.executionEnvironment.volumeMounts" lsp-ansible-execution-environment-volume-mounts)
    ("ansible.python.interpreterPath" lsp-ansible-python-interpreter-path)
    ("ansible.python.activationScript" lsp-ansible-python-activation-script)))
 
