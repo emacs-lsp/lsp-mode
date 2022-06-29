@@ -1126,12 +1126,15 @@ meaning."
 Extract the arguments, prepare the minor mode (cargo-process-mode if possible)
 and run a compilation"
   (-let* (((&rust-analyzer:Runnable :kind :label :args) runnable)
-          ((&rust-analyzer:RunnableArgs :cargo-args :executable-args :workspace-root?) args)
+          ((&rust-analyzer:RunnableArgs :cargo-args :executable-args :workspace-root? :expect-test?) args)
           (default-directory (or workspace-root? default-directory)))
     (if (not (string-equal kind "cargo"))
         (lsp--error "'%s' runnable is not supported" kind)
       (compilation-start
-       (string-join (append (list "cargo") cargo-args (when executable-args '("--")) executable-args '()) " ")
+       (string-join (append (when expect-test? '("env" "UPDATE_EXPECT=1"))
+                            (list "cargo") cargo-args
+                            (when executable-args '("--")) executable-args '()) " ")
+
        ;; cargo-process-mode is nice, but try to work without it...
        (if (functionp 'cargo-process-mode) 'cargo-process-mode nil)
        (lambda (_) (concat "*" label "*"))))))
