@@ -1044,13 +1044,13 @@ meaning."
       label
     (cond
      ((eql kind lsp/rust-analyzer-inlay-hint-kind-type-hint) (format lsp-rust-analyzer-inlay-type-format label))
-     ((eql kind lsp/rust-analyzer-inlay-hint-kind-type-hint) (format lsp-rust-analyzer-inlay-param-format label))
+     ((eql kind lsp/rust-analyzer-inlay-hint-kind-param-hint) (format lsp-rust-analyzer-inlay-param-format label))
      (t label))))
 
 (defun lsp-rust-analyzer-face-for-inlay (kind)
   (cond
    ((eql kind lsp/rust-analyzer-inlay-hint-kind-type-hint) 'lsp-rust-analyzer-inlay-type-face)
-   ((eql kind lsp/rust-analyzer-inlay-hint-kind-type-hint) 'lsp-rust-analyzer-inlay-param-face)
+   ((eql kind lsp/rust-analyzer-inlay-hint-kind-param-hint) 'lsp-rust-analyzer-inlay-param-face)
    (t 'lsp-rust-analyzer-inlay-face)))
 
 (defun lsp-rust-analyzer-initialized? ()
