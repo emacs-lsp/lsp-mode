@@ -4744,6 +4744,11 @@ Applies on type formatting."
 
 
 
+(defcustom lsp-warn-no-matched-clients t
+  "Whether to show messages when there are no supported clients."
+  :group 'lsp-mode
+  :type 'boolean)
+
 (defun lsp-buffer-language ()
   "Get language corresponding current buffer."
   (or (->> lsp-language-id-configuration
@@ -4753,9 +4758,11 @@ Applies on type formatting."
                             (s-matches? mode-or-pattern (buffer-file-name))) language)
                       ((eq mode-or-pattern major-mode) language))))
            cl-rest)
-      (lsp-warn "Unable to calculate the languageId for buffer `%s'. Take a look at `lsp-language-id-configuration'. The `major-mode' is %s"
-                (buffer-name)
-                major-mode)))
+      (and lsp-warn-no-matched-clients
+           (lsp-warn "Unable to calculate the languageId for buffer `%s'. \
+Take a look at `lsp-language-id-configuration'. The `major-mode' is %s"
+                     (buffer-name)
+                     major-mode))))
 
 (defun lsp-activate-on (&rest languages)
   "Returns language activation function.
@@ -8541,11 +8548,6 @@ Errors if there are none."
   (interactive (list (lsp--read-workspace)))
   (lsp--warn "Restarting %s" (lsp--workspace-print workspace))
   (with-lsp-workspace workspace (lsp--shutdown-workspace t)))
-
-(defcustom lsp-warn-no-matched-clients t
-  "Don't show message when there are no supported clients."
-  :group 'lsp-mode
-  :type 'boolean)
 
 ;;;###autoload
 (defun lsp (&optional arg)
