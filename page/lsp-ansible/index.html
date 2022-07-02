@@ -1214,13 +1214,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-ansible-ansible-navigator-path" class="md-nav__link">
-    lsp-ansible-ansible-navigator-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#lsp-ansible-ansible-path" class="md-nav__link">
     lsp-ansible-ansible-path
   </a>
@@ -1228,8 +1221,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-ansible-ansible-playbook-path" class="md-nav__link">
-    lsp-ansible-ansible-playbook-path
+  <a href="#lsp-ansible-completion-provide-module-option-aliases" class="md-nav__link">
+    lsp-ansible-completion-provide-module-option-aliases
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ansible-completion-provide-redirect-modules" class="md-nav__link">
+    lsp-ansible-completion-provide-redirect-modules
   </a>
   
 </li>
@@ -1237,6 +1237,13 @@
           <li class="md-nav__item">
   <a href="#lsp-ansible-execution-environment-container-engine" class="md-nav__link">
     lsp-ansible-execution-environment-container-engine
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ansible-execution-environment-container-options" class="md-nav__link">
+    lsp-ansible-execution-environment-container-options
   </a>
   
 </li>
@@ -1256,8 +1263,22 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-ansible-execution-environment-pull-arguments" class="md-nav__link">
+    lsp-ansible-execution-environment-pull-arguments
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-ansible-execution-environment-pull-policy" class="md-nav__link">
     lsp-ansible-execution-environment-pull-policy
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ansible-execution-environment-volume-mounts" class="md-nav__link">
+    lsp-ansible-execution-environment-volume-mounts
   </a>
   
 </li>
@@ -3170,13 +3191,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-ansible-ansible-navigator-path" class="md-nav__link">
-    lsp-ansible-ansible-navigator-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#lsp-ansible-ansible-path" class="md-nav__link">
     lsp-ansible-ansible-path
   </a>
@@ -3184,8 +3198,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-ansible-ansible-playbook-path" class="md-nav__link">
-    lsp-ansible-ansible-playbook-path
+  <a href="#lsp-ansible-completion-provide-module-option-aliases" class="md-nav__link">
+    lsp-ansible-completion-provide-module-option-aliases
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ansible-completion-provide-redirect-modules" class="md-nav__link">
+    lsp-ansible-completion-provide-redirect-modules
   </a>
   
 </li>
@@ -3193,6 +3214,13 @@
           <li class="md-nav__item">
   <a href="#lsp-ansible-execution-environment-container-engine" class="md-nav__link">
     lsp-ansible-execution-environment-container-engine
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ansible-execution-environment-container-options" class="md-nav__link">
+    lsp-ansible-execution-environment-container-options
   </a>
   
 </li>
@@ -3212,8 +3240,22 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-ansible-execution-environment-pull-arguments" class="md-nav__link">
+    lsp-ansible-execution-environment-pull-arguments
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-ansible-execution-environment-pull-policy" class="md-nav__link">
     lsp-ansible-execution-environment-pull-policy
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ansible-execution-environment-volume-mounts" class="md-nav__link">
+    lsp-ansible-execution-environment-volume-mounts
   </a>
   
 </li>
@@ -3332,21 +3374,21 @@ See ansible-lint documentation.</p>
 <p>Path to the ansible-lint executable.
 $PATH is searched for the executable.</p>
 <hr />
-<h3 id="lsp-ansible-ansible-navigator-path"><code>lsp-ansible-ansible-navigator-path</code><a class="headerlink" href="#lsp-ansible-ansible-navigator-path" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>ansible-navigator</code></p>
-<p>Path to the ansible-navigator executable.</p>
-<hr />
 <h3 id="lsp-ansible-ansible-path"><code>lsp-ansible-ansible-path</code><a class="headerlink" href="#lsp-ansible-ansible-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
 <p><em>Default:</em> <code>ansible</code></p>
 <p>Path to the ansible executable.
 $PATH is searched for the executable.</p>
 <hr />
-<h3 id="lsp-ansible-ansible-playbook-path"><code>lsp-ansible-ansible-playbook-path</code><a class="headerlink" href="#lsp-ansible-ansible-playbook-path" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>ansible-playbook</code></p>
-<p>Path to the ansible-playbook executable.</p>
+<h3 id="lsp-ansible-completion-provide-module-option-aliases"><code>lsp-ansible-completion-provide-module-option-aliases</code><a class="headerlink" href="#lsp-ansible-completion-provide-module-option-aliases" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Toggle alias provider when completing module options.</p>
+<hr />
+<h3 id="lsp-ansible-completion-provide-redirect-modules"><code>lsp-ansible-completion-provide-redirect-modules</code><a class="headerlink" href="#lsp-ansible-completion-provide-redirect-modules" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Toggle redirected module provider when completing modules.</p>
 <hr />
 <h3 id="lsp-ansible-execution-environment-container-engine"><code>lsp-ansible-execution-environment-container-engine</code><a class="headerlink" href="#lsp-ansible-execution-environment-container-engine" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const auto) (const podman) (const docker))</code></p>
@@ -3354,6 +3396,12 @@ $PATH is searched for the executable.</p>
 <p>The container engine to be used while running with execution environment.
 Valid values are auto, podman and docker.  For auto it will look for podman then
 docker.</p>
+<hr />
+<h3 id="lsp-ansible-execution-environment-container-options"><code>lsp-ansible-execution-environment-container-options</code><a class="headerlink" href="#lsp-ansible-execution-environment-container-options" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> ``</p>
+<p>Extra parameters passed to the container engine command.
+Example: <code>-–net=host</code></p>
 <hr />
 <h3 id="lsp-ansible-execution-environment-enabled"><code>lsp-ansible-execution-environment-enabled</code><a class="headerlink" href="#lsp-ansible-execution-environment-enabled" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -3365,6 +3413,12 @@ docker.</p>
 <p><em>Default:</em> <code>quay.io/ansible/creator-ee:latest</code></p>
 <p>Specify the name of the execution environment image.</p>
 <hr />
+<h3 id="lsp-ansible-execution-environment-pull-arguments"><code>lsp-ansible-execution-environment-pull-arguments</code><a class="headerlink" href="#lsp-ansible-execution-environment-pull-arguments" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> ``</p>
+<p>Specify any additional parameters for the pull command.
+Example: <code>--tls-verify=false</code></p>
+<hr />
 <h3 id="lsp-ansible-execution-environment-pull-policy"><code>lsp-ansible-execution-environment-pull-policy</code><a class="headerlink" href="#lsp-ansible-execution-environment-pull-policy" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const always) (const missing) (const never) (const tag))</code></p>
 <p><em>Default:</em> <code>missing</code></p>
@@ -3374,6 +3428,17 @@ pull the image when extension is activated or reloaded.  Setting missing will
 pull if not locally available.  Setting never will never pull the image and
 setting tag will always pull if the image tag is <code>latest</code>, otherwise pull
 if not locally available.</p>
+<hr />
+<h3 id="lsp-ansible-execution-environment-volume-mounts"><code>lsp-ansible-execution-environment-volume-mounts</code><a class="headerlink" href="#lsp-ansible-execution-environment-volume-mounts" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(lsp-repeatable-vector plist)</code></p>
+<p><em>Default:</em> <code>[]</code></p>
+<p>Additonnal volumes to mount in container.
+The value is a vector of plists.  Expected properties are:
+- src: the name of the local volume or path to be mounted within execution
+  environment
+- dest: the path where the file or directory are mounted in the container
+- options: the property is optional, and is a comma-separated list of options.
+  Example: ro,Z</p>
 <hr />
 <h3 id="lsp-ansible-language-server-command"><code>lsp-ansible-language-server-command</code><a class="headerlink" href="#lsp-ansible-language-server-command" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(repeat :tag List of string values string)</code></p>
