@@ -7752,7 +7752,16 @@ nil."
         ;; https://github.com/emacs-lsp/lsp-mode/issues/2364 for
         ;; discussion.
         (make-directory (f-join lsp-server-install-dir "npm" package "lib") 'parents)
-        (lsp-async-start-process callback
+        (lsp-async-start-process (lambda ()
+                                   (if (string-empty-p
+                                        (string-trim (shell-command-to-string
+                                                      (mapconcat #'shell-quote-argument `(,npm-binary "view" ,package "peerDependencies") " "))))
+                                       callback
+                                     (let ((default-directory (f-join lsp-server-install-dir "npm" package "lib" "node_modules" package)))
+                                       (lsp-async-start-process callback
+                                                                error-callback
+                                                                (executable-find "npx")
+                                                                "npm-install-peers"))))
                                  error-callback
                                  npm-binary
                                  "-g"
