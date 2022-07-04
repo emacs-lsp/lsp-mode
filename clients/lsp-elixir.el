@@ -201,11 +201,12 @@ be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
                                        (lsp-configuration-section "elixirLS")))
-                                    (puthash
-                                     "textDocumentSync"
-                                     (ht ("save" t)
-                                         ("change" 2))
-                                     (lsp--workspace-server-capabilities workspace)))))
+                                    (lsp-put
+                                     (lsp--workspace-server-capabilities workspace)
+                                     :textDocumentSync
+                                     (lsp-make-text-document-sync-options
+                                      :save t
+                                      :change 2)))))
 
 (lsp-consistency-check lsp-elixir)
 
