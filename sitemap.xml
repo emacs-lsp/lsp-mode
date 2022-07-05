@@ -706,6 +706,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://emacs-lsp.github.io/lsp-mode/tutorials/docker-integration/</loc>
+         <lastmod>2022-07-05</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/</loc>
          <lastmod>2022-07-05</lastmod>
          <changefreq>daily</changefreq>
