@@ -7762,6 +7762,7 @@ nil."
                                          (lsp-async-start-process callback
                                                                   error-callback
                                                                   (executable-find "npx")
+                                                                  "--yes"
                                                                   "npm-install-peers")))))
                                  error-callback
                                  npm-binary
