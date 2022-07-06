@@ -105,7 +105,7 @@ g. `error', `warning') and list of LSP TAGS."
                       flycheck-level
                       (mapconcat #'symbol-name tags "-"))))
     (or (intern-soft name)
-        (let* ((face (--doto (intern (format "lsp-%s-face" name))
+        (let* ((face (--doto (intern (format "%s-face" name))
                        (copy-face (-> flycheck-level
                                       (get 'flycheck-overlay-category)
                                       (get 'face))
@@ -114,7 +114,7 @@ g. `error', `warning') and list of LSP TAGS."
                                (apply #'set-face-attribute it nil
                                       (cl-rest (assoc tag lsp-diagnostics-attributes))))
                              tags)))
-               (category (--doto (intern (format "lsp-%s-category" name))
+               (category (--doto (intern (format "%s-category" name))
                            (setf (get it 'face) face
                                  (get it 'priority) 100)))
                (new-level (intern name))
