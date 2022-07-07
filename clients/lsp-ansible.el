@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'lsp-completion)
 
 ;;; Ansible
 (defgroup lsp-ansible nil
@@ -194,6 +195,12 @@ This prevents the Ansible server from being turned on in all yaml files."
   (and (eq major-mode 'yaml-mode)
        ;; emacs-ansible provides ansible, not ansible-mode
        (with-no-warnings (bound-and-true-p ansible))))
+
+(defun lsp-ansible-resync-inventory ()
+  "Resync the inventory cache used by Ansible Language Server for hosts completion."
+  (interactive)
+  (lsp-notify "resync/ansible-inventory" nil)
+  (lsp-completion--clear-cache))
 
 (lsp-register-client
  (make-lsp-client
