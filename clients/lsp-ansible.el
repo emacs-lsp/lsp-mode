@@ -195,6 +195,15 @@ This prevents the Ansible server from being turned on in all yaml files."
        ;; emacs-ansible provides ansible, not ansible-mode
        (with-no-warnings (bound-and-true-p ansible))))
 
+(declare-function lsp-completion--clear-cache "lsp-completion" (&optional keep-last-result))
+
+(defun lsp-ansible-resync-inventory ()
+  "Resync the inventory cache used by Ansible Language Server for hosts completion."
+  (interactive)
+  (lsp-notify "resync/ansible-inventory" nil)
+  (require 'lsp-completion)
+  (lsp-completion--clear-cache))
+
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection
