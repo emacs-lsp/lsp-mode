@@ -281,6 +281,11 @@ Requires using TypeScript 2.3.0 or newer in the workspace."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-typescript-format-insert-space-after-opening-and-before-closing-empty-braces nil
+  "Defines space handling after opening/before closing empty braces."
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
+
 (defcustom lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-parenthesis nil
   "Defines space handling after opening/before closing non-empty parenthesis."
   :type 'boolean
@@ -366,6 +371,11 @@ Requires using TypeScript 2.3.0 or newer in the workspace."
 
 (defcustom lsp-javascript-format-insert-space-before-function-parenthesis nil
   "Defines space handling before function argument parentheses."
+  :type 'boolean
+  :package-version '(lsp-mode . "6.1"))
+
+(defcustom lsp-javascript-format-insert-space-after-opening-and-before-closing-empty-braces nil
+  "Defines space handling after opening/before closing empty braces."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
@@ -687,6 +697,7 @@ name (e.g. `data' variable passed as `data' parameter)."
    ("javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions" lsp-javascript-format-insert-space-after-function-keyword-for-anonymous-functions t)
    ("javascript.format.insertSpaceAfterKeywordsInControlFlowStatements" lsp-javascript-format-insert-space-after-keywords-in-control-flow-statements t)
    ("javascript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces" lsp-javascript-format-insert-space-after-opening-and-before-closing-jsx-expression-braces t)
+   ("javascript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces" lsp-javascript-format-insert-space-after-opening-and-before-closing-empty-braces t)
    ("javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces" lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-braces t)
    ("javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets" lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-brackets t)
    ("javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis" lsp-javascript-format-insert-space-after-opening-and-before-closing-nonempty-parenthesis t)
@@ -727,6 +738,7 @@ name (e.g. `data' variable passed as `data' parameter)."
    ("typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions" lsp-typescript-format-insert-space-after-function-keyword-for-anonymous-functions t)
    ("typescript.format.insertSpaceAfterKeywordsInControlFlowStatements" lsp-typescript-format-insert-space-after-keywords-in-control-flow-statements t)
    ("typescript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces" lsp-typescript-format-insert-space-after-opening-and-before-closing-jsx-expression-braces t)
+   ("typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces" lsp-typescript-format-insert-space-after-opening-and-before-closing-empty-braces t)
    ("typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces" lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-braces t)
    ("typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets" lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-brackets t)
    ("typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis" lsp-typescript-format-insert-space-after-opening-and-before-closing-nonempty-parenthesis t)
