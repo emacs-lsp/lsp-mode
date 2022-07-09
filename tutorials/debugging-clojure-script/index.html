@@ -3169,6 +3169,14 @@ opening the above URL the Browser Console should show "Hello World".</p>
 <p>Then open <code>app.cljs</code> and place some breakpoints either by clicking in the fringe
 or by doing <code>M-x dap-breakpoint-toggle</code>.</p>
 <p>After doing that, you can do <code>M-x dap-debug</code> and select <code>DAP clojurescript</code>.</p>
+<p>In case you intend to use Chromium, and you get a <code>Error processing "launch": Error: Can't find Chrome - install it or set the "runtimeExecutable" field in the launch config</code>, just add the full path to your Chromium executable.
+For instance, in a Debian system, it would be <code>/usr/bin/chromium</code>.
+In your <code>launch.json</code>, just add the following line:</p>
+<div class="codehilite"><pre><span></span><code>        &quot;runtimeExecutable&quot;: &quot;/usr/bin/chromium&quot;
+</code></pre></div>
+
+<h3 id="screenshot">Screenshot<a class="headerlink" href="#screenshot" title="Permanent link">#</a></h3>
+<p>Your editor should look like this:</p>
 <p><img alt="debugging" src="../images/debugging-clojurescript.png" title="dap-mode" /></p>
 <p>You may find the complete project sources at https://github.com/yyoncho/dap-debug-app</p>
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">#</a></h2>
@@ -3184,7 +3192,7 @@ or by doing <code>M-x dap-breakpoint-toggle</code>.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 8, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 9, 2022</span>
       
     
   </small>
