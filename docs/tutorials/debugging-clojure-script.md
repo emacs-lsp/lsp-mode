@@ -156,6 +156,17 @@ or by doing `M-x dap-breakpoint-toggle`.
 
 After doing that, you can do `M-x dap-debug` and select `DAP clojurescript`.
 
+In case you intend to use Chromium, and you get a `Error processing "launch": Error: Can't find Chrome - install it or set the "runtimeExecutable" field in the launch config`, just add the full path to your Chromium executable.
+For instance, in a Debian system, it would be `/usr/bin/chromium`.
+In your `launch.json`, just add the following line:
+
+            "runtimeExecutable": "/usr/bin/chromium"
+
+
+### Screenshot
+
+Your editor should look like this:
+
 ![debugging](images/debugging-clojurescript.png "dap-mode")
 
 You may find the complete project sources at https://github.com/yyoncho/dap-debug-app
