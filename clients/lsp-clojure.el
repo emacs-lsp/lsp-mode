@@ -45,10 +45,12 @@
   :type '(repeat string))
 
 (defcustom lsp-clojure-server-download-url
-  (format "https://github.com/clojure-lsp/clojure-lsp/releases/latest/download/clojure-lsp-native-%s-amd64.zip"
+  (format "https://github.com/clojure-lsp/clojure-lsp/releases/latest/download/clojure-lsp-native-%s.zip"
           (pcase system-type
             ('gnu/linux "linux")
-            ('darwin "macos")
+            ('darwin (if (string-match "^aarch64-.*" system-configuration)
+                         "macos-aarch64"
+                       "macos-amd64"))
             ('windows-nt "windows")))
   "Automatic download url for lsp-clojure."
   :type 'string
