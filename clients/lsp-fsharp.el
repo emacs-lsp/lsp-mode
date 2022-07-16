@@ -167,6 +167,20 @@ UPDATE? is t."
    error-callback
    "dotnet" "tool" (if update? "update" "install") "-g" "fsautocomplete"))
 
+(defcustom lsp-fsharp-use-dotnet-tool-for-fsac t
+  "Run FsAutoComplete as a dotnet tool.
+
+The binary will be invoked via \"dotnet fsautocomplete\" in the
+project's root directory, which will run a project-local tool if
+available, else the globally installed tool."
+  :group 'lsp-fsharp
+  :type 'boolean
+  :risky t)
+
+(defun lsp-fsharp--fsac-cmd ()
+  "The location of fsautocomplete executable."
+  (expand-file-name "fsautocomplete.dll" lsp-fsharp-server-install-dir))
+
 (defun lsp-fsharp--make-launch-cmd ()
   "Build the command required to launch fsautocomplete."
 
@@ -199,8 +213,10 @@ UPDATE? is t."
 
 (defun lsp-fsharp--test-fsautocomplete-present ()
   "Return non-nil if dotnet tool fsautocomplete is installed globally."
-  (string-match-p "fsautocomplete"
-                  (shell-command-to-string "dotnet tool list -g")))
+  (if lsp-fsharp-use-dotnet-tool-for-fsac
+      (string-match-p "fsautocomplete"
+                      (shell-command-to-string "dotnet tool list -g"))
+    (f-exists? (lsp-fsharp--fsac-cmd))))
 
 (defun lsp-fsharp--project-list ()
   "Get the list of files we need to send to fsharp/workspaceLoad."
