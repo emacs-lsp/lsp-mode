@@ -158,10 +158,10 @@ Defaults to side following treemacs default."
         ("hcl-bool" . lsp-face-semhl-constant)
         ("hcl-string" . lsp-face-semhl-string)
         ("hcl-number" . lsp-face-semhl-number)
-        ("hcl-objectKey" . lsp-face-semhl-label)
-        ("hcl-mapKey" . lsp-face-semhl-label)
+        ("hcl-objectKey" . lsp-face-semhl-member)
+        ("hcl-mapKey" . lsp-face-semhl-member)
         ("hcl-keyword" . lsp-face-semhl-keyword)
-        ("hcl-traversalStep" . lsp-face-semhl-label)
+        ("hcl-traversalStep" . lsp-face-semhl-member)
         ("hcl-typeCapsule" . lsp-face-semhl-type)
         ("hcl-typePrimitive" . lsp-face-semhl-type)))
   (setq lsp-semantic-token-modifier-faces
@@ -187,7 +187,7 @@ Defaults to side following treemacs default."
         ("terraform-variable" . lsp-face-semhl-variable)
         ("terraform-terraform" . lsp-face-semhl-constant)
         ("terraform-backend" . lsp-face-semhl-definition)
-        ("terraform-name" . lsp-face-semhl-label)
+        ("terraform-name" . lsp-face-semhl-interface)
         ("terraform-type" . lsp-face-semhl-type)
         ("terraform-requiredProviders" . lsp-face-semhl-default-library))))
 
