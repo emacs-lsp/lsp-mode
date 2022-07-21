@@ -285,7 +285,7 @@ This is a synchronous action."
                      :no-wait nil
                      :no-merge nil))
          (modules (lsp-terraform-ls--modules-to-tf-module tree-data)))
-    (setq lsp-terraform-ls--modules-call-tree-data modules)))
+    (setq-local lsp-terraform-ls--modules-call-tree-data modules)))
 
 (defun lsp-terraform-ls--fetch-providers ()
   "Fetch modules call data and set it in `lsp-terraform-ls--providers-tree-data'."
@@ -296,7 +296,7 @@ This is a synchronous action."
                      :no-wait nil
                      :no-merge nil))
          (tf-packages (lsp-terraform-ls--providers-to-tf-package tree-data)))
-    (setq lsp-terraform-ls--providers-tree-data tf-packages)))
+    (setq-local lsp-terraform-ls--providers-tree-data tf-packages)))
 
 (defun lsp-terraform-ls--tf-packages-to-treemacs (tf-packages)
   "Convert list of `TF-PACKAGES' to treemacs compatible data."
