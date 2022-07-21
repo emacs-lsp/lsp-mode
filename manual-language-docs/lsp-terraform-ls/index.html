@@ -2992,6 +2992,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#link-to-documentation" class="md-nav__link">
+    Link to Documentation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#treeview-controls" class="md-nav__link">
     Treeview controls
   </a>
@@ -3082,9 +3089,12 @@
 
 <!-- Markdown content -->
 <h2 id="server-note">Server note<a class="headerlink" href="#server-note" title="Permanent link">#</a></h2>
-<p>Currently the mode supports two language servers. This <a href="https://emacs-lsp.github.io/lsp-mode/page/faq/#i-have-multiple-language-servers-registered-for-language-foo-which-one-will-be-used-when-opening-a-project">FAQ entry</a>
-shows how to choose a specific one. If you would want to go with the
-official Hashicorp's language server, set this:</p>
+<p>This page documents the official language server for Terraform by
+Hashicorp.</p>
+<p>Note that currently lsp-mode supports two terraform language
+servers. This <a href="https://emacs-lsp.github.io/lsp-mode/page/faq/#i-have-multiple-language-servers-registered-for-language-foo-which-one-will-be-used-when-opening-a-project">FAQ entry</a> shows how to choose a specific one. If
+you would want to go with the official Hashicorp's language server,
+set this:</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-disabled-clients</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">tfls</span><span class="p">))</span>
 </code></pre></div>
 <h2 id="terraform-ls">terraform-ls<a class="headerlink" href="#terraform-ls" title="Permanent link">#</a></h2>
@@ -3116,6 +3126,19 @@ semantic token support for terraform mode:</p>
 <p>And with semantic token support you get more contextual information
 via different faces:</p>
 <p><img alt="" src="../../examples/lsp-terraform-with-semantic-token.png" /></p>
+<h3 id="link-to-documentation">Link to Documentation<a class="headerlink" href="#link-to-documentation" title="Permanent link">#</a></h3>
+<p>Link to documentation from module sources for registry modules is
+available. Make sure you have this enabled:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-enable-links</span> <span class="no">t</span><span class="p">)</span>
+</code></pre></div>
+<p>Note that the default value of <code>lsp-enable-links</code> is <code>t</code>. So enabling
+it isn't strictly required, but you would require this feature for it
+to properly work.</p>
+<p>This gif demonstrates on how to use it:</p>
+<p><img alt="" src="../../examples/lsp-terraform-open-link.gif" /></p>
+<p>There are two ways to open the link:
+- Key binding: Alt + Enter
+- Clicking the middle button of your mouse</p>
 <h3 id="treeview-controls">Treeview controls<a class="headerlink" href="#treeview-controls" title="Permanent link">#</a></h3>
 <p>For this feature to work, make sure that you have <a href="https://github.com/emacs-lsp/lsp-treemacs">lsp-treemacs</a>
 installed.</p>
@@ -3141,7 +3164,7 @@ within the mode:</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 17, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 21, 2022</span>
       
     
   </small>
