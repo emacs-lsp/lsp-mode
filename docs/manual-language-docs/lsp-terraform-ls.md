@@ -87,6 +87,7 @@ This gif demonstrates on how to use it:
 ![](../examples/lsp-terraform-open-link.gif)
 
 There are two ways to open the link:
+
 - Key binding: Alt + Enter
 - Clicking the middle button of your mouse
 
