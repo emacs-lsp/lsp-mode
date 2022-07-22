@@ -425,6 +425,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "marksman",
+    "full-name": "Marksman",
+    "server-name": "marksman",
+    "server-url": "https://github.com/artempyanykh/marksman",
+    "installation-url": "https://github.com/artempyanykh/marksman",
+    "debugger": "Not available"
+  },
+  {
     "name": "nginx",
     "full-name": "Nginx",
     "server-name": "nginx-lsp",
