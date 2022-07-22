@@ -137,6 +137,38 @@ You may need to remove the lookup handlers conflict from `cider` and/or `clj-ref
 
 </details>
 
+<details>
+<summary>Spacemacs users</summary>
+
+- Add the `dap` layer to the `dotspacemacs/layers ()` section of your `.spacemacs` file (at the top of the file). 
+- Require the corresponding module in the `dotspacemacs/user-config ()` section of your `.spacemacs` (at the bottom of the file).
+(In my case, I made it work with Chromium.)
+- Make sure the Chromium executable is correctly setup (see https://github.com/syl20bnr/spacemacs/issues/13614#issuecomment-1179478365)
+ 
+
+
+```elisp
+dotspacemacs/user-config()
+  ...
+  ;; Enable DAP debugging in ClojureScript.
+  ;; Trying almost all options...
+
+  ;; This one downloads OK.
+  (require 'dap-chrome)
+
+  ;; These two cannot be downloaded... 
+  ;; (require 'dap-firefox)
+  ;; (require 'dap-node)
+
+  ;; I'm not into trying this one...
+  ;; (require 'dap-edge)
+```
+
+Based on:
+https://emacs-lsp.github.io/lsp-mode/tutorials/debugging-clojure-script/
+
+</details>
+
 ### Completion
 
 By default, `lsp-mode` uses `company-mode` as its completion front-end. When
