@@ -98,10 +98,10 @@
   (f-join lsp-clients-lua-language-server-install-dir
           "extension/server/bin/"
           (pcase system-type
-            ('gnu/linux "Linux/lua-language-server")
-            ('darwin "macOS/lua-language-server")
-            ('windows-nt "Windows/lua-language-server.exe")
-            (_ "Linux/lua-language-server")))
+            ('gnu/linux "lua-language-server")
+            ('darwin "lua-language-server")
+            ('windows-nt "lua-language-server.exe")
+            (_ "lua-language-server")))
   "Location of Lua Language Server."
   :group 'lsp-lua-language-server
   :version "8.0.0"
@@ -540,7 +540,11 @@ and `../lib` ,exclude `../lib/temp`.
        (set-file-modes lsp-clients-lua-language-server-bin #o0700)
        (funcall callback))
      error-callback
-     :url (lsp-vscode-extension-url "sumneko" "lua" "1.17.4")
+     :url (lsp-vscode-extension-url "sumneko" "lua" "3.5.0" (pcase system-type
+            ('gnu/linux "?targetPlatform=linux-x64")
+            ('darwin "?targetPlatform=darwin-x64")
+            ('windows-nt "?targetPlatformwin32-x64")
+            (_ "?targetPlatform=linux-x64")))
      :store-path store-path
      :decompress :zip)))
 
@@ -630,7 +634,7 @@ and `../lib` ,exclude `../lib/temp`.
   :type 'file)
 
 (defcustom lsp-lua-roblox-server-download-url
-  (lsp-vscode-extension-url "Nightrains" "robloxlsp" "0.15.8")
+  (lsp-vscode-extension-url "Nightrains" "robloxlsp" "1.5.11")
   "Download url for Roblox Lua vscode extension."
   :group 'lsp-lua-roblox-language-server
   :version "8.0.0"
