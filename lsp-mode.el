@@ -7935,18 +7935,19 @@ in place."
 ;; VSCode marketplace
 
 (defcustom lsp-vscode-ext-url
-  "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/%s/vsextensions/%s/%s/vspackage"
+  "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/%s/vsextensions/%s/%s/vspackage%s"
   "Vscode extension template url."
   :group 'lsp-mode
   :type 'string
   :package-version '(lsp-mode . "8.0.0"))
 
-(defun lsp-vscode-extension-url (publisher name &optional version)
+(defun lsp-vscode-extension-url (publisher name version &optional targetPlatform)
   "Return the URL to vscode extension.
 PUBLISHER is the extension publisher.
 NAME is the name of the extension.
-VERSION is the version of the extension, defaults to `latest'"
-  (format lsp-vscode-ext-url publisher name (or version "latest")))
+VERSION is the version of the extension.
+TARGETPLATFORM is the targetPlatform of the extension."
+  (format lsp-vscode-ext-url publisher name version (or targetPlatform "")))
 
 
 
