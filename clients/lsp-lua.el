@@ -96,12 +96,12 @@
 
 (defcustom lsp-clients-lua-language-server-bin
   (f-join lsp-clients-lua-language-server-install-dir
-          "extension/server/bin/"
+          "bin/"
           (pcase system-type
-            ('gnu/linux "Linux/lua-language-server")
-            ('darwin "macOS/lua-language-server")
-            ('windows-nt "Windows/lua-language-server.exe")
-            (_ "Linux/lua-language-server")))
+            ('gnu/linux "lua-language-server")
+            ('darwin "lua-language-server")
+            ('windows-nt "lua-language-server.exe")
+            (_ "lua-language-server")))
   "Location of Lua Language Server."
   :group 'lsp-lua-language-server
   :version "8.0.0"
@@ -110,7 +110,7 @@
 
 (defcustom lsp-clients-lua-language-server-main-location
   (f-join lsp-clients-lua-language-server-install-dir
-          "extension/server/main.lua")
+          "main.lua")
   "Location of Lua Language Server main.lua."
   :group 'lsp-lua-language-server
   :version "8.0.0"
@@ -530,19 +530,53 @@ and `../lib` ,exclude `../lib/temp`.
    ("Lua.completion.callSnippet" lsp-lua-completion-call-snippet)
    ("Lua.color.mode" lsp-lua-color-mode)))
 
+(defun lsp--find-latest-lua-lsp-release-url ()
+  "Fetch the latest version of lua-language-server from its github repo
+(for use with `lsp-lua-language-server-install'). Search for \"linux-x64\",
+\"darwin-x64\" and \"win32-x64\" tags on releases."
+  (let ((system-suffix (pcase system-type
+                         ('gnu/linux "linux-x64")
+                         ('darwin "darwin-x64")
+                         ('windows-nt "win32-x64")
+                         (_ "linux-x64")))
+        (url-request-method "GET"))
+    (with-current-buffer (url-retrieve-synchronously "https://api.github.com/repos/sumneko/lua-language-server/releases/latest")
+      (goto-char (point-max))
+      (goto-char (point-at-bol))
+      (let* ((json-result (prog1 (json-read) (kill-buffer)))
+             (os-search-pred (lambda (json-entry)
+                      (string-match-p system-suffix (alist-get 'name json-entry)))))
+        (message "Latest version found: %s" (alist-get 'name json-result))
+        (alist-get 'browser_download_url (seq-find os-search-pred (alist-get 'assets json-result)))
+        ))))
+
+;; (defun lsp-lua-language-server-install (client callback error-callback update?)
+;;   "Download the latest version of lua-language-server and extract it to
+;; `lsp-lua-language-server-install-dir'."
+;;   (ignore client update?)
+;;   (let ((store-path (expand-file-name "vs-lua" lsp-clients-lua-language-server-install-dir)))
+;;     (lsp-download-install
+;;      (lambda (&rest _)
+;;        (set-file-modes lsp-clients-lua-language-server-bin #o0700)
+;;        (funcall callback))
+;;      error-callback
+;;      :url (lsp-vscode-extension-url "sumneko" "lua" "1.17.4")
+;;      :store-path store-path
+;;      :decompress :zip)))
+
 (defun lsp-lua-language-server-install (client callback error-callback update?)
   "Download the latest version of lua-language-server and extract it to
 `lsp-lua-language-server-install-dir'."
   (ignore client update?)
-  (let ((store-path (expand-file-name "vs-lua" lsp-clients-lua-language-server-install-dir)))
+  (let ((store-path (expand-file-name "lua-language-server-github" lsp-clients-lua-language-server-install-dir)))
     (lsp-download-install
      (lambda (&rest _)
        (set-file-modes lsp-clients-lua-language-server-bin #o0700)
        (funcall callback))
      error-callback
-     :url (lsp-vscode-extension-url "sumneko" "lua" "1.17.4")
+     :url (lsp--find-latest-lua-lsp-release-url)
      :store-path store-path
-     :decompress :zip)))
+     :decompress (pcase system-type ('windows-nt :zip) (_ :targz)))))
 
 (lsp-register-client
  (make-lsp-client

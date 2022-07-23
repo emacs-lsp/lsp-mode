@@ -7798,8 +7798,9 @@ nil."
           (pcase decompress
             (:gzip (concat store-path ".gz"))
             (:zip (concat store-path ".zip"))
+            (:targz (concat store-path ".tar.gz"))
             (`nil store-path)
-            (_ (error ":decompress must be `:gzip', `:zip' or `nil'")))))
+            (_ (error ":decompress must be `:gzip', `:zip', `:targz' or `nil'")))))
     (make-thread
      (lambda ()
        (condition-case err
@@ -7841,10 +7842,11 @@ nil."
                (pcase decompress
                  (:gzip
                   (lsp-gunzip download-path))
-                 (:zip (lsp-unzip download-path (f-parent store-path))))
+                 (:zip (lsp-unzip download-path (f-parent store-path)))
+                 (:targz (lsp-tar-gz-decompress download-path (f-parent store-path)))
                (lsp--info "Decompressed %s..." store-path))
              (funcall callback))
-         (error (funcall error-callback err)))))))
+         (error (funcall error-callback err))))))))
 
 (cl-defun lsp-download-path (&key store-path binary-path set-executable? &allow-other-keys)
   "Download URL and store it into STORE-PATH.
@@ -7904,6 +7906,26 @@ in place."
   (unless lsp-gunzip-script
     (error "Unable to find `gzip' on the path, please either customize `lsp-gunzip-script' or manually decompress %s" gz-file))
   (shell-command (format lsp-gunzip-script gz-file)))
+
+;; tar.gz decompression
+
+(defconst lsp-ext-tar-script "bash -c 'mkdir -p %2$s; tar xf %1$s --directory=%2$s'"
+  "Script to decompress a .tar.gz file.")
+
+(defcustom lsp-tar-script (cond ((executable-find "tar") lsp-ext-tar-script)
+                                (t nil))
+  "The script to decompress a .tar.gaz file.
+Should be a format string with one argument for the file to be decompressed
+in place."
+  :group 'lsp-mode
+  :type 'string)
+
+(defun lsp-tar-gz-decompress (targz-file dest)
+  "Decompress TARGZ-FILE in DEST."
+  (unless lsp-tar-script
+    (error "Unable to find `tar' on the path, please either customize `lsp-tar-script' or manually decompress %s" targz-file))
+  (shell-command (format lsp-tar-script targz-file dest)))
+
 
 ;; VSCode marketplace
 
