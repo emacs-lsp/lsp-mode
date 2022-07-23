@@ -543,7 +543,7 @@ and `../lib` ,exclude `../lib/temp`.
      :url (lsp-vscode-extension-url "sumneko" "lua" "3.5.0" (pcase system-type
             ('gnu/linux "?targetPlatform=linux-x64")
             ('darwin "?targetPlatform=darwin-x64")
-            ('windows-nt "?targetPlatformwin32-x64")
+            ('windows-nt "?targetPlatform=win32-x64")
             (_ "?targetPlatform=linux-x64")))
      :store-path store-path
      :decompress :zip)))
