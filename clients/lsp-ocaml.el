@@ -77,6 +77,27 @@
   :priority 0
   :server-id 'ocaml-lsp-server))
 
+(defcustom lsp-cut-signature 'space
+  "If non-nil, signatures returned on hover will not be split on newline"
+  :group 'lsp-ocaml
+  :type '(choice (symbol :tag "Default behaviour" 'cut)
+                 (symbol :tag "Display all the lines with spaces" 'space)))
+
+(cl-defmethod lsp-clients-extract-signature-on-hover (contents (_server-id (eql ocamllsp)) &optional storable)
+  "Extract a representative line from OCaml's CONTENTS, to show in the echo area.
+This function splits the content between the signature
+and the documentation to display the signature"
+  (let ((type (lsp-make-marked-string
+               :language "ocaml"
+               :value (car (s-split "---" (lsp--render-element contents))))))
+      (if (eq lsp-cut-signature 'cut)
+          (car (s-lines (s-trim (lsp--render-element type))))
+        (if (and (eq lsp-cut-signature 'space) (equal nil storable))
+            (let* ((ntype (s-replace "\n" " " (s-trim (lsp--render-element type)))))
+              (if (>= (length ntype) (frame-width))
+                  (concat (substring ntype 0 (- (frame-width) 4)) "...")
+                ntype))
+        (s-trim (lsp--render-element type))))))
 
 (lsp-consistency-check lsp-ocaml)
 
