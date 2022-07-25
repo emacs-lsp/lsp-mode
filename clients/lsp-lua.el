@@ -629,7 +629,7 @@ and `../lib` ,exclude `../lib/temp`.
                                                          ,lsp-clients-lua-language-server-latest-main-location)))
                                         '(lambda () (and (f-exists? lsp-clients-lua-language-server-latest-bin) (f-exists? lsp-clients-lua-language-server-latest-main-location))))
   :major-modes '(lua-mode)
-  :priority -3
+  :priority -2
   :server-id 'lua-language-server-latest
   :download-server-fn #'lsp-lua-language-server-install-latest))
 
@@ -665,7 +665,7 @@ and `../lib` ,exclude `../lib/temp`.
                                               (f-join lsp-clients-luarocks-bin-dir "lua-lsp")))
                                         #'lsp-clients-lua-lsp-test)
   :major-modes '(lua-mode)
-  :priority -4
+  :priority -3
   :server-id 'lsp-lua-lsp))
 
 ;;; lua-roblox-language-server
@@ -744,7 +744,7 @@ and `../lib` ,exclude `../lib/temp`.
                                                          ,lsp-lua-roblox-language-server-main-location)))
                                         #'lsp-lua-roblox-language-server-test)
   :major-modes '(lua-mode)
-  :priority -5
+  :priority -4
   :server-id 'lua-roblox-language-server
   :download-server-fn #'lsp-lua-roblox-language-server-install))
 
