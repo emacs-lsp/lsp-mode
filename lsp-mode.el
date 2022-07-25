@@ -5246,7 +5246,6 @@ When language is nil render as markup if `markdown-mode' is loaded."
   "Extract a representative line from CONTENTS, to show in the echo area."
   (car (s-lines (s-trim (lsp--render-element contents)))))
 
-
 (defun lsp--render-on-hover-content (contents render-all)
   "Render the content received from 'document/onHover' request.
 CONTENTS  - MarkedString | MarkedString[] | MarkupContent
