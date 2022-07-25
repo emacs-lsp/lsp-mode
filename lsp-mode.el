@@ -112,11 +112,6 @@
   :group 'lsp-mode
   :type 'boolean)
 
-(defcustom lsp-cut-signature t
-  "If non-nil, signatures returned on hover will not be split on newline"
-  :group 'lsp-mode
-  :type 'boolean)
-
 (defcustom lsp-log-io-allowlist-methods '()
   "The methods to filter before print to lsp-log-io."
   :group 'lsp-mode
@@ -5249,9 +5244,8 @@ When language is nil render as markup if `markdown-mode' is loaded."
 
 (cl-defgeneric lsp-clients-extract-signature-on-hover (contents _server-id)
   "Extract a representative line from CONTENTS, to show in the echo area."
-  (if lsp-cut-signature
-      (car (s-lines (s-trim (lsp--render-element contents))))
-    (s-replace "\n" " " (s-trim (lsp--render-element contents)))))
+  (car (s-lines (s-trim (lsp--render-element contents)))))
+
 
 (defun lsp--render-on-hover-content (contents render-all)
   "Render the content received from 'document/onHover' request.
