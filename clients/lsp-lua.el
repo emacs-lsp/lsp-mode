@@ -98,10 +98,10 @@
   (f-join lsp-clients-lua-language-server-install-dir
           "extension/server/bin/"
           (pcase system-type
-            ('gnu/linux "lua-language-server")
-            ('darwin "lua-language-server")
-            ('windows-nt "lua-language-server.exe")
-            (_ "lua-language-server")))
+            ('gnu/linux "Linux/lua-language-server")
+            ('darwin "macOS/lua-language-server")
+            ('windows-nt "Windows/lua-language-server.exe")
+            (_ "Linux/lua-language-server")))
   "Location of Lua Language Server."
   :group 'lsp-lua-language-server
   :version "8.0.0"
@@ -596,6 +596,8 @@ and `../lib` ,exclude `../lib/temp`.
                          (_ "linux-x64")))
         (url-request-method "GET"))
     (with-current-buffer (url-retrieve-synchronously "https://api.github.com/repos/sumneko/lua-language-server/releases/latest")
+      ;; Go to beginning of the last line (where the retrieved json with information
+      ;; is in the buffer from `url-retrieve-synchronously')
       (goto-char (point-max))
       (goto-char (point-at-bol))
       (let* ((json-result (prog1 (json-read) (kill-buffer)))
@@ -612,7 +614,7 @@ and `../lib` ,exclude `../lib/temp`.
   (let ((store-path (expand-file-name "lua-language-server-github" lsp-clients-lua-language-server-install-dir)))
     (lsp-download-install
      (lambda (&rest _)
-       (set-file-modes lsp-clients-lua-language-server-bin #o0700)
+       (set-file-modes lsp-clients-lua-language-server-latest-bin #o0700)
        (funcall callback))
      error-callback
      :url (lsp--find-latest-lua-ls-release-url)
@@ -627,7 +629,7 @@ and `../lib` ,exclude `../lib/temp`.
                                                          ,lsp-clients-lua-language-server-latest-main-location)))
                                         '(lambda () (and (f-exists? lsp-clients-lua-language-server-latest-bin) (f-exists? lsp-clients-lua-language-server-latest-main-location))))
   :major-modes '(lua-mode)
-  :priority -2
+  :priority -3
   :server-id 'lua-language-server-latest
   :download-server-fn #'lsp-lua-language-server-install-latest))
 
@@ -663,7 +665,7 @@ and `../lib` ,exclude `../lib/temp`.
                                               (f-join lsp-clients-luarocks-bin-dir "lua-lsp")))
                                         #'lsp-clients-lua-lsp-test)
   :major-modes '(lua-mode)
-  :priority -3
+  :priority -4
   :server-id 'lsp-lua-lsp))
 
 ;;; lua-roblox-language-server
@@ -742,7 +744,7 @@ and `../lib` ,exclude `../lib/temp`.
                                                          ,lsp-lua-roblox-language-server-main-location)))
                                         #'lsp-lua-roblox-language-server-test)
   :major-modes '(lua-mode)
-  :priority -4
+  :priority -5
   :server-id 'lua-roblox-language-server
   :download-server-fn #'lsp-lua-roblox-language-server-install))
 
