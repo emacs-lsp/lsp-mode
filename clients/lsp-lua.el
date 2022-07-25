@@ -96,7 +96,7 @@
 
 (defcustom lsp-clients-lua-language-server-bin
   (f-join lsp-clients-lua-language-server-install-dir
-          "bin/"
+          "extension/server/bin/"
           (pcase system-type
             ('gnu/linux "lua-language-server")
             ('darwin "lua-language-server")
@@ -110,7 +110,7 @@
 
 (defcustom lsp-clients-lua-language-server-main-location
   (f-join lsp-clients-lua-language-server-install-dir
-          "main.lua")
+          "extension/server/main.lua")
   "Location of Lua Language Server main.lua."
   :group 'lsp-lua-language-server
   :version "8.0.0"
@@ -530,7 +530,62 @@ and `../lib` ,exclude `../lib/temp`.
    ("Lua.completion.callSnippet" lsp-lua-completion-call-snippet)
    ("Lua.color.mode" lsp-lua-color-mode)))
 
-(defun lsp--find-latest-lua-lsp-release-url ()
+(defun lsp-lua-language-server-install (client callback error-callback update?)
+  "Download the latest version of lua-language-server and extract it to
+`lsp-lua-language-server-install-dir'."
+  (ignore client update?)
+  (let ((store-path (expand-file-name "vs-lua" lsp-clients-lua-language-server-install-dir)))
+    (lsp-download-install
+     (lambda (&rest _)
+       (set-file-modes lsp-clients-lua-language-server-bin #o0700)
+       (funcall callback))
+     error-callback
+     :url (lsp-vscode-extension-url "sumneko" "lua" "1.17.4")
+     :store-path store-path
+     :decompress :zip)))
+
+(lsp-register-client
+ (make-lsp-client
+  :new-connection (lsp-stdio-connection (lambda () (or lsp-clients-lua-language-server-command
+                                                       `(,lsp-clients-lua-language-server-bin
+                                                         ,@lsp-clients-lua-language-server-args
+                                                         ,lsp-clients-lua-language-server-main-location)))
+                                        #'lsp-clients-lua-language-server-test)
+  :major-modes '(lua-mode)
+  :priority -2
+  :server-id 'lua-language-server
+  :download-server-fn #'lsp-lua-language-server-install))
+
+;;; lua-language-server-latest
+
+(defcustom lsp-clients-lua-language-server-latest-bin
+  (f-join lsp-clients-lua-language-server-install-dir
+          "bin/"
+          (pcase system-type
+            ('gnu/linux "lua-language-server")
+            ('darwin "lua-language-server")
+            ('windows-nt "lua-language-server.exe")
+            (_ "lua-language-server")))
+  "Location of Lua Language Server (latest)."
+  :group 'lsp-lua-language-server
+  :risky t
+  :type 'file)
+
+(defcustom lsp-clients-lua-language-server-latest-main-location
+  (f-join lsp-clients-lua-language-server-install-dir
+          "main.lua")
+  "Location of Lua Language Server main.lua (latest)."
+  :group 'lsp-lua-language-server
+  :risky t
+  :type 'file)
+
+(defcustom lsp-clients-lua-language-server-latest-args '("-E")
+  "Arguments to run the Lua Language server (latest)."
+  :group 'lsp-lua-language-server
+  :risky t
+  :type '(repeat string))
+
+(defun lsp--find-latest-lua-ls-release-url ()
   "Fetch the latest version of lua-language-server from its github repo
 (for use with `lsp-lua-language-server-install'). Search for \"linux-x64\",
 \"darwin-x64\" and \"win32-x64\" tags on releases."
@@ -550,21 +605,7 @@ and `../lib` ,exclude `../lib/temp`.
         (alist-get 'browser_download_url (seq-find os-search-pred (alist-get 'assets json-result)))
         ))))
 
-;; (defun lsp-lua-language-server-install (client callback error-callback update?)
-;;   "Download the latest version of lua-language-server and extract it to
-;; `lsp-lua-language-server-install-dir'."
-;;   (ignore client update?)
-;;   (let ((store-path (expand-file-name "vs-lua" lsp-clients-lua-language-server-install-dir)))
-;;     (lsp-download-install
-;;      (lambda (&rest _)
-;;        (set-file-modes lsp-clients-lua-language-server-bin #o0700)
-;;        (funcall callback))
-;;      error-callback
-;;      :url (lsp-vscode-extension-url "sumneko" "lua" "1.17.4")
-;;      :store-path store-path
-;;      :decompress :zip)))
-
-(defun lsp-lua-language-server-install (client callback error-callback update?)
+(defun lsp-lua-language-server-install-latest (client callback error-callback update?)
   "Download the latest version of lua-language-server and extract it to
 `lsp-lua-language-server-install-dir'."
   (ignore client update?)
@@ -574,22 +615,21 @@ and `../lib` ,exclude `../lib/temp`.
        (set-file-modes lsp-clients-lua-language-server-bin #o0700)
        (funcall callback))
      error-callback
-     :url (lsp--find-latest-lua-lsp-release-url)
+     :url (lsp--find-latest-lua-ls-release-url)
      :store-path store-path
      :decompress (pcase system-type ('windows-nt :zip) (_ :targz)))))
 
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection (lambda () (or lsp-clients-lua-language-server-command
-                                                       `(,lsp-clients-lua-language-server-bin
-                                                         ,@lsp-clients-lua-language-server-args
-                                                         ,lsp-clients-lua-language-server-main-location)))
-                                        #'lsp-clients-lua-language-server-test)
+                                                       `(,lsp-clients-lua-language-server-latest-bin
+                                                         ,@lsp-clients-lua-language-server-latest-args
+                                                         ,lsp-clients-lua-language-server-latest-main-location)))
+                                        '(lambda () (and (f-exists? lsp-clients-lua-language-server-latest-bin) (f-exists? lsp-clients-lua-language-server-latest-main-location))))
   :major-modes '(lua-mode)
   :priority -2
-  :server-id 'lua-language-server
-  :download-server-fn #'lsp-lua-language-server-install))
-
+  :server-id 'lua-language-server-latest
+  :download-server-fn #'lsp-lua-language-server-install-latest))
 
 ;;; lua-lsp
 (defgroup lsp-lua-lsp nil
