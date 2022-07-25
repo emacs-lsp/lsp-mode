@@ -558,6 +558,11 @@ and `../lib` ,exclude `../lib/temp`.
 
 ;;; lua-language-server-latest
 
+(defgroup lsp-lua-language-server-latest nil
+  "Lua LSP client, provided by the Lua Language Server (GitHub release)."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/sumneko/lua-language-server"))
+
 (defcustom lsp-clients-lua-language-server-latest-bin
   (f-join lsp-clients-lua-language-server-install-dir
           "bin/"
@@ -567,7 +572,7 @@ and `../lib` ,exclude `../lib/temp`.
             ('windows-nt "lua-language-server.exe")
             (_ "lua-language-server")))
   "Location of Lua Language Server (latest)."
-  :group 'lsp-lua-language-server
+  :group 'lsp-lua-language-server-latest
   :risky t
   :type 'file)
 
@@ -575,13 +580,13 @@ and `../lib` ,exclude `../lib/temp`.
   (f-join lsp-clients-lua-language-server-install-dir
           "main.lua")
   "Location of Lua Language Server main.lua (latest)."
-  :group 'lsp-lua-language-server
+  :group 'lsp-lua-language-server-latest
   :risky t
   :type 'file)
 
 (defcustom lsp-clients-lua-language-server-latest-args '("-E")
   "Arguments to run the Lua Language server (latest)."
-  :group 'lsp-lua-language-server
+  :group 'lsp-lua-language-server-latest
   :risky t
   :type '(repeat string))
 
