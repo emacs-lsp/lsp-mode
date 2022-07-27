@@ -4956,13 +4956,13 @@ type Location, LocationLink, Location[] or LocationLink[]."
              ((&Range :start right-start) (lsp--location-range right)))
         (lsp--position-compare right-start left-start)))))
 
-(defun lsp--make-reference-params (&optional td-position include-declaration)
+(defun lsp--make-reference-params (&optional td-position exclude-declaration)
   "Make a ReferenceParam object.
 If TD-POSITION is non-nil, use it as TextDocumentPositionParams object instead.
-If INCLUDE-DECLARATION is non-nil, request the server to include declarations."
+If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
   (let ((json-false :json-false))
     (plist-put (or td-position (lsp--text-document-position-params))
-               :context `(:includeDeclaration ,(or include-declaration json-false)))))
+               :context `(:includeDeclaration ,(lsp-json-bool (not exclude-declaration))))))
 
 (defun lsp--cancel-request (id)
   "Cancel request with ID in all workspaces."
@@ -6152,11 +6152,11 @@ REFERENCES? t when METHOD returns references."
                       :display-action display-action
                       :references? t))
 
-(cl-defun lsp-find-references (&optional include-declaration &key display-action)
+(cl-defun lsp-find-references (&optional exclude-declaration &key display-action)
   "Find references of the symbol under point."
   (interactive "P")
   (lsp-find-locations "textDocument/references"
-                      (list :context `(:includeDeclaration ,(lsp-json-bool include-declaration)))
+                      (list :context `(:includeDeclaration ,(lsp-json-bool (not exclude-declaration))))
                       :display-action display-action
                       :references? t))
 
