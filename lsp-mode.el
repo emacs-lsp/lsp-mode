@@ -7863,6 +7863,33 @@ archieve(e. g. when the archieve has multiple files)"
       (set-file-modes store-path #o0700)
       store-path)
      ((f-exists? store-path) store-path))))
+
+(defun lsp--find-latest-release-url (url &optional system-names)
+  "Fetch the latest version in the releases given by URL.
+(for use with `lsp-download-install'). Search for \"linux-x64\",
+\"darwin-x64\" and \"win32-x64\" tags on releases by default, or keys given in SYSTEM-NAMES."
+  (let ((system-suffix
+         (if system-names
+             (pcase system-type
+                         ('gnu/linux (cdr (assoc 'gnu/linux)))
+                         ('darwin (cdr (assoc 'darwin)))
+                         ('windows-nt (cdr (assoc 'windows-nt)))
+                         (_ (cdr (assoc 'gnu/linux))))
+             (pcase system-type
+                         ('gnu/linux "linux-x64")
+                         ('darwin "darwin-x64")
+                         ('windows-nt "win32-x64")
+                         (_ "linux-x64"))))
+        (url-request-method "GET"))
+    (with-current-buffer (url-retrieve-synchronously url)
+      ;; Go to beginning of the last line (where the retrieved json with information
+      ;; is in the buffer from `url-retrieve-synchronously')
+      (goto-char (point-max))
+      (goto-char (point-at-bol))
+      (let* ((json-result (prog1 (json-read) (kill-buffer)))
+             (os-search-pred (lambda (json-entry) (string-match-p system-suffix (alist-get 'name json-entry)))))
+        (message "Latest version found: %s" (alist-get 'name json-result))
+        (alist-get 'browser_download_url (seq-find os-search-pred (alist-get 'assets json-result)))))))
 
 ;; unzip
 

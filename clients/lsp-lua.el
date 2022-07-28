@@ -590,26 +590,6 @@ and `../lib` ,exclude `../lib/temp`.
   :risky t
   :type '(repeat string))
 
-(defun lsp--find-latest-lua-ls-release-url ()
-  "Fetch the latest version of lua-language-server from its github repo
-(for use with `lsp-lua-language-server-install'). Search for \"linux-x64\",
-\"darwin-x64\" and \"win32-x64\" tags on releases."
-  (let ((system-suffix (pcase system-type
-                         ('gnu/linux "linux-x64")
-                         ('darwin "darwin-x64")
-                         ('windows-nt "win32-x64")
-                         (_ "linux-x64")))
-        (url-request-method "GET"))
-    (with-current-buffer (url-retrieve-synchronously "https://api.github.com/repos/sumneko/lua-language-server/releases/latest")
-      ;; Go to beginning of the last line (where the retrieved json with information
-      ;; is in the buffer from `url-retrieve-synchronously')
-      (goto-char (point-max))
-      (goto-char (point-at-bol))
-      (let* ((json-result (prog1 (json-read) (kill-buffer)))
-             (os-search-pred (lambda (json-entry) (string-match-p system-suffix (alist-get 'name json-entry)))))
-        (message "Latest version found: %s" (alist-get 'name json-result))
-        (alist-get 'browser_download_url (seq-find os-search-pred (alist-get 'assets json-result)))))))
-
 (defun lsp-lua-language-server-install-latest (client callback error-callback update?)
   "Download the latest version of lua-language-server and extract it to
 `lsp-lua-language-server-install-dir'."
@@ -620,7 +600,7 @@ and `../lib` ,exclude `../lib/temp`.
        (set-file-modes lsp-clients-lua-language-server-latest-bin #o0700)
        (funcall callback))
      error-callback
-     :url (lsp--find-latest-lua-ls-release-url)
+     :url (lsp--find-latest-release-url "https://api.github.com/repos/sumneko/lua-language-server/releases/latest")
      :store-path store-path
      :decompress (pcase system-type ('windows-nt :zip) (_ :targz)))))
 
