@@ -606,11 +606,9 @@ and `../lib` ,exclude `../lib/temp`.
       (goto-char (point-max))
       (goto-char (point-at-bol))
       (let* ((json-result (prog1 (json-read) (kill-buffer)))
-             (os-search-pred (lambda (json-entry)
-                      (string-match-p system-suffix (alist-get 'name json-entry)))))
+             (os-search-pred (lambda (json-entry) (string-match-p system-suffix (alist-get 'name json-entry)))))
         (message "Latest version found: %s" (alist-get 'name json-result))
-        (alist-get 'browser_download_url (seq-find os-search-pred (alist-get 'assets json-result)))
-        ))))
+        (alist-get 'browser_download_url (seq-find os-search-pred (alist-get 'assets json-result)))))))
 
 (defun lsp-lua-language-server-install-latest (client callback error-callback update?)
   "Download the latest version of lua-language-server and extract it to
@@ -632,7 +630,7 @@ and `../lib` ,exclude `../lib/temp`.
                                                        `(,lsp-clients-lua-language-server-latest-bin
                                                          ,@lsp-clients-lua-language-server-latest-args
                                                          ,lsp-clients-lua-language-server-latest-main-location)))
-                                        '(lambda () (and (f-exists? lsp-clients-lua-language-server-latest-bin) (f-exists? lsp-clients-lua-language-server-latest-main-location))))
+                                        (lambda () (and (f-exists? lsp-clients-lua-language-server-latest-bin) (f-exists? lsp-clients-lua-language-server-latest-main-location))))
   :major-modes '(lua-mode)
   :priority -2
   :server-id 'lua-language-server-latest
