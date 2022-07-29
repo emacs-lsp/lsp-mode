@@ -96,12 +96,12 @@
 
 (defcustom lsp-clients-lua-language-server-bin
   (f-join lsp-clients-lua-language-server-install-dir
-          "extension/server/bin/"
+          "bin/"
           (pcase system-type
-            ('gnu/linux "Linux/lua-language-server")
-            ('darwin "macOS/lua-language-server")
-            ('windows-nt "Windows/lua-language-server.exe")
-            (_ "Linux/lua-language-server")))
+            ('gnu/linux "lua-language-server")
+            ('darwin "lua-language-server")
+            ('windows-nt "lua-language-server.exe")
+            (_ "lua-language-server")))
   "Location of Lua Language Server."
   :group 'lsp-lua-language-server
   :version "8.0.0"
@@ -110,7 +110,7 @@
 
 (defcustom lsp-clients-lua-language-server-main-location
   (f-join lsp-clients-lua-language-server-install-dir
-          "extension/server/main.lua")
+          "main.lua")
   "Location of Lua Language Server main.lua."
   :group 'lsp-lua-language-server
   :version "8.0.0"
@@ -530,19 +530,19 @@ and `../lib` ,exclude `../lib/temp`.
    ("Lua.completion.callSnippet" lsp-lua-completion-call-snippet)
    ("Lua.color.mode" lsp-lua-color-mode)))
 
-(defun lsp-lua-language-server-install (client callback error-callback update?)
+(defun lsp-lua-language-server-install-latest (client callback error-callback update?)
   "Download the latest version of lua-language-server and extract it to
 `lsp-lua-language-server-install-dir'."
   (ignore client update?)
-  (let ((store-path (expand-file-name "vs-lua" lsp-clients-lua-language-server-install-dir)))
+  (let ((store-path (expand-file-name "lua-language-server-github" lsp-clients-lua-language-server-install-dir)))
     (lsp-download-install
      (lambda (&rest _)
        (set-file-modes lsp-clients-lua-language-server-bin #o0700)
        (funcall callback))
      error-callback
-     :url (lsp-vscode-extension-url "sumneko" "lua" "1.17.4")
+     :url (lsp--find-latest-release-url "https://api.github.com/repos/sumneko/lua-language-server/releases/latest")
      :store-path store-path
-     :decompress :zip)))
+     :decompress (pcase system-type ('windows-nt :zip) (_ :targz)))))
 
 (lsp-register-client
  (make-lsp-client
@@ -554,66 +554,6 @@ and `../lib` ,exclude `../lib/temp`.
   :major-modes '(lua-mode)
   :priority -2
   :server-id 'lua-language-server
-  :download-server-fn #'lsp-lua-language-server-install))
-
-;;; lua-language-server-latest
-
-(defgroup lsp-lua-language-server-latest nil
-  "Lua LSP client, provided by the Lua Language Server (GitHub release)."
-  :group 'lsp-mode
-  :link '(url-link "https://github.com/sumneko/lua-language-server"))
-
-(defcustom lsp-clients-lua-language-server-latest-bin
-  (f-join lsp-clients-lua-language-server-install-dir
-          "bin/"
-          (pcase system-type
-            ('gnu/linux "lua-language-server")
-            ('darwin "lua-language-server")
-            ('windows-nt "lua-language-server.exe")
-            (_ "lua-language-server")))
-  "Location of Lua Language Server (latest)."
-  :group 'lsp-lua-language-server-latest
-  :risky t
-  :type 'file)
-
-(defcustom lsp-clients-lua-language-server-latest-main-location
-  (f-join lsp-clients-lua-language-server-install-dir
-          "main.lua")
-  "Location of Lua Language Server main.lua (latest)."
-  :group 'lsp-lua-language-server-latest
-  :risky t
-  :type 'file)
-
-(defcustom lsp-clients-lua-language-server-latest-args '("-E")
-  "Arguments to run the Lua Language server (latest)."
-  :group 'lsp-lua-language-server-latest
-  :risky t
-  :type '(repeat string))
-
-(defun lsp-lua-language-server-install-latest (client callback error-callback update?)
-  "Download the latest version of lua-language-server and extract it to
-`lsp-lua-language-server-install-dir'."
-  (ignore client update?)
-  (let ((store-path (expand-file-name "lua-language-server-github" lsp-clients-lua-language-server-install-dir)))
-    (lsp-download-install
-     (lambda (&rest _)
-       (set-file-modes lsp-clients-lua-language-server-latest-bin #o0700)
-       (funcall callback))
-     error-callback
-     :url (lsp--find-latest-release-url "https://api.github.com/repos/sumneko/lua-language-server/releases/latest")
-     :store-path store-path
-     :decompress (pcase system-type ('windows-nt :zip) (_ :targz)))))
-
-(lsp-register-client
- (make-lsp-client
-  :new-connection (lsp-stdio-connection (lambda () (or lsp-clients-lua-language-server-command
-                                                       `(,lsp-clients-lua-language-server-latest-bin
-                                                         ,@lsp-clients-lua-language-server-latest-args
-                                                         ,lsp-clients-lua-language-server-latest-main-location)))
-                                        (lambda () (and (f-exists? lsp-clients-lua-language-server-latest-bin) (f-exists? lsp-clients-lua-language-server-latest-main-location))))
-  :major-modes '(lua-mode)
-  :priority -2
-  :server-id 'lua-language-server-latest
   :download-server-fn #'lsp-lua-language-server-install-latest))
 
 ;;; lua-lsp
