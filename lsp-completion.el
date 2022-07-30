@@ -475,8 +475,7 @@ The MARKERS and PREFIX value will be attached to each candidate."
                                              ((lsp-completion-list? resp)
                                               (lsp:completion-list-items resp))
                                              (t resp))
-                                         (if (or completed
-                                                 (seq-some #'lsp:completion-item-sort-text? it))
+                                         (if (seq-some #'lsp:completion-item-sort-text? it)
                                              (lsp-completion--sort-completions it)
                                            it)
                                          (-map (lambda (item)
