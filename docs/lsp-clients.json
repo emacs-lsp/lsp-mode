@@ -341,7 +341,7 @@
     "full-name": "Json",
     "server-name": "vscode-json-languageserver",
     "server-url": "https://github.com/vscode-langservers/vscode-json-languageserver",
-    "installation": "Automatic or manual by npm i -g vscode-json-languageserver",
+    "installation": "Automatic or manual by npm i -g vscode-langservers-extracted",
     "lsp-install-server": "json-ls",
     "debugger": "Not available"
   },
