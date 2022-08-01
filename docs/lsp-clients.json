@@ -252,10 +252,10 @@
   {
     "name": "grammarly",
     "full-name": "Grammarly",
-    "server-name": "@emacs-grammarly/unofficial-grammarly-language-server",
-    "server-url": "https://github.com/emacs-grammarly/unofficial-grammarly-language-server",
-    "installation-url": "https://github.com/emacs-grammarly/unofficial-grammarly-language-server",
-    "installation": "npm i -g @emacs-grammarly/unofficial-grammarly-language-server",
+    "server-name": "@emacs-grammarly/grammarly-languageserver",
+    "server-url": "https://github.com/emacs-grammarly/grammarly-language-server",
+    "installation-url": "https://github.com/emacs-grammarly/grammarly-language-server",
+    "installation": "npm i -g @emacs-grammarly/grammarly-languageserver",
     "debugger": "Not available"
   },
   {
