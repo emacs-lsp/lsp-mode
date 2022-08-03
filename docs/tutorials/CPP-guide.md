@@ -62,7 +62,7 @@ git clone git://git.sv.gnu.org/emacs.git
 cd emacs
 ./autogen.sh
 CFLAGS="-ggdb3 -O0" CXXFLAGS="-ggdb3 -O0" LDFLAGS="-ggdb3" ./configure --with-modules --with-json
-bear make -j$(nproc)
+bear -- make -j$(nproc)
 ```
 
 Prefixing `make -j$(nproc)` with `bear` will generate the
