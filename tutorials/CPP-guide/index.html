@@ -3058,7 +3058,7 @@ git clone git://git.sv.gnu.org/emacs.git
 <span class="nb">cd</span> emacs
 ./autogen.sh
 <span class="nv">CFLAGS</span><span class="o">=</span><span class="s2">&quot;-ggdb3 -O0&quot;</span> <span class="nv">CXXFLAGS</span><span class="o">=</span><span class="s2">&quot;-ggdb3 -O0&quot;</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-ggdb3&quot;</span> ./configure --with-modules --with-json
-bear make -j<span class="k">$(</span>nproc<span class="k">)</span>
+bear -- make -j<span class="k">$(</span>nproc<span class="k">)</span>
 </code></pre></div>
 <p>Prefixing <code>make -j$(nproc)</code> with <code>bear</code> will generate the
 <code>compile_commands.json</code> which later will be used by <code>clangd</code>. <code>CFLAGS="-ggdb3
@@ -3224,7 +3224,7 @@ dap-breakpoint-toggle</code>. Switch to the debugged instance and do</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 2, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 3, 2022</span>
       
     
   </small>
