@@ -39,6 +39,7 @@
   * Add ~lsp-use-workspace-root-for-server-default-directory~.
   * Add [[https://github.com/artempyanykh/marksman][marksman]] support.
   * ~lsp-find-references~ to include declaration by default
+  * Add [[https://github.com/ruby-syntax-tree/syntax_tree][syntax_tree]] support for Ruby code.
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.
