@@ -7769,7 +7769,7 @@ nil."
                                    (if (string-empty-p
                                         (string-trim (shell-command-to-string
                                                       (mapconcat #'shell-quote-argument `(,npm-binary "view" ,package "peerDependencies") " "))))
-                                       callback
+                                       (funcall callback)
                                      (let ((default-directory (f-dirname (car (last (directory-files-recursively (f-join lsp-server-install-dir "npm" package) "package.json"))))))
                                        (when (f-dir-p default-directory)
                                          (lsp-async-start-process callback
