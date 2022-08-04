@@ -501,6 +501,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-syntax_tree/</loc>
+         <lastmod>2022-08-04</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-terraform-ls/</loc>
          <lastmod>2022-08-04</lastmod>
          <changefreq>daily</changefreq>

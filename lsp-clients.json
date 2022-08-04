@@ -734,6 +734,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "syntax_tree",
+    "common-group-name": "Ruby (syntax_tree)",
+    "full-name": "ruby-syntax-tree",
+    "server-name": "stree",
+    "server-url": "https://github.com/ruby-syntax-tree/syntax_tree",
+    "installation-url": "https://github.com/ruby-syntax-tree/syntax_tree#installation",
+    "debugger": "Not available"
+  },
+  {
     "name": "terraform",
     "full-name": "Terraform",
     "server-name": "terraform-lsp",
