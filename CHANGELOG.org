@@ -38,7 +38,7 @@
   * Add setting UPDATE_EXPECT=1 when running `expect!` tests ~lsp-rust~
   * Add ~lsp-use-workspace-root-for-server-default-directory~.
   * Add [[https://github.com/artempyanykh/marksman][marksman]] support.
-  * ~lsp-find-references~ to include declaration by default
+  * ~lsp-find-references~ to include declaration by default (configurable with ~lsp-references-exclude-definition~)
   * Add [[https://github.com/ruby-syntax-tree/syntax_tree][syntax_tree]] support for Ruby code.
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
