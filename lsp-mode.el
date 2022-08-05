@@ -182,7 +182,7 @@ As defined by the Language Server Protocol 3.16."
          lsp-pyright lsp-python-ms lsp-purescript lsp-r lsp-racket lsp-remark lsp-rf lsp-rust lsp-solargraph
          lsp-sorbet lsp-sourcekit lsp-sonarlint lsp-tailwindcss lsp-tex lsp-terraform lsp-toml
          lsp-ttcn3 lsp-typeprof lsp-v lsp-vala lsp-verilog lsp-vetur lsp-volar lsp-vhdl lsp-vimscript
-         lsp-xml lsp-yaml lsp-sqls lsp-svelte lsp-steep lsp-zig)
+         lsp-xml lsp-yaml lsp-ruby-syntax-tree lsp-sqls lsp-svelte lsp-steep lsp-zig)
   "List of the clients to be automatically required."
   :group 'lsp-mode
   :type '(repeat symbol))
@@ -7774,7 +7774,7 @@ nil."
                                    (if (string-empty-p
                                         (string-trim (shell-command-to-string
                                                       (mapconcat #'shell-quote-argument `(,npm-binary "view" ,package "peerDependencies") " "))))
-                                       callback
+                                       (funcall callback)
                                      (let ((default-directory (f-dirname (car (last (directory-files-recursively (f-join lsp-server-install-dir "npm" package) "package.json"))))))
                                        (when (f-dir-p default-directory)
                                          (lsp-async-start-process callback
