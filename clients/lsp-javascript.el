@@ -896,12 +896,19 @@ name (e.g. `data' variable passed as `data' parameter)."
                   :priority -2
                   :completion-in-comments? t
                   :initialization-options (lambda ()
-                                            (list :disableAutomaticTypingAcquisition lsp-clients-typescript-disable-automatic-typing-acquisition
-                                                  :logVerbosity lsp-clients-typescript-log-verbosity
-                                                  :maxTsServerMemory lsp-clients-typescript-max-ts-server-memory
-                                                  :npmLocation lsp-clients-typescript-npm-location
-                                                  :plugins lsp-clients-typescript-plugins
-                                                  :preferences lsp-clients-typescript-preferences))
+                                            (append
+                                             (when lsp-clients-typescript-disable-automatic-typing-acquisition
+                                              (list :disableAutomaticTypingAcquisition lsp-clients-typescript-disable-automatic-typing-acquisition))
+                                             (when lsp-clients-typescript-log-verbosity
+                                              (list :logVerbosity lsp-clients-typescript-log-verbosity))
+                                             (when lsp-clients-typescript-max-ts-server-memory
+                                              (list :maxTsServerMemory lsp-clients-typescript-max-ts-server-memory))
+                                             (when lsp-clients-typescript-npm-location
+                                              (list :npmLocation lsp-clients-typescript-npm-location))
+                                             (when lsp-clients-typescript-plugins
+                                              (list :plugins lsp-clients-typescript-plugins))
+                                             (when lsp-clients-typescript-preferences
+                                              (list :preferences lsp-clients-typescript-preferences))))
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
