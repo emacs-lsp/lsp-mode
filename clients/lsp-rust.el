@@ -27,6 +27,7 @@
 (require 'lsp-mode)
 (require 'ht)
 (require 'dash)
+(require 'lsp-semantic-tokens)
 
 (defgroup lsp-rust nil
   "LSP support for Rust, using Rust Language Server or rust-analyzer."
@@ -45,6 +46,12 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/rust-analyzer/rust-analyzer")
   :package-version '(lsp-mode . "8.0.0"))
+
+(defgroup lsp-rust-analyzer-semantic-tokens nil
+  "LSP semantic tokens support for rust-analyzer."
+  :group 'lsp-rust-analyzer
+  :link '(url-link "https://github.com/rust-analyzer/rust-analyzer")
+  :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-rust-server 'rust-analyzer
   "Choose LSP server."
@@ -926,6 +933,301 @@ or JSON objects in `rust-project.json` format."
 (lsp-defun lsp-rust--analyzer-debug-lens ((&Command :arguments? [args]))
   (lsp-rust-analyzer-debug args))
 
+
+;; Semantic tokens
+
+;; Modifier faces
+(defface lsp-rust-analyzer-documentation-modifier-face
+  '((t nil))
+  "The face modification to use for documentation items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-declaration-modifier-face
+  '((t nil))
+  "The face modification to use for declaration items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-definition-modifier-face
+  '((t nil))
+  "The face modification to use for definition items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-static-modifier-face
+  '((t nil))
+  "The face modification to use for static items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-abstract-modifier-face
+  '((t nil))
+  "The face modification to use for abstract items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-deprecated-modifier-face
+  '((t nil))
+  "The face modification to use for deprecated items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-readonly-modifier-face
+  '((t nil))
+  "The face modification to use for readonly items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-default-library-modifier-face
+  '((t nil))
+  "The face modification to use for default-library items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-async-modifier-face
+  '((t nil))
+  "The face modification to use for async items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-attribute-modifier-face
+  '((t nil))
+  "The face modification to use for attribute items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-callable-modifier-face
+  '((t nil))
+  "The face modification to use for callable items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-constant-modifier-face
+  '((t nil))
+  "The face modification to use for constant items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-consuming-modifier-face
+  '((t nil))
+  "The face modification to use for consuming items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-control-flow-modifier-face
+  '((t nil))
+  "The face modification to use for control-flow items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-crate-root-modifier-face
+  '((t nil))
+  "The face modification to use for crate-root items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-injected-modifier-face
+  '((t nil))
+  "The face modification to use for injected items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-intra-doc-link-modifier-face
+  '((t nil))
+  "The face modification to use for intra-doc-link items.")
+  :group 'lsp-rust-analyzer-semantic-tokens
+
+(defface lsp-rust-analyzer-library-modifier-face
+  '((t nil))
+  "The face modification to use for library items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-mutable-modifier-face
+  '((t :underline t))
+  "The face modification to use for mutable items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-public-modifier-face
+  '((t nil))
+  "The face modification to use for public items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-reference-modifier-face
+  '((t :bold t))
+  "The face modification to use for reference items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-trait-modifier-face
+  '((t nil))
+  "The face modification to use for trait items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+(defface lsp-rust-analyzer-unsafe-modifier-face
+  '((t nil))
+  "The face modification to use for unsafe items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
+
+
+;; ---------------------------------------------------------------------
+;; Semantic token modifier face customization
+
+(defcustom lsp-rust-analyzer-documentation-modifier 'lsp-rust-analyzer-documentation-modifier-face
+  "Face for semantic token modifier for `documentation' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-declaration-modifier 'lsp-rust-analyzer-declaration-modifier-face
+  "Face for semantic token modifier for `declaration' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-definition-modifier 'lsp-rust-analyzer-definition-modifier-face
+  "Face for semantic token modifier for `definition' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-static-modifier 'lsp-rust-analyzer-static-modifier-face
+  "Face for semantic token modifier for `static' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-abstract-modifier 'lsp-rust-analyzer-abstract-modifier-face
+  "Face for semantic token modifier for `abstract' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-deprecated-modifier 'lsp-rust-analyzer-deprecated-modifier-face
+  "Face for semantic token modifier for `deprecated' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-readonly-modifier 'lsp-rust-analyzer-readonly-modifier-face
+  "Face for semantic token modifier for `readonly' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-default-library-modifier 'lsp-rust-analyzer-default-library-modifier-face
+  "Face for semantic token modifier for `default' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-async-modifier 'lsp-rust-analyzer-async-modifier-face
+  "Face for semantic token modifier for `async' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-attribute-modifier 'lsp-rust-analyzer-attribute-modifier-face
+  "Face for semantic token modifier for `attribute' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-callable-modifier 'lsp-rust-analyzer-callable-modifier-face
+  "Face for semantic token modifier for `callable' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-constant-modifier 'lsp-rust-analyzer-constant-modifier-face
+  "Face for semantic token modifier for `constant' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-consuming-modifier 'lsp-rust-analyzer-consuming-modifier-face
+  "Face for semantic token modifier for `consuming' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-control-flow-modifier 'lsp-rust-analyzer-control-flow-modifier-face
+  "Face for semantic token modifier for `control_flow' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-crate-root-modifier 'lsp-rust-analyzer-crate-root-modifier-face
+  "Face for semantic token modifier for `crate_root' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-injected-modifier 'lsp-rust-analyzer-injected-modifier-face
+  "Face for semantic token modifier for `injected' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-intra-doc-link-modifier 'lsp-rust-analyzer-intra-doc-link-modifier-face
+  "Face for semantic token modifier for `intra_doc_link' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-library-modifier 'lsp-rust-analyzer-library-modifier-face
+  "Face for semantic token modifier for `library' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-mutable-modifier 'lsp-rust-analyzer-mutable-modifier-face
+  "Face for semantic token modifier for `mutable' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-public-modifier 'lsp-rust-analyzer-public-modifier-face
+  "Face for semantic token modifier for `public' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-reference-modifier 'lsp-rust-analyzer-reference-modifier-face
+  "Face for semantic token modifier for `reference' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-trait-modifier 'lsp-rust-analyzer-trait-modifier-face
+  "Face for semantic token modifier for `trait' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-unsafe-modifier 'lsp-rust-analyzer-unsafe-modifier-face
+  "Face for semantic token modifier for `unsafe' attribute."
+  :type 'face
+  :group 'lsp-rust-analyzer-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+;; ---------------------------------------------------------------------
+
+
+(defun lsp-rust-analyzer--semantic-modifiers ()
+  "Mapping between rust-analyzer keywords and fonts to apply.
+The keywords are sent in the initialize response, in the semantic
+tokens legend."
+  `(
+    ("documentation" . ,lsp-rust-analyzer-documentation-modifier)
+    ("declaration" . ,lsp-rust-analyzer-declaration-modifier)
+    ("definition" . ,lsp-rust-analyzer-definition-modifier)
+    ("static" . ,lsp-rust-analyzer-static-modifier)
+    ("abstract" . ,lsp-rust-analyzer-abstract-modifier)
+    ("deprecated" . ,lsp-rust-analyzer-deprecated-modifier)
+    ("readonly" . ,lsp-rust-analyzer-readonly-modifier)
+    ("default_library" . ,lsp-rust-analyzer-default-library-modifier)
+    ("async" . ,lsp-rust-analyzer-async-modifier)
+    ("attribute" . ,lsp-rust-analyzer-attribute-modifier)
+    ("callable" . ,lsp-rust-analyzer-callable-modifier)
+    ("constant" . ,lsp-rust-analyzer-constant-modifier)
+    ("consuming" . ,lsp-rust-analyzer-consuming-modifier)
+    ("control_flow" . ,lsp-rust-analyzer-control-flow-modifier)
+    ("crate_root" . ,lsp-rust-analyzer-crate-root-modifier)
+    ("injected" . ,lsp-rust-analyzer-injected-modifier)
+    ("intra_doc_link" . ,lsp-rust-analyzer-intra-doc-link-modifier)
+    ("library" . ,lsp-rust-analyzer-library-modifier)
+    ("mutable" . ,lsp-rust-analyzer-mutable-modifier)
+    ("public" . ,lsp-rust-analyzer-public-modifier)
+    ("reference" . ,lsp-rust-analyzer-reference-modifier)
+    ("trait" . ,lsp-rust-analyzer-trait-modifier)
+    ("unsafe" . ,lsp-rust-analyzer-unsafe-modifier)
+    ))
+
+
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection
@@ -947,6 +1249,10 @@ or JSON objects in `rust-project.json` format."
                    (when lsp-rust-analyzer-server-display-inlay-hints
                      (lsp-rust-analyzer-inlay-hints-mode)))
   :ignore-messages nil
+
+  :semantic-tokens-faces-overrides `(:discard-default-modifiers t
+                                     :modifiers
+                                     ,(lsp-rust-analyzer--semantic-modifiers))
   :server-id 'rust-analyzer
   :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (featurep 'yasnippet))))))
   :download-server-fn (lambda (_client callback error-callback _update?)
