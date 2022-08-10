@@ -449,6 +449,20 @@ If FONTIFY-IMMEDIATELY is non-nil, fontification will be performed immediately
      :cancel-token (format "semantic-tokens-%s" (lsp--buffer-uri)))))
 
 
+;;;###autoload
+(defvar-local semantic-token-modifier-cache (make-hash-table)
+  "A cache of modifier values to the selected fonts.
+This allows whole-bitmap lookup instead of checking each bit. The
+expectation is that usage of modifiers will tend to cluster, so
+we will not have the full range of possible usages, hence a
+tractable hash map.
+
+This is set as buffer-local. It should probably be shared in a
+given workspace/language-server combination.
+
+This cache should be flushed every time any modifier
+configuration changes.")
+
 (defun lsp-semantic-tokens--fontify (old-fontify-region beg-orig end-orig &optional loudly)
   "Apply fonts to retrieved semantic tokens.
 OLD-FONTIFY-REGION is the underlying region fontification function,
@@ -533,11 +547,19 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
                (setq text-property-end (+ text-property-beg (aref data (+ i 2))))
                (when face
                  (put-text-property text-property-beg text-property-end 'face face))
-               (cl-loop for j from 0 to (1- (length modifier-faces)) do
-                        (when (and (aref modifier-faces j)
-                                   (> (logand (aref data (+ i 4)) (lsh 1 j)) 0))
-                          (add-face-text-property text-property-beg text-property-end
-                                                  (aref modifier-faces j))))
+               ;; Deal with modifiers. We cache common combinations of
+               ;; modifiers, storing the faces they resolve to.
+               (let* ((modifier-code (aref data (+ i 4)))
+                      (faces-to-apply (gethash modifier-code semantic-token-modifier-cache 'not-found)))
+                 (when (eq 'not-found faces-to-apply)
+                   (setq faces-to-apply nil)
+                   (cl-loop for j from 0 to (1- (length modifier-faces)) do
+                            (when (and (aref modifier-faces j)
+                                       (> (logand modifier-code (ash 1 j)) 0))
+                              (push (aref modifier-faces j) faces-to-apply)))
+                   (puthash modifier-code faces-to-apply semantic-token-modifier-cache))
+                 (dolist (face faces-to-apply)
+                   (add-face-text-property text-property-beg text-property-end face)))
                when (> current-line line-max-inclusive) return nil)))))
       `(jit-lock-bounds ,beg . ,end)))))
 
