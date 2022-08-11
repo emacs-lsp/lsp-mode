@@ -483,10 +483,10 @@
   {
     "name": "openscad",
     "full-name": "OpenSCAD",
-    "server-name": "openscad-language-server",
-    "server-url": "https://github.com/dzhu/openscad-language-server",
-    "installation-url": "https://github.com/dzhu/openscad-language-server",
-    "installation": "cargo install openscad-language-server",
+    "server-name": "openscad-lsp",
+    "server-url": "https://github.com/Leathong/openscad-LSP",
+    "installation-url": "https://github.com/Leathong/openscad-LSP",
+    "installation": "cargo install openscad-lsp",
     "debugger": "Not available"
   },
   {
