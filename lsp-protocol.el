@@ -31,6 +31,7 @@
 (require 'dash)
 (require 'ht)
 (require 's)
+(require 'json)
 
 (eval-and-compile
   (defun lsp-keyword->symbol (keyword)
