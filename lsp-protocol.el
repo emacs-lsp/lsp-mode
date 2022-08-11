@@ -31,6 +31,7 @@
 (require 'dash)
 (require 'ht)
 (require 's)
+(require 'json)
 
 (eval-and-compile
   (defun lsp-keyword->symbol (keyword)
@@ -260,7 +261,8 @@ Allowed params: %s" interface (reverse (-map #'cl-first params)))
       (defalias 'lsp-copy 'copy-sequence)
       (defun lsp-member? (from key)
         (when (listp from)
-          (plist-member from key))))
+          (plist-member from key)))
+      (defalias 'lsp-structure-p 'json-plist-p))
   (defun lsp-get (from key)
     (when from
       (gethash (lsp-keyword->string key) from)))
@@ -276,7 +278,8 @@ Allowed params: %s" interface (reverse (-map #'cl-first params)))
   (defun lsp-member? (from key)
     (when (hash-table-p from)
       (not (eq (gethash (lsp-keyword->string key) from :__lsp_default)
-               :__lsp_default)))))
+               :__lsp_default))))
+  (defalias 'lsp-structure-p 'hash-table-p))
 
 (defmacro lsp-defun (name match-form &rest body)
   "Define a function named NAME.
