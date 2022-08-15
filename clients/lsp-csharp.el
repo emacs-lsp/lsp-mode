@@ -79,7 +79,9 @@ Usually this is to be set in your .dir-locals.el on the project root directory."
                    "omnisharp-win-x86.zip"))
 
                 ((eq system-type 'darwin)
-                 "omnisharp-osx.zip")
+                 (if (string-match "aarch64-.*" system-configuration)
+                     "omnisharp-osx-arm64-net6.0.zip"
+                   "omnisharp-osx-x64-net6.0.zip"))
 
                 ((and (eq system-type 'gnu/linux)
                       (or (eq (string-match "^x86_64" system-configuration) 0)
@@ -131,7 +133,7 @@ Will invoke CALLBACK on success, ERROR-CALLBACK on error."
         (f-join server-dir (cond ((eq system-type 'windows-nt) "OmniSharp.exe")
                                  (t "OmniSharp")))))))
 
-(lsp-defun lsp-csharp-open-project-file ()
+(defun lsp-csharp-open-project-file ()
   "Open corresponding project file  (.csproj) for the current file."
   (interactive)
   (-let* ((project-info-req (lsp-make-omnisharp-project-information-request :file-name (buffer-file-name)))
