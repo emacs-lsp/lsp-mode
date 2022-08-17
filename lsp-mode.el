@@ -779,6 +779,7 @@ Changes take effect only when a new session is started."
                                         (html-mode . "html")
                                         (sgml-mode . "html")
                                         (mhtml-mode . "html")
+                                        (mint-mode . "mint")
                                         (go-dot-mod-mode . "go.mod")
                                         (go-mode . "go")
                                         (graphql-mode . "graphql")
