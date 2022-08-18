@@ -674,8 +674,9 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
   "Merge alist BASE with OVERRIDES.
 For keys present in both alists, the assignments made by
 OVERRIDES will take precedence."
-  (let ((all-keys (-union (mapcar #'car base) (mapcar #'car overrides))))
-    (--map (cons it (alist-get it overrides (alist-get it base) nil #'string=)) all-keys)))
+  (let* ((copy-base (copy-alist base)))
+    (mapc (-lambda ((key . value)) (setf (alist-get key copy-base nil nil #'string=) value)) overrides)
+    copy-base))
 
 (defun lsp-semantic-tokens--type-faces-for (client)
   "Return the semantic token type faces for CLIENT."
