@@ -433,6 +433,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "mint",
+    "full-name": "mint-lang",
+    "server-name": "mint",
+    "server-url": "https://github.com/mint-lang/mint",
+    "installation-url": "https://mint-lang.com/blog/mint-0.12.0",
+    "debugger": "Not available"
+  },
+  {
     "name": "nginx",
     "full-name": "Nginx",
     "server-name": "nginx-lsp",
