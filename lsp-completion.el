@@ -428,9 +428,10 @@ The MARKERS and PREFIX value will be attached to each candidate."
   (when (or (--some (lsp--client-completion-in-comments? (lsp--workspace-client it))
                     (lsp-workspaces))
             (not (nth 4 (syntax-ppss))))
-    (let* ((trigger-chars (->> (lsp--server-capabilities)
-                               (lsp:server-capabilities-completion-provider?)
-                               (lsp:completion-options-trigger-characters?)))
+    (let* ((trigger-chars (-> (or (lsp--capability :completionProvider)
+                                  (-some-> (lsp--registered-capability "textDocument/completion")
+                                    (lsp--registered-capability-options)))
+                              (lsp:completion-options-trigger-characters?)))
            (bounds-start (or (-some--> (cl-first (bounds-of-thing-at-point 'symbol))
                                (save-excursion
                                  (ignore-errors
