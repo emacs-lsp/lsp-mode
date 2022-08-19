@@ -12,14 +12,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-vetur/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-mint/">
       
       <link rel="icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.0">
     
     
       
-        <title>Vue 2 - LSP Mode - LSP support for Emacs</title>
+        <title>Lsp mint - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#vue-2" class="md-skip">
+        <a href="#mint-lang" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Vue 2
+              Lsp mint
             
           </span>
         </div>
@@ -223,15 +223,13 @@
         
   
   
-    
-  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../languages/" class="md-tabs__link md-tabs__link--active">
+      <a href="../languages/" class="md-tabs__link">
         Languages
       </a>
     </li>
@@ -1038,14 +1036,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
       
       
       
@@ -2452,365 +2448,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Vue 2
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../lsp-vetur/" class="md-nav__link">
         Vue 2
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-    <nav class="md-nav" aria-label="Installation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-yes-firefoxchrome" class="md-nav__link">
-    Debugger: Yes (Firefox/Chrome)
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-javascript-references-code-lens-enabled" class="md-nav__link">
-    lsp-javascript-references-code-lens-enabled
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-typescript-check-npm-is-installed" class="md-nav__link">
-    lsp-typescript-check-npm-is-installed
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-typescript-disable-automatic-type-acquisition" class="md-nav__link">
-    lsp-typescript-disable-automatic-type-acquisition
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-typescript-implementations-code-lens-enabled" class="md-nav__link">
-    lsp-typescript-implementations-code-lens-enabled
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-typescript-npm" class="md-nav__link">
-    lsp-typescript-npm
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-typescript-references-code-lens-enabled" class="md-nav__link">
-    lsp-typescript-references-code-lens-enabled
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-typescript-tsdk" class="md-nav__link">
-    lsp-typescript-tsdk
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-typescript-tsserver-log" class="md-nav__link">
-    lsp-typescript-tsserver-log
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-completion-auto-import" class="md-nav__link">
-    lsp-vetur-completion-auto-import
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-completion-scaffold-snippet-sources" class="md-nav__link">
-    lsp-vetur-completion-scaffold-snippet-sources
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-completion-tag-casing" class="md-nav__link">
-    lsp-vetur-completion-tag-casing
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-dev-log-level" class="md-nav__link">
-    lsp-vetur-dev-log-level
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-dev-vls-path" class="md-nav__link">
-    lsp-vetur-dev-vls-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-dev-vls-port" class="md-nav__link">
-    lsp-vetur-dev-vls-port
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-emmet" class="md-nav__link">
-    lsp-vetur-emmet
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-experimental-template-interpolation-service" class="md-nav__link">
-    lsp-vetur-experimental-template-interpolation-service
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-css" class="md-nav__link">
-    lsp-vetur-format-default-formatter-css
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-html" class="md-nav__link">
-    lsp-vetur-format-default-formatter-html
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-js" class="md-nav__link">
-    lsp-vetur-format-default-formatter-js
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-less" class="md-nav__link">
-    lsp-vetur-format-default-formatter-less
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-options" class="md-nav__link">
-    lsp-vetur-format-default-formatter-options
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-postcss" class="md-nav__link">
-    lsp-vetur-format-default-formatter-postcss
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-scss" class="md-nav__link">
-    lsp-vetur-format-default-formatter-scss
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-stylus" class="md-nav__link">
-    lsp-vetur-format-default-formatter-stylus
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-ts" class="md-nav__link">
-    lsp-vetur-format-default-formatter-ts
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-enable" class="md-nav__link">
-    lsp-vetur-format-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-options-tab-size" class="md-nav__link">
-    lsp-vetur-format-options-tab-size
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-options-use-tabs" class="md-nav__link">
-    lsp-vetur-format-options-use-tabs
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-script-initial-indent" class="md-nav__link">
-    lsp-vetur-format-script-initial-indent
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-style-initial-indent" class="md-nav__link">
-    lsp-vetur-format-style-initial-indent
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-global-snippets-dir" class="md-nav__link">
-    lsp-vetur-global-snippets-dir
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-grammar-custom-blocks" class="md-nav__link">
-    lsp-vetur-grammar-custom-blocks
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-ignore-project-warning" class="md-nav__link">
-    lsp-vetur-ignore-project-warning
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-language-features-code-actions" class="md-nav__link">
-    lsp-vetur-language-features-code-actions
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-server-command" class="md-nav__link">
-    lsp-vetur-server-command
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-trace-server" class="md-nav__link">
-    lsp-vetur-trace-server
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-use-workspace-dependencies" class="md-nav__link">
-    lsp-vetur-use-workspace-dependencies
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-validation-script" class="md-nav__link">
-    lsp-vetur-validation-script
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-validation-style" class="md-nav__link">
-    lsp-vetur-validation-style
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-validation-template" class="md-nav__link">
-    lsp-vetur-validation-template
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -3325,8 +2967,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#debugger-yes-firefoxchrome" class="md-nav__link">
-    Debugger: Yes (Firefox/Chrome)
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
   </a>
   
 </li>
@@ -3345,281 +2987,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#lsp-javascript-references-code-lens-enabled" class="md-nav__link">
-    lsp-javascript-references-code-lens-enabled
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-typescript-check-npm-is-installed" class="md-nav__link">
-    lsp-typescript-check-npm-is-installed
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-typescript-disable-automatic-type-acquisition" class="md-nav__link">
-    lsp-typescript-disable-automatic-type-acquisition
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-typescript-implementations-code-lens-enabled" class="md-nav__link">
-    lsp-typescript-implementations-code-lens-enabled
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-typescript-npm" class="md-nav__link">
-    lsp-typescript-npm
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-typescript-references-code-lens-enabled" class="md-nav__link">
-    lsp-typescript-references-code-lens-enabled
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-typescript-tsdk" class="md-nav__link">
-    lsp-typescript-tsdk
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-typescript-tsserver-log" class="md-nav__link">
-    lsp-typescript-tsserver-log
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-completion-auto-import" class="md-nav__link">
-    lsp-vetur-completion-auto-import
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-completion-scaffold-snippet-sources" class="md-nav__link">
-    lsp-vetur-completion-scaffold-snippet-sources
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-completion-tag-casing" class="md-nav__link">
-    lsp-vetur-completion-tag-casing
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-dev-log-level" class="md-nav__link">
-    lsp-vetur-dev-log-level
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-dev-vls-path" class="md-nav__link">
-    lsp-vetur-dev-vls-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-dev-vls-port" class="md-nav__link">
-    lsp-vetur-dev-vls-port
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-emmet" class="md-nav__link">
-    lsp-vetur-emmet
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-experimental-template-interpolation-service" class="md-nav__link">
-    lsp-vetur-experimental-template-interpolation-service
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-css" class="md-nav__link">
-    lsp-vetur-format-default-formatter-css
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-html" class="md-nav__link">
-    lsp-vetur-format-default-formatter-html
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-js" class="md-nav__link">
-    lsp-vetur-format-default-formatter-js
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-less" class="md-nav__link">
-    lsp-vetur-format-default-formatter-less
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-options" class="md-nav__link">
-    lsp-vetur-format-default-formatter-options
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-postcss" class="md-nav__link">
-    lsp-vetur-format-default-formatter-postcss
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-scss" class="md-nav__link">
-    lsp-vetur-format-default-formatter-scss
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-stylus" class="md-nav__link">
-    lsp-vetur-format-default-formatter-stylus
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-default-formatter-ts" class="md-nav__link">
-    lsp-vetur-format-default-formatter-ts
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-enable" class="md-nav__link">
-    lsp-vetur-format-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-options-tab-size" class="md-nav__link">
-    lsp-vetur-format-options-tab-size
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-options-use-tabs" class="md-nav__link">
-    lsp-vetur-format-options-use-tabs
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-script-initial-indent" class="md-nav__link">
-    lsp-vetur-format-script-initial-indent
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-format-style-initial-indent" class="md-nav__link">
-    lsp-vetur-format-style-initial-indent
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-global-snippets-dir" class="md-nav__link">
-    lsp-vetur-global-snippets-dir
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-grammar-custom-blocks" class="md-nav__link">
-    lsp-vetur-grammar-custom-blocks
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-ignore-project-warning" class="md-nav__link">
-    lsp-vetur-ignore-project-warning
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-language-features-code-actions" class="md-nav__link">
-    lsp-vetur-language-features-code-actions
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-server-command" class="md-nav__link">
-    lsp-vetur-server-command
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-trace-server" class="md-nav__link">
-    lsp-vetur-trace-server
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-use-workspace-dependencies" class="md-nav__link">
-    lsp-vetur-use-workspace-dependencies
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-validation-script" class="md-nav__link">
-    lsp-vetur-validation-script
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-validation-style" class="md-nav__link">
-    lsp-vetur-validation-style
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-vetur-validation-template" class="md-nav__link">
-    lsp-vetur-validation-template
+  <a href="#lsp-clients-mint-executable" class="md-nav__link">
+    lsp-clients-mint-executable
   </a>
   
 </li>
@@ -3665,7 +3034,7 @@
 <!-- Edit button -->
 
 <a
-  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-vetur.el"
+  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-mint.el"
   title="Edit this page"
   class="md-content__button md-icon"
 >
@@ -3684,230 +3053,17 @@
 
 
 <!-- Markdown content -->
-<h1 id="vue-2">Vue 2<a class="headerlink" href="#vue-2" title="Permanent link">#</a></h1>
+<h1 id="mint-lang">mint-lang<a class="headerlink" href="#mint-lang" title="Permanent link">#</a></h1>
 <h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For more information about the LSP server, check <a href="https://github.com/vuejs/vetur/tree/master/server">vue-language-server</a>.</p>
+<p>For more information about the LSP server, check <a href="https://github.com/mint-lang/mint">mint</a>.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
-<p>This Server supports automatic install.
-Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><kbd>RET</kbd><code>vls</code><kbd>RET</kbd>.</p>
-<p><code>npm install -g vls</code></p>
-<h3 id="debugger-yes-firefoxchrome">Debugger: Yes (Firefox/Chrome)<a class="headerlink" href="#debugger-yes-firefoxchrome" title="Permanent link">#</a></h3>
+<p>For more instructions on how to install manually, check <a href="https://mint-lang.com/blog/mint-0.12.0">here</a>.</p>
+<h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<h3 id="lsp-javascript-references-code-lens-enabled"><code>lsp-javascript-references-code-lens-enabled</code><a class="headerlink" href="#lsp-javascript-references-code-lens-enabled" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Enable/disable references CodeLens in JavaScript files.</p>
-<hr />
-<h3 id="lsp-typescript-check-npm-is-installed"><code>lsp-typescript-check-npm-is-installed</code><a class="headerlink" href="#lsp-typescript-check-npm-is-installed" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Check if NPM is installed for Automatic Type Acquisition.</p>
-<hr />
-<h3 id="lsp-typescript-disable-automatic-type-acquisition"><code>lsp-typescript-disable-automatic-type-acquisition</code><a class="headerlink" href="#lsp-typescript-disable-automatic-type-acquisition" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Disables automatic type acquisition.
-Automatic type acquisition fetches <code>@types</code> packages from npm to improve
-IntelliSense for external libraries.</p>
-<hr />
-<h3 id="lsp-typescript-implementations-code-lens-enabled"><code>lsp-typescript-implementations-code-lens-enabled</code><a class="headerlink" href="#lsp-typescript-implementations-code-lens-enabled" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Enable/disable implementations CodeLens.
-This CodeLens shows the implementers of an interface.</p>
-<hr />
-<h3 id="lsp-typescript-npm"><code>lsp-typescript-npm</code><a class="headerlink" href="#lsp-typescript-npm" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(repeat string)</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Specifies the path to the NPM exec used for Automatic Type Acquisition.
-Requires using TypeScript 2.3.4 or newer in the
-workspace.</p>
-<hr />
-<h3 id="lsp-typescript-references-code-lens-enabled"><code>lsp-typescript-references-code-lens-enabled</code><a class="headerlink" href="#lsp-typescript-references-code-lens-enabled" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Enable/disable references CodeLens in TypeScript files.</p>
-<hr />
-<h3 id="lsp-typescript-tsdk"><code>lsp-typescript-tsdk</code><a class="headerlink" href="#lsp-typescript-tsdk" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(repeat string)</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Specifies the folder path containing tsserver and lib*.d.ts files to use.</p>
-<hr />
-<h3 id="lsp-typescript-tsserver-log"><code>lsp-typescript-tsserver-log</code><a class="headerlink" href="#lsp-typescript-tsserver-log" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const off) (const terse) (const normal) (const verbose))</code></p>
-<p><em>Default:</em> <code>off</code></p>
-<p>Enables logging of the TS server to a file.
-This log can be used to diagnose TS Server issues. The log may contain file
-paths, source code, and other potentially sensitive information
-from your project.</p>
-<hr />
-<h3 id="lsp-vetur-completion-auto-import"><code>lsp-vetur-completion-auto-import</code><a class="headerlink" href="#lsp-vetur-completion-auto-import" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Include completion for module export and auto import them</p>
-<hr />
-<h3 id="lsp-vetur-completion-scaffold-snippet-sources"><code>lsp-vetur-completion-scaffold-snippet-sources</code><a class="headerlink" href="#lsp-vetur-completion-scaffold-snippet-sources" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>alist</code></p>
-<p><em>Default:</em> <code>((workspace . (W)) (user . (U)) (vetur . (V)))</code></p>
-<p>Where Vetur source Scaffold Snippets from and how to indicate them.
-- workspace: <WORKSPACE>/.vscode/vetur/snippets.
-- user: <USER-DATA-DIR>/User/snippets/vetur.
-- vetur: Bundled in Vetur.
-The source value can be a string "(User)" or an emoji "✌".
-Set a source to "" to disable it.</p>
-<hr />
-<h3 id="lsp-vetur-completion-tag-casing"><code>lsp-vetur-completion-tag-casing</code><a class="headerlink" href="#lsp-vetur-completion-tag-casing" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const initial) (const kebab))</code></p>
-<p><em>Default:</em> <code>kebab</code></p>
-<p>Casing conversion for tag completion</p>
-<hr />
-<h3 id="lsp-vetur-dev-log-level"><code>lsp-vetur-dev-log-level</code><a class="headerlink" href="#lsp-vetur-dev-log-level" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const INFO) (const DEBUG))</code></p>
-<p><em>Default:</em> <code>INFO</code></p>
-<p>The vls log level for development</p>
-<hr />
-<h3 id="lsp-vetur-dev-vls-path"><code>lsp-vetur-dev-vls-path</code><a class="headerlink" href="#lsp-vetur-dev-vls-path" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> ``</p>
-<p>The vls path for development</p>
-<hr />
-<h3 id="lsp-vetur-dev-vls-port"><code>lsp-vetur-dev-vls-port</code><a class="headerlink" href="#lsp-vetur-dev-vls-port" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>integer</code></p>
-<p><em>Default:</em> <code>-1</code></p>
-<p>The vls port for development</p>
-<hr />
-<h3 id="lsp-vetur-emmet"><code>lsp-vetur-emmet</code><a class="headerlink" href="#lsp-vetur-emmet" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const never) (const inMarkupAndStylesheetFilesOnly) (const always))</code></p>
-<p><em>Default:</em> <code>never</code></p>
-<p>Controls the Emmet suggestions that show up in the suggestion/completion list.</p>
-<hr />
-<h3 id="lsp-vetur-experimental-template-interpolation-service"><code>lsp-vetur-experimental-template-interpolation-service</code><a class="headerlink" href="#lsp-vetur-experimental-template-interpolation-service" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Whether to have template interpolation service</p>
-<hr />
-<h3 id="lsp-vetur-format-default-formatter-css"><code>lsp-vetur-format-default-formatter-css</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-css" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const none) (const prettier))</code></p>
-<p><em>Default:</em> <code>prettier</code></p>
-<p>Default formatter for <style> region</p>
-<hr />
-<h3 id="lsp-vetur-format-default-formatter-html"><code>lsp-vetur-format-default-formatter-html</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-html" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const none) (const prettyhtml) (const js-beautify-html) (const prettier))</code></p>
-<p><em>Default:</em> <code>prettyhtml</code></p>
-<p>Default formatter for <template> region</p>
-<hr />
-<h3 id="lsp-vetur-format-default-formatter-js"><code>lsp-vetur-format-default-formatter-js</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-js" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const none) (const prettier) (const prettier-eslint) (const vscode-typescript))</code></p>
-<p><em>Default:</em> <code>prettier</code></p>
-<p>Default formatter for <script> region</p>
-<hr />
-<h3 id="lsp-vetur-format-default-formatter-less"><code>lsp-vetur-format-default-formatter-less</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-less" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const none) (const prettier))</code></p>
-<p><em>Default:</em> <code>prettier</code></p>
-<p>Default formatter for <style lang=<code>less</code>> region</p>
-<hr />
-<h3 id="lsp-vetur-format-default-formatter-options"><code>lsp-vetur-format-default-formatter-options</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-options" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>alist</code></p>
-<p><em>Default:</em> <code>((js-beautify-html (wrap_attributes . force-expand-multiline)) (prettyhtml (printWidth . 100) (singleQuote . :json-false) (wrapAttributes . :json-false) (sortAttributes . :json-false)))</code></p>
-<p>Options for all default formatters</p>
-<hr />
-<h3 id="lsp-vetur-format-default-formatter-postcss"><code>lsp-vetur-format-default-formatter-postcss</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-postcss" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const none) (const prettier))</code></p>
-<p><em>Default:</em> <code>prettier</code></p>
-<p>Default formatter for <style lang=<code>postcss</code>> region</p>
-<hr />
-<h3 id="lsp-vetur-format-default-formatter-scss"><code>lsp-vetur-format-default-formatter-scss</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-scss" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const none) (const prettier))</code></p>
-<p><em>Default:</em> <code>prettier</code></p>
-<p>Default formatter for <style lang=<code>scss</code>> region</p>
-<hr />
-<h3 id="lsp-vetur-format-default-formatter-stylus"><code>lsp-vetur-format-default-formatter-stylus</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-stylus" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const none) (const stylus-supremacy))</code></p>
-<p><em>Default:</em> <code>stylus-supremacy</code></p>
-<p>Default formatter for <style lang=<code>stylus</code>> region</p>
-<hr />
-<h3 id="lsp-vetur-format-default-formatter-ts"><code>lsp-vetur-format-default-formatter-ts</code><a class="headerlink" href="#lsp-vetur-format-default-formatter-ts" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const none) (const prettier) (const vscode-typescript))</code></p>
-<p><em>Default:</em> <code>prettier</code></p>
-<p>Default formatter for <script> region</p>
-<hr />
-<h3 id="lsp-vetur-format-enable"><code>lsp-vetur-format-enable</code><a class="headerlink" href="#lsp-vetur-format-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable/disable the Vetur document formatter.</p>
-<hr />
-<h3 id="lsp-vetur-format-options-tab-size"><code>lsp-vetur-format-options-tab-size</code><a class="headerlink" href="#lsp-vetur-format-options-tab-size" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>number</code></p>
-<p><em>Default:</em> <code>2</code></p>
-<p>Number of spaces per indentation level. Inherited by all formatters.</p>
-<hr />
-<h3 id="lsp-vetur-format-options-use-tabs"><code>lsp-vetur-format-options-use-tabs</code><a class="headerlink" href="#lsp-vetur-format-options-use-tabs" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Use tabs for indentation. Inherited by all formatters.</p>
-<hr />
-<h3 id="lsp-vetur-format-script-initial-indent"><code>lsp-vetur-format-script-initial-indent</code><a class="headerlink" href="#lsp-vetur-format-script-initial-indent" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Whether to have initial indent for <script> region</p>
-<hr />
-<h3 id="lsp-vetur-format-style-initial-indent"><code>lsp-vetur-format-style-initial-indent</code><a class="headerlink" href="#lsp-vetur-format-style-initial-indent" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Whether to have initial indent for <style> region</p>
-<hr />
-<h3 id="lsp-vetur-global-snippets-dir"><code>lsp-vetur-global-snippets-dir</code><a class="headerlink" href="#lsp-vetur-global-snippets-dir" title="Permanent link">#</a></h3>
+<h3 id="lsp-clients-mint-executable"><code>lsp-clients-mint-executable</code><a class="headerlink" href="#lsp-clients-mint-executable" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>file</code></p>
-<p><em>Default:</em> <code>~/.emacs.d/.snippets/vetur</code></p>
-<p>Path to snippets dir.</p>
-<hr />
-<h3 id="lsp-vetur-grammar-custom-blocks"><code>lsp-vetur-grammar-custom-blocks</code><a class="headerlink" href="#lsp-vetur-grammar-custom-blocks" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>alist</code></p>
-<p><em>Default:</em> <code>((docs . md) (i18n . json))</code></p>
-<p>Mapping from custom block tag name to language name. Used for
- generating grammar to support syntax highlighting for custom
- blocks.</p>
-<hr />
-<h3 id="lsp-vetur-ignore-project-warning"><code>lsp-vetur-ignore-project-warning</code><a class="headerlink" href="#lsp-vetur-ignore-project-warning" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Ignore projects without jsconfig.json or tsconfig.json warnings.</p>
-<hr />
-<h3 id="lsp-vetur-language-features-code-actions"><code>lsp-vetur-language-features-code-actions</code><a class="headerlink" href="#lsp-vetur-language-features-code-actions" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable/disable code actions.</p>
-<hr />
-<h3 id="lsp-vetur-server-command"><code>lsp-vetur-server-command</code><a class="headerlink" href="#lsp-vetur-server-command" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(repeat string)</code></p>
-<p><em>Default:</em> <code>(vls)</code></p>
-<p>Command to start vetur.</p>
-<hr />
-<h3 id="lsp-vetur-trace-server"><code>lsp-vetur-trace-server</code><a class="headerlink" href="#lsp-vetur-trace-server" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const off) (const messages) (const verbose))</code></p>
-<p><em>Default:</em> <code>off</code></p>
-<p>Traces the communication between VS Code and Vue Language Server.</p>
-<hr />
-<h3 id="lsp-vetur-use-workspace-dependencies"><code>lsp-vetur-use-workspace-dependencies</code><a class="headerlink" href="#lsp-vetur-use-workspace-dependencies" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Use dependencies from workspace. Currently only for
-TypeScript.</p>
-<hr />
-<h3 id="lsp-vetur-validation-script"><code>lsp-vetur-validation-script</code><a class="headerlink" href="#lsp-vetur-validation-script" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Validate js/ts in <script></p>
-<hr />
-<h3 id="lsp-vetur-validation-style"><code>lsp-vetur-validation-style</code><a class="headerlink" href="#lsp-vetur-validation-style" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Validate css/scss/less/postcss in <style></p>
-<hr />
-<h3 id="lsp-vetur-validation-template"><code>lsp-vetur-validation-template</code><a class="headerlink" href="#lsp-vetur-validation-template" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Validate vue-html in <template> using eslint-plugin-vue</p>
+<p><em>Default:</em> <code>(mint ls)</code></p>
+<p>Command to start the mint language server.</p>
 <hr />
 
 <!-- Source file information -->
@@ -3931,41 +3087,6 @@ TypeScript.</p>
       </main>
       
         <footer class="md-footer">
-  
-    <nav class="md-footer__inner md-grid" aria-label="Footer">
-      
-        
-        <a href="../lsp-vimscript/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Vimscript" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              Vimscript
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../lsp-volar/" class="md-footer__link md-footer__link--next" aria-label="Next: Vue 3" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Vue 3
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
