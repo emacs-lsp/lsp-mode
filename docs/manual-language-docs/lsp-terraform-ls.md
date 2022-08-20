@@ -37,6 +37,21 @@ to make sure that that proper credentials are there.
 Note that this is a synchronous action and will timeout after a
 certain amount of time.
 
+#### `lsp-terraform-ls-version`
+
+This feature is only available on terraform-ls version >= 0.29.0.
+
+Provides information about the terraform binary version for the
+current workspace. This is how it will look like in the minibuffer:
+
+``` shellsession
+Required: 1.1.9, Current: 1.0.5
+```
+
+Note that if you have changed the version in your `$PATH` meanwhile,
+you would have to restart the lsp session using
+`lsp-workspace-restart` for it to pick up the newer version.
+
 ### Code Lens
 
 This is an experimental feature which can be enabled via the option
