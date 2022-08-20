@@ -228,12 +228,10 @@ This is a synchronous action."
   (let ((terraform-data (lsp-request
                          "workspace/executeCommand"
                          (list :command "terraform-ls.module.terraform"
-                               :arguments (vector (format "uri=%s" (lsp--path-to-uri (lsp-workspace-root)))))
-                         :no-wait nil
-                         :no-merge nil)))
-    (message "Required: %s, Current: %s"
-             (lsp:terraform-ls-module-terraform-required-version terraform-data)
-             (lsp:terraform-ls-module-terraform-discovered-version terraform-data))))
+                               :arguments (vector (format "uri=%s" (lsp--path-to-uri (lsp-workspace-root))))))))
+    (lsp--info "Required: %s, Current: %s"
+               (lsp:terraform-ls-module-terraform-required-version terraform-data)
+               (lsp:terraform-ls-module-terraform-discovered-version terraform-data))))
 
 (lsp-consistency-check lsp-terraform)
 
