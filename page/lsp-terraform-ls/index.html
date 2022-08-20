@@ -2383,6 +2383,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#lsp-terraform-ls-version" class="md-nav__link">
+    lsp-terraform-ls-version
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3216,6 +3223,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#lsp-terraform-ls-version" class="md-nav__link">
+    lsp-terraform-ls-version
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3401,6 +3415,15 @@ published back in the buffer.</p>
 to make sure that that proper credentials are there.</p>
 <p>Note that this is a synchronous action and will timeout after a
 certain amount of time.</p>
+<h4 id="lsp-terraform-ls-version"><code>lsp-terraform-ls-version</code><a class="headerlink" href="#lsp-terraform-ls-version" title="Permanent link">#</a></h4>
+<p>This feature is only available on terraform-ls version &gt;= 0.29.0.</p>
+<p>Provides information about the terraform binary version for the
+current workspace. This is how it will look like in the minibuffer:</p>
+<div class="highlight"><pre><span></span><code>Required: 1.1.9, Current: 1.0.5
+</code></pre></div>
+<p>Note that if you have changed the version in your <code>$PATH</code> meanwhile,
+you would have to restart the lsp session using
+<code>lsp-workspace-restart</code> for it to pick up the newer version.</p>
 <h3 id="code-lens">Code Lens<a class="headerlink" href="#code-lens" title="Permanent link">#</a></h3>
 <p>This is an experimental feature which can be enabled via the option
 <code>lsp-terraform-ls-enable-show-reference</code>:</p>
@@ -3485,7 +3508,7 @@ Defaults to side following treemacs default.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 19, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 20, 2022</span>
       
     
   </small>
