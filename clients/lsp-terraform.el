@@ -222,6 +222,20 @@ This is a synchronous action."
      :no-wait nil
      :no-merge t))
 
+(defun lsp-terraform-ls-version ()
+  "Get information about the terraform binary version for the current module."
+  (interactive)
+  (let* ((terraform-data (lsp-request
+                          "workspace/executeCommand"
+                          (list :command "terraform-ls.module.terraform"
+                                :arguments (vector (format "uri=%s" (lsp--path-to-uri (lsp-workspace-root))))
+                                )
+                          :no-wait nil
+                          :no-merge nil)))
+    (message "Required: %s, Current: %s"
+             (lsp:terraform-ls-module-terraform-required-version terraform-data)
+             (lsp:terraform-ls-module-terraform-discovered-version terraform-data))))
+
 (lsp-consistency-check lsp-terraform)
 
 (defvar treemacs-position)
