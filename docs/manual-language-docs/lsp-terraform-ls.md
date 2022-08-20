@@ -39,6 +39,8 @@ certain amount of time.
 
 #### `lsp-terraform-ls-version`
 
+This feature is only available on terraform-ls version >= 0.29.0.
+
 Provides information about the terraform binary version for the
 current workspace. This is how it will look like in the minibuffer:
 
