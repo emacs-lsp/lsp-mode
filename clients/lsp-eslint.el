@@ -120,7 +120,9 @@ source.fixAll code action."
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-working-directories []
-  ""
+  "A vector of working directory names to use. Can be relative to
+the workspace root or absolute. The home directory reference ~/
+is not currently supported - use /home/[user]/ instead."
   :type 'lsp-string-vector
   :package-version '(lsp-mode . "6.3"))
 
@@ -291,8 +293,9 @@ stored."
 contains the current file"
   (let ((directories (-map (lambda (dir)
                              (let ((dir (lsp-resolve-value dir)))
-                               (when (not (f-absolute? dir))
-                                 (setq dir (f-join workspace dir)))))
+                               (if (f-absolute? dir)
+                                   dir
+                                 (f-join workspace dir))))
                            (append lsp-eslint-working-directories nil))))
     (-first (lambda (dir) (f-ancestor-of-p dir current-file)) directories)))
 
