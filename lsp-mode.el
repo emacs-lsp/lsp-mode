@@ -862,18 +862,14 @@ directory")
      :check-command (lambda (workspace)
                       (with-lsp-workspace workspace
                         (lsp:code-action-options-resolve-provider?
-                         (or (lsp--capability :codeActionProvider)
-                             (-some-> (lsp--registered-capability "textDocument/codeAction")
-                               (lsp--registered-capability-options)))))))
+                         (lsp--capability-for-method "textDocument/codeAction")))))
     ("textDocument/codeLens" :capability :codeLensProvider)
     ("textDocument/completion" :capability :completionProvider)
     ("completionItem/resolve"
      :check-command (lambda (wk)
                       (with-lsp-workspace wk
                         (lsp:completion-options-resolve-provider?
-                         (or (lsp--capability :completionProvider)
-                             (-some-> (lsp--registered-capability "textDocument/completion")
-                               (lsp--registered-capability-options)))))))
+                         (lsp--capability-for-method "textDocument/completion")))))
     ("textDocument/declaration" :capability :declarationProvider)
     ("textDocument/definition" :capability :definitionProvider)
     ("textDocument/documentColor" :capability :colorProvider)
@@ -890,9 +886,7 @@ directory")
      :check-command (lambda (workspace)
                       (with-lsp-workspace workspace
                         (lsp:rename-options-prepare-provider?
-                         (or (lsp--capability :renameProvider)
-                             (-some-> (lsp--registered-capability "textDocument/rename")
-                               (lsp--registered-capability-options)))))))
+                         (lsp--capability-for-method "textDocument/rename")))))
     ("textDocument/rangeFormatting" :capability :documentRangeFormattingProvider)
     ("textDocument/references" :capability :referencesProvider)
     ("textDocument/rename" :capability :renameProvider)
@@ -913,6 +907,7 @@ directory")
                         (lsp-get (lsp--capability :semanticTokensProvider) :range))))
     ("textDocument/signatureHelp" :capability :signatureHelpProvider)
     ("textDocument/typeDefinition" :capability :typeDefinitionProvider)
+    ("textDocument/typeHierarchy" :capability :typeHierarchyProvider)
     ("workspace/executeCommand" :capability :executeCommandProvider)
     ("workspace/symbol" :capability :workspaceSymbolProvider))
 
@@ -1641,7 +1636,7 @@ etc."
 (defun lsp-extend-selection ()
   "Extend selection."
   (interactive)
-  (unless (lsp--capability :selectionRangeProvider)
+  (unless (lsp-feature? "textDocument/selectionRange")
     (signal 'lsp-capability-not-supported (list "selectionRangeProvider")))
   (-when-let ((start . end) (lsp--find-wrapping-range (lsp--get-selection-range)))
     (goto-char start)
@@ -2327,13 +2322,11 @@ WORKSPACE is the workspace that contains the diagnostics."
                    nil)))
 
 (defun lsp--folding-range-at-point-bounds ()
-  (if (and (or (lsp--capability :foldingRangeProvider)
-               (lsp--registered-capability "textDocument/foldingRange"))
-           lsp-enable-folding)
-      (if-let ((range (lsp--get-current-innermost-folding-range)))
-          (cons (lsp--folding-range-beg range)
-                (lsp--folding-range-end range)))
-    nil))
+  (when (and lsp-enable-folding
+             (lsp-feature? "textDocument/foldingRange"))
+    (if-let ((range (lsp--get-current-innermost-folding-range)))
+        (cons (lsp--folding-range-beg range)
+              (lsp--folding-range-end range)))))
 (put 'lsp--folding-range 'bounds-of-thing-at-point
      #'lsp--folding-range-at-point-bounds)
 
@@ -2350,10 +2343,9 @@ WORKSPACE is the workspace that contains the diagnostics."
     found))
 
 (defun lsp--folding-range-at-point-forward-op (n)
-  (when (and (or (lsp--capability :foldingRangeProvider)
-                 (lsp--registered-capability "textDocument/foldingRange"))
-             lsp-enable-folding
-             (not (zerop n)))
+  (when (and lsp-enable-folding
+             (not (zerop n))
+             (lsp-feature? "textDocument/foldingRange"))
     (cl-block break
       (dotimes (_ (abs n))
         (if-let ((range (lsp--get-nearest-folding-range (< n 0))))
@@ -2377,7 +2369,7 @@ WORKSPACE is the workspace that contains the diagnostics."
 (defun lsp--range-at-point-bounds ()
   (or (lsp--folding-range-at-point-bounds)
       (when-let ((range (and
-                         (lsp--capability :hoverProvider)
+                         (lsp-feature? "textDocument/hover")
                          (->> (lsp--text-document-position-params)
                               (lsp-request "textDocument/hover")
                               (lsp:hover-range?)))))
@@ -3508,6 +3500,7 @@ disappearing, unset all the variables related to it."
                                          (hierarchicalDocumentSymbolSupport . t)))
                       (formatting . ((dynamicRegistration . t)))
                       (rangeFormatting . ((dynamicRegistration . t)))
+                      (onTypeFormatting . ((dynamicRegistration . t)))
                       ,@(when (and lsp-semantic-tokens-enable
                                    (functionp 'lsp--semantic-tokens-capabilities))
                           (lsp--semantic-tokens-capabilities))
@@ -3545,17 +3538,21 @@ disappearing, unset all the variables related to it."
                                                         (insertTextModeSupport . ((valueSet . [1 2])))))
                                      (contextSupport . t)
                                      (dynamicRegistration . t)))
-                      (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))))
+                      (signatureHelp . ((signatureInformation . ((parameterInformation . ((labelOffsetSupport . t)))))
+                                        (dynamicRegistration . t)))
                       (documentLink . ((dynamicRegistration . t)
                                        (tooltipSupport . t)))
-                      (hover . ((contentFormat . ["markdown" "plaintext"])))
+                      (hover . ((contentFormat . ["markdown" "plaintext"])
+                                (dynamicRegistration . t)))
                       ,@(when lsp-enable-folding
                           `((foldingRange . ((dynamicRegistration . t)
                                              ,@(when lsp-folding-range-limit
                                                  `((rangeLimit . ,lsp-folding-range-limit)))
                                              ,@(when lsp-folding-line-folding-only
                                                  `((lineFoldingOnly . t)))))))
+                      (selectionRange . ((dynamicRegistration . t)))
                       (callHierarchy . ((dynamicRegistration . :json-false)))
+                      (typeHierarchy . ((dynamicRegistration . t)))
                       (publishDiagnostics . ((relatedInformation . t)
                                              (tagSupport . ((valueSet . [1 2])))
                                              (versionSupport . t)))
@@ -3872,7 +3869,7 @@ yet."
       (lsp-signature-activate))))
 
 (defun lsp--on-type-formatting-handler-create ()
-  (when-let ((provider (lsp--capability :documentOnTypeFormattingProvider)))
+  (when-let ((provider (lsp--capability-for-method "textDocument/onTypeFormatting" )))
     (-let [(&DocumentOnTypeFormattingOptions :more-trigger-character?
                                              :first-trigger-character) provider]
       (lambda ()
@@ -3890,7 +3887,7 @@ yet."
 
 (defun lsp--signature-help-handler-create ()
   (-when-let ((&SignatureHelpOptions? :trigger-characters?)
-              (lsp--capability :signatureHelpProvider))
+              (lsp--capability-for-method "textDocument/signatureHelp"))
     (lambda ()
       (lsp--maybe-enable-signature-help trigger-characters?))))
 
@@ -4416,6 +4413,14 @@ Only works when mode is 'tick or 'alive."
                          (lsp--workspace-registered-server-capabilities it)))
        cl-first))
 
+(defun lsp--capability-for-method (method)
+  "Get the value of capability for METHOD."
+  (-let* ((reqs (cdr (assoc method lsp-method-requirements)))
+          ((&plist :capability) reqs))
+    (or (and capability (lsp--capability capability))
+        (-some-> (lsp--registered-capability method)
+          (lsp--registered-capability-options)))))
+
 (defvar-local lsp--before-change-vals nil
   "Store the positions from the `lsp-before-change' function call, for
 validation and use in the `lsp-on-change' function.")
@@ -4749,7 +4754,7 @@ Applies on type formatting."
     (lambda (_)
       (interactive)
       (when (lsp:document-link-registration-options-resolve-provider?
-             (lsp--capability :documentLinkProvider))
+             (lsp--capability-for-method "textDocument/documentLink"))
         (lsp-request-async
          "documentLink/resolve"
          link
@@ -5568,7 +5573,7 @@ It will show up only if current point has signature help."
           lsp--eldoc-saved-message nil)
     (if (looking-at "[[:space:]\n]")
         (lsp--eldoc-message nil)
-      (when (and lsp-eldoc-enable-hover (lsp--capability :hoverProvider))
+      (when (and lsp-eldoc-enable-hover (lsp-feature? "textDocument/hover"))
         (lsp-request-async
          "textDocument/hover"
          (lsp--text-document-position-params)
