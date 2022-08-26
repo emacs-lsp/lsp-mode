@@ -25,6 +25,14 @@
 (require 'lsp-mode)
 (require 'dash)
 
+(eval-when-compile
+  (if (version<= "27.1" emacs-version)
+      (require 'text-property-search)
+    (declare-function text-property-search-forward "text-property-search")
+    (declare-function text-property-search-backward "text-property-search")
+    (declare-function prop-match-beginning "text-property-search")
+    (declare-function prop-match-end "text-property-search")))
+
 (defgroup lsp-semantic-tokens nil
   "LSP support for semantic-tokens."
   :prefix "lsp-semantic-tokens-"
@@ -74,6 +82,7 @@ associated with the requesting language server."
 (defcustom lsp-semantic-tokens-set-comment-syntax nil
   "Whether to set the local syntax table for comments.
 
+Only compatible with emacs version >= 27.1.
 When set to nil, the syntax table will not be changed.
 When set to t, semantic tokens with type comment will be also
 marked as comment in the local syntax table. This helps a lot in
@@ -633,7 +642,8 @@ function also removes dangling comment starters/ends."
     (cons prev-beg next-end)))
 
 (defun lsp-semantic-tokens--remove-comment-syntax-strict (beg end)
-  "Remove all commnet syntax strictly in (BEG END), even if they overlap out of the range."
+  "Remove all commnet syntax strictly in (BEG END), even if they
+overlap out of the range."
   (lsp-save-restriction-and-excursion
     (with-silent-modifications
       ;; Remove comment starters
