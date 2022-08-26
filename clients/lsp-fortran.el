@@ -29,7 +29,7 @@
 (defgroup lsp-fortran nil
   "LSP support for Fortran, using the Fortran Language Server."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/hansec/fortran-language-server"))
+  :link '(url-link "https://gnikit.github.io/fortls"))
 
 (defcustom lsp-clients-fortls-executable "fortls"
   "The fortls executable to use.

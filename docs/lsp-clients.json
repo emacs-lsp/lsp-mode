@@ -212,9 +212,9 @@
   {
     "name": "fortran",
     "full-name": "Fortran",
-    "server-name": "fortran-language-server",
-    "server-url": "https://github.com/hansec/fortran-language-server",
-    "installation": "pip install fortran-language-server",
+    "server-name": "fortls",
+    "server-url": "https://gnikit.github.io/fortls",
+    "installation": "pip install fortls",
     "debugger": "Yes"
   },
   {
