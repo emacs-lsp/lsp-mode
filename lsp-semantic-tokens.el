@@ -579,7 +579,7 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
         (setq lsp-semantic-tokens-set-comment-syntax nil)
         (lsp-semantic-tokens--remove-comment-syntax (point-min) (point-max)))
     (setq lsp-semantic-tokens-set-comment-syntax t))
-  (font-lock-fontify-buffer))
+  (font-lock-flush))
 
 (defun lsp-semantic-tokens--get-overlapping-comments (beg end)
   "Returns the start of the comment pair that contains BEG, and the
