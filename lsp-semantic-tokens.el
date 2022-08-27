@@ -26,12 +26,10 @@
 (require 'dash)
 
 (eval-when-compile
-  (if (version<= "27.1" emacs-version)
-      (require 'text-property-search)
-    (declare-function text-property-search-forward "text-property-search")
-    (declare-function text-property-search-backward "text-property-search")
-    (declare-function prop-match-beginning "text-property-search")
-    (declare-function prop-match-end "text-property-search")))
+  (declare-function text-property-search-forward "text-property-search")
+  (declare-function text-property-search-backward "text-property-search")
+  (declare-function prop-match-beginning "text-property-search")
+  (declare-function prop-match-end "text-property-search"))
 
 (defgroup lsp-semantic-tokens nil
   "LSP support for semantic-tokens."
