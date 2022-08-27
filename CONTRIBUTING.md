@@ -1,9 +1,9 @@
 # Contributing
 
-`emacs-lsp` is a very active organization so before you start working on 
-a feature/issue make sure that there is a corresponding issue and drop a 
-note that you start working on that to avoid collisions. 
-Feel free to ping the maintainers in [Discord](https://discord.gg/Wrqrf42f2h) 
+`emacs-lsp` is a very active organization so before you start working on
+a feature/issue make sure that there is a corresponding issue and drop a
+note that you start working on that to avoid collisions.
+Feel free to ping the maintainers in [Discord](https://discord.gg/Wrqrf42f2h)
 chat or in the issue report if you need help/clarification on how things work.
 
 If you discover issues, have ideas for improvements or new features,
@@ -26,7 +26,7 @@ do so.
 ### Reporting bugs
 
 When reporting bugs it's a good idea to go through the [Troubleshooting section
-of the documentation][7].  Adding information like the backtrace and the *lsp-log* buffer to
+of the documentation][5].  Adding information like the backtrace and the *lsp-log* buffer to
 the bug report makes it easier to track down bugs. Some steps to reproduce a bug
 reliably would also make a huge difference.
 
@@ -36,11 +36,11 @@ reliably would also make a huge difference.
 * Use the same coding conventions as the rest of the project.
 * Make sure that the unit tests are passing locally via `make test` or via the CI.
 * Write [good commit messages][3].
-* Update the [changelog][6].
+* Update the [changelog][4].
 * Code-style/formatting changes and typo-fixes should go into their own commits and put into the `.git-blame-ignore-revs` file to avoid thrashing the `git blame` data.
 
 [1]: https://github.com/emacs-lsp/lsp-mode/issues
 [2]: http://gun.io/blog/how-to-github-fork-branch-and-pull-request
 [3]: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
-[4]: https://github.com/emacs-lsp/lsp-mode/blob/master/CHANGELOG.md
-[5]: https://emacs-lsp.github.io/lsp-mode/page/troubleshooting/
+[4]: CHANGELOG.org
+[5]: docs/page/troubleshooting.md
