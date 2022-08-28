@@ -277,9 +277,9 @@ Faces to use for semantic token modifiers if
      . ((dynamicRegistration . t)
         (requests . ((range . t) (full . t)))
         (tokenModifiers . ,(if lsp-semantic-tokens-apply-modifiers
-                               (apply 'vector (mapcar #'car lsp-semantic-token-modifier-faces))
+                               (apply 'vector (mapcar #'car (lsp-semantic-tokens--modifier-faces-for (lsp--workspace-client lsp--cur-workspace))))
                              []))
-        (tokenTypes . ,(apply 'vector (mapcar #'car lsp-semantic-token-faces)))
+        (tokenTypes . ,(apply 'vector (mapcar #'car (lsp-semantic-tokens--type-faces-for (lsp--workspace-client lsp--cur-workspace)))))
         (formats . ["relative"])))))
 
 (defvar lsp--semantic-tokens-pending-full-token-requests '()
