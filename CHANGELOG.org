@@ -45,6 +45,8 @@
   * Add ~lsp-sorbet-as-add-on~ variable to allow running the Sorbet server as an add-on alongside Solargraph or others
   * Add [[https://github.com/nikeee/dot-language-server][dot-language-server]] (/a.k.a./ Graphviz) support.
   * Add [[https://github.com/FractalBoy/perl-language-server][PLS]] support (additional sever for Perl).
+  * Fix ~lsp-avy-lens~ when ~avy-style~ is ~'de-bruijn~ or ~'words~ #3554
+  * Fix ~lsp-avy-lens~ when ~lsp-lens-place-position~ position is ~end-of-line~
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.
