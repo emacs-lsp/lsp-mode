@@ -847,7 +847,8 @@ Changes take effect only when a new session is started."
                                         (magik-mode . "magik")
                                         (idris-mode . "idris")
                                         (idris2-mode . "idris2")
-                                        (gleam-mode . "gleam"))
+                                        (gleam-mode . "gleam")
+                                        (graphviz-dot-mode . "dot"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
