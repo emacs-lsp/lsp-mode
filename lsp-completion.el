@@ -430,15 +430,7 @@ The MARKERS and PREFIX value will be attached to each candidate."
             (not (nth 4 (syntax-ppss))))
     (let* ((trigger-chars (-> (lsp--capability-for-method "textDocument/completion")
                               (lsp:completion-options-trigger-characters?)))
-           (bounds-start (or (-some--> (cl-first (bounds-of-thing-at-point 'symbol))
-                               (save-excursion
-                                 (ignore-errors
-                                   (goto-char (+ it 1))
-                                   (while (lsp-completion--looking-back-trigger-characterp
-                                           trigger-chars)
-                                     (cl-incf it)
-                                     (forward-char))
-                                   it)))
+           (bounds-start (or (cl-first (bounds-of-thing-at-point 'symbol))
                              (point)))
            result done?
            (candidates
