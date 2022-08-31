@@ -159,6 +159,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "dot",
+    "full-name": "DOT",
+    "server-name": "dot-language-server",
+    "server-url": "https://github.com/nikeee/dot-language-server",
+    "installation": "npm install -g dot-language-server",
+    "lsp-install-server": "dot-ls",
+    "debugger": "Not available"
+  },
+  {
     "name": "elixir",
     "full-name": "Elixir",
     "server-name": "elixir-lsp/elixir-ls",
