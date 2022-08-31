@@ -42,16 +42,11 @@
                 '(:npm :package "dot-language-server"
                        :path "dot-language-server"))
 
-(defun lsp-dot--dot-ls-activate-p (filename &optional _)
-  "Check if the dot-ls lsp server should be enabled based on FILENAME."
-  (or (string-match-p "\\.dot\\|\\.gv\\'" filename)
-      (derived-mode-p 'graphviz-dot-mode)))
-
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection #'lsp-dot--dot-ls-server-command)
   :priority -1
-  :activation-fn #'lsp-dot--dot-ls-activate-p
+  :activation-fn (lsp-activate-on "dot")
   :server-id 'dot-ls
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'dot-language-server callback error-callback))))
