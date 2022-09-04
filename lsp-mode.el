@@ -3998,7 +3998,7 @@ yet."
 
       (when (and lsp-enable-indentation
                  (lsp-feature? "textDocument/rangeFormatting"))
-        (setq-local indent-region-function #'lsp-format-region))
+        (add-function :override (var indent-region-function) #'lsp-format-region))
 
       (when (and lsp-enable-symbol-highlighting
                  (lsp-feature? "textDocument/documentHighlight"))
@@ -4015,18 +4015,25 @@ yet."
 
 (defun lsp-unconfig-buffer ()
   "Unconfigure LSP features for buffer."
-  (run-hooks 'lsp-unconfigure-hook)
-
   (lsp--remove-overlays 'lsp-color)
-  (when (eq indent-region-function #'lsp-format-region)
-    (kill-local-variable 'indent-region-function))
-  (when (eq imenu-create-index-function #'lsp--imenu-create-index)
-    (kill-local-variable 'imenu-create-index-function)
-    (kill-local-variable 'imenu-menubar-modified-tick)
-    (kill-local-variable 'imenu--index-alist))
+
+  (when (advice-function-member-p 'lsp--imenu-create-index imenu-create-index-function)
+    (remove-function (var imenu-create-index-function) #'lsp--imenu-create-index)
+    (setq-local imenu-menubar-modified-tick 0)
+    (setq-local imenu--index-alist nil)
+    (imenu--cleanup))
+
+  (remove-function (var indent-region-function) #'lsp-format-region)
+
   (remove-hook 'lsp-on-change-hook #'lsp--document-color t)
   (remove-hook 'lsp-on-idle-hook #'lsp--document-highlight t)
-  (remove-hook 'lsp-on-idle-hook #'lsp--document-links t))
+  (remove-hook 'lsp-on-idle-hook #'lsp--document-links t)
+
+  (when (and lsp-enable-dap-auto-configure
+             (functionp 'dap-mode))
+    (dap-auto-configure-mode -1))
+
+  (run-hooks 'lsp-unconfigure-hook))
 
 (defun lsp--buffer-content ()
   (lsp-save-restriction-and-excursion
@@ -6990,7 +6997,7 @@ Return a nested alist keyed by symbol names. e.g.
 (defun lsp-enable-imenu ()
   "Use lsp-imenu for the current buffer."
   (imenu--cleanup)
-  (setq-local imenu-create-index-function #'lsp--imenu-create-index)
+  (add-function :override (var imenu-create-index-function) #'lsp--imenu-create-index)
   (setq-local imenu-menubar-modified-tick -1)
   (setq-local imenu--index-alist nil)
   (when menu-bar-mode
