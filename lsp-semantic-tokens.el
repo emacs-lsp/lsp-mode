@@ -670,25 +670,29 @@ IS-RANGE-PROVIDER is non-nil when server supports range requests."
                        (lsp-warn "No face has been associated to the %s '%s': consider adding a corresponding definition to %s"
                                  category id varname)) maybe-face)) identifiers)))
 
-(defun lsp-semantic-tokens--apply-alist-overrides (base overrides)
-  "Merge alist BASE with OVERRIDES.
+(defun lsp-semantic-tokens--apply-alist-overrides (base overrides discard-defaults)
+  "Merge or replace BASE with OVERRIDES, depending on DISCARD-DEFAULTS.
 For keys present in both alists, the assignments made by
 OVERRIDES will take precedence."
-  (let* ((copy-base (copy-alist base)))
-    (mapc (-lambda ((key . value)) (setf (alist-get key copy-base nil nil #'string=) value)) overrides)
-    copy-base))
+  (if discard-defaults
+      overrides
+    (let* ((copy-base (copy-alist base)))
+      (mapc (-lambda ((key . value)) (setf (alist-get key copy-base nil nil #'string=) value)) overrides)
+      copy-base)))
 
 (defun lsp-semantic-tokens--type-faces-for (client)
   "Return the semantic token type faces for CLIENT."
   (lsp-semantic-tokens--apply-alist-overrides
    lsp-semantic-token-faces
-   (plist-get (lsp--client-semantic-tokens-faces-overrides client) :types)))
+   (plist-get (lsp--client-semantic-tokens-faces-overrides client) :types)
+   (plist-get (lsp--client-semantic-tokens-faces-overrides client) :discard-default-types)))
 
 (defun lsp-semantic-tokens--modifier-faces-for (client)
   "Return the semantic token type faces for CLIENT."
   (lsp-semantic-tokens--apply-alist-overrides
    lsp-semantic-token-modifier-faces
-   (plist-get (lsp--client-semantic-tokens-faces-overrides client) :modifiers)))
+   (plist-get (lsp--client-semantic-tokens-faces-overrides client) :modifiers)
+   (plist-get (lsp--client-semantic-tokens-faces-overrides client) :discard-default-modifiers)))
 
 (defun lsp--semantic-tokens-on-refresh (workspace)
   "Clear semantic tokens within all buffers of WORKSPACE,
