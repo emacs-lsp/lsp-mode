@@ -906,7 +906,11 @@ name (e.g. `data' variable passed as `data' parameter)."
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
                                        (ht-merge (lsp-configuration-section "javascript")
-                                                 (lsp-configuration-section "typescript")))))
+                                                 (lsp-configuration-section "typescript"))))
+                                    (let ((caps (lsp--workspace-server-capabilities workspace))
+                                          (format-enable (or lsp-javascript-format-enable lsp-typescript-format-enable)))
+                                      (lsp:set-server-capabilities-document-formatting-provider? caps format-enable)
+                                      (lsp:set-server-capabilities-document-range-formatting-provider? caps format-enable)))
                   :after-open-fn (lambda ()
                                    (when lsp-javascript-display-inlay-hints
                                      (lsp-javascript-inlay-hints-mode)))
