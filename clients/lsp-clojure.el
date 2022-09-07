@@ -327,7 +327,7 @@ and the third the column."
                    (list :uri (seq-elt args 0))
                    (list :line (1- (seq-elt args 1))
                          :character (1- (seq-elt args 2)))))))
-   t
+   nil
    t))
 
 (defvar-local lsp-clojure--test-tree-data nil)
