@@ -132,7 +132,7 @@ completing function calls."
     (gc_details . "Toggle the calculation of gc annotations")
     (generate . "Run `go generate` for a directory")
     (regenerate_cgo . "Regenerate cgo definitions")
-    (test . "Run `go test` for a specific set of test or benchmark functions (lgeacy)")
+    (test . "Run `go test` for a specific set of test or benchmark functions (legacy)")
     (tidy . "Run `go mod tidy` for a module")
     (upgrade_dependency . "Upgrade a dependency")
     (vendor . "Runs `go mod vendor' for a module"))
