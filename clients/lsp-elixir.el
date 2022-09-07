@@ -68,7 +68,7 @@ If value is `\"\"` then defaults to the workspace rootUri."
   :group 'lsp-elixir
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-elixir-fetch-deps t
+(defcustom lsp-elixir-fetch-deps nil
   "Automatically fetch project dependencies when compiling."
   :type 'boolean
   :group 'lsp-elixir
