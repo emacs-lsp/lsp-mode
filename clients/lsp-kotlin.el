@@ -27,7 +27,6 @@
 (require 'lsp-mode)
 (require 'cl-lib)
 (require 'dash)
-(require 'ht)
 
 (defgroup lsp-kotlin nil
   "LSP support for Kotlin, using KotlinLanguageServer."
@@ -230,9 +229,9 @@ to Kotlin."
    (lambda (member-options)
      (-if-let* ((option-items (-map (lambda (x)
                                       (list (lsp-get x :title)
-                                            (ht-get (lsp-get (lsp-get x :edit)
+                                            (lsp-get (lsp-get (lsp-get x :edit)
                                                              :changes)
-                                                    (lsp--buffer-uri))))
+                                                     (intern (concat ":" (lsp--buffer-uri))))))
                                     member-options))
                 (selected-members (lsp-kotlin--completing-read-multiple "Select overrides" option-items nil)))
          (dolist (edit (-flatten selected-members))
