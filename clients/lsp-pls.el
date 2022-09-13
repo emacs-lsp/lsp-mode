@@ -95,16 +95,25 @@ By default, the perl used to run PLS will be used."
   :group 'lsp-pls
   :package-version '(lsp-mode . "8.0.1"))
 
+(defcustom lsp-pls-syntax-args nil
+  "Additional arguments to pass to Perl when syntax checking.
+This is useful if there is a BEGIN block in your code that
+changes behavior depending on the contents of @ARGV."
+  :type '(repeat 'string)
+  :group 'lsp-pls
+  :package-version '(lsp-mode . "8.0.1"))
+
 (lsp-register-custom-settings
  '(("pls.cmd"                      lsp-pls-executable)
    ("pls.args"                     lsp-pls-arguments)
    ("pls.cwd"                      lsp-pls-working-dir)
    ("pls.inc"                      lsp-pls-include)
-   ("pls.perltidyrc"               lsp-pls-perltidy-rc)
+   ("pls.perltidy.perltidyrc"      lsp-pls-perltidy-rc)
    ("pls.perlcritic.perlcriticrc"  lsp-pls-perlcritic-rc)
    ("pls.perlcritic.enabled"       lsp-pls-perlcritic-enabled)
    ("pls.syntax.enabled"           lsp-pls-syntax-enabled)
-   ("pls.syntax.perl"              lsp-pls-syntax-perl)))
+   ("pls.syntax.perl"              lsp-pls-syntax-perl)
+   ("pls.syntax.args"              lsp-pls-syntax-args)))
 
 (lsp-register-client
  (make-lsp-client
