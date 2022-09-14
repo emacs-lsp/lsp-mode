@@ -46,12 +46,16 @@
 
 (defcustom lsp-clojure-server-download-url
   (format "https://github.com/clojure-lsp/clojure-lsp/releases/latest/download/clojure-lsp-native-%s.zip"
-          (pcase system-type
-            ('gnu/linux "linux-amd64")
-            ('darwin (if (string-match "^aarch64-.*" system-configuration)
-                         "macos-aarch64"
-                       "macos-amd64"))
-            ('windows-nt "windows-amd64")))
+          (let ((arch (substring system-configuration 0 (string-search "-" system-configuration))))
+            (pcase system-type
+              ('gnu/linux (concat "linux-"
+                                  (cond
+                                   ((string= "x86_64" arch) "amd64")
+                                   (t arch))))
+              ('darwin (concat "macos-"
+                               (cond ((string= "aarch64" arch) arch)
+                                     (t "amd64"))))
+              ('windows-nt "windows-amd64"))))
   "Automatic download url for lsp-clojure."
   :type 'string
   :group 'lsp-clojure
