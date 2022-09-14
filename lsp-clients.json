@@ -517,6 +517,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "pls",
+    "full-name": "PLS",
+    "server-name": "Perl Language Server",
+    "server-url": "https://metacpan.org/pod/PLS",
+    "installation": "cpan PLS",
+    "debugger": "Not available"
+  },
+  {
     "name": "perl",
     "full-name": "Perl",
     "server-name": "Perl::LanguageServer",
