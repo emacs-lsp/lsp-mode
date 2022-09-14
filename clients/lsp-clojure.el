@@ -53,8 +53,9 @@
                                    ((string= "x86_64" arch) "amd64")
                                    (t arch))))
               ('darwin (concat "macos-"
-                               (cond ((string= "aarch64" arch) arch)
-                                     (t "amd64"))))
+                               (cond
+                                ((string= "x86_64" arch) "amd64")
+                                (t arch))))
               ('windows-nt "windows-amd64"))))
   "Automatic download url for lsp-clojure."
   :type 'string
