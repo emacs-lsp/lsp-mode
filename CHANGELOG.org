@@ -44,6 +44,7 @@
   * Add [[https://github.com/mint-lang/mint][mint-lang]] support.
   * Add ~lsp-sorbet-as-add-on~ variable to allow running the Sorbet server as an add-on alongside Solargraph or others
   * Add [[https://github.com/nikeee/dot-language-server][dot-language-server]] (/a.k.a./ Graphviz) support.
+  * Add [[https://github.com/FractalBoy/perl-language-server][PLS]] support (additional sever for Perl).
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.

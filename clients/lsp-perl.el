@@ -108,7 +108,7 @@ Defaults to 0."
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
                                        (lsp-configuration-section "perl"))))
-                  :priority -1
+                  :priority -2
                   :server-id 'perl-language-server))
 
 (lsp-consistency-check lsp-perl)

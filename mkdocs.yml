@@ -103,6 +103,7 @@ nav:
     - OCaml (ocaml-lsp): page/lsp-ocaml-lsp-server.md
     - OpenSCAD: page/lsp-openscad.md
     - Pascal/Object Pascal: page/lsp-pascal.md
+    - Perl (PLS): page/lsp-pls.md
     - Perl (Perl::LanguageServer): page/lsp-perl.md
     - Perl (Navigator): page/lsp-perlnavigator.md
     - PHP (intelephense): page/lsp-intelephense.md
