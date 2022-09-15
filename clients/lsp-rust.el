@@ -1031,13 +1031,14 @@ meaning."
            (-let* (((&rust-analyzer:InlayHint :position :label :kind :padding-left :padding-right) hint)
                    (pos (lsp--position-to-point position))
                    (overlay (make-overlay pos pos nil 'front-advance 'end-advance)))
-             (overlay-put overlay 'lsp-rust-analyzer-inlay-hint t)
-             (overlay-put overlay 'before-string
-                          (format "%s%s%s"
-                                  (if padding-left " " "")
-                                  (propertize (lsp-rust-analyzer-format-inlay label kind)
-                                              'font-lock-face (lsp-rust-analyzer-face-for-inlay kind))
-                                  (if padding-right " " ""))))))
+             (when (stringp label)
+               (overlay-put overlay 'lsp-rust-analyzer-inlay-hint t)
+               (overlay-put overlay 'before-string
+                            (format "%s%s%s"
+                                    (if padding-left " " "")
+                                    (propertize (lsp-rust-analyzer-format-inlay label kind)
+                                                'font-lock-face (lsp-rust-analyzer-face-for-inlay kind))
+                                    (if padding-right " " "")))))))
        :mode 'tick))
   nil)
 
