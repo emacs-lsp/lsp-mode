@@ -79,12 +79,14 @@ Usually this is to be set in your .dir-locals.el on the project root directory."
                    "omnisharp-win-x86.zip"))
 
                 ((eq system-type 'darwin)
-                 "omnisharp-osx.zip")
+                 (if (string-match "aarch64-.*" system-configuration)
+                     "omnisharp-osx-arm64-net6.0.zip"
+                   "omnisharp-osx-x64-net6.0.zip"))
 
                 ((and (eq system-type 'gnu/linux)
                       (or (eq (string-match "^x86_64" system-configuration) 0)
                           (eq (string-match "^i[3-6]86" system-configuration) 0)))
-                 "omnisharp-linux-x64.zip")
+                 "omnisharp-linux-x64-net6.0.zip")
 
                 (t "omnisharp-mono.zip")))
   "Automatic download url for omnisharp-roslyn."
@@ -108,7 +110,7 @@ Usually this is to be set in your .dir-locals.el on the project root directory."
  `(:download :url lsp-csharp-omnisharp-roslyn-download-url
              :store-path lsp-csharp-omnisharp-roslyn-store-path))
 
-(defun lsp-csharp--download-server (_client callback error-callback _update?)
+(defun lsp-csharp--omnisharp-download-server (_client callback error-callback _update?)
   "Download zip package for omnisharp-roslyn and install it.
 Will invoke CALLBACK on success, ERROR-CALLBACK on error."
   (lsp-package-ensure
@@ -117,15 +119,8 @@ Will invoke CALLBACK on success, ERROR-CALLBACK on error."
      (lsp-unzip lsp-csharp-omnisharp-roslyn-store-path
                 lsp-csharp-omnisharp-roslyn-server-dir)
      (unless (eq system-type 'windows-nt)
-       (let ((run-script (f-join lsp-csharp-omnisharp-roslyn-server-dir "run")))
-         (when (not (f-exists-p run-script))
-           ; create the `run' script when missing (e.g. when server binaries are extracted from omnisharp-mono.zip)
-           ; NOTE: we do not check for presence or version of mono in the system
-           (with-temp-file run-script
-             (insert "#!/bin/bash\n")
-             (insert "BASEDIR=$(dirname \"$0\")\n")
-             (insert "exec mono $BASEDIR/OmniSharp.exe $@\n")))
-         (set-file-modes run-script #o755)))
+       (let ((omnisharp-executable (f-join lsp-csharp-omnisharp-roslyn-server-dir "OmniSharp")))
+         (set-file-modes omnisharp-executable #o755)))
      (funcall callback))
    error-callback))
 
@@ -136,9 +131,9 @@ Will invoke CALLBACK on success, ERROR-CALLBACK on error."
     (let ((server-dir lsp-csharp-omnisharp-roslyn-server-dir))
       (when (f-exists? server-dir)
         (f-join server-dir (cond ((eq system-type 'windows-nt) "OmniSharp.exe")
-                                 (t "run")))))))
+                                 (t "OmniSharp")))))))
 
-(lsp-defun lsp-csharp-open-project-file ()
+(defun lsp-csharp-open-project-file ()
   "Open corresponding project file  (.csproj) for the current file."
   (interactive)
   (-let* ((project-info-req (lsp-make-omnisharp-project-information-request :file-name (buffer-file-name)))
@@ -362,7 +357,7 @@ using the `textDocument/references' request."
                                              ("o#/testcompleted" 'lsp-csharp--handle-os-testcompleted)
                                              ("o#/projectconfiguration" 'ignore)
                                              ("o#/projectdiagnosticstatus" 'ignore))
-                  :download-server-fn #'lsp-csharp--download-server))
+                  :download-server-fn #'lsp-csharp--omnisharp-download-server))
 
 ;;
 ;; Alternative "csharp-ls" language server support

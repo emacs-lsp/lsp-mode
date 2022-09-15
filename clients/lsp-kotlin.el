@@ -26,6 +26,7 @@
 
 (require 'lsp-mode)
 (require 'cl-lib)
+(require 'dash)
 
 (defgroup lsp-kotlin nil
   "LSP support for Kotlin, using KotlinLanguageServer."
@@ -180,6 +181,61 @@ to Kotlin."
     (lsp-lens-refresh t))
    (t (setq-local lsp-lens-backends (delete #'lsp-kotlin-lens-backend lsp-lens-backends)))))
 
+
+;; Stolen from lsp-java:
+;; https://github.com/emacs-lsp/lsp-java/blob/a1aff851bcf4f397f2a968557d213db1fede0c8a/lsp-java.el#L1065
+(declare-function helm-make-source "ext:helm-source")
+(defvar lsp-kotlin--helm-result nil)
+(defun lsp-kotlin--completing-read-multiple (message items initial-selection)
+  (if (functionp 'helm)
+      (progn
+        (require 'helm-source)
+        (helm :sources (helm-make-source
+                           message 'helm-source-sync :candidates items
+                           :action '(("Identity" lambda (_)
+                                      (setq lsp-kotlin--helm-result (helm-marked-candidates)))))
+              :buffer "*lsp-kotlin select*"
+              :prompt message)
+        lsp-kotlin--helm-result)
+    (if (functionp 'ivy-read)
+        (let (result)
+          (ivy-read message (mapcar #'car items)
+                    :action (lambda (c) (setq result (list (cdr (assoc c items)))))
+                    :multi-action
+                    (lambda (canditates)
+                      (setq result (mapcar (lambda (c) (cdr (assoc c items))) canditates))))
+          result)
+      (let ((deps initial-selection) dep)
+        (while (setq dep (cl-rest (lsp--completing-read
+                                   (if deps
+                                       (format "%s (selected %s): " message (length deps))
+                                     (concat message ": "))
+                                   items
+                                   (-lambda ((name . id))
+                                     (if (-contains? deps id)
+                                         (concat name " ✓")
+                                       name)))))
+          (if (-contains? deps dep)
+              (setq deps (remove dep deps))
+            (cl-pushnew dep deps)))
+        deps))))
+
+(defun lsp-kotlin-implement-member ()
+  (interactive)
+  (lsp-request-async
+   "kotlin/overrideMember"
+   (list :textDocument (list :uri (lsp--buffer-uri))
+         :position (lsp--cur-position))
+   (lambda (member-options)
+     (-if-let* ((option-items (-map (lambda (x)
+                                      (list (lsp-get x :title)
+                                            (lsp-get (lsp-get (lsp-get x :edit)
+                                                             :changes)
+                                                     (intern (concat ":" (lsp--buffer-uri))))))
+                                    member-options))
+                (selected-members (lsp-kotlin--completing-read-multiple "Select overrides" option-items nil)))
+         (dolist (edit (-flatten selected-members))
+           (lsp--apply-text-edits edit))))))
 
 (lsp-dependency
  'kotlin-language-server

@@ -428,18 +428,9 @@ The MARKERS and PREFIX value will be attached to each candidate."
   (when (or (--some (lsp--client-completion-in-comments? (lsp--workspace-client it))
                     (lsp-workspaces))
             (not (nth 4 (syntax-ppss))))
-    (let* ((trigger-chars (->> (lsp--server-capabilities)
-                               (lsp:server-capabilities-completion-provider?)
-                               (lsp:completion-options-trigger-characters?)))
-           (bounds-start (or (-some--> (cl-first (bounds-of-thing-at-point 'symbol))
-                               (save-excursion
-                                 (ignore-errors
-                                   (goto-char (+ it 1))
-                                   (while (lsp-completion--looking-back-trigger-characterp
-                                           trigger-chars)
-                                     (cl-incf it)
-                                     (forward-char))
-                                   it)))
+    (let* ((trigger-chars (-> (lsp--capability-for-method "textDocument/completion")
+                              (lsp:completion-options-trigger-characters?)))
+           (bounds-start (or (cl-first (bounds-of-thing-at-point 'symbol))
                              (point)))
            result done?
            (candidates
@@ -512,24 +503,11 @@ The MARKERS and PREFIX value will be attached to each candidate."
        bounds-start
        (point)
        (lambda (probe pred action)
-         (cond
-          ;; metadata
-          ((equal action 'metadata)
-           `(metadata (category . lsp-capf)
-                      (display-sort-function . identity)
-                      (cycle-sort-function . identity)))
-          ;; boundaries
-          ((equal (car-safe action) 'boundaries) nil)
-          ;; try-completion
-          ((null action)
-           (when-let ((cands (funcall candidates)))
-             (if (cl-rest cands) probe (cl-first cands))))
-          ;; test-completion: not return exact match so that the selection will
-          ;; always be shown
-          ((equal action 'lambda) nil)
-          ;; retrieve candidates
-          ((equal action t)
-           (all-completions probe (funcall candidates) pred))))
+         (if (eq action 'metadata)
+             '(metadata (category . lsp-capf)
+                        (display-sort-function . identity)
+                        (cycle-sort-function . identity))
+           (complete-with-action action (funcall candidates) probe pred)))
        :annotation-function #'lsp-completion--annotate
        :company-kind #'lsp-completion--candidate-kind
        :company-deprecated #'lsp-completion--candidate-deprecated

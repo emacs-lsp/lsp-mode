@@ -68,7 +68,7 @@ If value is `\"\"` then defaults to the workspace rootUri."
   :group 'lsp-elixir
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-elixir-fetch-deps t
+(defcustom lsp-elixir-fetch-deps nil
   "Automatically fetch project dependencies when compiling."
   :type 'boolean
   :group 'lsp-elixir
@@ -105,7 +105,7 @@ Leave as default to let `executable-find' search for it."
   :type '(repeat string)
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-elixir-ls-version "v0.9.0"
+(defcustom lsp-elixir-ls-version "v0.11.0"
   "Elixir-Ls version to download.
 It has to be set before `lsp-elixir.el' is loaded and it has to
 be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
