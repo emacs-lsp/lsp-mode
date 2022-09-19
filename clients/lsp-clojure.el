@@ -46,7 +46,7 @@
 
 (defcustom lsp-clojure-server-download-url
   (format "https://github.com/clojure-lsp/clojure-lsp/releases/latest/download/clojure-lsp-native-%s.zip"
-          (let ((arch (substring system-configuration 0 (string-search "-" system-configuration))))
+          (let ((arch (car (split-string system-configuration "-"))))
             (pcase system-type
               ('gnu/linux (concat "linux-"
                                   (cond
