@@ -1371,6 +1371,31 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
                                       def inherit-input-method)))
     (cdr (assoc completion col))))
 
+(defconst lsp--system-arch (lambda ()
+                             (setq lsp--system-arch
+                                   (pcase system-type
+                                     ('windows-nt
+                                      (pcase system-configuration
+                                        ((rx bol "x86_64-") 'x64)
+                                        (_ 'x86)))
+                                     ('darwin
+                                      (pcase system-configuration
+                                        ((rx "aarch64-") 'arm64)
+                                        (_ 'x64)))
+                                     ('gnu/linux
+                                       (pcase system-configuration
+                                         ((rx bol "x86_64") 'x64)
+                                         ((rx bol (| "i386" "i886")) 'x32)))
+                                     (_
+                                      (pcase system-configuration
+                                        ((rx bol "x86_64") 'x64)
+                                        ((rx bol (| "i386" "i886")) 'x32))))))
+  "Return the system architecture of `Emacs'.
+Special values:
+  `x64'       64bit
+  `x32'       32bit
+  `arm64'     ARM 64bit")
+
 (defmacro lsp-with-current-buffer (buffer-id &rest body)
   (declare (indent 1) (debug t))
   `(if-let ((wcb (plist-get ,buffer-id :with-current-buffer)))
@@ -7717,11 +7742,11 @@ When prefix UPDATE? is t force installation even if the server is present."
 (defun lsp-resolve-value (value)
   "Resolve VALUE's value.
 If it is function - call it.
-If it is symbol - return it's value
+If it is a variable - return it's value
 Otherwise returns value itself."
   (cond
    ((functionp value) (funcall value))
-   ((symbolp value) (symbol-value value))
+   ((and (symbolp value) (boundp value)) (symbol-value value))
    (value)))
 
 (defvar lsp-deps-providers
@@ -7825,8 +7850,9 @@ nil."
           (pcase decompress
             (:gzip (concat store-path ".gz"))
             (:zip (concat store-path ".zip"))
+            (:targz (concat store-path ".tar.gz"))
             (`nil store-path)
-            (_ (error ":decompress must be `:gzip', `:zip' or `nil'")))))
+            (_ (error ":decompress must be `:gzip', `:zip', `:targz' or `nil'")))))
     (make-thread
      (lambda ()
        (condition-case err
@@ -7868,7 +7894,8 @@ nil."
                (pcase decompress
                  (:gzip
                   (lsp-gunzip download-path))
-                 (:zip (lsp-unzip download-path (f-parent store-path))))
+                 (:zip (lsp-unzip download-path (f-parent store-path)))
+                 (:targz (lsp-tar-gz-decompress download-path (f-parent store-path))))
                (lsp--info "Decompressed %s..." store-path))
              (funcall callback))
          (error (funcall error-callback err)))))))
@@ -7888,6 +7915,20 @@ archieve(e. g. when the archieve has multiple files)"
       (set-file-modes store-path #o0700)
       store-path)
      ((f-exists? store-path) store-path))))
+
+(defun lsp--find-latest-gh-release-url (url regex)
+  "Fetch the latest version in the releases given by URL by using REGEX."
+  (let ((url-request-method "GET"))
+    (with-current-buffer (url-retrieve-synchronously url)
+      (goto-char (point-min))
+      (re-search-forward "\n\n" nil 'noerror)
+      (delete-region (point-min) (point))
+      (let* ((json-result (lsp-json-read-buffer)))
+        (message "Latest version found: %s" (lsp-get json-result :tag_name))
+        (--> json-result
+             (lsp-get it :assets)
+             (seq-find (lambda (entry) (string-match-p regex (lsp-get entry :name))) it)
+             (lsp-get it :browser_download_url))))))
 
 ;; unzip
 
@@ -7898,9 +7939,10 @@ archieve(e. g. when the archieve has multiple files)"
 (defconst lsp-ext-unzip-script "bash -c 'mkdir -p %2$s && unzip -qq -o %1$s -d %2$s'"
   "Unzip script to unzip file.")
 
-(defcustom lsp-unzip-script (cond ((executable-find "powershell") lsp-ext-pwsh-script)
-                                  ((executable-find "unzip") lsp-ext-unzip-script)
-                                  (t nil))
+(defcustom lsp-unzip-script (lambda ()
+                              (cond ((executable-find "powershell") lsp-ext-pwsh-script)
+                                    ((executable-find "unzip") lsp-ext-unzip-script)
+                                    (t nil)))
   "The script to unzip."
   :group 'lsp-mode
   :type 'string
@@ -7910,15 +7952,16 @@ archieve(e. g. when the archieve has multiple files)"
   "Unzip ZIP-FILE to DEST."
   (unless lsp-unzip-script
     (error "Unable to find `unzip' or `powershell' on the path, please customize `lsp-unzip-script'"))
-  (shell-command (format lsp-unzip-script zip-file dest)))
+  (shell-command (format (lsp-resolve-value lsp-unzip-script) zip-file dest)))
 
 ;; gunzip
 
 (defconst lsp-ext-gunzip-script "gzip -d %1$s"
   "Script to decompress a gzippped file with gzip.")
 
-(defcustom lsp-gunzip-script (cond ((executable-find "gzip") lsp-ext-gunzip-script)
-                                   (t nil))
+(defcustom lsp-gunzip-script (lambda ()
+                               (cond ((executable-find "gzip") lsp-ext-gunzip-script)
+                                     (t nil)))
   "The script to decompress a gzipped file.
 Should be a format string with one argument for the file to be decompressed
 in place."
@@ -7930,7 +7973,28 @@ in place."
   "Decompress GZ-FILE in place."
   (unless lsp-gunzip-script
     (error "Unable to find `gzip' on the path, please either customize `lsp-gunzip-script' or manually decompress %s" gz-file))
-  (shell-command (format lsp-gunzip-script gz-file)))
+  (shell-command (format (lsp-resolve-value lsp-gunzip-script) gz-file)))
+
+;; tar.gz decompression
+
+(defconst lsp-ext-tar-script "bash -c 'mkdir -p %2$s; tar xf %1$s --directory=%2$s'"
+  "Script to decompress a .tar.gz file.")
+
+(defcustom lsp-tar-script (lambda ()
+                            (cond ((executable-find "tar") lsp-ext-tar-script)
+                                  (t nil)))
+  "The script to decompress a .tar.gz file.
+Should be a format string with one argument for the file to be decompressed
+in place."
+  :group 'lsp-mode
+  :type 'string)
+
+(defun lsp-tar-gz-decompress (targz-file dest)
+  "Decompress TARGZ-FILE in DEST."
+  (unless lsp-tar-script
+    (error "Unable to find `tar' on the path, please either customize `lsp-tar-script' or manually decompress %s" targz-file))
+  (shell-command (format (lsp-resolve-value lsp-tar-script) targz-file dest)))
+
 
 ;; VSCode marketplace
 
