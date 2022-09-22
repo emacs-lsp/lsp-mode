@@ -200,6 +200,11 @@ Takes a value accepted by `spinner-start'."
                  ,@(mapcar (lambda (c) (list 'const (car c)))
                            spinner-types)))
 
+(defcustom lsp-xref-ignored-files '("_ide_helper_models.php" "_ide_helper.php")
+  "List of files to be ignored when searching by `xref'"
+  :group 'lsp-mode
+  :type '(repeat string))
+
 (defvar-local lsp-use-workspace-root-for-server-default-directory nil
   "Use `lsp-workspace-root' for `default-directory' when starting LSP process.")
 
@@ -4924,6 +4929,13 @@ identifier and the position respectively."
       (goto-char point)
       (buffer-substring (line-beginning-position) (line-end-position)))))
 
+(defun lsp--xref-ignored-file-p (item)
+  "Returns t if item should be ignored."
+  (seq-some
+   (lambda (cand)
+     (string-suffix-p cand (oref (xref-item-location item) file)))
+   lsp-xref-ignored-files))
+
 (lsp-defun lsp--xref-make-item (filename (&Range :start (start &as &Position :character start-char :line start-line)
                                                  :end (end &as &Position :character end-char)))
   "Return a xref-item from a RANGE in FILENAME."
@@ -4991,6 +5003,7 @@ type Location, LocationLink, Location[] or LocationLink[]."
                                          filename (error-message-string err)))))))
 
     (->> locations
+         (cl-remove-if #'lsp--xref-ignored-file-p)
          (seq-sort #'lsp--location-before-p)
          (seq-group-by (-compose #'lsp--uri-to-path #'lsp--location-uri))
          (seq-map #'get-xrefs-in-file)
