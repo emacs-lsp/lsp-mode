@@ -194,7 +194,7 @@ Information comes from the clang.llvm.org website."
 
 ;;; lsp-clangd
 (defgroup lsp-clangd nil
-  "LSP support for C-family languages (C, C++, Objective-C, Objective-C++), using clangd."
+  "LSP support for C-family languages (C, C++, Objective-C, Objective-C++, CUDA), using clangd."
   :group 'lsp-mode
   :link '(url-link "https://clang.llvm.org/extra/clangd"))
 
@@ -246,7 +246,7 @@ This must be set only once after loading the clang client.")
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    'lsp-clients--clangd-command)
-                  :activation-fn (lsp-activate-on "c" "cpp" "objective-c")
+                  :activation-fn (lsp-activate-on "c" "cpp" "objective-c" "cuda")
                   :priority -1
                   :server-id 'clangd
                   :library-folders-fn (lambda (_workspace) lsp-clients-clangd-library-directories)

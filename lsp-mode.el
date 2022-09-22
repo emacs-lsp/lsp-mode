@@ -775,6 +775,7 @@ Changes take effect only when a new session is started."
                                         (xml-mode . "xml")
                                         (c-mode . "c")
                                         (c++-mode . "cpp")
+                                        (cuda-mode . "cuda")
                                         (objc-mode . "objective-c")
                                         (html-mode . "html")
                                         (sgml-mode . "html")
