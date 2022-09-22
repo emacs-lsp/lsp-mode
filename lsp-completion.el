@@ -503,18 +503,20 @@ The MARKERS and PREFIX value will be attached to each candidate."
        bounds-start
        (point)
        (lambda (probe pred action)
-         (if (eq action 'metadata)
-             '(metadata (category . lsp-capf)
-                        (display-sort-function . identity)
-                        (cycle-sort-function . identity))
-           (complete-with-action action (funcall candidates) probe pred)))
+         (cond
+          ((eq action 'metadata)
+           '(metadata (category . lsp-capf)
+                      (display-sort-function . identity)
+                      (cycle-sort-function . identity)))
+          ((eq (car-safe action) 'boundaries) nil)
+          (t
+           (complete-with-action action (funcall candidates) probe pred))))
        :annotation-function #'lsp-completion--annotate
        :company-kind #'lsp-completion--candidate-kind
        :company-deprecated #'lsp-completion--candidate-deprecated
        :company-require-match 'never
        :company-prefix-length
        (save-excursion
-         (goto-char bounds-start)
          (and (lsp-completion--looking-back-trigger-characterp trigger-chars) t))
        :company-match #'lsp-completion--company-match
        :company-doc-buffer (-compose #'lsp-doc-buffer
