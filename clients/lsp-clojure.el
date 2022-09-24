@@ -73,6 +73,11 @@
   :group 'lsp-clojure
   :package-version '(lsp-mode . "8.0.0"))
 
+(defcustom lsp-clojure-trace-enable nil
+  "Enable trace logs between client and clojure-lsp server."
+  :group 'lsp-clojure
+  :type 'boolean)
+
 (defcustom lsp-clojure-workspace-dir (expand-file-name (locate-user-emacs-file "workspace/"))
   "LSP clojure workspace directory."
   :group 'lsp-clojure
@@ -414,6 +419,17 @@ It updates the test tree view data."
       (lsp-clojure--show-test-tree ignore-focus?)
     (error "The package lsp-treemacs is not installed")))
 
+(defun lsp-clojure--build-command ()
+  "Build clojure-lsp start command."
+  (let* ((base-command (or lsp-clojure-custom-server-command
+                           `(,(lsp-clojure--server-executable-path)))))
+    (if lsp-clojure-trace-enable
+        (-map-last #'stringp
+                   (lambda (command)
+                     (concat command " --trace"))
+                   base-command)
+      base-command)))
+
 (lsp-register-client
  (make-lsp-client
   :download-server-fn (lambda (_client callback error-callback _update?)
@@ -422,12 +438,8 @@ It updates the test tree view data."
                                              ("keyword" . clojure-keyword-face)
                                              ("event" . default)))
   :new-connection (lsp-stdio-connection
-                   (lambda ()
-                     (or lsp-clojure-custom-server-command
-                         `(,(lsp-clojure--server-executable-path))))
-                   (lambda ()
-                     (or lsp-clojure-custom-server-command
-                         (lsp-clojure--server-executable-path))))
+                   #'lsp-clojure--build-command
+                   #'lsp-clojure--build-command)
   :major-modes '(clojure-mode clojurec-mode clojurescript-mode)
   :library-folders-fn (lambda (_workspace) (list lsp-clojure-workspace-cache-dir))
   :uri-handlers (lsp-ht ("jar" #'lsp-clojure--file-in-jar))
