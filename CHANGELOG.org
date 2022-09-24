@@ -47,6 +47,7 @@
   * Add [[https://github.com/FractalBoy/perl-language-server][PLS]] support (additional sever for Perl).
   * Fix ~lsp-avy-lens~ when ~avy-style~ is ~'de-bruijn~ or ~'words~ #3554
   * Fix ~lsp-avy-lens~ when ~lsp-lens-place-position~ position is ~end-of-line~
+  * Add ~lsp-clojure-trace-enable~ variable.
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.
