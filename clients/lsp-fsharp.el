@@ -179,7 +179,9 @@ available, else the globally installed tool."
 
 (defun lsp-fsharp--fsac-cmd ()
   "The location of fsautocomplete executable."
-  (or (expand-file-name "fsautocomplete" lsp-fsharp-server-install-dir)
+  (or (-let [maybe-local-executable (expand-file-name "fsautocomplete" lsp-fsharp-server-install-dir)]
+        (when (f-exists-p maybe-local-executable)
+          maybe-local-executable))
       (executable-find "fsautocomplete")
       (f-join (or (getenv "USERPROFILE") (getenv "HOME"))
               ".dotnet" "tools" "fsautocomplete")))
