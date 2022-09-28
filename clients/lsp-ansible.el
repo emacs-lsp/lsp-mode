@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'json)
 
 ;;; Ansible
 (defgroup lsp-ansible nil
@@ -204,6 +205,17 @@ This prevents the Ansible server from being turned on in all yaml files."
   (require 'lsp-completion)
   (lsp-completion--clear-cache))
 
+(defun lsp-ansible-update-metadata-handler (_workspace params)
+  "Handler for `update/ansible-metadata' notification.
+Pretty print the content of PARAMS."
+  (let ((json-encoding-pretty-print t))
+    (message "Ansible Language Server metadata: %s" (json-encode params))))
+
+(defun lsp-ansible-show-server-metadata ()
+  "Show informations about Ansible environment used by the Ansible Language Server."
+  (interactive)
+  (lsp-notify "update/ansible-metadata" nil))
+
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection
@@ -213,6 +225,7 @@ This prevents the Ansible server from being turned on in all yaml files."
                             (lsp-package-path 'ansible-language-server))
                        ,@(cl-rest lsp-ansible-language-server-command))))
   :priority 1
+  :notification-handlers (ht ("update/ansible-metadata" #'lsp-ansible-update-metadata-handler))
   :activation-fn #'lsp-ansible-check-ansible-minor-mode
   :server-id 'ansible-ls
   :download-server-fn (lambda (_client callback error-callback _update?)
