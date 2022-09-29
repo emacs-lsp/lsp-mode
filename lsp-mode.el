@@ -803,6 +803,7 @@ Changes take effect only when a new session is started."
                                         (elixir-mode . "elixir")
                                         (conf-javaprop-mode . "spring-boot-properties")
                                         (yaml-mode . "spring-boot-properties-yaml")
+                                        (gitlab-ci-mode . "gitlab-ci")
                                         (ruby-mode . "ruby")
                                         (enh-ruby-mode . "ruby")
                                         (fortran-mode . "fortran")
