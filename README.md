@@ -282,5 +282,16 @@ primary working on/responsible for.
         Terraform
       </div>
     </td>
+    <td align="center">
+      <div>
+        <a href="https://github.com/razzmatazz">
+          <img src="https://github.com/razzmatazz.png" width="100px;" style="border-radius: 50%;" alt="psibi"/>
+          <br/>
+          <sub><b>razzmatazz</b></sub>
+        </a>
+        <br/>
+        C# | F#
+      </div>
+    </td>
   </tr>
 </table>
