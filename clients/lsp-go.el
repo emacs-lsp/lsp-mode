@@ -169,12 +169,12 @@ The returned type provides a tri-state that either:
   "lsp-mode 7.0.1")
 
 (defcustom lsp-go-codelenses '((gc_details . :json-false)
-                   (generate . t)
-                   (regenerate_cgo . t)
-                   (tidy . t)
-                   (upgrade_dependency . t)
-                   (test . t)
-                   (vendor . t))
+                               (generate . t)
+                               (regenerate_cgo . t)
+                               (tidy . t)
+                               (upgrade_dependency . t)
+                               (test . t)
+                               (vendor . t))
   "Select what codelenses should be enabled or not.
 
 The codelenses can be found at https://github.com/golang/tools/blob/3fa0e8f87c1aae0a9adc2a63af1a1945d16d9359/internal/lsp/source/options.go#L106-L112."
@@ -231,7 +231,7 @@ $GOPATH/pkg/mod along with the value of
 (defcustom lsp-go-link-target "pkg.go.dev"
   "Which website to use for displaying Go documentation."
   :type '(choice (const "pkg.go.dev")
-         (string :tag "A custom website"))
+                 (string :tag "A custom website"))
   :group 'lsp-go
   :package-version '(lsp-mode "7.0.1"))
 
