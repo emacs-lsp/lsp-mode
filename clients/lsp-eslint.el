@@ -288,13 +288,20 @@ stored."
 
 (defun lsp-eslint--working-directory (workspace current-file)
   "Find the first directory in the parameter config.workingDirectories which
-contains the current file"
+contains the current file. This parameter supports:
+
+ - \".abc\"
+ - (directory \"./abc\") equivalent to \"./abc\", see above
+ - (pattern \"./abc/*\")"
   (let ((directories (-map (lambda (dir)
-                             (let ((dir (lsp-resolve-value dir)))
-                               (when (not (f-absolute? dir))
+                             (when (and (listp dir) (plist-member dir 'directory))
+                               (setq dir (plist-get dir 'directory)))
+                             (if (and (listp dir) (plist-member dir 'pattern))
+                               (setq dir (f-glob (f-join workspace (plist-get dir 'pattern))))
+                               (if (and (stringp dir) (not (f-absolute? dir)))
                                  (setq dir (f-join workspace dir)))))
                            (append lsp-eslint-working-directories nil))))
-    (-first (lambda (dir) (f-ancestor-of-p dir current-file)) directories)))
+    (-first (lambda (dir) (f-ancestor-of-p dir current-file)) (-flatten directories))))
 
 (lsp-defun lsp-eslint--open-doc (_workspace (&eslint:OpenESLintDocParams :url))
   "Open documentation."
