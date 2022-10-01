@@ -161,7 +161,7 @@ Limited for performance reasons."
                                      `(,(or (executable-find (cl-first lsp-yaml-server-command))
                                             (lsp-package-path 'yaml-language-server))
                                        ,@(cl-rest lsp-yaml-server-command))))
-                  :major-modes '(yaml-mode k8s-mode)
+                  :activation-fn (lsp-activate-on "yaml")
                   :priority 0
                   :server-id 'yamlls
                   :initialized-fn (lambda (workspace)
