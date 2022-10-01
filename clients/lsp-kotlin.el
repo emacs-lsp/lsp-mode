@@ -87,7 +87,7 @@ When enabled a debugger for Kotlin will be available."
 
 (defcustom lsp-kotlin-external-sources-use-kls-scheme t
   "[Recommended] Specifies whether URIs inside JARs should be represented
-using the 'kls'-scheme."
+using the `kls'-scheme."
   :type 'boolean
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))

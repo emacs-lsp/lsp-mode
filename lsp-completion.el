@@ -184,7 +184,7 @@ This will help minimize popup flickering issue in `company-mode'."
 
 (defun lsp-completion--looking-back-trigger-characterp (trigger-characters)
   "Return character if text before point match any of the TRIGGER-CHARACTERS."
-  (unless (= (point) (point-at-bol))
+  (unless (= (point) (line-beginning-position))
     (seq-some
      (lambda (trigger-char)
        (and (equal (buffer-substring-no-properties (- (point) (length trigger-char)) (point))

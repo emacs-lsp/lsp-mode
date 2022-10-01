@@ -250,7 +250,7 @@ convention."
 (defcustom lsp-pyls-plugins-pydocstyle-match "(?!test_).*\\.py"
   "Check only files that exactly match the given regular
 expression; default is to match files that don't start with
-'test_' but end with '.py'."
+`test_' but end with `.py'."
   :type 'string
   :group 'lsp-pyls
   :package-version '(lsp-mode . "6.1"))

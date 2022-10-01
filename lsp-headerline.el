@@ -61,25 +61,29 @@
 (defface lsp-headerline-breadcrumb-path-error-face
   '((t :underline (:style wave :color "Red1")
        :inherit lsp-headerline-breadcrumb-path-face))
-  "Face used for breadcrumb paths on headerline when there is an error under that path"
+  "Face used for breadcrumb paths on headerline when there is an error under
+that path."
   :group 'lsp-headerline)
 
 (defface lsp-headerline-breadcrumb-path-warning-face
   '((t :underline (:style wave :color "Yellow")
        :inherit lsp-headerline-breadcrumb-path-face))
-  "Face used for breadcrumb paths on headerline when there is an warning under that path"
+  "Face used for breadcrumb paths on headerline when there is an warning under
+that path."
   :group 'lsp-headerline)
 
 (defface lsp-headerline-breadcrumb-path-info-face
   '((t :underline (:style wave :color "Green")
        :inherit lsp-headerline-breadcrumb-path-face))
-  "Face used for breadcrumb paths on headerline when there is an info under that path"
+  "Face used for breadcrumb paths on headerline when there is an info under
+that path."
   :group 'lsp-headerline)
 
 (defface lsp-headerline-breadcrumb-path-hint-face
   '((t :underline (:style wave :color "Green")
        :inherit lsp-headerline-breadcrumb-path-face))
-  "Face used for breadcrumb paths on headerline when there is an hint under that path"
+  "Face used for breadcrumb paths on headerline when there is an hint under
+that path."
   :group 'lsp-headerline)
 
 (defface lsp-headerline-breadcrumb-project-prefix-face
