@@ -456,9 +456,12 @@ It updates the test tree view data."
 
 (defun lsp-clojure-semantic-tokens-refresh (&rest _)
   "Force refresh semantic tokens."
-  (when (and lsp-semantic-tokens-enable
-             (lsp-find-workspace 'clojure-lsp (buffer-file-name)))
-    (lsp-semantic-tokens--enable)))
+  (when-let ((workspace (and lsp-semantic-tokens-enable
+                             (lsp-find-workspace 'clojure-lsp (buffer-file-name)))))
+    (--each (lsp--workspace-buffers workspace)
+      (when (lsp-buffer-live-p it)
+        (lsp-with-current-buffer it
+          (lsp-semantic-tokens--enable))))))
 
 (with-eval-after-load 'cider
   (when lsp-semantic-tokens-enable
