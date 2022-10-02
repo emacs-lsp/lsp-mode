@@ -729,7 +729,7 @@
     "full-name": "SQL (sqls)",
     "server-name": "sqls",
     "server-url": "https://github.com/lighttiger2505/sqls",
-    "installation": "go get github.com/lighttiger2505/sqls",
+    "installation": "go install github.com/lighttiger2505/sqls@latest",
     "debugger": "Not available"
   },
   {
