@@ -12,7 +12,7 @@ In this guide, I will show you how to configure Emacs to develop Clojure
 using:
 
 - `lsp-mode`, which has many IDE features like **completion**, **renaming**,
-**reference-searching**, **definition-finding**, **code lenses**, and **code actions**
+**reference-searching**, **definition-finding**, **code lenses**, **code actions** and many more.
 - [CIDER](https://github.com/clojure-emacs/cider),
 the Emacs package most famous for enabling **REPL-driven development** with Clojure.
 
@@ -29,7 +29,7 @@ Ever since I found [clojure-lsp](https://github.com/clojure-lsp/clojure-lsp), wh
 While I really like `CIDER` and believe it is one of the best tools for Clojure development,
 you can complement it with `clojure-lsp` to make programming in Clojure even better.
 
-Once it is running (and you are plugged into the REPL), `CIDER` will provide many of the same features that `clojure-lsp` does, so you need to tell Emacs how to resolve conflicts.
+Once it is running (and you are plugged into the REPL), `CIDER` will provide many of the same features that `clojure-lsp` does, so you need to tell Emacs how to resolve conflicts, which features use from `lsp-mode` and which ones from `CIDER`.
 
 Therefore, if you want to have a more *IDE-ish* experience with Emacs, you should read this guide.
 
@@ -60,8 +60,6 @@ in your config or you could run in a separate session.
       read-process-output-max (* 1024 1024)
       treemacs-space-between-root-nodes nil
       company-minimum-prefix-length 1
-      lsp-lens-enable t
-      lsp-signature-auto-activate nil
       ; lsp-enable-indentation nil ; uncomment to use cider indentation instead of lsp
       ; lsp-enable-completion-at-point nil ; uncomment to use cider completion instead of lsp
       )
@@ -75,7 +73,7 @@ For more detailed info on how to setup `lsp-mode`, check [here](https://emacs-ls
 order for it to work, you have to install a separate _language server_ that
 understands the specifics of your target language.
 
-For Clojure, we will use [clojure-lsp](https://github.com/clojure-lsp/clojure-lsp) which as of 2021/01, is the only [LSP](https://microsoft.github.io/language-server-protocol/implementors/servers/)
+For Clojure, we will use [clojure-lsp](https://github.com/clojure-lsp/clojure-lsp) which as of 2022/10, is the only [LSP](https://microsoft.github.io/language-server-protocol/implementors/servers/)
 server for Clojure, and has a lot of useful features that I will try to show in this guide.
 
 ### Via lsp-mode
@@ -187,11 +185,7 @@ See also [CIDER code completion](https://docs.cider.mx/cider/usage/code_completi
 ### Code lens
 
 LSP supports code lenses, actionable text snippets that a server may want to display in a client IDE. `clojure-lsp`
-uses it to show the reference count of a function/variable. They are disabled by default so you need to manually enable them via:
-
-```elisp
-(setq lsp-lens-enable t)
-```
+uses it to show the reference count of a function/variable. They are enabled by default so you if you want to disable, disable `lsp-lens-enable` variable:
 
 ![reference code-lens](images/clojure-code-lens.png "reference code-lens")
 
@@ -259,7 +253,7 @@ or to disable on <b>clojure-lsp</b>:
 ### Hover
 
 This feature shows the function/var signature on minibuffer about the symbol at cursor, it's a really useful feature which avoid the need 
-to find definition all the time to check its signature.
+to find definition all the time to check its signature, arity documentation or even clojuredocs for clojure core vars.
 
 ![hover](images/clojure-hover.png "hover")
 
@@ -282,9 +276,9 @@ or to disable on <b>clojure-lsp</b>:
 
 </details>
 
-### Semantic tokens (Experimental)
+### Semantic tokens
 
-Another feature recently introduced in LSP 3.16, is **semantic tokens**, which consists of the LSP server return to
+Another feature introduced in LSP 3.16, is **semantic tokens**, which consists of the LSP server return to
 client the tokens and what they mean, with that, `lsp-mode` can color the tokens according to their meaning on the code:
 
 | semantic-tokens OFF                                   | semantic-tokens ON                                   | CIDER code evaluated                                    |
