@@ -2918,8 +2918,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#semantic-tokens-experimental" class="md-nav__link">
-    Semantic tokens (Experimental)
+  <a href="#semantic-tokens" class="md-nav__link">
+    Semantic tokens
   </a>
   
 </li>
@@ -3268,8 +3268,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#semantic-tokens-experimental" class="md-nav__link">
-    Semantic tokens (Experimental)
+  <a href="#semantic-tokens" class="md-nav__link">
+    Semantic tokens
   </a>
   
 </li>
@@ -3369,7 +3369,7 @@
 using:</p>
 <ul>
 <li><code>lsp-mode</code>, which has many IDE features like <strong>completion</strong>, <strong>renaming</strong>,
-<strong>reference-searching</strong>, <strong>definition-finding</strong>, <strong>code lenses</strong>, and <strong>code actions</strong></li>
+<strong>reference-searching</strong>, <strong>definition-finding</strong>, <strong>code lenses</strong>, <strong>code actions</strong> and many more.</li>
 <li><a href="https://github.com/clojure-emacs/cider">CIDER</a>,
 the Emacs package most famous for enabling <strong>REPL-driven development</strong> with Clojure.</li>
 </ul>
@@ -3383,7 +3383,7 @@ viewing the call hierarchy of a method/function, formatting code automatically, 
 Ever since I found <a href="https://github.com/clojure-lsp/clojure-lsp">clojure-lsp</a>, which implements most of those features, I have been using it alongside <code>CIDER</code> without issues.</p>
 <p>While I really like <code>CIDER</code> and believe it is one of the best tools for Clojure development,
 you can complement it with <code>clojure-lsp</code> to make programming in Clojure even better.</p>
-<p>Once it is running (and you are plugged into the REPL), <code>CIDER</code> will provide many of the same features that <code>clojure-lsp</code> does, so you need to tell Emacs how to resolve conflicts.</p>
+<p>Once it is running (and you are plugged into the REPL), <code>CIDER</code> will provide many of the same features that <code>clojure-lsp</code> does, so you need to tell Emacs how to resolve conflicts, which features use from <code>lsp-mode</code> and which ones from <code>CIDER</code>.</p>
 <p>Therefore, if you want to have a more <em>IDE-ish</em> experience with Emacs, you should read this guide.</p>
 <h2 id="basic-configuration">Basic configuration<a class="headerlink" href="#basic-configuration" title="Permanent link">#</a></h2>
 <p>Here is a bare-bones <code>lsp-mode</code> configuration template to get you started with your own <code>lsp-mode</code> config,
@@ -3409,8 +3409,6 @@ in your config or you could run in a separate session.</p>
       <span class="nv">read-process-output-max</span> <span class="p">(</span><span class="nf">*</span> <span class="mi">1024</span> <span class="mi">1024</span><span class="p">)</span>
       <span class="nv">treemacs-space-between-root-nodes</span> <span class="no">nil</span>
       <span class="nv">company-minimum-prefix-length</span> <span class="mi">1</span>
-      <span class="nv">lsp-lens-enable</span> <span class="no">t</span>
-      <span class="nv">lsp-signature-auto-activate</span> <span class="no">nil</span>
       <span class="c1">; lsp-enable-indentation nil ; uncomment to use cider indentation instead of lsp</span>
       <span class="c1">; lsp-enable-completion-at-point nil ; uncomment to use cider completion instead of lsp</span>
       <span class="p">)</span>
@@ -3420,7 +3418,7 @@ in your config or you could run in a separate session.</p>
 <p><code>lsp-mode</code> is a client-server application with <code>Emacs</code> acting as the client. In
 order for it to work, you have to install a separate <em>language server</em> that
 understands the specifics of your target language.</p>
-<p>For Clojure, we will use <a href="https://github.com/clojure-lsp/clojure-lsp">clojure-lsp</a> which as of 2021/01, is the only <a href="https://microsoft.github.io/language-server-protocol/implementors/servers/">LSP</a>
+<p>For Clojure, we will use <a href="https://github.com/clojure-lsp/clojure-lsp">clojure-lsp</a> which as of 2022/10, is the only <a href="https://microsoft.github.io/language-server-protocol/implementors/servers/">LSP</a>
 server for Clojure, and has a lot of useful features that I will try to show in this guide.</p>
 <h3 id="via-lsp-mode">Via lsp-mode<a class="headerlink" href="#via-lsp-mode" title="Permanent link">#</a></h3>
 <p><code>lsp-mode</code> ships with automatic installation scripts for some of the language servers and clojure-lsp
@@ -3506,9 +3504,7 @@ If you do not want LSP completion, It's possible to use <code>cider</code> compl
 <p>See also <a href="https://docs.cider.mx/cider/usage/code_completion.html">CIDER code completion</a></p>
 <h3 id="code-lens">Code lens<a class="headerlink" href="#code-lens" title="Permanent link">#</a></h3>
 <p>LSP supports code lenses, actionable text snippets that a server may want to display in a client IDE. <code>clojure-lsp</code>
-uses it to show the reference count of a function/variable. They are disabled by default so you need to manually enable them via:</p>
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-lens-enable</span> <span class="no">t</span><span class="p">)</span>
-</code></pre></div>
+uses it to show the reference count of a function/variable. They are enabled by default so you if you want to disable, disable <code>lsp-lens-enable</code> variable:</p>
 <p><img alt="reference code-lens" src="../images/clojure-code-lens.png" title="reference code-lens" /></p>
 <h3 id="call-hierarchy">Call hierarchy<a class="headerlink" href="#call-hierarchy" title="Permanent link">#</a></h3>
 <p>This feature returns the call hierarchy of a function/method.
@@ -3555,7 +3551,7 @@ or to disable on <b>clojure-lsp</b>:
 
 <h3 id="hover">Hover<a class="headerlink" href="#hover" title="Permanent link">#</a></h3>
 <p>This feature shows the function/var signature on minibuffer about the symbol at cursor, it's a really useful feature which avoid the need 
-to find definition all the time to check its signature.</p>
+to find definition all the time to check its signature, arity documentation or even clojuredocs for clojure core vars.</p>
 <p><img alt="hover" src="../images/clojure-hover.png" title="hover" /></p>
 <details>
 <summary>Conflict with <b>CIDER</b></summary>
@@ -3574,8 +3570,8 @@ or to disable on <b>clojure-lsp</b>:
 
 </details>
 
-<h3 id="semantic-tokens-experimental">Semantic tokens (Experimental)<a class="headerlink" href="#semantic-tokens-experimental" title="Permanent link">#</a></h3>
-<p>Another feature recently introduced in LSP 3.16, is <strong>semantic tokens</strong>, which consists of the LSP server return to
+<h3 id="semantic-tokens">Semantic tokens<a class="headerlink" href="#semantic-tokens" title="Permanent link">#</a></h3>
+<p>Another feature introduced in LSP 3.16, is <strong>semantic tokens</strong>, which consists of the LSP server return to
 client the tokens and what they mean, with that, <code>lsp-mode</code> can color the tokens according to their meaning on the code:</p>
 <table>
 <thead>
