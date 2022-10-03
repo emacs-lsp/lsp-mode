@@ -297,9 +297,14 @@ contains the current file. This parameter supports:
                              (when (and (listp dir) (plist-member dir 'directory))
                                (setq dir (plist-get dir 'directory)))
                              (if (and (listp dir) (plist-member dir 'pattern))
-                               (setq dir (f-glob (f-join workspace (plist-get dir 'pattern))))
-                               (if (and (stringp dir) (not (f-absolute? dir)))
-                                 (setq dir (f-join workspace dir)))))
+                               (progn
+                                 (setq dir (plist-get dir 'pattern))
+                                 (when (not (f-absolute? dir))
+                                   (setq dir (f-join workspace dir)))
+                                 (f-glob dir))
+                               (if (f-absolute? dir)
+                                 dir
+                                 (f-join workspace dir))))
                            (append lsp-eslint-working-directories nil))))
     (-first (lambda (dir) (f-ancestor-of-p dir current-file)) (-flatten directories))))
 
