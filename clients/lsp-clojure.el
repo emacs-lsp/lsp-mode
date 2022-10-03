@@ -262,7 +262,7 @@ If there are more arguments expected after the line and column numbers."
                        (lsp-get :log-path))))
     (with-current-buffer (find-file log-path)
       (read-only-mode)
-      (end-of-buffer))))
+      (goto-char (point-max)))))
 
 (defun lsp-clojure-server-info-raw ()
   "Request server info raw data."
