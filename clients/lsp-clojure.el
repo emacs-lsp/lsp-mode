@@ -259,14 +259,10 @@ If there are more arguments expected after the line and column numbers."
   (lsp--cur-workspace-check)
   (let* ((log-path (-> (lsp--json-serialize (lsp-request "clojure/serverInfo/raw" nil))
                        (lsp--read-json)
-                       (lsp-get :log-path)))
-         (original-file-log-buffer (find-file-noselect log-path)))
-    (with-current-buffer original-file-log-buffer
-      (add-hook 'after-revert-hook (-partial #'lsp-clojure--server-log-revert-function original-file-log-buffer) nil t)
-      (auto-revert-tail-mode)
-      (read-only-mode))
-    (lsp-clojure--server-log-revert-function original-file-log-buffer)
-    (switch-to-buffer lsp-clojure-server-buffer-name)))
+                       (lsp-get :log-path))))
+    (with-current-buffer (find-file log-path)
+      (read-only-mode)
+      (end-of-buffer))))
 
 (defun lsp-clojure-server-info-raw ()
   "Request server info raw data."
