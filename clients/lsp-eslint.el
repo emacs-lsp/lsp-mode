@@ -120,7 +120,14 @@ source.fixAll code action."
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-working-directories []
-  ""
+  "A vector of working directory names to use. Can be a pattern, an absolute path
+or a path relative to the workspace. Examples:
+ - \"/home/user/abc/\"
+ - \"abc/\"
+ - (directory \"abc\") which is equivalent to \"abc\" above
+ - (pattern \"abc/*\")
+Note that the home directory reference ~/ is not currently supported, use
+/home/[user]/ instead."
   :type 'lsp-string-vector
   :package-version '(lsp-mode . "6.3"))
 
@@ -288,11 +295,7 @@ stored."
 
 (defun lsp-eslint--working-directory (workspace current-file)
   "Find the first directory in the parameter config.workingDirectories which
-contains the current file. This parameter supports:
-
- - \".abc\"
- - (directory \"./abc\") equivalent to \"./abc\", see above
- - (pattern \"./abc/*\")"
+contains the current file"
   (let ((directories (-map (lambda (dir)
                              (when (and (listp dir) (plist-member dir 'directory))
                                (setq dir (plist-get dir 'directory)))
