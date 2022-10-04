@@ -51,8 +51,7 @@ This is caused by the fact that `vue-mode` uses multiple major modes in single f
 `Rust Analyzer` does not support disabling snippets - see <https://github.com/rust-analyzer/rust-analyzer/issues/2518>
 
 ---
-### :grey_question: How do I force `lsp-mode` to forget the workspace folders for multi root
-  servers so the workspace folders are added on demand?
+### :grey_question: How do I force `lsp-mode` to forget the workspace folders for multi root servers so the workspace folders are added on demand?
 
 Use the following snippet:
   ``` elisp
