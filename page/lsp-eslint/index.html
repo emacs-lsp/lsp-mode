@@ -3698,6 +3698,14 @@ from running.</p>
 <h3 id="lsp-eslint-working-directories"><code>lsp-eslint-working-directories</code><a class="headerlink" href="#lsp-eslint-working-directories" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
 <p><em>Default:</em> <code>[]</code></p>
+<p>A vector of working directory names to use. Can be a pattern, an absolute path
+or a path relative to the workspace. Examples:
+ - "/home/user/abc/"
+ - "abc/"
+ - (directory "abc") which is equivalent to "abc" above
+ - (pattern "abc/*")
+Note that the home directory reference ~/ is not currently supported, use
+/home/[user]/ instead.</p>
 <hr />
 
 <!-- Source file information -->
@@ -3707,7 +3715,7 @@ from running.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 3, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 4, 2022</span>
       
     
   </small>
