@@ -56,20 +56,28 @@ not configured for the task."
   :group 'lsp-ansible
   :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom lsp-ansible-ansible-lint-arguments ""
+(defcustom lsp-ansible-validation-enabled t
+  "Toggle validation provider.
+If enabled and ansible-lint is disabled, validation falls back to
+ansible-playbook --syntax-check."
+  :type 'boolean
+  :group 'lsp-ansible
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-ansible-validation-lint-arguments ""
   "Optional command line arguments to be appended to ansible-lint invocation.
 See ansible-lint documentation."
   :type 'string
   :group 'lsp-ansible
   :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom lsp-ansible-ansible-lint-enabled t
+(defcustom lsp-ansible-validation-lint-enabled t
   "Enables/disables use of ansible-lint."
   :type 'boolean
   :group 'lsp-ansible
   :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom lsp-ansible-ansible-lint-path "ansible-lint"
+(defcustom lsp-ansible-validation-lint-path "ansible-lint"
   "Path to the ansible-lint executable.
 $PATH is searched for the executable."
   :type 'string
@@ -174,9 +182,10 @@ Python virtual environment."
 (lsp-register-custom-settings
  '(("ansible.ansible.path" lsp-ansible-ansible-path)
    ("ansible.ansible.useFullyQualifiedCollectionNames" lsp-ansible-use-fully-qualified-collection-names t)
-   ("ansible.ansibleLint.arguments" lsp-ansible-ansible-lint-arguments)
-   ("ansible.ansibleLint.enabled" lsp-ansible-ansible-lint-enabled t)
-   ("ansible.ansibleLint.path" lsp-ansible-ansible-lint-path)
+   ("ansible.validation.enabled" lsp-ansible-validation-enabled t)
+   ("ansible.validation.lint.arguments" lsp-ansible-validation-lint-arguments)
+   ("ansible.validation.lint.enabled" lsp-ansible-validation-lint-enabled t)
+   ("ansible.validation.lint.path" lsp-ansible-validation-lint-path)
    ("ansible.completion.provideRedirectModules" lsp-ansible-completion-provide-redirect-modules t)
    ("ansible.completion.provideModuleOptionAliases" lsp-ansible-completion-provide-module-option-aliases t)
    ("ansible.executionEnvironment.containerEngine" lsp-ansible-execution-environment-container-engine)
