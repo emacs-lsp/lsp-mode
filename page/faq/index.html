@@ -758,8 +758,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#how-do-i-force-lsp-mode-to-forget-the-workspace-folders-for-multi-root" class="md-nav__link">
-    How do I force lsp-mode to forget the workspace folders for multi root
+  <a href="#how-do-i-force-lsp-mode-to-forget-the-workspace-folders-for-multi-root-servers-so-the-workspace-folders-are-added-on-demand" class="md-nav__link">
+    How do I force lsp-mode to forget the workspace folders for multi root servers so the workspace folders are added on demand?
   </a>
   
 </li>
@@ -3137,8 +3137,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#how-do-i-force-lsp-mode-to-forget-the-workspace-folders-for-multi-root" class="md-nav__link">
-    How do I force lsp-mode to forget the workspace folders for multi root
+  <a href="#how-do-i-force-lsp-mode-to-forget-the-workspace-folders-for-multi-root-servers-so-the-workspace-folders-are-added-on-demand" class="md-nav__link">
+    How do I force lsp-mode to forget the workspace folders for multi root servers so the workspace folders are added on demand?
   </a>
   
 </li>
@@ -3243,8 +3243,7 @@
 <h3 id="i-have-disabled-snippets-and-rust-analyzer-server-inserts-redundant-0-when-performing-completion"><img alt="❔" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/2754.svg" title=":grey_question:" /> I have disabled snippets and <code>Rust Analyzer</code> server inserts redundant <code>$0</code> when performing completion?<a class="headerlink" href="#i-have-disabled-snippets-and-rust-analyzer-server-inserts-redundant-0-when-performing-completion" title="Permanent link">#</a></h3>
 <p><code>Rust Analyzer</code> does not support disabling snippets - see <a href="https://github.com/rust-analyzer/rust-analyzer/issues/2518">https://github.com/rust-analyzer/rust-analyzer/issues/2518</a></p>
 <hr />
-<h3 id="how-do-i-force-lsp-mode-to-forget-the-workspace-folders-for-multi-root"><img alt="❔" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/2754.svg" title=":grey_question:" /> How do I force <code>lsp-mode</code> to forget the workspace folders for multi root<a class="headerlink" href="#how-do-i-force-lsp-mode-to-forget-the-workspace-folders-for-multi-root" title="Permanent link">#</a></h3>
-<p>servers so the workspace folders are added on demand?</p>
+<h3 id="how-do-i-force-lsp-mode-to-forget-the-workspace-folders-for-multi-root-servers-so-the-workspace-folders-are-added-on-demand"><img alt="❔" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/2754.svg" title=":grey_question:" /> How do I force <code>lsp-mode</code> to forget the workspace folders for multi root servers so the workspace folders are added on demand?<a class="headerlink" href="#how-do-i-force-lsp-mode-to-forget-the-workspace-folders-for-multi-root-servers-so-the-workspace-folders-are-added-on-demand" title="Permanent link">#</a></h3>
 <p>Use the following snippet:
   <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">advice-add</span> <span class="ss">&#39;lsp</span> <span class="nb">:before</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">(</span><span class="kp">&amp;rest</span> <span class="nv">_args</span><span class="p">)</span> <span class="p">(</span><span class="nf">eval</span> <span class="o">&#39;</span><span class="p">(</span><span class="nb">setf</span> <span class="p">(</span><span class="nv">lsp-session-server-id-&gt;folders</span> <span class="p">(</span><span class="nv">lsp-session</span><span class="p">))</span> <span class="p">(</span><span class="nv">ht</span><span class="p">)))))</span>
 </code></pre></div></p>
@@ -3265,7 +3264,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 4, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 5, 2022</span>
       
     
   </small>
