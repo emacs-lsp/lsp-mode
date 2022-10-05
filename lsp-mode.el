@@ -6715,6 +6715,11 @@ information, for example if it doesn't support DocumentSymbols."
   :group 'lsp-imenu
   :type 'boolean)
 
+(defcustom lsp-imenu-hide-parent-details t
+  "Whether `lsp-imenu' should hide signatures of parent nodes."
+  :group 'lsp-imenu
+  :type 'boolean)
+
 (defface lsp-details-face '((t :height 0.8 :inherit shadow))
   "Used to display additional information troughout `lsp'.
 Things like line numbers, signatures, ... are considered
@@ -6923,7 +6928,8 @@ The result looks like this: ((\"Variables\" . (...)))."
     (-lambda ((sym &as &DocumentSymbol :kind :children?))
       (if (seq-empty-p children?)
           (list (list kind (lsp--symbol->imenu sym)))
-        (let ((parent (lsp-render-symbol sym lsp-imenu-detailed-outline)))
+        (let ((parent (lsp-render-symbol sym (and lsp-imenu-detailed-outline
+                                                  (not lsp-imenu-hide-parent-details)))))
           (cons
            (list kind (lsp--symbol->imenu sym))
            (mapcar (-lambda ((type .  imenu-items))
