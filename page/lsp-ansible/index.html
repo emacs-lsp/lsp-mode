@@ -1193,27 +1193,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#lsp-ansible-ansible-lint-arguments" class="md-nav__link">
-    lsp-ansible-ansible-lint-arguments
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-ansible-ansible-lint-enabled" class="md-nav__link">
-    lsp-ansible-ansible-lint-enabled
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-ansible-ansible-lint-path" class="md-nav__link">
-    lsp-ansible-ansible-lint-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#lsp-ansible-ansible-path" class="md-nav__link">
     lsp-ansible-ansible-path
   </a>
@@ -1307,6 +1286,34 @@
           <li class="md-nav__item">
   <a href="#lsp-ansible-use-fully-qualified-collection-names" class="md-nav__link">
     lsp-ansible-use-fully-qualified-collection-names
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ansible-validation-enabled" class="md-nav__link">
+    lsp-ansible-validation-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ansible-validation-lint-arguments" class="md-nav__link">
+    lsp-ansible-validation-lint-arguments
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ansible-validation-lint-enabled" class="md-nav__link">
+    lsp-ansible-validation-lint-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ansible-validation-lint-path" class="md-nav__link">
+    lsp-ansible-validation-lint-path
   </a>
   
 </li>
@@ -3198,27 +3205,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#lsp-ansible-ansible-lint-arguments" class="md-nav__link">
-    lsp-ansible-ansible-lint-arguments
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-ansible-ansible-lint-enabled" class="md-nav__link">
-    lsp-ansible-ansible-lint-enabled
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-ansible-ansible-lint-path" class="md-nav__link">
-    lsp-ansible-ansible-lint-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#lsp-ansible-ansible-path" class="md-nav__link">
     lsp-ansible-ansible-path
   </a>
@@ -3316,6 +3302,34 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#lsp-ansible-validation-enabled" class="md-nav__link">
+    lsp-ansible-validation-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ansible-validation-lint-arguments" class="md-nav__link">
+    lsp-ansible-validation-lint-arguments
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ansible-validation-lint-enabled" class="md-nav__link">
+    lsp-ansible-validation-lint-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-ansible-validation-lint-path" class="md-nav__link">
+    lsp-ansible-validation-lint-path
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3385,23 +3399,6 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
 <p><code>npm i -g @ansible/ansible-language-server</code></p>
 <h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<h3 id="lsp-ansible-ansible-lint-arguments"><code>lsp-ansible-ansible-lint-arguments</code><a class="headerlink" href="#lsp-ansible-ansible-lint-arguments" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> ``</p>
-<p>Optional command line arguments to be appended to ansible-lint invocation.
-See ansible-lint documentation.</p>
-<hr />
-<h3 id="lsp-ansible-ansible-lint-enabled"><code>lsp-ansible-ansible-lint-enabled</code><a class="headerlink" href="#lsp-ansible-ansible-lint-enabled" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enables/disables use of ansible-lint.</p>
-<hr />
-<h3 id="lsp-ansible-ansible-lint-path"><code>lsp-ansible-ansible-lint-path</code><a class="headerlink" href="#lsp-ansible-ansible-lint-path" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>ansible-lint</code></p>
-<p>Path to the ansible-lint executable.
-$PATH is searched for the executable.</p>
-<hr />
 <h3 id="lsp-ansible-ansible-path"><code>lsp-ansible-ansible-path</code><a class="headerlink" href="#lsp-ansible-ansible-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
 <p><em>Default:</em> <code>ansible</code></p>
@@ -3493,6 +3490,30 @@ ansible-lint installations in a Python virtual environment.</p>
 <p>Toggles use of fully qualified collection names when inserting a module name.
 Disabling it will only use FQCNs when necessary, that is when the collection is
 not configured for the task.</p>
+<hr />
+<h3 id="lsp-ansible-validation-enabled"><code>lsp-ansible-validation-enabled</code><a class="headerlink" href="#lsp-ansible-validation-enabled" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Toggle validation provider.
+If enabled and ansible-lint is disabled, validation falls back to
+ansible-playbook --syntax-check.</p>
+<hr />
+<h3 id="lsp-ansible-validation-lint-arguments"><code>lsp-ansible-validation-lint-arguments</code><a class="headerlink" href="#lsp-ansible-validation-lint-arguments" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> ``</p>
+<p>Optional command line arguments to be appended to ansible-lint invocation.
+See ansible-lint documentation.</p>
+<hr />
+<h3 id="lsp-ansible-validation-lint-enabled"><code>lsp-ansible-validation-lint-enabled</code><a class="headerlink" href="#lsp-ansible-validation-lint-enabled" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Enables/disables use of ansible-lint.</p>
+<hr />
+<h3 id="lsp-ansible-validation-lint-path"><code>lsp-ansible-validation-lint-path</code><a class="headerlink" href="#lsp-ansible-validation-lint-path" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> <code>ansible-lint</code></p>
+<p>Path to the ansible-lint executable.
+$PATH is searched for the executable.</p>
 <hr />
 
 <!-- Source file information -->
