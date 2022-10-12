@@ -8379,7 +8379,8 @@ When ALL is t, erase all log buffers of the running session."
   "Describes current `lsp-session'."
   (interactive)
   (let ((session (lsp-session))
-        (buf (get-buffer-create "*lsp session*")))
+        (buf (get-buffer-create "*lsp session*"))
+        (root (lsp-workspace-root)))
     (with-current-buffer buf
       (lsp-browser-mode)
       (let ((inhibit-read-only t))
@@ -8393,7 +8394,11 @@ When ALL is t, erase all log buffers of the running session."
                     (lsp-session-folder->servers)
                     (gethash it)
                     (-map 'lsp--render-workspace)))))))
-    (pop-to-buffer buf)))
+    (pop-to-buffer buf)
+    (goto-char (point-min))
+    (cl-loop for tag = (widget-get (widget-get (widget-at) :node) :tag)
+             until (or (and root (string= tag root)) (eobp))
+             do (goto-char (next-overlay-change (point))))))
 
 (defun lsp--session-workspaces (session)
   "Get all workspaces that are part of the SESSION."
