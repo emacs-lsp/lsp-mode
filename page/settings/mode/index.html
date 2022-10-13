@@ -4631,7 +4631,7 @@ Set to nil to disable the warning.</p>
 <hr />
 <h3 id="lsp-gunzip-script"><code>lsp-gunzip-script</code><a class="headerlink" href="#lsp-gunzip-script" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>(closure (view-inhibit-help-message cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t) nil (cond ((executable-find gzip) lsp-ext-gunzip-script) (t nil)))</code></p>
+<p><em>Default:</em> <code>(closure (view-inhibit-help-message lsp-help-mode-abbrev-table lsp-help-mode-syntax-table cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t) nil (cond ((executable-find gzip) lsp-ext-gunzip-script) (t nil)))</code></p>
 <p>The script to decompress a gzipped file.
 Should be a format string with one argument for the file to be decompressed
 in place.</p>
@@ -4824,7 +4824,7 @@ namespace SymbolKind.</p>
 <hr />
 <h3 id="lsp-tar-script"><code>lsp-tar-script</code><a class="headerlink" href="#lsp-tar-script" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>(closure (view-inhibit-help-message cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t) nil (cond ((executable-find tar) lsp-ext-tar-script) (t nil)))</code></p>
+<p><em>Default:</em> <code>(closure (view-inhibit-help-message lsp-help-mode-abbrev-table lsp-help-mode-syntax-table cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t) nil (cond ((executable-find tar) lsp-ext-tar-script) (t nil)))</code></p>
 <p>The script to decompress a .tar.gz file.
 Should be a format string with one argument for the file to be decompressed
 in place.</p>
@@ -4841,7 +4841,7 @@ in place.</p>
 <hr />
 <h3 id="lsp-unzip-script"><code>lsp-unzip-script</code><a class="headerlink" href="#lsp-unzip-script" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>(closure (view-inhibit-help-message cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t) nil (cond ((executable-find powershell) lsp-ext-pwsh-script) ((executable-find unzip) lsp-ext-unzip-script) (t nil)))</code></p>
+<p><em>Default:</em> <code>(closure (view-inhibit-help-message lsp-help-mode-abbrev-table lsp-help-mode-syntax-table cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t) nil (cond ((executable-find powershell) lsp-ext-pwsh-script) ((executable-find unzip) lsp-ext-unzip-script) (t nil)))</code></p>
 <p>The script to unzip.</p>
 <hr />
 <h3 id="lsp-verify-signature"><code>lsp-verify-signature</code><a class="headerlink" href="#lsp-verify-signature" title="Permanent link">#</a></h3>
@@ -4873,7 +4873,7 @@ The hook will receive two parameters list of added and removed folders.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 10, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 13, 2022</span>
       
     
   </small>
