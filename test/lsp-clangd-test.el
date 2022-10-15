@@ -81,6 +81,7 @@ and starts lsp. After the test BODY runs - tidy up."
      ;; or we might keep it forever
      (setq lsp-clients-clangd-args '("--compile-commands-dir=build/" "--log=verbose"))
 
+     (setq lsp--parsed-messages nil)
      ;; snippet complains in logs
      (setq lsp-enable-snippet nil)
      (lsp-workspace-folders-add (f-join lsp-test-location "fixtures/SampleCppProject/"))

@@ -1920,7 +1920,7 @@ regex in IGNORED-FILES."
   "Helper macro for invoking BODY in WORKSPACE context."
   (declare (debug (form body))
            (indent 1))
-  `(when ,workspace (let ((lsp--cur-workspace ,workspace)) ,@body)))
+  `(let ((lsp--cur-workspace ,workspace)) ,@body))
 
 (defmacro with-lsp-workspaces (workspaces &rest body)
   "Helper macro for invoking BODY against multiple WORKSPACES."
@@ -6660,7 +6660,8 @@ server. WORKSPACE is the active workspace."
   "Dispatch the messages in `lsp--parsed-messages'."
   (run-at-time 0 nil (lambda ()
                        (when (cl-rest lsp--parsed-messages) (lsp--dispatch-messages))
-                       (apply #'lsp--parser-on-message (pop lsp--parsed-messages)))))
+                       (when lsp--parsed-messages
+                         (apply #'lsp--parser-on-message (pop lsp--parsed-messages))))))
 
 (defun lsp--create-filter-function (workspace)
   "Make filter for the workspace."

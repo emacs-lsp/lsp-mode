@@ -35,14 +35,14 @@
 (require 'lsp-modeline)
 (require 'lsp-completion)
 (require 'lsp-diagnostics)
-(require 'lsp-pyls)
+(require 'lsp-pylsp)
 
 (defconst lsp-test-location (file-name-directory (or load-file-name buffer-file-name)))
 
 (defun lsp-test--wait-for (form &optional d)
   (--doto (or d (deferred:new #'identity))
     (run-with-timer
-     0.001 nil
+     0.1 nil
      (lambda ()
        (if-let ((result (eval form)))
            (deferred:callback-post it result)
@@ -57,40 +57,37 @@
            :error-handler (-partial #'deferred:errorback-post it)
            args)))
 
-(ert-deftest lsp-text-document-hover-request ()
-  (lsp-workspace-folders-add (f-join lsp-test-location "fixtures"))
-  (find-file (f-join lsp-test-location "fixtures/pyls/test.py"))
-  (lsp)
-  (-> (lsp-test-wait
-       (eq 'initialized (lsp--workspace-status
-                         (cl-first (lsp-workspaces)))))
-      (deferred:nextc (lambda (_)
-                        (goto-char (point-min))
-                        (search-forward "fn1")
-                        (lsp-def-request-async "textDocument/hover"
-                                               (lsp--text-document-position-params)) ))
-      (deferred:nextc (lambda (contents)
-                        (should (lsp-hover? contents))))
-      (deferred:sync!))
-  (kill-buffer)
-  (lsp-workspace-folders-remove (f-join lsp-test-location "fixtures")))
-
-(defmacro deferred::nextc (d &rest body)
-  `(deferred:nextc ,d (lambda (result)
-                        ,@body)))
-
 (defmacro lsp-with-pyls (&rest body)
   `(progn
+     (setq lsp--parsed-messages nil)
      (lsp-workspace-folders-add (f-join lsp-test-location "fixtures"))
      (find-file (f-join lsp-test-location "fixtures/pyls/test.py"))
+     (sleep-for 1)
      (lsp)
-     (sleep-for 0.1)
      ,@body
 
      (find-file (f-join lsp-test-location "fixtures/pyls/test.py"))
      (save-buffer)
      (kill-buffer)
      (lsp-workspace-folders-remove (f-join lsp-test-location "fixtures"))))
+
+(ert-deftest lsp-text-document-hover-request ()
+  (lsp-with-pyls
+   (-> (lsp-test-wait
+        (eq 'initialized (lsp--workspace-status
+                          (cl-first (lsp-workspaces)))))
+       (deferred:nextc (lambda (_)
+                         (goto-char (point-min))
+                         (search-forward "fn1")
+                         (lsp-def-request-async "textDocument/hover"
+                                                (lsp--text-document-position-params)) ))
+       (deferred:nextc (lambda (contents)
+                         (should (lsp-hover? contents))))
+       (deferred:sync!))))
+
+(defmacro deferred::nextc (d &rest body)
+  `(deferred:nextc ,d (lambda (result)
+                        ,@body)))
 
 (ert-deftest lsp-text-document-hover-request-tick ()
   (lsp-with-pyls

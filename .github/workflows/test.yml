@@ -50,13 +50,13 @@ jobs:
             - name: Install depedencies on Linux
               if: runner.os == 'Linux'
               run: |
-                   pip3 install python-language-server
+                   pip3 install python-lsp-server
                    sudo apt-get install clangd-9
 
             - name: Install deps on macOS
               if: runner.os == 'macOS'
               run: |
-                   pip3 install python-language-server
+                   pip3 install python-lsp-server
 
             - name: Check clangd
               if: runner.os == 'Linux'
@@ -94,7 +94,7 @@ jobs:
                 version: ${{ matrix.emacs-version }}
 
             - name: Install depedencies
-              run: "pip install python-language-server"
+              run: "pip install python-lsp-server"
 
             - name: Run tests
               run:
