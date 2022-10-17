@@ -49,6 +49,12 @@
   * Fix ~lsp-avy-lens~ when ~lsp-lens-place-position~ position is ~end-of-line~
   * Add ~lsp-clojure-trace-enable~ variable.
   * Add some support for rust-analyzer semantic token modifiers.  Highlights mutable and reference variables.
+  * Update version for ~lsp-xml~ to 0.21.0, adding custom variables
+    for new formatting options.
+  * Changes variable ~lsp-xml-validation-schema~ to be an alist rather
+    than a boolean.
+  * Adds ~lsp-xml-preferences-quote-style~ as a replacement for
+    obsolete ~lsp-xml-format-quotes~.
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.

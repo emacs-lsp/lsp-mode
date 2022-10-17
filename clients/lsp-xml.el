@@ -97,14 +97,100 @@ Newlines and excess whitespace are removed."
   :group 'lsp-xml
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-xml-format-quotations "doubleQuotes"
-  "Which type of quotes to use for attribute values when
-  formatting."
+(defcustom lsp-xml-preferences-quote-style "double"
+  "The preferred quote style for attribute values."
   :type '(choice
-          (const "doubleQuotes")
-          (const "singleQuotes"))
+          (const "double")
+          (const "single"))
   :group 'lsp-xml
-  :package-version '(lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-xml-format-comments t
+  "Enable/disable comment formatting."
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-xml-format-closing-bracket-new-line nil
+  "Enable/disable moving the closing bracket.
+
+This only affects tags with two or more (split) attributes."
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-xml-format-split-attributes-indent-size 2
+  "The indentation used for split attributes."
+  :type 'integer
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-xml-format-preserve-attribute-line-breaks t
+  "Enable/disable preserving line breaks in attributes."
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-xml-format-enforce-quote-style "ignore"
+  "The way in which quote style should be enforced."
+  :type '(choice
+          (const "ignore")
+          (const "preferred"))
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-xml-format-preserved-newlines 2
+  "The number of empty newlines to be preserved."
+  :type 'integer
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-xml-format-xsi-schema-location-split "onPair"
+  "XSI schema location split settings."
+  :type '(choice
+          (const "onElement")
+          (const "onPair")
+          (const "none"))
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-xml-format-experimental nil
+  "Enable/disable experimental formatter."
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-xml-format-max-line-width 80
+  "Max line width.
+
+This only applies to experimental formatter."
+  :type 'integer
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-xml-format-preserve-space ["xsl:text"
+                                          "xsl:comment"
+                                          "xsl:processing-instruction"
+                                          "literallayout"
+                                          "programlisting"
+                                          "screen"
+                                          "synopsis"
+                                          "pre"
+                                          "xd:pre"]
+  "List of elements which must preserve space.
+
+This option only affects the experimental formatter."
+  :type 'lsp-string-vector
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-xml-format-grammar-aware-formatting t
+  "Enable/disable grammar aware formatting.
+
+This only affects the experimental formatter."
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-xml-file-associations nil
   "Allows XML schemas to be associated to file name patterns.
@@ -161,15 +247,16 @@ Newlines and excess whitespace are removed."
   :group 'lsp-xml
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-xml-validation-schema t
-  "Enable/disable schema based validation. Ignored if
-  \"xml.validation.enabled\": false."
-  :type 'boolean
+(defcustom lsp-xml-validation-schema '((enabled . "always"))
+  "The XML schema settings.
+
+The value for 'enabled' can be always, never or onValidSchema."
+  :type 'alist
   :group 'lsp-xml
   :package-version '(lsp-mode . "6.1"))
 
 (lsp-register-custom-settings '
- (("xml.validation.schema" lsp-xml-validation-schema t)
+ (("xml.validation.schema" lsp-xml-validation-schema)
   ("xml.validation.resolveExternalEntities" lsp-xml-validation-resolve-external-entities)
   ("xml.validation.enabled" lsp-xml-validation-enabled t)
   ("xml.validation.noGrammar" lsp-xml-validation-no-grammar)
@@ -177,7 +264,7 @@ Newlines and excess whitespace are removed."
   ("xml.server.vmargs" lsp-xml-server-vmargs)
   ("xml.completion.autoCloseTags" lsp-xml-completion-auto-close-tags t)
   ("xml.fileAssociations" lsp-xml-file-associations)
-  ("xml.format.quotations" lsp-xml-format-quotations)
+  ("xml.preferences.quoteStyle" lsp-xml-preferences-quote-style)
   ("xml.format.enabled" lsp-xml-format-enabled t)
   ("xml.format.preserveEmptyContent" lsp-xml-format-preserve-empty-content t)
   ("xml.format.joinContentLines" lsp-xml-format-join-content-lines t)
@@ -185,11 +272,22 @@ Newlines and excess whitespace are removed."
   ("xml.format.joinCommentLines" lsp-xml-format-join-comment-lines t)
   ("xml.format.joinCDATALines" lsp-xml-format-join-cdata-lines t)
   ("xml.format.splitAttributes" lsp-xml-format-split-attributes t)
+  ("xml.format.formatComments" lsp-xml-format-comments t)
+  ("xml.format.closingBracketNewLine" lsp-xml-format-closing-bracket-new-line t)
+  ("xml.format.splitAttributesIndentSize" lsp-xml-format-split-attributes-indent-size)
+  ("xml.format.preserveAttributeLineBreaks" lsp-xml-format-preserve-attribute-line-breaks t)
+  ("xml.format.enforceQuoteStyle" lsp-xml-format-enforce-quote-style)
+  ("xml.format.preservedNewlines" lsp-xml-format-preserved-newlines)
+  ("xml.format.xsiSchemaLocationSplit" lsp-xml-format-xsi-schema-location-split)
+  ("xml.format.experimental" lsp-xml-format-experimental t)
+  ("xml.format.maxLineWidth" lsp-xml-format-max-line-width)
+  ("xml.format.preserveSpace" lsp-xml-format-preserve-space)
+  ("xml.format.grammarAwareFormatting" lsp-xml-format-grammar-aware-formatting t)
   ("xml.logs.client" lsp-xml-logs-client t)
   ("xml.catalogs" lsp-xml-catalogs)
   ("xml.trace.server" lsp-xml-trace-server)))
 
-(defconst lsp-xml-jar-version "0.18.0")
+(defconst lsp-xml-jar-version "0.21.0")
 
 (defconst lsp-xml-jar-name (format "org.eclipse.lemminx-%s-uber.jar" lsp-xml-jar-version))
 
