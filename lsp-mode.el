@@ -4292,12 +4292,6 @@ interface TextDocumentEdit {
 
 (lsp-defun lsp--apply-text-edit ((edit &as &TextEdit :range (&RangeToPoint :start :end) :new-text))
   "Apply the edits described in the TextEdit object in TEXT-EDIT."
-  ;; We sort text edits so as to apply edits that modify latter parts of the
-  ;; document first. Furthermore, because the LSP spec dictates that:
-  ;; "If multiple inserts have the same position, the order in the array
-  ;; defines which edit to apply first."
-  ;; We reverse the initial list and sort stably to make sure the order among
-  ;; edits with the same position is preserved.
   (setq new-text (s-replace "\r" "" (or new-text "")))
   (lsp:set-text-edit-new-text edit new-text)
   (goto-char start)
@@ -4421,6 +4415,13 @@ OPERATION is symbol representing the source of this text edit."
                            #'lsp--apply-text-edit)))
         (unwind-protect
             (->> edits
+                 ;; We sort text edits so as to apply edits that modify latter
+                 ;; parts of the document first. Furthermore, because the LSP
+                 ;; spec dictates that: "If multiple inserts have the same
+                 ;; position, the order in the array defines which edit to
+                 ;; apply first."  We reverse the initial list and sort stably
+                 ;; to make sure the order among edits with the same position
+                 ;; is preserved.
                  (nreverse)
                  (seq-sort #'lsp--text-edit-sort-predicate)
                  (mapc (lambda (edit)
