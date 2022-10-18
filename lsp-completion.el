@@ -466,16 +466,16 @@ The MARKERS and PREFIX value will be attached to each candidate."
                                              ((lsp-completion-list? resp)
                                               (lsp:completion-list-items resp))
                                              (t resp))
-                                         (if (or completed
-                                                 (seq-some #'lsp:completion-item-sort-text? it))
-                                             (lsp-completion--sort-completions it)
-                                           it)
-                                         (-map (lambda (item)
-                                                 (lsp-put item
-                                                          :_emacsStartPoint
-                                                          (or (lsp-completion--guess-prefix item)
-                                                              bounds-start)))
-                                               it))))
+                                            (if (or completed
+                                                    (seq-some #'lsp:completion-item-sort-text? it))
+                                                (lsp-completion--sort-completions it)
+                                              it)
+                                            (-map (lambda (item)
+                                                    (lsp-put item
+                                                             :_emacsStartPoint
+                                                             (or (lsp-completion--guess-prefix item)
+                                                                 bounds-start)))
+                                                  it))))
                               (markers (list bounds-start (copy-marker (point) t)))
                               (prefix (buffer-substring-no-properties bounds-start (point)))
                               (lsp-completion--no-reordering (not lsp-completion-sort-initial-results)))
@@ -524,6 +524,10 @@ The MARKERS and PREFIX value will be attached to each candidate."
        :exit-function
        (-rpartial #'lsp-completion--exit-fn candidates)))))
 
+(defun lsp-completion--find-workspace (server-id)
+  (--first (eq (lsp--client-server-id (lsp--workspace-client it)) server-id)
+           (lsp-workspaces)))
+
 (defun lsp-completion--exit-fn (candidate _status &optional candidates)
   "Exit function of `completion-at-point'.
 CANDIDATE is the selected completion item.
@@ -540,7 +544,11 @@ Others: CANDIDATES"
                (text-properties-at 0 candidate))
               ((&CompletionItem? :label :insert-text? :text-edit? :insert-text-format?
                                  :additional-text-edits? :insert-text-mode? :command?)
-               item))
+               ;; see #3498 typescript-language-server does not provide the
+               ;; proper insertText without resolving.
+               (if (lsp-completion--find-workspace 'ts-ls)
+                   (lsp-completion--resolve item)
+                 item)))
         (cond
          (text-edit?
           (apply #'delete-region markers)
