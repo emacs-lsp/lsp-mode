@@ -57,6 +57,20 @@
   :package-version '(lsp-mode . "8.0.1")
   :lsp-path "nim.nimsuggestPath")
 
+(defcustom-lsp lsp-nim-auto-check-file t
+  "Check the file on the fly"
+  :type 'boolean
+  :group 'lsp-nim
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "nim.autoCheckFile")
+
+(defcustom-lsp lsp-nim-auto-check-project t
+  "Check the project after saving the file"
+  :type 'boolean
+  :group 'lsp-nim
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "nim.autoCheckProject")
+
 (defcustom lsp-nim-langserver "nimlangserver"
   "Path to `nimlangserver'"
   :type 'number
