@@ -355,6 +355,8 @@ the server has requested that."
     "[/\\\\]build-aux\\'"
     "[/\\\\]autom4te.cache\\'"
     "[/\\\\]\\.reference\\'"
+    ;; Bazel
+    "bazel-[^/\\\\]+\\'"
     ;; Clojure
     "[/\\\\]\\.lsp\\'"
     "[/\\\\]\\.clj-kondo\\'"
