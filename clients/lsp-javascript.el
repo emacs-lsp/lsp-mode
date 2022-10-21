@@ -674,6 +674,11 @@ name (e.g. `data' variable passed as `data' parameter)."
   :type 'boolean
   :package-version '(lsp-mode . "8.0.1"))
 
+(defcustom lsp-javascript-completions-complete-function-calls t
+  "Complete function calls."
+  :type 'boolean
+  :package-version '(lsp-mode . "8.0.1"))
+
 (lsp-register-custom-settings
  '(("javascript.autoClosingTags" lsp-javascript-auto-closing-tags t)
    ("javascript.implicitProjectConfig.checkJs" lsp-javascript-implicit-project-config-check-js t)
@@ -762,7 +767,8 @@ name (e.g. `data' variable passed as `data' parameter)."
    ("javascript.inlayHints.includeInlayParameterNameHints" lsp-javascript-display-parameter-name-hints nil)
    ("javascript.inlayHints.includeInlayParameterNameHintsWhenArgumentMatchesName" lsp-javascript-display-parameter-name-hints-when-argument-matches-name t)
    ("javascript.inlayHints.includeInlayPropertyDeclarationTypeHints" lsp-javascript-display-property-declaration-type-hints t)
-   ("javascript.inlayHints.includeInlayVariableTypeHints" lsp-javascript-display-variable-type-hints t)))
+   ("javascript.inlayHints.includeInlayVariableTypeHints" lsp-javascript-display-variable-type-hints t)
+   ("completions.completeFunctionCalls" lsp-javascript-completions-complete-function-calls t)))
 
 (lsp-dependency 'typescript-language-server
                 '(:system lsp-clients-typescript-tls-path)
@@ -898,22 +904,24 @@ name (e.g. `data' variable passed as `data' parameter)."
                   :initialization-options (lambda ()
                                             (append
                                              (when lsp-clients-typescript-disable-automatic-typing-acquisition
-                                              (list :disableAutomaticTypingAcquisition lsp-clients-typescript-disable-automatic-typing-acquisition))
+                                               (list :disableAutomaticTypingAcquisition lsp-clients-typescript-disable-automatic-typing-acquisition))
                                              (when lsp-clients-typescript-log-verbosity
-                                              (list :logVerbosity lsp-clients-typescript-log-verbosity))
+                                               (list :logVerbosity lsp-clients-typescript-log-verbosity))
                                              (when lsp-clients-typescript-max-ts-server-memory
-                                              (list :maxTsServerMemory lsp-clients-typescript-max-ts-server-memory))
+                                               (list :maxTsServerMemory lsp-clients-typescript-max-ts-server-memory))
                                              (when lsp-clients-typescript-npm-location
-                                              (list :npmLocation lsp-clients-typescript-npm-location))
+                                               (list :npmLocation lsp-clients-typescript-npm-location))
                                              (when lsp-clients-typescript-plugins
-                                              (list :plugins lsp-clients-typescript-plugins))
+                                               (list :plugins lsp-clients-typescript-plugins))
                                              (when lsp-clients-typescript-preferences
-                                              (list :preferences lsp-clients-typescript-preferences))))
+                                               (list :preferences lsp-clients-typescript-preferences))))
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
                                        (ht-merge (lsp-configuration-section "javascript")
-                                                 (lsp-configuration-section "typescript"))))
+                                                 (lsp-configuration-section "typescript")
+                                                 (lsp-configuration-section "completions")
+                                                 (lsp-configuration-section "diagnostics"))))
                                     (let ((caps (lsp--workspace-server-capabilities workspace))
                                           (format-enable (or lsp-javascript-format-enable lsp-typescript-format-enable)))
                                       (lsp:set-server-capabilities-document-formatting-provider? caps format-enable)
