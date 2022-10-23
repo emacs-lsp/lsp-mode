@@ -138,8 +138,7 @@ opened module/namespace."
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-fsharp-enable-reference-code-lens t
-  "Enables reference count code lenses.
-It is recommended to disable if `--background-service-enabled' is not used."
+  "Enables reference count code lenses."
   :group 'lsp-fsharp
   :type 'boolean
   :package-version '(lsp-mode . "6.2"))
@@ -210,7 +209,7 @@ available, else the globally installed tool."
                                (t nil)))
         (fsautocomplete-exec (lsp-fsharp--fsac-cmd)))
     (append startup-wrapper
-            (list fsautocomplete-exec "--background-service-enabled")
+            (list fsautocomplete-exec)
             lsp-fsharp-server-args)))
 
 (defun lsp-fsharp--test-fsautocomplete-present ()
