@@ -128,8 +128,7 @@ Defaults to side following treemacs default."
   (when lsp-terraform-ls-enable-show-reference
     '((experimental . ((showReferencesCommandId . "client.showReferences"))))))
 
-(defun lsp-terraform-ls--set-tokens ()
-  (setq lsp-semantic-token-faces
+(setq terraform--lsp-semantic-token-faces
       '(("namespace" . lsp-face-semhl-namespace)
         ("type" . lsp-face-semhl-type)
         ("class" . lsp-face-semhl-class)
@@ -164,7 +163,8 @@ Defaults to side following treemacs default."
         ("hcl-traversalStep" . lsp-face-semhl-member)
         ("hcl-typeCapsule" . lsp-face-semhl-type)
         ("hcl-typePrimitive" . lsp-face-semhl-type)))
-  (setq lsp-semantic-token-modifier-faces
+
+(setq terraform--lsp-semantic-token-modifier-faces
       '(("declaration" . lsp-face-semhl-class)
         ("definition" . lsp-face-semhl-definition)
         ("readonly" . lsp-face-semhl-constant)
@@ -189,7 +189,7 @@ Defaults to side following treemacs default."
         ("terraform-backend" . lsp-face-semhl-definition)
         ("terraform-name" . lsp-face-semhl-interface)
         ("terraform-type" . lsp-face-semhl-type)
-        ("terraform-requiredProviders" . lsp-face-semhl-default-library))))
+        ("terraform-requiredProviders" . lsp-face-semhl-default-library)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-terraform-ls--make-launch-cmd)
@@ -197,6 +197,10 @@ Defaults to side following treemacs default."
                   :priority 1
                   :server-id 'tfmls
                   :action-handlers (ht ("client.showReferences" #'lsp-terraform-ls--show-references))
+                  :semantic-tokens-faces-overrides `(:discard-default-modifiers t
+                                                     :discard-default-types t
+                                                     :modifiers ,terraform--lsp-semantic-token-modifier-faces
+                                                     :types ,terraform--lsp-semantic-token-faces)
                   :custom-capabilities (lsp-terraform-ls--custom-capabilities)))
 
 (defun lsp-terraform-ls-validate ()
@@ -416,11 +420,6 @@ This is a synchronous action."
     (error "Original buffer not present.  Do M-x lsp-terraform-ls-module-calls"))
   (with-current-buffer lsp-tf--modules-control-buffer
     (lsp-terraform-ls--refresh-module-calls)))
-
-(with-eval-after-load 'terraform-mode
-  (when lsp-semantic-tokens-enable
-    (lsp-terraform-ls--set-tokens)
-    (add-hook 'terraform-mode-hook #'lsp-terraform-ls--set-tokens)))
 
 (provide 'lsp-terraform)
 ;;; lsp-terraform.el ends here
