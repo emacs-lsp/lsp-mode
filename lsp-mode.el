@@ -2844,7 +2844,10 @@ and end-of-string meta-characters."
     (:eval (mapconcat #'lsp--workspace-print lsp--buffer-workspaces "]["))
     (:propertize "Disconnected" face warning))
    "]")
-  :group 'lsp-mode)
+  :group 'lsp-mode
+  (when (and lsp-mode (not lsp--buffer-workspaces))
+    ;; fire up `lsp' when someone calls `lsp-mode' instead of `lsp'
+    (lsp)))
 
 (defvar lsp-mode-menu
   (easy-menu-create-menu
