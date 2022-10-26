@@ -75,8 +75,8 @@
                 '(:npm :package "@volar/vue-language-server" :path "vue-language-server"))
 
 (lsp-register-custom-settings
- '(("typescript.serverPath" (lambda () (if-let ((project-root (lsp-workspace-root))
-                                                (server-path (f-join project-root "node_modules/typescript/lib/tsserverlibrary.js"))
+ '(("typescript.tsdk" (lambda () (if-let ((project-root (lsp-workspace-root))
+                                                (server-path (f-join project-root "node_modules/typescript/lib"))
                                                 (is-exist (file-exists-p server-path)))
                                            server-path
                                         (lsp-volar-get-typescript-server-path))) t)
