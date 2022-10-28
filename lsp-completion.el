@@ -540,13 +540,15 @@ Others: CANDIDATES"
               ((&plist 'lsp-completion-item item
                        'lsp-completion-start-point start-point
                        'lsp-completion-markers markers
+                       'lsp-completion-resolved resolved
                        'lsp-completion-prefix prefix)
                (text-properties-at 0 candidate))
               ((&CompletionItem? :label :insert-text? :text-edit? :insert-text-format?
                                  :additional-text-edits? :insert-text-mode? :command?)
                ;; see #3498 typescript-language-server does not provide the
                ;; proper insertText without resolving.
-               (if (lsp-completion--find-workspace 'ts-ls)
+               (if (and (lsp-completion--find-workspace 'ts-ls)
+                        (not resolved))
                    (lsp-completion--resolve item)
                  item)))
         (cond
