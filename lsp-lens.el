@@ -107,7 +107,6 @@ Results are meaningful only if FROM and TO are on the same line."
                (make-overlay (point-at-eol) -1 nil t t)
              (make-overlay (point-at-bol) (1+ (point-at-eol)) nil t t)))
     (overlay-put 'lsp-lens t)
-    (overlay-put 'evaporate t)
     (overlay-put 'lsp-lens-position pos)))
 
 (defun lsp-lens--show (str pos metadata)
