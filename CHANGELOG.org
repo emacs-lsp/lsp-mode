@@ -55,6 +55,7 @@
     than a boolean.
   * Adds ~lsp-xml-preferences-quote-style~ as a replacement for
     obsolete ~lsp-xml-format-quotes~.
+  * Add [[https://github.com/oxalica/nil][nil]] support (additional server for Nix)
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.
