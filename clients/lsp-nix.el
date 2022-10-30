@@ -40,7 +40,8 @@
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-nix-rnix-server-path))
                   :major-modes '(nix-mode)
-                  :server-id 'rnix-lsp))
+                  :server-id 'rnix-lsp
+                  :priority -1))
 
 (defgroup lsp-nix-nil nil
   "LSP support for Nix, using nil."
