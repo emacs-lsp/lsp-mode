@@ -61,6 +61,11 @@ You could go minimal and use `lsp-mode` as it is without external packages with 
 ;; if you want to change prefix for lsp-mode keybindings.
 (setq lsp-keymap-prefix "s-l")
 
+;; The path to lsp-mode needs to be added to load-path as well as the
+;; path to the `clients' subdirectory.
+(add-to-list 'load-path (expand-file-name "lib/lsp-mode" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "lib/lsp-mode/clients" user-emacs-directory))
+
 (require 'lsp-mode)
 (add-hook 'XXX-mode-hook #'lsp)
 ```
