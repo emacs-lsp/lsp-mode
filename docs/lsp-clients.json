@@ -490,6 +490,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "nix",
+    "full-name": "Nix",
+    "server-name": "nil",
+    "server-url": "https://github.com/oxalica/nil",
+    "installation": "nix-env -i nil || nix profile install nixpkgs#nil",
+    "debugger": "Not available"
+  },
+  {
     "name": "ocaml",
     "full-name": "OCaml",
     "server-name": "ocaml-language-server",
