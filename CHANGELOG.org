@@ -21,7 +21,6 @@
   * Fix fsautocomplete (lsp-fsharp) startup on emacs@master (and emacs@emacs-28 on macOS) due to
     a switch ~posix_spawn~ and not setting proper sigmask on child processes.
   * Add TypeProf support.
-  * Add Volar support.
   * Add Ansible support.
   * Disable ~lsp-steep-use-bundler~ by default.
   * Add [[https://github.com/idris-community/idris2-lsp][idris2-lsp]]
@@ -56,6 +55,7 @@
   * Adds ~lsp-xml-preferences-quote-style~ as a replacement for
     obsolete ~lsp-xml-format-quotes~.
   * Add [[https://github.com/oxalica/nil][nil]] support (additional server for Nix)
+  * Add [[https://github.com/johnsoncodehk/volar/pull/1916][Volar 1.0]] support, refactor vue-language-server ~initializationOptions~, and remove multi server that is no longer needed.
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.
