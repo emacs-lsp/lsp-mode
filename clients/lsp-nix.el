@@ -26,21 +26,38 @@
 
 (require 'lsp-mode)
 
-(defgroup lsp-nix nil
+(defgroup lsp-nix-rnix nil
   "LSP support for Nix, using rnix-lsp."
   :group 'lsp-mode
   :link '(url-link "https://github.com/nix-community/rnix-lsp"))
 
-(defcustom lsp-nix-server-path "rnix-lsp"
+(defcustom lsp-nix-rnix-server-path "rnix-lsp"
   "Executable path for the server."
-  :group 'lsp-nix
+  :group 'lsp-nix-rnix
   :type 'string
   :package-version '(lsp-mode . "8.0.0"))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-nix-server-path))
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-nix-rnix-server-path))
                   :major-modes '(nix-mode)
-                  :server-id 'rnix-lsp))
+                  :server-id 'rnix-lsp
+                  :priority -1))
+
+(defgroup lsp-nix-nil nil
+  "LSP support for Nix, using nil."
+  :group `lsp-mode
+  :link '(url-link "https://github.com/oxalica/nil"))
+
+(defcustom lsp-nix-nil-server-path "nil"
+  "Executable path for the server."
+  :group `lsp-nix-nil
+  :type 'string
+  :package-version '(lsp-mode . "8.0.1"))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-nix-nil-server-path))
+                  :major-modes '(nix-mode)
+                  :server-id 'nil))
 
 (lsp-consistency-check lsp-nix)
 
