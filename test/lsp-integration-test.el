@@ -84,7 +84,6 @@
      (lsp-workspace-folders-add (f-join lsp-test-location "fixtures"))
      (find-file (f-join lsp-test-location "fixtures/pyls/test.py"))
      (lsp)
-     (sleep-for 0.1)
      ,@body
 
      (find-file (f-join lsp-test-location "fixtures/pyls/test.py"))
