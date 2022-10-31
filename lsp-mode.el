@@ -1922,7 +1922,7 @@ regex in IGNORED-FILES."
   "Helper macro for invoking BODY in WORKSPACE context."
   (declare (debug (form body))
            (indent 1))
-  `(when ,workspace (let ((lsp--cur-workspace ,workspace)) ,@body)))
+  `(let ((lsp--cur-workspace ,workspace)) ,@body))
 
 (defmacro with-lsp-workspaces (workspaces &rest body)
   "Helper macro for invoking BODY against multiple WORKSPACES."
@@ -6660,14 +6660,6 @@ server. WORKSPACE is the active workspace."
            (lsp--on-notification workspace json-data))
           ('request (lsp--on-request workspace json-data)))))))
 
-(defvar lsp--parsed-messages nil
-  "Stores the message queue that needed to be parsed.")
-(defun lsp--dispatch-messages ()
-  "Dispatch the messages in `lsp--parsed-messages'."
-  (run-at-time 0 nil (lambda ()
-                       (when (cl-rest lsp--parsed-messages) (lsp--dispatch-messages))
-                       (apply #'lsp--parser-on-message (pop lsp--parsed-messages)))))
-
 (defun lsp--create-filter-function (workspace)
   "Make filter for the workspace."
   (let ((body-received 0)
@@ -6677,8 +6669,7 @@ server. WORKSPACE is the active workspace."
                       input
                     (concat leftovers input)))
 
-      (let (messages
-            (empty-queue? (not lsp--parsed-messages)))
+      (let (messages)
         (while (not (s-blank? chunk))
           (if (not body-length)
               ;; Read headers
@@ -6731,9 +6722,8 @@ server. WORKSPACE is the active workspace."
                              (concat leftovers input)
                              err)))))))
         (mapc (lambda (msg)
-                (setq lsp--parsed-messages (nconc lsp--parsed-messages `((,msg ,workspace)))))
-              (nreverse messages))
-        (when (and empty-queue? lsp--parsed-messages) (lsp--dispatch-messages))))))
+                (lsp--parser-on-message msg workspace))
+              (nreverse messages))))))
 
 (defvar-local lsp--line-col-to-point-hash-table nil
   "Hash table with keys (line . col) and values that are either point positions
