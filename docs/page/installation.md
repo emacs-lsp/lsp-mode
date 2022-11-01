@@ -46,7 +46,7 @@ For Doom Emacs module flags and more information, check the [doom-emacs lsp modu
 [lsp-mode](https://emacs-lsp.github.io/lsp-mode) is included in spacemacs develop branch. Add `lsp` to `dotspacemacs-configuration-layers` and configure the language that you want to use to be backed by `lsp` backend.
 
 ### Vanilla Emacs
-    
+
 You could go minimal and use `lsp-mode` as it is without external packages with the built-in `flymake` and `completion-at-point` or you could install the following extensions for better experience:
 
 - [lsp-ui](https://emacs-lsp.github.io/lsp-ui/#intro) for fancy sideline, popup documentation, VScode-like peek UI, etc.
@@ -61,11 +61,6 @@ You could go minimal and use `lsp-mode` as it is without external packages with 
 ;; if you want to change prefix for lsp-mode keybindings.
 (setq lsp-keymap-prefix "s-l")
 
-;; The path to lsp-mode needs to be added to load-path as well as the
-;; path to the `clients' subdirectory.
-(add-to-list 'load-path (expand-file-name "lib/lsp-mode" user-emacs-directory))
-(add-to-list 'load-path (expand-file-name "lib/lsp-mode/clients" user-emacs-directory))
-
 (require 'lsp-mode)
 (add-hook 'XXX-mode-hook #'lsp)
 ```
@@ -79,7 +74,7 @@ To defer LSP server startup (and DidOpen notifications) until the buffer is visi
 ```
 
 #### use-package
-    
+
 Replace `(require 'lsp-mode)` with the following if you use use-package.
 
 ```elisp
@@ -118,6 +113,15 @@ To defer LSP server startup (and DidOpen notifications) until the buffer is visi
 (use-package lsp-mode
     :hook (XXX-mode . lsp-deferred)
     :commands (lsp lsp-deferred))
+```
+
+When you are not using `package.el` to install `lsp-mode` make sure to put clients folder to the `load-path`:
+
+```elisp
+;; The path to lsp-mode needs to be added to load-path as well as the
+;; path to the `clients' subdirectory.
+(add-to-list 'load-path (expand-file-name "lib/lsp-mode" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "lib/lsp-mode/clients" user-emacs-directory))
 ```
 
 ## Install a language server
