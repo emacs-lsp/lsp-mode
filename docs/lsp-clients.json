@@ -492,7 +492,7 @@
   {
     "name": "nix",
     "full-name": "Nix",
-    "server-name": "nil",
+    "server-name": "nix-nil",
     "server-url": "https://github.com/oxalica/nil",
     "installation": "nix-env -i nil || nix profile install nixpkgs#nil",
     "debugger": "Not available"
