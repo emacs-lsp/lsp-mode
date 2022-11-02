@@ -364,6 +364,8 @@ the server has requested that."
     "[/\\\\]\\.babel_cache\\'"
     "[/\\\\]\\.cpcache\\'"
     "[/\\\\]\\checkouts\\'"
+    ;; Gradle
+    "[/\\\\]\\.gradle\\'"
     ;; Maven
     "[/\\\\]\\.m2\\'"
     ;; .Net Core build-output
