@@ -59,8 +59,8 @@
   "Get tsserver.js file path."
   (if-let ((package-path (lsp-package-path 'typescript))
            (system-server-path (apply #'f-join (if lsp-volar--is-windows
-                                                   (append (cl-subseq (f-split (file-truename (lsp-package-path 'typescript))) 0 -1) '("node_modules" "typescript" "lib" "tsserver.js"))
-                                                 (append (cl-subseq (f-split (file-truename (lsp-package-path 'typescript))) 0 -2) '("lib" "tsserver.js")))))
+                                                   (append (cl-subseq (f-split (file-truename (lsp-package-path 'typescript))) 0 -1) '("node_modules" "typescript" "lib"))
+                                                 (append (cl-subseq (f-split (file-truename (lsp-package-path 'typescript))) 0 -2) '("lib")))))
            (is-exist (f-file-p system-server-path)))
       system-server-path
     (progn (lsp--error "[lsp-volar] Typescript is not detected correctly. Please ensure the npm package typescript is installed in your project or system (npm install -g typescript), otherwise open an issue") "")))
@@ -75,38 +75,14 @@
                 '(:npm :package "@volar/vue-language-server" :path "vue-language-server"))
 
 (lsp-register-custom-settings
- '(("typescript.serverPath" (lambda () (if-let ((project-root (lsp-workspace-root))
-                                                (server-path (f-join project-root "node_modules/typescript/lib/tsserverlibrary.js"))
+ '(("typescript.tsdk" (lambda () (if-let ((project-root (lsp-workspace-root))
+                                                (server-path (f-join project-root "node_modules/typescript/lib"))
                                                 (is-exist (file-exists-p server-path)))
                                            server-path
-                                        (lsp-volar-get-typescript-server-path))) t)
-   ("languageFeatures.references" t t)
-   ("languageFeatures.implementation" t t)
-   ("languageFeatures.definition" t t)
-   ("languageFeatures.typeDefinition" t t)
-   ("languageFeatures.callHierarchy" t t)
-   ("languageFeatures.hover" t t)
-   ("languageFeatures.rename" t t)
-   ("languageFeatures.renameFileRefactoring" t t)
-   ("languageFeatures.signatureHelp" t t)
-   ("languageFeatures.codeAction" t t)
-   ("languageFeatures.workspaceSymbol" t t)
-   ("languageFeatures.completion.defaultTagNameCase" "both" t)
-   ("languageFeatures.completion.defaultAttrNameCase" "kebabCase" t t)
-   ("languageFeatures.completion.getDocumentNameCasesRequest" nil t)
-   ("languageFeatures.completion.getDocumentSelectionRequest" nil t)
-   ("languageFeatures.schemaRequestService.getDocumentContentRequest" nil t)
-
-   ("documentFeatures.selectionRange" t t)
-   ("documentFeatures.foldingRange" t t)
-   ("documentFeatures.linkedEditingRange" t t)
-   ("documentFeatures.documentSymbol" t t)
-   ("documentFeatures.documentColor" t t)
-   ("documentFeatures.documentFormatting.defaultPrintWidth" 100 t)
-   ("documentFeatures.documentFormatting.getDocumentPrintWidthRequest" nil t)))
+                                        (lsp-volar-get-typescript-server-path))) t)))
 
 (defun lsp-volar--vue-project-p (workspace-root)
-  "Check if the 'vue' package is present in the package.json file
+  "Check if the `Vue' package is present in the package.json file
 in the WORKSPACE-ROOT."
   (if-let ((package-json (f-join workspace-root "package.json"))
            (exist (f-file-p package-json))
@@ -135,74 +111,11 @@ in the WORKSPACE-ROOT."
   :activation-fn 'lsp-volar--activate-p
   :priority 0
   :multi-root nil
-  :server-id 'volar-api
+  :server-id 'vue-semantic-server
   :initialization-options (lambda () (ht-merge (lsp-configuration-section "typescript")
-                                               (lsp-configuration-section "languageFeatures")))
-  :initialized-fn (lambda (workspace)
-                    (with-lsp-workspace workspace
-                      (lsp--server-register-capability
-                       (lsp-make-registration
-                        :id "random-id"
-                        :method "workspace/didChangeWatchedFiles"
-                        :register-options? (lsp-make-did-change-watched-files-registration-options
-                                            :watchers
-                                            `[,(lsp-make-file-system-watcher :glob-pattern "**/*.js")
-                                              ,(lsp-make-file-system-watcher :glob-pattern "**/*.ts")
-                                              ,(lsp-make-file-system-watcher :glob-pattern "**/*.vue")
-                                              ,(lsp-make-file-system-watcher :glob-pattern "**/*.jsx")
-                                              ,(lsp-make-file-system-watcher :glob-pattern "**/*.tsx")
-                                              ,(lsp-make-file-system-watcher :glob-pattern "**/*.json")])))))
-  :download-server-fn (lambda (_client callback error-callback _update?)
-                        (lsp-package-ensure 'volar-language-server
-                                            callback error-callback))))
-
-(lsp-register-client
- (make-lsp-client
-  :new-connection (lsp-stdio-connection
-                   (lambda ()
-                     `(,(lsp-package-path 'volar-language-server) "--stdio")))
-  :activation-fn 'lsp-volar--activate-p
-  :priority 0
-  :multi-root nil
-  :add-on? t
-  :server-id 'volar-doc
-  :initialization-options (lambda () (ht-merge (lsp-configuration-section "typescript")
-                                               (ht ("languageFeatures" (ht-merge (ht ("documentHighlight" t))
-                                                                                 (ht ("documentLink" t))
-                                                                                 (ht ("codeLens" (ht ("showReferencesNotification" t))))
-                                                                                 (ht ("semanticTokens" t))
-                                                                                 (ht ("diagnostics" (ht ("getDocumentVersionRequest" nil))))
-                                                                                 (ht ("schemaRequestService" (ht ("getDocumentContentRequest" nil)))))))))
-  :initialized-fn (lambda (workspace)
-                    (with-lsp-workspace workspace
-                      (lsp--server-register-capability
-                       (lsp-make-registration
-                        :id "random-id"
-                        :method "workspace/didChangeWatchedFiles"
-                        :register-options? (lsp-make-did-change-watched-files-registration-options
-                                            :watchers
-                                            `[,(lsp-make-file-system-watcher :glob-pattern "**/*.js")
-                                              ,(lsp-make-file-system-watcher :glob-pattern "**/*.ts")
-                                              ,(lsp-make-file-system-watcher :glob-pattern "**/*.vue")
-                                              ,(lsp-make-file-system-watcher :glob-pattern "**/*.jsx")
-                                              ,(lsp-make-file-system-watcher :glob-pattern "**/*.tsx")
-                                              ,(lsp-make-file-system-watcher :glob-pattern "**/*.json")])))))
-  :download-server-fn (lambda (_client callback error-callback _update?)
-                        (lsp-package-ensure 'volar-language-server
-                                            callback error-callback))))
-
-(lsp-register-client
- (make-lsp-client
-  :new-connection (lsp-stdio-connection
-                   (lambda ()
-                     `(,(lsp-package-path 'volar-language-server) "--stdio")))
-  :activation-fn 'lsp-volar--activate-p
-  :priority 0
-  :multi-root nil
-  :add-on? t
-  :server-id 'volar-html
-  :initialization-options (lambda () (ht-merge (lsp-configuration-section "typescript")
-                                               (lsp-configuration-section "documentFeatures")))
+                                               (ht ("serverMode" 0)
+                                                   ("diagnosticMode" 1)
+                                                   ("textDocumentSync" 2))))
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--server-register-capability
