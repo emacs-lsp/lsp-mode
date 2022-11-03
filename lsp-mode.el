@@ -3554,6 +3554,7 @@ disappearing, unset all the variables related to it."
                                       (linkSupport . t)))
                       (definition . ((dynamicRegistration . t)
                                      (linkSupport . t)))
+                      (references . ((dynamicRegistration . t)))
                       (implementation . ((dynamicRegistration . t)
                                          (linkSupport . t)))
                       (typeDefinition . ((dynamicRegistration . t)
