@@ -1934,7 +1934,7 @@ regex in IGNORED-FILES."
 
 
 
-(defconst lsp-downstream-deps
+(defvar lsp-downstream-deps
   '(;; external packages
     ccls consult-lsp dap-mode helm-lsp lsp-dart lsp-docker lsp-focus lsp-grammarly
     lsp-haskell lsp-ivy lsp-java lsp-javacomp lsp-jedi lsp-julia lsp-latex lsp-ltex
@@ -3176,7 +3176,7 @@ TYPE can either be 'incoming or 'outgoing"
                           (plist-get body :method)
                           nil (plist-get body :params) 'outgoing-notif)
                          lsp--cur-workspace))
-   (lsp--send-no-wait (lsp--make-message body)
+   (lsp--send-no-wait body
                       (lsp--workspace-proc lsp--cur-workspace))))
 
 (defalias 'lsp-send-notification 'lsp--send-notification)
@@ -3232,6 +3232,7 @@ If NO-WAIT is non-nil send the request as notification."
                 (accept-process-output
                  nil
                  (if expected-time (- expected-time send-time) 1)))
+              (redisplay)
               (setq send-time (time-to-seconds (current-time)))
               (when (and expected-time (< expected-time send-time))
                 (error "Timeout while waiting for response.  Method: %s" method)))
@@ -3477,13 +3478,12 @@ CANCEL-TOKEN is the token that can be used to cancel request."
                                                      (plist-get body :params)
                                                      'outgoing-req)
                                 workspace))
-          (let ((message (lsp--make-message body)))
-            (puthash id
-                     (list callback error-callback method start-time (current-time))
-                     (-> workspace
-                         (lsp--workspace-client)
-                         (lsp--client-response-handlers)))
-            (lsp--send-no-wait message (lsp--workspace-proc workspace))))
+          (puthash id
+                   (list callback error-callback method start-time (current-time))
+                   (-> workspace
+                       (lsp--workspace-client)
+                       (lsp--client-response-handlers)))
+          (lsp--send-no-wait body (lsp--workspace-proc workspace)))
         body)
     (error "The connected server(s) does not support method %s.
 To find out what capabilities support your server use `M-x lsp-describe-session'
@@ -3517,10 +3517,8 @@ and expand the capabilities section"
   "Cleanup buffer state.
 When a workspace is shut down, by request or from just
 disappearing, unset all the variables related to it."
-  (let ((proc (lsp--workspace-cmd-proc lsp--cur-workspace))
-        (buffers (lsp--workspace-buffers lsp--cur-workspace)))
-    (when (process-live-p proc)
-      (kill-process proc))
+  (-let [(&lsp-wks 'cmd-proc 'buffers) lsp--cur-workspace]
+    (lsp-process-kill cmd-proc)
     (mapc (lambda (buf)
             (when (lsp-buffer-live-p buf)
               (lsp-with-current-buffer buf
@@ -6379,11 +6377,7 @@ textDocument/didOpen for the new file."
   (unless lsp--flushing-delayed-changes
     (let ((lsp--flushing-delayed-changes t))
       (lsp--flush-delayed-changes)))
-
-  (condition-case err
-      (process-send-string proc message)
-    ('error (lsp--error "Sending to process failed with the following error: %s"
-                        (error-message-string err)))))
+  (lsp-process-send proc message))
 
 (define-error 'lsp-parse-error
   "Error parsing message from language server" 'lsp-error)
@@ -6469,7 +6463,7 @@ PARAMS are the `workspace/configuration' request params"
     (when (lsp--log-io-p method)
       (lsp--log-entry-new req-entry workspace)
       (lsp--log-entry-new resp-entry workspace))
-    (lsp--send-no-wait (lsp--make-message response) process)))
+    (lsp--send-no-wait response process)))
 
 (lsp-defun lsp--on-request (workspace (request &as &JSONRequest :params :method))
   "Call the appropriate handler for REQUEST, and send the return value to the
@@ -7173,29 +7167,33 @@ returned by COMMAND is available via `executable-find'"
                                                (seq-every-p (lambda (el)
                                                               (stringp el))
                                                             l))))))
-  (list :connect (lambda (filter sentinel name environment-fn)
-                   (let ((final-command (lsp-resolve-final-function command))
-                         (process-name (generate-new-buffer-name name))
-                         (process-environment
-                          (lsp--compute-process-environment environment-fn)))
-                     (let* ((stderr-buf (format "*%s::stderr*" process-name))
-                            (default-directory (lsp--default-directory-for-connection))
-                            (proc (make-process
-                                   :name process-name
-                                   :connection-type 'pipe
-                                   :buffer (format "*%s*" process-name)
-                                   :coding 'no-conversion
-                                   :command final-command
-                                   :filter filter
-                                   :sentinel sentinel
-                                   :stderr stderr-buf
-                                   :noquery t)))
-                       (set-process-query-on-exit-flag proc nil)
-                       (set-process-query-on-exit-flag (get-buffer-process stderr-buf) nil)
-                       (with-current-buffer (get-buffer stderr-buf)
-                         ;; Make the *NAME::stderr* buffer buffer-read-only, q to bury, etc.
-                         (special-mode))
-                       (cons proc proc))))
+  (list :connect (lambda (filter sentinel name environment-fn workspace)
+                   (if (fboundp 'json-rpc)
+                       (lsp-json-rpc-connection
+                        workspace
+                        (lsp-resolve-final-function command))
+                     (let ((final-command (lsp-resolve-final-function command))
+                           (process-name (generate-new-buffer-name name))
+                           (process-environment
+                            (lsp--compute-process-environment environment-fn)))
+                       (let* ((stderr-buf (format "*%s::stderr*" process-name))
+                              (default-directory (lsp--default-directory-for-connection))
+                              (proc (make-process
+                                     :name process-name
+                                     :connection-type 'pipe
+                                     :buffer (format "*%s*" process-name)
+                                     :coding 'no-conversion
+                                     :command final-command
+                                     :filter filter
+                                     :sentinel sentinel
+                                     :stderr stderr-buf
+                                     :noquery t)))
+                         (set-process-query-on-exit-flag proc nil)
+                         (set-process-query-on-exit-flag (get-buffer-process stderr-buf) nil)
+                         (with-current-buffer (get-buffer stderr-buf)
+                           ;; Make the *NAME::stderr* buffer buffer-read-only, q to bury, etc.
+                           (special-mode))
+                         (cons proc proc)))))
         :test? (or
                 test-command
                 (lambda () (-> command lsp-resolve-final-function lsp-server-present?)))))
@@ -7243,7 +7241,7 @@ port number. It should return a command for launches a language server
 process listening for TCP connections on the provided port."
   (cl-check-type command-fn function)
   (list
-   :connect (lambda (filter sentinel name environment-fn)
+   :connect (lambda (filter sentinel name environment-fn _workspace)
               (let* ((host "localhost")
                      (port (lsp--find-available-port host (cl-incf lsp--tcp-port)))
                      (command (funcall command-fn port))
@@ -7272,7 +7270,7 @@ to it. COMMAND is function with one parameter(the port) and it
 should return the command to start the LS server."
   (cl-check-type command-fn function)
   (list
-   :connect (lambda (filter sentinel name environment-fn)
+   :connect (lambda (filter sentinel name environment-fn _workspace)
               (let* (tcp-client-connection
                      (tcp-server (make-network-process :name (format "*tcp-server-%s*" name)
                                                        :buffer (format "*tcp-server-%s*" name)
@@ -7318,7 +7316,7 @@ should return the command to start the LS server."
   "Create LSP stdio connection named name.
 LOCAL-COMMAND is either list of strings, string or function which
 returns the command to execute."
-  (list :connect (lambda (filter sentinel name environment-fn)
+  (list :connect (lambda (filter sentinel name environment-fn _workspace)
                    (let* ((final-command (lsp-resolve-final-function local-command))
                           ;; wrap with stty to disable converting \r to \n
                           (process-name (generate-new-buffer-name name))
@@ -7374,9 +7372,8 @@ returns the command to execute."
             (eq (lsp--workspace-shutdown-action workspace) 'restart)
             (and (eq lsp-restart 'interactive)
                  (let ((query (format
-                               "Server %s exited with status %s(check corresponding stderr buffer for details). Do you want to restart it?"
-                               (lsp--workspace-print workspace)
-                               (process-status (lsp--workspace-proc workspace)))))
+                               "Server %s exited (check corresponding stderr buffer for details). Do you want to restart it?"
+                               (lsp--workspace-print workspace))))
                    (y-or-n-p query))))
     (--each (lsp--workspace-buffers workspace)
       (when (lsp-buffer-live-p it)
@@ -7396,49 +7393,46 @@ returns the command to execute."
 (defun lsp--process-sentinel (workspace process exit-str)
   "Create the sentinel for WORKSPACE."
   (unless (process-live-p process)
-    (let* ((status (process-status process))
-           (folder->workspaces (lsp-session-folder->servers (lsp-session)))
-           (stderr (-> workspace lsp--workspace-proc process-name get-buffer)))
+    (lsp--handle-process-exit workspace exit-str)))
 
-      (lsp--warn "%s has exited (%s)"
-                 (process-name (lsp--workspace-proc workspace))
-                 (string-trim-right exit-str))
+(defun lsp--handle-process-exit (workspace exit-str)
+  (let* ((folder->workspaces (lsp-session-folder->servers (lsp-session)))
+         (proc (lsp--workspace-proc workspace)))
+    (lsp--warn "%s has exited (%s)"
+               (lsp-process-name proc)
+               (string-trim-right (or exit-str "")))
+    (with-lsp-workspace workspace
+      ;; Clean workspace related data in each of the buffers
+      ;; in the workspace.
+      (--each (lsp--workspace-buffers workspace)
+        (when (lsp-buffer-live-p it)
+          (lsp-with-current-buffer it
+            (setq lsp--buffer-workspaces (delete workspace lsp--buffer-workspaces))
+            (lsp--uninitialize-workspace)
+            (lsp--spinner-stop)
+            (lsp--remove-overlays 'lsp-highlight))))
 
-      (with-lsp-workspace workspace
-        ;; Clean workspace related data in each of the buffers
-        ;; in the workspace.
-        (--each (lsp--workspace-buffers workspace)
-          (when (lsp-buffer-live-p it)
-            (lsp-with-current-buffer it
-              (setq lsp--buffer-workspaces (delete workspace lsp--buffer-workspaces))
-              (lsp--uninitialize-workspace)
-              (lsp--spinner-stop)
-              (lsp--remove-overlays 'lsp-highlight))))
+      ;; Cleanup session from references to the closed workspace.
+      (--each (hash-table-keys folder->workspaces)
+        (lsp--update-key folder->workspaces it (apply-partially 'delete workspace)))
 
-        ;; Cleanup session from references to the closed workspace.
-        (--each (hash-table-keys folder->workspaces)
-          (lsp--update-key folder->workspaces it (apply-partially 'delete workspace)))
+      (lsp-process-cleanup proc))
 
-        ;; Kill standard error buffer only if the process exited normally.
-        ;; Leave it intact otherwise for debugging purposes.
-        (when (and (eq status 'exit) (zerop (process-exit-status process)) (buffer-live-p stderr))
-          (kill-buffer stderr)))
+    (run-hook-with-args 'lsp-after-uninitialized-functions workspace)
 
-      (run-hook-with-args 'lsp-after-uninitialized-functions workspace)
-
-      (if (eq (lsp--workspace-shutdown-action workspace) 'shutdown)
-          (lsp--info "Workspace %s shutdown." (lsp--workspace-print workspace))
-        (lsp--restart-if-needed workspace))
-      (lsp--cleanup-hanging-watches))))
+    (if (eq (lsp--workspace-shutdown-action workspace) 'shutdown)
+        (lsp--info "Workspace %s shutdown." (lsp--workspace-print workspace))
+      (lsp--restart-if-needed workspace))
+    (lsp--cleanup-hanging-watches)))
 
 (defun lsp-workspace-folders (workspace)
   "Return all folders associated with WORKSPACE."
   (let (result)
     (->> (lsp-session)
-      (lsp-session-folder->servers)
-      (maphash (lambda (folder workspaces)
-                 (when (-contains? workspaces workspace)
-                   (push folder result)))))
+         (lsp-session-folder->servers)
+         (maphash (lambda (folder workspaces)
+                    (when (-contains? workspaces workspace)
+                      (push folder result)))))
     result))
 
 (defun lsp--start-workspace (session client-template root &optional initialization-options)
@@ -7462,7 +7456,8 @@ SESSION is the active session."
                               (lsp--create-filter-function workspace)
                               (apply-partially #'lsp--process-sentinel workspace)
                               (format "%s" server-id)
-                              environment-fn))
+                              environment-fn
+                              workspace))
           (workspace-folders (gethash server-id (lsp-session-server-id->folders session))))
     (setf (lsp--workspace-proc workspace) proc
           (lsp--workspace-cmd-proc workspace) cmd-proc)
@@ -8312,8 +8307,8 @@ SESSION is the active session."
 
 (defun lsp--get-log-buffer-create (workspace)
   "Return the lsp log buffer of WORKSPACE, creating a new one if needed."
-  (let ((server-id (-> workspace lsp--workspace-client lsp--client-server-id symbol-name))
-        (pid (format "%s" (process-id (lsp--workspace-cmd-proc workspace)))))
+  (let* ((server-id (-> workspace lsp--workspace-client lsp--client-server-id symbol-name))
+         (pid (-> workspace lsp--workspace-cmd-proc lsp-process-id)))
     (get-buffer-create (format "*lsp-log: %s:%s*" server-id pid))))
 
 (defun lsp--erase-log-buffer (&optional all)
@@ -8344,12 +8339,120 @@ When ALL is t, erase all log buffers of the running session."
   (interactive "P")
   (ewoc-goto-prev lsp--log-io-ewoc (or arg 1)))
 
+
+
+(cl-defgeneric lsp-process-id ((process process))
+  (process-id process))
+
+(cl-defgeneric lsp-process-name ((process process)) (process-name process))
+
+(cl-defgeneric lsp-process-status ((process process)) (process-status process))
+
+(cl-defgeneric lsp-process-kill ((process process))
+  (when (process-live-p process)
+    (kill-process process)))
+
+(cl-defgeneric lsp-process-send ((process process) message)
+  (condition-case err
+      (process-send-string process (lsp--make-message message))
+    ('error (lsp--error "Sending to process failed with the following error: %s"
+                        (error-message-string err)))))
+
+(cl-defgeneric lsp-process-cleanup (process)
+  ;; Kill standard error buffer only if the process exited normally.
+  ;; Leave it intact otherwise for debugging purposes.
+  (let ((buffer (-> process process-name get-buffer)))
+    (when (and (eq (process-status process) 'exit)
+               (zerop (process-exit-status process))
+               (buffer-live-p buffer))
+      (kill-buffer buffer))))
+
+
+;; native JSONRPC
+
+(declare-function json-rpc "ext:json")
+(declare-function json-rpc-connection "ext:json")
+(declare-function json-rpc-send "ext:json")
+(declare-function json-rpc-shutdown "ext:json")
+(declare-function json-rpc-stderr "ext:json")
+(declare-function json-rpc-pid "ext:json")
+
+(defvar lsp-json-rpc-thread nil)
+(defvar lsp-json-rpc-queue nil)
+(defvar lsp-json-rpc-done nil)
+(defvar lsp-json-rpc-mutex (make-mutex))
+(defvar lsp-json-rpc-condition (make-condition-variable lsp-json-rpc-mutex))
+
+(defun lsp-json-rpc-process-queue ()
+  (while (not lsp-json-rpc-done)
+    (while lsp-json-rpc-queue
+      (-let (((proc . message) (pop lsp-json-rpc-queue)))
+        (json-rpc-send
+         proc message
+         :null-object nil
+         :false-object :json-false)))
+    (with-mutex lsp-json-rpc-mutex
+      (condition-wait lsp-json-rpc-condition))))
+
+(cl-defmethod lsp-process-id (process) (json-rpc-pid process))
+
+(cl-defmethod lsp-process-name (_process) "TBD")
+
+(cl-defmethod lsp-process-kill (process) (json-rpc-shutdown process))
+
+(cl-defmethod lsp-process-send (proc message)
+  (unless lsp-json-rpc-thread
+    (setq lsp-json-rpc-thread (make-thread #'lsp-json-rpc-process-queue)))
+
+  (with-mutex lsp-json-rpc-mutex
+    (setq lsp-json-rpc-queue (append lsp-json-rpc-queue
+                                     (list (cons proc message))))
+    (condition-notify lsp-json-rpc-condition)))
+
+(cl-defmethod lsp-process-cleanup (_proc))
+
+(defun lsp-json-rpc-connection (workspace command)
+  (let ((con (apply #'json-rpc-connection command))
+        (object-type (if lsp-use-plists 'plist 'hash-table)))
+    (make-thread
+     (lambda ()
+       (json-rpc
+        con
+        (lambda (result err done)
+          (run-with-timer
+           0.0
+           nil
+           (lambda ()
+             (cond
+              (result (lsp--parser-on-message result workspace))
+              (err (warn "Json parsing failed with the following erorr: %s" err))
+              (done (lsp--handle-process-exit workspace ""))))))
+        :object-type object-type
+        :null-object nil
+        :false-object nil)))
+    (cons con con)))
+
+(defun lsp-json-rpc-stderr ()
+  (interactive)
+  (--when-let (pcase (lsp-workspaces)
+                (`nil (user-error "There are no active servers in the current buffer"))
+                (`(,workspace) workspace)
+                (workspaces (lsp--completing-read "Select server: "
+                                                  workspaces
+                                                  'lsp--workspace-print nil t)))
+    (let ((content (json-rpc-stderr (lsp--workspace-cmd-proc it)))
+          (buffer (format "*stderr-%s*" (lsp--workspace-print it)) ))
+      (with-current-buffer (get-buffer-create buffer)
+        (with-help-window buffer
+          (insert content))))))
+
+
 (defun lsp--workspace-print (workspace)
   "Visual representation WORKSPACE."
   (let* ((proc (lsp--workspace-cmd-proc workspace))
          (status (lsp--workspace-status workspace))
          (server-id (-> workspace lsp--workspace-client lsp--client-server-id symbol-name))
-         (pid (process-id proc)))
+         (pid (lsp-process-id proc)))
 
     (if (eq 'initialized status)
         (format "%s:%s" server-id pid)

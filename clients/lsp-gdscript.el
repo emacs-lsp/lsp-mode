@@ -38,7 +38,7 @@
 
 (defun lsp-gdscript-tcp-connect-to-port ()
   (list
-   :connect (lambda (filter sentinel name _environment-fn)
+   :connect (lambda (filter sentinel name _environment-fn _workspace)
               (let* ((host "localhost")
                      (port lsp-gdscript-port)
                      (tcp-proc (lsp--open-network-stream host port (concat name "::tcp"))))
