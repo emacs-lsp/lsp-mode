@@ -128,8 +128,7 @@ Defaults to side following treemacs default."
   (when lsp-terraform-ls-enable-show-reference
     '((experimental . ((showReferencesCommandId . "client.showReferences"))))))
 
-(defun terraform--lsp-semantic-token-faces ()
-  "Mapping between terrafom-ls tokens and fonts to apply."
+(defcustom terraform-lsp-semantic-token-faces
   '(("namespace" . lsp-face-semhl-namespace)
     ("type" . lsp-face-semhl-type)
     ("class" . lsp-face-semhl-class)
@@ -163,10 +162,13 @@ Defaults to side following treemacs default."
     ("hcl-keyword" . lsp-face-semhl-keyword)
     ("hcl-traversalStep" . lsp-face-semhl-member)
     ("hcl-typeCapsule" . lsp-face-semhl-type)
-    ("hcl-typePrimitive" . lsp-face-semhl-type)))
+    ("hcl-typePrimitive" . lsp-face-semhl-type))
+  "Mapping between terrafom-ls tokens and fonts to apply."
+  :group 'lsp-terraform
+  :type '(alist :key-type string :value-type face)
+  :package-version '(lsp-mode . "8.1"))
 
-(defun terraform--lsp-semantic-token-modifier-faces ()
-  "Mapping between terraform-ls modifiers and fonts to apply."
+(defcustom terraform-lsp-semantic-token-modifier-faces
   '(("declaration" . lsp-face-semhl-class)
     ("definition" . lsp-face-semhl-definition)
     ("readonly" . lsp-face-semhl-constant)
@@ -191,7 +193,11 @@ Defaults to side following treemacs default."
     ("terraform-backend" . lsp-face-semhl-definition)
     ("terraform-name" . lsp-face-semhl-interface)
     ("terraform-type" . lsp-face-semhl-type)
-    ("terraform-requiredProviders" . lsp-face-semhl-default-library)))
+    ("terraform-requiredProviders" . lsp-face-semhl-default-library))
+  "Mapping between terraform-ls modifiers and fonts to apply."
+  :group 'lsp-terraform
+  :type '(alist :key-type string :value-type face)
+  :package-version '(lsp-mode . "8.1"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-terraform-ls--make-launch-cmd)
@@ -201,8 +207,8 @@ Defaults to side following treemacs default."
                   :action-handlers (ht ("client.showReferences" #'lsp-terraform-ls--show-references))
                   :semantic-tokens-faces-overrides `(:discard-default-modifiers t
                                                      :discard-default-types t
-                                                     :modifiers ,(terraform--lsp-semantic-token-modifier-faces)
-                                                     :types ,(terraform--lsp-semantic-token-faces))
+                                                     :modifiers ,terraform-lsp-semantic-token-modifier-faces
+                                                     :types ,terraform-lsp-semantic-token-faces)
                   :custom-capabilities (lsp-terraform-ls--custom-capabilities)))
 
 (defun lsp-terraform-ls-validate ()
