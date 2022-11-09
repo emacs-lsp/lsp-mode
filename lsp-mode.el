@@ -3228,7 +3228,7 @@ If NO-WAIT is non-nil send the request as notification."
                                :mode 'detached
                                :cancel-token :sync-request)
             (while (not (or resp-error resp-result))
-              (if (fboundp 'json-rpc)
+              (if (functionp 'json-rpc-connection)
                   (catch 'lsp-done (sit-for 0.01))
                 (catch 'lsp-done
                   (accept-process-output
@@ -7169,7 +7169,7 @@ returned by COMMAND is available via `executable-find'"
                                                               (stringp el))
                                                             l))))))
   (list :connect (lambda (filter sentinel name environment-fn workspace)
-                   (if (fboundp 'json-rpc)
+                   (if (functionp 'json-rpc-connection)
                        (lsp-json-rpc-connection
                         workspace
                         (lsp-resolve-final-function command))
