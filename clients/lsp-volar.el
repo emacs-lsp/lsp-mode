@@ -119,7 +119,7 @@ in the WORKSPACE-ROOT."
   :server-id 'vue-semantic-server
   :initialization-options (lambda () (ht-merge (lsp-configuration-section "typescript")
                                                (ht ("serverMode" 0)
-                                                   ("diagnosticMode" 1)
+                                                   ("diagnosticModel" 1)
                                                    ("textDocumentSync" 2))))
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
