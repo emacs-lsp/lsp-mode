@@ -8403,7 +8403,8 @@ When ALL is t, erase all log buffers of the running session."
 
 (cl-defmethod lsp-process-send (proc message)
   (unless lsp-json-rpc-thread
-    (setq lsp-json-rpc-thread (make-thread #'lsp-json-rpc-process-queue)))
+    (with-current-buffer (get-buffer-create " *json-rpc*")
+      (setq lsp-json-rpc-thread (make-thread #'lsp-json-rpc-process-queue "*json-rpc-queue*"))))
 
   (with-mutex lsp-json-rpc-mutex
     (setq lsp-json-rpc-queue (append lsp-json-rpc-queue
@@ -8415,22 +8416,24 @@ When ALL is t, erase all log buffers of the running session."
 (defun lsp-json-rpc-connection (workspace command)
   (let ((con (apply #'json-rpc-connection command))
         (object-type (if lsp-use-plists 'plist 'hash-table)))
-    (make-thread
-     (lambda ()
-       (json-rpc
-        con
-        (lambda (result err done)
-          (run-with-timer
-           0.0
-           nil
-           (lambda ()
-             (cond
-              (result (lsp--parser-on-message result workspace))
-              (err (warn "Json parsing failed with the following erorr: %s" err))
-              (done (lsp--handle-process-exit workspace ""))))))
-        :object-type object-type
-        :null-object nil
-        :false-object nil)))
+    (with-current-buffer (get-buffer-create " *json-rpc*")
+      (make-thread
+       (lambda ()
+         (json-rpc
+          con
+          (lambda (result err done)
+            (run-with-timer
+             0.0
+             nil
+             (lambda ()
+               (cond
+                (result (lsp--parser-on-message result workspace))
+                (err (warn "Json parsing failed with the following erorr: %s" err))
+                (done (lsp--handle-process-exit workspace ""))))))
+          :object-type object-type
+          :null-object nil
+          :false-object nil))
+       "*json-rpc-connection*"))
     (cons con con)))
 
 (defun lsp-json-rpc-stderr ()
