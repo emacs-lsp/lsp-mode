@@ -128,7 +128,7 @@ Defaults to side following treemacs default."
   (when lsp-terraform-ls-enable-show-reference
     '((experimental . ((showReferencesCommandId . "client.showReferences"))))))
 
-(defcustom terraform-lsp-semantic-token-faces
+(defcustom lsp-terraform-semantic-token-faces
   '(("namespace" . lsp-face-semhl-namespace)
     ("type" . lsp-face-semhl-type)
     ("class" . lsp-face-semhl-class)
@@ -168,7 +168,7 @@ Defaults to side following treemacs default."
   :type '(alist :key-type string :value-type face)
   :package-version '(lsp-mode . "8.1"))
 
-(defcustom terraform-lsp-semantic-token-modifier-faces
+(defcustom lsp-terraform-semantic-token-modifier-faces
   '(("declaration" . lsp-face-semhl-class)
     ("definition" . lsp-face-semhl-definition)
     ("readonly" . lsp-face-semhl-constant)
@@ -207,8 +207,8 @@ Defaults to side following treemacs default."
                   :action-handlers (ht ("client.showReferences" #'lsp-terraform-ls--show-references))
                   :semantic-tokens-faces-overrides `(:discard-default-modifiers t
                                                      :discard-default-types t
-                                                     :modifiers ,terraform-lsp-semantic-token-modifier-faces
-                                                     :types ,terraform-lsp-semantic-token-faces)
+                                                     :modifiers ,lsp-terraform-semantic-token-modifier-faces
+                                                     :types ,lsp-terraform-semantic-token-faces)
                   :custom-capabilities (lsp-terraform-ls--custom-capabilities)))
 
 (defun lsp-terraform-ls-validate ()
