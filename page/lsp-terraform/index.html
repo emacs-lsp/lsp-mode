@@ -2376,6 +2376,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-terraform-semantic-token-faces" class="md-nav__link">
+    lsp-terraform-semantic-token-faces
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-terraform-semantic-token-modifier-faces" class="md-nav__link">
+    lsp-terraform-semantic-token-modifier-faces
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-terraform-server" class="md-nav__link">
     lsp-terraform-server
   </a>
@@ -3114,6 +3128,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-terraform-semantic-token-faces" class="md-nav__link">
+    lsp-terraform-semantic-token-faces
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-terraform-semantic-token-modifier-faces" class="md-nav__link">
+    lsp-terraform-semantic-token-modifier-faces
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-terraform-server" class="md-nav__link">
     lsp-terraform-server
   </a>
@@ -3192,6 +3220,16 @@
 <p><em>Default:</em> <code>nil</code></p>
 <p>If non-nil, enable `terraform-ls``s native logging.</p>
 <hr />
+<h3 id="lsp-terraform-semantic-token-faces"><code>lsp-terraform-semantic-token-faces</code><a class="headerlink" href="#lsp-terraform-semantic-token-faces" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(alist :key-type string :value-type face)</code></p>
+<p><em>Default:</em> <code>((namespace . lsp-face-semhl-namespace) (type . lsp-face-semhl-type) (class . lsp-face-semhl-class) (enum . lsp-face-semhl-enum) (interface . lsp-face-semhl-interface) (struct . lsp-face-semhl-struct) (typeParameter . lsp-face-semhl-type-parameter) (parameter . lsp-face-semhl-parameter) (variable . lsp-face-semhl-variable) (property . lsp-face-semhl-property) (enumMember . lsp-face-semhl-constant) (event . lsp-face-semhl-event) (function . lsp-face-semhl-function) (method . lsp-face-semhl-method) (macro . lsp-face-semhl-macro) (keyword . lsp-face-semhl-keyword) (modifier . lsp-face-semhl-member) (comment . lsp-face-semhl-comment) (string . lsp-face-semhl-string) (number . lsp-face-semhl-number) (regexp . lsp-face-semhl-regexp) (operator . lsp-face-semhl-operator) (hcl-attrName . lsp-face-semhl-member) (hcl-blockType . lsp-face-semhl-struct) (hcl-blockLabel . lsp-face-semhl-member) (hcl-bool . lsp-face-semhl-constant) (hcl-string . lsp-face-semhl-string) (hcl-number . lsp-face-semhl-number) (hcl-objectKey . lsp-face-semhl-member) (hcl-mapKey . lsp-face-semhl-member) (hcl-keyword . lsp-face-semhl-keyword) (hcl-traversalStep . lsp-face-semhl-member) (hcl-typeCapsule . lsp-face-semhl-type) (hcl-typePrimitive . lsp-face-semhl-type))</code></p>
+<p>Mapping between terrafom-ls tokens and fonts to apply.</p>
+<hr />
+<h3 id="lsp-terraform-semantic-token-modifier-faces"><code>lsp-terraform-semantic-token-modifier-faces</code><a class="headerlink" href="#lsp-terraform-semantic-token-modifier-faces" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(alist :key-type string :value-type face)</code></p>
+<p><em>Default:</em> <code>((declaration . lsp-face-semhl-class) (definition . lsp-face-semhl-definition) (readonly . lsp-face-semhl-constant) (static . lsp-face-semhl-static) (deprecated . lsp-face-semhl-deprecated) (abstract . lsp-face-semhl-keyword) (async . lsp-face-semhl-macro) (modification . lsp-face-semhl-operator) (documentation . lsp-face-semhl-comment) (defaultLibrary . lsp-face-semhl-default-library) (hcl-dependent . lsp-face-semhl-constant) (terraform-data . lsp-face-semhl-constant) (terraform-locals . lsp-face-semhl-variable) (terraform-module . lsp-face-semhl-namespace) (terraform-output . lsp-face-semhl-constant) (terraform-provider . lsp-face-semhl-class) (terraform-resource . lsp-face-semhl-interface) (terraform-provisioner . lsp-face-semhl-default-library) (terraform-connection . lsp-face-semhl-constant) (terraform-variable . lsp-face-semhl-variable) (terraform-terraform . lsp-face-semhl-constant) (terraform-backend . lsp-face-semhl-definition) (terraform-name . lsp-face-semhl-interface) (terraform-type . lsp-face-semhl-type) (terraform-requiredProviders . lsp-face-semhl-default-library))</code></p>
+<p>Mapping between terraform-ls modifiers and fonts to apply.</p>
+<hr />
 <h3 id="lsp-terraform-server"><code>lsp-terraform-server</code><a class="headerlink" href="#lsp-terraform-server" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (file :tag File) (repeat string))</code></p>
 <p><em>Default:</em> <code>terraform-lsp</code></p>
@@ -3205,7 +3243,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 9, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 14, 2022</span>
       
     
   </small>
