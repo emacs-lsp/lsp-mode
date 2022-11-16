@@ -55,15 +55,17 @@
   :package-version '(lsp-mode . "8.0.1"))
 
 (defconst lsp-volar--is-windows (memq system-type '(cygwin windows-nt ms-dos)))
-(defun lsp-volar-get-typescript-server-path ()
-  "Get tsserver.js file path."
+(defun lsp-volar-get-typescript-tsdk-path ()
+  "Get tsserver lib*.d.ts directory path."
   (if-let ((package-path (lsp-package-path 'typescript))
-           (system-server-path (apply #'f-join (if lsp-volar--is-windows
-                                                   (append (cl-subseq (f-split (file-truename (lsp-package-path 'typescript))) 0 -1) '("node_modules" "typescript" "lib"))
-                                                 (append (cl-subseq (f-split (file-truename (lsp-package-path 'typescript))) 0 -2) '("lib")))))
-           (is-exist (f-file-p system-server-path)))
-      system-server-path
-    (progn (lsp--error "[lsp-volar] Typescript is not detected correctly. Please ensure the npm package typescript is installed in your project or system (npm install -g typescript), otherwise open an issue") "")))
+           (system-tsdk-path (f-join (file-truename package-path)
+                                     (if lsp-volar--is-windows
+                                         "../node_modules/typescript/lib"
+                                       "../../lib")))
+           ((file-exists-p system-tsdk-path)))
+      system-tsdk-path
+    (prog1 ""
+      (lsp--error "[lsp-volar] Typescript is not detected correctly. Please ensure the npm package typescript is installed in your project or system (npm install -g typescript), otherwise open an issue"))))
 
 (lsp-dependency 'typescript
                 '(:system "tsserver")
@@ -75,11 +77,14 @@
                 '(:npm :package "@volar/vue-language-server" :path "vue-language-server"))
 
 (lsp-register-custom-settings
- '(("typescript.tsdk" (lambda () (if-let ((project-root (lsp-workspace-root))
-                                                (server-path (f-join project-root "node_modules/typescript/lib"))
-                                                (is-exist (file-exists-p server-path)))
-                                           server-path
-                                        (lsp-volar-get-typescript-server-path))) t)))
+ '(("typescript.tsdk"
+    (lambda ()
+      (if-let ((project-root (lsp-workspace-root))
+               (tsdk-path (f-join project-root "node_modules/typescript/lib"))
+               ((file-exists-p tsdk-path)))
+          tsdk-path
+        (lsp-volar-get-typescript-tsdk-path)))
+    t)))
 
 (defun lsp-volar--vue-project-p (workspace-root)
   "Check if the `Vue' package is present in the package.json file
@@ -114,7 +119,7 @@ in the WORKSPACE-ROOT."
   :server-id 'vue-semantic-server
   :initialization-options (lambda () (ht-merge (lsp-configuration-section "typescript")
                                                (ht ("serverMode" 0)
-                                                   ("diagnosticMode" 1)
+                                                   ("diagnosticModel" 1)
                                                    ("textDocumentSync" 2))))
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
