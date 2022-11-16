@@ -46,7 +46,7 @@
 
 (let* ((pkg-list '(lsp-mode lsp-ui yasnippet lsp-java lsp-python-ms lsp-haskell helm-lsp lsp-treemacs dap-mode lsp-origami lsp-dart company flycheck lsp-pyright
                             ;; modes
-                            rust-mode php-mode scala-mode dart-mode clojure-mode typescript-mode csharp-mode)))
+                            rust-mode php-mode scala-mode dart-mode clojure-mode typescript-mode csharp-mode haskell-mode)))
 
   (package-initialize)
   (package-refresh-contents)

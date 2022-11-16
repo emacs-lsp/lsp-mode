@@ -772,7 +772,7 @@ or JSON objects in `rust-project.json` format."
                                         :useParameterNames ,(lsp-json-bool lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names))
                  :maxLength ,lsp-rust-analyzer-max-inlay-hint-length
                  :parameterHints ,(lsp-json-bool lsp-rust-analyzer-display-parameter-hints)
-                 :reborrowHints ,(lsp-json-bool lsp-rust-analyzer-display-reborrow-hints)
+                 :reborrowHints ,lsp-rust-analyzer-display-reborrow-hints
                  :renderColons ,(lsp-json-bool lsp-rust-analyzer-server-format-inlay-hints)
                  :typeHints (:enable ,(lsp-json-bool lsp-rust-analyzer-server-display-inlay-hints)
                              :hideClosureInitialization ,(lsp-json-bool lsp-rust-analyzer-hide-closure-initialization)
