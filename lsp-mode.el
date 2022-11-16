@@ -3957,6 +3957,18 @@ yet."
   (lsp-disconnect)
   (lsp))
 
+;; https://github.com/emacs-lsp/lsp-mode/issues/3295#issuecomment-1308994099
+(when (and (< emacs-major-version 28)
+           (not (boundp 'eldoc-documentation-functions)))
+  (let ((lsp--user--eldoc-documentation-strategy
+         (and (boundp 'eldoc-documentation-strategy)
+              (default-value 'eldoc-documentation-strategy))))
+    (load "eldoc")
+    (when (memq (default-value 'eldoc-documentation-strategy) '(nil ignore))
+      (setq-default eldoc-documentation-strategy
+                    (or lsp--user--eldoc-documentation-strategy
+                        #'eldoc-documentation-compose-eagerly)))))
+
 (define-minor-mode lsp-managed-mode
   "Mode for source buffers managed by lsp-mode."
   :lighter nil
