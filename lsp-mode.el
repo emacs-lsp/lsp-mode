@@ -607,7 +607,7 @@ The hook will receive two parameters list of added and removed folders."
   :type 'hook
   :group 'lsp-mode)
 
-(make-obsolete 'lsp-eldoc-hook 'eldoc-documentation-functions "lsp-mode 8.0.0")
+(define-obsolete-variable-alias 'lsp-eldoc-hook 'eldoc-documentation-functions "lsp-mode 8.0.1")
 
 (defcustom lsp-before-apply-edits-hook nil
   "Hooks to run before applying edits."
