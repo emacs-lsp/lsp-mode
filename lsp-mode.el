@@ -4761,6 +4761,21 @@ Added to `after-change-functions'."
   (lsp--idle-reschedule buffer))
 
 
+(defcustom lsp-trim-trailing-whitespace t
+  "Trim trailing whitespace on a line."
+  :group 'lsp-mode
+  :type 'boolean)
+
+(defcustom lsp-insert-final-newline t
+  "Insert a newline character at the end of the file if one does not exist."
+  :group 'lsp-mode
+  :type 'boolean)
+
+(defcustom lsp-trim-final-newlines t
+  "Trim all newlines after the final newline at the end of the file."
+  :group 'lsp-mode
+  :type 'boolean)
+
 
 (defun lsp--on-type-formatting (first-trigger-characters more-trigger-characters)
   "Self insert handling.
@@ -4773,7 +4788,10 @@ Applies on type formatting."
                           :text-document (lsp--text-document-identifier)
                           :options (lsp-make-formatting-options
                                     :tab-size (symbol-value (lsp--get-indent-width major-mode))
-                                    :insert-spaces (if indent-tabs-mode :json-false t))
+                                    :insert-spaces (lsp-json-bool (not indent-tabs-mode))
+                                    :trim-trailing-whitespace? (lsp-json-bool lsp-trim-trailing-whitespace)
+                                    :insert-final-newline? (lsp-json-bool lsp-insert-final-newline)
+                                    :trim-final-newlines? (lsp-json-bool lsp-trim-final-newlines))
                           :ch (char-to-string ch)
                           :position (lsp--cur-position))
                          (lambda (data) (lsp--apply-text-edits data 'format))
@@ -5833,7 +5851,10 @@ Request codeAction/resolve for more info if server supports."
    :text-document (lsp--text-document-identifier)
    :options (lsp-make-formatting-options
              :tab-size (symbol-value (lsp--get-indent-width major-mode))
-             :insert-spaces (if indent-tabs-mode :json-false t))))
+             :insert-spaces (lsp-json-bool (not indent-tabs-mode))
+             :trim-trailing-whitespace? (lsp-json-bool lsp-trim-trailing-whitespace)
+             :insert-final-newline? (lsp-json-bool lsp-insert-final-newline)
+             :trim-final-newlines? (lsp-json-bool lsp-trim-final-newlines))))
 
 (defun lsp-format-buffer ()
   "Ask the server to format this document."
