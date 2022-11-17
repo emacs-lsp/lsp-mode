@@ -3957,17 +3957,14 @@ yet."
   (lsp-disconnect)
   (lsp))
 
+;; TODO remove those eldoc workarounds when dropping support for Emacs 27
 ;; https://github.com/emacs-lsp/lsp-mode/issues/3295#issuecomment-1308994099
-(when (and (< emacs-major-version 28)
-           (not (boundp 'eldoc-documentation-functions)))
-  (let ((lsp--user--eldoc-documentation-strategy
-         (and (boundp 'eldoc-documentation-strategy)
-              (default-value 'eldoc-documentation-strategy))))
-    (load "eldoc")
-    (when (memq (default-value 'eldoc-documentation-strategy) '(nil ignore))
-      (setq-default eldoc-documentation-strategy
-                    (or lsp--user--eldoc-documentation-strategy
-                        #'eldoc-documentation-compose-eagerly)))))
+(when (< emacs-major-version 28)
+  (unless (boundp 'eldoc-documentation-functions)
+    (load "eldoc"))
+  (when (memq (default-value 'eldoc-documentation-function) '(nil ignore))
+    ;; actually `eldoc-documentation-strategy', but CI was failing
+    (setq-default eldoc-documentation-function #'eldoc-documentation-default)))
 
 (define-minor-mode lsp-managed-mode
   "Mode for source buffers managed by lsp-mode."
