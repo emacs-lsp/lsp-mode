@@ -1163,6 +1163,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-insert-final-newline" class="md-nav__link">
+    lsp-insert-final-newline
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-installation-buffer-face" class="md-nav__link">
     lsp-installation-buffer-face
   </a>
@@ -1396,6 +1403,20 @@
         <li class="md-nav__item">
   <a href="#lsp-tcp-connection-timeout" class="md-nav__link">
     lsp-tcp-connection-timeout
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-trim-final-newlines" class="md-nav__link">
+    lsp-trim-final-newlines
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-trim-trailing-whitespace" class="md-nav__link">
+    lsp-trim-trailing-whitespace
   </a>
   
 </li>
@@ -4014,6 +4035,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-insert-final-newline" class="md-nav__link">
+    lsp-insert-final-newline
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-installation-buffer-face" class="md-nav__link">
     lsp-installation-buffer-face
   </a>
@@ -4247,6 +4275,20 @@
         <li class="md-nav__item">
   <a href="#lsp-tcp-connection-timeout" class="md-nav__link">
     lsp-tcp-connection-timeout
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-trim-final-newlines" class="md-nav__link">
+    lsp-trim-final-newlines
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-trim-trailing-whitespace" class="md-nav__link">
+    lsp-trim-trailing-whitespace
   </a>
   
 </li>
@@ -4655,6 +4697,11 @@ in place.</p>
 <p><em>Default:</em> <code>0.5</code></p>
 <p>Debounce interval for <code>after-change-functions</code>.</p>
 <hr />
+<h3 id="lsp-insert-final-newline"><code>lsp-insert-final-newline</code><a class="headerlink" href="#lsp-insert-final-newline" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Insert a newline character at the end of the file if one does not exist.</p>
+<hr />
 <h3 id="lsp-installation-buffer-face"><code>lsp-installation-buffer-face</code><a class="headerlink" href="#lsp-installation-buffer-face" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>face</code></p>
 <p><em>Default:</em> <code>((t :foreground green))</code></p>
@@ -4848,6 +4895,16 @@ in place.</p>
 <p><em>Default:</em> <code>2</code></p>
 <p>The timeout for tcp connection in seconds.</p>
 <hr />
+<h3 id="lsp-trim-final-newlines"><code>lsp-trim-final-newlines</code><a class="headerlink" href="#lsp-trim-final-newlines" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Trim all newlines after the final newline at the end of the file.</p>
+<hr />
+<h3 id="lsp-trim-trailing-whitespace"><code>lsp-trim-trailing-whitespace</code><a class="headerlink" href="#lsp-trim-trailing-whitespace" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Trim trailing whitespace on a line.</p>
+<hr />
 <h3 id="lsp-unconfigure-hook"><code>lsp-unconfigure-hook</code><a class="headerlink" href="#lsp-unconfigure-hook" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>hook</code></p>
 <p><em>Default:</em> <code>nil</code></p>
@@ -4887,7 +4944,7 @@ The hook will receive two parameters list of added and removed folders.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 15, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 18, 2022</span>
       
     
   </small>
