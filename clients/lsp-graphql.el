@@ -27,6 +27,7 @@
 (require 'lsp-mode)
 
 (lsp-dependency 'graphql-language-service-cli
+                '(:system "graphql-lsp")
                 '(:npm :package "graphql-language-service-cli"
                        :path "graphql-lsp"))
 
