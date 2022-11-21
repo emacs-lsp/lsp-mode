@@ -450,15 +450,18 @@ It updates the test tree view data."
 
 ;; For debugging
 
+(declare-function cider-connect-clj "ext:cider" (params))
+
 (defun lsp-clojure-nrepl-connect ()
   "Connect to the running nrepl debug server of clojure-lsp."
   (interactive)
   (let ((info (lsp-clojure-server-info-raw)))
     (save-match-data
-      (when-let (port (and (string-match "\"port\":\\([0-9]+\\)" info)
-                           (match-string 1 info)))
-        (cider-connect-clj `(:host "localhost"
-                             :port ,port))))))
+      (when (functionp 'cider-connect-clj)
+        (when-let (port (and (string-match "\"port\":\\([0-9]+\\)" info)
+                             (match-string 1 info)))
+          (cider-connect-clj `(:host "localhost"
+                               :port ,port)))))))
 
 ;; Cider integration
 
