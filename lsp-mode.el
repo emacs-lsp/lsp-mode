@@ -7498,7 +7498,8 @@ SESSION is the active session."
       (lsp-request-async
        "initialize"
        (append
-        (list :processId nil
+        (list :processId (unless (file-remote-p (buffer-file-name))
+                           (emacs-pid))
               :rootPath (lsp-file-local-name (expand-file-name root))
               :clientInfo (list :name "emacs"
                                 :version (emacs-version))
