@@ -8926,6 +8926,9 @@ The server(s) will be started in the buffer when it has finished."
                        t)))
           (cl-pushnew (current-buffer) (lsp--client-buffers client))
           (lsp--install-server-internal client)))
+       ;; ignore other warnings
+       ((not lsp-warn-no-matched-clients)
+        nil)
        ;; automatic installation disabled
        ((setq clients (unless matching-clients
                         (lsp--filter-clients (-andfn #'lsp--supports-buffer?
@@ -8950,8 +8953,7 @@ You may find the installation instructions at https://emacs-lsp.github.io/lsp-mo
                               clients
                               " ")))
        ;; no matches
-       ((and lsp-warn-no-matched-clients
-             (-> #'lsp--supports-buffer? lsp--filter-clients not))
+       ((-> #'lsp--supports-buffer? lsp--filter-clients not)
         (lsp--error "There are no language servers supporting current mode `%s' registered with `lsp-mode'.
 This issue might be caused by:
 1. The language you are trying to use does not have built-in support in `lsp-mode'. You must install the required support manually. Examples of this are `lsp-java' or `lsp-metals'.
