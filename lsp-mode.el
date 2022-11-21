@@ -8020,7 +8020,7 @@ archieve(e. g. when the archieve has multiple files)"
 ;; unzip
 
 (defconst lsp-ext-pwsh-script "powershell -noprofile -noninteractive \
--nologo -ex bypass Expand-Archive -path '%s' -dest '%s'"
+-nologo -ex bypass -command Expand-Archive -path '%s' -dest '%s'"
   "Powershell script to unzip file.")
 
 (defconst lsp-ext-unzip-script "bash -c 'mkdir -p %2$s && unzip -qq -o %1$s -d %2$s'"
