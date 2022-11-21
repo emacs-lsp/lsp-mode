@@ -93,7 +93,7 @@ in the WORKSPACE-ROOT."
            (exist (f-file-p package-json))
            (config (json-read-file package-json))
            (dependencies (alist-get 'dependencies config)))
-      (alist-get 'vue dependencies)
+      (alist-get 'vue (append dependencies (alist-get 'devDependencies config)))
   nil))
 
 (defun lsp-volar--activate-p (filename &optional _)
