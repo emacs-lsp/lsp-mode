@@ -49,6 +49,7 @@ nav:
     - Ada: page/lsp-ada.md
     - Angular: page/lsp-angular.md
     - Ansible: page/lsp-ansible.md
+    - Astro: page/lsp-astro.md
     - Bash: page/lsp-bash.md
     - Beancount: page/lsp-beancount.md
     - Camel: page/lsp-camel.md

@@ -34,6 +34,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "astro",
+    "full-name": "Astro",
+    "server-name": "astro-ls",
+    "server-url": "https://github.com/withastro/language-tools",
+    "installation": "npm i -g @astrojs/language-server",
+    "lsp-install-server": "astro-ls",
+    "debugger": "Not available"
+  },
+  {
     "name": "bash",
     "full-name": "Bash",
     "server-name": "bash-language-server",
