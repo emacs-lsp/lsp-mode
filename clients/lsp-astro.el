@@ -1,6 +1,6 @@
 ;;; lsp-astro.el --- lsp-mode astro integration -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022 Paweł Kobojek
+;; Copyright (C) 2022 Paweł Kobojek, Luca Fanselau
 
 ;; Author: Paweł Kobojek
 ;; Keywords: languages,astro
@@ -25,6 +25,14 @@
 ;;; Code:
 (require 'lsp-mode)
 
+
+(defun lsp-astro--get-initialization-options ()
+  "Try to get the typescript server path, to supply to the astro language server."
+  (let ((library (f-join (lsp-workspace-root) "node_modules/typescript/lib/tsserverlibrary.js")))
+    (if (file-exists-p library)
+        `(:typescript (:serverPath ,library))
+      (lsp-warn "Unable to find typescript server path for astro-ls. Guessed: %s" library))))
+
 (defgroup lsp-astro nil
   "LSP support for Astro.build, using astro-ls."
   :group 'lsp-mode
@@ -33,6 +41,7 @@
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("astro-ls" "--stdio"))
                   :activation-fn (lsp-activate-on "astro")
+                  :initialization-options #'lsp-astro--get-initialization-options
                   :server-id 'astro-ls))
 
 
