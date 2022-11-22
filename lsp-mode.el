@@ -3959,12 +3959,13 @@ yet."
 
 ;; TODO remove those eldoc workarounds when dropping support for Emacs 27
 ;; https://github.com/emacs-lsp/lsp-mode/issues/3295#issuecomment-1308994099
+(defvar eldoc-documentation-default) ; CI
 (when (< emacs-major-version 28)
   (unless (boundp 'eldoc-documentation-functions)
     (load "eldoc"))
   (when (memq (default-value 'eldoc-documentation-function) '(nil ignore))
     ;; actually `eldoc-documentation-strategy', but CI was failing
-    (setq-default eldoc-documentation-function #'eldoc-documentation-default)))
+    (setq-default eldoc-documentation-function 'eldoc-documentation-default)))
 
 (define-minor-mode lsp-managed-mode
   "Mode for source buffers managed by lsp-mode."
