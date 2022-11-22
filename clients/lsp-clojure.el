@@ -90,6 +90,12 @@
   :risky t
   :type 'directory)
 
+(defcustom lsp-clojure-library-dirs (list lsp-clojure-workspace-cache-dir
+                                          (expand-file-name "~/.gitlibs/libs"))
+  "LSP clojure dirs that should be considered library folders."
+  :group 'lsp-clojure
+  :type 'list)
+
 (defcustom lsp-clojure-test-tree-position-params nil
   "The optional test tree position params.
 Defaults to side following treemacs default."
@@ -437,7 +443,7 @@ It updates the test tree view data."
                    #'lsp-clojure--build-command
                    #'lsp-clojure--build-command)
   :major-modes '(clojure-mode clojurec-mode clojurescript-mode)
-  :library-folders-fn (lambda (_workspace) (list lsp-clojure-workspace-cache-dir))
+  :library-folders-fn (lambda (_workspace) lsp-clojure-library-dirs)
   :uri-handlers (lsp-ht ("jar" #'lsp-clojure--file-in-jar))
   :action-handlers (lsp-ht ("code-lens-references" #'lsp-clojure--show-references))
   :notification-handlers (lsp-ht ("clojure/textDocument/testTree" #'lsp-clojure--handle-test-tree))
