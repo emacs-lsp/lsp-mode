@@ -3199,7 +3199,7 @@ workspace->result.
 If NO-WAIT is non-nil send the request as notification."
   (if no-wait
       (lsp-notify method params)
-    (let* ((send-time (time-to-seconds (current-time)))
+    (let* ((send-time (float-time))
            ;; max time by which we must get a response
            (expected-time
             (and
@@ -3221,7 +3221,7 @@ If NO-WAIT is non-nil send the request as notification."
                   (accept-process-output
                    nil
                    (if expected-time (- expected-time send-time) 1))))
-              (setq send-time (time-to-seconds (current-time)))
+              (setq send-time (float-time))
               (when (and expected-time (< expected-time send-time))
                 (error "Timeout while waiting for response.  Method: %s" method)))
             (setq done? t)
@@ -3238,7 +3238,7 @@ If NO-WAIT is non-nil send the request as notification."
   "Send request METHOD with PARAMS and waits until there is no input.
 Return same value as `lsp--while-no-input' and respecting `non-essential'."
   (if non-essential
-    (let* ((send-time (time-to-seconds (current-time)))
+    (let* ((send-time (float-time))
            ;; max time by which we must get a response
            (expected-time
             (and
@@ -3256,7 +3256,7 @@ Return same value as `lsp--while-no-input' and respecting `non-essential'."
                 (catch 'lsp-done
                   (sit-for
                    (if expected-time (- expected-time send-time) 1)))
-                (setq send-time (time-to-seconds (current-time)))
+                (setq send-time (float-time))
                 (when (and expected-time (< expected-time send-time))
                   (error "Timeout while waiting for response.  Method: %s" method)))
               (setq done? (or resp-error resp-result))
