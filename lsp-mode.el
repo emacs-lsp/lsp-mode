@@ -6464,7 +6464,7 @@ PARAMS are the `workspace/configuration' request params"
 
 (defun lsp--ms-since (timestamp)
   "Integer number of milliseconds since TIMESTAMP.  Fractions discarded."
-  (/ (nth 2 (time-since timestamp)) 1000))
+  (floor (* 1000 (float-time (time-since timestamp)))))
 
 (defun lsp--send-request-response (workspace recv-time request response)
   "Send the RESPONSE for REQUEST in WORKSPACE and log if needed."
