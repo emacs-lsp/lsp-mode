@@ -6462,6 +6462,10 @@ PARAMS are the `workspace/configuration' request params"
                      section))))))
        (apply #'vector)))
 
+(defun lsp--ms-since (timestamp)
+  "Integer number of milliseconds since TIMESTAMP.  Fractions discarded."
+  (/ (nth 2 (time-since timestamp)) 1000))
+
 (defun lsp--send-request-response (workspace recv-time request response)
   "Send the RESPONSE for REQUEST in WORKSPACE and log if needed."
   (-let* (((&JSONResponse :params :method :id) request)
@@ -6471,7 +6475,7 @@ PARAMS are the `workspace/configuration' request params"
                           (lsp--make-log-entry method id params 'incoming-req)))
           (resp-entry (and lsp-log-io
                            (lsp--make-log-entry method id response 'outgoing-resp
-                                                (/ (nth 2 (time-since recv-time)) 1000)))))
+                                                (lsp--ms-since recv-time)))))
     ;; Send response to the server.
     (when (lsp--log-io-p method)
       (lsp--log-entry-new req-entry workspace)
@@ -6650,7 +6654,7 @@ server. WORKSPACE is the active workspace."
              (when (lsp--log-io-p method)
                (lsp--log-entry-new
                 (lsp--make-log-entry method id data 'incoming-resp
-                                     (/ (nth 2 (time-since before-send)) 1000))
+                                     (lsp--ms-since before-send))
                 workspace))
              (when callback
                (remhash id (lsp--client-response-handlers client))
@@ -6661,7 +6665,7 @@ server. WORKSPACE is the active workspace."
              (when (lsp--log-io-p method)
                (lsp--log-entry-new
                 (lsp--make-log-entry method id (lsp:json-response-error-error json-data)
-                                     'incoming-resp (/ (nth 2 (time-since before-send)) 1000))
+                                     'incoming-resp (lsp--ms-since before-send))
                 workspace))
              (when callback
                (remhash id (lsp--client-response-handlers client))
