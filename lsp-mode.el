@@ -3206,7 +3206,7 @@ workspace->result.
 If NO-WAIT is non-nil send the request as notification."
   (if no-wait
       (lsp-notify method params)
-    (let* ((send-time (time-to-seconds (current-time)))
+    (let* ((send-time (float-time))
            ;; max time by which we must get a response
            (expected-time
             (and
@@ -3228,7 +3228,7 @@ If NO-WAIT is non-nil send the request as notification."
                   (accept-process-output
                    nil
                    (if expected-time (- expected-time send-time) 1))))
-              (setq send-time (time-to-seconds (current-time)))
+              (setq send-time (float-time))
               (when (and expected-time (< expected-time send-time))
                 (error "Timeout while waiting for response.  Method: %s" method)))
             (setq done? t)
@@ -3245,7 +3245,7 @@ If NO-WAIT is non-nil send the request as notification."
   "Send request METHOD with PARAMS and waits until there is no input.
 Return same value as `lsp--while-no-input' and respecting `non-essential'."
   (if non-essential
-    (let* ((send-time (time-to-seconds (current-time)))
+    (let* ((send-time (float-time))
            ;; max time by which we must get a response
            (expected-time
             (and
@@ -3263,7 +3263,7 @@ Return same value as `lsp--while-no-input' and respecting `non-essential'."
                 (catch 'lsp-done
                   (sit-for
                    (if expected-time (- expected-time send-time) 1)))
-                (setq send-time (time-to-seconds (current-time)))
+                (setq send-time (float-time))
                 (when (and expected-time (< expected-time send-time))
                   (error "Timeout while waiting for response.  Method: %s" method)))
               (setq done? (or resp-error resp-result))
@@ -6469,6 +6469,10 @@ PARAMS are the `workspace/configuration' request params"
                      section))))))
        (apply #'vector)))
 
+(defun lsp--ms-since (timestamp)
+  "Integer number of milliseconds since TIMESTAMP.  Fractions discarded."
+  (floor (* 1000 (float-time (time-since timestamp)))))
+
 (defun lsp--send-request-response (workspace recv-time request response)
   "Send the RESPONSE for REQUEST in WORKSPACE and log if needed."
   (-let* (((&JSONResponse :params :method :id) request)
@@ -6478,7 +6482,7 @@ PARAMS are the `workspace/configuration' request params"
                           (lsp--make-log-entry method id params 'incoming-req)))
           (resp-entry (and lsp-log-io
                            (lsp--make-log-entry method id response 'outgoing-resp
-                                                (/ (nth 2 (time-since recv-time)) 1000)))))
+                                                (lsp--ms-since recv-time)))))
     ;; Send response to the server.
     (when (lsp--log-io-p method)
       (lsp--log-entry-new req-entry workspace)
@@ -6657,7 +6661,7 @@ server. WORKSPACE is the active workspace."
              (when (lsp--log-io-p method)
                (lsp--log-entry-new
                 (lsp--make-log-entry method id data 'incoming-resp
-                                     (/ (nth 2 (time-since before-send)) 1000))
+                                     (lsp--ms-since before-send))
                 workspace))
              (when callback
                (remhash id (lsp--client-response-handlers client))
@@ -6668,7 +6672,7 @@ server. WORKSPACE is the active workspace."
              (when (lsp--log-io-p method)
                (lsp--log-entry-new
                 (lsp--make-log-entry method id (lsp:json-response-error-error json-data)
-                                     'incoming-resp (/ (nth 2 (time-since before-send)) 1000))
+                                     'incoming-resp (lsp--ms-since before-send))
                 workspace))
              (when callback
                (remhash id (lsp--client-response-handlers client))
