@@ -129,8 +129,7 @@ Will invoke CALLBACK on success, ERROR-CALLBACK on error."
   "Resolve path to use to start the server."
   (let ((executable-name (if (eq system-type 'windows-nt)
                              "OmniSharp.exe"
-                           "OmniSharp"))
-        (server-dir lsp-csharp-omnisharp-roslyn-server-dir))
+                           "OmniSharp")))
     (or (and lsp-csharp-server-path
              (executable-find lsp-csharp-server-path))
         (executable-find executable-name)
