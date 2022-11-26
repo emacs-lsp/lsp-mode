@@ -11,6 +11,13 @@
 (source "melpa")
 
 (depends-on "emacs" "26.3")
+(depends-on "dash")
+(depends-on "f")
+(depends-on "ht")
+(depends-on "spinner")
+(depends-on "markdown-mode")
+(depends-on "lv")
+(depends-on "eldoc")
 
 (development
  (depends-on "ccls")

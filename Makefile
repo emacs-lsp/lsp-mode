@@ -7,14 +7,14 @@ TEST-FILES := test/test-helper.el $(shell ls test/lsp-*.el)
 LOAD-FILE = -l $(test-file)
 LOAD-TEST-FILES := $(foreach test-file, $(TEST-FILES), $(LOAD-FILE))
 
-build:
-	$(EASK) package
-	$(EASK) install
-
 # TODO: add 'checkdoc' and 'lint' here when they pass
 unix-ci: clean build compile prepare_cpp_project unix-test
 # TODO: add 'windows-test' back
 windows-ci: clean build compile prepare_cpp_project
+
+build:
+	$(EASK) package
+	$(EASK) install
 
 compile:
 	@echo "Compiling..."
@@ -30,11 +30,11 @@ test-downstream-pkgs:
 
 checkdoc:
 	@echo "Run checkdoc..."
-	$(EASK) checkdoc
+	$(EASK) lint checkdoc
 
 lint:
 	@echo "Package linting..."
-	$(EASK) lint
+	$(EASK) lint package
 
 unix-test:
 	@echo "Testing..."

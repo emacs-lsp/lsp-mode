@@ -78,11 +78,15 @@ jobs:
 
     - name: Move built artifact (Unix)
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
-      run: mv -f ./dist/ ./test/downstream/dist/
+      run: |
+        mv -f ./.eask/ ./test/downstream/.eask/
+        mv -f ./dist/ ./test/downstream/dist/
 
     - name: Move built artifact (Windows)
       if: matrix.os == 'windows-latest'
-      run: mv -Force ./dist/ ./test/downstream/dist/
+      run: |
+        mv -Force ./.eask/ ./test/downstream/.eask/
+        mv -Force ./dist/ ./test/downstream/dist/
 
     - name: Test downstream packages
       run: make test-downstream-pkgs
