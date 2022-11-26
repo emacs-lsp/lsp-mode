@@ -9,6 +9,7 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
@@ -17,7 +18,17 @@ jobs:
           - 26.3
           - 27.2
           - 28.2
-          - snapshot
+        experimental: [false]
+        include:
+          - os: ubuntu-latest
+            emacs-version: snapshot
+            experimental: true
+          - os: macos-latest
+            emacs-version: snapshot
+            experimental: true
+          - os: windows-latest
+            emacs-version: snapshot
+            experimental: true
 
     steps:
     - uses: jcs090218/setup-emacs@master
