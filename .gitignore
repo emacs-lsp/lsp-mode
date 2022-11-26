@@ -28,8 +28,8 @@ tramp
 # AUCTeX auto folder
 /auto/
 
-# cask packages
-.cask/
+# eask packages
+.eask/
 dist/
 
 # Flycheck

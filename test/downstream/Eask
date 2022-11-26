@@ -1,0 +1,45 @@
+(package "lsp-mode"
+         "8.0.1"
+         "Test downstream packages")
+
+(website-url "https://github.com/emacs-lsp/lsp-mode")
+(keywords "languages")
+
+(package-file "lsp-mode.el")
+
+(source "gnu")
+(source "melpa")
+
+(depends-on "emacs" "26.3")
+(depends-on "dash")
+(depends-on "f")
+(depends-on "ht")
+(depends-on "spinner")
+(depends-on "markdown-mode")
+(depends-on "lv")
+(depends-on "eldoc")
+
+(development
+ (depends-on "ccls")
+ (depends-on "dap-mode")
+ (depends-on "helm-lsp")
+ (depends-on "lsp-dart")
+ (depends-on "lsp-docker")
+ (depends-on "lsp-focus")
+ (depends-on "lsp-grammarly")
+ (depends-on "lsp-haskell")
+ (depends-on "lsp-ivy")
+ (depends-on "lsp-java")
+ (depends-on "lsp-ltex")
+ (depends-on "lsp-metals")
+ (depends-on "lsp-mssql")
+ (depends-on "lsp-origami")
+ (depends-on "lsp-pyright")
+ (depends-on "lsp-python-ms")
+ (depends-on "lsp-sonarlint")
+ (depends-on "lsp-sourcekit")
+ (depends-on "lsp-tailwindcss")
+ (depends-on "lsp-treemacs")
+ (depends-on "lsp-ui"))
+
+(setq network-security-level 'low)  ; see https://github.com/jcs090218/setup-emacs-windows/issues/156#issuecomment-932956432
