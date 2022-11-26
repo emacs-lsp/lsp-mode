@@ -2,6 +2,9 @@
          "8.0.1"
          "LSP mode")
 
+(website-url "https://github.com/emacs-lsp/lsp-mode")
+(keywords "languages")
+
 (package-file "lsp-mode.el")
 
 (load-paths "./" "./clients/" "./test/")
@@ -30,6 +33,7 @@
 (depends-on "spinner")
 (depends-on "markdown-mode")
 (depends-on "lv")
+(depends-on "eldoc")
 
 (development
  (depends-on "flycheck")
