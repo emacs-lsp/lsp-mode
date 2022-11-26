@@ -26,7 +26,7 @@
  "lsp-semantic-tokens.el"
  "clients/*.el")
 
-(depends-on "emacs" "26.1")
+(depends-on "emacs" "26.3")
 (depends-on "dash")
 (depends-on "f")
 (depends-on "ht")

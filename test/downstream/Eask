@@ -10,7 +10,7 @@
 (source "gnu")
 (source "melpa")
 
-(depends-on "emacs" "26.1")
+(depends-on "emacs" "26.3")
 
 (development
  (depends-on "ccls")
