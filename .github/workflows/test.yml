@@ -42,7 +42,12 @@ jobs:
     - name: Check cmake
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
       run: "cmake --version"
-
+      
+    - uses: actions/setup-python@v2
+      with:
+        python-version: "3.9"
+        architecture: "x64"
+      
     - name: Install depedencies on Linux
       if: runner.os == 'Linux'
       run: |
