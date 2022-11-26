@@ -71,7 +71,7 @@ jobs:
 
     - name: Check clangd
       if: runner.os == 'Linux'
-      run: "clangd-9 --version"
+      run: "clangd-11 --version"
 
     - uses: actions/checkout@v2
 
