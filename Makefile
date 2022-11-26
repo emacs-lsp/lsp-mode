@@ -12,9 +12,9 @@ build:
 	$(EASK) install
 
 # TODO: add 'checkdoc' and 'lint' here when they pass
-unix-ci: clean build compile prepare_cpp_project unix-test test-downstream-pkgs
+unix-ci: clean build compile prepare_cpp_project unix-test
 # TODO: add 'windows-test' back
-windows-ci: clean build compile prepare_cpp_project test-downstream-pkgs
+windows-ci: clean build compile prepare_cpp_project
 
 compile:
 	@echo "Compiling..."
