@@ -62,9 +62,9 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         pip3 install python-language-server
-        sudo apt-get install clangd-9
+        sudo apt-get install clangd-11
 
-    - name: Install deps on macOS
+    - name: Install depedencies on macOS
       if: runner.os == 'macOS'
       run: |
         pip3 install python-language-server
