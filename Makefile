@@ -26,7 +26,6 @@ prepare_cpp_project:
 
 test-downstream-pkgs:
 	@echo "Test downstream packages..."
-	mv ./dist/ ./test/downstream/dist/
 	./test/downstream/run.sh
 
 checkdoc:

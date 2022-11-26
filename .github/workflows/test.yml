@@ -64,11 +64,11 @@ jobs:
       run: "clangd-9 --version"
 
     - uses: actions/checkout@v2
-              
+
     - name: Grant execution permission
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
       run: chmod -R 777 ./
-              
+
     - name: Run tests (Unix)
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
       run: make unix-ci
@@ -76,6 +76,14 @@ jobs:
     - name: Run tests (Windows)
       if: matrix.os == 'windows-latest'
       run: make windows-ci
+
+    - name: Move built artifact (Unix)
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+      run: mv -f ./dist/ ./test/downstream/dist/
+
+    - name: Move built artifact (Windows)
+      if: matrix.os == 'windows-latest'
+      run: mv -Force ./dist/ ./test/downstream/dist/
 
     - name: Test downstream packages
       run: make test-downstream-pkgs
