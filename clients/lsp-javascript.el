@@ -51,7 +51,7 @@
 (defun lsp-typescript-javascript-tsx-jsx-activate-p (filename &optional _)
   "Check if the js-ts lsp server should be enabled based on FILENAME."
   (or (string-match-p "\\.mjs\\|\\.[jt]sx?\\'" filename)
-      (and (derived-mode-p 'js-mode 'typescript-mode)
+      (and (derived-mode-p 'js-mode 'typescript-mode 'typescript-ts-mode)
            (not (derived-mode-p 'json-mode)))))
 
 ;; Unmaintained sourcegraph server

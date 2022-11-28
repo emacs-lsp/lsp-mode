@@ -392,7 +392,7 @@ to allow or deny it.")
                      (or (string-match-p (rx (one-or-more anything) "."
                                              (or "ts" "js" "jsx" "tsx" "html" "vue" "svelte")eos)
                                          filename)
-                         (and (derived-mode-p 'js-mode 'js2-mode 'typescript-mode 'html-mode 'svelte-mode)
+                         (and (derived-mode-p 'js-mode 'js2-mode 'typescript-mode 'typescript-ts-mode 'html-mode 'svelte-mode)
                            (not (string-match-p "\\.json\\'" filename))))))
   :priority -1
   :completion-in-comments? t

@@ -806,6 +806,7 @@ Changes take effect only when a new session is started."
                                         (js-mode . "javascript")
                                         (js-ts-mode . "javascript")
                                         (typescript-mode . "typescript")
+                                        (typescript-ts-mode . "typescript")
                                         (fsharp-mode . "fsharp")
                                         (reason-mode . "reason")
                                         (caml-mode . "ocaml")
@@ -824,6 +825,7 @@ Changes take effect only when a new session is started."
                                         (dockerfile-mode . "dockerfile")
                                         (csharp-mode . "csharp")
                                         (csharp-tree-sitter-mode . "csharp")
+                                        (csharp-ts-mode . "csharp")
                                         (plain-tex-mode . "plaintex")
                                         (latex-mode . "latex")
                                         (v-mode . "v")
@@ -5803,6 +5805,7 @@ Request codeAction/resolve for more info if server supports."
     (c++-mode                   . c-basic-offset)                   ; C++
     (csharp-mode                . c-basic-offset)                   ; C#
     (csharp-tree-sitter-mode    . csharp-tree-sitter-indent-offset) ; C#
+    (csharp-ts-mode             . csharp-ts-mode-indent-offset)     ; C# (tree-sitter, Emacs29)
     (d-mode                     . c-basic-offset)                   ; D
     (java-mode                  . c-basic-offset)                   ; Java
     (jde-mode                   . c-basic-offset)                   ; Java (JDE)
@@ -5822,6 +5825,7 @@ Request codeAction/resolve for more info if server supports."
     (nxml-mode                  . nxml-child-indent)                ; XML
     (pascal-mode                . pascal-indent-level)              ; Pascal
     (typescript-mode            . typescript-indent-level)          ; Typescript
+    (typescript-ts-mode         . typescript-ts-mode-indent-offset) ; Typescript (tree-sitter, Emacs29)
     (sh-mode                    . sh-basic-offset)                  ; Shell Script
     (ruby-mode                  . ruby-indent-level)                ; Ruby
     (enh-ruby-mode              . enh-ruby-indent-level)            ; Ruby
