@@ -806,6 +806,7 @@ Changes take effect only when a new session is started."
                                         (js-mode . "javascript")
                                         (js-ts-mode . "javascript")
                                         (typescript-mode . "typescript")
+                                        (typescript-ts-mode . "typescript")
                                         (fsharp-mode . "fsharp")
                                         (reason-mode . "reason")
                                         (caml-mode . "ocaml")
@@ -5824,6 +5825,7 @@ Request codeAction/resolve for more info if server supports."
     (nxml-mode                  . nxml-child-indent)                ; XML
     (pascal-mode                . pascal-indent-level)              ; Pascal
     (typescript-mode            . typescript-indent-level)          ; Typescript
+    (typescript-ts-mode         . typescript-ts-mode-indent-offset) ; Typescript (tree-sitter, Emacs29)
     (sh-mode                    . sh-basic-offset)                  ; Shell Script
     (ruby-mode                  . ruby-indent-level)                ; Ruby
     (enh-ruby-mode              . enh-ruby-indent-level)            ; Ruby

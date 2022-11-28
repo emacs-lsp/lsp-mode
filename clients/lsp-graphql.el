@@ -48,7 +48,7 @@
   (or (string-match-p (rx (one-or-more anything) "."
                         (or "ts" "js" "jsx" "tsx" "vue" "graphql" "gql")eos)
         filename)
-    (and (derived-mode-p 'js-mode 'js2-mode 'typescript-mode)
+    (and (derived-mode-p 'js-mode 'js2-mode 'typescript-mode 'typescript-ts-mode)
       (not (derived-mode-p 'json-mode)))))
 
 (lsp-register-client
