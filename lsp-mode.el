@@ -357,6 +357,8 @@ the server has requested that."
     "[/\\\\]\\.reference\\'"
     ;; Bazel
     "bazel-[^/\\\\]+\\'"
+    ;; CSharp
+    "[/\\\\]\\.meta\\'"
     ;; Clojure
     "[/\\\\]\\.lsp\\'"
     "[/\\\\]\\.clj-kondo\\'"
