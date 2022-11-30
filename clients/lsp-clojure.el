@@ -424,7 +424,7 @@ It updates the test tree view data."
 (defun lsp-clojure--build-command ()
   "Build clojure-lsp start command."
   (let* ((base-command (or lsp-clojure-custom-server-command
-                           `(,(lsp-clojure--server-executable-path)))))
+                           (-some-> (lsp-clojure--server-executable-path) list))))
     (if lsp-clojure-trace-enable
         (-map-last #'stringp
                    (lambda (command)
