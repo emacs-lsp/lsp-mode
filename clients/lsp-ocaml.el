@@ -83,7 +83,7 @@
   :type '(choice (symbol :tag "Default behaviour" 'cut)
                  (symbol :tag "Display all the lines with spaces" 'space)))
 
-(cl-defmethod lsp-clients-extract-signature-on-hover (contents (_server-id (eql ocamllsp)) &optional storable)
+(cl-defmethod lsp-clients-extract-signature-on-hover (contents (_server-id (eql ocaml-lsp-server)) &optional storable)
   "Extract a representative line from OCaml's CONTENTS, to show in the echo area.
 This function splits the content between the signature
 and the documentation to display the signature
