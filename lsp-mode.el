@@ -4867,15 +4867,23 @@ Applies on type formatting."
   :group 'lsp-mode
   :type 'boolean)
 
+(defvar-local lsp--buffer-language 'uncomputed
+  "Locally cached returned value of `lsp-buffer-language'.")
+
 (defun lsp-buffer-language ()
   "Get language corresponding current buffer."
-  (or (->> lsp-language-id-configuration
-           (-first (-lambda ((mode-or-pattern . language))
-                     (cond
-                      ((and (stringp mode-or-pattern)
-                            (s-matches? mode-or-pattern (buffer-file-name))) language)
-                      ((eq mode-or-pattern major-mode) language))))
-           cl-rest)
+  (or (if (eq lsp--buffer-language 'uncomputed)
+          (setq lsp--buffer-language
+                (->> lsp-language-id-configuration
+                     (-first
+                      (-lambda ((mode-or-pattern . language))
+                        (cond
+                         ((and (stringp mode-or-pattern)
+                               (s-matches? mode-or-pattern (buffer-file-name)))
+                          language)
+                         ((eq mode-or-pattern major-mode) language))))
+                     cl-rest))
+        lsp--buffer-language)
       (and lsp-warn-no-matched-clients
            (lsp-warn "Unable to calculate the languageId for buffer `%s'. \
 Take a look at `lsp-language-id-configuration'. The `major-mode' is %s"
