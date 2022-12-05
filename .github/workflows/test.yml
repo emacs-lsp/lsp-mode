@@ -35,10 +35,6 @@ jobs:
       with:
         version: ${{ matrix.emacs-version }}
 
-    - uses: actions/setup-node@v2
-      with:
-        node-version: '16'
-
     - uses: emacs-eask/setup-eask@master
       with:
         version: 'snapshot'

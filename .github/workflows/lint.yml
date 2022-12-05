@@ -16,10 +16,6 @@ jobs:
         with:
           version: 27.1
 
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-
       - uses: emacs-eask/setup-eask@master
         with:
           version: 'snapshot'
