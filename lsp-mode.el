@@ -8041,8 +8041,8 @@ archieve(e. g. when the archieve has multiple files)"
   "Unzip script to unzip file.")
 
 (defcustom lsp-unzip-script (lambda ()
-                              (cond ((executable-find "powershell") lsp-ext-pwsh-script)
-                                    ((executable-find "unzip") lsp-ext-unzip-script)
+                              (cond ((executable-find "unzip") lsp-ext-unzip-script)
+                                    ((executable-find "powershell") lsp-ext-pwsh-script)
                                     (t nil)))
   "The script to unzip."
   :group 'lsp-mode
