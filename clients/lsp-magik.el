@@ -34,6 +34,30 @@
   :tag "Lsp Magik"
   :package-version '(lsp-mode . "8.0.1"))
 
+(defcustom lsp-magik-version "0.6.0"
+  "Version of LSP server."
+  :type `string
+  :group `lsp-magik
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-magik-download-url-lsp (format "https://github.com/StevenLooman/magik-tools/releases/download/%s/magik-language-server-%s.jar" lsp-magik-version lsp-magik-version)
+  "URL of LSP server to download."
+  :type `string
+  :group `lsp-magik
+  :package-version '(lsp-mode . "8.0.1"))
+
+(lsp-dependency
+ 'magik-ls
+ `(:download :url lsp-magik-download-url-lsp
+             :store-path ,(f-join lsp-server-install-dir "magik-ls" (format "magik-language-server-%s.jar" lsp-magik-version))))
+
+(defcustom lsp-magik-ls-path
+  (f-join lsp-server-install-dir (format "magik-ls/magik-language-server-%s.jar" lsp-magik-version))
+  "Path of the language server."
+  :type 'string
+  :group `lsp-magik
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defcustom lsp-magik-java-home nil
   "Path to Java Runtime, Java 11 minimum."
   :type `string
@@ -42,18 +66,6 @@
 
 (defcustom lsp-magik-smallworld-gis nil
   "Path to Smallworld Core."
-  :type `string
-  :group `lsp-magik
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-magik-aliases nil
-  "Path to gis_aliases file."
-  :type `string
-  :group `lsp-magik
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-magik-environment nil
-  "Path to environment file."
   :type `string
   :group `lsp-magik
   :package-version '(lsp-mode . "8.0.1"))
@@ -83,12 +95,6 @@
   :group `lsp-magik
   :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom lsp-magik-lsp-path (expand-file-name "magik-lsp/magik-language-server-0.5.1.jar" user-emacs-directory)
-  "Path of the language server."
-  :type 'string
-  :group `lsp-magik
-  :package-version '(lsp-mode . "8.0.1"))
-
 (defcustom lsp-magik-lint-override-config-file nil
   "Override path to magiklintrc.properties."
   :type 'string
@@ -96,27 +102,31 @@
   :package-version '(lsp-mode . "8.0.1"))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda ()
-                                     (list
-                                      (substitute-in-file-name lsp-magik-java-path)
-                                      "-jar"
-                                      (substitute-in-file-name lsp-magik-lsp-path)
-                                      "--debug")))
-                  :activation-fn (lsp-activate-on "magik")
-                  :initialized-fn (lambda (workspace)
-                                    (with-lsp-workspace workspace
-                                      (lsp--set-configuration (lsp-configuration-section "magik"))))
-                  :server-id 'magik))
+ (make-lsp-client
+  :download-server-fn (lambda (_client callback error-callback _update?)
+                        (lsp-package-ensure 'magik-ls callback error-callback))
+  :new-connection (lsp-stdio-connection
+                   (lambda ()
+                     (list
+                      (substitute-in-file-name lsp-magik-java-path)
+                      "-jar"
+                      (substitute-in-file-name lsp-magik-ls-path)
+                      "--debug")))
+  :activation-fn (lsp-activate-on "magik")
+  :initialized-fn (lambda (workspace)
+                    (with-lsp-workspace workspace
+                      (lsp--set-configuration (lsp-configuration-section "magik"))))
+  :server-id 'magik))
 
-(lsp-register-custom-settings `(("magik.javaHome" lsp-magik-java-home)
-                                ("magik.smallworldGis" lsp-magik-smallworld-gis)
-                                ("magik.aliases" lsp-magik-aliases)
-                                ("magik.environment" lsp-magik-environment)
-                                ("magik.typing.typeDatabasePaths" lsp-magik-typing-type-database-paths)
-                                ("magik.typing.enableChecks" lsp-magik-typing-enable-checks)
-                                ("magik.trace.server" lsp-magik-trace-server)
-                                ("magik.lint.overrideConfigFile" lsp-magik-lint-override-config-file)))
+(lsp-register-custom-settings
+ `(("magik.javaHome" lsp-magik-java-home)
+   ("magik.smallworldGis" lsp-magik-smallworld-gis)
+   ("magik.aliases" lsp-magik-aliases)
+   ("magik.environment" lsp-magik-environment)
+   ("magik.typing.typeDatabasePaths" lsp-magik-typing-type-database-paths)
+   ("magik.typing.enableChecks" lsp-magik-typing-enable-checks)
+   ("magik.trace.server" lsp-magik-trace-server)
+   ("magik.lint.overrideConfigFile" lsp-magik-lint-override-config-file)))
 
 (lsp-consistency-check lsp-magik)
 

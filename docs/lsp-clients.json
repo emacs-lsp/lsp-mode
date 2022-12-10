@@ -431,8 +431,9 @@
     "full-name": "GE Smallworld Magik",
     "server-name": "magik-language-server",
     "server-url": "https://github.com/StevenLooman/magik-tools",
-    "installation": "https://github.com/StevenLooman/magik-tools/releases",
-    "debugger": "Not implemented"
+    "installation": "Automatic by lsp-mode with `lsp-install-server`",
+    "lsp-install-server": "magik-ls",
+    "debugger": "Yes"
   },
   {
     "name": "markdown",
