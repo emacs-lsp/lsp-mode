@@ -56,7 +56,7 @@ local-webpage: docs
 	docker run --rm -it -p 8000:8000 -v ${PWD}:/docs docker.pkg.github.com/emacs-lsp/docs-image/docs-image
 
 clean:
-	$(EASK) clean-all
+	$(EASK) clean all
 	rm -rf test/fixtures/SampleCppProject/build test/fixtures/SampleCppProject/.cache
 
 

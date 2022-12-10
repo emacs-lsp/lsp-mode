@@ -69,7 +69,7 @@ jobs:
       if: runner.os == 'Linux'
       run: "clangd-11 --version"
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Grant execution permission
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
