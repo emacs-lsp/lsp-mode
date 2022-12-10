@@ -5218,6 +5218,23 @@ MODE is the mode used in the parent frame."
         (lambda (_start _end _match) t))
   (prettify-symbols-mode 1))
 
+(defvar lsp--markdown-link-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map [mouse-2] #'lsp--help-open-link)
+    (define-key map "\r" #'lsp--help-open-link)
+    map)
+  "Keymap for following links with mouse in *lsp-help* mode.")
+
+(defun lsp--fix-markdown-links ()
+  (let (prop)
+    (while (setq prop (text-property-search-forward 'face 'markdown-link-face t))
+      (add-text-properties (prop-match-beginning prop)
+                           (prop-match-end prop)
+                           (list 'button t
+                                 'category 'markdown-link
+                                 'follow-link t
+                                 'keymap lsp--markdown-link-map)))))
+
 (defun lsp--buffer-string-visible ()
   "Return visible buffer string.
 Stolen from `org-copy-visible'."
@@ -5338,7 +5355,9 @@ In addition, each can have property:
             ;;
             ;; See #2984
             (ignore-errors (font-lock-ensure))
-            (lsp--display-inline-image mode))
+            (lsp--display-inline-image mode)
+            (when (eq mode 'lsp--render-markdown)
+              (lsp--fix-markdown-links)))
           (lsp--buffer-string-visible))
       (error str))))
 
