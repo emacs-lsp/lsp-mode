@@ -5158,9 +5158,12 @@ If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
                               `(,buffer ,(posn-point event))
                             `(,(current-buffer) ,(point)))]
       (with-current-buffer buffer
-        ;; Markdown-mode puts the url in 'help-echo
-        (-some-> (get-text-property point 'help-echo)
-          (lsp--document-link-handle-target))))))
+        (when-let* ((face (get-text-property point 'face))
+                    (url (or (and (eq face 'markdown-link-face)
+                                  (get-text-property point 'help-echo))
+                             (and (memq face '(markdown-url-face markdown-plain-url-face))
+                                  (nth 3 (markdown-link-at-pos point))))))
+          (lsp--document-link-handle-target url))))))
 
 (defvar lsp-help-mode-map
   (-doto (make-sparse-keymap)
@@ -5218,22 +5221,27 @@ MODE is the mode used in the parent frame."
         (lambda (_start _end _match) t))
   (prettify-symbols-mode 1))
 
-(defvar lsp--markdown-link-map
+(defvar lsp-help-link-keymap
   (let ((map (make-sparse-keymap)))
     (define-key map [mouse-2] #'lsp--help-open-link)
     (define-key map "\r" #'lsp--help-open-link)
     map)
-  "Keymap for following links with mouse in *lsp-help* mode.")
+  "Keymap active on links in *lsp-help* mode.")
 
 (defun lsp--fix-markdown-links ()
   (let (prop)
-    (while (setq prop (text-property-search-forward 'face 'markdown-link-face t))
+    (while (setq prop (text-property-search-forward
+                       'face nil
+                       (lambda (_ face)
+                         (memq face '(markdown-link-face
+                                      markdown-url-face
+                                      markdown-plain-url-face)))))
       (add-text-properties (prop-match-beginning prop)
                            (prop-match-end prop)
                            (list 'button t
-                                 'category 'markdown-link
+                                 'category 'lsp-help-link
                                  'follow-link t
-                                 'keymap lsp--markdown-link-map)))))
+                                 'keymap lsp-help-link-keymap)))))
 
 (defun lsp--buffer-string-visible ()
   "Return visible buffer string.
