@@ -5229,7 +5229,8 @@ MODE is the mode used in the parent frame."
   "Keymap active on links in *lsp-help* mode.")
 
 (defun lsp--fix-markdown-links ()
-  (let (prop)
+  (let ((inhibit-read-only t)
+        (prop))
     (while (setq prop (text-property-search-forward
                        'face nil
                        (lambda (_ face)
