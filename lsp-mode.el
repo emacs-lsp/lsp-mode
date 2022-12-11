@@ -359,6 +359,8 @@ the server has requested that."
     "bazel-[^/\\\\]+\\'"
     ;; CSharp
     "[/\\\\]\\.meta\\'"
+    ;; Unity
+    "[/\\\\]Library\\'"
     ;; Clojure
     "[/\\\\]\\.lsp\\'"
     "[/\\\\]\\.clj-kondo\\'"
