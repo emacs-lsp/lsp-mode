@@ -219,10 +219,10 @@ available, else the globally installed tool."
                       (shell-command-to-string "dotnet tool list -g"))
     (f-exists? (lsp-fsharp--fsac-cmd))))
 
-(defun lsp-fsharp--project-list ()
+(defun lsp-fsharp--project-list (workspace)
   "Get the list of files we need to send to fsharp/workspaceLoad."
   (let* ((response (lsp-request "fsharp/workspacePeek"
-                                `(:directory ,(lsp-workspace-root)
+                                `(:directory ,(lsp--workspace-root workspace)
                                              :deep 10
                                              :excludedDirs ["paket-files" ".git" "packages" "node_modules"])))
          (data (lsp--read-json (lsp-get response :content)))
@@ -286,7 +286,7 @@ available, else the globally installed tool."
                                         (lsp--set-configuration
                                          (lsp-configuration-section "fsharp"))
                                         (lsp-fsharp--workspace-load
-                                         (lsp-fsharp--project-list)))))
+                                         (lsp-fsharp--project-list workspace)))))
                   :after-open-fn ;; workaround https://github.com/fsharp/FsAutoComplete/issues/833
                   (lambda ()
                     (setq-local lsp-default-create-error-handler-fn
