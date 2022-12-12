@@ -25,6 +25,12 @@
 (require 'lsp-mode)
 (require 'dash)
 
+(eval-when-compile
+  (declare-function text-property-search-forward "text-property-search")
+  (declare-function text-property-search-backward "text-property-search")
+  (declare-function prop-match-beginning "text-property-search")
+  (declare-function prop-match-end "text-property-search"))
+
 (defgroup lsp-semantic-tokens nil
   "LSP support for semantic-tokens."
   :prefix "lsp-semantic-tokens-"
@@ -68,6 +74,23 @@ preferred over both full and ranged token requests."
 When set to nil, refresh requests will be silently discarded.
 When set to t, semantic tokens will be re-requested for all buffers
 associated with the requesting language server."
+  :group 'lsp-semantic-tokens
+  :type 'boolean)
+
+(defcustom lsp-semantic-tokens-set-comment-syntax nil
+  "Whether to set the local syntax table for comments.
+
+Only compatible with emacs version >= 27.1.
+When set to nil, the syntax table will not be changed.
+When set to t, semantic tokens with type comment will be also
+marked as comment in the local syntax table. This helps a lot in
+situations when it is beneficial to ignore the comments. For
+example, in c-mode, parenthesis matching should ignore the ones
+in disabled macro blocks. Note that when turned on,
+auto-indentation may not work well in these \"disabled\" code
+blocks, so this may need to be temporarily set to nil in that
+case. Use `lsp-semantic-tokens-toggle-comment-syntax' to toggle
+the value of this variable."
   :group 'lsp-semantic-tokens
   :type 'boolean)
 
@@ -472,6 +495,9 @@ modified by OLD-FONTIFY-REGION.
 LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
   ;; TODO: support multiple language servers per buffer?
   (let ((faces (seq-some #'lsp--workspace-semantic-tokens-faces lsp--buffer-workspaces))
+        (types (plist-get
+                (seq-some #'lsp--semantic-tokens-as-defined-by-workspace lsp--buffer-workspaces)
+                :token-types))
         (modifier-faces
          (when lsp-semantic-tokens-apply-modifiers
            (seq-some #'lsp--workspace-semantic-tokens-modifier-faces lsp--buffer-workspaces)))
@@ -482,11 +508,15 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
           (eq nil lsp--semantic-tokens-cache)
           (eq nil (plist-get lsp--semantic-tokens-cache :response)))
       ;; default to non-semantic highlighting until first response has arrived
+      (when lsp-semantic-tokens-set-comment-syntax
+        (lsp-semantic-tokens--remove-comment-syntax beg-orig end-orig))
       (funcall old-fontify-region beg-orig end-orig loudly))
      ((not (= lsp--cur-version (plist-get lsp--semantic-tokens-cache :_documentVersion)))
       ;; delay fontification until we have fresh tokens
       '(jit-lock-bounds 0 . 0))
      (t
+      (when lsp-semantic-tokens-set-comment-syntax
+        (lsp-semantic-tokens--remove-comment-syntax beg-orig end-orig))
       (setq old-bounds (funcall old-fontify-region beg-orig end-orig loudly))
       ;; this is to prevent flickering when semantic token highlighting
       ;; is layered on top of, e.g., tree-sitter-hl, or clojure-mode's syntax highlighting.
@@ -510,6 +540,7 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
               (line-delta)
               (column 0)
               (face)
+              (type)
               (line-start-pos)
               (line-min)
               (line-max-inclusive)
@@ -543,8 +574,13 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
                  (setq current-line (+ current-line line-delta)))
                (setq column (+ column (aref data (1+ i))))
                (setq face (aref faces (aref data (+ i 3))))
+               (setq type (aref types (aref data (+ i 3))))
                (setq text-property-beg (+ line-start-pos column))
                (setq text-property-end (+ text-property-beg (aref data (+ i 2))))
+               (when lsp-semantic-tokens-set-comment-syntax
+                 (if (equal type "comment")
+                     (lsp-semantic-tokens--put-comment-syntax text-property-beg text-property-end)
+                   (lsp-semantic-tokens--remove-comment-syntax text-property-beg text-property-end)))
                (when face
                  (put-text-property text-property-beg text-property-end 'face face))
                ;; Deal with modifiers. We cache common combinations of
@@ -562,6 +598,144 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
                    (add-face-text-property text-property-beg text-property-end face)))
                when (> current-line line-max-inclusive) return nil)))))
       `(jit-lock-bounds ,beg . ,end)))))
+
+(defun lsp-semantic-tokens-toggle-comment-syntax ()
+  "Toggle the value of `lsp-semantic-tokens-set-comment-syntax'"
+  (interactive)
+  (if lsp-semantic-tokens-set-comment-syntax
+      (progn
+        (setq lsp-semantic-tokens-set-comment-syntax nil)
+        (lsp-semantic-tokens--remove-comment-syntax (point-min) (point-max)))
+    (setq lsp-semantic-tokens-set-comment-syntax t))
+  (font-lock-flush))
+
+(defun lsp-semantic-tokens--get-overlapping-comments (beg end)
+  "Returns the start of the comment pair that contains BEG, and the
+end of the comment pair that contains END. If either of such
+comment pairs does not exist, return nil for that part. This
+function also removes dangling comment starters/ends."
+  (let (prev-beg
+        prev-end
+        next-beg
+        next-end
+        tmp)
+    (lsp-save-restriction-and-excursion
+      (goto-char beg)
+      (setq prev-beg (text-property-search-backward 'lsp-semantic-token--comment-beg))
+      (when prev-beg
+        (setq prev-beg (prop-match-beginning prev-beg))
+        (goto-char prev-beg)
+        (setq prev-end (text-property-search-forward 'lsp-semantic-token--comment-end))
+        (when prev-end
+          (setq prev-end (prop-match-end prev-end))
+          ;; Check whether this is the actual matching end of prev-start
+          (setq tmp (text-property-search-backward 'lsp-semantic-token--comment-beg))
+          (when (or (not tmp) (not (equal prev-beg (prop-match-beginning tmp))))
+            (setq prev-end nil)))
+
+        (if prev-end
+            (when (<= prev-end beg)
+              ;; Does not overlap with (beg end)
+              (setq prev-beg nil))
+          (lsp-semantic-tokens--remove-comment-syntax-strict prev-beg prev-beg)
+          (setq prev-beg nil)))
+
+      (goto-char end)
+      (setq next-end (text-property-search-forward 'lsp-semantic-token--comment-end))
+      (when next-end
+        (setq next-end (prop-match-end next-end))
+        (goto-char next-end)
+        (setq next-beg (text-property-search-backward 'lsp-semantic-token--comment-beg))
+        (when next-beg
+          (setq next-beg (prop-match-beginning next-beg))
+          ;; Check whether this is the actual matching beginning of next-end
+          (setq tmp (text-property-search-forward 'lsp-semantic-token--comment-end))
+          (when (or (not tmp) (not (equal next-end (prop-match-end tmp))))
+            (setq next-beg nil)))
+
+        (if next-beg
+            (when (>= next-beg end)
+              ;; Does not overlap with (beg end)
+              (setq next-end nil))
+          (lsp-semantic-tokens--remove-comment-syntax-strict next-end next-end)
+          (setq next-end nil))))
+    (cons prev-beg next-end)))
+
+(defun lsp-semantic-tokens--remove-comment-syntax-strict (beg end)
+  "Remove all commnet syntax strictly in (BEG END), even if they
+overlap out of the range."
+  (lsp-save-restriction-and-excursion
+    (with-silent-modifications
+      ;; Remove comment starters
+      (goto-char beg)
+      (cl-do ((loc (text-property-search-forward
+                    'lsp-semantic-token--comment-beg)
+                   (text-property-search-forward
+                    'lsp-semantic-token--comment-beg)))
+          ((or (not loc) (>= (point) end)))
+        (let ((beg-match (prop-match-beginning loc))
+              (end-match (prop-match-end loc)))
+          (remove-text-properties beg-match end-match '(lsp-semantic-token--comment-beg))
+          (cl-loop for i from beg-match below end-match do
+                   (put-text-property i (1+ i) 'syntax-table
+                                      (get-text-property i 'lsp-semantic-token--previous-syntax-table))
+                   (remove-text-properties i (1+ i) '(lsp-semantic-token--previous-syntax-table)))))
+      ;; Remove comment ends
+      (goto-char end)
+      (cl-do ((loc (text-property-search-backward
+                    'lsp-semantic-token--comment-end)
+                   (text-property-search-backward
+                    'lsp-semantic-token--comment-end)))
+          ((or (not loc) (<= (point) beg)))
+        (let ((beg-match (prop-match-beginning loc))
+              (end-match (prop-match-end loc)))
+          (remove-text-properties beg-match end-match '(lsp-semantic-token--comment-end))
+          (cl-loop for i from beg-match below end-match do
+                   (put-text-property i (1+ i) 'syntax-table
+                                      (get-text-property i 'lsp-semantic-token--previous-syntax-table))
+                   (remove-text-properties i (1+ i) '(lsp-semantic-token--previous-syntax-table))))))))
+
+(defun lsp-semantic-tokens--put-comment-syntax (beg end)
+  "Set the comment syntax from BEG to END."
+  (let* ((overlapping (lsp-semantic-tokens--get-overlapping-comments beg end))
+         (new-beg (car overlapping))
+         (new-end (cdr overlapping)))
+    (when new-beg
+      (setq beg new-beg))
+    (when new-end
+      (setq end new-end)))
+  (lsp-semantic-tokens--remove-comment-syntax-strict beg end)
+  (lsp-save-restriction-and-excursion
+    (with-silent-modifications
+      (let ((beg-plus-1 (1+ beg))
+            (end-minus-1 (1- end)))
+        ;; Comment beginning
+        (put-text-property beg beg-plus-1
+                           'lsp-semantic-token--previous-syntax-table
+                           (get-text-property beg 'syntax-table))
+        (put-text-property beg beg-plus-1
+                           'lsp-semantic-token--comment-beg t)
+        (put-text-property beg beg-plus-1
+                           'syntax-table `(11 . ,(char-after beg)))
+        ;; Comment end
+        (put-text-property end-minus-1 end
+                           'lsp-semantic-token--previous-syntax-table
+                           (get-text-property end-minus-1 'syntax-table))
+        (put-text-property end-minus-1 end
+                           'lsp-semantic-token--comment-end t)
+        (put-text-property end-minus-1 end
+                           'syntax-table `(12 . ,(char-after end)))))))
+
+(defun lsp-semantic-tokens--remove-comment-syntax (beg end)
+  "Remove the comment syntax from BEG to END."
+  (let* ((overlapping (lsp-semantic-tokens--get-overlapping-comments beg end))
+         (new-beg (car overlapping))
+         (new-end (cdr overlapping)))
+    (when new-beg
+      (setq beg new-beg))
+    (when new-end
+      (setq end new-end)))
+  (lsp-semantic-tokens--remove-comment-syntax-strict beg end))
 
 (defun lsp-semantic-tokens--request-update ()
   "Request semantic-tokens update."
@@ -789,6 +963,8 @@ refresh in currently active buffer."
    (t
     (remove-hook 'lsp-configure-hook #'lsp-semantic-tokens--enable t)
     (remove-hook 'lsp-unconfigure-hook #'lsp-semantic-tokens--disable t)
+    (when lsp-semantic-tokens-set-comment-syntax
+      (lsp-semantic-tokens--remove-comment-syntax (point-min) (point-max)))
     (when lsp--semantic-tokens-teardown
       (funcall lsp--semantic-tokens-teardown))
     (lsp-semantic-tokens--request-update)
