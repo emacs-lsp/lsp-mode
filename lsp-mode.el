@@ -5232,18 +5232,20 @@ MODE is the mode used in the parent frame."
   (let ((inhibit-read-only t)
         (inhibit-modification-hooks t)
         (prop))
-    (while (setq prop (markdown-find-next-prop 'face))
-      (let ((end (next-single-property-change (car prop) 'face)))
-        (when (memq (get-text-property (car prop) 'face)
-                    '(markdown-link-face
-                      markdown-url-face
-                      markdown-plain-url-face))
+    (save-restriction
+      (goto-char (point-min))
+      (while (setq prop (markdown-find-next-prop 'face))
+        (let ((end (next-single-property-change (car prop) 'face)))
+          (when (memq (get-text-property (car prop) 'face)
+                      '(markdown-link-face
+                        markdown-url-face
+                        markdown-plain-url-face))
             (add-text-properties (car prop) end
                                  (list 'button t
                                        'category 'lsp-help-link
                                        'follow-link t
                                        'keymap lsp-help-link-keymap)))
-        (goto-char end)))))
+          (goto-char end))))))
 
 (defun lsp--buffer-string-visible ()
   "Return visible buffer string.
