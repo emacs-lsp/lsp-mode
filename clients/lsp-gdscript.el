@@ -23,6 +23,7 @@
 ;; lsp-gdscript client
 
 ;;; Code:
+
 (require 'lsp-mode)
 
 (defgroup lsp-gdscript nil
@@ -31,12 +32,13 @@
   :link '(url-link "https://github.com/godotengine/godot")
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-gdscript-port 6008
+(defcustom lsp-gdscript-port 6005
   "Port to connect server to"
   :type 'integer
   :group 'lsp-gdscript)
 
 (defun lsp-gdscript-tcp-connect-to-port ()
+  "Define a TCP connection to language server."
   (list
    :connect (lambda (filter sentinel name _environment-fn _workspace)
               (let* ((host "localhost")
@@ -54,8 +56,7 @@
                   :major-modes '(gdscript-mode)
                   :server-id 'gdscript))
 
+(lsp-consistency-check lsp-gdscript)
 
-(lsp-consistency-check lsp-gdscript)(provide 'lsp-gdscript)
-
-
+(provide 'lsp-gdscript)
 ;;; lsp-gdscript.el ends here
