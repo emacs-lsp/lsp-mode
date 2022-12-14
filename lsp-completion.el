@@ -523,7 +523,8 @@ The MARKERS and PREFIX value will be attached to each candidate."
        :company-doc-buffer (-compose #'lsp-doc-buffer
                                      #'lsp-completion--get-documentation)
        :exit-function
-       (-rpartial #'lsp-completion--exit-fn candidates)))))
+       (-rpartial #'lsp-completion--exit-fn candidates)
+       :exclusive 'no))))
 
 (defun lsp-completion--find-workspace (server-id)
   (--first (eq (lsp--client-server-id (lsp--workspace-client it)) server-id)
