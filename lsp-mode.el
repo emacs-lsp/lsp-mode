@@ -3402,6 +3402,13 @@ CANCEL-TOKEN is the token that can be used to cancel request."
       (let* ((start-time (current-time))
              (method (plist-get body :method))
              (id (cl-incf lsp-last-id))
+             (cancel-callback (when cancel-callback
+                                (pcase mode
+                                  ((or 'alive 'tick 'unchanged)
+                                   (lambda ()
+                                     (with-current-buffer buf
+                                       (funcall cancel-callback))))
+                                  (_ cancel-callback))))
              ;; calculate what are the (hook . local) pairs which will cancel
              ;; the request
              (hooks (pcase mode
@@ -3450,13 +3457,6 @@ CANCEL-TOKEN is the token that can be used to cancel request."
                                (funcall callback :error)
                                (lsp--request-cleanup-hooks id)
                                (funcall error-callback error)))
-             (cancel-callback (when cancel-callback
-                                (pcase mode
-                                  ((or 'alive 'tick 'unchanged)
-                                   (lambda ()
-                                     (with-current-buffer buf
-                                       (funcall cancel-callback))))
-                                  (_ cancel-callback))))
              (body (plist-put body :id id)))
 
         ;; cancel request in any of the hooks
