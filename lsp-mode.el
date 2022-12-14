@@ -3402,6 +3402,7 @@ CANCEL-TOKEN is the token that can be used to cancel request."
       (let* ((start-time (current-time))
              (method (plist-get body :method))
              (id (cl-incf lsp-last-id))
+             (buf (current-buffer))
              (cancel-callback (when cancel-callback
                                 (pcase mode
                                   ((or 'alive 'tick 'unchanged)
@@ -3416,7 +3417,6 @@ CANCEL-TOKEN is the token that can be used to cancel request."
                       ('tick      '((kill-buffer-hook . t) (after-change-functions . t)))
                       ('unchanged '((after-change-functions . t) (post-command-hook . nil)))
                       ('current   '((post-command-hook . nil)))))
-             (buf (current-buffer))
              ;; note: lambdas in emacs can be compared but we should make sure
              ;; that all of the captured arguments are the same - in our case
              ;; `lsp--create-request-cancel' will return the same lambda when
