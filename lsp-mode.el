@@ -5176,9 +5176,12 @@ If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
                               `(,buffer ,(posn-point event))
                             `(,(current-buffer) ,(point)))]
       (with-current-buffer buffer
-        ;; Markdown-mode puts the url in 'help-echo
-        (-some-> (get-text-property point 'help-echo)
-          (lsp--document-link-handle-target))))))
+        (when-let* ((face (get-text-property point 'face))
+                    (url (or (and (eq face 'markdown-link-face)
+                                  (get-text-property point 'help-echo))
+                             (and (memq face '(markdown-url-face markdown-plain-url-face))
+                                  (nth 3 (markdown-link-at-pos point))))))
+          (lsp--document-link-handle-target url))))))
 
 (defvar lsp-help-mode-map
   (-doto (make-sparse-keymap)
@@ -5237,6 +5240,32 @@ MODE is the mode used in the parent frame."
   (setq prettify-symbols-compose-predicate
         (lambda (_start _end _match) t))
   (prettify-symbols-mode 1))
+
+(defvar lsp-help-link-keymap
+  (let ((map (make-sparse-keymap)))
+    (define-key map [mouse-2] #'lsp--help-open-link)
+    (define-key map "\r" #'lsp--help-open-link)
+    map)
+  "Keymap active on links in *lsp-help* mode.")
+
+(defun lsp--fix-markdown-links ()
+  (let ((inhibit-read-only t)
+        (inhibit-modification-hooks t)
+        (prop))
+    (save-restriction
+      (goto-char (point-min))
+      (while (setq prop (markdown-find-next-prop 'face))
+        (let ((end (next-single-property-change (car prop) 'face)))
+          (when (memq (get-text-property (car prop) 'face)
+                      '(markdown-link-face
+                        markdown-url-face
+                        markdown-plain-url-face))
+            (add-text-properties (car prop) end
+                                 (list 'button t
+                                       'category 'lsp-help-link
+                                       'follow-link t
+                                       'keymap lsp-help-link-keymap)))
+          (goto-char end))))))
 
 (defun lsp--buffer-string-visible ()
   "Return visible buffer string.
@@ -5358,7 +5387,9 @@ In addition, each can have property:
             ;;
             ;; See #2984
             (ignore-errors (font-lock-ensure))
-            (lsp--display-inline-image mode))
+            (lsp--display-inline-image mode)
+            (when (eq mode 'lsp--render-markdown)
+              (lsp--fix-markdown-links)))
           (lsp--buffer-string-visible))
       (error str))))
 
