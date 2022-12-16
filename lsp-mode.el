@@ -4869,20 +4869,36 @@ Applies on type formatting."
   :group 'lsp-mode
   :type 'boolean)
 
+(defun lsp-buffer-language--configured-id ()
+  "Return nil when not registered."
+  (->> lsp-language-id-configuration
+       (-first
+        (-lambda ((mode-or-pattern . language))
+          (cond
+           ((and (stringp mode-or-pattern)
+                 (s-matches? mode-or-pattern (buffer-file-name)))
+            language)
+           ((eq mode-or-pattern major-mode) language))))
+       cl-rest))
+
+(defvar-local lsp--buffer-language nil
+  "Locally cached returned value of `lsp-buffer-language'.")
+
 (defun lsp-buffer-language ()
   "Get language corresponding current buffer."
-  (or (->> lsp-language-id-configuration
-           (-first (-lambda ((mode-or-pattern . language))
-                     (cond
-                      ((and (stringp mode-or-pattern)
-                            (s-matches? mode-or-pattern (buffer-file-name))) language)
-                      ((eq mode-or-pattern major-mode) language))))
-           cl-rest)
-      (and lsp-warn-no-matched-clients
-           (lsp-warn "Unable to calculate the languageId for buffer `%s'. \
+  (or lsp--buffer-language
+      (let* ((configured-language (lsp-buffer-language--configured-id)))
+        (setq lsp--buffer-language
+              (or configured-language
+                  ;; ensure non-nil
+                  (string-remove-suffix "-mode" (symbol-name major-mode))))
+        (when (and lsp-warn-no-matched-clients
+                   (null configured-language))
+          (lsp-warn "Unable to calculate the languageId for buffer `%s'. \
 Take a look at `lsp-language-id-configuration'. The `major-mode' is %s"
-                     (buffer-name)
-                     major-mode))))
+                    (buffer-name)
+                    major-mode))
+        lsp--buffer-language)))
 
 (defun lsp-activate-on (&rest languages)
   "Returns language activation function.
