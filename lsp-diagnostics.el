@@ -300,8 +300,8 @@ See https://github.com/emacs-lsp/lsp-mode."
                                   end (cdr region))
                           (lsp-save-restriction-and-excursion
                             (goto-char (point-min))
-                            (setq start (point-at-bol (1+ start-line))
-                                  end (point-at-eol (1+ end-line))))))
+                            (setq start (line-beginning-position (1+ start-line))
+                                  end (line-end-position (1+ end-line))))))
                       (flymake-make-diagnostic (current-buffer)
                                                start
                                                end

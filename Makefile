@@ -39,7 +39,7 @@ lint:
 unix-test:
 	@echo "Testing..."
 	$(EASK) install-deps --dev
-	$(EASK) exec ert-runner -L . -L clients	$(LOAD-TEST-FILES) -t '!no-win' -t '!org'
+	$(EASK) exec ert-runner -L . -L clients -t '!no-win' -t '!org'
 
 windows-test:
 	@echo "Testing..."
