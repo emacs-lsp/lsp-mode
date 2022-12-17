@@ -104,8 +104,8 @@ Results are meaningful only if FROM and TO are on the same line."
   (-doto (save-excursion
            (goto-char pos)
            (if (eq 'end-of-line lsp-lens-place-position)
-               (make-overlay (point-at-eol) -1 nil t t)
-             (make-overlay (point-at-bol) (1+ (point-at-eol)) nil t t)))
+               (make-overlay (line-end-position) -1 nil t t)
+             (make-overlay (line-beginning-position) (1+ (line-end-position)) nil t t)))
     (overlay-put 'lsp-lens t)
     (overlay-put 'lsp-lens-position pos)))
 
