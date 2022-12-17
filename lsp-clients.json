@@ -499,7 +499,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "nix",
+    "name": "nix-nil",
     "full-name": "Nix",
     "server-name": "nix-nil",
     "server-url": "https://github.com/oxalica/nil",

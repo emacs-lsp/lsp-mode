@@ -366,6 +366,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-nix-nil/</loc>
+         <lastmod>2022-12-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-nix/</loc>
          <lastmod>2022-12-17</lastmod>
          <changefreq>daily</changefreq>
