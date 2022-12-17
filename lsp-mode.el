@@ -1622,10 +1622,10 @@ actual language server executable. ARGS is a list of arguments to
 give to FIND-COMMAND to find the language server.  Returns the
 output of FIND-COMMAND if it exits successfully, nil otherwise.
 
-Typical uses include finding an executable by invoking `find' in
-a project, finding LLVM commands on macOS with `xcrun', or
+Typical uses include finding an executable by invoking 'find' in
+a project, finding LLVM commands on macOS with 'xcrun', or
 looking up project-specific language servers for projects written
-in the various dynamic languages, e.g. `nvm', `pyenv' and `rbenv'
+in the various dynamic languages, e.g. 'nvm', 'pyenv' and 'rbenv'
 etc."
   (when-let* ((find-command-path (executable-find find-command))
               (executable-path
@@ -3095,7 +3095,7 @@ If WORKSPACE is not provided current workspace will be used."
 (defun lsp--make-log-entry (method id body type &optional process-time)
   "Create an outgoing log object from BODY with method METHOD and id ID.
 If ID is non-nil, then the body is assumed to be a notification.
-TYPE can either be `incoming' or `outgoing'"
+TYPE can either be 'incoming or 'outgoing"
   (cl-assert (memq type '(incoming-req outgoing-req incoming-notif
                                        outgoing-notif incoming-resp
                                        outgoing-resp)))
@@ -4121,7 +4121,7 @@ yet."
                                         (point-max)))))
 
 (defun lsp--text-document-did-open ()
-  "`document/didOpen' event."
+  "'document/didOpen' event."
   (run-hooks 'lsp-before-open-hook)
   (when (and lsp-auto-touch-files
              (not (f-exists? (lsp--uri-to-path (lsp--buffer-uri)))))
@@ -4186,7 +4186,7 @@ yet."
   "The active region or the current line."
   (if (use-region-p)
       (lsp--region-to-range (region-beginning) (region-end))
-    (lsp--region-to-range (line-beginning-position) (line-end-position))))
+    (lsp--region-to-range (point-at-bol) (point-at-eol))))
 
 (defun lsp--check-document-changes-version (document-changes)
   "Verify that DOCUMENT-CHANGES have the proper version."
@@ -4465,7 +4465,7 @@ OPERATION is symbol representing the source of this text edit."
 
 (defun lsp--create-apply-text-edits-handlers ()
   "Create (handler cleanup-fn) for applying text edits in async request.
-Only works when mode is `tick or `alive."
+Only works when mode is 'tick or 'alive."
   (let* (first-edited
          (func (lambda (start &rest _)
                  (setq first-edited (if first-edited
@@ -5464,7 +5464,7 @@ When language is nil render as markup if `markdown-mode' is loaded."
   (car (s-lines (s-trim (lsp--render-element contents)))))
 
 (defun lsp--render-on-hover-content (contents render-all)
-  "Render the content received from `document/onHover' request.
+  "Render the content received from 'document/onHover' request.
 CONTENTS  - MarkedString | MarkedString[] | MarkupContent
 RENDER-ALL - nil if only the signature should be rendered."
   (cond
@@ -5984,7 +5984,7 @@ execute a CODE-ACTION-KIND action."
 
 (defun lsp--document-highlight-callback (highlights)
   "Create a callback to process the reply of a
-`textDocument/documentHighlight' message for the buffer BUF.
+'textDocument/documentHighlight' message for the buffer BUF.
 A reference is highlighted only if it is visible in a window."
   (lsp--remove-overlays 'lsp-highlight)
 
@@ -6415,7 +6415,7 @@ The command is executed via `workspace/executeCommand'"
             command err))))
 
 (defun lsp-send-execute-command (command &optional args)
-  "Create and send a `workspace/executeCommand' message having command COMMAND
+  "Create and send a 'workspace/executeCommand' message having command COMMAND
 and optional ARGS."
   (lsp-workspace-command-execute command args))
 
@@ -7671,14 +7671,14 @@ DEPENDENCY is found by locating it on the system path using
 You can explicitly call lsp-dependency in your environment to
 specify the absolute path to the DEPENDENCY. For example, the
 typescript-language-server requires both the server and the
-typescript compiler. If you have installed them in a team shared
+typescript compiler. If you've installed them in a team shared
 read-only location, you can instruct lsp-mode to use them via
 
- (eval-after-load `lsp-mode
-   `(progn
-      (require lsp-javascript)
-      (lsp-dependency typescript-language-server (:system ,tls-exe))
-      (lsp-dependency typescript (:system ,ts-js))))
+ (eval-after-load 'lsp-mode
+   '(progn
+      (require 'lsp-javascript)
+      (lsp-dependency 'typescript-language-server `(:system ,tls-exe))
+      (lsp-dependency 'typescript `(:system ,ts-js))))
 
 where tls-exe is the absolute path to the typescript-language-server
 executable and ts-js is the absolute path to the typescript compiler
@@ -8306,7 +8306,7 @@ function or lambda function to be called without arguments; BOOLEAN? is an
 optional flag that should be non-nil for boolean settings, when it is nil the
 property will be ignored if the VALUE is nil.
 
-Example: `(lsp-register-custom-settings `((\"foo.bar.buzz.enabled\" t t)))'
+Example: `(lsp-register-custom-settings '((\"foo.bar.buzz.enabled\" t t)))'
 \(note the double parentheses)"
   (let ((-compare-fn #'lsp--compare-setting-path))
     (setq lsp-client-settings (-uniq (append props lsp-client-settings)))))
@@ -9229,8 +9229,8 @@ This avoids overloading the server with many files when starting Emacs."
 (defun lsp--move-point-in-indentation (point indentation)
   (save-excursion
     (goto-char point)
-    (if (<= point (+ (line-beginning-position) indentation))
-        (line-beginning-position)
+    (if (<= point (+ (point-at-bol) indentation))
+        (point-at-bol)
       point)))
 
 (declare-function flycheck-checker-supports-major-mode-p "ext:flycheck")
@@ -9247,7 +9247,7 @@ This avoids overloading the server with many files when starting Emacs."
 
 (defun lsp-progress-spinner-type ()
   "Retrive the spinner type value, if value is not a symbol of `spinner-types
-defaults to `progress-bar."
+defaults to 'progress-bar."
   (or (car (assoc lsp-progress-spinner-type spinner-types)) 'progress-bar))
 
 (defun lsp-org ()
@@ -9320,8 +9320,8 @@ defaults to `progress-bar."
 
                      (goto-char (point-min))
                      (while (not (eobp))
-                       (delete-region (point) (if (> (+ (point) indentation) (line-end-position))
-                                                  (line-end-position)
+                       (delete-region (point) (if (> (+ (point) indentation) (point-at-eol))
+                                                  (point-at-eol)
                                                 (+ (point) indentation)))
                        (forward-line))
                      (buffer-substring-no-properties (point-min)
