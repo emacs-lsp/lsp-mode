@@ -99,6 +99,14 @@ Usually this is to be set in your .dir-locals.el on the project root directory."
   :group 'lsp-csharp-omnisharp
   :type 'file)
 
+(defcustom lsp-csharp-omnisharp-roslyn-binary-path
+  (f-join lsp-csharp-server-install-dir "latest" (if (eq system-type 'windows-nt)
+                                                     "OmniSharp.exe"
+                                                   "OmniSharp"))
+  "The path where omnisharp-roslyn binary after will be stored."
+  :group 'lsp-csharp-omnisharp
+  :type 'file)
+
 (defcustom lsp-csharp-omnisharp-roslyn-server-dir
   (f-join lsp-csharp-server-install-dir "latest" "omnisharp-roslyn")
   "The path where omnisharp-roslyn .zip archive will be extracted."
@@ -108,22 +116,16 @@ Usually this is to be set in your .dir-locals.el on the project root directory."
 (lsp-dependency
  'omnisharp-roslyn
  `(:download :url lsp-csharp-omnisharp-roslyn-download-url
-   :store-path lsp-csharp-omnisharp-roslyn-store-path)
+             :decompress :zip
+             :store-path lsp-csharp-omnisharp-roslyn-store-path
+             :binary-path lsp-csharp-omnisharp-roslyn-binary-path
+             :set-executable? t)
  '(:system "OmniSharp"))
 
 (defun lsp-csharp--omnisharp-download-server (_client callback error-callback _update?)
   "Download zip package for omnisharp-roslyn and install it.
 Will invoke CALLBACK on success, ERROR-CALLBACK on error."
-  (lsp-package-ensure
-   'omnisharp-roslyn
-   (lambda ()
-     (lsp-unzip lsp-csharp-omnisharp-roslyn-store-path
-                lsp-csharp-omnisharp-roslyn-server-dir)
-     (unless (eq system-type 'windows-nt)
-       (let ((omnisharp-executable (f-join lsp-csharp-omnisharp-roslyn-server-dir "OmniSharp")))
-         (set-file-modes omnisharp-executable #o755)))
-     (funcall callback))
-   error-callback))
+  (lsp-package-ensure 'omnisharp-roslyn callback error-callback))
 
 (defun lsp-csharp--language-server-path ()
   "Resolve path to use to start the server."
