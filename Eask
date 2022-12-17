@@ -12,7 +12,6 @@
 (script "test" "echo \"Error: no test specified\" && exit 1")
 
 (source "gnu")
-(source "jcs-elpa")
 (source "melpa")
 
 (files
@@ -46,7 +45,6 @@
  (depends-on "undercover")
  (depends-on "deferred")
  (depends-on "el-mock")
- (depends-on "org")
- (depends-on "elenv"))
+ (depends-on "org"))
 
 (setq network-security-level 'low)  ; see https://github.com/jcs090218/setup-emacs-windows/issues/156#issuecomment-932956432
