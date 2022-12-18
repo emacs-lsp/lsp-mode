@@ -54,9 +54,38 @@
   :type 'string
   :package-version '(lsp-mode . "8.0.1"))
 
+(defcustom lsp-nix-nil-formatter nil
+  "External formatter command with arguments.
+
+  Example [nixpkgs-fmt]."
+  :type 'lsp-string-vector
+  :group 'lsp-nix-nil
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-nix-nil-ignored-diagnostics nil
+  "Ignored diagnostic kinds."
+  :type 'lsp-string-vector
+  :group 'lsp-nix-nil
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-nix-nil-exclude-files-diagnostic nil
+  "Files to exclude from showing diagnostics."
+  :type 'lsp-string-vector
+  :group 'lsp-nix-nil
+  :package-version '(lsp-mode . "8.0.1"))
+
+(lsp-register-custom-settings
+ '(("nil.formatting.command" lsp-nix-nil-formatter)
+   ("nil.diagnostics.ignored" lsp-nix-nil-ignored-diagnostics)
+   ("nil.diagnostics.excludedFiles" lsp-nix-nil-exclude-files-diagnostic)))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-nix-nil-server-path))
                   :major-modes '(nix-mode)
+                  :initialized-fn (lambda (workspace)
+                    (with-lsp-workspace workspace
+                      (lsp--set-configuration
+                       (lsp-configuration-section "nil"))))
                   :server-id 'nix-nil))
 
 (lsp-consistency-check lsp-nix)
