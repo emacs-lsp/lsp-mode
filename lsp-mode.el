@@ -773,6 +773,7 @@ Changes take effect only when a new session is started."
                                         (lsp--render-markdown . "markdown")
                                         (rust-mode . "rust")
                                         (rustic-mode . "rust")
+                                        (rust-ts-mode . "rust")
                                         (kotlin-mode . "kotlin")
                                         (css-mode . "css")
                                         (css-ts-mode . "css")
