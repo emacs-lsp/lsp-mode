@@ -7841,17 +7841,28 @@ When prefix UPDATE? is t force installation even if the server is present."
   (interactive
    (list (read-directory-name "Uninstall LSP server: " (f-slash lsp-server-install-dir))))
   (unless (file-directory-p dir)
-    (user-error "Couldn't find %S directory" dir))
+    (user-error "Couldn't find %s directory" dir))
   (delete-directory dir 'recursive)
-  (message "Uninstalled %S" (file-name-nondirectory (directory-file-name dir))))
+  (message "Server `%s' uninstalled." (file-name-nondirectory (directory-file-name dir))))
 
 ;;;###autoload
 (defun lsp-uninstall-servers ()
   "Uninstall all installed servers."
-  (unless (file-directory-p lsp-server-install-dir)
-    (user-error "No server to uninstall" lsp-server-install-dir))
-  (delete-directory lsp-server-install-dir 'recursive)
-  (message "Done uninstall all servers"))
+  (interactive)
+  (let* ((dir lsp-server-install-dir)
+         (servers (ignore-errors
+                    (directory-files dir t
+                                     directory-files-no-dot-files-regexp))))
+    (if (or (not (file-directory-p dir)) (zerop (length servers)))
+        (user-error "No server to uninstall")
+      (when (yes-or-no-p
+             (format "Servers to uninstall: %d (%s), proceed? "
+                     (length servers)
+                     (mapconcat (lambda (server)
+                                  (file-name-nondirectory (directory-file-name server)))
+                                servers " ")))
+        (mapc #'lsp-uninstall-server servers)
+        (message "Done uninstall all servers")))))
 
 ;;;###autoload
 (defun lsp-update-server (&optional server-id)
