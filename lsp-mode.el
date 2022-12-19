@@ -5260,7 +5260,8 @@ MODE is the mode used in the parent frame."
     (save-restriction
       (goto-char (point-min))
       (while (setq prop (markdown-find-next-prop 'face))
-        (let ((end (next-single-property-change (car prop) 'face)))
+        (let ((end (or (next-single-property-change (car prop) 'face)
+                       (point-max))))
           (when (memq (get-text-property (car prop) 'face)
                       '(markdown-link-face
                         markdown-url-face
