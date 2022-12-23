@@ -254,7 +254,7 @@ to Kotlin."
                                                  (or (executable-find lsp-clients-kotlin-server-executable)
                                                      (lsp-package-path 'kotlin-language-server))
                                                  "kotlin-language-server"))))
-  :major-modes '(kotlin-mode)
+  :major-modes '(kotlin-mode kotlin-ts-mode)
   :priority -1
   :server-id 'kotlin-ls
   :initialized-fn (lambda (workspace)

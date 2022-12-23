@@ -58,6 +58,7 @@
   * Add [[https://github.com/oxalica/nil][nil]] support (additional server for Nix)
   * Add [[https://github.com/johnsoncodehk/volar/pull/1916][Volar 1.0]] support, refactor vue-language-server ~initializationOptions~, and remove multi server that is no longer needed.
   * Ensure that incomplete completions only trigger when retriggering from the same completion session #3028
+  * ~lsp-kotlin~ now supports ~kotlin-ts-mode~
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.

@@ -783,6 +783,7 @@ Changes take effect only when a new session is started."
                                         (rust-ts-mode . "rust")
                                         (rustic-mode . "rust")
                                         (kotlin-mode . "kotlin")
+                                        (kotlin-ts-mode . "kotlin")
                                         (css-mode . "css")
                                         (css-ts-mode . "css")
                                         (less-mode . "less")
