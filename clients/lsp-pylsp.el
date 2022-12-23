@@ -426,7 +426,7 @@ So it will rename only references it can find."
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda () lsp-pylsp-server-command))
-                  :major-modes '(python-mode cython-mode)
+                  :activation-fn (lsp-activate-on "python")
                   :priority -1
                   :server-id 'pylsp
                   :library-folders-fn (lambda (_workspace) lsp-clients-pylsp-library-directories)
