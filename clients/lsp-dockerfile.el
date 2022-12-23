@@ -53,7 +53,7 @@
                                              (cl-first lsp-dockerfile-language-server-command))
                                             (lsp-package-path 'docker-langserver))
                                        ,@(cl-rest lsp-dockerfile-language-server-command))))
-                  :major-modes '(dockerfile-mode)
+                  :activation-fn (lsp-activate-on "dockerfile")
                   :priority -1
                   :server-id 'dockerfile-ls
                   :download-server-fn (lambda (_client callback error-callback _update?)

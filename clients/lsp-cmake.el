@@ -33,7 +33,7 @@
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection "cmake-language-server")
-                  :major-modes '(cmake-mode)
+                  :activation-fn (lsp-activate-on "cmake")
                   :priority -1
                   :server-id 'cmakels))
 

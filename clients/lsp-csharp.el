@@ -345,7 +345,7 @@ using the `textDocument/references' request."
                    #'(lambda ()
                        (when-let ((binary (lsp-csharp--language-server-path)))
                          (f-exists? binary))))
-                  :major-modes '(csharp-mode csharp-tree-sitter-mode csharp-ts-mode)
+                  :activation-fn (lsp-activate-on "csharp")
                   :server-id 'omnisharp
                   :priority -1
                   :action-handlers (ht ("omnisharp/client/findReferences" 'lsp-csharp--action-client-find-references))
@@ -461,7 +461,7 @@ Will update if UPDATE? is t"
                                                         #'lsp-csharp--cls-test-csharp-ls-present)
                   :priority -2
                   :server-id 'csharp-ls
-                  :major-modes '(csharp-mode csharp-tree-sitter-mode csharp-ts-mode)
+                  :activation-fn (lsp-activate-on "csharp")
                   :before-file-open-fn #'lsp-csharp--cls-before-file-open
                   :uri-handlers (ht ("csharp" #'lsp-csharp--cls-metadata-uri-handler))
                   :download-server-fn #'lsp-csharp--cls-download-server))
