@@ -328,7 +328,7 @@ PARAMS progress report notification data."
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-rust-rls-server-command))
-                  :major-modes '(rust-mode rustic-mode)
+                  :activation-fn (lsp-activate-on "rust")
                   :priority (if (eq lsp-rust-server 'rls) 1 -1)
                   :initialization-options '((omitInitBuild . t)
                                             (cmdRun . t))
@@ -1237,7 +1237,7 @@ tokens legend."
                             (lsp-package-path 'rust-analyzer)
                             "rust-analyzer")
                        ,@(cl-rest lsp-rust-analyzer-server-command))))
-  :major-modes '(rust-mode rustic-mode)
+  :activation-fn (lsp-activate-on "rust")
   :priority (if (eq lsp-rust-server 'rust-analyzer) 1 -1)
   :initialization-options 'lsp-rust-analyzer--make-init-options
   :notification-handlers (ht<-alist lsp-rust-notification-handlers)

@@ -730,27 +730,35 @@ Changes take effect only when a new session is started."
   :group 'lsp-mode
   :package-version '(lsp-mode . "8.0.1"))
 
-(defvar lsp-language-id-configuration '((".*\\.vue$" . "vue")
-                                        (".*\\.tsx$" . "typescriptreact")
-                                        (".*\\.ts$" . "typescript")
-                                        (".*\\.jsx$" . "javascriptreact")
-                                        (".*\\.js$" . "javascript")
-                                        (".*\\.xml$" . "xml")
-                                        (".*\\.hx$" . "haxe")
-                                        (".*\\.lua$" . "lua")
-                                        (".*\\.sql$" . "sql")
-                                        (".*\\.html$" . "html")
-                                        (".*\\.css" . "css")
-                                        (".*/settings.json$" . "jsonc")
-                                        (".*\\.json$" . "json")
-                                        (".*\\.jsonc$" . "jsonc")
-                                        (".*\\.php$" . "php")
-                                        (".*\\.svelte$" . "svelte")
-                                        (".*\\.ebuild$" . "shellscript")
-                                        (".*/PKGBUILD$" . "shellscript")
-                                        (".*\\.ttcn3$" . "ttcn3")
-                                        (".*\\ya?ml$" . "yaml")
-                                        (".*\\.astro$" . "astro")
+(defvar lsp-language-id-configuration '(("\\(^CMakeLists\\.txt\\|\\.cmake\\)\\'" . "cmake")
+                                        ("\\(^Dockerfile\\(?:\\..*\\)?\\|\\.[Dd]ockerfile\\)\\'" . "dockerfile")
+                                        ("\\.astro$" . "astro")
+                                        ("\\.cs\\'" . "csharp")
+                                        ("\\.css" . "css")
+                                        ("\\.ebuild$" . "shellscript")
+                                        ("\\.go\\'" . "go")
+                                        ("\\.html$" . "html")
+                                        ("\\.hx$" . "haxe")
+                                        ("\\.java\\'" . "java")
+                                        ("\\.js$" . "javascript")
+                                        ("\\.json$" . "json")
+                                        ("\\.jsonc$" . "jsonc")
+                                        ("\\.jsx$" . "javascriptreact")
+                                        ("\\.lua$" . "lua")
+                                        ("\\.php$" . "php")
+                                        ("\\.rs\\'" . "rust")
+                                        ("\\.sql$" . "sql")
+                                        ("\\.svelte$" . "svelte")
+                                        ("\\.toml\\'" . "toml")
+                                        ("\\.ts$" . "typescript")
+                                        ("\\.tsx$" . "typescriptreact")
+                                        ("\\.ttcn3$" . "ttcn3")
+                                        ("\\.vue$" . "vue")
+                                        ("\\.xml$" . "xml")
+                                        ("\\ya?ml$" . "yaml")
+                                        ("^PKGBUILD$" . "shellscript")
+                                        ("^go\\.mod\\'" . "go.mod")
+                                        ("^settings.json$" . "jsonc")
                                         (ada-mode . "ada")
                                         (nxml-mode . "xml")
                                         (sql-mode . "sql")
@@ -5861,43 +5869,51 @@ Request codeAction/resolve for more info if server supports."
 
 (defvar lsp--formatting-indent-alist
   ;; Taken from `dtrt-indent-mode'
-  '((c-mode                     . c-basic-offset)                   ; C
+  '(
+    (ada-mode                   . ada-indent)                       ; Ada
     (c++-mode                   . c-basic-offset)                   ; C++
+    (c++-ts-mode                . c-ts-mode-indent-offset)
+    (c-mode                     . c-basic-offset)                   ; C
+    (c-ts-mode                  . c-ts-mode-indent-offset)
+    (cperl-mode                 . cperl-indent-level)               ; Perl
+    (crystal-mode               . crystal-indent-level)             ; Crystal (Ruby)
     (csharp-mode                . c-basic-offset)                   ; C#
     (csharp-tree-sitter-mode    . csharp-tree-sitter-indent-offset) ; C#
     (csharp-ts-mode             . csharp-ts-mode-indent-offset)     ; C# (tree-sitter, Emacs29)
+    (css-mode                   . css-indent-offset)                ; CSS
     (d-mode                     . c-basic-offset)                   ; D
+    (enh-ruby-mode              . enh-ruby-indent-level)            ; Ruby
+    (erlang-mode                . erlang-indent-level)              ; Erlang
+    (ess-mode                   . ess-indent-offset)                ; ESS (R)
+    (go-ts-mode                 . go-ts-mode-indent-offset)
+    (hack-mode                  . hack-indent-offset)               ; Hack
     (java-mode                  . c-basic-offset)                   ; Java
+    (java-ts-mode               . java-ts-mode-indent-offset)
     (jde-mode                   . c-basic-offset)                   ; Java (JDE)
     (js-mode                    . js-indent-level)                  ; JavaScript
     (js2-mode                   . js2-basic-offset)                 ; JavaScript-IDE
     (js3-mode                   . js3-indent-level)                 ; JavaScript-IDE
     (json-mode                  . js-indent-level)                  ; JSON
+    (json-ts-mode               . json-ts-mode-indent-offset)
     (lua-mode                   . lua-indent-level)                 ; Lua
-    (objc-mode                  . c-basic-offset)                   ; Objective C
-    (php-mode                   . c-basic-offset)                   ; PHP
-    (perl-mode                  . perl-indent-level)                ; Perl
-    (cperl-mode                 . cperl-indent-level)               ; Perl
-    (raku-mode                  . raku-indent-offset)               ; Perl6/Raku
-    (erlang-mode                . erlang-indent-level)              ; Erlang
-    (ada-mode                   . ada-indent)                       ; Ada
-    (sgml-mode                  . sgml-basic-offset)                ; SGML
     (nxml-mode                  . nxml-child-indent)                ; XML
+    (objc-mode                  . c-basic-offset)                   ; Objective C
     (pascal-mode                . pascal-indent-level)              ; Pascal
-    (typescript-mode            . typescript-indent-level)          ; Typescript
-    (typescript-ts-mode         . typescript-ts-mode-indent-offset) ; Typescript (tree-sitter, Emacs29)
-    (sh-mode                    . sh-basic-offset)                  ; Shell Script
+    (perl-mode                  . perl-indent-level)                ; Perl
+    (php-mode                   . c-basic-offset)                   ; PHP
+    (powershell-mode            . powershell-indent)                ; PowerShell
+    (raku-mode                  . raku-indent-offset)               ; Perl6/Raku
     (ruby-mode                  . ruby-indent-level)                ; Ruby
-    (enh-ruby-mode              . enh-ruby-indent-level)            ; Ruby
-    (crystal-mode               . crystal-indent-level)             ; Crystal (Ruby)
-    (css-mode                   . css-indent-offset)                ; CSS
     (rust-mode                  . rust-indent-offset)               ; Rust
+    (rust-ts-mode               . rust-ts-mode-indent-offset)
     (rustic-mode                . rustic-indent-offset)             ; Rust
     (scala-mode                 . scala-indent:step)                ; Scala
-    (powershell-mode            . powershell-indent)                ; PowerShell
-    (ess-mode                   . ess-indent-offset)                ; ESS (R)
+    (sgml-mode                  . sgml-basic-offset)                ; SGML
+    (sh-mode                    . sh-basic-offset)                  ; Shell Script
+    (toml-ts-mode               . toml-ts-mode-indent-offset)
+    (typescript-mode            . typescript-indent-level)          ; Typescript
+    (typescript-ts-mode         . typescript-ts-mode-indent-offset) ; Typescript (tree-sitter, Emacs29)
     (yaml-mode                  . yaml-indent-offset)               ; YAML
-    (hack-mode                  . hack-indent-offset)               ; Hack
 
     (default                    . standard-indent))                 ; default fallback
   "A mapping from `major-mode' to its indent variable.")
