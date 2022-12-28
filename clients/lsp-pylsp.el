@@ -237,6 +237,11 @@ dot."
   :type 'boolean
   :group 'lsp-pylsp)
 
+(defcustom lsp-pylsp-plugins-black-enabled nil
+  "Enable or disable the plugin."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
 (defcustom lsp-pylsp-rope-extension-modules nil
   "Builtin and c-extension modules that are allowed to be
 imported and inspected by rope."
@@ -370,6 +375,7 @@ So it will rename only references it can find."
    ("pylsp.plugins.rope_rename.enabled" (lambda () (eq lsp-pylsp-rename-backend 'rope)) t)
    ("pylsp.plugins.autopep8.enabled" lsp-pylsp-plugins-autopep8-enabled t)
    ("pylsp.plugins.yapf.enabled" lsp-pylsp-plugins-yapf-enabled t)
+   ("pylsp.plugins.black.enabled" lsp-pylsp-plugins-black-enabled t)
    ("pylsp.plugins.rope_completion.enabled" lsp-pylsp-plugins-rope-completion-enabled t)
    ("pylsp.plugins.pyflakes.enabled" lsp-pylsp-plugins-pyflakes-enabled t)
    ("pylsp.plugins.pydocstyle.matchDir" lsp-pylsp-plugins-pydocstyle-match-dir)
