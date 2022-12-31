@@ -829,6 +829,8 @@ Changes take effect only when a new session is started."
                                         (tuareg-mode . "ocaml")
                                         (swift-mode . "swift")
                                         (elixir-mode . "elixir")
+                                        (elixir-ts-mode . "elixir")
+                                        (heex-ts-mode . "elixir")
                                         (conf-javaprop-mode . "spring-boot-properties")
                                         (yaml-mode . "yaml")
                                         (yaml-ts-mode . "yaml")
