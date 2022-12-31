@@ -569,7 +569,7 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
   ;; which should minimize those occasions where font-lock region extension extends beyond the
   ;; region covered by our freshly requested tokens (see lsp-mode issue #3154), while still limiting
   ;; requests to fairly small regions even if the underlying buffer is large
-  (when (lsp-feature? "textDocument/semanticTokens")
+  (when (lsp-feature? "textDocument/semanticTokensFull")
     (lsp--semantic-tokens-request
      (cons (max (point-min) (- (window-start) (* 5 jit-lock-chunk-size)))
            (min (point-max) (+ (window-end) (* 5 jit-lock-chunk-size)))) t)))
@@ -766,7 +766,7 @@ refresh in currently active buffer."
 (defun lsp-semantic-tokens--enable ()
   "Enable semantic tokens mode."
   (when (and lsp-semantic-tokens-enable
-             (lsp-feature? "textDocument/semanticTokens"))
+             (lsp-feature? "textDocument/semanticTokensFull"))
     (lsp-semantic-tokens--warn-about-deprecated-setting)
     (lsp-semantic-tokens-mode 1)))
 
@@ -780,11 +780,11 @@ refresh in currently active buffer."
   :group 'lsp-semantic-tokens
   :global nil
   (cond
-   (lsp-semantic-tokens-mode
+   ((and lsp-semantic-tokens-mode (lsp-feature? "textDocument/semanticTokensFull"))
     (add-hook 'lsp-configure-hook #'lsp-semantic-tokens--enable nil t)
     (add-hook 'lsp-unconfigure-hook #'lsp-semantic-tokens--disable nil t)
     (mapc #'lsp--semantic-tokens-initialize-workspace
-          (lsp--find-workspaces-for "textDocument/semanticTokens"))
+          (lsp--find-workspaces-for "textDocument/semanticTokensFull"))
     (lsp--semantic-tokens-initialize-buffer))
    (t
     (remove-hook 'lsp-configure-hook #'lsp-semantic-tokens--enable t)

@@ -133,9 +133,6 @@ is an hints in symbols range."
   "Face used on breadcrumb deprecated text on modeline."
   :group 'lsp-headerline)
 
-(defvar-local lsp-headerline--string nil
-  "Holds the current breadcrumb string on headerline.")
-
 (defvar lsp-headerline-arrow nil
   "Holds the current breadcrumb string on headerline.")
 
@@ -403,7 +400,7 @@ PATH is the current folder to be checked."
 
 (defun lsp-headerline--check-breadcrumb (&rest _)
   "Request for document symbols to build the breadcrumb."
-  (setq lsp-headerline--string (lsp-headerline--build-string))
+  (set-frame-parameter (selected-frame) 'lsp-headerline--string (lsp-headerline--build-string))
   (force-mode-line-update))
 
 (defun lsp-headerline--enable-breadcrumb ()
@@ -428,7 +425,7 @@ PATH is the current folder to be checked."
     ;; symbol or a list."
     (unless (listp header-line-format)
       (setq header-line-format (list header-line-format)))
-    (add-to-list 'header-line-format '(t (:eval lsp-headerline--string)))
+    (add-to-list 'header-line-format '(t (:eval (frame-parameter nil 'lsp-headerline--string) )))
 
     (add-hook 'xref-after-jump-hook #'lsp-headerline--check-breadcrumb nil t)
 
@@ -443,7 +440,7 @@ PATH is the current folder to be checked."
     (remove-hook 'xref-after-jump-hook #'lsp-headerline--check-breadcrumb t)
 
     (setq lsp-headerline--path-up-to-project-segments nil)
-    (setq header-line-format (remove '(t (:eval lsp-headerline--string)) header-line-format)))))
+    (setq header-line-format (remove '(t (:eval (frame-parameter nil 'lsp-headerline--string) )) header-line-format)))))
 
 ;;;###autoload
 (defun lsp-breadcrumb-go-to-symbol (symbol-position)

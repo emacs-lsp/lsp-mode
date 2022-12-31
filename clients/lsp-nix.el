@@ -45,18 +45,46 @@
 
 (defgroup lsp-nix-nil nil
   "LSP support for Nix, using nil."
-  :group `lsp-mode
+  :group 'lsp-mode
   :link '(url-link "https://github.com/oxalica/nil"))
 
 (defcustom lsp-nix-nil-server-path "nil"
   "Executable path for the server."
-  :group `lsp-nix-nil
+  :group 'lsp-nix-nil
   :type 'string
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom-lsp lsp-nix-nil-formatter nil
+  "External formatter command with arguments.
+
+  Example [nixpkgs-fmt]."
+  :type 'lsp-string-vector
+  :group 'lsp-nix-nil
+  :lsp-path "nil.formatting.command"
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom-lsp lsp-nix-nil-ignored-diagnostics nil
+  "Ignored diagnostic kinds."
+  :type 'lsp-string-vector
+  :group 'lsp-nix-nil
+  :lsp-path "nil.diagnostics.ignored"
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom-lsp lsp-nix-nil-exclude-files-diagnostic nil
+  "Files to exclude from showing diagnostics."
+  :type 'lsp-string-vector
+  :group 'lsp-nix-nil
+  :lsp-path "nil.diagnostics.excludedFiles"
   :package-version '(lsp-mode . "8.0.1"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-nix-nil-server-path))
                   :major-modes '(nix-mode)
+                  :initialized-fn (lambda (workspace)
+                    (with-lsp-workspace workspace
+                      (lsp--set-configuration
+                       (lsp-configuration-section "nil"))))
+                  :synchronize-sections '("nil")
                   :server-id 'nix-nil))
 
 (lsp-consistency-check lsp-nix)

@@ -111,7 +111,7 @@ most popular Emacs packages like `company`, `flycheck` and `projectile`.
 
 Contributions are very much welcome!
 
-**NOTE** 
+**NOTE**
 Documentation for clients is generated from doc comments in the clients
 themselves (see
 [lsp-doc.el](https://github.com/emacs-lsp/lsp-mode/blob/master/docs/lsp-doc.el))
@@ -279,7 +279,7 @@ primary working on/responsible for.
           <sub><b>psibi</b></sub>
         </a>
         <br/>
-        Terraform
+        Terraform | Nix
       </div>
     </td>
     <td align="center">

@@ -359,6 +359,8 @@ the server has requested that."
     "bazel-[^/\\\\]+\\'"
     ;; CSharp
     "[/\\\\]\\.meta\\'"
+    ;; Unity
+    "[/\\\\]Library\\'"
     ;; Clojure
     "[/\\\\]\\.lsp\\'"
     "[/\\\\]\\.clj-kondo\\'"
@@ -728,27 +730,35 @@ Changes take effect only when a new session is started."
   :group 'lsp-mode
   :package-version '(lsp-mode . "8.0.1"))
 
-(defvar lsp-language-id-configuration '((".*\\.vue$" . "vue")
-                                        (".*\\.tsx$" . "typescriptreact")
-                                        (".*\\.ts$" . "typescript")
-                                        (".*\\.jsx$" . "javascriptreact")
-                                        (".*\\.js$" . "javascript")
-                                        (".*\\.xml$" . "xml")
-                                        (".*\\.hx$" . "haxe")
-                                        (".*\\.lua$" . "lua")
-                                        (".*\\.sql$" . "sql")
-                                        (".*\\.html$" . "html")
-                                        (".*\\.css" . "css")
-                                        (".*/settings.json$" . "jsonc")
-                                        (".*\\.json$" . "json")
-                                        (".*\\.jsonc$" . "jsonc")
-                                        (".*\\.php$" . "php")
-                                        (".*\\.svelte$" . "svelte")
-                                        (".*\\.ebuild$" . "shellscript")
-                                        (".*/PKGBUILD$" . "shellscript")
-                                        (".*\\.ttcn3$" . "ttcn3")
-                                        (".*\\ya?ml$" . "yaml")
-                                        (".*\\.astro$" . "astro")
+(defvar lsp-language-id-configuration '(("\\(^CMakeLists\\.txt\\|\\.cmake\\)\\'" . "cmake")
+                                        ("\\(^Dockerfile\\(?:\\..*\\)?\\|\\.[Dd]ockerfile\\)\\'" . "dockerfile")
+                                        ("\\.astro$" . "astro")
+                                        ("\\.cs\\'" . "csharp")
+                                        ("\\.css" . "css")
+                                        ("\\.ebuild$" . "shellscript")
+                                        ("\\.go\\'" . "go")
+                                        ("\\.html$" . "html")
+                                        ("\\.hx$" . "haxe")
+                                        ("\\.java\\'" . "java")
+                                        ("\\.js$" . "javascript")
+                                        ("\\.json$" . "json")
+                                        ("\\.jsonc$" . "jsonc")
+                                        ("\\.jsx$" . "javascriptreact")
+                                        ("\\.lua$" . "lua")
+                                        ("\\.php$" . "php")
+                                        ("\\.rs\\'" . "rust")
+                                        ("\\.sql$" . "sql")
+                                        ("\\.svelte$" . "svelte")
+                                        ("\\.toml\\'" . "toml")
+                                        ("\\.ts$" . "typescript")
+                                        ("\\.tsx$" . "typescriptreact")
+                                        ("\\.ttcn3$" . "ttcn3")
+                                        ("\\.vue$" . "vue")
+                                        ("\\.xml$" . "xml")
+                                        ("\\ya?ml$" . "yaml")
+                                        ("^PKGBUILD$" . "shellscript")
+                                        ("^go\\.mod\\'" . "go.mod")
+                                        ("^settings.json$" . "jsonc")
                                         (ada-mode . "ada")
                                         (nxml-mode . "xml")
                                         (sql-mode . "sql")
@@ -770,8 +780,10 @@ Changes take effect only when a new session is started."
                                         (cython-mode . "python")
                                         (lsp--render-markdown . "markdown")
                                         (rust-mode . "rust")
+                                        (rust-ts-mode . "rust")
                                         (rustic-mode . "rust")
                                         (kotlin-mode . "kotlin")
+                                        (kotlin-ts-mode . "kotlin")
                                         (css-mode . "css")
                                         (css-ts-mode . "css")
                                         (less-mode . "less")
@@ -793,7 +805,9 @@ Changes take effect only when a new session is started."
                                         (mhtml-mode . "html")
                                         (mint-mode . "mint")
                                         (go-dot-mod-mode . "go.mod")
+                                        (go-mod-ts-mode . "go.mod")
                                         (go-mode . "go")
+                                        (go-ts-mode . "go")
                                         (graphql-mode . "graphql")
                                         (haskell-mode . "haskell")
                                         (hack-mode . "hack")
@@ -815,8 +829,11 @@ Changes take effect only when a new session is started."
                                         (tuareg-mode . "ocaml")
                                         (swift-mode . "swift")
                                         (elixir-mode . "elixir")
+                                        (elixir-ts-mode . "elixir")
+                                        (heex-ts-mode . "elixir")
                                         (conf-javaprop-mode . "spring-boot-properties")
                                         (yaml-mode . "yaml")
+                                        (yaml-ts-mode . "yaml")
                                         (ruby-mode . "ruby")
                                         (enh-ruby-mode . "ruby")
                                         (fortran-mode . "fortran")
@@ -825,6 +842,7 @@ Changes take effect only when a new session is started."
                                         (dart-mode . "dart")
                                         (erlang-mode . "erlang")
                                         (dockerfile-mode . "dockerfile")
+                                        (dockerfile-ts-mode . "dockerfile")
                                         (csharp-mode . "csharp")
                                         (csharp-tree-sitter-mode . "csharp")
                                         (csharp-ts-mode . "csharp")
@@ -840,6 +858,7 @@ Changes take effect only when a new session is started."
                                         (nim-mode . "nim")
                                         (dhall-mode . "dhall")
                                         (cmake-mode . "cmake")
+                                        (cmake-ts-mode . "cmake")
                                         (purescript-mode . "purescript")
                                         (gdscript-mode . "gdscript")
                                         (perl-mode . "perl")
@@ -857,6 +876,7 @@ Changes take effect only when a new session is started."
                                         (gfm-mode . "markdown")
                                         (beancount-mode . "beancount")
                                         (conf-toml-mode . "toml")
+                                        (toml-ts-mode . "toml")
                                         (org-mode . "org")
                                         (org-journal-mode . "org")
                                         (nginx-mode . "nginx")
@@ -3400,6 +3420,14 @@ CANCEL-TOKEN is the token that can be used to cancel request."
       (let* ((start-time (current-time))
              (method (plist-get body :method))
              (id (cl-incf lsp-last-id))
+             (buf (current-buffer))
+             (cancel-callback (when cancel-callback
+                                (pcase mode
+                                  ((or 'alive 'tick 'unchanged)
+                                   (lambda ()
+                                     (with-current-buffer buf
+                                       (funcall cancel-callback))))
+                                  (_ cancel-callback))))
              ;; calculate what are the (hook . local) pairs which will cancel
              ;; the request
              (hooks (pcase mode
@@ -3407,7 +3435,6 @@ CANCEL-TOKEN is the token that can be used to cancel request."
                       ('tick      '((kill-buffer-hook . t) (after-change-functions . t)))
                       ('unchanged '((after-change-functions . t) (post-command-hook . nil)))
                       ('current   '((post-command-hook . nil)))))
-             (buf (current-buffer))
              ;; note: lambdas in emacs can be compared but we should make sure
              ;; that all of the captured arguments are the same - in our case
              ;; `lsp--create-request-cancel' will return the same lambda when
@@ -3448,13 +3475,6 @@ CANCEL-TOKEN is the token that can be used to cancel request."
                                (funcall callback :error)
                                (lsp--request-cleanup-hooks id)
                                (funcall error-callback error)))
-             (cancel-callback (when cancel-callback
-                                (pcase mode
-                                  ((or 'alive 'tick 'unchanged)
-                                   (lambda ()
-                                     (with-current-buffer buf
-                                       (funcall cancel-callback))))
-                                  (_ cancel-callback))))
              (body (plist-put body :id id)))
 
         ;; cancel request in any of the hooks
@@ -4867,20 +4887,36 @@ Applies on type formatting."
   :group 'lsp-mode
   :type 'boolean)
 
+(defun lsp-buffer-language--configured-id ()
+  "Return nil when not registered."
+  (->> lsp-language-id-configuration
+       (-first
+        (-lambda ((mode-or-pattern . language))
+          (cond
+           ((and (stringp mode-or-pattern)
+                 (s-matches? mode-or-pattern (buffer-file-name)))
+            language)
+           ((eq mode-or-pattern major-mode) language))))
+       cl-rest))
+
+(defvar-local lsp--buffer-language nil
+  "Locally cached returned value of `lsp-buffer-language'.")
+
 (defun lsp-buffer-language ()
   "Get language corresponding current buffer."
-  (or (->> lsp-language-id-configuration
-           (-first (-lambda ((mode-or-pattern . language))
-                     (cond
-                      ((and (stringp mode-or-pattern)
-                            (s-matches? mode-or-pattern (buffer-file-name))) language)
-                      ((eq mode-or-pattern major-mode) language))))
-           cl-rest)
-      (and lsp-warn-no-matched-clients
-           (lsp-warn "Unable to calculate the languageId for buffer `%s'. \
+  (or lsp--buffer-language
+      (let* ((configured-language (lsp-buffer-language--configured-id)))
+        (setq lsp--buffer-language
+              (or configured-language
+                  ;; ensure non-nil
+                  (string-remove-suffix "-mode" (symbol-name major-mode))))
+        (when (and lsp-warn-no-matched-clients
+                   (null configured-language))
+          (lsp-warn "Unable to calculate the languageId for buffer `%s'. \
 Take a look at `lsp-language-id-configuration'. The `major-mode' is %s"
-                     (buffer-name)
-                     major-mode))))
+                    (buffer-name)
+                    major-mode))
+        lsp--buffer-language)))
 
 (defun lsp-activate-on (&rest languages)
   "Returns language activation function.
@@ -5158,9 +5194,12 @@ If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
                               `(,buffer ,(posn-point event))
                             `(,(current-buffer) ,(point)))]
       (with-current-buffer buffer
-        ;; Markdown-mode puts the url in 'help-echo
-        (-some-> (get-text-property point 'help-echo)
-          (lsp--document-link-handle-target))))))
+        (when-let* ((face (get-text-property point 'face))
+                    (url (or (and (eq face 'markdown-link-face)
+                                  (get-text-property point 'help-echo))
+                             (and (memq face '(markdown-url-face markdown-plain-url-face))
+                                  (nth 3 (markdown-link-at-pos point))))))
+          (lsp--document-link-handle-target url))))))
 
 (defvar lsp-help-mode-map
   (-doto (make-sparse-keymap)
@@ -5180,9 +5219,11 @@ If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
     (if (and contents (not (equal contents "")))
         (let ((lsp-help-buf-name "*lsp-help*"))
           (with-current-buffer (get-buffer-create lsp-help-buf-name)
-            (lsp-help-mode)
-            (with-help-window lsp-help-buf-name
-              (insert (string-trim-right (lsp--render-on-hover-content contents t))))))
+            (let ((delay-mode-hooks t))
+              (lsp-help-mode)
+              (with-help-window lsp-help-buf-name
+                (insert (string-trim-right (lsp--render-on-hover-content contents t)))))
+            (run-mode-hooks)))
       (lsp--info "No content at point."))))
 
 (defun lsp--point-in-bounds-p (bounds)
@@ -5217,6 +5258,33 @@ MODE is the mode used in the parent frame."
   (setq prettify-symbols-compose-predicate
         (lambda (_start _end _match) t))
   (prettify-symbols-mode 1))
+
+(defvar lsp-help-link-keymap
+  (let ((map (make-sparse-keymap)))
+    (define-key map [mouse-2] #'lsp--help-open-link)
+    (define-key map "\r" #'lsp--help-open-link)
+    map)
+  "Keymap active on links in *lsp-help* mode.")
+
+(defun lsp--fix-markdown-links ()
+  (let ((inhibit-read-only t)
+        (inhibit-modification-hooks t)
+        (prop))
+    (save-restriction
+      (goto-char (point-min))
+      (while (setq prop (markdown-find-next-prop 'face))
+        (let ((end (or (next-single-property-change (car prop) 'face)
+                       (point-max))))
+          (when (memq (get-text-property (car prop) 'face)
+                      '(markdown-link-face
+                        markdown-url-face
+                        markdown-plain-url-face))
+            (add-text-properties (car prop) end
+                                 (list 'button t
+                                       'category 'lsp-help-link
+                                       'follow-link t
+                                       'keymap lsp-help-link-keymap)))
+          (goto-char end))))))
 
 (defun lsp--buffer-string-visible ()
   "Return visible buffer string.
@@ -5328,19 +5396,20 @@ In addition, each can have property:
 (defun lsp--fontlock-with-mode (str mode)
   "Fontlock STR with MODE."
   (let ((lsp-buffer-major-mode major-mode))
-    (condition-case nil
-        (with-temp-buffer
-          (insert str)
-          (delay-mode-hooks (funcall mode))
-          (cl-flet ((window-body-width () lsp-window-body-width))
-            ;; This can go wrong in some cases, and the fontification would
-            ;; not work as expected.
-            ;;
-            ;; See #2984
-            (ignore-errors (font-lock-ensure))
-            (lsp--display-inline-image mode))
-          (lsp--buffer-string-visible))
-      (error str))))
+    (with-temp-buffer
+      (with-demoted-errors "Error during doc rendering: %s"
+        (insert str)
+        (delay-mode-hooks (funcall mode))
+        (cl-flet ((window-body-width () lsp-window-body-width))
+          ;; This can go wrong in some cases, and the fontification would
+          ;; not work as expected.
+          ;;
+          ;; See #2984
+          (ignore-errors (font-lock-ensure))
+          (lsp--display-inline-image mode)
+          (when (eq mode 'lsp--render-markdown)
+            (lsp--fix-markdown-links))))
+      (lsp--buffer-string-visible))))
 
 (defun lsp--render-string (str language)
   "Render STR using `major-mode' corresponding to LANGUAGE.
@@ -5803,43 +5872,51 @@ Request codeAction/resolve for more info if server supports."
 
 (defvar lsp--formatting-indent-alist
   ;; Taken from `dtrt-indent-mode'
-  '((c-mode                     . c-basic-offset)                   ; C
+  '(
+    (ada-mode                   . ada-indent)                       ; Ada
     (c++-mode                   . c-basic-offset)                   ; C++
+    (c++-ts-mode                . c-ts-mode-indent-offset)
+    (c-mode                     . c-basic-offset)                   ; C
+    (c-ts-mode                  . c-ts-mode-indent-offset)
+    (cperl-mode                 . cperl-indent-level)               ; Perl
+    (crystal-mode               . crystal-indent-level)             ; Crystal (Ruby)
     (csharp-mode                . c-basic-offset)                   ; C#
     (csharp-tree-sitter-mode    . csharp-tree-sitter-indent-offset) ; C#
     (csharp-ts-mode             . csharp-ts-mode-indent-offset)     ; C# (tree-sitter, Emacs29)
+    (css-mode                   . css-indent-offset)                ; CSS
     (d-mode                     . c-basic-offset)                   ; D
+    (enh-ruby-mode              . enh-ruby-indent-level)            ; Ruby
+    (erlang-mode                . erlang-indent-level)              ; Erlang
+    (ess-mode                   . ess-indent-offset)                ; ESS (R)
+    (go-ts-mode                 . go-ts-mode-indent-offset)
+    (hack-mode                  . hack-indent-offset)               ; Hack
     (java-mode                  . c-basic-offset)                   ; Java
+    (java-ts-mode               . java-ts-mode-indent-offset)
     (jde-mode                   . c-basic-offset)                   ; Java (JDE)
     (js-mode                    . js-indent-level)                  ; JavaScript
     (js2-mode                   . js2-basic-offset)                 ; JavaScript-IDE
     (js3-mode                   . js3-indent-level)                 ; JavaScript-IDE
     (json-mode                  . js-indent-level)                  ; JSON
+    (json-ts-mode               . json-ts-mode-indent-offset)
     (lua-mode                   . lua-indent-level)                 ; Lua
-    (objc-mode                  . c-basic-offset)                   ; Objective C
-    (php-mode                   . c-basic-offset)                   ; PHP
-    (perl-mode                  . perl-indent-level)                ; Perl
-    (cperl-mode                 . cperl-indent-level)               ; Perl
-    (raku-mode                  . raku-indent-offset)               ; Perl6/Raku
-    (erlang-mode                . erlang-indent-level)              ; Erlang
-    (ada-mode                   . ada-indent)                       ; Ada
-    (sgml-mode                  . sgml-basic-offset)                ; SGML
     (nxml-mode                  . nxml-child-indent)                ; XML
+    (objc-mode                  . c-basic-offset)                   ; Objective C
     (pascal-mode                . pascal-indent-level)              ; Pascal
-    (typescript-mode            . typescript-indent-level)          ; Typescript
-    (typescript-ts-mode         . typescript-ts-mode-indent-offset) ; Typescript (tree-sitter, Emacs29)
-    (sh-mode                    . sh-basic-offset)                  ; Shell Script
+    (perl-mode                  . perl-indent-level)                ; Perl
+    (php-mode                   . c-basic-offset)                   ; PHP
+    (powershell-mode            . powershell-indent)                ; PowerShell
+    (raku-mode                  . raku-indent-offset)               ; Perl6/Raku
     (ruby-mode                  . ruby-indent-level)                ; Ruby
-    (enh-ruby-mode              . enh-ruby-indent-level)            ; Ruby
-    (crystal-mode               . crystal-indent-level)             ; Crystal (Ruby)
-    (css-mode                   . css-indent-offset)                ; CSS
     (rust-mode                  . rust-indent-offset)               ; Rust
+    (rust-ts-mode               . rust-ts-mode-indent-offset)
     (rustic-mode                . rustic-indent-offset)             ; Rust
     (scala-mode                 . scala-indent:step)                ; Scala
-    (powershell-mode            . powershell-indent)                ; PowerShell
-    (ess-mode                   . ess-indent-offset)                ; ESS (R)
+    (sgml-mode                  . sgml-basic-offset)                ; SGML
+    (sh-mode                    . sh-basic-offset)                  ; Shell Script
+    (toml-ts-mode               . toml-ts-mode-indent-offset)
+    (typescript-mode            . typescript-indent-level)          ; Typescript
+    (typescript-ts-mode         . typescript-ts-mode-indent-offset) ; Typescript (tree-sitter, Emacs29)
     (yaml-mode                  . yaml-indent-offset)               ; YAML
-    (hack-mode                  . hack-indent-offset)               ; Hack
 
     (default                    . standard-indent))                 ; default fallback
   "A mapping from `major-mode' to its indent variable.")
@@ -7778,6 +7855,16 @@ When prefix UPDATE? is t force installation even if the server is present."
                       (and (not (lsp--client-download-in-progress? chosen-client))
                            (lsp--server-binary-present? chosen-client)))))
     (lsp--install-server-internal chosen-client update?)))
+
+;;;###autoload
+(defun lsp-uninstall-server (dir)
+  "Delete a LSP server from `lsp-server-install-dir'."
+  (interactive
+   (list (read-directory-name "Uninstall LSP server: " (f-slash lsp-server-install-dir) nil t)))
+  (unless (file-directory-p dir)
+    (user-error "Couldn't find %S directory" dir))
+  (delete-directory dir 'recursive)
+  (message "Uninstalled %S" (file-name-nondirectory dir)))
 
 ;;;###autoload
 (defun lsp-update-server (&optional server-id)

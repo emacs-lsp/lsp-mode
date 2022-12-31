@@ -100,7 +100,7 @@ nav:
     - MSSQL: https://emacs-lsp.github.io/lsp-mssql
     - Nginx: page/lsp-nginx.md
     - Nim: page/lsp-nim.md
-    - Nix (rnix-lsp): page/lsp-nix-rnix.md
+    - Nix (rnix-lsp): page/lsp-nix.md
     - Nix (nil): page/lsp-nix-nil.md
     - OCaml (ocaml-lsp): page/lsp-ocaml-lsp-server.md
     - OpenSCAD: page/lsp-openscad.md
