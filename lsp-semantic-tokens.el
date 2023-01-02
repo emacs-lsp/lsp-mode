@@ -72,7 +72,9 @@ associated with the requesting language server."
   :type 'boolean)
 
 (defcustom lsp-semantic-tokens-enable-multiline-token-support t
-  "When set to nil, tokens will be truncated after end-of-line.")
+  "When set to nil, tokens will be truncated after end-of-line."
+  :group 'lsp-semantic-tokens
+  :type 'boolean)
 
 (defface lsp-face-semhl-constant
   '((t :inherit font-lock-constant-face))
