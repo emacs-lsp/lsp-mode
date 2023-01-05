@@ -495,11 +495,12 @@ The command should include `--message=format=json` or similar option."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "6.2.2"))
 
-(defcustom lsp-rust-analyzer-cargo-all-targets t
-  "Cargo watch all targets or not."
-  :type 'boolean
-  :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "6.2.2"))
+(defcustom lsp-rust-analyzer-checkonsave-features []
+  "List of features to activate.
+Set this to `\"all\"` to pass `--all-features` to cargo."
+  :type 'lsp-string-vector
+  :group 'lsp-rust-rust-analyzer
+  :package-version '(lsp-mode . "8.0.2"))
 
 (defcustom lsp-rust-analyzer-cargo-unset-test []
   "force rust-analyzer to unset `#[cfg(test)]` for the specified crates."
@@ -746,8 +747,7 @@ or JSON objects in `rust-project.json` format."
     :checkOnSave (:enable ,(lsp-json-bool lsp-rust-analyzer-cargo-watch-enable)
                   :command ,lsp-rust-analyzer-cargo-watch-command
                   :extraArgs ,lsp-rust-analyzer-cargo-watch-args
-                  :features ,lsp-rust-features
-                  :allTargets ,(lsp-json-bool lsp-rust-analyzer-cargo-all-targets)
+                  :features ,lsp-rust-analyzer-checkonsave-features
                   :overrideCommand ,lsp-rust-analyzer-cargo-override-command)
     :files (:exclude ,lsp-rust-analyzer-exclude-globs
             :watcher ,(if lsp-rust-analyzer-use-client-watching "client" "notify")
