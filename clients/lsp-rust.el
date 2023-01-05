@@ -184,7 +184,8 @@ the latest build duration."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-features []
-  "List of Cargo features to enable."
+  "List of features to activate.
+Set this to `\"all\"` to pass `--all-features` to cargo."
   :type 'lsp-string-vector
   :group 'lsp-rust-rls
   :package-version '(lsp-mode . "6.1"))
@@ -482,7 +483,7 @@ belongs to."
   :package-version '(lsp-mode . "6.2.2"))
 
 (defcustom lsp-rust-analyzer-cargo-watch-args []
-  "Cargo watch args."
+  "Extra arguments for `cargo check`."
   :type 'lsp-string-vector
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "6.2.2"))
@@ -745,6 +746,7 @@ or JSON objects in `rust-project.json` format."
     :checkOnSave (:enable ,(lsp-json-bool lsp-rust-analyzer-cargo-watch-enable)
                   :command ,lsp-rust-analyzer-cargo-watch-command
                   :extraArgs ,lsp-rust-analyzer-cargo-watch-args
+                  :features ,lsp-rust-features
                   :allTargets ,(lsp-json-bool lsp-rust-analyzer-cargo-all-targets)
                   :overrideCommand ,lsp-rust-analyzer-cargo-override-command)
     :files (:exclude ,lsp-rust-analyzer-exclude-globs
