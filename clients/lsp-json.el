@@ -99,6 +99,8 @@
 
 (lsp-dependency 'vscode-json-languageserver
                 '(:system "vscode-json-language-server")
+                ;; The binary shipped from microsoft/vscode
+                '(:system "vscode-json-languageserver")
                 '(:npm :package "vscode-langservers-extracted"
                        :path "vscode-json-language-server"))
 
