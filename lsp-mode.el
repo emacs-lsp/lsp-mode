@@ -8286,6 +8286,13 @@ remote machine and vice versa."
                              selected-clients)))
       selected-clients)))
 
+(defun lsp-workspace-remove-all-folders()
+  "Delete all lsp tracked folders."
+  (interactive)
+  (--each (lsp-session-folders (lsp-session))
+    (lsp-workspace-folders-remove it)))
+
+
 (defun lsp-register-client (client)
   "Registers LSP client CLIENT."
   (cl-assert (symbolp (lsp--client-server-id client)) t)
