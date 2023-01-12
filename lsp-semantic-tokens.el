@@ -71,6 +71,11 @@ associated with the requesting language server."
   :group 'lsp-semantic-tokens
   :type 'boolean)
 
+(defcustom lsp-semantic-tokens-enable-multiline-token-support t
+  "When set to nil, tokens will be truncated after end-of-line."
+  :group 'lsp-semantic-tokens
+  :type 'boolean)
+
 (defface lsp-face-semhl-constant
   '((t :inherit font-lock-constant-face))
   "Face used for semantic highlighting scopes matching constant scopes."
@@ -279,6 +284,8 @@ Faces to use for semantic token modifiers if
         (tokenModifiers . ,(if lsp-semantic-tokens-apply-modifiers
                                (apply 'vector (mapcar #'car (lsp-semantic-tokens--modifier-faces-for (lsp--workspace-client lsp--cur-workspace))))
                              []))
+        (overlappingTokenSupport . t)
+        (multilineTokenSupport . ,(if lsp-semantic-tokens-enable-multiline-token-support t json-false))
         (tokenTypes . ,(apply 'vector (mapcar #'car (lsp-semantic-tokens--type-faces-for (lsp--workspace-client lsp--cur-workspace)))))
         (formats . ["relative"])))))
 
@@ -544,7 +551,10 @@ LOUDLY will be forwarded to OLD-FONTIFY-REGION as-is."
                (setq column (+ column (aref data (1+ i))))
                (setq face (aref faces (aref data (+ i 3))))
                (setq text-property-beg (+ line-start-pos column))
-               (setq text-property-end (+ text-property-beg (aref data (+ i 2))))
+               (setq text-property-end
+                     (min (if lsp-semantic-tokens-enable-multiline-token-support
+                              (point-max) (line-end-position))
+                      (+ text-property-beg (aref data (+ i 2)))))
                (when face
                  (put-text-property text-property-beg text-property-end 'face face))
                ;; Deal with modifiers. We cache common combinations of
