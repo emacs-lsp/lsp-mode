@@ -124,12 +124,17 @@
   :group 'lsp-solargraph
   :package-version '(lsp-mode . "7.0.1"))
 
+(defcustom lsp-solargraph-server-command '("solargraph" "stdio")
+  "Command to start yaml-languageserver."
+  :type '(repeat string)
+  :group 'lsp-solargraph
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defun lsp-solargraph--build-command ()
   "Build solargraph command"
-  (let ((lsp-command '("solargraph" "stdio")))
-    (if lsp-solargraph-use-bundler
-              (append '("bundle" "exec") lsp-command)
-            lsp-command)))
+  (if lsp-solargraph-use-bundler
+      (append '("bundle" "exec") lsp-solargraph-server-command)
+    lsp-solargraph-server-command))
 
 (lsp-register-custom-settings
  '(("solargraph.logLevel" lsp-solargraph-log-level)
