@@ -118,6 +118,12 @@ exceed allowed memory usage."
   :group 'lsp-typescript
   :type 'string)
 
+(defcustom lsp-clients-typescript-prefer-use-project-ts-server nil
+  "When set, prefers using the tsserver.js from your project. This
+can allow loading plugins configured in your tsconfig.json."
+  :group 'lsp-typescript
+  :type 'boolean)
+
 (defcustom lsp-clients-typescript-plugins (vector)
   "The list of plugins to load.
 It should be a vector of plist with keys `:location' and `:name'
@@ -892,11 +898,23 @@ name (e.g. `data' variable passed as `data' parameter)."
     (when lsp-javascript-update-inlay-hints-on-scroll
       (setf window-scroll-functions (delete #'lsp-javascript-update-inlay-hints-scroll-function window-scroll-functions))))))
 
+(defun lsp-clients-typescript-project-ts-server-path ()
+  (f-join (lsp-workspace-root) "node_modules" "typescript" "lib" "tsserver.js"))
+
+(defun lsp-clients-typescript-server-path ()
+  (cond
+   ((and
+     lsp-clients-typescript-prefer-use-project-ts-server
+     (f-exists? (lsp-clients-typescript-project-ts-server-path)))
+    (lsp-clients-typescript-project-ts-server-path))
+   (t
+    (lsp-package-path 'typescript))))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
                                                           `(,(lsp-package-path 'typescript-language-server)
                                                             "--tsserver-path"
-                                                            ,(lsp-package-path 'typescript)
+                                                            ,(lsp-clients-typescript-server-path)
                                                             ,@lsp-clients-typescript-server-args)))
                   :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
                   :priority -2

@@ -61,6 +61,9 @@
   * ~lsp-kotlin~ now supports ~kotlin-ts-mode~
   * ~lsp-elixir~ now supports ~elixir-ts-mode~ and ~heex-ts-mode~
   * Update Magik
+  * Add ~lsp-clients-typescript-prefer-use-project-ts-server~ custom
+    variable to try to use the project's tsserver.js instead of the
+    one installed by lsp-mode.
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.
