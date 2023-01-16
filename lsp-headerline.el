@@ -250,7 +250,7 @@ PATH is the current folder to be checked."
 
 (defun lsp-headerline--build-project-string ()
   "Build the project-segment string for the breadcrumb."
-  (-if-let (root (lsp-workspace-root))
+  (-if-let (root (lsp-headerline--workspace-root))
       (propertize (lsp-headerline--directory-with-action
                    root
                    (f-filename root))
@@ -304,7 +304,7 @@ PATH is the current folder to be checked."
 
 (defun lsp-headerline--build-path-up-to-project-string ()
   "Build the path-up-to-project segment for the breadcrumb."
-  (if-let ((root (lsp-workspace-root)))
+  (if-let ((root (lsp-headerline--workspace-root)))
       (let ((segments (or
                        lsp-headerline--path-up-to-project-segments
                        (setq lsp-headerline--path-up-to-project-segments
@@ -412,6 +412,10 @@ PATH is the current folder to be checked."
 (defun lsp-headerline--disable-breadcrumb ()
   "Disable headerline breadcrumb mode."
   (lsp-headerline-breadcrumb-mode -1))
+
+(defun lsp-headerline--workspace-root ()
+  (--when-let (car lsp--buffer-workspaces)
+    (lsp--workspace-root it)))
 
 ;;;###autoload
 (define-minor-mode lsp-headerline-breadcrumb-mode
