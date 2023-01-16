@@ -310,7 +310,7 @@ PATH is the current folder to be checked."
                           (setq lsp-headerline--path-up-to-project-segments
                                 (list (lsp-headerline--path-up-to-project-root
                                        root
-                                       (lsp-f-parent (buffer-file-name))))))
+                                       (file-name-directory (file-truename (buffer-file-name)))))))
                         (car lsp-headerline--path-up-to-project-segments))))
         (mapconcat (lambda (next-dir)
                      (propertize next-dir
