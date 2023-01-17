@@ -7862,7 +7862,7 @@ When prefix UPDATE? is t force installation even if the server is present."
                                   (file-name-nondirectory (directory-file-name server)))
                                 servers " ")))
         (mapc #'lsp-uninstall-server servers)
-        (message "Done uninstall all servers")))))
+        (message "All servers uninstalled")))))
 
 ;;;###autoload
 (defun lsp-update-server (&optional server-id)
