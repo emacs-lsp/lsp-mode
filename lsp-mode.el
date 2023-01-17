@@ -7854,7 +7854,7 @@ When prefix UPDATE? is t force installation even if the server is present."
                     (directory-files dir t
                                      directory-files-no-dot-files-regexp))))
     (if (or (not (file-directory-p dir)) (zerop (length servers)))
-        (user-error "No server to uninstall")
+        (user-error "No servers to uninstall")
       (when (yes-or-no-p
              (format "Servers to uninstall: %d (%s), proceed? "
                      (length servers)
