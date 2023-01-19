@@ -893,12 +893,11 @@ or JSON objects in `rust-project.json` format."
 
 (defcustom lsp-rust-analyzer-download-url
   (format "https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/%s"
-          (pcase system-type
-            ('gnu/linux "rust-analyzer-x86_64-unknown-linux-gnu.gz")
-            ('darwin (if (string-match "^aarch64-.*" system-configuration)
-                         "rust-analyzer-aarch64-apple-darwin.gz"
-                       "rust-analyzer-x86_64-apple-darwin.gz"))
-            ('windows-nt "rust-analyzer-x86_64-pc-windows-msvc.gz")))
+          (format (pcase system-type
+            ('gnu/linux "rust-analyzer-%s-unknown-linux-gnu.gz")
+            ('darwin "rust-analyzer-%s-apple-darwin.gz")
+            ('windows-nt "rust-analyzer-%s-pc-windows-msvc.gz"))
+                  (lsp-resolve-value lsp--gnu-arch)))
   "Automatic download url for Rust Analyzer"
   :type 'string
   :group 'lsp-rust-analyzer

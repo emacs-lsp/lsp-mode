@@ -69,26 +69,24 @@ Usually this is to be set in your .dir-locals.el on the project root directory."
 
 (defcustom lsp-csharp-omnisharp-roslyn-download-url
   (concat "https://github.com/omnisharp/omnisharp-roslyn/releases/latest/download/"
-          (cond ((eq system-type 'windows-nt)
-                 ; On Windows we're trying to avoid a crash starting 64bit .NET PE binaries in
-                 ; Emacs by using x86 version of omnisharp-roslyn on older (<= 26.4) versions
-                 ; of Emacs. See https://lists.nongnu.org/archive/html/bug-gnu-emacs/2017-06/msg00893.html"
-                 (if (and (string-match "^x86_64-.*" system-configuration)
-                          (version<= "26.4" emacs-version))
-                     "omnisharp-win-x64.zip"
-                   "omnisharp-win-x86.zip"))
+          (pcase system-type
+            ('windows-nt
+             ; On Windows we're trying to avoid a crash starting 64bit .NET PE binaries in
+             ; Emacs by using x86 version of omnisharp-roslyn on older (<= 26.4) versions
+             ; of Emacs. See https://lists.nongnu.org/archive/html/bug-gnu-emacs/2017-06/msg00893.html"
+             (if (and (string-match "^x86_64-.*" system-configuration)
+                      (version<= "26.4" emacs-version))
+                 "omnisharp-win-x64.zip"
+               ((format "omnisharp-win-%s.zip"
+                        (lsp-resolve-value lsp--system-arch)))))
 
-                ((eq system-type 'darwin)
-                 (if (string-match "aarch64-.*" system-configuration)
-                     "omnisharp-osx-arm64-net6.0.zip"
-                   "omnisharp-osx-x64-net6.0.zip"))
+            ('darwin (format "omnisharp-osx-%s-net6.0.zip"
+                             (lsp-resolve-value lsp--system-arch)))
 
-                ((and (eq system-type 'gnu/linux)
-                      (or (eq (string-match "^x86_64" system-configuration) 0)
-                          (eq (string-match "^i[3-6]86" system-configuration) 0)))
-                 "omnisharp-linux-x64-net6.0.zip")
+            ('gnu/linux (format "omnisharp-linux-%s-net6.0.zip"
+                                (lsp-resolve-value lsp--system-arch)))
 
-                (t "omnisharp-mono.zip")))
+            (_ "omnisharp-mono.zip")))
   "Automatic download url for omnisharp-roslyn."
   :group 'lsp-csharp-omnisharp
   :type 'string)
