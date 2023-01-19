@@ -182,11 +182,11 @@ default to ~/.perlcriticrc. (no aliases, .bat files or ~/)."
    :set-executable? t))
 
 (lsp-register-client
-(make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
-                                                         (list
-                                                          (or (executable-find lsp-perlnavigator-executable)
-                                                              (lsp-package-path 'perlnavigator))
-                                                          "--stdio")))
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
+                                                          (list
+                                                           (or (lsp-package-path 'perlnavigator)
+                                                               lsp-perlnavigator-executable)
+                                                           "--stdio")))
                   :activation-fn (lsp-activate-on "perl")
                   :priority 0
                   :download-server-fn (lambda (_client callback error-callback _update?)
