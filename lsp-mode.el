@@ -1396,30 +1396,29 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
                                       def inherit-input-method)))
     (cdr (assoc completion col))))
 
+(defconst lsp--gnu-arch (lambda ()
+                          (setq lsp--gnu-arch
+                                (car (split-string system-configuration "-"))))
+  "Returns the first element of system-configuration:
+Special values:
+  `x86_64'		Intel 64bit
+  `i386' or `i686'	Intel 32bit
+  `aarch64'		ARM   64bit
+  `arm'		ARM   32bit")
+
 (defconst lsp--system-arch (lambda ()
                              (setq lsp--system-arch
-                                   (pcase system-type
-                                     ('windows-nt
-                                      (pcase system-configuration
-                                        ((rx bol "x86_64-") 'x64)
-                                        (_ 'x86)))
-                                     ('darwin
-                                      (pcase system-configuration
-                                        ((rx "aarch64-") 'arm64)
-                                        (_ 'x64)))
-                                     ('gnu/linux
-                                       (pcase system-configuration
-                                         ((rx bol "x86_64") 'x64)
-                                         ((rx bol (| "i386" "i886")) 'x32)))
-                                     (_
-                                      (pcase system-configuration
-                                        ((rx bol "x86_64") 'x64)
-                                        ((rx bol (| "i386" "i886")) 'x32))))))
+                                   (pcase (lsp-resolve-value lsp--gnu-arch)
+                                     ("aarch64" 'arm64)
+                                     ("arm"     'arm)
+                                     ("x86_64"  'x64)
+                                     ("i686"    'x32)
+                                     ("i386"    'x32))))
   "Return the system architecture of `Emacs'.
 Special values:
-  `x64'       64bit
-  `x32'       32bit
-  `arm64'     ARM 64bit")
+  `x64'       Intel 64bit
+  `x32'       Intel 32bit
+  `arm64'     ARM   64bit")
 
 (defmacro lsp-with-current-buffer (buffer-id &rest body)
   (declare (indent 1) (debug t))
