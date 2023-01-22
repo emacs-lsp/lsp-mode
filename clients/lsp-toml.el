@@ -82,8 +82,7 @@
   :lsp-path "evenBetterToml.schema.links")
 
 (defcustom-lsp lsp-toml-schema-catalogs
-  ["https://taplo.tamasfe.dev/schema_index.json"
-   "https://www.schemastore.org/api/json/catalog.json"]
+  ["https://www.schemastore.org/api/json/catalog.json"]
   "A list of URLs to schema catalogs where schemas and associations
 can be fetched from"
   :type 'lsp-string-vector
