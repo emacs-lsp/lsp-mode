@@ -79,6 +79,7 @@
   :activation-fn (lsp-activate-on "python")
   :server-id 'ruff-lsp
   :priority -2
+  :add-on? t
   :initialization-options
   (lambda ()
     (list :settings
