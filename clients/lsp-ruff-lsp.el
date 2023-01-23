@@ -86,8 +86,8 @@
                 :logLevel lsp-ruff-lsp-log-level
                 :path lsp-ruff-lsp-ruff-path
                 :interpreter (vector lsp-ruff-lsp-python-path)
-                :organizeImports (if lsp-ruff-lsp-advertize-organize-imports t :json-false)
-                :fixAll (if lsp-ruff-lsp-advertize-fix-all t :json-false))))))
+                :organizeImports (lsp-json-bool lsp-ruff-lsp-advertize-organize-imports)
+                :fixAll (lsp-json-bool lsp-ruff-lsp-advertize-fix-all))))))
 
 (lsp-consistency-check lsp-ruff-lsp)
 
