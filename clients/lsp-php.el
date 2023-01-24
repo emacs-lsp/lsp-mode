@@ -176,6 +176,13 @@ trigger parameter hints."
   :package-version '(lsp-mode . "6.1")
   :lsp-path "intelephense.format.enable")
 
+(defcustom-lsp lsp-intelephense-format-braces "psr12"
+  "Formatting braces style. psr12, allman or k&r"
+  :type 'string
+  :group 'lsp-intelephense
+  :package-version '(lsp-mode . "8.1")
+  :lsp-path "intelephense.format.braces")
+
 (defcustom lsp-intelephense-licence-key nil
   "Enter your intelephense licence key here to access premium
 features."
