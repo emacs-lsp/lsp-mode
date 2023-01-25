@@ -734,7 +734,7 @@ Changes take effect only when a new session is started."
                                         ("\\(^Dockerfile\\(?:\\..*\\)?\\|\\.[Dd]ockerfile\\)\\'" . "dockerfile")
                                         ("\\.astro$" . "astro")
                                         ("\\.cs\\'" . "csharp")
-                                        ("\\.css" . "css")
+                                        ("\\.css$" . "css")
                                         ("\\.ebuild$" . "shellscript")
                                         ("\\.go\\'" . "go")
                                         ("\\.html$" . "html")
