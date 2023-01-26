@@ -289,9 +289,8 @@ Must not nil.")
   (-if-let* ((rule-raw (lsp-seq-first arguments?))
              (rule-id (if (s-prefix-p "PS" rule-raw) (substring rule-raw 2) rule-raw)))
       (browse-url
-       (concat "https://github.com/PowerShell/PSScriptAnalyzer/blob/master/RuleDocumentation/"
-               rule-id
-               ".md"))
+       (concat "https://learn.microsoft.com/en-us/powershell/utility-modules/psscriptanalyzer/rules/"
+               rule-id))
     (lsp-warn "Cannot show documentation for code action, no ruleName was supplied")))
 
 (defvar lsp-pwsh--major-modes '(powershell-mode))
