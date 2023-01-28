@@ -51,8 +51,11 @@
 
 (defcustom lsp-ruff-lsp-log-level "error"
   "Tracing level."
-  :type '(choice (const :tag "error" "error")
-                 (const :tag "warning" "warning"))
+  :type '(choice (const "debug")
+                 (const "error")
+                 (const "info")
+                 (const "off")
+                 (const "warn"))
   :group 'lsp-ruff-lsp)
 
 (defcustom lsp-ruff-lsp-python-path "python3"
