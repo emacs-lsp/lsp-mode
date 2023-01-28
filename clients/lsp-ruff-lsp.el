@@ -82,6 +82,12 @@
   :type 'boolean
   :group 'lsp-ruff-lsp)
 
+(defcustom lsp-ruff-lsp-import-strategy "fromEnvironment"
+  "Where ruff is imported from if lsp-ruff-lsp-ruff-path is not set."
+  :type '(choice (const "fromEnvironment")
+                 (const "useBundled"))
+  :group 'lsp-ruff-lsp)
+
 
 (lsp-register-client
  (make-lsp-client
@@ -100,7 +106,8 @@
                 :interpreter (vector lsp-ruff-lsp-python-path)
                 :showNotifications lsp-ruff-lsp-show-notifications
                 :organizeImports (lsp-json-bool lsp-ruff-lsp-advertize-organize-imports)
-                :fixAll (lsp-json-bool lsp-ruff-lsp-advertize-fix-all))))))
+                :fixAll (lsp-json-bool lsp-ruff-lsp-advertize-fix-all)
+                :importStrategy lsp-ruff-lsp-import-strategy)))))
 
 (lsp-consistency-check lsp-ruff-lsp)
 
