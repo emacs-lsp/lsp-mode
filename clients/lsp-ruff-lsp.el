@@ -64,6 +64,14 @@
   :type 'string
   :group 'lsp-ruff-lsp)
 
+(defcustom lsp-ruff-lsp-show-notifications "off"
+  "When notifications are shown."
+  :type '(choice (const "off")
+                 (const "onError")
+                 (const "onWarning")
+                 (const "always"))
+  :group 'lsp-ruff-lsp)
+
 (defcustom lsp-ruff-lsp-advertize-organize-imports t
   "Whether to report ability to handle source.organizeImports actions."
   :type 'boolean
@@ -90,6 +98,7 @@
                 :logLevel lsp-ruff-lsp-log-level
                 :path lsp-ruff-lsp-ruff-path
                 :interpreter (vector lsp-ruff-lsp-python-path)
+                :showNotifications lsp-ruff-lsp-show-notifications
                 :organizeImports (lsp-json-bool lsp-ruff-lsp-advertize-organize-imports)
                 :fixAll (lsp-json-bool lsp-ruff-lsp-advertize-fix-all))))))
 
