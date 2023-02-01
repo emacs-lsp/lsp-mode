@@ -908,7 +908,7 @@
     "server-name": "volar-language-server",
     "server-url": "https://github.com/johnsoncodehk/volar",
     "installation": "npm install -g @volar/vue-language-server",
-    "lsp-install-server": "volar-api",
+    "lsp-install-server": "vue-semantic-server",
     "debugger": "Not available"
   },
   {
