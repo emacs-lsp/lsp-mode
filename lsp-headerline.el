@@ -423,8 +423,8 @@ PATH is the current folder to be checked."
   (lsp-headerline-breadcrumb-mode -1))
 
 (defun lsp-headerline--workspace-root ()
-(or lsp-headerline--cached-workspace-root
-    (setq lsp-headerline--cached-workspace-root (lsp-workspace-root)))
+  (or lsp-headerline--cached-workspace-root
+      (setq lsp-headerline--cached-workspace-root (lsp-workspace-root))))
 
 ;;;###autoload
 (define-minor-mode lsp-headerline-breadcrumb-mode
