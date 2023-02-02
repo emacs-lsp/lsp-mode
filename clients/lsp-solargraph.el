@@ -155,7 +155,7 @@
  (make-lsp-client
   :new-connection (lsp-stdio-connection
                    #'lsp-solargraph--build-command)
-  :major-modes '(ruby-mode enh-ruby-mode)
+  :activation-fn (lsp-activate-on "ruby")
   :priority -1
   :multi-root lsp-solargraph-multi-root
   :library-folders-fn (lambda (_workspace) lsp-solargraph-library-directories)

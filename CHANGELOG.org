@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 8.0.1
+  * ~lsp-ruby-syntax-tree~, ~lsp-solargraph~, ~lsp-sorbet~, ~lsp-steep~, and ~lsp-typeprof~ now support ~ruby-ts-mode~
   * Drop support for emacs 26.1 and 26.2
   * Added support for ~textDocument/linkedEditingRange~ via
     ~lsp-iedit-linked-ranges~ and ~lsp-evil-multiedit-ranges~ (see [[https://github.com/emacs-lsp/lsp-mode/pull/3166][#3166]])

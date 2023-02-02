@@ -51,7 +51,7 @@
   :new-connection (lsp-stdio-connection
                    #'lsp-typeprof--build-command)
   :priority -4
-  :major-modes '(ruby-mode enh-ruby-mode)
+  :activation-fn (lsp-activate-on "ruby")
   :server-id 'typeprof-ls))
 
 (lsp-consistency-check lsp-typeprof)

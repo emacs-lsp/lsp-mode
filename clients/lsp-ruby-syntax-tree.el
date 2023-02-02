@@ -51,7 +51,7 @@
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection #'lsp-ruby-syntax-tree--build-command)
-  :major-modes '(ruby-mode enh-ruby-mode)
+  :activation-fn (lsp-activate-on "ruby")
   :priority -4
   :server-id 'ruby-syntax-tree-ls))
 
