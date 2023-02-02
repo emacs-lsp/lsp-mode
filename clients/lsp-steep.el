@@ -63,7 +63,7 @@ If specified, `lsp-steep-use-bundler' is ignored."
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection #'lsp-steep--build-command)
-  :major-modes '(ruby-mode enh-ruby-mode)
+  :major-modes '(ruby-mode ruby-ts-mode enh-ruby-mode)
   :priority -3
   :server-id 'steep-ls))
 

@@ -836,6 +836,7 @@ Changes take effect only when a new session is started."
                                         (yaml-ts-mode . "yaml")
                                         (ruby-mode . "ruby")
                                         (enh-ruby-mode . "ruby")
+                                        (ruby-ts-mode . "ruby")
                                         (fortran-mode . "fortran")
                                         (f90-mode . "fortran")
                                         (elm-mode . "elm")

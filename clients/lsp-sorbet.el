@@ -57,7 +57,7 @@
   :new-connection (lsp-stdio-connection
                    #'lsp-sorbet--build-command)
   :priority -2
-  :major-modes '(ruby-mode enh-ruby-mode)
+  :major-modes '(ruby-mode ruby-ts-mode enh-ruby-mode)
   :server-id 'sorbet-ls))
 
 (lsp-consistency-check lsp-sorbet)
