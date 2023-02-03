@@ -1339,12 +1339,18 @@ meaning."
            (-let* (((&rust-analyzer:InlayHint :position :label :kind :padding-left :padding-right) hint)
                    (pos (lsp--position-to-point position))
                    (overlay (make-overlay pos pos nil 'front-advance 'end-advance)))
-             (when (stringp label)
+             (let ((concat-label
+                    (string-join
+                     (mapcar
+                      (lambda (label)
+                        (when (lsp-structure-p label)
+                          (gethash "value" label "")))
+                      label))))
                (overlay-put overlay 'lsp-rust-analyzer-inlay-hint t)
                (overlay-put overlay 'before-string
                             (format "%s%s%s"
                                     (if padding-left " " "")
-                                    (propertize (lsp-rust-analyzer-format-inlay label kind)
+                                    (propertize (lsp-rust-analyzer-format-inlay concat-label kind)
                                                 'font-lock-face (lsp-rust-analyzer-face-for-inlay kind))
                                     (if padding-right " " "")))))))
        :mode 'tick))
