@@ -1323,6 +1323,8 @@ meaning."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
+(defvar lsp-rust-analyzer-already-warned-about-inlay-hint-type nil)
+
 (defun lsp-rust-analyzer-update-inlay-hints (buffer)
   (if (and (lsp-rust-analyzer-initialized?)
            (eq buffer (current-buffer)))
@@ -1340,12 +1342,21 @@ meaning."
                    (pos (lsp--position-to-point position))
                    (overlay (make-overlay pos pos nil 'front-advance 'end-advance)))
              (let ((concat-label
-                    (string-join
-                     (mapcar
-                      (lambda (label)
-                        (when (lsp-structure-p label)
-                          (gethash "value" label "")))
-                      label))))
+                    (cl-typecase label
+                      (vector
+                       (string-join
+                        (mapcar
+                         (lambda (label)
+                           (when (lsp-structure-p label)
+                             (gethash "value" label "")))
+                         label)))
+                      (string
+                       label)
+                      (t
+                       (unless lsp-rust-analyzer-already-warned-about-inlay-hint-type
+                         (message "Unexpected type for inlay hint: %s" (type-of label))
+                         (setq lsp-rust-analyzer-already-warned-about-inlay-hint-type t))
+                       ""))))
                (overlay-put overlay 'lsp-rust-analyzer-inlay-hint t)
                (overlay-put overlay 'before-string
                             (format "%s%s%s"
