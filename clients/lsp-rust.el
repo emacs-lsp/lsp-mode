@@ -1348,7 +1348,7 @@ meaning."
                         (mapcar
                          (lambda (label)
                            (when (lsp-structure-p label)
-                             (gethash "value" label "")))
+                             (lsp-get label :value)))
                          label)))
                       (string
                        label)
