@@ -125,7 +125,7 @@
   :package-version '(lsp-mode . "7.0.1"))
 
 (defcustom lsp-solargraph-server-command '("solargraph" "stdio")
-  "Command to start yaml-languageserver."
+  "Command to start Solargraph Ruby language server."
   :type '(repeat string)
   :group 'lsp-solargraph
   :package-version '(lsp-mode . "8.0.1"))
