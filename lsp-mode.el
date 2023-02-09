@@ -764,6 +764,7 @@ Changes take effect only when a new session is started."
                                         (sql-mode . "sql")
                                         (vimrc-mode . "vim")
                                         (sh-mode . "shellscript")
+                                        (bash-ts-mode . "shellscript")
                                         (ebuild-mode . "shellscript")
                                         (pkgbuild-mode . "shellscript")
                                         (scala-mode . "scala")
