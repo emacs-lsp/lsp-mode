@@ -30,7 +30,7 @@
 ;; HDL Checker. See https://github.com/suoto/hdl_checker/wiki/setting-up-a-project
 ;; for setting up the project file.
 ;;
-;; VHDL LS. See https://github.com/kraigher/rust_hdl#configuration for setting
+;; VHDL LS. See https://github.com/VHDL-LS/rust_hdl#configuration for setting
 ;; up the project file.
 ;;
 ;; GHDL LS. See https://github.com/ghdl/ghdl-language-server for setting up the
@@ -65,11 +65,15 @@ VHDL-tool: A syntax checking, type checking and linting tool
 \(http://vhdltool.com).
 
 HDL Checker: A wrapper for third party tools such as GHDL,
-ModelSim, Vivado Simulator (https://github.com/suoto/hdl_checker).
+ModelSim, Vivado Simulator
+\(https://github.com/suoto/hdl_checker).
 
 VHDL LS: A complete VHDL language server protocol implementation
-with diagnostics, navigate to symbol, find all references etc.
-\(https://github.com/kraigher/rust_hdl)."
+with diagnostics, navigate to symbol, find all references etc
+\(https://github.com/VHDL-LS/rust_hdl).
+
+GHDL LS: A LSP server for VHDL based on GHDL
+\(https://github.com/ghdl/ghdl-language-server)."
   :type '(choice (const :tag "VHDL-tool" vhdl-tool)
                  (const :tag "HDL Checker" hdl-checker)
                  (const :tag "VHDL LS" vhdl-ls)
