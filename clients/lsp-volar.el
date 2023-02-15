@@ -100,13 +100,13 @@ in the WORKSPACE-ROOT."
   "Check if the volar-language-server should be enabled base on FILENAME."
   (if lsp-volar-take-over-mode
       (or (or
-            (and (lsp-workspace-root) (lsp-volar--vue-project-p (lsp-workspace-root)))
-            (and (lsp-workspace-root) lsp-volar-activate-file (f-file-p (f-join (lsp-workspace-root) lsp-volar-activate-file))))
-           (or (or (string-match-p "\\.mjs\\|\\.[jt]sx?\\'" filename)
-                   (and (derived-mode-p 'js-mode 'typescript-mode 'typescript-ts-mode)
-                        (not (derived-mode-p 'json-mode))))
-               (string= (file-name-extension filename) "vue")))
-   (string= (file-name-extension filename) "vue")))
+           (and (lsp-workspace-root) (lsp-volar--vue-project-p (lsp-workspace-root)))
+           (and (lsp-workspace-root) lsp-volar-activate-file (f-file-p (f-join (lsp-workspace-root) lsp-volar-activate-file))))
+          (or (or (string-match-p "\\.mjs\\|\\.[jt]sx?\\'" filename)
+                  (and (derived-mode-p 'js-mode 'typescript-mode 'typescript-ts-mode)
+                       (not (derived-mode-p 'json-mode))))
+              (string= (file-name-extension filename) "vue")))
+    (string= (file-name-extension filename) "vue")))
 
 (lsp-register-client
  (make-lsp-client
