@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 8.0.1
+  * ~lsp-ruby-syntax-tree~, ~lsp-solargraph~, ~lsp-sorbet~, ~lsp-steep~, and ~lsp-typeprof~ now support ~ruby-ts-mode~
   * Drop support for emacs 26.1 and 26.2
   * Added support for ~textDocument/linkedEditingRange~ via
     ~lsp-iedit-linked-ranges~ and ~lsp-evil-multiedit-ranges~ (see [[https://github.com/emacs-lsp/lsp-mode/pull/3166][#3166]])
@@ -65,6 +66,7 @@
     variable to try to use the project's tsserver.js instead of the
     one installed by lsp-mode.
   * Add [[https://github.com/charliermarsh/ruff-lsp][ruff-lsp]] support (additional server for Python).
+  * Update documentation of Vue3 install server
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.

@@ -836,6 +836,7 @@ Changes take effect only when a new session is started."
                                         (yaml-ts-mode . "yaml")
                                         (ruby-mode . "ruby")
                                         (enh-ruby-mode . "ruby")
+                                        (ruby-ts-mode . "ruby")
                                         (fortran-mode . "fortran")
                                         (f90-mode . "fortran")
                                         (elm-mode . "elm")
@@ -3548,7 +3549,8 @@ disappearing, unset all the variables related to it."
 (defun lsp--client-capabilities (&optional custom-capabilities)
   "Return the client capabilities appending CUSTOM-CAPABILITIES."
   (append
-   `((workspace . ((workspaceEdit . ((documentChanges . t)
+   `((general . ((positionEncodings . ["utf-32", "utf-16"])))
+     (workspace . ((workspaceEdit . ((documentChanges . t)
                                      (resourceOperations . ["create" "rename" "delete"])))
                    (applyEdit . t)
                    (symbol . ((symbolKind . ((valueSet . ,(apply 'vector (number-sequence 1 26)))))))

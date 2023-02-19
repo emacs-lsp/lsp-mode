@@ -125,7 +125,7 @@
   :package-version '(lsp-mode . "7.0.1"))
 
 (defcustom lsp-solargraph-server-command '("solargraph" "stdio")
-  "Command to start yaml-languageserver."
+  "Command to start Solargraph Ruby language server."
   :type '(repeat string)
   :group 'lsp-solargraph
   :package-version '(lsp-mode . "8.0.1"))
@@ -155,7 +155,7 @@
  (make-lsp-client
   :new-connection (lsp-stdio-connection
                    #'lsp-solargraph--build-command)
-  :major-modes '(ruby-mode enh-ruby-mode)
+  :activation-fn (lsp-activate-on "ruby")
   :priority -1
   :multi-root lsp-solargraph-multi-root
   :library-folders-fn (lambda (_workspace) lsp-solargraph-library-directories)

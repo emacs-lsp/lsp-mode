@@ -144,6 +144,9 @@ is an hints in symbols range."
   "Holds the current breadcrumb path-up-to-project segments for
 caching purposes.")
 
+(defvar-local lsp-headerline--cached-workspace-root nil
+  "Holds the current value of lsp-workspace-root for caching purposes")
+
 ;; Redefine local vars of `all-the-icons' to avoid bytecode compilation errors.
 (defvar all-the-icons-default-adjust)
 (defvar all-the-icons-scale-factor)
@@ -420,8 +423,8 @@ PATH is the current folder to be checked."
   (lsp-headerline-breadcrumb-mode -1))
 
 (defun lsp-headerline--workspace-root ()
-  (--when-let (car lsp--buffer-workspaces)
-    (lsp--workspace-root it)))
+  (or lsp-headerline--cached-workspace-root
+      (setq lsp-headerline--cached-workspace-root (lsp-workspace-root))))
 
 ;;;###autoload
 (define-minor-mode lsp-headerline-breadcrumb-mode
