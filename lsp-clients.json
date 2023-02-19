@@ -700,6 +700,14 @@
     "debugger": "Yes"
   },
   {
+    "name": "ruff-lsp",
+    "full-name": "Python",
+    "server-name": "ruff-lsp",
+    "server-url": "https://github.com/charliermarsh/ruff-lsp",
+    "installation": "pip install ruff-lsp",
+    "debugger": "Not available"
+  },
+  {
     "name": "rust-analyzer",
     "common-group-name": "rust",
     "full-name": "Rust",
