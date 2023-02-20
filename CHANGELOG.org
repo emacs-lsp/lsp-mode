@@ -66,6 +66,7 @@
   * Add ~lsp-clients-typescript-prefer-use-project-ts-server~ custom
     variable to try to use the project's tsserver.js instead of the
     one installed by lsp-mode.
+  * Add [[https://github.com/charliermarsh/ruff-lsp][ruff-lsp]] support (additional server for Python).
   * Update documentation of Vue3 install server
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.

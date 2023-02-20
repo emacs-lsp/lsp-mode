@@ -37,7 +37,7 @@
 
 (defgroup lsp-volar nil
   "Lsp support for vue3."
-  :group 'lsp-volar
+  :group 'lsp-mode
   :link '(url-link "https://github.com/johnsoncodehk/volar")
   :package-version '(lsp-mode . "8.0.1"))
 
