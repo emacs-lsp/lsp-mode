@@ -34,7 +34,7 @@
   :tag "Lsp Magik"
   :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom lsp-magik-version "0.6.0"
+(defcustom lsp-magik-version "0.7.0"
   "Version of LSP server."
   :type `string
   :group `lsp-magik
@@ -121,8 +121,6 @@
 (lsp-register-custom-settings
  `(("magik.javaHome" lsp-magik-java-home)
    ("magik.smallworldGis" lsp-magik-smallworld-gis)
-   ("magik.aliases" lsp-magik-aliases)
-   ("magik.environment" lsp-magik-environment)
    ("magik.typing.typeDatabasePaths" lsp-magik-typing-type-database-paths)
    ("magik.typing.enableChecks" lsp-magik-typing-enable-checks)
    ("magik.trace.server" lsp-magik-trace-server)
