@@ -132,6 +132,7 @@ nav:
     - Rust (rls): page/lsp-rust-rls.md
     - Scala: https://emacs-lsp.github.io/lsp-metals
     - SQL (sqls): page/lsp-sqls.md
+    - Standard ML (Millet): page/lsp-sml.md
     - Svelte: page/lsp-svelte.md
     - Swift: https://emacs-lsp.github.io/lsp-sourcekit
     - Terraform (terraform-lsp): page/lsp-terraform.md
