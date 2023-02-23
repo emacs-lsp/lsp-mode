@@ -452,6 +452,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "millet",
+    "full-name": "Standard ML (Millet)",
+    "server-name": "millet",
+    "server-url": "https://github.com/azdavis/millet",
+    "installation-url": "https://github.com/azdavis/millet",
+    "debugger": "Not available"
+  },
+  {
     "name": "mint",
     "full-name": "mint-lang",
     "server-name": "mint",
