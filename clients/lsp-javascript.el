@@ -148,6 +148,12 @@ See https://github.com/typescript-language-server/typescript-language-server#ini
   :group 'lsp-typescript
   :type 'plist)
 
+(defcustom lsp-clients-typescript-tsserver nil
+  "Options related to the tsserver process. See below for more info.
+See https://github.com/typescript-language-server/typescript-language-server#initializationoptions for the list of tsserver available in the latest version of TypeScript."
+  :group 'lsp-typescript
+  :type 'plist)
+
 (defcustom lsp-typescript-tsdk nil
   "Specifies the folder path containing tsserver and lib*.d.ts files to use."
   :type '(repeat string)
@@ -926,7 +932,9 @@ name (e.g. `data' variable passed as `data' parameter)."
                                              (when lsp-clients-typescript-plugins
                                                (list :plugins lsp-clients-typescript-plugins))
                                              (when lsp-clients-typescript-preferences
-                                               (list :preferences lsp-clients-typescript-preferences))))
+                                               (list :preferences lsp-clients-typescript-preferences))
+                                             (when lsp-clients-typescript-tsserver
+                                               (list :tsserver lsp-clients-typescript-tsserver))))
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
