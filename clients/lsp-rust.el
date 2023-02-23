@@ -378,12 +378,6 @@ to a closure.ppOnly applies to closures with blocks, same as
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom lsp-rust-analyzer-server-display-inlay-hints nil
-  "Show inlay hints."
-  :type 'boolean
-  :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "6.2"))
-
 (defcustom lsp-rust-analyzer-max-inlay-hint-length nil
   "Max inlay hint length."
   :type 'integer
@@ -783,7 +777,7 @@ or JSON objects in `rust-project.json` format."
                  :parameterHints ,(lsp-json-bool lsp-rust-analyzer-display-parameter-hints)
                  :reborrowHints ,lsp-rust-analyzer-display-reborrow-hints
                  :renderColons ,(lsp-json-bool lsp-rust-analyzer-server-format-inlay-hints)
-                 :typeHints (:enable ,(lsp-json-bool lsp-rust-analyzer-server-display-inlay-hints)
+                 :typeHints (:enable ,(lsp-json-bool lsp-inlay-hint-enable)
                              :hideClosureInitialization ,(lsp-json-bool lsp-rust-analyzer-hide-closure-initialization)
                              :hideNamedConstructor ,(lsp-json-bool lsp-rust-analyzer-hide-named-constructor)))
     :completion (:addCallParenthesis ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-parenthesis)
@@ -1233,9 +1227,7 @@ tokens legend."
     ("public" . ,lsp-rust-analyzer-public-modifier)
     ("reference" . ,lsp-rust-analyzer-reference-modifier)
     ("trait" . ,lsp-rust-analyzer-trait-modifier)
-    ("unsafe" . ,lsp-rust-analyzer-unsafe-modifier)
-    ))
-
+    ("unsafe" . ,lsp-rust-analyzer-unsafe-modifier)))
 
 (lsp-register-client
  (make-lsp-client
@@ -1255,14 +1247,9 @@ tokens legend."
                        ("rust-analyzer.showReferences" #'lsp-rust--analyzer-show-references)
                        ("rust-analyzer.triggerParameterHints" #'lsp--action-trigger-parameter-hints))
   :library-folders-fn (lambda (_workspace) lsp-rust-analyzer-library-directories)
-  :after-open-fn (lambda ()
-                   (when lsp-rust-analyzer-server-display-inlay-hints
-                     (lsp-rust-analyzer-inlay-hints-mode)))
-  :ignore-messages nil
-
   :semantic-tokens-faces-overrides `(:discard-default-modifiers t
-                                     :modifiers
-                                     ,(lsp-rust-analyzer--semantic-modifiers))
+                                                                :modifiers
+                                                                ,(lsp-rust-analyzer--semantic-modifiers))
   :server-id 'rust-analyzer
   :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (featurep 'yasnippet))))))
   :download-server-fn (lambda (_client callback error-callback _update?)
@@ -1282,42 +1269,6 @@ tokens legend."
 
 ;; inlay hints
 
-(defvar-local lsp-rust-analyzer-inlay-hints-timer nil)
-
-(defface lsp-rust-analyzer-inlay-face
-  '((t :inherit font-lock-comment-face))
-  "The face to use for the Rust Analyzer inlays."
-  :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "7.0"))
-
-(defface lsp-rust-analyzer-inlay-type-face
-  '((t :inherit lsp-rust-analyzer-inlay-face))
-  "Face for inlay type hints (e.g. inferred variable types)."
-  :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "8.0.0"))
-
-(defcustom lsp-rust-analyzer-inlay-type-format ": %s"
-  "Format string for variable inlays (part of the inlay face,
-used only if lsp-rust-analyzer-server-format-inlay-hints is
-non-nil)."
-  :type '(string :tag "String")
-  :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "8.0.0"))
-
-(defface lsp-rust-analyzer-inlay-param-face
-  '((t :inherit lsp-rust-analyzer-inlay-face))
-  "Face for inlay parameter hints (e.g. function parameter names at call-site)."
-  :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "8.0.0"))
-
-(defcustom lsp-rust-analyzer-inlay-param-format "%s:"
-  "Format string for parameter inlays (part of the inlay face,
-used only if lsp-rust-analyzer-server-format-inlay-hints is
-non-nil)."
-  :type '(string :tag "String")
-  :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "8.0.0"))
-
 (defcustom lsp-rust-analyzer-debug-lens-extra-dap-args
   '(:MIMode "gdb" :miDebuggerPath "gdb" :stopAtEntry t :externalConsole :json-false)
   "Extra arguments to pass to DAP template when debugging a test from code lens.
@@ -1331,84 +1282,9 @@ meaning."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
-(defvar lsp-rust-analyzer-already-warned-about-inlay-hint-type nil)
-
-(defun lsp-rust-analyzer-update-inlay-hints (buffer)
-  (if (and (lsp-rust-analyzer-initialized?)
-           (eq buffer (current-buffer)))
-      (lsp-request-async
-       "textDocument/inlayHint"
-       (lsp-make-rust-analyzer-inlay-hints-params
-        :text-document (lsp--text-document-identifier)
-        :range (if (use-region-p)
-                   (lsp--region-to-range (region-beginning) (region-end))
-                 (lsp--region-to-range (point-min) (point-max))))
-       (lambda (res)
-         (remove-overlays (point-min) (point-max) 'lsp-rust-analyzer-inlay-hint t)
-         (dolist (hint res)
-           (-let* (((&rust-analyzer:InlayHint :position :label :kind :padding-left :padding-right) hint)
-                   (pos (lsp--position-to-point position))
-                   (overlay (make-overlay pos pos nil 'front-advance 'end-advance)))
-             (let ((concat-label
-                    (cl-typecase label
-                      (vector
-                       (string-join
-                        (mapcar
-                         (lambda (label)
-                           (when (lsp-structure-p label)
-                             (lsp-get label :value)))
-                         label)))
-                      (string
-                       label)
-                      (t
-                       (unless lsp-rust-analyzer-already-warned-about-inlay-hint-type
-                         (message "Unexpected type for inlay hint: %s" (type-of label))
-                         (setq lsp-rust-analyzer-already-warned-about-inlay-hint-type t))
-                       ""))))
-               (overlay-put overlay 'lsp-rust-analyzer-inlay-hint t)
-               (overlay-put overlay 'before-string
-                            (format "%s%s%s"
-                                    (if padding-left " " "")
-                                    (propertize (lsp-rust-analyzer-format-inlay concat-label kind)
-                                                'font-lock-face (lsp-rust-analyzer-face-for-inlay kind))
-                                    (if padding-right " " "")))))))
-       :mode 'tick))
-  nil)
-
-(defun lsp-rust-analyzer-format-inlay (label kind)
-  (if lsp-rust-analyzer-server-format-inlay-hints
-      label
-    (cond
-     ((eql kind lsp/rust-analyzer-inlay-hint-kind-type-hint) (format lsp-rust-analyzer-inlay-type-format label))
-     ((eql kind lsp/rust-analyzer-inlay-hint-kind-param-hint) (format lsp-rust-analyzer-inlay-param-format label))
-     (t label))))
-
-(defun lsp-rust-analyzer-face-for-inlay (kind)
-  (cond
-   ((eql kind lsp/rust-analyzer-inlay-hint-kind-type-hint) 'lsp-rust-analyzer-inlay-type-face)
-   ((eql kind lsp/rust-analyzer-inlay-hint-kind-param-hint) 'lsp-rust-analyzer-inlay-param-face)
-   (t 'lsp-rust-analyzer-inlay-face)))
-
 (defun lsp-rust-analyzer-initialized? ()
   (when-let ((workspace (lsp-find-workspace 'rust-analyzer (buffer-file-name))))
     (eq 'initialized (lsp--workspace-status workspace))))
-
-(defun lsp-rust-analyzer-inlay-hints-change-handler (&rest _rest)
-  (when lsp-rust-analyzer-inlay-hints-timer
-    (cancel-timer lsp-rust-analyzer-inlay-hints-timer))
-  (setq lsp-rust-analyzer-inlay-hints-timer
-        (run-with-idle-timer 0.1 nil #'lsp-rust-analyzer-update-inlay-hints (current-buffer))))
-
-(define-minor-mode lsp-rust-analyzer-inlay-hints-mode
-  "Mode for displaying inlay hints."
-  :lighter nil
-  (cond
-   (lsp-rust-analyzer-inlay-hints-mode
-    (lsp-rust-analyzer-update-inlay-hints (current-buffer))
-    (add-hook 'lsp-on-change-hook #'lsp-rust-analyzer-inlay-hints-change-handler nil t))
-   (t
-    (remove-overlays (point-min) (point-max) 'lsp-rust-analyzer-inlay-hint t)
-    (remove-hook 'lsp-on-change-hook #'lsp-rust-analyzer-inlay-hints-change-handler t))))
 
 (defun lsp-rust-analyzer-expand-macro ()
   "Expands the macro call at point recursively."

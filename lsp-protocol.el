@@ -432,12 +432,6 @@ See `-let' for a description of the destructuring mechanism."
                (rust-analyzer:CommandLink (:title :command) (:arguments :tooltip))
                (rust-analyzer:CommandLinkGroup (:commands) (:title)))
 
-(defconst lsp/javascript-inlay-hint-kind-type-hint "Type")
-(defconst lsp/javascript-inlay-hint-kind-parameter-hint "Parameter")
-(defconst lsp/javascript-inlay-hint-kind-enum-hint "Enum")
-(lsp-interface (javascript:InlayHint (:label :position :kind) (:paddingLeft :paddingRight?))
-               (javascript:InlayHintsParams (:textDocument) (:range)))
-
 (lsp-interface (clojure-lsp:TestTreeParams (:uri :tree) nil)
                (clojure-lsp:TestTreeNode (:name :range :nameRange :kind) (:children)))
 
@@ -791,7 +785,15 @@ See `-let' for a description of the destructuring mechanism."
  (UnregistrationParams (:unregisterations) nil)
  (WatchKind nil nil)
  (WillSaveTextDocumentParams (:reason :textDocument) nil)
- (WorkspaceSymbolParams (:query) nil))
+ (WorkspaceSymbolParams (:query) nil)
+ ;; 3.17
+ (InlayHint (:label :position :kind) (:paddingLeft :paddingRight))
+ (InlayHintsParams (:textDocument) (:range)))
+
+;; 3.17
+(defconst lsp/inlay-hint-kind-type-hint "Type")
+(defconst lsp/inlay-hint-kind-parameter-hint "Parameter")
+(defconst lsp/inlay-hint-kind-enum-hint "Enum")
 
 
 (provide 'lsp-protocol)
