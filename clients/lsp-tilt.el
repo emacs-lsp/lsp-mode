@@ -26,8 +26,6 @@
 
 (require 'lsp-mode)
 
-(add-to-list 'lsp-language-id-configuration '(tiltfile-mode . "tiltfile"))
-
 (lsp-register-client
     (make-lsp-client :new-connection (lsp-stdio-connection '("tilt" "lsp" "start"))
         :activation-fn (lsp-activate-on "tiltfile")
