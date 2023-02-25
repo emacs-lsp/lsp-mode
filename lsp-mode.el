@@ -8858,11 +8858,9 @@ Select action: "
                       (prog1 t
                         (lsp--info "File %s is in blacklisted directory %s" file-name it))))
         not)
-   (or
-    (when lsp-auto-guess-root
-      (lsp--suggest-project-root))
-    (lsp-find-session-folder session file-name)
-    (unless lsp-auto-guess-root
+   (if lsp-auto-guess-root (lsp--suggest-project-root)
+     (or
+      (lsp-find-session-folder session file-name)
       (when-let ((root-folder (lsp--find-root-interactively session)))
         (if (or (not (f-equal? root-folder (expand-file-name "~/")))
                 (yes-or-no-p
