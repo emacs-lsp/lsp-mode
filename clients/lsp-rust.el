@@ -495,11 +495,11 @@ The command should include `--message=format=json` or similar option."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "6.2.2"))
 
-(defcustom lsp-rust-analyzer-cargo-all-targets t
-  "Cargo watch all targets or not."
+(defcustom lsp-rust-analyzer-check-all-targets t
+  "Enables --all-targets for `cargo check`."
   :type 'boolean
   :group 'lsp-rust-analyzer
-  :package-version '(lsp-mode . "6.2.2"))
+  :package-version '(lsp-mode . "8.0.2"))
 
 (defcustom lsp-rust-analyzer-checkonsave-features []
   "List of features to activate.
@@ -753,7 +753,7 @@ or JSON objects in `rust-project.json` format."
     :checkOnSave (:enable ,(lsp-json-bool lsp-rust-analyzer-cargo-watch-enable)
                   :command ,lsp-rust-analyzer-cargo-watch-command
                   :extraArgs ,lsp-rust-analyzer-cargo-watch-args
-                  :allTargets ,(lsp-json-bool lsp-rust-analyzer-cargo-all-targets)
+                  :allTargets ,(lsp-json-bool lsp-rust-analyzer-check-all-targets)
                   :features ,lsp-rust-analyzer-checkonsave-features
                   :overrideCommand ,lsp-rust-analyzer-cargo-override-command)
     :files (:exclude ,lsp-rust-analyzer-exclude-globs
