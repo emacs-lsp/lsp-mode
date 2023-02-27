@@ -849,6 +849,7 @@ Changes take effect only when a new session is started."
                                         (csharp-tree-sitter-mode . "csharp")
                                         (csharp-ts-mode . "csharp")
                                         (plain-tex-mode . "plaintex")
+                                        (context-mode . "context")
                                         (latex-mode . "latex")
                                         (v-mode . "v")
                                         (vhdl-mode . "vhdl")
