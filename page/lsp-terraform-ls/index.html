@@ -2487,6 +2487,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#prefill-required-fields" class="md-nav__link">
+    Prefill required fields
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#treeview-controls" class="md-nav__link">
     Treeview controls
   </a>
@@ -2541,6 +2548,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-terraform-ls-prefill-required-fields" class="md-nav__link">
+    lsp-terraform-ls-prefill-required-fields
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-terraform-ls-providers-position-params" class="md-nav__link">
     lsp-terraform-ls-providers-position-params
   </a>
@@ -2550,6 +2564,13 @@
           <li class="md-nav__item">
   <a href="#lsp-terraform-ls-server" class="md-nav__link">
     lsp-terraform-ls-server
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-terraform-ls-validate-on-save" class="md-nav__link">
+    lsp-terraform-ls-validate-on-save
   </a>
   
 </li>
@@ -3327,6 +3348,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#prefill-required-fields" class="md-nav__link">
+    Prefill required fields
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#treeview-controls" class="md-nav__link">
     Treeview controls
   </a>
@@ -3381,6 +3409,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-terraform-ls-prefill-required-fields" class="md-nav__link">
+    lsp-terraform-ls-prefill-required-fields
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-terraform-ls-providers-position-params" class="md-nav__link">
     lsp-terraform-ls-providers-position-params
   </a>
@@ -3390,6 +3425,13 @@
           <li class="md-nav__item">
   <a href="#lsp-terraform-ls-server" class="md-nav__link">
     lsp-terraform-ls-server
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-terraform-ls-validate-on-save" class="md-nav__link">
+    lsp-terraform-ls-validate-on-save
   </a>
   
 </li>
@@ -3527,6 +3569,13 @@ to properly work.</p>
 <li>Key binding: Alt + Enter</li>
 <li>Clicking the middle button of your mouse</li>
 </ul>
+<h3 id="prefill-required-fields">Prefill required fields<a class="headerlink" href="#prefill-required-fields" title="Permanent link">#</a></h3>
+<p>This is an experimental feature which can be enabled via the option
+<code>lsp-terraform-ls-prefill-required-fields</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-terraform-ls-prefill-required-fields</span> <span class="no">t</span><span class="p">)</span>
+</code></pre></div>
+<p>This gif demonstrates how this feature is used:</p>
+<p><img alt="" src="../../examples/terraform-ls-prefill.gif" /></p>
 <h3 id="treeview-controls">Treeview controls<a class="headerlink" href="#treeview-controls" title="Permanent link">#</a></h3>
 <p>For this feature to work, make sure that you have <a href="https://github.com/emacs-lsp/lsp-treemacs">lsp-treemacs</a>
 installed.</p>
@@ -3559,6 +3608,14 @@ language server.</p>
 <p>The optional module calls tree position params.
 Defaults to side following treemacs default.</p>
 <hr />
+<h3 id="lsp-terraform-ls-prefill-required-fields"><code>lsp-terraform-ls-prefill-required-fields</code><a class="headerlink" href="#lsp-terraform-ls-prefill-required-fields" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Enable completion of required fields.</p>
+<p>Enable autocompletion for required fields when completing
+Terraform blocks.  This is an experimental feature provided by the
+language server.</p>
+<hr />
 <h3 id="lsp-terraform-ls-providers-position-params"><code>lsp-terraform-ls-providers-position-params</code><a class="headerlink" href="#lsp-terraform-ls-providers-position-params" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>list</code></p>
 <p><em>Default:</em> <code>nil</code></p>
@@ -3570,6 +3627,12 @@ Defaults to side following treemacs default.</p>
 <p><em>Default:</em> <code>terraform-ls</code></p>
 <p>Path to the <code>terraform-ls</code> binary.</p>
 <hr />
+<h3 id="lsp-terraform-ls-validate-on-save"><code>lsp-terraform-ls-validate-on-save</code><a class="headerlink" href="#lsp-terraform-ls-validate-on-save" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Enable validating the current open file on save.</p>
+<p>This is an experimental feature provided by the language server.</p>
+<hr />
 
 <!-- Source file information -->
 
@@ -3578,7 +3641,7 @@ Defaults to side following treemacs default.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 26, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 27, 2023</span>
       
     
   </small>
