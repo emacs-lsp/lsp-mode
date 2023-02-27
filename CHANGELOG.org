@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 8.0.1
+  * terraform-ls now supports prefill requied fields and the ability to validate on save.
   * ~lsp-bash~ now supports ~bash-ts-mode~
   * ~lsp-ruby-syntax-tree~, ~lsp-solargraph~, ~lsp-sorbet~, ~lsp-steep~, and ~lsp-typeprof~ now support ~ruby-ts-mode~
   * Drop support for emacs 26.1 and 26.2

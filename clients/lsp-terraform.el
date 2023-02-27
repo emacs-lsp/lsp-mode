@@ -32,7 +32,7 @@
 ;; terraform-lsp
 
 (defgroup lsp-terraform nil
-  "LSP support for Terraform, using terraform-lsp"
+  "LSP support for Terraform, using terraform-lsp."
   :group 'lsp-mode
   :link '(url-link "https://github.com/juliosueiras/terraform-lsp")
   :package-version `(lsp-mode . "6.2"))
@@ -96,6 +96,24 @@ language server."
   :type 'boolean
   :package-version '(lsp-mode . "8.0.1"))
 
+(defcustom lsp-terraform-ls-validate-on-save nil
+  "Enable validating the current open file on save.
+
+This is an experimental feature provided by the language server."
+  :group 'lsp-terraform-ls
+  :type 'boolean
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-terraform-ls-prefill-required-fields nil
+  "Enable completion of required fields.
+
+Enable autocompletion for required fields when completing
+Terraform blocks.  This is an experimental feature provided by the
+language server."
+  :group 'lsp-terraform-ls
+  :type 'boolean
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defcustom lsp-terraform-ls-providers-position-params nil
   "The optional providers tree position params.
 Defaults to side following treemacs default."
@@ -127,6 +145,11 @@ Defaults to side following treemacs default."
   "Construct custom capabilities for the language server."
   (when lsp-terraform-ls-enable-show-reference
     '((experimental . ((showReferencesCommandId . "client.showReferences"))))))
+
+(defun lsp-terraform-ls--init-options ()
+  "Construct initialization options for the lanague server."
+  `((experimentalFeatures . ((validateOnSave . ,(lsp-json-bool lsp-terraform-ls-validate-on-save))
+                             (prefillRequiredFields . ,(lsp-json-bool lsp-terraform-ls-prefill-required-fields))))))
 
 (defcustom lsp-terraform-semantic-token-faces
   '(("namespace" . lsp-face-semhl-namespace)
@@ -209,6 +232,7 @@ Defaults to side following treemacs default."
                                                      :discard-default-types t
                                                      :modifiers ,lsp-terraform-semantic-token-modifier-faces
                                                      :types ,lsp-terraform-semantic-token-faces)
+                  :initialization-options (lsp-terraform-ls--init-options)
                   :custom-capabilities (lsp-terraform-ls--custom-capabilities)))
 
 (defun lsp-terraform-ls-validate ()
