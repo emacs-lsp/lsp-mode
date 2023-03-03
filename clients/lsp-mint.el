@@ -1,4 +1,4 @@
-;;; lsp-mint.el --- Solargraph server configuration  -*- lexical-binding: t; -*-
+;;; lsp-mint.el --- Mint Language Server configuration  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Ivan Yonchovski
 
