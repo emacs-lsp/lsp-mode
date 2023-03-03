@@ -708,6 +708,14 @@
     "debugger": "Yes"
   },
   {
+    "name": "ruby-lsp",
+    "full-name": "Ruby (ruby-lsp)",
+    "server-name": "ruby-lsp",
+    "server-url": "https://github.com/Shopify/ruby-lsp",
+    "installation": "gem install ruby-lsp",
+    "debugger": "Not available"
+  },
+  {
     "name": "ruff-lsp",
     "full-name": "Python",
     "server-name": "ruff-lsp",
