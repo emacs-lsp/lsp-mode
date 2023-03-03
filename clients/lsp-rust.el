@@ -1252,7 +1252,8 @@ tokens legend."
   :notification-handlers (ht<-alist lsp-rust-notification-handlers)
   :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single)
                        ("rust-analyzer.debugSingle" #'lsp-rust--analyzer-debug-lens)
-                       ("rust-analyzer.showReferences" #'lsp-rust--analyzer-show-references))
+                       ("rust-analyzer.showReferences" #'lsp-rust--analyzer-show-references)
+                       ("rust-analyzer.triggerParameterHints" #'lsp--action-trigger-parameter-hints))
   :library-folders-fn (lambda (_workspace) lsp-rust-analyzer-library-directories)
   :after-open-fn (lambda ()
                    (when lsp-rust-analyzer-server-display-inlay-hints
