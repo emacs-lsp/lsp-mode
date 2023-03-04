@@ -313,13 +313,12 @@ PATH is the current folder to be checked."
 (defun lsp-headerline--build-path-up-to-project-string ()
   "Build the path-up-to-project segment for the breadcrumb."
   (if-let ((root (lsp-headerline--workspace-root)))
-      (let ((segments (progn
-                        (unless lsp-headerline--path-up-to-project-segments
-                          (setq lsp-headerline--path-up-to-project-segments
-                                (list (lsp-headerline--path-up-to-project-root
-                                       root
-                                       (file-name-directory (file-truename (buffer-file-name)))))))
-                        (car lsp-headerline--path-up-to-project-segments))))
+      (let ((segments (or
+                       lsp-headerline--path-up-to-project-segments
+                       (setq lsp-headerline--path-up-to-project-segments
+                             (lsp-headerline--path-up-to-project-root
+                              root
+                              (lsp-f-parent (buffer-file-name)))))))
         (mapconcat (lambda (next-dir)
                      (propertize next-dir
                                  'font-lock-face
