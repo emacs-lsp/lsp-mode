@@ -380,6 +380,9 @@ the server has requested that."
     "[/\\\\]_build\\'"
     ;; Elixir
     "[/\\\\]\\.elixir_ls\\'"
+    ;; terraform and terragrunt
+    "[/\\\\]\\.terraform\\'"
+    "[/\\\\]\\.terragrunt-cache\\'"
     ;; nix-direnv
     "[/\\\\]\\.direnv\\'")
   "List of regexps matching directory paths which won't be monitored when
