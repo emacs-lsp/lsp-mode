@@ -986,6 +986,11 @@ must be used for handling a particular message.")
   "Face used for highlighting symbols being written to."
   :group 'lsp-mode)
 
+(defface lsp-face-xref-items
+  '((t :inherit highlight))
+  "Face used for highlighting xref items."
+  :group 'lsp-mode)
+
 (define-obsolete-variable-alias 'lsp-lens-auto-enable
   'lsp-lens-enable "lsp-mode 7.0.1")
 
@@ -5039,7 +5044,7 @@ identifier and the position respectively."
          (len (length line)))
     (add-face-text-property (max (min start-char len) 0)
                             (max (min end-char len) 0)
-                            'highlight t line)
+                            'lsp-face-xref-items t line)
     ;; LINE is nil when FILENAME is not being current visited by any buffer.
     (xref-make (or line filename)
                (xref-make-file-location
