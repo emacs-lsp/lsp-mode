@@ -826,6 +826,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "tilt",
+    "full-name": "Tilt LSP",
+    "server-name": "tilt",
+    "installation": "To be used with tilt-mode available in https://github.com/Konubinix/tilt-mode",
+    "server-url": "https://docs.tilt.dev/cli/tilt_lsp.html",
+    "installation-url": "https://docs.tilt.dev/",
+    "debugger": "Not available"
+  },
+  {
     "name": "latex",
     "full-name": "TeX, LaTeX, etc.",
     "server-name": "texlab",
