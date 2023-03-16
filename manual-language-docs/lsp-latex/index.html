@@ -19,7 +19,7 @@
     
     
       
-        <title>Lsp latex - LSP Mode - LSP support for Emacs</title>
+        <title>lsp-latex.el: texlab LSP-client - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#available-functions" class="md-skip">
+        <a href="#lsp-latexel-texlab-lsp-client" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Lsp latex
+              lsp-latex.el: texlab LSP-client
             
           </span>
         </div>
@@ -3040,48 +3040,8 @@
   
   
   
+    
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#available-functions" class="md-nav__link">
-    Available functions
-  </a>
-  
-    <nav class="md-nav" aria-label="Available functions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-latex-build" class="md-nav__link">
-    lsp-latex-build
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-latex-forward-search" class="md-nav__link">
-    lsp-latex-forward-search
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#note" class="md-nav__link">
-    Note
-  </a>
-  
-</li>
-      
-    </ul>
   
 </nav>
                   </div>
@@ -3134,38 +3094,10 @@
   as the main headline.
 -->
 
-  <h1>Lsp latex</h1>
-
 
 <!-- Markdown content -->
-<h2 id="available-functions">Available functions<a class="headerlink" href="#available-functions" title="Permanent link">#</a></h2>
-<h3 id="lsp-latex-build"><code>lsp-latex-build</code><a class="headerlink" href="#lsp-latex-build" title="Permanent link">#</a></h3>
-<p>Build .tex files with texlab.
-It use latexmk by default, so add .latexmkrc if you want to customize
-latex commands or options. You can change build command and option to other
-such as <code>make</code>, by changing <code>lsp-latex-build-executable</code> and
-<code>lsp-latex-build-args</code>.</p>
-<p>This command builds asynchronously by default, while it build synchronously
-with prefix argument(C-u).</p>
-<h3 id="lsp-latex-forward-search"><code>lsp-latex-forward-search</code><a class="headerlink" href="#lsp-latex-forward-search" title="Permanent link">#</a></h3>
-<p>Move to current position on pdf viewer.
-To use, you should set <code>lsp-latex-forward-search-executable</code> and
-<code>lsp-latex-forward-search-args</code> according to your pdf viewer.
-See also <a href="https://texlab.netlify.app/docs/installation/previewing">document of texlab</a>.</p>
-<h2 id="note">Note<a class="headerlink" href="#note" title="Permanent link">#</a></h2>
-<p>In this package, you can use even texlab v0.4.2 or older, written with Java,
-though it is not recommended. If you want to use them, you can write like:</p>
-<div class="highlight"><pre><span></span><code><span class="c1">;; Path to Java executable. If it is added to environmental PATH,</span>
-<span class="c1">;; you don&#39;t have to write this.</span>
-<span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-latex-java-executable</span> <span class="s">&quot;/path/to/java&quot;</span><span class="p">)</span>
-
-<span class="c1">;; &quot;texlab.jar&quot; must be located at a directory contained in `exec-path&#39;</span>
-<span class="c1">;; &quot;texlab&quot; must be located at a directory contained in `exec-path&#39;.</span>
-<span class="p">(</span><span class="k">setq</span> <span class="nv">lsp-latex-texlab-jar-file</span> <span class="ss">&#39;search-from-exec-path</span><span class="p">)</span>
-<span class="c1">;; If you want to put &quot;texlab.jar&quot; somewhere else,</span>
-<span class="c1">;; you can specify the path to &quot;texlab.jar&quot; as follows:</span>
-<span class="c1">;; (setq lsp-latex-texlab-jar-file &quot;/path/to/texlab.jar&quot;)</span>
-</code></pre></div>
+<h1 id="lsp-latexel-texlab-lsp-client">lsp-latex.el: texlab LSP-client<a class="headerlink" href="#lsp-latexel-texlab-lsp-client" title="Permanent link">#</a></h1>
+<p>See <a href="https://github.com/ROCKTAKEY/lsp-latex">lsp-latex.el homepage</a>.</p>
 
 <!-- Source file information -->
 
@@ -3174,7 +3106,7 @@ though it is not recommended. If you want to use them, you can write like:</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 15, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 16, 2023</span>
       
     
   </small>
