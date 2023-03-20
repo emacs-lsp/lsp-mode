@@ -1774,7 +1774,12 @@ On other systems, returns path without change."
          (file
           (concat (decode-coding-string (url-filename url)
                                         (or locale-coding-system 'utf-8))
-                  (when target
+                  (when (and target
+                             (not (s-match
+                                   (rx "#" (group (1+ num)) (or "," "#")
+                                       (group (1+ num))
+                                       string-end)
+                                   uri)))
                     (concat "#" target))))
          (file-name (if (and type (not (string= type "file")))
                         (if-let ((handler (lsp--get-uri-handler type)))
@@ -4869,7 +4874,7 @@ Applies on type formatting."
     (pcase type
       ("file"
        (find-file (lsp--uri-to-path url))
-       (-when-let ((_ line column) (s-match (rx "#" (group (1+ num)) "," (group (1+ num))) url))
+       (-when-let ((_ line column) (s-match (rx "#" (group (1+ num)) (or "," "#") (group (1+ num))) url))
          (goto-char (lsp--position-to-point
                      (lsp-make-position :character (1- (string-to-number column))
                                         :line (1- (string-to-number line)))))))
