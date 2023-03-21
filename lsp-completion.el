@@ -701,7 +701,8 @@ See #2675"
   (lsp-completion--fix-resolve-data item)
   (or (ignore-errors
         (when (lsp-feature? "completionItem/resolve")
-          (lsp-request "completionItem/resolve" (lsp-delete item :_emacsStartPoint))))
+          (lsp-request "completionItem/resolve"
+                       (lsp-delete (lsp-copy item) :_emacsStartPoint))))
       item))
 
 (defun lsp-completion--resolve-async (item callback &optional cleanup-fn)
@@ -711,7 +712,8 @@ The CLEANUP-FN will be called to cleanup."
   (lsp-completion--fix-resolve-data item)
   (ignore-errors
     (if (lsp-feature? "completionItem/resolve")
-        (lsp-request-async "completionItem/resolve" (lsp-delete item :_emacsStartPoint)
+        (lsp-request-async "completionItem/resolve"
+                           (lsp-delete (lsp-copy item) :_emacsStartPoint)
                            (lambda (result)
                              (funcall callback result)
                              (when cleanup-fn (funcall cleanup-fn)))
