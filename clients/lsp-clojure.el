@@ -442,7 +442,7 @@ It updates the test tree view data."
   :new-connection (lsp-stdio-connection
                    #'lsp-clojure--build-command
                    #'lsp-clojure--build-command)
-  :major-modes '(clojure-mode clojurec-mode clojurescript-mode)
+  :major-modes '(clojure-mode clojurec-mode clojurescript-mode clojure-ts-mode)
   :library-folders-fn (lambda (_workspace) lsp-clojure-library-dirs)
   :uri-handlers (lsp-ht ("jar" #'lsp-clojure--file-in-jar))
   :action-handlers (lsp-ht ("code-lens-references" #'lsp-clojure--show-references))

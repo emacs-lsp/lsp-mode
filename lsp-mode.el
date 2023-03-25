@@ -775,6 +775,7 @@ Changes take effect only when a new session is started."
                                         (clojure-mode . "clojure")
                                         (clojurec-mode . "clojure")
                                         (clojurescript-mode . "clojurescript")
+                                        (clojure-ts-mode . "clojure")
                                         (java-mode . "java")
                                         (java-ts-mode . "java")
                                         (jdee-mode . "java")
