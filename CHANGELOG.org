@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 8.0.1
+  * Fix lsp-javascript-rename-file bug
   * Add support for clojure-ts-mode in clojure-lsp client
   * terraform-ls now supports prefill requied fields and the ability to validate on save.
   * Ignore =.terraform= and =.terragrunt-cache= directories

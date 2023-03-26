@@ -816,7 +816,7 @@ name (e.g. `data' variable passed as `data' parameter)."
       (when (file-exists-p new)
         (error "A file named '%s' already exists." new))
       (lsp--send-execute-command
-       "_typescript.applyRenameFile"
+       "_typescript.willRenameFiles"
        (vector (list :sourceUri (lsp--buffer-uri)
                      :targetUri (lsp--path-to-uri new))))
       (mkdir (file-name-directory new) t)
