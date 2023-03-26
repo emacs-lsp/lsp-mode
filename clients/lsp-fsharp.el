@@ -32,10 +32,11 @@
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-fsharp-server-dll-path nil
+  "Path to a self-built fsautocomplete dll. Useful for debugging."
   :group 'lsp-fsharp
-  :risky t
-  :type 'directory
-  :package-version '(lsp-mode . "6.1"))
+  :type 'file
+  :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-fsharp-server-args nil
   "Extra arguments for the F# language server."
@@ -201,9 +202,11 @@ available, else the globally installed tool."
                                 (list "/bin/ksh" "-c"))
 
                                (t nil)))
-        (fsautocomplete-exec (lsp-fsharp--fsac-cmd)))
+        (fsautocomplete-cmd (if lsp-fsharp-server-dll-path
+                                (list "dotnet" (expand-file-name lsp-fsharp-server-dll-path))
+                              (list (lsp-fsharp--fsac-cmd)))))
     (append startup-wrapper
-            (list fsautocomplete-exec)
+            fsautocomplete-cmd
             lsp-fsharp-server-args)))
 
 (defun lsp-fsharp--test-fsautocomplete-present ()
