@@ -32,9 +32,6 @@
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-fsharp-server-install-dir (f-join lsp-server-install-dir "fsautocomplete/")
-  "Install directory for fsautocomplete server.
-The slash is expected at the end."
   :group 'lsp-fsharp
   :risky t
   :type 'directory
@@ -178,10 +175,7 @@ available, else the globally installed tool."
 
 (defun lsp-fsharp--fsac-cmd ()
   "The location of fsautocomplete executable."
-  (or (-let [maybe-local-executable (expand-file-name "fsautocomplete" lsp-fsharp-server-install-dir)]
-        (when (f-exists-p maybe-local-executable)
-          maybe-local-executable))
-      (executable-find "fsautocomplete")
+  (or (executable-find "fsautocomplete")
       (f-join (or (getenv "USERPROFILE") (getenv "HOME"))
               ".dotnet" "tools" "fsautocomplete")))
 
