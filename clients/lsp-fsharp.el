@@ -277,6 +277,7 @@ available, else the globally installed tool."
                                              ("fsharp/fileParsed" #'ignore)
                                              ("fsharp/notifyWorkspacePeek" #'ignore)
                                              ("fsharp/documentAnalyzed" #'ignore)
+                                             ("workspace/codeLens/refresh" #'ignore)
                                              ("fsharp/testDetected" #'ignore))
                   :initialization-options 'lsp-fsharp--make-init-options
                   :initialized-fn (lambda (workspace)
