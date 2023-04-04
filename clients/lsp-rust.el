@@ -737,6 +737,19 @@ or JSON objects in `rust-project.json` format."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
+(defcustom lsp-rust-analyzer-cargo-extra-args []
+  "Extra arguments that are passed to every cargo invocation."
+  :type 'lsp-string-vector
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-cargo-extra-env []
+  "Extra environment variables that will be set when running cargo, rustc or
+other commands within the workspace.  Useful for setting RUSTFLAGS."
+  :type 'lsp-string-vector
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defun lsp-rust-analyzer--make-init-options ()
   "Init options for rust-analyzer"
   `(:diagnostics (:enable ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable)
@@ -762,6 +775,8 @@ or JSON objects in `rust-project.json` format."
     :cargo (:allFeatures ,(lsp-json-bool lsp-rust-all-features)
             :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
             :features ,lsp-rust-features
+            :extraArgs ,lsp-rust-analyzer-cargo-extra-args
+            :extraEnv ,lsp-rust-analyzer-cargo-extra-env
             :target ,lsp-rust-analyzer-cargo-target
             :runBuildScripts ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
             ; Obsolete, but used by old Rust-Analyzer versions
