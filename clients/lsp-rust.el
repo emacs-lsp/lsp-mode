@@ -1485,8 +1485,8 @@ and run a compilation"
 (defun lsp-rust-analyzer-debug (runnable)
   "Select and debug a RUNNABLE action."
   (interactive (list (lsp-rust-analyzer--select-runnable)))
-  (unless (featurep 'dap-cpptools)
-    (user-error "You must require `dap-cpptools'"))
+  (unless (featurep 'dap-lldb)
+    (user-error "You must require `dap-lldb'"))
   (-let (((&rust-analyzer:Runnable
            :args (&rust-analyzer:RunnableArgs :cargo-args :workspace-root? :executable-args)
            :label) runnable))
@@ -1503,8 +1503,10 @@ and run a compilation"
          (-keep (lambda (s)
                   (condition-case nil
                       (-let* ((json-object-type 'plist)
-                              ((msg &as &plist :reason :executable) (json-read-from-string s)))
-                        (when (and executable (string= "compiler-artifact" reason))
+                              ((msg &as &plist :reason :executable :target) (json-read-from-string s)))
+                        (when (and executable
+                                   (string= "compiler-artifact" reason)
+                                   (string= "test" (aref (plist-get target :kind) 0)))
                           executable))
                     (error))))
          (funcall
@@ -1513,14 +1515,12 @@ and run a compilation"
               (`() (user-error "No compilation artifacts or obtaining the runnable artifacts failed"))
               (`(,spec) spec)
               (_ (user-error "Multiple compilation artifacts are not supported")))))
-         (list :type "cppdbg"
+         (list :type "lldb-vscode"
                :request "launch"
                :name label
                :args executable-args
                :cwd workspace-root?
-               :sourceLanguages ["rust"]
                :program)
-         (append lsp-rust-analyzer-debug-lens-extra-dap-args)
          (dap-debug))))
 
 (defun lsp-rust-analyzer-rerun (&optional runnable)
