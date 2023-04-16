@@ -893,7 +893,8 @@ Changes take effect only when a new session is started."
                                         (idris2-mode . "idris2")
                                         (gleam-mode . "gleam")
                                         (graphviz-dot-mode . "dot")
-                                        (tiltfile-mode . "tiltfile"))
+                                        (tiltfile-mode . "tiltfile")
+                                        (glsl-mode . "glsl"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
