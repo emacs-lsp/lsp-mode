@@ -74,6 +74,7 @@ nav:
     - Fortran: page/lsp-fortran.md
     - GDScript: page/lsp-gdscript.md
     - Gleam: page/lsp-gleam.md
+    - GLSL: page/lsp-glsl.md
     - Go (gopls): manual-language-docs/lsp-gopls.md
     - Grammarly: page/lsp-grammarly.md
     - GraphQL: page/lsp-graphql.md

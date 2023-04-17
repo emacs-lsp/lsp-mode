@@ -896,7 +896,8 @@ Changes take effect only when a new session is started."
     (graphviz-dot-mode . "dot")
     (tiltfile-mode . "tiltfile")
     (bibtex-mode . "bibtex")
-    (rst-mode . "restructuredtext"))
+    (rst-mode . "restructuredtext")
+    (glsl-mode . "glsl"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
