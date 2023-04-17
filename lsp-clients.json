@@ -260,6 +260,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "glsl",
+    "full-name": "GLSL",
+    "server-name": "glsl",
+    "server-url": "https://github.com/svenstaro/glsl-language-server",
+    "installation-url": "https://github.com/svenstaro/glsl-language-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "gopls",
     "full-name": "Go",
     "server-name": "gopls",

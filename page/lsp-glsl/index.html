@@ -12,14 +12,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-perlnavigator/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-glsl/">
       
       <link rel="icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.0">
     
     
       
-        <title>Perl (Navigator) - LSP Mode - LSP support for Emacs</title>
+        <title>GLSL - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#perl-navigator" class="md-skip">
+        <a href="#glsl" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Perl (Navigator)
+              GLSL
             
           </span>
         </div>
@@ -1486,11 +1486,79 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../lsp-glsl/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          GLSL
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         GLSL
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#server" class="md-nav__link">
+    Server
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-configurations" class="md-nav__link">
+    Available configurations
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1962,197 +2030,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Perl (Navigator)
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../lsp-perlnavigator/" class="md-nav__link">
         Perl (Navigator)
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-    <nav class="md-nav" aria-label="Installation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-not-available" class="md-nav__link">
-    Debugger: Not available
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-autoinstall-dir" class="md-nav__link">
-    lsp-perlnavigator-autoinstall-dir
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-download-url" class="md-nav__link">
-    lsp-perlnavigator-download-url
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-enable-warnings" class="md-nav__link">
-    lsp-perlnavigator-enable-warnings
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-executable" class="md-nav__link">
-    lsp-perlnavigator-executable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-include-paths" class="md-nav__link">
-    lsp-perlnavigator-include-paths
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-logging" class="md-nav__link">
-    lsp-perlnavigator-logging
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-perl-path" class="md-nav__link">
-    lsp-perlnavigator-perl-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-perlcritic-enabled" class="md-nav__link">
-    lsp-perlnavigator-perlcritic-enabled
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-perlcritic-profile" class="md-nav__link">
-    lsp-perlnavigator-perlcritic-profile
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-perltidy-profile" class="md-nav__link">
-    lsp-perlnavigator-perltidy-profile
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-severity1" class="md-nav__link">
-    lsp-perlnavigator-severity1
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-severity2" class="md-nav__link">
-    lsp-perlnavigator-severity2
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-severity3" class="md-nav__link">
-    lsp-perlnavigator-severity3
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-severity4" class="md-nav__link">
-    lsp-perlnavigator-severity4
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-severity5" class="md-nav__link">
-    lsp-perlnavigator-severity5
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-trace-server" class="md-nav__link">
-    lsp-perlnavigator-trace-server
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -3285,124 +3167,6 @@
     Available configurations
   </a>
   
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-autoinstall-dir" class="md-nav__link">
-    lsp-perlnavigator-autoinstall-dir
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-download-url" class="md-nav__link">
-    lsp-perlnavigator-download-url
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-enable-warnings" class="md-nav__link">
-    lsp-perlnavigator-enable-warnings
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-executable" class="md-nav__link">
-    lsp-perlnavigator-executable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-include-paths" class="md-nav__link">
-    lsp-perlnavigator-include-paths
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-logging" class="md-nav__link">
-    lsp-perlnavigator-logging
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-perl-path" class="md-nav__link">
-    lsp-perlnavigator-perl-path
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-perlcritic-enabled" class="md-nav__link">
-    lsp-perlnavigator-perlcritic-enabled
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-perlcritic-profile" class="md-nav__link">
-    lsp-perlnavigator-perlcritic-profile
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-perltidy-profile" class="md-nav__link">
-    lsp-perlnavigator-perltidy-profile
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-severity1" class="md-nav__link">
-    lsp-perlnavigator-severity1
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-severity2" class="md-nav__link">
-    lsp-perlnavigator-severity2
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-severity3" class="md-nav__link">
-    lsp-perlnavigator-severity3
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-severity4" class="md-nav__link">
-    lsp-perlnavigator-severity4
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-severity5" class="md-nav__link">
-    lsp-perlnavigator-severity5
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-perlnavigator-trace-server" class="md-nav__link">
-    lsp-perlnavigator-trace-server
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
     </ul>
@@ -3441,7 +3205,7 @@
 <!-- Edit button -->
 
 <a
-  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-perlnavigator.el"
+  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-glsl.el"
   title="Edit this page"
   class="md-content__button md-icon"
 >
@@ -3460,94 +3224,13 @@
 
 
 <!-- Markdown content -->
-<h1 id="perl-navigator">Perl Navigator<a class="headerlink" href="#perl-navigator" title="Permanent link">#</a></h1>
+<h1 id="glsl">GLSL<a class="headerlink" href="#glsl" title="Permanent link">#</a></h1>
 <h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For more information about the LSP server, check <a href="https://github.com/bscan/PerlNavigator">perlnavigator</a>.</p>
+<p>For more information about the LSP server, check <a href="https://github.com/svenstaro/glsl-language-server">glsl</a>.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
-<p><code>https://github.com/bscan/PerlNavigator/releases</code></p>
+<p>For more instructions on how to install manually, check <a href="https://github.com/svenstaro/glsl-language-server">here</a>.</p>
 <h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<h3 id="lsp-perlnavigator-autoinstall-dir"><code>lsp-perlnavigator-autoinstall-dir</code><a class="headerlink" href="#lsp-perlnavigator-autoinstall-dir" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>directory</code></p>
-<p><em>Default:</em> <code>~/.emacs.d/.cache/lsp/perlnavigator</code></p>
-<p>Automatic installation directory for Perl Navigator.</p>
-<hr />
-<h3 id="lsp-perlnavigator-download-url"><code>lsp-perlnavigator-download-url</code><a class="headerlink" href="#lsp-perlnavigator-download-url" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>https://github.com/bscan/PerlNavigator/releases/latest/download/perlnavigator-linux-x86_64.zip</code></p>
-<p>Automatic download url for PerlNavigator.</p>
-<hr />
-<h3 id="lsp-perlnavigator-enable-warnings"><code>lsp-perlnavigator-enable-warnings</code><a class="headerlink" href="#lsp-perlnavigator-enable-warnings" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable warnings using -Mwarnings command switch.</p>
-<hr />
-<h3 id="lsp-perlnavigator-executable"><code>lsp-perlnavigator-executable</code><a class="headerlink" href="#lsp-perlnavigator-executable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>file</code></p>
-<p><em>Default:</em> <code>perlnavigator</code></p>
-<p>Location of the perlnavigator binary.</p>
-<hr />
-<h3 id="lsp-perlnavigator-include-paths"><code>lsp-perlnavigator-include-paths</code><a class="headerlink" href="#lsp-perlnavigator-include-paths" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>lsp-string-vector</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Array of paths added to @INC.  You can use $workspaceRoot as a placeholder.</p>
-<hr />
-<h3 id="lsp-perlnavigator-logging"><code>lsp-perlnavigator-logging</code><a class="headerlink" href="#lsp-perlnavigator-logging" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Log to stdout from the navigator.  Viewable in the Perl Navigator LSP log.</p>
-<hr />
-<h3 id="lsp-perlnavigator-perl-path"><code>lsp-perlnavigator-perl-path</code><a class="headerlink" href="#lsp-perlnavigator-perl-path" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>perl</code></p>
-<p>Full path to the perl executable (no aliases, .bat files or ~/).</p>
-<hr />
-<h3 id="lsp-perlnavigator-perlcritic-enabled"><code>lsp-perlnavigator-perlcritic-enabled</code><a class="headerlink" href="#lsp-perlnavigator-perlcritic-enabled" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable perl critic.</p>
-<hr />
-<h3 id="lsp-perlnavigator-perlcritic-profile"><code>lsp-perlnavigator-perlcritic-profile</code><a class="headerlink" href="#lsp-perlnavigator-perlcritic-profile" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Path to perl critic profile. Otherwise perlcritic itself will
-default to ~/.perlcriticrc. (no aliases, .bat files or ~/).</p>
-<hr />
-<h3 id="lsp-perlnavigator-perltidy-profile"><code>lsp-perlnavigator-perltidy-profile</code><a class="headerlink" href="#lsp-perlnavigator-perltidy-profile" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Path to perl tidy profile (no aliases, .bat files or ~/).</p>
-<hr />
-<h3 id="lsp-perlnavigator-severity1"><code>lsp-perlnavigator-severity1</code><a class="headerlink" href="#lsp-perlnavigator-severity1" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag error warning info hint none))</code></p>
-<p><em>Default:</em> <code>hint</code></p>
-<p>Editor Diagnostic severity level for Critic severity 1.</p>
-<hr />
-<h3 id="lsp-perlnavigator-severity2"><code>lsp-perlnavigator-severity2</code><a class="headerlink" href="#lsp-perlnavigator-severity2" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag error warning info hint none))</code></p>
-<p><em>Default:</em> <code>hint</code></p>
-<p>Editor Diagnostic severity level for Critic severity 2.</p>
-<hr />
-<h3 id="lsp-perlnavigator-severity3"><code>lsp-perlnavigator-severity3</code><a class="headerlink" href="#lsp-perlnavigator-severity3" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag error warning info hint none))</code></p>
-<p><em>Default:</em> <code>hint</code></p>
-<p>Editor Diagnostic severity level for Critic severity 3.</p>
-<hr />
-<h3 id="lsp-perlnavigator-severity4"><code>lsp-perlnavigator-severity4</code><a class="headerlink" href="#lsp-perlnavigator-severity4" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag error warning info hint none))</code></p>
-<p><em>Default:</em> <code>info</code></p>
-<p>Editor Diagnostic severity level for Critic severity 4.</p>
-<hr />
-<h3 id="lsp-perlnavigator-severity5"><code>lsp-perlnavigator-severity5</code><a class="headerlink" href="#lsp-perlnavigator-severity5" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag error warning info hint none))</code></p>
-<p><em>Default:</em> <code>warning</code></p>
-<p>Editor Diagnostic severity level for Critic severity 5.</p>
-<hr />
-<h3 id="lsp-perlnavigator-trace-server"><code>lsp-perlnavigator-trace-server</code><a class="headerlink" href="#lsp-perlnavigator-trace-server" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (:tag off messages verbose))</code></p>
-<p><em>Default:</em> <code>messages</code></p>
-<p>Traces the communication between VS Code and the language server.</p>
-<hr />
 
 <!-- Source file information -->
 
@@ -3574,7 +3257,7 @@ default to ~/.perlcriticrc. (no aliases, .bat files or ~/).</p>
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../lsp-perl/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Perl (Perl::LanguageServer)" rel="prev">
+        <a href="../lsp-gleam/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Gleam" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -3583,20 +3266,20 @@ default to ~/.perlcriticrc. (no aliases, .bat files or ~/).</p>
               <span class="md-footer__direction">
                 Previous
               </span>
-              Perl (Perl::LanguageServer)
+              Gleam
             </div>
           </div>
         </a>
       
       
         
-        <a href="../lsp-intelephense/" class="md-footer__link md-footer__link--next" aria-label="Next: PHP (intelephense)" rel="next">
+        <a href="../../manual-language-docs/lsp-gopls/" class="md-footer__link md-footer__link--next" aria-label="Next: Go (gopls)" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              PHP (intelephense)
+              Go (gopls)
             </div>
           </div>
           <div class="md-footer__button md-icon">
