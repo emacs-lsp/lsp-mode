@@ -330,6 +330,7 @@ the server has requested that."
   '(; SCM tools
     "[/\\\\]\\.git\\'"
     "[/\\\\]\\.github\\'"
+    "[/\\\\]\\.gitlab\\'"
     "[/\\\\]\\.circleci\\'"
     "[/\\\\]\\.hg\\'"
     "[/\\\\]\\.bzr\\'"
@@ -355,6 +356,9 @@ the server has requested that."
     "[/\\\\]\\.vscode\\'"
     "[/\\\\]\\.venv\\'"
     "[/\\\\]\\.mypy_cache\\'"
+    "[/\\\\]\\.pytest_cache\\'"
+    ;; Python
+    "[/\\\\]__pycache__\\'"
     ;; Autotools output
     "[/\\\\]\\.deps\\'"
     "[/\\\\]build-aux\\'"
