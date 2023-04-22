@@ -2766,41 +2766,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-inlay-face" class="md-nav__link">
-    lsp-rust-analyzer-inlay-face
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-inlay-param-face" class="md-nav__link">
-    lsp-rust-analyzer-inlay-param-face
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-inlay-param-format" class="md-nav__link">
-    lsp-rust-analyzer-inlay-param-format
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-inlay-type-face" class="md-nav__link">
-    lsp-rust-analyzer-inlay-type-face
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-inlay-type-format" class="md-nav__link">
-    lsp-rust-analyzer-inlay-type-format
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-library-directories" class="md-nav__link">
     lsp-rust-analyzer-library-directories
   </a>
@@ -2873,13 +2838,6 @@
           <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-server-command" class="md-nav__link">
     lsp-rust-analyzer-server-command
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-server-display-inlay-hints" class="md-nav__link">
-    lsp-rust-analyzer-server-display-inlay-hints
   </a>
   
 </li>
@@ -4174,41 +4132,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-inlay-face" class="md-nav__link">
-    lsp-rust-analyzer-inlay-face
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-inlay-param-face" class="md-nav__link">
-    lsp-rust-analyzer-inlay-param-face
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-inlay-param-format" class="md-nav__link">
-    lsp-rust-analyzer-inlay-param-format
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-inlay-type-face" class="md-nav__link">
-    lsp-rust-analyzer-inlay-type-face
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-inlay-type-format" class="md-nav__link">
-    lsp-rust-analyzer-inlay-type-format
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-library-directories" class="md-nav__link">
     lsp-rust-analyzer-library-directories
   </a>
@@ -4281,13 +4204,6 @@
           <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-server-command" class="md-nav__link">
     lsp-rust-analyzer-server-command
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-rust-analyzer-server-display-inlay-hints" class="md-nav__link">
-    lsp-rust-analyzer-server-display-inlay-hints
   </a>
   
 </li>
@@ -4727,35 +4643,6 @@ them with</code>crate` or the crate name they refer to.</p>
 <p>Whether to allow import insertion to merge new imports into single path
 glob imports like <code>use std::fmt::*;</code>.</p>
 <hr />
-<h3 id="lsp-rust-analyzer-inlay-face"><code>lsp-rust-analyzer-inlay-face</code><a class="headerlink" href="#lsp-rust-analyzer-inlay-face" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>face</code></p>
-<p><em>Default:</em> <code>((t :inherit font-lock-comment-face))</code></p>
-<p>The face to use for the Rust Analyzer inlays.</p>
-<hr />
-<h3 id="lsp-rust-analyzer-inlay-param-face"><code>lsp-rust-analyzer-inlay-param-face</code><a class="headerlink" href="#lsp-rust-analyzer-inlay-param-face" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>face</code></p>
-<p><em>Default:</em> <code>((t :inherit lsp-rust-analyzer-inlay-face))</code></p>
-<p>Face for inlay parameter hints (e.g. function parameter names at call-site).</p>
-<hr />
-<h3 id="lsp-rust-analyzer-inlay-param-format"><code>lsp-rust-analyzer-inlay-param-format</code><a class="headerlink" href="#lsp-rust-analyzer-inlay-param-format" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(string :tag String)</code></p>
-<p><em>Default:</em> <code>%s:</code></p>
-<p>Format string for parameter inlays (part of the inlay face,
-used only if lsp-rust-analyzer-server-format-inlay-hints is
-non-nil).</p>
-<hr />
-<h3 id="lsp-rust-analyzer-inlay-type-face"><code>lsp-rust-analyzer-inlay-type-face</code><a class="headerlink" href="#lsp-rust-analyzer-inlay-type-face" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>face</code></p>
-<p><em>Default:</em> <code>((t :inherit lsp-rust-analyzer-inlay-face))</code></p>
-<p>Face for inlay type hints (e.g. inferred variable types).</p>
-<hr />
-<h3 id="lsp-rust-analyzer-inlay-type-format"><code>lsp-rust-analyzer-inlay-type-format</code><a class="headerlink" href="#lsp-rust-analyzer-inlay-type-format" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(string :tag String)</code></p>
-<p><em>Default:</em> <code>: %s</code></p>
-<p>Format string for variable inlays (part of the inlay face,
-used only if lsp-rust-analyzer-server-format-inlay-hints is
-non-nil).</p>
-<hr />
 <h3 id="lsp-rust-analyzer-library-directories"><code>lsp-rust-analyzer-library-directories</code><a class="headerlink" href="#lsp-rust-analyzer-library-directories" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(repeat string)</code></p>
 <p><em>Default:</em> <code>(~/.cargo/registry/src ~/.rustup/toolchains)</code></p>
@@ -4817,11 +4704,6 @@ available on a nightly build.</p>
 <p><em>Default:</em> <code>(rust-analyzer)</code></p>
 <p>Command to start rust-analyzer.</p>
 <hr />
-<h3 id="lsp-rust-analyzer-server-display-inlay-hints"><code>lsp-rust-analyzer-server-display-inlay-hints</code><a class="headerlink" href="#lsp-rust-analyzer-server-display-inlay-hints" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Show inlay hints.</p>
-<hr />
 <h3 id="lsp-rust-analyzer-server-format-inlay-hints"><code>lsp-rust-analyzer-server-format-inlay-hints</code><a class="headerlink" href="#lsp-rust-analyzer-server-format-inlay-hints" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
@@ -4852,7 +4734,7 @@ compiling unnecessary things.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 20, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 22, 2023</span>
       
     
   </small>

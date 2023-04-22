@@ -1156,6 +1156,55 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-inlay-hint-enable" class="md-nav__link">
+    lsp-inlay-hint-enable
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-inlay-hint-enum-format" class="md-nav__link">
+    lsp-inlay-hint-enum-format
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-inlay-hint-face" class="md-nav__link">
+    lsp-inlay-hint-face
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-inlay-hint-param-format" class="md-nav__link">
+    lsp-inlay-hint-param-format
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-inlay-hint-parameter-face" class="md-nav__link">
+    lsp-inlay-hint-parameter-face
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-inlay-hint-type-face" class="md-nav__link">
+    lsp-inlay-hint-type-face
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-inlay-hint-type-format" class="md-nav__link">
+    lsp-inlay-hint-type-format
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-insert-final-newline" class="md-nav__link">
     lsp-insert-final-newline
   </a>
@@ -4105,6 +4154,55 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-inlay-hint-enable" class="md-nav__link">
+    lsp-inlay-hint-enable
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-inlay-hint-enum-format" class="md-nav__link">
+    lsp-inlay-hint-enum-format
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-inlay-hint-face" class="md-nav__link">
+    lsp-inlay-hint-face
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-inlay-hint-param-format" class="md-nav__link">
+    lsp-inlay-hint-param-format
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-inlay-hint-parameter-face" class="md-nav__link">
+    lsp-inlay-hint-parameter-face
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-inlay-hint-type-face" class="md-nav__link">
+    lsp-inlay-hint-type-face
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lsp-inlay-hint-type-format" class="md-nav__link">
+    lsp-inlay-hint-type-format
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-insert-final-newline" class="md-nav__link">
     lsp-insert-final-newline
   </a>
@@ -4762,6 +4860,42 @@ in place.</p>
 <p><em>Default:</em> <code>0.5</code></p>
 <p>Debounce interval for <code>after-change-functions</code>.</p>
 <hr />
+<h3 id="lsp-inlay-hint-enable"><code>lsp-inlay-hint-enable</code><a class="headerlink" href="#lsp-inlay-hint-enable" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>If non-nil it will enable inlay hints.</p>
+<hr />
+<h3 id="lsp-inlay-hint-enum-format"><code>lsp-inlay-hint-enum-format</code><a class="headerlink" href="#lsp-inlay-hint-enum-format" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(string :tag String)</code></p>
+<p><em>Default:</em> <code>%s</code></p>
+<p>Format string for parameter inlays (part of the inlay face).</p>
+<hr />
+<h3 id="lsp-inlay-hint-face"><code>lsp-inlay-hint-face</code><a class="headerlink" href="#lsp-inlay-hint-face" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>face</code></p>
+<p><em>Default:</em> <code>((t :inherit font-lock-comment-face))</code></p>
+<p>The face to use for the JavaScript inlays.</p>
+<hr />
+<h3 id="lsp-inlay-hint-param-format"><code>lsp-inlay-hint-param-format</code><a class="headerlink" href="#lsp-inlay-hint-param-format" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(string :tag String)</code></p>
+<p><em>Default:</em> <code>%s</code></p>
+<p>Format string for parameter inlays (part of the inlay face).</p>
+<hr />
+<h3 id="lsp-inlay-hint-parameter-face"><code>lsp-inlay-hint-parameter-face</code><a class="headerlink" href="#lsp-inlay-hint-parameter-face" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>face</code></p>
+<p><em>Default:</em> <code>((t :inherit lsp-inlay-hint-face))</code></p>
+<p>Face for inlay parameter hints (e.g. function parameter names at
+call-site).</p>
+<hr />
+<h3 id="lsp-inlay-hint-type-face"><code>lsp-inlay-hint-type-face</code><a class="headerlink" href="#lsp-inlay-hint-type-face" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>face</code></p>
+<p><em>Default:</em> <code>((t :inherit lsp-inlay-hint-face))</code></p>
+<p>Face for inlay type hints (e.g. inferred variable types).</p>
+<hr />
+<h3 id="lsp-inlay-hint-type-format"><code>lsp-inlay-hint-type-format</code><a class="headerlink" href="#lsp-inlay-hint-type-format" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(string :tag String)</code></p>
+<p><em>Default:</em> <code>%s</code></p>
+<p>Format string for variable inlays (part of the inlay face).</p>
+<hr />
 <h3 id="lsp-insert-final-newline"><code>lsp-insert-final-newline</code><a class="headerlink" href="#lsp-insert-final-newline" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
@@ -5009,7 +5143,7 @@ The hook will receive two parameters list of added and removed folders.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 20, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 22, 2023</span>
       
     
   </small>
