@@ -599,49 +599,11 @@ TypeScript 3.0 or newer in the workspace."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
 
-;; inlay hints
-
-(defface lsp-javascript-inlay-face
-  '((t :inherit font-lock-comment-face))
-  "The face to use for the JavaScript inlays."
-  :group 'lsp-javascript
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defface lsp-javascript-inlay-type-face
-  '((t :inherit lsp-javascript-inlay-face))
-  "Face for inlay type hints (e.g. inferred variable types)."
-  :group 'lsp-javascript
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-javascript-inlay-type-format ": %s"
-  "Format string for variable inlays (part of the inlay face)."
-  :type '(string :tag "String")
-  :group 'lsp-javascript
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defface lsp-javascript-inlay-parameter-face
-  '((t :inherit lsp-javascript-inlay-face))
-  "Face for inlay parameter hints (e.g. function parameter names at
-call-site)."
-  :group 'lsp-javascript
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-javascript-inlay-param-format "%s:"
-  "Format string for parameter inlays (part of the inlay face)."
-  :type '(string :tag "String")
-  :group 'lsp-javascript
-  :package-version '(lsp-mode . "8.0.1"))
-
 (defcustom lsp-typescript-surveys-enabled t
   "Enabled/disable occasional surveys that help us improve VS
 Code's JavaScript and TypeScript support."
   :type 'boolean
   :package-version '(lsp-mode . "6.1"))
-
-(defcustom lsp-javascript-display-inlay-hints nil
-  "Whether to display inlay hints."
-  :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-javascript-display-enum-member-value-hints nil
   "Show inlay hints for enum member values."
@@ -678,11 +640,6 @@ name (e.g. `data' variable passed as `data' parameter)."
 
 (defcustom lsp-javascript-display-variable-type-hints nil
   "Show inlay hints for variable types."
-  :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-javascript-update-inlay-hints-on-scroll t
-  "Update inlay hints immediately when scrolling or modifying window sizes."
   :type 'boolean
   :package-version '(lsp-mode . "8.0.1"))
 
@@ -829,74 +786,9 @@ name (e.g. `data' variable passed as `data' parameter)."
       (lsp)
       (lsp--info "Renamed '%s' to '%s'." name (file-name-nondirectory new)))))
 
-(defun lsp-javascript-update-inlay-hints-scroll-function (window start)
-  (lsp-javascript--update-inlay-hints start (window-end window t)))
-
-(defun lsp-javascript-update-inlay-hints ()
-  (lsp-javascript--update-inlay-hints (window-start) (window-end nil t)))
-
-(defun lsp-javascript--update-inlay-hints (start end)
-  (if (lsp-javascript-initialized?)
-      (lsp-request-async
-       "textDocument/inlayHint"
-       (lsp-make-javascript-inlay-hints-params
-        :text-document (lsp--text-document-identifier)
-        :range (lsp-make-range :start
-                               (lsp-point-to-position start)
-                               :end
-                               (lsp-point-to-position end)))
-       (lambda (res)
-         (lsp--remove-overlays 'lsp-javascript-inlay-hint)
-         (dolist (hint res)
-           (-let* (((&javascript:InlayHint :label :position :kind :padding-left? :padding-right?) hint)
-                   (pos (lsp--position-to-point position))
-                   (overlay (make-overlay pos pos nil 'front-advance 'end-advance)))
-              (when (stringp label)
-                (overlay-put overlay 'lsp-javascript-inlay-hint t)
-                (overlay-put overlay 'before-string
-                             (format "%s%s%s"
-                                     (if padding-left? " " "")
-                                     (propertize (lsp-javascript-format-inlay label kind)
-                                                 'font-lock-face (lsp-javascript-face-for-inlay kind))
-                                     (if padding-right? " " "")))))))
-       :mode 'tick)))
-
-(defun lsp-javascript-column-at-pos (pos)
-  (save-excursion
-    (goto-char pos)
-    (current-column)))
-
-(defun lsp-javascript-format-inlay (text kind)
-  (cond
-   ((eql kind lsp/javascript-inlay-hint-kind-type-hint) (format lsp-javascript-inlay-type-format text))
-   ((eql kind lsp/javascript-inlay-hint-kind-parameter-hint) (format lsp-javascript-inlay-param-format text))
-   ;; ((eql kind lsp/javascript-inlay-hint-kind-enum-hint) (format lsp-javascript-inlay-enum-format text))
-   (t text)))
-
-(defun lsp-javascript-face-for-inlay (kind)
-  (cond
-   ((eql kind lsp/javascript-inlay-hint-kind-type-hint) 'lsp-javascript-inlay-type-face)
-   ((eql kind lsp/javascript-inlay-hint-kind-parameter-hint) 'lsp-javascript-inlay-parameter-face)
-   (t 'lsp-javascript-inlay-face)))
-
 (defun lsp-javascript-initialized? ()
   (when-let ((workspace (lsp-find-workspace 'ts-ls (buffer-file-name))))
     (eq 'initialized (lsp--workspace-status workspace))))
-
-(define-minor-mode lsp-javascript-inlay-hints-mode
-  "Mode for displaying inlay hints."
-  :lighter nil
-  (cond
-   (lsp-javascript-inlay-hints-mode
-    (lsp-javascript-update-inlay-hints)
-    (add-hook 'lsp-on-idle-hook #'lsp-javascript-update-inlay-hints nil t)
-    (when lsp-javascript-update-inlay-hints-on-scroll
-      (add-to-list (make-local-variable 'window-scroll-functions) #'lsp-javascript-update-inlay-hints-scroll-function)))
-   (t
-    (lsp--remove-overlays 'lsp-javascript-inlay-hint)
-    (remove-hook 'lsp-on-idle-hook #'lsp-javascript-update-inlay-hints t)
-    (when lsp-javascript-update-inlay-hints-on-scroll
-      (setf window-scroll-functions (delete #'lsp-javascript-update-inlay-hints-scroll-function window-scroll-functions))))))
 
 (defun lsp-clients-typescript-project-ts-server-path ()
   (f-join (lsp-workspace-root) "node_modules" "typescript" "lib" "tsserver.js"))
@@ -946,9 +838,6 @@ name (e.g. `data' variable passed as `data' parameter)."
                                           (format-enable (or lsp-javascript-format-enable lsp-typescript-format-enable)))
                                       (lsp:set-server-capabilities-document-formatting-provider? caps format-enable)
                                       (lsp:set-server-capabilities-document-range-formatting-provider? caps format-enable)))
-                  :after-open-fn (lambda ()
-                                   (when lsp-javascript-display-inlay-hints
-                                     (lsp-javascript-inlay-hints-mode)))
                   :ignore-messages '("readFile .*? requested by TypeScript but content not available")
                   :server-id 'ts-ls
                   :request-handlers (ht ("_typescript.rename" #'lsp-javascript--rename))

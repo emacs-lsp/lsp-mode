@@ -260,6 +260,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "glsl",
+    "full-name": "GLSL",
+    "server-name": "glsl",
+    "server-url": "https://github.com/svenstaro/glsl-language-server",
+    "installation-url": "https://github.com/svenstaro/glsl-language-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "gopls",
     "full-name": "Go",
     "server-name": "gopls",
@@ -708,6 +716,14 @@
     "debugger": "Yes"
   },
   {
+    "name": "ruby-lsp",
+    "full-name": "Ruby (ruby-lsp)",
+    "server-name": "ruby-lsp",
+    "server-url": "https://github.com/Shopify/ruby-lsp",
+    "installation": "gem install ruby-lsp",
+    "debugger": "Not available"
+  },
+  {
     "name": "ruff-lsp",
     "full-name": "Python",
     "server-name": "ruff-lsp",
@@ -815,6 +831,15 @@
     "server-name": "terraform-ls",
     "server-url": "https://github.com/hashicorp/terraform-ls",
     "installation-url": "https://github.com/hashicorp/terraform-ls",
+    "debugger": "Not available"
+  },
+  {
+    "name": "tilt",
+    "full-name": "Tilt LSP",
+    "server-name": "tilt",
+    "installation": "To be used with tilt-mode available in https://github.com/Konubinix/tilt-mode",
+    "server-url": "https://docs.tilt.dev/cli/tilt_lsp.html",
+    "installation-url": "https://docs.tilt.dev/",
     "debugger": "Not available"
   },
   {

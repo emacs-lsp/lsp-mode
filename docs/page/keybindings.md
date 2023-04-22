@@ -36,7 +36,7 @@ configured `lsp-command-map` which is bound to `lsp-keymap-prefix`
 | `s-l g d`  | Find declarations of the symbol under point.                                                                                        |
 | `s-l g h`  | Show the incoming call hierarchy for the symbol at point. (requires `lsp-treemacs`)                                                 |
 | `s-l g a`  | Find all meaningful symbols that match pattern.                                                                                     |
-| `s-l h h`  | Display the type signature and documentation of the thing at                                                                        |
+| `s-l h h`  | Display the type signature and documentation of the thing at point.                                                                 |
 | `s-l h s`  | Activate signature help.                                                                                                            |
 | `s-l h g`  | Trigger display hover information popup and hide it on next typing.                                                                 |
 | `s-l r r`  | Rename the symbol (and all references to it).                                                                                       |

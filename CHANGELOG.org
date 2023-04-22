@@ -1,5 +1,8 @@
 * Changelog
 ** Unreleased 8.0.1
+  * Add support for clojure-ts-mode in clojure-lsp client
+  * terraform-ls now supports prefill requied fields and the ability to validate on save.
+  * Ignore =.terraform= and =.terragrunt-cache= directories
   * ~lsp-bash~ now supports ~bash-ts-mode~
   * ~lsp-ruby-syntax-tree~, ~lsp-solargraph~, ~lsp-sorbet~, ~lsp-steep~, and ~lsp-typeprof~ now support ~ruby-ts-mode~
   * Drop support for emacs 26.1 and 26.2
@@ -68,6 +71,10 @@
     one installed by lsp-mode.
   * Add [[https://github.com/charliermarsh/ruff-lsp][ruff-lsp]] support (additional server for Python).
   * Update documentation of Vue3 install server
+  * Add GLSL support.
+  * Move inlay hint support in core from ~lsp-rust~ and ~lsp-javascript~. Use
+    ~lsp-inlay-hint-enable~ instead of ~lsp-rust-analyzer-server-display-inlay-hints~ and
+    ~lsp-javascript-server-display-inlay-hints~
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.

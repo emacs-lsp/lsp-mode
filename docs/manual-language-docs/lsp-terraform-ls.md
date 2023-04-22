@@ -106,6 +106,19 @@ There are two ways to open the link:
 - Key binding: Alt + Enter
 - Clicking the middle button of your mouse
 
+### Prefill required fields
+
+This is an experimental feature which can be enabled via the option
+`lsp-terraform-ls-prefill-required-fields`:
+
+``` emacs-lisp
+(setq lsp-terraform-ls-prefill-required-fields t)
+```
+
+This gif demonstrates how this feature is used:
+
+![](../examples/terraform-ls-prefill.gif)
+
 ### Treeview controls
 
 For this feature to work, make sure that you have [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs)
