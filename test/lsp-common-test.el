@@ -27,13 +27,15 @@
 
 (ert-deftest lsp--path-to-uri-1 ()
   (elenv-with-windows
-    (let ((lsp--uri-file-prefix "file:///"))
-      (should (equal (lsp--path-to-uri "c:/Users/?/") "file:///c:/Users/%3F/"))))
+   (let ((lsp--uri-file-prefix "file:///"))
+     (should (equal (lsp--path-to-uri "c:/Users/?/") "file:///c:/Users/%3F/"))))
   (elenv-with-os '(darwin gnu/linux)
-    (let ((lsp--uri-file-prefix "file://"))
-      (should (equal (lsp--path-to-uri "/root/file/hallo welt") "file:///root/file/hallo%20welt")))
-    (should (equal (lsp--uri-to-path "file:///home/nim-%23devel")
-                   "/home/nim-#devel"))))
+                 (let ((lsp--uri-file-prefix "file://"))
+                   (should (equal (lsp--path-to-uri "/root/file/hallo welt") "file:///root/file/hallo%20welt")))
+                 (should (equal (lsp--uri-to-path "file:///home/nim-%23devel")
+                                "/home/nim-#devel"))
+                 (should (equal (lsp--uri-to-path "file:///home/yyoncho/Sources/DemoProjects/lua/lua.lua#1#9")
+                                "/home/yyoncho/Sources/DemoProjects/lua/lua.lua"))))
 
 (ert-deftest lsp--path-to-uri-2 ()
   (let ((lsp--uri-file-prefix "file:///")

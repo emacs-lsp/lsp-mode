@@ -1,9 +1,9 @@
-;;; lsp-mint.el --- Mint Language Server configuration  -*- lexical-binding: t; -*-
+;;; lsp-glsl.el --- GLSL client -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2019  Ivan Yonchovski
+;; Copyright (C) 2023 emacs-lsp maintainers
 
-;; Author: Ivan Yonchovski <yyoncho@gmail.com>
-;; Keywords:
+;; Author: Jen-Chieh Shen <jcs090218@gmail.com>
+;; Keywords: languages lsp glsl
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -19,30 +19,31 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-
+;;
+;; LSP client for the GLSL.
 ;;
 
 ;;; Code:
 
 (require 'lsp-mode)
 
-(defgroup lsp-mint nil
-  "LSP support for mint-lang."
+(defgroup lsp-glsl nil
+  "LSP support for GLSL."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/mint-lang/mint")
-  :package-version '(lsp-mode . "6.1"))
+  :link '(url-link "https://github.com/svenstaro/glsl-language-server"))
 
-(defcustom lsp-clients-mint-executable '("mint" "ls")
-  "Command to start the mint language server."
-  :group 'lsp-mint
+(defcustom lsp-glsl-executable '("glslls" "--stdin")
+  "Command to run the GLSL language server."
+  :group 'lsp-glsl
   :risky t
-  :type 'file)
+  :type 'list)
 
-;; Mint
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-mint-executable)
-                  :major-modes '(mint-mode)
-                  :server-id 'mint-ls))
+ (make-lsp-client
+  :new-connection (lsp-stdio-connection lsp-glsl-executable)
+  :activation-fn (lsp-activate-on "glsl")
+  :priority -1
+  :server-id 'glslls))
 
-(provide 'lsp-mint)
-;;; lsp-mint.el ends here
+(provide 'lsp-glsl)
+;;; lsp-glsl.el ends here

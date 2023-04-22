@@ -313,13 +313,12 @@ PATH is the current folder to be checked."
 (defun lsp-headerline--build-path-up-to-project-string ()
   "Build the path-up-to-project segment for the breadcrumb."
   (if-let ((root (lsp-headerline--workspace-root)))
-      (let ((segments (progn
-                        (unless lsp-headerline--path-up-to-project-segments
-                          (setq lsp-headerline--path-up-to-project-segments
-                                (list (lsp-headerline--path-up-to-project-root
-                                       root
-                                       (file-name-directory (file-truename (buffer-file-name)))))))
-                        (car lsp-headerline--path-up-to-project-segments))))
+      (let ((segments (or
+                       lsp-headerline--path-up-to-project-segments
+                       (setq lsp-headerline--path-up-to-project-segments
+                             (lsp-headerline--path-up-to-project-root
+                              root
+                              (lsp-f-parent (buffer-file-name)))))))
         (mapconcat (lambda (next-dir)
                      (propertize next-dir
                                  'font-lock-face
@@ -409,7 +408,7 @@ PATH is the current folder to be checked."
 
 (defun lsp-headerline--check-breadcrumb (&rest _)
   "Request for document symbols to build the breadcrumb."
-  (set-frame-parameter (selected-frame) 'lsp-headerline--string (lsp-headerline--build-string))
+  (set-window-parameter (selected-window) 'lsp-headerline--string (lsp-headerline--build-string))
   (force-mode-line-update))
 
 (defun lsp-headerline--enable-breadcrumb ()
@@ -438,7 +437,7 @@ PATH is the current folder to be checked."
     ;; symbol or a list."
     (unless (listp header-line-format)
       (setq header-line-format (list header-line-format)))
-    (add-to-list 'header-line-format '(t (:eval (frame-parameter nil 'lsp-headerline--string) )))
+    (add-to-list 'header-line-format '(t (:eval (window-parameter nil 'lsp-headerline--string) )))
 
     (add-hook 'xref-after-jump-hook #'lsp-headerline--check-breadcrumb nil t)
 
@@ -453,7 +452,7 @@ PATH is the current folder to be checked."
     (remove-hook 'xref-after-jump-hook #'lsp-headerline--check-breadcrumb t)
 
     (setq lsp-headerline--path-up-to-project-segments nil)
-    (setq header-line-format (remove '(t (:eval (frame-parameter nil 'lsp-headerline--string) )) header-line-format)))))
+    (setq header-line-format (remove '(t (:eval (window-parameter nil 'lsp-headerline--string) )) header-line-format)))))
 
 ;;;###autoload
 (defun lsp-breadcrumb-go-to-symbol (symbol-position)

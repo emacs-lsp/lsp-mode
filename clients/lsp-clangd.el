@@ -47,7 +47,7 @@
 (declare-function flycheck-error-group "ext:flycheck" (err) t)
 (declare-function flycheck-error-message "ext:flycheck" (err) t)
 
-(defcustom lsp-clangd-version "13.0.0"
+(defcustom lsp-clangd-version "15.0.6"
   "Clangd version to download.
 It has to be set before `lsp-clangd.el' is loaded and it has to
 be available here: https://github.com/clangd/clangd/releases/"
