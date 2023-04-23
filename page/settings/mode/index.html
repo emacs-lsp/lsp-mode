@@ -1142,6 +1142,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-guess-root-without-session" class="md-nav__link">
+    lsp-guess-root-without-session
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-gunzip-script" class="md-nav__link">
     lsp-gunzip-script
   </a>
@@ -4140,6 +4147,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-guess-root-without-session" class="md-nav__link">
+    lsp-guess-root-without-session
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-gunzip-script" class="md-nav__link">
     lsp-gunzip-script
   </a>
@@ -4848,6 +4862,15 @@ Set to nil to disable the warning.</p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>The maximum number of folding ranges to receive from the language server.</p>
 <hr />
+<h3 id="lsp-guess-root-without-session"><code>lsp-guess-root-without-session</code><a class="headerlink" href="#lsp-guess-root-without-session" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Ignore the session file when calculating the project root.
+You almost always want to set lsp-auto-guess-root too.
+Do <em>not</em> use this setting unless you are familiar with <code>lsp-mode</code>
+internals and you are sure that all of your projects are
+following <code>projectile</code>/<code>project.el</code> conventions.</p>
+<hr />
 <h3 id="lsp-gunzip-script"><code>lsp-gunzip-script</code><a class="headerlink" href="#lsp-gunzip-script" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
 <p><em>Default:</em> <code>(closure (view-inhibit-help-message lsp-help-mode-abbrev-table lsp-help-mode-syntax-table eldoc-documentation-default cl-struct-lsp--log-entry-tags cl-struct-lsp-session-tags cl-struct-lsp--workspace-tags cl-struct-lsp--registered-capability-tags lsp-mode-menu cl-struct-lsp--folding-range-tags cl-struct-lsp-watch-tags cl-struct-lsp--client-tags lsp--log-lines company-minimum-prefix-length dap-ui-menu-items dap-auto-configure-mode yas-also-auto-indent-first-line yas-wrap-around-region yas-indent-line yas-inhibit-overlay-modification-protection t) nil (cond ((executable-find gzip) lsp-ext-gunzip-script) (t nil)))</code></p>
@@ -5143,7 +5166,7 @@ The hook will receive two parameters list of added and removed folders.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 22, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 23, 2023</span>
       
     
   </small>
