@@ -245,6 +245,15 @@ following `projectile'/`project.el' conventions."
   :group 'lsp-mode
   :type 'boolean)
 
+(defcustom lsp-guess-root-without-session nil
+  "Ignore the session file when calculating the project root.
+You almost always want to set lsp-auto-guess-root too.
+Do *not* use this setting unless you are familiar with `lsp-mode'
+internals and you are sure that all of your projects are
+following `projectile'/`project.el' conventions."
+  :group 'lsp-mode
+  :type 'boolean)
+
 (defcustom lsp-restart 'interactive
   "Defines how server-exited events must be handled."
   :group 'lsp-mode
@@ -8894,7 +8903,8 @@ Select action: "
    (or
     (when lsp-auto-guess-root
       (lsp--suggest-project-root))
-    (lsp-find-session-folder session file-name)
+    (unless lsp-guess-root-without-session
+      (lsp-find-session-folder session file-name))
     (unless lsp-auto-guess-root
       (when-let ((root-folder (lsp--find-root-interactively session)))
         (if (or (not (f-equal? root-folder (expand-file-name "~/")))
