@@ -759,6 +759,15 @@
     "debugger": "Yes"
   },
   {
+    "name": "shader",
+    "common-group-name": "ShaderLab",
+    "full-name": "ShaderLab",
+    "server-name": "shader-ls",
+    "server-url": "https://github.com/shader-ls/shader-language-server",
+    "installation-url": "https://github.com/shader-ls/shader-language-server/releases",
+    "debugger": "Not available"
+  },
+  {
     "name": "solargraph",
     "full-name": "Ruby (Solargraph)",
     "server-name": "solargraph",

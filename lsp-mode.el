@@ -183,7 +183,7 @@ As defined by the Language Server Protocol 3.16."
      lsp-lua lsp-markdown lsp-marksman lsp-mint lsp-nginx lsp-nim lsp-nix lsp-magik
      lsp-metals lsp-mssql lsp-ocaml lsp-openscad lsp-pascal lsp-perl lsp-perlnavigator
      lsp-pls lsp-php lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms lsp-purescript
-     lsp-r lsp-racket lsp-remark lsp-ruff-lsp lsp-rf lsp-rust lsp-solargraph
+     lsp-r lsp-racket lsp-remark lsp-ruff-lsp lsp-rf lsp-rust lsp-shader lsp-solargraph
      lsp-sorbet lsp-sourcekit lsp-sonarlint lsp-tailwindcss lsp-tex lsp-terraform
      lsp-toml lsp-ttcn3 lsp-typeprof lsp-v lsp-vala lsp-verilog lsp-vetur lsp-volar
      lsp-vhdl lsp-vimscript lsp-xml lsp-yaml lsp-ruby-lsp lsp-ruby-syntax-tree
@@ -914,7 +914,8 @@ Changes take effect only when a new session is started."
     (tiltfile-mode . "tiltfile")
     (bibtex-mode . "bibtex")
     (rst-mode . "restructuredtext")
-    (glsl-mode . "glsl"))
+    (glsl-mode . "glsl")
+    (shader-mode . "shaderlab"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
@@ -1993,8 +1994,8 @@ regex in IGNORED-FILES."
     ccls consult-lsp dap-mode helm-lsp lsp-dart lsp-docker lsp-focus lsp-grammarly
     lsp-haskell lsp-ivy lsp-java lsp-javacomp lsp-jedi lsp-julia lsp-latex lsp-ltex
     lsp-metals lsp-mssql lsp-origami lsp-p4 lsp-pascal lsp-pyre lsp-pyright
-    lsp-python-ms lsp-rescript lsp-sonarlint lsp-sourcekit lsp-tailwindcss lsp-treemacs
-    lsp-ui swift-helpful
+    lsp-python-ms lsp-rescript lsp-shader lsp-sonarlint lsp-sourcekit lsp-tailwindcss
+    lsp-treemacs lsp-ui swift-helpful
     ;; clients
     lsp-actionscript lsp-ada lsp-angular lsp-astro lsp-bash lsp-beancount lsp-clangd
     lsp-clojure lsp-cmake lsp-crystal lsp-csharp lsp-css lsp-d lsp-dhall
