@@ -516,6 +516,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-shader/</loc>
+         <lastmod>2023-05-02</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-solargraph/</loc>
          <lastmod>2023-05-02</lastmod>
          <changefreq>daily</changefreq>
