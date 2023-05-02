@@ -166,8 +166,11 @@
 (lsp-register-custom-settings '(("section2.nested.prop2" lsp-nested-prop2)))
 
 (ert-deftest lsp--custom-settings-test-2 ()
-  (cl-assert (equal (lsp-ht->alist (lsp-configuration-section "section2"))
-                    '(("section2" ("nested" ("prop1" . "10") ("prop2" . "20")))))))
+  (let ((actual (lsp-ht->alist (lsp-configuration-section "section2"))))
+    (cl-assert (or (equal actual
+                          '(("section2" ("nested" ("prop1" . "10") ("prop2" . "20")))))
+                   (equal actual
+                          '(("section2" ("nested" ("prop2" . "20") ("prop1" . "10")))))))))
 
 (ert-deftest lsp--build-workspace-configuration-response-test-2 ()
   (-let* ((request (lsp-make-configuration-params
