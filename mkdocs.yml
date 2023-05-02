@@ -133,6 +133,7 @@ nav:
     - Rust (rust-analyzer): page/lsp-rust-analyzer.md
     - Rust (rls): page/lsp-rust-rls.md
     - Scala: https://emacs-lsp.github.io/lsp-metals
+    - ShaderLab: page/lsp-shader.md
     - SQL (sqls): page/lsp-sqls.md
     - Standard ML (Millet): page/lsp-sml.md
     - Svelte: page/lsp-svelte.md
