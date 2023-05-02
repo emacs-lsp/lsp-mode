@@ -46,42 +46,42 @@
   :group 'lsp-toml
   :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom-lsp lsp-toml-taplo-config-file-path nil
+(lsp-defcustom lsp-toml-taplo-config-file-path nil
   "An absolute, or workspace relative path to the Taplo configuration file."
   :type 'string
   :group 'lsp-toml
   :package-version '(lsp-mode . "8.0.1")
   :lsp-path "evenBetterToml.taplo.configFile.path")
 
-(defcustom-lsp lsp-toml-taplo-config-file-enabled t
+(lsp-defcustom lsp-toml-taplo-config-file-enabled t
   "Whether to enable the usage of a Taplo configuration file."
   :type 'boolean
   :group 'lsp-toml
   :package-version '(lsp-mode . "8.0.1")
   :lsp-path "evenBetterToml.taplo.configFile.enabled")
 
-(defcustom-lsp lsp-toml-semantic-tokens nil
+(lsp-defcustom lsp-toml-semantic-tokens nil
   "Enable semantic tokens for inline table and array keys."
   :type 'boolean
   :group 'lsp-toml
   :package-version '(lsp-mode . "8.0.1")
   :lsp-path "evenBetterToml.semanticTokens")
 
-(defcustom-lsp lsp-toml-schema-enabled t
+(lsp-defcustom lsp-toml-schema-enabled t
   "Enable completion and validation based on JSON schemas."
   :type 'boolean
   :group 'lsp-toml
   :package-version '(lsp-mode . "8.0.1")
   :lsp-path "evenBetterToml.schema.enabled")
 
-(defcustom-lsp lsp-toml-schema-links nil
+(lsp-defcustom lsp-toml-schema-links nil
   "Whether to show clickable links for keys in the editor."
   :type 'boolean
   :group 'lsp-toml
   :package-version '(lsp-mode . "8.0.1")
   :lsp-path "evenBetterToml.schema.links")
 
-(defcustom-lsp lsp-toml-schema-catalogs
+(lsp-defcustom lsp-toml-schema-catalogs
   ["https://www.schemastore.org/api/json/catalog.json"]
   "A list of URLs to schema catalogs where schemas and associations
 can be fetched from"
@@ -90,7 +90,7 @@ can be fetched from"
   :package-version '(lsp-mode . "8.0.1")
   :lsp-path "evenBetterToml.schema.catalogs")
 
-(defcustom-lsp lsp-toml-schema-associations nil
+(lsp-defcustom lsp-toml-schema-associations nil
   "Additional document and schema associations.
 
 The key must be a regular expression, this pattern is used to
@@ -102,14 +102,14 @@ The value must be an absolute URI to the JSON schema"
   :package-version '(lsp-mode . "8.0.1")
   :lsp-path "evenBetterToml.schema.associations")
 
-(defcustom-lsp lsp-toml-schema-cache-memory-expiration 60
+(lsp-defcustom lsp-toml-schema-cache-memory-expiration 60
   "The amount of seconds after which schemas will be invalidated from memory."
   :type 'number
   :group 'lsp-toml
   :package-version '(lsp-mode . "8.0.1")
   :lsp-path "evenBetterToml.schema.cache.memoryExpiration")
 
-(defcustom-lsp lsp-toml-schema-cache-disk-expiration 600
+(lsp-defcustom lsp-toml-schema-cache-disk-expiration 600
   "The amount of seconds after which cached catalogs and schemas
 expire and will be attempted to be fetched again."
   :type 'number
@@ -117,7 +117,7 @@ expire and will be attempted to be fetched again."
   :package-version '(lsp-mode . "8.0.1")
   :lsp-path "evenBetterToml.schema.cache.diskExpiration")
 
-(defcustom-lsp lsp-toml-completion-max-keys 5
+(lsp-defcustom lsp-toml-completion-max-keys 5
   "The maximum amount of keys in a dotted key to display during
 completion, 0 effectively disables key completions."
   :type 'number
@@ -125,7 +125,7 @@ completion, 0 effectively disables key completions."
   :package-version '(lsp-mode . "8.0.1")
   :lsp-path "evenBetterToml.completion.maxKeys")
 
-(defcustom-lsp lsp-toml-syntax-semantic-tokens t
+(lsp-defcustom lsp-toml-syntax-semantic-tokens t
   "Whether to enable semantic tokens for tables and arrays."
   :type 'boolean
   :group 'lsp-toml

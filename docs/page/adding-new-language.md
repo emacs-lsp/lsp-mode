@@ -97,7 +97,7 @@ from [Generate Settings script](https://github.com/emacs-lsp/lsp-mode/blob/maste
 VScode plugin manifest. Example:
 
 ``` elisp
-(defcustom-lsp lsp-foo-language-server-property "bar"
+(lsp-defcustom lsp-foo-language-server-property "bar"
   "Demo property."
   :group 'foo-ls
   :lsp-path "foo.section.property")

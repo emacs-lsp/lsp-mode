@@ -63,7 +63,7 @@ FILE-NAME is path to package.json vscode manifest."
             (let ((type (lsp--convert-type type enum))
                   (prop-symbol (intern (format "lsp-%s" (s-dashed-words (symbol-name prop-name)))) ))
               (unless (boundp prop-symbol)
-                (format "(defcustom-lsp %s %s
+                (format "(lsp-defcustom %s %s
   \"%s\"
   :type '%s
   :group '%s
