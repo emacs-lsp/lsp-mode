@@ -8384,12 +8384,9 @@ session workspace folder configuration for the server."
         (funcall initialization-options-or-fn)
       initialization-options-or-fn)))
 
-(defvar lsp-client-settings nil
+(defvar lsp-client-settings (make-hash-table)
   "For internal use, any external users please use
   `lsp-register-custom-settings' function instead")
-
-(defun lsp--compare-setting-path (a b)
-  (equal (car a) (car b)))
 
 (defun lsp-register-custom-settings (props)
   "Register PROPS.
@@ -8401,8 +8398,10 @@ property will be ignored if the VALUE is nil.
 
 Example: `(lsp-register-custom-settings `((\"foo.bar.buzz.enabled\" t t)))'
 \(note the double parentheses)"
-  (let ((-compare-fn #'lsp--compare-setting-path))
-    (setq lsp-client-settings (-uniq (append props lsp-client-settings)))))
+  (mapc
+   (-lambda ((path . rest))
+     (puthash path rest lsp-client-settings))
+   props))
 
 (defun lsp-region-text (region)
   "Get the text for REGION in current buffer."
@@ -8448,17 +8447,17 @@ TBL - a hash table, PATHS is the path to the nested VALUE."
 (defun lsp-configuration-section (section)
   "Get settings for SECTION."
   (let ((ret (ht-create)))
-    (mapc (-lambda ((path variable boolean?))
-            (when (s-matches? (concat (regexp-quote section) "\\..*") path)
-              (let* ((symbol-value (-> variable
-                                       lsp-resolve-value
-                                       lsp-resolve-value))
-                     (value (if (and boolean? (not symbol-value))
-                                :json-false
-                              symbol-value)))
-                (when (or boolean? value)
-                  (lsp-ht-set ret (s-split "\\." path) value)))))
-          lsp-client-settings)
+    (maphash (-lambda (path (variable boolean?))
+               (when (s-matches? (concat (regexp-quote section) "\\..*") path)
+                 (let* ((symbol-value (-> variable
+                                          lsp-resolve-value
+                                          lsp-resolve-value))
+                        (value (if (and boolean? (not symbol-value))
+                                   :json-false
+                                 symbol-value)))
+                   (when (or boolean? value)
+                     (lsp-ht-set ret (s-split "\\." path) value)))))
+             lsp-client-settings)
     ret))
 
 
