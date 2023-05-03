@@ -54,7 +54,7 @@
   :type 'string
   :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom-lsp lsp-nix-nil-formatter nil
+(lsp-defcustom lsp-nix-nil-formatter nil
   "External formatter command with arguments.
 
   Example [nixpkgs-fmt]."
@@ -63,14 +63,14 @@
   :lsp-path "nil.formatting.command"
   :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom-lsp lsp-nix-nil-ignored-diagnostics nil
+(lsp-defcustom lsp-nix-nil-ignored-diagnostics nil
   "Ignored diagnostic kinds."
   :type 'lsp-string-vector
   :group 'lsp-nix-nil
   :lsp-path "nil.diagnostics.ignored"
   :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom-lsp lsp-nix-nil-exclude-files-diagnostic nil
+(lsp-defcustom lsp-nix-nil-exclude-files-diagnostic nil
   "Files to exclude from showing diagnostics."
   :type 'lsp-string-vector
   :group 'lsp-nix-nil

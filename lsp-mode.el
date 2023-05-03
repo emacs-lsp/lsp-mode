@@ -8421,8 +8421,12 @@ TBL - a hash table, PATHS is the path to the nested VALUE."
 
 ;; sections
 
-(defmacro defcustom-lsp (symbol standard doc &rest args)
+(defalias 'defcustom-lsp 'lsp-defcustom)
+
+(defmacro lsp-defcustom (symbol standard doc &rest args)
   "Defines `lsp-mode' server property."
+  (declare (doc-string 3) (debug (name body))
+           (indent defun))
   (let ((path (plist-get args :lsp-path)))
     (cl-remf args :lsp-path)
     `(progn

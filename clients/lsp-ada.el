@@ -32,7 +32,7 @@
   :tag "Language Server"
   :package-version '(lsp-mode . "6.2"))
 
-(defcustom-lsp lsp-ada-project-file "default.gpr"
+(lsp-defcustom lsp-ada-project-file "default.gpr"
   "Set the project file full path to configure the language server with.
   The ~ prefix (for the user home directory) is supported.
   See https://github.com/AdaCore/ada_language_server for a per-project
@@ -42,14 +42,14 @@
   :package-version '(lsp-mode . "6.2")
   :lsp-path "ada.projectFile")
 
-(defcustom-lsp lsp-ada-option-charset "UTF-8"
+(lsp-defcustom lsp-ada-option-charset "UTF-8"
   "The charset to use by the Ada Language server. Defaults to 'UTF-8'."
   :type 'string
   :group 'lsp-ada
   :package-version '(lsp-mode . "6.2")
   :lsp-path "ada.defaultCharset")
 
-(defcustom-lsp lsp-ada-enable-diagnostics t
+(lsp-defcustom lsp-ada-enable-diagnostics t
   "A boolean to disable diagnostics. Defaults to true."
   :type 'boolean
   :group 'lsp-ada
