@@ -36,7 +36,7 @@
   * Add support for ~typescript-language-server~’s inlay hints.
   * Add support for ~workspace/willRenameFiles~ and ~workspace/didRenameFiles~.
   * Improve project root import to read specific keys instead of any events.
-  * Support ~labelDetails~ of Lsp Specification 3.17
+  * Support ~labelDetails~ of LSP Specification 3.17
   * Add Gleam support
   * Drop deprecated rust-analyzer variable lsp-rust-analyzer-import-merge-behaviour
   * Added run and debug code lenses to ~lsp-kotlin~
@@ -76,6 +76,8 @@
     ~lsp-inlay-hint-enable~ instead of ~lsp-rust-analyzer-server-display-inlay-hints~ and
     ~lsp-javascript-server-display-inlay-hints~
   * Add ShaderLab support.
+  * Remove custom variable ~lsp-inlay-hint-enum-format~ since LSP Specification 3.17 only has ~type~ and
+    ~parameter~ hint kinds.
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.

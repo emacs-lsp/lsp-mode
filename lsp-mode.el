@@ -9540,12 +9540,6 @@ call-site)."
   :group 'lsp-mode
   :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom lsp-inlay-hint-enum-format "%s"
-  "Format string for parameter inlays (part of the inlay face)."
-  :type '(string :tag "String")
-  :group 'lsp-mode
-  :package-version '(lsp-mode . "8.0.1"))
-
 (defcustom lsp-update-inlay-hints-on-scroll t
   "If non-nil update inlay hints immediately when scrolling or
 modifying window sizes."
@@ -9562,7 +9556,6 @@ modifying window sizes."
   (cond
    ((eql kind lsp/inlay-hint-kind-type-hint) (format lsp-inlay-hint-type-format text))
    ((eql kind lsp/inlay-hint-kind-parameter-hint) (format lsp-inlay-hint-param-format text))
-   ((eql kind lsp/inlay-hint-kind-enum-hint) (format lsp-inlay-hint-enum-format text))
    (t text)))
 
 (defun lsp--face-for-inlay (kind)
@@ -9577,6 +9570,18 @@ modifying window sizes."
 (defun lsp--update-inlay-hints ()
   (lsp-update-inlay-hints (window-start) (window-end nil t)))
 
+(defun lsp--label-from-inlay-hints-response (label)
+  "Returns a string label built from an array of
+InlayHintLabelParts or the argument itself if it's already a
+string."
+  (cl-typecase label
+    (string label)
+    (vector
+     (string-join (mapcar (lambda (part)
+                            (-let (((&InlayHintLabelPart :value) part))
+                              value))
+                          label)))))
+
 (defun lsp-update-inlay-hints (start end)
   (lsp-request-async
    "textDocument/inlayHint"
@@ -9589,7 +9594,9 @@ modifying window sizes."
    (lambda (res)
      (lsp--remove-overlays 'lsp-inlay-hint)
      (dolist (hint res)
-       (-let* (((&InlayHint :label :position :kind :padding-left? :padding-right?) hint)
+       (-let* (((&InlayHint :label :position :kind? :padding-left? :padding-right?) hint)
+               (kind (or kind? lsp/inlay-hint-kind-type-hint))
+               (label (lsp--label-from-inlay-hints-response label))
                (pos (lsp--position-to-point position))
                (overlay (make-overlay pos pos nil 'front-advance 'end-advance)))
          (when (stringp label)
@@ -9606,7 +9613,7 @@ modifying window sizes."
   "Mode for displaying inlay hints."
   :lighter nil
   (cond
-   (lsp-inlay-hints-mode
+   ((and lsp-inlay-hints-mode lsp--buffer-workspaces)
     (add-hook 'lsp-on-idle-hook #'lsp--update-inlay-hints nil t)
     (when lsp-update-inlay-hints-on-scroll
       (add-to-list (make-local-variable 'window-scroll-functions)

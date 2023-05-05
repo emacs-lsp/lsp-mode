@@ -406,9 +406,6 @@ See `-let' for a description of the destructuring mechanism."
 
 (lsp-interface (rls:Cmd (:args :binary :env :cwd) nil))
 
-(defconst lsp/rust-analyzer-inlay-hint-kind-type-hint 1)
-(defconst lsp/rust-analyzer-inlay-hint-kind-param-hint 2)
-(defconst lsp/rust-analyzer-inlay-hint-kind-nonstandard-hint nil)
 (lsp-interface (rust-analyzer:AnalyzerStatusParams (:textDocument))
                (rust-analyzer:SyntaxTreeParams (:textDocument) (:range))
                (rust-analyzer:ViewHir (:textDocument :position))
@@ -426,8 +423,6 @@ See `-let' for a description of the destructuring mechanism."
                (rust-analyzer:RunnableArgs (:cargoArgs :executableArgs) (:workspaceRoot :expectTest))
                (rust-analyzer:RelatedTestsParams (:textDocument :position) nil)
                (rust-analyzer:RelatedTests (:runnable) nil)
-               (rust-analyzer:InlayHint (:position :label :kind :paddingLeft :paddingRight) nil)
-               (rust-analyzer:InlayHintsParams (:textDocument :range) nil)
                (rust-analyzer:SsrParams (:query :parseOnly) nil)
                (rust-analyzer:CommandLink (:title :command) (:arguments :tooltip))
                (rust-analyzer:CommandLinkGroup (:commands) (:title)))
@@ -787,13 +782,13 @@ See `-let' for a description of the destructuring mechanism."
  (WillSaveTextDocumentParams (:reason :textDocument) nil)
  (WorkspaceSymbolParams (:query) nil)
  ;; 3.17
- (InlayHint (:label :position :kind) (:paddingLeft :paddingRight))
+ (InlayHint (:label :position) (:kind :paddingLeft :paddingRight))
+ (InlayHintLabelPart (:value) (:tooltip :location :command))
  (InlayHintsParams (:textDocument) (:range)))
 
 ;; 3.17
-(defconst lsp/inlay-hint-kind-type-hint "Type")
-(defconst lsp/inlay-hint-kind-parameter-hint "Parameter")
-(defconst lsp/inlay-hint-kind-enum-hint "Enum")
+(defconst lsp/inlay-hint-kind-type-hint 1)
+(defconst lsp/inlay-hint-kind-parameter-hint 2)
 
 
 (provide 'lsp-protocol)
