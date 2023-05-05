@@ -482,6 +482,12 @@ and `../lib` ,exclude `../lib/temp`.
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
+(defcustom lsp-lua-prefer-musl nil
+  "Whether or not to download the musl-compiled server."
+  :type 'boolean
+  :package-version '(lsp-mode . "8.0.0")
+  :group 'lsp-lua-language-server)
+
 (lsp-register-custom-settings
  '(("files.associations" lsp-lua-files-associations t)
    ("files.exclude" lsp-lua-files-exclude t)
@@ -542,21 +548,23 @@ and `../lib` ,exclude `../lib/temp`.
      error-callback
      :url (lsp--find-latest-gh-release-url
            "https://api.github.com/repos/sumneko/lua-language-server/releases/latest"
-           (pcase system-type
-             ('gnu/linux
-              (pcase (lsp-resolve-value lsp--system-arch)
-                ('x64     "linux-x64")))
-             ('darwin
-              (pcase (lsp-resolve-value lsp--system-arch)
-                ('x64     "darwin-x64")
-                ('arm64   "darwin-arm64")))
-             ('windows-nt
-              (pcase (lsp-resolve-value lsp--system-arch)
-                ('x64     "win32-x64")
-                ('arm64   "win32-ia32")))
-             (_
-              (pcase (lsp-resolve-value lsp--system-arch)
-                ('x64     "linux-x64")))))
+           (format "%s%s.tar.gz"
+                   (pcase system-type
+                     ('gnu/linux
+                      (pcase (lsp-resolve-value lsp--system-arch)
+                        ('x64     "linux-x64")))
+                     ('darwin
+                      (pcase (lsp-resolve-value lsp--system-arch)
+                        ('x64     "darwin-x64")
+                        ('arm64   "darwin-arm64")))
+                     ('windows-nt
+                      (pcase (lsp-resolve-value lsp--system-arch)
+                        ('x64     "win32-x64")
+                        ('arm64   "win32-ia32")))
+                     (_
+                      (pcase (lsp-resolve-value lsp--system-arch)
+                        ('x64     "linux-x64"))))
+                   (if lsp-lua-prefer-musl "-musl" "")))
      :store-path store-path
      :decompress (pcase system-type ('windows-nt :zip) (_ :targz)))))
 
