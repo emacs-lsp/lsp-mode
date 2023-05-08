@@ -3180,6 +3180,13 @@
 server. See
 <a href="https://github.com/golang/tools/tree/master/gopls#installation">upstream</a>
 for gopls installation instructions.</p>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">#</a></h2>
+<p>By default, some
+<a href="https://github.com/golang/tools/blob/master/gopls/doc/analyzers.md">gopls analyzers</a>
+are enabled and others are disabled. To override, use:</p>
+<div class="highlight"><pre><span></span><code>(setq lsp-go-analyses &#39;((shadow . t)
+                        (simplifycompositelit . :json-false)))
+</code></pre></div>
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">#</a></h2>
 <h3 id="working-with-nested-gomod-files">Working with nested go.mod files<a class="headerlink" href="#working-with-nested-gomod-files" title="Permanent link">#</a></h3>
 <p>If you encounter an error like one of these:</p>
@@ -3213,7 +3220,7 @@ bit more discussion of this particular issue.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 7, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 8, 2023</span>
       
     
   </small>
