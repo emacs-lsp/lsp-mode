@@ -21,7 +21,7 @@
 ;;
 ;;; Commentary:
 ;;
-;;  semgrep support for lsp-mode
+;;  Semgrep support for lsp-mode
 ;;
 ;;; Code:
 
@@ -45,23 +45,74 @@
 
 ;; General options
 
-(defcustom lsp-semgrep-trace-server "off"
+(defcustom lsp-semgrep-trace-server "verbose"
   "Trace Semgrep LS server"
   :group 'lsp-semgrep
   :type '(choice (const "off")
-                 (const "messages")
-                 (const "verbose")))
+          (const "messages")
+          (const "verbose")))
 
-(defcustom lsp-semgrep-server-command-options ["lsp"]
-  "Semgrep LS server command options."
+(defcustom lsp-semgrep-server-command '("semgrep" "lsp" "--debug")
+  "Semgrep LS server command."
   :group 'lsp-semgrep
   :type '(repeat string))
 
-(defcustom lsp-semgrep-server-path "semgrep"
-  "Semgrep LS server path."
+(defcustom lsp-semgrep-languages '("apex"
+                                  "bash"
+                                  "sh"
+                                  "c"
+                                  "cairo"
+                                  "clojure"
+                                  "cpp"
+                                  "c++"
+                                  "csharp"
+                                  "c#"
+                                  "dart"
+                                  "dockerfile"
+                                  "docker"
+                                  "ex"
+                                  "elixir"
+                                  "go"
+                                  "golang"
+                                  "hack"
+                                  "html"
+                                  "java"
+                                  "js"
+                                  "javascript"
+                                  "json"
+                                  "jsonnet"
+                                  "julia"
+                                  "kt"
+                                  "kotlin"
+                                  "lisp"
+                                  "lua"
+                                  "ocaml"
+                                  "php"
+                                  "python2"
+                                  "python3"
+                                  "py"
+                                  "python"
+                                  "r"
+                                  "regex"
+                                  "none"
+                                  "ruby"
+                                  "rust"
+                                  "scala"
+                                  "scheme"
+                                  "solidity"
+                                  "sol"
+                                  "swift"
+                                  "tf"
+                                  "hcl"
+                                  "terraform"
+                                  "ts"
+                                  "typescript"
+                                  "vue"
+                                  "xml"
+                                  "yaml")
+  "List of languages to enable Semgrep LS for."
   :group 'lsp-semgrep
-  :type 'string)
-
+  :type '(repeat string))
 ;; Scan options
 
 (defcustom lsp-semgrep-scan-configuration []
@@ -71,13 +122,13 @@
 
 (defcustom lsp-semgrep-scan-exclude []
   "List of files or directories to exclude from scan."
-   :group 'lsp-semgrep-scan
-   :type '(repeat string))
+  :group 'lsp-semgrep-scan
+  :type '(repeat string))
 
 (defcustom lsp-semgrep-scan-include []
-        "List of files or directories to include in scan."
-        :group 'lsp-semgrep-scan
-        :type '(repeat string))
+  "List of files or directories to include in scan."
+  :group 'lsp-semgrep-scan
+  :type '(repeat string))
 
 (defcustom lsp-semgrep-scan-jobs 1
   "Number of parallel jobs to run."
@@ -105,7 +156,7 @@
   :type 'integer)
 
 (defcustom lsp-semgrep-scan-only-git-dirty t
-  "Only scan files that are dirty in git"
+  "Only scan files that are dirty in git."
   :group 'lsp-semgrep-scan
   :type 'boolean)
 
@@ -121,15 +172,42 @@
   :group 'lsp-semgrep-metrics
   :type 'string)
 
+;; Custom commands
+
+(defun semgrep-scan-workspace (full)
+  "Scan workspace with Semgrep.
+If FULL is non-nil, scan all files in workspace, regardless of git status."
+  (interactive (list (lsp--completing-read "Scan: " (list "Changed files in workspace" "All files in workspace") 'identity)))
+  (lsp-notify "semgrep/scanWorkspace" (list :full (if (string= full "All files in workspace") t :json-false))))
+
+(defun semgrep-refresh-rules ()
+  "Refresh Semgrep rules."
+  (interactive)
+  (lsp-notify "semgrep/refreshRules" lsp--empty-ht))
+
+
+(defun semgrep-login ()
+  "Login to Semgrep."
+  (interactive)
+  (lsp-request-async "semgrep/login" lsp--empty-ht
+                     (lambda (result)
+                       (list
+                        (browse-url (lsp-get result :url))
+                        (lsp-message "Please login to Semgrep and return to Emacs.")
+                        (lsp-notify "semgrep/loginFinish" result)))))
+
+(defun semgrep-logout ()
+  "Logout from Semgrep."
+  (interactive)
+  (lsp-notify "semgrep/logout" lsp--empty-ht))
+
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection
-                   (lambda () (concat lsp-semgrep-server-path " "
-                                 (mapconcat
-                                  'identity lsp-semgrep-server-command-options " "))))
-  :activation-fn (lsp-activate-on "python" "ocaml" "elixir")
+  :new-connection (lsp-stdio-connection (lambda () lsp-semgrep-server-command))
+  :activation-fn (apply 'lsp-activate-on lsp-semgrep-languages)
   :server-id 'semgrep-ls
-  :priority -10
+  :priority -1
+  :add-on? t
   :initialization-options
   (lambda ()
     (list

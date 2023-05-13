@@ -754,7 +754,7 @@
     "full-name": "Semgrep",
     "server-name": "semgrep-ls",
     "server-url": "https://github.com/returntocorp/semgrep",
-    "installation": "pip install semgrep",
+    "installation": "pip install semgrep --user",
     "debugger": "Not available"
   },
   {
