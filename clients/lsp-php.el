@@ -403,7 +403,7 @@ already present."
 (defcustom lsp-phpactor-path nil
   "Path to the `phpactor' command."
   :group 'lsp-phpactor
-  :type "string")
+  :type 'string)
 
 (lsp-register-client
  (make-lsp-client
