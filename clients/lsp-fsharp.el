@@ -176,6 +176,11 @@ available, else the globally installed tool."
   :type 'boolean
   :risky t)
 
+(defcustom lsp-fsharp-workspace-extra-exclude-dirs '()
+  "Additional directories to exclude from FsAutoComplete workspace loading / discovery."
+  :group 'lsp-fsharp
+  :type '(repeat string))
+
 (defun lsp-fsharp--fsac-cmd ()
   "The location of fsautocomplete executable."
   (or (-let [maybe-local-executable (expand-file-name "fsautocomplete" lsp-fsharp-server-install-dir)]
@@ -221,10 +226,12 @@ available, else the globally installed tool."
 
 (defun lsp-fsharp--project-list (workspace)
   "Get the list of files we need to send to fsharp/workspaceLoad."
-  (let* ((response (lsp-request "fsharp/workspacePeek"
+  (let* ((base-exlude-dirs ["paket-files" ".git" "packages" "node_modules"])
+         (exclude-dirs (apply 'vector (append base-exlude-dirs lsp-fsharp-workspace-extra-exclude-dirs)))
+         (response (lsp-request "fsharp/workspacePeek"
                                 `(:directory ,(lsp--workspace-root workspace)
                                              :deep 10
-                                             :excludedDirs ["paket-files" ".git" "packages" "node_modules"])))
+                                             :excludedDirs ,exclude-dirs)))
          (data (lsp--read-json (lsp-get response :content)))
          (found (-> data (lsp-get :Data) (lsp-get :Found)))
          (directory (seq-find (lambda (d) (equal "directory" (lsp-get d :Type))) found)))
