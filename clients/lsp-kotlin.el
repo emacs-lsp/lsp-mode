@@ -237,6 +237,33 @@ to Kotlin."
          (dolist (edit (-flatten selected-members))
            (lsp--apply-text-edits edit))))))
 
+(defun lsp-kotlin--get-filename (uri)
+  "Get the name of the buffer in a similar format to an import, calculating it based on URI."
+  (or (save-match-data
+        (when (string-match "kls:file://\\(.*\\)!/\\(.*\.\\(class\\|java\\|kt\\)\\)?.*" uri)
+          (format "%s"
+                  (replace-regexp-in-string "/" "." (match-string 2 url) t t))))
+      (error "Unable to match %s" uri)))
+
+(defun lsp-kotlin--resolve-uri (uri)
+  "Load a file corresponding to URI executing request to the kotlin server."
+  (let* ((buffer-name (lsp-kotlin--get-filename uri))
+         (file-location (concat (lsp-workspace-root) "/.cache/" buffer-name)))
+    (unless (file-readable-p file-location)
+      (lsp-kotlin--ensure-dir (file-name-directory file-location))
+      (with-lsp-workspace (lsp-find-workspace 'kotlin-ls nil)
+        (let ((content (lsp-send-request (lsp-make-request
+                                          "kotlin/jarClassContents"
+                                          (list :uri uri)))))
+          (with-temp-file file-location
+            (insert content)))))
+    file-location))
+
+(defun lsp-kotlin--ensure-dir (path)
+  "Ensure that directory PATH exists."
+  (unless (file-directory-p path)
+    (make-directory path t)))
+
 (lsp-dependency
  'kotlin-language-server
  `(:system ,lsp-clients-kotlin-server-executable)
@@ -257,6 +284,8 @@ to Kotlin."
   :major-modes '(kotlin-mode kotlin-ts-mode)
   :priority -1
   :server-id 'kotlin-ls
+  :uri-handlers (lsp-ht ("kls" #'lsp-kotlin--resolve-uri))
+
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--set-configuration (lsp-configuration-section "kotlin"))))
