@@ -6376,7 +6376,10 @@ to check if server wants to apply any workspaceEdits after renamed."
         (funcall (if references? xref-show-xrefs-function xref-show-definitions-function)
                  (-const xrefs)
                  `((window . ,(selected-window))
-                   (display-action . ,display-action))))
+                   (display-action . ,display-action)
+                   ,(if references?
+                        `(auto-jump . ,xref-auto-jump-to-first-xref)
+                      `(auto-jump . ,xref-auto-jump-to-first-definition)))))
     (xref--show-xrefs xrefs display-action)))
 
 (cl-defmethod seq-empty-p ((ht hash-table))
