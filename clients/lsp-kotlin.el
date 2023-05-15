@@ -106,6 +106,19 @@ to Kotlin."
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "8.0.1"))
 
+(defcustom lsp-kotlin-workspace-dir (expand-file-name (locate-user-emacs-file "workspace/"))
+  "LSP kotlin workspace directory."
+  :group 'lsp-kotlin
+  :risky t
+  :type 'directory)
+
+(defcustom lsp-kotlin-workspace-cache-dir (expand-file-name ".cache/" lsp-kotlin-workspace-dir)
+  "LSP kotlin workspace cache directory."
+  :group 'lsp-kotlin
+  :risky t
+  :type 'directory)
+
+
 (lsp-register-custom-settings
  '(("kotlin.externalSources.autoConvertToKotlin" lsp-kotlin-external-sources-auto-convert-to-kotlin t)
    ("kotlin.externalSources.useKlsScheme" lsp-kotlin-external-sources-use-kls-scheme t)
@@ -237,18 +250,19 @@ to Kotlin."
          (dolist (edit (-flatten selected-members))
            (lsp--apply-text-edits edit))))))
 
-(defun lsp-kotlin--get-filename (uri)
-  "Get the name of the buffer in a similar format to an import, calculating it based on URI."
+(defun lsp-kotlin--parse-uri (uri)
+  "Get the path for where we'll store the file, calculating it based on URI."
   (or (save-match-data
-        (when (string-match "kls:file://\\(.*\\)!/\\(.*\.\\(class\\|java\\|kt\\)\\)?.*" uri)
-          (format "%s"
-                  (replace-regexp-in-string "/" "." (match-string 2 url) t t))))
+        (when (string-match "kls:file:///\\(.*\\)!/\\(.*\.\\(class\\|java\\|kt\\)\\)?.*" uri)
+          (let* ((lib-name (replace-regexp-in-string "/" "." (match-string 1 uri) t t))
+                 (buffer-name (replace-regexp-in-string "/" "." (match-string 2 uri) t t))
+                 (file-location (expand-file-name (concat lsp-kotlin-workspace-cache-dir "/" lib-name "/" buffer-name))))
+            file-location)))
       (error "Unable to match %s" uri)))
 
-(defun lsp-kotlin--resolve-uri (uri)
+(defun lsp-kotlin--uri-handler (uri)
   "Load a file corresponding to URI executing request to the kotlin server."
-  (let* ((buffer-name (lsp-kotlin--get-filename uri))
-         (file-location (concat (lsp-workspace-root) "/.cache/" buffer-name)))
+  (let ((file-location (lsp-kotlin--parse-uri uri)))
     (unless (file-readable-p file-location)
       (lsp-kotlin--ensure-dir (file-name-directory file-location))
       (with-lsp-workspace (lsp-find-workspace 'kotlin-ls nil)
@@ -284,7 +298,7 @@ to Kotlin."
   :major-modes '(kotlin-mode kotlin-ts-mode)
   :priority -1
   :server-id 'kotlin-ls
-  :uri-handlers (lsp-ht ("kls" #'lsp-kotlin--resolve-uri))
+  :uri-handlers (lsp-ht ("kls" #'lsp-kotlin--uri-handler))
 
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
