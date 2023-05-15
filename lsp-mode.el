@@ -2145,6 +2145,11 @@ PARAMS - the data sent from WORKSPACE."
           (function :tag "Other function"))
   :package-version '(lsp-mode . "8.0.0"))
 
+(defcustom lsp-request-while-no-input-may-block nil
+  "Have `lsp-request-while-no-input` block unless `non-essential` is t."
+  :group 'lsp-mode
+  :type 'boolean)
+
 (defun lsp--progress-status ()
   "Returns the status of the progress for the current workspaces."
   (-let ((progress-status
@@ -3310,14 +3315,14 @@ If NO-WAIT is non-nil send the request as notification."
 (cl-defun lsp-request-while-no-input (method params)
   "Send request METHOD with PARAMS and waits until there is no input.
 Return same value as `lsp--while-no-input' and respecting `non-essential'."
-  (if non-essential
-    (let* ((send-time (float-time))
-           ;; max time by which we must get a response
-           (expected-time
-            (and
-             lsp-response-timeout
-             (+ send-time lsp-response-timeout)))
-           resp-result resp-error done?)
+  (if (or non-essential (not lsp-request-while-no-input-may-block))
+      (let* ((send-time (float-time))
+             ;; max time by which we must get a response
+             (expected-time
+              (and
+               lsp-response-timeout
+               (+ send-time lsp-response-timeout)))
+             resp-result resp-error done?)
         (unwind-protect
             (progn
               (lsp-request-async method params
