@@ -1338,6 +1338,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-request-while-no-input-may-block" class="md-nav__link">
+    lsp-request-while-no-input-may-block
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-response-timeout" class="md-nav__link">
     lsp-response-timeout
   </a>
@@ -4350,6 +4357,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-request-while-no-input-may-block" class="md-nav__link">
+    lsp-request-while-no-input-may-block
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-response-timeout" class="md-nav__link">
     lsp-response-timeout
   </a>
@@ -5020,6 +5034,11 @@ too slow, in which case this variable may be set to nil.
 <code>lsp-rename</code> will then use <code>thing-at-point</code> <code>symbol</code> to determine
 the symbol to rename at point.</p>
 <hr />
+<h3 id="lsp-request-while-no-input-may-block"><code>lsp-request-while-no-input-may-block</code><a class="headerlink" href="#lsp-request-while-no-input-may-block" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Have <code>lsp-request-while-no-input</code> block unless <code>non-essential</code> is t.</p>
+<hr />
 <h3 id="lsp-response-timeout"><code>lsp-response-timeout</code><a class="headerlink" href="#lsp-response-timeout" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (number :tag Seconds) (const :tag No timeout nil))</code></p>
 <p><em>Default:</em> <code>10</code></p>
@@ -5161,7 +5180,7 @@ The hook will receive two parameters list of added and removed folders.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 13, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 15, 2023</span>
       
     
   </small>
