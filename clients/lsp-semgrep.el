@@ -45,14 +45,14 @@
 
 ;; General options
 
-(defcustom lsp-semgrep-trace-server "verbose"
+(defcustom lsp-semgrep-trace-server "off"
   "Trace Semgrep LS server"
   :group 'lsp-semgrep
   :type '(choice (const "off")
           (const "messages")
           (const "verbose")))
 
-(defcustom lsp-semgrep-server-command '("semgrep" "lsp" "--debug")
+(defcustom lsp-semgrep-server-command '("semgrep" "lsp")
   "Semgrep LS server command."
   :group 'lsp-semgrep
   :type '(repeat string))
