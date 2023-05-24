@@ -366,6 +366,8 @@ the server has requested that."
     "[/\\\\]\\.venv\\'"
     "[/\\\\]\\.mypy_cache\\'"
     "[/\\\\]\\.pytest_cache\\'"
+    ;; Swift Package Manager
+    "[/\\\\]\\.build\\'"
     ;; Python
     "[/\\\\]__pycache__\\'"
     ;; Autotools output
