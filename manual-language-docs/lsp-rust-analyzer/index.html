@@ -3282,8 +3282,8 @@
 <p>after:</p>
 <p><img alt="" src="../../examples/lsp-rust-join-lines-after.png" /></p>
 <h3 id="inlay-hints">inlay-hints<a class="headerlink" href="#inlay-hints" title="Permanent link">#</a></h3>
-<p><code>lsp-rust-analyzer-inlay-hints-mode</code> enables displaying of inlay hints</p>
-<p>Additionally, <code>lsp-rust-analyzer-server-display-inlay-hints</code> must be set to <code>t</code> in order for inlay hints to render.</p>
+<p><code>lsp-inlay-hints-mode</code> enables displaying of inlay hints</p>
+<p>Additionally, <code>lsp-inlay-hint-enable</code> must be set to <code>t</code> in order for inlay hints to render.</p>
 <p>NOTE: the inlay hints interact badly with the lsp-ui sideline, because it doesn't seem to consider the overlays in its width calculation, which often leads to lines wrapping around.</p>
 <p><img alt="" src="../../examples/lsp-rust-analyzer-inlay-hints.png" /></p>
 <h3 id="macro-expansion">Macro expansion<a class="headerlink" href="#macro-expansion" title="Permanent link">#</a></h3>
@@ -3344,9 +3344,6 @@ modifying the signature that is displayed by eldoc.</p>
     :notification-handlers (ht&lt;-alist lsp-rust-notification-handlers)
     :action-handlers (ht (&quot;rust-analyzer.runSingle&quot; #&#39;lsp-rust--analyzer-run-single))
     :library-folders-fn (lambda (_workspace) lsp-rust-analyzer-library-directories)
-    :after-open-fn (lambda ()
-                     (when lsp-rust-analyzer-server-display-inlay-hints
-                       (lsp-rust-analyzer-inlay-hints-mode)))
     :ignore-messages nil
     :server-id &#39;rust-analyzer-remote)))
 </code></pre></div>
@@ -3358,7 +3355,7 @@ modifying the signature that is displayed by eldoc.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 24, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 30, 2023</span>
       
     
   </small>
