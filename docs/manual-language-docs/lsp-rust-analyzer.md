@@ -41,9 +41,9 @@ after:
 
 ### inlay-hints
 
-`lsp-rust-analyzer-inlay-hints-mode` enables displaying of inlay hints
+`lsp-inlay-hints-mode` enables displaying of inlay hints
 
-Additionally, `lsp-rust-analyzer-server-display-inlay-hints` must be set to `t` in order for inlay hints to render.
+Additionally, `lsp-inlay-hint-enable` must be set to `t` in order for inlay hints to render.
 
 NOTE: the inlay hints interact badly with the lsp-ui sideline, because it doesn't seem to consider the overlays in its width calculation, which often leads to lines wrapping around.
 
@@ -136,8 +136,8 @@ The following is an example configuration for using lsp-mode with a remote rust-
     :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single))
     :library-folders-fn (lambda (_workspace) lsp-rust-analyzer-library-directories)
     :after-open-fn (lambda ()
-                     (when lsp-rust-analyzer-server-display-inlay-hints
-                       (lsp-rust-analyzer-inlay-hints-mode)))
+                     (when lsp-inlay-hint-enable
+                       (lsp-inlay-hints-mode)))
     :ignore-messages nil
     :server-id 'rust-analyzer-remote)))
 ```
