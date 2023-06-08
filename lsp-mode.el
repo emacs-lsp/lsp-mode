@@ -6370,16 +6370,23 @@ to check if server wants to apply any workspaceEdits after renamed."
 
 (advice-add 'rename-file :around #'lsp--on-rename-file)
 
+(defcustom lsp-xref-force-references nil
+  "If non-nil threat everything as references(e. g. jump if only one item.)"
+  :group 'lsp-mode
+  :type 'boolean)
+
 (defun lsp-show-xrefs (xrefs display-action references?)
   (unless (region-active-p) (push-mark nil t))
   (if (boundp 'xref-show-definitions-function)
       (with-no-warnings
         (xref-push-marker-stack)
-        (funcall (if references? xref-show-xrefs-function xref-show-definitions-function)
+        (funcall (if (and references? (not lsp-xref-force-references))
+                     xref-show-xrefs-function
+                   xref-show-definitions-function)
                  (-const xrefs)
                  `((window . ,(selected-window))
                    (display-action . ,display-action)
-                   ,(if references?
+                   ,(if (and references? (not lsp-xref-force-references))
                         `(auto-jump . ,xref-auto-jump-to-first-xref)
                       `(auto-jump . ,xref-auto-jump-to-first-definition)))))
     (xref--show-xrefs xrefs display-action)))
