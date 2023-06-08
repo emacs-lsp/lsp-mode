@@ -243,21 +243,26 @@ version."
       (lsp-lens--display (apply #'append (-map #'cl-rest backend-data)))))
   version)
 
-(lsp-defun lsp--lens-backend-not-loaded? ((&CodeLens :range
+(lsp-defun lsp--lens-backend-not-loaded? (range
+                                          (&CodeLens :range
                                                      (&Range :start)
                                                      :command?
                                                      :_pending pending))
   "Return t if LENS has to be loaded."
-  (let ((window (get-buffer-window (current-buffer))))
-    ;; (window-start/end) does not consider current window buffer if not passed manually
-    (and (< (window-start window) (lsp--position-to-point start) (window-end window))
-         (not command?)
-         (not pending))))
+  (and (not command?)
+       (not pending)
+       (lsp-point-in-range? start range)))
 
-(lsp-defun lsp--lens-backend-present? ((&CodeLens :range (&Range :start) :command?))
+(lsp-defun lsp--lens-backend-present? (range (&CodeLens :range (&Range :start) :command?))
   "Return t if LENS has to be loaded."
-  (or command?
-      (not (< (window-start) (lsp--position-to-point start) (window-end)))))
+  (or command? (not (lsp-point-in-range? start range))))
+
+(defun lsp-lens--window-range ()
+  "Return the window Range"
+  (let ((window (get-buffer-window (current-buffer))))
+    (lsp-make-range
+     :start (lsp--point-to-position (window-start window))
+     :end (lsp--point-to-position (window-end window)))))
 
 (defun lsp-lens--backend-fetch-missing (lenses callback file-version)
   "Fetch LENSES without command in for the current window.
@@ -276,10 +281,14 @@ FILE-VERSION - the version of the file."
                           (-lambda ((&CodeLens :command?))
                             (lsp-put it :_pending nil)
                             (lsp-put it :command command?)
-                            (when (seq-every-p #'lsp--lens-backend-present? lenses)
+                            (when (seq-every-p (-partial #'lsp--lens-backend-present?
+                                                         (lsp-lens--window-range))
+                                               lenses)
                               (funcall callback lenses file-version)))
                           :mode 'tick)))
-   (seq-filter #'lsp--lens-backend-not-loaded? lenses)))
+   (seq-filter (-partial #'lsp--lens-backend-not-loaded?
+                         (lsp-lens--window-range))
+               lenses)))
 
 (defun lsp-lens--backend (modified? callback)
   "Lenses backend using `textDocument/codeLens'.
@@ -306,7 +315,9 @@ CALLBACK - callback for the lenses."
                              :mode 'tick
                              :no-merge t
                              :cancel-token (concat (buffer-name (current-buffer)) "-lenses")))
-      (if (-all? #'lsp--lens-backend-present? lsp-lens--backend-cache)
+      (if (-all? (-partial #'lsp--lens-backend-present?
+                           (lsp-lens--window-range))
+                 lsp-lens--backend-cache)
           (funcall callback lsp-lens--backend-cache lsp--cur-version)
         (lsp-lens--backend-fetch-missing lsp-lens--backend-cache callback lsp--cur-version)))))
 
