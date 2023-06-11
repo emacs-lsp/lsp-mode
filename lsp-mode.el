@@ -400,6 +400,8 @@ the server has requested that."
     "[/\\\\]_build\\'"
     ;; Elixir
     "[/\\\\]\\.elixir_ls\\'"
+    ;; Elixir Credo
+    "[/\\\\]\\.elixir-tools\\'"
     ;; terraform and terragrunt
     "[/\\\\]\\.terraform\\'"
     "[/\\\\]\\.terragrunt-cache\\'"

@@ -70,6 +70,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "credo",
+    "full-name": "Credo",
+    "server-name": "credo-ls",
+    "server-url": "https://github.com/elixir-tools/credo-language-server",
+    "installation-url": "https://github.com/elixir-tools/credo-language-server#installation",
+    "debugger": "Not available"
+  },
+  {
     "name": "csharp-ls",
     "common-group-name": "csharp",
     "full-name": "C# (csharp-ls)",
