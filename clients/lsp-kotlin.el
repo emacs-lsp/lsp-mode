@@ -301,7 +301,6 @@ to Kotlin."
   :priority -1
   :server-id 'kotlin-ls
   :uri-handlers (lsp-ht ("kls" #'lsp-kotlin--uri-handler))
-
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--set-configuration (lsp-configuration-section "kotlin"))))
