@@ -1,8 +1,8 @@
 ;;; lsp-credo.el --- lsp-mode Credo integration -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022 emacs-lsp maintainers
+;; Copyright (C) 2023 Wilhelm H Kirschbaum
 
-;; Author: lsp-mode maintainers
+;; Author: Wilhelm H Kirschbaum
 ;; Keywords: lsp, elixir, credo
 
 ;; This program is free software; you can redistribute it and/or modify
