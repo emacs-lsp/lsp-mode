@@ -254,8 +254,10 @@ to Kotlin."
   "Get the path for where we'll store the file, calculating it based on URI."
   (or (save-match-data
         (when (string-match "kls:file:///\\(.*\\)!/\\(.*\.\\(class\\|java\\|kt\\)\\)?.*" uri)
-          (let* ((lib-name (replace-regexp-in-string "/" "." (match-string 1 uri) t t))
-                 (buffer-name (replace-regexp-in-string "/" "." (match-string 2 uri) t t))
+          (let* ((jar-path (match-string 1 uri))
+                 (file-path (match-string 2 uri))
+                 (lib-name (string-join (last (split-string jar-path "/") 2) "."))
+                 (buffer-name (replace-regexp-in-string "/" "." file-path t t))
                  (file-location (expand-file-name (concat lsp-kotlin-workspace-cache-dir "/" lib-name "/" buffer-name))))
             file-location)))
       (error "Unable to match %s" uri)))
