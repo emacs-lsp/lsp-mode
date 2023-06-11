@@ -2179,13 +2179,11 @@ PARAMS - the data sent from WORKSPACE."
                                                                 (value &as &WorkDoneProgress :kind)))
   "PARAMS contains the progress data.
 WORKSPACE is the workspace that contains the progress token."
-  (lsp-workspace-status (lsp--progress-status) workspace)
+  (add-to-list 'global-mode-string '(t (:eval (lsp--progress-status))))
   (pcase kind
     ("begin" (lsp-workspace-set-work-done-token token value workspace))
     ("report" (lsp-workspace-set-work-done-token token value workspace))
-    ("end"
-     (lsp-workspace-rem-work-done-token token workspace)
-     (lsp-workspace-status nil workspace)))
+    ("end" (lsp-workspace-rem-work-done-token token workspace)))
   (force-mode-line-update))
 
 (lsp-defun lsp-on-progress-legacy (workspace (&ProgressParams :token :value
