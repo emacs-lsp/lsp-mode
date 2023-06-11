@@ -849,6 +849,7 @@ Changes take effect only when a new session is started."
     (js-ts-mode . "javascript")
     (typescript-mode . "typescript")
     (typescript-ts-mode . "typescript")
+    (tsx-ts-mode . "typescriptreact")
     (fsharp-mode . "fsharp")
     (reason-mode . "reason")
     (caml-mode . "ocaml")
