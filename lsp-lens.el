@@ -251,7 +251,7 @@ version."
   "Return t if LENS has to be loaded."
   (and (not command?)
        (not pending)
-       (lsp-point-in-range? start range)))
+       (lsp-point-in-range? (lsp--position-to-point start) range)))
 
 (lsp-defun lsp--lens-backend-present? (range (&CodeLens :range (&Range :start) :command?))
   "Return t if LENS has to be loaded."
