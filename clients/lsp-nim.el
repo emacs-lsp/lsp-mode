@@ -77,8 +77,15 @@
   :group 'lsp-nim
   :package-version '(lsp-mode . "8.0.1"))
 
+(defcustom lsp-nim-lsp "nimlsp"
+  "Path to `nimlsp'"
+  :type 'number
+  :group 'lsp-nim
+  :package-version '(lsp-mode . "8.0.1"))
+
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "nimlsp")
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (lambda () lsp-nim-lsp))
                   :activation-fn (lsp-activate-on "nim")
                   :priority -1
                   :server-id 'nimlsp))
