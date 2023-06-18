@@ -81,7 +81,7 @@
  (make-lsp-client :new-connection (lsp-stdio-connection "nimlsp")
                   :activation-fn (lsp-activate-on "nim")
                   :priority -1
-                  :server-id 'nimls))
+                  :server-id 'nimlsp))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
