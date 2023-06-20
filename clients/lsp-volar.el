@@ -38,7 +38,7 @@
 (defgroup lsp-volar nil
   "Lsp support for vue3."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/johnsoncodehk/volar")
+  :link '(url-link "https://github.com/vuejs/language-tools")
   :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-volar-take-over-mode t
@@ -74,7 +74,7 @@
 
 (lsp-dependency 'volar-language-server
                 '(:system "vue-language-server")
-                '(:npm :package "@volar/vue-language-server" :path "vue-language-server"))
+                '(:npm :package "@vue/language-server" :path "vue-language-server"))
 
 (lsp-register-custom-settings
  '(("typescript.tsdk"
