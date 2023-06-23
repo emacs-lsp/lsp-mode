@@ -84,7 +84,7 @@ be available here: https://github.com/elixir-tools/credo-language-server/release
   :activation-fn (lsp-activate-on "elixir")
   :priority -1
   :add-on? t
-  :multi-root t
+  :multi-root nil
   :server-id 'credo-language-server
   :download-server-fn
   (lambda (_client callback error-callback _update?)
