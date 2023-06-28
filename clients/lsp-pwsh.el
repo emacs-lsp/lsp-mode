@@ -303,7 +303,6 @@ Must not nil.")
   :major-modes lsp-pwsh--major-modes
   :server-id 'pwsh-ls
   :priority -1
-  :multi-root t
   :initialization-options #'lsp-pwsh--extra-init-params
   :notification-handlers (ht ("powerShell/executionStatusChanged" #'ignore)
                              ("output" #'ignore))
