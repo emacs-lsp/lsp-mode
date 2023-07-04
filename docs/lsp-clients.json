@@ -43,6 +43,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "awk",
+    "full-name": "AWK",
+    "server-name": "awk-language-server",
+    "server-url": "https://github.com/Beaglefoot/awk-language-server",
+    "installation": "npm i -g awk-language-server",
+    "lsp-install-server": "awkls",
+    "debugger": "Not available"
+  },
+  {
     "name": "bash",
     "full-name": "Bash",
     "server-name": "bash-language-server",

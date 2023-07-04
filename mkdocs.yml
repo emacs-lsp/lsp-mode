@@ -50,6 +50,7 @@ nav:
     - Angular: page/lsp-angular.md
     - Ansible: page/lsp-ansible.md
     - Astro: page/lsp-astro.md
+    - AWK: page/lsp-awk.md
     - Bash: page/lsp-bash.md
     - Beancount: page/lsp-beancount.md
     - Camel: page/lsp-camel.md

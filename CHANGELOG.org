@@ -80,6 +80,7 @@
   * Remove custom variable ~lsp-inlay-hint-enum-format~ since LSP Specification 3.17 only has ~type~ and
     ~parameter~ hint kinds.
   * Add [[https://semgrep.dev][Semgrep]] support
+  * Add AWK language server support.
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.

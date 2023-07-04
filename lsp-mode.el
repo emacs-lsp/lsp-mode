@@ -174,7 +174,7 @@ As defined by the Language Server Protocol 3.16."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-client-packages
-  '( ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-astro lsp-bash
+  '( ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-awk lsp-astro lsp-bash
      lsp-beancount lsp-clangd lsp-clojure lsp-cmake lsp-credo lsp-crystal lsp-csharp lsp-css
      lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile lsp-elm lsp-elixir lsp-emmet
      lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go lsp-gleam
@@ -786,6 +786,7 @@ Changes take effect only when a new session is started."
     ("^go\\.mod\\'" . "go.mod")
     ("^settings.json$" . "jsonc")
     (ada-mode . "ada")
+    (awk-mode . "awk")
     (nxml-mode . "xml")
     (sql-mode . "sql")
     (vimrc-mode . "vim")
