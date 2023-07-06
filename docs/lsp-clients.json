@@ -733,6 +733,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "robocop",
+    "full-name": "Ruby (RuboCop)",
+    "server-name": "rubocop",
+    "server-url": "https://github.com/rubocop/rubocop",
+    "installation-url": "https://docs.rubocop.org/rubocop/installation.html",
+    "installation": "gem install rubocop",
+    "debugger": "Not available"
+  },
+  {
     "name": "robot",
     "full-name": "robot framework",
     "server-name": "rf-intellisense",
