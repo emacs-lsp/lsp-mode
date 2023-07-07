@@ -90,6 +90,19 @@
   http://eslint.org/docs/developer-guide/nodejs-api#cliengine)."
   :type 'alist)
 
+(defcustom lsp-eslint-experimental nil
+  "The eslint experimental configuration."
+  :type 'alist)
+
+(defcustom lsp-eslint-config-problems nil
+  "The eslint problems configuration."
+  :type 'alist)
+
+(defcustom lsp-eslint-time-budget nil
+  "The eslint config to inform you of slow validation times and
+  long ESLint runs when computing code fixes during save."
+  :type 'alist)
+
 (defcustom lsp-eslint-trace-server "off"
   "Traces the communication between VSCode and the eslint linter service."
   :type 'string)
@@ -282,6 +295,9 @@ stored."
                               :quiet (lsp-json-bool lsp-eslint-quiet)
                               :onIgnoredFiles (if lsp-eslint-warn-on-ignored-files "warn" "off")
                               :options (or lsp-eslint-options (ht))
+                              :experimental (or lsp-eslint-experimental (ht))
+                              :problems (or lsp-eslint-config-problems (ht))
+                              :timeBudget (or lsp-eslint-time-budget (ht))
                               :rulesCustomizations lsp-eslint-rules-customizations
                               :run lsp-eslint-run
                               :nodePath lsp-eslint-node-path
