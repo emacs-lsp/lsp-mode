@@ -78,7 +78,8 @@
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda ()
                                      (cons (or (executable-find lsp-marksman-server-command)
-                                               (lsp-package-path 'marksman))
+                                               (lsp-package-path 'marksman)
+                                               "marksman")
                                            lsp-marksman-server-command-args)))
                   :activation-fn (lsp-activate-on "markdown")
                   :initialized-fn (lambda (workspace)
