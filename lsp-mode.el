@@ -4876,6 +4876,7 @@ Applies on type formatting."
          (type (url-type parsed-url)))
     (pcase type
       ("file"
+       (xref-push-marker-stack)
        (find-file (lsp--uri-to-path url))
        (-when-let ((_ line column) (s-match (rx "#" (group (1+ num)) (or "," "#") (group (1+ num))) url))
          (goto-char (lsp--position-to-point
