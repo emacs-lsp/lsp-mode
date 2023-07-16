@@ -1306,8 +1306,8 @@ FORMAT and ARGS i the same as for `message'."
 (defalias 'lsp-file-local-name 'file-local-name)
 
 (defun lsp-f-canonical (file-name)
-  "Return the canonical FILE-NAME, without a trailing slash."
-  (directory-file-name (expand-file-name file-name)))
+  "Return the canonical FILE-NAME, without a trailing slash (follow symlink)."
+  (directory-file-name (file-truename (expand-file-name file-name))))
 
 (defalias 'lsp-canonical-file-name 'lsp-f-canonical)
 
