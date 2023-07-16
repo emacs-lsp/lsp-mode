@@ -28,9 +28,9 @@
 
 (defun lsp-astro--get-initialization-options ()
   "Try to get the typescript server path, to supply to the astro language server."
-  (let ((library (f-join (lsp-workspace-root) "node_modules/typescript/lib/tsserverlibrary.js")))
+  (let ((library (f-join (lsp-workspace-root) "node_modules/typescript/lib")))
     (if (file-exists-p library)
-        `(:typescript (:serverPath ,library))
+        `(:typescript (:tsdk ,library))
       (lsp-warn "Unable to find typescript server path for astro-ls. Guessed: %s" library))))
 
 (defgroup lsp-astro nil
