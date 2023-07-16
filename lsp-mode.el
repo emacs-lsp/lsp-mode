@@ -1306,8 +1306,8 @@ FORMAT and ARGS i the same as for `message'."
 (defalias 'lsp-file-local-name 'file-local-name)
 
 (defun lsp-f-canonical (file-name)
-  "Return the canonical FILE-NAME, without a trailing slash (follow symlink)."
-  (directory-file-name (file-truename (expand-file-name file-name))))
+  "Return the canonical FILE-NAME, without a trailing slash."
+  (directory-file-name (expand-file-name file-name)))
 
 (defalias 'lsp-canonical-file-name 'lsp-f-canonical)
 
@@ -8863,7 +8863,7 @@ Select action: "
 
 (defun lsp-find-session-folder (session file-name)
   "Look in the current SESSION for folder containing FILE-NAME."
-  (let ((file-name-canonical (lsp-f-canonical file-name)))
+  (let ((file-name-canonical (file-truename file-name)))
     (->> session
          (lsp-session-folders)
          (--filter (and (lsp--files-same-host it file-name-canonical)
