@@ -201,7 +201,8 @@ Python virtual environment."
 (defun lsp-ansible-check-ansible-minor-mode (&rest _)
   "Check whether ansible minor mode is active.
 This prevents the Ansible server from being turned on in all yaml files."
-  (and (derived-mode-p 'yaml-mode)
+  (and (or (derived-mode-p 'yaml-mode)
+           (derived-mode-p 'yaml-ts-mode))
        ;; emacs-ansible provides ansible, not ansible-mode
        (with-no-warnings (bound-and-true-p ansible))))
 
