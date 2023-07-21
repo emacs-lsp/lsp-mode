@@ -667,7 +667,7 @@ The return is nil or in range of (0, inf)."
                   "Update score variables given match range (A B)."
                   (setq score-numerator (+ score-numerator (- b a)))
                   (unless (= a len)
-                    ;; case mis-match will be pushed to near next rank
+                    ;; case mismatch will be pushed to near next rank
                     (unless (equal (aref query q-ind) (aref str a))
                       (cl-incf a 0.9))
                     (setq score-denominator

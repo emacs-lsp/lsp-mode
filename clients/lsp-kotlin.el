@@ -202,8 +202,8 @@ to Kotlin."
           (ivy-read message (mapcar #'car items)
                     :action (lambda (c) (setq result (list (cdr (assoc c items)))))
                     :multi-action
-                    (lambda (canditates)
-                      (setq result (mapcar (lambda (c) (cdr (assoc c items))) canditates))))
+                    (lambda (candidates)
+                      (setq result (mapcar (lambda (c) (cdr (assoc c items))) candidates))))
           result)
       (let ((deps initial-selection) dep)
         (while (setq dep (cl-rest (lsp--completing-read
