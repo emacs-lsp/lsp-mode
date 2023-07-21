@@ -3,7 +3,7 @@
 ;; Copyright (c) 2023 Ariel Davis
 
 ;; Author: Ariel Davis <ariel.z.davis@icloud.com>
-;; Keywords: langauges, lsp, sml, standard-ml, millet
+;; Keywords: languages, lsp, sml, standard-ml, millet
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ How to format open SML files on save."
   "What diagnostics to send per file."
   :type '(choice (const :tag "No filter, i.e. all available diagnostics are sent." "none")
                  (const :tag "If there are syntax errors (lex, parse, etc),
-send only those, and do not send e.g. statics diagnostics." "syntax"))
+send only those, and do not send e.g. statistics diagnostics." "syntax"))
   :group 'lsp-sml)
 
 (defcustom lsp-sml-millet-server-diagnostics-moreInfoHint-enable t

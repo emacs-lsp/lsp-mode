@@ -56,7 +56,7 @@ Set this if you have the binary installed or have it built yourself."
 
 (defcustom lsp-csharp-test-run-buffer-name
   "*lsp-csharp test run*"
-  "The name of buffer used for outputing lsp-csharp test run results."
+  "The name of buffer used for outputting lsp-csharp test run results."
   :group 'lsp-csharp-omnisharp
   :type 'string)
 

@@ -680,7 +680,7 @@ are determined by the index of the element."
                          (const :tag "Method" Method)
                          (const :tag "Property" Property)
                          (const :tag "Field" Field)
-                         (const :tag "Constructor" Constuctor)
+                         (const :tag "Constructor" Constructor)
                          (const :tag "Enum" Enum)
                          (const :tag "Interface" Interface)
                          (const :tag "Function" Function)
@@ -6881,7 +6881,7 @@ information, for example if it doesn't support DocumentSymbols."
   :type 'boolean)
 
 (defface lsp-details-face '((t :height 0.8 :inherit shadow))
-  "Used to display additional information troughout `lsp'.
+  "Used to display additional information throughout `lsp'.
 Things like line numbers, signatures, ... are considered
 additional information. Often, additional faces are defined that
 inherit from this face by default, like `lsp-signature-face', and
@@ -8148,7 +8148,7 @@ nil."
 SET-EXECUTABLE? when non-nil change the executable flags of
 STORE-PATH to make it executable. BINARY-PATH can be specified
 when the binary to start does not match the name of the
-archieve(e. g. when the archieve has multiple files)"
+archive (e.g. when the archive has multiple files)"
   (let ((store-path (or (lsp-resolve-value binary-path)
                         (lsp-resolve-value store-path))))
     (cond
@@ -8615,7 +8615,7 @@ When ALL is t, erase all log buffers of the running session."
              (lambda ()
                (cond
                 (result (lsp--parser-on-message result workspace))
-                (err (warn "Json parsing failed with the following erorr: %s" err))
+                (err (warn "Json parsing failed with the following error: %s" err))
                 (done (lsp--handle-process-exit workspace ""))))))
           :object-type object-type
           :null-object nil
@@ -9332,7 +9332,7 @@ This avoids overloading the server with many files when starting Emacs."
     (flycheck-add-mode 'lsp mode)))
 
 (defun lsp-progress-spinner-type ()
-  "Retrive the spinner type value, if value is not a symbol of `spinner-types
+  "Retrieve the spinner type value, if value is not a symbol of `spinner-types
 defaults to `progress-bar."
   (or (car (assoc lsp-progress-spinner-type spinner-types)) 'progress-bar))
 
@@ -9615,7 +9615,7 @@ string."
 
 ;;;###autoload
 (defun lsp-start-plain ()
-  "Start `lsp-mode' using mininal configuration using the latest `melpa' version
+  "Start `lsp-mode' using minimal configuration using the latest `melpa' version
 of the packages.
 
 In case the major-mode that you are using for "

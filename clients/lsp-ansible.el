@@ -222,7 +222,7 @@ Pretty print the content of PARAMS."
     (message "Ansible Language Server metadata: %s" (json-encode params))))
 
 (defun lsp-ansible-show-server-metadata ()
-  "Show informations about Ansible environment used by the Ansible Language Server."
+  "Show information about Ansible environment used by the Ansible Language Server."
   (interactive)
   (lsp-notify "update/ansible-metadata" nil))
 
