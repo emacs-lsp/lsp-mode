@@ -795,6 +795,7 @@ Changes take effect only when a new session is started."
     (ebuild-mode . "shellscript")
     (pkgbuild-mode . "shellscript")
     (scala-mode . "scala")
+    (scala-ts-mode . "scala")
     (julia-mode . "julia")
     (clojure-mode . "clojure")
     (clojurec-mode . "clojure")
