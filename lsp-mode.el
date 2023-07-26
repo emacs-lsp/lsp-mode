@@ -914,6 +914,7 @@ Changes take effect only when a new session is started."
     (org-journal-mode . "org")
     (nginx-mode . "nginx")
     (magik-mode . "magik")
+    (magik-ts-mode . "magik")
     (idris-mode . "idris")
     (idris2-mode . "idris2")
     (gleam-mode . "gleam")
