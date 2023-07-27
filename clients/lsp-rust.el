@@ -366,7 +366,7 @@ active, the various inlay format settings are not used."
 
 (defcustom lsp-rust-analyzer-hide-closure-initialization nil
   "Whether to hide inlay type hints for `let` statements that initialize
-to a closure.ppOnly applies to closures with blocks, same as
+to a closure. Only applies to closures with blocks, same as
 `#rust-analyzer.inlayHints.closureReturnTypeHints.enable#`."
   :type 'boolean
   :group 'lsp-rust-analyzer
@@ -766,6 +766,17 @@ or JSON objects in `rust-project.json` format."
     :rustfmt (:extraArgs ,lsp-rust-analyzer-rustfmt-extra-args
               :overrideCommand ,lsp-rust-analyzer-rustfmt-override-command
               :rangeFormatting (:enable ,(lsp-json-bool lsp-rust-analyzer-rustfmt-rangeformatting-enable)))
+    :lens (:debug (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-debug-enable))
+            :enable ,(lsp-json-bool lsp-rust-analyzer-lens-enable)
+            ;; :forceCustomCommands ,(lsp-json-bool lsp-rust-analyzer-lens-force-custom-commands)
+            :implementations (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-implementations-enable))
+            ;; :location ,lsp-rust-analyzer-lens-location
+            :references (:adt (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-references-adt-enable))
+                         :enumVariant (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-references-enum-variant-enable))
+                         :method (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-references-method-enable))
+                         :trait (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-references-trait-enable)))
+            :run (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-run-enable)))
+
     :inlayHints (:bindingModeHints ,(lsp-json-bool lsp-rust-analyzer-binding-mode-hints)
                  :chainingHints ,(lsp-json-bool lsp-rust-analyzer-display-chaining-hints)
                  :closingBraceHints (:enable ,(lsp-json-bool lsp-rust-analyzer-closing-brace-hints)
@@ -935,7 +946,6 @@ or JSON objects in `rust-project.json` format."
 
 (lsp-defun lsp-rust--analyzer-debug-lens ((&Command :arguments? [args]))
   (lsp-rust-analyzer-debug args))
-
 
 ;; Semantic tokens
 
@@ -1281,6 +1291,131 @@ meaning."
   :type 'plist
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
+
+;; lenses
+
+(defgroup lsp-rust-analyzer-lens nil
+  "LSP lens support for Rust when using rust-analyzer.
+
+Lenses are (depending on your configuration) clickable links to
+the right of function definitions and the like. These display
+some useful information in their own right and/or perform a
+shortcut action when clicked such as displaying uses of that
+function or running an individual test.
+"
+  :prefix "lsp-rust-analyzer-lens-"
+  :group 'lsp-rust-analyzer
+  :link '(url-link "https://emacs-lsp.github.io/lsp-mode/")
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-lens-debug-enable t
+  "Enable or disable the Debug lens."
+  :type 'boolean
+  :group 'lsp-rust-analyzer-lens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-lens-enable t
+  "Master-enable of lenses in Rust files."
+  :type 'boolean
+  :group 'lsp-rust-analyzer-lens
+  :package-version '(lsp-mode . "8.0.1"))
+
+;; This customisation "works" in that it works as described, but the default is fine and changing it
+;; from the default will either stop lenses working or do nothing.
+;;
+;; If this is ever uncommented to re-enable the option, don't forget to also uncomment it in defun
+;; lsp-rust-analyzer--make-init-options too or it'll not do anything.
+
+;; (defcustom lsp-rust-analyzer-lens-force-custom-commands t
+;;   "Internal config: use custom client-side commands even when the
+;; client doesn't set the corresponding capability."
+;;   :type 'boolean
+;;   :group 'lsp-rust-analyzer-lens
+;;   :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-lens-implementations-enable t
+  "Enable or disable the Implementations lens.
+
+The Implementations lens shows `NN implementations' to the right
+of the first line of an enum, struct, or union declaration. This
+is the count of impl blocks, including derived traits. Clicking
+on it gives a list of the impls of that type.
+"
+  :type 'boolean
+  :group 'lsp-rust-analyzer-lens
+  :package-version '(lsp-mode . "8.0.1"))
+
+;; The valid range of values for this is documented in the rust-lang/rust-analyzer repository at the
+;; path "editors/code/package.json"; the TL:DR is that it's "above_name" or "above_whole_item".
+;; However, setting it to "above_whole_item" causes lenses to disappear in Emacs. I suspect this
+;; feature has only ever been tested in some other IDE and it's broken in Emacs. So I've disabled it
+;; for now.
+;;
+;; If this is ever uncommented to re-enable the option, don't forget to also uncomment it in defun
+;; lsp-rust-analyzer--make-init-options too or it'll not do anything.
+
+;; (defcustom lsp-rust-analyzer-lens-location "above_name"
+;;   "Where to render annotations."
+;;    :type '(choice
+;;            (const :tag "Above name" "above_name")
+;;            (const :tag "Above whole item" "above_whole_item")
+;;    :group 'lsp-rust-analyzer-lens
+;;    :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-lens-references-adt-enable nil
+  "Enable or disable the References lens on enums, structs, and traits.
+
+The References lens shows `NN references` to the right of the
+first line of each enum, struct, or union declaration. This is
+the count of uses of that type. Clicking on it gives a list of
+where that type is used."
+  :type 'boolean
+  :group 'lsp-rust-analyzer-lens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-lens-references-enum-variant-enable nil
+  "Enable or disable the References lens on enum variants.
+
+The References lens shows `NN references` to the right of the
+first (or only) line of each enum variant. This is the count of
+uses of that enum variant. Clicking on it gives a list of where
+that enum variant is used."
+  :type 'boolean
+  :group 'lsp-rust-analyzer-lens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-lens-references-method-enable nil
+  "Enable or disable the References lens on functions.
+
+The References lens shows `NN references` to the right of the
+first line of each function declaration. This is the count of
+uses of that function. Clicking on it gives a list of where that
+function is used."
+
+  :type 'boolean
+  :group 'lsp-rust-analyzer-lens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-lens-references-trait-enable nil
+  "Enable or disable the References lens on traits.
+
+The References lens shows `NN references` to the right of the
+first line of each trait declaration. This is a count of uses of
+that trait. Clicking on it gives a list of where that trait is
+used.
+
+There is some overlap with the Implementations lens which slows
+all of the trait's impl blocks, but this also shows other uses
+such as imports and dyn traits."
+  :type 'boolean
+  :group 'lsp-rust-analyzer-lens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-lens-run-enable t
+  "Enable or disable the Run lens."
+  :type 'boolean
+  :group 'lsp-rust-analyzer-lens
+  :package-version '(lsp-mode . "8.0.1"))
 
 (defun lsp-rust-analyzer-initialized? ()
   (when-let ((workspace (lsp-find-workspace 'rust-analyzer (buffer-file-name))))
