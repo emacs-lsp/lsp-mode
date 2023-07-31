@@ -75,12 +75,7 @@ be available here: https://github.com/elixir-tools/credo-language-server/release
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection
-  (lsp-stdio-connection
-   (lambda ()
-     `(,(or (executable-find (cl-first lsp-credo-command))
-            (lsp-package-path 'credo-language-server))
-       ,@(cl-rest lsp-credo-command))))
+  :new-connection (lsp-stdio-connection lsp-credo-command)
   :activation-fn (lsp-activate-on "elixir")
   :priority -1
   :add-on? t
