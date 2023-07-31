@@ -93,6 +93,7 @@
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda () lsp-nim-langserver))
+                  :synchronize-sections '("nim")
                   :activation-fn (lsp-activate-on "nim")
                   :server-id 'nimlangserver))
 
