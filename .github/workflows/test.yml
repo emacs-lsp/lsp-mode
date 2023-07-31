@@ -18,6 +18,7 @@ jobs:
           - 26.3
           - 27.2
           - 28.2
+          - 29.1
         experimental: [false]
         include:
           - os: ubuntu-latest
