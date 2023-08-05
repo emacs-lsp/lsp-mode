@@ -87,6 +87,27 @@
                   :synchronize-sections '("nil")
                   :server-id 'nix-nil))
 
+(defgroup lsp-nix-nixd nil
+  "LSP support for Nix, using nil."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/nix-community/nixd"))
+
+(defcustom lsp-nix-nixd-server-path "nixd"
+  "Executable path for the server."
+  :group 'lsp-nix-nixd
+  :type 'string
+  :package-version '(lsp-mode . "8.0.1"))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-nix-nixd-server-path))
+                  :major-modes '(nix-mode)
+                  :initialized-fn (lambda (workspace)
+                    (with-lsp-workspace workspace
+                      (lsp--set-configuration
+                       (lsp-configuration-section "nixd"))))
+                  :synchronize-sections '("nixd")
+                  :server-id 'nix-nixd))
+
 (lsp-consistency-check lsp-nix)
 
 (provide 'lsp-nix)
