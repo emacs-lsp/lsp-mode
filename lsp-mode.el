@@ -819,6 +819,7 @@ Changes take effect only when a new session is started."
     (less-mode . "less")
     (less-css-mode . "less")
     (lua-mode . "lua")
+    (lua-ts-mode . "lua")
     (sass-mode . "sass")
     (ssass-mode . "sass")
     (scss-mode . "scss")
@@ -894,6 +895,7 @@ Changes take effect only when a new session is started."
     (cmake-ts-mode . "cmake")
     (purescript-mode . "purescript")
     (gdscript-mode . "gdscript")
+    (gdscript-ts-mode . "gdscript")
     (perl-mode . "perl")
     (cperl-mode . "perl")
     (robot-mode . "robot")
@@ -5926,6 +5928,7 @@ Request codeAction/resolve for more info if server supports."
     (json-mode                  . js-indent-level)                  ; JSON
     (json-ts-mode               . json-ts-mode-indent-offset)
     (lua-mode                   . lua-indent-level)                 ; Lua
+    (lua-ts-mode                . lua-ts-mode-indent-offset)
     (nxml-mode                  . nxml-child-indent)                ; XML
     (objc-mode                  . c-basic-offset)                   ; Objective C
     (pascal-mode                . pascal-indent-level)              ; Pascal

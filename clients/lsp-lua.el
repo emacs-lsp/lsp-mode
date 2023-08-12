@@ -74,7 +74,7 @@
                                                          ,@lsp-clients-emmy-lua-args
                                                          ,lsp-clients-emmy-lua-jar-path)))
                                         #'lsp-clients-emmy-lua-test)
-  :major-modes '(lua-mode)
+  :activation-fn (lsp-activate-on "lua")
   :server-id 'emmy-lua
   :priority -1
   :notification-handlers (lsp-ht ("emmy/progressReport" #'ignore))))
@@ -575,7 +575,7 @@ and `../lib` ,exclude `../lib/temp`.
                                                          ,@lsp-clients-lua-language-server-args
                                                          ,lsp-clients-lua-language-server-main-location)))
                                         #'lsp-clients-lua-language-server-test)
-  :major-modes '(lua-mode)
+  :activation-fn (lsp-activate-on "lua")
   :priority -2
   :server-id 'lua-language-server
   :download-server-fn #'lsp-lua-language-server-install-latest))
@@ -611,7 +611,7 @@ and `../lib` ,exclude `../lib/temp`.
                                           (or lsp-clients-lua-lsp-server-install-dir
                                               (f-join lsp-clients-luarocks-bin-dir "lua-lsp")))
                                         #'lsp-clients-lua-lsp-test)
-  :major-modes '(lua-mode)
+  :activation-fn (lsp-activate-on "lua")
   :priority -3
   :server-id 'lsp-lua-lsp))
 
@@ -690,7 +690,7 @@ and `../lib` ,exclude `../lib/temp`.
                                                          ,@lsp-clients-lua-language-server-args
                                                          ,lsp-lua-roblox-language-server-main-location)))
                                         #'lsp-lua-roblox-language-server-test)
-  :major-modes '(lua-mode)
+  :activation-fn (lsp-activate-on "lua")
   :priority -4
   :server-id 'lua-roblox-language-server
   :download-server-fn #'lsp-lua-roblox-language-server-install))
