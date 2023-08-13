@@ -63,9 +63,10 @@
   {
     "name": "beancount",
     "full-name": "Beancount",
-    "server-name": "beancount-langserver",
+    "server-name": "beancount-language-server",
     "server-url": "https://github.com/polarmutex/beancount-language-server",
-    "installation": "npm install -g beancount-langserver",
+    "installation": "cargo install beancount-language-server",
+    "installation-url": "https://github.com/polarmutex/beancount-language-server#installation",
     "lsp-install-server": "beancount-ls",
     "debugger": "Not available"
   },
