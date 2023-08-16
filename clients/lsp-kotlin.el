@@ -272,9 +272,8 @@ to Kotlin."
                     (with-lsp-workspace workspace
                       (lsp--set-configuration (lsp-configuration-section "kotlin"))))
   :initialization-options (lambda ()
-                            (if lsp-kotlin-ondisk-cache-enabled
-                                (list :storagePath lsp-kotlin-ondisk-cache-path)
-                              (list)))
+                            (when lsp-kotlin-ondisk-cache-enabled
+                              (list :storagePath lsp-kotlin-ondisk-cache-path)))
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'kotlin-language-server callback error-callback))))
 
