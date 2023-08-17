@@ -925,7 +925,8 @@ Changes take effect only when a new session is started."
     (bibtex-mode . "bibtex")
     (rst-mode . "restructuredtext")
     (glsl-mode . "glsl")
-    (shader-mode . "shaderlab"))
+    (shader-mode . "shaderlab")
+    (jq-mode . "jq"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
