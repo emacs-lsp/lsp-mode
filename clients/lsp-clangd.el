@@ -162,6 +162,9 @@ number of newlines."
   "Show clang-tidy documentation about ERROR-ID.
 
 Information comes from the clang.llvm.org website."
+  ;; Example error-id: modernize-loop-convert
+  ;; Example url: https://clang.llvm.org/extra/clang-tidy/checks/modernize/loop-convert.html
+  (setq error-id (s-join "/" (s-split-up-to "-" error-id 1 t)))
   (url-retrieve (format
                  "https://clang.llvm.org/extra/clang-tidy/checks/%s.html" error-id)
                 (lambda (status)
