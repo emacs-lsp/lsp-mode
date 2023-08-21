@@ -733,7 +733,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "robocop",
+    "name": "rubocop",
     "full-name": "Ruby (RuboCop)",
     "server-name": "rubocop",
     "server-url": "https://github.com/rubocop/rubocop",
