@@ -506,12 +506,12 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-robocop/</loc>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-robot/</loc>
          <lastmod>2023-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-robot/</loc>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-rubocop/</loc>
          <lastmod>2023-08-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
