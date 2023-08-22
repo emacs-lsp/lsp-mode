@@ -131,7 +131,7 @@ It can use erlang-ls or erlang-language-platform (ELP)."
                             "elp")
                        ,@(cl-rest lsp-erlang-elp-server-command))))
   :activation-fn (lsp-activate-on "erlang")
-  :priority (if (eq lsp-erlang-server 'erlang-language-platform) 1 -1)
+  :priority (if (eq lsp-erlang-server 'erlang-language-platform) 1 -2)
   :server-id 'elp
   :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (featurep 'yasnippet))))))
   :download-server-fn (lambda (_client callback error-callback _update?)
