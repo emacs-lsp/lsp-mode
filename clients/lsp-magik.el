@@ -88,8 +88,11 @@
   :group `lsp-magik
   :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom lsp-magik-java-path (cond ((eq system-type 'windows-nt) "$JAVA_HOME/bin/java")
-                                     (t "java"))
+(defcustom lsp-magik-java-path (lambda ()
+                                 (cond ((eq system-type 'windows-nt)
+                                        (or (lsp-resolve-value (executable-find (expand-file-name "bin/java" (getenv "JAVA_HOME"))))
+                                            (lsp-resolve-value (executable-find "java"))))
+                                       (t "java")))
   "Path of the java executable."
   :type 'string
   :group `lsp-magik
@@ -108,7 +111,7 @@
   :new-connection (lsp-stdio-connection
                    (lambda ()
                      (list
-                      (substitute-in-file-name lsp-magik-java-path)
+                      (substitute-in-file-name (lsp-resolve-value lsp-magik-java-path))
                       "-jar"
                       (substitute-in-file-name lsp-magik-ls-path)
                       "--debug")))
