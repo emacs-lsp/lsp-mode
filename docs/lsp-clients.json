@@ -195,6 +195,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "editorconfig",
+    "full-name": "EditorConfig",
+    "server-name": "ecls",
+    "server-url": "https://github.com/Lilja/ecls",
+    "installation": "npm install -g ecls",
+    "lsp-install-server": "ecls",
+    "debugger": "Not available"
+  },
+  {
     "name": "elixir",
     "full-name": "Elixir",
     "server-name": "elixir-lsp/elixir-ls",
