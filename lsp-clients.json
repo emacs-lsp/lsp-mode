@@ -146,9 +146,9 @@
   {
     "name": "crystal",
     "full-name": "Crystal",
-    "server-name": "scry",
-    "server-url": "https://github.com/crystal-lang-tools/scry",
-    "installation-url": "https://github.com/crystal-lang-tools/scry#installation",
+    "server-name": "crystalline",
+    "server-url": "https://github.com/elbywan/crystalline",
+    "installation-url": "https://github.com/elbywan/crystalline#installation",
     "debugger": "Not available"
   },
   {
