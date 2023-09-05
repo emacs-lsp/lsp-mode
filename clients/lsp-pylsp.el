@@ -260,7 +260,7 @@ Drastically increases startup time."
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-isort-enabled nil
-  "Enable of disable the plugin."
+  "Enable or disable the plugin."
   :type 'boolean
   :group 'lsp-pylsp)
 
