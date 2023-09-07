@@ -502,6 +502,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "move",
+    "full-name": "Move Language",
+    "server-name": "move-analyzer",
+    "server-url": "https://github.com/move-language/move",
+    "installation-url": "https://github.com/move-language/move/tree/main/language/move-analyzer",
+    "debugger": "Not available"
+  },
+  {
     "name": "nginx",
     "full-name": "Nginx",
     "server-name": "nginx-lsp",
