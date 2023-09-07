@@ -12,14 +12,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-python-ms/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-move/">
       
       <link rel="icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.0">
     
     
       
-        <title>Lsp python ms - LSP Mode - LSP support for Emacs</title>
+        <title>Move - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#python-microsoft" class="md-skip">
+        <a href="#move-language" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Lsp python ms
+              Move
             
           </span>
         </div>
@@ -223,13 +223,15 @@
         
   
   
+    
+  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../languages/" class="md-tabs__link">
+      <a href="../languages/" class="md-tabs__link md-tabs__link--active">
         Languages
       </a>
     </li>
@@ -1036,12 +1038,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
       
       
       
@@ -1832,11 +1836,99 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../lsp-move/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Move
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Move
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#server" class="md-nav__link">
+    Server
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-configurations" class="md-nav__link">
+    Available configurations
+  </a>
+  
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-move-analyzer-args" class="md-nav__link">
+    lsp-clients-move-analyzer-args
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-move-analyzer-executable" class="md-nav__link">
+    lsp-clients-move-analyzer-executable
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -3163,8 +3255,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#debugger-yes" class="md-nav__link">
-    Debugger: Yes
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
   </a>
   
 </li>
@@ -3178,6 +3270,26 @@
   <a href="#available-configurations" class="md-nav__link">
     Available configurations
   </a>
+  
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-move-analyzer-args" class="md-nav__link">
+    lsp-clients-move-analyzer-args
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-move-analyzer-executable" class="md-nav__link">
+    lsp-clients-move-analyzer-executable
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3217,7 +3329,7 @@
 <!-- Edit button -->
 
 <a
-  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-python-ms.el"
+  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-move.el"
   title="Edit this page"
   class="md-content__button md-icon"
 >
@@ -3236,13 +3348,25 @@
 
 
 <!-- Markdown content -->
-<h1 id="python-microsoft">Python (Microsoft)<a class="headerlink" href="#python-microsoft" title="Permanent link">#</a></h1>
+<h1 id="move-language">Move Language<a class="headerlink" href="#move-language" title="Permanent link">#</a></h1>
 <h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For more information about the LSP server, check <a href="https://github.com/Microsoft/python-language-server">Microsoft Python Language Server</a>.</p>
+<p>For more information about the LSP server, check <a href="https://github.com/move-language/move">move-analyzer</a>.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
-<p>For more instructions on how to install manually, check <a href="https://github.com/emacs-lsp/lsp-python-ms">here</a>.</p>
-<h3 id="debugger-yes">Debugger: Yes<a class="headerlink" href="#debugger-yes" title="Permanent link">#</a></h3>
+<p>For more instructions on how to install manually, check <a href="https://github.com/move-language/move/tree/main/language/move-analyzer">here</a>.</p>
+<h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
+<h3 id="lsp-clients-move-analyzer-args"><code>lsp-clients-move-analyzer-args</code><a class="headerlink" href="#lsp-clients-move-analyzer-args" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(repeat string)</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Extra arguments for the move-analyzer executable.</p>
+<hr />
+<h3 id="lsp-clients-move-analyzer-executable"><code>lsp-clients-move-analyzer-executable</code><a class="headerlink" href="#lsp-clients-move-analyzer-executable" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>file</code></p>
+<p><em>Default:</em> <code>move-analyzer</code></p>
+<p>The move-analyzer executable to use.
+Leave as just the executable name to use the default behavior of
+finding the executable with <code>exec-path</code>.</p>
+<hr />
 
 <!-- Source file information -->
 
@@ -3265,6 +3389,41 @@
       </main>
       
         <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../lsp-marksman/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Marksman" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Marksman
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../lsp-nginx/" class="md-footer__link md-footer__link--next" aria-label="Next: Nginx" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Nginx
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
