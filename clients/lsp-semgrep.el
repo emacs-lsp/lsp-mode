@@ -204,7 +204,8 @@ If FULL is non-nil, scan all files in workspace, regardless of git status."
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection (lambda () lsp-semgrep-server-command))
-  :activation-fn (apply 'lsp-activate-on lsp-semgrep-languages)
+  :activation-fn (lambda (_file-name _mode)
+                   (-contains? lsp-semgrep-languages (lsp-buffer-language)))
   :server-id 'semgrep-ls
   :priority -1
   :add-on? t
