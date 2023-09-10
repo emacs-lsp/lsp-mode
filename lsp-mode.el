@@ -3546,9 +3546,9 @@ and expand the capabilities section"
   "Shut down the language server process for ‘lsp--cur-workspace’."
   (with-demoted-errors "LSP error: %S"
     (let ((lsp-response-timeout 0.5))
-      (condition-case _err
-          (lsp-request "shutdown" lsp--empty-ht)
-        (error (lsp--error "Timeout while sending shutdown request"))))
+      (condition-case err
+          (lsp-request "shutdown" nil)
+        (error (lsp--error "%s" err))))
     (lsp-notify "exit" nil))
   (setf (lsp--workspace-shutdown-action lsp--cur-workspace) (or (and restart 'restart) 'shutdown))
   (lsp--uninitialize-workspace))
