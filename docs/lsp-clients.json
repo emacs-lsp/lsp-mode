@@ -510,6 +510,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "mdx",
+    "full-name": "mdx",
+    "server-name": "mdx-analyzer",
+    "server-url": "https://github.com/mdx-js/mdx-analyzer/tree/main/packages/language-server",
+    "installation": "npm install -g @mdx-js/language-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "nginx",
     "full-name": "Nginx",
     "server-name": "nginx-lsp",
