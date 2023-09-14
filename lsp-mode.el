@@ -934,7 +934,7 @@ Changes take effect only when a new session is started."
 We want to try the last workspace first when jumping into a library
 directory")
 
-(defconst lsp-method-requirements
+(defvar lsp-method-requirements
   '(("textDocument/callHierarchy" :capability :callHierarchyProvider)
     ("textDocument/codeAction" :capability :codeActionProvider)
     ("codeAction/resolve"
@@ -6432,6 +6432,32 @@ REFERENCES? t when METHOD returns references."
   (evil-set-command-property 'lsp-find-references :jump t)
   (evil-set-command-property 'lsp-find-type-definition :jump t))
 
+(defun lsp--workspace-method-supported? (check-command method capability workspace)
+  (with-lsp-workspace workspace
+    (if check-command
+        (funcall check-command workspace)
+      (or
+       (when capability (lsp--capability capability))
+       (lsp--registered-capability method)
+       (and (not capability) (not check-command))))))
+
+(defun lsp-disable-method-for-server (method server-id)
+  "Disable METHOD for SERVER-ID."
+  (cl-callf
+      (lambda (reqs)
+        (-let (((&plist :check-command :capability) reqs))
+          (list :check-command
+                (lambda (workspace)
+                  (unless (-> workspace
+                              lsp--workspace-client
+                              lsp--client-server-id
+                              (eq server-id))
+                    (lsp--workspace-method-supported? check-command
+                                                      method
+                                                      capability
+                                                      workspace))))))
+      (alist-get method lsp-method-requirements nil nil 'string=)))
+
 (defun lsp--find-workspaces-for (msg-or-method)
   "Find all workspaces in the current project that can handle MSG."
   (let ((method (if (stringp msg-or-method)
@@ -6439,13 +6465,9 @@ REFERENCES? t when METHOD returns references."
                   (plist-get msg-or-method :method))))
     (-if-let (reqs (cdr (assoc method lsp-method-requirements)))
         (-let (((&plist :capability :check-command) reqs))
-          (--filter
-           (with-lsp-workspace it
-             (or
-              (when check-command (funcall check-command it))
-              (when capability (lsp--capability capability))
-              (lsp--registered-capability method)
-              (and (not capability) (not check-command))))
+          (-filter
+           (-partial #'lsp--workspace-method-supported?
+                     check-command method capability)
            (lsp-workspaces)))
       (lsp-workspaces))))
 
