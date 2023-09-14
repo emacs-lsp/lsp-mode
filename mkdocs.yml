@@ -100,6 +100,7 @@ nav:
     - Markdown: page/lsp-markdown.md
     - Marksman: page/lsp-marksman.md
     - Move: page/lsp-move.md
+    - MDX: page/lsp-mdx.md
     - MSSQL: https://emacs-lsp.github.io/lsp-mssql
     - Nginx: page/lsp-nginx.md
     - Nim: page/lsp-nim.md
