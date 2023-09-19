@@ -302,7 +302,7 @@ This is a synchronous action."
                    :installed-version installed-version
                    :version-constraint (lsp-get provider :version_constraint)))
 
-(lsp-defun construct-tf-module ((&terraform-ls:Module :name :docs-link :version :source-type :dependent-modules))
+(lsp-defun construct-tf-module ((&terraform-ls:Module :name :docs_link :version :source_type :dependent_modules))
   "Construct `TF-MODULE' using MODULE."
   (make-tf-module :name name
                   :doc-link docs-link
@@ -310,7 +310,7 @@ This is a synchronous action."
                   :source-type source-type
                   :dependent-modules dependent-modules))
 
-(lsp-defun lsp-terraform-ls--providers-to-tf-package ((&terraform-ls:Providers :provider-requirements :installed-providers))
+(lsp-defun lsp-terraform-ls--providers-to-tf-package ((&terraform-ls:Providers :provider_requirements :installed_providers))
   "Convert PROVIDERS-TREE-DATA to list of `tf-package'."
   (let* ((provider-requirements-keys (hash-table-keys provider-requirements))
          (installed-versions (mapcar (lambda (x) (lsp-get installed-providers (make-symbol (format ":%s" x)))) provider-requirements-keys))
@@ -318,7 +318,7 @@ This is a synchronous action."
          (tf-packages (-zip-with (lambda (x y) (construct-tf-package x y)) providers installed-versions)))
     tf-packages))
 
-(lsp-defun lsp-terraform-ls--modules-to-tf-module ((&terraform-ls:ModuleCalls :module-calls))
+(lsp-defun lsp-terraform-ls--modules-to-tf-module ((&terraform-ls:ModuleCalls :module_calls))
   "Convert MODULES-TREE-DATA to list of `TF-MODULE'."
   (let* ((modules (-map (lambda (x) (construct-tf-module x)) module-calls)))
     modules))
