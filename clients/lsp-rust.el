@@ -157,7 +157,7 @@ the latest build duration."
   :group 'lsp-rust-rls
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-rust-crate-blacklist  [
+(defcustom lsp-rust-crate-blocklist  [
                                       "cocoa"
                                       "gleam"
                                       "glium"
@@ -172,7 +172,7 @@ the latest build duration."
                                       "unicode_segmentation"
                                       "winapi"
                                       ]
-  "A list of Cargo crates to blacklist."
+  "A list of Cargo crates to blocklist."
   :type 'lsp-string-vector
   :group 'lsp-rust-rls
   :package-version '(lsp-mode . "6.1"))
@@ -298,7 +298,7 @@ is often the type local variable declaration."
    ("rust.all_features" lsp-rust-all-features t)
    ("rust.features" lsp-rust-features)
    ("rust.build_on_save" lsp-rust-build-on-save t)
-   ("rust.crate_blacklist" lsp-rust-crate-blacklist)
+   ("rust.crate_blocklist" lsp-rust-crate-blocklist)
    ("rust.show_warnings" lsp-rust-show-warnings t)
    ("rust.wait_to_build" lsp-rust-wait-to-build)
    ("rust.unstable_features" lsp-rust-unstable-features t)

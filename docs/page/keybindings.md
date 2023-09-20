@@ -20,7 +20,7 @@ configured `lsp-command-map` which is bound to `lsp-keymap-prefix`
 | `s-l = r`  | Ask the server to format the region, or if none is selected, the current line.                                                      |
 | `s-l F a`  | Add new project root to the list of workspace folders.                                                                              |
 | `s-l F r`  | Remove project root from the list of workspace folders.                                                                             |
-| `s-l F b`  | Remove project root from the workspace blacklist.                                                                                   |
+| `s-l F b`  | Remove project root from the workspace blocklist.                                                                                   |
 | `s-l T l`  | Toggle code-lens overlays.                                                                                                          |
 | `s-l T L`  | Toggle client-server protocol logging.                                                                                              |
 | `s-l T h`  | Toggle symbol highlighting.                                                                                                         |
