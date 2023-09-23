@@ -105,7 +105,7 @@ Leave as default to let `executable-find' search for it."
   :type '(repeat string)
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-elixir-ls-version "v0.14.6"
+(defcustom lsp-elixir-ls-version "v0.16.0"
   "Elixir-Ls version to download.
 It has to be set before `lsp-elixir.el' is loaded and it has to
 be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
@@ -114,7 +114,7 @@ be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
   :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-elixir-ls-download-url
-  (format "https://github.com/elixir-lsp/elixir-ls/releases/download/%s/elixir-ls.zip"
+  (format "https://github.com/elixir-lsp/elixir-ls/releases/download/%1$s/elixir-ls-%1$s.zip"
           lsp-elixir-ls-version)
   "Automatic download url for elixir-ls"
   :type 'string
