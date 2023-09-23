@@ -3008,7 +3008,7 @@ and end-of-string meta-characters."
   ;; `lsp-register-client-capabilities'. It's value is an alist of (PACKAGE-NAME
   ;; . CAPS), where PACKAGE-NAME is a symbol of the third-party package name,
   ;; and CAPS is either a plist of the client capabilities, or a function that
-  ;; takes no argument and returns a plist of the client capabilities or nil.")
+  ;; takes no argument and returns a plist of the client capabilities or nil.
   (extra-client-capabilities nil)
 
   ;; Workspace status
