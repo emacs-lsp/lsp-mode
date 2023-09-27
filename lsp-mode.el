@@ -788,6 +788,7 @@ Changes take effect only when a new session is started."
     ("^settings.json$" . "jsonc")
     (ada-mode . "ada")
     (awk-mode . "awk")
+    (awk-ts-mode . "awk")
     (nxml-mode . "xml")
     (sql-mode . "sql")
     (vimrc-mode . "vim")

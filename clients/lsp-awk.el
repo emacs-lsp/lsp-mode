@@ -40,7 +40,7 @@
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection lsp-awk-executable)
+  :new-connection (lsp-stdio-connection (lambda () lsp-awk-executable))
   :activation-fn (lsp-activate-on "awk")
   :priority -1
   :server-id 'awkls))
