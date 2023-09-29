@@ -31,8 +31,16 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/regen100/cmake-language-server"))
 
+(defcustom lsp-cmake-server-command "cmake-language-server"
+  "The binary (or full path to binary) which executes the server."
+  :type 'string
+  :group 'lsp-cmake
+  :package-version '(lsp-mode . "8.0.1"))
+
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "cmake-language-server")
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (lambda ()
+                                     lsp-cmake-server-command))
                   :activation-fn (lsp-activate-on "cmake")
                   :priority -1
                   :server-id 'cmakels))
