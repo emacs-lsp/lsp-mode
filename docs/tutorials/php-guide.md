@@ -66,7 +66,7 @@ unless you're using a complex framework like Laravel or Symfony. Following the
 For the most part, Laravel should "just work"; with the caveat that the majority
 of the so-called "magic methods" won't be autocompleted properly. To get around
 this, there is a composer package called
-[laravel-ide-helper](lhttps://github.com/barryvdh/laravel-ide-helper) which will
+[laravel-ide-helper](https://github.com/barryvdh/laravel-ide-helper) which will
 pull together everything in your project and the laravel codebase.
 
 Follow the instructions on the laravel-ide-helper page (including the scripts
