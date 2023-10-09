@@ -92,6 +92,13 @@ It can use erlang-ls or erlang-language-platform (ELP)."
 
 ;; erlang-language-platform
 
+(lsp-defcustom lsp-erlang-elp-types-on-hover t
+  "Show eqWAlizer types on hover."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "elp.typesOnHover.enable")
+
 (defcustom lsp-erlang-elp-server-command '("elp" "server")
   "Command to start erlang-language-platform."
   :type '(repeat string)
