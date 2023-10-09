@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 8.0.1
+  * Add architecture triples for [[https://github.com/WhatsApp/erlang-language-platform][erlang-language-platform]] file downloads, to support macos on ARM and X86.
   * Add semantic token support for [[https://github.com/WhatsApp/erlang-language-platform][erlang-language-platform]] in lsp-erlang client.
   * Update [[https://github.com/WhatsApp/erlang-language-platform][erlang-language-platform]] download file names to match new upstream names.
   * Add [[https://github.com/WhatsApp/erlang-language-platform][erlang-language-platform]] support in lsp-erlang client.

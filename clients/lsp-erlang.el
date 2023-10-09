@@ -101,8 +101,11 @@ It can use erlang-ls or erlang-language-platform (ELP)."
 (defcustom lsp-erlang-elp-download-url
   (format "https://github.com/WhatsApp/erlang-language-platform/releases/latest/download/%s"
           (pcase system-type
-            ('gnu/linux "elp-linux-otp-26.tar.gz")
-            ('darwin "elp-macos-otp-25.3.tar.gz")))
+            ('gnu/linux "elp-linux-x86_64-unknown-linux-gnu-otp-26.tar.gz")
+            ('darwin
+             (if (string-match "^aarch64-.*" system-configuration)
+                 "elp-macos-aarch64-apple-darwin-otp-25.3.tar.gz"
+               "elp-macos-x86_64-apple-darwin-otp-25.3.tar.gz"))))
   "Automatic download url for erlang-language-platform."
   :type 'string
   :group 'lsp-erlang-elp
