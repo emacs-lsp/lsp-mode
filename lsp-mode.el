@@ -6740,7 +6740,7 @@ server. WORKSPACE is the active workspace."
                                            'plist
                                          'hash-table)
                           :null-object nil
-                          :false-object nil)
+                          :false-object :json-false)
     `(let ((json-array-type 'vector)
            (json-object-type (if lsp-use-plists
                                  'plist
@@ -6757,7 +6757,7 @@ server. WORKSPACE is the active workspace."
                                            'plist
                                          'hash-table)
                           :null-object nil
-                          :false-object nil)
+                          :false-object :json-false)
     `(let ((json-array-type 'vector)
            (json-object-type (if lsp-use-plists
                                  'plist
@@ -8626,7 +8626,7 @@ When ALL is t, erase all log buffers of the running session."
                 (done (lsp--handle-process-exit workspace ""))))))
           :object-type object-type
           :null-object nil
-          :false-object nil))
+          :false-object :json-false))
        "*json-rpc-connection*"))
     (cons con con)))
 
