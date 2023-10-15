@@ -107,8 +107,8 @@ to Kotlin."
   :package-version '(lsp-mode . "8.0.1"))
 
 ;; cache in this case is the dependency cache. Given as an initialization option.
-(defcustom lsp-kotlin-ondisk-cache-path ""
-  "Path to the ondisk cache if used."
+(defcustom lsp-kotlin-ondisk-cache-path nil
+  "Path to the ondisk cache if used. If lsp-kotlin-ondisk-cache-enabled is t, but path is nil, then the project root is used as a default."
   :type 'string
   :group 'lsp-kotlin)
 
@@ -273,7 +273,8 @@ to Kotlin."
                       (lsp--set-configuration (lsp-configuration-section "kotlin"))))
   :initialization-options (lambda ()
                             (when lsp-kotlin-ondisk-cache-enabled
-                              (list :storagePath lsp-kotlin-ondisk-cache-path)))
+                              (list :storagePath (or lsp-kotlin-ondisk-cache-path
+                                                     (lsp-workspace-root)))))
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'kotlin-language-server callback error-callback))))
 
