@@ -408,6 +408,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "jq",
+    "full-name": "Jq (jq-lsp)",
+    "server-name": "jq-lsp",
+    "server-url": "https://github.com/wader/jq-lsp",
+    "installation": "go install github.com/wader/jq-lsp@master",
+    "installation-url": "https://github.com/wader/jq-lsp#install",
+    "debugger": "Not available"
+  },
+  {
     "name": "kotlin",
     "full-name": "Kotlin",
     "server-name": "kotlin-language-server",
