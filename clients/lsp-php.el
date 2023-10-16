@@ -122,7 +122,7 @@ from all language server features."
 (lsp-defcustom lsp-intelephense-paths-include
   []
   "Configure additional paths outside workspace."
-  :type '(repeat string)
+  :type 'lsp-string-vector
   :group 'lsp-intelephense
   :package-version '(lsp-mode . "8.1")
   :lsp-path "intelephense.environment.includePaths")
