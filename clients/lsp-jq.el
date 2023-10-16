@@ -39,8 +39,10 @@
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection lsp-clients-jq-server-executable)
-  :major-modes '(jq-mode)
+  :new-connection (lsp-stdio-connection (lambda () lsp-clients-jq-server-executable))
+  :activation-fn (lsp-activate-on "jq")
+  :priority -1
+  :major-modes '(jq-mode jq-ts-mode)
   :server-id 'jq-lsp))
 
 (lsp-consistency-check lsp-jq)
