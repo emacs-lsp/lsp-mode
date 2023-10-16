@@ -1851,6 +1851,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-kotlin-ondisk-cache-enabled" class="md-nav__link">
+    lsp-kotlin-ondisk-cache-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kotlin-ondisk-cache-path" class="md-nav__link">
+    lsp-kotlin-ondisk-cache-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-kotlin-server-download-url" class="md-nav__link">
     lsp-kotlin-server-download-url
   </a>
@@ -3401,6 +3415,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-kotlin-ondisk-cache-enabled" class="md-nav__link">
+    lsp-kotlin-ondisk-cache-enabled
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-kotlin-ondisk-cache-path" class="md-nav__link">
+    lsp-kotlin-ondisk-cache-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-kotlin-server-download-url" class="md-nav__link">
     lsp-kotlin-server-download-url
   </a>
@@ -3528,6 +3556,16 @@ using the <code>kls</code>-scheme.</p>
 <p>[DEBUG] Specifies the debounce time limit.
 Lower to increase responsiveness at the cost of possible stability issues.</p>
 <hr />
+<h3 id="lsp-kotlin-ondisk-cache-enabled"><code>lsp-kotlin-ondisk-cache-enabled</code><a class="headerlink" href="#lsp-kotlin-ondisk-cache-enabled" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Specifies whether to enable ondisk cache or not. If nil, in-memory cache will be used.</p>
+<hr />
+<h3 id="lsp-kotlin-ondisk-cache-path"><code>lsp-kotlin-ondisk-cache-path</code><a class="headerlink" href="#lsp-kotlin-ondisk-cache-path" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Path to the ondisk cache if used. If lsp-kotlin-ondisk-cache-enabled is t, but path is nil, then the project root is used as a default.</p>
+<hr />
 <h3 id="lsp-kotlin-server-download-url"><code>lsp-kotlin-server-download-url</code><a class="headerlink" href="#lsp-kotlin-server-download-url" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
 <p><em>Default:</em> <code>https://github.com/fwcd/kotlin-language-server/releases/latest/download/server.zip</code></p>
@@ -3546,7 +3584,7 @@ Lower to increase responsiveness at the cost of possible stability issues.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 9, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 16, 2023</span>
       
     
   </small>
