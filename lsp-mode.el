@@ -278,7 +278,7 @@ For finer granularity you may use `lsp-enable-*' properties."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-disabled-clients nil
-  "A list of disabled/blacklisted clients.
+  "A list of disabled/blocklisted clients.
 Each entry in the list can be either:
 a symbol, the server-id for the LSP client, or
 a cons pair (MAJOR-MODE . CLIENTS), where MAJOR-MODE is the major-mode,
@@ -2590,7 +2590,7 @@ BINDINGS is a list of (key def desc cond)."
 
       ;; folders
       "Fa" lsp-workspace-folders-add "add folder" t
-      "Fb" lsp-workspace-blacklist-remove "un-blacklist folder" t
+      "Fb" lsp-workspace-blocklist-remove "un-blocklist folder" t
       "Fr" lsp-workspace-folders-remove "remove folder" t
 
       ;; toggles
@@ -3048,7 +3048,7 @@ and end-of-string meta-characters."
   ;; contains the folders that are part of the current session
   folders
   ;; contains the folders that must not be imported in the current workspace.
-  folders-blacklist
+  folders-blocklist
   ;; contains the list of folders that must be imported in a project in case of
   ;; multi root LSP server.
   (server-id->folders (make-hash-table :test 'equal))
@@ -3948,14 +3948,14 @@ yet."
 
   (run-hook-with-args 'lsp-workspace-folders-changed-functions nil (list project-root)))
 
-(defun lsp-workspace-blacklist-remove (project-root)
-  "Remove PROJECT-ROOT from the workspace blacklist."
+(defun lsp-workspace-blocklist-remove (project-root)
+  "Remove PROJECT-ROOT from the workspace blocklist."
   (interactive (list (completing-read "Select folder to remove:"
-                                      (lsp-session-folders-blacklist (lsp-session))
+                                      (lsp-session-folders-blocklist (lsp-session))
                                       nil t)))
-  (setf (lsp-session-folders-blacklist (lsp-session))
+  (setf (lsp-session-folders-blocklist (lsp-session))
         (delete project-root
-                (lsp-session-folders-blacklist (lsp-session))))
+                (lsp-session-folders-blocklist (lsp-session))))
   (lsp--persist-session (lsp-session)))
 
 (define-obsolete-function-alias 'lsp-workspace-folders-switch
@@ -8841,7 +8841,7 @@ Returns nil if the project should not be added to the current SESSION."
 %s ==> Import project root %s
 %s ==> Import project by selecting root directory interactively
 %s ==> Import project at current directory %s
-%s ==> Do not ask again for the current project by adding %s to lsp-session-folders-blacklist
+%s ==> Do not ask again for the current project by adding %s to lsp-session-folders-blocklist
 %s ==> Do not ask again for the current project by selecting ignore path interactively
 %s ==> Do nothing: ask again when opening other files from the current project
 
@@ -8865,14 +8865,14 @@ Select action: "
                                    nil
                                    t))
           (?. default-directory)
-          (?d (push project-root-suggestion (lsp-session-folders-blacklist session))
+          (?d (push project-root-suggestion (lsp-session-folders-blocklist session))
               (lsp--persist-session session)
               nil)
-          (?D (push (read-directory-name "Select folder to blacklist: "
+          (?D (push (read-directory-name "Select folder to blocklist: "
                                          (or project-root-suggestion default-directory)
                                          nil
                                          t)
-                    (lsp-session-folders-blacklist session))
+                    (lsp-session-folders-blocklist session))
               (lsp--persist-session session)
               nil)
           (t nil)))
@@ -8916,11 +8916,11 @@ Select action: "
   "Calculate project root for FILE-NAME in SESSION."
   (and
    (->> session
-        (lsp-session-folders-blacklist)
+        (lsp-session-folders-blocklist)
         (--first (and (lsp--files-same-host it file-name)
                       (lsp-f-ancestor-of? it file-name)
                       (prog1 t
-                        (lsp--info "File %s is in blacklisted directory %s" file-name it))))
+                        (lsp--info "File %s is in blocklisted directory %s" file-name it))))
         not)
    (or
     (when lsp-auto-guess-root
@@ -8969,7 +8969,7 @@ The library folders are defined by each client for each of the active workspace.
   "Persist SESSION to `lsp-session-file'."
   (lsp--persist lsp-session-file (make-lsp-session
                                   :folders (lsp-session-folders session)
-                                  :folders-blacklist (lsp-session-folders-blacklist session)
+                                  :folders-blocklist (lsp-session-folders-blocklist session)
                                   :server-id->folders (lsp-session-server-id->folders session))))
 
 (defun lsp--try-project-root-workspaces (ask-for-client ignore-multi-folder)
@@ -8994,7 +8994,7 @@ such."
                 (cl-pushnew project-root (lsp-session-folders session))
                 (lsp--persist-session session))
               (lsp--ensure-lsp-servers session clients project-root ignore-multi-folder))
-          (lsp--warn "%s not in project or it is blacklisted." (buffer-name))
+          (lsp--warn "%s not in project or it is blocklisted." (buffer-name))
           nil)
       (lsp--warn "No LSP server for %s(check *lsp-log*)." major-mode)
       nil)))
