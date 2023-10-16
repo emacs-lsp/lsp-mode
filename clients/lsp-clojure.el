@@ -236,6 +236,26 @@ If there are more arguments expected after the line and column numbers."
   (interactive)
   (lsp-clojure--refactoring-call "move-coll-entry-down"))
 
+(defun lsp-clojure-forward-slurp ()
+  "Apply forward slurp refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "forward-slurp"))
+
+(defun lsp-clojure-forward-barf ()
+  "Apply forward barf refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "forward-barf"))
+
+(defun lsp-clojure-backward-slurp ()
+  "Apply backward slurp refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "backward-slurp"))
+
+(defun lsp-clojure-backward-barf ()
+  "Apply backward slurp refactoring at point."
+  (interactive)
+  (lsp-clojure--refactoring-call "backward-barf"))
+
 (defun lsp-clojure-move-form (dest-filename)
   "Apply move-form refactoring at point to DEST-FILENAME."
   (interactive

@@ -180,11 +180,11 @@ As defined by the Language Server Protocol 3.16."
      lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go lsp-gleam
      lsp-glsl lsp-graphql lsp-hack lsp-grammarly lsp-groovy lsp-haskell lsp-haxe
      lsp-idris lsp-java lsp-javascript lsp-json lsp-kotlin lsp-latex lsp-ltex
-     lsp-lua lsp-markdown lsp-marksman lsp-mint lsp-nginx lsp-nim lsp-nix lsp-magik
+     lsp-lua lsp-markdown lsp-marksman lsp-mdx lsp-mint lsp-move lsp-nginx lsp-nim lsp-nix lsp-magik
      lsp-metals lsp-mssql lsp-ocaml lsp-openscad lsp-pascal lsp-perl lsp-perlnavigator
      lsp-pls lsp-php lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms lsp-purescript
-     lsp-r lsp-racket lsp-remark lsp-ruff-lsp lsp-rf lsp-rust lsp-semgrep lsp-shader lsp-solargraph
-     lsp-sorbet lsp-sourcekit lsp-sonarlint lsp-tailwindcss lsp-tex lsp-terraform
+     lsp-r lsp-racket lsp-remark lsp-ruff-lsp lsp-rf lsp-rubocop lsp-rust lsp-semgrep lsp-shader
+     lsp-solargraph lsp-sorbet lsp-sourcekit lsp-sonarlint lsp-tailwindcss lsp-tex lsp-terraform
      lsp-toml lsp-ttcn3 lsp-typeprof lsp-v lsp-vala lsp-verilog lsp-vetur lsp-volar
      lsp-vhdl lsp-vimscript lsp-xml lsp-yaml lsp-ruby-lsp lsp-ruby-syntax-tree
      lsp-sqls lsp-svelte lsp-steep lsp-tilt lsp-zig)
@@ -278,7 +278,7 @@ For finer granularity you may use `lsp-enable-*' properties."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-disabled-clients nil
-  "A list of disabled/blacklisted clients.
+  "A list of disabled/blocklisted clients.
 Each entry in the list can be either:
 a symbol, the server-id for the LSP client, or
 a cons pair (MAJOR-MODE . CLIENTS), where MAJOR-MODE is the major-mode,
@@ -771,6 +771,7 @@ Changes take effect only when a new session is started."
     ("\\.jsonc$" . "jsonc")
     ("\\.jsx$" . "javascriptreact")
     ("\\.lua$" . "lua")
+    ("\\.mdx\\'" . "mdx")
     ("\\.php$" . "php")
     ("\\.rs\\'" . "rust")
     ("\\.sql$" . "sql")
@@ -809,6 +810,7 @@ Changes take effect only when a new session is started."
     (python-ts-mode . "python")
     (cython-mode . "python")
     (lsp--render-markdown . "markdown")
+    (move-mode . "move")
     (rust-mode . "rust")
     (rust-ts-mode . "rust")
     (rustic-mode . "rust")
@@ -934,7 +936,7 @@ Changes take effect only when a new session is started."
 We want to try the last workspace first when jumping into a library
 directory")
 
-(defconst lsp-method-requirements
+(defvar lsp-method-requirements
   '(("textDocument/callHierarchy" :capability :callHierarchyProvider)
     ("textDocument/codeAction" :capability :codeActionProvider)
     ("codeAction/resolve"
@@ -2589,7 +2591,7 @@ BINDINGS is a list of (key def desc cond)."
 
       ;; folders
       "Fa" lsp-workspace-folders-add "add folder" t
-      "Fb" lsp-workspace-blacklist-remove "un-blacklist folder" t
+      "Fb" lsp-workspace-blocklist-remove "un-blocklist folder" t
       "Fr" lsp-workspace-folders-remove "remove folder" t
 
       ;; toggles
@@ -3007,7 +3009,7 @@ and end-of-string meta-characters."
   ;; `lsp-register-client-capabilities'. It's value is an alist of (PACKAGE-NAME
   ;; . CAPS), where PACKAGE-NAME is a symbol of the third-party package name,
   ;; and CAPS is either a plist of the client capabilities, or a function that
-  ;; takes no argument and returns a plist of the client capabilities or nil.")
+  ;; takes no argument and returns a plist of the client capabilities or nil.
   (extra-client-capabilities nil)
 
   ;; Workspace status
@@ -3047,7 +3049,7 @@ and end-of-string meta-characters."
   ;; contains the folders that are part of the current session
   folders
   ;; contains the folders that must not be imported in the current workspace.
-  folders-blacklist
+  folders-blocklist
   ;; contains the list of folders that must be imported in a project in case of
   ;; multi root LSP server.
   (server-id->folders (make-hash-table :test 'equal))
@@ -3546,9 +3548,9 @@ and expand the capabilities section"
   "Shut down the language server process for ‘lsp--cur-workspace’."
   (with-demoted-errors "LSP error: %S"
     (let ((lsp-response-timeout 0.5))
-      (condition-case _err
-          (lsp-request "shutdown" lsp--empty-ht)
-        (error (lsp--error "Timeout while sending shutdown request"))))
+      (condition-case err
+          (lsp-request "shutdown" nil)
+        (error (lsp--error "%s" err))))
     (lsp-notify "exit" nil))
   (setf (lsp--workspace-shutdown-action lsp--cur-workspace) (or (and restart 'restart) 'shutdown))
   (lsp--uninitialize-workspace))
@@ -3947,14 +3949,14 @@ yet."
 
   (run-hook-with-args 'lsp-workspace-folders-changed-functions nil (list project-root)))
 
-(defun lsp-workspace-blacklist-remove (project-root)
-  "Remove PROJECT-ROOT from the workspace blacklist."
+(defun lsp-workspace-blocklist-remove (project-root)
+  "Remove PROJECT-ROOT from the workspace blocklist."
   (interactive (list (completing-read "Select folder to remove:"
-                                      (lsp-session-folders-blacklist (lsp-session))
+                                      (lsp-session-folders-blocklist (lsp-session))
                                       nil t)))
-  (setf (lsp-session-folders-blacklist (lsp-session))
+  (setf (lsp-session-folders-blocklist (lsp-session))
         (delete project-root
-                (lsp-session-folders-blacklist (lsp-session))))
+                (lsp-session-folders-blocklist (lsp-session))))
   (lsp--persist-session (lsp-session)))
 
 (define-obsolete-function-alias 'lsp-workspace-folders-switch
@@ -6432,6 +6434,32 @@ REFERENCES? t when METHOD returns references."
   (evil-set-command-property 'lsp-find-references :jump t)
   (evil-set-command-property 'lsp-find-type-definition :jump t))
 
+(defun lsp--workspace-method-supported? (check-command method capability workspace)
+  (with-lsp-workspace workspace
+    (if check-command
+        (funcall check-command workspace)
+      (or
+       (when capability (lsp--capability capability))
+       (lsp--registered-capability method)
+       (and (not capability) (not check-command))))))
+
+(defun lsp-disable-method-for-server (method server-id)
+  "Disable METHOD for SERVER-ID."
+  (cl-callf
+      (lambda (reqs)
+        (-let (((&plist :check-command :capability) reqs))
+          (list :check-command
+                (lambda (workspace)
+                  (unless (-> workspace
+                              lsp--workspace-client
+                              lsp--client-server-id
+                              (eq server-id))
+                    (lsp--workspace-method-supported? check-command
+                                                      method
+                                                      capability
+                                                      workspace))))))
+      (alist-get method lsp-method-requirements nil nil 'string=)))
+
 (defun lsp--find-workspaces-for (msg-or-method)
   "Find all workspaces in the current project that can handle MSG."
   (let ((method (if (stringp msg-or-method)
@@ -6439,13 +6467,9 @@ REFERENCES? t when METHOD returns references."
                   (plist-get msg-or-method :method))))
     (-if-let (reqs (cdr (assoc method lsp-method-requirements)))
         (-let (((&plist :capability :check-command) reqs))
-          (--filter
-           (with-lsp-workspace it
-             (or
-              (when check-command (funcall check-command it))
-              (when capability (lsp--capability capability))
-              (lsp--registered-capability method)
-              (and (not capability) (not check-command))))
+          (-filter
+           (-partial #'lsp--workspace-method-supported?
+                     check-command method capability)
            (lsp-workspaces)))
       (lsp-workspaces))))
 
@@ -8818,7 +8842,7 @@ Returns nil if the project should not be added to the current SESSION."
 %s ==> Import project root %s
 %s ==> Import project by selecting root directory interactively
 %s ==> Import project at current directory %s
-%s ==> Do not ask again for the current project by adding %s to lsp-session-folders-blacklist
+%s ==> Do not ask again for the current project by adding %s to lsp-session-folders-blocklist
 %s ==> Do not ask again for the current project by selecting ignore path interactively
 %s ==> Do nothing: ask again when opening other files from the current project
 
@@ -8842,14 +8866,14 @@ Select action: "
                                    nil
                                    t))
           (?. default-directory)
-          (?d (push project-root-suggestion (lsp-session-folders-blacklist session))
+          (?d (push project-root-suggestion (lsp-session-folders-blocklist session))
               (lsp--persist-session session)
               nil)
-          (?D (push (read-directory-name "Select folder to blacklist: "
+          (?D (push (read-directory-name "Select folder to blocklist: "
                                          (or project-root-suggestion default-directory)
                                          nil
                                          t)
-                    (lsp-session-folders-blacklist session))
+                    (lsp-session-folders-blocklist session))
               (lsp--persist-session session)
               nil)
           (t nil)))
@@ -8893,11 +8917,11 @@ Select action: "
   "Calculate project root for FILE-NAME in SESSION."
   (and
    (->> session
-        (lsp-session-folders-blacklist)
+        (lsp-session-folders-blocklist)
         (--first (and (lsp--files-same-host it file-name)
                       (lsp-f-ancestor-of? it file-name)
                       (prog1 t
-                        (lsp--info "File %s is in blacklisted directory %s" file-name it))))
+                        (lsp--info "File %s is in blocklisted directory %s" file-name it))))
         not)
    (or
     (when lsp-auto-guess-root
@@ -8946,7 +8970,7 @@ The library folders are defined by each client for each of the active workspace.
   "Persist SESSION to `lsp-session-file'."
   (lsp--persist lsp-session-file (make-lsp-session
                                   :folders (lsp-session-folders session)
-                                  :folders-blacklist (lsp-session-folders-blacklist session)
+                                  :folders-blocklist (lsp-session-folders-blocklist session)
                                   :server-id->folders (lsp-session-server-id->folders session))))
 
 (defun lsp--try-project-root-workspaces (ask-for-client ignore-multi-folder)
@@ -8971,7 +8995,7 @@ such."
                 (cl-pushnew project-root (lsp-session-folders session))
                 (lsp--persist-session session))
               (lsp--ensure-lsp-servers session clients project-root ignore-multi-folder))
-          (lsp--warn "%s not in project or it is blacklisted." (buffer-name))
+          (lsp--warn "%s not in project or it is blocklisted." (buffer-name))
           nil)
       (lsp--warn "No LSP server for %s(check *lsp-log*)." major-mode)
       nil)))

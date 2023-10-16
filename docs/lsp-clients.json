@@ -63,9 +63,10 @@
   {
     "name": "beancount",
     "full-name": "Beancount",
-    "server-name": "beancount-langserver",
+    "server-name": "beancount-language-server",
     "server-url": "https://github.com/polarmutex/beancount-language-server",
-    "installation": "npm install -g beancount-langserver",
+    "installation": "cargo install beancount-language-server",
+    "installation-url": "https://github.com/polarmutex/beancount-language-server#installation",
     "lsp-install-server": "beancount-ls",
     "debugger": "Not available"
   },
@@ -145,9 +146,9 @@
   {
     "name": "crystal",
     "full-name": "Crystal",
-    "server-name": "scry",
-    "server-url": "https://github.com/crystal-lang-tools/scry",
-    "installation-url": "https://github.com/crystal-lang-tools/scry#installation",
+    "server-name": "crystalline",
+    "server-url": "https://github.com/elbywan/crystalline",
+    "installation-url": "https://github.com/elbywan/crystalline#installation",
     "debugger": "Not available"
   },
   {
@@ -510,6 +511,22 @@
     "debugger": "Not available"
   },
   {
+    "name": "move",
+    "full-name": "Move Language",
+    "server-name": "move-analyzer",
+    "server-url": "https://github.com/move-language/move",
+    "installation-url": "https://github.com/move-language/move/tree/main/language/move-analyzer",
+    "debugger": "Not available"
+  },
+  {
+    "name": "mdx",
+    "full-name": "mdx",
+    "server-name": "mdx-analyzer",
+    "server-url": "https://github.com/mdx-js/mdx-analyzer/tree/main/packages/language-server",
+    "installation": "npm install -g @mdx-js/language-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "nginx",
     "full-name": "Nginx",
     "server-name": "nginx-lsp",
@@ -738,6 +755,15 @@
     "server-name": "remark-language-server",
     "server-url": "https://github.com/remarkjs/remark-language-server",
     "installation": "npm i -g remark-language-server",
+    "debugger": "Not available"
+  },
+  {
+    "name": "rubocop",
+    "full-name": "Ruby (RuboCop)",
+    "server-name": "rubocop",
+    "server-url": "https://github.com/rubocop/rubocop",
+    "installation-url": "https://docs.rubocop.org/rubocop/installation.html",
+    "installation": "gem install rubocop",
     "debugger": "Not available"
   },
   {

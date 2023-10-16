@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'lsp-semantic-tokens)
 
 (defgroup lsp-erlang nil
   "LSP support for the Erlang programming language.
@@ -40,6 +41,12 @@ It can use erlang-ls or erlang-language-platform (ELP)."
   "LSP support for the Erlang programming language using erlang-language-platform (ELP)."
   :group 'lsp-mode
   :link '(url-link "https://github.com/WhatsApp/erlang-language-platform"))
+
+(defgroup lsp-erlang-elp-semantic-tokens nil
+  "LSP semantic tokens support for ELP."
+  :group 'lsp-erlang-elp
+  :link '(url-link "https://github.com/WhatsApp/erlang-language-platform")
+  :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-erlang-server 'erlang-ls
   "Choose LSP server."
@@ -85,6 +92,13 @@ It can use erlang-ls or erlang-language-platform (ELP)."
 
 ;; erlang-language-platform
 
+(lsp-defcustom lsp-erlang-elp-types-on-hover t
+  "Show eqWAlizer types on hover."
+  :type 'boolean
+  :group 'lsp-erlang-elp
+  :package-version '(lsp-mode . "8.0.1")
+  :lsp-path "elp.typesOnHover.enable")
+
 (defcustom lsp-erlang-elp-server-command '("elp" "server")
   "Command to start erlang-language-platform."
   :type '(repeat string)
@@ -94,8 +108,11 @@ It can use erlang-ls or erlang-language-platform (ELP)."
 (defcustom lsp-erlang-elp-download-url
   (format "https://github.com/WhatsApp/erlang-language-platform/releases/latest/download/%s"
           (pcase system-type
-            ('gnu/linux "elp-linux.tar.gz")
-            ('darwin "elp-macos.tar.gz")))
+            ('gnu/linux "elp-linux-x86_64-unknown-linux-gnu-otp-26.tar.gz")
+            ('darwin
+             (if (string-match "^aarch64-.*" system-configuration)
+                 "elp-macos-aarch64-apple-darwin-otp-25.3.tar.gz"
+               "elp-macos-x86_64-apple-darwin-otp-25.3.tar.gz"))))
   "Automatic download url for erlang-language-platform."
   :type 'string
   :group 'lsp-erlang-elp
@@ -119,6 +136,59 @@ It can use erlang-ls or erlang-language-platform (ELP)."
              :set-executable? t)
  '(:system "elp"))
 
+;; Semantic tokens
+
+;; Modifier faces
+
+(defface lsp-erlang-elp-bound-modifier-face
+  '((t :underline t))
+  "The face modification to use for bound variables in patterns."
+  :group 'lsp-erlang-elp-semantic-tokens)
+
+(defface lsp-erlang-elp-exported-function-modifier-face
+  '((t :underline t))
+  "The face modification to use for exported functions."
+  :group 'lsp-erlang-elp-semantic-tokens)
+
+(defface lsp-erlang-elp-deprecated-function-modifier-face
+  '((t :strike-through t))
+  "The face modification to use for deprecated functions."
+  :group 'lsp-erlang-elp-semantic-tokens)
+
+
+;; ---------------------------------------------------------------------
+;; Semantic token modifier face customization
+
+(defcustom lsp-erlang-elp-bound-modifier 'lsp-erlang-elp-bound-modifier-face
+  "Face for semantic token modifier for `bound' attribute."
+  :type 'face
+  :group 'lsp-erlang-elp-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-erlang-elp-exported-function-modifier 'lsp-erlang-elp-exported-function-modifier-face
+  "Face for semantic token modifier for `exported_function' attribute."
+  :type 'face
+  :group 'lsp-erlang-elp-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-erlang-elp-deprecated-function-modifier 'lsp-erlang-elp-deprecated-function-modifier-face
+  "Face for semantic token modifier for `deprecated_function' attribute."
+  :type 'face
+  :group 'lsp-erlang-elp-semantic-tokens
+  :package-version '(lsp-mode . "8.0.1"))
+
+;; ---------------------------------------------------------------------
+
+(defun lsp-erlang-elp--semantic-modifiers ()
+  "Mapping between rust-analyzer keywords and fonts to apply.
+The keywords are sent in the initialize response, in the semantic
+tokens legend."
+  `(
+    ("bound" . ,lsp-erlang-elp-bound-modifier)
+    ("exported_function" . ,lsp-erlang-elp-exported-function-modifier)
+    ("deprecated_function" . ,lsp-erlang-elp-deprecated-function-modifier)))
+
+;; ---------------------------------------------------------------------
 ;; Client
 
 (lsp-register-client
@@ -131,7 +201,10 @@ It can use erlang-ls or erlang-language-platform (ELP)."
                             "elp")
                        ,@(cl-rest lsp-erlang-elp-server-command))))
   :activation-fn (lsp-activate-on "erlang")
-  :priority (if (eq lsp-erlang-server 'erlang-language-platform) 1 -1)
+  :priority (if (eq lsp-erlang-server 'erlang-language-platform) 1 -2)
+  :semantic-tokens-faces-overrides `(:discard-default-modifiers t
+                                                                :modifiers
+                                                                ,(lsp-erlang-elp--semantic-modifiers))
   :server-id 'elp
   :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (featurep 'yasnippet))))))
   :download-server-fn (lambda (_client callback error-callback _update?)
