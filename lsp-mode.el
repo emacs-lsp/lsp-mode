@@ -792,6 +792,7 @@ Changes take effect only when a new session is started."
     (nxml-mode . "xml")
     (sql-mode . "sql")
     (vimrc-mode . "vim")
+    (vimscript-ts-mode . "vim")
     (sh-mode . "shellscript")
     (bash-ts-mode . "shellscript")
     (ebuild-mode . "shellscript")
