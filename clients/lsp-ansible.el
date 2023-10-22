@@ -245,6 +245,7 @@ Pretty print the content of PARAMS."
                        ,@(cl-rest lsp-ansible-language-server-command))))
   :priority 1
   :add-on? lsp-ansible-add-on?
+  :multi-root t
   :notification-handlers (ht ("update/ansible-metadata" #'lsp-ansible-update-metadata-handler))
   :activation-fn #'lsp-ansible-check-ansible-minor-mode
   :server-id 'ansible-ls
