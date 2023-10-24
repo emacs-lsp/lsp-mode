@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 8.0.1
+  * Change rust-analyzer base URL to be github.com/rust-lang/rust-analyzer, rather than rust-analyzer/rust-analyzer.
   * Add [[https://github.com/wader/jq-lsp][jq-lsp]]
   * Add architecture triples for [[https://github.com/WhatsApp/erlang-language-platform][erlang-language-platform]] file downloads, to support macos on ARM and X86.
   * Add semantic token support for [[https://github.com/WhatsApp/erlang-language-platform][erlang-language-platform]] in lsp-erlang client.
