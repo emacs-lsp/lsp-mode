@@ -117,6 +117,21 @@ to Kotlin."
   :type 'boolean
   :group 'lsp-kotlin)
 
+(defcustom lsp-kotlin-inlayhints-enable-typehints t
+  "Specifies whether to enable type hints or not. Requires lsp-inlay-hints-mode."
+  :type 'boolean
+  :group 'lsp-kotlin)
+
+(defcustom lsp-kotlin-inlayhints-enable-parameterhints t
+  "Specifies whether to enable parameter hints or not. Requires lsp-inlay-hints-mode."
+  :type 'boolean
+  :group 'lsp-kotlin)
+
+(defcustom lsp-kotlin-inlayhints-enable-chainedhints t
+  "Specifies whether to enable chained hints or not. Requires lsp-inlay-hints-mode."
+  :type 'boolean
+  :group 'lsp-kotlin)
+
 (lsp-register-custom-settings
  '(("kotlin.externalSources.autoConvertToKotlin" lsp-kotlin-external-sources-auto-convert-to-kotlin t)
    ("kotlin.externalSources.useKlsScheme" lsp-kotlin-external-sources-use-kls-scheme t)
@@ -126,7 +141,10 @@ to Kotlin."
    ("kotlin.linting.debounceTime" lsp-kotlin-linting-debounce-time)
    ("kotlin.compiler.jvm.target" lsp-kotlin-compiler-jvm-target)
    ("kotlin.trace.server" lsp-kotlin-trace-server)
-   ("kotlin.languageServer.path" lsp-clients-kotlin-server-executable)))
+   ("kotlin.languageServer.path" lsp-clients-kotlin-server-executable)
+   ("kotlin.inlayHints.typeHints" lsp-kotlin-inlayhints-enable-typehints t)
+   ("kotlin.inlayHints.parameterHints" lsp-kotlin-inlayhints-enable-parameterhints t)
+   ("kotlin.inlayHints.chainedHints" lsp-kotlin-inlayhints-enable-chainedhints t)))
 
 (defvar lsp-kotlin--language-server-path
   (f-join lsp-server-install-dir
