@@ -800,13 +800,11 @@ name (e.g. `data' variable passed as `data' parameter)."
      (f-exists? (lsp-clients-typescript-project-ts-server-path)))
     (lsp-clients-typescript-project-ts-server-path))
    (t
-    (lsp-package-path 'typescript))))
+    (f-join (f-parent (lsp-package-path 'typescript)) "node_modules" "typescript" "lib"))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
                                                           `(,(lsp-package-path 'typescript-language-server)
-                                                            "--tsserver-path"
-                                                            ,(lsp-clients-typescript-server-path)
                                                             ,@lsp-clients-typescript-server-args)))
                   :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
                   :priority -2
@@ -825,8 +823,8 @@ name (e.g. `data' variable passed as `data' parameter)."
                                                (list :plugins lsp-clients-typescript-plugins))
                                              (when lsp-clients-typescript-preferences
                                                (list :preferences lsp-clients-typescript-preferences))
-                                             (when lsp-clients-typescript-tsserver
-                                               (list :tsserver lsp-clients-typescript-tsserver))))
+                                             `(:tsserver ( :path ,(lsp-clients-typescript-server-path)
+                                                           ,@lsp-clients-typescript-tsserver))))
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
