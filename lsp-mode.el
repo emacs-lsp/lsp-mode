@@ -3147,6 +3147,22 @@ TYPE can either be `incoming' or `outgoing'"
    :type type
    :body body))
 
+(defun lsp--log-font-lock-json (body)
+  "Font lock JSON BODY."
+  (with-temp-buffer
+    (insert body)
+    ;; We set the temp buffer file-name extension to .json and call `set-auto-mode'
+    ;; so the users configured json mode is used which could be
+    ;; `json-mode', `json-ts-mode', `jsonian-mode', etc.
+    (let ((buffer-file-name "lsp-log.json"))
+      (delay-mode-hooks
+        (set-auto-mode)
+        (if (fboundp 'font-lock-ensure)
+            (font-lock-ensure)
+          (with-no-warnings
+            (font-lock-fontify-buffer)))))
+    (buffer-string)))
+
 (defun lsp--log-entry-pp (entry)
   (cl-assert (lsp--log-entry-p entry))
   (pcase-let (((cl-struct lsp--log-entry timestamp method id type process-time
@@ -3174,7 +3190,7 @@ TYPE can either be `incoming' or `outgoing'"
                   (if (memq type '(incoming-resp ougoing-resp))
                       "Result: "
                     "Params: ")
-                  (json-encode body)
+                  (lsp--log-font-lock-json (json-encode body))
                   "\n\n\n"))
     (setq str (propertize str 'mouse-face 'highlight 'read-only t))
     (insert str)))
