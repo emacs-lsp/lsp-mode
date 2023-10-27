@@ -84,6 +84,15 @@
                   :major-modes '(scad-mode)
                   :priority -1
                   :initialized-fn (lambda (workspace)
+                                    ;; OpenSCAD-LSP returns an empty list of
+                                    ;; completion options at initialization
+                                    ;; so completionProvider capability is {}
+                                    ;; When using plists, this value is parsed as
+                                    ;; null/nil so we need to force it to "t"
+                                    ;; to enable completion
+                                    (let ((caps (lsp--workspace-server-capabilities workspace)))
+                                      (unless (lsp-get caps :completionProvider)
+                                        (lsp:set-server-capabilities-completion-provider? caps t)))
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
                                        (lsp-configuration-section "openscad"))))
