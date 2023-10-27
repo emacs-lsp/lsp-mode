@@ -19,7 +19,7 @@
     
     
       
-        <title>Eslint - LSP Mode - LSP support for Emacs</title>
+        <title>ESLint - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Eslint
+              ESLint
             
           </span>
         </div>
@@ -1442,12 +1442,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Eslint
+          ESLint
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Eslint
+        ESLint
       </a>
       
         
@@ -3770,7 +3770,7 @@
 <!-- Markdown content -->
 <h1 id="eslint">ESlint<a class="headerlink" href="#eslint" title="Permanent link">#</a></h1>
 <h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For more information about the LSP server, check <a href="https://github.com/Microsoft/vscode-eslint">eslint</a>.</p>
+<p>For more information about the LSP server, check <a href="https://github.com/microsoft/vscode-eslint">eslint</a>.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
 <p>This Server supports automatic install.
 Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><kbd>RET</kbd><code>eslint</code><kbd>RET</kbd>.</p>
@@ -3797,7 +3797,7 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
 <h3 id="lsp-eslint-code-action-show-documentation"><code>lsp-eslint-code-action-show-documentation</code><a class="headerlink" href="#lsp-eslint-code-action-show-documentation" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>bool</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Controls whether code actions to show documentation for an eslint rule should
+<p>Controls whether code actions to show documentation for an ESLint rule should
 be shown.</p>
 <hr />
 <h3 id="lsp-eslint-config-problems"><code>lsp-eslint-config-problems</code><a class="headerlink" href="#lsp-eslint-config-problems" title="Permanent link">#</a></h3>
@@ -3808,12 +3808,12 @@ be shown.</p>
 <h3 id="lsp-eslint-download-url"><code>lsp-eslint-download-url</code><a class="headerlink" href="#lsp-eslint-download-url" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
 <p><em>Default:</em> <code>https://github.com/emacs-lsp/lsp-server-binaries/blob/master/dbaeumer.vscode-eslint-2.2.2.vsix?raw=true</code></p>
-<p>Eslint language server download url.</p>
+<p>ESLint language server download url.</p>
 <hr />
 <h3 id="lsp-eslint-enable"><code>lsp-eslint-enable</code><a class="headerlink" href="#lsp-eslint-enable" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
-<p>Controls whether eslint is enabled for JavaScript files or not.</p>
+<p>Controls whether ESLint is enabled for JavaScript files or not.</p>
 <hr />
 <h3 id="lsp-eslint-experimental"><code>lsp-eslint-experimental</code><a class="headerlink" href="#lsp-eslint-experimental" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>alist</code></p>
@@ -3857,19 +3857,19 @@ workspace (see https://eslint.org/docs/user-guide/command-line-interface).</p>
 <h3 id="lsp-eslint-node"><code>lsp-eslint-node</code><a class="headerlink" href="#lsp-eslint-node" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>file</code></p>
 <p><em>Default:</em> <code>node</code></p>
-<p>Path to nodejs.</p>
+<p>Path to Node.js.</p>
 <hr />
 <h3 id="lsp-eslint-node-path"><code>lsp-eslint-node-path</code><a class="headerlink" href="#lsp-eslint-node-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(repeat string)</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>A path added to NODE_PATH when resolving the eslint module.</p>
+<p>A path added to NODE_PATH when resolving the <code>eslint</code> module.</p>
 <hr />
 <h3 id="lsp-eslint-options"><code>lsp-eslint-options</code><a class="headerlink" href="#lsp-eslint-options" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>alist</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>The eslint options object to provide args normally passed to
-  eslint when executed from a command line (see
-  http://eslint.org/docs/developer-guide/nodejs-api#cliengine).</p>
+<p>The ESLint options object to provide args normally passed to
+  <code>eslint</code> when executed from a command line (see
+  https://eslint.org/docs/latest/integrate/nodejs-api).</p>
 <hr />
 <h3 id="lsp-eslint-package-manager"><code>lsp-eslint-package-manager</code><a class="headerlink" href="#lsp-eslint-package-manager" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const :tag npm npm) (const :tag yarn yarn) (const :tag pnpm pnpm) (string :tag other))</code></p>
@@ -3889,7 +3889,7 @@ workspace (see https://eslint.org/docs/user-guide/command-line-interface).</p>
 <h3 id="lsp-eslint-rules-customizations"><code>lsp-eslint-rules-customizations</code><a class="headerlink" href="#lsp-eslint-rules-customizations" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(lsp-repeatable-vector (alist :options ((rule string) (severity (choice (const off) (const info) (const warn) (const error) (const upgrade) (const downgrade) (const default))))))</code></p>
 <p><em>Default:</em> <code>[]</code></p>
-<p>Controls severity overrides for eslint rules.</p>
+<p>Controls severity overrides for ESLint rules.</p>
 <p>The value is a vector of alists, with each alist containing the following keys:
 - rule - The rule to match. Can match wildcards with *, or be prefixed with !
   to negate the match.
@@ -3900,7 +3900,7 @@ workspace (see https://eslint.org/docs/user-guide/command-line-interface).</p>
   - "error": Report as an error.
   - "upgrade": Increase by 1 severity level (eg. warning -&gt; error).
   - "downgrade": Decrease by 1 severity level (eg. warning -&gt; info).
-  - "default": Report as the same severity specified in the eslint config.</p>
+  - "default": Report as the same severity specified in the ESLint config.</p>
 <hr />
 <h3 id="lsp-eslint-run"><code>lsp-eslint-run</code><a class="headerlink" href="#lsp-eslint-run" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const :tag onSave onSave) (const :tag onType onType))</code></p>
@@ -3921,7 +3921,7 @@ from running.</p>
 <h3 id="lsp-eslint-server-command"><code>lsp-eslint-server-command</code><a class="headerlink" href="#lsp-eslint-server-command" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(repeat string)</code></p>
 <p><em>Default:</em> <code>(node ~/server/out/eslintServer.js --stdio)</code></p>
-<p>Command to start eslint server.</p>
+<p>Command to start ESLint server.</p>
 <hr />
 <h3 id="lsp-eslint-time-budget"><code>lsp-eslint-time-budget</code><a class="headerlink" href="#lsp-eslint-time-budget" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>alist</code></p>
@@ -3932,7 +3932,7 @@ from running.</p>
 <h3 id="lsp-eslint-trace-server"><code>lsp-eslint-trace-server</code><a class="headerlink" href="#lsp-eslint-trace-server" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
 <p><em>Default:</em> <code>off</code></p>
-<p>Traces the communication between VSCode and the eslint linter service.</p>
+<p>Traces the communication between VSCode and the ESLint linter service.</p>
 <hr />
 <h3 id="lsp-eslint-unzipped-path"><code>lsp-eslint-unzipped-path</code><a class="headerlink" href="#lsp-eslint-unzipped-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>file</code></p>
@@ -3942,7 +3942,7 @@ from running.</p>
 <h3 id="lsp-eslint-validate"><code>lsp-eslint-validate</code><a class="headerlink" href="#lsp-eslint-validate" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(repeat string)</code></p>
 <p><em>Default:</em> <code>(svelte)</code></p>
-<p>An array of language ids which should always be validated by eslint.</p>
+<p>An array of language ids which should always be validated by ESLint.</p>
 <hr />
 <h3 id="lsp-eslint-warn-on-ignored-files"><code>lsp-eslint-warn-on-ignored-files</code><a class="headerlink" href="#lsp-eslint-warn-on-ignored-files" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>bool</code></p>
