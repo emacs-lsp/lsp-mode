@@ -5065,6 +5065,25 @@ identifier and the position respectively."
                 (lsp--get-buffer-diagnostics))
                'vector)))
 
+(lsp-defun lsp-range-overlapping?((left &as &Range :start left-start :end left-end)
+                                  (right &as &Range :start right-start :end right-end))
+  (or (lsp-point-in-range? right-start left)
+      (lsp-point-in-range? right-end left)
+      (lsp-point-in-range? left-start right)
+      (lsp-point-in-range? left-end right)))
+
+(defun lsp-cur-possition-diagnostics ()
+  "Return any diagnostics that apply to the current line."
+  (-let* ((start (if (use-region-p) (region-beginning) (point)))
+          (end (if (use-region-p) (region-end) (point)))
+          (current-range (lsp-make-range :start (lsp-point-to-position start)
+                                         :end (lsp-point-to-position end))))
+    (->> (lsp--get-buffer-diagnostics)
+         (-filter
+          (-lambda ((&Diagnostic :range))
+            (lsp-range-overlapping? range current-range)))
+         (apply 'vector))))
+
 (defalias 'lsp--cur-line-diagnotics 'lsp-cur-line-diagnostics)
 
 (defun lsp--extract-line-from-buffer (pos)
@@ -5866,7 +5885,7 @@ It will show up only if current point has signature help."
         :range (if (use-region-p)
                    (lsp--region-to-range (region-beginning) (region-end))
                  (lsp--region-to-range (point) (point)))
-        :context `( :diagnostics ,(lsp-cur-line-diagnostics)
+        :context `( :diagnostics ,(lsp-cur-possition-diagnostics)
                     ,@(when kind (list :only (vector kind))))))
 
 (defun lsp-code-actions-at-point (&optional kind)
