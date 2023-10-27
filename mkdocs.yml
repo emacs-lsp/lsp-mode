@@ -70,7 +70,7 @@ nav:
     - Elm: page/lsp-elm.md
     - Emmet: page/lsp-emmet.md
     - Erlang: page/lsp-erlang.md
-    - Eslint: page/lsp-eslint.md
+    - ESLint: page/lsp-eslint.md
     - F#: page/lsp-fsharp.md
     - Fortran: page/lsp-fortran.md
     - GDScript: page/lsp-gdscript.md

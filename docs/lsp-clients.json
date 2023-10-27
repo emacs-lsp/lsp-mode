@@ -240,7 +240,7 @@
     "name": "eslint",
     "full-name": "ESlint",
     "server-name": "eslint",
-    "server-url": "https://github.com/Microsoft/vscode-eslint",
+    "server-url": "https://github.com/microsoft/vscode-eslint",
     "lsp-install-server": "eslint",
     "debugger": "N/A"
   },

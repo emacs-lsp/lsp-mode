@@ -32,9 +32,9 @@
 (defconst lsp-eslint/status-error 3)
 
 (defgroup lsp-eslint nil
-  "ESlint language server group."
+  "ESLint language server group."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/Microsoft/vscode-eslint"))
+  :link '(url-link "https://github.com/microsoft/vscode-eslint"))
 
 (defcustom lsp-eslint-unzipped-path (f-join lsp-server-install-dir "eslint/unzipped")
   "The path to the file in which `eslint' will be stored."
@@ -43,7 +43,7 @@
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-eslint-download-url "https://github.com/emacs-lsp/lsp-server-binaries/blob/master/dbaeumer.vscode-eslint-2.2.2.vsix?raw=true"
-  "Eslint language server download url."
+  "ESLint language server download url."
   :type 'string
   :group 'lsp-eslint
   :package-version '(lsp-mode . "8.0.1"))
@@ -51,13 +51,13 @@
 (defcustom lsp-eslint-server-command `("node"
                                        "~/server/out/eslintServer.js"
                                        "--stdio")
-  "Command to start eslint server."
+  "Command to start ESLint server."
   :risky t
   :type '(repeat string)
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-enable t
-  "Controls whether eslint is enabled for JavaScript files or not."
+  "Controls whether ESLint is enabled for JavaScript files or not."
   :type 'boolean
   :package-version '(lsp-mode . "6.3"))
 
@@ -75,19 +75,19 @@
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-node-path nil
-  "A path added to NODE_PATH when resolving the eslint module."
+  "A path added to NODE_PATH when resolving the `eslint' module."
   :type '(repeat string)
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-node "node"
-  "Path to nodejs."
+  "Path to Node.js."
   :type 'file
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-eslint-options nil
-  "The eslint options object to provide args normally passed to
-  eslint when executed from a command line (see
-  http://eslint.org/docs/developer-guide/nodejs-api#cliengine)."
+  "The ESLint options object to provide args normally passed to
+  `eslint' when executed from a command line (see
+  https://eslint.org/docs/latest/integrate/nodejs-api)."
   :type 'alist)
 
 (defcustom lsp-eslint-experimental nil
@@ -104,7 +104,7 @@
   :type 'alist)
 
 (defcustom lsp-eslint-trace-server "off"
-  "Traces the communication between VSCode and the eslint linter service."
+  "Traces the communication between VSCode and the ESLint linter service."
   :type 'string)
 
 (defcustom lsp-eslint-run "onType"
@@ -145,7 +145,7 @@ Note that the home directory reference ~/ is not currently supported, use
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-eslint-validate '("svelte")
-  "An array of language ids which should always be validated by eslint."
+  "An array of language ids which should always be validated by ESLint."
   :type '(repeat string)
   :package-version '(lsp-mode . "8.0.0"))
 
@@ -187,7 +187,7 @@ Accepts the following values:
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-eslint-code-action-show-documentation t
-  "Controls whether code actions to show documentation for an eslint rule should
+  "Controls whether code actions to show documentation for an ESLint rule should
 be shown."
   :type 'bool
   :package-version '(lsp-mode . "8.0.0"))
@@ -198,7 +198,7 @@ be shown."
   :package-version '(lsp-mode . "8.0.0"))
 
 (defcustom lsp-eslint-rules-customizations []
-  "Controls severity overrides for eslint rules.
+  "Controls severity overrides for ESLint rules.
 
 The value is a vector of alists, with each alist containing the following keys:
 - rule - The rule to match. Can match wildcards with *, or be prefixed with !
@@ -210,7 +210,7 @@ The value is a vector of alists, with each alist containing the following keys:
   - \"error\": Report as an error.
   - \"upgrade\": Increase by 1 severity level (eg. warning -> error).
   - \"downgrade\": Decrease by 1 severity level (eg. warning -> info).
-  - \"default\": Report as the same severity specified in the eslint config."
+  - \"default\": Report as the same severity specified in the ESLint config."
   :type '(lsp-repeatable-vector
           (alist :options ((rule string)
                            (severity (choice
@@ -251,7 +251,7 @@ stored."
    "eslint"))
 
 (defun lsp-eslint-create-default-configuration ()
-  "Create default eslint configuration."
+  "Create default ESLint configuration."
   (interactive)
   (unless (lsp-session-folders (lsp-session))
     (user-error "There are no workspace folders"))
@@ -261,7 +261,7 @@ stored."
                          (-none?
                           (lambda (file) (f-exists? (f-join dir file)))
                           '(".eslintrc.js" ".eslintrc.yaml" ".eslintrc.yml" ".eslintrc" ".eslintrc.json")))))
-    (`nil (user-error "All workspace folders contain eslint configuration"))
+    (`nil (user-error "All workspace folders contain ESLint configuration"))
     (folders (let ((default-directory (completing-read "Select project folder: " folders nil t)))
                (async-shell-command (format "%s --init" (lsp--find-eslint)))))))
 
