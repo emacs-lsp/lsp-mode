@@ -10,7 +10,7 @@
   * Add support for clojure-ts-mode in clojure-lsp client
   * terraform-ls now supports prefill required fields and the ability to validate on save.
   * Ignore =.terraform= and =.terragrunt-cache= directories
-  * ~lsp-bash~ now supports ~bash-ts-mode~
+  * ~lsp-bash~ now supports ~bash-ts-mode~ and ~ebuild-mode~
   * ~lsp-ruby-syntax-tree~, ~lsp-solargraph~, ~lsp-sorbet~, ~lsp-steep~, and ~lsp-typeprof~ now support ~ruby-ts-mode~
   * Drop support for emacs 26.1 and 26.2
   * Added support for ~textDocument/linkedEditingRange~ via
