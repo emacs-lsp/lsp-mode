@@ -181,7 +181,7 @@ As defined by the Language Server Protocol 3.16."
      lsp-glsl lsp-graphql lsp-hack lsp-grammarly lsp-groovy lsp-haskell lsp-haxe
      lsp-idris lsp-java lsp-javascript lsp-json lsp-kotlin lsp-latex lsp-ltex
      lsp-lua lsp-markdown lsp-marksman lsp-mdx lsp-mint lsp-move lsp-nginx lsp-nim lsp-nix lsp-magik
-     lsp-metals lsp-mssql lsp-ocaml lsp-openscad lsp-pascal lsp-perl lsp-perlnavigator
+     lsp-mojo lsp-metals lsp-mssql lsp-ocaml lsp-openscad lsp-pascal lsp-perl lsp-perlnavigator
      lsp-pls lsp-php lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms lsp-purescript
      lsp-r lsp-racket lsp-remark lsp-ruff-lsp lsp-rf lsp-rubocop lsp-rust lsp-semgrep lsp-shader
      lsp-solargraph lsp-sorbet lsp-sourcekit lsp-sonarlint lsp-tailwindcss lsp-tex lsp-terraform
@@ -812,6 +812,7 @@ Changes take effect only when a new session is started."
     (python-mode . "python")
     (python-ts-mode . "python")
     (cython-mode . "python")
+    ("\\(\\.mojo\\|\\.🔥\\)\\'" . "mojo")
     (lsp--render-markdown . "markdown")
     (move-mode . "move")
     (rust-mode . "rust")
