@@ -187,7 +187,7 @@ As defined by the Language Server Protocol 3.16."
      lsp-solargraph lsp-sorbet lsp-sourcekit lsp-sonarlint lsp-tailwindcss lsp-tex lsp-terraform
      lsp-toml lsp-ttcn3 lsp-typeprof lsp-v lsp-vala lsp-verilog lsp-vetur lsp-volar
      lsp-vhdl lsp-vimscript lsp-xml lsp-yaml lsp-ruby-lsp lsp-ruby-syntax-tree
-     lsp-sqls lsp-svelte lsp-steep lsp-tilt lsp-zig lsp-jq)
+     lsp-solidity lsp-sqls lsp-svelte lsp-steep lsp-tilt lsp-zig lsp-jq)
   "List of the clients to be automatically required."
   :group 'lsp-mode
   :type '(repeat symbol))
@@ -927,6 +927,7 @@ Changes take effect only when a new session is started."
     (gleam-mode . "gleam")
     (graphviz-dot-mode . "dot")
     (tiltfile-mode . "tiltfile")
+    (solidity-mode . "solidity")
     (bibtex-mode . "bibtex")
     (rst-mode . "restructuredtext")
     (glsl-mode . "glsl")
