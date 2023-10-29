@@ -360,7 +360,8 @@ using the `textDocument/references' request."
                                              ("o#/testmessage" 'lsp-csharp--handle-os-testmessage)
                                              ("o#/testcompleted" 'lsp-csharp--handle-os-testcompleted)
                                              ("o#/projectconfiguration" 'ignore)
-                                             ("o#/projectdiagnosticstatus" 'ignore))
+                                             ("o#/projectdiagnosticstatus" 'ignore)
+                                             ("o#/backgrounddiagnosticstatus" 'ignore))
                   :download-server-fn #'lsp-csharp--omnisharp-download-server))
 
 ;;
