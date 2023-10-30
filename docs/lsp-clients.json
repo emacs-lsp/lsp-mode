@@ -844,6 +844,15 @@
     "debugger": "Yes"
   },
   {
+      "name": "solidity",
+      "full-name": "nomicfoundation/solidity-language-server",
+      "server-name": "solidity-language-server",
+      "installation": "npx @nomicfoundation/solidity-language-server",
+      "server-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
+      "installation-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
+      "debugger": "Not available"
+  },
+  {
     "name": "sorbet",
     "full-name": "Ruby (Sorbet)",
     "server-name": "sorbet",
