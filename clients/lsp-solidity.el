@@ -24,43 +24,38 @@
 
 (require 'lsp-mode)
 
+(lsp-dependency 'solidity-language-server
+                '(:system "solidity-language-server")
+                '(:npm :package "@nomicfoundation/solidity-language-server"
+                       :path "nomicfoundation-solidity-language-server"))
+
+
+(defun lsp-client--solidity-ls-server-command ()
+  "Startup command for Solidity language server."
+  (list (lsp-package-path 'solidity-language-server) "--stdio"))
+
+
 (defgroup lsp-solidity nil
   "LSP support for Solidity."
   :group 'lsp-mode
   :link '(url-link "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md"))
 
-(defcustom lsp-clients-solidity-server-command "npx @nomicfoundation/solidity-language-server --stdio"
-  "Command to run the server.
-
-You can also install nomicfoundation-solidity-language-server
-globally with
-
-npm install @nomicfoundation/solidity-language-server -g
-
-and provide the command npx nomicfoundation-solidity-language-server --stdio
-
-Or use
-
-solc --lsp
-
-npx solidity-ls --stdio
-"
-  :group 'lsp-solidity
-  :type 'string)
-
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection (string-split lsp-clients-solidity-server-command))
+ (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-client--solidity-ls-server-command)
                   :activation-fn (lsp-activate-on "solidity" "sol")
                   :server-id 'solidity
                   :notification-handlers
                   (ht ("custom/validation-job-status"
                        #'lsp-client--solidity-validation-job-status))
-                  ))
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure 'solidity-language-server callback error-callback))))
 
 (defun lsp-client--solidity-validation-job-status (_workspace params)
   ;; noop until I find out what to do with this
   )
+
+(lsp-consistency-check lsp-solidity)
 
 (provide 'lsp-solidity)
 ;;; lsp-solidity.el ends here
