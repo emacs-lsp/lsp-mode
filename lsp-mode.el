@@ -7307,16 +7307,11 @@ Return a nested alist keyed by symbol names. e.g.
 
 (defun lsp-server-present? (final-command)
   "Check whether FINAL-COMMAND is present."
-  ;; executable-find only gained support for remote checks after 27 release
-  (or (and (cond
-            ((not (file-remote-p default-directory))
-             (executable-find (cl-first final-command)))
-            ((version<= "27.0" emacs-version)
-             (with-no-warnings (executable-find (cl-first final-command) (file-remote-p default-directory))))
-            (t))
-           (prog1 t
-             (lsp-log "Command \"%s\" is present on the path." (s-join " " final-command))))
-      (ignore (lsp-log "Command \"%s\" is not present on the path." (s-join " " final-command)))))
+  (let ((binary-found? (executable-find (cl-first final-command) t)))
+    (if binary-found?
+        (lsp-log "Command \"%s\" is present on the path." (s-join " " final-command))
+      (lsp-log "Command \"%s\" is not present on the path." (s-join " " final-command)))
+    binary-found?))
 
 (defun lsp--value-to-string (value)
   "Convert VALUE to a string that can be set as value in an environment
@@ -7464,7 +7459,7 @@ process listening for TCP connections on the provided port."
                      (port (lsp--find-available-port host (cl-incf lsp--tcp-port)))
                      (command (funcall command-fn port))
                      (final-command (if (consp command) command (list command)))
-                     (_ (unless (executable-find (cl-first final-command))
+                     (_ (unless (lsp-server-present? final-command)
                           (user-error (format "Couldn't find executable %s" (cl-first final-command)))))
                      (process-environment
                       (lsp--compute-process-environment environment-fn))
@@ -7477,7 +7472,7 @@ process listening for TCP connections on the provided port."
                 (set-process-query-on-exit-flag tcp-proc nil)
                 (set-process-filter tcp-proc filter)
                 (cons tcp-proc proc)))
-   :test? (lambda () (executable-find (cl-first (funcall command-fn 0))))))
+   :test? (lambda () (lsp-server-present? (funcall command-fn 0)))))
 
 (defalias 'lsp-tcp-server 'lsp-tcp-server-command)
 
@@ -7528,7 +7523,7 @@ should return the command to start the LS server."
                 (set-process-filter tcp-client-connection filter)
                 (set-process-sentinel tcp-client-connection sentinel)
                 (cons tcp-client-connection cmd-proc)))
-   :test? (lambda () (executable-find (cl-first (funcall command-fn 0))))))
+   :test? (lambda () (lsp-server-present? (funcall command-fn 0)))))
 
 (defalias 'lsp-tramp-connection 'lsp-stdio-connection)
 
@@ -8062,7 +8057,7 @@ nil."
     (if (and (f-absolute? path)
              (f-exists? path))
         path
-      (executable-find path))))
+      (executable-find path t))))
 
 (defun lsp-package-path (dependency)
   "Path to the DEPENDENCY each of the registered providers."
@@ -8095,7 +8090,8 @@ nil."
                (f-join lsp-server-install-dir "npm" package
                        (cond ((eq system-type 'windows-nt) "")
                              (t "bin"))
-                       path))))
+                       path)
+               t)))
     (unless (and path (f-exists? path))
       (error "The package %s is not installed.  Unable to find %s" package path))
     path))
