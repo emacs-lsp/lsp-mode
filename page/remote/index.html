@@ -702,6 +702,20 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#sample-configuration" class="md-nav__link">
+    Sample configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dealing-with-stderr" class="md-nav__link">
+    Dealing with stderr
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3241,6 +3255,20 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#sample-configuration" class="md-nav__link">
+    Sample configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dealing-with-stderr" class="md-nav__link">
+    Dealing with stderr
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3310,13 +3338,24 @@
 <!-- Markdown content -->
 <h1 id="remote">Remote<a class="headerlink" href="#remote" title="Permanent link">#</a></h1>
 <h2 id="tramp">TRAMP<a class="headerlink" href="#tramp" title="Permanent link">#</a></h2>
-<p><code>lsp-mode</code> has support for tramp buffers with the following requirements:</p>
+<p>LSP mode has support for tramp buffers with the following requirements:</p>
 <ul>
 <li>The language server has to be present on the remote server.</li>
 <li>Having multi folder language server (like <a href="https://github.com/eclipse/eclipse.jdt.ls">Eclipse JDT LS</a>) cannot have local and remote workspace folders.</li>
 </ul>
 <h3 id="how-does-it-work">How does it work?<a class="headerlink" href="#how-does-it-work" title="Permanent link">#</a></h3>
-<p><code>lsp-mode</code> detects whether a particular file is located on remote machine and looks for a client which matches current file and it is marked as <code>:remote?</code> t. Then <code>lsp-mode</code> starts the client through tramp. By default <code>lsp-mode</code> will copy the local client and mark it as <code>remote? t</code>. In most of the cases it is good enough but certain cases this may not work (e. g. if the server configuration contains references to local paths). In this case the user is supposed to create <code>.dir-local</code> configuration to override the references to local paths or open an issue on <code>lsp-mode</code> side to make the setting remote agnostic. To turn of automatic remote clients registration you can set <code>lsp-auto-register-remote-clients</code> to <code>nil</code>.</p>
+<p><code>lsp-mode</code> detects whether a particular file is located on remote machine and looks for a client which matches current file and it is marked as <code>:remote?</code> t. Then <code>lsp-mode</code> starts the client through tramp.</p>
+<h3 id="sample-configuration">Sample configuration<a class="headerlink" href="#sample-configuration" title="Permanent link">#</a></h3>
+<p>Here it is example how you can configure python language server to work when using <code>TRAMP</code>. Note that if you are trying to convert existing language server configuration you should copy all of it's properties(e. g. <code>:request-handlers</code>, <code>activation-fn</code>, etc). Also, when you are doing that you should make sure that none of the custom language server settings are not pointing to local path because those settings will be sent to the remote server.</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">lsp-register-client</span>
+    <span class="p">(</span><span class="nv">make-lsp-client</span> <span class="nb">:new-connection</span> <span class="p">(</span><span class="nv">lsp-tramp-connection</span> <span class="s">&quot;&lt;binary name (e. g. pyls, rls)&gt;&quot;</span><span class="p">)</span>
+                     <span class="nb">:major-modes</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">python-mode</span><span class="p">)</span>
+                     <span class="nb">:remote?</span> <span class="no">t</span>
+                     <span class="nb">:server-id</span> <span class="ss">&#39;pyls-remote</span><span class="p">))</span>
+</code></pre></div>
+<p><em>Note:</em> when you do not have root privileges on the remote machine to put the language server on the path you may alter the remote path by changing <code>tramp-remote-path</code>.</p>
+<h3 id="dealing-with-stderr">Dealing with stderr<a class="headerlink" href="#dealing-with-stderr" title="Permanent link">#</a></h3>
+<p>With TRAMP, Emacs does not have an easy way to distinguish stdout and stderr, so when the underlying LSP process writes to stderr, it breaks the <code>lsp-mode</code> parser. As a workaround, <code>lsp-mode</code> is redirecting stderr to <code>/tmp/&lt;process-name&gt;-&lt;id&gt;~stderr</code>.</p>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
 <p>Refer to <a href="https://github.com/emacs-lsp/lsp-docker/">lsp-docker</a> README which provides a guide on how you can run <code>lsp-mode</code> in <code>docker</code> container.</p>
 
