@@ -5074,12 +5074,16 @@ identifier and the position respectively."
       (lsp-point-in-range? left-start right)
       (lsp-point-in-range? left-end right)))
 
+(defun lsp-make-position-1 (position)
+  (lsp-make-position :line (plist-get position :line)
+                     :character (plist-get position :character)))
+
 (defun lsp-cur-possition-diagnostics ()
   "Return any diagnostics that apply to the current line."
   (-let* ((start (if (use-region-p) (region-beginning) (point)))
           (end (if (use-region-p) (region-end) (point)))
-          (current-range (lsp-make-range :start (lsp-point-to-position start)
-                                         :end (lsp-point-to-position end))))
+          (current-range (lsp-make-range :start (lsp-make-position-1 (lsp-point-to-position start))
+                                         :end (lsp-make-position-1 (lsp-point-to-position end)))))
     (->> (lsp--get-buffer-diagnostics)
          (-filter
           (-lambda ((&Diagnostic :range))
