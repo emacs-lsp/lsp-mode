@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 8.0.1
+  * Add Cypher support.
   * Add Mojo 🔥 support
   * Add lsp-solidity, using the implementation from NomicFoundation
   * Change rust-analyzer base URL to be github.com/rust-lang/rust-analyzer, rather than rust-analyzer/rust-analyzer.
