@@ -119,22 +119,3 @@ In the example below, first you see that:
 
 This [unmerged PR](https://github.com/emacs-lsp/lsp-mode/pull/1740) contains an example method that allows
 modifying the signature that is displayed by eldoc.
-
-### TRAMP Example
-
-The following is an example configuration for using lsp-mode with a remote rust-analyzer server:
-
-```
-(with-eval-after-load "lsp-rust"
-  (lsp-register-client
-   (make-lsp-client
-    :new-connection (lsp-tramp-connection "rust-analyzer")
-    :remote? t
-    :major-modes '(rust-mode rustic-mode)
-    :initialization-options 'lsp-rust-analyzer--make-init-options
-    :notification-handlers (ht<-alist lsp-rust-notification-handlers)
-    :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single))
-    :library-folders-fn (lambda (_workspace) lsp-rust-analyzer-library-directories)
-    :ignore-messages nil
-    :server-id 'rust-analyzer-remote)))
-```
