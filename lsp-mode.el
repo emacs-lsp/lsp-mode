@@ -7403,7 +7403,7 @@ returned by COMMAND is available via `executable-find'"
                                                               (stringp el))
                                                             l))))))
   (list :connect (lambda (filter sentinel name environment-fn workspace)
-                   (if (and nil
+                   (if (and (functionp 'json-rpc-connection)
                             (not (file-remote-p default-directory)))
                        (lsp-json-rpc-connection workspace (lsp-resolve-final-command command))
                      (let ((final-command (lsp-resolve-final-command command))
