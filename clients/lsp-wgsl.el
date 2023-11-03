@@ -38,8 +38,50 @@
   :package-version '(lsp-mode . "8.0.1"))
 
 ;; Various toggling settings for the lsp server
+(defcustom lsp-wgsl-diagnostics-type-errors t
+  "Whether to show type errors in diagnostics or not."
+  :type 'boolean
+  :group 'lsp-wgsl
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-wgsl-diagnostics-naga-parsing-errors t
+  "Whether to show naga parsing errors in diagnostics or not."
+  :type 'boolean
+  :group 'lsp-wgsl
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-wgsl-diagnostics-naga-validation-errors t
+  "Whether to show naga validation errors in diagnostics or not."
+  :type 'boolean
+  :group 'lsp-wgsl
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-wgsl-diagnostics-naga-version "main"
+  "Naga version to use."
+  :type 'string
+  :group 'lsp-wgsl
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defcustom lsp-wgsl-inlayhints-enabled t
   "Whether to enable inlay hints or not."
+  :type 'boolean
+  :group 'lsp-wgsl
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-wgsl-inlayhints-typehints t
+  "Whether to enable type hints or not when using inlay hints."
+  :type 'boolean
+  :group 'lsp-wgsl
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-wgsl-inlayhints-parameterhints t
+  "Whether to enable parameter hints or not when using inlay hints."
+  :type 'boolean
+  :group 'lsp-wgsl
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-wgsl-inlayhints-structlayout t
+  "Whether to enable struct layout hints or not when using inlay hints."
   :type 'boolean
   :group 'lsp-wgsl
   :package-version '(lsp-mode . "8.0.1"))
@@ -52,6 +94,39 @@
                  (string "inner"))
   :group 'lsp-wgsl
   :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-wgsl-custom-imports (lsp-ht)
+  "List of custom imports in the style of Bevy"
+  :type 'ht
+  :group 'lsp-wgsl)
+
+(defcustom lsp-wgsl-shaderdefs []
+  "Defines that should be valid for preprocessor operations like ifdef."
+  :type 'vector
+  :group 'lsp-wgsl)
+
+
+;; wgsl-analyzer is a bit weird with how it gets config.
+;; Currently it relies on a custom extension to query the clients.
+;; (could not get standard custom-settings blocks to work)
+(defun lsp-wgsl--send-configuration (&rest _)
+  (list :customImports lsp-wgsl-custom-imports
+        :diagnostics (list :typeErrors (lsp-json-bool lsp-wgsl-diagnostics-type-errors)
+                           :nagaParsingErrors (lsp-json-bool lsp-wgsl-diagnostics-naga-parsing-errors)
+                           :nagaValidationErrors (lsp-json-bool lsp-wgsl-diagnostics-naga-validation-errors)
+                           :nagaVersion lsp-wgsl-diagnostics-naga-version)
+        :inlayHints (list :enabled (lsp-json-bool lsp-wgsl-inlayhints-enabled)
+                          :typeHints (lsp-json-bool lsp-wgsl-inlayhints-typehints)
+                          :parameterHints (lsp-json-bool lsp-wgsl-inlayhints-parameterhints)
+                          :structLayoutHints (lsp-json-bool lsp-wgsl-inlayhints-structlayout)
+                          :typeVerbosity lsp-wgsl-inlayhints-type-verbosity)
+        ;; using lsp-wgsl-shaderdefs seems to fail even when lsp-wgsl-shaderdefs is [],
+        ;;  which is the reason for this hack. wrong argument consp, nil
+        :shaderDefs (if (length= lsp-wgsl-shaderdefs 0) [] lsp-wgsl-shaderdefs)
+        ;; not configurable at the moment, as they don't seem to have much effect.
+        ;; Fails if not given.
+        :trace (list :extension t
+                     :server t)))
 
 
 ;; Various interactive functions to use the custom LSP extensions from the server
@@ -73,38 +148,6 @@
          (font-lock-mode))
        (switch-to-buffer buffer)))))
 
-
-;; Error("missing field `customImports`"
-;; TODO: best way to handle the custom imports logic?
-(defcustom lsp-wgsl-custom-imports (lsp-ht)
-  ""
-  :type 'list
-  :group 'lsp-wgsl)
-
-;; TODO: make it work for empty lists!
-(defcustom lsp-wgsl-shaderdefs (list "TEST")
-  ""
-  :type 'list
-  :group 'lsp-wgsl)
-
-
-;; wgsl-analyzer is a bit weird with how it gets config.
-;; Currently it relies on a custom extension to query the clients.
-;; (could not get standard custom-settings blocks to work)
-(defun lsp-wgsl--send-configuration (&rest _)
-  (list :customImports lsp-wgsl-custom-imports
-        :diagnostics (list :typeErrors (lsp-json-bool t)
-                           :nagaParsingErrors (lsp-json-bool t)
-                           :nagaValidationErrors (lsp-json-bool nil)
-                           :nagaVersion "main")
-        :inlayHints (list :enabled (lsp-json-bool lsp-wgsl-inlayhints-enabled)
-                          :typeHints (lsp-json-bool nil)
-                          :parameterHints (lsp-json-bool nil)
-                          :structLayoutHints (lsp-json-bool nil)
-                          :typeVerbosity lsp-wgsl-inlayhints-type-verbosity)
-        :shaderDefs []
-        :trace (list :extension t
-                     :server t)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
