@@ -98,18 +98,20 @@
 (defcustom lsp-wgsl-custom-imports (lsp-ht)
   "List of custom imports in the style of Bevy"
   :type 'ht
-  :group 'lsp-wgsl)
+  :group 'lsp-wgsl
+  :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom lsp-wgsl-shaderdefs []
-  "Defines that should be valid for preprocessor operations like ifdef."
-  :type 'vector
-  :group 'lsp-wgsl)
-
+;; (defcustom lsp-wgsl-shaderdefs []
+;;   "Defines that should be valid for preprocessor operations like ifdef."
+;;   :type 'vector
+;;   :group 'lsp-wgsl
+;;   :package-version '(lsp-mode . "8.0.1"))
 
 ;; wgsl-analyzer is a bit weird with how it gets config.
 ;; Currently it relies on a custom extension to query the clients.
 ;; (could not get standard custom-settings blocks to work)
 (defun lsp-wgsl--send-configuration (&rest _)
+  ;; TODO: why doesnt this behave like the normal lists?!?!? I cant just send a list?!?!?! why the fuck?!?!
   (list :customImports lsp-wgsl-custom-imports
         :diagnostics (list :typeErrors (lsp-json-bool lsp-wgsl-diagnostics-type-errors)
                            :nagaParsingErrors (lsp-json-bool lsp-wgsl-diagnostics-naga-parsing-errors)
@@ -120,9 +122,7 @@
                           :parameterHints (lsp-json-bool lsp-wgsl-inlayhints-parameterhints)
                           :structLayoutHints (lsp-json-bool lsp-wgsl-inlayhints-structlayout)
                           :typeVerbosity lsp-wgsl-inlayhints-type-verbosity)
-        ;; using lsp-wgsl-shaderdefs seems to fail even when lsp-wgsl-shaderdefs is [],
-        ;;  which is the reason for this hack. wrong argument consp, nil
-        :shaderDefs (if (length= lsp-wgsl-shaderdefs 0) [] lsp-wgsl-shaderdefs)
+        :shaderDefs []
         ;; not configurable at the moment, as they don't seem to have much effect.
         ;; Fails if not given.
         :trace (list :extension t
