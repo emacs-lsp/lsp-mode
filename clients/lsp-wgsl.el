@@ -37,6 +37,22 @@
   :group 'lsp-wgsl
   :package-version '(lsp-mode . "8.0.1"))
 
+;; Various toggling settings for the lsp server
+(defcustom lsp-wgsl-inlayhints-enabled t
+  "Whether to enable inlay hints or not."
+  :type 'boolean
+  :group 'lsp-wgsl
+  :package-version '(lsp-mode . "8.0.1"))
+
+;; TODO: maybe type choice instead?
+(defcustom lsp-wgsl-inlayhints-type-verbosity "compact"
+  "The type verbosity to use for inlay hints."
+  :type '(choice (string "full")
+                 (string "compact")
+                 (string "inner"))
+  :group 'lsp-wgsl
+  :package-version '(lsp-mode . "8.0.1"))
+
 
 ;; Various interactive functions to use the custom LSP extensions from the server
 (defun lsp-wgsl-full-source ()
@@ -57,10 +73,49 @@
          (font-lock-mode))
        (switch-to-buffer buffer)))))
 
+
+;; Error("missing field `customImports`"
+;; TODO: best way to handle the custom imports logic?
+(defcustom lsp-wgsl-custom-imports (lsp-ht)
+  ""
+  :type 'list
+  :group 'lsp-wgsl)
+
+;; TODO: make it work for empty lists!
+(defcustom lsp-wgsl-shaderdefs (list "TEST")
+  ""
+  :type 'list
+  :group 'lsp-wgsl)
+
+
+;; wgsl-analyzer is a bit weird with how it gets config.
+;; Currently it relies on a custom extension to query the clients.
+;; (could not get standard custom-settings blocks to work)
+(defun lsp-wgsl--send-configuration (&rest _)
+  (list :customImports lsp-wgsl-custom-imports
+        :diagnostics (list :typeErrors (lsp-json-bool t)
+                           :nagaParsingErrors (lsp-json-bool t)
+                           :nagaValidationErrors (lsp-json-bool nil)
+                           :nagaVersion "main")
+        :inlayHints (list :enabled (lsp-json-bool lsp-wgsl-inlayhints-enabled)
+                          :typeHints (lsp-json-bool nil)
+                          :parameterHints (lsp-json-bool nil)
+                          :structLayoutHints (lsp-json-bool nil)
+                          :typeVerbosity lsp-wgsl-inlayhints-type-verbosity)
+        :shaderDefs []
+        :trace (list :extension t
+                     :server t)))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda ()
                                      lsp-wgsl-server-command))
+                  :initialized-fn (lambda (workspace)
+                                    (with-lsp-workspace workspace
+                                      ;; wgsl-analyzer handles configuration in a VERY non-standard way
+                                      ;; https://github.com/wgsl-analyzer/wgsl-analyzer/issues/77
+                                      (lsp--set-configuration '())))
+                  :request-handlers (lsp-ht ("wgsl-analyzer/requestConfiguration" #'lsp-wgsl--send-configuration))
                   :activation-fn (lsp-activate-on "wgsl")
                   :priority -1
                   :server-id 'wgsl-analyzer))
