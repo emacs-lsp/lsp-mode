@@ -2500,13 +2500,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#tramp-example" class="md-nav__link">
-    TRAMP Example
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -3908,13 +3901,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#tramp-example" class="md-nav__link">
-    TRAMP Example
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -4480,21 +4466,6 @@ like this:</p>
 <h3 id="extract-signature">extract signature<a class="headerlink" href="#extract-signature" title="Permanent link">#</a></h3>
 <p>This <a href="https://github.com/emacs-lsp/lsp-mode/pull/1740">unmerged PR</a> contains an example method that allows
 modifying the signature that is displayed by eldoc.</p>
-<h3 id="tramp-example">TRAMP Example<a class="headerlink" href="#tramp-example" title="Permanent link">#</a></h3>
-<p>The following is an example configuration for using lsp-mode with a remote rust-analyzer server:</p>
-<div class="highlight"><pre><span></span><code>(with-eval-after-load &quot;lsp-rust&quot;
-  (lsp-register-client
-   (make-lsp-client
-    :new-connection (lsp-tramp-connection &quot;rust-analyzer&quot;)
-    :remote? t
-    :major-modes &#39;(rust-mode rustic-mode)
-    :initialization-options &#39;lsp-rust-analyzer--make-init-options
-    :notification-handlers (ht&lt;-alist lsp-rust-notification-handlers)
-    :action-handlers (ht (&quot;rust-analyzer.runSingle&quot; #&#39;lsp-rust--analyzer-run-single))
-    :library-folders-fn (lambda (_workspace) lsp-rust-analyzer-library-directories)
-    :ignore-messages nil
-    :server-id &#39;rust-analyzer-remote)))
-</code></pre></div>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
 <h3 id="lsp-rust-server"><code>lsp-rust-server</code><a class="headerlink" href="#lsp-rust-server" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(choice (const :tag rls rls) (const :tag rust-analyzer rust-analyzer))</code></p>
@@ -4829,7 +4800,7 @@ compiling unnecessary things.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 1, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 3, 2023</span>
       
     
   </small>
