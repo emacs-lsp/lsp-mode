@@ -343,7 +343,7 @@ and `lsp-go-server-wrapper-function'."
   (funcall lsp-go-server-wrapper-function (append (list lsp-go-server-path) lsp-go-gopls-server-args)))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection (lambda () (lsp-go--server-command)))
+ (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-go--server-command)
                   :activation-fn (lsp-activate-on "go" "go.mod")
                   :language-id "go"
                   :priority 0
