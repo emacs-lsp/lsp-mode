@@ -305,7 +305,7 @@ This is a synchronous action."
 (lsp-defun construct-tf-module ((&terraform-ls:Module :name :docs-link :version :source-type :dependent-modules))
   "Construct `TF-MODULE' using MODULE."
   (make-tf-module :name name
-                  :doc-link docs-link
+                  :docs-link docs-link
                   :version version
                   :source-type source-type
                   :dependent-modules dependent-modules))
