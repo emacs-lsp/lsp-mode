@@ -355,8 +355,13 @@ The MARKERS and PREFIX value will be attached to each candidate."
          ;; `lsp-completion-start-point' above might be from cached/previous completion and
          ;; pointing to a very distant point, which results in `prefix' being way too long.
          ;; So let's consider only the first line.
-         (prefix (car (string-lines prefix)))
-         (prefix-len (length prefix))
+         (prefix-len (let ((idx 0)
+                           (len (length prefix)))
+		       (while (and (< idx len)
+                                   (not (= ?\n (elt prefix idx))))
+			 (setq idx (1+ idx)))
+		       idx))
+         (prefix (substring prefix 0 prefix-len))
          (prefix-pos 0)
          (label (downcase candidate))
          (label-len (length label))
