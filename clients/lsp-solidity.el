@@ -25,7 +25,7 @@
 (require 'lsp-mode)
 
 (lsp-dependency 'solidity-language-server
-                '(:system "solidity-language-server")
+                '(:system "nomicfoundation-solidity-language-server")
                 '(:npm :package "@nomicfoundation/solidity-language-server"
                        :path "nomicfoundation-solidity-language-server"))
 
