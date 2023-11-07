@@ -92,8 +92,8 @@ client has been loaded.
 
 (lsp-register-client
  (make-lsp-client
-  ;; instead of `:new-connection (lsp-stdio-connection lsp-text-executable)` use
-  :new-connection (lsp-stdio-connection (lambda () lsp-text-executable))
+  ;; instead of `:new-connection (lsp-stdio-connection lsp-tex-executable)` use
+  :new-connection (lsp-stdio-connection (lambda () lsp-tex-executable))
   :activation-fn (lsp-activate-on "plaintex" "latex")
   :priority -1
   :server-id 'digestif))
