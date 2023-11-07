@@ -3369,8 +3369,8 @@ client has been loaded.</p>
 
 <span class="p">(</span><span class="nv">lsp-register-client</span>
  <span class="p">(</span><span class="nv">make-lsp-client</span>
-  <span class="c1">;; instead of `:new-connection (lsp-stdio-connection lsp-text-executable)` use</span>
-  <span class="nb">:new-connection</span> <span class="p">(</span><span class="nv">lsp-stdio-connection</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">()</span> <span class="nv">lsp-text-executable</span><span class="p">))</span>
+  <span class="c1">;; instead of `:new-connection (lsp-stdio-connection lsp-tex-executable)` use</span>
+  <span class="nb">:new-connection</span> <span class="p">(</span><span class="nv">lsp-stdio-connection</span> <span class="p">(</span><span class="nb">lambda</span> <span class="p">()</span> <span class="nv">lsp-tex-executable</span><span class="p">))</span>
   <span class="nb">:activation-fn</span> <span class="p">(</span><span class="nv">lsp-activate-on</span> <span class="s">&quot;plaintex&quot;</span> <span class="s">&quot;latex&quot;</span><span class="p">)</span>
   <span class="nb">:priority</span> <span class="mi">-1</span>
   <span class="nb">:server-id</span> <span class="ss">&#39;digestif</span><span class="p">))</span>
