@@ -69,20 +69,27 @@
       (should (equal (lsp--uri-to-path "/root/%E4%BD%A0%E5%A5%BD/%E8%B0%A2%E8%B0%A2") "/root/你好/谢谢")))))
 
 (ert-deftest lsp-byte-compilation-test ()
-  (seq-doseq (library (-filter
-                       (lambda (file)
-                         (and (f-ext? file "el")
-                              (not (s-contains? ".dir-locals" file))
-                              (not (s-contains? "test" file))))
-                       (append (when (or load-file-name buffer-file-name)
-                                 (f-files (f-parent (f-dirname (or load-file-name buffer-file-name)))))
-                               (f-files default-directory))))
-    ;; TODO: turn this back on!
-    (let ((byte-compile-error-on-warn nil))
-      (message "Testing file %s" library)
-      (should (byte-compile-file (save-excursion
-                                   (find-library library)
-                                   (buffer-file-name)))))))
+  (let ((dir (if load-file-name
+                 (f-parent (find-library-name "lsp-mode"))
+               (f-parent default-directory))))
+    (message "Byte compilation test in %s..." dir)
+    (->> (append (f-files dir)
+                 (when (f-exists? (f-join dir "clients"))
+                   (f-files (f-join dir "clients"))))
+         (-filter
+          (lambda (file)
+            (and (f-ext? file "el")
+                 (not (s-contains? ".dir-locals" file))
+                 (not (s-contains? "test" file)))))
+         (mapc (lambda (library)
+                 (let ((byte-compile-warnings
+                        '(redefine callargs free-vars unresolved
+                                   obsolete noruntime interactive-only
+                                   make-local mapcar constants suspicious lexical lexical-dynamic
+                                   docstrings-non-ascii-quotes not-unused))
+                       (byte-compile-error-on-warn t))
+                   (message "Checking %s..." library)
+                   (should (byte-compile-file library))))))))
 
 (ert-deftest lsp--find-session-folder ()
   (let* ((project (make-temp-file "foo"))

@@ -1145,7 +1145,7 @@ calling `remove-overlays'.")
 
 (defvar-local lsp--virtual-buffer-point-max nil)
 
-(cl-defmethod lsp-execute-command (server command arguments)
+(cl-defmethod lsp-execute-command (_server _command _arguments)
   "Ask SERVER to execute COMMAND with ARGUMENTS.")
 
 (defun lsp-elt (sequence n)
