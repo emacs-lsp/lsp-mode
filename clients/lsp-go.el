@@ -340,7 +340,7 @@ flake.nix file with:
   "Command and arguments for launching the inferior language server process.
 These are assembled from the customizable variables `lsp-go-server-path'
 and `lsp-go-server-wrapper-function'."
-  (funcall lsp-go-server-wrapper-function (append (list lsp-go-server-path) lsp-go-gopls-server-args)))
+  (funcall lsp-go-server-wrapper-function (append (list lsp-go-gopls-server-path) lsp-go-gopls-server-args)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-go--server-command)
