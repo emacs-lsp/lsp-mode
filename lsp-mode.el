@@ -8079,10 +8079,11 @@ nil."
   ;; typescript-language-server). This is why we check for existence and not
   ;; that the path is executable.
   (let ((path (lsp-resolve-value path)))
-    (if (and (f-absolute? path)
-             (f-exists? path))
-        path
-      (executable-find path t))))
+    (cond
+     ((and (f-absolute? path)
+           (f-exists? path))
+      path)
+     ((executable-find path t) path))))
 
 (defun lsp-package-path (dependency)
   "Path to the DEPENDENCY each of the registered providers."
