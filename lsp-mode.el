@@ -8429,7 +8429,7 @@ the next question until the queue is empty."
                                                    (format "%s-tramp"
                                                            (lsp--client-server-id client)))
             ;; disable automatic download
-            (lsp--client-download-server-fn client) nil)
+            (lsp--client-download-server-fn remote-client) nil)
       (lsp-register-client remote-client))))
 
 (defun lsp--create-initialization-options (_session client)
