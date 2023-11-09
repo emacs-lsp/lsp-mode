@@ -3577,6 +3577,12 @@ and expand the capabilities section"
   (setf (lsp--workspace-shutdown-action lsp--cur-workspace) (or (and restart 'restart) 'shutdown))
   (lsp--uninitialize-workspace))
 
+(defcustom lsp-inlay-hint-enable nil
+  "If non-nil it will enable inlay hints."
+  :type 'boolean
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defun lsp--uninitialize-workspace ()
   "Cleanup buffer state.
 When a workspace is shut down, by request or from just
@@ -3586,7 +3592,7 @@ disappearing, unset all the variables related to it."
     (mapc (lambda (buf)
             (when (lsp-buffer-live-p buf)
               (lsp-with-current-buffer buf
-                (lsp-managed-mode -1))))
+                                       (lsp-managed-mode -1))))
           buffers)
     (lsp-diagnostics--workspace-cleanup lsp--cur-workspace)))
 
@@ -7384,6 +7390,9 @@ Originally coppied from eglot."
                          " "))
     program))
 
+(defvar tramp-use-ssh-controlmaster-options)
+(defvar tramp-ssh-controlmaster-options)
+
 (defun lsp-stdio-connection (command &optional test-command)
   "Returns a connection property list using COMMAND.
 COMMAND can be: A string, denoting the command to launch the
@@ -9600,12 +9609,6 @@ call-site)."
   "If non-nil update inlay hints immediately when scrolling or
 modifying window sizes."
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
-
-(defcustom lsp-inlay-hint-enable nil
-  "If non-nil it will enable inlay hints."
-  :type 'boolean
-  :group 'lsp-mode
   :package-version '(lsp-mode . "8.0.1"))
 
 (defun lsp--format-inlay (text kind)
