@@ -731,78 +731,6 @@ or JSON objects in `rust-project.json` format."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
-(defun lsp-rust-analyzer--make-init-options ()
-  "Init options for rust-analyzer"
-  `(:diagnostics (:enable ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable)
-                  :enableExperimental ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable-experimental)
-                  :disabled ,lsp-rust-analyzer-diagnostics-disabled
-                  :warningsAsHint ,lsp-rust-analyzer-diagnostics-warnings-as-hint
-                  :warningsAsInfo ,lsp-rust-analyzer-diagnostics-warnings-as-info)
-    :imports (:granularity (:enforce ,(lsp-json-bool lsp-rust-analyzer-import-enforce-granularity)
-                            :group ,lsp-rust-analyzer-import-granularity)
-             :group ,(lsp-json-bool lsp-rust-analyzer-import-group)
-             :merge (:glob ,(lsp-json-bool lsp-rust-analyzer-imports-merge-glob))
-             :prefix ,lsp-rust-analyzer-import-prefix)
-    :lruCapacity ,lsp-rust-analyzer-lru-capacity
-    :checkOnSave (:enable ,(lsp-json-bool lsp-rust-analyzer-cargo-watch-enable)
-                  :command ,lsp-rust-analyzer-cargo-watch-command
-                  :extraArgs ,lsp-rust-analyzer-cargo-watch-args
-                  :allTargets ,(lsp-json-bool lsp-rust-analyzer-check-all-targets)
-                  :features ,lsp-rust-analyzer-checkonsave-features
-                  :overrideCommand ,lsp-rust-analyzer-cargo-override-command)
-    :files (:exclude ,lsp-rust-analyzer-exclude-globs
-            :watcher ,(if lsp-rust-analyzer-use-client-watching "client" "notify")
-            :excludeDirs ,lsp-rust-analyzer-exclude-dirs)
-    :cargo (:allFeatures ,(lsp-json-bool lsp-rust-all-features)
-            :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
-            :features ,lsp-rust-features
-            :target ,lsp-rust-analyzer-cargo-target
-            :runBuildScripts ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
-            ; Obsolete, but used by old Rust-Analyzer versions
-            :loadOutDirsFromCheck ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
-            :autoreload ,(lsp-json-bool lsp-rust-analyzer-cargo-auto-reload)
-            :useRustcWrapperForBuildScripts ,(lsp-json-bool lsp-rust-analyzer-use-rustc-wrapper-for-build-scripts)
-            :unsetTest ,lsp-rust-analyzer-cargo-unset-test)
-    :rustfmt (:extraArgs ,lsp-rust-analyzer-rustfmt-extra-args
-              :overrideCommand ,lsp-rust-analyzer-rustfmt-override-command
-              :rangeFormatting (:enable ,(lsp-json-bool lsp-rust-analyzer-rustfmt-rangeformatting-enable)))
-    :lens (:debug (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-debug-enable))
-            :enable ,(lsp-json-bool lsp-rust-analyzer-lens-enable)
-            ;; :forceCustomCommands ,(lsp-json-bool lsp-rust-analyzer-lens-force-custom-commands)
-            :implementations (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-implementations-enable))
-            ;; :location ,lsp-rust-analyzer-lens-location
-            :references (:adt (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-references-adt-enable))
-                         :enumVariant (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-references-enum-variant-enable))
-                         :method (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-references-method-enable))
-                         :trait (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-references-trait-enable)))
-            :run (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-run-enable)))
-
-    :inlayHints (:bindingModeHints ,(lsp-json-bool lsp-rust-analyzer-binding-mode-hints)
-                 :chainingHints ,(lsp-json-bool lsp-rust-analyzer-display-chaining-hints)
-                 :closingBraceHints (:enable ,(lsp-json-bool lsp-rust-analyzer-closing-brace-hints)
-                                     :minLines ,lsp-rust-analyzer-closing-brace-hints-min-lines)
-                 :closureReturnTypeHints ,(lsp-json-bool lsp-rust-analyzer-display-closure-return-type-hints)
-                 :lifetimeElisionHints (:enable ,lsp-rust-analyzer-display-lifetime-elision-hints-enable
-                                        :useParameterNames ,(lsp-json-bool lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names))
-                 :maxLength ,lsp-rust-analyzer-max-inlay-hint-length
-                 :parameterHints ,(lsp-json-bool lsp-rust-analyzer-display-parameter-hints)
-                 :reborrowHints ,lsp-rust-analyzer-display-reborrow-hints
-                 :renderColons ,(lsp-json-bool lsp-rust-analyzer-server-format-inlay-hints)
-                 :typeHints (:enable ,(lsp-json-bool lsp-inlay-hint-enable)
-                             :hideClosureInitialization ,(lsp-json-bool lsp-rust-analyzer-hide-closure-initialization)
-                             :hideNamedConstructor ,(lsp-json-bool lsp-rust-analyzer-hide-named-constructor)))
-    :completion (:addCallParenthesis ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-parenthesis)
-                 :addCallArgumentSnippets ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-argument-snippets)
-                 :postfix (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-postfix-enable))
-                 :autoimport (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-auto-import-enable))
-                 :autoself (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-auto-self-enable)))
-    :callInfo (:full ,(lsp-json-bool lsp-rust-analyzer-call-info-full))
-    :procMacro (:enable ,(lsp-json-bool lsp-rust-analyzer-proc-macro-enable))
-    :rustcSource ,lsp-rust-analyzer-rustc-source
-    :linkedProjects ,lsp-rust-analyzer-linked-projects
-    :highlighting (:strings ,(lsp-json-bool lsp-rust-analyzer-highlighting-strings))
-    :experimental (:procAttrMacros ,(lsp-json-bool lsp-rust-analyzer-experimental-proc-attr-macros))))
-
 (defconst lsp-rust-notification-handlers
   '(("rust-analyzer/publishDecorations" . (lambda (_w _p)))))
 
@@ -1239,32 +1167,6 @@ tokens legend."
     ("trait" . ,lsp-rust-analyzer-trait-modifier)
     ("unsafe" . ,lsp-rust-analyzer-unsafe-modifier)))
 
-(lsp-register-client
- (make-lsp-client
-  :new-connection (lsp-stdio-connection
-                   (lambda ()
-                     `(,(or (executable-find
-                             (cl-first lsp-rust-analyzer-server-command))
-                            (lsp-package-path 'rust-analyzer)
-                            "rust-analyzer")
-                       ,@(cl-rest lsp-rust-analyzer-server-command))))
-  :activation-fn (lsp-activate-on "rust")
-  :priority (if (eq lsp-rust-server 'rust-analyzer) 1 -1)
-  :initialization-options 'lsp-rust-analyzer--make-init-options
-  :notification-handlers (ht<-alist lsp-rust-notification-handlers)
-  :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single)
-                       ("rust-analyzer.debugSingle" #'lsp-rust--analyzer-debug-lens)
-                       ("rust-analyzer.showReferences" #'lsp-rust--analyzer-show-references)
-                       ("rust-analyzer.triggerParameterHints" #'lsp--action-trigger-parameter-hints))
-  :library-folders-fn (lambda (_workspace) lsp-rust-analyzer-library-directories)
-  :semantic-tokens-faces-overrides `(:discard-default-modifiers t
-                                                                :modifiers
-                                                                ,(lsp-rust-analyzer--semantic-modifiers))
-  :server-id 'rust-analyzer
-  :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (featurep 'yasnippet))))))
-  :download-server-fn (lambda (_client callback error-callback _update?)
-                        (lsp-package-ensure 'rust-analyzer callback error-callback))))
-
 (defun lsp-rust-switch-server (&optional lsp-server)
   "Switch priorities of lsp servers, unless LSP-SERVER is already active."
   (interactive)
@@ -1633,6 +1535,105 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
   "Move item under cursor or selection down"
   (interactive)
   (lsp-rust-analyzer-move-item "Down"))
+
+(defun lsp-rust-analyzer--make-init-options ()
+  "Init options for rust-analyzer"
+  `(:diagnostics (:enable ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable)
+                          :enableExperimental ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable-experimental)
+                          :disabled ,lsp-rust-analyzer-diagnostics-disabled
+                          :warningsAsHint ,lsp-rust-analyzer-diagnostics-warnings-as-hint
+                          :warningsAsInfo ,lsp-rust-analyzer-diagnostics-warnings-as-info)
+                 :imports (:granularity (:enforce ,(lsp-json-bool lsp-rust-analyzer-import-enforce-granularity)
+                                                  :group ,lsp-rust-analyzer-import-granularity)
+                                        :group ,(lsp-json-bool lsp-rust-analyzer-import-group)
+                                        :merge (:glob ,(lsp-json-bool lsp-rust-analyzer-imports-merge-glob))
+                                        :prefix ,lsp-rust-analyzer-import-prefix)
+                 :lruCapacity ,lsp-rust-analyzer-lru-capacity
+                 :checkOnSave (:enable ,(lsp-json-bool lsp-rust-analyzer-cargo-watch-enable)
+                                       :command ,lsp-rust-analyzer-cargo-watch-command
+                                       :extraArgs ,lsp-rust-analyzer-cargo-watch-args
+                                       :allTargets ,(lsp-json-bool lsp-rust-analyzer-check-all-targets)
+                                       :features ,lsp-rust-analyzer-checkonsave-features
+                                       :overrideCommand ,lsp-rust-analyzer-cargo-override-command)
+                 :files (:exclude ,lsp-rust-analyzer-exclude-globs
+                                  :watcher ,(if lsp-rust-analyzer-use-client-watching "client" "notify")
+                                  :excludeDirs ,lsp-rust-analyzer-exclude-dirs)
+                 :cargo (:allFeatures ,(lsp-json-bool lsp-rust-all-features)
+                                      :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
+                                      :features ,lsp-rust-features
+                                      :target ,lsp-rust-analyzer-cargo-target
+                                      :runBuildScripts ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
+                                        ; Obsolete, but used by old Rust-Analyzer versions
+                                      :loadOutDirsFromCheck ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
+                                      :autoreload ,(lsp-json-bool lsp-rust-analyzer-cargo-auto-reload)
+                                      :useRustcWrapperForBuildScripts ,(lsp-json-bool lsp-rust-analyzer-use-rustc-wrapper-for-build-scripts)
+                                      :unsetTest ,lsp-rust-analyzer-cargo-unset-test)
+                 :rustfmt (:extraArgs ,lsp-rust-analyzer-rustfmt-extra-args
+                                      :overrideCommand ,lsp-rust-analyzer-rustfmt-override-command
+                                      :rangeFormatting (:enable ,(lsp-json-bool lsp-rust-analyzer-rustfmt-rangeformatting-enable)))
+                 :lens (:debug (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-debug-enable))
+                               :enable ,(lsp-json-bool lsp-rust-analyzer-lens-enable)
+                               ;; :forceCustomCommands ,(lsp-json-bool lsp-rust-analyzer-lens-force-custom-commands)
+                               :implementations (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-implementations-enable))
+                               ;; :location ,lsp-rust-analyzer-lens-location
+                               :references (:adt (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-references-adt-enable))
+                                                 :enumVariant (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-references-enum-variant-enable))
+                                                 :method (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-references-method-enable))
+                                                 :trait (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-references-trait-enable)))
+                               :run (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-run-enable)))
+
+                 :inlayHints (:bindingModeHints ,(lsp-json-bool lsp-rust-analyzer-binding-mode-hints)
+                                                :chainingHints ,(lsp-json-bool lsp-rust-analyzer-display-chaining-hints)
+                                                :closingBraceHints (:enable ,(lsp-json-bool lsp-rust-analyzer-closing-brace-hints)
+                                                                            :minLines ,lsp-rust-analyzer-closing-brace-hints-min-lines)
+                                                :closureReturnTypeHints ,(lsp-json-bool lsp-rust-analyzer-display-closure-return-type-hints)
+                                                :lifetimeElisionHints (:enable ,lsp-rust-analyzer-display-lifetime-elision-hints-enable
+                                                                               :useParameterNames ,(lsp-json-bool lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names))
+                                                :maxLength ,lsp-rust-analyzer-max-inlay-hint-length
+                                                :parameterHints ,(lsp-json-bool lsp-rust-analyzer-display-parameter-hints)
+                                                :reborrowHints ,lsp-rust-analyzer-display-reborrow-hints
+                                                :renderColons ,(lsp-json-bool lsp-rust-analyzer-server-format-inlay-hints)
+                                                :typeHints (:enable ,(lsp-json-bool lsp-inlay-hint-enable)
+                                                                    :hideClosureInitialization ,(lsp-json-bool lsp-rust-analyzer-hide-closure-initialization)
+                                                                    :hideNamedConstructor ,(lsp-json-bool lsp-rust-analyzer-hide-named-constructor)))
+                 :completion (:addCallParenthesis ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-parenthesis)
+                                                  :addCallArgumentSnippets ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-argument-snippets)
+                                                  :postfix (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-postfix-enable))
+                                                  :autoimport (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-auto-import-enable))
+                                                  :autoself (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-auto-self-enable)))
+                 :callInfo (:full ,(lsp-json-bool lsp-rust-analyzer-call-info-full))
+                 :procMacro (:enable ,(lsp-json-bool lsp-rust-analyzer-proc-macro-enable))
+                 :rustcSource ,lsp-rust-analyzer-rustc-source
+                 :linkedProjects ,lsp-rust-analyzer-linked-projects
+                 :highlighting (:strings ,(lsp-json-bool lsp-rust-analyzer-highlighting-strings))
+                 :experimental (:procAttrMacros ,(lsp-json-bool lsp-rust-analyzer-experimental-proc-attr-macros))))
+
+(lsp-register-client
+ (make-lsp-client
+  :new-connection (lsp-stdio-connection
+                   (lambda ()
+                     `(,(or (executable-find
+                             (cl-first lsp-rust-analyzer-server-command))
+                            (lsp-package-path 'rust-analyzer)
+                            "rust-analyzer")
+                       ,@(cl-rest lsp-rust-analyzer-server-command))))
+  :activation-fn (lsp-activate-on "rust")
+  :priority (if (eq lsp-rust-server 'rust-analyzer) 1 -1)
+  :initialization-options 'lsp-rust-analyzer--make-init-options
+  :notification-handlers (ht<-alist lsp-rust-notification-handlers)
+  :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single)
+                       ("rust-analyzer.debugSingle" #'lsp-rust--analyzer-debug-lens)
+                       ("rust-analyzer.showReferences" #'lsp-rust--analyzer-show-references)
+                       ("rust-analyzer.triggerParameterHints" #'lsp--action-trigger-parameter-hints))
+  :library-folders-fn (lambda (_workspace) lsp-rust-analyzer-library-directories)
+  :semantic-tokens-faces-overrides `(:discard-default-modifiers t
+                                                                :modifiers
+                                                                ,(lsp-rust-analyzer--semantic-modifiers))
+  :server-id 'rust-analyzer
+  :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (featurep 'yasnippet))))))
+  :download-server-fn (lambda (_client callback error-callback _update?)
+                        (lsp-package-ensure 'rust-analyzer callback error-callback))))
+
 
 (lsp-consistency-check lsp-rust)
 
