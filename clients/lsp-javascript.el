@@ -805,14 +805,13 @@ name (e.g. `data' variable passed as `data' parameter)."
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
                                                           `(,(lsp-package-path 'typescript-language-server)
-                                                            "--tsserver-path"
-                                                            ,(lsp-clients-typescript-server-path)
                                                             ,@lsp-clients-typescript-server-args)))
                   :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
                   :priority -2
                   :completion-in-comments? t
                   :initialization-options (lambda ()
                                             (append
+                                             (list :tsserver.path (lsp-clients-typescript-server-path))
                                              (when lsp-clients-typescript-disable-automatic-typing-acquisition
                                                (list :disableAutomaticTypingAcquisition lsp-clients-typescript-disable-automatic-typing-acquisition))
                                              (when lsp-clients-typescript-log-verbosity
