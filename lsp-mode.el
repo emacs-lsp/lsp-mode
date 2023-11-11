@@ -935,6 +935,7 @@ Changes take effect only when a new session is started."
     (rst-mode . "restructuredtext")
     (glsl-mode . "glsl")
     (shader-mode . "shaderlab")
+    (wgsl-mode . "wgsl")
     (jq-mode . "jq")
     (jq-ts-mode . "jq"))
   "Language id configuration.")
