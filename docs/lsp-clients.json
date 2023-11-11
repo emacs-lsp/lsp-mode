@@ -161,6 +161,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "cypher",
+    "full-name": "Cypher",
+    "server-name": "cypher-language-server",
+    "server-url": "https://github.com/neo4j/cypher-language-support/tree/main/packages/language-server",
+    "installation": "npm install -g @neo4j-cypher/language-server",
+    "installation-url": "https://github.com/neo4j/cypher-language-support/tree/main/packages/language-server#installation",
+    "debugger": "Not available"
+  },
+  {
     "name": "d",
     "full-name": "D",
     "server-name": "serve-d",

@@ -176,7 +176,7 @@ As defined by the Language Server Protocol 3.16."
 (defcustom lsp-client-packages
   '( ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-awk lsp-astro lsp-bash
      lsp-beancount lsp-clangd lsp-clojure lsp-cmake lsp-credo lsp-crystal lsp-csharp lsp-css
-     lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile lsp-elm lsp-elixir lsp-emmet
+     lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile lsp-elm lsp-elixir lsp-emmet
      lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go lsp-gleam
      lsp-glsl lsp-graphql lsp-hack lsp-grammarly lsp-groovy lsp-haskell lsp-haxe
      lsp-idris lsp-java lsp-javascript lsp-json lsp-kotlin lsp-latex lsp-ltex
@@ -776,6 +776,7 @@ Changes take effect only when a new session is started."
     ("\\.php$" . "php")
     ("\\.rs\\'" . "rust")
     ("\\.sql$" . "sql")
+    ("\\.cypher$" . "cypher")
     ("\\.svelte$" . "svelte")
     ("\\.toml\\'" . "toml")
     ("\\.ts$" . "typescript")
@@ -887,6 +888,7 @@ Changes take effect only when a new session is started."
     (csharp-ts-mode . "csharp")
     (plain-tex-mode . "plaintex")
     (context-mode . "context")
+    (cypher-mode . "cypher")
     (latex-mode . "latex")
     (v-mode . "v")
     (vhdl-mode . "vhdl")
