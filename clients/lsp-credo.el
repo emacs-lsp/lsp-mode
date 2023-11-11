@@ -70,10 +70,7 @@ be available here: https://github.com/elixir-tools/credo-language-server/release
 (lsp-dependency
  'credo-language-server
  `(:download :url lsp-credo-download-url
-             :store-path ,(f-join lsp-server-install-dir
-                                  "credo-language-server"
-                                  "credo-language-server")
-             :binary-path lsp-credo-binary-path
+             :store-path lsp-credo-binary-path
              :set-executable? t))
 
 (lsp-register-client
