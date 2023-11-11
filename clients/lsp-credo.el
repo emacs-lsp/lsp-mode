@@ -41,7 +41,7 @@
   :group 'lsp-credo
   :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom lsp-credo-version "0.1.2"
+(defcustom lsp-credo-version "0.3.0"
   "Credo language server version to download.
 It has to be set before `lsp-credo.el' is loaded and it has to
 be available here: https://github.com/elixir-tools/credo-language-server/releases."
