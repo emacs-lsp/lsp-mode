@@ -696,6 +696,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-wgsl-analyzer/</loc>
+         <lastmod>2023-11-11</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-xml/</loc>
          <lastmod>2023-11-11</lastmod>
          <changefreq>daily</changefreq>
