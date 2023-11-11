@@ -32,7 +32,10 @@
   :link '(url-link "https://github.com/elixir-tools/credo-language-server")
   :package-version '(lsp-mode . "8.0.1"))
 
-(defcustom lsp-credo-command '("credo-language-server" "--stdio=true")
+(defcustom lsp-credo-command
+  `(,(f-join lsp-server-install-dir "credo-language-server"
+            "credo-language-server")
+    "--stdio=true")
   "The command that starts credo-language-server."
   :type '(repeat :tag "List of string values" string)
   :group 'lsp-credo
@@ -75,7 +78,12 @@ be available here: https://github.com/elixir-tools/credo-language-server/release
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection (lsp-stdio-connection lsp-credo-command)
+  :new-connection (lsp-stdio-connection
+                   (lambda ()
+                     `(,(or (executable-find
+                             (cl-first lsp-credo-command))
+                            (lsp-package-path 'credo-language-server))
+                       ,@(cl-rest lsp-credo-command))))
   :activation-fn (lsp-activate-on "elixir")
   :priority -1
   :add-on? t
