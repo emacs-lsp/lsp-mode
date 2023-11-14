@@ -103,7 +103,7 @@
 
 (defcustom lsp-wgsl-shaderdefs []
   "Defines that should be valid for preprocessor operations like ifdef, e.g, ['USE_TYPES', 'DEBUG']"
-  :type '(repeat string)
+  :type 'lsp-string-vector
   :group 'lsp-wgsl
   :package-version '(lsp-mode . "8.0.1"))
 
