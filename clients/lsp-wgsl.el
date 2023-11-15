@@ -128,6 +128,7 @@
         :trace (list :extension t
                      :server t)))
 
+(defvar wgsl-font-lock-keywords)
 
 ;; Various interactive functions to use the custom LSP extensions from the server
 (defun lsp-wgsl-full-source ()
