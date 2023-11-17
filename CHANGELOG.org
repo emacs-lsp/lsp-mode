@@ -97,6 +97,7 @@
   * Add [https://github.com/rubocop/rubocop][RuboCop built-in language server]] for linting and formatting Ruby code.
   * Add Move language server support.
   * Add mdx support using [[https://github.com/mdx-js/mdx-analyzer/tree/main/packages/language-server][mdx-language-server]]
+  * Added a new optional ~:boolean-action-arguments~ argument when defining LSP clients. This allows clients to work around an lsp-mode parsing quirk that incorrectly sends ~null~ values instead of ~false~ in code action requests. An example of a code action that was broken because of this is the 'Fill placeholders for ...' code action in Haskell Language Server.
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.
