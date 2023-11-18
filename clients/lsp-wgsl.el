@@ -101,11 +101,11 @@
   :group 'lsp-wgsl
   :package-version '(lsp-mode . "8.0.1"))
 
-;; (defcustom lsp-wgsl-shaderdefs []
-;;   "Defines that should be valid for preprocessor operations like ifdef."
-;;   :type 'vector
-;;   :group 'lsp-wgsl
-;;   :package-version '(lsp-mode . "8.0.1"))
+(defcustom lsp-wgsl-shaderdefs []
+  "Defines that should be valid for preprocessor operations like ifdef, e.g, ['USE_TYPES', 'DEBUG']"
+  :type 'lsp-string-vector
+  :group 'lsp-wgsl
+  :package-version '(lsp-mode . "8.0.1"))
 
 ;; wgsl-analyzer is a bit weird with how it gets config.
 ;; Currently it relies on a custom extension to query the clients.
@@ -122,7 +122,7 @@
                           :parameterHints (lsp-json-bool lsp-wgsl-inlayhints-parameterhints)
                           :structLayoutHints (lsp-json-bool lsp-wgsl-inlayhints-structlayout)
                           :typeVerbosity lsp-wgsl-inlayhints-type-verbosity)
-        :shaderDefs []
+        :shaderDefs lsp-wgsl-shaderdefs
         ;; not configurable at the moment, as they don't seem to have much effect.
         ;; Fails if not given.
         :trace (list :extension t
