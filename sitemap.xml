@@ -281,6 +281,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-golangci-lint-server/</loc>
+         <lastmod>2023-11-18</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-gopls/</loc>
          <lastmod>2023-11-18</lastmod>
          <changefreq>daily</changefreq>
