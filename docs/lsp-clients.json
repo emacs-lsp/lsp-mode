@@ -315,6 +315,7 @@
     "full-name": "golangci-lint",
     "server-name": "golangci-lint-server",
     "server-url": "https://github.com/nametake/golangci-lint-langserver",
+    "installation": "go install github.com/nametake/golangci-lint-langserver@latest",
     "installation-url": "https://github.com/nametake/golangci-lint-langserver#installation",
     "debugger": "Not available"
   },
