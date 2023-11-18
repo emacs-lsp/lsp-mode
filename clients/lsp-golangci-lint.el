@@ -112,7 +112,7 @@
   "Return the command and args to start golangci-lint-langserver."
   (let ((args (list lsp-golangci-lint-server-path)))
     (when (and (listp lsp-golangci-lint-server-args)
-               (length> lsp-golangci-lint-server-args 0))
+               (> (length lsp-golangci-lint-server-args) 0))
       (setq args (append args lsp-golangci-lint-server-args)))
     (when lsp-golangci-lint-server-debug
       (setq args (append args '("-debug"))))
@@ -138,7 +138,7 @@
                         when condition
                         append (if value (list flag value) (list flag)))))
     (when (and (listp lsp-golangci-lint-run-args)
-               (length> lsp-golangci-lint-run-args 0))
+               (> (length lsp-golangci-lint-run-args) 0))
       (setq args (append args lsp-golangci-lint-run-args)))
     args))
 
