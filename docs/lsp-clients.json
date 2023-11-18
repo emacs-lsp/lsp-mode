@@ -71,6 +71,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "bufls",
+    "full-name": "buf-language-server",
+    "server-name": "bufls",
+    "server-url": "https://github.com/bufbuild/buf-language-server",
+    "installation": "go install github.com/bufbuild/buf-language-server/cmd/bufls@latest",
+    "installation-url": "https://github.com/bufbuild/buf-language-server#usage",
+    "debugger": "Not available"
+  },
+  {
     "name": "camel",
     "full-name": "CAMEL",
     "server-name": "camells",
