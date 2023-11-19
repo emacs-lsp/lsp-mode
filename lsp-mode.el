@@ -799,6 +799,7 @@ Changes take effect only when a new session is started."
     (bash-ts-mode . "shellscript")
     (ebuild-mode . "shellscript")
     (pkgbuild-mode . "shellscript")
+    (envrc-file-mode . "shellscript")
     (scala-mode . "scala")
     (scala-ts-mode . "scala")
     (julia-mode . "julia")

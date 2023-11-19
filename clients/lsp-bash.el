@@ -68,13 +68,13 @@ See instructions at https://marketplace.visualstudio.com/items?itemName=mads-har
   "Check whether `sh-shell' is sh or bash.
 
 This prevents the Bash server from being turned on in zsh files."
-  (and (memq major-mode '(sh-mode bash-ts-mode ebuild-mode))
+  (and (memq major-mode '(sh-mode bash-ts-mode ebuild-mode envrc-file-mode))
        (memq sh-shell '(sh bash))))
 
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection #'lsp-bash--bash-ls-server-command)
-  :major-modes '(sh-mode bash-ts-mode ebuild-mode)
+  :major-modes '(sh-mode bash-ts-mode ebuild-mode envrc-file-mode)
   :priority -1
   :activation-fn #'lsp-bash-check-sh-shell
   :environment-fn (lambda ()
