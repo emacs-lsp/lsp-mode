@@ -8047,7 +8047,10 @@ When prefix UPDATE? is t force installation even if the server is present."
 (defun lsp-async-start-process (callback error-callback &rest command)
   "Start async process COMMAND with CALLBACK and ERROR-CALLBACK."
   (let ((name (cl-first command)))
-    (with-current-buffer (compilation-start (mapconcat #'shell-quote-argument command " ") t
+    (with-current-buffer (compilation-start (mapconcat #'shell-quote-argument (-filter (lambda (cmd)
+                                                                                         (not (null cmd)))
+                                                                                       command)
+                                                       " ") t
                                             (lambda (&rest _)
                                               (generate-new-buffer-name (format "*lsp-install: %s*" name))))
       (lsp-installation-buffer-mode +1)
@@ -8076,6 +8079,8 @@ Otherwise returns value itself."
 (defvar lsp-deps-providers
   (list :npm (list :path #'lsp--npm-dependency-path
                    :install #'lsp--npm-dependency-install)
+        :cargo (list :path #'lsp--cargo-dependency-path
+                     :install #'lsp--cargo-dependency-install)
         :system (list :path #'lsp--system-path)
         :download (list :path #'lsp-download-path
                         :install #'lsp-download-install)))
@@ -8165,6 +8170,37 @@ nil."
                                  package))
     (lsp-log "Unable to install %s via `npm' because it is not present" package)
     nil))
+
+
+;; Cargo dependency handling
+(cl-defun lsp--cargo-dependency-path (&key package path &allow-other-keys)
+  (let ((path (executable-find
+               (f-join lsp-server-install-dir
+                       "cargo"
+                       package
+                       "bin"
+                       path)
+               t)))
+    (unless (and path (f-exists? path))
+      (error "The package %s is not installed.  Unable to find %s" package path))
+    path))
+
+(cl-defun lsp--cargo-dependency-install (callback error-callback &key package git &allow-other-keys)
+  (if-let ((cargo-binary (executable-find "cargo")))
+      (lsp-async-start-process
+       callback
+       error-callback
+       cargo-binary
+       "install"
+       package
+       (when git
+         "--git")
+       git
+       "--root"
+       (f-join lsp-server-install-dir "cargo" package))
+    (lsp-log "Unable to install %s via `cargo' because it is not present" package)
+    nil))
+
 
 
 ;; Download URL handling
