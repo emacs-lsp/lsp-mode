@@ -149,6 +149,23 @@
          (font-lock-mode))
        (switch-to-buffer buffer)))))
 
+(defun lsp-wgsl-syntax-tree ()
+  "Gets the syntax tree of the current buffer."
+  (interactive)
+  (lsp-request-async
+   "wgsl-analyzer/syntaxTree"
+   (list :textDocument (list :uri (lsp--buffer-uri))
+         :range (if (use-region-p)
+                    (lsp--region-to-range (region-beginning) (region-end))
+                  (lsp--region-to-range (point-min) (point-max))))
+   (lambda (syntax-tree)
+     (let ((buffer (get-buffer-create (format "*WGSL-syntax-tree %s*" (lsp--buffer-uri)))))
+       (with-current-buffer buffer
+         (setq-local buffer-read-only nil)
+         (erase-buffer)
+         (insert syntax-tree)
+         (read-only-mode))
+       (switch-to-buffer buffer)))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
