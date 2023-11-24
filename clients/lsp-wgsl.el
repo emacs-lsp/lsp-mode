@@ -167,10 +167,18 @@
          (read-only-mode))
        (switch-to-buffer buffer)))))
 
+
+(lsp-dependency 'wgsl-analyzer
+                '(:system lsp-wgsl-server-command)
+                '(:cargo :package "wgsl_analyzer"
+                         :path "wgsl_analyzer"
+                         :git "https://github.com/wgsl-analyzer/wgsl-analyzer"))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda ()
-                                     lsp-wgsl-server-command))
+                                     (or (lsp-package-path 'wgsl-analyzer)
+                                         lsp-wgsl-server-command)))
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
                                       ;; wgsl-analyzer handles configuration in a VERY non-standard way
@@ -178,6 +186,9 @@
                                       (lsp--set-configuration '())))
                   :request-handlers (lsp-ht ("wgsl-analyzer/requestConfiguration" #'lsp-wgsl--send-configuration))
                   :activation-fn (lsp-activate-on "wgsl")
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure 'wgsl-analyzer
+                                                            callback error-callback))
                   :priority -1
                   :server-id 'wgsl-analyzer))
 
