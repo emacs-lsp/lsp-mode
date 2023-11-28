@@ -167,6 +167,7 @@
   * Reorganized lsp-mode code moving features and clients to separated files. #2067
   * Add support for signatureHelp using ~posframe~. #1999
   * Add ~iedit~ integration. #2478
+  * Add client for Verible SystemVerilog language Server ([[https://github.com/chipsalliance/verible]])
 
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.

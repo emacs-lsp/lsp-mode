@@ -160,6 +160,7 @@ nav:
     - Vala: page/lsp-vala.md
     - Verilog/SystemVerilog (hdl-checker): page/lsp-verilog.md
     - Verilog/SystemVerilog (svlangserver): page/lsp-svlangserver.md
+    - Verilog/SystemVerilog (verible): page/lsp-verible.md
     - VHDL: page/lsp-vhdl.md
     - Vimscript: page/lsp-vimscript.md
     - Vue 2: page/lsp-vetur.md
