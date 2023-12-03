@@ -106,6 +106,18 @@ to Kotlin."
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "8.0.1"))
 
+(defcustom lsp-kotlin-workspace-dir (expand-file-name (locate-user-emacs-file "workspace/"))
+  "LSP kotlin workspace directory."
+  :group 'lsp-kotlin
+  :risky t
+  :type 'directory)
+
+(defcustom lsp-kotlin-workspace-cache-dir (expand-file-name ".cache/" lsp-kotlin-workspace-dir)
+  "LSP kotlin workspace cache directory."
+  :group 'lsp-kotlin
+  :risky t
+  :type 'directory)
+
 ;; cache in this case is the dependency cache. Given as an initialization option.
 (defcustom lsp-kotlin-ondisk-cache-path nil
   "Path to the ondisk cache if used. If lsp-kotlin-ondisk-cache-enabled is t, but path is nil, then the project root is used as a default."
@@ -266,6 +278,36 @@ to Kotlin."
          (dolist (edit (-flatten selected-members))
            (lsp--apply-text-edits edit))))))
 
+(defun lsp-kotlin--parse-uri (uri)
+  "Get the path for where we'll store the file, calculating it based on URI."
+  (or (save-match-data
+        (when (string-match "kls:file:///\\(.*\\)!/\\(.*\.\\(class\\|java\\|kt\\)\\)?.*" uri)
+          (let* ((jar-path (match-string 1 uri))
+                 (file-path (match-string 2 uri))
+                 (lib-name (string-join (last (split-string jar-path "/") 2) "."))
+                 (buffer-name (replace-regexp-in-string "/" "." file-path t t))
+                 (file-location (expand-file-name (concat lsp-kotlin-workspace-cache-dir "/" lib-name "/" buffer-name))))
+            file-location)))
+      (error "Unable to match %s" uri)))
+
+(defun lsp-kotlin--uri-handler (uri)
+  "Load a file corresponding to URI executing request to the kotlin server."
+  (let ((file-location (lsp-kotlin--parse-uri uri)))
+    (unless (file-readable-p file-location)
+      (lsp-kotlin--ensure-dir (file-name-directory file-location))
+      (with-lsp-workspace (lsp-find-workspace 'kotlin-ls nil)
+        (let ((content (lsp-send-request (lsp-make-request
+                                          "kotlin/jarClassContents"
+                                          (list :uri uri)))))
+          (with-temp-file file-location
+            (insert content)))))
+    file-location))
+
+(defun lsp-kotlin--ensure-dir (path)
+  "Ensure that directory PATH exists."
+  (unless (file-directory-p path)
+    (make-directory path t)))
+
 (lsp-dependency
  'kotlin-language-server
  `(:system ,lsp-clients-kotlin-server-executable)
@@ -286,6 +328,7 @@ to Kotlin."
   :major-modes '(kotlin-mode kotlin-ts-mode)
   :priority -1
   :server-id 'kotlin-ls
+  :uri-handlers (lsp-ht ("kls" #'lsp-kotlin--uri-handler))
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--set-configuration (lsp-configuration-section "kotlin"))))
