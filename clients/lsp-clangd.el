@@ -162,6 +162,9 @@ number of newlines."
   "Show clang-tidy documentation about ERROR-ID.
 
 Information comes from the clang.llvm.org website."
+  ;; Example error-id: modernize-loop-convert
+  ;; Example url: https://clang.llvm.org/extra/clang-tidy/checks/modernize/loop-convert.html
+  (setq error-id (s-join "/" (s-split-up-to "-" error-id 1 t)))
   (url-retrieve (format
                  "https://clang.llvm.org/extra/clang-tidy/checks/%s.html" error-id)
                 (lambda (status)
@@ -236,7 +239,7 @@ This must be set only once after loading the clang client.")
                             ;; Prefer `clangd` without a version number appended.
                             (cl-list* "" (-map
                                           (lambda (vernum) (format "-%d" vernum))
-                                          (number-sequence 14 6 -1)))))
+                                          (number-sequence 17 6 -1)))))
               (lsp-clients-executable-find "xcodebuild" "-find-executable" "clangd")
               (lsp-clients-executable-find "xcrun" "--find" "clangd"))))
 

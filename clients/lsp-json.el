@@ -36,7 +36,9 @@
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-json-schemas nil
-  "Associate schemas to JSON files in the current project"
+  "Associate schemas to JSON files in the current project example can be found \
+[here]\
+(https://github.com/emacs-lsp/lsp-mode/issues/3368#issuecomment-1049635155)."
   :type '(repeat alist)
   :group 'lsp-json
   :package-version '(lsp-mode . "6.3"))

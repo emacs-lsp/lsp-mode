@@ -61,7 +61,7 @@
                                      `(,(or (executable-find (cl-first lsp-clients-vim-executable))
                                             (lsp-package-path 'vim-language-server))
                                        ,@(cl-rest lsp-clients-vim-executable))))
-                  :major-modes '(vimrc-mode)
+                  :major-modes '(vimrc-mode vimscript-ts-mode)
                   :priority -1
                   :server-id 'vimls
                   :initialization-options (lambda () lsp-clients-vim-initialization-options)

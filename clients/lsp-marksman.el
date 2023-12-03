@@ -48,10 +48,11 @@
 (defcustom lsp-marksman-download-url
   (format "https://github.com/artempyanykh/marksman/releases/latest/download/%s"
           (pcase system-type
-            ('gnu/linux "marksman-linux")
-            ('darwin (if (string-match "^aarch64-.*" system-configuration)
-                         "marksman-macos" ;; Note: probably wrong/will not work
-                       "marksman-macos"))
+            ('gnu/linux
+             (if (string-match "^aarch64-.*" system-configuration)
+                 "marksman-linux-arm64"
+               "marksman-linux-x64"))
+            ('darwin "marksman-macos")
             ('windows-nt "marksman.exe")))
   "Automatic download url for Marksman."
   :type 'string
@@ -78,7 +79,8 @@
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda ()
                                      (cons (or (executable-find lsp-marksman-server-command)
-                                               (lsp-package-path 'marksman))
+                                               (lsp-package-path 'marksman)
+                                               "marksman")
                                            lsp-marksman-server-command-args)))
                   :activation-fn (lsp-activate-on "markdown")
                   :initialized-fn (lambda (workspace)

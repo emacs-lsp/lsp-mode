@@ -306,7 +306,7 @@ private void extracted() {
 ;;; `lsp-rename'
 (defmacro lsp-test--simulated-input (keys &rest body)
   "Execute body, while simulating the pressing of KEYS.
-KEYS is passed to `execute-kbd-macro', after being run trough
+KEYS is passed to `execute-kbd-macro', after being run through
 `kbd'. Returns the result of the last BODY form."
   (declare (indent 1))
   `(let (result)

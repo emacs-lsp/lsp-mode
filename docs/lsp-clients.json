@@ -43,6 +43,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "awk",
+    "full-name": "AWK",
+    "server-name": "awk-language-server",
+    "server-url": "https://github.com/Beaglefoot/awk-language-server",
+    "installation": "npm i -g awk-language-server",
+    "lsp-install-server": "awkls",
+    "debugger": "Not available"
+  },
+  {
     "name": "bash",
     "full-name": "Bash",
     "server-name": "bash-language-server",
@@ -54,10 +63,20 @@
   {
     "name": "beancount",
     "full-name": "Beancount",
-    "server-name": "beancount-langserver",
+    "server-name": "beancount-language-server",
     "server-url": "https://github.com/polarmutex/beancount-language-server",
-    "installation": "npm install -g beancount-langserver",
+    "installation": "cargo install beancount-language-server",
+    "installation-url": "https://github.com/polarmutex/beancount-language-server#installation",
     "lsp-install-server": "beancount-ls",
+    "debugger": "Not available"
+  },
+  {
+    "name": "bufls",
+    "full-name": "buf-language-server",
+    "server-name": "bufls",
+    "server-url": "https://github.com/bufbuild/buf-language-server",
+    "installation": "go install github.com/bufbuild/buf-language-server/cmd/bufls@latest",
+    "installation-url": "https://github.com/bufbuild/buf-language-server#usage",
     "debugger": "Not available"
   },
   {
@@ -67,6 +86,14 @@
     "server-url": "https://github.com/camel-tooling/camel-language-server/",
     "installation": "Automatic by lsp-mode with `lsp-install-server`",
     "lsp-install-server": "camells",
+    "debugger": "Not available"
+  },
+  {
+    "name": "credo",
+    "full-name": "Credo",
+    "server-name": "credo-ls",
+    "server-url": "https://github.com/elixir-tools/credo-language-server",
+    "installation-url": "https://github.com/elixir-tools/credo-language-server#installation",
     "debugger": "Not available"
   },
   {
@@ -128,9 +155,9 @@
   {
     "name": "crystal",
     "full-name": "Crystal",
-    "server-name": "scry",
-    "server-url": "https://github.com/crystal-lang-tools/scry",
-    "installation-url": "https://github.com/crystal-lang-tools/scry#installation",
+    "server-name": "crystalline",
+    "server-url": "https://github.com/elbywan/crystalline",
+    "installation-url": "https://github.com/elbywan/crystalline#installation",
     "debugger": "Not available"
   },
   {
@@ -140,6 +167,15 @@
     "server-url": "https://github.com/microsoft/vscode/tree/main/extensions/css-language-features/server",
     "installation": "npm install -g vscode-langservers-extracted",
     "lsp-install-server": "css-ls",
+    "debugger": "Not available"
+  },
+  {
+    "name": "cypher",
+    "full-name": "Cypher",
+    "server-name": "cypher-language-server",
+    "server-url": "https://github.com/neo4j/cypher-language-support/tree/main/packages/language-server",
+    "installation": "npm install -g @neo4j-cypher/language-server",
+    "installation-url": "https://github.com/neo4j/cypher-language-support/tree/main/packages/language-server#installation",
     "debugger": "Not available"
   },
   {
@@ -203,7 +239,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "erlang",
+    "name": "erlang-ls",
     "full-name": "Erlang",
     "server-name": "erlang_ls",
     "server-url": "https://github.com/erlang-ls/erlang_ls",
@@ -211,10 +247,18 @@
     "debugger": "Not available"
   },
   {
+    "name": "erlang-elp",
+    "full-name": "Erlang",
+    "server-name": "elp",
+    "server-url": "https://github.com/WhatsApp/erlang-language-platform",
+    "installation-url": "https://github.com/WhatsApp/erlang-language-platform",
+    "debugger": "Not available"
+  },
+  {
     "name": "eslint",
     "full-name": "ESlint",
     "server-name": "eslint",
-    "server-url": "https://github.com/Microsoft/vscode-eslint",
+    "server-url": "https://github.com/microsoft/vscode-eslint",
     "lsp-install-server": "eslint",
     "debugger": "N/A"
   },
@@ -274,6 +318,15 @@
     "server-url": "https://github.com/golang/tools/tree/master/gopls",
     "installation-url": "https://github.com/golang/tools/tree/master/gopls#installation",
     "debugger": "Yes"
+  },
+  {
+    "name": "golangci-lint-server",
+    "full-name": "golangci-lint",
+    "server-name": "golangci-lint-server",
+    "server-url": "https://github.com/nametake/golangci-lint-langserver",
+    "installation": "go install github.com/nametake/golangci-lint-langserver@latest",
+    "installation-url": "https://github.com/nametake/golangci-lint-langserver#installation",
+    "debugger": "Not available"
   },
   {
     "name": "grammarly",
@@ -382,6 +435,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "jq",
+    "full-name": "Jq (jq-lsp)",
+    "server-name": "jq-lsp",
+    "server-url": "https://github.com/wader/jq-lsp",
+    "installation": "go install github.com/wader/jq-lsp@master",
+    "installation-url": "https://github.com/wader/jq-lsp#install",
+    "debugger": "Not available"
+  },
+  {
     "name": "kotlin",
     "full-name": "Kotlin",
     "server-name": "kotlin-language-server",
@@ -473,6 +535,22 @@
     "server-name": "mint",
     "server-url": "https://github.com/mint-lang/mint",
     "installation-url": "https://mint-lang.com/blog/mint-0.12.0",
+    "debugger": "Not available"
+  },
+  {
+    "name": "move",
+    "full-name": "Move Language",
+    "server-name": "move-analyzer",
+    "server-url": "https://github.com/move-language/move",
+    "installation-url": "https://github.com/move-language/move/tree/main/language/move-analyzer",
+    "debugger": "Not available"
+  },
+  {
+    "name": "mdx",
+    "full-name": "mdx",
+    "server-name": "mdx-analyzer",
+    "server-url": "https://github.com/mdx-js/mdx-analyzer/tree/main/packages/language-server",
+    "installation": "npm install -g @mdx-js/language-server",
     "debugger": "Not available"
   },
   {
@@ -707,6 +785,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "rubocop",
+    "full-name": "Ruby (RuboCop)",
+    "server-name": "rubocop",
+    "server-url": "https://github.com/rubocop/rubocop",
+    "installation-url": "https://docs.rubocop.org/rubocop/installation.html",
+    "installation": "gem install rubocop",
+    "debugger": "Not available"
+  },
+  {
     "name": "robot",
     "full-name": "robot framework",
     "server-name": "rf-intellisense",
@@ -750,6 +837,14 @@
     "debugger": "Yes"
   },
   {
+    "name": "semgrep",
+    "full-name": "Semgrep",
+    "server-name": "semgrep-ls",
+    "server-url": "https://github.com/returntocorp/semgrep",
+    "installation": "pip install semgrep --user",
+    "debugger": "Not available"
+  },
+  {
     "name": "serenata",
     "common-group-name": "php",
     "full-name": "PHP (Serenata)",
@@ -774,6 +869,15 @@
     "server-url": "https://github.com/castwide/solargraph",
     "installation": "gem install solargraph",
     "debugger": "Yes"
+  },
+  {
+      "name": "solidity",
+      "full-name": "nomicfoundation/solidity-language-server",
+      "server-name": "solidity-language-server",
+      "installation": "npx @nomicfoundation/solidity-language-server",
+      "server-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
+      "installation-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
+      "debugger": "Not available"
   },
   {
     "name": "sorbet",
@@ -956,9 +1060,17 @@
     "name": "volar",
     "full-name": "Vue 3",
     "server-name": "volar-language-server",
-    "server-url": "https://github.com/johnsoncodehk/volar",
-    "installation": "npm install -g @volar/vue-language-server",
+    "server-url": "https://github.com/vuejs/language-tools",
+    "installation": "npm install -g @vue/language-server",
     "lsp-install-server": "vue-semantic-server",
+    "debugger": "Not available"
+  },
+  {
+    "name": "wgsl-analyzer",
+    "full-name": "wgsl",
+    "server-name": "wgsl-analyzer",
+    "server-url": "https://github.com/wgsl-analyzer/wgsl-analyzer",
+    "installation": "cargo install --git https://github.com/wgsl-analyzer/wgsl-analyzer wgsl_analyzer",
     "debugger": "Not available"
   },
   {

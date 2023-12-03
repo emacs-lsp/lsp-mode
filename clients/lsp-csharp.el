@@ -56,7 +56,7 @@ Set this if you have the binary installed or have it built yourself."
 
 (defcustom lsp-csharp-test-run-buffer-name
   "*lsp-csharp test run*"
-  "The name of buffer used for outputing lsp-csharp test run results."
+  "The name of buffer used for outputting lsp-csharp test run results."
   :group 'lsp-csharp-omnisharp
   :type 'string)
 
@@ -360,7 +360,8 @@ using the `textDocument/references' request."
                                              ("o#/testmessage" 'lsp-csharp--handle-os-testmessage)
                                              ("o#/testcompleted" 'lsp-csharp--handle-os-testcompleted)
                                              ("o#/projectconfiguration" 'ignore)
-                                             ("o#/projectdiagnosticstatus" 'ignore))
+                                             ("o#/projectdiagnosticstatus" 'ignore)
+                                             ("o#/backgrounddiagnosticstatus" 'ignore))
                   :download-server-fn #'lsp-csharp--omnisharp-download-server))
 
 ;;

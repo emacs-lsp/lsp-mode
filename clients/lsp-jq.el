@@ -1,9 +1,9 @@
-;;; lsp-crystal.el --- description -*- lexical-binding: t; -*-
+;;; lsp-jq.el --- lsp client for jq -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
-;; Keywords: lsp, crystal
+;; Keywords: lsp, jq
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -19,30 +19,33 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-
-;; LSP Clients for the Crystal Programming Language.
-
+;;
+;; LSP client for jq language.
+;;
 ;;; Code:
 
 (require 'lsp-mode)
 
-(defgroup lsp-crystalline nil
-  "LSP support for Crystal via crystalline."
+(defgroup lsp-jq nil
+  "LSP support for Jq."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/elbywan/crystalline"))
+  :link '(url-link "https://github.com/wader/jq-lsp"))
 
-(defcustom lsp-clients-crystal-executable '("crystalline" "--stdio")
-  "Command to start the crystalline language server."
-  :group 'lsp-crystalline
+(defcustom lsp-clients-jq-server-executable '("jq-lsp")
+  "The jq language server executable to use."
+  :group 'lsp-jq
   :risky t
-  :type 'file)
+  :type '(repeat string))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-crystal-executable)
-                  :major-modes '(crystal-mode)
-                  :server-id 'crystalline))
+ (make-lsp-client
+  :new-connection (lsp-stdio-connection (lambda () lsp-clients-jq-server-executable))
+  :activation-fn (lsp-activate-on "jq")
+  :priority -1
+  :major-modes '(jq-mode jq-ts-mode)
+  :server-id 'jq-lsp))
 
-(lsp-consistency-check lsp-crystal)
+(lsp-consistency-check lsp-jq)
 
-(provide 'lsp-crystal)
-;;; lsp-crystal.el ends here
+(provide 'lsp-jq)
+;;; lsp-jq.el ends here

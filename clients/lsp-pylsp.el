@@ -222,8 +222,25 @@ dot."
   :type 'boolean
   :group 'lsp-pylsp)
 
+(defcustom lsp-pylsp-plugins-rope-autoimport-enabled nil
+  "Enable or disable the plugin."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-rope-autoimport-memory nil
+  "Make the autoimport database memory only.
+
+Drastically increases startup time."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
 (defcustom lsp-pylsp-plugins-rope-completion-enabled nil
   "Enable or disable the plugin."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-rope-completion-eager nil
+  "Resolve documentation and detail eagerly."
   :type 'boolean
   :group 'lsp-pylsp)
 
@@ -238,6 +255,11 @@ dot."
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-black-enabled nil
+  "Enable or disable the plugin."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-isort-enabled nil
   "Enable or disable the plugin."
   :type 'boolean
   :group 'lsp-pylsp)
@@ -376,7 +398,11 @@ So it will rename only references it can find."
    ("pylsp.plugins.autopep8.enabled" lsp-pylsp-plugins-autopep8-enabled t)
    ("pylsp.plugins.yapf.enabled" lsp-pylsp-plugins-yapf-enabled t)
    ("pylsp.plugins.black.enabled" lsp-pylsp-plugins-black-enabled t)
+   ("pylsp.plugins.pyls_isort.enabled" lsp-pylsp-plugins-isort-enabled t)
+   ("pylsp.plugins.rope_autoimport.enabled" lsp-pylsp-plugins-rope-autoimport-enabled t)
+   ("pylsp.plugins.rope_autoimport.memory" lsp-pylsp-plugins-rope-autoimport-memory t)
    ("pylsp.plugins.rope_completion.enabled" lsp-pylsp-plugins-rope-completion-enabled t)
+   ("pylsp.plugins.rope_completion.eager" lsp-pylsp-plugins-rope-completion-eager t)
    ("pylsp.plugins.pyflakes.enabled" lsp-pylsp-plugins-pyflakes-enabled t)
    ("pylsp.plugins.pydocstyle.matchDir" lsp-pylsp-plugins-pydocstyle-match-dir)
    ("pylsp.plugins.pydocstyle.match" lsp-pylsp-plugins-pydocstyle-match)

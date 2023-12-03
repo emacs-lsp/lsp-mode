@@ -31,6 +31,17 @@ corresponding mode -\> language id - in this case `(python-mode .
 buffer language. When the `major-mode` is not sufficient to determine the
 language (e.g. `web-mode` is used for `javascript`, `html`, and `css`) you can put regex.
 
+**Note:** In the above example, when a new client is created using
+`make-lsp-client`, a new connection to the language server is created
+using `lsp-stdio-connection`.  Please carefully check its
+documentation, as the function checks for various things (e.g. testing
+for the executable in PATH) and handles respective errors.  Often
+while adding a server, the LSP client author might do these checks
+themselves, but without handling the errors correctly.  This leads to
+features like `lsp-install-server` breaking for other users; e.g. see
+[this issue](https://github.com/emacs-lsp/lsp-mode/issues/3415).  This
+is a common mistake that keeps reoccurring.
+
 Here's an example of how to set up a custom language server in your `init.el` file:
 
 ```elisp
@@ -81,8 +92,8 @@ client has been loaded.
 
 (lsp-register-client
  (make-lsp-client
-  ;; instead of `:new-connection (lsp-stdio-connection lsp-text-executable)` use
-  :new-connection (lsp-stdio-connection (lambda () lsp-text-executable))
+  ;; instead of `:new-connection (lsp-stdio-connection lsp-tex-executable)` use
+  :new-connection (lsp-stdio-connection (lambda () lsp-tex-executable))
   :activation-fn (lsp-activate-on "plaintex" "latex")
   :priority -1
   :server-id 'digestif))

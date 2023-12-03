@@ -317,9 +317,33 @@ $GOPATH/pkg/mod along with the value of
    ("gopls.symbolMatcher" lsp-go-symbol-matcher)
    ("gopls.symbolStyle" lsp-go-symbol-style)))
 
+(defcustom lsp-go-server-wrapper-function
+  #'identity
+  "Function to wrap the language server process started by lsp-go.
+
+For example, you can pick a go binary provided by a repository's
+flake.nix file with:
+
+  (use-package nix-sandbox)
+  (defun my/nix--lsp-go-wrapper (args)
+    (if-let ((sandbox (nix-current-sandbox)))
+        (apply 'nix-shell-command sandbox args)
+      args))
+  (setq lsp-go-server-path \"gopls\"
+        lsp-go-server-wrapper-function 'my/nix--lsp-go-wrapper)"
+  :group 'lsp-go
+  :type '(choice
+          (function-item :tag "None" :value identity)
+          (function :tag "Custom function")))
+
+(defun lsp-go--server-command ()
+  "Command and arguments for launching the inferior language server process.
+These are assembled from the customizable variables `lsp-go-server-path'
+and `lsp-go-server-wrapper-function'."
+  (funcall lsp-go-server-wrapper-function (append (list lsp-go-gopls-server-path) lsp-go-gopls-server-args)))
+
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection
-                                   (lambda () (cons lsp-go-gopls-server-path lsp-go-gopls-server-args)))
+ (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-go--server-command)
                   :activation-fn (lsp-activate-on "go" "go.mod")
                   :language-id "go"
                   :priority 0

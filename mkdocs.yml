@@ -50,6 +50,7 @@ nav:
     - Angular: page/lsp-angular.md
     - Ansible: page/lsp-ansible.md
     - Astro: page/lsp-astro.md
+    - AWK: page/lsp-awk.md
     - Bash: page/lsp-bash.md
     - Beancount: page/lsp-beancount.md
     - Camel: page/lsp-camel.md
@@ -61,6 +62,7 @@ nav:
     - CMake: page/lsp-cmake.md
     - Crystal: page/lsp-crystal.md
     - CSS/LessCSS/SASS/SCSS: page/lsp-css.md
+    - Cypher: page/lsp-cypher.md
     - D: page/lsp-d.md
     - Dart: https://emacs-lsp.github.io/lsp-dart
     - Dhall: page/lsp-dhall.md
@@ -69,7 +71,7 @@ nav:
     - Elm: page/lsp-elm.md
     - Emmet: page/lsp-emmet.md
     - Erlang: page/lsp-erlang.md
-    - Eslint: page/lsp-eslint.md
+    - ESLint: page/lsp-eslint.md
     - F#: page/lsp-fsharp.md
     - Fortran: page/lsp-fortran.md
     - GDScript: page/lsp-gdscript.md
@@ -98,6 +100,8 @@ nav:
     - Magik: page/lsp-magik.md
     - Markdown: page/lsp-markdown.md
     - Marksman: page/lsp-marksman.md
+    - Move: page/lsp-move.md
+    - MDX: page/lsp-mdx.md
     - MSSQL: https://emacs-lsp.github.io/lsp-mssql
     - Nginx: page/lsp-nginx.md
     - Nim: page/lsp-nim.md
@@ -125,6 +129,7 @@ nav:
     - R: page/lsp-r.md
     - Racket (jeapostrophe): page/lsp-racket-langserver.md
     - Racket (Theia): page/lsp-racket-language-server.md
+    - Ruby (RuboCop): page/lsp-rubocop.md
     - Ruby (ruby-lsp): page/lsp-ruby-lsp.md
     - Ruby (Solargraph): page/lsp-solargraph.md
     - Ruby (Sorbet): page/lsp-sorbet.md
@@ -133,6 +138,7 @@ nav:
     - Rust (rust-analyzer): page/lsp-rust-analyzer.md
     - Rust (rls): page/lsp-rust-rls.md
     - Scala: https://emacs-lsp.github.io/lsp-metals
+    - Semgrep: page/lsp-semgrep.md
     - ShaderLab: page/lsp-shader.md
     - SQL (sqls): page/lsp-sqls.md
     - Standard ML (Millet): page/lsp-sml.md
@@ -154,6 +160,7 @@ nav:
     - Vimscript: page/lsp-vimscript.md
     - Vue 2: page/lsp-vetur.md
     - Vue 3: page/lsp-volar.md
+    - wgsl: page/lsp-wgsl.md
     - XML: page/lsp-xml.md
     - YAML: page/lsp-yaml.md
     - Zig: page/lsp-zig.md
@@ -171,6 +178,7 @@ nav:
       - 'Configuring Emacs as a Clojure IDE': tutorials/clojure-guide.md
       - 'Debugging Clojurescript': tutorials/debugging-clojure-script.md
       - 'Python, debbuging with poetry + pyenv': https://emacs-lsp.github.io/dap-mode/page/python-poetry-pyenv/
+      - 'Configuring Emacs as a Crystal IDE': tutorials/crystal-guide.md
   - Blog:
       - 2020:
           - '7.0 Release': blog/2020/7.0-release.md

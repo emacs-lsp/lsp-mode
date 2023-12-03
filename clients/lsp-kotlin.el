@@ -118,6 +118,31 @@ to Kotlin."
   :risky t
   :type 'directory)
 
+;; cache in this case is the dependency cache. Given as an initialization option.
+(defcustom lsp-kotlin-ondisk-cache-path nil
+  "Path to the ondisk cache if used. If lsp-kotlin-ondisk-cache-enabled is t, but path is nil, then the project root is used as a default."
+  :type 'string
+  :group 'lsp-kotlin)
+
+(defcustom lsp-kotlin-ondisk-cache-enabled nil
+  "Specifies whether to enable ondisk cache or not. If nil, in-memory cache will be used."
+  :type 'boolean
+  :group 'lsp-kotlin)
+
+(defcustom lsp-kotlin-inlayhints-enable-typehints t
+  "Specifies whether to enable type hints or not. Requires lsp-inlay-hints-mode."
+  :type 'boolean
+  :group 'lsp-kotlin)
+
+(defcustom lsp-kotlin-inlayhints-enable-parameterhints t
+  "Specifies whether to enable parameter hints or not. Requires lsp-inlay-hints-mode."
+  :type 'boolean
+  :group 'lsp-kotlin)
+
+(defcustom lsp-kotlin-inlayhints-enable-chainedhints t
+  "Specifies whether to enable chained hints or not. Requires lsp-inlay-hints-mode."
+  :type 'boolean
+  :group 'lsp-kotlin)
 
 (lsp-register-custom-settings
  '(("kotlin.externalSources.autoConvertToKotlin" lsp-kotlin-external-sources-auto-convert-to-kotlin t)
@@ -128,7 +153,10 @@ to Kotlin."
    ("kotlin.linting.debounceTime" lsp-kotlin-linting-debounce-time)
    ("kotlin.compiler.jvm.target" lsp-kotlin-compiler-jvm-target)
    ("kotlin.trace.server" lsp-kotlin-trace-server)
-   ("kotlin.languageServer.path" lsp-clients-kotlin-server-executable)))
+   ("kotlin.languageServer.path" lsp-clients-kotlin-server-executable)
+   ("kotlin.inlayHints.typeHints" lsp-kotlin-inlayhints-enable-typehints t)
+   ("kotlin.inlayHints.parameterHints" lsp-kotlin-inlayhints-enable-parameterhints t)
+   ("kotlin.inlayHints.chainedHints" lsp-kotlin-inlayhints-enable-chainedhints t)))
 
 (defvar lsp-kotlin--language-server-path
   (f-join lsp-server-install-dir
@@ -215,8 +243,8 @@ to Kotlin."
           (ivy-read message (mapcar #'car items)
                     :action (lambda (c) (setq result (list (cdr (assoc c items)))))
                     :multi-action
-                    (lambda (canditates)
-                      (setq result (mapcar (lambda (c) (cdr (assoc c items))) canditates))))
+                    (lambda (candidates)
+                      (setq result (mapcar (lambda (c) (cdr (assoc c items))) candidates))))
           result)
       (let ((deps initial-selection) dep)
         (while (setq dep (cl-rest (lsp--completing-read
@@ -304,6 +332,10 @@ to Kotlin."
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--set-configuration (lsp-configuration-section "kotlin"))))
+  :initialization-options (lambda ()
+                            (when lsp-kotlin-ondisk-cache-enabled
+                              (list :storagePath (or lsp-kotlin-ondisk-cache-path
+                                                     (lsp-workspace-root)))))
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'kotlin-language-server callback error-callback))))
 

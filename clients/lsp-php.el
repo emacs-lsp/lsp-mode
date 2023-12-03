@@ -119,6 +119,14 @@ from all language server features."
   :package-version '(lsp-mode . "6.1")
   :lsp-path "intelephense.files.exclude")
 
+(lsp-defcustom lsp-intelephense-paths-include
+  []
+  "Configure additional paths outside workspace."
+  :type 'lsp-string-vector
+  :group 'lsp-intelephense
+  :package-version '(lsp-mode . "8.1")
+  :lsp-path "intelephense.environment.includePaths")
+
 (lsp-defcustom lsp-intelephense-stubs
   ["apache" "bcmath" "bz2" "calendar"
    "com_dotnet" "Core" "ctype" "curl" "date" "dba" "dom" "enchant"
