@@ -372,6 +372,104 @@ to a closure. Only applies to closures with blocks, same as
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.1"))
 
+(defcustom lsp-rust-analyzer-highlight-breakpoints t
+  "Enables highlighting of related references while the cursor is on
+`break`, `loop`, `while`, or `for` keywords."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-highlight-closure-captures t
+  "Enables highlighting of all captures of a closure while the
+cursor is on the `|` or move keyword of a closure."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-highlight-exit-points t
+  "Enables highlighting of all exit points while the cursor is on
+any `return`, `?`, `fn`, or return type arrow (`->`)."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-highlight-references t
+  "Enables highlighting of related references while the cursor is on
+any identifier."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-highlight-yield-points t
+  "Enables highlighting of all break points for a loop or block
+context while the cursor is on any `async` or `await` keywords."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-closure-return-type-hints "never"
+  "Whether to show inlay type hints for return types of closures."
+  :type '(choice
+          (const "never")
+          (const "always")
+          (const "with_block"))
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-discriminants-hints "never"
+  "Whether to show enum variant discriminant hints."
+  :type '(choice
+          (const "never")
+          (const "always")
+          (const "fieldless"))
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-expression-adjustment-hints "never"
+  "Whether to show inlay hints for type adjustments.."
+  :type '(choice
+          (const "never")
+          (const "always")
+          (const "reborrow"))
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-expression-adjustment-hints-mode "prefix"
+  "Whether to show inlay hints as postfix ops (`.*` instead of `*`, etc)."
+  :type '(choice
+          (const "prefix")
+          (const "postfix")
+          (const "prefer_prefix")
+          (const "prefer_postfix"))
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-expression-adjustment-hide-unsafe nil
+  "Whether to hide inlay hints for type adjustments outside of
+`unsafe` blocks."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-implicit-drops nil
+  "Whether to show implicit drop hints."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+
+(defcustom lsp-rust-analyzer-closure-capture-hints nil
+  "Whether to show inlay hints for closure captures."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-closure-style "impl_fn"
+  "Closure notation in type and chaining inlay hints."
+  :type 'string
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defcustom lsp-rust-analyzer-hide-named-constructor nil
   "Whether to hide inlay type hints for constructors."
   :type 'boolean
@@ -1555,6 +1653,11 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
                                        :allTargets ,(lsp-json-bool lsp-rust-analyzer-check-all-targets)
                                        :features ,lsp-rust-analyzer-checkonsave-features
                                        :overrideCommand ,lsp-rust-analyzer-cargo-override-command)
+                 :highlightRelated (:breakPoints (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-breakpoints))
+                                    :closureCaptures (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-closure-captures))
+                                    :exitPoints (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-exit-points))
+                                    :references (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-references))
+                                    :yieldPoints (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-yield-points)))
                  :files (:exclude ,lsp-rust-analyzer-exclude-globs
                                   :watcher ,(if lsp-rust-analyzer-use-client-watching "client" "notify")
                                   :excludeDirs ,lsp-rust-analyzer-exclude-dirs)
@@ -1582,20 +1685,29 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
                                                  :trait (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-references-trait-enable)))
                                :run (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-run-enable)))
 
-                 :inlayHints (:bindingModeHints ,(lsp-json-bool lsp-rust-analyzer-binding-mode-hints)
-                                                :chainingHints ,(lsp-json-bool lsp-rust-analyzer-display-chaining-hints)
-                                                :closingBraceHints (:enable ,(lsp-json-bool lsp-rust-analyzer-closing-brace-hints)
-                                                                            :minLines ,lsp-rust-analyzer-closing-brace-hints-min-lines)
-                                                :closureReturnTypeHints ,(lsp-json-bool lsp-rust-analyzer-display-closure-return-type-hints)
-                                                :lifetimeElisionHints (:enable ,lsp-rust-analyzer-display-lifetime-elision-hints-enable
-                                                                               :useParameterNames ,(lsp-json-bool lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names))
-                                                :maxLength ,lsp-rust-analyzer-max-inlay-hint-length
-                                                :parameterHints ,(lsp-json-bool lsp-rust-analyzer-display-parameter-hints)
-                                                :reborrowHints ,lsp-rust-analyzer-display-reborrow-hints
-                                                :renderColons ,(lsp-json-bool lsp-rust-analyzer-server-format-inlay-hints)
-                                                :typeHints (:enable ,(lsp-json-bool lsp-inlay-hint-enable)
-                                                                    :hideClosureInitialization ,(lsp-json-bool lsp-rust-analyzer-hide-closure-initialization)
-                                                                    :hideNamedConstructor ,(lsp-json-bool lsp-rust-analyzer-hide-named-constructor)))
+                 :inlayHints (:bindingModeHints (:enable ,(lsp-json-bool lsp-rust-analyzer-binding-mode-hints))
+                              :chainingHints (:enable ,(lsp-json-bool lsp-rust-analyzer-display-chaining-hints))
+                              :closingBraceHints (:enable ,(lsp-json-bool lsp-rust-analyzer-closing-brace-hints)
+                                                          :minLines ,lsp-rust-analyzer-closing-brace-hints-min-lines)
+                              :closureCaptureHints (:enable ,(lsp-json-bool lsp-rust-analyzer-closure-capture-hints))
+                              :closureReturnTypeHints (:enable ,lsp-rust-analyzer-closure-return-type-hints)
+                              :closureStyle ,lsp-rust-analyzer-closure-style
+                              :discriminantHints (:enable ,lsp-rust-analyzer-discriminants-hints)
+
+                              :expressionAdjustmentHints (:enable ,lsp-rust-analyzer-expression-adjustment-hints
+                                                          :hideOutsideUnsafe ,(lsp-json-bool lsp-rust-analyzer-expression-adjustment-hide-unsafe)
+                                                          :mode ,lsp-rust-analyzer-expression-adjustment-hints-mode)
+                              :implicitDrops (:enable ,(lsp-json-bool lsp-rust-analyzer-implicit-drops))
+                              :lifetimeElisionHints (:enable ,lsp-rust-analyzer-display-lifetime-elision-hints-enable
+                                                             :useParameterNames ,(lsp-json-bool lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names))
+                              :maxLength ,lsp-rust-analyzer-max-inlay-hint-length
+                              :parameterHints (:enable ,(lsp-json-bool lsp-rust-analyzer-display-parameter-hints))
+                              :reborrowHints (:enable ,lsp-rust-analyzer-display-reborrow-hints)
+                              :renderColons ,(lsp-json-bool lsp-rust-analyzer-server-format-inlay-hints)
+                              :typeHints (:enable ,(lsp-json-bool lsp-inlay-hint-enable)
+                                                  :hideClosureInitialization ,(lsp-json-bool lsp-rust-analyzer-hide-closure-initialization)
+                                                  :hideNamedConstructor ,(lsp-json-bool lsp-rust-analyzer-hide-named-constructor))
+                              )
                  :completion (:addCallParenthesis ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-parenthesis)
                                                   :addCallArgumentSnippets ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-argument-snippets)
                                                   :postfix (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-postfix-enable))
