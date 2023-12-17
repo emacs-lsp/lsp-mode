@@ -34,6 +34,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "asm",
+    "full-name": "Assembly",
+    "server-name": "asm-lsp",
+    "server-url": "https://github.com/bergercookie/asm-lsp",
+    "installation": "cargo install asm-lsp",
+    "lsp-install-server": "asm-lsp",
+    "debugger": "Not available"
+  },
+  {
     "name": "astro",
     "full-name": "Astro",
     "server-name": "astro-ls",

@@ -49,6 +49,7 @@ nav:
     - Ada: page/lsp-ada.md
     - Angular: page/lsp-angular.md
     - Ansible: page/lsp-ansible.md
+    - Assembly: page/lsp-asm.md
     - Astro: page/lsp-astro.md
     - AWK: page/lsp-awk.md
     - Bash: page/lsp-bash.md
