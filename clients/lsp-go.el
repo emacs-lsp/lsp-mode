@@ -149,14 +149,14 @@ The returned type provides a tri-state that either:
   - sets element to false (actually, :json-false)
   - sets element to true \(actually, t)"
   (let ((list '()))
-	(dolist (v alist)
-	  (push `(cons
-			  :tag ,(cdr v)
-			  (const :format "" ,(car v))
-			  (choice (const :tag "Enable" t) (const :tag "Disable" :json-false)))
-			list))
-	(push 'set list)
-	list))
+    (dolist (v alist)
+      (push `(cons
+              :tag ,(cdr v)
+              (const :format "" ,(car v))
+              (choice (const :tag "Enable" t) (const :tag "Disable" :json-false)))
+            list))
+    (push 'set list)
+    list))
 
 (define-obsolete-variable-alias
   'lsp-gopls-codelens
@@ -169,12 +169,12 @@ The returned type provides a tri-state that either:
   "lsp-mode 7.0.1")
 
 (defcustom lsp-go-codelenses '((gc_details . :json-false)
-			       (generate . t)
-			       (regenerate_cgo . t)
-			       (tidy . t)
-			       (upgrade_dependency . t)
-			       (test . t)
-			       (vendor . t))
+                               (generate . t)
+                               (regenerate_cgo . t)
+                               (tidy . t)
+                               (upgrade_dependency . t)
+                               (test . t)
+                               (vendor . t))
   "Select what codelenses should be enabled or not.
 
 The codelenses can be found at https://github.com/golang/tools/blob/3fa0e8f87c1aae0a9adc2a63af1a1945d16d9359/internal/lsp/source/options.go#L106-L112."
@@ -231,7 +231,7 @@ $GOPATH/pkg/mod along with the value of
 (defcustom lsp-go-link-target "pkg.go.dev"
   "Which website to use for displaying Go documentation."
   :type '(choice (const "pkg.go.dev")
-		 (string :tag "A custom website"))
+                 (string :tag "A custom website"))
   :group 'lsp-go
   :package-version '(lsp-mode "7.0.1"))
 
@@ -266,7 +266,7 @@ $GOPATH/pkg/mod along with the value of
   :package-version '(lsp-mode "8.0.0"))
 
 (defcustom lsp-go-import-shortcut "Both"
-  "Specifies whether import statements should link to documentation or go to 
+  "Specifies whether import statements should link to documentation or go to
   definitions."
   :type '(choice (const "Both")
                  (const "Link")
@@ -287,13 +287,13 @@ $GOPATH/pkg/mod along with the value of
 (defcustom lsp-go-symbol-style "Dynamic"
   "Controls how symbols are qualified in symbol responses.
 
-  'Dynamic' uses whichever qualifier results in the highest scoring match for
-  the given symbol query. Here a 'qualifier' is any '/' or '.' delimited suffix
-  of the fully qualified symbol. i.e. 'to/pkg.Foo.Field' or just 'Foo.Field'.
+  `Dynamic' uses whichever qualifier results in the highest scoring match for
+  the given symbol query. Here a `qualifier' is any `/' or '.' delimited suffix
+  of the fully qualified symbol. i.e. `to/pkg.Foo.Field' or just `Foo.Field'.
 
-  'Full' is fully qualified symbols, i.e. 'path/to/pkg.Foo.Field'.
+  `Full' is fully qualified symbols, i.e. `path/to/pkg.Foo.Field'.
 
-  'Package' is package qualified symbols i.e. 'pkg.Foo.Field'."
+  `Package' is package qualified symbols i.e. `pkg.Foo.Field'."
   :type '(choice (const "Dynamic")
                  (const "Full")
                  (const "Package"))
@@ -327,10 +327,10 @@ flake.nix file with:
   (use-package nix-sandbox)
   (defun my/nix--lsp-go-wrapper (args)
     (if-let ((sandbox (nix-current-sandbox)))
-        (apply 'nix-shell-command sandbox args)
+        (apply `nix-shell-command sandbox args)
       args))
   (setq lsp-go-server-path \"gopls\"
-        lsp-go-server-wrapper-function 'my/nix--lsp-go-wrapper)"
+        lsp-go-server-wrapper-function `my/nix--lsp-go-wrapper)"
   :group 'lsp-go
   :type '(choice
           (function-item :tag "None" :value identity)

@@ -102,7 +102,8 @@
   :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-wgsl-shaderdefs []
-  "Defines that should be valid for preprocessor operations like ifdef, e.g, ['USE_TYPES', 'DEBUG']"
+  "Defines that should be valid for preprocessor operations like ifdef,
+e.g, ['USE_TYPES', 'DEBUG']"
   :type 'lsp-string-vector
   :group 'lsp-wgsl
   :package-version '(lsp-mode . "8.0.1"))
@@ -132,7 +133,8 @@
 
 ;; Various interactive functions to use the custom LSP extensions from the server
 (defun lsp-wgsl-full-source ()
-  "Gets the full source of the file with all imports and preprocessor definitions resolved."
+  "Gets the full source of the file with all imports and preprocessor
+definitions resolved."
   (interactive)
   (lsp-request-async
    "wgsl-analyzer/fullSource"

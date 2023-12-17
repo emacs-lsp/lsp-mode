@@ -34,7 +34,7 @@
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-bash-explainshell-endpoint nil
-  "The endpoint to use explainshell.com to answer 'onHover' queries.
+  "The endpoint to use explainshell.com to answer `onHover' queries.
 See instructions at https://marketplace.visualstudio.com/items?itemName=mads-hartmann.bash-ide-vscode"
   :type 'string
   :risky t
@@ -42,7 +42,7 @@ See instructions at https://marketplace.visualstudio.com/items?itemName=mads-har
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-bash-highlight-parsing-errors nil
-  "Consider parsing errors in scripts as 'problems'."
+  "Consider parsing errors in scripts as `problems'."
   :type 'boolean
   :group 'lsp-bash
   :package-version '(lsp-mode . "6.2"))
