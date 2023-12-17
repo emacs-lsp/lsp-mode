@@ -250,7 +250,7 @@ This only affects the experimental formatter."
 (defcustom lsp-xml-validation-schema '((enabled . "always"))
   "The XML schema settings.
 
-The value for 'enabled' can be always, never or onValidSchema."
+The value for `enabled' can be always, never or onValidSchema."
   :type 'alist
   :group 'lsp-xml
   :package-version '(lsp-mode . "6.1"))

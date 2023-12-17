@@ -337,7 +337,7 @@ tolerance for this setting. Please adjust it to the appropriate value."
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-runtime-file-encoding "utf8"
-  "File encoding. The 'ansi' option is only available under the 'Windows'
+  "File encoding.  The `ansi' option is only available under the `Windows'
 platform."
   :type '(choice (:tag "utf8" "ansi"))
   :package-version '(lsp-mode . "8.0.0")

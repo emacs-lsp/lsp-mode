@@ -87,7 +87,7 @@ When enabled a debugger for Kotlin will be available."
 
 (defcustom lsp-kotlin-external-sources-use-kls-scheme t
   "[Recommended] Specifies whether URIs inside JARs should be represented
-using the 'kls'-scheme."
+using the `kls'-scheme."
   :type 'boolean
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))
@@ -120,27 +120,32 @@ to Kotlin."
 
 ;; cache in this case is the dependency cache. Given as an initialization option.
 (defcustom lsp-kotlin-ondisk-cache-path nil
-  "Path to the ondisk cache if used. If lsp-kotlin-ondisk-cache-enabled is t, but path is nil, then the project root is used as a default."
+  "Path to the ondisk cache if used. If lsp-kotlin-ondisk-cache-enabled is t,
+but path is nil, then the project root is used as a default."
   :type 'string
   :group 'lsp-kotlin)
 
 (defcustom lsp-kotlin-ondisk-cache-enabled nil
-  "Specifies whether to enable ondisk cache or not. If nil, in-memory cache will be used."
+  "Specifies whether to enable ondisk cache or not.  If nil, in-memory cache
+will be used."
   :type 'boolean
   :group 'lsp-kotlin)
 
 (defcustom lsp-kotlin-inlayhints-enable-typehints t
-  "Specifies whether to enable type hints or not. Requires lsp-inlay-hints-mode."
+  "Specifies whether to enable type hints or not.
+Requires lsp-inlay-hints-mode."
   :type 'boolean
   :group 'lsp-kotlin)
 
 (defcustom lsp-kotlin-inlayhints-enable-parameterhints t
-  "Specifies whether to enable parameter hints or not. Requires lsp-inlay-hints-mode."
+  "Specifies whether to enable parameter hints or not.
+Requires lsp-inlay-hints-mode."
   :type 'boolean
   :group 'lsp-kotlin)
 
 (defcustom lsp-kotlin-inlayhints-enable-chainedhints t
-  "Specifies whether to enable chained hints or not. Requires lsp-inlay-hints-mode."
+  "Specifies whether to enable chained hints or not.
+Requires lsp-inlay-hints-mode."
   :type 'boolean
   :group 'lsp-kotlin)
 

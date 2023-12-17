@@ -50,7 +50,8 @@ send only those, and do not send e.g. statistics diagnostics." "syntax"))
   :group 'lsp-sml)
 
 (defcustom lsp-sml-millet-server-diagnostics-moreInfoHint-enable t
-  "Show a hint on diagnostic messages about clicking the error code number for more information."
+  "Show a hint on diagnostic messages about clicking the error code number for
+more information."
   :type 'boolean
   :group 'lsp-sml)
 
