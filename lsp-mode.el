@@ -5998,7 +5998,7 @@ Request codeAction/resolve for more info if server supports."
     (json-mode                  . js-indent-level)                  ; JSON
     (json-ts-mode               . json-ts-mode-indent-offset)
     (lua-mode                   . lua-indent-level)                 ; Lua
-    (lua-ts-mode                . lua-ts-mode-indent-offset)
+    (lua-ts-mode                . lua-ts-indent-offset)
     (nxml-mode                  . nxml-child-indent)                ; XML
     (objc-mode                  . c-basic-offset)                   ; Objective C
     (pascal-mode                . pascal-indent-level)              ; Pascal
