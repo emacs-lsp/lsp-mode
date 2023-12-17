@@ -56,6 +56,8 @@
 
 Will invoke CALLBACK or ERROR-CALLBACK based on result.
 Will update if UPDATE? is t."
+  (when update?
+    (ignore-errors (delete-directory lsp-asm-store-path t)))
   (lsp-async-start-process
    callback
    error-callback
