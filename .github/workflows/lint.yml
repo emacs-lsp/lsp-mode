@@ -27,7 +27,7 @@ jobs:
         run: |
           git diff-tree --no-commit-id --name-only -r ${{ github.sha }} \
           | grep \.el | grep -v \.dir-locals\.el \
-          | xargs -t -I^ cask emacs -q --batch ^ --eval "\
+          | xargs -t -I^ eask emacs -q --batch ^ --eval "\
               (let ((require-final-newline t)) \
                 (require 'flycheck) \
                 (eval-buffer) \
