@@ -51,6 +51,7 @@ nav:
     - Ansible: page/lsp-ansible.md
     - Assembly: page/lsp-asm.md
     - Astro: page/lsp-astro.md
+    - Autotools: page/lsp-autotools.md
     - AWK: page/lsp-awk.md
     - Bash: page/lsp-bash.md
     - Beancount: page/lsp-beancount.md
