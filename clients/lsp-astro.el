@@ -23,8 +23,8 @@
 ;;  client for astro-ls
 
 ;;; Code:
-(require 'lsp-mode)
 
+(require 'lsp-mode)
 
 (defun lsp-astro--get-initialization-options ()
   "Try to get the typescript server path, to supply to the astro language server."
@@ -44,8 +44,7 @@
                   :initialization-options #'lsp-astro--get-initialization-options
                   :server-id 'astro-ls))
 
-
-
 (lsp-consistency-check lsp-astro)
+
 (provide 'lsp-astro)
 ;;; lsp-astro.el ends here
