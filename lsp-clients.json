@@ -52,6 +52,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "autotools",
+    "full-name": "Autotools",
+    "server-name": "autotools-language-server",
+    "server-url": "https://github.com/Freed-Wu/autotools-language-server",
+    "installation": "pip install autotools-language-server",
+    "lsp-install-server": "autotools-ls",
+    "debugger": "Not available"
+  },
+  {
     "name": "awk",
     "full-name": "AWK",
     "server-name": "awk-language-server",
