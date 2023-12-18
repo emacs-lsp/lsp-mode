@@ -42,7 +42,7 @@
      makefile-imake-mode)
   "List of major mode that work with Autotools."
   :type 'list
-  :group 'lsp-grammarly)
+  :group 'lsp-autotools)
 
 (defun lsp-autotools--download-server (_client callback error-callback update?)
   "Install/update Autotools language server using `pip
