@@ -129,5 +129,4 @@
       (should (equal (do-test-trigger-kind t t) 2))) ;; and the session is the same: expect a new trigger-character completion
     ))
 
-(provide 'lsp-completion-test)
 ;;; lsp-completion-test.el ends here

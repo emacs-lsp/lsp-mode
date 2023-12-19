@@ -175,5 +175,4 @@
                        "textDocument/hover")))
              2)))
 
-(provide 'lsp-mode-test)
 ;;; lsp-mode-test.el ends here
