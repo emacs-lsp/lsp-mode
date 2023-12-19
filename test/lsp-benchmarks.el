@@ -76,4 +76,4 @@
                  lsp-benchmark-data))
     (garbage-collect)))
 
-(provide 'lsp-benchmarks)
+;;; lsp-benchmarks.el ends here

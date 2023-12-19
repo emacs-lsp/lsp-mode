@@ -167,5 +167,4 @@
     (lsp-put input :import_for_trait_assoc_item :json-false)
     (should (eq (lsp-get input :import_for_trait_assoc_item) :json-false))))
 
-(provide 'lsp-protocol-test)
 ;;; lsp-protocol-test.el ends here
