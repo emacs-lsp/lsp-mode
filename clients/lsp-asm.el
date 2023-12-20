@@ -33,7 +33,7 @@
   :package-version `(lsp-mode . "8.0.1"))
 
 (defcustom lsp-asm-active-modes
-  '(nasm-mode masm-mode fasm-mode)
+  '( asm-mode fasm-mode masm-mode nasm-mode gas-mode)
   "List of major mode that work with asm-lsp."
   :type 'list
   :group 'lsp-asm)
