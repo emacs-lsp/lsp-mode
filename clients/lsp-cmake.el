@@ -1,6 +1,6 @@
 ;;; lsp-cmake.el --- description -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 emacs-lsp maintainers
+;; Copyright (C) 2020-2023 emacs-lsp maintainers
 
 ;; Author: emacs-lsp maintainers
 ;; Keywords: lsp, cmake
@@ -37,13 +37,24 @@
   :group 'lsp-cmake
   :package-version '(lsp-mode . "8.0.1"))
 
+(defun lsp-cmake--download-server (_client callback error-callback update?)
+  "Install/update CMake language server using `pip
+
+Will invoke CALLBACK or ERROR-CALLBACK based on result.
+Will update if UPDATE? is t."
+  (lsp-async-start-process
+   callback
+   error-callback
+   "pip" "install" "cmake-language-server" (when update? "-U")))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda ()
                                      lsp-cmake-server-command))
                   :activation-fn (lsp-activate-on "cmake")
                   :priority -1
-                  :server-id 'cmakels))
+                  :server-id 'cmakels
+                  :download-server-fn #'lsp-cmake--download-server))
 
 (lsp-consistency-check lsp-cmake)
 

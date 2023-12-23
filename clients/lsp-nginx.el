@@ -1,6 +1,6 @@
 ;;; lsp-nginx.el --- Nginx Client settings  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2021  Shen, Jen-Chieh
+;; Copyright (C) 2021-2023  Shen, Jen-Chieh
 
 ;; Author: Jen-Chieh Shen <jcs090218@gmail.com>
 ;; Keywords: nginx lsp
@@ -40,12 +40,23 @@
   :type '(repeat string)
   :package-version `(lsp-mode . "8.0.1"))
 
+(defun lsp-nginx--download-server (_client callback error-callback update?)
+  "Install/update Nginx language server using `pip
+
+Will invoke CALLBACK or ERROR-CALLBACK based on result.
+Will update if UPDATE? is t."
+  (lsp-async-start-process
+   callback
+   error-callback
+   "pip" "install" "nginx-language-server" (when update? "-U")))
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda () lsp-nginx-server-command))
                   :major-modes '(nginx-mode)
                   :priority -1
-                  :server-id 'nginx-ls))
+                  :server-id 'nginx-ls
+                  :download-server-fn #'lsp-nginx--download-server))
 
 (lsp-consistency-check lsp-nginx)
 
