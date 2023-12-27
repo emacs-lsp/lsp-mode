@@ -895,6 +895,7 @@ Changes take effect only when a new session is started."
     (latex-mode . "latex")
     (v-mode . "v")
     (vhdl-mode . "vhdl")
+    (vhdl-ts-mode . "vhdl")
     (verilog-mode . "verilog")
     (terraform-mode . "terraform")
     (ess-julia-mode . "julia")
