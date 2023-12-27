@@ -120,7 +120,7 @@ GHDL LS: A LSP server for VHDL based on GHDL
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-vhdl--create-connection)
-                  :major-modes '(vhdl-mode)
+                  :major-modes '(vhdl-mode vhdl-ts-mode)
                   :language-id "VHDL"
                   :priority -1
                   :server-id 'lsp-vhdl))
