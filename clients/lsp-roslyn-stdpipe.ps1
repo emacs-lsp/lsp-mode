@@ -21,13 +21,13 @@ public static class StdPipe
         var pipeReader = new StreamReader(pipeClient, new System.Text.UTF8Encoding(false));
         var pipeWriter = new StreamWriter(pipeClient, new System.Text.UTF8Encoding(false));
 
-        var pipeBuffer = new char[512];
-        var stdBuffer = new char[512];
+        var stdin = Console.In;
+        var stdout = Console.Out;
 
-        var tasks = new Task<int>[2]
+        var tasks = new Task<char[]>[2]
         {
-            pipeReader.ReadAsync(pipeBuffer, 0, pipeBuffer.Length),
-            ReadFromStdinAsync(stdBuffer, 0, stdBuffer.Length)
+            ReadHeaderDelimitedAsync(pipeReader, false),
+            ReadHeaderDelimitedAsync(stdin, true)
         };
 
         while (true)
@@ -36,31 +36,88 @@ public static class StdPipe
 
             var bytesRead = tasks[doneIdx].Result;
             if (doneIdx == 0)
-            {//Input from pipe
-             if (bytesRead == 0)
-             {// If the pipe has closed out on us, punk out
-                 break;
-             }
+            {
+                // pipe in -> stdout
+                if (bytesRead.Length == 0)
+                {
+                    // pipe was closed
+                    break;
+                }
 
-             Console.Out.Write(pipeBuffer, 0, bytesRead);
-             Console.Out.Flush();
-             tasks[doneIdx] = pipeReader.ReadAsync(pipeBuffer, 0, pipeBuffer.Length);
+                stdout.Write(bytesRead, 0, bytesRead.Length);
+                stdout.Flush();
+                tasks[doneIdx] = ReadHeaderDelimitedAsync(pipeReader, false);
             }
             else
-            {//Input from stdin
-             pipeWriter.Write(stdBuffer, 0, bytesRead);
-             pipeWriter.Flush();
-             tasks[doneIdx] = ReadFromStdinAsync(stdBuffer, 0, stdBuffer.Length);
+            {
+                // stdin -> pipe out
+                pipeWriter.Write(bytesRead, 0, bytesRead.Length);
+                pipeWriter.Flush();
+                tasks[doneIdx] = ReadHeaderDelimitedAsync(stdin, true);
             }
         }
     }
 
-    private static Task<int> ReadFromStdinAsync(char[] buffer, int offset, int len)
+    private static async Task<char[]> ReadHeaderDelimitedAsync(TextReader reader, bool isInput)
     {
-        return Task.Run(() =>
-                        {
-                            return Console.In.Read(buffer, offset, len);
-                        });
+        // Assigning new tasks with this function blocks the thread
+        // unless this is awaited first.
+        await Task.Yield();
+
+        string name = isInput ? "stdin -> pipe" : "pipe -> stdout";
+
+        string line = null;
+        while (line == null) {
+            line = await reader.ReadLineAsync();
+        }
+
+        var colonPos = line.IndexOf(":");
+        if (colonPos == -1)
+        {
+            // throw new Exception("Did not find colon inside header");
+            return new char[0];
+        }
+
+        var headerName = line.Substring(0, colonPos);
+        var headerContent = line.Substring(colonPos + 1);
+
+        if (headerName != "Content-Length")
+        {
+            // throw new Exception("Expected Content-Length header");
+            return new char[0];
+        }
+        if (headerContent.Length > 20)
+        {
+            // throw new Exception("Content-Length header too large");
+            return new char[0];
+        }
+
+        int contentLength;
+        try 
+        {
+            contentLength = int.Parse(headerContent);
+        }
+        catch (Exception)
+        {
+            return new char[0];
+        }
+
+        var buffer = new char[line.Length + contentLength + 4];
+        var c = 0;
+        for (var i = 0; i < line.Length; i++)
+        {
+            buffer[c++] = line[i];
+        }
+        buffer[c++] = '\r';
+        buffer[c++] = '\n';
+        buffer[c++] = '\r';
+        buffer[c++] = '\n';
+
+        await reader.ReadLineAsync();
+
+        var bytesRead = await reader.ReadBlockAsync(buffer, c, contentLength);
+
+        return buffer;
     }
 }
 "@
