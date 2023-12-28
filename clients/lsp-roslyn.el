@@ -71,20 +71,51 @@ Unused on other platforms.")
   :type 'string
   :group 'lsp-roslyn)
 
-;; TODO replace with server install
-(defvar lsp-roslyn--TEMP-server-path "G:\\build\\roslyn\\artifacts\\bin\\Microsoft.CodeAnalysis.LanguageServer\\Debug\\net7.0\\Microsoft.CodeAnalysis.LanguageServer.dll")
-
 (defvar lsp-roslyn--pipe-name nil)
+
+(defun lsp-roslyn--parse-pipe-name (pipe)
+  (if (eq system-type 'windows-nt)
+          (progn
+            (string-match "\\([a-z0-9]+\\)$" pipe)
+            (match-string 1 pipe))
+      pipe))
 
 (defun lsp-roslyn--parent-process-filter (process output)
   "Parses the named pipe's name that the Roslyn server process prints on stdout."
   (let* ((data (json-parse-string output :object-type 'plist))
          (pipe (plist-get data :pipeName)))
     (when pipe
-      (string-match "\\([a-z0-9]+\\)$" pipe)
-      (let ((pipe-name (match-string 1 pipe)))
-        (message "%s %s" pipe pipe-name)
-        (setq lsp-roslyn--pipe-name pipe-name)))))
+      (setq lsp-roslyn--pipe-name (lsp-roslyn--parse-pipe-name pipe)))))
+
+(defun lsp-roslyn--make-named-pipe-process (filter sentinel environment-fn name)
+  "Creates the process that will handle the JSON-RPC communication."
+  (let* ((process-environment
+          (lsp--compute-process-environment environment-fn))
+         (process-name (generate-new-buffer-name (format "%s-pipe" name)))
+         (stderr-buf (format "*%s::stderr*" process-name))
+         (default-directory (lsp--default-directory-for-connection)))
+    (with-current-buffer (get-buffer stderr-buf)
+      ;; Make the *NAME::stderr* buffer buffer-read-only, q to bury, etc.
+      (special-mode))
+    (set-process-query-on-exit-flag (get-buffer-process stderr-buf) nil)
+    (if (eq system-type 'windows-nt)
+        (make-process
+         :name process-name
+         :connection-type 'pipe
+         :buffer (format "*%s*" process-name)
+         :coding 'no-conversion
+         :filter filter
+         :sentinel sentinel
+         :stderr stderr-buf
+         :noquery t
+         :command (list "PowerShell" "-NoProfile" "-ExecutionPolicy" "Bypass" "-Command" lsp-roslyn--stdpipe-path "." lsp-roslyn--pipe-name)))
+    (make-network-process
+     :name process-name
+     :remote lsp-roslyn--pipe-name
+     :sentinel sentinel
+     :filter filter
+     :stderr stderr-buf
+     :noquery t)))
 
 (defun lsp-roslyn--connect (filter sentinel name environment-fn workspace)
   "Creates a connection to the Roslyn language server's named pipe.
@@ -111,30 +142,13 @@ creates another process connecting to the named pipe it specifies."
     (accept-process-output command-process 5) ; wait for JSON with pipe name to print on stdout, like {"pipeName":"\\\\.\\pipe\\d1b72351"}
     (when (not lsp-roslyn--pipe-name)
       (error "Failed to receieve pipe name from Roslyn server process"))
-    (let* ((process-environment
-            (lsp--compute-process-environment environment-fn))
-           (process-name (generate-new-buffer-name (format "%s-pipe" name)))
-           (stderr-buf (format "*%s::stderr*" process-name))
-           (default-directory (lsp--default-directory-for-connection))
-           (communication-process (make-process
-                                   :name process-name
-                                   :connection-type 'pipe
-                                   :buffer (format "*%s*" process-name)
-                                   :coding 'no-conversion
-                                   :filter filter
-                                   :sentinel sentinel
-                                   :stderr stderr-buf
-                                   :noquery t
-                                   :command (list "PowerShell" "-NoProfile" "-ExecutionPolicy" "Bypass" "-Command" lsp-roslyn--stdpipe-path "." lsp-roslyn--pipe-name))))
+    (let* ((communication-process
+            (lsp-roslyn--make-named-pipe-process filter sentinel environment-fn name)))
       (message "go %s" lsp-roslyn--pipe-name)
-      (with-current-buffer (get-buffer stderr-buf)
-        ;; Make the *NAME::stderr* buffer buffer-read-only, q to bury, etc.
-        (special-mode))
       (with-current-buffer (get-buffer parent-stderr-buf)
         (special-mode))
       (set-process-query-on-exit-flag command-process nil)
       (set-process-query-on-exit-flag communication-process nil)
-      (set-process-query-on-exit-flag (get-buffer-process stderr-buf) nil)
       (cons communication-process communication-process))))
 
 (defun lsp-roslyn--uri-to-path (uri)
@@ -235,10 +249,10 @@ creates another process connecting to the named pipe it specifies."
   (let* ((is-x64 (string-match-p "x86_64" system-configuration))
          (is-x86 (and (string-match-p "x86" system-configuration) (not is-x64)))
          (is-arm (string-match-p "arm" system-configuration)))
-    (if-let ((platform-name (cl-case system-type
-                              ('gnu/linux "linux")
-                              ('darwin "osx")
-                              ('windows-nt "win")))
+    (if-let ((platform-name (cond
+                              ((eq system-type 'gnu/linux) "linux")
+                              ((eq system-type 'darwin) "osx")
+                              ((eq system-type 'windows-nt) "win")))
              (arch-name (cond
                          (is-x64 "x64")
                          (is-x64 "x86")
