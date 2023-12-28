@@ -229,10 +229,9 @@ creates another process connecting to the named pipe it specifies."
   "Chooses the solution file to associate with the Roslyn language server."
   (interactive)
   (let ((solution-file (lsp-roslyn--find-solution-file)))
-    ;; (progn (message "No .sln files were found for this workspace.") nil)
     (if solution-file
       (lsp-notify "solution/open" (list :solution (lsp--path-to-uri solution-file)))
-      (message "No solution file selected for this workspace."))))
+      (lsp--error "No solution file was found for this workspace."))))
 
 (defun lsp-roslyn--on-initialized (workspace)
   "Handler for Roslyn server initialization."
@@ -261,7 +260,7 @@ creates another process connecting to the named pipe it specifies."
                               ((eq system-type 'windows-nt) "win")))
              (arch-name (cond
                          (is-x64 "x64")
-                         (is-x64 "x86")
+                         (is-x86 "x86")
                          (is-arm "arm64"))))
         (format "%s-%s" platform-name arch-name)
       (error "Unsupported platform: %s (%s)" system-type system-configuration))))
@@ -336,7 +335,6 @@ FORCED if specified with prefix argument."
                   :notification-handlers (ht ("window/logMessage" 'lsp-roslyn--log-message)
                                              ("workspace/projectInitializationComplete" 'lsp-roslyn--on-project-initialization-complete))
 
-                  ;; Parts of the Roslyn server do not strictly follow the LSP spec.
                   ;; These two functions are the same as lsp-mode's except they do not
                   ;; (un)hexify URIs.
                   :path->uri-fn 'lsp-roslyn--path-to-uri
