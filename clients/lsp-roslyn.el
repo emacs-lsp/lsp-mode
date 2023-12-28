@@ -25,7 +25,7 @@
 ;;; Code:
 
 (require 'lsp-mode)
-(require 'cl)
+(require 'cl-lib)
 (require 'f)
 
 (defgroup lsp-roslyn nil
@@ -86,14 +86,14 @@ Unused on other platforms.")
             (match-string 1 pipe))
       pipe))
 
-(defun lsp-roslyn--parent-process-filter (process output)
+(defun lsp-roslyn--parent-process-filter (_process output)
   "Parses the named pipe's name that the Roslyn server process prints on stdout."
   (let* ((data (json-parse-string output :object-type 'plist))
          (pipe (plist-get data :pipeName)))
     (when pipe
       (setq lsp-roslyn--pipe-name (lsp-roslyn--parse-pipe-name pipe)))))
 
-(defun lsp-roslyn--make-named-pipe-process (filter sentinel environment-fn name process-name stderr-buf)
+(defun lsp-roslyn--make-named-pipe-process (filter sentinel environment-fn process-name stderr-buf)
   "Creates the process that will handle the JSON-RPC communication."
   (let* ((process-environment
           (lsp--compute-process-environment environment-fn))
@@ -118,7 +118,7 @@ Unused on other platforms.")
          :stderr stderr-buf
          :noquery t)))))
 
-(defun lsp-roslyn--connect (filter sentinel name environment-fn workspace)
+(defun lsp-roslyn--connect (filter sentinel name environment-fn _workspace)
   "Creates a connection to the Roslyn language server's named pipe.
 
 First creates an instance of the language server process, then
@@ -146,7 +146,7 @@ creates another process connecting to the named pipe it specifies."
     (let* ((process-name (generate-new-buffer-name (format "%s-pipe" name)))
            (stderr-buf (format "*%s::stderr*" process-name))
            (communication-process
-            (lsp-roslyn--make-named-pipe-process filter sentinel environment-fn name process-name stderr-buf)))
+            (lsp-roslyn--make-named-pipe-process filter sentinel environment-fn process-name stderr-buf)))
       (with-current-buffer (get-buffer parent-stderr-buf)
         (special-mode))
       (with-current-buffer (get-buffer stderr-buf)
@@ -190,7 +190,7 @@ creates another process connecting to the named pipe it specifies."
   "Convert PATH to a URI, without hexifying."
   (url-unhex-string (lsp--path-to-uri-1 path)))
 
-(lsp-defun lsp-roslyn--log-message (workspace params)
+(lsp-defun lsp-roslyn--log-message (_workspace params)
   (let ((type (gethash "type" params))
         (mes (gethash "message" params)))
     (cl-case type
@@ -199,7 +199,7 @@ creates another process connecting to the named pipe it specifies."
       (3 (lsp--info "%s" mes))    ; Info
       (t (lsp--info "%s" mes))))) ; Log
 
-(lsp-defun lsp-roslyn--on-project-initialization-complete (workspace params)
+(lsp-defun lsp-roslyn--on-project-initialization-complete (workspace _params)
   (lsp--info "%s: Project initialized successfully."
              (lsp--workspace-print workspace)))
 
@@ -233,7 +233,7 @@ creates another process connecting to the named pipe it specifies."
       (lsp-notify "solution/open" (list :solution (lsp--path-to-uri solution-file)))
       (lsp--error "No solution file was found for this workspace."))))
 
-(defun lsp-roslyn--on-initialized (workspace)
+(defun lsp-roslyn--on-initialized (_workspace)
   "Handler for Roslyn server initialization."
   (lsp-roslyn-open-solution-file))
 
