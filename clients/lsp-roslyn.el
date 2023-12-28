@@ -32,7 +32,7 @@
   "LSP support for the C# programming language, using the Roslyn language server."
   :link '(url-link "https://github.com/dotnet/roslyn/tree/main/src/Features/LanguageServer")
   :group 'lsp-mode
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "8.0.0"))
 
 (defvar lsp-roslyn--stdpipe-path (expand-file-name
                                   "lsp-roslyn-stdpipe.ps1"
@@ -44,31 +44,37 @@ Unused on other platforms.")
 (defcustom lsp-roslyn-install-path (expand-file-name "roslyn" lsp-server-install-dir)
   "The path to install the Roslyn server to."
   :type 'string
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-roslyn)
 
 (defcustom lsp-roslyn-server-log-level "Information"
   "Log level for the Roslyn language server."
-  :type 'string
+  :type '(choice (:tag "None" "Trace" "Debug" "Information" "Warning" "Error" "Critical"))
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-roslyn)
 
 (defcustom lsp-roslyn-server-log-directory (concat (temporary-file-directory) (file-name-as-directory "lsp-roslyn"))
   "Log directory for the Roslyn language server."
   :type 'string
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-roslyn)
 
 (defcustom lsp-roslyn-server-extra-args '()
   "Extra arguments for the Roslyn language server."
   :type '(repeat string)
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-roslyn)
 
 (defcustom lsp-roslyn-dotnet-executable "dotnet"
   "Dotnet executable to use with the Roslyn language server."
   :type 'string
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-roslyn)
 
 (defcustom lsp-roslyn-package-version "4.9.0-3.23604.10"
   "Version of the Roslyn package to install."
   :type 'string
+  :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-roslyn)
 
 (defvar lsp-roslyn--pipe-name nil)
