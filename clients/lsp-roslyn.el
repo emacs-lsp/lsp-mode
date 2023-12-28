@@ -47,6 +47,18 @@ Unused on other platforms.")
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-roslyn)
 
+(defcustom lsp-roslyn-server-dll-override-path nil
+  "Custom path to Microsoft.CodeAnalysis.LanguageServer.dll."
+  :type '(choice (const nil) string)
+  :package-version '(lsp-mode . "8.0.0")
+  :group 'lsp-roslyn)
+
+(defcustom lsp-roslyn-server-timeout-seconds 60
+  "Amount of time to wait for Roslyn server startup, in seconds."
+  :type 'integer
+  :package-version '(lsp-mode . "8.0.0")
+  :group 'lsp-roslyn)
+
 (defcustom lsp-roslyn-server-log-level "Information"
   "Log level for the Roslyn language server."
   :type '(choice (:tag "None" "Trace" "Debug" "Information" "Warning" "Error" "Critical"))
@@ -140,7 +152,7 @@ creates another process connecting to the named pipe it specifies."
                                           (format "--extensionLogDirectory=%s" lsp-roslyn-server-log-directory))
                                     lsp-roslyn-server-extra-args)
                           :noquery t)))
-    (accept-process-output command-process 5) ; wait for JSON with pipe name to print on stdout, like {"pipeName":"\\\\.\\pipe\\d1b72351"}
+    (accept-process-output command-process lsp-roslyn-server-timeout-seconds) ; wait for JSON with pipe name to print on stdout, like {"pipeName":"\\\\.\\pipe\\d1b72351"}
     (when (not lsp-roslyn--pipe-name)
       (error "Failed to receieve pipe name from Roslyn server process"))
     (let* ((process-name (generate-new-buffer-name (format "%s-pipe" name)))
@@ -242,12 +254,16 @@ creates another process connecting to the named pipe it specifies."
   (format "microsoft.codeanalysis.languageserver.%s" (lsp-roslyn--get-rid)))
 
 (defun lsp-roslyn--get-server-dll-path ()
-  (f-join lsp-roslyn-install-path "out"
-          (lsp-roslyn--get-package-name)
-          lsp-roslyn-package-version
-          "content" "LanguageServer"
-          (lsp-roslyn--get-rid)
-          "Microsoft.CodeAnalysis.LanguageServer.dll"))
+  "Gets the path to the language server DLL.
+Assumes it was installed with the server install function."
+  (if lsp-roslyn-server-dll-override-path
+      lsp-roslyn-server-dll-override-path
+    (f-join lsp-roslyn-install-path "out"
+            (lsp-roslyn--get-package-name)
+            lsp-roslyn-package-version
+            "content" "LanguageServer"
+            (lsp-roslyn--get-rid)
+            "Microsoft.CodeAnalysis.LanguageServer.dll")))
 
 (defun lsp-roslyn--get-rid ()
   "Retrieves the .NET Runtime Identifier (RID) for the current system."

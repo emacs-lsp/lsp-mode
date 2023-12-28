@@ -7,6 +7,7 @@ param (
 
 $Source = @"
 using System;
+using System.Text;
 using System.IO;
 using System.IO.Pipes;
 using System.Threading.Tasks;
@@ -18,13 +19,13 @@ public static class StdPipe
         var pipeClient = new NamedPipeClientStream(pipeServer, pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
         pipeClient.Connect();
 
-        var pipeReader = new StreamReader(pipeClient, new System.Text.UTF8Encoding(false));
-        var pipeWriter = new StreamWriter(pipeClient, new System.Text.UTF8Encoding(false));
+        var pipeReader = new BufferedStream(pipeClient);
+        var pipeWriter = new BufferedStream(pipeClient);
 
-        var stdin = Console.In;
-        var stdout = Console.Out;
+        var stdin = new BufferedStream(Console.OpenStandardInput());
+        var stdout = new BufferedStream(Console.OpenStandardOutput());
 
-        var tasks = new Task<char[]>[2]
+        var tasks = new Task<byte[]>[2]
         {
             ReadHeaderDelimitedAsync(pipeReader, false),
             ReadHeaderDelimitedAsync(stdin, true)
@@ -58,64 +59,80 @@ public static class StdPipe
         }
     }
 
-    private static async Task<char[]> ReadHeaderDelimitedAsync(TextReader reader, bool isInput)
+    private static async Task<byte[]> ReadHeaderDelimitedAsync(Stream stream, bool isInput)
     {
         // Assigning new tasks with this function blocks the thread
         // unless this is awaited first.
         await Task.Yield();
 
-        string name = isInput ? "stdin -> pipe" : "pipe -> stdout";
+        var idx = 0;
+        var header = new byte[64];
+        int b = 0;
+        do
+        {
+            var bytesRead = await stream.ReadAsync(header, idx, 1);
+            if (bytesRead == 0)
+                continue;
+            b = header[idx++];
+        } while (b != '\r');
 
-        string line = null;
-        while (line == null) {
-            line = await reader.ReadLineAsync();
-        }
-
-        var colonPos = line.IndexOf(":");
+        var colonPos = Array.IndexOf(header, (byte)':');
         if (colonPos == -1)
         {
-            // throw new Exception("Did not find colon inside header");
-            return new char[0];
+            return new byte[0];
         }
 
-        var headerName = line.Substring(0, colonPos);
-        var headerContent = line.Substring(colonPos + 1);
+        var headerName = new byte[colonPos];
+        Array.Copy(header, headerName, colonPos);
+        var headerContent = new byte[idx - colonPos - 1];
+        Array.Copy(header, colonPos + 2, headerContent, 0, headerContent.Length - 2);
 
-        if (headerName != "Content-Length")
+        if (Encoding.ASCII.GetString(headerName) != "Content-Length")
         {
-            // throw new Exception("Expected Content-Length header");
-            return new char[0];
+            return new byte[0];
         }
         if (headerContent.Length > 20)
         {
-            // throw new Exception("Content-Length header too large");
-            return new char[0];
+            return new byte[0];
         }
-
         int contentLength;
-        try 
+        try
         {
-            contentLength = int.Parse(headerContent);
+            contentLength = int.Parse(Encoding.ASCII.GetString(headerContent));
         }
         catch (Exception)
         {
-            return new char[0];
+            return new byte[0];
         }
 
-        var buffer = new char[line.Length + contentLength + 4];
+        var buffer = new byte[contentLength + idx + 3];
         var c = 0;
-        for (var i = 0; i < line.Length; i++)
+        for (var i = 0; i < idx; i++)
         {
-            buffer[c++] = line[i];
+            buffer[c++] = header[i];
         }
-        buffer[c++] = '\r';
-        buffer[c++] = '\n';
-        buffer[c++] = '\r';
-        buffer[c++] = '\n';
 
-        await reader.ReadLineAsync();
+        // LF, CRLF
+        var bytesToRead = contentLength + 3;
+        while (bytesToRead > 0)
+        {
+            var bytesRead = await stream.ReadAsync(buffer, c, bytesToRead);
+            bytesToRead -= bytesRead;
+            c += bytesRead;
+        }
 
-        var bytesRead = await reader.ReadBlockAsync(buffer, c, contentLength);
+        if (isInput)
+        {
+            using (var sw = new FileStream("debug-stdin-to-pipe.txt", FileMode.Append)) {
+                sw.Write(buffer, 0, buffer.Length);
+            }
+        }
+        else
+        {
+            using (var sw = new FileStream("debug-pipe-to-stdout.txt", FileMode.Append)) {
+                sw.Write(buffer, 0, buffer.Length);
+            }
+        }
 
         return buffer;
     }
@@ -124,4 +141,9 @@ public static class StdPipe
 
 Add-Type -TypeDefinition $Source -Language CSharp
 
-[StdPipe]::RouteToPipe($ServerName, $PipeName)
+try {
+    [StdPipe]::RouteToPipe($ServerName, $PipeName)
+} catch [System.AggregateException] {
+    Write-Error $error[0].exception.innerexception
+    throw $error[0].exception.innerexception
+}
