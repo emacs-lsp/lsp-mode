@@ -4299,6 +4299,8 @@ yet."
 
   (lsp-managed-mode 1)
 
+  (lsp-diagnostics--request-pull-diagnostics lsp--cur-workspace)
+
   (run-hooks 'lsp-after-open-hook)
   (when-let ((client (-some-> lsp--cur-workspace (lsp--workspace-client))))
     (-some-> (lsp--client-after-open-fn client)
