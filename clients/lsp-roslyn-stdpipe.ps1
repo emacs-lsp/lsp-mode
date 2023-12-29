@@ -121,19 +121,6 @@ public static class StdPipe
             c += bytesRead;
         }
 
-        if (isInput)
-        {
-            using (var sw = new FileStream("debug-stdin-to-pipe.txt", FileMode.Append)) {
-                sw.Write(buffer, 0, buffer.Length);
-            }
-        }
-        else
-        {
-            using (var sw = new FileStream("debug-pipe-to-stdout.txt", FileMode.Append)) {
-                sw.Write(buffer, 0, buffer.Length);
-            }
-        }
-
         return buffer;
     }
 }
