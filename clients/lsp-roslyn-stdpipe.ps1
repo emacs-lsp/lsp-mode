@@ -27,8 +27,8 @@ public static class StdPipe
 
         var tasks = new Task<byte[]>[2]
         {
-            ReadHeaderDelimitedAsync(pipeReader, false),
-            ReadHeaderDelimitedAsync(stdin, true)
+            ReadHeaderDelimitedAsync(pipeReader),
+            ReadHeaderDelimitedAsync(stdin)
         };
 
         while (true)
@@ -47,19 +47,19 @@ public static class StdPipe
 
                 stdout.Write(bytesRead, 0, bytesRead.Length);
                 stdout.Flush();
-                tasks[doneIdx] = ReadHeaderDelimitedAsync(pipeReader, false);
+                tasks[doneIdx] = ReadHeaderDelimitedAsync(pipeReader);
             }
             else
             {
                 // stdin -> pipe out
                 pipeWriter.Write(bytesRead, 0, bytesRead.Length);
                 pipeWriter.Flush();
-                tasks[doneIdx] = ReadHeaderDelimitedAsync(stdin, true);
+                tasks[doneIdx] = ReadHeaderDelimitedAsync(stdin);
             }
         }
     }
 
-    private static async Task<byte[]> ReadHeaderDelimitedAsync(Stream stream, bool isInput)
+    private static async Task<byte[]> ReadHeaderDelimitedAsync(Stream stream)
     {
         // Assigning new tasks with this function blocks the thread
         // unless this is awaited first.
