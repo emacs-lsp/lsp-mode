@@ -127,7 +127,6 @@ Unused on other platforms.")
          :remote lsp-roslyn--pipe-name
          :sentinel sentinel
          :filter filter
-         :stderr stderr-buf
          :noquery t)))))
 
 (defun lsp-roslyn--connect (filter sentinel name environment-fn _workspace)
@@ -161,12 +160,13 @@ creates another process connecting to the named pipe it specifies."
             (lsp-roslyn--make-named-pipe-process filter sentinel environment-fn process-name stderr-buf)))
       (with-current-buffer (get-buffer parent-stderr-buf)
         (special-mode))
-      (with-current-buffer (get-buffer stderr-buf)
-        ;; Make the *NAME::stderr* buffer buffer-read-only, q to bury, etc.
-        (special-mode))
+      (when-let ((stderr-buffer (get-buffer stderr-buf)))
+        (with-current-buffer stderr-buffer
+          ;; Make the *NAME::stderr* buffer buffer-read-only, q to bury, etc.
+          (special-mode))
+        (set-process-query-on-exit-flag (get-buffer-process stderr-buffer) nil))
       (set-process-query-on-exit-flag command-process nil)
       (set-process-query-on-exit-flag communication-process nil)
-      (set-process-query-on-exit-flag (get-buffer-process stderr-buf) nil)
       (cons communication-process communication-process))))
 
 (defun lsp-roslyn--uri-to-path (uri)
