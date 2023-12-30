@@ -443,6 +443,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "jsonnet",
+    "full-name": "Jsonnet",
+    "server-name": "jsonnet-language-server",
+    "server-url": "https://github.com/grafana/jsonnet-language-server",
+    "installation-url": "https://github.com/grafana/jsonnet-language-server?tab=readme-ov-file#installation",
+    "lsp-install-server": "jsonnet-ls",
+    "debugger": "Not available"
+  },
+  {
     "name": "julia",
     "full-name": "Julia",
     "server-name": "lsp-julia",

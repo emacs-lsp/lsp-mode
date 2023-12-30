@@ -770,6 +770,7 @@ Changes take effect only when a new session is started."
     ("\\.java\\'" . "java")
     ("\\.js$" . "javascript")
     ("\\.json$" . "json")
+    ("\\.jsonnet$" . "jsonnet")
     ("\\.jsonc$" . "jsonc")
     ("\\.jsx$" . "javascriptreact")
     ("\\.jq$"  . "jq")

@@ -93,6 +93,7 @@ nav:
     - JavaScript/TypeScript (theia-ide): page/lsp-typescript.md
     - JavaScript Flow: page/lsp-flow.md
     - Json: page/lsp-json.md
+    - Jsonnet: page/lsp-jsonnet.md
     - Julia: page/lsp-julia.md
     - Kotlin: page/lsp-kotlin.md
     - LanguageTool (LTEX): page/lsp-ltex.md
