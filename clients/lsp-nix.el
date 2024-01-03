@@ -39,7 +39,7 @@
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-nix-rnix-server-path))
-                  :major-modes '(nix-mode)
+                  :major-modes '(nix-mode nix-ts-mode)
                   :server-id 'rnix-lsp
                   :priority -1))
 
@@ -79,7 +79,7 @@
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-nix-nil-server-path))
-                  :major-modes '(nix-mode)
+                  :major-modes '(nix-mode nix-ts-mode)
                   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--set-configuration
