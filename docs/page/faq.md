@@ -19,7 +19,7 @@ Add `lsp` server call to `hack-local-variables-hook` which runs right after the 
 ---
 ### :grey_question: I have multiple language servers registered for language FOO. Which one will be used when opening a project?
 
-The one with highest priority wins. Servers defined in `lsp-mode` tend to have lower priority than the external packages (priority 0 if unspecified). If a server is registered with `:add-on?` flag set to `t` it will be started in parallel to the other servers that are registered for the current mode. If the server that you want to use is not with the highest priority you may use `lsp-disabled-clients` to disable the server with higher `priority` or use `lsp-enabled-clients` to enable only the servers you want to use. In order to find the server ids you may check `*lsp-log*` buffer.
+The highest number is highest priority. Note this is the opposite of [Unix priority (niceness)](https://en.wikipedia.org/wiki/Nice_(Unix)). Servers defined in `lsp-mode` tend to have lower priority than the external packages (priority 0 if unspecified). If a server is registered with `:add-on?` flag set to `t` it will be started in parallel to the other servers that are registered for the current mode. If the server that you want to use is not with the highest priority you may use `lsp-disabled-clients` to disable the server with higher `priority` or use `lsp-enabled-clients` to enable only the servers you want to use. In order to find the server ids you may check `*lsp-log*` buffer.
 
 ---
 ### :grey_question: I have multiple language servers for language `FOO` and I want to select the server per project, what can I do?
