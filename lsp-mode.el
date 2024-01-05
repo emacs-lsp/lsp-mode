@@ -408,6 +408,8 @@ the server has requested that."
     "[/\\\\]\\.terraform\\'"
     "[/\\\\]\\.terragrunt-cache\\'"
     ;; nix-direnv
+    "[/\\\\]\\result"
+    "[/\\\\]\\result-bin"
     "[/\\\\]\\.direnv\\'")
   "List of regexps matching directory paths which won't be monitored when
 creating file watches. Customization of this variable is only honored at
@@ -914,6 +916,7 @@ Changes take effect only when a new session is started."
     (robot-mode . "robot")
     (racket-mode . "racket")
     (nix-mode . "nix")
+    (nix-ts-mode . "Nix")
     (prolog-mode . "prolog")
     (vala-mode . "vala")
     (actionscript-mode . "actionscript")
