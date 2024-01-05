@@ -1017,6 +1017,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "trunk",
+    "full-name": "Trunk",
+    "server-name": "trunk-lsp",
+    "server-url": "https://docs.trunk.io",
+    "installation": "curl https://get.trunk.io -fsSL | bash -s -- -y; trunk init",
+    "installation-url": "https://docs.trunk.io/check",
+    "debugger": "Not available"
+  },
+  {
     "name": "typeprof",
     "full-name": "Ruby (TypeProf)",
     "server-name": "typeprof",
