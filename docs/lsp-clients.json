@@ -614,10 +614,18 @@
   },
   {
     "name": "nix",
-    "full-name": "Nix",
+    "full-name": "Nix (nixd language server)",
+    "server-name": "nixd",
+    "server-url": "https://github.com/nix-community/nixd",
+    "installation": "nix profile install github:nixos/nixpkgs#nixd",
+    "debugger": "Not available"
+  },
+  {
+    "name": "nix",
+    "full-name": "Nix (rnix language server)",
     "server-name": "rnix-lsp",
     "server-url": "https://github.com/nix-community/rnix-lsp",
-    "installation": "nix-env -i rnix-lsp",
+    "installation": "nix profile install github:nixos/nixpkgs#rnix-lsp",
     "debugger": "Not available"
   },
   {

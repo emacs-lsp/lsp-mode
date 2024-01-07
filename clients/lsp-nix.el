@@ -41,6 +41,23 @@
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-nix-rnix-server-path))
                   :major-modes '(nix-mode nix-ts-mode)
                   :server-id 'rnix-lsp
+                  :priority -2))
+
+(defgroup lsp-nix-nixd nil
+  "LSP support for Nix, using nixd language server."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/nix-community/nixd"))
+
+(defcustom lsp-nix-nixd-server-path "nixd"
+  "Executable path for the server."
+  :group 'lsp-nix-nixd
+  :type 'string
+  :package-version '(lsp-mode . "8.0.0"))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-nix-nixd-server-path))
+                  :major-modes '(nix-mode)
+                  :server-id 'nixd-lsp
                   :priority -1))
 
 (defgroup lsp-nix-nil nil
