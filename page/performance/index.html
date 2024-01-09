@@ -3519,10 +3519,13 @@ Benchmarks show that Emacs 27 is <code>~15 times</code> faster than Emacs when u
 <h3 id="use-plists-for-deserialization">Use <code>plists</code> for deserialization.<a class="headerlink" href="#use-plists-for-deserialization" title="Permanent link">#</a></h3>
 <p><code>lsp-mode</code> can be compiled in 2 modes <code>plist</code> and <code>hash-table</code> based <code>lsp-use-plists</code> flag. <code>plist</code>s provide better performance in deserialization and also put less presure than <code>hash-table</code>s. To switch to <code>plist</code> you have to perform 2 steps:</p>
 <ol>
-<li>Configure the following env variable. Make sure that <code>Emacs</code> can see that variable (best way to do that is to start <code>Emacs</code> from the shell, not from the icon).
+<li>Configure the following env variable. Make sure that <code>Emacs</code> can see that variable. For example, this can be done by starting <code>Emacs</code> from the shell.
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">LSP_USE_PLISTS</span><span class="o">=</span><span class="nb">true</span>
+</code></pre></div>
+or by setting it in <code>early-init.el</code>:
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">setenv</span> <span class="s">&quot;LSP_USE_PLISTS&quot;</span> <span class="s">&quot;true&quot;</span><span class="p">)</span>
 </code></pre></div></li>
-<li>Delete <code>lsp-mode</code> related packages.</li>
+<li>Delete <code>lsp-mode</code> related packages. This can be done with <code>package-delete</code>.</li>
 <li>Make sure that <code>lsp-use-plists</code> is non-nil.</li>
 <li>Restart <code>Emacs</code> and install again <code>lsp-mode</code> related packages.</li>
 </ol>
@@ -3564,7 +3567,7 @@ to be watched for performance reasons, you can add a regexp to that variable exc
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 8, 2024</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 9, 2024</span>
       
     
   </small>
