@@ -179,7 +179,7 @@ available, else the globally installed tool."
 (defcustom lsp-fsharp-workspace-extra-exclude-dirs '()
   "Additional directories to exclude from FsAutoComplete workspace loading / discovery."
   :group 'lsp-fsharp
-  :type '(repeat string))
+  :type 'lsp-string-vector)
 
 (defun lsp-fsharp--fsac-cmd ()
   "The location of fsautocomplete executable."
