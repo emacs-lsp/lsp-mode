@@ -460,13 +460,17 @@ It updates the test tree view data."
     (3 'library)
     (4 'jar)
     (5 'namespace)
-    (6 'class)))
+    (6 'class)
+    (7 'method)
+    (8 'variable)
+    (9 'interface)))
 
-(defun lsp-clojure--project-tree-ret-action (uri)
+(defun lsp-clojure--project-tree-ret-action (uri range)
   "Build the ret action for an item in the project tree view.
 URI is the source of the item."
   (interactive)
   (lsp-treemacs--open-file-in-mru (lsp--uri-to-path uri))
+  (goto-char (lsp--position-to-point (lsp:range-start range)))
   (run-hooks 'xref-after-jump-hook))
 
 (lsp-defun lsp-clojure--project-tree-children-data->tree (buffer current-node &optional _ callback)
@@ -479,7 +483,7 @@ URI is the source of the item."
        (funcall
         callback
         (-map
-         (-lambda ((node &as &clojure-lsp:ProjectTreeNode :id? :name :type :uri? :detail? :final?))
+         (-lambda ((node &as &clojure-lsp:ProjectTreeNode :id? :name :type :uri? :range? :detail? :final?))
            (-let ((label (if detail?
                              (format "%s %s" name (propertize detail? 'face 'lsp-details-face))
                            name)))
@@ -492,7 +496,7 @@ URI is the source of the item."
                    (list :uri uri?
                          :ret-action (lambda (&rest _)
                                        (interactive)
-                                       (lsp-clojure--project-tree-ret-action uri?)))))))
+                                       (lsp-clojure--project-tree-ret-action uri? range?)))))))
          nodes?)))
      :mode 'detached)))
 
