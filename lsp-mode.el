@@ -781,6 +781,7 @@ Changes take effect only when a new session is started."
     ("\\.mdx\\'" . "mdx")
     ("\\.php$" . "php")
     ("\\.rs\\'" . "rust")
+    ("\\.spec\\'" . "rpm-spec")
     ("\\.sql$" . "sql")
     ("\\.cypher$" . "cypher")
     ("\\.svelte$" . "svelte")

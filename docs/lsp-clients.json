@@ -828,6 +828,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "rpm-spec",
+    "full-name": "RPM Spec",
+    "server-name": "rpm-spec-language-server",
+    "server-url": "https://github.com/dcermak/rpm-spec-language-server",
+    "installation": "pip install --user rpm-spec-language-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "rubocop",
     "full-name": "Ruby (RuboCop)",
     "server-name": "rubocop",
