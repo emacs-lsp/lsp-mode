@@ -637,6 +637,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "nushell",
+    "full-name": "Nushell",
+    "server-name": "nu",
+    "server-url": "https://github.com/nushell/nushell/tree/main/crates/nu-lsp",
+    "installation": "It is included in Nushell >= 0.87.0",
+    "debugger": "Not available"
+  },
+  {
     "name": "ocaml",
     "full-name": "OCaml",
     "server-name": "ocaml-language-server",
