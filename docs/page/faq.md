@@ -71,3 +71,17 @@ The issue is caused by `clojure-lsp` server being more aggressive with formattin
     ``` elisp
     (setq lsp-enable-suggest-server-download nil)
     ```
+
+---
+### :grey_question: How can I stop #include statements being automatically inserted when editing C/C++ code?
+
+You can use `lsp-clients-clangd-args` to configure your clangd. Add the following:
+
+    ``` elisp
+    (setq lsp-clients-clangd-args
+        '("--header-insertion=never"))
+    ```
+
+For more flags, see clangd --help.
+
+(Thanks to [Martingale on Emacs StackExchange](https://emacs.stackexchange.com/questions/58015/how-to-stop-lsp-mode-including-headers-automatically-for-c-c-code) for this answer!)
