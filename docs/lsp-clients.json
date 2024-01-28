@@ -1057,6 +1057,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "verible",
+    "common-group-name": "verilog",
+    "full-name": "Verilog/SystemVerilog",
+    "server-name": "verible-verilog-ls",
+    "server-url": "https://github.com/chipsalliance/verible",
+    "installation": "https://github.com/chipsalliance/verible#installation",
+    "debugger": "Not available"
+  },
+  {
     "name": "verilog",
     "common-group-name": "verilog",
     "full-name": "Verilog/SystemVerilog",

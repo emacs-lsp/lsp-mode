@@ -20,10 +20,11 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;; LSP client support for Verilog/SystemVerilog. Two language servers
-;; are available:
+;; LSP client support for Verilog/SystemVerilog. The following language
+;; servers are available:
 ;;   1) HDL Checker. See https://github.com/suoto/hdl_checker
 ;;   2) SVLangserver. See https://github.com/imc-trading/svlangserver
+;;   3) Verible. See https://github.com/chipsalliance/verible
 ;;
 ;; This file is based on the lsp-vhdl.el file.
 ;;
@@ -189,6 +190,24 @@
                   :server-id 'lsp-verilog))
 
 (lsp-consistency-check lsp-verilog)
+
+(defgroup lsp-verible nil
+  "LSP support for Verilog/SystemVerilog using the Verible suite."
+  :group 'lsp-mode
+  :link '(url-link "https://github.com/chipsalliance/verible"))
+
+(defcustom lsp-clients-verible-executable '("verible-verilog-ls")
+  "Command to start the Verible Verilog language server."
+  :group 'lsp-verible
+  :risky t
+  :type 'file)
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-verible-executable)
+                  :major-modes '(verilog-mode)
+                  :language-id "verilog"
+                  :priority -2
+                  :server-id 'lsp-verilog-verible))
 
 (provide 'lsp-verilog)
 ;;; lsp-verilog.el ends here
