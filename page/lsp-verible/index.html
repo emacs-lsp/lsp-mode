@@ -12,14 +12,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-fsharp/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-verible/">
       
       <link rel="icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.0">
     
     
       
-        <title>F# - LSP Mode - LSP support for Emacs</title>
+        <title>Verilog/SystemVerilog (verible) - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#f" class="md-skip">
+        <a href="#verilogsystemverilog" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              F#
+              Verilog/SystemVerilog (verible)
             
           </span>
         </div>
@@ -1486,225 +1486,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          F#
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../lsp-fsharp/" class="md-nav__link">
         F#
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-    <nav class="md-nav" aria-label="Installation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-yes-netcoredbg" class="md-nav__link">
-    Debugger: Yes (netcoredbg)
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-auto-workspace-init" class="md-nav__link">
-    lsp-fsharp-auto-workspace-init
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-enable-reference-code-lens" class="md-nav__link">
-    lsp-fsharp-enable-reference-code-lens
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-external-autocomplete" class="md-nav__link">
-    lsp-fsharp-external-autocomplete
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-generate-binlog" class="md-nav__link">
-    lsp-fsharp-generate-binlog
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-interface-stub-generation" class="md-nav__link">
-    lsp-fsharp-interface-stub-generation
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-interface-stub-generation-method-body" class="md-nav__link">
-    lsp-fsharp-interface-stub-generation-method-body
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-interface-stub-generation-object-identifier" class="md-nav__link">
-    lsp-fsharp-interface-stub-generation-object-identifier
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-keywords-autocomplete" class="md-nav__link">
-    lsp-fsharp-keywords-autocomplete
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-linter" class="md-nav__link">
-    lsp-fsharp-linter
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-record-stub-generation" class="md-nav__link">
-    lsp-fsharp-record-stub-generation
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-record-stub-generation-body" class="md-nav__link">
-    lsp-fsharp-record-stub-generation-body
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-resolve-namespaces" class="md-nav__link">
-    lsp-fsharp-resolve-namespaces
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-server-args" class="md-nav__link">
-    lsp-fsharp-server-args
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-server-install-dir" class="md-nav__link">
-    lsp-fsharp-server-install-dir
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-simplify-name-analyzer" class="md-nav__link">
-    lsp-fsharp-simplify-name-analyzer
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-union-case-stub-generation" class="md-nav__link">
-    lsp-fsharp-union-case-stub-generation
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-union-case-stub-generation-body" class="md-nav__link">
-    lsp-fsharp-union-case-stub-generation-body
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-unused-declarations-analyzer" class="md-nav__link">
-    lsp-fsharp-unused-declarations-analyzer
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-unused-opens-analyzer" class="md-nav__link">
-    lsp-fsharp-unused-opens-analyzer
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-use-dotnet-tool-for-fsac" class="md-nav__link">
-    lsp-fsharp-use-dotnet-tool-for-fsac
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2904,11 +2690,99 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../lsp-verible/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Verilog/SystemVerilog (verible)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Verilog/SystemVerilog (verible)
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#server" class="md-nav__link">
+    Server
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-configurations" class="md-nav__link">
+    Available configurations
+  </a>
+  
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-verilog-executable" class="md-nav__link">
+    lsp-clients-verilog-executable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-clients-verible-executable" class="md-nav__link">
+    lsp-clients-verible-executable
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -3493,8 +3367,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#debugger-yes-netcoredbg" class="md-nav__link">
-    Debugger: Yes (netcoredbg)
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
   </a>
   
 </li>
@@ -3513,141 +3387,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#lsp-fsharp-auto-workspace-init" class="md-nav__link">
-    lsp-fsharp-auto-workspace-init
+  <a href="#lsp-clients-verilog-executable" class="md-nav__link">
+    lsp-clients-verilog-executable
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-fsharp-enable-reference-code-lens" class="md-nav__link">
-    lsp-fsharp-enable-reference-code-lens
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-external-autocomplete" class="md-nav__link">
-    lsp-fsharp-external-autocomplete
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-generate-binlog" class="md-nav__link">
-    lsp-fsharp-generate-binlog
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-interface-stub-generation" class="md-nav__link">
-    lsp-fsharp-interface-stub-generation
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-interface-stub-generation-method-body" class="md-nav__link">
-    lsp-fsharp-interface-stub-generation-method-body
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-interface-stub-generation-object-identifier" class="md-nav__link">
-    lsp-fsharp-interface-stub-generation-object-identifier
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-keywords-autocomplete" class="md-nav__link">
-    lsp-fsharp-keywords-autocomplete
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-linter" class="md-nav__link">
-    lsp-fsharp-linter
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-record-stub-generation" class="md-nav__link">
-    lsp-fsharp-record-stub-generation
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-record-stub-generation-body" class="md-nav__link">
-    lsp-fsharp-record-stub-generation-body
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-resolve-namespaces" class="md-nav__link">
-    lsp-fsharp-resolve-namespaces
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-server-args" class="md-nav__link">
-    lsp-fsharp-server-args
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-server-install-dir" class="md-nav__link">
-    lsp-fsharp-server-install-dir
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-simplify-name-analyzer" class="md-nav__link">
-    lsp-fsharp-simplify-name-analyzer
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-union-case-stub-generation" class="md-nav__link">
-    lsp-fsharp-union-case-stub-generation
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-union-case-stub-generation-body" class="md-nav__link">
-    lsp-fsharp-union-case-stub-generation-body
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-unused-declarations-analyzer" class="md-nav__link">
-    lsp-fsharp-unused-declarations-analyzer
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-unused-opens-analyzer" class="md-nav__link">
-    lsp-fsharp-unused-opens-analyzer
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-fsharp-use-dotnet-tool-for-fsac" class="md-nav__link">
-    lsp-fsharp-use-dotnet-tool-for-fsac
+  <a href="#lsp-clients-verible-executable" class="md-nav__link">
+    lsp-clients-verible-executable
   </a>
   
 </li>
@@ -3693,7 +3441,7 @@
 <!-- Edit button -->
 
 <a
-  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-fsharp.el"
+  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-verilog.el"
   title="Edit this page"
   class="md-content__button md-icon"
 >
@@ -3712,124 +3460,22 @@
 
 
 <!-- Markdown content -->
-<h1 id="f">F#<a class="headerlink" href="#f" title="Permanent link">#</a></h1>
+<h1 id="verilogsystemverilog">Verilog/SystemVerilog<a class="headerlink" href="#verilogsystemverilog" title="Permanent link">#</a></h1>
 <h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For more information about the LSP server, check <a href="https://github.com/fsharp/FsAutoComplete">fsautocomplete</a>.</p>
+<p>For more information about the LSP server, check <a href="https://github.com/chipsalliance/verible">verible-verilog-ls</a>.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
-<p>This Server supports automatic install.
-Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><kbd>RET</kbd><code>fsac</code><kbd>RET</kbd>.</p>
-<p><code>Automatic by lsp-mode</code></p>
-<h3 id="debugger-yes-netcoredbg">Debugger: Yes (netcoredbg)<a class="headerlink" href="#debugger-yes-netcoredbg" title="Permanent link">#</a></h3>
+<p><code>https://github.com/chipsalliance/verible#installation</code></p>
+<h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<h3 id="lsp-fsharp-auto-workspace-init"><code>lsp-fsharp-auto-workspace-init</code><a class="headerlink" href="#lsp-fsharp-auto-workspace-init" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Enable automatic workspace initialization.
-Do note that this can cause unexpected or challenging behaviors, as solutions
-with test projects are not autoloaded by FSharpAutoComplete.</p>
+<h3 id="lsp-clients-verilog-executable"><code>lsp-clients-verilog-executable</code><a class="headerlink" href="#lsp-clients-verilog-executable" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>file</code></p>
+<p><em>Default:</em> <code>(hdl_checker --lsp)</code></p>
+<p>Command to start the hdl_checker language server.</p>
 <hr />
-<h3 id="lsp-fsharp-enable-reference-code-lens"><code>lsp-fsharp-enable-reference-code-lens</code><a class="headerlink" href="#lsp-fsharp-enable-reference-code-lens" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enables reference count code lenses.</p>
-<hr />
-<h3 id="lsp-fsharp-external-autocomplete"><code>lsp-fsharp-external-autocomplete</code><a class="headerlink" href="#lsp-fsharp-external-autocomplete" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Provides autocompletion for symbols from not opened namespaces/modules;
-inserts open on accept.</p>
-<hr />
-<h3 id="lsp-fsharp-generate-binlog"><code>lsp-fsharp-generate-binlog</code><a class="headerlink" href="#lsp-fsharp-generate-binlog" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Generate a binlog for debugging project cracking.</p>
-<hr />
-<h3 id="lsp-fsharp-interface-stub-generation"><code>lsp-fsharp-interface-stub-generation</code><a class="headerlink" href="#lsp-fsharp-interface-stub-generation" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enables code action to generate an interface stub.</p>
-<hr />
-<h3 id="lsp-fsharp-interface-stub-generation-method-body"><code>lsp-fsharp-interface-stub-generation-method-body</code><a class="headerlink" href="#lsp-fsharp-interface-stub-generation-method-body" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>failwith "Not Implemented"</code></p>
-<p>Defines dummy body used by interface stub generator.</p>
-<hr />
-<h3 id="lsp-fsharp-interface-stub-generation-object-identifier"><code>lsp-fsharp-interface-stub-generation-object-identifier</code><a class="headerlink" href="#lsp-fsharp-interface-stub-generation-object-identifier" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>this</code></p>
-<p>Defines object identifier used by interface stub generator,
-e.g. <code>this</code> or <code>self</code>.</p>
-<hr />
-<h3 id="lsp-fsharp-keywords-autocomplete"><code>lsp-fsharp-keywords-autocomplete</code><a class="headerlink" href="#lsp-fsharp-keywords-autocomplete" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Provides keywords in autocomplete list.</p>
-<hr />
-<h3 id="lsp-fsharp-linter"><code>lsp-fsharp-linter</code><a class="headerlink" href="#lsp-fsharp-linter" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enables FSharpLint integration, provides additional warnings and code
-action fixes.</p>
-<hr />
-<h3 id="lsp-fsharp-record-stub-generation"><code>lsp-fsharp-record-stub-generation</code><a class="headerlink" href="#lsp-fsharp-record-stub-generation" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enables code action to generate record stub.</p>
-<hr />
-<h3 id="lsp-fsharp-record-stub-generation-body"><code>lsp-fsharp-record-stub-generation-body</code><a class="headerlink" href="#lsp-fsharp-record-stub-generation-body" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>failwith "Not Implemented"</code></p>
-<p>Defines dummy body used by record stub generator.</p>
-<hr />
-<h3 id="lsp-fsharp-resolve-namespaces"><code>lsp-fsharp-resolve-namespaces</code><a class="headerlink" href="#lsp-fsharp-resolve-namespaces" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enables resolve namespace quick fix; adds <code>open</code> if symbol is from not yet
-opened module/namespace.</p>
-<hr />
-<h3 id="lsp-fsharp-server-args"><code>lsp-fsharp-server-args</code><a class="headerlink" href="#lsp-fsharp-server-args" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(repeat string)</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Extra arguments for the F# language server.</p>
-<hr />
-<h3 id="lsp-fsharp-server-install-dir"><code>lsp-fsharp-server-install-dir</code><a class="headerlink" href="#lsp-fsharp-server-install-dir" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>directory</code></p>
-<p><em>Default:</em> <code>~/.emacs.d/.cache/lsp/fsautocomplete/</code></p>
-<p>Install directory for fsautocomplete server.
-The slash is expected at the end.</p>
-<hr />
-<h3 id="lsp-fsharp-simplify-name-analyzer"><code>lsp-fsharp-simplify-name-analyzer</code><a class="headerlink" href="#lsp-fsharp-simplify-name-analyzer" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Enables simplify name analyzer and remove redundant qualifier quick fix.</p>
-<hr />
-<h3 id="lsp-fsharp-union-case-stub-generation"><code>lsp-fsharp-union-case-stub-generation</code><a class="headerlink" href="#lsp-fsharp-union-case-stub-generation" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enables a code action to generate pattern matching cases.</p>
-<hr />
-<h3 id="lsp-fsharp-union-case-stub-generation-body"><code>lsp-fsharp-union-case-stub-generation-body</code><a class="headerlink" href="#lsp-fsharp-union-case-stub-generation-body" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>failwith "Not Implemented"</code></p>
-<p>Defines dummy body used by pattern matching generator.</p>
-<hr />
-<h3 id="lsp-fsharp-unused-declarations-analyzer"><code>lsp-fsharp-unused-declarations-analyzer</code><a class="headerlink" href="#lsp-fsharp-unused-declarations-analyzer" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enables unused symbol detection.</p>
-<hr />
-<h3 id="lsp-fsharp-unused-opens-analyzer"><code>lsp-fsharp-unused-opens-analyzer</code><a class="headerlink" href="#lsp-fsharp-unused-opens-analyzer" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enables unused open detection.</p>
-<hr />
-<h3 id="lsp-fsharp-use-dotnet-tool-for-fsac"><code>lsp-fsharp-use-dotnet-tool-for-fsac</code><a class="headerlink" href="#lsp-fsharp-use-dotnet-tool-for-fsac" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Run FsAutoComplete as a dotnet tool.</p>
-<p>The binary will be invoked via "dotnet fsautocomplete" in the
-project`s root directory, which will run a project-local tool if
-available, else the globally installed tool.</p>
+<h3 id="lsp-clients-verible-executable"><code>lsp-clients-verible-executable</code><a class="headerlink" href="#lsp-clients-verible-executable" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>file</code></p>
+<p><em>Default:</em> <code>(verible-verilog-ls)</code></p>
+<p>Command to start the Verible Verilog language server.</p>
 <hr />
 
 <!-- Source file information -->
@@ -3857,7 +3503,7 @@ available, else the globally installed tool.</p>
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../lsp-eslint/" class="md-footer__link md-footer__link--prev" aria-label="Previous: ESLint" rel="prev">
+        <a href="../lsp-svlangserver/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Verilog/SystemVerilog (svlangserver)" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -3866,20 +3512,20 @@ available, else the globally installed tool.</p>
               <span class="md-footer__direction">
                 Previous
               </span>
-              ESLint
+              Verilog/SystemVerilog (svlangserver)
             </div>
           </div>
         </a>
       
       
         
-        <a href="../lsp-fortran/" class="md-footer__link md-footer__link--next" aria-label="Next: Fortran" rel="next">
+        <a href="../lsp-vhdl/" class="md-footer__link md-footer__link--next" aria-label="Next: VHDL" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Fortran
+              VHDL
             </div>
           </div>
           <div class="md-footer__button md-icon">
