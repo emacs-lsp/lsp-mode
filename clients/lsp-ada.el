@@ -90,7 +90,7 @@
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection lsp-ada-als-executable)
-                  :major-modes '(ada-mode)
+                  :major-modes '(ada-mode ada-ts-mode)
                   :priority -1
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace

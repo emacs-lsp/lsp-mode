@@ -794,6 +794,7 @@ Changes take effect only when a new session is started."
     ("^go\\.mod\\'" . "go.mod")
     ("^settings.json$" . "jsonc")
     (ada-mode . "ada")
+    (ada-ts-mode . "ada")
     (awk-mode . "awk")
     (awk-ts-mode . "awk")
     (nxml-mode . "xml")
@@ -5975,6 +5976,7 @@ Request codeAction/resolve for more info if server supports."
   ;; Taken from `dtrt-indent-mode'
   '(
     (ada-mode                   . ada-indent)                       ; Ada
+    (ada-ts-mode                . ada-ts-mode-indent-offset)
     (c++-mode                   . c-basic-offset)                   ; C++
     (c++-ts-mode                . c-ts-mode-indent-offset)
     (c-mode                     . c-basic-offset)                   ; C
