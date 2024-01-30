@@ -857,6 +857,7 @@ Changes take effect only when a new session is started."
     (haskell-mode . "haskell")
     (hack-mode . "hack")
     (php-mode . "php")
+    (php-ts-mode . "php")
     (powershell-mode . "powershell")
     (powershell-mode . "PowerShell")
     (json-mode . "json")
@@ -6009,6 +6010,7 @@ Request codeAction/resolve for more info if server supports."
     (pascal-mode                . pascal-indent-level)              ; Pascal
     (perl-mode                  . perl-indent-level)                ; Perl
     (php-mode                   . c-basic-offset)                   ; PHP
+    (php-ts-mode                . php-ts-mode-indent-offset)        ; PHP
     (powershell-mode            . powershell-indent)                ; PowerShell
     (raku-mode                  . raku-indent-offset)               ; Perl6/Raku
     (ruby-mode                  . ruby-indent-level)                ; Ruby
