@@ -103,6 +103,7 @@
   * Add Assembly Language support.
   * Add Autotools support
   * Add Jsonnet support
+  * Add support for ~ada-ts-mode~.
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.
