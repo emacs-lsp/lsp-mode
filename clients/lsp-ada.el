@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'lsp-semantic-tokens)
 
 (defgroup lsp-ada nil
   "Settings for Ada Language Server."
@@ -68,6 +69,31 @@
   :group 'lsp-ada
   :package-version '(lsp-mode "8.0.1"))
 
+(defcustom lsp-ada-semantic-token-face-overrides
+  '(("namespace" . default)
+    ("modifier"  . lsp-face-semhl-keyword))
+  "Semantic token face overrides to be applied."
+  :type '(alist :key-type string
+                :value-type (choice (face  :tag "Face")
+                                    (const :tag "No Face" nil)))
+  :group 'lsp-ada
+  :package-version '(lsp-mode "8.0.1"))
+
+(defcustom lsp-ada-semantic-token-modifier-face-overrides
+  '(("declaration")
+    ("definition")
+    ("implementation")
+    ("static")
+    ("modification")
+    ("documentation")
+    ("defaultLibrary"))
+  "Semantic token modifier face overrides to be applied."
+  :type '(alist :key-type string
+                :value-type (choice (face  :tag "Face")
+                                    (const :tag "No Face" nil)))
+  :group 'lsp-ada
+  :package-version '(lsp-mode "8.0.1"))
+
 (defun lsp-ada--environment ()
   "Add environmental variables if needed."
   (let ((project-root (lsp-workspace-root)))
@@ -96,6 +122,8 @@
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
                                        (lsp-configuration-section "ada"))))
+                  :semantic-tokens-faces-overrides `( :types ,lsp-ada-semantic-token-face-overrides
+                                                      :modifiers ,lsp-ada-semantic-token-modifier-face-overrides)
                   :server-id 'ada-ls
                   :synchronize-sections '("ada")
                   :environment-fn 'lsp-ada--environment))
