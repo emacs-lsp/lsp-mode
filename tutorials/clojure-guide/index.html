@@ -3801,10 +3801,8 @@ If you do not want LSP completion, It's possible to use <code>cider</code> compl
 uses it to show the reference count of a function/variable. They are enabled by default so you if you want to disable, disable <code>lsp-lens-enable</code> variable:</p>
 <p><img alt="reference code-lens" src="../images/clojure-code-lens.png" title="reference code-lens" /></p>
 <h3 id="call-hierarchy">Call hierarchy<a class="headerlink" href="#call-hierarchy" title="Permanent link">#</a></h3>
-<p>This feature returns the call hierarchy of a function/method.
-As of now, <code>clojure-lsp</code> only supports returning the incoming-call hierarchy.</p>
+<p>With <a href="https://github.com/emacs-lsp/lsp-treemacs">lsp-treemacs</a>, installed, <code>lsp-treemacs-call-hierarchy</code> returns the incoming call hierarchy of a function/method by default and the outgoing hierarchy with the <code>C-u</code> prefix argument.</p>
 <p><img alt="incoming-call hierarchy" src="../images/clojure-call-hierarchy.png" title="incoming-call hierarchy" /></p>
-<p>It uses <a href="https://github.com/emacs-lsp/lsp-treemacs">lsp-treemacs</a>, which you should install to use this feature.</p>
 <h3 id="formatting">Formatting<a class="headerlink" href="#formatting" title="Permanent link">#</a></h3>
 <p>For LSP formatting, <code>clojure-lsp</code> use <a href="https://github.com/weavejester/cljfmt">cljfmt</a> with support for all known <code>cljfmt</code>
 settings.
@@ -3909,7 +3907,7 @@ I rely on <code>cider</code> to use its REPL, evaluate expressions, run tests, a
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 4, 2024</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 5, 2024</span>
       
     
   </small>
