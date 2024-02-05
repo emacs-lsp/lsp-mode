@@ -191,12 +191,9 @@ uses it to show the reference count of a function/variable. They are enabled by 
 
 ### Call hierarchy
 
-This feature returns the call hierarchy of a function/method.
-As of now, `clojure-lsp` only supports returning the incoming-call hierarchy.
+With [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs), installed, `lsp-treemacs-call-hierarchy` returns the incoming call hierarchy of a function/method by default and the outgoing hierarchy with the `C-u` prefix argument.
 
 ![incoming-call hierarchy](images/clojure-call-hierarchy.png "incoming-call hierarchy")
-
-It uses [lsp-treemacs](https://github.com/emacs-lsp/lsp-treemacs), which you should install to use this feature.
 
 ### Formatting
 
