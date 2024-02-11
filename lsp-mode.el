@@ -769,6 +769,7 @@ Changes take effect only when a new session is started."
     ("\\.go\\'" . "go")
     ("\\.html$" . "html")
     ("\\.hx$" . "haxe")
+    ("\\.hy$" . "hy")
     ("\\.java\\'" . "java")
     ("\\.js$" . "javascript")
     ("\\.json$" . "json")

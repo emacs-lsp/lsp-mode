@@ -390,6 +390,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "hyuga",
+    "full-name": "Hy",
+    "server-name": "hyuga",
+    "server-url": "https://github.com/sakuraiyuta/hyuga",
+    "installation": "pip install hyuga --user",
+    "debugger": "Not available"
+  },
+  {
     "name": "idris",
     "full-name": "Idris",
     "server-name": "idris2-lsp",
