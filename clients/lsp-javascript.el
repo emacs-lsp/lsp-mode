@@ -790,17 +790,28 @@ name (e.g. `data' variable passed as `data' parameter)."
   (when-let ((workspace (lsp-find-workspace 'ts-ls (buffer-file-name))))
     (eq 'initialized (lsp--workspace-status workspace))))
 
-(defun lsp-clients-typescript-project-ts-server-path ()
-  (f-join (lsp-workspace-root) "node_modules" "typescript" "lib" "tsserver.js"))
+(defun lsp-clients-typescript-server-path-by-node-require ()
+  "Get the location of the typescript library.
+Use Node.js.
+The node_modules directory structure is suspect
+and should be trusted as little as possible.
+If you call require in Node.js,
+it should take into account the various hooks."
+  (let ((output
+         (string-trim-right
+          (shell-command-to-string
+           "node -e \"console.log(require.resolve('typescript'))\" 2>/dev/null"))))
+    (if (string-empty-p output)
+        nil
+      (f-parent output))))
 
 (defun lsp-clients-typescript-server-path ()
-  (cond
-   ((and
-     lsp-clients-typescript-prefer-use-project-ts-server
-     (f-exists? (lsp-clients-typescript-project-ts-server-path)))
-    (lsp-clients-typescript-project-ts-server-path))
-   (t
-    (f-join (f-parent (lsp-package-path 'typescript)) "node_modules" "typescript" "lib"))))
+  (if lsp-clients-typescript-prefer-use-project-ts-server
+      (let ((server-path (lsp-clients-typescript-server-path-by-node-require)))
+        (if (f-exists? server-path)
+            server-path
+          (lsp-package-path 'typescript)))
+    (lsp-package-path 'typescript)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
