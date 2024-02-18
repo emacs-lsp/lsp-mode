@@ -365,6 +365,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "gpr",
+    "full-name": "GNAT Project",
+    "server-name": "ada_language_server",
+    "server-url": "https://github.com/AdaCore/ada_language_server",
+    "installation-url": "https://github.com/AdaCore/ada_language_server#install",
+    "lsp-install-server": "gpr-ls",
+    "debugger": "Not available"
+  },
+  {
     "name": "grammarly",
     "full-name": "Grammarly",
     "server-name": "@emacs-grammarly/grammarly-languageserver",
