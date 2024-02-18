@@ -5226,7 +5226,7 @@ If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
       lsp--eldoc-saved-message
     (setq lsp--hover-saved-bounds nil
           lsp--eldoc-saved-message nil)
-    (if (looking-at "[[:space:]\n]")
+    (if (looking-at-p "[[:space:]\n]")
         (setq lsp--eldoc-saved-message nil) ; And returns nil.
       (when (and lsp-eldoc-enable-hover (lsp--capability :hoverProvider))
         (lsp-request-async
@@ -5264,7 +5264,7 @@ If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
 (defun lsp--document-highlight ()
   (when (lsp-feature? "textDocument/documentHighlight")
     (let ((curr-sym-bounds (bounds-of-thing-at-point 'symbol)))
-      (unless (or (looking-at "[[:space:]\n]")
+      (unless (or (looking-at-p "[[:space:]\n]")
                   (not lsp-enable-symbol-highlighting)
                   (and lsp--have-document-highlights
                        curr-sym-bounds
