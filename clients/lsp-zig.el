@@ -129,9 +129,11 @@ and not the global storage."
   :new-connection (lsp-stdio-connection
                    (lambda () (or (executable-find lsp-zig-zls-executable)
                                   (lsp-zig--stored-zls-executable)))
-                   (lambda () (or (executable-find lsp-zig-zls-executable)
-                                  (lsp-zig--stored-zls-executable))))
+                   (lambda ()
+                     (or (executable-find lsp-zig-zls-executable)
+                         (file-executable-p (lsp-zig--stored-zls-executable)))))
   :activation-fn (lsp-activate-on "zig")
+  :priority -1
   :server-id 'zls
   :download-server-fn
   (lambda (_client _callback error-callback _update?)
