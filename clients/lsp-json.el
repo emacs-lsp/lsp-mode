@@ -36,9 +36,8 @@
   :package-version '(lsp-mode . "6.3"))
 
 (defcustom lsp-json-schemas nil
-  "Associate schemas to JSON files in the current project example can be found \
-[here]\
-(https://github.com/emacs-lsp/lsp-mode/issues/3368#issuecomment-1049635155)."
+  "Associate schemas to JSON files in the current project example can be found
+here, https://github.com/emacs-lsp/lsp-mode/issues/3368#issuecomment-1049635155."
   :type '(repeat alist)
   :group 'lsp-json
   :package-version '(lsp-mode . "6.3"))
@@ -61,29 +60,29 @@
    ("http.proxyStrictSSL" lsp-http-proxyStrictSSL)))
 
 (defvar lsp-json--extra-init-params
-  `(:provideFormatter t
-    :handledSchemaProtocols ["file" "http" "https"]))
+  `( :provideFormatter t
+     :handledSchemaProtocols ["file" "http" "https"]))
 
 (defvar lsp-json--schema-associations
-  `(:/*.css-data.json ["https://raw.githubusercontent.com/Microsoft/vscode-css-languageservice/master/docs/customData.schema.json"]
-    :/package.json ["http://json.schemastore.org/package"]
-    :/*.html-data.json ["https://raw.githubusercontent.com/Microsoft/vscode-html-languageservice/master/docs/customData.schema.json"]
-    :/*.schema.json ["http://json-schema.org/draft-07/schema#"]
-    :/bower.json ["http://json.schemastore.org/bower"]
-    :/composer.json ["http://json.schemastore.org/composer"]
-    :/tsconfig.json ["http://json.schemastore.org/tsconfig"]
-    :/tsconfig.*.json ["http://json.schemastore.org/tsconfig"]
-    :/typings.json ["http://json.schemastore.org/typings"]
-    :/.bowerrc ["http://json.schemastore.org/bowerrc"]
-    :/.babelrc ["http://json.schemastore.org/babelrc"]
-    :/.babelrc.json ["http://json.schemastore.org/babelrc"]
-    :/babel.config.json ["http://json.schemastore.org/babelrc"]
-    :/jsconfig.json ["http://json.schemastore.org/jsconfig"]
-    :/jsconfig.*.json ["http://json.schemastore.org/jsconfig"]
-    :/project.json ["http://json.schemastore.org/project"]
-    :/omnisharp.json ["http://json.schemastore.org/omnisharp"]
-    :/.eslintrc.json ["http://json.schemastore.org/eslintrc"]
-    :/.eslintrc ["http://json.schemastore.org/eslintrc"])
+  `( :/*.css-data.json ["https://raw.githubusercontent.com/Microsoft/vscode-css-languageservice/master/docs/customData.schema.json"]
+     :/package.json ["http://json.schemastore.org/package"]
+     :/*.html-data.json ["https://raw.githubusercontent.com/Microsoft/vscode-html-languageservice/master/docs/customData.schema.json"]
+     :/*.schema.json ["http://json-schema.org/draft-07/schema#"]
+     :/bower.json ["http://json.schemastore.org/bower"]
+     :/composer.json ["http://json.schemastore.org/composer"]
+     :/tsconfig.json ["http://json.schemastore.org/tsconfig"]
+     :/tsconfig.*.json ["http://json.schemastore.org/tsconfig"]
+     :/typings.json ["http://json.schemastore.org/typings"]
+     :/.bowerrc ["http://json.schemastore.org/bowerrc"]
+     :/.babelrc ["http://json.schemastore.org/babelrc"]
+     :/.babelrc.json ["http://json.schemastore.org/babelrc"]
+     :/babel.config.json ["http://json.schemastore.org/babelrc"]
+     :/jsconfig.json ["http://json.schemastore.org/jsconfig"]
+     :/jsconfig.*.json ["http://json.schemastore.org/jsconfig"]
+     :/project.json ["http://json.schemastore.org/project"]
+     :/omnisharp.json ["http://json.schemastore.org/omnisharp"]
+     :/.eslintrc.json ["http://json.schemastore.org/eslintrc"]
+     :/.eslintrc ["http://json.schemastore.org/eslintrc"])
   "Default json schemas.")
 
 (defun lsp-json--get-content (_workspace uri callback)
