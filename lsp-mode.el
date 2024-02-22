@@ -814,6 +814,8 @@ Changes take effect only when a new session is started."
     (clojurec-mode . "clojure")
     (clojurescript-mode . "clojurescript")
     (clojure-ts-mode . "clojure")
+    (clojure-ts-clojurec-mode . "clojure")
+    (clojure-ts-clojurescript-mode . "clojurescript")
     (java-mode . "java")
     (java-ts-mode . "java")
     (jdee-mode . "java")
