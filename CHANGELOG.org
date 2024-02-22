@@ -106,6 +106,7 @@
   * Add support for ~ada-ts-mode~.
   * Allow customizing Ada semantic token and token modifier faces.
   * Add Hylang support.
+  * Add support for clojure-ts derived modes.
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.
