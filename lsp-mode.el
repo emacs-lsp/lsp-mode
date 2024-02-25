@@ -2164,8 +2164,8 @@ PARAMS - the data sent from WORKSPACE."
                    (-lambda ((&WorkDoneProgressBegin :message? :title :percentage?))
                      (concat (if percentage?
                                  (if (numberp percentage?)
-                                     (format "%.0f%%%% " percentage?)
-                                   (format "%s%%%% " percentage?))
+                                     (format "%.0f%%%%%%%% " percentage?)
+                                   (format "%s%%%%%%%% " percentage?))
                                "")
                              (or message? title)))
                    (ht-values tokens)
