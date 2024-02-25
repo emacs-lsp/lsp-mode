@@ -356,6 +356,98 @@ Requires pylsp >= 0.33.0"
   :type 'boolean
   :group 'lsp-pylsp)
 
+;; See https://github.com/python-lsp/python-lsp-ruff#configuration
+
+(defcustom lsp-pylsp-plugins-ruff-enabled nil
+  "Enable or disable the plugin."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-executable nil
+  "Custom path to ruff."
+  :type 'file
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-config nil
+  "Custom config for ruff to use."
+  :type 'file
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-extend-select nil
+  "Rules that are additionally used by ruff."
+  :type 'lsp-string-vector
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-extend-ignore nil
+  "Rules that are additionally ignored by ruff."
+  :type 'lsp-string-vector
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-format nil
+  "Rules that are marked as fixable by ruff that should be fixed when running textDocument/formatting."
+  :type 'lsp-string-vector
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-severities nil
+  "Optional table of rules where a custom severity is desired."
+  :type '(alist :key-type (lsp-string-vector :tag "rules") :value-type (string :tag "severity"))
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-unsafe-fixes nil
+  "Whether or not to offer unsafe fixes as code actions.  Ignored with the \"Fix All\" action."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+;; Rules that are ignored when a pyproject.toml or ruff.toml is present
+(defcustom lsp-pylsp-plugins-ruff-line-length 88
+  "Line length to pass to ruff checking and formatting.
+
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present."
+  :type 'integer
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-exclude nil
+  "Files to be excluded by ruff checking.
+
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present."
+  :type 'lsp-string-vector
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-select nil
+  "Rules to be enabled by ruff.
+
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present."
+  :type 'lsp-string-vector
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-ignore nil
+  "Rules to be ignored by ruff.
+
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present."
+  :type 'lsp-string-vector
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-per-file-ignores nil
+  "Rules that should be ignored for specific files.
+
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present."
+  :type '(alist :key-type (lsp-string-vector :tag "files") :value-type (string :tag "rule"))
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-preview nil
+  "Whether to enable the preview style linting and formatting.
+
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-target-version nil
+  "The minimum python version to target (applies for both linting and formatting).
+    
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present."
+  :type 'string
+  :group 'lsp-pylsp)
+
 (defcustom lsp-pylsp-rename-backend 'jedi
   "Choose renaming backend.
 
@@ -433,6 +525,21 @@ So it will rename only references it can find."
    ("pylsp.plugins.preload.enabled" lsp-pylsp-plugins-preload-enabled t)
    ("pylsp.plugins.mccabe.threshold" lsp-pylsp-plugins-mccabe-threshold)
    ("pylsp.plugins.mccabe.enabled" lsp-pylsp-plugins-mccabe-enabled t)
+   ("pylsp.plugins.ruff.enabled" lsp-pylsp-plugins-ruff-enabled t)
+   ("pylsp.plugins.ruff.executable" lsp-pylsp-plugins-ruff-executable)
+   ("pylsp.plugins.ruff.config" lsp-pylsp-plugins-ruff-config)
+   ("pylsp.plugins.ruff.extendSelect" lsp-pylsp-plugins-ruff-extend-select)
+   ("pylsp.plugins.ruff.extendIgnore" lsp-pylsp-plugins-ruff-extend-ignore)
+   ("pylsp.plugins.ruff.format" lsp-pylsp-plugins-ruff-format)
+   ("pylsp.plugins.ruff.severities" lsp-pylsp-plugins-ruff-severities)
+   ("pylsp.plugins.ruff.unsafeFixes" lsp-pylsp-plugins-ruff-unsafe-fixes t)
+   ("pylsp.plugins.ruff.lineLength" lsp-pylsp-plugins-ruff-line-length)
+   ("pylsp.plugins.ruff.exclude" lsp-pylsp-plugins-ruff-exclude)
+   ("pylsp.plugins.ruff.select" lsp-pylsp-plugins-ruff-select)
+   ("pylsp.plugins.ruff.ignore" lsp-pylsp-plugins-ruff-ignore)
+   ("pylsp.plugins.ruff.perFileIgnores" lsp-pylsp-plugins-ruff-per-file-ignores)
+   ("pylsp.plugins.ruff.preview" lsp-pylsp-plugins-ruff-preview t)
+   ("pylsp.plugins.ruff.targetVersion" lsp-pylsp-plugins-ruff-target-version)
    ("pylsp.plugins.jedi_symbols.all_scopes" lsp-pylsp-plugins-jedi-symbols-all-scopes t)
    ("pylsp.plugins.jedi_symbols.enabled" lsp-pylsp-plugins-jedi-symbols-enabled t)
    ("pylsp.plugins.jedi_signature_help.enabled" lsp-pylsp-plugins-jedi-signature-help-enabled t)
