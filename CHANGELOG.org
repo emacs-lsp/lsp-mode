@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 8.0.1
+  * Add basic support for [[https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_pullDiagnostics][pull diagnostics]] requests.
   * Add support for installing lsp dependencies via Cargo.
   * Fix tramp support issues (see [[https://github.com/emacs-lsp/lsp-mode/pull/4204][#4204]])
   * Add Cypher support.
