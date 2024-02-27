@@ -384,7 +384,9 @@ Requires pylsp >= 0.33.0"
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-ruff-format nil
-  "Rules that are marked as fixable by ruff that should be fixed when running textDocument/formatting."
+  "Rules that should be fixed when running textDocument/formatting.
+
+Note each rule must additionally be marked as fixable by ruff."
   :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
@@ -394,7 +396,9 @@ Requires pylsp >= 0.33.0"
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-ruff-unsafe-fixes nil
-  "Whether or not to offer unsafe fixes as code actions.  Ignored with the \"Fix All\" action."
+  "Whether or not to offer unsafe fixes as code actions.
+
+Note this is ignored with the \"Fix All\" action."
   :type 'boolean
   :group 'lsp-pylsp)
 
@@ -402,49 +406,56 @@ Requires pylsp >= 0.33.0"
 (defcustom lsp-pylsp-plugins-ruff-line-length 88
   "Line length to pass to ruff checking and formatting.
 
-Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present."
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml is
+present."
   :type 'integer
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-ruff-exclude nil
   "Files to be excluded by ruff checking.
 
-Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present."
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present."
   :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-ruff-select nil
   "Rules to be enabled by ruff.
 
-Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present."
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present."
   :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-ruff-ignore nil
   "Rules to be ignored by ruff.
 
-Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present."
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present."
   :type 'lsp-string-vector
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-ruff-per-file-ignores nil
   "Rules that should be ignored for specific files.
 
-Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present."
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present."
   :type '(alist :key-type (lsp-string-vector :tag "files") :value-type (string :tag "rule"))
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-ruff-preview nil
   "Whether to enable the preview style linting and formatting.
 
-Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present."
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present."
   :type 'boolean
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-ruff-target-version nil
   "The minimum python version to target (applies for both linting and formatting).
     
-Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present."
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present."
   :type 'string
   :group 'lsp-pylsp)
 
