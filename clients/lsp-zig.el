@@ -72,8 +72,8 @@ executable with variable `exec-path'."
   :type 'string)
 
 (defcustom lsp-zig-zls-enable-autofix nil
-  "Whether to automatically fix errors on save. Currently supports adding and
-removing discards."
+  "Whether to automatically fix errors on save.
+Currently supports adding and removing discards."
   :group 'lsp-zig
   :type 'boolean)
 
@@ -151,7 +151,7 @@ Improves lookup speed for functions in user's code.  Renaming and
 
 (defcustom lsp-zig-zls-record-session nil
   "When true, zls will record all request is receives and write in into
- `record_session_path`, so that they can replayed with `zls replay`."
+`record_session_path`, so that they can replayed with `zls replay`."
   :group 'lsp-zig
   :type 'boolean)
 
@@ -168,7 +168,7 @@ If no extra argument is given `record_session_path` is used as the default path.
   :type 'string)
 
 (defcustom lsp-zig-zls-builtin-path ""
-  "Path to 'builtin;' useful for debugging, automatically set if let null."
+  "Path to `builtin'; useful for debugging, automatically set if let null."
   :group 'lsp-zig
   :type 'string)
 
@@ -191,14 +191,14 @@ null is equivalent to `${KnownFolders.Cache}/zls`."
   :type 'string)
 
 (defcustom lsp-zig-zls-build-runner-global-cache-path ""
-  "Path to a directory that will be used as the global cache path when executing a projects build.zig.
-null is equivalent to the path shown by `zig env`."
+  "Path to a directory that will be used as the global cache path when executing
+a projects build.zig.  null is equivalent to the path shown by `zig env`."
   :group 'lsp-zig
   :type 'string)
 
 (defcustom lsp-zig-zls-completions-with-replace nil
   "Completions confirm behavior.
-If 'true', replace the text after the cursor."
+If `true', replace the text after the cursor."
   :group 'lsp-zig
   :type 'boolean)
 
