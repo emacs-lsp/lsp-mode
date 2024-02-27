@@ -4784,7 +4784,8 @@ dot.</p>
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Files to be excluded by ruff checking.</p>
-<p>Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present.</p>
+<p>Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present.</p>
 <hr />
 <h3 id="lsp-pylsp-plugins-ruff-executable"><code>lsp-pylsp-plugins-ruff-executable</code><a class="headerlink" href="#lsp-pylsp-plugins-ruff-executable" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>file</code></p>
@@ -4804,37 +4805,43 @@ dot.</p>
 <h3 id="lsp-pylsp-plugins-ruff-format"><code>lsp-pylsp-plugins-ruff-format</code><a class="headerlink" href="#lsp-pylsp-plugins-ruff-format" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Rules that are marked as fixable by ruff that should be fixed when running textDocument/formatting.</p>
+<p>Rules that should be fixed when running textDocument/formatting.</p>
+<p>Note each rule must additionally be marked as fixable by ruff.</p>
 <hr />
 <h3 id="lsp-pylsp-plugins-ruff-ignore"><code>lsp-pylsp-plugins-ruff-ignore</code><a class="headerlink" href="#lsp-pylsp-plugins-ruff-ignore" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Rules to be ignored by ruff.</p>
-<p>Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present.</p>
+<p>Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present.</p>
 <hr />
 <h3 id="lsp-pylsp-plugins-ruff-line-length"><code>lsp-pylsp-plugins-ruff-line-length</code><a class="headerlink" href="#lsp-pylsp-plugins-ruff-line-length" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>integer</code></p>
 <p><em>Default:</em> <code>88</code></p>
 <p>Line length to pass to ruff checking and formatting.</p>
-<p>Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present.</p>
+<p>Note this variable will be ignored when a when a pyproject.toml or ruff.toml is
+present.</p>
 <hr />
 <h3 id="lsp-pylsp-plugins-ruff-per-file-ignores"><code>lsp-pylsp-plugins-ruff-per-file-ignores</code><a class="headerlink" href="#lsp-pylsp-plugins-ruff-per-file-ignores" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(alist :key-type (lsp-string-vector :tag files) :value-type (string :tag rule))</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Rules that should be ignored for specific files.</p>
-<p>Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present.</p>
+<p>Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present.</p>
 <hr />
 <h3 id="lsp-pylsp-plugins-ruff-preview"><code>lsp-pylsp-plugins-ruff-preview</code><a class="headerlink" href="#lsp-pylsp-plugins-ruff-preview" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Whether to enable the preview style linting and formatting.</p>
-<p>Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present.</p>
+<p>Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present.</p>
 <hr />
 <h3 id="lsp-pylsp-plugins-ruff-select"><code>lsp-pylsp-plugins-ruff-select</code><a class="headerlink" href="#lsp-pylsp-plugins-ruff-select" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Rules to be enabled by ruff.</p>
-<p>Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present.</p>
+<p>Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present.</p>
 <hr />
 <h3 id="lsp-pylsp-plugins-ruff-severities"><code>lsp-pylsp-plugins-ruff-severities</code><a class="headerlink" href="#lsp-pylsp-plugins-ruff-severities" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>(alist :key-type (lsp-string-vector :tag rules) :value-type (string :tag severity))</code></p>
@@ -4845,12 +4852,14 @@ dot.</p>
 <p><em>Type:</em> <code>string</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>The minimum python version to target (applies for both linting and formatting).</p>
-<p>Note this variable will be ignored when a when a pyproject.toml or ruff.toml is present.</p>
+<p>Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present.</p>
 <hr />
 <h3 id="lsp-pylsp-plugins-ruff-unsafe-fixes"><code>lsp-pylsp-plugins-ruff-unsafe-fixes</code><a class="headerlink" href="#lsp-pylsp-plugins-ruff-unsafe-fixes" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
-<p>Whether or not to offer unsafe fixes as code actions.  Ignored with the "Fix All" action.</p>
+<p>Whether or not to offer unsafe fixes as code actions.</p>
+<p>Note this is ignored with the "Fix All" action.</p>
 <hr />
 <h3 id="lsp-pylsp-plugins-yapf-enabled"><code>lsp-pylsp-plugins-yapf-enabled</code><a class="headerlink" href="#lsp-pylsp-plugins-yapf-enabled" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
@@ -4891,7 +4900,7 @@ at all.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 25, 2024</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 27, 2024</span>
       
     
   </small>
