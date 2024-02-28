@@ -173,6 +173,14 @@ e.g. `/path/to/zig/lib/zig`, used to analyze std library imports."
   :group 'lsp-zig
   :type 'string)
 
+(defcustom lsp-zig-zig-exe-path ""
+  "	Zig executable path.
+e.g. /path/to/zig/zig, used to run the custom build runner.  If null, zig is
+looked up in PATH.  Will be used to infer the zig standard library path if none
+is provided."
+  :group 'lsp-zig
+  :type 'string)
+
 (defcustom lsp-zig-build-runner-path ""
   "Path to the `build_runner.zig` file provided by zls.
 null is equivalent to `${executable_directory}/build_runner.zig`."
@@ -283,9 +291,7 @@ and not the global storage."
 ;;; Core
 
 (lsp-register-custom-settings
- '(("zls.trace.server" lsp-zig-trace-server)
-   ("zls.path" lsp-zig-zls-executable)
-   ("zls.enable_snippets" lsp-zls-enable-snippets t)
+ '(("zls.enable_snippets" lsp-zls-enable-snippets t)
    ("zls.enable_argument_placeholders" lsp-zig-enable-argument-placeholders t)
    ("zls.enable_build_on_save" lsp-zig-enable-build-on-save t)
    ("zls.build_on_save_step" lsp-zig-build-on-save-step)
@@ -308,6 +314,7 @@ and not the global storage."
    ("zls.replay_session_path" lsp-zig-replay-session-path)
    ("zls.builtin_path" lsp-zig-builtin-path)
    ("zls.zig_lib_path" lsp-zig-zig-lib-path)
+   ("zls.zig_exe_path" lsp-zig-zig-exe-path)
    ("zls.build_runner_path" lsp-zig-build-runner-path)
    ("zls.global_cache_path" lsp-zig-global-cache-path)
    ("zls.build_runner_global_cache_path" lsp-zig-build-runner-global-cache-path)
