@@ -3083,6 +3083,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-zig-zig-exe-path" class="md-nav__link">
+    lsp-zig-zig-exe-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-zig-zig-lib-path" class="md-nav__link">
     lsp-zig-zig-lib-path
   </a>
@@ -3800,6 +3807,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-zig-zig-exe-path" class="md-nav__link">
+    lsp-zig-zig-exe-path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-zig-zig-lib-path" class="md-nav__link">
     lsp-zig-zig-lib-path
   </a>
@@ -4039,6 +4053,16 @@ Improves lookup speed for functions in user`s code.  Renaming and
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Enables warnings for style guideline mismatches.</p>
+<hr />
+<h3 id="lsp-zig-zig-exe-path"><code>lsp-zig-zig-exe-path</code><a class="headerlink" href="#lsp-zig-zig-exe-path" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> ``</p>
+<div class="codehilite"><pre><span></span><code>Zig executable path.
+</code></pre></div>
+
+<p>e.g. /path/to/zig/zig, used to run the custom build runner.  If null, zig is
+looked up in PATH.  Will be used to infer the zig standard library path if none
+is provided.</p>
 <hr />
 <h3 id="lsp-zig-zig-lib-path"><code>lsp-zig-zig-lib-path</code><a class="headerlink" href="#lsp-zig-zig-lib-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
