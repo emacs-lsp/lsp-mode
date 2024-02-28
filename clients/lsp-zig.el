@@ -46,11 +46,6 @@ executable with variable `exec-path'."
                  (const "messages")
                  (const "verbose")))
 
-(defcustom lsp-zig-check-for-update t
-  "Whether to automatically check for new updates."
-  :group 'lsp-zig
-  :type 'boolean)
-
 (defcustom lsp-zls-enable-snippets t
   "Enables snippet completions when the client also supports them."
   :group 'lsp-zig
