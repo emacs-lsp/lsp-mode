@@ -51,7 +51,7 @@ executable with variable `exec-path'."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-enable-snippets t
+(defcustom lsp-zls-enable-snippets t
   "Enables snippet completions when the client also supports them."
   :group 'lsp-zig
   :type 'boolean)
@@ -202,12 +202,6 @@ If `true', replace the text after the cursor."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-completion-label-details nil
-  "When false, the function signature of completion results is hidden.
-Improves readability in some editors."
-  :group 'lsp-zig
-  :type 'boolean)
-
 ;;
 ;;; Util
 
@@ -294,37 +288,35 @@ and not the global storage."
 ;;; Core
 
 (lsp-register-custom-settings
- '(("zig.zls.trace.server" lsp-zig-trace-server)
-   ("zig.zls.checkForUpdate" lsp-zig-check-for-update)
-   ("zig.zls.path" lsp-zig-zls-executable)
-   ("zig.zls.enableSnippets" lsp-zig-zls-enable-snippets)
-   ("zig.zls.enableArgumentPlaceholders" lsp-zig-zls-enable-argument-placeholders)
-   ("zig.zls.enableBuildOnSave" lsp-zig-zls-enable-build-on-save)
-   ("zig.zls.buildOnSaveStep" lsp-zig-zls-build-on-save-step)
-   ("zig.zls.enableAutofix" lsp-zig-zls-enable-autofix)
-   ("zig.zls.semanticTokens" lsp-zig-zls-semantic-tokens)
-   ("zig.zls.enableInlayHints" lsp-zig-zls-enable-inlay-hints)
-   ("zig.zls.inlayHintsShowVariableTypeHints" lsp-zig-zls-inlay-hints-show-variable-type-hints)
-   ("zig.zls.inlayHintsShowParameterName" lsp-zig-zls-inlay-hints-show-parameter-name)
-   ("zig.zls.inlayHintsShowBuiltin" lsp-zig-zls-inlay-hints-show-builtin)
-   ("zig.zls.inlayHintsExcludeSingleArgument" lsp-zig-zls-inlay-hints-exclude-single-argument)
-   ("zig.zls.inlayHintsHideRedundantParamNames" lsp-zig-zls-inlay-hints-hide-redundant-param-names)
-   ("zig.zls.inlayHintsHideRedundantParamNamesLastToken" lsp-zig-zls-inlay-hints-hide-redundant-param-names-last-token)
-   ("zig.zls.warnStyle" lsp-zig-zls-warn-style)
-   ("zig.zls.highlightGlobalVarDeclarations" lsp-zig-zls-highlight-global-var-declarations)
-   ("zig.zls.dangerousComptimeExperimentsDoNotEnable" lsp-zig-zls-dangerous-comptime-experiments-do-not-enable)
-   ("zig.zls.skipStdReferences" lsp-zig-zls-skip-std-references)
-   ("zig.zls.preferAstCheckAsChildProcess" lsp-zig-zls-prefer-ast-check-as-child-process)
-   ("zig.zls.recordSession" lsp-zig-zls-record-session)
-   ("zig.zls.recordSessionPath" lsp-zig-zls-record-session-path)
-   ("zig.zls.replaySessionPath" lsp-zig-zls-replay-session-path)
-   ("zig.zls.builtinPath" lsp-zig-zls-builtin-path)
-   ("zig.zls.zigLibPath" lsp-zig-zls-zig-lib-path)
-   ("zig.zls.buildRunnerPath" lsp-zig-zls-build-runner-path)
-   ("zig.zls.globalCachePath" lsp-zig-zls-global-cache-path)
-   ("zig.zls.buildRunnerGlobalCachePath" lsp-zig-zls-build-runner-global-cache-path)
-   ("zig.zls.completionsWithReplace" lsp-zig-zls-completions-with-replace)
-   ("zig.zls.completionLabelDetails" lsp-zig-zls-completion-label-details)))
+ '(("zls.trace.server" lsp-zig-trace-server)
+   ("zls.path" lsp-zig-zls-executable)
+   ("zls.enable_snippets" lsp-zls-enable-snippets t)
+   ("zls.enable_argument_placeholders" lsp-zig-zls-enable-argument-placeholders t)
+   ("zls.enable_build_on_save" lsp-zig-zls-enable-build-on-save t)
+   ("zls.build_on_save_step" lsp-zig-zls-build-on-save-step)
+   ("zls.enable_autofix" lsp-zig-zls-enable-autofix t)
+   ("zls.semantic_tokens" lsp-zig-zls-semantic-tokens)
+   ("zls.enable_inlay_hints" lsp-zig-zls-enable-inlay-hints t)
+   ("zls.inlay_hints_show_variable_type_hints" lsp-zig-zls-inlay-hints-show-variable-type-hints t)
+   ("zls.inlay_hints_show_parameter_name" lsp-zig-zls-inlay-hints-show-parameter-name t)
+   ("zls.inlay_hints_show_builtin" lsp-zig-zls-inlay-hints-show-builtin t)
+   ("zls.inlay_hints_exclude_single_argument" lsp-zig-zls-inlay-hints-exclude-single-argument t)
+   ("zls.inlay_hints_hide_redundant_param_names" lsp-zig-zls-inlay-hints-hide-redundant-param-names t)
+   ("zls.inlay_hints_hide_redundant_param_names_last_token" lsp-zig-zls-inlay-hints-hide-redundant-param-names-last-token t)
+   ("zls.warn_style" lsp-zig-zls-warn-style t)
+   ("zls.highlight_global_var_declarations" lsp-zig-zls-highlight-global-var-declarations t)
+   ("zls.dangerous_comptime_experiments_do_not_enable" lsp-zig-zls-dangerous-comptime-experiments-do-not-enable t)
+   ("zls.skip_std_references" lsp-zig-zls-skip-std-references t)
+   ("zls.prefer_ast_check_as_child_process" lsp-zig-zls-prefer-ast-check-as-child-process t)
+   ("zls.record_session" lsp-zig-zls-record-session t)
+   ("zls.record_session_path" lsp-zig-zls-record-session-path)
+   ("zls.replay_session_path" lsp-zig-zls-replay-session-path)
+   ("zls.builtin_path" lsp-zig-zls-builtin-path)
+   ("zls.zig_lib_path" lsp-zig-zls-zig-lib-path)
+   ("zls.build_runner_path" lsp-zig-zls-build-runner-path)
+   ("zls.global_cache_path" lsp-zig-zls-global-cache-path)
+   ("zls.build_runner_global_cache_path" lsp-zig-zls-build-runner-global-cache-path)
+   ("zls.completion_label_details" lsp-zig-zls-completions-with-replace t)))
 
 (lsp-register-client
  (make-lsp-client
