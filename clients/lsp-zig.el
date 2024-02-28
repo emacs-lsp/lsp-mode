@@ -56,147 +56,147 @@ executable with variable `exec-path'."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-enable-argument-placeholders t
+(defcustom lsp-zig-enable-argument-placeholders t
   "Whether to enable function argument placeholder completions."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-enable-build-on-save nil
+(defcustom lsp-zig-enable-build-on-save nil
   "Whether to enable build-on-save diagnostics."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-build-on-save-step "install"
+(defcustom lsp-zig-build-on-save-step "install"
   "Select which step should be executed on build-on-save."
   :group 'lsp-zig
   :type 'string)
 
-(defcustom lsp-zig-zls-enable-autofix nil
+(defcustom lsp-zig-enable-autofix nil
   "Whether to automatically fix errors on save.
 Currently supports adding and removing discards."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-semantic-tokens "partial"
+(defcustom lsp-zig-semantic-tokens "partial"
   "Traces the communication between Emacs and the language server."
   :group 'lsp-zig
   :type '(choice (const "off")
                  (const "messages")
                  (const "verbose")))
 
-(defcustom lsp-zig-zls-enable-inlay-hints t
+(defcustom lsp-zig-enable-inlay-hints t
   "Enables inlay hint support when the client also supports it."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-inlay-hints-show-variable-type-hints t
+(defcustom lsp-zig-inlay-hints-show-variable-type-hints t
   "Enable inlay hints for variable type."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-inlay-hints-show-parameter-name t
+(defcustom lsp-zig-inlay-hints-show-parameter-name t
   "Enable inlay hints for parameter names."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-inlay-hints-exclude-single-argument t
+(defcustom lsp-zig-inlay-hints-exclude-single-argument t
   "Don't show inlay hints for single argument calls."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-inlay-hints-show-builtin t
+(defcustom lsp-zig-inlay-hints-show-builtin t
   "Don't show inlay hints for single argument calls."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-inlay-hints-hide-redundant-param-names nil
+(defcustom lsp-zig-inlay-hints-hide-redundant-param-names nil
   "Hides inlay hints when parameter name matches the identifier (e.g. foo: foo)."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-inlay-hints-hide-redundant-param-names-last-token nil
+(defcustom lsp-zig-inlay-hints-hide-redundant-param-names-last-token nil
   "Hides inlay hints when parameter name matches the last token of a parameter
 node (e.g. foo: bar.foo, foo: &foo)."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-warn-style nil
+(defcustom lsp-zig-warn-style nil
   "Enables warnings for style guideline mismatches."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-highlight-global-var-declarations nil
+(defcustom lsp-zig-highlight-global-var-declarations nil
   "Whether to highlight global var declarations."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-dangerous-comptime-experiments-do-not-enable nil
+(defcustom lsp-zig-dangerous-comptime-experiments-do-not-enable nil
   "When true, skips searching for references in std.
 Improves lookup speed for functions in user's code.  Renaming and
 go-to-definition will continue to work as is."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-skip-std-references nil
+(defcustom lsp-zig-skip-std-references nil
   "hen true, skips searching for references in std.
 Improves lookup speed for functions in user's code.  Renaming and
  go-to-definition will continue to work as is."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-prefer-ast-check-as-child-process t
+(defcustom lsp-zig-prefer-ast-check-as-child-process t
   "Favor using `zig ast-check` instead of ZLS's fork."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-record-session nil
+(defcustom lsp-zig-record-session nil
   "When true, zls will record all request is receives and write in into
 `record_session_path`, so that they can replayed with `zls replay`."
   :group 'lsp-zig
   :type 'boolean)
 
-(defcustom lsp-zig-zls-record-session-path ""
+(defcustom lsp-zig-record-session-path ""
   "Output file path when `record_session` is set.
 The recommended file extension *.zlsreplay."
   :group 'lsp-zig
   :type 'string)
 
-(defcustom lsp-zig-zls-replay-session-path ""
+(defcustom lsp-zig-replay-session-path ""
   "Used when calling `zls replay` for specifying the replay file.
 If no extra argument is given `record_session_path` is used as the default path."
   :group 'lsp-zig
   :type 'string)
 
-(defcustom lsp-zig-zls-builtin-path ""
+(defcustom lsp-zig-builtin-path ""
   "Path to `builtin'; useful for debugging, automatically set if let null."
   :group 'lsp-zig
   :type 'string)
 
-(defcustom lsp-zig-zls-zig-lib-path ""
+(defcustom lsp-zig-zig-lib-path ""
   "Zig library path.
 e.g. `/path/to/zig/lib/zig`, used to analyze std library imports."
   :group 'lsp-zig
   :type 'string)
 
-(defcustom lsp-zig-zls-build-runner-path ""
+(defcustom lsp-zig-build-runner-path ""
   "Path to the `build_runner.zig` file provided by zls.
 null is equivalent to `${executable_directory}/build_runner.zig`."
   :group 'lsp-zig
   :type 'string)
 
-(defcustom lsp-zig-zls-global-cache-path ""
+(defcustom lsp-zig-global-cache-path ""
   "Path to a directory that will be used as zig's cache.
 null is equivalent to `${KnownFolders.Cache}/zls`."
   :group 'lsp-zig
   :type 'string)
 
-(defcustom lsp-zig-zls-build-runner-global-cache-path ""
+(defcustom lsp-zig-build-runner-global-cache-path ""
   "Path to a directory that will be used as the global cache path when executing
 a projects build.zig.  null is equivalent to the path shown by `zig env`."
   :group 'lsp-zig
   :type 'string)
 
-(defcustom lsp-zig-zls-completions-with-replace nil
+(defcustom lsp-zig-completions-with-replace nil
   "Completions confirm behavior.
 If `true', replace the text after the cursor."
   :group 'lsp-zig
@@ -291,32 +291,32 @@ and not the global storage."
  '(("zls.trace.server" lsp-zig-trace-server)
    ("zls.path" lsp-zig-zls-executable)
    ("zls.enable_snippets" lsp-zls-enable-snippets t)
-   ("zls.enable_argument_placeholders" lsp-zig-zls-enable-argument-placeholders t)
-   ("zls.enable_build_on_save" lsp-zig-zls-enable-build-on-save t)
-   ("zls.build_on_save_step" lsp-zig-zls-build-on-save-step)
-   ("zls.enable_autofix" lsp-zig-zls-enable-autofix t)
-   ("zls.semantic_tokens" lsp-zig-zls-semantic-tokens)
-   ("zls.enable_inlay_hints" lsp-zig-zls-enable-inlay-hints t)
-   ("zls.inlay_hints_show_variable_type_hints" lsp-zig-zls-inlay-hints-show-variable-type-hints t)
-   ("zls.inlay_hints_show_parameter_name" lsp-zig-zls-inlay-hints-show-parameter-name t)
-   ("zls.inlay_hints_show_builtin" lsp-zig-zls-inlay-hints-show-builtin t)
-   ("zls.inlay_hints_exclude_single_argument" lsp-zig-zls-inlay-hints-exclude-single-argument t)
-   ("zls.inlay_hints_hide_redundant_param_names" lsp-zig-zls-inlay-hints-hide-redundant-param-names t)
-   ("zls.inlay_hints_hide_redundant_param_names_last_token" lsp-zig-zls-inlay-hints-hide-redundant-param-names-last-token t)
-   ("zls.warn_style" lsp-zig-zls-warn-style t)
-   ("zls.highlight_global_var_declarations" lsp-zig-zls-highlight-global-var-declarations t)
-   ("zls.dangerous_comptime_experiments_do_not_enable" lsp-zig-zls-dangerous-comptime-experiments-do-not-enable t)
-   ("zls.skip_std_references" lsp-zig-zls-skip-std-references t)
-   ("zls.prefer_ast_check_as_child_process" lsp-zig-zls-prefer-ast-check-as-child-process t)
-   ("zls.record_session" lsp-zig-zls-record-session t)
-   ("zls.record_session_path" lsp-zig-zls-record-session-path)
-   ("zls.replay_session_path" lsp-zig-zls-replay-session-path)
-   ("zls.builtin_path" lsp-zig-zls-builtin-path)
-   ("zls.zig_lib_path" lsp-zig-zls-zig-lib-path)
-   ("zls.build_runner_path" lsp-zig-zls-build-runner-path)
-   ("zls.global_cache_path" lsp-zig-zls-global-cache-path)
-   ("zls.build_runner_global_cache_path" lsp-zig-zls-build-runner-global-cache-path)
-   ("zls.completion_label_details" lsp-zig-zls-completions-with-replace t)))
+   ("zls.enable_argument_placeholders" lsp-zig-enable-argument-placeholders t)
+   ("zls.enable_build_on_save" lsp-zig-enable-build-on-save t)
+   ("zls.build_on_save_step" lsp-zig-build-on-save-step)
+   ("zls.enable_autofix" lsp-zig-enable-autofix t)
+   ("zls.semantic_tokens" lsp-zig-semantic-tokens)
+   ("zls.enable_inlay_hints" lsp-zig-enable-inlay-hints t)
+   ("zls.inlay_hints_show_variable_type_hints" lsp-zig-inlay-hints-show-variable-type-hints t)
+   ("zls.inlay_hints_show_parameter_name" lsp-zig-inlay-hints-show-parameter-name t)
+   ("zls.inlay_hints_show_builtin" lsp-zig-inlay-hints-show-builtin t)
+   ("zls.inlay_hints_exclude_single_argument" lsp-zig-inlay-hints-exclude-single-argument t)
+   ("zls.inlay_hints_hide_redundant_param_names" lsp-zig-inlay-hints-hide-redundant-param-names t)
+   ("zls.inlay_hints_hide_redundant_param_names_last_token" lsp-zig-inlay-hints-hide-redundant-param-names-last-token t)
+   ("zls.warn_style" lsp-zig-warn-style t)
+   ("zls.highlight_global_var_declarations" lsp-zig-highlight-global-var-declarations t)
+   ("zls.dangerous_comptime_experiments_do_not_enable" lsp-zig-dangerous-comptime-experiments-do-not-enable t)
+   ("zls.skip_std_references" lsp-zig-skip-std-references t)
+   ("zls.prefer_ast_check_as_child_process" lsp-zig-prefer-ast-check-as-child-process t)
+   ("zls.record_session" lsp-zig-record-session t)
+   ("zls.record_session_path" lsp-zig-record-session-path)
+   ("zls.replay_session_path" lsp-zig-replay-session-path)
+   ("zls.builtin_path" lsp-zig-builtin-path)
+   ("zls.zig_lib_path" lsp-zig-zig-lib-path)
+   ("zls.build_runner_path" lsp-zig-build-runner-path)
+   ("zls.global_cache_path" lsp-zig-global-cache-path)
+   ("zls.build_runner_global_cache_path" lsp-zig-build-runner-global-cache-path)
+   ("zls.completion_label_details" lsp-zig-completions-with-replace t)))
 
 (lsp-register-client
  (make-lsp-client
