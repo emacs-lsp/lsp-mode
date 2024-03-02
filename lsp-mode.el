@@ -810,6 +810,7 @@ Changes take effect only when a new session is started."
     (scala-mode . "scala")
     (scala-ts-mode . "scala")
     (julia-mode . "julia")
+    (julia-ts-mode . "julia")
     (clojure-mode . "clojure")
     (clojurec-mode . "clojure")
     (clojurescript-mode . "clojurescript")
