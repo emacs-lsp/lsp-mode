@@ -116,6 +116,7 @@
   * Add Cucumber support.
   * Add COBOL support.
   * Add Common Lisp support.
+  * Add YANG support using TypeFox/yang-lsp Server.
 
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
