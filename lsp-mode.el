@@ -190,7 +190,8 @@ As defined by the Language Server Protocol 3.16."
      lsp-sonarlint lsp-tailwindcss lsp-tex lsp-terraform lsp-toml lsp-ttcn3
      lsp-typeprof lsp-v lsp-vala lsp-verilog lsp-vetur lsp-volar lsp-vhdl
      lsp-vimscript lsp-wgsl lsp-xml lsp-yaml lsp-ruby-lsp lsp-ruby-syntax-tree
-     lsp-solidity lsp-sqls lsp-svelte lsp-steep lsp-tilt lsp-trunk lsp-zig lsp-jq)
+     lsp-solidity lsp-sqls lsp-svelte lsp-steep lsp-tilt lsp-trunk lsp-zig lsp-jq
+     lsp-yang)
   "List of the clients to be automatically required."
   :group 'lsp-mode
   :type '(repeat symbol))
@@ -795,6 +796,7 @@ Changes take effect only when a new session is started."
     ("^PKGBUILD$" . "shellscript")
     ("^go\\.mod\\'" . "go.mod")
     ("^settings.json$" . "jsonc")
+    ("^yang\\.settings$" . "jsonc")
     (ada-mode . "ada")
     (ada-ts-mode . "ada")
     (awk-mode . "awk")
@@ -956,7 +958,8 @@ Changes take effect only when a new session is started."
     (jq-ts-mode . "jq")
     (protobuf-mode . "protobuf")
     (nushell-mode . "nushell")
-    (nushell-ts-mode . "nushell"))
+    (nushell-ts-mode . "nushell")
+    (yang-mode . "yang"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
@@ -6033,6 +6036,7 @@ Request codeAction/resolve for more info if server supports."
     (typescript-mode            . typescript-indent-level)          ; Typescript
     (typescript-ts-mode         . typescript-ts-mode-indent-offset) ; Typescript (tree-sitter, Emacs29)
     (yaml-mode                  . yaml-indent-offset)               ; YAML
+    (yang-mode                  . c-basic-offset)                   ; YANG (yang-mode)
 
     (default                    . standard-indent))                 ; default fallback
   "A mapping from `major-mode' to its indent variable.")
