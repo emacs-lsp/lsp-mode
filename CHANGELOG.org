@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 8.0.1
+  * Add support for RPM spec files
   * Add support for installing lsp dependencies via Cargo.
   * Fix tramp support issues (see [[https://github.com/emacs-lsp/lsp-mode/pull/4204][#4204]])
   * Add Cypher support.
