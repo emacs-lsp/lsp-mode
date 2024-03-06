@@ -94,6 +94,44 @@
   :group 'lsp-ada
   :package-version '(lsp-mode "8.0.1"))
 
+(defvar lsp-ada--als-download-url-cache nil)
+
+(defvar lsp-ada--als-downloaded-executable
+  (f-join lsp-server-install-dir
+          "ada-ls"
+          (symbol-name (lsp-resolve-value lsp--system-arch))
+          (pcase system-type
+            ('gnu/linux  "linux")
+            ('darwin     "darwin")
+            ('windows-nt "win32")
+            (_           "linux"))
+          (concat "ada_language_server"
+                  (pcase system-type
+                    ('windows-nt ".exe")
+                    (_ "")))))
+
+(defun lsp-ada--als-latest-release-url ()
+  "URL for the latest release of the Ada Language Server."
+  (setq lsp-ada--als-download-url-cache
+        (lsp--find-latest-gh-release-url
+         "https://api.github.com/repos/AdaCore/ada_language_server/releases/latest"
+         (format "%s.zip"
+                 (pcase (list system-type (lsp-resolve-value lsp--system-arch))
+                   ('(gnu/linux  x64)   "Linux_amd64")
+                   ('(gnu/linux  arm64) "Linux_aarch64")
+                   ('(darwin     x64)   "macOS_amd64")
+                   ('(darwin     arm64) "macOS_aarch64")
+                   ('(windows-nt x64)   "Windows_amd64")
+                   (`(,_         x64)   "Linux_amd64"))))))
+
+(defun lsp-ada--als-store-path ()
+  "Store Path for the downloaded Ada Language Server."
+  (f-join lsp-server-install-dir
+          "ada-ls"
+          (file-name-base (or lsp-ada--als-download-url-cache
+                              (lsp-ada--als-latest-release-url)
+                              "ada-ls"))))
+
 (defun lsp-ada--environment ()
   "Add environmental variables if needed."
   (let ((project-root (lsp-workspace-root)))
@@ -114,14 +152,26 @@
                         var-strings)))
           (lsp--error "Found alire.toml but the executable %s could not be found" alr-executable))))))
 
+(lsp-dependency
+ 'ada-ls
+ '(:download :url lsp-ada--als-latest-release-url
+             :store-path lsp-ada--als-store-path
+             :decompress :zip
+             :binary-path lsp-ada--als-downloaded-executable
+             :set-executable? t)
+ '(:system lsp-ada-als-executable))
+
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection lsp-ada-als-executable)
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (lambda () (lsp-package-path 'ada-ls)))
                   :major-modes '(ada-mode ada-ts-mode)
                   :priority -1
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration
                                        (lsp-configuration-section "ada"))))
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure 'ada-ls callback error-callback))
                   :semantic-tokens-faces-overrides `( :types ,lsp-ada-semantic-token-face-overrides
                                                       :modifiers ,lsp-ada-semantic-token-modifier-face-overrides)
                   :server-id 'ada-ls
