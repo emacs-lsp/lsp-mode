@@ -13,6 +13,7 @@
     "server-name": "ada_language_server",
     "server-url": "https://github.com/AdaCore/ada_language_server",
     "installation-url": "https://github.com/AdaCore/ada_language_server#install",
+    "lsp-install-server": "ada-ls",
     "debugger": "Yes (gdb)"
   },
   {
