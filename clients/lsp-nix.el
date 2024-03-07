@@ -100,7 +100,7 @@
   :lsp-path "nil.nix.maxMemoryMB"
   :package-version '(lsp-mode . "8.0.1"))
 (lsp-defcustom lsp-nix-nil-auto-eval-inputs t
-  "Max Memory MB"
+  "Auto Eval Inputs"
   :type 'boolean
   :group 'lsp-nix-nil
   :lsp-path "nil.nix.flake.autoEvalInputs"
