@@ -3349,10 +3349,10 @@
 
 <!-- Markdown content -->
 <h1 id="file-watchers">File watchers<a class="headerlink" href="#file-watchers" title="Permanent link">#</a></h1>
-<p>When some of the workspaces that are active in the current project requests file notifications via <code>workspace/didChangeWatchedFiles</code>, <code>lsp-mode</code> will start monitoring each of the folders in the workspace for changes to notify the server about that. </p>
-<p>In case you have issues with file watchers, first, check what folders are being watched, they are logged on <code>*lsp-log*</code> when the server starts, then you may consider check the below:</p>
+<p>When a workspace that is active in the current project requests file notifications via <code>workspace/didChangeWatchedFiles</code>, <code>lsp-mode</code> will monitor the workspace folders for changes and notify the server about them.</p>
+<p>If you have problems with file watchers, first check what folders are being watched (they are logged in the <code>*lsp-log*</code> buffer when the server starts) and then check the below:</p>
 <ul>
-<li>If your project has some specific folder that should not be watched, you can exclude it with:</li>
+<li>If your project has a specific folder that should not be watched, you can exclude it with:</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-mode</span>
   <span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;lsp-file-watch-ignored-directories</span> <span class="s">&quot;[/\\\\]\\.my-folder\\&#39;&quot;</span><span class="p">)</span>
@@ -3360,9 +3360,9 @@
   <span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;lsp-file-watch-ignored-files</span> <span class="s">&quot;[/\\\\]\\.my-files\\&#39;&quot;</span><span class="p">))</span>
 </code></pre></div>
 <ul>
-<li>Increase the file watch warning threshold, the default is <code>1000</code>, <code>(setq lsp-file-watch-threshold 2000)</code> </li>
-<li>If the folder is some kind of cache folder or something that should always be excluded for everyone, consider opening a pull request or informing the maintainers to add to the <a href="https://github.com/emacs-lsp/lsp-mode/blob/master/lsp-mode.el#L306">common regex</a>. </li>
-<li>In last case, disable file watchers with <code>(setq lsp-enable-file-watchers nil)</code> (you may use dir-locals).</li>
+<li>Increase the file watch warning threshold, the default is <code>1000</code>: <code>(setq lsp-file-watch-threshold 2000)</code></li>
+<li>If the folder is some kind of cache folder or something that should always be excluded for everyone, consider <a href="https://github.com/emacs-lsp/lsp-mode/pulls">opening a pull request</a> or <a href="https://github.com/emacs-lsp/lsp-mode/issues">filing a bug</a> to add to the <a href="https://github.com/emacs-lsp/lsp-mode/blob/1b13d7c1b39aaad12073095ef7719952568c45db/lsp-mode.el#L340">common regex</a>.</li>
+<li>As a last resort, disable file watchers with <code>(setq lsp-enable-file-watchers nil)</code> (you may use dir-locals).</li>
 </ul>
 
 <!-- Source file information -->
@@ -3372,7 +3372,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 8, 2024</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 11, 2024</span>
       
     
   </small>

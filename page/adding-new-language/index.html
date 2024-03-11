@@ -730,8 +730,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#registering-server" class="md-nav__link">
-    Registering server
+  <a href="#register-a-server" class="md-nav__link">
+    Register a server
   </a>
   
 </li>
@@ -3347,8 +3347,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#registering-server" class="md-nav__link">
-    Registering server
+  <a href="#register-a-server" class="md-nav__link">
+    Register a server
   </a>
   
 </li>
@@ -3423,28 +3423,38 @@
 
 <!-- Markdown content -->
 <h1 id="adding-support-for-languages">Adding support for languages<a class="headerlink" href="#adding-support-for-languages" title="Permanent link">#</a></h1>
-<h2 id="registering-server">Registering server<a class="headerlink" href="#registering-server" title="Permanent link">#</a></h2>
-<p>Here it is the minimal configuration that is needed for new language
-server registration. Refer to the documentation of <code>lsp-mode.el</code> for
-the additional settings supported on registration time.
-<code>lsp-language-id-configuration</code> must be updated to contain the
-corresponding mode -> language id - in this case <code>(python-mode .
-"python")</code></p>
-<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="k">defvar</span> <span class="nv">lsp-language-id-configuration</span>
-  <span class="o">&#39;</span><span class="p">(</span><span class="o">...</span>
-    <span class="p">(</span><span class="nv">python-mode</span> <span class="o">.</span> <span class="s">&quot;python&quot;</span><span class="p">)</span>
-    <span class="o">...</span><span class="p">))</span>
-<span class="c1">;; if you are adding the support for your language server in separate repo use</span>
-<span class="c1">;; (add-to-list &#39;lsp-language-id-configuration &#39;(python-mode . &quot;python&quot;))</span>
-
-<span class="p">(</span><span class="nv">lsp-register-client</span>
- <span class="p">(</span><span class="nv">make-lsp-client</span> <span class="nb">:new-connection</span> <span class="p">(</span><span class="nv">lsp-stdio-connection</span> <span class="s">&quot;pyls&quot;</span><span class="p">)</span>
-                  <span class="nb">:activation-fn</span> <span class="p">(</span><span class="nv">lsp-activate-on</span> <span class="s">&quot;python&quot;</span><span class="p">)</span>
-                  <span class="nb">:server-id</span> <span class="ss">&#39;pyls</span><span class="p">))</span>
+<h2 id="register-a-server">Register a server<a class="headerlink" href="#register-a-server" title="Permanent link">#</a></h2>
+<p>Your language server must be registered with <code>lsp-mode</code> in order for the <code>lsp</code>
+command to figure out how to communicate with it. This section explains how to
+do that.</p>
+<p>The language being used is identified by either an Emacs major mode or by a
+regular expression matching the buffer's filename. A language server matching
+that language is then started.</p>
+<p>Here's a minimal example using Python. First we tell <code>lsp-mode</code> that buffers in
+<code>python-mode</code> correspond to the language <code>"python"</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;lsp-language-id-configuration</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">python-mode</span> <span class="o">.</span> <span class="s">&quot;python&quot;</span><span class="p">))</span>
 </code></pre></div>
-<p><code>lsp-mode</code> is using <code>lsp-language-id-configuration</code> to determine what is the
-buffer language. When the <code>major-mode</code> is not sufficient to determine the
-language (e.g. <code>web-mode</code> is used for <code>javascript</code>, <code>html</code>, and <code>css</code>) you can put regex.</p>
+<p>If there is no major mode corresponding to your language, or the major mode is
+not sufficient to determine the language (e.g. <code>web-mode</code> is used for
+<code>javascript</code>, <code>html</code>, and <code>css</code>) you can register it using a regular expression
+that matches the filename instead:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;lsp-language-id-configuration</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;.*\\.svelte$&quot;</span> <span class="o">.</span> <span class="s">&quot;svelte&quot;</span><span class="p">))</span>
+</code></pre></div>
+<p><strong>Note:</strong> If adding support directly in the <code>lsp-mode.el</code> source obviously you
+should modify <code>lsp-language-id-configuration</code> directly instead of calling
+<code>add-to-list</code>.</p>
+<p>Now we tell <code>lsp-mode</code> how to start the <code>pyls</code> language server when a buffer
+uses the <code>"python"</code> language:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">lsp-register-client</span> <span class="p">(</span><span class="nv">make-lsp-client</span>
+                      <span class="nb">:new-connection</span> <span class="p">(</span><span class="nv">lsp-stdio-connection</span> <span class="s">&quot;pyls&quot;</span><span class="p">)</span>
+                      <span class="nb">:activation-fn</span> <span class="p">(</span><span class="nv">lsp-activate-on</span> <span class="s">&quot;python&quot;</span><span class="p">)</span>
+                      <span class="nb">:server-id</span> <span class="ss">&#39;pyls</span><span class="p">))</span>
+</code></pre></div>
+<p>There are many more options for the client (see <a href="https://github.com/emacs-lsp/lsp-mode/blob/1b13d7c1b39aaad12073095ef7719952568c45db/lsp-mode.el#L1528">the <code>lsp-client</code>
+struct</a>
+which documents each option) but what we've shown above is the minimal required
+configuration. One common case, setting environment variables for the server,
+is shown below.</p>
 <p><strong>Note:</strong> In the above example, when a new client is created using
 <code>make-lsp-client</code>, a new connection to the language server is created
 using <code>lsp-stdio-connection</code>.  Please carefully check its
@@ -3456,20 +3466,20 @@ features like <code>lsp-install-server</code> breaking for other users; e.g. see
 <a href="https://github.com/emacs-lsp/lsp-mode/issues/3415">this issue</a>.  This
 is a common mistake that keeps reoccurring.</p>
 <p>Here's an example of how to set up a custom language server in your <code>init.el</code> file:</p>
-<div class="highlight"><pre><span></span><code><span class="c1">;; Use shopify-cli / theme-check-language-server for Shopify&#39;s liquid syntax</span>
+<div class="highlight"><pre><span></span><code><span class="c1">;; Use shopify-cli / theme-check-language-server for Shopify&#39;s liquid syntax.</span>
 <span class="p">(</span><span class="nb">with-eval-after-load</span> <span class="ss">&#39;lsp-mode</span>
   <span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;lsp-language-id-configuration</span>
-    <span class="o">&#39;</span><span class="p">(</span><span class="nv">shopify-mode</span> <span class="o">.</span> <span class="s">&quot;shopify&quot;</span><span class="p">))</span>
+               <span class="o">&#39;</span><span class="p">(</span><span class="nv">shopify-mode</span> <span class="o">.</span> <span class="s">&quot;shopify&quot;</span><span class="p">))</span>
 
   <span class="p">(</span><span class="nv">lsp-register-client</span>
-    <span class="p">(</span><span class="nv">make-lsp-client</span> <span class="nb">:new-connection</span> <span class="p">(</span><span class="nv">lsp-stdio-connection</span> <span class="s">&quot;theme-check-language-server&quot;</span><span class="p">)</span>
-                     <span class="nb">:activation-fn</span> <span class="p">(</span><span class="nv">lsp-activate-on</span> <span class="s">&quot;shopify&quot;</span><span class="p">)</span>
-                     <span class="nb">:server-id</span> <span class="ss">&#39;theme-check</span><span class="p">)))</span>
+   <span class="p">(</span><span class="nv">make-lsp-client</span> <span class="nb">:new-connection</span> <span class="p">(</span><span class="nv">lsp-stdio-connection</span> <span class="s">&quot;theme-check-language-server&quot;</span><span class="p">)</span>
+                    <span class="nb">:activation-fn</span> <span class="p">(</span><span class="nv">lsp-activate-on</span> <span class="s">&quot;shopify&quot;</span><span class="p">)</span>
+                    <span class="nb">:server-id</span> <span class="ss">&#39;theme-check</span><span class="p">)))</span>
 </code></pre></div>
 <p><strong>Note:</strong> This example assumes that you've already set up a major mode of your own either by <a href="https://www.gnu.org/software/emacs/manual/html_node/elisp/Derived-Modes.html">deriving it</a> from <code>web-mode</code> or perhaps by writing it yourself.</p>
 <p>If the language server supports environment variables to control
 additional behavior, you can register that by using the
-<code>:environment-fn</code> function, like the Bash language client does:</p>
+<code>:environment-fn</code> option, like the Bash language client does:</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">lsp-register-client</span>
  <span class="p">(</span><span class="nv">make-lsp-client</span> <span class="nb">:new-connection</span> <span class="p">(</span><span class="nv">lsp-stdio-connection</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;bash-language-server&quot;</span> <span class="s">&quot;start&quot;</span><span class="p">))</span>
                   <span class="nb">:activation-fn</span> <span class="p">(</span><span class="nv">lsp-activate-on</span> <span class="s">&quot;shellscript&quot;</span><span class="p">)</span>
@@ -3482,11 +3492,11 @@ additional behavior, you can register that by using the
 <p><code>lsp-bash-explainshell-endpoint</code> and <code>lsp-bash-highlight-parsing-errors</code>
 are language client <code>defcustom</code> that expose supported server environment
 settings in a type-safe way. If you change any of those variables,
-restart the language server with <code>lsp-restart-workspace</code> for the changes
+restart the language server with <code>lsp-workspace-restart</code> for the changes
 to be applied.</p>
-<p>Also, if new client support customizing language server path. It's recommended
+<p>Also, if your client supports customizing the language server path it's recommended
 to make a wrapper function so the user can customize the value even after the
-client has been loaded.</p>
+client has been loaded. For example:</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">defcustom</span> <span class="nv">lsp-tex-executable</span> <span class="s">&quot;digestif&quot;</span>
   <span class="s">&quot;Command to start the Digestif language server.&quot;</span>
   <span class="nb">:group</span> <span class="ss">&#39;lsp-tex</span>
@@ -3503,9 +3513,9 @@ client has been loaded.</p>
 </code></pre></div>
 <h2 id="sections">Sections<a class="headerlink" href="#sections" title="Permanent link">#</a></h2>
 <p><code>lsp-mode</code> provides tools to bridge emacs <code>defcustom</code> as a language
-configuration sections properties(see <a href="https://microsoft.github.io/language-server-protocol/specification#workspace_configuration">specification
+configuration sections properties (see <a href="https://microsoft.github.io/language-server-protocol/specification#workspace_configuration">specification
 workspace/configuration</a>). In addition you may use <code>lsp-generate-settings</code>
-from <a href="https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-generate-settings.el">Generate Settings script</a> to generate <code>lsp-defcustom</code> from <code>package.json</code>
+from the <a href="https://github.com/emacs-lsp/lsp-mode/blob/master/scripts/lsp-generate-settings.el">Generate Settings script</a> to generate <code>lsp-defcustom</code> from the <code>package.json</code>
 VScode plugin manifest. Example:</p>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">lsp-defcustom</span> <span class="nv">lsp-foo-language-server-property</span> <span class="s">&quot;bar&quot;</span>
   <span class="s">&quot;Demo property.&quot;</span>
@@ -3528,7 +3538,7 @@ VScode plugin manifest. Example:</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 8, 2024</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 11, 2024</span>
       
     
   </small>
