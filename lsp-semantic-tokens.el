@@ -844,33 +844,37 @@ refresh in currently active buffer."
 
 This is a debugging tool, and may incur significant performance penalties."
   (setq lsp-semantic-tokens--log '())
-  (defadvice lsp-semantic-tokens--fontify (around advice-tokens-fontify activate)
+  (defun lsp-advice-tokens-fontify (orig-func old-fontify-region beg-orig end-orig &optional loudly)
     (lsp-semantic-tokens--log-buffer-contents 'before)
-    (let ((result ad-do-it))
+    (let ((result (funcall orig-func old-fontify-region beg-orig end-orig loudly)))
       (lsp-semantic-tokens--log-buffer-contents 'after)
       result))
-  (defadvice lsp--semantic-tokens-ingest-full/delta-response
-      (before log-delta-response (response) activate)
+  (advice-add 'lsp-semantic-tokens--fontify :around 'lsp-advice-tokens-fontify)
+
+  (defun lsp-log-delta-response (response)
     (setq lsp-semantic-tokens--prev-response `(:request-type "delta"
                                                :response ,response
                                                :version ,lsp--cur-version)))
-  (defadvice lsp--semantic-tokens-ingest-full-response
-      (before log-full-response (response) activate)
+  (advice-add 'lsp--semantic-tokens-ingest-full/delta-response :before 'lsp-log-delta-response)
+
+  (defun lsp-log-full-response (response)
     (setq lsp-semantic-tokens--prev-response `(:request-type "full"
-                                               :response ,response
-                                               :version ,lsp--cur-version)))
-  (defadvice lsp--semantic-tokens-ingest-range-response
-      (before log-range-response (response) activate)
+                                                             :response ,response
+                                                             :version ,lsp--cur-version)))
+  (advice-add 'lsp--semantic-tokens-ingest-full-response :before 'lsp-log-full-response)
+
+  (defun lsp-log-range-response (response)
     (setq lsp-semantic-tokens--prev-response `(:request-type "range"
                                                :response ,response
-                                               :version ,lsp--cur-version))))
+                                               :version ,lsp--cur-version)))
+  (advice-add 'lsp--semantic-tokens-ingest-range-response :before 'lsp-log-range-response))
 
 (defun lsp-semantic-tokens-disable-log ()
   "Disable logging of intermediate fontification states."
-  (ad-unadvise 'lsp-semantic-tokens--fontify)
-  (ad-unadvise 'lsp--semantic-tokens-ingest-full/delta-response)
-  (ad-unadvise 'lsp--semantic-tokens-ingest-full-response)
-  (ad-unadvise 'lsp--semantic-tokens-ingest-range-response))
+  (advice-remove 'lsp-semantic-tokens--fontify 'lsp-advice-tokens-fontify)
+  (advice-remove 'lsp--semantic-tokens-ingest-full/delta-response 'lsp-log-delta-response)
+  (advice-remove 'lsp--semantic-tokens-ingest-full-response 'lsp-log-full-response)
+  (advice-remove 'lsp--semantic-tokens-ingest-range-response 'lsp-log-range-response))
 
 (declare-function htmlize-buffer "ext:htmlize")
 
