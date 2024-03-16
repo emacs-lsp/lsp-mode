@@ -5016,7 +5016,7 @@ respectively.</p>
 <p>Showing inline image or not.</p>
 <hr />
 <h3 id="lsp-document-sync-method"><code>lsp-document-sync-method</code><a class="headerlink" href="#lsp-document-sync-method" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const :tag Documents should not be synced at all. nil) (const :tag Documents are synced by always sending the full content of the document. lsp--sync-full) (const :tag Documents are synced by always sending incremental changes to the document. lsp--sync-incremental) (const :tag Use the method recommended by the language server. nil))</code></p>
+<p><em>Type:</em> <code>(choice (const :tag Documents are synced by always sending the full content of the document. lsp--sync-full) (const :tag Documents are synced by always sending incremental changes to the document. lsp--sync-incremental) (const :tag Use the method recommended by the language server. nil))</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>How to sync the document with the language server.</p>
 <hr />
@@ -5264,7 +5264,7 @@ the buffer when it becomes large.</p>
 <p>Display the char represent the document color in overlay</p>
 <hr />
 <h3 id="lsp-progress-function"><code>lsp-progress-function</code><a class="headerlink" href="#lsp-progress-function" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const :tag Use modeline lsp-on-progress-modeline) (const :tag Legacy(uses either</code>progress-reporter' or <code>spinner' based on</code>lsp-progress-via-spinner') lsp-on-progress-legacy) (const ignore :tag Ignore) (function :tag Other function))`</p>
+<p><em>Type:</em> <code>(choice (const :tag Use modeline lsp-on-progress-modeline) (const :tag Legacy(uses either</code>progress-reporter' or <code>spinner' based on</code>lsp-progress-via-spinner') lsp-on-progress-legacy) (const :tag Ignore ignore) (function :tag Other function))`</p>
 <p><em>Default:</em> <code>lsp-on-progress-modeline</code></p>
 <p>Function for handling the progress notifications.</p>
 <hr />
