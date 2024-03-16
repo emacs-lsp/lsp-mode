@@ -1990,9 +1990,9 @@ regex in IGNORED-FILES."
            (let ((number-of-directories (length dirs-to-watch)))
              (or
               (< number-of-directories lsp-file-watch-threshold)
-              (condition-case _err
+              (condition-case nil
                   (lsp--ask-about-watching-big-repo number-of-directories dir)
-                ('quit)))))
+                (quit)))))
       (dolist (current-dir dirs-to-watch)
         (condition-case err
             (progn
@@ -8683,8 +8683,8 @@ When ALL is t, erase all log buffers of the running session."
 (cl-defmethod lsp-process-send ((process process) message)
   (condition-case err
       (process-send-string process (lsp--make-message message))
-    ('error (lsp--error "Sending to process failed with the following error: %s"
-                        (error-message-string err)))))
+    (error (lsp--error "Sending to process failed with the following error: %s"
+                       (error-message-string err)))))
 
 (cl-defmethod lsp-process-cleanup (process)
   ;; Kill standard error buffer only if the process exited normally.
@@ -8987,7 +8987,7 @@ Select action: "
               (lsp--persist-session session)
               nil)
           (t nil)))
-    ('quit)))
+    (quit)))
 
 (declare-function tramp-file-name-host "ext:tramp" (file) t)
 (declare-function tramp-dissect-file-name "ext:tramp" (file &optional nodefault))
