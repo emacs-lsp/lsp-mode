@@ -109,6 +109,7 @@
   * Add Hylang support.
   * Add support for clojure-ts derived modes.
   * Add support for installing Ada Language Server.
+  * Add Nushell support
   * Add [[https://docs.trunk.io][Trunk]] support
 
 ** Release 8.0.0
