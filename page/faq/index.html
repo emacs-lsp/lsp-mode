@@ -778,6 +778,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#how-can-i-stop-include-statements-being-automatically-inserted-when-editing-cc-code" class="md-nav__link">
+    How can I stop #include statements being automatically inserted when editing C/C++ code?
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3507,6 +3514,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#how-can-i-stop-include-statements-being-automatically-inserted-when-editing-cc-code" class="md-nav__link">
+    How can I stop #include statements being automatically inserted when editing C/C++ code?
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3606,6 +3620,18 @@
 <span class="p">(</span><span class="n">setq</span><span class="w"> </span><span class="n">lsp</span><span class="o">-</span><span class="n">enable</span><span class="o">-</span><span class="n">suggest</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">download</span><span class="w"> </span><span class="n">nil</span><span class="p">)</span><span class="w"></span>
 <span class="err">```</span><span class="w"></span>
 </code></pre></div>
+
+<hr />
+<h3 id="how-can-i-stop-include-statements-being-automatically-inserted-when-editing-cc-code"><img alt="❔" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/2754.svg" title=":grey_question:" /> How can I stop #include statements being automatically inserted when editing C/C++ code?<a class="headerlink" href="#how-can-i-stop-include-statements-being-automatically-inserted-when-editing-cc-code" title="Permanent link">#</a></h3>
+<p>You can use <code>lsp-clients-clangd-args</code> to configure your clangd. Add the following:</p>
+<div class="codehilite"><pre><span></span><code>``` elisp
+(setq lsp-clients-clangd-args
+    &#39;(&quot;--header-insertion=never&quot;))
+```
+</code></pre></div>
+
+<p>For more flags, see clangd --help.</p>
+<p>(Thanks to <a href="https://emacs.stackexchange.com/questions/58015/how-to-stop-lsp-mode-including-headers-automatically-for-c-c-code">Martingale on Emacs StackExchange</a> for this answer!)</p>
 
 <!-- Source file information -->
 
