@@ -2147,7 +2147,7 @@ PARAMS - the data sent from WORKSPACE."
           (const :tag "Use modeline" lsp-on-progress-modeline)
           (const :tag "Legacy(uses either `progress-reporter' or `spinner' based on `lsp-progress-via-spinner')"
                  lsp-on-progress-legacy)
-          (const ignore :tag "Ignore")
+          (const :tag "Ignore" ignore)
           (function :tag "Other function"))
   :package-version '(lsp-mode . "8.0.0"))
 
