@@ -570,7 +570,8 @@ Focus on it if IGNORE-FOCUS? is nil."
   :new-connection (lsp-stdio-connection
                    #'lsp-clojure--build-command
                    #'lsp-clojure--build-command)
-  :major-modes '(clojure-mode clojurec-mode clojurescript-mode clojure-ts-mode)
+  :major-modes '(clojure-mode clojurec-mode clojurescript-mode
+                 clojure-ts-mode clojure-ts-clojurec-mode clojure-ts-clojurescript-mode)
   :library-folders-fn (lambda (_workspace) lsp-clojure-library-dirs)
   :uri-handlers (lsp-ht ("jar" #'lsp-clojure--file-in-jar))
   :action-handlers (lsp-ht ("code-lens-references" #'lsp-clojure--show-references))

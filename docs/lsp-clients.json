@@ -13,6 +13,7 @@
     "server-name": "ada_language_server",
     "server-url": "https://github.com/AdaCore/ada_language_server",
     "installation-url": "https://github.com/AdaCore/ada_language_server#install",
+    "lsp-install-server": "ada-ls",
     "debugger": "Yes (gdb)"
   },
   {
@@ -185,6 +186,15 @@
     "server-url": "https://github.com/microsoft/vscode/tree/main/extensions/css-language-features/server",
     "installation": "npm install -g vscode-langservers-extracted",
     "lsp-install-server": "css-ls",
+    "debugger": "Not available"
+  },
+  {
+    "name": "cucumber",
+    "full-name": "Cucumber",
+    "server-name": "cucumber-language-server",
+    "server-url": "https://github.com/cucumber/language-server",
+    "installation": "npm install -g @cucumber/language-server",
+    "lsp-install-server": "cucumber-language-server",
     "debugger": "Not available"
   },
   {
@@ -387,6 +397,14 @@
     "server-url": "https://github.com/microsoft/vscode/tree/main/extensions/html-language-features/server",
     "installation": "npm install -g vscode-langservers-extracted",
     "lsp-install-server": "html-ls",
+    "debugger": "Not available"
+  },
+  {
+    "name": "hyuga",
+    "full-name": "Hy",
+    "server-name": "hyuga",
+    "server-url": "https://github.com/sakuraiyuta/hyuga",
+    "installation": "pip install hyuga --user",
     "debugger": "Not available"
   },
   {
@@ -828,6 +846,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "rpm-spec",
+    "full-name": "RPM Spec",
+    "server-name": "rpm-spec-language-server",
+    "server-url": "https://github.com/dcermak/rpm-spec-language-server",
+    "installation": "pip install --user rpm-spec-language-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "rubocop",
     "full-name": "Ruby (RuboCop)",
     "server-name": "rubocop",
@@ -914,13 +940,13 @@
     "debugger": "Yes"
   },
   {
-      "name": "solidity",
-      "full-name": "nomicfoundation/solidity-language-server",
-      "server-name": "solidity-language-server",
-      "installation": "npx @nomicfoundation/solidity-language-server",
-      "server-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
-      "installation-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
-      "debugger": "Not available"
+    "name": "solidity",
+    "full-name": "nomicfoundation/solidity-language-server",
+    "server-name": "solidity-language-server",
+    "installation": "npx @nomicfoundation/solidity-language-server",
+    "server-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
+    "installation-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
+    "debugger": "Not available"
   },
   {
     "name": "sorbet",
@@ -1062,6 +1088,15 @@
     "server-name": "vala-language-server",
     "server-url": "https://github.com/benwaffle/vala-language-server",
     "installation": "meson build && ninja -C build install",
+    "debugger": "Not available"
+  },
+  {
+    "name": "verible",
+    "common-group-name": "verilog",
+    "full-name": "Verilog/SystemVerilog",
+    "server-name": "verible-verilog-ls",
+    "server-url": "https://github.com/chipsalliance/verible",
+    "installation": "https://github.com/chipsalliance/verible#installation",
     "debugger": "Not available"
   },
   {

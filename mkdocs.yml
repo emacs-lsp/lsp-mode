@@ -64,6 +64,7 @@ nav:
     - CMake: page/lsp-cmake.md
     - Crystal: page/lsp-crystal.md
     - CSS/LessCSS/SASS/SCSS: page/lsp-css.md
+    - Cucumber: page/lsp-cucumber.md
     - Cypher: page/lsp-cypher.md
     - D: page/lsp-d.md
     - Dart: https://emacs-lsp.github.io/lsp-dart
@@ -86,6 +87,7 @@ nav:
     - Hack: page/lsp-hack.md
     - HTML: page/lsp-html.md
     - Haskell: https://emacs-lsp.github.io/lsp-haskell
+    - Hy (hyuga): page/lsp-hy.md
     - Idris: page/lsp-idris.md
     - Java: https://emacs-lsp.github.io/lsp-java
     - Javascript/Typescript (deno): page/lsp-deno.md
@@ -134,6 +136,7 @@ nav:
     - R: page/lsp-r.md
     - Racket (jeapostrophe): page/lsp-racket-langserver.md
     - Racket (Theia): page/lsp-racket-language-server.md
+    - RPM Spec: page/lsp-rpm-spec.md
     - Ruby (RuboCop): page/lsp-rubocop.md
     - Ruby (ruby-lsp): page/lsp-ruby-lsp.md
     - Ruby (Solargraph): page/lsp-solargraph.md
@@ -161,6 +164,7 @@ nav:
     - Vala: page/lsp-vala.md
     - Verilog/SystemVerilog (hdl-checker): page/lsp-verilog.md
     - Verilog/SystemVerilog (svlangserver): page/lsp-svlangserver.md
+    - Verilog/SystemVerilog (verible): page/lsp-verible.md
     - VHDL: page/lsp-vhdl.md
     - Vimscript: page/lsp-vimscript.md
     - Vue 2: page/lsp-vetur.md

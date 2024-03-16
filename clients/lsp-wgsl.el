@@ -187,6 +187,7 @@ definitions resolved."
                                       ;; https://github.com/wgsl-analyzer/wgsl-analyzer/issues/77
                                       (lsp--set-configuration '())))
                   :request-handlers (lsp-ht ("wgsl-analyzer/requestConfiguration" #'lsp-wgsl--send-configuration))
+                  :major-modes '(wgsl-mode)
                   :activation-fn (lsp-activate-on "wgsl")
                   :download-server-fn (lambda (_client callback error-callback _update?)
                                         (lsp-package-ensure 'wgsl-analyzer
