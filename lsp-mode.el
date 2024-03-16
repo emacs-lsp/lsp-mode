@@ -853,6 +853,7 @@ Changes take effect only when a new session is started."
     (cuda-mode . "cuda")
     (objc-mode . "objective-c")
     (html-mode . "html")
+    (html-ts-mode . "html")
     (sgml-mode . "html")
     (mhtml-mode . "html")
     (mint-mode . "mint")
