@@ -189,6 +189,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "cucumber",
+    "full-name": "Cucumber",
+    "server-name": "cucumber-language-server",
+    "server-url": "https://github.com/cucumber/language-server",
+    "installation": "npm install -g @cucumber/language-server",
+    "lsp-install-server": "cucumber-language-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "cypher",
     "full-name": "Cypher",
     "server-name": "cypher-language-server",
@@ -923,13 +932,13 @@
     "debugger": "Yes"
   },
   {
-      "name": "solidity",
-      "full-name": "nomicfoundation/solidity-language-server",
-      "server-name": "solidity-language-server",
-      "installation": "npx @nomicfoundation/solidity-language-server",
-      "server-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
-      "installation-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
-      "debugger": "Not available"
+    "name": "solidity",
+    "full-name": "nomicfoundation/solidity-language-server",
+    "server-name": "solidity-language-server",
+    "installation": "npx @nomicfoundation/solidity-language-server",
+    "server-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
+    "installation-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
+    "debugger": "Not available"
   },
   {
     "name": "sorbet",
