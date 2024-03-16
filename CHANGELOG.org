@@ -1,9 +1,23 @@
 * Changelog
 ** Unreleased 8.0.1
+  * Add support for RPM spec files
+  * Add support for installing lsp dependencies via Cargo.
+  * Fix tramp support issues (see [[https://github.com/emacs-lsp/lsp-mode/pull/4204][#4204]])
+  * Add Cypher support.
+  * Add Mojo 🔥 support
+  * Add lsp-solidity, using the implementation from NomicFoundation
+  * Change rust-analyzer base URL to be github.com/rust-lang/rust-analyzer, rather than rust-analyzer/rust-analyzer.
+  * Add support for wgsl using [[https://github.com/wgsl-analyzer/wgsl-analyzer][wgsl-analyzer]]
+  * Add [[https://github.com/wader/jq-lsp][jq-lsp]]
+  * Add architecture triples for [[https://github.com/WhatsApp/erlang-language-platform][erlang-language-platform]] file downloads, to support macos on ARM and X86.
+  * Add semantic token support for [[https://github.com/WhatsApp/erlang-language-platform][erlang-language-platform]] in lsp-erlang client.
+  * Update [[https://github.com/WhatsApp/erlang-language-platform][erlang-language-platform]] download file names to match new upstream names.
+  * Add [[https://github.com/WhatsApp/erlang-language-platform][erlang-language-platform]] support in lsp-erlang client.
+  * Add [[https://github.com/elixir-tools/credo-language-server][credo-language-server]]
   * Add support for clojure-ts-mode in clojure-lsp client
-  * terraform-ls now supports prefill requied fields and the ability to validate on save.
+  * terraform-ls now supports prefill required fields and the ability to validate on save.
   * Ignore =.terraform= and =.terragrunt-cache= directories
-  * ~lsp-bash~ now supports ~bash-ts-mode~
+  * ~lsp-bash~ now supports ~bash-ts-mode~, ~ebuild-mode~ and ~envrc-file-mode~
   * ~lsp-ruby-syntax-tree~, ~lsp-solargraph~, ~lsp-sorbet~, ~lsp-steep~, and ~lsp-typeprof~ now support ~ruby-ts-mode~
   * Drop support for emacs 26.1 and 26.2
   * Added support for ~textDocument/linkedEditingRange~ via
@@ -36,7 +50,7 @@
   * Add support for ~typescript-language-server~’s inlay hints.
   * Add support for ~workspace/willRenameFiles~ and ~workspace/didRenameFiles~.
   * Improve project root import to read specific keys instead of any events.
-  * Support ~labelDetails~ of Lsp Specification 3.17
+  * Support ~labelDetails~ of LSP Specification 3.17
   * Add Gleam support
   * Drop deprecated rust-analyzer variable lsp-rust-analyzer-import-merge-behaviour
   * Added run and debug code lenses to ~lsp-kotlin~
@@ -71,6 +85,32 @@
     one installed by lsp-mode.
   * Add [[https://github.com/charliermarsh/ruff-lsp][ruff-lsp]] support (additional server for Python).
   * Update documentation of Vue3 install server
+  * Add GLSL support.
+  * Move inlay hint support in core from ~lsp-rust~ and ~lsp-javascript~. Use
+    ~lsp-inlay-hint-enable~ instead of ~lsp-rust-analyzer-server-display-inlay-hints~ and
+    ~lsp-javascript-server-display-inlay-hints~
+  * Add ShaderLab support.
+  * Remove custom variable ~lsp-inlay-hint-enum-format~ since LSP Specification 3.17 only has ~type~ and
+    ~parameter~ hint kinds.
+  * Add [[https://semgrep.dev][Semgrep]] support
+  * Add AWK language server support.
+  * Add support for ~scala-ts-mode~.
+  * Drop support for emacs 26.3
+  * Add [https://github.com/rubocop/rubocop][RuboCop built-in language server]] for linting and formatting Ruby code.
+  * Add Move language server support.
+  * Add mdx support using [[https://github.com/mdx-js/mdx-analyzer/tree/main/packages/language-server][mdx-language-server]]
+  * Add golangci-lint add-on client using [[https://github.com/nametake/golangci-lint-langserver][golangci-lint-langserver]]
+  * Add buf/protobuf support via [[https://github.com/bufbuild/buf-language-server][bufls]]
+  * Add Assembly Language support.
+  * Add Autotools support
+  * Add Jsonnet support
+  * Add support for ~ada-ts-mode~.
+  * Allow customizing Ada semantic token and token modifier faces.
+  * Add Hylang support.
+  * Add support for clojure-ts derived modes.
+  * Add support for installing Ada Language Server.
+  * Add Nushell support
+
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
   * Set ~lsp-clients-angular-language-server-command~ after the first connection to speed up subsequent connections.
@@ -135,6 +175,8 @@
   * Reorganized lsp-mode code moving features and clients to separated files. #2067
   * Add support for signatureHelp using ~posframe~. #1999
   * Add ~iedit~ integration. #2478
+  * Add client for Verible SystemVerilog language Server ([[https://github.com/chipsalliance/verible]])
+  * Add Cucumber support.
 
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
@@ -328,7 +370,7 @@
   - introduced new command ~lsp-describe-session~ which replaces the existing one ~lsp-capabilities~. The command lists the folders that are part of the workspace and the servers that are associated with the corresponding folder.
   - ~lsp-mode~ displays information about the running server and it's status in the modeline.
   - ~lsp-define-stdio-client~ and ~lsp-define-tcp-client~ are replaced with ~lsp-register-client~
-  - ~lsp~ rely on ~projectile~ or ~project.el~ now only for suggesting project root. Once you open new file in a project and start ~lsp~ it will provide several options(import project, blacklist project, select other directory root). Once you select a root it will be persisted and used for the next sessions.
+  - ~lsp~ rely on ~projectile~ or ~project.el~ now only for suggesting project root. Once you open new file in a project and start ~lsp~ it will provide several options(import project, blocklist project, select other directory root). Once you select a root it will be persisted and used for the next sessions.
   - support for multiple language servers per single file and workspace.
   - changed ~lsp-mode~ settings to more sensible defaults.
   - Removed all synchronous calls from the server startup.

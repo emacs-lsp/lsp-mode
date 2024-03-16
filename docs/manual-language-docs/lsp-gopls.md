@@ -10,6 +10,17 @@ server. See
 [upstream](https://github.com/golang/tools/tree/master/gopls#installation)
 for gopls installation instructions.
 
+## Configuration
+
+By default, some
+[gopls analyzers](https://github.com/golang/tools/blob/master/gopls/doc/analyzers.md)
+are enabled and others are disabled. To override, use:
+
+```
+(setq lsp-go-analyses '((shadow . t)
+                        (simplifycompositelit . :json-false)))
+```
+
 ## Troubleshooting
 
 ### Working with nested go.mod files

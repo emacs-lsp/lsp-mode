@@ -114,7 +114,7 @@
 (defcustom lsp-yaml-schema-store-local-db (expand-file-name
                                            (locate-user-emacs-file
                                             (f-join ".cache" "lsp" "lsp-yaml-schemas.json")))
-  "Cached databse of schema store."
+  "Cached database of schema store."
   :type 'file
   :group 'lsp-yaml)
 

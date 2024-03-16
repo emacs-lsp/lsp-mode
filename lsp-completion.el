@@ -351,6 +351,11 @@ The MARKERS and PREFIX value will be attached to each candidate."
                   (buffer-substring-no-properties
                    (plist-get (text-properties-at 0 candidate) 'lsp-completion-start-point)
                    (point))))
+         ;; Workaround for bug #4192
+         ;; `lsp-completion-start-point' above might be from cached/previous completion and
+         ;; pointing to a very distant point, which results in `prefix' being way too long.
+         ;; So let's consider only the first line.
+         (prefix (car (s-lines prefix)))
          (prefix-len (length prefix))
          (prefix-pos 0)
          (label (downcase candidate))
@@ -667,7 +672,7 @@ The return is nil or in range of (0, inf)."
                   "Update score variables given match range (A B)."
                   (setq score-numerator (+ score-numerator (- b a)))
                   (unless (= a len)
-                    ;; case mis-match will be pushed to near next rank
+                    ;; case mismatch will be pushed to near next rank
                     (unless (equal (aref query q-ind) (aref str a))
                       (cl-incf a 0.9))
                     (setq score-denominator

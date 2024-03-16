@@ -368,5 +368,4 @@
     (should (null lsp--test-events))
     (should (ht-empty? (lsp-session-watches)))))
 
-(provide 'lsp-file-watch-test)
 ;;; lsp-file-watch-test.el ends here

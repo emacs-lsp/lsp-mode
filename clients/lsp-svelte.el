@@ -188,7 +188,7 @@ file paths or globs relative to workspace root."
 
 (defcustom lsp-svelte-plugin-svelte-compiler-warnings nil
   "Svelte compiler warning codes to ignore or to treat as errors.
-Example: '((css-unused-selector . ignore) (unused-export-let . error))"
+Example: `((css-unused-selector . ignore) (unused-export-let . error))"
   :type '(alist :key-type (symbol :tag "Warning code")
                 :value-type (choice
                              (const :tag "Ignore" ignore)

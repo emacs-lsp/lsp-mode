@@ -1,6 +1,6 @@
 ;;; lsp-clangd.el --- LSP clients for the C Languages Family -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 Daniel Martín & emacs-lsp maintainers
+;; Copyright (C) 2020 Daniel Martin & emacs-lsp maintainers
 ;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; Keywords: languages, c, cpp, clang
 
@@ -47,7 +47,7 @@
 (declare-function flycheck-error-group "ext:flycheck" (err) t)
 (declare-function flycheck-error-message "ext:flycheck" (err) t)
 
-(defcustom lsp-clangd-version "13.0.0"
+(defcustom lsp-clangd-version "15.0.6"
   "Clangd version to download.
 It has to be set before `lsp-clangd.el' is loaded and it has to
 be available here: https://github.com/clangd/clangd/releases/"
@@ -111,9 +111,9 @@ be available here: https://github.com/clangd/clangd/releases/"
   "Extract the parts of the LLVM clang-tidy documentation that are relevant.
 
 This function assumes that the current buffer contains the result
-of browsing 'clang.llvm.org', as returned by `url-retrieve'.
+of browsing `clang.llvm.org', as returned by `url-retrieve'.
 More concretely, this function returns the main <div> element
-with class 'section', and also removes 'headerlinks'."
+with class `section', and also removes `headerlinks'."
   (goto-char (point-min))
   (lsp-cpp-flycheck-clang-tidy--narrow-to-http-body)
   (lsp-cpp-flycheck-clang-tidy--decode-region-as-utf8 (point-min) (point-max))
@@ -162,6 +162,9 @@ number of newlines."
   "Show clang-tidy documentation about ERROR-ID.
 
 Information comes from the clang.llvm.org website."
+  ;; Example error-id: modernize-loop-convert
+  ;; Example url: https://clang.llvm.org/extra/clang-tidy/checks/modernize/loop-convert.html
+  (setq error-id (s-join "/" (s-split-up-to "-" error-id 1 t)))
   (url-retrieve (format
                  "https://clang.llvm.org/extra/clang-tidy/checks/%s.html" error-id)
                 (lambda (status)
@@ -236,7 +239,7 @@ This must be set only once after loading the clang client.")
                             ;; Prefer `clangd` without a version number appended.
                             (cl-list* "" (-map
                                           (lambda (vernum) (format "-%d" vernum))
-                                          (number-sequence 14 6 -1)))))
+                                          (number-sequence 17 6 -1)))))
               (lsp-clients-executable-find "xcodebuild" "-find-executable" "clangd")
               (lsp-clients-executable-find "xcrun" "--find" "clangd"))))
 

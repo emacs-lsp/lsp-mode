@@ -74,7 +74,7 @@
                                                          ,@lsp-clients-emmy-lua-args
                                                          ,lsp-clients-emmy-lua-jar-path)))
                                         #'lsp-clients-emmy-lua-test)
-  :major-modes '(lua-mode)
+  :activation-fn (lsp-activate-on "lua")
   :server-id 'emmy-lua
   :priority -1
   :notification-handlers (lsp-ht ("emmy/progressReport" #'ignore))))
@@ -337,7 +337,7 @@ tolerance for this setting. Please adjust it to the appropriate value."
   :group 'lsp-lua-language-server)
 
 (defcustom lsp-lua-runtime-file-encoding "utf8"
-  "File encoding. The 'ansi' option is only available under the 'Windows'
+  "File encoding.  The `ansi' option is only available under the `Windows'
 platform."
   :type '(choice (:tag "utf8" "ansi"))
   :package-version '(lsp-mode . "8.0.0")
@@ -482,6 +482,12 @@ and `../lib` ,exclude `../lib/temp`.
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
+(defcustom lsp-lua-prefer-musl nil
+  "Whether or not to download the musl-compiled server."
+  :type 'boolean
+  :package-version '(lsp-mode . "8.0.0")
+  :group 'lsp-lua-language-server)
+
 (lsp-register-custom-settings
  '(("files.associations" lsp-lua-files-associations t)
    ("files.exclude" lsp-lua-files-exclude t)
@@ -542,21 +548,23 @@ and `../lib` ,exclude `../lib/temp`.
      error-callback
      :url (lsp--find-latest-gh-release-url
            "https://api.github.com/repos/sumneko/lua-language-server/releases/latest"
-           (pcase system-type
-             ('gnu/linux
-              (pcase (lsp-resolve-value lsp--system-arch)
-                ('x64     "linux-x64")))
-             ('darwin
-              (pcase (lsp-resolve-value lsp--system-arch)
-                ('x64     "darwin-x64")
-                ('arm64   "darwin-arm64")))
-             ('windows-nt
-              (pcase (lsp-resolve-value lsp--system-arch)
-                ('x64     "win32-x64")
-                ('arm64   "win32-ia32")))
-             (_
-              (pcase (lsp-resolve-value lsp--system-arch)
-                ('x64     "linux-x64")))))
+           (format "%s%s.tar.gz"
+                   (pcase system-type
+                     ('gnu/linux
+                      (pcase (lsp-resolve-value lsp--system-arch)
+                        ('x64     "linux-x64")))
+                     ('darwin
+                      (pcase (lsp-resolve-value lsp--system-arch)
+                        ('x64     "darwin-x64")
+                        ('arm64   "darwin-arm64")))
+                     ('windows-nt
+                      (pcase (lsp-resolve-value lsp--system-arch)
+                        ('x64     "win32-x64")
+                        ('arm64   "win32-ia32")))
+                     (_
+                      (pcase (lsp-resolve-value lsp--system-arch)
+                        ('x64     "linux-x64"))))
+                   (if lsp-lua-prefer-musl "-musl" "")))
      :store-path store-path
      :decompress (pcase system-type ('windows-nt :zip) (_ :targz)))))
 
@@ -567,7 +575,7 @@ and `../lib` ,exclude `../lib/temp`.
                                                          ,@lsp-clients-lua-language-server-args
                                                          ,lsp-clients-lua-language-server-main-location)))
                                         #'lsp-clients-lua-language-server-test)
-  :major-modes '(lua-mode)
+  :activation-fn (lsp-activate-on "lua")
   :priority -2
   :server-id 'lua-language-server
   :download-server-fn #'lsp-lua-language-server-install-latest))
@@ -603,7 +611,7 @@ and `../lib` ,exclude `../lib/temp`.
                                           (or lsp-clients-lua-lsp-server-install-dir
                                               (f-join lsp-clients-luarocks-bin-dir "lua-lsp")))
                                         #'lsp-clients-lua-lsp-test)
-  :major-modes '(lua-mode)
+  :activation-fn (lsp-activate-on "lua")
   :priority -3
   :server-id 'lsp-lua-lsp))
 
@@ -682,7 +690,7 @@ and `../lib` ,exclude `../lib/temp`.
                                                          ,@lsp-clients-lua-language-server-args
                                                          ,lsp-lua-roblox-language-server-main-location)))
                                         #'lsp-lua-roblox-language-server-test)
-  :major-modes '(lua-mode)
+  :activation-fn (lsp-activate-on "lua")
   :priority -4
   :server-id 'lua-roblox-language-server
   :download-server-fn #'lsp-lua-roblox-language-server-install))

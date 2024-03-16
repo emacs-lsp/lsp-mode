@@ -87,7 +87,7 @@ When enabled a debugger for Kotlin will be available."
 
 (defcustom lsp-kotlin-external-sources-use-kls-scheme t
   "[Recommended] Specifies whether URIs inside JARs should be represented
-using the 'kls'-scheme."
+using the `kls'-scheme."
   :type 'boolean
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "6.1"))
@@ -106,6 +106,49 @@ to Kotlin."
   :group 'lsp-kotlin
   :package-version '(lsp-mode . "8.0.1"))
 
+(defcustom lsp-kotlin-workspace-dir (expand-file-name (locate-user-emacs-file "workspace/"))
+  "LSP kotlin workspace directory."
+  :group 'lsp-kotlin
+  :risky t
+  :type 'directory)
+
+(defcustom lsp-kotlin-workspace-cache-dir (expand-file-name ".cache/" lsp-kotlin-workspace-dir)
+  "LSP kotlin workspace cache directory."
+  :group 'lsp-kotlin
+  :risky t
+  :type 'directory)
+
+;; cache in this case is the dependency cache. Given as an initialization option.
+(defcustom lsp-kotlin-ondisk-cache-path nil
+  "Path to the ondisk cache if used. If lsp-kotlin-ondisk-cache-enabled is t,
+but path is nil, then the project root is used as a default."
+  :type 'string
+  :group 'lsp-kotlin)
+
+(defcustom lsp-kotlin-ondisk-cache-enabled nil
+  "Specifies whether to enable ondisk cache or not.  If nil, in-memory cache
+will be used."
+  :type 'boolean
+  :group 'lsp-kotlin)
+
+(defcustom lsp-kotlin-inlayhints-enable-typehints t
+  "Specifies whether to enable type hints or not.
+Requires lsp-inlay-hints-mode."
+  :type 'boolean
+  :group 'lsp-kotlin)
+
+(defcustom lsp-kotlin-inlayhints-enable-parameterhints t
+  "Specifies whether to enable parameter hints or not.
+Requires lsp-inlay-hints-mode."
+  :type 'boolean
+  :group 'lsp-kotlin)
+
+(defcustom lsp-kotlin-inlayhints-enable-chainedhints t
+  "Specifies whether to enable chained hints or not.
+Requires lsp-inlay-hints-mode."
+  :type 'boolean
+  :group 'lsp-kotlin)
+
 (lsp-register-custom-settings
  '(("kotlin.externalSources.autoConvertToKotlin" lsp-kotlin-external-sources-auto-convert-to-kotlin t)
    ("kotlin.externalSources.useKlsScheme" lsp-kotlin-external-sources-use-kls-scheme t)
@@ -115,7 +158,10 @@ to Kotlin."
    ("kotlin.linting.debounceTime" lsp-kotlin-linting-debounce-time)
    ("kotlin.compiler.jvm.target" lsp-kotlin-compiler-jvm-target)
    ("kotlin.trace.server" lsp-kotlin-trace-server)
-   ("kotlin.languageServer.path" lsp-clients-kotlin-server-executable)))
+   ("kotlin.languageServer.path" lsp-clients-kotlin-server-executable)
+   ("kotlin.inlayHints.typeHints" lsp-kotlin-inlayhints-enable-typehints t)
+   ("kotlin.inlayHints.parameterHints" lsp-kotlin-inlayhints-enable-parameterhints t)
+   ("kotlin.inlayHints.chainedHints" lsp-kotlin-inlayhints-enable-chainedhints t)))
 
 (defvar lsp-kotlin--language-server-path
   (f-join lsp-server-install-dir
@@ -202,8 +248,8 @@ to Kotlin."
           (ivy-read message (mapcar #'car items)
                     :action (lambda (c) (setq result (list (cdr (assoc c items)))))
                     :multi-action
-                    (lambda (canditates)
-                      (setq result (mapcar (lambda (c) (cdr (assoc c items))) canditates))))
+                    (lambda (candidates)
+                      (setq result (mapcar (lambda (c) (cdr (assoc c items))) candidates))))
           result)
       (let ((deps initial-selection) dep)
         (while (setq dep (cl-rest (lsp--completing-read
@@ -237,6 +283,36 @@ to Kotlin."
          (dolist (edit (-flatten selected-members))
            (lsp--apply-text-edits edit))))))
 
+(defun lsp-kotlin--parse-uri (uri)
+  "Get the path for where we'll store the file, calculating it based on URI."
+  (or (save-match-data
+        (when (string-match "kls:file:///\\(.*\\)!/\\(.*\.\\(class\\|java\\|kt\\)\\)?.*" uri)
+          (let* ((jar-path (match-string 1 uri))
+                 (file-path (match-string 2 uri))
+                 (lib-name (string-join (last (split-string jar-path "/") 2) "."))
+                 (buffer-name (replace-regexp-in-string "/" "." file-path t t))
+                 (file-location (expand-file-name (concat lsp-kotlin-workspace-cache-dir "/" lib-name "/" buffer-name))))
+            file-location)))
+      (error "Unable to match %s" uri)))
+
+(defun lsp-kotlin--uri-handler (uri)
+  "Load a file corresponding to URI executing request to the kotlin server."
+  (let ((file-location (lsp-kotlin--parse-uri uri)))
+    (unless (file-readable-p file-location)
+      (lsp-kotlin--ensure-dir (file-name-directory file-location))
+      (with-lsp-workspace (lsp-find-workspace 'kotlin-ls nil)
+        (let ((content (lsp-send-request (lsp-make-request
+                                          "kotlin/jarClassContents"
+                                          (list :uri uri)))))
+          (with-temp-file file-location
+            (insert content)))))
+    file-location))
+
+(defun lsp-kotlin--ensure-dir (path)
+  "Ensure that directory PATH exists."
+  (unless (file-directory-p path)
+    (make-directory path t)))
+
 (lsp-dependency
  'kotlin-language-server
  `(:system ,lsp-clients-kotlin-server-executable)
@@ -257,9 +333,14 @@ to Kotlin."
   :major-modes '(kotlin-mode kotlin-ts-mode)
   :priority -1
   :server-id 'kotlin-ls
+  :uri-handlers (lsp-ht ("kls" #'lsp-kotlin--uri-handler))
   :initialized-fn (lambda (workspace)
                     (with-lsp-workspace workspace
                       (lsp--set-configuration (lsp-configuration-section "kotlin"))))
+  :initialization-options (lambda ()
+                            (when lsp-kotlin-ondisk-cache-enabled
+                              (list :storagePath (or lsp-kotlin-ondisk-cache-path
+                                                     (lsp-workspace-root)))))
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'kotlin-language-server callback error-callback))))
 

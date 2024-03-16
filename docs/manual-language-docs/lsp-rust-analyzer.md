@@ -41,9 +41,9 @@ after:
 
 ### inlay-hints
 
-`lsp-rust-analyzer-inlay-hints-mode` enables displaying of inlay hints
+`lsp-inlay-hints-mode` enables displaying of inlay hints
 
-Additionally, `lsp-rust-analyzer-server-display-inlay-hints` must be set to `t` in order for inlay hints to render.
+Additionally, `lsp-inlay-hint-enable` must be set to `t` in order for inlay hints to render.
 
 NOTE: the inlay hints interact badly with the lsp-ui sideline, because it doesn't seem to consider the overlays in its width calculation, which often leads to lines wrapping around.
 
@@ -119,25 +119,3 @@ In the example below, first you see that:
 
 This [unmerged PR](https://github.com/emacs-lsp/lsp-mode/pull/1740) contains an example method that allows
 modifying the signature that is displayed by eldoc.
-
-### TRAMP Example
-
-The following is an example configuration for using lsp-mode with a remote rust-analyzer server:
-
-```
-(with-eval-after-load "lsp-rust"
-  (lsp-register-client
-   (make-lsp-client
-    :new-connection (lsp-tramp-connection "rust-analyzer")
-    :remote? t
-    :major-modes '(rust-mode rustic-mode)
-    :initialization-options 'lsp-rust-analyzer--make-init-options
-    :notification-handlers (ht<-alist lsp-rust-notification-handlers)
-    :action-handlers (ht ("rust-analyzer.runSingle" #'lsp-rust--analyzer-run-single))
-    :library-folders-fn (lambda (_workspace) lsp-rust-analyzer-library-directories)
-    :after-open-fn (lambda ()
-                     (when lsp-rust-analyzer-server-display-inlay-hints
-                       (lsp-rust-analyzer-inlay-hints-mode)))
-    :ignore-messages nil
-    :server-id 'rust-analyzer-remote)))
-```

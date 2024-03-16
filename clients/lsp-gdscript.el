@@ -53,7 +53,7 @@
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-gdscript-tcp-connect-to-port)
-                  :major-modes '(gdscript-mode)
+                  :activation-fn (lsp-activate-on "gdscript")
                   :server-id 'gdscript))
 
 (lsp-consistency-check lsp-gdscript)

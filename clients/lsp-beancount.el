@@ -32,20 +32,17 @@
   :link '(url-link "https://github.com/polarmutex/beancount-language-server")
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-beancount-langserver-executable "beancount-langserver"
+(defcustom lsp-beancount-langserver-executable "beancount-language-server"
   "Command to start Beancount language server."
   :type 'string
   :group 'lsp-beancount
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-beancount-python-interpreter nil
-  "Path to Python executable."
-  :type 'string
-  :group 'lsp-beancount
-  :package-version '(lsp-mode . "8.0.0"))
-
 (defcustom lsp-beancount-journal-file nil
-  "Pathg to Beancount journal file."
+  "Path to Beancount journal file.
+
+The path can be absolute, or relative to the currently opened file.
+Use nil (the default) to use the current beancount buffer as the journal file."
   :type 'string
   :group 'lsp-beancount
   :package-version '(lsp-mode . "8.0.0"))
@@ -55,14 +52,10 @@
   :new-connection
   (lsp-stdio-connection
    (lambda ()
-     (when (null lsp-beancount-python-interpreter)
-       (setq lsp-beancount-python-interpreter (or (executable-find "python3")
-                                                  (executable-find "python"))))
-     `(,lsp-beancount-langserver-executable "--stdio")))
+      `(,lsp-beancount-langserver-executable "--stdio")))
   :major-modes '(beancount-mode)
   :initialization-options
-  `((journalFile . ,lsp-beancount-journal-file)
-    (pythonPath . ,lsp-beancount-python-interpreter))
+  `((journalFile . ,lsp-beancount-journal-file))
   :server-id 'beancount-ls))
 
 (lsp-consistency-check lsp-beancount)

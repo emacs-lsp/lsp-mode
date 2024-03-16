@@ -23,7 +23,7 @@
 
 (require 'ert)
 (require 'lsp-clangd)
-(require 'lsp-integration-test)
+(require 'lsp-test-utils)
 
 (ert-deftest lsp-clangd-extract-signature-on-hover ()
   (should (string= (lsp-clients-extract-signature-on-hover

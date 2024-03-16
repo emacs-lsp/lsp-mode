@@ -49,7 +49,10 @@ nav:
     - Ada: page/lsp-ada.md
     - Angular: page/lsp-angular.md
     - Ansible: page/lsp-ansible.md
+    - Assembly: page/lsp-asm.md
     - Astro: page/lsp-astro.md
+    - Autotools: page/lsp-autotools.md
+    - AWK: page/lsp-awk.md
     - Bash: page/lsp-bash.md
     - Beancount: page/lsp-beancount.md
     - Camel: page/lsp-camel.md
@@ -61,6 +64,8 @@ nav:
     - CMake: page/lsp-cmake.md
     - Crystal: page/lsp-crystal.md
     - CSS/LessCSS/SASS/SCSS: page/lsp-css.md
+    - Cucumber: page/lsp-cucumber.md
+    - Cypher: page/lsp-cypher.md
     - D: page/lsp-d.md
     - Dart: https://emacs-lsp.github.io/lsp-dart
     - Dhall: page/lsp-dhall.md
@@ -69,11 +74,12 @@ nav:
     - Elm: page/lsp-elm.md
     - Emmet: page/lsp-emmet.md
     - Erlang: page/lsp-erlang.md
-    - Eslint: page/lsp-eslint.md
+    - ESLint: page/lsp-eslint.md
     - F#: page/lsp-fsharp.md
     - Fortran: page/lsp-fortran.md
     - GDScript: page/lsp-gdscript.md
     - Gleam: page/lsp-gleam.md
+    - GLSL: page/lsp-glsl.md
     - Go (gopls): manual-language-docs/lsp-gopls.md
     - Grammarly: page/lsp-grammarly.md
     - GraphQL: page/lsp-graphql.md
@@ -81,6 +87,7 @@ nav:
     - Hack: page/lsp-hack.md
     - HTML: page/lsp-html.md
     - Haskell: https://emacs-lsp.github.io/lsp-haskell
+    - Hy (hyuga): page/lsp-hy.md
     - Idris: page/lsp-idris.md
     - Java: https://emacs-lsp.github.io/lsp-java
     - Javascript/Typescript (deno): page/lsp-deno.md
@@ -88,6 +95,7 @@ nav:
     - JavaScript/TypeScript (theia-ide): page/lsp-typescript.md
     - JavaScript Flow: page/lsp-flow.md
     - Json: page/lsp-json.md
+    - Jsonnet: page/lsp-jsonnet.md
     - Julia: page/lsp-julia.md
     - Kotlin: page/lsp-kotlin.md
     - LanguageTool (LTEX): page/lsp-ltex.md
@@ -97,11 +105,15 @@ nav:
     - Magik: page/lsp-magik.md
     - Markdown: page/lsp-markdown.md
     - Marksman: page/lsp-marksman.md
+    - Move: page/lsp-move.md
+    - MDX: page/lsp-mdx.md
     - MSSQL: https://emacs-lsp.github.io/lsp-mssql
     - Nginx: page/lsp-nginx.md
     - Nim: page/lsp-nim.md
-    - Nix (rnix-lsp): page/lsp-nix.md
+    - Nix (nixd-lsp): page/lsp-nix-nixd.md
+    - Nix (rnix-lsp): page/lsp-nix-rnix.md
     - Nix (nil): page/lsp-nix-nil.md
+    - Nushell: page/lsp-nushell.md
     - OCaml (ocaml-lsp): page/lsp-ocaml-lsp-server.md
     - OpenSCAD: page/lsp-openscad.md
     - Pascal/Object Pascal: page/lsp-pascal.md
@@ -124,6 +136,8 @@ nav:
     - R: page/lsp-r.md
     - Racket (jeapostrophe): page/lsp-racket-langserver.md
     - Racket (Theia): page/lsp-racket-language-server.md
+    - RPM Spec: page/lsp-rpm-spec.md
+    - Ruby (RuboCop): page/lsp-rubocop.md
     - Ruby (ruby-lsp): page/lsp-ruby-lsp.md
     - Ruby (Solargraph): page/lsp-solargraph.md
     - Ruby (Sorbet): page/lsp-sorbet.md
@@ -132,6 +146,8 @@ nav:
     - Rust (rust-analyzer): page/lsp-rust-analyzer.md
     - Rust (rls): page/lsp-rust-rls.md
     - Scala: https://emacs-lsp.github.io/lsp-metals
+    - Semgrep: page/lsp-semgrep.md
+    - ShaderLab: page/lsp-shader.md
     - SQL (sqls): page/lsp-sqls.md
     - Standard ML (Millet): page/lsp-sml.md
     - Svelte: page/lsp-svelte.md
@@ -148,10 +164,12 @@ nav:
     - Vala: page/lsp-vala.md
     - Verilog/SystemVerilog (hdl-checker): page/lsp-verilog.md
     - Verilog/SystemVerilog (svlangserver): page/lsp-svlangserver.md
+    - Verilog/SystemVerilog (verible): page/lsp-verible.md
     - VHDL: page/lsp-vhdl.md
     - Vimscript: page/lsp-vimscript.md
     - Vue 2: page/lsp-vetur.md
     - Vue 3: page/lsp-volar.md
+    - wgsl: page/lsp-wgsl.md
     - XML: page/lsp-xml.md
     - YAML: page/lsp-yaml.md
     - Zig: page/lsp-zig.md
@@ -169,6 +187,7 @@ nav:
       - 'Configuring Emacs as a Clojure IDE': tutorials/clojure-guide.md
       - 'Debugging Clojurescript': tutorials/debugging-clojure-script.md
       - 'Python, debbuging with poetry + pyenv': https://emacs-lsp.github.io/dap-mode/page/python-poetry-pyenv/
+      - 'Configuring Emacs as a Crystal IDE': tutorials/crystal-guide.md
   - Blog:
       - 2020:
           - '7.0 Release': blog/2020/7.0-release.md

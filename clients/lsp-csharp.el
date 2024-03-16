@@ -56,7 +56,7 @@ Set this if you have the binary installed or have it built yourself."
 
 (defcustom lsp-csharp-test-run-buffer-name
   "*lsp-csharp test run*"
-  "The name of buffer used for outputing lsp-csharp test run results."
+  "The name of buffer used for outputting lsp-csharp test run results."
   :group 'lsp-csharp-omnisharp
   :type 'string)
 
@@ -284,11 +284,11 @@ PRESENT-BUFFER will make the buffer be presented to the user."
     (message "lsp-csharp: No test method(s) found to be ran previously on this workspace")))
 
 (lsp-defun lsp-csharp--handle-os-error (_workspace (&omnisharp:ErrorMessage :file-name :text))
-  "Handle the 'o#/error' (interop) notification displaying a message."
+  "Handle the `o#/error' (interop) notification displaying a message."
   (lsp-warn "%s: %s" file-name text))
 
 (lsp-defun lsp-csharp--handle-os-testmessage (_workspace (&omnisharp:TestMessageEvent :message))
-  "Handle the 'o#/testmessage and display test message on test output buffer."
+  "Handle the `o#/testmessage and display test message on test output buffer."
   (lsp-csharp--test-message message))
 
 (lsp-defun lsp-csharp--handle-os-testcompleted (_workspace (&omnisharp:DotNetTestResult
@@ -298,7 +298,7 @@ PRESENT-BUFFER will make the buffer be presented to the user."
                                                             :error-stack-trace
                                                             :standard-output
                                                             :standard-error))
-  "Handle the 'o#/testcompleted' message from the server.
+  "Handle the `o#/testcompleted' message from the server.
 
 Will display the results of the test on the lsp-csharp test output buffer."
   (let ((passed (string-equal "passed" outcome)))
@@ -360,7 +360,8 @@ using the `textDocument/references' request."
                                              ("o#/testmessage" 'lsp-csharp--handle-os-testmessage)
                                              ("o#/testcompleted" 'lsp-csharp--handle-os-testcompleted)
                                              ("o#/projectconfiguration" 'ignore)
-                                             ("o#/projectdiagnosticstatus" 'ignore))
+                                             ("o#/projectdiagnosticstatus" 'ignore)
+                                             ("o#/backgrounddiagnosticstatus" 'ignore))
                   :download-server-fn #'lsp-csharp--omnisharp-download-server))
 
 ;;
@@ -370,7 +371,7 @@ using the `textDocument/references' request."
 (lsp-defun lsp-csharp--cls-metadata-uri-handler (uri)
   "Handle `csharp:/(metadata)' uri from csharp-ls server.
 
-'csharp/metadata' request is issued to retrieve metadata from the server.
+`csharp/metadata' request is issued to retrieve metadata from the server.
 A cache file is created on project root dir that stores this metadata and
 filename is returned so lsp-mode can display this file."
 
@@ -441,11 +442,6 @@ filename is returned so lsp-mode can display this file."
             (list csharp-ls-exec)
             solution-file-params)))
 
-(defun lsp-csharp--cls-test-csharp-ls-present ()
-  "Return non-nil if dotnet tool csharp-ls is installed globally."
-  (string-match-p "csharp-ls"
-                  (shell-command-to-string "dotnet tool list -g")))
-
 (defun lsp-csharp--cls-download-server (_client callback error-callback update?)
   "Install/update csharp-ls language server using `dotnet tool'.
 
@@ -457,8 +453,7 @@ Will update if UPDATE? is t"
    "dotnet" "tool" (if update? "update" "install") "-g" "csharp-ls"))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-csharp--cls-make-launch-cmd
-                                                        #'lsp-csharp--cls-test-csharp-ls-present)
+ (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-csharp--cls-make-launch-cmd)
                   :priority -2
                   :server-id 'csharp-ls
                   :activation-fn (lsp-activate-on "csharp")

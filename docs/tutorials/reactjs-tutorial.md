@@ -238,7 +238,7 @@ module.exports = {
 };
 ```
 
-`ESLint` will now analyze open files and shows a warning in `index.js` about 'App' being defined but never used.
+ESLint will now analyze open files and shows a warning in `index.js` about 'App' being defined but never used.
 
 ![App is unused](images/reactjs/app-is-unused.png)
 

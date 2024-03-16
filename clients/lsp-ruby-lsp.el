@@ -47,20 +47,6 @@
  (make-lsp-client
   :new-connection (lsp-stdio-connection #'lsp-ruby-lsp--build-command)
   :activation-fn (lsp-activate-on "ruby")
-  :initialization-options `(
-			    :enabledFeatures ["documentHighlights"
-                            "documentSymbols"
-                            "documentLink"
-                            "diagnostics"
-                            "foldingRanges"
-                            "selectionRanges"
-                            "semanticHighlighting"
-                            "formatting"
-                            "onTypeFormatting"
-                            "codeActions"
-                            "completion"
-                            "inlayHint"
-                            "hover"])
   :priority -2
   :server-id 'ruby-lsp-ls))
 

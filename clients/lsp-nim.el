@@ -32,7 +32,7 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/PMunch/nimlsp"))
 
-(defcustom-lsp lsp-nim-project-mapping []
+(lsp-defcustom lsp-nim-project-mapping []
   "Nimsuggest project mapping. Sample value
 
 [(:projectFile \"root.nim\"
@@ -43,28 +43,28 @@
   :package-version '(lsp-mode . "8.0.1")
   :lsp-path "nim.projectMapping")
 
-(defcustom-lsp lsp-nim-timeout 120000
+(lsp-defcustom lsp-nim-timeout 120000
   "Timeout for restarting `nimsuggest'"
   :type 'number
   :group 'lsp-nim
   :package-version '(lsp-mode . "8.0.1")
   :lsp-path "nim.timeout")
 
-(defcustom-lsp lsp-nim-nimsuggest-path "nimsuggest"
+(lsp-defcustom lsp-nim-nimsuggest-path "nimsuggest"
   "Path to `nimsuggest' to use."
   :type 'number
   :group 'lsp-nim
   :package-version '(lsp-mode . "8.0.1")
   :lsp-path "nim.nimsuggestPath")
 
-(defcustom-lsp lsp-nim-auto-check-file t
+(lsp-defcustom lsp-nim-auto-check-file t
   "Check the file on the fly"
   :type 'boolean
   :group 'lsp-nim
   :package-version '(lsp-mode . "8.0.1")
   :lsp-path "nim.autoCheckFile")
 
-(defcustom-lsp lsp-nim-auto-check-project t
+(lsp-defcustom lsp-nim-auto-check-project t
   "Check the project after saving the file"
   :type 'boolean
   :group 'lsp-nim
@@ -77,15 +77,23 @@
   :group 'lsp-nim
   :package-version '(lsp-mode . "8.0.1"))
 
+(defcustom lsp-nim-lsp "nimlsp"
+  "Path to `nimlsp'"
+  :type 'number
+  :group 'lsp-nim
+  :package-version '(lsp-mode . "8.0.1"))
+
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "nimlsp")
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (lambda () lsp-nim-lsp))
                   :activation-fn (lsp-activate-on "nim")
                   :priority -1
-                  :server-id 'nimls))
+                  :server-id 'nimlsp))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
                                    (lambda () lsp-nim-langserver))
+                  :synchronize-sections '("nim")
                   :activation-fn (lsp-activate-on "nim")
                   :server-id 'nimlangserver))
 

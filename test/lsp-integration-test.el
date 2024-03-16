@@ -39,18 +39,6 @@
 
 (defconst lsp-test-location (file-name-directory (or load-file-name buffer-file-name)))
 
-(defun lsp-test--wait-for (form &optional d)
-  (--doto (or d (deferred:new #'identity))
-    (run-with-timer
-     0.001 nil
-     (lambda ()
-       (if-let ((result (eval form)))
-           (deferred:callback-post it result)
-         (lsp-test--wait-for form it))))))
-
-(defmacro lsp-test-wait (form)
-  `(lsp-test--wait-for '(progn ,form)))
-
 (defun lsp-def-request-async (method params &rest args)
   (--doto (deferred:new #'identity)
     (apply #'lsp-request-async method params (-partial #'deferred:callback-post it)
@@ -671,5 +659,4 @@
             (replace-match "foobar")))
         (deferred:sync!))))
 
-(provide 'lsp-integration-test)
 ;;; lsp-integration-test.el ends here
