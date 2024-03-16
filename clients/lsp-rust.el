@@ -842,69 +842,6 @@ other commands within the workspace.  Useful for setting RUSTFLAGS."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.1"))
 
-(defun lsp-rust-analyzer--make-init-options ()
-  "Init options for rust-analyzer"
-  `(:diagnostics (:enable ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable)
-                  :enableExperimental ,(lsp-json-bool lsp-rust-analyzer-diagnostics-enable-experimental)
-                  :disabled ,lsp-rust-analyzer-diagnostics-disabled
-                  :warningsAsHint ,lsp-rust-analyzer-diagnostics-warnings-as-hint
-                  :warningsAsInfo ,lsp-rust-analyzer-diagnostics-warnings-as-info)
-    :imports (:granularity (:enforce ,(lsp-json-bool lsp-rust-analyzer-import-enforce-granularity)
-                            :group ,lsp-rust-analyzer-import-granularity)
-             :group ,(lsp-json-bool lsp-rust-analyzer-import-group)
-             :merge (:glob ,(lsp-json-bool lsp-rust-analyzer-imports-merge-glob))
-             :prefix ,lsp-rust-analyzer-import-prefix)
-    :lruCapacity ,lsp-rust-analyzer-lru-capacity
-    :checkOnSave (:enable ,(lsp-json-bool lsp-rust-analyzer-cargo-watch-enable)
-                  :command ,lsp-rust-analyzer-cargo-watch-command
-                  :extraArgs ,lsp-rust-analyzer-cargo-watch-args
-                  :allTargets ,(lsp-json-bool lsp-rust-analyzer-check-all-targets)
-                  :features ,lsp-rust-analyzer-checkonsave-features
-                  :overrideCommand ,lsp-rust-analyzer-cargo-override-command)
-    :files (:exclude ,lsp-rust-analyzer-exclude-globs
-            :watcher ,(if lsp-rust-analyzer-use-client-watching "client" "notify")
-            :excludeDirs ,lsp-rust-analyzer-exclude-dirs)
-    :cargo (:allFeatures ,(lsp-json-bool lsp-rust-all-features)
-            :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
-            :features ,lsp-rust-features
-            :extraArgs ,lsp-rust-analyzer-cargo-extra-args
-            :extraEnv ,lsp-rust-analyzer-cargo-extra-env
-            :target ,lsp-rust-analyzer-cargo-target
-            :runBuildScripts ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
-            ; Obsolete, but used by old Rust-Analyzer versions
-            :loadOutDirsFromCheck ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
-            :autoreload ,(lsp-json-bool lsp-rust-analyzer-cargo-auto-reload)
-            :useRustcWrapperForBuildScripts ,(lsp-json-bool lsp-rust-analyzer-use-rustc-wrapper-for-build-scripts)
-            :unsetTest ,lsp-rust-analyzer-cargo-unset-test)
-    :rustfmt (:extraArgs ,lsp-rust-analyzer-rustfmt-extra-args
-              :overrideCommand ,lsp-rust-analyzer-rustfmt-override-command
-              :rangeFormatting (:enable ,(lsp-json-bool lsp-rust-analyzer-rustfmt-rangeformatting-enable)))
-    :inlayHints (:bindingModeHints ,(lsp-json-bool lsp-rust-analyzer-binding-mode-hints)
-                 :chainingHints ,(lsp-json-bool lsp-rust-analyzer-display-chaining-hints)
-                 :closingBraceHints (:enable ,(lsp-json-bool lsp-rust-analyzer-closing-brace-hints)
-                                     :minLines ,lsp-rust-analyzer-closing-brace-hints-min-lines)
-                 :closureReturnTypeHints ,(lsp-json-bool lsp-rust-analyzer-display-closure-return-type-hints)
-                 :lifetimeElisionHints (:enable ,lsp-rust-analyzer-display-lifetime-elision-hints-enable
-                                        :useParameterNames ,(lsp-json-bool lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names))
-                 :maxLength ,lsp-rust-analyzer-max-inlay-hint-length
-                 :parameterHints ,(lsp-json-bool lsp-rust-analyzer-display-parameter-hints)
-                 :reborrowHints ,lsp-rust-analyzer-display-reborrow-hints
-                 :renderColons ,(lsp-json-bool lsp-rust-analyzer-server-format-inlay-hints)
-                 :typeHints (:enable ,(lsp-json-bool lsp-rust-analyzer-server-display-inlay-hints)
-                             :hideClosureInitialization ,(lsp-json-bool lsp-rust-analyzer-hide-closure-initialization)
-                             :hideNamedConstructor ,(lsp-json-bool lsp-rust-analyzer-hide-named-constructor)))
-    :completion (:addCallParenthesis ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-parenthesis)
-                 :addCallArgumentSnippets ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-argument-snippets)
-                 :postfix (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-postfix-enable))
-                 :autoimport (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-auto-import-enable))
-                 :autoself (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-auto-self-enable)))
-    :callInfo (:full ,(lsp-json-bool lsp-rust-analyzer-call-info-full))
-    :procMacro (:enable ,(lsp-json-bool lsp-rust-analyzer-proc-macro-enable))
-    :rustcSource ,lsp-rust-analyzer-rustc-source
-    :linkedProjects ,lsp-rust-analyzer-linked-projects
-    :highlighting (:strings ,(lsp-json-bool lsp-rust-analyzer-highlighting-strings))
-    :experimental (:procAttrMacros ,(lsp-json-bool lsp-rust-analyzer-experimental-proc-attr-macros))))
-
 (defconst lsp-rust-notification-handlers
   '(("rust-analyzer/publishDecorations" . (lambda (_w _p)))))
 
@@ -1740,6 +1677,8 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
                  :cargo (:allFeatures ,(lsp-json-bool lsp-rust-all-features)
                                       :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
                                       :features ,lsp-rust-features
+                                      :extraArgs ,lsp-rust-analyzer-cargo-extra-args
+                                      :extraEnv ,lsp-rust-analyzer-cargo-extra-env
                                       :target ,lsp-rust-analyzer-cargo-target
                                       :runBuildScripts ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
                                         ; Obsolete, but used by old Rust-Analyzer versions
@@ -1821,7 +1760,6 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
   :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (featurep 'yasnippet))))))
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'rust-analyzer callback error-callback))))
-
 
 (lsp-consistency-check lsp-rust)
 
