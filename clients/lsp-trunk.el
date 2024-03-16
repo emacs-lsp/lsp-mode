@@ -80,9 +80,7 @@
                        ("trunk.checkEnable" #'lsp-trunk-check-enable)
                        ("trunk.openConfigFile" #'lsp-trunk-open-config))
   :priority -2
-  :add-on? t
-  )
- )
+  :add-on? t))
 
 (lsp-consistency-check lsp-trunk)
 
