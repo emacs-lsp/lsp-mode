@@ -428,7 +428,8 @@ See `-let' for a description of the destructuring mechanism."
                (rust-analyzer:CommandLinkGroup (:commands) (:title)))
 
 (lsp-interface (clojure-lsp:TestTreeParams (:uri :tree) nil)
-               (clojure-lsp:TestTreeNode (:name :range :nameRange :kind) (:children)))
+               (clojure-lsp:TestTreeNode (:name :range :nameRange :kind) (:children))
+               (clojure-lsp:ProjectTreeNode (:name :type) (:nodes :final :id :uri :detail :range)))
 
 (lsp-interface (terraform-ls:ModuleCalls (:v :module_calls) nil))
 (lsp-interface (terraform-ls:Module (:name :docs_link :version :source_type :dependent_modules) nil))

@@ -174,21 +174,22 @@ As defined by the Language Server Protocol 3.16."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-client-packages
-  '( ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-autotools lsp-awk lsp-asm lsp-astro
-     lsp-bash lsp-beancount lsp-bufls lsp-clangd lsp-clojure lsp-cmake lsp-credo
-     lsp-crystal lsp-csharp lsp-css lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker
-     lsp-dockerfile lsp-elm lsp-elixir lsp-emmet lsp-erlang lsp-eslint lsp-fortran
-     lsp-fsharp lsp-gdscript lsp-go lsp-golangci-lint lsp-gleam lsp-glsl lsp-graphql
-     lsp-hack lsp-grammarly lsp-groovy lsp-haskell lsp-haxe lsp-idris lsp-java
-     lsp-javascript lsp-json lsp-kotlin lsp-latex lsp-ltex lsp-lua lsp-markdown
-     lsp-marksman lsp-mdx lsp-mint lsp-move lsp-nginx lsp-nim lsp-nix lsp-magik
-     lsp-mojo lsp-metals lsp-mssql lsp-ocaml lsp-openscad lsp-pascal lsp-perl
-     lsp-perlnavigator lsp-pls lsp-php lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright
-     lsp-python-ms lsp-purescript lsp-r lsp-racket lsp-remark lsp-ruff-lsp lsp-rf
-     lsp-rubocop lsp-rust lsp-semgrep lsp-shader lsp-solargraph lsp-sorbet
-     lsp-sourcekit lsp-sonarlint lsp-tailwindcss lsp-tex lsp-terraform lsp-toml
-     lsp-ttcn3 lsp-typeprof lsp-v lsp-vala lsp-verilog lsp-vetur lsp-volar
-     lsp-vhdl lsp-vimscript lsp-xml lsp-yaml lsp-ruby-lsp lsp-ruby-syntax-tree
+  '( ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-autotools lsp-awk
+     lsp-asm lsp-astro lsp-bash lsp-beancount lsp-bufls lsp-clangd lsp-clojure
+     lsp-cmake lsp-credo lsp-crystal lsp-csharp lsp-css lsp-cucumber lsp-cypher
+     lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile lsp-elm lsp-elixir
+     lsp-emmet lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go
+     lsp-golangci-lint lsp-gleam lsp-glsl lsp-graphql lsp-hack lsp-grammarly
+     lsp-groovy lsp-haskell lsp-haxe lsp-idris lsp-java lsp-javascript lsp-json
+     lsp-kotlin lsp-latex lsp-ltex lsp-lua lsp-markdown lsp-marksman lsp-mdx
+     lsp-mint lsp-move lsp-nginx lsp-nim lsp-nix lsp-magik lsp-mojo lsp-metals
+     lsp-mssql lsp-ocaml lsp-openscad lsp-pascal lsp-perl lsp-perlnavigator
+     lsp-pls lsp-php lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms
+     lsp-purescript lsp-r lsp-racket lsp-remark lsp-ruff-lsp lsp-rf lsp-rubocop
+     lsp-rust lsp-semgrep lsp-shader lsp-solargraph lsp-sorbet lsp-sourcekit
+     lsp-sonarlint lsp-tailwindcss lsp-tex lsp-terraform lsp-toml lsp-ttcn3
+     lsp-typeprof lsp-v lsp-vala lsp-verilog lsp-vetur lsp-volar lsp-vhdl
+     lsp-vimscript lsp-xml lsp-yaml lsp-ruby-lsp lsp-ruby-syntax-tree
      lsp-solidity lsp-sqls lsp-svelte lsp-steep lsp-tilt lsp-trunk lsp-zig lsp-jq)
   "List of the clients to be automatically required."
   :group 'lsp-mode
@@ -769,6 +770,7 @@ Changes take effect only when a new session is started."
     ("\\.go\\'" . "go")
     ("\\.html$" . "html")
     ("\\.hx$" . "haxe")
+    ("\\.hy$" . "hy")
     ("\\.java\\'" . "java")
     ("\\.js$" . "javascript")
     ("\\.json$" . "json")
@@ -780,6 +782,7 @@ Changes take effect only when a new session is started."
     ("\\.mdx\\'" . "mdx")
     ("\\.php$" . "php")
     ("\\.rs\\'" . "rust")
+    ("\\.spec\\'" . "rpm-spec")
     ("\\.sql$" . "sql")
     ("\\.cypher$" . "cypher")
     ("\\.svelte$" . "svelte")
@@ -794,6 +797,7 @@ Changes take effect only when a new session is started."
     ("^go\\.mod\\'" . "go.mod")
     ("^settings.json$" . "jsonc")
     (ada-mode . "ada")
+    (ada-ts-mode . "ada")
     (awk-mode . "awk")
     (awk-ts-mode . "awk")
     (nxml-mode . "xml")
@@ -808,10 +812,13 @@ Changes take effect only when a new session is started."
     (scala-mode . "scala")
     (scala-ts-mode . "scala")
     (julia-mode . "julia")
+    (julia-ts-mode . "julia")
     (clojure-mode . "clojure")
     (clojurec-mode . "clojure")
     (clojurescript-mode . "clojurescript")
     (clojure-ts-mode . "clojure")
+    (clojure-ts-clojurec-mode . "clojure")
+    (clojure-ts-clojurescript-mode . "clojurescript")
     (java-mode . "java")
     (java-ts-mode . "java")
     (jdee-mode . "java")
@@ -856,6 +863,7 @@ Changes take effect only when a new session is started."
     (haskell-mode . "haskell")
     (hack-mode . "hack")
     (php-mode . "php")
+    (php-ts-mode . "php")
     (powershell-mode . "powershell")
     (powershell-mode . "PowerShell")
     (json-mode . "json")
@@ -5223,7 +5231,7 @@ If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
       lsp--eldoc-saved-message
     (setq lsp--hover-saved-bounds nil
           lsp--eldoc-saved-message nil)
-    (if (looking-at "[[:space:]\n]")
+    (if (looking-at-p "[[:space:]\n]")
         (setq lsp--eldoc-saved-message nil) ; And returns nil.
       (when (and lsp-eldoc-enable-hover (lsp--capability :hoverProvider))
         (lsp-request-async
@@ -5261,7 +5269,7 @@ If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
 (defun lsp--document-highlight ()
   (when (lsp-feature? "textDocument/documentHighlight")
     (let ((curr-sym-bounds (bounds-of-thing-at-point 'symbol)))
-      (unless (or (looking-at "[[:space:]\n]")
+      (unless (or (looking-at-p "[[:space:]\n]")
                   (not lsp-enable-symbol-highlighting)
                   (and lsp--have-document-highlights
                        curr-sym-bounds
@@ -5514,10 +5522,11 @@ In addition, each can have property:
   "Render STR using `major-mode' corresponding to LANGUAGE.
 When language is nil render as markup if `markdown-mode' is loaded."
   (setq str (s-replace "\r" "" (or str "")))
-  (if-let ((mode (-some (-lambda ((mode . lang))
-                          (when (and (equal lang language) (functionp mode))
-                            mode))
-                        lsp-language-id-configuration)))
+  (if-let* ((modes (-keep (-lambda ((mode . lang))
+                            (when (and (equal lang language) (functionp mode))
+                              mode))
+                          lsp-language-id-configuration))
+            (mode (car (or (member major-mode modes) modes))))
       (lsp--fontlock-with-mode str mode)
     str))
 
@@ -5975,6 +5984,7 @@ Request codeAction/resolve for more info if server supports."
   ;; Taken from `dtrt-indent-mode'
   '(
     (ada-mode                   . ada-indent)                       ; Ada
+    (ada-ts-mode                . ada-ts-mode-indent-offset)
     (c++-mode                   . c-basic-offset)                   ; C++
     (c++-ts-mode                . c-ts-mode-indent-offset)
     (c-mode                     . c-basic-offset)                   ; C
@@ -6007,6 +6017,7 @@ Request codeAction/resolve for more info if server supports."
     (pascal-mode                . pascal-indent-level)              ; Pascal
     (perl-mode                  . perl-indent-level)                ; Perl
     (php-mode                   . c-basic-offset)                   ; PHP
+    (php-ts-mode                . php-ts-mode-indent-offset)        ; PHP
     (powershell-mode            . powershell-indent)                ; PowerShell
     (raku-mode                  . raku-indent-offset)               ; Perl6/Raku
     (ruby-mode                  . ruby-indent-level)                ; Ruby
