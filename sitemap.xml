@@ -461,6 +461,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-nushell/</loc>
+         <lastmod>2024-03-16</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-ocaml-lsp-server/</loc>
          <lastmod>2024-03-16</lastmod>
          <changefreq>daily</changefreq>
