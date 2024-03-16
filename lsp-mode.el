@@ -459,7 +459,6 @@ level or at a root of an lsp workspace."
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.3"))
 
-(defconst lsp--sync-none 0)
 (defconst lsp--sync-full 1)
 (defconst lsp--sync-incremental 2)
 
@@ -483,8 +482,7 @@ This flag affects only servers which do not support incremental updates."
 
 (defcustom lsp-document-sync-method nil
   "How to sync the document with the language server."
-  :type '(choice (const :tag "Documents should not be synced at all." nil)
-                 (const :tag "Documents are synced by always sending the full content of the document." lsp--sync-full)
+  :type '(choice (const :tag "Documents are synced by always sending the full content of the document." lsp--sync-full)
                  (const :tag "Documents are synced by always sending incremental changes to the document." lsp--sync-incremental)
                  (const :tag "Use the method recommended by the language server." nil))
   :group 'lsp-mode)
@@ -1992,9 +1990,9 @@ regex in IGNORED-FILES."
            (let ((number-of-directories (length dirs-to-watch)))
              (or
               (< number-of-directories lsp-file-watch-threshold)
-              (condition-case _err
+              (condition-case nil
                   (lsp--ask-about-watching-big-repo number-of-directories dir)
-                ('quit)))))
+                (quit)))))
       (dolist (current-dir dirs-to-watch)
         (condition-case err
             (progn
@@ -2149,7 +2147,7 @@ PARAMS - the data sent from WORKSPACE."
           (const :tag "Use modeline" lsp-on-progress-modeline)
           (const :tag "Legacy(uses either `progress-reporter' or `spinner' based on `lsp-progress-via-spinner')"
                  lsp-on-progress-legacy)
-          (const ignore :tag "Ignore")
+          (const :tag "Ignore" ignore)
           (function :tag "Other function"))
   :package-version '(lsp-mode . "8.0.0"))
 
@@ -4724,9 +4722,9 @@ Added to `before-change-functions'."
             (setq lsp--delayed-requests nil)))))
 
 (defun lsp--workspace-sync-method (workspace)
-  (let* ((sync (-> workspace
-                   (lsp--workspace-server-capabilities)
-                   (lsp:server-capabilities-text-document-sync?))))
+  (let ((sync (-> workspace
+                  (lsp--workspace-server-capabilities)
+                  (lsp:server-capabilities-text-document-sync?))))
     (if (lsp-text-document-sync-options? sync)
         (lsp:text-document-sync-options-change? sync)
       sync)))
@@ -8685,8 +8683,8 @@ When ALL is t, erase all log buffers of the running session."
 (cl-defmethod lsp-process-send ((process process) message)
   (condition-case err
       (process-send-string process (lsp--make-message message))
-    ('error (lsp--error "Sending to process failed with the following error: %s"
-                        (error-message-string err)))))
+    (error (lsp--error "Sending to process failed with the following error: %s"
+                       (error-message-string err)))))
 
 (cl-defmethod lsp-process-cleanup (process)
   ;; Kill standard error buffer only if the process exited normally.
@@ -8989,7 +8987,7 @@ Select action: "
               (lsp--persist-session session)
               nil)
           (t nil)))
-    ('quit)))
+    (quit)))
 
 (declare-function tramp-file-name-host "ext:tramp" (file) t)
 (declare-function tramp-dissect-file-name "ext:tramp" (file &optional nodefault))

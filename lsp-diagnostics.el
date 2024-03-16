@@ -65,7 +65,7 @@
 List containing (tag attributes) where tag is the LSP diagnostic tag and
 attributes is a `plist' containing face attributes which will be applied
 on top the flycheck face for that error level."
-  :type '(repeat list)
+  :type '(repeat (list symbol plist))
   :group 'lsp-diagnostics)
 
 (defcustom lsp-diagnostics-disabled-modes nil
