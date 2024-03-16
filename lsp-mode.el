@@ -459,7 +459,6 @@ level or at a root of an lsp workspace."
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.3"))
 
-(defconst lsp--sync-none 0)
 (defconst lsp--sync-full 1)
 (defconst lsp--sync-incremental 2)
 
@@ -483,8 +482,7 @@ This flag affects only servers which do not support incremental updates."
 
 (defcustom lsp-document-sync-method nil
   "How to sync the document with the language server."
-  :type '(choice (const :tag "Documents should not be synced at all." nil)
-                 (const :tag "Documents are synced by always sending the full content of the document." lsp--sync-full)
+  :type '(choice (const :tag "Documents are synced by always sending the full content of the document." lsp--sync-full)
                  (const :tag "Documents are synced by always sending incremental changes to the document." lsp--sync-incremental)
                  (const :tag "Use the method recommended by the language server." nil))
   :group 'lsp-mode)
