@@ -64,6 +64,7 @@ nav:
     - CMake: page/lsp-cmake.md
     - Crystal: page/lsp-crystal.md
     - CSS/LessCSS/SASS/SCSS: page/lsp-css.md
+    - Cucumber: page/lsp-cucumber.md
     - Cypher: page/lsp-cypher.md
     - D: page/lsp-d.md
     - Dart: https://emacs-lsp.github.io/lsp-dart
