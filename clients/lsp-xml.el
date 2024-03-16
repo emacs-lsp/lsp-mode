@@ -289,7 +289,7 @@ The value for `enabled' can be always, never or onValidSchema."
 
 (defconst lsp-xml-jar-version "0.27.0")
 
-(defconst lsp-xml-jar-name (format "org.eclipse.lemminx-uber.jar" lsp-xml-jar-version))
+(defconst lsp-xml-jar-name "org.eclipse.lemminx-uber.jar")
 
 (defcustom lsp-xml-jar-file (f-join lsp-server-install-dir "xmlls" lsp-xml-jar-name)
   "Xml server jar command."
