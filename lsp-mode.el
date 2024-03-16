@@ -4724,9 +4724,9 @@ Added to `before-change-functions'."
             (setq lsp--delayed-requests nil)))))
 
 (defun lsp--workspace-sync-method (workspace)
-  (let* ((sync (-> workspace
-                   (lsp--workspace-server-capabilities)
-                   (lsp:server-capabilities-text-document-sync?))))
+  (let ((sync (-> workspace
+                  (lsp--workspace-server-capabilities)
+                  (lsp:server-capabilities-text-document-sync?))))
     (if (lsp-text-document-sync-options? sync)
         (lsp:text-document-sync-options-change? sync)
       sync)))
