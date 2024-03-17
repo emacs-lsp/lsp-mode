@@ -172,6 +172,14 @@
     "debugger": "Not relevant"
   },
   {
+    "name": "cobol",
+    "full-name": "COBOL",
+    "server-name": "cobol-language-service",
+    "server-url": "https://github.com/eclipse-che4z/che-che4z-lsp-for-cobol",
+    "installation-url": "https://github.com/eclipse-che4z/che-che4z-lsp-for-cobol/releases",
+    "debugger": "Not relevant"
+  },
+  {
     "name": "crystal",
     "full-name": "Crystal",
     "server-name": "crystalline",

@@ -176,8 +176,8 @@ As defined by the Language Server Protocol 3.16."
 (defcustom lsp-client-packages
   '( ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-autotools lsp-awk
      lsp-asm lsp-astro lsp-bash lsp-beancount lsp-bufls lsp-clangd lsp-clojure
-     lsp-cmake lsp-credo lsp-crystal lsp-csharp lsp-css lsp-cucumber lsp-cypher
-     lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile lsp-elm lsp-elixir
+     lsp-cmake lsp-cobol lsp-credo lsp-crystal lsp-csharp lsp-css lsp-cucumber
+     lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile lsp-elm lsp-elixir
      lsp-emmet lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go
      lsp-golangci-lint lsp-gleam lsp-glsl lsp-graphql lsp-hack lsp-grammarly
      lsp-groovy lsp-haskell lsp-haxe lsp-idris lsp-java lsp-javascript lsp-json
