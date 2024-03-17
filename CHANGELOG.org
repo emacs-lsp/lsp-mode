@@ -111,6 +111,8 @@
   * Add support for installing Ada Language Server.
   * Add Nushell support
   * Add [[https://docs.trunk.io][Trunk]] support
+  * Add Cucumber support.
+  * Add COBOL support.
 
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
@@ -177,8 +179,6 @@
   * Add support for signatureHelp using ~posframe~. #1999
   * Add ~iedit~ integration. #2478
   * Add client for Verible SystemVerilog language Server ([[https://github.com/chipsalliance/verible]])
-  * Add Cucumber support.
-  * Add COBOL support.
 
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
