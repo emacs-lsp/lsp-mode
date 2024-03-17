@@ -691,6 +691,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-trunk/</loc>
+         <lastmod>2024-03-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-ttcn3/</loc>
          <lastmod>2024-03-17</lastmod>
          <changefreq>daily</changefreq>
