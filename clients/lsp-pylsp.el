@@ -459,6 +459,85 @@ is present."
   :type 'string
   :group 'lsp-pylsp)
 
+;; See https://github.com/python-lsp/pylsp-mypy#configuration
+
+(defcustom lsp-pylsp-plugins-mypy-enabled nil
+  "Enable or disable the plugin."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-mypy-live-mode t
+  "If non-nil, type checking is provided as you type.
+
+This writes to a tempfile every time a check is done.  Turning off live_mode
+means you must save your changes for mypy diagnostics to update correctly."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-mypy-dmypy nil
+  "If non-nil, use 'dmypy run' rather than mypy.
+
+This uses the dmypy daemon and may dramatically improve the responsiveness of
+the pylsp server, however this currently does not work in live_mode.  Enabling
+this disables live_mode, even for conflicting configs."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-mypy-strict nil
+  "If non-nil, enable the strict option of mypy.
+
+This option often is too strict to be useful."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-mypy-overrides [t]
+  "A list of alternate or supplemental command-line options.
+
+This modifies the options passed to mypy or the mypy-specific ones passed to
+dmypy run.  When present, the special boolean member True is replaced with
+the command-line options that would've been passed had overrides not been
+specified.  Later options take precedence, which allows for replacing or
+negating individual default options (see mypy.main:process_options and mypy
+--help | grep inverse)."
+  :type '(vector (choice string boolean))
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-mypy-dmypy-status-file ".dmypy.json"
+  "The status file dmypy should use.
+
+This modifies the --status-file option passed to dmypy given dmypy is active."
+  :type 'string
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-mypy-config-sub-paths nil
+  "Sub paths under which the mypy configuration file may be found.
+
+For each directory searched for the mypy config file, this also searches the
+sub paths specified here."
+  :type 'lsp-string-vector
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-mypy-report-progress nil
+  "If non-nil, report basic progress to the LSP client.
+
+With this option, pylsp-mypy will report when mypy is running, given your editor
+supports LSP progress reporting.  For small files this might produce annoying
+flashing, especially in with live_mode.  For large projects, enabling this can
+be helpful to assure yourself whether mypy is still running."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-mypy-exclude nil
+  "A list of regular expressions which should be ignored.
+
+The mypy runner wil not be invoked when a document path is matched by one of the
+expressions.  Note that this differs from the exclude directive of a mypy config
+which is only used for recursively discovering files when mypy is invoked on a
+whole directory.  For both windows or unix platforms you should use forward
+slashes (/) to indicate paths."
+  :type 'lsp-string-vector
+  :group 'lsp-pylsp)
+
 (defcustom lsp-pylsp-rename-backend 'jedi
   "Choose renaming backend.
 
@@ -551,6 +630,15 @@ So it will rename only references it can find."
    ("pylsp.plugins.ruff.perFileIgnores" lsp-pylsp-plugins-ruff-per-file-ignores)
    ("pylsp.plugins.ruff.preview" lsp-pylsp-plugins-ruff-preview t)
    ("pylsp.plugins.ruff.targetVersion" lsp-pylsp-plugins-ruff-target-version)
+   ("pylsp.plugins.pylsp_mypy.enabled" lsp-pylsp-plugins-mypy-enabled t)
+   ("pylsp.plugins.pylsp_mypy.live_mode" lsp-pylsp-plugins-mypy-live-mode t)
+   ("pylsp.plugins.pylsp_mypy.dmypy" lsp-pylsp-plugins-mypy-dmypy t)
+   ("pylsp.plugins.pylsp_mypy.strict" lsp-pylsp-plugins-mypy-strict t)
+   ("pylsp.plugins.pylsp_mypy.overrides" lsp-pylsp-plugins-mypy-overrides)
+   ("pylsp.plugins.pylsp_mypy.dmypy_status_file" lsp-pylsp-plugins-mypy-dmypy-status-file)
+   ("pylsp.plugins.pylsp_mypy.config_sub_paths" lsp-pylsp-plugins-mypy-config-sub-paths)
+   ("pylsp.plugins.pylsp_mypy.report_progress" lsp-pylsp-plugins-mypy-report-progress t)
+   ("pylsp.plugins.pylsp_mypy.exclude" lsp-pylsp-plugins-mypy-exclude)
    ("pylsp.plugins.jedi_symbols.all_scopes" lsp-pylsp-plugins-jedi-symbols-all-scopes t)
    ("pylsp.plugins.jedi_symbols.enabled" lsp-pylsp-plugins-jedi-symbols-enabled t)
    ("pylsp.plugins.jedi_signature_help.enabled" lsp-pylsp-plugins-jedi-signature-help-enabled t)
