@@ -110,6 +110,7 @@
   * Add support for clojure-ts derived modes.
   * Add support for installing Ada Language Server.
   * Add Nushell support
+  * Add [[https://docs.trunk.io][Trunk]] support
 
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
