@@ -177,6 +177,7 @@
   * Add ~iedit~ integration. #2478
   * Add client for Verible SystemVerilog language Server ([[https://github.com/chipsalliance/verible]])
   * Add Cucumber support.
+  * Add COBOL support.
 
 ** Release 7.0.1
   * Introduced ~lsp-diagnostics-mode~.
