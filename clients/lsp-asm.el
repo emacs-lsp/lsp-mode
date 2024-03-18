@@ -35,7 +35,7 @@
 (defcustom lsp-asm-active-modes
   '( asm-mode fasm-mode masm-mode nasm-mode gas-mode)
   "List of major mode that work with asm-lsp."
-  :type 'list
+  :type '(list symbol)
   :group 'lsp-asm)
 
 (defcustom lsp-asm-home-url

@@ -99,13 +99,13 @@
 (defcustom lsp-clojure-test-tree-position-params nil
   "The optional test tree position params.
 Defaults to side following treemacs default."
-  :type 'list
+  :type 'alist
   :group 'lsp-clojure)
 
 (defcustom lsp-clojure-project-tree-position-params nil
   "The optional project tree position params.
 Defaults to side following treemacs default."
-  :type 'list
+  :type 'alist
   :group 'lsp-clojure)
 
 ;; Internal

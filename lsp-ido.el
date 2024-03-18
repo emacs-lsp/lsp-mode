@@ -61,7 +61,7 @@
    "TPar"]          ; TypeParameter - 26
   "A vector of 26 items representing the SymbolKind."
   :group 'lsp-ido
-  :type 'vector)
+  :type '(vector string))
 
 (defcustom lsp-ido-show-symbol-filename
   t
