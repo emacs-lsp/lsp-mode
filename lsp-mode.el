@@ -7495,16 +7495,17 @@ returned by COMMAND is available via `executable-find'"
            (cl-incf retries)))))
     (or connection (error "Port %s was never taken. Consider increasing `lsp-tcp-connection-timeout'." port))))
 
+(defun lsp--port-available (host port)
+  "Return non-nil if HOST and PORT are available."
+  (condition-case _err
+      (delete-process (open-network-stream "*connection-test*" nil host port :type 'plain))
+    (file-error t)))
+
 (defun lsp--find-available-port (host starting-port)
   "Find available port on HOST starting from STARTING-PORT."
-  (let ((success nil)
-        (port starting-port))
-    (while (and (not success))
-      (condition-case _err
-          (progn
-            (delete-process (open-network-stream "*connection-test*" nil host port :type 'plain))
-            (cl-incf port))
-        (file-error (setq success t))))
+  (let ((port starting-port))
+    (while (not (lsp--port-available host port))
+      (cl-incf port))
     port))
 
 (defun lsp-tcp-connection (command-fn)
