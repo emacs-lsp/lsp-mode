@@ -45,7 +45,7 @@ This is only for development use."
   :group 'lsp-cobol)
 
 ;;
-;;; Installation
+;;; Util
 
 (defmacro lsp-cobol--mute-apply (&rest body)
   "Execute BODY without message."
@@ -103,7 +103,7 @@ This is only for development use."
 (defvar lsp-cobol--downloaded-file (f-join lsp-cobol-server-store-path "temp.tar")
   "The full file path after downloading the server zipped file.")
 
-(defun lsp-cobol--extract-compressed-file ()
+(defun lsp-cobol--extract-compressed-file (callback)
   "Install COBOL language service."
   (cond ((file-exists-p lsp-cobol--downloaded-file)
          ;; Suprisingly, you can just use `tar' to unzip a zip file on Windows.
@@ -112,7 +112,8 @@ This is only for development use."
          ;; Delete the zip file.
          (ignore-errors (delete-file lsp-cobol--downloaded-file)))
         (t
-         (error "Can't extract the downloaded file: %s" lsp-cobol--downloaded-file))))
+         (error "Can't extract the downloaded file: %s" lsp-cobol--downloaded-file)))
+  (funcall callback))
 
 (defun lsp-cobol--stored-executable ()
   "Return the stored COBOL language service executable."
@@ -125,10 +126,24 @@ This is only for development use."
                      (gnu/linux                  "server-linux"))))))
 
 (lsp-dependency
- 'cobol-language-service
- '(:system "cobol-language-service")
+ 'cobol-ls
+ '(:system "cobol-ls")
  `(:download :url ,lsp-cobol--server-download-url
              :store-path ,lsp-cobol--downloaded-file))
+
+;;
+;;; Server
+
+;;;###autoload
+(add-hook 'cobol-mode-hook #'lsp-cobol-start-ls)
+
+;;;###autoload
+(defun lsp-cobol-start-ls ()
+  "Start the COBOL language service."
+  (interactive)
+  (when-let ((exe (lsp-cobol--executable))
+             ((lsp--port-available "localhost" lsp-cobol-port)))
+    (lsp-async-start-process #'ignore #'ignore exe)))
 
 ;;
 ;;; Core
@@ -138,25 +153,37 @@ This is only for development use."
   (or lsp-cobol-server-path
       (lsp-cobol--stored-executable)))
 
-(defun lsp-cobol-server-start-fun (&rest _)
+(defun lsp-cobol-server-start-fn (&rest _)
   "Define COOBL language service start function."
   `(,(lsp-cobol--executable)))
 
 (defun lsp-cobol--tcp-connect-to-port ()
-  "Define a TCP connection to language service."
-  (let ((lsp--tcp-port lsp-cobol-port))
-    (lsp-tcp-connection #'lsp-cobol-server-start-fun)))
+  "Define a TCP connection to language server."
+  (list
+   :connect
+   (lambda (filter sentinel name _environment-fn _workspace)
+     (let* ((host "localhost")
+            (port lsp-cobol-port)
+            (tcp-proc (lsp--open-network-stream host port (concat name "::tcp"))))
+
+       ;; TODO: Same :noquery issue (see above)
+       (set-process-query-on-exit-flag tcp-proc nil)
+       (set-process-filter tcp-proc filter)
+       (set-process-sentinel tcp-proc sentinel)
+       (cons tcp-proc tcp-proc)))
+   :test? (lambda () (file-executable-p (lsp-cobol--executable)))))
 
 (lsp-register-client
  (make-lsp-client
-  :new-connection #'lsp-cobol--tcp-connect-to-port
+  :new-connection (lsp-cobol--tcp-connect-to-port)
   :activation-fn (lsp-activate-on "cobol")
   :priority -1
   :server-id 'cobol-ls
   :download-server-fn
-  (lambda (_client _callback error-callback _update?)
-    (lsp-package-ensure 'cobol-language-service
-                        #'lsp-cobol--extract-compressed-file error-callback))))
+  (lambda (_client callback error-callback _update?)
+    (lsp-package-ensure 'cobol-ls
+                        (lambda () (lsp-cobol--extract-compressed-file callback))
+                        error-callback))))
 
 (lsp-consistency-check lsp-cobol)
 
