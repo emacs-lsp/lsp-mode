@@ -270,7 +270,7 @@ This is differ from the variable `lsp-zig-zls-executable'; this is local storage
 and not the global storage."
   (executable-find (f-join lsp-zig-server-store-path "bin/zls")))
 
-(defun lsp-zig--extract-compressed-file ()
+(defun lsp-zig--extract-compressed-file (callback)
   "Install zls."
   (cond ((file-exists-p lsp-zig--downloaded-file)
          ;; Suprisingly, you can just use `tar' to unzip a zip file on Windows.
@@ -279,7 +279,8 @@ and not the global storage."
          ;; Delete the zip file.
          (ignore-errors (delete-file lsp-zig--downloaded-file)))
         (t
-         (error "Can't extract the downloaded file: %s" lsp-zig--downloaded-file))))
+         (error "Can't extract the downloaded file: %s" lsp-zig--downloaded-file)))
+  (funcall callback))
 
 (lsp-dependency
  'zls
@@ -332,8 +333,11 @@ and not the global storage."
   :priority -1
   :server-id 'zls
   :download-server-fn
-  (lambda (_client _callback error-callback _update?)
-    (lsp-package-ensure 'zls #'lsp-zig--extract-compressed-file error-callback))))
+  (lambda (_client callback error-callback _update?)
+    (lsp-package-ensure 'zls
+                        (lambda (&rest _)
+                          (lsp-zig--extract-compressed-file callback))
+                        error-callback))))
 
 (lsp-consistency-check lsp-zig)
 
