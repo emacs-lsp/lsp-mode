@@ -475,7 +475,7 @@ means you must save your changes for mypy diagnostics to update correctly."
   :group 'lsp-pylsp)
 
 (defcustom lsp-pylsp-plugins-mypy-dmypy nil
-  "If non-nil, use 'dmypy run' rather than mypy.
+  "If non-nil, use \"dmypy run\" rather than mypy.
 
 This uses the dmypy daemon and may dramatically improve the responsiveness of
 the pylsp server, however this currently does not work in live_mode.  Enabling
