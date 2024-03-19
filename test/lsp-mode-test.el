@@ -175,4 +175,13 @@
                        "textDocument/hover")))
              2)))
 
+(ert-deftest lsp-test--register-custom-settings-override ()
+  "Test that custom settings can be overridden."
+  (clrhash lsp-client-settings)
+  (lsp-register-custom-settings '(("foo" "original value")))
+  (lsp-register-custom-settings '(("foo" "new value")))
+  (should (equal (gethash "foo" lsp-client-settings) '("new value"))))
+
+
+
 ;;; lsp-mode-test.el ends here

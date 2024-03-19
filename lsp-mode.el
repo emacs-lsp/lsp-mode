@@ -8514,7 +8514,7 @@ session workspace folder configuration for the server."
         (funcall initialization-options-or-fn)
       initialization-options-or-fn)))
 
-(defvar lsp-client-settings (make-hash-table)
+(defvar lsp-client-settings (make-hash-table :test 'equal)
   "For internal use, any external users please use
   `lsp-register-custom-settings' function instead")
 
