@@ -100,6 +100,7 @@ nav:
     - Julia: page/lsp-julia.md
     - Kotlin: page/lsp-kotlin.md
     - LanguageTool (LTEX): page/lsp-ltex.md
+    - Lisp: page/lsp-lisp.md
     - Lua (EmmyLua): page/lsp-emmy-lua.md
     - Lua (Lua Language Server): page/lsp-lua-language-server.md
     - Lua (Lua-Lsp): page/lsp-lua-lsp.md
