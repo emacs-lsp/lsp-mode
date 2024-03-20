@@ -505,6 +505,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "lisp",
+    "full-name": "Lisp",
+    "server-name": "alive-lsp",
+    "server-url": "https://github.com/nobody-famous/alive-lsp",
+    "installation-url": "https://github.com/nobody-famous/alive-lsp?tab=readme-ov-file#running-the-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "ltex",
     "full-name": "LanguageTool",
     "server-name": "LTEX",
