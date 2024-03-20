@@ -113,6 +113,7 @@
   * Add [[https://docs.trunk.io][Trunk]] support
   * Add Cucumber support.
   * Add COBOL support.
+  * Add Common Lisp support.
 
 ** Release 8.0.0
   * Add ~lsp-clients-angular-node-get-prefix-command~ to get the Angular server from another location which is still has ~/lib/node_modules~ in it.
