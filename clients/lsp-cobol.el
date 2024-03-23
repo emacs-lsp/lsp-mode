@@ -97,39 +97,23 @@ This is only for development use."
        (format lsp-cobol-download-url-format
                version "linux" arch version "")))))
 
-(defvar lsp-cobol--server-download-url (lsp-cobol--server-url)
-  "The actual url used to download language server.")
-
-(defvar lsp-cobol--downloaded-file (f-join lsp-cobol-server-store-path "temp.tar")
-  "The full file path after downloading the server zipped file.")
-
-(defun lsp-cobol--extract-compressed-file (callback)
-  "Install COBOL language service."
-  (cond ((file-exists-p lsp-cobol--downloaded-file)
-         ;; Suprisingly, you can just use `tar' to unzip a zip file on Windows.
-         ;; Therefore, just use the same command.
-         (lsp-cobol--execute "tar" "-xvzf" lsp-cobol--downloaded-file "-C" lsp-cobol-server-store-path)
-         ;; Delete the zip file.
-         (ignore-errors (delete-file lsp-cobol--downloaded-file)))
-        (t
-         (error "Can't extract the downloaded file: %s" lsp-cobol--downloaded-file)))
-  (funcall callback))
-
 (defun lsp-cobol--stored-executable ()
   "Return the stored COBOL language service executable."
-  (executable-find
-   (f-join lsp-cobol-server-store-path
-           (concat "extension/server/native/"
-                   (cl-case system-type
-                     ((cygwin windows-nt ms-dos) "engine.exe")
-                     (darwin                     "server-mac")
-                     (gnu/linux                  "server-linux"))))))
+  (f-join lsp-cobol-server-store-path
+          (concat "extension/server/native/"
+                  (cl-case system-type
+                    ((cygwin windows-nt ms-dos) "engine.exe")
+                    (darwin                     "server-mac")
+                    (gnu/linux                  "server-linux")))))
 
 (lsp-dependency
  'cobol-ls
  '(:system "cobol-ls")
- `(:download :url ,lsp-cobol--server-download-url
-             :store-path ,lsp-cobol--downloaded-file))
+ `(:download :url ,(lsp-cobol--server-url)
+             :decompress :zip
+             :store-path ,(f-join lsp-cobol-server-store-path "temp")
+             :set-executable? t)
+ `(:system ,(lsp-cobol--stored-executable)))
 
 ;;
 ;;; Server
@@ -181,9 +165,7 @@ This is only for development use."
   :server-id 'cobol-ls
   :download-server-fn
   (lambda (_client callback error-callback _update?)
-    (lsp-package-ensure 'cobol-ls
-                        (lambda () (lsp-cobol--extract-compressed-file callback))
-                        error-callback))))
+    (lsp-package-ensure 'cobol-ls callback error-callback))))
 
 (lsp-consistency-check lsp-cobol)
 
