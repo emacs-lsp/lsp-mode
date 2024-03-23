@@ -1057,8 +1057,8 @@ or JSON objects in `rust-project.json` format."
 
 (defface lsp-rust-analyzer-intra-doc-link-modifier-face
   '((t nil))
-  "The face modification to use for intra-doc-link items.")
-:group 'lsp-rust-analyzer-semantic-tokens
+  "The face modification to use for intra-doc-link items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
 
 (defface lsp-rust-analyzer-library-modifier-face
   '((t nil))
