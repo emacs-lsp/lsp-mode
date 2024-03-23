@@ -108,7 +108,7 @@ See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-S
  (make-lsp-client
   :new-connection (lsp-stdio-connection
                    #'lsp-actionscript--server-command
-                   (lambda () (f-exists? (lsp-actionscript--extension-dir)))))
+                   (lambda () (f-exists? (lsp-actionscript--extension-dir))))
   :major-modes '(actionscript-mode)
   :priority -1
   :server-id 'as3mxml-ls
