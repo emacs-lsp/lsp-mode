@@ -233,13 +233,8 @@ If `true', replace the text after the cursor."
   :type 'file
   :group 'lsp-zig)
 
-(defcustom lsp-zig-server-version "0.11.0"
-  "The zls version to install."
-  :type 'file
-  :group 'lsp-zig)
-
 (defconst lsp-zig-download-url-format
-  "https://github.com/zigtools/zls/releases/download/%s/zls-%s-%s.%s"
+  "https://github.com/zigtools/zls/releases/latest/download/zls-%s-%s.%s"
   "Format to the download url link.")
 
 (defun lsp-zig--zls-url ()
@@ -248,45 +243,28 @@ If `true', replace the text after the cursor."
          (arch (if x86 "x86_64" "aarch64")))
     (cl-case system-type
       ((cygwin windows-nt ms-dos)
-       (format lsp-zig-download-url-format
-               lsp-zig-server-version arch "windows" "zip"))
+       (format lsp-zig-download-url-format arch "windows" "zip"))
       (darwin
-       (format lsp-zig-download-url-format
-               lsp-zig-server-version arch "macos" "tar.gz"))
+       (format lsp-zig-download-url-format arch "macos" "tar.gz"))
       (gnu/linux
-       (format lsp-zig-download-url-format
-               lsp-zig-server-version arch "linux" "tar.gz")))))
-
-(defvar lsp-zig--server-download-url (lsp-zig--zls-url)
-  "The actual url used to download language server.")
-
-(defvar lsp-zig--downloaded-file (f-join lsp-zig-server-store-path "temp.tar")
-  "The full file path after downloading the server zipped file.")
+       (format lsp-zig-download-url-format arch "linux" "tar.gz")))))
 
 (defun lsp-zig--stored-zls-executable ()
   "Return the stored zls executable.
 
 This is differ from the variable `lsp-zig-zls-executable'; this is local storage
 and not the global storage."
-  (executable-find (f-join lsp-zig-server-store-path "bin/zls")))
-
-(defun lsp-zig--extract-compressed-file (callback)
-  "Install zls."
-  (cond ((file-exists-p lsp-zig--downloaded-file)
-         ;; Suprisingly, you can just use `tar' to unzip a zip file on Windows.
-         ;; Therefore, just use the same command.
-         (lsp-zig--execute "tar" "-xvzf" lsp-zig--downloaded-file "-C" lsp-zig-server-store-path)
-         ;; Delete the zip file.
-         (ignore-errors (delete-file lsp-zig--downloaded-file)))
-        (t
-         (error "Can't extract the downloaded file: %s" lsp-zig--downloaded-file)))
-  (funcall callback))
+  (f-join lsp-zig-server-store-path
+          (pcase system-type ('windows-nt "bin/zls.exe") (_ "bin/zls"))))
 
 (lsp-dependency
  'zls
  '(:system "zls")
- `(:download :url ,lsp-zig--server-download-url
-             :store-path ,lsp-zig--downloaded-file))
+ `(:download :url ,(lsp-zig--zls-url)
+             :decompress ,(pcase system-type ('windows-nt :zip) (_ :targz))
+             :store-path ,(f-join lsp-zig-server-store-path "temp")
+             :set-executable? t)
+ `(:system ,(lsp-zig--stored-zls-executable)))
 
 ;;
 ;;; Core
@@ -334,10 +312,7 @@ and not the global storage."
   :server-id 'zls
   :download-server-fn
   (lambda (_client callback error-callback _update?)
-    (lsp-package-ensure 'zls
-                        (lambda (&rest _)
-                          (lsp-zig--extract-compressed-file callback))
-                        error-callback))))
+    (lsp-package-ensure 'zls callback error-callback))))
 
 (lsp-consistency-check lsp-zig)
 
