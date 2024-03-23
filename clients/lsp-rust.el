@@ -1652,11 +1652,11 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
                                        :allTargets ,(lsp-json-bool lsp-rust-analyzer-check-all-targets)
                                        :features ,lsp-rust-analyzer-checkonsave-features
                                        :overrideCommand ,lsp-rust-analyzer-cargo-override-command)
-                 :highlightRelated (:breakPoints (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-breakpoints))
-                                                 :closureCaptures (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-closure-captures))
-                                                 :exitPoints (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-exit-points))
-                                                 :references (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-references))
-                                                 :yieldPoints (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-yield-points)))
+                 :highlightRelated ( :breakPoints (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-breakpoints))
+                                     :closureCaptures (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-closure-captures))
+                                     :exitPoints (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-exit-points))
+                                     :references (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-references))
+                                     :yieldPoints (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-yield-points)))
                  :files (:exclude ,lsp-rust-analyzer-exclude-globs
                                   :watcher ,(if lsp-rust-analyzer-use-client-watching "client" "notify")
                                   :excludeDirs ,lsp-rust-analyzer-exclude-dirs)
@@ -1684,29 +1684,29 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
                                                  :trait (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-references-trait-enable)))
                                :run (:enable ,(lsp-json-bool lsp-rust-analyzer-lens-run-enable)))
 
-                 :inlayHints (:bindingModeHints (:enable ,(lsp-json-bool lsp-rust-analyzer-binding-mode-hints))
-                                                :chainingHints (:enable ,(lsp-json-bool lsp-rust-analyzer-display-chaining-hints))
-                                                :closingBraceHints (:enable ,(lsp-json-bool lsp-rust-analyzer-closing-brace-hints)
-                                                                            :minLines ,lsp-rust-analyzer-closing-brace-hints-min-lines)
-                                                :closureCaptureHints (:enable ,(lsp-json-bool lsp-rust-analyzer-closure-capture-hints))
-                                                :closureReturnTypeHints (:enable ,lsp-rust-analyzer-closure-return-type-hints)
-                                                :closureStyle ,lsp-rust-analyzer-closure-style
-                                                :discriminantHints (:enable ,lsp-rust-analyzer-discriminants-hints)
+                 :inlayHints ( :bindingModeHints (:enable ,(lsp-json-bool lsp-rust-analyzer-binding-mode-hints))
+                               :chainingHints (:enable ,(lsp-json-bool lsp-rust-analyzer-display-chaining-hints))
+                               :closingBraceHints (:enable ,(lsp-json-bool lsp-rust-analyzer-closing-brace-hints)
+                                                           :minLines ,lsp-rust-analyzer-closing-brace-hints-min-lines)
+                               :closureCaptureHints (:enable ,(lsp-json-bool lsp-rust-analyzer-closure-capture-hints))
+                               :closureReturnTypeHints (:enable ,lsp-rust-analyzer-closure-return-type-hints)
+                               :closureStyle ,lsp-rust-analyzer-closure-style
+                               :discriminantHints (:enable ,lsp-rust-analyzer-discriminants-hints)
 
-                                                :expressionAdjustmentHints (:enable ,lsp-rust-analyzer-expression-adjustment-hints
-                                                                                    :hideOutsideUnsafe ,(lsp-json-bool lsp-rust-analyzer-expression-adjustment-hide-unsafe)
-                                                                                    :mode ,lsp-rust-analyzer-expression-adjustment-hints-mode)
-                                                :implicitDrops (:enable ,(lsp-json-bool lsp-rust-analyzer-implicit-drops))
-                                                :lifetimeElisionHints (:enable ,lsp-rust-analyzer-display-lifetime-elision-hints-enable
-                                                                               :useParameterNames ,(lsp-json-bool lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names))
-                                                :maxLength ,lsp-rust-analyzer-max-inlay-hint-length
-                                                :parameterHints (:enable ,(lsp-json-bool lsp-rust-analyzer-display-parameter-hints))
-                                                :reborrowHints (:enable ,lsp-rust-analyzer-display-reborrow-hints)
-                                                :renderColons ,(lsp-json-bool lsp-rust-analyzer-server-format-inlay-hints)
-                                                :typeHints (:enable ,(lsp-json-bool lsp-inlay-hint-enable)
-                                                                    :hideClosureInitialization ,(lsp-json-bool lsp-rust-analyzer-hide-closure-initialization)
-                                                                    :hideNamedConstructor ,(lsp-json-bool lsp-rust-analyzer-hide-named-constructor))
-                                                )
+                               :expressionAdjustmentHints (:enable ,lsp-rust-analyzer-expression-adjustment-hints
+                                                                   :hideOutsideUnsafe ,(lsp-json-bool lsp-rust-analyzer-expression-adjustment-hide-unsafe)
+                                                                   :mode ,lsp-rust-analyzer-expression-adjustment-hints-mode)
+                               :implicitDrops (:enable ,(lsp-json-bool lsp-rust-analyzer-implicit-drops))
+                               :lifetimeElisionHints (:enable ,lsp-rust-analyzer-display-lifetime-elision-hints-enable
+                                                              :useParameterNames ,(lsp-json-bool lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names))
+                               :maxLength ,lsp-rust-analyzer-max-inlay-hint-length
+                               :parameterHints (:enable ,(lsp-json-bool lsp-rust-analyzer-display-parameter-hints))
+                               :reborrowHints (:enable ,lsp-rust-analyzer-display-reborrow-hints)
+                               :renderColons ,(lsp-json-bool lsp-rust-analyzer-server-format-inlay-hints)
+                               :typeHints (:enable ,(lsp-json-bool lsp-inlay-hint-enable)
+                                                   :hideClosureInitialization ,(lsp-json-bool lsp-rust-analyzer-hide-closure-initialization)
+                                                   :hideNamedConstructor ,(lsp-json-bool lsp-rust-analyzer-hide-named-constructor))
+                               )
                  :completion (:addCallParenthesis ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-parenthesis)
                                                   :addCallArgumentSnippets ,(lsp-json-bool lsp-rust-analyzer-completion-add-call-argument-snippets)
                                                   :postfix (:enable ,(lsp-json-bool lsp-rust-analyzer-completion-postfix-enable))
