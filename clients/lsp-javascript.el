@@ -1011,15 +1011,15 @@ Examples: `./import-map.json',
 
 (defun lsp-clients-deno--make-init-options ()
   "Initialization options for the Deno language server."
-  `(:enable t
-            :config ,lsp-clients-deno-config
-            :importMap ,lsp-clients-deno-import-map
-            :lint ,(lsp-json-bool lsp-clients-deno-enable-lint)
-            :unstable ,(lsp-json-bool lsp-clients-deno-enable-unstable)
-            :codeLens (:implementations ,(lsp-json-bool lsp-clients-deno-enable-code-lens-implementations)
-                                        :references ,(lsp-json-bool (or lsp-clients-deno-enable-code-lens-references
-                                                                        lsp-clients-deno-enable-code-lens-references-all-functions))
-                                        :referencesAllFunctions ,(lsp-json-bool lsp-clients-deno-enable-code-lens-references-all-functions))))
+  `( :enable t
+     :config ,lsp-clients-deno-config
+     :importMap ,lsp-clients-deno-import-map
+     :lint ,(lsp-json-bool lsp-clients-deno-enable-lint)
+     :unstable ,(lsp-json-bool lsp-clients-deno-enable-unstable)
+     :codeLens ( :implementations ,(lsp-json-bool lsp-clients-deno-enable-code-lens-implementations)
+                 :references ,(lsp-json-bool (or lsp-clients-deno-enable-code-lens-references
+                                                 lsp-clients-deno-enable-code-lens-references-all-functions))
+                 :referencesAllFunctions ,(lsp-json-bool lsp-clients-deno-enable-code-lens-references-all-functions))))
 
 (lsp-register-client
  (make-lsp-client :new-connection
