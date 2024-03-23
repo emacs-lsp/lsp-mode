@@ -78,18 +78,13 @@ See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-S
   :group 'lsp-actionscript
   :package-version '(lsp-mode . "8.0.0"))
 
-(defun lsp-actionscript--extension-root ()
-  "The path that the downloaded extension will extract to."
-  (f-join lsp-actionscript-server-store-path
-          (format "vscode-nextgenas-%s" lsp-actionscript-version)))
-
 (defun lsp-actionscript--extension-path ()
   "Return full path of the downloaded extension."
   (f-join lsp-actionscript-server-store-path lsp-actionscript-extension-name))
 
 (defun lsp-actionscript--extension-dir ()
   "Return as3mxml extension path."
-  (f-join (lsp-actionscript--extension-root) "extension"))
+  (f-join lsp-actionscript-server-store-path "extension"))
 
 (defun lsp-actionscript--server-command ()
   "Startup command for ActionScript language server."
@@ -101,33 +96,24 @@ See https://github.com/BowlerHatLLC/vscode-as3mxml/wiki/Choose-an-ActionScript-S
                 (lsp-actionscript--extension-dir) (lsp-actionscript--extension-dir))
         "com.as3mxml.vscode.Main"))
 
-(defun lsp-actionscript--extension-path-zip ()
-  "Change extension path from .vsix to .zip."
-  (concat (f-no-ext (lsp-actionscript--extension-path)) ".zip"))
-
 (lsp-dependency
  'as3mxml
  '(:system "as3mxml")
  `(:download :url lsp-actionscript-server-download-url
-             :store-path ,(lsp-actionscript--extension-path-zip)))
+             :decompress :zip
+             :store-path ,(f-no-ext (lsp-actionscript--extension-path))
+             :set-executable? t))
 
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection
                    #'lsp-actionscript--server-command
-                   (lambda () (f-exists? (lsp-actionscript--extension-path-zip))))
+                   (lambda () (f-exists? (lsp-actionscript--extension-dir))))
   :major-modes '(actionscript-mode)
   :priority -1
   :server-id 'as3mxml-ls
   :download-server-fn (lambda (_client callback error-callback _update?)
-                        (lsp-package-ensure
-                         'as3mxml
-                         (lambda ()
-                           ;; TODO: Error handling when unzip failed
-                           (lsp-unzip (lsp-actionscript--extension-path-zip)
-                                      (lsp-actionscript--extension-root))
-                           (funcall callback))
-                         error-callback))))
+                        (lsp-package-ensure 'as3mxml callback error-callback))))
 
 (lsp-consistency-check lsp-actionscript)
 
