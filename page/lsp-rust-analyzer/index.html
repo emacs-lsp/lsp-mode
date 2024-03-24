@@ -2696,6 +2696,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-cargo-extra-args" class="md-nav__link">
+    lsp-rust-analyzer-cargo-extra-args
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-cargo-extra-env" class="md-nav__link">
+    lsp-rust-analyzer-cargo-extra-env
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-cargo-override-command" class="md-nav__link">
     lsp-rust-analyzer-cargo-override-command
   </a>
@@ -4230,6 +4244,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-cargo-extra-args" class="md-nav__link">
+    lsp-rust-analyzer-cargo-extra-args
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-rust-analyzer-cargo-extra-env" class="md-nav__link">
+    lsp-rust-analyzer-cargo-extra-env
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-rust-analyzer-cargo-override-command" class="md-nav__link">
     lsp-rust-analyzer-cargo-override-command
   </a>
@@ -4865,6 +4893,17 @@ modifying the signature that is displayed by eldoc.</p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Automatically refresh project info via <code>cargo metadata</code> on <code>Cargo.toml</code> changes.</p>
 <hr />
+<h3 id="lsp-rust-analyzer-cargo-extra-args"><code>lsp-rust-analyzer-cargo-extra-args</code><a class="headerlink" href="#lsp-rust-analyzer-cargo-extra-args" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>lsp-string-vector</code></p>
+<p><em>Default:</em> <code>[]</code></p>
+<p>Extra arguments that are passed to every cargo invocation.</p>
+<hr />
+<h3 id="lsp-rust-analyzer-cargo-extra-env"><code>lsp-rust-analyzer-cargo-extra-env</code><a class="headerlink" href="#lsp-rust-analyzer-cargo-extra-env" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>lsp-string-vector</code></p>
+<p><em>Default:</em> <code>[]</code></p>
+<p>Extra environment variables that will be set when running cargo, rustc or
+other commands within the workspace.  Useful for setting RUSTFLAGS.</p>
+<hr />
 <h3 id="lsp-rust-analyzer-cargo-override-command"><code>lsp-rust-analyzer-cargo-override-command</code><a class="headerlink" href="#lsp-rust-analyzer-cargo-override-command" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
 <p><em>Default:</em> <code>[]</code></p>
@@ -5249,7 +5288,7 @@ compiling unnecessary things.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 23, 2024</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 24, 2024</span>
       
     
   </small>
