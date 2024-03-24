@@ -791,16 +791,19 @@ name (e.g. `data' variable passed as `data' parameter)."
     (eq 'initialized (lsp--workspace-status workspace))))
 
 (defun lsp-clients-typescript-project-ts-server-path ()
+  "Return the project local TS server path."
   (f-join (lsp-workspace-root) "node_modules" "typescript" "lib" "tsserver.js"))
 
 (defun lsp-clients-typescript-server-path ()
+  "Return the TS sever path base on settings."
   (cond
-   ((and
-     lsp-clients-typescript-prefer-use-project-ts-server
-     (f-exists? (lsp-clients-typescript-project-ts-server-path)))
+   ((and lsp-clients-typescript-prefer-use-project-ts-server
+         (f-exists? (lsp-clients-typescript-project-ts-server-path)))
     (lsp-clients-typescript-project-ts-server-path))
    (t
-    (f-join (f-parent (lsp-package-path 'typescript)) "node_modules" "typescript" "lib"))))
+    (if (memq system-type '(cygwin windows-nt ms-dos))
+        (f-join (f-parent (lsp-package-path 'typescript)) "node_modules" "typescript" "lib")
+      (f-join (f-parent (f-parent (lsp-package-path 'typescript))) "lib" "node_modules" "typescript" "lib")))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
@@ -1008,15 +1011,15 @@ Examples: `./import-map.json',
 
 (defun lsp-clients-deno--make-init-options ()
   "Initialization options for the Deno language server."
-  `(:enable t
-    :config ,lsp-clients-deno-config
-    :importMap ,lsp-clients-deno-import-map
-    :lint ,(lsp-json-bool lsp-clients-deno-enable-lint)
-    :unstable ,(lsp-json-bool lsp-clients-deno-enable-unstable)
-    :codeLens (:implementations ,(lsp-json-bool lsp-clients-deno-enable-code-lens-implementations)
-               :references ,(lsp-json-bool (or lsp-clients-deno-enable-code-lens-references
-                                               lsp-clients-deno-enable-code-lens-references-all-functions))
-               :referencesAllFunctions ,(lsp-json-bool lsp-clients-deno-enable-code-lens-references-all-functions))))
+  `( :enable t
+     :config ,lsp-clients-deno-config
+     :importMap ,lsp-clients-deno-import-map
+     :lint ,(lsp-json-bool lsp-clients-deno-enable-lint)
+     :unstable ,(lsp-json-bool lsp-clients-deno-enable-unstable)
+     :codeLens ( :implementations ,(lsp-json-bool lsp-clients-deno-enable-code-lens-implementations)
+                 :references ,(lsp-json-bool (or lsp-clients-deno-enable-code-lens-references
+                                                 lsp-clients-deno-enable-code-lens-references-all-functions))
+                 :referencesAllFunctions ,(lsp-json-bool lsp-clients-deno-enable-code-lens-references-all-functions))))
 
 (lsp-register-client
  (make-lsp-client :new-connection
