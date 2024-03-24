@@ -347,8 +347,9 @@ The MARKERS and PREFIX value will be attached to each candidate."
 (defun lsp-completion--company-match (candidate)
   "Return highlight of typed prefix inside CANDIDATE."
   (if-let ((md (cddr (plist-get (text-properties-at 0 candidate) 'match-data))))
-      (let (matches)
-        (while-let ((start (pop md)) (end (pop md)))
+      (let (matches start end)
+        (while (progn (setq start (pop md) end (pop md))
+                      (and start end))
           (setq matches (nconc matches `((,start . ,end)))))
         matches)
     (let* ((prefix (downcase
