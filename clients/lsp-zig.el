@@ -206,25 +206,6 @@ If `true', replace the text after the cursor."
   :type 'boolean)
 
 ;;
-;;; Util
-
-(defmacro lsp-zig--mute-apply (&rest body)
-  "Execute BODY without message."
-  (declare (indent 0) (debug t))
-  `(let (message-log-max)
-     (with-temp-message (or (current-message) nil)
-       (let ((inhibit-message t)) ,@body))))
-
-(defun lsp-zig--execute (cmd &rest args)
-  "Return non-nil if CMD executed succesfully with ARGS."
-  (save-window-excursion
-    (lsp-zig--mute-apply
-      (= 0 (shell-command (concat cmd " "
-                                  (mapconcat #'shell-quote-argument
-                                             (cl-remove-if #'null args)
-                                             " ")))))))
-
-;;
 ;;; Installation
 
 (defcustom lsp-zig-server-store-path

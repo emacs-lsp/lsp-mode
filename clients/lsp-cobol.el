@@ -45,25 +45,6 @@ This is only for development use."
   :group 'lsp-cobol)
 
 ;;
-;;; Util
-
-(defmacro lsp-cobol--mute-apply (&rest body)
-  "Execute BODY without message."
-  (declare (indent 0) (debug t))
-  `(let (message-log-max)
-     (with-temp-message (or (current-message) nil)
-       (let ((inhibit-message t)) ,@body))))
-
-(defun lsp-cobol--execute (cmd &rest args)
-  "Return non-nil if CMD executed succesfully with ARGS."
-  (save-window-excursion
-    (lsp-cobol--mute-apply
-      (= 0 (shell-command (concat cmd " "
-                                  (mapconcat #'shell-quote-argument
-                                             (cl-remove-if #'null args)
-                                             " ")))))))
-
-;;
 ;;; Installation
 
 (defcustom lsp-cobol-server-store-path
