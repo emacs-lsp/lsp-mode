@@ -829,6 +829,19 @@ or JSON objects in `rust-project.json` format."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
+(defcustom lsp-rust-analyzer-cargo-extra-args []
+  "Extra arguments that are passed to every cargo invocation."
+  :type 'lsp-string-vector
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-rust-analyzer-cargo-extra-env []
+  "Extra environment variables that will be set when running cargo, rustc or
+other commands within the workspace.  Useful for setting RUSTFLAGS."
+  :type 'lsp-string-vector
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defconst lsp-rust-notification-handlers
   '(("rust-analyzer/publishDecorations" . (lambda (_w _p)))))
 
@@ -1664,6 +1677,8 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
     :cargo ( :allFeatures ,(lsp-json-bool lsp-rust-all-features)
              :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
              :features ,lsp-rust-features
+             :extraArgs ,lsp-rust-analyzer-cargo-extra-args
+             :extraEnv ,lsp-rust-analyzer-cargo-extra-env
              :target ,lsp-rust-analyzer-cargo-target
              :runBuildScripts ,(lsp-json-bool lsp-rust-analyzer-cargo-run-build-scripts)
              ;; Obsolete, but used by old Rust-Analyzer versions
@@ -1744,7 +1759,6 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
   :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (featurep 'yasnippet))))))
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'rust-analyzer callback error-callback))))
-
 
 (lsp-consistency-check lsp-rust)
 
