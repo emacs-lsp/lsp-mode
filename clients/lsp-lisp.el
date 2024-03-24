@@ -46,9 +46,6 @@
 ;;; Server
 
 ;;;###autoload
-(add-hook 'lisp-mode-hook #'lsp-lisp-alive-start-ls)
-
-;;;###autoload
 (defun lsp-lisp-alive-start-ls ()
   "Start the alive-lsp."
   (interactive)
@@ -89,7 +86,7 @@
   :priority -1
   :server-id 'alive-lsp))
 
-(lsp-consistency-check alive-lsp)
+(lsp-consistency-check lsp-lisp)
 
 (provide 'lsp-lisp)
 ;;; lsp-lisp.el ends here
