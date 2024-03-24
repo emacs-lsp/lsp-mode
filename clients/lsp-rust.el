@@ -943,23 +943,22 @@ other commands within the workspace.  Useful for setting RUSTFLAGS."
   (lsp-send-request (lsp-make-request "rust-analyzer/reloadWorkspace")))
 
 (defcustom lsp-rust-analyzer-download-url
-  (format "https://github.com/rust-lang/rust-analyzer/releases/latest/download/%s"
-          (pcase system-type
-            ('gnu/linux "rust-analyzer-x86_64-unknown-linux-gnu.gz")
-            ('darwin (if (string-match "^aarch64-.*" system-configuration)
-                         "rust-analyzer-aarch64-apple-darwin.gz"
-                       "rust-analyzer-x86_64-apple-darwin.gz"))
-            ('windows-nt "rust-analyzer-x86_64-pc-windows-msvc.gz")))
+  (let* ((x86 (string-prefix-p "x86_64" system-configuration))
+         (arch (if x86 "x86_64" "aarch64")))
+    (format "https://github.com/rust-lang/rust-analyzer/releases/latest/download/%s"
+            (pcase system-type
+              ('gnu/linux (format "rust-analyzer-%s-unknown-linux-gnu.gz" arch))
+              ('darwin (format "rust-analyzer-%s-apple-darwin.gz" arch))
+              ('windows-nt (format "rust-analyzer-%s-pc-windows-msvc.zip" arch)))))
   "Automatic download url for Rust Analyzer"
   :type 'string
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
-(defcustom lsp-rust-analyzer-store-path (f-join lsp-server-install-dir
-                                                "rust"
-                                                (if (eq system-type 'windows-nt)
-                                                    "rust-analyzer.exe"
-                                                  "rust-analyzer"))
+(defcustom lsp-rust-analyzer-store-path (f-join lsp-server-install-dir "rust"
+                                                (pcase system-type
+                                                  ('windows-nt "rust-analyzer.exe")
+                                                  (_ "rust-analyzer")))
   "The path to the file in which `rust-analyzer' will be stored."
   :type 'file
   :group 'lsp-rust-analyzer
@@ -968,10 +967,10 @@ other commands within the workspace.  Useful for setting RUSTFLAGS."
 (lsp-dependency
  'rust-analyzer
  `(:download :url lsp-rust-analyzer-download-url
-             :decompress :gzip
+             :decompress ,(pcase system-type ('windows-nt :zip) (_ :gzip))
              :store-path lsp-rust-analyzer-store-path
              :set-executable? t)
- '(:system "rust-analyzer"))
+ `(:system ,(file-name-nondirectory lsp-rust-analyzer-store-path)))
 
 (lsp-defun lsp-rust--analyzer-run-single ((&Command :arguments?))
   (lsp-rust-analyzer-run (lsp-seq-first arguments?)))
@@ -1071,8 +1070,8 @@ other commands within the workspace.  Useful for setting RUSTFLAGS."
 
 (defface lsp-rust-analyzer-intra-doc-link-modifier-face
   '((t nil))
-  "The face modification to use for intra-doc-link items.")
-  :group 'lsp-rust-analyzer-semantic-tokens
+  "The face modification to use for intra-doc-link items."
+  :group 'lsp-rust-analyzer-semantic-tokens)
 
 (defface lsp-rust-analyzer-library-modifier-face
   '((t nil))
@@ -1503,8 +1502,8 @@ and run a compilation"
 (defun lsp-rust-analyzer-run (runnable)
   "Select and run a RUNNABLE action."
   (interactive (list (lsp-rust-analyzer--select-runnable)))
-    (when (lsp-rust-analyzer--common-runner runnable)
-      (setq lsp-rust-analyzer--last-runnable runnable)))
+  (when (lsp-rust-analyzer--common-runner runnable)
+    (setq lsp-rust-analyzer--last-runnable runnable)))
 
 (defun lsp-rust-analyzer-debug (runnable)
   "Select and debug a RUNNABLE action."
@@ -1734,7 +1733,6 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
     :linkedProjects ,lsp-rust-analyzer-linked-projects
     :highlighting (:strings ,(lsp-json-bool lsp-rust-analyzer-highlighting-strings))
     :experimental (:procAttrMacros ,(lsp-json-bool lsp-rust-analyzer-experimental-proc-attr-macros))))
-
 
 (lsp-register-client
  (make-lsp-client

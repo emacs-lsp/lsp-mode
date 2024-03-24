@@ -24,6 +24,8 @@
 
 ;;; Code:
 
+(require 'lsp-mode)
+
 (defgroup lsp-wgsl nil
   "LSP support for wgsl, using wgsl-analyzer."
   :group 'lsp-mode

@@ -176,12 +176,12 @@ As defined by the Language Server Protocol 3.16."
 (defcustom lsp-client-packages
   '( ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-autotools lsp-awk
      lsp-asm lsp-astro lsp-bash lsp-beancount lsp-bufls lsp-clangd lsp-clojure
-     lsp-cmake lsp-credo lsp-crystal lsp-csharp lsp-css lsp-cucumber lsp-cypher
-     lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile lsp-elm lsp-elixir
+     lsp-cmake lsp-cobol lsp-credo lsp-crystal lsp-csharp lsp-css lsp-cucumber
+     lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile lsp-elm lsp-elixir
      lsp-emmet lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go
      lsp-golangci-lint lsp-gleam lsp-glsl lsp-graphql lsp-hack lsp-grammarly
      lsp-groovy lsp-haskell lsp-haxe lsp-idris lsp-java lsp-javascript lsp-json
-     lsp-kotlin lsp-latex lsp-ltex lsp-lua lsp-markdown lsp-marksman lsp-mdx
+     lsp-kotlin lsp-latex lsp-lisp lsp-ltex lsp-lua lsp-markdown lsp-marksman lsp-mdx
      lsp-mint lsp-move lsp-nginx lsp-nim lsp-nix lsp-magik lsp-mojo lsp-metals
      lsp-mssql lsp-nushell lsp-ocaml lsp-openscad lsp-pascal lsp-perl lsp-perlnavigator
      lsp-pls lsp-php lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms
@@ -189,8 +189,8 @@ As defined by the Language Server Protocol 3.16."
      lsp-rust lsp-semgrep lsp-shader lsp-solargraph lsp-sorbet lsp-sourcekit
      lsp-sonarlint lsp-tailwindcss lsp-tex lsp-terraform lsp-toml lsp-ttcn3
      lsp-typeprof lsp-v lsp-vala lsp-verilog lsp-vetur lsp-volar lsp-vhdl
-     lsp-vimscript lsp-xml lsp-yaml lsp-ruby-lsp lsp-ruby-syntax-tree
-     lsp-solidity lsp-sqls lsp-svelte lsp-steep lsp-tilt lsp-zig lsp-jq)
+     lsp-vimscript lsp-wgsl lsp-xml lsp-yaml lsp-ruby-lsp lsp-ruby-syntax-tree
+     lsp-solidity lsp-sqls lsp-svelte lsp-steep lsp-tilt lsp-trunk lsp-zig lsp-jq)
   "List of the clients to be automatically required."
   :group 'lsp-mode
   :type '(repeat symbol))
@@ -459,7 +459,6 @@ level or at a root of an lsp workspace."
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.3"))
 
-(defconst lsp--sync-none 0)
 (defconst lsp--sync-full 1)
 (defconst lsp--sync-incremental 2)
 
@@ -483,8 +482,7 @@ This flag affects only servers which do not support incremental updates."
 
 (defcustom lsp-document-sync-method nil
   "How to sync the document with the language server."
-  :type '(choice (const :tag "Documents should not be synced at all." nil)
-                 (const :tag "Documents are synced by always sending the full content of the document." lsp--sync-full)
+  :type '(choice (const :tag "Documents are synced by always sending the full content of the document." lsp--sync-full)
                  (const :tag "Documents are synced by always sending incremental changes to the document." lsp--sync-incremental)
                  (const :tag "Use the method recommended by the language server." nil))
   :group 'lsp-mode)
@@ -853,6 +851,7 @@ Changes take effect only when a new session is started."
     (cuda-mode . "cuda")
     (objc-mode . "objective-c")
     (html-mode . "html")
+    (html-ts-mode . "html")
     (sgml-mode . "html")
     (mhtml-mode . "html")
     (mint-mode . "mint")
@@ -1991,9 +1990,9 @@ regex in IGNORED-FILES."
            (let ((number-of-directories (length dirs-to-watch)))
              (or
               (< number-of-directories lsp-file-watch-threshold)
-              (condition-case _err
+              (condition-case nil
                   (lsp--ask-about-watching-big-repo number-of-directories dir)
-                ('quit)))))
+                (quit)))))
       (dolist (current-dir dirs-to-watch)
         (condition-case err
             (progn
@@ -2148,7 +2147,7 @@ PARAMS - the data sent from WORKSPACE."
           (const :tag "Use modeline" lsp-on-progress-modeline)
           (const :tag "Legacy(uses either `progress-reporter' or `spinner' based on `lsp-progress-via-spinner')"
                  lsp-on-progress-legacy)
-          (const ignore :tag "Ignore")
+          (const :tag "Ignore" ignore)
           (function :tag "Other function"))
   :package-version '(lsp-mode . "8.0.0"))
 
@@ -4723,9 +4722,9 @@ Added to `before-change-functions'."
             (setq lsp--delayed-requests nil)))))
 
 (defun lsp--workspace-sync-method (workspace)
-  (let* ((sync (-> workspace
-                   (lsp--workspace-server-capabilities)
-                   (lsp:server-capabilities-text-document-sync?))))
+  (let ((sync (-> workspace
+                  (lsp--workspace-server-capabilities)
+                  (lsp:server-capabilities-text-document-sync?))))
     (if (lsp-text-document-sync-options? sync)
         (lsp:text-document-sync-options-change? sync)
       sync)))
@@ -7496,16 +7495,17 @@ returned by COMMAND is available via `executable-find'"
            (cl-incf retries)))))
     (or connection (error "Port %s was never taken. Consider increasing `lsp-tcp-connection-timeout'." port))))
 
+(defun lsp--port-available (host port)
+  "Return non-nil if HOST and PORT are available."
+  (condition-case _err
+      (delete-process (open-network-stream "*connection-test*" nil host port :type 'plain))
+    (file-error t)))
+
 (defun lsp--find-available-port (host starting-port)
   "Find available port on HOST starting from STARTING-PORT."
-  (let ((success nil)
-        (port starting-port))
-    (while (and (not success))
-      (condition-case _err
-          (progn
-            (delete-process (open-network-stream "*connection-test*" nil host port :type 'plain))
-            (cl-incf port))
-        (file-error (setq success t))))
+  (let ((port starting-port))
+    (while (not (lsp--port-available host port))
+      (cl-incf port))
     port))
 
 (defun lsp-tcp-connection (command-fn)
@@ -8514,7 +8514,7 @@ session workspace folder configuration for the server."
         (funcall initialization-options-or-fn)
       initialization-options-or-fn)))
 
-(defvar lsp-client-settings (make-hash-table)
+(defvar lsp-client-settings (make-hash-table :test 'equal)
   "For internal use, any external users please use
   `lsp-register-custom-settings' function instead")
 
@@ -8684,8 +8684,8 @@ When ALL is t, erase all log buffers of the running session."
 (cl-defmethod lsp-process-send ((process process) message)
   (condition-case err
       (process-send-string process (lsp--make-message message))
-    ('error (lsp--error "Sending to process failed with the following error: %s"
-                        (error-message-string err)))))
+    (error (lsp--error "Sending to process failed with the following error: %s"
+                       (error-message-string err)))))
 
 (cl-defmethod lsp-process-cleanup (process)
   ;; Kill standard error buffer only if the process exited normally.
@@ -8988,7 +8988,7 @@ Select action: "
               (lsp--persist-session session)
               nil)
           (t nil)))
-    ('quit)))
+    (quit)))
 
 (declare-function tramp-file-name-host "ext:tramp" (file) t)
 (declare-function tramp-dissect-file-name "ext:tramp" (file &optional nodefault))

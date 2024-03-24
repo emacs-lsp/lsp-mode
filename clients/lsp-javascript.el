@@ -498,7 +498,7 @@ TypeScript 2.6.1 or newer in the workspace."
           (const "ru")
           (const "zh-CN")
           (const "zh-TW")
-          nil)
+          (const :tag "default" nil))
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-suggestion-actions-enabled t

@@ -172,6 +172,14 @@
     "debugger": "Not relevant"
   },
   {
+    "name": "cobol",
+    "full-name": "COBOL",
+    "server-name": "cobol-language-service",
+    "server-url": "https://github.com/eclipse-che4z/che-che4z-lsp-for-cobol",
+    "installation-url": "https://github.com/eclipse-che4z/che-che4z-lsp-for-cobol/releases",
+    "debugger": "Not relevant"
+  },
+  {
     "name": "crystal",
     "full-name": "Crystal",
     "server-name": "crystalline",
@@ -494,6 +502,14 @@
     "server-name": "kotlin-language-server",
     "server-url": "https://github.com/fwcd/KotlinLanguageServer",
     "installation-url": "https://github.com/fwcd/kotlin-language-server/blob/master/BUILDING.md",
+    "debugger": "Not available"
+  },
+  {
+    "name": "lisp",
+    "full-name": "Lisp",
+    "server-name": "alive-lsp",
+    "server-url": "https://github.com/nobody-famous/alive-lsp",
+    "installation-url": "https://github.com/nobody-famous/alive-lsp?tab=readme-ov-file#running-the-server",
     "debugger": "Not available"
   },
   {
@@ -1056,6 +1072,15 @@
     "server-name": "taplo",
     "server-url": "https://github.com/tamasfe/taplo",
     "installation": "cargo install taplo-cli --features lsp",
+    "debugger": "Not available"
+  },
+  {
+    "name": "trunk",
+    "full-name": "Trunk",
+    "server-name": "trunk-lsp",
+    "server-url": "https://docs.trunk.io",
+    "installation": "curl https://get.trunk.io -fsSL | bash -s -- -y; trunk init",
+    "installation-url": "https://docs.trunk.io/check",
     "debugger": "Not available"
   },
   {

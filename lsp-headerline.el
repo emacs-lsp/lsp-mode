@@ -397,7 +397,7 @@ PATH is the current folder to be checked."
                (_ (lsp-log "'%s' is not a valid entry for `lsp-headerline-breadcrumb-segments'"
                            (symbol-name segment))
                   ""))))
-        (if (eq segment-string "")
+        (if (string-empty-p segment-string)
             ""
           (concat (lsp-headerline--arrow-icon)
                   " "
