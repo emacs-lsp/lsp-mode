@@ -7346,6 +7346,18 @@ Return a nested alist keyed by symbol names. e.g.
   (when menu-bar-mode
     (lsp--imenu-refresh)))
 
+(defun lsp--get-tramp-remote-shell ()
+  "Get the `tramp-remote-shell' for the current Tramp connection."
+  (let* ((vec (tramp-dissect-file-name default-directory))
+         (remote-shell (tramp-get-connection-property vec "remote-shell" nil)))
+    remote-shell))
+
+(defun lsp--raw-terminal-mode-command (command)
+  (list (lsp--get-tramp-remote-shell) "-c"
+        (string-join (cons "stty raw > /dev/null;"
+                           (mapcar #'shell-quote-argument command))
+                     " ")))
+
 (defun lsp-resolve-final-command (command &optional test?)
   "Resolve final function COMMAND."
   (let* ((command (lsp-resolve-value command))
@@ -7356,11 +7368,8 @@ Return a nested alist keyed by symbol names. e.g.
                      command)
                     (string (list command)))))
     (if (and (file-remote-p default-directory) (not test?))
-        (list shell-file-name "-c"
-              (string-join (cons "stty raw > /dev/null;"
-                                 (mapcar #'shell-quote-argument command))
-                           " "))
-      command)))
+        (lsp--raw-terminal-mode-command command)
+        command)))
 
 (defun lsp-server-present? (final-command)
   "Check whether FINAL-COMMAND is present."
@@ -7410,10 +7419,7 @@ corresponding to PATH, else returns `default-directory'."
 Originally coppied from eglot."
 
   (if (file-remote-p default-directory)
-      (list shell-file-name "-c"
-            (string-join (cons "stty raw > /dev/null;"
-                               (mapcar #'shell-quote-argument program))
-                         " "))
+      (lsp--raw-terminal-mode-command command)
     program))
 
 (defvar tramp-use-ssh-controlmaster-options)
