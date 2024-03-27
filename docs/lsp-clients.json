@@ -13,6 +13,7 @@
     "server-name": "ada_language_server",
     "server-url": "https://github.com/AdaCore/ada_language_server",
     "installation-url": "https://github.com/AdaCore/ada_language_server#install",
+    "lsp-install-server": "ada-ls",
     "debugger": "Yes (gdb)"
   },
   {
@@ -171,6 +172,14 @@
     "debugger": "Not relevant"
   },
   {
+    "name": "cobol",
+    "full-name": "COBOL",
+    "server-name": "cobol-language-service",
+    "server-url": "https://github.com/eclipse-che4z/che-che4z-lsp-for-cobol",
+    "installation-url": "https://github.com/eclipse-che4z/che-che4z-lsp-for-cobol/releases",
+    "debugger": "Not relevant"
+  },
+  {
     "name": "crystal",
     "full-name": "Crystal",
     "server-name": "crystalline",
@@ -185,6 +194,15 @@
     "server-url": "https://github.com/microsoft/vscode/tree/main/extensions/css-language-features/server",
     "installation": "npm install -g vscode-langservers-extracted",
     "lsp-install-server": "css-ls",
+    "debugger": "Not available"
+  },
+  {
+    "name": "cucumber",
+    "full-name": "Cucumber",
+    "server-name": "cucumber-language-server",
+    "server-url": "https://github.com/cucumber/language-server",
+    "installation": "npm install -g @cucumber/language-server",
+    "lsp-install-server": "cucumber-language-server",
     "debugger": "Not available"
   },
   {
@@ -487,6 +505,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "lisp",
+    "full-name": "Lisp",
+    "server-name": "alive-lsp",
+    "server-url": "https://github.com/nobody-famous/alive-lsp",
+    "installation-url": "https://github.com/nobody-famous/alive-lsp?tab=readme-ov-file#running-the-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "ltex",
     "full-name": "LanguageTool",
     "server-name": "LTEX",
@@ -642,6 +668,14 @@
     "server-name": "nix-nil",
     "server-url": "https://github.com/oxalica/nil",
     "installation": "nix-env -i nil || nix profile install nixpkgs#nil",
+    "debugger": "Not available"
+  },
+  {
+    "name": "nushell",
+    "full-name": "Nushell",
+    "server-name": "nu",
+    "server-url": "https://github.com/nushell/nushell/tree/main/crates/nu-lsp",
+    "installation": "It is included in Nushell >= 0.87.0",
     "debugger": "Not available"
   },
   {
@@ -828,6 +862,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "rpm-spec",
+    "full-name": "RPM Spec",
+    "server-name": "rpm-spec-language-server",
+    "server-url": "https://github.com/dcermak/rpm-spec-language-server",
+    "installation": "pip install --user rpm-spec-language-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "rubocop",
     "full-name": "Ruby (RuboCop)",
     "server-name": "rubocop",
@@ -914,13 +956,13 @@
     "debugger": "Yes"
   },
   {
-      "name": "solidity",
-      "full-name": "nomicfoundation/solidity-language-server",
-      "server-name": "solidity-language-server",
-      "installation": "npx @nomicfoundation/solidity-language-server",
-      "server-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
-      "installation-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
-      "debugger": "Not available"
+    "name": "solidity",
+    "full-name": "nomicfoundation/solidity-language-server",
+    "server-name": "solidity-language-server",
+    "installation": "npx @nomicfoundation/solidity-language-server",
+    "server-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
+    "installation-url": "https://github.com/NomicFoundation/hardhat-vscode/blob/development/server/README.md",
+    "debugger": "Not available"
   },
   {
     "name": "sorbet",
@@ -1030,6 +1072,15 @@
     "server-name": "taplo",
     "server-url": "https://github.com/tamasfe/taplo",
     "installation": "cargo install taplo-cli --features lsp",
+    "debugger": "Not available"
+  },
+  {
+    "name": "trunk",
+    "full-name": "Trunk",
+    "server-name": "trunk-lsp",
+    "server-url": "https://docs.trunk.io",
+    "installation": "curl https://get.trunk.io -fsSL | bash -s -- -y; trunk init",
+    "installation-url": "https://docs.trunk.io/check",
     "debugger": "Not available"
   },
   {

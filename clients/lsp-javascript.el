@@ -498,7 +498,7 @@ TypeScript 2.6.1 or newer in the workspace."
           (const "ru")
           (const "zh-CN")
           (const "zh-TW")
-          nil)
+          (const :tag "default" nil))
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-javascript-suggestion-actions-enabled t
@@ -806,13 +806,22 @@ For example, yarn PnP."
         nil
       (f-parent output))))
 
+(defun lsp-clients-typescript-package-path-direct ()
+  "`lsp-package-path' apply `'typescript' is modified.
+because the lsp server may not recognize the tsserver executable file,
+e.g., on Windows."
+  (if (memq system-type '(cygwin windows-nt ms-dos))
+      (f-join (f-parent (lsp-package-path 'typescript)) "node_modules" "typescript" "lib")
+    (lsp-package-path 'typescript)))
+
 (defun lsp-clients-typescript-server-path ()
+  "Return the TS sever path base on settings."
   (if lsp-clients-typescript-prefer-use-project-ts-server
       (let ((server-path (lsp-clients-typescript-require-resolve)))
         (if (f-exists? server-path)
             server-path
-          (lsp-package-path 'typescript)))
-    (lsp-package-path 'typescript)))
+          (lsp-clients-typescript-package-path-direct)))
+    (lsp-clients-typescript-package-path-direct)))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
@@ -900,13 +909,13 @@ with the file contents."
         (unless (re-search-forward "[^\n[:space:]]" nil t)
           (setq stop t))
         (if (= (point) (point-min)) (setq stop t) (backward-char))
-        (cond ((or (looking-at "//+[ ]*@flow")
-                   (looking-at "/\\**[ ]*@flow")
-                   (looking-at "[ ]*\\*[ ]*@flow"))
+        (cond ((or (looking-at-p "//+[ ]*@flow")
+                   (looking-at-p "/\\**[ ]*@flow")
+                   (looking-at-p "[ ]*\\*[ ]*@flow"))
                (setq found t) (setq stop t))
-              ((or (looking-at "//") (looking-at "*"))
+              ((or (looking-at-p "//") (looking-at-p "*"))
                (forward-line))
-              ((looking-at "/\\*")
+              ((looking-at-p "/\\*")
                (save-excursion
                  (unless (re-search-forward "*/" nil t) (setq stop t)))
                (forward-line))
@@ -1020,15 +1029,15 @@ Examples: `./import-map.json',
 
 (defun lsp-clients-deno--make-init-options ()
   "Initialization options for the Deno language server."
-  `(:enable t
-    :config ,lsp-clients-deno-config
-    :importMap ,lsp-clients-deno-import-map
-    :lint ,(lsp-json-bool lsp-clients-deno-enable-lint)
-    :unstable ,(lsp-json-bool lsp-clients-deno-enable-unstable)
-    :codeLens (:implementations ,(lsp-json-bool lsp-clients-deno-enable-code-lens-implementations)
-               :references ,(lsp-json-bool (or lsp-clients-deno-enable-code-lens-references
-                                               lsp-clients-deno-enable-code-lens-references-all-functions))
-               :referencesAllFunctions ,(lsp-json-bool lsp-clients-deno-enable-code-lens-references-all-functions))))
+  `( :enable t
+     :config ,lsp-clients-deno-config
+     :importMap ,lsp-clients-deno-import-map
+     :lint ,(lsp-json-bool lsp-clients-deno-enable-lint)
+     :unstable ,(lsp-json-bool lsp-clients-deno-enable-unstable)
+     :codeLens ( :implementations ,(lsp-json-bool lsp-clients-deno-enable-code-lens-implementations)
+                 :references ,(lsp-json-bool (or lsp-clients-deno-enable-code-lens-references
+                                                 lsp-clients-deno-enable-code-lens-references-all-functions))
+                 :referencesAllFunctions ,(lsp-json-bool lsp-clients-deno-enable-code-lens-references-all-functions))))
 
 (lsp-register-client
  (make-lsp-client :new-connection

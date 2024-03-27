@@ -24,6 +24,8 @@
 
 ;;; Code:
 
+(require 'lsp-mode)
+
 (defgroup lsp-wgsl nil
   "LSP support for wgsl, using wgsl-analyzer."
   :group 'lsp-mode
@@ -187,6 +189,7 @@ definitions resolved."
                                       ;; https://github.com/wgsl-analyzer/wgsl-analyzer/issues/77
                                       (lsp--set-configuration '())))
                   :request-handlers (lsp-ht ("wgsl-analyzer/requestConfiguration" #'lsp-wgsl--send-configuration))
+                  :major-modes '(wgsl-mode)
                   :activation-fn (lsp-activate-on "wgsl")
                   :download-server-fn (lambda (_client callback error-callback _update?)
                                         (lsp-package-ensure 'wgsl-analyzer

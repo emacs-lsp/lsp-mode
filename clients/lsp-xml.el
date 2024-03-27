@@ -287,9 +287,9 @@ The value for `enabled' can be always, never or onValidSchema."
   ("xml.catalogs" lsp-xml-catalogs)
   ("xml.trace.server" lsp-xml-trace-server)))
 
-(defconst lsp-xml-jar-version "0.21.0")
+(defconst lsp-xml-jar-version "0.27.0")
 
-(defconst lsp-xml-jar-name (format "org.eclipse.lemminx-%s-uber.jar" lsp-xml-jar-version))
+(defconst lsp-xml-jar-name "org.eclipse.lemminx-uber.jar")
 
 (defcustom lsp-xml-jar-file (f-join lsp-server-install-dir "xmlls" lsp-xml-jar-name)
   "Xml server jar command."
@@ -300,7 +300,7 @@ The value for `enabled' can be always, never or onValidSchema."
 
 (defcustom lsp-xml-jar-download-url
   (format
-   "https://repo.eclipse.org/content/repositories/lemminx-releases/org/eclipse/lemminx/org.eclipse.lemminx/%s/%s"
+   "https://download.eclipse.org/lemminx/releases/%s/%s"
    lsp-xml-jar-version
    lsp-xml-jar-name)
   "Automatic download url for lsp-xml."

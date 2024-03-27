@@ -117,14 +117,14 @@ language server."
 (defcustom lsp-terraform-ls-providers-position-params nil
   "The optional providers tree position params.
 Defaults to side following treemacs default."
-  :type 'list
+  :type 'alist
   :group 'lsp-terraform-ls
   :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-terraform-ls-module-calls-position-params nil
   "The optional module calls tree position params.
 Defaults to side following treemacs default."
-  :type 'list
+  :type 'alist
   :group 'lsp-terraform-ls
   :package-version '(lsp-mode . "8.0.1"))
 

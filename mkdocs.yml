@@ -62,8 +62,10 @@ nav:
     - C# (csharp-ls): page/lsp-csharp-ls.md
     - Clojure: page/lsp-clojure.md
     - CMake: page/lsp-cmake.md
+    - COBOL: page/lsp-cobol.md
     - Crystal: page/lsp-crystal.md
     - CSS/LessCSS/SASS/SCSS: page/lsp-css.md
+    - Cucumber: page/lsp-cucumber.md
     - Cypher: page/lsp-cypher.md
     - D: page/lsp-d.md
     - Dart: https://emacs-lsp.github.io/lsp-dart
@@ -98,6 +100,7 @@ nav:
     - Julia: page/lsp-julia.md
     - Kotlin: page/lsp-kotlin.md
     - LanguageTool (LTEX): page/lsp-ltex.md
+    - Lisp: page/lsp-lisp.md
     - Lua (EmmyLua): page/lsp-emmy-lua.md
     - Lua (Lua Language Server): page/lsp-lua-language-server.md
     - Lua (Lua-Lsp): page/lsp-lua-lsp.md
@@ -112,6 +115,7 @@ nav:
     - Nix (nixd-lsp): page/lsp-nix-nixd.md
     - Nix (rnix-lsp): page/lsp-nix-rnix.md
     - Nix (nil): page/lsp-nix-nil.md
+    - Nushell: page/lsp-nushell.md
     - OCaml (ocaml-lsp): page/lsp-ocaml-lsp-server.md
     - OpenSCAD: page/lsp-openscad.md
     - Pascal/Object Pascal: page/lsp-pascal.md
@@ -134,6 +138,7 @@ nav:
     - R: page/lsp-r.md
     - Racket (jeapostrophe): page/lsp-racket-langserver.md
     - Racket (Theia): page/lsp-racket-language-server.md
+    - RPM Spec: page/lsp-rpm-spec.md
     - Ruby (RuboCop): page/lsp-rubocop.md
     - Ruby (ruby-lsp): page/lsp-ruby-lsp.md
     - Ruby (Solargraph): page/lsp-solargraph.md
@@ -156,6 +161,7 @@ nav:
     - TeX, LaTeX, etc (texlab, external): page/lsp-latex.md
     - Tilt: page/lsp-tilt.md
     - TOML: page/lsp-toml.md
+    - Trunk: page/lsp-trunk.md
     - TTCN3: page/lsp-ttcn3.md
     - V: page/lsp-v.md
     - Vala: page/lsp-vala.md

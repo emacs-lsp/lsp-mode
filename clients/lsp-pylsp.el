@@ -356,6 +356,188 @@ Requires pylsp >= 0.33.0"
   :type 'boolean
   :group 'lsp-pylsp)
 
+;; See https://github.com/python-lsp/python-lsp-ruff#configuration
+
+(defcustom lsp-pylsp-plugins-ruff-enabled nil
+  "Enable or disable the plugin."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-executable nil
+  "Custom path to ruff."
+  :type 'file
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-config nil
+  "Custom config for ruff to use."
+  :type 'file
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-extend-select nil
+  "Rules that are additionally used by ruff."
+  :type 'lsp-string-vector
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-extend-ignore nil
+  "Rules that are additionally ignored by ruff."
+  :type 'lsp-string-vector
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-format nil
+  "Rules that should be fixed when running textDocument/formatting.
+
+Note each rule must additionally be marked as fixable by ruff."
+  :type 'lsp-string-vector
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-severities nil
+  "Optional table of rules where a custom severity is desired."
+  :type '(alist :key-type (lsp-string-vector :tag "rules") :value-type (string :tag "severity"))
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-unsafe-fixes nil
+  "Whether or not to offer unsafe fixes as code actions.
+
+Note this is ignored with the \"Fix All\" action."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+;; Rules that are ignored when a pyproject.toml or ruff.toml is present
+(defcustom lsp-pylsp-plugins-ruff-line-length 88
+  "Line length to pass to ruff checking and formatting.
+
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml is
+present."
+  :type 'integer
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-exclude nil
+  "Files to be excluded by ruff checking.
+
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present."
+  :type 'lsp-string-vector
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-select nil
+  "Rules to be enabled by ruff.
+
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present."
+  :type 'lsp-string-vector
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-ignore nil
+  "Rules to be ignored by ruff.
+
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present."
+  :type 'lsp-string-vector
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-per-file-ignores nil
+  "Rules that should be ignored for specific files.
+
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present."
+  :type '(alist :key-type (lsp-string-vector :tag "files") :value-type (string :tag "rule"))
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-preview nil
+  "Whether to enable the preview style linting and formatting.
+
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-ruff-target-version nil
+  "The minimum python version to target (applies for both linting and formatting).
+    
+Note this variable will be ignored when a when a pyproject.toml or ruff.toml
+is present."
+  :type 'string
+  :group 'lsp-pylsp)
+
+;; See https://github.com/python-lsp/pylsp-mypy#configuration
+
+(defcustom lsp-pylsp-plugins-mypy-enabled nil
+  "Enable or disable the plugin."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-mypy-live-mode t
+  "If non-nil, type checking is provided as you type.
+
+This writes to a tempfile every time a check is done.  Turning off live_mode
+means you must save your changes for mypy diagnostics to update correctly."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-mypy-dmypy nil
+  "If non-nil, use \"dmypy run\" rather than mypy.
+
+This uses the dmypy daemon and may dramatically improve the responsiveness of
+the pylsp server, however this currently does not work in live_mode.  Enabling
+this disables live_mode, even for conflicting configs."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-mypy-strict nil
+  "If non-nil, enable the strict option of mypy.
+
+This option often is too strict to be useful."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-mypy-overrides [t]
+  "A list of alternate or supplemental command-line options.
+
+This modifies the options passed to mypy or the mypy-specific ones passed to
+dmypy run.  When present, the special boolean member True is replaced with
+the command-line options that would've been passed had overrides not been
+specified.  Later options take precedence, which allows for replacing or
+negating individual default options (see mypy.main:process_options and mypy
+--help | grep inverse)."
+  :type '(vector (choice string boolean))
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-mypy-dmypy-status-file ".dmypy.json"
+  "The status file dmypy should use.
+
+This modifies the --status-file option passed to dmypy given dmypy is active."
+  :type 'string
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-mypy-config-sub-paths nil
+  "Sub paths under which the mypy configuration file may be found.
+
+For each directory searched for the mypy config file, this also searches the
+sub paths specified here."
+  :type 'lsp-string-vector
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-mypy-report-progress nil
+  "If non-nil, report basic progress to the LSP client.
+
+With this option, pylsp-mypy will report when mypy is running, given your editor
+supports LSP progress reporting.  For small files this might produce annoying
+flashing, especially in with live_mode.  For large projects, enabling this can
+be helpful to assure yourself whether mypy is still running."
+  :type 'boolean
+  :group 'lsp-pylsp)
+
+(defcustom lsp-pylsp-plugins-mypy-exclude nil
+  "A list of regular expressions which should be ignored.
+
+The mypy runner wil not be invoked when a document path is matched by one of the
+expressions.  Note that this differs from the exclude directive of a mypy config
+which is only used for recursively discovering files when mypy is invoked on a
+whole directory.  For both windows or unix platforms you should use forward
+slashes (/) to indicate paths."
+  :type 'lsp-string-vector
+  :group 'lsp-pylsp)
+
 (defcustom lsp-pylsp-rename-backend 'jedi
   "Choose renaming backend.
 
@@ -433,6 +615,30 @@ So it will rename only references it can find."
    ("pylsp.plugins.preload.enabled" lsp-pylsp-plugins-preload-enabled t)
    ("pylsp.plugins.mccabe.threshold" lsp-pylsp-plugins-mccabe-threshold)
    ("pylsp.plugins.mccabe.enabled" lsp-pylsp-plugins-mccabe-enabled t)
+   ("pylsp.plugins.ruff.enabled" lsp-pylsp-plugins-ruff-enabled t)
+   ("pylsp.plugins.ruff.executable" lsp-pylsp-plugins-ruff-executable)
+   ("pylsp.plugins.ruff.config" lsp-pylsp-plugins-ruff-config)
+   ("pylsp.plugins.ruff.extendSelect" lsp-pylsp-plugins-ruff-extend-select)
+   ("pylsp.plugins.ruff.extendIgnore" lsp-pylsp-plugins-ruff-extend-ignore)
+   ("pylsp.plugins.ruff.format" lsp-pylsp-plugins-ruff-format)
+   ("pylsp.plugins.ruff.severities" lsp-pylsp-plugins-ruff-severities)
+   ("pylsp.plugins.ruff.unsafeFixes" lsp-pylsp-plugins-ruff-unsafe-fixes t)
+   ("pylsp.plugins.ruff.lineLength" lsp-pylsp-plugins-ruff-line-length)
+   ("pylsp.plugins.ruff.exclude" lsp-pylsp-plugins-ruff-exclude)
+   ("pylsp.plugins.ruff.select" lsp-pylsp-plugins-ruff-select)
+   ("pylsp.plugins.ruff.ignore" lsp-pylsp-plugins-ruff-ignore)
+   ("pylsp.plugins.ruff.perFileIgnores" lsp-pylsp-plugins-ruff-per-file-ignores)
+   ("pylsp.plugins.ruff.preview" lsp-pylsp-plugins-ruff-preview t)
+   ("pylsp.plugins.ruff.targetVersion" lsp-pylsp-plugins-ruff-target-version)
+   ("pylsp.plugins.pylsp_mypy.enabled" lsp-pylsp-plugins-mypy-enabled t)
+   ("pylsp.plugins.pylsp_mypy.live_mode" lsp-pylsp-plugins-mypy-live-mode t)
+   ("pylsp.plugins.pylsp_mypy.dmypy" lsp-pylsp-plugins-mypy-dmypy t)
+   ("pylsp.plugins.pylsp_mypy.strict" lsp-pylsp-plugins-mypy-strict t)
+   ("pylsp.plugins.pylsp_mypy.overrides" lsp-pylsp-plugins-mypy-overrides)
+   ("pylsp.plugins.pylsp_mypy.dmypy_status_file" lsp-pylsp-plugins-mypy-dmypy-status-file)
+   ("pylsp.plugins.pylsp_mypy.config_sub_paths" lsp-pylsp-plugins-mypy-config-sub-paths)
+   ("pylsp.plugins.pylsp_mypy.report_progress" lsp-pylsp-plugins-mypy-report-progress t)
+   ("pylsp.plugins.pylsp_mypy.exclude" lsp-pylsp-plugins-mypy-exclude)
    ("pylsp.plugins.jedi_symbols.all_scopes" lsp-pylsp-plugins-jedi-symbols-all-scopes t)
    ("pylsp.plugins.jedi_symbols.enabled" lsp-pylsp-plugins-jedi-symbols-enabled t)
    ("pylsp.plugins.jedi_signature_help.enabled" lsp-pylsp-plugins-jedi-signature-help-enabled t)
