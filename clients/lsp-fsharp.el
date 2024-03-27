@@ -32,13 +32,11 @@
   :group 'lsp-mode
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-fsharp-server-install-dir (f-join lsp-server-install-dir "fsautocomplete/")
-  "Install directory for fsautocomplete server.
-The slash is expected at the end."
+(defcustom lsp-fsharp-server-dll-path nil
+  "Path to a self-built fsautocomplete dll. Useful for debugging."
   :group 'lsp-fsharp
-  :risky t
-  :type 'directory
-  :package-version '(lsp-mode . "6.1"))
+  :type 'file
+  :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-fsharp-server-args nil
   "Extra arguments for the F# language server."
@@ -178,10 +176,7 @@ available, else the globally installed tool."
 
 (defun lsp-fsharp--fsac-cmd ()
   "The location of fsautocomplete executable."
-  (or (-let [maybe-local-executable (expand-file-name "fsautocomplete" lsp-fsharp-server-install-dir)]
-        (when (f-exists-p maybe-local-executable)
-          maybe-local-executable))
-      (executable-find "fsautocomplete")
+  (or (executable-find "fsautocomplete")
       (f-join (or (getenv "USERPROFILE") (getenv "HOME"))
               ".dotnet" "tools" "fsautocomplete")))
 
@@ -207,9 +202,11 @@ available, else the globally installed tool."
                                 (list "/bin/ksh" "-c"))
 
                                (t nil)))
-        (fsautocomplete-exec (lsp-fsharp--fsac-cmd)))
+        (fsautocomplete-cmd (if lsp-fsharp-server-dll-path
+                                (list "dotnet" (expand-file-name lsp-fsharp-server-dll-path))
+                              (list (lsp-fsharp--fsac-cmd)))))
     (append startup-wrapper
-            (list fsautocomplete-exec)
+            fsautocomplete-cmd
             lsp-fsharp-server-args)))
 
 (defun lsp-fsharp--test-fsautocomplete-present ()
