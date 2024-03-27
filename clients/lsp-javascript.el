@@ -790,18 +790,22 @@ name (e.g. `data' variable passed as `data' parameter)."
   (when-let ((workspace (lsp-find-workspace 'ts-ls (buffer-file-name))))
     (eq 'initialized (lsp--workspace-status workspace))))
 
-(defun lsp-clients-typescript-require-resolve ()
+(defun lsp-clients-typescript-require-resolve (&optional dir)
   "Get the location of the typescript.
 Use Node.js require.
 The node_modules directory structure is suspect
 and should be trusted as little as possible.
 If you call require in Node.js,
 it should take into account the various hooks.
-For example, yarn PnP."
-  (let ((output
-         (string-trim-right
-          (shell-command-to-string
-           "node -e \"console.log(require.resolve('typescript'))\""))))
+For example, yarn PnP.
+
+Optional argument DIR specifies the working directory
+to run the command in."
+  (let* ((default-directory (or dir default-directory))
+         (output
+          (string-trim-right
+           (shell-command-to-string
+            "node -e \"console.log(require.resolve('typescript'))\""))))
     (if (string-empty-p output)
         nil
       (f-parent output))))
@@ -811,7 +815,7 @@ For example, yarn PnP."
 because the lsp server may not recognize the tsserver executable file,
 e.g., on Windows."
   (if (memq system-type '(cygwin windows-nt ms-dos))
-      (f-join (f-parent (lsp-package-path 'typescript)) "node_modules" "typescript" "lib")
+      (lsp-clients-typescript-require-resolve (f-parent (lsp-package-path 'typescript)))
     (lsp-package-path 'typescript)))
 
 (defun lsp-clients-typescript-server-path ()
