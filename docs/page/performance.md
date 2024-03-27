@@ -68,12 +68,20 @@ to be watched for performance reasons, you can add a regexp to that variable exc
 
 Check the [file watchers section](file-watchers.md) for details.
 
-## Check if logging is switched off.
+## Check if logging is switched off
 
 Make sure `lsp-log-io` is `nil`. You might have forgotten it after a debugging session, for example. It can cause a great performance hit.
 
 ```elisp
 (setq lsp-log-io nil) ; if set to true can cause a performance hit
+```
+
+## If your language server doesn't support formatting it is better to switch off identation
+
+`lsp-enable-indentation` is `t` by defult. This can cause performance issues caused by timeouts.
+
+```elisp
+(setq lsp-enable-indentation nil) ; causes timeouts if a server doesn't support textDocument/rangeFormatting
 ```
 
 Sometimes you might need to check logging for specific LSP server configuration as well, i.e. for `lsp-eslint` it is: `lsp-eslint-trace-server`.
