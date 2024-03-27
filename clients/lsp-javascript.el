@@ -800,7 +800,7 @@ it should take into account the various hooks."
   (let ((output
          (string-trim-right
           (shell-command-to-string
-           "node -e \"console.log(require.resolve('typescript'))\" 2>/dev/null"))))
+           "node -e \"console.log(require.resolve('typescript'))\""))))
     (if (string-empty-p output)
         nil
       (f-parent output))))
