@@ -137,6 +137,18 @@ styles."
   :group 'lsp-html
   :package-version '(lsp-mode . "6.1"))
 
+(defcustom lsp-html-hover-documentation t
+  "Whether to show documentation strings on hover or not."
+  :type 'boolean
+  :group 'lsp-html
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-html-hover-references t
+  "Whether to show MDN references in documentation popups."
+  :type 'boolean
+  :group 'lsp-html
+  :package-version '(lsp-mode . "8.0.1"))
+
 (defcustom lsp-html-trace-server "off"
   "Traces the communication between VS Code and the HTML language server."
   :type '(choice
@@ -163,6 +175,8 @@ styles."
    ("html.format.unformatted" lsp-html-format-unformatted)
    ("html.format.wrapLineLength" lsp-html-format-wrap-line-length)
    ("html.format.enable" lsp-html-format-enable t)
+   ("html.hover.documentation" lsp-html-hover-documentation t)
+   ("html.hover.references" lsp-html-hover-references t)
    ("html.experimental.customData" lsp-html-experimental-custom-data)))
 
 (defcustom lsp-html-server-command-args '("--stdio")
