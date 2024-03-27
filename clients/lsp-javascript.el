@@ -790,13 +790,14 @@ name (e.g. `data' variable passed as `data' parameter)."
   (when-let ((workspace (lsp-find-workspace 'ts-ls (buffer-file-name))))
     (eq 'initialized (lsp--workspace-status workspace))))
 
-(defun lsp-clients-typescript-server-path-by-node-require ()
-  "Get the location of the typescript library.
-Use Node.js.
+(defun lsp-clients-typescript-require-resolve ()
+  "Get the location of the typescript.
+Use Node.js require.
 The node_modules directory structure is suspect
 and should be trusted as little as possible.
 If you call require in Node.js,
-it should take into account the various hooks."
+it should take into account the various hooks.
+For example, yarn PnP."
   (let ((output
          (string-trim-right
           (shell-command-to-string
@@ -807,7 +808,7 @@ it should take into account the various hooks."
 
 (defun lsp-clients-typescript-server-path ()
   (if lsp-clients-typescript-prefer-use-project-ts-server
-      (let ((server-path (lsp-clients-typescript-server-path-by-node-require)))
+      (let ((server-path (lsp-clients-typescript-require-resolve)))
         (if (f-exists? server-path)
             server-path
           (lsp-package-path 'typescript)))
