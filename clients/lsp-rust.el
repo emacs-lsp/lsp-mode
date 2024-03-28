@@ -1752,9 +1752,8 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
                        ("rust-analyzer.showReferences" #'lsp-rust--analyzer-show-references)
                        ("rust-analyzer.triggerParameterHints" #'lsp--action-trigger-parameter-hints))
   :library-folders-fn (lambda (_workspace) lsp-rust-analyzer-library-directories)
-  :semantic-tokens-faces-overrides `(:discard-default-modifiers t
-                                                                :modifiers
-                                                                ,(lsp-rust-analyzer--semantic-modifiers))
+  :semantic-tokens-faces-overrides `( :discard-default-modifiers t
+                                      :modifiers ,(lsp-rust-analyzer--semantic-modifiers))
   :server-id 'rust-analyzer
   :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (featurep 'yasnippet))))))
   :download-server-fn (lambda (_client callback error-callback _update?)
