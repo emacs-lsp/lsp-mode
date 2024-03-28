@@ -33,7 +33,8 @@
 
 (defcustom lsp-html-custom-data []
   "A list of JSON file paths that define custom tags, properties and other HTML
-syntax constructs. Only workspace folder setting will be read."
+syntax constructs. Only workspace folder setting will be read.
+All json file paths should be relative to your workspace folder."
   :type 'lsp-repeatable-vector
   :group 'lsp-html
   :package-version '(lsp-mode . "8.0.1"))
