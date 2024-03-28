@@ -287,8 +287,6 @@ The value for `enabled' can be always, never or onValidSchema."
   ("xml.catalogs" lsp-xml-catalogs)
   ("xml.trace.server" lsp-xml-trace-server)))
 
-(defconst lsp-xml-has-java? (executable-find "java"))
-
 (defcustom lsp-xml-prefer-jar t
   "Prefer using the jar file instead of the native binary."
   :type 'boolean
@@ -352,18 +350,20 @@ The value for `enabled' can be always, never or onValidSchema."
              :decompress :zip
              :store-path lsp-xml-bin-file))
 
-(defcustom lsp-xml-server-command (or (and lsp-xml-has-java? lsp-xml-prefer-jar `("java" "-jar" ,lsp-xml-jar-file))
-                                      `(,lsp-xml-bin-file))
+(defsubst lsp-xml-has-java? () (executable-find "java"))
+
+(defcustom lsp-xml-server-command
+  (lambda () (or (and (lsp-xml-has-java?) lsp-xml-prefer-jar `("java" "-jar" ,lsp-xml-jar-file))
+                 `(,lsp-xml-bin-file)))
   "Xml server command."
-  :type '(repeat string)
   :group 'lsp-xml
   :package-version '(lsp-mode . "6.1"))
 
 (defun lsp-xml--create-connection ()
   "Create a connection for the XML language server."
   (lsp-stdio-connection
-   (lambda () lsp-xml-server-command)
-   (lambda () (or (and lsp-xml-has-java? lsp-xml-prefer-jar (f-exists? lsp-xml-jar-file))
+   (lambda () (lsp-resolve-value lsp-xml-server-command))
+   (lambda () (or (and (lsp-xml-has-java?) lsp-xml-prefer-jar (f-exists? lsp-xml-jar-file))
                   (f-exists? lsp-xml-bin-file)))))
 
 (lsp-register-client
@@ -376,7 +376,7 @@ The value for `enabled' can be always, never or onValidSchema."
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration (lsp-configuration-section "xml"))))
                   :download-server-fn (lambda (_client callback error-callback _update?)
-                                        (lsp-package-ensure (or (and lsp-xml-has-java? lsp-xml-prefer-jar 'xmlls)
+                                        (lsp-package-ensure (or (and (lsp-xml-has-java?) lsp-xml-prefer-jar 'xmlls)
                                                                 'xmlls-bin)
                                                             callback error-callback))))
 
