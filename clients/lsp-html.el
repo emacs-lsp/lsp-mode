@@ -23,6 +23,7 @@
 ;;; Code:
 
 (require 'lsp-mode)
+(require 'f)
 
 (defgroup lsp-html nil
   "LSP support for HTML, using vscode's built-in language server."
@@ -30,12 +31,12 @@
   :link '(url-link "https://github.com/microsoft/vscode/tree/main/extensions/html-language-features/server")
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-html-experimental-custom-data nil
+(defcustom lsp-html-custom-data []
   "A list of JSON file paths that define custom tags, properties and other HTML
 syntax constructs. Only workspace folder setting will be read."
-  :type '(choice (const nil) string)
+  :type 'lsp-repeatable-vector
   :group 'lsp-html
-  :package-version '(lsp-mode . "6.1"))
+  :package-version '(lsp-mode . "8.0.1"))
 
 (defcustom lsp-html-format-enable t
   "Enable/disable default HTML formatter."
@@ -177,13 +178,21 @@ styles."
    ("html.format.enable" lsp-html-format-enable t)
    ("html.hover.documentation" lsp-html-hover-documentation t)
    ("html.hover.references" lsp-html-hover-references t)
-   ("html.experimental.customData" lsp-html-experimental-custom-data)))
+   ("html.customData" lsp-html-custom-data)))
 
 (defcustom lsp-html-server-command-args '("--stdio")
   "Command to start html-languageserver."
   :type '(repeat string)
   :group 'lsp-html
   :package-version '(lsp-mode . "6.3"))
+
+;; Caveat: uri seems to be sent as a single length vector.
+(defun lsp-html--get-content (_workspace files callback)
+  "Helper function for getting the content of a URI when the language server requests it."
+  (let* ((filename (aref files 0))
+         (uri (f-join (lsp-workspace-root) filename))
+         (file-content (f-read-text uri)))
+    (funcall callback file-content)))
 
 (lsp-dependency 'html-language-server
                 '(:system "vscode-html-language-server")
@@ -199,6 +208,9 @@ styles."
                   :priority -4
                   :completion-in-comments? t
                   :server-id 'html-ls
+                  :initialization-options (lambda ()
+                                            (list :dataPaths lsp-html-custom-data))
+                  :async-request-handlers (ht ("html/customDataContent" #'lsp-html--get-content))
                   :initialized-fn (lambda (w)
                                     (with-lsp-workspace w
                                       (lsp--set-configuration
