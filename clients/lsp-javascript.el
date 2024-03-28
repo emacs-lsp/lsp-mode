@@ -801,31 +801,26 @@ For example, yarn PnP.
 
 Optional argument DIR specifies the working directory
 to run the command in."
-  (let* ((default-directory (or dir default-directory))
-         (output
-          (string-trim-right
-           (shell-command-to-string
-            "node -e \"console.log(require.resolve('typescript'))\""))))
-    (if (string-empty-p output)
-        nil
-      (f-parent output))))
-
-(defun lsp-clients-typescript-package-path-direct ()
-  "`lsp-package-path' apply `'typescript' is modified.
-because the lsp server may not recognize the tsserver executable file,
-e.g., on Windows."
-  (if (memq system-type '(cygwin windows-nt ms-dos))
-      (lsp-clients-typescript-require-resolve (f-parent (lsp-package-path 'typescript)))
-    (lsp-package-path 'typescript)))
+  (when-let*
+      ((default-directory (or dir default-directory))
+       (output
+        (string-trim-right
+         (shell-command-to-string
+          "node -e \"console.log(require.resolve('typescript'))\"")))
+       (not-empty (not (string-empty-p output))))
+    (f-parent output)))
 
 (defun lsp-clients-typescript-server-path ()
-  "Return the TS sever path base on settings."
-  (if lsp-clients-typescript-prefer-use-project-ts-server
-      (let ((server-path (lsp-clients-typescript-require-resolve)))
-        (if (f-exists? server-path)
-            server-path
-          (lsp-clients-typescript-package-path-direct)))
-    (lsp-clients-typescript-package-path-direct)))
+  "Return the TS server path based on settings."
+  (if-let* ((use-project-ts lsp-clients-typescript-prefer-use-project-ts-server)
+            (server-path (lsp-clients-typescript-require-resolve))
+            (server-path-exist (f-exists? server-path)))
+      server-path
+    (if (memq system-type '(cygwin windows-nt ms-dos))
+        ;; The Windows environment does not recognize the top-level PATH returned by `lsp-package-path',
+        ;; so the real PATH is returned through Node.js.
+        (lsp-clients-typescript-require-resolve (f-parent (lsp-package-path 'typescript)))
+      (lsp-package-path 'typescript))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
