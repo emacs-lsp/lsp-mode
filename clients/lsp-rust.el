@@ -69,11 +69,7 @@
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-rust-library-directories
-  (let ((home-dir (pcase system-type
-                    ('windows-nt (getenv "USERPROFILE"))
-                    (_ "~/"))))
-    `(,(expand-file-name ".cargo/registry/src" home-dir)
-      ,(expand-file-name ".rustup/toolchains" home-dir)))
+  '("~/.cargo/registry/src" "~/.rustup/toolchains")
   "List of directories which will be considered to be libraries."
   :risky t
   :type '(repeat string)
@@ -356,11 +352,7 @@ PARAMS progress report notification data."
   :package-version '(lsp-mode . "6.2"))
 
 (defcustom lsp-rust-analyzer-library-directories
-  (let ((home-dir (pcase system-type
-                    ('windows-nt (getenv "USERPROFILE"))
-                    (_ "~/"))))
-    `(,(expand-file-name ".cargo/registry/src" home-dir)
-      ,(expand-file-name ".rustup/toolchains" home-dir)))
+  '("~/.cargo/registry/src" "~/.rustup/toolchains")
   "List of directories which will be considered to be libraries."
   :risky t
   :type '(repeat string)
