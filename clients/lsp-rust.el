@@ -68,7 +68,8 @@
   :group 'lsp-rust-rls
   :package-version '(lsp-mode . "6.1"))
 
-(defcustom lsp-rust-library-directories '("~/.cargo/registry/src" "~/.rustup/toolchains")
+(defcustom lsp-rust-library-directories
+  '("~/.cargo/registry/src" "~/.rustup/toolchains")
   "List of directories which will be considered to be libraries."
   :risky t
   :type '(repeat string)
@@ -350,7 +351,8 @@ PARAMS progress report notification data."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "6.2"))
 
-(defcustom lsp-rust-analyzer-library-directories '("~/.cargo/registry/src" "~/.rustup/toolchains")
+(defcustom lsp-rust-analyzer-library-directories
+  '("~/.cargo/registry/src" "~/.rustup/toolchains")
   "List of directories which will be considered to be libraries."
   :risky t
   :type '(repeat string)
@@ -1247,35 +1249,33 @@ other commands within the workspace.  Useful for setting RUSTFLAGS."
 
 ;; ---------------------------------------------------------------------
 
-
 (defun lsp-rust-analyzer--semantic-modifiers ()
   "Mapping between rust-analyzer keywords and fonts to apply.
 The keywords are sent in the initialize response, in the semantic
 tokens legend."
-  `(
-    ("documentation" . ,lsp-rust-analyzer-documentation-modifier)
-    ("declaration" . ,lsp-rust-analyzer-declaration-modifier)
-    ("definition" . ,lsp-rust-analyzer-definition-modifier)
-    ("static" . ,lsp-rust-analyzer-static-modifier)
-    ("abstract" . ,lsp-rust-analyzer-abstract-modifier)
-    ("deprecated" . ,lsp-rust-analyzer-deprecated-modifier)
-    ("readonly" . ,lsp-rust-analyzer-readonly-modifier)
+  `(("documentation"   . ,lsp-rust-analyzer-documentation-modifier)
+    ("declaration"     . ,lsp-rust-analyzer-declaration-modifier)
+    ("definition"      . ,lsp-rust-analyzer-definition-modifier)
+    ("static"          . ,lsp-rust-analyzer-static-modifier)
+    ("abstract"        . ,lsp-rust-analyzer-abstract-modifier)
+    ("deprecated"      . ,lsp-rust-analyzer-deprecated-modifier)
+    ("readonly"        . ,lsp-rust-analyzer-readonly-modifier)
     ("default_library" . ,lsp-rust-analyzer-default-library-modifier)
-    ("async" . ,lsp-rust-analyzer-async-modifier)
-    ("attribute" . ,lsp-rust-analyzer-attribute-modifier)
-    ("callable" . ,lsp-rust-analyzer-callable-modifier)
-    ("constant" . ,lsp-rust-analyzer-constant-modifier)
-    ("consuming" . ,lsp-rust-analyzer-consuming-modifier)
-    ("control_flow" . ,lsp-rust-analyzer-control-flow-modifier)
-    ("crate_root" . ,lsp-rust-analyzer-crate-root-modifier)
-    ("injected" . ,lsp-rust-analyzer-injected-modifier)
-    ("intra_doc_link" . ,lsp-rust-analyzer-intra-doc-link-modifier)
-    ("library" . ,lsp-rust-analyzer-library-modifier)
-    ("mutable" . ,lsp-rust-analyzer-mutable-modifier)
-    ("public" . ,lsp-rust-analyzer-public-modifier)
-    ("reference" . ,lsp-rust-analyzer-reference-modifier)
-    ("trait" . ,lsp-rust-analyzer-trait-modifier)
-    ("unsafe" . ,lsp-rust-analyzer-unsafe-modifier)))
+    ("async"           . ,lsp-rust-analyzer-async-modifier)
+    ("attribute"       . ,lsp-rust-analyzer-attribute-modifier)
+    ("callable"        . ,lsp-rust-analyzer-callable-modifier)
+    ("constant"        . ,lsp-rust-analyzer-constant-modifier)
+    ("consuming"       . ,lsp-rust-analyzer-consuming-modifier)
+    ("control_flow"    . ,lsp-rust-analyzer-control-flow-modifier)
+    ("crate_root"      . ,lsp-rust-analyzer-crate-root-modifier)
+    ("injected"        . ,lsp-rust-analyzer-injected-modifier)
+    ("intra_doc_link"  . ,lsp-rust-analyzer-intra-doc-link-modifier)
+    ("library"         . ,lsp-rust-analyzer-library-modifier)
+    ("mutable"         . ,lsp-rust-analyzer-mutable-modifier)
+    ("public"          . ,lsp-rust-analyzer-public-modifier)
+    ("reference"       . ,lsp-rust-analyzer-reference-modifier)
+    ("trait"           . ,lsp-rust-analyzer-trait-modifier)
+    ("unsafe"          . ,lsp-rust-analyzer-unsafe-modifier)))
 
 (defun lsp-rust-switch-server (&optional lsp-server)
   "Switch priorities of lsp servers, unless LSP-SERVER is already active."
@@ -1289,7 +1289,8 @@ tokens legend."
                              (* (lsp--client-priority (gethash server lsp-clients)) -1)))
           (message (format "Switched to server %s." server)))))))
 
-;; inlay hints
+;;
+;;; Inlay hints
 
 (defcustom lsp-rust-analyzer-debug-lens-extra-dap-args
   '(:MIMode "gdb" :miDebuggerPath "gdb" :stopAtEntry t :externalConsole :json-false)
@@ -1304,7 +1305,8 @@ meaning."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.0"))
 
-;; lenses
+;;
+;;; Lenses
 
 (defgroup lsp-rust-analyzer-lens nil
   "LSP lens support for Rust when using rust-analyzer.
@@ -1457,10 +1459,14 @@ such as imports and dyn traits."
         (special-mode)))
     (pop-to-buffer buf)))
 
-;; runnables
-(defvar lsp-rust-analyzer--last-runnable nil)
+;;
+;;; Runnables
+
+(defvar lsp-rust-analyzer--last-runnable nil
+  "Record the last runnable.")
 
 (defun lsp-rust-analyzer--runnables ()
+  "Return list of runnables."
   (lsp-send-request (lsp-make-request
                      "experimental/runnables"
                      (lsp-make-rust-analyzer-runnables-params
@@ -1468,6 +1474,7 @@ such as imports and dyn traits."
                       :position? (lsp--cur-position)))))
 
 (defun lsp-rust-analyzer--select-runnable ()
+  "Select runnable."
   (lsp--completing-read
    "Select runnable:"
    (if lsp-rust-analyzer--last-runnable
@@ -1477,7 +1484,6 @@ such as imports and dyn traits."
                       (lsp-rust-analyzer--runnables)))
      (lsp-rust-analyzer--runnables))
    (-lambda ((&rust-analyzer:Runnable :label)) label)))
-
 
 (defun lsp-rust-analyzer--common-runner (runnable)
   "Execute a given RUNNABLE.
@@ -1497,7 +1503,6 @@ and run a compilation"
        ;; cargo-process-mode is nice, but try to work without it...
        (if (functionp 'cargo-process-mode) 'cargo-process-mode nil)
        (lambda (_) (concat "*" label "*"))))))
-
 
 (defun lsp-rust-analyzer-run (runnable)
   "Select and run a RUNNABLE action."
