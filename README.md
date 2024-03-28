@@ -285,12 +285,23 @@ primary working on/responsible for.
     <td align="center">
       <div>
         <a href="https://github.com/razzmatazz">
-          <img src="https://github.com/razzmatazz.png" width="100px;" style="border-radius: 50%;" alt="psibi"/>
+          <img src="https://github.com/razzmatazz.png" width="100px;" style="border-radius: 50%;" alt="razzmatazz"/>
           <br/>
           <sub><b>razzmatazz</b></sub>
         </a>
         <br/>
         C# | F#
+      </div>
+    </td>
+    <td align="center">
+      <div>
+        <a href="https://github.com/jcs090218">
+          <img src="https://github.com/jcs090218.png" width="100px;" style="border-radius: 50%;" alt="jcs090218"/>
+          <br/>
+          <sub><b>jcs090218</b></sub>
+        </a>
+        <br/>
+        lsp-mode core
       </div>
     </td>
   </tr>
