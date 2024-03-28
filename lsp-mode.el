@@ -5322,7 +5322,7 @@ If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
     (if (and contents (not (equal contents "")))
         (let ((lsp-help-buf-name "*lsp-help*"))
           (with-current-buffer (get-buffer-create lsp-help-buf-name)
-            (let ((delay-mode-hooks t))
+            (delay-mode-hooks
               (lsp-help-mode)
               (with-help-window lsp-help-buf-name
                 (insert (string-trim-right (lsp--render-on-hover-content contents t)))))
