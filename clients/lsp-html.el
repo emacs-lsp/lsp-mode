@@ -23,7 +23,6 @@
 ;;; Code:
 
 (require 'lsp-mode)
-(require 'f)
 
 (defgroup lsp-html nil
   "LSP support for HTML, using vscode's built-in language server."
@@ -189,7 +188,7 @@ styles."
 
 ;; Caveat: uri seems to be sent as a single length vector.
 (defun lsp-html--get-content (_workspace files callback)
-  "Helper function for getting the content of a URI when the language server requests it."
+  "Helper function for getting the content of a URI/filename."
   (let* ((filename (aref files 0))
          (uri (f-join (lsp-workspace-root) filename))
          (file-content (f-read-text uri)))
