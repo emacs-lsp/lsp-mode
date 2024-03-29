@@ -49,7 +49,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
       run: "cmake --version"
       
-    - uses: actions/setup-python@v2
+    - uses: actions/setup-python@v5
       with:
         python-version: "3.9"
         architecture: "x64"
