@@ -287,13 +287,18 @@ The value for `enabled' can be always, never or onValidSchema."
   ("xml.catalogs" lsp-xml-catalogs)
   ("xml.trace.server" lsp-xml-trace-server)))
 
+(defcustom lsp-xml-prefer-jar t
+  "Prefer using the jar file instead of the native binary."
+  :type 'boolean
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "8.0.2"))
+
 (defconst lsp-xml-jar-version "0.27.0")
 
 (defconst lsp-xml-jar-name "org.eclipse.lemminx-uber.jar")
 
 (defcustom lsp-xml-jar-file (f-join lsp-server-install-dir "xmlls" lsp-xml-jar-name)
   "Xml server jar command."
-  :type 'string
   :group 'lsp-xml
   :type 'file
   :package-version '(lsp-mode . "6.1"))
@@ -314,16 +319,53 @@ The value for `enabled' can be always, never or onValidSchema."
  `(:download :url lsp-xml-jar-download-url
              :store-path lsp-xml-jar-file))
 
-(defcustom lsp-xml-server-command `("java" "-jar" ,lsp-xml-jar-file)
+(defconst lsp-xml-bin-base-name
+  (format "lemminx-%s" (let ((arch (if (string-prefix-p "x86_64" system-configuration) "x86_64" "aarch_64")))
+                         (pcase system-type
+                           ('darwin (format "osx-%s" arch))
+                           ('gnu/linux "linux")
+                           ('windows-nt "win32")))))
+
+(defconst lsp-xml-bin-name (format "%s%s" lsp-xml-bin-base-name (if (eq system-type 'windows-nt) ".exe" "")))
+
+(defcustom lsp-xml-bin-file (f-join lsp-server-install-dir "xmlls" lsp-xml-bin-name)
+  "Xml server binary."
+  :group 'lsp-xml
+  :type 'file
+  :package-version '(lsp-mode . "8.0.2"))
+
+(defcustom lsp-xml-bin-download-url
+  ;; This is the version with `latest` tag
+  (format "https://github.com/redhat-developer/vscode-xml/releases/download/latest/%s.zip"
+          lsp-xml-bin-base-name)
+  "Automatic download url for lsp-xml's native binary."
+  :type 'string
+  :group 'lsp-xml
+  :package-version '(lsp-mode . "8.0.2"))
+
+(lsp-dependency
+ 'xmlls-bin
+ '(:system ,(file-name-nondirectory lsp-xml-bin-file))
+ `(:download :url lsp-xml-bin-download-url
+             :decompress :zip
+             :store-path lsp-xml-bin-file))
+
+(defsubst lsp-xml-has-java? () (executable-find "java"))
+
+(defcustom lsp-xml-server-command
+  (lambda () (or (and (lsp-xml-has-java?) lsp-xml-prefer-jar `("java" "-jar" ,lsp-xml-jar-file))
+                 `(,lsp-xml-bin-file)))
   "Xml server command."
-  :type '(repeat string)
+  :type '(choice (repeat string) (function))
   :group 'lsp-xml
   :package-version '(lsp-mode . "6.1"))
 
 (defun lsp-xml--create-connection ()
+  "Create a connection for the XML language server."
   (lsp-stdio-connection
-   (lambda () lsp-xml-server-command)
-   (lambda () (f-exists? lsp-xml-jar-file))))
+   (lambda () (lsp-resolve-value lsp-xml-server-command))
+   (lambda () (or (and (lsp-xml-has-java?) lsp-xml-prefer-jar (f-exists? lsp-xml-jar-file))
+                  (f-exists? lsp-xml-bin-file)))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-xml--create-connection)
@@ -335,7 +377,9 @@ The value for `enabled' can be always, never or onValidSchema."
                                     (with-lsp-workspace workspace
                                       (lsp--set-configuration (lsp-configuration-section "xml"))))
                   :download-server-fn (lambda (_client callback error-callback _update?)
-                                        (lsp-package-ensure 'xmlls callback error-callback))))
+                                        (lsp-package-ensure (or (and (lsp-xml-has-java?) lsp-xml-prefer-jar 'xmlls)
+                                                                'xmlls-bin)
+                                                            callback error-callback))))
 
 (lsp-consistency-check lsp-xml)
 
