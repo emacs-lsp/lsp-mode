@@ -300,7 +300,7 @@ Must not nil.")
   :new-connection (lsp-stdio-connection #'lsp-pwsh--command
                                         (lambda ()
                                           (f-exists? lsp-pwsh-pses-script)))
-  :major-modes lsp-pwsh--major-modes
+  :activation-fn (lsp-activate-on "powershell")
   :server-id 'pwsh-ls
   :priority -1
   :initialization-options #'lsp-pwsh--extra-init-params
