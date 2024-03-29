@@ -356,6 +356,7 @@ The value for `enabled' can be always, never or onValidSchema."
   (lambda () (or (and (lsp-xml-has-java?) lsp-xml-prefer-jar `("java" "-jar" ,lsp-xml-jar-file))
                  `(,lsp-xml-bin-file)))
   "Xml server command."
+  :type '(choice (repeat string) (function))
   :group 'lsp-xml
   :package-version '(lsp-mode . "6.1"))
 
