@@ -293,8 +293,6 @@ Must not nil.")
                rule-id))
     (lsp-warn "Cannot show documentation for code action, no ruleName was supplied")))
 
-(defvar lsp-pwsh--major-modes '(powershell-mode))
-
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection #'lsp-pwsh--command
