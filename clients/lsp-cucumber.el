@@ -24,6 +24,8 @@
 
 ;;; Code:
 
+(require 'lsp-mode)
+
 (defgroup lsp-cucumber nil
   "LSP server implementation for Cucumber."
   :group 'lsp-mode
