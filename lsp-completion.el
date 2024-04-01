@@ -272,35 +272,34 @@ The MARKERS and PREFIX value will be attached to each candidate."
   (lsp--while-no-input
     (->>
      (if items
-         (-->
-             (let (queries fuz-queries)
-               (-keep (-lambda ((cand &as &plist :label :start-point :score))
-                        (let* ((query (or (plist-get queries start-point)
-                                          (let ((s (buffer-substring-no-properties
-                                                    start-point (point))))
-                                            (setq queries (plist-put queries start-point s))
-                                            s)))
-                               (fuz-query (or (plist-get fuz-queries start-point)
-                                              (let ((s (lsp-completion--regex-fuz query)))
-                                                (setq fuz-queries
-                                                      (plist-put fuz-queries start-point s))
-                                                s)))
-                               (label-len (length label)))
-                          (when (string-match fuz-query label)
-                            (put-text-property 0 label-len 'match-data (match-data) label)
-                            (plist-put cand
-                                       :sort-score
-                                       (* (or (lsp-completion--fuz-score query label) 1e-05)
-                                          (or score 0.001)))
-                            cand)))
-                      items))
-           (if lsp-completion--no-reordering
-               it
-             (sort it (lambda (o1 o2)
-                        (> (plist-get o1 :sort-score)
-                           (plist-get o2 :sort-score)))))
-           ;; TODO: pass additional function to sort the candidates
-           (-map (-rpartial #'plist-get :item) it))
+         (--> (let (queries fuz-queries)
+                (-keep (-lambda ((cand &as &plist :label :start-point :score))
+                         (let* ((query (or (plist-get queries start-point)
+                                           (let ((s (buffer-substring-no-properties
+                                                     start-point (point))))
+                                             (setq queries (plist-put queries start-point s))
+                                             s)))
+                                (fuz-query (or (plist-get fuz-queries start-point)
+                                               (let ((s (lsp-completion--regex-fuz query)))
+                                                 (setq fuz-queries
+                                                       (plist-put fuz-queries start-point s))
+                                                 s)))
+                                (label-len (length label)))
+                           (when (string-match fuz-query label)
+                             (put-text-property 0 label-len 'match-data (match-data) label)
+                             (plist-put cand
+                                        :sort-score
+                                        (* (or (lsp-completion--fuz-score query label) 1e-05)
+                                           (or score 0.001)))
+                             cand)))
+                       items))
+              (if lsp-completion--no-reordering
+                  it
+                (sort it (lambda (o1 o2)
+                           (> (plist-get o1 :sort-score)
+                              (plist-get o2 :sort-score)))))
+              ;; TODO: pass additional function to sort the candidates
+              (-map (-rpartial #'plist-get :item) it))
        lsp-items)
      (-map (lambda (item) (lsp-completion--make-item item
                                                      :markers markers
@@ -347,42 +346,45 @@ The MARKERS and PREFIX value will be attached to each candidate."
 
 (defun lsp-completion--company-match (candidate)
   "Return highlight of typed prefix inside CANDIDATE."
-  (let* ((prefix (downcase
-                  (buffer-substring-no-properties
-                   (plist-get (text-properties-at 0 candidate) 'lsp-completion-start-point)
-                   (point))))
-         ;; Workaround for bug #4192
-         ;; `lsp-completion-start-point' above might be from cached/previous completion and
-         ;; pointing to a very distant point, which results in `prefix' being way too long.
-         ;; So let's consider only the first line.
-         (prefix (car (s-lines prefix)))
-         (prefix-len (length prefix))
-         (prefix-pos 0)
-         (label (downcase candidate))
-         (label-len (length label))
-         (label-pos 0)
-         matches start)
-    (while (and (not matches)
-                (< prefix-pos prefix-len))
-      (while (and (< prefix-pos prefix-len)
-                  (< label-pos label-len))
-        (if (equal (aref prefix prefix-pos) (aref label label-pos))
-            (progn
-              (unless start (setq start label-pos))
-              (cl-incf prefix-pos))
-          (when start
-            (setq matches (nconc matches `((,start . ,label-pos))))
-            (setq start nil)))
-        (cl-incf label-pos))
-      (when start (setq matches (nconc matches `((,start . ,label-pos)))))
-      ;; Search again when the whole prefix is not matched
-      (when (< prefix-pos prefix-len)
-        (setq matches nil))
-      ;; Start search from next offset of prefix to find a match with label
-      (unless matches
-        (cl-incf prefix-pos)
-        (setq label-pos 0)))
-    matches))
+  (if-let ((md (cddr (plist-get (text-properties-at 0 candidate) 'match-data))))
+      (let (matches start end)
+        (while (progn (setq start (pop md) end (pop md))
+                      (and start end))
+          (setq matches (nconc matches `((,start . ,end)))))
+        matches)
+    (let* ((prefix (downcase
+                    (buffer-substring-no-properties
+                     ;; Put a safe guard to prevent staled cache from setting a wrong start point #4192
+                     (max (line-beginning-position)
+                          (plist-get (text-properties-at 0 candidate) 'lsp-completion-start-point))
+                     (point))))
+           (prefix-len (length prefix))
+           (prefix-pos 0)
+           (label (downcase candidate))
+           (label-len (length label))
+           (label-pos 0)
+           matches start)
+      (while (and (not matches)
+                  (< prefix-pos prefix-len))
+        (while (and (< prefix-pos prefix-len)
+                    (< label-pos label-len))
+          (if (equal (aref prefix prefix-pos) (aref label label-pos))
+              (progn
+                (unless start (setq start label-pos))
+                (cl-incf prefix-pos))
+            (when start
+              (setq matches (nconc matches `((,start . ,label-pos))))
+              (setq start nil)))
+          (cl-incf label-pos))
+        (when start (setq matches (nconc matches `((,start . ,label-pos)))))
+        ;; Search again when the whole prefix is not matched
+        (when (< prefix-pos prefix-len)
+          (setq matches nil))
+        ;; Start search from next offset of prefix to find a match with label
+        (unless matches
+          (cl-incf prefix-pos)
+          (setq label-pos 0)))
+      matches)))
 
 (defun lsp-completion--get-documentation (item)
   "Get doc comment for completion ITEM."
@@ -743,9 +745,17 @@ The CLEANUP-FN will be called to cleanup."
   (lsp-completion-mode -1))
 
 (defun lsp-completion-passthrough-all-completions (_string table pred _point)
-  "Like `completion-basic-all-completions' but have prefix ignored.
-TABLE PRED"
-  (completion-basic-all-completions "" table pred 0))
+  "Passthrough all completions from TABLE with PRED."
+  (defvar completion-lazy-hilit-fn)
+  (when (bound-and-true-p completion-lazy-hilit)
+    (setq completion-lazy-hilit-fn
+          (lambda (candidate)
+            (->> candidate
+                 lsp-completion--company-match
+                 (mapc (-lambda ((start . end))
+                         (put-text-property start end 'face 'completions-common-part candidate))))
+            candidate)))
+  (all-completions "" table pred))
 
 ;;;###autoload
 (define-minor-mode lsp-completion-mode
