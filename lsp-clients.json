@@ -829,6 +829,15 @@
     "debugger": "Yes"
   },
   {
+    "name": "qml-ls",
+    "full-name": "QML (Qt Modeling Language)",
+    "server-name": "QML Language Server",
+    "server-url": "https://doc.qt.io/qt-6/qtquick-tool-qmlls.html",
+    "client-name": "lsp-qml",
+    "installation-url": "https://github.com/emacs-lsp/lsp-qml",
+    "debugger": "Not Available"
+  },
+  {
     "name": "r",
     "full-name": "R",
     "server-name": "languageserver",
