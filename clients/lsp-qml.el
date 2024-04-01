@@ -1,4 +1,4 @@
-;;; lsp-qml.el --- description -*- lexical-binding: t; -*-
+;;; lsp-qml.el --- LSP Client for QML -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024 emacs-lsp maintainers
 
