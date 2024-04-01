@@ -1760,7 +1760,7 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
   :semantic-tokens-faces-overrides `( :discard-default-modifiers t
                                       :modifiers ,(lsp-rust-analyzer--semantic-modifiers))
   :server-id 'rust-analyzer
-  :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (featurep 'yasnippet))))))
+  :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (fboundp 'yas-minor-mode))))))
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'rust-analyzer callback error-callback))))
 

@@ -56,7 +56,6 @@
 (require 'xref)
 (require 'minibuffer)
 (require 'help-mode)
-(require 'yasnippet nil t)
 (require 'lsp-protocol)
 
 (defgroup lsp-mode nil
@@ -3680,7 +3679,7 @@ disappearing, unset all the variables related to it."
                                      (resolveSupport . ((properties . ["edit" "command"])))
                                      (dataSupport . t)))
                       (completion . ((completionItem . ((snippetSupport . ,(cond
-                                                                            ((and lsp-enable-snippet (not (featurep 'yasnippet)) t)
+                                                                            ((and lsp-enable-snippet (not (fboundp 'yas-minor-mode)))
                                                                              (lsp--warn (concat
                                                                                          "Yasnippet is not installed, but `lsp-enable-snippet' is set to `t'. "
                                                                                          "You must either install yasnippet, or disable snippet support."))
@@ -4479,6 +4478,7 @@ from language server.")
   "Wrapper of `yas-expand-snippet' with all of it arguments.
 The snippet will be convert to LSP style and indent according to
 LSP server result."
+  (require 'yasnippet nil t)
   (let* ((inhibit-field-text-motion t)
          (yas-wrap-around-region nil)
          (yas-indent-line 'none)

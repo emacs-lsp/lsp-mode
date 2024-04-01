@@ -206,7 +206,7 @@ tokens legend."
                                                                 :modifiers
                                                                 ,(lsp-erlang-elp--semantic-modifiers))
   :server-id 'elp
-  :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (featurep 'yasnippet))))))
+  :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (fboundp 'yas-minor-mode))))))
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'erlang-language-platform callback error-callback))))
 
