@@ -1204,6 +1204,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "yang",
+    "full-name": "YANG",
+    "server-name": "yang-lsp",
+    "server-url": "https://github.com/TypeFox/yang-lsp",
+    "installation-url": "https://github.com/TypeFox/yang-lsp/releases",
+    "debugger": "Not available"
+  },
+  {
     "name": "zig",
     "full-name": "Zig",
     "server-name": "zls",

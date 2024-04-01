@@ -51,6 +51,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://emacs-lsp.github.io/lsp-mode/manual-language-docs/lsp-yang/</loc>
+         <lastmod>2024-04-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/CHANGELOG/</loc>
          <lastmod>2024-04-01</lastmod>
          <changefreq>daily</changefreq>
@@ -777,6 +782,11 @@
     </url>
     <url>
          <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-yaml/</loc>
+         <lastmod>2024-04-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-yang/</loc>
          <lastmod>2024-04-01</lastmod>
          <changefreq>daily</changefreq>
     </url>
