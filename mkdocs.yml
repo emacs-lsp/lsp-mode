@@ -176,6 +176,7 @@ nav:
     - wgsl: page/lsp-wgsl.md
     - XML: page/lsp-xml.md
     - YAML: page/lsp-yaml.md
+    - YANG: page/lsp-yang.md
     - Zig: page/lsp-zig.md
   - Debugging:
       - https://emacs-lsp.github.io/dap-mode

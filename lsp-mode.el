@@ -174,23 +174,25 @@ As defined by the Language Server Protocol 3.16."
   :package-version '(lsp-mode . "6.1"))
 
 (defcustom lsp-client-packages
-  '( ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-autotools lsp-awk
-     lsp-asm lsp-astro lsp-bash lsp-beancount lsp-bufls lsp-clangd lsp-clojure
-     lsp-cmake lsp-cobol lsp-credo lsp-crystal lsp-csharp lsp-css lsp-cucumber
-     lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile lsp-elm lsp-elixir
-     lsp-emmet lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go
-     lsp-golangci-lint lsp-gleam lsp-glsl lsp-graphql lsp-hack lsp-grammarly
-     lsp-groovy lsp-haskell lsp-haxe lsp-idris lsp-java lsp-javascript lsp-json
-     lsp-kotlin lsp-latex lsp-lisp lsp-ltex lsp-lua lsp-markdown lsp-marksman lsp-mdx
-     lsp-mint lsp-move lsp-nginx lsp-nim lsp-nix lsp-magik lsp-mojo lsp-metals
-     lsp-mssql lsp-nushell lsp-ocaml lsp-openscad lsp-pascal lsp-perl lsp-perlnavigator
-     lsp-pls lsp-php lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms
-     lsp-purescript lsp-qml lsp-r lsp-racket lsp-remark lsp-ruff-lsp lsp-rf lsp-rubocop
-     lsp-rust lsp-semgrep lsp-shader lsp-solargraph lsp-sorbet lsp-sourcekit
-     lsp-sonarlint lsp-tailwindcss lsp-tex lsp-terraform lsp-toml lsp-ttcn3
-     lsp-typeprof lsp-v lsp-vala lsp-verilog lsp-vetur lsp-volar lsp-vhdl
-     lsp-vimscript lsp-wgsl lsp-xml lsp-yaml lsp-ruby-lsp lsp-ruby-syntax-tree
-     lsp-solidity lsp-sqls lsp-svelte lsp-steep lsp-tilt lsp-trunk lsp-zig lsp-jq)
+  '( ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-asm lsp-astro
+     lsp-autotools lsp-awk lsp-bash lsp-beancount lsp-bufls lsp-clangd
+     lsp-clojure lsp-cmake lsp-cobol lsp-credo lsp-crystal lsp-csharp lsp-css
+     lsp-cucumber lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile
+     lsp-elixir lsp-elm lsp-emmet lsp-erlang lsp-eslint lsp-fortran lsp-fsharp
+     lsp-gdscript lsp-gleam lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly
+     lsp-graphql lsp-groovy lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java
+     lsp-javascript lsp-jq lsp-json lsp-kotlin lsp-latex lsp-lisp lsp-ltex
+     lsp-lua lsp-magik lsp-markdown lsp-marksman lsp-mdx lsp-metals lsp-mint
+     lsp-mojo lsp-move lsp-mssql lsp-nginx lsp-nim lsp-nix lsp-nushell lsp-ocaml
+     lsp-openscad lsp-pascal lsp-perl lsp-perlnavigator lsp-php lsp-pls
+     lsp-purescript lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms
+     lsp-qml lsp-r lsp-racket lsp-remark lsp-rf lsp-rubocop lsp-ruby-lsp
+     lsp-ruby-syntax-tree lsp-ruff-lsp lsp-rust lsp-semgrep lsp-shader
+     lsp-solargraph lsp-solidity lsp-sonarlint lsp-sorbet lsp-sourcekit lsp-sqls
+     lsp-steep lsp-svelte lsp-tailwindcss lsp-terraform lsp-tex lsp-tilt
+     lsp-toml lsp-trunk lsp-ttcn3 lsp-typeprof lsp-v lsp-vala lsp-verilog
+     lsp-vetur lsp-vhdl lsp-vimscript lsp-volar lsp-wgsl lsp-xml lsp-yaml
+     lsp-yang lsp-zig)
   "List of the clients to be automatically required."
   :group 'lsp-mode
   :type '(repeat symbol))
@@ -795,7 +797,8 @@ Changes take effect only when a new session is started."
     ("\\ya?ml$" . "yaml")
     ("^PKGBUILD$" . "shellscript")
     ("^go\\.mod\\'" . "go.mod")
-    ("^settings.json$" . "jsonc")
+    ("^settings\\.json$" . "jsonc")
+    ("^yang\\.settings$" . "jsonc")
     (ada-mode . "ada")
     (ada-ts-mode . "ada")
     (awk-mode . "awk")
@@ -958,7 +961,8 @@ Changes take effect only when a new session is started."
     (jq-ts-mode . "jq")
     (protobuf-mode . "protobuf")
     (nushell-mode . "nushell")
-    (nushell-ts-mode . "nushell"))
+    (nushell-ts-mode . "nushell")
+    (yang-mode . "yang"))
   "Language id configuration.")
 
 (defvar lsp--last-active-workspaces nil
@@ -6036,6 +6040,7 @@ Request codeAction/resolve for more info if server supports."
     (typescript-mode            . typescript-indent-level)          ; Typescript
     (typescript-ts-mode         . typescript-ts-mode-indent-offset) ; Typescript (tree-sitter, Emacs29)
     (yaml-mode                  . yaml-indent-offset)               ; YAML
+    (yang-mode                  . c-basic-offset)                   ; YANG (yang-mode)
 
     (default                    . standard-indent))                 ; default fallback
   "A mapping from `major-mode' to its indent variable.")
