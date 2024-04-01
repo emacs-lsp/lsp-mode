@@ -797,7 +797,7 @@ Changes take effect only when a new session is started."
     ("\\ya?ml$" . "yaml")
     ("^PKGBUILD$" . "shellscript")
     ("^go\\.mod\\'" . "go.mod")
-    ("^settings.json$" . "jsonc")
+    ("^settings\\.json$" . "jsonc")
     ("^yang\\.settings$" . "jsonc")
     (ada-mode . "ada")
     (ada-ts-mode . "ada")
