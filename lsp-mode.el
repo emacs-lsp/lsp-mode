@@ -764,26 +764,27 @@ Changes take effect only when a new session is started."
     ("\\.astro$" . "astro")
     ("\\.cs\\'" . "csharp")
     ("\\.css$" . "css")
+    ("\\.cypher$" . "cypher")
     ("\\.ebuild$" . "shellscript")
     ("\\.go\\'" . "go")
     ("\\.html$" . "html")
     ("\\.hx$" . "haxe")
     ("\\.hy$" . "hy")
     ("\\.java\\'" . "java")
+    ("\\.jq$"  . "jq")
     ("\\.js$" . "javascript")
     ("\\.json$" . "json")
-    ("\\.jsonnet$" . "jsonnet")
     ("\\.jsonc$" . "jsonc")
+    ("\\.jsonnet$" . "jsonnet")
     ("\\.jsx$" . "javascriptreact")
-    ("\\.jq$"  . "jq")
     ("\\.lua$" . "lua")
     ("\\.mdx\\'" . "mdx")
     ("\\.nu$" . "nushell")
     ("\\.php$" . "php")
+    ("\\.ps[dm]?1\\'" . "powershell")
     ("\\.rs\\'" . "rust")
     ("\\.spec\\'" . "rpm-spec")
     ("\\.sql$" . "sql")
-    ("\\.cypher$" . "cypher")
     ("\\.svelte$" . "svelte")
     ("\\.toml\\'" . "toml")
     ("\\.ts$" . "typescript")
@@ -866,6 +867,7 @@ Changes take effect only when a new session is started."
     (php-ts-mode . "php")
     (powershell-mode . "powershell")
     (powershell-mode . "PowerShell")
+    (powershell-ts-mode . "powershell")
     (json-mode . "json")
     (json-ts-mode . "json")
     (jsonc-mode . "jsonc")
@@ -6021,6 +6023,7 @@ Request codeAction/resolve for more info if server supports."
     (php-mode                   . c-basic-offset)                   ; PHP
     (php-ts-mode                . php-ts-mode-indent-offset)        ; PHP
     (powershell-mode            . powershell-indent)                ; PowerShell
+    (powershell-ts-mode         . powershell-ts-mode-indent-offset) ; PowerShell
     (raku-mode                  . raku-indent-offset)               ; Perl6/Raku
     (ruby-mode                  . ruby-indent-level)                ; Ruby
     (rust-mode                  . rust-indent-offset)               ; Rust
