@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;;  client for astro-ls
+;;  LSP client for astro-ls
 
 ;;; Code:
 
@@ -38,11 +38,19 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/withastro/language-tools"))
 
+(lsp-dependency 'astro-language-server
+                '(:system "astroserver")
+                '(:npm :package "@astrojs/language-server"
+                       :path "astroserver"))
+
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("astro-ls" "--stdio"))
                   :activation-fn (lsp-activate-on "astro")
                   :initialization-options #'lsp-astro--get-initialization-options
-                  :server-id 'astro-ls))
+                  :server-id 'astro-ls
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure 'astro-language-server callback error-callback))))
 
 (lsp-consistency-check lsp-astro)
 
