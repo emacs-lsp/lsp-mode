@@ -9,7 +9,7 @@
   "LSP support for Camel, using camel-language-server"
   :group 'lsp-mode
   :tag "Language Server"
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 ;; Define a variable to store camel language server jar version
 (defconst lsp-camel-jar-version "1.5.0")
@@ -23,14 +23,14 @@
   :type 'string
   :group 'lsp-camel
   :type 'file
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-camel-jar-download-url
   (format "https://repo1.maven.org/maven2/com/github/camel-tooling/camel-lsp-server/%s/%s" lsp-camel-jar-version lsp-camel-jar-name)
   "Automatic download url for lsp-camel."
   :type 'string
   :group 'lsp-camel
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (lsp-dependency
  'camells
@@ -42,7 +42,7 @@
   "Camel server command."
   :type '(repeat string)
   :group 'lsp-camel
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp-camel--create-connection ()
   (lsp-stdio-connection

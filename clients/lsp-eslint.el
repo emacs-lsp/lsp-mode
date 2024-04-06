@@ -46,7 +46,7 @@
   "ESLint language server download url."
   :type 'string
   :group 'lsp-eslint
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-eslint-server-command `("node"
                                        "~/server/out/eslintServer.js"

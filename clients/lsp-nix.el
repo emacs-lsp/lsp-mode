@@ -69,7 +69,7 @@
   "Executable path for the server."
   :group 'lsp-nix-nil
   :type 'string
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (lsp-defcustom lsp-nix-nil-formatter nil
   "External formatter command with arguments.
@@ -78,33 +78,33 @@
   :type 'lsp-string-vector
   :group 'lsp-nix-nil
   :lsp-path "nil.formatting.command"
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (lsp-defcustom lsp-nix-nil-ignored-diagnostics nil
   "Ignored diagnostic kinds."
   :type 'lsp-string-vector
   :group 'lsp-nix-nil
   :lsp-path "nil.diagnostics.ignored"
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (lsp-defcustom lsp-nix-nil-exclude-files-diagnostic nil
   "Files to exclude from showing diagnostics."
   :type 'lsp-string-vector
   :group 'lsp-nix-nil
   :lsp-path "nil.diagnostics.excludedFiles"
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 (lsp-defcustom lsp-nix-nil-max-mem 10000
   "Max Memory MB"
   :type 'number
   :group 'lsp-nix-nil
   :lsp-path "nil.nix.maxMemoryMB"
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 (lsp-defcustom lsp-nix-nil-auto-eval-inputs t
   "Auto Eval Inputs"
   :type 'boolean
   :group 'lsp-nix-nil
   :lsp-path "nil.nix.flake.autoEvalInputs"
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-nix-nil-server-path))

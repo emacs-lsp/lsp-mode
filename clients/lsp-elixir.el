@@ -111,7 +111,7 @@ It has to be set before `lsp-elixir.el' is loaded and it has to
 be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
   :type 'string
   :group 'lsp-elixir
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-elixir-ls-download-url
   (format "https://github.com/elixir-lsp/elixir-ls/releases/download/%1$s/elixir-ls-%1$s.zip"
@@ -119,7 +119,7 @@ be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
   "Automatic download url for elixir-ls."
   :type 'string
   :group 'lsp-elixir
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 
 (defconst lsp-elixir-ls-server-dir

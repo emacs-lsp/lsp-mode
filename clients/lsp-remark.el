@@ -31,19 +31,19 @@
   "Settings for the markdown language server client."
   :group 'lsp-mode
   :link '(url-link "https://github.com/remarkjs/remark-language-server")
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-remark-server-command "remark-language-server"
   "The binary (or full path to binary) which executes the server."
   :type 'string
   :group 'lsp-remark
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-remark-server-command-args '("--stdio")
   "Command-line arguments for the markdown lsp server."
   :type '(repeat 'string)
   :group 'lsp-remark
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (lsp-dependency 'remark-language-server
                 '(:system "remark-language-server")

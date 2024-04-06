@@ -155,7 +155,7 @@ with test projects are not autoloaded by FSharpAutoComplete."
   "Generate a binlog for debugging project cracking."
   :group 'lsp-fsharp
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp-fsharp--fsac-install (_client callback error-callback update?)
   "Install/update fsautocomplete language server using `dotnet tool'.

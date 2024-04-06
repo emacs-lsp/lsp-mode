@@ -67,7 +67,7 @@
   "The alire executable to run when a project is detected."
   :type 'string
   :group 'lsp-ada
-  :package-version '(lsp-mode "8.0.1"))
+  :package-version '(lsp-mode "9.0.0"))
 
 (defcustom lsp-ada-semantic-token-face-overrides
   '(("namespace" . default)
@@ -77,7 +77,7 @@
                 :value-type (choice (face  :tag "Face")
                                     (const :tag "No Face" nil)))
   :group 'lsp-ada
-  :package-version '(lsp-mode "8.0.1"))
+  :package-version '(lsp-mode "9.0.0"))
 
 (defcustom lsp-ada-semantic-token-modifier-face-overrides
   '(("declaration")
@@ -92,7 +92,7 @@
                 :value-type (choice (face  :tag "Face")
                                     (const :tag "No Face" nil)))
   :group 'lsp-ada
-  :package-version '(lsp-mode "8.0.1"))
+  :package-version '(lsp-mode "9.0.0"))
 
 (defvar lsp-ada--als-download-url-cache nil)
 

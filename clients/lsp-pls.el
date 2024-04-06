@@ -35,65 +35,65 @@
   "LSP Mode support for PLS, the Perl Language Server."
   :group 'lsp-mode
   :link '(url-link "https://metacpan.org/pod/PLS")
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-pls-executable "pls"
   "Full path to the PLS executable."
   :type '(string)
   :group 'lsp-pls
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-pls-arguments nil
   "Additional arguments needed to execute PLS."
   :type '(repeat 'string)
   :group 'lsp-pls
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-pls-working-dir nil
   "Working directory to run PLS in.
 Defaults to the workspace root when not configured."
   :type '(string)
   :group 'lsp-pls
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-pls-include nil
   "Paths to be added to your @INC."
   :type '(repeat 'string)
   :group 'lsp-pls
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-pls-perltidy-rc nil
   "Path to your .perltidyrc file.
 Default is \"~/.perltidyrc\" when not configured."
   :type '(string)
   :group 'lsp-pls
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-pls-perlcritic-rc nil
   "Path to your .perlcriticrc file.
 Default is \"~/.perlcriticrc\" when not configured."
   :type '(string)
   :group 'lsp-pls
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-pls-perlcritic-enabled t
   "Enable perlcritic checking."
   :type '(boolean)
   :group 'lsp-pls
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-pls-syntax-enabled t
   "Enable syntax checking."
   :type '(boolean)
   :group 'lsp-pls
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-pls-syntax-perl nil
   "Full path to an alternate perl used for syntax checking.
 By default, the perl used to run PLS will be used."
   :type '(string)
   :group 'lsp-pls
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-pls-syntax-args nil
   "Additional arguments to pass to Perl when syntax checking.
@@ -101,7 +101,7 @@ This is useful if there is a BEGIN block in your code that
 changes behavior depending on the contents of @ARGV."
   :type '(repeat 'string)
   :group 'lsp-pls
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (lsp-register-custom-settings
  '(("pls.cmd"                      lsp-pls-executable)

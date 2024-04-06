@@ -30,7 +30,7 @@
   "Settings for credo language server."
   :group 'lsp-mode
   :link '(url-link "https://github.com/elixir-tools/credo-language-server")
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-credo-command
   `(,(f-join lsp-server-install-dir "credo-language-server"
@@ -39,7 +39,7 @@
   "The command that starts credo-language-server."
   :type '(repeat :tag "List of string values" string)
   :group 'lsp-credo
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-credo-version "0.3.0"
   "Credo language server version to download.
@@ -47,7 +47,7 @@ It has to be set before `lsp-credo.el' is loaded and it has to
 be available here: https://github.com/elixir-tools/credo-language-server/releases."
   :type 'string
   :group 'lsp-credo
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-credo-download-url
   (format (concat "https://github.com/elixir-tools/credo-language-server"
@@ -56,7 +56,7 @@ be available here: https://github.com/elixir-tools/credo-language-server/release
   "Automatic download url for credo-language-server."
   :type 'string
   :group 'lsp-credo
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-credo-binary-path
   (f-join lsp-server-install-dir
@@ -65,7 +65,7 @@ be available here: https://github.com/elixir-tools/credo-language-server/release
   "The path to `credo-language-server' binary."
   :type 'file
   :group 'lsp-credo
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (lsp-dependency
  'credo-language-server

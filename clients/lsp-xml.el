@@ -103,13 +103,13 @@ Newlines and excess whitespace are removed."
           (const "double")
           (const "single"))
   :group 'lsp-xml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-xml-format-comments t
   "Enable/disable comment formatting."
   :type 'boolean
   :group 'lsp-xml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-xml-format-closing-bracket-new-line nil
   "Enable/disable moving the closing bracket.
@@ -117,19 +117,19 @@ Newlines and excess whitespace are removed."
 This only affects tags with two or more (split) attributes."
   :type 'boolean
   :group 'lsp-xml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-xml-format-split-attributes-indent-size 2
   "The indentation used for split attributes."
   :type 'integer
   :group 'lsp-xml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-xml-format-preserve-attribute-line-breaks t
   "Enable/disable preserving line breaks in attributes."
   :type 'boolean
   :group 'lsp-xml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-xml-format-enforce-quote-style "ignore"
   "The way in which quote style should be enforced."
@@ -137,13 +137,13 @@ This only affects tags with two or more (split) attributes."
           (const "ignore")
           (const "preferred"))
   :group 'lsp-xml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-xml-format-preserved-newlines 2
   "The number of empty newlines to be preserved."
   :type 'integer
   :group 'lsp-xml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-xml-format-xsi-schema-location-split "onPair"
   "XSI schema location split settings."
@@ -152,13 +152,13 @@ This only affects tags with two or more (split) attributes."
           (const "onPair")
           (const "none"))
   :group 'lsp-xml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-xml-format-experimental nil
   "Enable/disable experimental formatter."
   :type 'boolean
   :group 'lsp-xml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-xml-format-max-line-width 80
   "Max line width.
@@ -166,7 +166,7 @@ This only affects tags with two or more (split) attributes."
 This only applies to experimental formatter."
   :type 'integer
   :group 'lsp-xml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-xml-format-preserve-space ["xsl:text"
                                           "xsl:comment"
@@ -182,7 +182,7 @@ This only applies to experimental formatter."
 This option only affects the experimental formatter."
   :type 'lsp-string-vector
   :group 'lsp-xml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-xml-format-grammar-aware-formatting t
   "Enable/disable grammar aware formatting.
@@ -190,7 +190,7 @@ This option only affects the experimental formatter."
 This only affects the experimental formatter."
   :type 'boolean
   :group 'lsp-xml
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-xml-file-associations nil
   "Allows XML schemas to be associated to file name patterns.

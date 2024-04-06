@@ -1,11 +1,11 @@
 ;;; lsp-mode.el --- LSP mode                              -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020 emacs-lsp maintainers
+;; Copyright (C) 2020-2024 emacs-lsp maintainers
 
 ;; Author: Vibhav Pant, Fangrui Song, Ivan Yonchovski
 ;; Keywords: languages
 ;; Package-Requires: ((emacs "27.1") (dash "2.18.0") (f "0.20.0") (ht "2.3") (spinner "1.7.3") (markdown-mode "2.3") (lv "0") (eldoc "1.11"))
-;; Version: 8.0.1
+;; Version: 9.0.0
 
 ;; URL: https://github.com/emacs-lsp/lsp-mode
 ;; This program is free software; you can redistribute it and/or modify
@@ -116,7 +116,7 @@
   "The methods to filter before print to lsp-log-io."
   :group 'lsp-mode
   :type '(repeat string)
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-log-max message-log-max
   "Maximum number of lines to keep in the log buffer.
@@ -640,7 +640,7 @@ The hook will receive two parameters list of added and removed folders."
   :type 'hook
   :group 'lsp-mode)
 
-(define-obsolete-variable-alias 'lsp-eldoc-hook 'eldoc-documentation-functions "lsp-mode 8.0.1")
+(define-obsolete-variable-alias 'lsp-eldoc-hook 'eldoc-documentation-functions "lsp-mode 9.0.0")
 
 (defcustom lsp-before-apply-edits-hook nil
   "Hooks to run before applying edits."
@@ -757,7 +757,7 @@ Changes take effect only when a new session is started."
 `textDocument/didOpen' notification."
   :type 'boolean
   :group 'lsp-mode
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defvar lsp-language-id-configuration
   '(("\\(^CMakeLists\\.txt\\|\\.cmake\\)\\'" . "cmake")
@@ -3436,7 +3436,7 @@ Handler should give METHOD as argument and return function of one argument
 ERROR."
   :type 'function
   :group 'lsp-mode
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp--create-default-error-handler (method)
   "Default error handler.
@@ -3608,7 +3608,7 @@ and expand the capabilities section"
   "If non-nil it will enable inlay hints."
   :type 'boolean
   :group 'lsp-mode
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp--uninitialize-workspace ()
   "Cleanup buffer state.
@@ -5477,13 +5477,13 @@ In addition, each can have property:
   "When non-nil enable server downloading suggestions."
   :group 'lsp-mode
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-auto-register-remote-clients t
   "When non-nil register remote when registering the local one."
   :group 'lsp-mode
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp--display-inline-image (mode)
   "Add image property if available."
@@ -9649,38 +9649,38 @@ defaults to `progress-bar."
   '((t :inherit font-lock-comment-face))
   "The face to use for the JavaScript inlays."
   :group 'lsp-mode
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defface lsp-inlay-hint-type-face
   '((t :inherit lsp-inlay-hint-face))
   "Face for inlay type hints (e.g. inferred variable types)."
   :group 'lsp-mode
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-inlay-hint-type-format "%s"
   "Format string for variable inlays (part of the inlay face)."
   :type '(string :tag "String")
   :group 'lsp-mode
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defface lsp-inlay-hint-parameter-face
   '((t :inherit lsp-inlay-hint-face))
   "Face for inlay parameter hints (e.g. function parameter names at
 call-site)."
   :group 'lsp-mode
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-inlay-hint-param-format "%s"
   "Format string for parameter inlays (part of the inlay face)."
   :type '(string :tag "String")
   :group 'lsp-mode
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-update-inlay-hints-on-scroll t
   "If non-nil update inlay hints immediately when scrolling or
 modifying window sizes."
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp--format-inlay (text kind)
   (cond

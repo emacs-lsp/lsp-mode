@@ -31,21 +31,21 @@
   "LSP support for RuboCop, using the RuboCop built-in language server."
   :group 'lsp-mode
   :link '(url-link "https://github.com/rubocop/rubocop")
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-rubocop-use-bundler nil
   "Run RuboCop using Bundler."
   :type 'boolean
   :safe #'booleanp
   :group 'lsp-rubocop
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-rubocop-server-path nil
   "Path of the RuboCop built-in language server executable.
 If specified, `lsp-rubocop-use-bundler' is ignored."
   :type 'file
   :group 'lsp-rubocop
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp-rubocop--build-command ()
   "Build a command to start the RuboCop built-in language server."

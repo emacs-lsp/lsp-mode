@@ -34,19 +34,19 @@
   :link '(url-link "https://github.com/idris-community/idris2-lsp")
   :group 'lsp-mode
   :tag "Lsp Idirs"
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-idris2-lsp-path "idris2-lsp"
   "Command to start Idris 2 language server process."
   :group 'lsp-idris
   :type 'string
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-idris2-lsp-trace-server "off"
   "Traces the communication between VS Code and the language server."
   :group 'lsp-idris
   :type '(choice (:tag "off" "messages" "verbose"))
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (lsp-register-custom-settings
   '(("idris2-lsp.trace.server" lsp-idris2-lsp-trace-server)

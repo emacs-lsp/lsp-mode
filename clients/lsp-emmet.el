@@ -31,13 +31,13 @@
   "Settings for emmet-ls."
   :group 'lsp-mode
   :link '(url-link "https://github.com/aca/emmet-ls")
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-emmet-ls-command '("emmet-ls" "--stdio")
   "The command that starts emmet-ls."
   :type '(repeat :tag "List of string values" string)
   :group 'lsp-emmet-ls
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (lsp-dependency 'emmet-ls
                 '(:system "emmet-ls")

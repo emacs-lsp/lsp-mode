@@ -55,14 +55,14 @@
 Passed to the IDE server for source locations."
   :type 'boolean
   :group 'lsp-purescript
-  :package-version '(lsp-mode . "8.0.1")
+  :package-version '(lsp-mode . "9.0.0")
   :lsp-path "purescript.addSpagoSources")
 
 (lsp-defcustom lsp-purescript-add-npm-path nil
   "Whether to add the local npm bin directory to the PATH."
   :type 'boolean
   :group 'lsp-purescript
-  :package-version '(lsp-mode . "8.0.1")
+  :package-version '(lsp-mode . "9.0.0")
   :lsp-path "purescript.addNpmPath")
 
 (lsp-defcustom lsp-purescript-formatter "purty"
@@ -70,7 +70,7 @@ Passed to the IDE server for source locations."
 Must be installed and on PATH (or npm installed with addNpmPath set)"
   :type '(choice (:tag none purty purs-tidy pose))
   :group 'lsp-purescript
-  :package-version '(lsp-mode . "8.0.1")
+  :package-version '(lsp-mode . "9.0.0")
   :lsp-path "purescript.formatter")
 
 (lsp-dependency 'purescript-language-server

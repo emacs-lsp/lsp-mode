@@ -39,20 +39,20 @@
   "Lsp support for vue3."
   :group 'lsp-mode
   :link '(url-link "https://github.com/vuejs/language-tools")
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-volar-take-over-mode t
   "Enable Take Over Mode."
   :type 'boolean
   :group 'lsp-volar
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-volar-activate-file ".volarrc"
   "A file with a custom name placed in WORKSPACE-ROOT is used to force enable
  volar when there is no package.json in the WORKSPACE-ROOT."
   :type 'string
   :group 'lsp-volar
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defconst lsp-volar--is-windows (memq system-type '(cygwin windows-nt ms-dos)))
 (defun lsp-volar-get-typescript-tsdk-path ()

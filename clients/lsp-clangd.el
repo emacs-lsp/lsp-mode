@@ -226,7 +226,7 @@ This must be set only once after loading the clang client.")
   :risky t
   :type '(repeat string)
   :group 'lsp-clangd
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp-clients--clangd-command ()
   "Generate the language server startup command."

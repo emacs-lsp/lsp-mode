@@ -128,7 +128,7 @@
   "Command to start Solargraph Ruby language server."
   :type '(repeat string)
   :group 'lsp-solargraph
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp-solargraph--build-command ()
   "Build solargraph command"

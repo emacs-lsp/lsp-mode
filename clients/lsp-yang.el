@@ -43,7 +43,7 @@ It has to be set before `lsp-yang.el' is loaded and it has to
 be available here: https://github.com/TypeFox/yang-lsp/releases/"
   :type 'string
   :group 'lsp-yang
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (add-to-list 'auto-mode-alist '("^yang\\.settings$" . jsonc-mode))
 
@@ -53,7 +53,7 @@ be available here: https://github.com/TypeFox/yang-lsp/releases/"
   "URL for yang-lsp server settings schema"
   :type 'string
   :group 'lsp-yang
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-yang-yls-executable "yang-language-server"
   "The yang-lsp server executable to use.
@@ -70,14 +70,14 @@ executable with variable `exec-path'."
   "Automatic download url for yang-lsp server"
   :type 'string
   :group 'lsp-yang
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-yang-yls-store-path
   (f-join lsp-server-install-dir "yang-lsp" "yang-lsp")
   "The path to the file in which `yang-language-server' will be stored."
   :type 'file
   :group 'lsp-yang
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-yang-yls-binary-path
   (f-join lsp-server-install-dir (format "yang-lsp/yang-language-server-%s/bin"
@@ -88,7 +88,7 @@ executable with variable `exec-path'."
   "The path to `yang-language-server' binary."
   :type 'file
   :group 'lsp-yang
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp-yang--stored-yls-executable ()
   "Return the stored yang-lsp server executable."

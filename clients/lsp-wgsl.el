@@ -30,63 +30,63 @@
   "LSP support for wgsl, using wgsl-analyzer."
   :group 'lsp-mode
   :link '(url-link "https://github.com/wgsl-analyzer/wgsl-analyzer")
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 
 (defcustom lsp-wgsl-server-command "wgsl_analyzer"
   "Command to run the wgsl-analyzer executable."
   :type 'boolean
   :group 'lsp-wgsl
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 ;; Various toggling settings for the lsp server
 (defcustom lsp-wgsl-diagnostics-type-errors t
   "Whether to show type errors in diagnostics or not."
   :type 'boolean
   :group 'lsp-wgsl
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-wgsl-diagnostics-naga-parsing-errors t
   "Whether to show naga parsing errors in diagnostics or not."
   :type 'boolean
   :group 'lsp-wgsl
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-wgsl-diagnostics-naga-validation-errors t
   "Whether to show naga validation errors in diagnostics or not."
   :type 'boolean
   :group 'lsp-wgsl
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-wgsl-diagnostics-naga-version "main"
   "Naga version to use."
   :type 'string
   :group 'lsp-wgsl
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-wgsl-inlayhints-enabled t
   "Whether to enable inlay hints or not."
   :type 'boolean
   :group 'lsp-wgsl
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-wgsl-inlayhints-typehints t
   "Whether to enable type hints or not when using inlay hints."
   :type 'boolean
   :group 'lsp-wgsl
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-wgsl-inlayhints-parameterhints t
   "Whether to enable parameter hints or not when using inlay hints."
   :type 'boolean
   :group 'lsp-wgsl
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-wgsl-inlayhints-structlayout t
   "Whether to enable struct layout hints or not when using inlay hints."
   :type 'boolean
   :group 'lsp-wgsl
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 ;; TODO: maybe type choice instead?
 (defcustom lsp-wgsl-inlayhints-type-verbosity "compact"
@@ -95,20 +95,20 @@
                  (string "compact")
                  (string "inner"))
   :group 'lsp-wgsl
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-wgsl-custom-imports (lsp-ht)
   "List of custom imports in the style of Bevy"
   :type 'ht
   :group 'lsp-wgsl
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-wgsl-shaderdefs []
   "Defines that should be valid for preprocessor operations like ifdef,
 e.g, ['USE_TYPES', 'DEBUG']"
   :type 'lsp-string-vector
   :group 'lsp-wgsl
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 ;; wgsl-analyzer is a bit weird with how it gets config.
 ;; Currently it relies on a custom extension to query the clients.

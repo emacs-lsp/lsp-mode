@@ -36,7 +36,7 @@ syntax constructs. Only workspace folder setting will be read.
 All json file paths should be relative to your workspace folder."
   :type 'lsp-repeatable-vector
   :group 'lsp-html
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-html-format-enable t
   "Enable/disable default HTML formatter."
@@ -142,13 +142,13 @@ styles."
   "Whether to show documentation strings on hover or not."
   :type 'boolean
   :group 'lsp-html
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-html-hover-references t
   "Whether to show MDN references in documentation popups."
   :type 'boolean
   :group 'lsp-html
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-html-trace-server "off"
   "Traces the communication between VS Code and the HTML language server."

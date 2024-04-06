@@ -104,7 +104,7 @@ to Kotlin."
   "The URL for the language server download."
   :type 'string
   :group 'lsp-kotlin
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-kotlin-workspace-dir (expand-file-name (locate-user-emacs-file "workspace/"))
   "LSP kotlin workspace directory."

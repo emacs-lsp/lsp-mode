@@ -30,7 +30,7 @@
   "LSP support for Autotools."
   :group 'lsp-mode
   :link '(url-link "https://github.com/Freed-Wu/autotools-language-server")
-  :package-version `(lsp-mode . "8.0.1"))
+  :package-version `(lsp-mode . "9.0.0"))
 
 (defcustom lsp-autotools-active-modes
   '( autoconf-mode

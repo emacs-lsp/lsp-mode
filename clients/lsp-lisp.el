@@ -29,7 +29,7 @@
 (defgroup lsp-lisp nil
   "LSP support for Lisp."
   :group 'lsp-mode
-  :package-version `(lsp-mode . "8.0.1"))
+  :package-version `(lsp-mode . "9.0.0"))
 
 (defcustom lsp-lisp-active-modes
   '( lisp-mode)

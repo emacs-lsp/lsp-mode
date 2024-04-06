@@ -75,7 +75,7 @@ ignored."
   "Whether or not to show description of completion candidates."
   :type 'boolean
   :group 'lsp-completion
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-completion-no-cache nil
   "Whether or not caching the returned completions from server."

@@ -39,7 +39,7 @@
   "Ignore projects without jsconfig.json or tsconfig.json warnings."
   :type 'boolean
   :group 'lsp-vetur
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-vetur-use-workspace-dependencies nil
   "Use dependencies from workspace. Currently only for
@@ -68,7 +68,7 @@ Set a source to \"\" to disable it.
   :type 'alist
   :group 'lsp-vetur
   :link '(url-link "https://vuejs.github.io/vetur/guide/snippet.html")
-  :package-version '(lsp-mode. "8.0.1"))
+  :package-version '(lsp-mode. "9.0.0"))
 
 (defcustom lsp-vetur-completion-tag-casing "kebab"
   "Casing conversion for tag completion"

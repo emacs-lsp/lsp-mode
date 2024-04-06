@@ -39,7 +39,7 @@ Version 1.34.3 minimum is required."
 Version 1.34.3 minimum is required."
   :group 'lsp-mode
   :link '(url-link "https://github.com/OmniSharp/omnisharp-roslyn")
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-csharp-server-install-dir
   (f-join lsp-server-install-dir "omnisharp-roslyn/")

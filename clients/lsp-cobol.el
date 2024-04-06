@@ -30,7 +30,7 @@
   "LSP support for COBOL."
   :group 'lsp-mode
   :link '(url-link "https://github.com/eclipse-che4z/che-che4z-lsp-for-cobol")
-  :package-version `(lsp-mode . "8.0.1"))
+  :package-version `(lsp-mode . "9.0.0"))
 
 (defcustom lsp-cobol-server-path nil
   "Path points for COBOL language service.

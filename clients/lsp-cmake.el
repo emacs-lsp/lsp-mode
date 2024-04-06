@@ -35,7 +35,7 @@
   "The binary (or full path to binary) which executes the server."
   :type 'string
   :group 'lsp-cmake
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp-cmake--download-server (_client callback error-callback update?)
   "Install/update CMake language server using `pip

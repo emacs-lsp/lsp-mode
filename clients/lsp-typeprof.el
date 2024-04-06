@@ -30,14 +30,14 @@
   "LSP support for Ruby, using the TypeProf language server."
   :group 'lsp-mode
   :link '(url-link "https://github.com/ruby/typeprof")
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-typeprof-use-bundler nil
   "Run typeprof under bundler."
   :type 'boolean
   :safe #'booleanp
   :group 'lsp-typeprof
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp-typeprof--build-command ()
   "Build typeprof command."

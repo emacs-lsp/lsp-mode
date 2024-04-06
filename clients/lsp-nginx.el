@@ -31,14 +31,14 @@
   "LSP support for Nginx."
   :group 'lsp-mode
   :link '(url-link "https://github.com/pappasam/nginx-language-server")
-  :package-version `(lsp-mode . "8.0.1"))
+  :package-version `(lsp-mode . "9.0.0"))
 
 (defcustom lsp-nginx-server-command '("nginx-language-server")
   "Command to start Nginx Language Server."
   :risky t
   :group 'lsp-nginx
   :type '(repeat string)
-  :package-version `(lsp-mode . "8.0.1"))
+  :package-version `(lsp-mode . "9.0.0"))
 
 (defun lsp-nginx--download-server (_client callback error-callback update?)
   "Install/update Nginx language server using `pip

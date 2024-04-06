@@ -40,7 +40,7 @@
 (define-obsolete-variable-alias
   'lsp-clients-typescript-init-opts
   'lsp-clients-typescript-preferences
-  "lsp-mode 8.0.1")
+  "lsp-mode 9.0.0")
 
 (defcustom lsp-clients-typescript-javascript-server-args '()
   "Extra arguments for the typescript-language-server language server."
@@ -608,45 +608,45 @@ Code's JavaScript and TypeScript support."
 (defcustom lsp-javascript-display-enum-member-value-hints nil
   "Show inlay hints for enum member values."
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-javascript-display-return-type-hints nil
   "Show inlay hints for function return types."
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-javascript-display-parameter-type-hints nil
   "Show inlay hints for function parameters."
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-javascript-display-parameter-name-hints "none"
   "Level of hinting for parameter types."
   :type '(choice (const :tag "none" "none")
                  (const :tag "literals" "literals")
                  (const :tag "all" "all"))
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-javascript-display-parameter-name-hints-when-argument-matches-name nil
   "Show inlay hints for function parameters even when argument matches
 name (e.g. `data' variable passed as `data' parameter)."
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-javascript-display-property-declaration-type-hints nil
   "Show inlay hints for property declaration types."
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-javascript-display-variable-type-hints nil
   "Show inlay hints for variable types."
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-javascript-completions-complete-function-calls t
   "Complete function calls."
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (lsp-register-custom-settings
  '(("javascript.autoClosingTags" lsp-javascript-auto-closing-tags t)

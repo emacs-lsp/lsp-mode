@@ -256,7 +256,7 @@ Must not nil.")
                   ,lsp-pwsh-pses-script
                   "-HostName" "\"Emacs Host\""
                   "-HostProfileId" "'Emacs.LSP'"
-                  "-HostVersion" "8.0.1"
+                  "-HostVersion" "9.0.0"
                   "-LogPath" ,(expand-file-name "emacs-powershell.log" lsp-pwsh-log-path)
                   "-LogLevel" ,lsp-pwsh-developer-editor-services-log-level
                   "-SessionDetailsPath" ,(expand-file-name (format "PSES-VSCode-%d" lsp-pwsh--sess-id)

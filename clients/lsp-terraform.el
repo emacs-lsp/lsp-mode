@@ -75,7 +75,7 @@
   "LSP support for Terraform, using terraform-ls from Hashicorp."
   :group 'lsp-mode
   :link '(url-link "https://github.com/hashicorp/terraform-ls")
-  :package-version `(lsp-mode . "8.0.1"))
+  :package-version `(lsp-mode . "9.0.0"))
 
 (defcustom lsp-terraform-ls-server "terraform-ls"
   "Path to the `terraform-ls' binary."
@@ -84,7 +84,7 @@
   :type '(choice
           (file :tag "File")
           (repeat string))
-  :package-version `(lsp-mode . "8.0.1"))
+  :package-version `(lsp-mode . "9.0.0"))
 
 (defcustom lsp-terraform-ls-enable-show-reference nil
   "Enable reference counts.
@@ -94,7 +94,7 @@ attributes.  This is an experimental feature provided by the
 language server."
   :group 'lsp-terraform-ls
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-terraform-ls-validate-on-save nil
   "Enable validating the current open file on save.
@@ -102,7 +102,7 @@ language server."
 This is an experimental feature provided by the language server."
   :group 'lsp-terraform-ls
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-terraform-ls-prefill-required-fields nil
   "Enable completion of required fields.
@@ -112,21 +112,21 @@ Terraform blocks.  This is an experimental feature provided by the
 language server."
   :group 'lsp-terraform-ls
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-terraform-ls-providers-position-params nil
   "The optional providers tree position params.
 Defaults to side following treemacs default."
   :type 'alist
   :group 'lsp-terraform-ls
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-terraform-ls-module-calls-position-params nil
   "The optional module calls tree position params.
 Defaults to side following treemacs default."
   :type 'alist
   :group 'lsp-terraform-ls
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp-terraform-ls--make-launch-cmd ()
   `(,lsp-terraform-ls-server "serve"))

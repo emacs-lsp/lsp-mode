@@ -32,7 +32,7 @@
   "Settings for the Ansible Language Server."
   :group 'lsp-mode
   :link '(url-link "https://github.com/ansible/ansible-language-server")
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-add-on? t
   "Make the client `add-on' so that it works with other language servers.
@@ -41,21 +41,21 @@
 Enabled by default."
   :type 'boolean
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-language-server-command
   '("ansible-language-server" "--stdio")
   "The command that starts the ansible language server."
   :type '(repeat :tag "List of string values" string)
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-ansible-path "ansible"
   "Path to the ansible executable.
 $PATH is searched for the executable."
   :type 'string
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-use-fully-qualified-collection-names t
   "Toggles use of fully qualified collection names when inserting a module name.
@@ -63,7 +63,7 @@ Disabling it will only use FQCNs when necessary, that is when the collection is
 not configured for the task."
   :type 'boolean
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-validation-enabled t
   "Toggle validation provider.
@@ -71,39 +71,39 @@ If enabled and ansible-lint is disabled, validation falls back to
 ansible-playbook --syntax-check."
   :type 'boolean
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-validation-lint-arguments ""
   "Optional command line arguments to be appended to ansible-lint invocation.
 See ansible-lint documentation."
   :type 'string
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-validation-lint-enabled t
   "Enables/disables use of ansible-lint."
   :type 'boolean
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-validation-lint-path "ansible-lint"
   "Path to the ansible-lint executable.
 $PATH is searched for the executable."
   :type 'string
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-completion-provide-redirect-modules t
   "Toggle redirected module provider when completing modules."
   :type 'boolean
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-completion-provide-module-option-aliases t
   "Toggle alias provider when completing module options."
   :type 'boolean
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-execution-environment-container-engine "auto"
   "The container engine to be used while running with execution environment.
@@ -113,19 +113,19 @@ docker."
                  (const "podman")
                  (const "docker"))
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-execution-environment-enabled nil
   "Enable or disable the use of an execution environment."
   :type 'boolean
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-execution-environment-image "quay.io/ansible/creator-ee:latest"
   "Specify the name of the execution environment image."
   :type 'string
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-execution-environment-pull-policy "missing"
   "Specify the image pull policy.
@@ -139,21 +139,21 @@ if not locally available."
                  (const "never")
                  (const "tag"))
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-execution-environment-pull-arguments ""
   "Specify any additional parameters for the pull command.
 Example: ‘--tls-verify=false’"
   :type 'string
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-execution-environment-container-options ""
   "Extra parameters passed to the container engine command.
 Example: ‘-–net=host’"
   :type 'string
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-execution-environment-volume-mounts []
   "Additonnal volumes to mount in container.
@@ -165,7 +165,7 @@ The value is a vector of plists.  Expected properties are:
   Example: ro,Z"
   :type '(lsp-repeatable-vector plist)
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-python-interpreter-path ""
   "Path to the python/python3 executable.
@@ -173,7 +173,7 @@ This setting may be used to make the extension work with ansible and
 ansible-lint installations in a Python virtual environment."
   :type 'string
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-ansible-python-activation-script ""
   "Path to a custom activate script.
@@ -181,7 +181,7 @@ It will be used instead of `lsp-ansible-python-interpreter-path' to run in a
 Python virtual environment."
   :type 'string
   :group 'lsp-ansible
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (lsp-dependency 'ansible-language-server
                 '(:system "ansible-language-server")

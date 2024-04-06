@@ -67,7 +67,7 @@ FILE-NAME is path to package.json vscode manifest."
   \"%s\"
   :type '%s
   :group '%s
-  :package-version '(lsp-mode . \"8.0.1\")
+  :package-version '(lsp-mode . \"9.0.0\")
   :lsp-path \"%s\")"
                         prop-symbol
                         (prin1-to-string

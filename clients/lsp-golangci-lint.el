@@ -36,77 +36,77 @@
   "Configuration options for lsp-golangci-lint."
   :group 'lsp-mode
   :link '(url-lint "https://github.com/nametake/golangci-lint-langserver")
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-golangci-lint-server-path "golangci-lint-langserver"
   "Command to run golangci-lint-langserver."
   :type 'string
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-golangci-lint-server-debug nil
   "Whether to run golangci-lint-langserver in debug mode or not."
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-golangci-lint-server-args nil
   "Arguments to pass to golangci-lint-langserver."
   :type '(repeat string)
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-golangci-lint-path "golangci-lint"
   "Command to run golangci-lint."
   :type 'string
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-golangci-lint-allow-parallel-runners t
   "If not nil, pass --allow-parallel-runners flag to golangci-lint run."
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-golangci-lint-build-tags nil
   "If non-empty list, pass as --build-tags flag value to golangci-lint run."
   :type '(repeat string)
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-golangci-lint-fast nil
   "If not nil, pass --fast flag to golangci-lint run."
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-golangci-lint-enable-all nil
   "If not nil, pass --enable-all flag to golangci-lint run."
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-golangci-lint-enable nil
   "If non-empty list, pass as --enable flag value to golangci-lint run."
   :type '(repeat string)
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-golangci-lint-disable-all nil
   "If not nil, pass --disable-all to golangci-lint run."
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-golangci-lint-disable nil
   "If non-empty list, pass as --disable flag value to golangci-lint run."
   :type '(repeat string)
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-golangci-lint-config nil
   "If set, pass value as --config flag to golangci-lint run."
   :type 'string
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-golangci-lint-no-config nil
   "If not nil, pass --no-config flag to golangci-lint run."
   :type 'boolean
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-golangci-lint-run-args nil
   "Arguments to pass to golangci-lint run command."
   :type '(repeat string)
-  :package-version '(lsp-mode . "8.0.1"))
+  :package-version '(lsp-mode . "9.0.0"))
 
 (defun lsp-golangci-lint-server--stdio-command ()
   "Return the command and args to start golangci-lint-langserver."
