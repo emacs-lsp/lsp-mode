@@ -1,5 +1,5 @@
 (package "lsp-mode"
-         "9.0.0"
+         "9.0.1"
          "LSP mode")
 
 (website-url "https://github.com/emacs-lsp/lsp-mode")
