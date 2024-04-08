@@ -255,7 +255,7 @@ The value for `enabled' can be always, never or onValidSchema."
   :group 'lsp-xml
   :package-version '(lsp-mode . "6.1"))
 
-(lsp-register-custom-settings '
+(lsp-register-new-settings '
  (("xml.validation.schema" lsp-xml-validation-schema)
   ("xml.validation.resolveExternalEntities" lsp-xml-validation-resolve-external-entities)
   ("xml.validation.enabled" lsp-xml-validation-enabled t)

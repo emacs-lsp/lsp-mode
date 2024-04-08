@@ -159,7 +159,7 @@ styles."
   :group 'lsp-html
   :package-version '(lsp-mode . "6.1"))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("html.trace.server" lsp-html-trace-server)
    ("html.autoClosingTags" lsp-html-auto-closing-tags t)
    ("html.validate.styles" lsp-html-validate-styles t)

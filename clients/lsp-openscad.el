@@ -60,7 +60,7 @@
   :type 'string
   :group 'lsp-openscad)
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("openscad.search_paths" lsp-openscad-search-paths)
    ("openscad.fmt_exe" lsp-openscad-format-exe)
    ("openscad.fmt_style" lsp-openscad-format-style)))

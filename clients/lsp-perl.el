@@ -88,7 +88,7 @@ Defaults to 0."
   :group 'lsp-perl
   :package-version '(lsp-mode . "8.0.0"))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("perl.perlCmd" lsp-perl-perl-cmd)
    ("perl.perlInc" lsp-perl-perl-inc)
    ("perl.fileFilter" lsp-perl-file-filter)

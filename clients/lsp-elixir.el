@@ -169,7 +169,7 @@ be available here: https://github.com/elixir-lsp/elixir-ls/releases/"
              :binary-path lsp-elixir-server-command
              :set-executable? t))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("elixirLS.dialyzerEnabled" lsp-elixir-dialyzer-enabled t)
    ("elixirLS.dialyzerWarnOpts" lsp-elixir-dialyzer-warn-opts)
    ("elixirLS.dialyzerFormat" lsp-elixir-dialyzer-format)

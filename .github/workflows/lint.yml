@@ -20,6 +20,11 @@ jobs:
         with:
           version: 'snapshot'
 
+      # `lsp-register-custom-settings` should not be used for defining client
+      # settings, see its description for details
+      - name: Do not overwrite user settings
+        run: "! git grep lsp-register-custom-settings -- clients"
+
       - name: Resolve dependency
         run: eask install-deps --dev
 

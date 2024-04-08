@@ -103,7 +103,7 @@ changes behavior depending on the contents of @ARGV."
   :group 'lsp-pls
   :package-version '(lsp-mode . "9.0.0"))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("pls.cmd"                      lsp-pls-executable)
    ("pls.args"                     lsp-pls-arguments)
    ("pls.cwd"                      lsp-pls-working-dir)

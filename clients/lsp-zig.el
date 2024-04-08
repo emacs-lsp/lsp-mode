@@ -250,7 +250,7 @@ and not the global storage."
 ;;
 ;;; Core
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("zls.enable_snippets" lsp-zls-enable-snippets t)
    ("zls.enable_argument_placeholders" lsp-zig-enable-argument-placeholders t)
    ("zls.enable_build_on_save" lsp-zig-enable-build-on-save t)

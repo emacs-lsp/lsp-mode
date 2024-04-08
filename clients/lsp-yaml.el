@@ -129,7 +129,7 @@ Limited for performance reasons."
 (defvar lsp-yaml--schema-store-schemas-alist nil
   "A list of schemas fetched from schema stores.")
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("yaml.format.enable" lsp-yaml-format-enable t)
    ("yaml.format.singleQuote" lsp-yaml-single-quote t)
    ("yaml.format.bracketSpacing" lsp-yaml-bracket-spacing)

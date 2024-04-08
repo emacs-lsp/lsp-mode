@@ -198,7 +198,7 @@ server."
           (const "messages")
           (const "verbose")))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("css.trace.server" lsp-css-trace-server)
    ("css.lint.unknownAtRules" lsp-css-lint-unknown-at-rules)
    ("css.lint.idSelector" lsp-css-lint-id-selector)
