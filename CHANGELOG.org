@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 9.0.1
+  * Add support for GNAT Project (~gpr-mode~, ~gpr-ts-mode~).
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.

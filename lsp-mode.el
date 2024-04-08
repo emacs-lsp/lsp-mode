@@ -800,6 +800,8 @@ Changes take effect only when a new session is started."
     ("^yang\\.settings$" . "jsonc")
     (ada-mode . "ada")
     (ada-ts-mode . "ada")
+    (gpr-mode . "gpr")
+    (gpr-ts-mode . "gpr")
     (awk-mode . "awk")
     (awk-ts-mode . "awk")
     (nxml-mode . "xml")
@@ -6008,6 +6010,8 @@ Request codeAction/resolve for more info if server supports."
     (erlang-mode                . erlang-indent-level)              ; Erlang
     (ess-mode                   . ess-indent-offset)                ; ESS (R)
     (go-ts-mode                 . go-ts-mode-indent-offset)
+    (gpr-mode                   . gpr-indent-offset)                ; GNAT Project
+    (gpr-ts-mode                . gpr-ts-mode-indent-offset)
     (hack-mode                  . hack-indent-offset)               ; Hack
     (java-mode                  . c-basic-offset)                   ; Java
     (java-ts-mode               . java-ts-mode-indent-offset)

@@ -178,6 +178,17 @@
                   :synchronize-sections '("ada")
                   :environment-fn 'lsp-ada--environment))
 
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection
+                                   (lambda () (list (lsp-package-path 'ada-ls)
+                                                    "--language-gpr")))
+                  :major-modes '(gpr-mode gpr-ts-mode)
+                  :priority -1
+                  :download-server-fn (lambda (_client callback error-callback _update?)
+                                        (lsp-package-ensure 'ada-ls callback error-callback))
+                  :server-id 'gpr-ls
+                  :environment-fn #'lsp-ada--environment))
+
 (lsp-consistency-check lsp-ada)
 
 (provide 'lsp-ada)
