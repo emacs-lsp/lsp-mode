@@ -366,6 +366,7 @@ the server has requested that."
     "[/\\\\]\\.metals\\'"
     "[/\\\\]target\\'"
     "[/\\\\]\\.ccls-cache\\'"
+    "[/\\\\]\\.vs\\'"
     "[/\\\\]\\.vscode\\'"
     "[/\\\\]\\.venv\\'"
     "[/\\\\]\\.mypy_cache\\'"
@@ -382,7 +383,9 @@ the server has requested that."
     ;; Bazel
     "[/\\\\]bazel-[^/\\\\]+\\'"
     ;; CSharp
+    "[/\\\\]\\.cache[/\\\\]lsp-csharp\\'"
     "[/\\\\]\\.meta\\'"
+    "[/\\\\]\\.nuget\\'"
     ;; Unity
     "[/\\\\]Library\\'"
     ;; Clojure
