@@ -47,6 +47,12 @@
   :group 'lsp-volar
   :package-version '(lsp-mode . "9.0.0"))
 
+(defcustom lsp-volar-hybrid-mode nil
+  "Enable Hybrid Mode."
+  :type 'boolean
+  :group 'lsp-volar
+  :package-version '(lsp-mode . "9.0.1"))
+
 (defcustom lsp-volar-activate-file ".volarrc"
   "A file with a custom name placed in WORKSPACE-ROOT is used to force enable
  volar when there is no package.json in the WORKSPACE-ROOT."
@@ -86,6 +92,9 @@
         (lsp-volar-get-typescript-tsdk-path)))
     t)))
 
+(lsp-register-custom-settings
+ '(("vue.hybridMode" lsp-volar-hybrid-mode t)))
+
 (defun lsp-volar--vue-project-p (workspace-root)
   "Check if the `Vue' package is present in the package.json file
 in the WORKSPACE-ROOT."
@@ -118,6 +127,7 @@ in the WORKSPACE-ROOT."
   :multi-root nil
   :server-id 'vue-semantic-server
   :initialization-options (lambda () (ht-merge (lsp-configuration-section "typescript")
+                                               (lsp-configuration-section "vue")
                                                (ht ("serverMode" 0)
                                                    ("diagnosticModel" 1)
                                                    ("textDocumentSync" 2))))
