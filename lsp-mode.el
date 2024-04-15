@@ -2880,8 +2880,13 @@ and end-of-string meta-characters."
 
 (defun lsp-glob-to-regexps (glob-pattern)
   "Convert a GLOB-PATTERN to a list of Elisp regexps."
-  (let* ((trimmed-pattern (string-trim glob-pattern))
-         (top-level-unbraced-patterns (lsp-glob-unbrace-at-top-level trimmed-pattern)))
+  (when-let*
+      ((glob-pattern (cond ((hash-table-p glob-pattern)
+                            (ht-get glob-pattern "pattern"))
+                           ((stringp glob-pattern) glob-pattern)
+                           (t (error "Unknown glob-pattern type: %s" glob-pattern))))
+       (trimmed-pattern (string-trim glob-pattern))
+       (top-level-unbraced-patterns (lsp-glob-unbrace-at-top-level trimmed-pattern)))
     (seq-map #'lsp-glob-convert-to-wrapped-regexp
              top-level-unbraced-patterns)))
 
