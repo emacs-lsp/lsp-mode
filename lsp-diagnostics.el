@@ -156,10 +156,12 @@ CALLBACK is the status callback passed by Flycheck."
 
   (->> (lsp--get-buffer-diagnostics)
        (-map (-lambda ((&Diagnostic :message :severity? :tags? :code? :source?
-                                    :range (&Range :start (&Position :line      start-line
-                                                                     :character start-character)
-                                                   :end   (&Position :line      end-line
-                                                                     :character end-character))))
+                                    :range (&Range :start (start &as &Position
+                                                                 :line      start-line
+                                                                 :character start-character)
+                                                   :end   (end   &as &Position
+                                                                 :line      end-line
+                                                                 :character end-character))))
                (flycheck-error-new
                 :buffer (current-buffer)
                 :checker checker
@@ -171,7 +173,8 @@ CALLBACK is the status callback passed by Flycheck."
                 :line (lsp-translate-line (1+ start-line))
                 :column (1+ (lsp-translate-column start-character))
                 :end-line (lsp-translate-line (1+ end-line))
-                :end-column (1+ (lsp-translate-column end-character)))))
+                :end-column (unless (lsp--position-equal start end)
+                              (1+ (lsp-translate-column end-character))))))
        (funcall callback 'finished)))
 
 (defun lsp-diagnostics--flycheck-buffer ()
