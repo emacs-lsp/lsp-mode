@@ -525,8 +525,11 @@ The MARKERS and PREFIX value will be attached to each candidate."
        :company-require-match 'never
        :company-prefix-length
        (save-excursion
-         (defvar company-minimum-prefix-length)
-         (let ((bounds-left (max (line-beginning-position) (- (point) company-minimum-prefix-length)))
+         (let (
+               ;; 2 is a heuristic number to make sure we look futher back than
+               ;; the bounds-start, which can be different from the actual start
+               ;; of the symbol
+               (bounds-left (max (line-beginning-position) (- bounds-start 2)))
                triggered-by-char?)
            (while (and (> (point) bounds-left)
                        (not (equal (char-after) ?\s))
