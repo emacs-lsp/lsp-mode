@@ -298,7 +298,7 @@ See https://github.com/emacs-lsp/lsp-mode."
                       (when (= start end)
                         (if-let ((region (flymake-diag-region (current-buffer)
                                                               (1+ start-line)
-                                                              character)))
+                                                              (1+ character))))
                             (setq start (car region)
                                   end (cdr region))
                           (lsp-save-restriction-and-excursion
