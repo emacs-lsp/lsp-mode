@@ -634,6 +634,15 @@ diagnostics have changed."
   :type 'hook
   :group 'lsp-mode)
 
+(defcustom lsp-diagnostics-default-severity 'error
+  "Error level to use when the server does not report one."
+  :type '(choice (const :tag "Error"       error)
+                 (const :tag "Warning"     warning)
+                 (const :tag "Information" info)
+                 (const :tag "Hint"        hint))
+  :group 'lsp-mode
+  :package-version '(lsp-mode . "9.0.1"))
+
 (define-obsolete-variable-alias 'lsp-workspace-folders-changed-hook
   'lsp-workspace-folders-changed-functions "lsp-mode 6.3")
 
@@ -2277,6 +2286,14 @@ Common usecase are:
                         result)))
       (ht)))
 
+(defun lsp-diagnostics-severity->numeric (severity)
+  "Determine numeric severity from symbolic SEVERITY."
+  (pcase severity
+    ('error   lsp/diagnostic-severity-error)
+    ('warning lsp/diagnostic-severity-warning)
+    ('info    lsp/diagnostic-severity-information)
+    ('hint    lsp/diagnostic-severity-hint)))
+
 (defun lsp-diagnostics-stats-for (path)
   "Get diagnostics statistics for PATH.
 The result format is vector [_ errors warnings infos hints] or nil."
@@ -2296,11 +2313,15 @@ The result format is vector [_ errors warnings infos hints] or nil."
   (let ((path (lsp--fix-path-casing (lsp--uri-to-path uri)))
         (new-stats (make-vector 5 0)))
     (mapc (-lambda ((&Diagnostic :severity?))
-            (cl-incf (aref new-stats (or severity? 1))))
+            (cl-incf (aref new-stats (or severity?
+                                         (lsp-diagnostics-severity->numeric
+                                          lsp-diagnostics-default-severity)))))
           diagnostics)
     (when-let ((old-diags (gethash path (lsp--workspace-diagnostics workspace))))
       (mapc (-lambda ((&Diagnostic :severity?))
-              (cl-decf (aref new-stats (or severity? 1))))
+              (cl-decf (aref new-stats (or severity?
+                                           (lsp-diagnostics-severity->numeric
+                                            lsp-diagnostics-default-severity)))))
             old-diags))
     (lsp-diagnostics--update-path path new-stats)
     (while (not (string= path (setf path (file-name-directory
