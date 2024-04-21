@@ -1126,6 +1126,9 @@ called with nil the signature info must be cleared."
 (defvar-local lsp--buffer-workspaces ()
   "List of the buffer workspaces.")
 
+(defvar-local lsp--buffer-deferred nil
+  "Whether buffer was loaded via `lsp-deferred'.")
+
 (defvar lsp--session nil
   "Contain the `lsp-session' for the current Emacs instance.")
 
@@ -2931,7 +2934,7 @@ and end-of-string meta-characters."
     (:propertize "Disconnected" face warning))
    "]")
   :group 'lsp-mode
-  (when (and lsp-mode (not lsp--buffer-workspaces))
+  (when (and lsp-mode (not lsp--buffer-workspaces) (not lsp--buffer-deferred))
     ;; fire up `lsp' when someone calls `lsp-mode' instead of `lsp'
     (lsp)))
 
@@ -7634,9 +7637,6 @@ should return the command to start the LS server."
 
   ;; yas-snippet config
   (setq-local yas-inhibit-overlay-modification-protection t))
-
-(defvar-local lsp--buffer-deferred nil
-  "Whether buffer was loaded via `lsp-deferred'.")
 
 (defun lsp--restart-if-needed (workspace)
   "Handler restart for WORKSPACE."
