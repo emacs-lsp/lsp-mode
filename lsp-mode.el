@@ -2147,7 +2147,7 @@ PARAMS - the data sent from WORKSPACE."
           (goto-char (lsp--position-to-point (lsp:range-start selection?))))
         t))))
 
-(defcustom lsp-progress-prefix " ⌛ "
+(defcustom lsp-progress-prefix "⌛ "
   "Progress prefix."
   :group 'lsp-mode
   :type 'string
@@ -2190,7 +2190,7 @@ PARAMS - the data sent from WORKSPACE."
                    "|"))))
             (lsp-workspaces)))))
     (unless (s-blank? progress-status)
-      (concat lsp-progress-prefix progress-status))))
+      (concat lsp-progress-prefix progress-status " "))))
 
 (lsp-defun lsp-on-progress-modeline (workspace (&ProgressParams :token :value
                                                                 (value &as &WorkDoneProgress :kind)))
