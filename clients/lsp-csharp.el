@@ -41,6 +41,13 @@ Version 1.34.3 minimum is required."
   :link '(url-link "https://github.com/OmniSharp/omnisharp-roslyn")
   :package-version '(lsp-mode . "9.0.0"))
 
+(defconst lsp-csharp--metadata-uri-re
+  "^file:///%24metadata%24/Project/\\(.+\\)/Assembly/\\(.+\\)/Symbol/\\(.+\\)\.cs$"
+  "Regular expression matching omnisharp's metadata uri.
+Group 1 contains the Project name
+Group 2 contains the Assembly name
+Group 3 contains the Type name")
+
 (defcustom lsp-csharp-server-install-dir
   (f-join lsp-server-install-dir "omnisharp-roslyn/")
   "Installation directory for OmniSharp Roslyn server."
@@ -334,6 +341,56 @@ using the `textDocument/references' request."
       (lsp-show-xrefs (lsp--locations-to-xref-items locations-found) nil t)
     (message "No references found")))
 
+(defun lsp-csharp--path->qualified-name (path)
+  "Convert PATH to qualified-namespace-like name."
+  (replace-regexp-in-string
+   (regexp-quote "/")
+   "."
+   path))
+
+(defun lsp-csharp--omnisharp-metadata-uri-handler (uri)
+  "Handle `file:/(metadata)' uri from omnisharp-roslyn server.
+The uri is parsed and then 'o#/metadata' request is issued to retrieve
+metadata from the server. A cache file is created on project root dir that
+stores this metadata and filename is returned so lsp-mode can display this file."
+  (string-match lsp-csharp--metadata-uri-re uri)
+  (-when-let* ((project-name (lsp-csharp--path->qualified-name (url-unhex-string (match-string 1 uri))))
+               (assembly-name (lsp-csharp--path->qualified-name (url-unhex-string (match-string 2 uri))))
+               (type-name (lsp-csharp--path->qualified-name (url-unhex-string (match-string 3 uri))))
+               (metadata-req (lsp-make-omnisharp-metadata-request :project-name project-name
+                                                                  :assembly-name assembly-name
+                                                                  :type-name type-name))
+               (metadata (lsp-request "o#/metadata" metadata-req))
+               ((&omnisharp:MetadataResponse :source-name :source) metadata)
+               (filename (f-join ".cache"
+                                 "lsp-csharp"
+                                 "metadata"
+                                 "Project" project-name
+                                 "Assembly" assembly-name
+                                 "Symbol" (concat type-name ".cs")))
+               (file-location (expand-file-name filename (lsp--suggest-project-root)))
+               (metadata-file-location (concat file-location ".metadata-uri"))
+               (path (f-dirname file-location)))
+
+    (unless (find-buffer-visiting file-location)
+      (unless (file-directory-p path)
+        (make-directory path t))
+
+      (with-temp-file metadata-file-location
+        (insert uri))
+
+      (with-temp-file file-location
+        (insert source)))
+
+    file-location))
+
+(defun lsp-csharp--uri->path-fn (uri)
+  "Custom implementation of lsp--uri-to-path function to glue omnisharp's metadata uri."
+  (if (string-match-p lsp-csharp--metadata-uri-re uri)
+      (lsp-csharp--omnisharp-metadata-uri-handler uri)
+    (lsp--uri-to-path-1 uri))
+  )
+
 (lsp-register-client
  (make-lsp-client :new-connection
                   (lsp-stdio-connection
@@ -348,6 +405,7 @@ using the `textDocument/references' request."
                   :activation-fn (lsp-activate-on "csharp")
                   :server-id 'omnisharp
                   :priority -1
+                  :uri->path-fn #'lsp-csharp--uri->path-fn
                   :action-handlers (ht ("omnisharp/client/findReferences" 'lsp-csharp--action-client-find-references))
                   :notification-handlers (ht ("o#/projectadded" 'ignore)
                                              ("o#/projectchanged" 'ignore)
