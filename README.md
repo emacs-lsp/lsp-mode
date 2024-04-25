@@ -29,13 +29,6 @@ Language Server Protocol Support for Emacs
 </p>
 <hr>
 
-## Why?
-
-  - :heart: **Community Driven**
-  - :gem: **Fully featured** - supports **all** features in Language Server Protocol v3.14.
-  - :rocket: **Fast** - see [performance section](https://emacs-lsp.github.io/lsp-mode/page/performance).
-  - :star2: **Flexible** - choose between full-blown IDE with flashy UI or minimal distraction free.
-  - :gear: **Easy to configure** - works out of the box and automatically upgrades if additional packages are present.
 
 ## Overview
 
