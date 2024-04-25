@@ -120,6 +120,13 @@ Usually this is to be set in your .dir-locals.el on the project root directory."
   :group 'lsp-csharp-omnisharp
   :type 'file)
 
+(defcustom lsp-csharp-enable-decompilation-support
+  nil
+  "Decompile bytecode when browsing method metadata for types in assemblies.
+Otherwise only declarations for the methods are visible (the default)."
+  :group 'lsp-csharp
+  :type 'boolean)
+
 (lsp-dependency
  'omnisharp-roslyn
  `(:download :url lsp-csharp-omnisharp-roslyn-download-url
@@ -391,6 +398,11 @@ stores this metadata and filename is returned so lsp-mode can display this file.
     (lsp--uri-to-path-1 uri))
   )
 
+(defun lsp-csharp--environment-fn ()
+  "Build environment structure for current values of lsp-csharp customizables.
+See https://github.com/OmniSharp/omnisharp-roslyn/wiki/Configuration-Options"
+  `(("OMNISHARP_RoslynExtensionsOptions:enableDecompilationSupport" . ,(if lsp-csharp-enable-decompilation-support "true" "false"))))
+
 (lsp-register-client
  (make-lsp-client :new-connection
                   (lsp-stdio-connection
@@ -406,6 +418,7 @@ stores this metadata and filename is returned so lsp-mode can display this file.
                   :server-id 'omnisharp
                   :priority -1
                   :uri->path-fn #'lsp-csharp--uri->path-fn
+                  :environment-fn #'lsp-csharp--environment-fn
                   :action-handlers (ht ("omnisharp/client/findReferences" 'lsp-csharp--action-client-find-references))
                   :notification-handlers (ht ("o#/projectadded" 'ignore)
                                              ("o#/projectchanged" 'ignore)
