@@ -108,6 +108,7 @@ nav:
     - Magik: page/lsp-magik.md
     - Markdown: page/lsp-markdown.md
     - Marksman: page/lsp-marksman.md
+    - Meson: page/lsp-meson.md
     - Move: page/lsp-move.md
     - MDX: page/lsp-mdx.md
     - MSSQL: https://emacs-lsp.github.io/lsp-mssql
