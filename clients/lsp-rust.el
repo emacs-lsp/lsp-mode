@@ -1513,8 +1513,8 @@ and run a compilation"
 (defun lsp-rust-analyzer-debug (runnable)
   "Select and debug a RUNNABLE action."
   (interactive (list (lsp-rust-analyzer--select-runnable)))
-  (unless (featurep 'dap-cpptools)
-    (user-error "You must require `dap-cpptools'"))
+  (unless (or (featurep 'dap-cpptools) (featurep 'dap-gdb))
+    (user-error "You must require `dap-cpptools' or 'dap-gdb'"))
   (-let (((&rust-analyzer:Runnable
            :args (&rust-analyzer:RunnableArgs :cargo-args :workspace-root? :executable-args)
            :label) runnable))
@@ -1541,7 +1541,7 @@ and run a compilation"
               (`() (user-error "No compilation artifacts or obtaining the runnable artifacts failed"))
               (`(,spec) spec)
               (_ (user-error "Multiple compilation artifacts are not supported")))))
-         (list :type "cppdbg"
+         (list :type (if (featurep 'dap-gdb) "gdb" "cppdbg")
                :request "launch"
                :name label
                :args executable-args
