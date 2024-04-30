@@ -1,7 +1,7 @@
 * Changelog
 ** Unreleased 9.0.1
   * Add support for GNAT Project (~gpr-mode~, ~gpr-ts-mode~).
-
+  * Add SQL support
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
   * Add new configuration options for lsp-html. Now able to toggle documentation hovers. Custom data is no longer experimental, and is now a vector.

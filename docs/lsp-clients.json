@@ -991,6 +991,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "sql",
+    "full-name": "SQL (sql)",
+    "server-name": "sql-language-server",
+    "server-url": "https://github.com/joe-re/sql-language-server",
+    "installation": "npm i -g sql-language-server",
+    "debugger": "Not available"
+  },
+  {
     "name": "sqls",
     "full-name": "SQL (sqls)",
     "server-name": "sqls",
