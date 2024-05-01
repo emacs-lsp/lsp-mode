@@ -21,8 +21,10 @@ jobs:
         include:
           - os: ubuntu-latest
             emacs-version: 27.2
+            experimental: false
           - os: windows-latest
             emacs-version: 27.2
+            experimental: false
           - os: ubuntu-latest
             emacs-version: snapshot
             experimental: true
