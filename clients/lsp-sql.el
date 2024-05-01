@@ -32,7 +32,6 @@
   :link '(url-link "https://github.com/joe-re/sql-language-server")
   :package-version `(lsp-mode . "9.0.1"))
 
-
 (defcustom lsp-sql-server-path nil
   "Path points for SQL language server.
 
