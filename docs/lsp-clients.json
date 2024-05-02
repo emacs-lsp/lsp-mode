@@ -592,6 +592,14 @@
     "debugger": "Not available"
   },
   {
+    "name": "meson",
+    "full-name": "Meson",
+    "server-name": "mesonlsp",
+    "server-url": "https://github.com/JCWasmx86/mesonlsp",
+    "installation-url": "https://github.com/JCWasmx86/mesonlsp",
+    "debugger": "Not available"
+  },
+  {
     "name": "millet",
     "full-name": "Standard ML (Millet)",
     "server-name": "millet",
