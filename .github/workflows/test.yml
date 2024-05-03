@@ -31,7 +31,7 @@ jobs:
             experimental: true
         exclude:
           - os: macos-latest
-            emacs_version: 27.2
+            emacs-version: 27.2
 
     steps:
     - uses: jcs090218/setup-emacs@master
