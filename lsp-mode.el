@@ -4088,7 +4088,7 @@ yet."
 (defvar eldoc-documentation-default) ; CI
 (when (< emacs-major-version 28)
   (unless (boundp 'eldoc-documentation-functions)
-    (load "eldoc"))
+    (load "eldoc" nil 'nomessage))
   (when (memq (default-value 'eldoc-documentation-function) '(nil ignore))
     ;; actually `eldoc-documentation-strategy', but CI was failing
     (setq-default eldoc-documentation-function 'eldoc-documentation-default)))
