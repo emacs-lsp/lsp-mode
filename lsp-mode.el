@@ -801,6 +801,7 @@ Changes take effect only when a new session is started."
     ("^go\\.mod\\'" . "go.mod")
     ("^settings\\.json$" . "jsonc")
     ("^yang\\.settings$" . "jsonc")
+    ("^meson\\(_options\\.txt\\|\\.\\(build\\|format\\)\\)\\'" . "meson")
     (ada-mode . "ada")
     (ada-ts-mode . "ada")
     (gpr-mode . "gpr")
@@ -967,6 +968,7 @@ Changes take effect only when a new session is started."
     (protobuf-mode . "protobuf")
     (nushell-mode . "nushell")
     (nushell-ts-mode . "nushell")
+    (meson-mode . "meson")
     (yang-mode . "yang"))
   "Language id configuration.")
 
