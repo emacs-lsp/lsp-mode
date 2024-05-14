@@ -5257,7 +5257,7 @@ If EXCLUDE-DECLARATION is non-nil, request the server to include declarations."
           lsp--eldoc-saved-message nil)
     (if (looking-at-p "[[:space:]\n]")
         (setq lsp--eldoc-saved-message nil) ; And returns nil.
-      (when (and lsp-eldoc-enable-hover (lsp--capability :hoverProvider))
+      (when (and lsp-eldoc-enable-hover (lsp-feature? "textDocument/hover"))
         (lsp-request-async
          "textDocument/hover"
          (lsp--text-document-position-params)
