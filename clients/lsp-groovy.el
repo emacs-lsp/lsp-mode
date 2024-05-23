@@ -30,7 +30,7 @@
 (defgroup lsp-groovy nil
   "LSP support for Groovy, using groovy-language-server."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/prominic/groovy-language-server"))
+  :link '(url-link "https://github.com/GroovyLanguageServer/groovy-language-server"))
 
 (defcustom lsp-groovy-server-file (f-join lsp-server-install-dir "groovy-language-server-all.jar")
   "JAR file path for groovy-language-server-all.jar."
