@@ -395,8 +395,8 @@
     "name": "groovy",
     "full-name": "Groovy",
     "server-name": "groovy-language-server",
-    "server-url": "https://github.com/prominic/groovy-language-server",
-    "installation-url": "https://github.com/prominic/groovy-language-server#build",
+    "server-url": "https://github.com/GroovyLanguageServer/groovy-language-server",
+    "installation-url": "https://github.com/GroovyLanguageServer/groovy-language-server#build",
     "debugger": "Not available"
   },
   {
