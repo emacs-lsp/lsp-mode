@@ -790,20 +790,37 @@ name (e.g. `data' variable passed as `data' parameter)."
   (when-let ((workspace (lsp-find-workspace 'ts-ls (buffer-file-name))))
     (eq 'initialized (lsp--workspace-status workspace))))
 
-(defun lsp-clients-typescript-project-ts-server-path ()
-  "Return the project local TS server path."
-  (f-join (lsp-workspace-root) "node_modules" "typescript" "lib" "tsserver.js"))
+(defun lsp-clients-typescript-require-resolve (&optional dir)
+  "Get the location of the typescript.
+Use Node.js require.
+The node_modules directory structure is suspect
+and should be trusted as little as possible.
+If you call require in Node.js,
+it should take into account the various hooks.
+For example, yarn PnP.
+
+Optional argument DIR specifies the working directory
+to run the command in."
+  (when-let*
+      ((default-directory (or dir default-directory))
+       (output
+        (string-trim-right
+         (shell-command-to-string
+          "node -e \"console.log(require.resolve('typescript'))\"")))
+       (not-empty (not (string-empty-p output))))
+    (f-parent output)))
 
 (defun lsp-clients-typescript-server-path ()
-  "Return the TS sever path base on settings."
-  (cond
-   ((and lsp-clients-typescript-prefer-use-project-ts-server
-         (f-exists? (lsp-clients-typescript-project-ts-server-path)))
-    (lsp-clients-typescript-project-ts-server-path))
-   (t
+  "Return the TS server path based on settings."
+  (if-let* ((use-project-ts lsp-clients-typescript-prefer-use-project-ts-server)
+            (server-path (lsp-clients-typescript-require-resolve))
+            (server-path-exist (f-exists? server-path)))
+      server-path
     (if (memq system-type '(cygwin windows-nt ms-dos))
-        (f-join (f-parent (lsp-package-path 'typescript)) "node_modules" "typescript" "lib")
-      (f-join (f-parent (f-parent (lsp-package-path 'typescript))) "lib" "node_modules" "typescript" "lib")))))
+        ;; The Windows environment does not recognize the top-level PATH returned by `lsp-package-path',
+        ;; so the real PATH is returned through Node.js.
+        (lsp-clients-typescript-require-resolve (f-parent (lsp-package-path 'typescript)))
+      (lsp-package-path 'typescript))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda ()
