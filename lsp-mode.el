@@ -5160,11 +5160,11 @@ identifier and the position respectively."
                             'xref-match t line)
     ;; LINE is nil when FILENAME is not being current visited by any buffer.
     (xref-make-match (or line filename)
-               (xref-make-file-location
-                filename
-                (lsp-translate-line (1+ start-line))
-                (lsp-translate-column start-char))
-               (- end-char start-char))))
+                     (xref-make-file-location
+                      filename
+                      (lsp-translate-line (1+ start-line))
+                      (lsp-translate-column start-char))
+                     (- end-char start-char))))
 
 (defun lsp--location-uri (loc)
   (if (lsp-location? loc)
