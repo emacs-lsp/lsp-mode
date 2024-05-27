@@ -3933,10 +3933,11 @@ If any filters, checks if it applies for PATH."
 (defun lsp--suggest-project-root ()
   "Get project root."
   (or
-   (when (featurep 'projectile) (condition-case nil
-                                    (projectile-project-root)
-                                  (error nil)))
-   (when (featurep 'project)
+   (when (fboundp 'projectile-project-root)
+     (condition-case nil
+         (projectile-project-root)
+       (error nil)))
+   (when (fboundp 'project-current)
      (when-let ((project (project-current)))
        (if (fboundp 'project-root)
            (project-root project)
