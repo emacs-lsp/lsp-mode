@@ -356,8 +356,9 @@ using the `textDocument/references' request."
    path))
 
 (defun lsp-csharp--omnisharp-metadata-uri-handler (uri)
-  "Handle `file:/(metadata)' uri from omnisharp-roslyn server.
-The uri is parsed and then 'o#/metadata' request is issued to retrieve
+  "Handle `file:/(metadata)' URI from omnisharp-roslyn server.
+
+The URI is parsed and then `o#/metadata' request is issued to retrieve
 metadata from the server. A cache file is created on project root dir that
 stores this metadata and filename is returned so lsp-mode can display this file."
   (string-match lsp-csharp--omnisharp-metadata-uri-re uri)
@@ -392,11 +393,11 @@ stores this metadata and filename is returned so lsp-mode can display this file.
     file-location))
 
 (defun lsp-csharp--omnisharp-uri->path-fn (uri)
-  "Custom implementation of lsp--uri-to-path function to glue omnisharp's metadata uri."
+  "Custom implementation of lsp--uri-to-path function to glue omnisharp's
+metadata uri."
   (if (string-match-p lsp-csharp--omnisharp-metadata-uri-re uri)
       (lsp-csharp--omnisharp-metadata-uri-handler uri)
-    (lsp--uri-to-path-1 uri))
-  )
+    (lsp--uri-to-path-1 uri)))
 
 (defun lsp-csharp--omnisharp-environment-fn ()
   "Build environment structure for current values of lsp-csharp customizables.
