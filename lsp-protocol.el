@@ -399,7 +399,9 @@ See `-let' for a description of the destructuring mechanism."
                (omnisharp:RunTestsInClassRequest (:MethodNames :RunSettings :TestFrameworkname :TargetFrameworkVersion :NoBuild :Line :Column :Buffer :FileName))
                (omnisharp:RunTestResponse (:Results :Pass :Failure :ContextHadNoTests))
                (omnisharp:TestMessageEvent (:MessageLevel :Message))
-               (omnisharp:DotNetTestResult (:MethodName :Outcome :ErrorMessage :ErrorStackTrace :StandardOutput :StandardError)))
+               (omnisharp:DotNetTestResult (:MethodName :Outcome :ErrorMessage :ErrorStackTrace :StandardOutput :StandardError))
+               (omnisharp:MetadataRequest (:AssemblyName :TypeName :ProjectName :VersionNumber :Language))
+               (omnisharp:MetadataResponse (:SourceName :Source)))
 
 (lsp-interface (csharp-ls:CSharpMetadata (:textDocument))
                (csharp-ls:CSharpMetadataResponse (:source :projectName :assemblyName :symbolName)))
