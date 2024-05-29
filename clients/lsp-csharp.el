@@ -41,7 +41,7 @@ Version 1.34.3 minimum is required."
   :link '(url-link "https://github.com/OmniSharp/omnisharp-roslyn")
   :package-version '(lsp-mode . "9.0.0"))
 
-(defconst lsp-csharp--metadata-uri-re
+(defconst lsp-csharp--omnisharp-metadata-uri-re
   "^file:///%24metadata%24/Project/\\(.+\\)/Assembly/\\(.+\\)/Symbol/\\(.+\\)\.cs$"
   "Regular expression matching omnisharp's metadata uri.
 Group 1 contains the Project name
@@ -120,7 +120,7 @@ Usually this is to be set in your .dir-locals.el on the project root directory."
   :group 'lsp-csharp-omnisharp
   :type 'file)
 
-(defcustom lsp-csharp-enable-decompilation-support
+(defcustom lsp-csharp-omnisharp-enable-decompilation-support
   nil
   "Decompile bytecode when browsing method metadata for types in assemblies.
 Otherwise only declarations for the methods are visible (the default)."
@@ -348,7 +348,7 @@ using the `textDocument/references' request."
       (lsp-show-xrefs (lsp--locations-to-xref-items locations-found) nil t)
     (message "No references found")))
 
-(defun lsp-csharp--path->qualified-name (path)
+(defun lsp-csharp--omnisharp-path->qualified-name (path)
   "Convert PATH to qualified-namespace-like name."
   (replace-regexp-in-string
    (regexp-quote "/")
@@ -360,10 +360,10 @@ using the `textDocument/references' request."
 The uri is parsed and then 'o#/metadata' request is issued to retrieve
 metadata from the server. A cache file is created on project root dir that
 stores this metadata and filename is returned so lsp-mode can display this file."
-  (string-match lsp-csharp--metadata-uri-re uri)
-  (-when-let* ((project-name (lsp-csharp--path->qualified-name (url-unhex-string (match-string 1 uri))))
-               (assembly-name (lsp-csharp--path->qualified-name (url-unhex-string (match-string 2 uri))))
-               (type-name (lsp-csharp--path->qualified-name (url-unhex-string (match-string 3 uri))))
+  (string-match lsp-csharp--omnisharp-metadata-uri-re uri)
+  (-when-let* ((project-name (lsp-csharp--omnisharp-path->qualified-name (url-unhex-string (match-string 1 uri))))
+               (assembly-name (lsp-csharp--omnisharp-path->qualified-name (url-unhex-string (match-string 2 uri))))
+               (type-name (lsp-csharp--omnisharp-path->qualified-name (url-unhex-string (match-string 3 uri))))
                (metadata-req (lsp-make-omnisharp-metadata-request :project-name project-name
                                                                   :assembly-name assembly-name
                                                                   :type-name type-name))
@@ -391,17 +391,17 @@ stores this metadata and filename is returned so lsp-mode can display this file.
 
     file-location))
 
-(defun lsp-csharp--uri->path-fn (uri)
+(defun lsp-csharp--omnisharp-uri->path-fn (uri)
   "Custom implementation of lsp--uri-to-path function to glue omnisharp's metadata uri."
-  (if (string-match-p lsp-csharp--metadata-uri-re uri)
+  (if (string-match-p lsp-csharp--omnisharp-metadata-uri-re uri)
       (lsp-csharp--omnisharp-metadata-uri-handler uri)
     (lsp--uri-to-path-1 uri))
   )
 
-(defun lsp-csharp--environment-fn ()
+(defun lsp-csharp--omnisharp-environment-fn ()
   "Build environment structure for current values of lsp-csharp customizables.
 See https://github.com/OmniSharp/omnisharp-roslyn/wiki/Configuration-Options"
-  `(("OMNISHARP_RoslynExtensionsOptions:enableDecompilationSupport" . ,(if lsp-csharp-enable-decompilation-support "true" "false"))))
+  `(("OMNISHARP_RoslynExtensionsOptions:enableDecompilationSupport" . ,(if lsp-csharp-omnisharp-enable-decompilation-support "true" "false"))))
 
 (lsp-register-client
  (make-lsp-client :new-connection
@@ -417,8 +417,8 @@ See https://github.com/OmniSharp/omnisharp-roslyn/wiki/Configuration-Options"
                   :activation-fn (lsp-activate-on "csharp")
                   :server-id 'omnisharp
                   :priority -1
-                  :uri->path-fn #'lsp-csharp--uri->path-fn
-                  :environment-fn #'lsp-csharp--environment-fn
+                  :uri->path-fn #'lsp-csharp--omnisharp-uri->path-fn
+                  :environment-fn #'lsp-csharp--omnisharp-environment-fn
                   :action-handlers (ht ("omnisharp/client/findReferences" 'lsp-csharp--action-client-find-references))
                   :notification-handlers (ht ("o#/projectadded" 'ignore)
                                              ("o#/projectchanged" 'ignore)
