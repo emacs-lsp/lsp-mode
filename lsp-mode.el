@@ -915,6 +915,7 @@ Changes take effect only when a new session is started."
     (context-mode . "context")
     (cypher-mode . "cypher")
     (latex-mode . "latex")
+    (LaTeX-mode . "latex")
     (v-mode . "v")
     (vhdl-mode . "vhdl")
     (vhdl-ts-mode . "vhdl")
