@@ -46,7 +46,7 @@
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-digestif-executable)
-                  :major-modes '(plain-tex-mode latex-mode context-mode texinfo-mode)
+                  :major-modes '(plain-tex-mode latex-mode context-mode texinfo-mode LaTex-mode)
                   :priority (if (eq lsp-tex-server 'digestif) 1 -1)
                   :server-id 'digestif))
 
@@ -58,7 +58,7 @@
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-texlab-executable)
-                  :major-modes '(plain-tex-mode latex-mode)
+                  :major-modes '(plain-tex-mode latex-mode LaTeX-mode)
                   :priority (if (eq lsp-tex-server 'texlab) 1 -1)
                   :server-id 'texlab))
 
