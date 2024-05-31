@@ -28,6 +28,7 @@
 (require 'ht)
 (require 'dash)
 (require 'lsp-semantic-tokens)
+(require 's)
 
 (defgroup lsp-rust nil
   "LSP support for Rust, using Rust Language Server or rust-analyzer."
@@ -1763,6 +1764,16 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
   :custom-capabilities `((experimental . ((snippetTextEdit . ,(and lsp-enable-snippet (fboundp 'yas-minor-mode))))))
   :download-server-fn (lambda (_client callback error-callback _update?)
                         (lsp-package-ensure 'rust-analyzer callback error-callback))))
+
+(cl-defmethod lsp-clients-extract-signature-on-hover (contents (_server-id (eql rust-analyzer)))
+  "Extract first non-comment line from rust-analyzer's hover CONTENTS.
+The first line of the hover contents is usally about memory layout or notable
+traits starting with //, with the actual signature follows."
+  (let* ((lines (s-lines (s-trim (lsp--render-element contents))))
+         (non-comment-lines (--filter (not (s-prefix? "//" it)) lines)))
+    (if non-comment-lines
+        (car non-comment-lines)
+      (car lines))))
 
 (lsp-consistency-check lsp-rust)
 
