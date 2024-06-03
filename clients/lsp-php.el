@@ -98,7 +98,7 @@ completions."
   :type 'number
   :group 'lsp-intelephense
   :package-version '(lsp-mode . "6.1")
-  :lsp-path "intelephense-files.maxSize")
+  :lsp-path "intelephense.files.maxSize")
 
 (lsp-defcustom lsp-intelephense-files-associations
   ["*.php" "*.phtml"]
