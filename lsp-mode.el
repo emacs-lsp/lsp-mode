@@ -1625,6 +1625,13 @@ return value of `body' or nil if interrupted."
   ;; to the server.
   (action-handlers (make-hash-table :test 'equal))
 
+  ;; `action-filter' can be set to a function that modifies any incoming
+  ;; `CodeAction' in place before it is executed. The return value is ignored.
+  ;; This can be used to patch up broken code action requests before they are
+  ;; sent back to the LSP server. See `lsp-fix-code-action-booleans' for an
+  ;; example of a function that can be useful here.
+  (action-filter nil)
+
   ;; major modes supported by the client.
   major-modes
   ;; Function that will be called to decide if this language client
@@ -6005,7 +6012,49 @@ Request codeAction/resolve for more info if server supports."
 
   (cond
    ((stringp command?) (lsp--execute-command action))
-   ((lsp-command? command?) (lsp--execute-command command?))))
+   ((lsp-command? command?) (progn
+                              (when-let ((action-filter (->> (lsp-workspaces)
+                                                             (cl-first)
+                                                             (or lsp--cur-workspace)
+                                                             (lsp--workspace-client)
+                                                             (lsp--client-action-filter))))
+                                (funcall action-filter command?))
+                              (lsp--execute-command command?)))))
+
+(lsp-defun lsp-fix-code-action-booleans ((&Command :arguments?) boolean-action-arguments)
+  "Patch incorrect boolean argument values in the provided `CodeAction' command
+in place, based on the BOOLEAN-ACTION-ARGUMENTS list. The values
+in this list can be either symbols or lists of symbols that
+represent paths to boolean arguments in code actions:
+
+> (lsp-fix-code-action-booleans command '(:foo :bar (:some :nested :boolean)))
+
+When there are available code actions, the server sends
+`lsp-mode' a list of possible command names and arguments as
+JSON. `lsp-mode' parses all boolean false values as `nil'. As a
+result code action arguments containing falsy values don't
+roundtrip correctly because `lsp-mode' will end up sending null
+values back to the client. This list makes it possible to
+selectively transform `nil' values back into `:json-false'."
+  (seq-doseq (path boolean-action-arguments)
+    (seq-doseq (args arguments?)
+      (lsp--fix-nested-boolean args (if (listp path) path (list path))))))
+
+(defun lsp--fix-nested-boolean (structure path)
+  "Traverse STRUCTURE using the paths from the PATH list, changing the value to
+`:json-false' if it was `nil'. PATH should be a list containing
+one or more symbols, and STRUCTURE should be compatible with
+`lsp-member?', `lsp-get', and `lsp-put'."
+  (let ((key (car path))
+        (rest (cdr path)))
+    (if (null rest)
+        ;; `lsp-put' returns `nil' both when the key doesn't exist and when the
+        ;; value is `nil', so we need to explicitly check its presence here
+        (when (and (lsp-member? structure key) (not (lsp-get structure key)))
+          (lsp-put structure key :json-false))
+      ;; If `key' does not exist, then we'll silently ignore it
+      (when-let ((child (lsp-get structure key)))
+        (lsp--fix-nested-boolean child rest)))))
 
 (defvar lsp--formatting-indent-alist
   ;; Taken from `dtrt-indent-mode'
