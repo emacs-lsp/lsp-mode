@@ -249,6 +249,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "earthly",
+    "full-name": "Earthfile language server",
+    "server-name": "earthlyls",
+    "server-url": "https://github.com/glehmann/earthlyls",
+    "installation": "cargo install earthlyls",
+    "lsp-install-server": "earthlyls",
+    "debugger": "Not available"
+  },
+  {
     "name": "elixir",
     "full-name": "Elixir",
     "server-name": "elixir-lsp/elixir-ls",
