@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased 9.0.1
+  * Add support for [[https://github.com/glehmann/earthlyls][earthlyls]]
   * Add support for GNAT Project (~gpr-mode~, ~gpr-ts-mode~).
   * Add SQL support
   * Add support for Meson build system. (~meson-mode~).
