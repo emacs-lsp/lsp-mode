@@ -956,6 +956,7 @@ Changes take effect only when a new session is started."
     (idris-mode . "idris")
     (idris2-mode . "idris2")
     (gleam-mode . "gleam")
+    (gleam-ts-mode . "gleam")
     (graphviz-dot-mode . "dot")
     (tiltfile-mode . "tiltfile")
     (solidity-mode . "solidity")

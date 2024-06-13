@@ -40,7 +40,7 @@
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection lsp-gleam-executable)
-  :major-modes '(gleam-mode)
+  :major-modes '(gleam-mode gleam-ts-mode)
   :priority -1
   :server-id 'gleam-lsp))
 
