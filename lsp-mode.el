@@ -6028,7 +6028,7 @@ in place, based on the BOOLEAN-ACTION-ARGUMENTS list. The values
 in this list can be either symbols or lists of symbols that
 represent paths to boolean arguments in code actions:
 
-> (lsp-fix-code-action-booleans command '(:foo :bar (:some :nested :boolean)))
+> (lsp-fix-code-action-booleans command `(:foo :bar (:some :nested :boolean)))
 
 When there are available code actions, the server sends
 `lsp-mode' a list of possible command names and arguments as
