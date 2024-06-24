@@ -59,6 +59,7 @@ nav:
     - C++ (ccls): page/lsp-ccls.md
     - C++ (clangd): page/lsp-clangd.md
     - C# (omnisharp-roslyn): page/lsp-csharp-omnisharp.md
+    - C# (csharp-roslyn): page/lsp-csharp-roslyn.md
     - C# (csharp-ls): page/lsp-csharp-ls.md
     - Clojure: page/lsp-clojure.md
     - CMake: page/lsp-cmake.md
