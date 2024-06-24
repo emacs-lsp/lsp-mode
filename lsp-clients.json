@@ -136,6 +136,16 @@
     "debugger": "Yes (netcoredbg)"
   },
   {
+    "name": "csharp-roslyn",
+    "common-group-name": "csharp",
+    "full-name": "C# (csharp-roslyn)",
+    "server-name": "Microsoft.CodeAnalysis.LanguageServer (Roslyn)",
+    "server-url": "https://github.com/dotnet/roslyn/tree/main/src/Features/LanguageServer",
+    "installation": "Supports automatic installation via NuGet",
+    "lsp-install-server": "csharp-roslyn",
+    "debugger": "Yes (netcoredbg)"
+  },
+  {
     "name": "ccls",
     "full-name": "C++",
     "server-name": "ccls",
