@@ -35,7 +35,7 @@
 (defvar lsp-roslyn--stdpipe-path (expand-file-name
                                   "lsp-roslyn-stdpipe.ps1"
                                   (file-name-directory (file-truename load-file-name)))
-  "Path to the 'stdpipe' script.
+  "Path to the `stdpipe' script.
 On Windows, this script is used as a proxy for the language server's named pipe.
 Unused on other platforms.")
 
@@ -91,10 +91,10 @@ Unused on other platforms.")
 
 (defun lsp-roslyn--parse-pipe-name (pipe)
   (if (eq system-type 'windows-nt)
-          (progn
-            (string-match "\\([a-z0-9]+\\)$" pipe)
-            (match-string 1 pipe))
-      pipe))
+      (progn
+        (string-match "\\([a-z0-9]+\\)$" pipe)
+        (match-string 1 pipe))
+    pipe))
 
 (defun lsp-roslyn--parent-process-filter (_process output)
   "Parses the named pipe's name that the Roslyn server process prints on stdout."
@@ -136,19 +136,19 @@ creates another process connecting to the named pipe it specifies."
   (let* ((parent-process-name name)
          (parent-stderr-buf (format "*%s::stderr*" parent-process-name))
          (command-process (make-process
-                          :name parent-process-name
-                          :buffer (generate-new-buffer-name parent-process-name)
-                          :coding 'no-conversion
-                          :filter 'lsp-roslyn--parent-process-filter
-                          :sentinel sentinel
-                          :stderr parent-stderr-buf
-                          :command (append
-                                    (list lsp-roslyn-dotnet-executable
-                                          (lsp-roslyn--get-server-dll-path)
-                                          (format "--logLevel=%s" lsp-roslyn-server-log-level)
-                                          (format "--extensionLogDirectory=%s" lsp-roslyn-server-log-directory))
-                                    lsp-roslyn-server-extra-args)
-                          :noquery t)))
+                           :name parent-process-name
+                           :buffer (generate-new-buffer-name parent-process-name)
+                           :coding 'no-conversion
+                           :filter 'lsp-roslyn--parent-process-filter
+                           :sentinel sentinel
+                           :stderr parent-stderr-buf
+                           :command (append
+                                     (list lsp-roslyn-dotnet-executable
+                                           (lsp-roslyn--get-server-dll-path)
+                                           (format "--logLevel=%s" lsp-roslyn-server-log-level)
+                                           (format "--extensionLogDirectory=%s" lsp-roslyn-server-log-directory))
+                                     lsp-roslyn-server-extra-args)
+                           :noquery t)))
     (accept-process-output command-process lsp-roslyn-server-timeout-seconds) ; wait for JSON with pipe name to print on stdout, like {"pipeName":"\\\\.\\pipe\\d1b72351"}
     (when (not lsp-roslyn--pipe-name)
       (error "Failed to receieve pipe name from Roslyn server process"))
@@ -216,8 +216,8 @@ creates another process connecting to the named pipe it specifies."
 (defun lsp-roslyn--find-files-in-parent-directories (directory regex &optional result)
   "Search DIRECTORY for files matching REGEX and return their full paths if found."
   (let* ((parent-dir (file-truename (concat (file-name-directory directory) "../")))
-        (found (directory-files directory 't regex))
-        (result (append (or result '()) found)))
+         (found (directory-files directory 't regex))
+         (result (append (or result '()) found)))
     (if (and (not (string= (file-truename directory) parent-dir))
              (< (length parent-dir) (length (file-truename directory))))
         (lsp-roslyn--find-files-in-parent-directories parent-dir regex result)
@@ -240,7 +240,7 @@ creates another process connecting to the named pipe it specifies."
   (interactive)
   (let ((solution-file (lsp-roslyn--find-solution-file)))
     (if solution-file
-      (lsp-notify "solution/open" (list :solution (lsp--path-to-uri solution-file)))
+        (lsp-notify "solution/open" (list :solution (lsp--path-to-uri solution-file)))
       (lsp--error "No solution file was found for this workspace."))))
 
 (defun lsp-roslyn--on-initialized (_workspace)
@@ -269,9 +269,9 @@ Assumes it was installed with the server install function."
          (is-x86 (and (string-match-p "x86" system-configuration) (not is-x64)))
          (is-arm (string-match-p "arm" system-configuration)))
     (if-let ((platform-name (cond
-                              ((eq system-type 'gnu/linux) "linux")
-                              ((eq system-type 'darwin) "osx")
-                              ((eq system-type 'windows-nt) "win")))
+                             ((eq system-type 'gnu/linux) "linux")
+                             ((eq system-type 'darwin) "osx")
+                             ((eq system-type 'windows-nt) "win")))
              (arch-name (cond
                          (is-x64 "x64")
                          (is-x86 "x86")
@@ -296,8 +296,8 @@ Assumes it was installed with the server install function."
 ;; Adapted from roslyn.nvim's version
 (defun lsp-roslyn--temp-project-csproj (pkg-name pkg-version)
   "Generates a temporary .csproj to use for downloading the language server."
-    (format
-"<Project Sdk=\"Microsoft.Build.NoTargets/1.0.80\">
+  (format
+   "<Project Sdk=\"Microsoft.Build.NoTargets/1.0.80\">
     <PropertyGroup>
         <!-- Changes the global packages folder -->
         <RestorePackagesPath>out</RestorePackagesPath>
@@ -312,7 +312,7 @@ Assumes it was installed with the server install function."
         <PackageDownload Include=\"%s\" version=\"[%s]\" />
     </ItemGroup>
 </Project>"
-pkg-name pkg-version))
+   pkg-name pkg-version))
 
 (defun lsp-roslyn--download-server (_client callback error-callback update?)
   "Downloads the Roslyn language server to `lsp-roslyn-install-path'.
