@@ -1452,6 +1452,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-cucumber-features" class="md-nav__link">
+    lsp-cucumber-features
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-cucumber-glue" class="md-nav__link">
+    lsp-cucumber-glue
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-cucumber-parameter-types" class="md-nav__link">
+    lsp-cucumber-parameter-types
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-cucumber-server-path" class="md-nav__link">
     lsp-cucumber-server-path
   </a>
@@ -3590,6 +3611,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-cucumber-features" class="md-nav__link">
+    lsp-cucumber-features
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-cucumber-glue" class="md-nav__link">
+    lsp-cucumber-glue
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-cucumber-parameter-types" class="md-nav__link">
+    lsp-cucumber-parameter-types
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-cucumber-server-path" class="md-nav__link">
     lsp-cucumber-server-path
   </a>
@@ -3670,6 +3712,26 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
 <p><em>Default:</em> <code>(feature-mode)</code></p>
 <p>List of major mode that work with Cucumber language server.</p>
 <hr />
+<h3 id="lsp-cucumber-features"><code>lsp-cucumber-features</code><a class="headerlink" href="#lsp-cucumber-features" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(repeat string)</code></p>
+<p><em>Default:</em> <code>[src/test/**/*.feature features/**/*.feature tests/**/*.feature *specs*/**/*.feature]</code></p>
+<p>Configure where the extension should look for .feature files.</p>
+<hr />
+<h3 id="lsp-cucumber-glue"><code>lsp-cucumber-glue</code><a class="headerlink" href="#lsp-cucumber-glue" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(repeat string)</code></p>
+<p><em>Default:</em> <code>[*specs*/**/*.cs features/**/*.js features/**/*.jsx features/**/*.php features/**/*.py features/**/*.rs features/**/*.rb features/**/*.ts features/**/*.tsx features/**/*_test.go **/*_test.go src/test/**/*.java tests/**/*.py tests/**/*.rs]</code></p>
+<p>Configure where the extension should look for source code where
+step definitions and parameter types are defined.</p>
+<hr />
+<h3 id="lsp-cucumber-parameter-types"><code>lsp-cucumber-parameter-types</code><a class="headerlink" href="#lsp-cucumber-parameter-types" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>(lsp-repeatable-vector plist)</code></p>
+<p><em>Default:</em> <code>[]</code></p>
+<p>Configure parameters types to convert output parameters to your own types.</p>
+<p>Details at https://github.com/cucumber/cucumber-expressions#custom-parameter-types.
+Sample:
+[(:name "actor"
+  :regexp "[A-Z][a-z]+")]</p>
+<hr />
 <h3 id="lsp-cucumber-server-path"><code>lsp-cucumber-server-path</code><a class="headerlink" href="#lsp-cucumber-server-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
 <p><em>Default:</em> <code>nil</code></p>
@@ -3684,7 +3746,7 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 24, 2024</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 25, 2024</span>
       
     
   </small>
