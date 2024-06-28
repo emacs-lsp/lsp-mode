@@ -81,7 +81,8 @@ Has no effects when `lsp-clients-angular-language-server-command' is set."
                 node-modules-path
                 "--ngProbeLocations"
                 (f-join node-modules-path "@angular/language-server/node_modules/")
-                ))
+                )
+               )
          lsp-clients-angular-language-server-command))))
   :activation-fn
   (lambda (&rest _args)
