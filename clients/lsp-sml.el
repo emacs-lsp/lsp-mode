@@ -70,7 +70,7 @@ more information."
   :type 'string
   :group 'lsp-sml)
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("millet.format.engine" lsp-sml-millet-format-engine)
    ("millet.server.diagnostics.filter" lsp-sml-millet-server-diagnostics-filter)
    ("millet.server.diagnostics.moreInfoHint.enable" lsp-sml-millet-server-diagnostics-moreInfoHint-enable)

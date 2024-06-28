@@ -136,7 +136,7 @@
       (append '("bundle" "exec") lsp-solargraph-server-command)
     lsp-solargraph-server-command))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("solargraph.logLevel" lsp-solargraph-log-level)
    ("solargraph.folding" lsp-solargraph-folding t)
    ("solargraph.references" lsp-solargraph-references t)

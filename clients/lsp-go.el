@@ -301,7 +301,7 @@ $GOPATH/pkg/mod along with the value of
   :risky t
   :package-version '(lsp-mode "8.0.0"))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("gopls.usePlaceholders" lsp-go-use-placeholders t)
    ("gopls.hoverKind" lsp-go-hover-kind)
    ("gopls.buildFlags" lsp-go-build-flags)

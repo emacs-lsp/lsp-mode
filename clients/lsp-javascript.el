@@ -648,7 +648,7 @@ name (e.g. `data' variable passed as `data' parameter)."
   :type 'boolean
   :package-version '(lsp-mode . "9.0.0"))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("javascript.autoClosingTags" lsp-javascript-auto-closing-tags t)
    ("javascript.implicitProjectConfig.checkJs" lsp-javascript-implicit-project-config-check-js t)
    ("javascript.implicitProjectConfig.experimentalDecorators" lsp-javascript-implicit-project-config-experimental-decorators t)

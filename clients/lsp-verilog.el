@@ -160,7 +160,7 @@
                      :library-folders-fn 'lsp-clients-svlangserver-get-workspace-additional-dirs
                      :server-id 'svlangserver))
 
-(lsp-register-custom-settings '(("systemverilog.includeIndexing" lsp-clients-svlangserver-includeIndexing)
+(lsp-register-new-settings '(("systemverilog.includeIndexing" lsp-clients-svlangserver-includeIndexing)
                                 ("systemverilog.excludeIndexing" lsp-clients-svlangserver-excludeIndexing)
                                 ("systemverilog.defines" lsp-clients-svlangserver-defines)
                                 ("systemverilog.launchConfiguration" lsp-clients-svlangserver-launchConfiguration)

@@ -583,7 +583,7 @@ So it will rename only references it can find."
             (setenv "PYENV_VERSION" pyenv-version)
             python-env))))))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("pylsp.rope.ropeFolder" lsp-pylsp-rope-rope-folder)
    ("pylsp.rope.extensionModules" lsp-pylsp-rope-extension-modules)
    ("pylsp.plugins.rope_rename.enabled" (lambda () (eq lsp-pylsp-rename-backend 'rope)) t)

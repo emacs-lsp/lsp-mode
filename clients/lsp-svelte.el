@@ -225,7 +225,7 @@ Example: `((css-unused-selector . ignore) (unused-export-let . error))"
   :type 'boolean
   :package-version '(lsp-mode . "8.0.0"))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("svelte.plugin.svelte.rename.enable" lsp-svelte-plugin-svelte-rename-enable t)
    ("svelte.plugin.svelte.selectionRange.enable" lsp-svelte-plugin-svelte-selection-range-enable t)
    ("svelte.plugin.svelte.codeActions.enable" lsp-svelte-plugin-svelte-code-actions-enable t)

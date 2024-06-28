@@ -121,7 +121,7 @@
                       (lsp--set-configuration (lsp-configuration-section "magik"))))
   :server-id 'magik))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  `(("magik.javaHome" lsp-magik-java-home)
    ("magik.smallworldGis" lsp-magik-smallworld-gis)
    ("magik.typing.typeDatabasePaths" lsp-magik-typing-type-database-paths)

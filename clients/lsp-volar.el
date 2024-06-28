@@ -82,7 +82,7 @@
                 '(:system "vue-language-server")
                 '(:npm :package "@vue/language-server" :path "vue-language-server"))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("typescript.tsdk"
     (lambda ()
       (if-let ((project-root (lsp-workspace-root))

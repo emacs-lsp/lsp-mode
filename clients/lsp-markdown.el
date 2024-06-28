@@ -79,7 +79,7 @@ For a complete list of plugins, check:
                 '(:npm :package "unified-language-server"
                        :path "unified-language-server"))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  `(("unified-language-server.remark-parse.plugins" lsp-markdown-remark-plugins)
    ("unified-language-server.remark-parse.checkTextWith.setting" lsp-markdown-remark-check-text-with-setting)
    ("unified-language-server.remark-parse.checkTextWith.mutator" lsp-markdown-remark-check-text-with-mutator)))
