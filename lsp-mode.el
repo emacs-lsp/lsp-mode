@@ -8635,16 +8635,24 @@ TBL - a hash table, PATHS is the path to the nested VALUE."
   "Defines `lsp-mode' server property."
   (declare (doc-string 3) (debug (name body))
            (indent defun))
-  (let ((path (plist-get args :lsp-path)))
+  (let ((path (plist-get args :lsp-path))
+        (setter (intern (concat (symbol-name symbol) "--set"))))
     (cl-remf args :lsp-path)
     `(progn
        (lsp-register-custom-settings
         (quote ((,path ,symbol ,(equal ''boolean (plist-get args :type))))))
 
-       (defcustom ,symbol ,standard ,doc
-         :set (lambda (sym val)
-                (lsp--set-custom-property sym val ,path))
-         ,@args))))
+       (defcustom ,symbol ,standard ,doc ,@args)
+
+       ;; Use a variable watcher instead of registering a `defcustom'
+       ;; setter since `hack-local-variables' is not aware of custom
+       ;; setters and won't invoke them.
+
+       (defun ,setter (sym val op _where)
+         (when (eq op 'set)
+           (lsp--set-custom-property sym val ,path)))
+
+       (add-variable-watcher ',symbol #',setter))))
 
 (defun lsp--set-custom-property (sym val path)
   (set sym val)
