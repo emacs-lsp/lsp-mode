@@ -544,8 +544,7 @@ filename is returned so lsp-mode can display this file."
                   (shell-command-to-string
                    (if lsp-csharp-csharpls-use-local-tool
                        "dotnet tool list"
-                     "dotnet tool list -g")))
-  )
+                     "dotnet tool list -g"))))
 
 (defun lsp-csharp--cls-download-server (_client callback error-callback update?)
   "Install/update csharp-ls language server using `dotnet tool'.
