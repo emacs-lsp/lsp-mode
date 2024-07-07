@@ -1035,6 +1035,7 @@ directory")
     ("textDocument/signatureHelp" :capability :signatureHelpProvider)
     ("textDocument/typeDefinition" :capability :typeDefinitionProvider)
     ("textDocument/typeHierarchy" :capability :typeHierarchyProvider)
+    ("textDocument/diagnostic" :capability :diagnosticProvider)
     ("workspace/executeCommand" :capability :executeCommandProvider)
     ("workspace/symbol" :capability :workspaceSymbolProvider))
 
@@ -2299,6 +2300,17 @@ Common usecase are:
 The result format is vector [_ errors warnings infos hints] or nil."
   (gethash (lsp--fix-path-casing path) lsp-diagnostic-stats))
 
+(defun lsp-diagnostics--request-pull-diagnostics (workspace)
+  "Request new diagnostics for the current file within WORKSPACE.
+This is only executed if the server supports pull diagnostics."
+  (when (lsp-feature? "textDocument/diagnostic")
+    (let ((path (lsp--fix-path-casing (buffer-file-name))))
+      (lsp-request-async "textDocument/diagnostic"
+                         (list :textDocument (lsp--text-document-identifier))
+                         (-lambda ((&DocumentDiagnosticReport :kind :items?))
+                           (lsp-diagnostics--apply-pull-diagnostics workspace path kind items?))
+                         :mode 'tick))))
+
 (defun lsp-diagnostics--update-path (path new-stats)
   (let ((new-stats (copy-sequence new-stats))
         (path (lsp--fix-path-casing (directory-file-name path))))
@@ -2308,9 +2320,8 @@ The result format is vector [_ errors warnings infos hints] or nil."
             (aref new-stats idx)))
       (puthash path new-stats lsp-diagnostic-stats))))
 
-(lsp-defun lsp--on-diagnostics-update-stats (workspace
-                                             (&PublishDiagnosticsParams :uri :diagnostics))
-  (let ((path (lsp--fix-path-casing (lsp--uri-to-path uri)))
+(defun lsp-diagnostics--convert-and-update-path-stats (workspace path diagnostics)
+  (let ((path (lsp--fix-path-casing path))
         (new-stats (make-vector 5 0)))
     (mapc (-lambda ((&Diagnostic :severity?))
             (cl-incf (aref new-stats (or severity? 1))))
@@ -2323,6 +2334,27 @@ The result format is vector [_ errors warnings infos hints] or nil."
     (while (not (string= path (setf path (file-name-directory
                                           (directory-file-name path)))))
       (lsp-diagnostics--update-path path new-stats))))
+
+(lsp-defun lsp--on-diagnostics-update-stats (workspace
+                                             (&PublishDiagnosticsParams :uri :diagnostics))
+  (lsp-diagnostics--convert-and-update-path-stats workspace (lsp--uri-to-path uri) diagnostics))
+
+(defun lsp-diagnostics--apply-pull-diagnostics (workspace path kind diagnostics?)
+  "Update WORKSPACE diagnostics at PATH with DIAGNOSTICS?.
+Depends on KIND being a \\='full\\=' update."
+  (cond
+   ((equal kind "full")
+    ;; TODO support `lsp-diagnostic-filter'
+    ;; (the params types differ from the published diagnostics response)
+    (lsp-diagnostics--convert-and-update-path-stats workspace path diagnostics?)
+    (-let* ((lsp--virtual-buffer-mappings (ht))
+            (workspace-diagnostics (lsp--workspace-diagnostics workspace)))
+      (if (seq-empty-p diagnostics?)
+          (remhash path workspace-diagnostics)
+        (puthash path (append diagnostics? nil) workspace-diagnostics))
+      (run-hooks 'lsp-diagnostics-updated-hook)))
+    ((equal kind "unchanged") t)
+    (t (lsp--error "Unknown pull diagnostic result kind '%s'" kind))))
 
 (defun lsp--on-diagnostics (workspace params)
   "Callback for textDocument/publishDiagnostics.
@@ -3744,6 +3776,8 @@ disappearing, unset all the variables related to it."
                       (publishDiagnostics . ((relatedInformation . t)
                                              (tagSupport . ((valueSet . [1 2])))
                                              (versionSupport . t)))
+                      (diagnostic . ((dynamicRegistration . :json-false)
+                                     (relatedDocumentSupport . :json-false)))
                       (linkedEditingRange . ((dynamicRegistration . t)))))
      (window . ((workDoneProgress . t)
                 (showDocument . ((support . t))))))
@@ -4264,6 +4298,8 @@ yet."
                :text (lsp--buffer-content))))
 
   (lsp-managed-mode 1)
+
+  (lsp-diagnostics--request-pull-diagnostics lsp--cur-workspace)
 
   (run-hooks 'lsp-after-open-hook)
   (when-let ((client (-some-> lsp--cur-workspace (lsp--workspace-client))))
@@ -4809,7 +4845,8 @@ Added to `after-change-functions'."
                 (with-lsp-workspace workspace
                   (lsp-notify "textDocument/didChange"
                               (list :contentChanges (vector (lsp--full-change-event))
-                                    :textDocument (lsp--versioned-text-document-identifier))))))
+                                    :textDocument (lsp--versioned-text-document-identifier)))
+                  (lsp-diagnostics--request-pull-diagnostics workspace))))
              (2
               (with-lsp-workspace workspace
                 (lsp-notify
@@ -4819,7 +4856,8 @@ Added to `after-change-functions'."
                                         (if content-change-event-fn
                                             (funcall content-change-event-fn start end length)
                                           (lsp--text-document-content-change-event
-                                           start end length)))))))))
+                                           start end length)))))
+                (lsp-diagnostics--request-pull-diagnostics workspace)))))
          (lsp-workspaces))
         (when lsp--delay-timer (cancel-timer lsp--delay-timer))
         (setq lsp--delay-timer (run-with-idle-timer
@@ -4828,14 +4866,7 @@ Added to `after-change-functions'."
                                 #'lsp--flush-delayed-changes))
         ;; force cleanup overlays after each change
         (lsp--remove-overlays 'lsp-highlight)
-        (lsp--after-change (current-buffer))
-        (setq lsp--signature-last-index nil
-              lsp--signature-last nil)
-        ;; cleanup diagnostics
-        (when lsp-diagnostic-clean-after-change
-          (lsp-foreach-workspace
-           (-let [diagnostics (lsp--workspace-diagnostics lsp--cur-workspace)]
-             (remhash (lsp--fix-path-casing (buffer-file-name)) diagnostics))))))))
+        (lsp--after-change (current-buffer))))))
 
 
 
@@ -4892,6 +4923,16 @@ Added to `after-change-functions'."
     (run-hooks 'lsp-on-change-hook)))
 
 (defun lsp--after-change (buffer)
+  "Called after most textDocument/didChange events."
+  (setq lsp--signature-last-index nil
+        lsp--signature-last nil)
+
+  ;; cleanup diagnostics
+  (when lsp-diagnostic-clean-after-change
+    (dolist (workspace (lsp-workspaces))
+      (-let [diagnostics (lsp--workspace-diagnostics workspace)]
+        (remhash (lsp--fix-path-casing (buffer-file-name)) diagnostics))))
+
   (when (fboundp 'lsp--semantic-tokens-refresh-if-enabled)
     (lsp--semantic-tokens-refresh-if-enabled buffer))
   (when lsp--on-change-timer
