@@ -129,7 +129,8 @@ Otherwise only declarations for the methods are visible (the default)."
   :type 'boolean)
 
 (defcustom lsp-csharp-csharpls-use-dotnet-tool t
-  "Whether to use a dotnet tool version of the expected C# language server; only available for csharp-ls"
+  "Whether to use a dotnet tool version of the expected C#
+ language server; only available for csharp-ls"
   :group 'lsp-csharp
   :type 'boolean
   :risky t)
@@ -137,7 +138,8 @@ Otherwise only declarations for the methods are visible (the default)."
 (defcustom lsp-csharp-csharpls-use-local-tool nil
   "Whether to use csharp-ls as a global or local dotnet tool.
 
-Note: this variable has no effect if lsp-csharp-csharpls-use-dotnet-tool is nil."
+Note: this variable has no effect if
+lsp-csharp-csharpls-use-dotnet-tool is nil."
   :group 'lsp-csharp
   :type 'boolean
   :risky t)

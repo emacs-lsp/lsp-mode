@@ -182,7 +182,8 @@ repository)."
   :risky t)
 
 (defcustom lsp-fsharp-workspace-extra-exclude-dirs nil
-  "Additional directories to exclude from FsAutoComplete workspace loading / discovery."
+  "Additional directories to exclude from FsAutoComplete
+ workspace loading / discovery."
   :group 'lsp-fsharp
   :type 'lsp-string-vector)
 
