@@ -120,12 +120,29 @@ Usually this is to be set in your .dir-locals.el on the project root directory."
   :group 'lsp-csharp-omnisharp
   :type 'file)
 
+
 (defcustom lsp-csharp-omnisharp-enable-decompilation-support
   nil
   "Decompile bytecode when browsing method metadata for types in assemblies.
 Otherwise only declarations for the methods are visible (the default)."
   :group 'lsp-csharp
   :type 'boolean)
+
+(defcustom lsp-csharp-csharpls-use-dotnet-tool t
+  "Whether to use a dotnet tool version of the expected C#
+ language server; only available for csharp-ls"
+  :group 'lsp-csharp
+  :type 'boolean
+  :risky t)
+
+(defcustom lsp-csharp-csharpls-use-local-tool nil
+  "Whether to use csharp-ls as a global or local dotnet tool.
+
+Note: this variable has no effect if
+lsp-csharp-csharpls-use-dotnet-tool is nil."
+  :group 'lsp-csharp
+  :type 'boolean
+  :risky t)
 
 (lsp-dependency
  'omnisharp-roslyn
@@ -485,6 +502,15 @@ filename is returned so lsp-mode can display this file."
                   (with-temp-buffer (insert-file-contents metadata-file-name)
                                     (buffer-string))))))
 
+(defun lsp-csharp--cls-find-executable ()
+  (or (when lsp-csharp-csharpls-use-dotnet-tool
+        (-flatten (list "dotnet" (if lsp-csharp-csharpls-use-local-tool (list "tool" "run") "") "csharp-ls")))
+      (executable-find "csharp-ls")
+      ;; NOTE[gastove|2023-02-03] This approach might be remove-able if we
+      ;; standardize on going through the `dotnet' cli.
+      (f-join (or (getenv "USERPROFILE") (getenv "HOME"))
+              ".dotnet" "tools" "csharp-ls")))
+
 (defun lsp-csharp--cls-make-launch-cmd ()
   "Return command line to invoke csharp-ls."
 
@@ -504,15 +530,23 @@ filename is returned so lsp-mode can display this file."
 
                                (t nil)))
 
-        (csharp-ls-exec (or (executable-find "csharp-ls")
-                            (f-join (or (getenv "USERPROFILE") (getenv "HOME"))
-                                    ".dotnet" "tools" "csharp-ls")))
+        (csharp-ls-exec (lsp-csharp--cls-find-executable))
 
         (solution-file-params (when lsp-csharp-solution-file
                                 (list "-s" lsp-csharp-solution-file))))
     (append startup-wrapper
-            (list csharp-ls-exec)
+            (if (listp csharp-ls-exec)
+                csharp-ls-exec
+              (list csharp-ls-exec))
             solution-file-params)))
+
+(defun lsp-csharp--cls-test-csharp-ls-present ()
+  "Return non-nil if dotnet tool csharp-ls is installed as a dotnet tool."
+  (string-match-p "csharp-ls"
+                  (shell-command-to-string
+                   (if lsp-csharp-csharpls-use-local-tool
+                       "dotnet tool list"
+                     "dotnet tool list -g"))))
 
 (defun lsp-csharp--cls-download-server (_client callback error-callback update?)
   "Install/update csharp-ls language server using `dotnet tool'.
@@ -522,7 +556,7 @@ Will update if UPDATE? is t"
   (lsp-async-start-process
    callback
    error-callback
-   "dotnet" "tool" (if update? "update" "install") "-g" "csharp-ls"))
+   "dotnet" "tool" (if update? "update" "install") (if lsp-csharp-csharpls-use-local-tool "" "-g") "csharp-ls"))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection #'lsp-csharp--cls-make-launch-cmd)

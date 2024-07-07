@@ -157,15 +157,6 @@ with test projects are not autoloaded by FSharpAutoComplete."
   :type 'boolean
   :package-version '(lsp-mode . "9.0.0"))
 
-(defun lsp-fsharp--fsac-install (_client callback error-callback update?)
-  "Install/update fsautocomplete language server using `dotnet tool'.
-Will invoke CALLBACK or ERROR-CALLBACK based on result. Will update if
-UPDATE? is t."
-  (lsp-async-start-process
-   callback
-   error-callback
-   "dotnet" "tool" (if update? "update" "install") "-g" "fsautocomplete"))
-
 (defcustom lsp-fsharp-use-dotnet-tool-for-fsac t
   "Run FsAutoComplete as a dotnet tool.
 
@@ -176,9 +167,40 @@ available, else the globally installed tool."
   :type 'boolean
   :risky t)
 
+
+(defcustom lsp-fsharp-use-dotnet-local-tool nil
+  "When running FsAutoComplete as a dotnet tool, use the local version.
+
+This variable will have no effect if
+`lsp-fsharp-use-dotnet-tool-for-fsac' is nil.
+
+This variable is risky as a buffer-local, and should instead be
+set per-project (e.g. in a .dir-locals.el at the root of a
+repository)."
+  :group 'lsp-fsharp
+  :type 'boolean
+  :risky t)
+
+(defcustom lsp-fsharp-workspace-extra-exclude-dirs nil
+  "Additional directories to exclude from FsAutoComplete
+ workspace loading / discovery."
+  :group 'lsp-fsharp
+  :type 'lsp-string-vector)
+
+(defun lsp-fsharp--fsac-install (_client callback error-callback update?)
+  "Install/update fsautocomplete language server using `dotnet tool'.
+Will invoke CALLBACK or ERROR-CALLBACK based on result. Will update if
+UPDATE? is t."
+  (lsp-async-start-process
+   callback
+   error-callback
+   "dotnet" "tool" (if update? "update" "install") (when lsp-fsharp-use-dotnet-local-tool "-g") "fsautocomplete"))
+
 (defun lsp-fsharp--fsac-cmd ()
   "The location of fsautocomplete executable."
-  (or (-let [maybe-local-executable (expand-file-name "fsautocomplete" lsp-fsharp-server-install-dir)]
+  (or (when lsp-fsharp-use-dotnet-tool-for-fsac
+        (list "dotnet" (if lsp-fsharp-use-dotnet-local-tool "" "tool") "run" "fsautocomplete"))
+      (-let [maybe-local-executable (expand-file-name "fsautocomplete" lsp-fsharp-server-install-dir)]
         (when (f-exists-p maybe-local-executable)
           maybe-local-executable))
       (executable-find "fsautocomplete")
@@ -209,22 +231,32 @@ available, else the globally installed tool."
                                (t nil)))
         (fsautocomplete-exec (lsp-fsharp--fsac-cmd)))
     (append startup-wrapper
-            (list fsautocomplete-exec)
+            (if (listp fsautocomplete-exec)
+                fsautocomplete-exec
+              (list fsautocomplete-exec))
             lsp-fsharp-server-args)))
 
 (defun lsp-fsharp--test-fsautocomplete-present ()
   "Return non-nil if dotnet tool fsautocomplete is installed globally."
   (if lsp-fsharp-use-dotnet-tool-for-fsac
-      (string-match-p "fsautocomplete"
-                      (shell-command-to-string "dotnet tool list -g"))
+      (-let* ((cmd-str (if lsp-fsharp-use-dotnet-local-tool
+                           "dotnet tool list"
+                         "dotnet tool list -g"))
+              (res (string-match-p "fsautocomplete"
+                                  (shell-command-to-string cmd-str))))
+        (if res res
+          (error "Failed to locate fsautocomplete binary; due to lsp-fsharp-use-dotnet-local-tool == %s, checked with command %s" lsp-fsharp-use-dotnet-local-tool cmd-str)))
+
     (f-exists? (lsp-fsharp--fsac-cmd))))
 
 (defun lsp-fsharp--project-list (workspace)
   "Get the list of files we need to send to fsharp/workspaceLoad."
-  (let* ((response (lsp-request "fsharp/workspacePeek"
+  (let* ((base-exlude-dirs ["paket-files" ".git" "packages" "node_modules"])
+         (exclude-dirs (apply 'vector (append base-exlude-dirs lsp-fsharp-workspace-extra-exclude-dirs)))
+         (response (lsp-request "fsharp/workspacePeek"
                                 `(:directory ,(lsp--workspace-root workspace)
                                              :deep 10
-                                             :excludedDirs ["paket-files" ".git" "packages" "node_modules"])))
+                                             :excludedDirs ,exclude-dirs)))
          (data (lsp--read-json (lsp-get response :content)))
          (found (-> data (lsp-get :Data) (lsp-get :Found)))
          (directory (seq-find (lambda (d) (equal "directory" (lsp-get d :Type))) found)))
