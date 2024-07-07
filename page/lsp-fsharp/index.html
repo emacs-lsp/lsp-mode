@@ -1746,8 +1746,22 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-fsharp-use-dotnet-local-tool" class="md-nav__link">
+    lsp-fsharp-use-dotnet-local-tool
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-fsharp-use-dotnet-tool-for-fsac" class="md-nav__link">
     lsp-fsharp-use-dotnet-tool-for-fsac
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-fsharp-workspace-extra-exclude-dirs" class="md-nav__link">
+    lsp-fsharp-workspace-extra-exclude-dirs
   </a>
   
 </li>
@@ -3842,8 +3856,22 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-fsharp-use-dotnet-local-tool" class="md-nav__link">
+    lsp-fsharp-use-dotnet-local-tool
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-fsharp-use-dotnet-tool-for-fsac" class="md-nav__link">
     lsp-fsharp-use-dotnet-tool-for-fsac
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-fsharp-workspace-extra-exclude-dirs" class="md-nav__link">
+    lsp-fsharp-workspace-extra-exclude-dirs
   </a>
   
 </li>
@@ -4019,6 +4047,16 @@ The slash is expected at the end.</p>
 <p><em>Default:</em> <code>t</code></p>
 <p>Enables unused open detection.</p>
 <hr />
+<h3 id="lsp-fsharp-use-dotnet-local-tool"><code>lsp-fsharp-use-dotnet-local-tool</code><a class="headerlink" href="#lsp-fsharp-use-dotnet-local-tool" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>When running FsAutoComplete as a dotnet tool, use the local version.</p>
+<p>This variable will have no effect if
+<code>lsp-fsharp-use-dotnet-tool-for-fsac</code> is nil.</p>
+<p>This variable is risky as a buffer-local, and should instead be
+set per-project (e.g. in a .dir-locals.el at the root of a
+repository).</p>
+<hr />
 <h3 id="lsp-fsharp-use-dotnet-tool-for-fsac"><code>lsp-fsharp-use-dotnet-tool-for-fsac</code><a class="headerlink" href="#lsp-fsharp-use-dotnet-tool-for-fsac" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>t</code></p>
@@ -4026,6 +4064,12 @@ The slash is expected at the end.</p>
 <p>The binary will be invoked via "dotnet fsautocomplete" in the
 project`s root directory, which will run a project-local tool if
 available, else the globally installed tool.</p>
+<hr />
+<h3 id="lsp-fsharp-workspace-extra-exclude-dirs"><code>lsp-fsharp-workspace-extra-exclude-dirs</code><a class="headerlink" href="#lsp-fsharp-workspace-extra-exclude-dirs" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>lsp-string-vector</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Additional directories to exclude from FsAutoComplete
+ workspace loading / discovery.</p>
 <hr />
 
 <!-- Source file information -->
@@ -4035,7 +4079,7 @@ available, else the globally installed tool.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 1, 2024</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 7, 2024</span>
       
     
   </small>
