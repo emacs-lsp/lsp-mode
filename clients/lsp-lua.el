@@ -552,7 +552,8 @@ and `../lib` ,exclude `../lib/temp`.
                    (pcase system-type
                      ('gnu/linux
                       (pcase (lsp-resolve-value lsp--system-arch)
-                        ('x64     "linux-x64")))
+                        ('x64     "linux-x64")
+                        ('arm64   "linux-arm64")))
                      ('darwin
                       (pcase (lsp-resolve-value lsp--system-arch)
                         ('x64     "darwin-x64")

@@ -1503,6 +1503,7 @@ INHERIT-INPUT-METHOD will be proxied to `completing-read' without changes."
                                         (_ 'x64)))
                                      ('gnu/linux
                                        (pcase system-configuration
+                                         ((rx bol "aarch64-") 'arm64)
                                          ((rx bol "x86_64") 'x64)
                                          ((rx bol (| "i386" "i886")) 'x32)))
                                      (_
