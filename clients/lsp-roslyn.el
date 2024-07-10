@@ -28,7 +28,7 @@
 
 (defgroup lsp-roslyn nil
   "LSP support for the C# programming language, using the Roslyn language server."
-  :link '(url-link "https://github.com/dotnet/roslyn/tree/main/src/Features/LanguageServer")
+  :link '(url-link "https://github.com/dotnet/roslyn/tree/main/src/LanguageServer")
   :group 'lsp-mode
   :package-version '(lsp-mode . "8.0.0"))
 

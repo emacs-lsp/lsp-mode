@@ -6,7 +6,7 @@
   * Add support for Meson build system. (~meson-mode~).
   * Add support for go to definition for external files (.dll) in CSharp projects for OmniSharp server.
   * Added a new optional ~:action-filter~ argument when defining LSP clients that allows code action requests to be modified before they are sent to the server. This is used by the Haskell language server client to work around an ~lsp-mode~ parsing quirk that incorrectly sends ~null~ values instead of ~false~ in code action requests.
-  * Add support for C# via the [[https://github.com/dotnet/roslyn/tree/main/src/Features/LanguageServer][Roslyn language server]].
+  * Add support for C# via the [[https://github.com/dotnet/roslyn/tree/main/src/LanguageServer][Roslyn language server]].
   * Add basic support for [[https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_pullDiagnostics][pull diagnostics]] requests.
 
 ** 9.0.0
