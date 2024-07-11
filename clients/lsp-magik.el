@@ -58,12 +58,6 @@
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-magik-java-home nil
-  "Path to Java Runtime, Java 17 minimum."
-  :type `string
-  :group `lsp-magik
-  :package-version '(lsp-mode . "9.0.0"))
-
 (defcustom lsp-magik-smallworld-gis nil
   "Path to Smallworld Core."
   :type `string
@@ -117,7 +111,7 @@
                                         (or (lsp-resolve-value (executable-find (expand-file-name "bin/java" (getenv "JAVA_HOME"))))
                                             (lsp-resolve-value (executable-find "java"))))
                                        (t "java")))
-  "Path of the java executable."
+  "Path to Java Runtime, Java 11 minimum."
   :type 'string
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
@@ -140,8 +134,7 @@
   :server-id 'magik))
 
 (lsp-register-custom-settings
- `(("magik.javaHome" lsp-magik-java-home)
-   ("magik.smallworldGis" lsp-magik-smallworld-gis)
+ `(("magik.smallworldGis" lsp-magik-smallworld-gis)
    ("magik.libsDirs" lsp-magik-libs-dirs)
    ("magik.lint.overrideConfigFile" lsp-magik-lint-override-config-file)
    ("magik.typing.typeDatabasePaths" lsp-magik-typing-type-database-paths)
