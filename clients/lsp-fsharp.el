@@ -199,7 +199,9 @@ UPDATE? is t."
 (defun lsp-fsharp--fsac-cmd ()
   "The location of fsautocomplete executable."
   (or (when lsp-fsharp-use-dotnet-tool-for-fsac
-        (list "dotnet" (if lsp-fsharp-use-dotnet-local-tool "" "tool") "run" "fsautocomplete"))
+        (if lsp-fsharp-use-dotnet-local-tool
+            (list "dotnet" "tool" "run" "fsautocomplete")
+          (list "fsautocomplete")))
       (-let [maybe-local-executable (expand-file-name "fsautocomplete" lsp-fsharp-server-install-dir)]
         (when (f-exists-p maybe-local-executable)
           maybe-local-executable))

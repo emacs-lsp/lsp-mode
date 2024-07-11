@@ -504,10 +504,10 @@ filename is returned so lsp-mode can display this file."
 
 (defun lsp-csharp--cls-find-executable ()
   (or (when lsp-csharp-csharpls-use-dotnet-tool
-        (-flatten (list "dotnet" (if lsp-csharp-csharpls-use-local-tool (list "tool" "run") "") "csharp-ls")))
-      (executable-find "csharp-ls")
-      ;; NOTE[gastove|2023-02-03] This approach might be remove-able if we
-      ;; standardize on going through the `dotnet' cli.
+        (if lsp-csharp-csharpls-use-local-tool
+            (list "dotnet" "tool" "run" "csharp-ls")
+          (list "csharp-ls")))
+      (executable-find "csharp-ls")      
       (f-join (or (getenv "USERPROFILE") (getenv "HOME"))
               ".dotnet" "tools" "csharp-ls")))
 
