@@ -58,9 +58,21 @@
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-magik-smallworld-gis nil
-  "Path to Smallworld Core."
+(defcustom lsp-magik-java-home nil
+  "Path to Java Runtime, Java 17 minimum."
   :type `string
+  :group `lsp-magik
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-magik-libs-dirs []
+  "Paths to libs dirs of Smallworld products."
+  :type `lsp-string-vector
+  :group `lsp-magik
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-magik-lint-override-config-file nil
+  "Override path to magiklintrc.properties."
+  :type 'string
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
 
@@ -134,7 +146,7 @@
   :server-id 'magik))
 
 (lsp-register-custom-settings
- `(("magik.smallworldGis" lsp-magik-smallworld-gis)
+ `(("magik.javaHome" lsp-magik-java-home)
    ("magik.libsDirs" lsp-magik-libs-dirs)
    ("magik.lint.overrideConfigFile" lsp-magik-lint-override-config-file)
    ("magik.typing.typeDatabasePaths" lsp-magik-typing-type-database-paths)
