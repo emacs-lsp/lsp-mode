@@ -76,18 +76,6 @@
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-magik-libs-dirs []
-  "Paths to libs dirs of Smallworld products."
-  :type `lsp-string-vector
-  :group `lsp-magik
-  :package-version '(lsp-mode . "9.0.0"))
-
-(defcustom lsp-magik-lint-override-config-file nil
-  "Override path to magiklintrc.properties."
-  :type 'string
-  :group `lsp-magik
-  :package-version '(lsp-mode . "9.0.0"))
-
 (defcustom lsp-magik-typing-type-database-paths []
   "Paths to type databases."
   :type `lsp-string-vector
