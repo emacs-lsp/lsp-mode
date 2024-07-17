@@ -26,6 +26,8 @@
 
 ;;; Code:
 
+(require 'deferred)
+
 (defun lsp-test--wait-for (form &optional d)
   (--doto (or d (deferred:new #'identity))
     (run-with-timer
