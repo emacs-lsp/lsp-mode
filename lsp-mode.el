@@ -7040,6 +7040,7 @@ server. WORKSPACE is the active workspace."
   (let ((body-received 0)
         leftovers body-length body chunk)
     (lambda (_proc input)
+      (lsp-dump-string-to-special-buffer input "*lsp-received-messages*")
       (setf chunk (if (s-blank? leftovers)
                       input
                     (concat leftovers input)))
@@ -8809,9 +8810,24 @@ When ALL is t, erase all log buffers of the running session."
   (when (process-live-p process)
     (kill-process process)))
 
+(defun lsp-dump-string-to-special-buffer (string buffer-name)
+  "Dump the given STRING into a special-named buffer BUFFER-NAME, preserving the current buffer."
+  (with-current-buffer (get-buffer-create buffer-name)
+    (goto-char (point-max))
+    (let* ((current-time (current-time))
+           (decoded-time (decode-time current-time))
+           (hours (nth 2 decoded-time))
+           (minutes (nth 1 decoded-time))
+           (seconds (nth 0 decoded-time))
+           (milliseconds (floor (* 1000 (mod (float-time current-time) 1)))))
+      (insert (format "|(%02d:%02d:%02d.%03d)|" hours minutes seconds milliseconds)))
+    (insert string)))
+
 (cl-defmethod lsp-process-send ((process process) message)
   (condition-case err
-      (process-send-string process (lsp--make-message message))
+      (let ((msg (lsp--make-message message)))
+        (lsp-dump-string-to-special-buffer msg "*lsp-sent-messages*")
+        (process-send-string process msg))
     (error (lsp--error "Sending to process failed with the following error: %s"
                        (error-message-string err)))))
 
