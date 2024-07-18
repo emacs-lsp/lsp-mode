@@ -6,7 +6,7 @@
   ;; 1+ - extra new-line at the end
   (format "Content-Length: %d\r\nContent-Type: application/vscode-jsonrpc; charset=utf8\r\n\r\n%s\n" (1+ (string-bytes body)) body))
 
-;; TODO:
+;; TODO mock:
 ;; - codeActionProvider
 ;; - codeLensProvider
 ;; - document(Range)FormattingProvider?
@@ -24,10 +24,49 @@
 (defun shutdown-ack (id)
   (json-rpc-string (format "{\"jsonrpc\":\"2.0\",\"id\":%d,\"result\":null}" id)))
 
+(defun loc-to-json (loc)
+  (format "{\"line\":%d,\"character\":%d}" (plist-get loc :line) (plist-get loc :character)))
+
+(defun range-to-json (range)
+  (format "{\"start\":%s,\"end\":%s}"
+          (loc-to-json (plist-get range :start))
+          (loc-to-json (plist-get range :end))))
+
+(defun diagnostic-to-json (diagnostic)
+        (format "{\"source\":\"%s\",\"code\":\"%s\",\"range\":%s,\"message\":\"%s\",\"severity\":%d}"
+                (plist-get diagnostic :source)
+                (plist-get diagnostic :code)
+                (range-to-json (plist-get diagnostic :range))
+                (plist-get diagnostic :message)
+                (plist-get diagnostic :severity)))
+
+(defun point-to-loc (point)
+  (goto-char point)
+  (list :line (- (line-number-at-pos point) 1) :character (- (current-column) 1)))
+
+(defun make-diagnostics (for-file)
+  (let ((forbidden-word "broming"))
+    (with-current-buffer (find-file-noselect for-file)
+      (goto-char (point-min))
+      (let (diagnostics)
+        (while (re-search-forward forbidden-word nil t)
+          (let ((line (- (line-number-at-pos (point)) 1))
+                (end-col (current-column))
+                (start-col (- (current-column) (length forbidden-word))))
+            (push (list :source "mockS"
+                        :code "E001"
+                        :range (list :start (list :line line :character start-col)
+                                     :end (list :line line :character end-col))
+                        :message (format "Do not use word '%s'" forbidden-word)
+                        :severity 2)
+                  diagnostics)))
+        diagnostics))))
+
 (defun diagnostics (for-file)
   (json-rpc-string
-   (format "{\"jsonrpc\":\"2.0\",\"method\":\"textDocument\\/publishDiagnostics\",\"params\":{\"uri\":\"file:\\/\\/%s\",\"diagnostics\":[{\"source\":\"flake8\",\"code\":\"F821\",\"range\":{\"start\":{\"line\":2,\"character\":3},\"end\":{\"line\":2,\"character\":18}},\"message\":\"F821 undefined name 'true'\",\"severity\":2},{\"source\":\"flake8\",\"code\":\"F821\",\"range\":{\"start\":{\"line\":2,\"character\":11},\"end\":{\"line\":2,\"character\":18}},\"message\":\"F821 undefined name 'false'\",\"severity\":2},{\"source\":\"flake8\",\"code\":\"F701\",\"range\":{\"start\":{\"line\":3,\"character\":4},\"end\":{\"line\":3,\"character\":10}},\"message\":\"F701 'broke' outside loop\",\"severity\":2}]}}"
-           for-file)))
+   (format "{\"jsonrpc\":\"2.0\",\"method\":\"textDocument\\/publishDiagnostics\",\"params\":{\"uri\":\"file:\\/\\/%s\",\"diagnostics\":[%s]}}"
+           for-file
+           (mapconcat #'diagnostic-to-json (make-diagnostics for-file) ","))))
 
 (defun get-id (input)
   (if (string-match "\"id\":\\([0-9]+\\)" input)

@@ -18,6 +18,26 @@
 (defun lsp-test-total-server-count ()
   (hash-table-count (lsp-session-folder->servers (lsp-session))))
 
+(defun lsp-test-diag-make-summary (file-content line-number line marker)
+  (with-temp-buffer
+    (insert file-content)
+    (goto-char (point-min))
+    (forward-line line-number)
+    ;; Make sure line-number is correct
+    (should (string-equal (string-trim-right (thing-at-point 'line t)) line)))
+  (should (eq (length marker) (length line)))
+  (should (string-match "^ *\\(\\^+\\) *$" marker))
+  (list :line line-number :from (match-beginning 1) :to (match-end 1)))
+
+(defun lsp-test-diag-get-summary (diagnostic)
+  (let* ((range (ht-get diagnostic "range"))
+         (start (ht-get range "start"))
+         (end (ht-get range "end")))
+    (should (eq (ht-get start "line") (ht-get end "line")))
+    (list :line (ht-get start "line")
+          :from (ht-get start "character")
+          :to (ht-get end "character"))))
+
 (ert-deftest lsp-mock-server-reports-issues ()
   (let ((lsp-clients (lsp-ht)) ; clear all clients
         (lsp-enable-snippets nil) ; Avoid warning that lsp-yasnippet is not intalled
@@ -31,12 +51,16 @@
           (with-timeout (5 (error "Timeout trying to get diagnostics from mock server"))
             (with-current-buffer buf
               (lsp)
+              ;; Make sure the server started
               (should (eq (lsp-test-total-server-count) (1+ initial-server-count)))
               (deferred:sync! (lsp-test-wait (gethash sample-file (lsp-diagnostics t))))
-              (should (eq (length (gethash sample-file (lsp-diagnostics t))) 3))))
+              (should (eq (length (gethash sample-file (lsp-diagnostics t))) 1))
+              (should (equal (lsp-test-diag-get-summary (car (gethash sample-file (lsp-diagnostics t))))
+                             (lsp-test-diag-make-summary (buffer-string) 1
+                                                         "line 1 is here broming and here"
+                                                         "               ^^^^^^^         ")))))
         (kill-buffer buf)
         (lsp-workspace-folders-remove workspace-root)))
-    (message "%d" initial-server-count)
     (with-timeout (5 (error "LSP server refuses to stop"))
-      (message "%d" initial-server-count)
+      ;; Make sure the server stopped
       (deferred:sync! (lsp-test-wait (= initial-server-count (lsp-test-total-server-count)))))))
