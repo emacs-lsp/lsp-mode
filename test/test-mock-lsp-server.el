@@ -1,3 +1,5 @@
+;;; test-mock-lsp-server.el --- unit test utilities -*- lexical-binding: t -*-
+
 (require 'lsp-mode)
 (require 'lsp-test-utils)
 
@@ -29,15 +31,10 @@
             (with-current-buffer buf
               (lsp)
               (should (eq (lsp-test-total-server-count) (1+ initial-server-count)))
-              ;; why is 'sample-file' here throwing "variable definition is void"?
               ;; Why does lsp not send the "shutdown" message on error?
-              (let* ((chain (lsp-test-wait (gethash (f-join lsp-test-location "fixtures/SamplesForMock/sample.awk") ;was sample-file
-                                                    (lsp-diagnostics t))))
+              (let* ((chain (lsp-test-wait (gethash sample-file (lsp-diagnostics t))))
                      (diagnostics (deferred:sync! chain)))
                 (should (eq (length diagnostics) 3)))))
         (kill-buffer buf)
-        ;; (with-timeout (2 (error "LSP server refuses to stop"))
-        ;;   ;; Again "initial-server-count" is void variable:
-        ;;   ;; WTF with this deferred stuff?
-        ;;   (deferred:sync! (lsp-test-wait (= initial-server-count (lsp-test-total-server-count)))))
-        ))))
+        (with-timeout (10 (error "LSP server refuses to stop"))
+          (deferred:sync! (lsp-test-wait (= initial-server-count (lsp-test-total-server-count)))))))))
