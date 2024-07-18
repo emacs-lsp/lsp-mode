@@ -33,12 +33,12 @@
     (run-with-timer
      0.001 nil
      (lambda ()
-       (if-let ((result (eval form)))
+       (if-let ((result (funcall form)))
            (deferred:callback-post it result)
          (lsp-test--wait-for form it))))))
 
 (defmacro lsp-test-wait (form)
-  `(lsp-test--wait-for '(progn ,form)))
+  `(lsp-test--wait-for (lambda () ,form)))
 
 (provide 'lsp-test-utils)
 ;;; lsp-test-utils.el ends here
