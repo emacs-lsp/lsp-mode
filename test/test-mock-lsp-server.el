@@ -18,23 +18,25 @@
 (defun lsp-test-total-server-count ()
   (hash-table-count (lsp-session-folder->servers (lsp-session))))
 
-;; Should I add the fixtures/SamplesForMock folder to workspace folders?
 (ert-deftest lsp-mock-server-reports-issues ()
   (let ((lsp-clients (lsp-ht)) ; clear all clients
         (lsp-enable-snippets nil) ; Avoid warning that lsp-yasnippet is not intalled
+        (workspace-root (f-join lsp-test-location "fixtures/SamplesForMock"))
         (sample-file (f-join lsp-test-location "fixtures/SamplesForMock/sample.awk"))
         (initial-server-count (lsp-test-total-server-count)))
     (register-mock-client) ; register mock client as the one an only lsp client
+    (lsp-workspace-folders-add workspace-root)
     (let* ((buf (find-file-noselect sample-file)))
       (unwind-protect
-          (with-timeout (15 (error "Timeout trying to get diagnostics from mock server"))
+          (with-timeout (5 (error "Timeout trying to get diagnostics from mock server"))
             (with-current-buffer buf
               (lsp)
               (should (eq (lsp-test-total-server-count) (1+ initial-server-count)))
-              ;; Why does lsp not send the "shutdown" message on error?
-              (let* ((chain (lsp-test-wait (gethash sample-file (lsp-diagnostics t))))
-                     (diagnostics (deferred:sync! chain)))
-                (should (eq (length diagnostics) 3)))))
+              (deferred:sync! (lsp-test-wait (gethash sample-file (lsp-diagnostics t))))
+              (should (eq (length (gethash sample-file (lsp-diagnostics t))) 3))))
         (kill-buffer buf)
-        (with-timeout (10 (error "LSP server refuses to stop"))
-          (deferred:sync! (lsp-test-wait (= initial-server-count (lsp-test-total-server-count)))))))))
+        (lsp-workspace-folders-remove workspace-root)))
+    (message "%d" initial-server-count)
+    (with-timeout (5 (error "LSP server refuses to stop"))
+      (message "%d" initial-server-count)
+      (deferred:sync! (lsp-test-wait (= initial-server-count (lsp-test-total-server-count)))))))

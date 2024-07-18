@@ -19,7 +19,7 @@
 
 (defun diagnostics (for-file)
   (json-rpc-string
-   (format "{\"jsonrpc\":\"2.0\",\"method\":\"textDocument\\/publishDiagnostics\",\"params\":{\"uri\":\"%s\",\"diagnostics\":[{\"source\":\"flake8\",\"code\":\"F821\",\"range\":{\"start\":{\"line\":2,\"character\":3},\"end\":{\"line\":2,\"character\":18}},\"message\":\"F821 undefined name 'true'\",\"severity\":2},{\"source\":\"flake8\",\"code\":\"F821\",\"range\":{\"start\":{\"line\":2,\"character\":11},\"end\":{\"line\":2,\"character\":18}},\"message\":\"F821 undefined name 'false'\",\"severity\":2},{\"source\":\"flake8\",\"code\":\"F701\",\"range\":{\"start\":{\"line\":3,\"character\":4},\"end\":{\"line\":3,\"character\":10}},\"message\":\"F701 'broke' outside loop\",\"severity\":2}]}}"
+   (format "{\"jsonrpc\":\"2.0\",\"method\":\"textDocument\\/publishDiagnostics\",\"params\":{\"uri\":\"file:\\/\\/%s\",\"diagnostics\":[{\"source\":\"flake8\",\"code\":\"F821\",\"range\":{\"start\":{\"line\":2,\"character\":3},\"end\":{\"line\":2,\"character\":18}},\"message\":\"F821 undefined name 'true'\",\"severity\":2},{\"source\":\"flake8\",\"code\":\"F821\",\"range\":{\"start\":{\"line\":2,\"character\":11},\"end\":{\"line\":2,\"character\":18}},\"message\":\"F821 undefined name 'false'\",\"severity\":2},{\"source\":\"flake8\",\"code\":\"F701\",\"range\":{\"start\":{\"line\":3,\"character\":4},\"end\":{\"line\":3,\"character\":10}},\"message\":\"F701 'broke' outside loop\",\"severity\":2}]}}"
            for-file)))
 
 (defun get-id (input)
@@ -27,10 +27,8 @@
       (string-to-number (match-string 1 input))
     nil))
 
-(setq ll "{\"jsonrpc\":\"2.0\",\"method\":\"textDocument/didOpen\",\"params\":{\"textDocument\":{\"uri\":\"file:///home/necto/proj/lsp-mode/sample.awk\",\"languageId\":\"awk\",\"version\":0,\"text\":\"heyho! Hi I'm a new member here. I'm a 16 year old\\nline 1 is here and here\\nline 2 is here and here\\n\"}}}")
-
 (defun get-file-path (input)
-  (if (string-match "\"uri\":\"\\(file:\\/\\/[^,]+\\)\"," input)
+  (if (string-match "\"uri\":\"file:\\/\\/\\([^,]+\\)\"," input)
       (match-string 1 input)
     nil))
 
