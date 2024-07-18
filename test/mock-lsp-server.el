@@ -2,31 +2,14 @@
 ;; -*- lexical-binding: t; -*-
 ;; -*- coding: utf-8; -*-
 
-(defconst server-name "mock-server")
-(defconst server-version "0.0.1")
-
-(defconst json-rpc-header
-  "Content-Length: %d\r\nContent-Type: application/vscode-jsonrpc; charset=utf8\r\n\r\n")
-
 (defun json-rpc-string (body)
   ;; 1+ - extra new-line at the end
-  (format json-rpc-header  (1+ (string-bytes body)) body))
+  (format "Content-Length: %d\r\nContent-Type: application/vscode-jsonrpc; charset=utf8\r\n\r\n%s\n" (1+ (string-bytes body)) body))
 
-;; TODO: mock and check
-;; - quick fixes
-;; - highlighting
-;; - folding
-;; - formatting
-;; - codeLens: go to def, go to use
-;; - hover? does it involve source ranges?
-;; - rename
 (defun greeting (id)
   (json-rpc-string
-   (format
-    "{\"jsonrpc\":\"2.0\",\"id\":%d,\"result\":{\"capabilities\":{\"textDocumentSync\":{\"change\":2,\"save\":{\"includeText\":true},\"openClose\":true}},\"serverInfo\":{\"name\":\"%s\",\"version\":\"%s\"}}}"
-    id
-    server-name
-    server-version)))
+   (format "{\"jsonrpc\":\"2.0\",\"id\":%d,\"result\":{\"capabilities\":{\"codeActionProvider\":true,\"codeLensProvider\":{\"resolveProvider\":false},\"completionProvider\":{\"resolveProvider\":true,\"triggerCharacters\":[\".\"]},\"documentFormattingProvider\":true,\"documentHighlightProvider\":true,\"documentRangeFormattingProvider\":true,\"documentSymbolProvider\":true,\"definitionProvider\":true,\"executeCommandProvider\":{\"commands\":[]},\"hoverProvider\":true,\"referencesProvider\":true,\"renameProvider\":true,\"foldingRangeProvider\":true,\"signatureHelpProvider\":{\"triggerCharacters\":[\"(\",\",\",\"=\"]},\"textDocumentSync\":{\"change\":2,\"save\":{\"includeText\":true},\"openClose\":true},\"workspace\":{\"workspaceFolders\":{\"supported\":true,\"changeNotifications\":true}},\"experimental\":{}},\"serverInfo\":{\"name\":\"mockS\",\"version\":\"1.3.3\"}}}"
+           id)))
 
 (defun ack (id)
   (json-rpc-string (format "{\"jsonrpc\":\"2.0\",\"id\":%d,\"result\":[]}" id)))
@@ -43,6 +26,8 @@
   (if (string-match "\"id\":\\([0-9]+\\)" input)
       (string-to-number (match-string 1 input))
     nil))
+
+(setq ll "{\"jsonrpc\":\"2.0\",\"method\":\"textDocument/didOpen\",\"params\":{\"textDocument\":{\"uri\":\"file:///home/necto/proj/lsp-mode/sample.awk\",\"languageId\":\"awk\",\"version\":0,\"text\":\"heyho! Hi I'm a new member here. I'm a 16 year old\\nline 1 is here and here\\nline 2 is here and here\\n\"}}}")
 
 (defun get-file-path (input)
   (if (string-match "\"uri\":\"\\(file:\\/\\/[^,]+\\)\"," input)
@@ -71,8 +56,10 @@
       )
      ((get-id line)
       (princ (ack (get-id line))))
-     ((or (string-match "Content-Length" line)
-          (string-match "Content-Type" line))
+     ((string-match "Content-Length" line)
+      ;; Ignore header
+      )
+     ((string-match "Content-Type" line)
       ;; Ignore header
       )
      ((string-match "^$" line)
