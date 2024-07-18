@@ -18,18 +18,27 @@
 (defun lsp-test-total-server-count ()
   (hash-table-count (lsp-session-folder->servers (lsp-session))))
 
-(defun lsp-test-diag-make-summary (file-content line-number line marker)
-  (with-temp-buffer
-    (insert file-content)
-    (goto-char (point-min))
-    (forward-line line-number)
-    ;; Make sure line-number is correct
-    (should (string-equal (string-trim-right (thing-at-point 'line t)) line)))
-  (should (eq (length marker) (length line)))
-  (should (string-match "^ *\\(\\^+\\) *$" marker))
-  (list :line line-number :from (match-beginning 1) :to (match-end 1)))
+(defun lsp-test--find-line (file-content line)
+  (let ((lines (split-string file-content "\n"))
+        (line-number 0)
+        (found nil))
+    (while (and lines (not found))
+      (when (string= (car lines) line)
+        (setq found line-number))
+      (setq lines (cdr lines))
+      (setq line-number (1+ line-number)))
+    (when (not found)
+      (error "Line %s not found" line))
+    found))
 
-(defun lsp-test-diag-get-summary (diagnostic)
+(defun lsp-test-diag-make (file-content line marker)
+  (let ((line-number (lsp-test--find-line file-content line)))
+    (should-not (null line-number))
+    (should (eq (length marker) (length line)))
+    (should (string-match "^ *\\(\\^+\\) *$" marker))
+    (list :line line-number :from (match-beginning 1) :to (match-end 1))))
+
+(defun lsp-test-diag-get (diagnostic)
   (let* ((range (ht-get diagnostic "range"))
          (start (ht-get range "start"))
          (end (ht-get range "end")))
@@ -55,10 +64,10 @@
               (should (eq (lsp-test-total-server-count) (1+ initial-server-count)))
               (deferred:sync! (lsp-test-wait (gethash sample-file (lsp-diagnostics t))))
               (should (eq (length (gethash sample-file (lsp-diagnostics t))) 1))
-              (should (equal (lsp-test-diag-get-summary (car (gethash sample-file (lsp-diagnostics t))))
-                             (lsp-test-diag-make-summary (buffer-string) 1
-                                                         "line 1 is here broming and here"
-                                                         "               ^^^^^^^         ")))))
+              (should (equal (lsp-test-diag-get (car (gethash sample-file (lsp-diagnostics t))))
+                             (lsp-test-diag-make (buffer-string)
+                                                 "line 1 is here broming and here"
+                                                 "               ^^^^^^^         ")))))
         (kill-buffer buf)
         (lsp-workspace-folders-remove workspace-root)))
     (with-timeout (5 (error "LSP server refuses to stop"))
