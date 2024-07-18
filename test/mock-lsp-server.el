@@ -6,9 +6,16 @@
   ;; 1+ - extra new-line at the end
   (format "Content-Length: %d\r\nContent-Type: application/vscode-jsonrpc; charset=utf8\r\n\r\n%s\n" (1+ (string-bytes body)) body))
 
+;; TODO:
+;; - codeActionProvider
+;; - codeLensProvider
+;; - document(Range)FormattingProvider?
+;; - documentHighlightProvider
+;; - referencesProvider?
+;; - foldingRangeProvider
 (defun greeting (id)
   (json-rpc-string
-   (format "{\"jsonrpc\":\"2.0\",\"id\":%d,\"result\":{\"capabilities\":{\"codeActionProvider\":true,\"codeLensProvider\":{\"resolveProvider\":false},\"completionProvider\":{\"resolveProvider\":true,\"triggerCharacters\":[\".\"]},\"documentFormattingProvider\":true,\"documentHighlightProvider\":true,\"documentRangeFormattingProvider\":true,\"documentSymbolProvider\":true,\"definitionProvider\":true,\"executeCommandProvider\":{\"commands\":[]},\"hoverProvider\":true,\"referencesProvider\":true,\"renameProvider\":true,\"foldingRangeProvider\":true,\"signatureHelpProvider\":{\"triggerCharacters\":[\"(\",\",\",\"=\"]},\"textDocumentSync\":{\"change\":2,\"save\":{\"includeText\":true},\"openClose\":true},\"workspace\":{\"workspaceFolders\":{\"supported\":true,\"changeNotifications\":true}},\"experimental\":{}},\"serverInfo\":{\"name\":\"mockS\",\"version\":\"1.3.3\"}}}"
+   (format "{\"jsonrpc\":\"2.0\",\"id\":%d,\"result\":{\"serverInfo\":{\"name\":\"mockS\",\"version\":\"1.3.3\"}}}"
            id)))
 
 (defun ack (id)
