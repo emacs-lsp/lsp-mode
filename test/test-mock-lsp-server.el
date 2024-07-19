@@ -12,6 +12,9 @@
 (defconst lsp-test-mock-server-command-file
   (expand-file-name "mock-server-commands.el" lsp-test-location))
 
+(defconst lsp-test-sample-file
+  (f-join lsp-test-location "fixtures/SamplesForMock/sample.awk"))
+
 (defun lsp-test-send-command-to-mock-server (command)
   ;; Can run only one command at a time
   (should (not (file-exists-p lsp-test-mock-server-command-file)))
@@ -85,43 +88,73 @@
      (format "(publish-diagnostics '%s)"
              (prin1-to-string diags)))))
 
-(ert-deftest lsp-mock-server-reports-issues ()
+(defun lsp-test-crash-server-with-message (message)
+  (lsp-test-send-command-to-mock-server (format "(error %S)" message)))
+
+(defun lsp-test--sync-wait-for (condition-func)
+  (let ((result (funcall condition-func)))
+    (while (not result)
+      (sleep-for 0.05)
+      (setq result (funcall condition-func)))
+    result))
+
+(defmacro lsp-test-sync-wait (condition)
+  `(lsp-test--sync-wait-for (lambda () ,condition)))
+
+(defun lsp-mock--run-with-mock-server (test-body)
   (let ((lsp-clients (lsp-ht)) ; clear all clients
-        (lsp-diagnostic-package :none)
+        (lsp-diagnostic-package :none) ; focus on LSP itself, not its UI integration
+        (lsp-restart 'ignore) ; Avoid restarting the server or prompting user on a crash
         (lsp-enable-snippets nil) ; Avoid warning that lsp-yasnippet is not intalled
-        (workspace-root (f-join lsp-test-location "fixtures/SamplesForMock"))
-        (sample-file (f-join lsp-test-location "fixtures/SamplesForMock/sample.awk"))
+        (workspace-root (file-name-directory lsp-test-sample-file))
         (initial-server-count (lsp-test-total-server-count)))
     (register-mock-client) ; register mock client as the one an only lsp client
     (lsp-workspace-folders-add workspace-root)
-    (let* ((buf (find-file-noselect sample-file)))
+    (let* ((buf (find-file-noselect lsp-test-sample-file)))
       (unwind-protect
-          (with-timeout (5 (error "Timeout trying to get diagnostics from mock server"))
+          (with-timeout (5 (error "Timeout running a test with mock server"))
             (with-current-buffer buf
               (lsp)
               ;; Make sure the server started
               (should (eq (lsp-test-total-server-count) (1+ initial-server-count)))
-
-              (lsp-test-wait (eq 'initialized
-                                 (lsp--workspace-status (cl-first (lsp-workspaces)))))
-              (lsp-test-command-send-diags sample-file (buffer-string))
-              ;; FIXME: in the case of a failed test, this will hang forever,
-              ;; need to find a way to terminate it cleanly
-              (deferred:sync! (lsp-test-wait (progn
-                                               ;; TODO: check workspace still exists
-                                               ;; If I crash the server, I get a type error
-                                               ;; ~~ wrong type of argument lsp--workspace
-                                               (gethash sample-file (lsp-diagnostics t)))))
-              (should (eq (length (gethash sample-file (lsp-diagnostics t))) 1))
-              (should (equal (lsp-test-diag-get (car (gethash sample-file (lsp-diagnostics t))))
-                             (lsp-test-diag-make (buffer-string)
-                                                 "line 1 is here broming and here"
-                                                 "               ^^^^^^^         ")))))
+              (lsp-test-sync-wait (eq 'initialized
+                                      (lsp--workspace-status (cl-first (lsp-workspaces)))))
+              (funcall test-body)))
         (kill-buffer buf)
         (lsp-workspace-folders-remove workspace-root)
         ;; Remove possibly unhandled commands
         (when (file-exists-p lsp-test-mock-server-command-file)
             (delete-file lsp-test-mock-server-command-file))))
-    (with-timeout (5 (error "LSP server refuses to stop"))
+    (with-timeout (5 (error "LSP mock server refuses to stop"))
       ;; Make sure the server stopped
-      (deferred:sync! (lsp-test-wait (= initial-server-count (lsp-test-total-server-count)))))))
+      (lsp-test-sync-wait (= initial-server-count (lsp-test-total-server-count))))))
+
+(defmacro lsp-mock-run-with-mock-server (&rest test-body)
+  `(lsp-mock--run-with-mock-server (lambda () ,@test-body)))
+
+(ert-deftest lsp-mock-server-reports-issues ()
+  (lsp-mock-run-with-mock-server
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string))
+   (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                              (gethash lsp-test-sample-file (lsp-diagnostics t))))
+   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+   (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                  (lsp-test-diag-make (buffer-string)
+                                      "line 1 is here broming and here"
+                                      "               ^^^^^^^         ")))))
+
+(ert-deftest lsp-mock-server-crashes ()
+  (let ((initial-serv-count (lsp-test-total-server-count)))
+    (when-let ((buffer (get-buffer "*mock-server::stderr*")))
+      (kill-buffer buffer))
+
+    (lsp-mock-run-with-mock-server
+     (should (eq (lsp-test-total-server-count) (1+ initial-serv-count)))
+     (lsp-test-crash-server-with-message "crashed by command")
+     (lsp-test-sync-wait (eq initial-serv-count (lsp-test-total-server-count)))
+     (let ((buffer (get-buffer "*mock-server::stderr*")))
+       (should buffer)
+       (with-current-buffer buffer
+         (goto-char (point-min))
+         (should (search-forward "crashed by command"))
+         (goto-char (point-max)))))))
