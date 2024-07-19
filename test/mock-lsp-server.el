@@ -26,7 +26,7 @@
 ;; - foldingRangeProvider
 (defun greeting (id)
   (json-rpc-string
-   (format "{\"jsonrpc\":\"2.0\",\"id\":%d,\"result\":{\"serverInfo\":{\"name\":\"mockS\",\"version\":\"1.3.3\"}}}"
+   (format "{\"jsonrpc\":\"2.0\",\"id\":%d,\"result\":{\"serverInfo\":{\"name\":\"mockS\",\"version\":\"0.0.1\"}}}"
            id)))
 
 (defun ack (id)
@@ -68,42 +68,41 @@
       (match-string 1 input)
     nil))
 
+(defconst notification-methods '("\"method\":\"initialized\""
+                                 "\"method\":\"textDocument/didOpen\""
+                                 "\"method\":\"textDocument/didClose\""
+                                 "\"method\":\"$/setTrace\""
+                                 "\"method\":\"workspace/didChangeConfiguration\""))
+
+(defun is-notification (input)
+  (catch 'found
+    (dolist (n notification-methods)
+      (when (string-match-p n input)
+        (throw 'found t)))
+    nil))
+
 (defun handle-lsp-client-input ()
   (let ((line (read-string "")))
     (cond
      ((string-match "method\":\"initialize\"" line)
       (princ (greeting (get-id line))))
-     ((string-match "method\":\"initialized\"" line)
-      ;; No need to acknowledge
-      )
      ((string-match "method\":\"exit" line)
       (kill-emacs 0))
      ((string-match "method\":\"shutdown" line)
       (princ (shutdown-ack (get-id line))))
-     ((string-match "didOpen" line)
-      ;; (princ (diagnostics (get-file-path line)))
-      )
-     ((string-match "method\":\"workspace/didChangeConfiguration" line)
-      ;; No need to acknowledge
-      )
-     ((string-match "method\":\"textDocument/didClose" line)
-      ;; No need to acknowledge
-      )
-     ((string-match "$/setTrace" line)
-      ;; Used as a way to wakt up the server and
-      ;; execute a command in the command file if any
-      ;; No need to acknowledge
+     ((is-notification line)
+      ;; No need to acknowledge a notification
       )
      ((get-id line)
+      ;; It has an id, probably some request
+      ;; Acknowledge that it is received
       (princ (ack (get-id line))))
      ((or (string-match "Content-Length" line)
           (string-match "Content-Type" line))
       ;; Ignore header
       )
-     ((string-match "^$" line)
-      ;; Ignore the empty lines delimitting header and content
-      )
-     ((string-match "^$" line)
+     ((or (string-match "^$" line)
+          (string-match "^$" line))
       ;; Ignore other empty lines
       )
      (t (error "unexpected input '%s'" line)))))
