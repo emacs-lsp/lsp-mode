@@ -1,5 +1,35 @@
-;; -*- lexical-binding: t; -*-
-;; -*- coding: utf-8; -*-
+;;; mock-lsp-server.el --- Mock LSP server                       -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2024-2024 emacs-lsp maintainers
+
+;; Author: Arseniy Zaostrovnykh
+;; Package-Requires: ((emacs "27.1"))
+;; Version: 0.0.1
+;; License: GPL-3.0-or-later
+
+;; URL: https://github.com/emacs-lsp/lsp-mode
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; A mock implementation of a Language Server Protocol server for testing
+;; of the LSP client in lsp-mode.
+;; The server reads commands from a file `mock-server-commands.el` in the
+;; same directory as this file. The commands are elisp code that is loaded
+;; and executed by the server.
+
+;;; Code:
 
 (setq debug-on-error t)
 
@@ -110,3 +140,5 @@
 (while t
   (run-command-from-file-if-any)
   (handle-lsp-client-input))
+
+;;; mock-lsp-server.el ends here
