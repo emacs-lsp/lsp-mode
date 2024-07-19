@@ -276,5 +276,44 @@ line 3 words here and here
                                       "line 1 unique word broming + common"
                                       "                   ^^^^^^^         ")))))
 
-(provide 'lsp-mock-server-test)
+(ert-deftest lsp-mock-server-updates-diags-clears-up ()
+  "Test ensuring diagnostics are cleared after a change."
+  (let ((lsp-diagnostic-clean-after-change t))
+  (lsp-mock-run-with-mock-server
+   ;; There are no diagnostics at first
+   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
+
+   ;; Server found diagnostic
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+   (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                              (gethash lsp-test-sample-file (lsp-diagnostics t))))
+   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+
+   ;; The diagnostic is properly received
+   (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                  (lsp-test-diag-make (buffer-string)
+                                      "line 1 unique word broming + common"
+                                      "                   ^^^^^^^         ")))
+
+   ;; Change the text: remove the first line
+   (goto-char (point-min))
+   (kill-line 1)
+
+   ;; After a short while, diagnostics are cleared up
+   (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                              (null (gethash lsp-test-sample-file (lsp-diagnostics t)))))
+
+   ;; Server sent an update
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+
+   (let ((old-line (lsp-mock-get-first-diagnostic-line)))
+     (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                                (not (equal old-line (lsp-mock-get-first-diagnostic-line))))))
+
+   ;; Now the diagnostic is correct again
+   (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                  (lsp-test-diag-make (buffer-string)
+                                      "line 1 unique word broming + common"
+                                      "                   ^^^^^^^         "))))))
+
 ;;; lsp-mock-server-test.el ends here
