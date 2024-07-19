@@ -51,33 +51,12 @@
                 (plist-get diagnostic :message)
                 (plist-get diagnostic :severity)))
 
-(defun point-to-loc (point)
-  (goto-char point)
-  (list :line (- (line-number-at-pos point) 1) :character (- (current-column) 1)))
-
-(defun make-diagnostics (for-file)
-  (let ((forbidden-word "broming"))
-    (with-current-buffer (find-file-noselect for-file)
-      (goto-char (point-min))
-      (let (diagnostics)
-        (while (re-search-forward forbidden-word nil t)
-          (let ((line (- (line-number-at-pos (point)) 1))
-                (end-col (current-column))
-                (start-col (- (current-column) (length forbidden-word))))
-            (push (list :source "mockS"
-                        :code "E001"
-                        :range (list :start (list :line line :character start-col)
-                                     :end (list :line line :character end-col))
-                        :message (format "Do not use word '%s'" forbidden-word)
-                        :severity 2)
-                  diagnostics)))
-        diagnostics))))
-
-(defun diagnostics (for-file)
-  (json-rpc-string
-   (format "{\"jsonrpc\":\"2.0\",\"method\":\"textDocument\\/publishDiagnostics\",\"params\":{\"uri\":\"file:\\/\\/%s\",\"diagnostics\":[%s]}}"
-           for-file
-           (mapconcat #'diagnostic-to-json (make-diagnostics for-file) ","))))
+(defun publish-diagnostics (diagnostics)
+  (princ
+   (json-rpc-string
+    (format "{\"jsonrpc\":\"2.0\",\"method\":\"textDocument\\/publishDiagnostics\",\"params\":{\"uri\":\"file:\\/\\/%s\",\"diagnostics\":[%s]}}"
+            (plist-get diagnostics :path)
+            (mapconcat #'diagnostic-to-json (plist-get diagnostics :diags) ",")))))
 
 (defun get-id (input)
   (if (string-match "\"id\":\\([0-9]+\\)" input)
@@ -89,7 +68,7 @@
       (match-string 1 input)
     nil))
 
-(defun handle-lsp-client ()
+(defun handle-lsp-client-input ()
   (let ((line (read-string "")))
     (cond
      ((string-match "method\":\"initialize\"" line)
@@ -102,11 +81,17 @@
      ((string-match "method\":\"shutdown" line)
       (princ (shutdown-ack (get-id line))))
      ((string-match "didOpen" line)
-      (princ (diagnostics (get-file-path line))))
+      ;; (princ (diagnostics (get-file-path line)))
+      )
      ((string-match "method\":\"workspace/didChangeConfiguration" line)
       ;; No need to acknowledge
       )
      ((string-match "method\":\"textDocument/didClose" line)
+      ;; No need to acknowledge
+      )
+     ((string-match "$/setTrace" line)
+      ;; Used as a way to wakt up the server and
+      ;; execute a command in the command file if any
       ;; No need to acknowledge
       )
      ((get-id line)
@@ -125,4 +110,4 @@
 
 (while t
   (run-command-from-file-if-any)
-  (handle-lsp-client))
+  (handle-lsp-client-input))

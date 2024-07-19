@@ -6,11 +6,24 @@
 ;; Taken from lsp-integration-tests.el
 (defconst lsp-test-location (file-name-directory (or load-file-name buffer-file-name)))
 
+(defconst lsp-test-mock-server-location
+  (expand-file-name "mock-lsp-server.el" lsp-test-location))
+
+(defconst lsp-test-mock-server-command-file
+  (expand-file-name "mock-server-commands.el" lsp-test-location))
+
+(defun lsp-test-send-command-to-mock-server (command)
+  ;; Can run only one command at a time
+  (should (not (file-exists-p lsp-test-mock-server-command-file)))
+  (write-region command nil lsp-test-mock-server-command-file nil nil nil 'excl)
+  ;; Nudge the server to find and execute the command
+  (lsp-notify "$/setTrace" '(:value "messages")))
+
 (defun register-mock-client ()
   (lsp-register-client
    (make-lsp-client
     :new-connection (lsp-stdio-connection
-                     '("emacs" "--script" "/home/necto/proj/lsp-mode/test/mock-lsp-server.el"))
+                     `("emacs" "--script" ,lsp-test-mock-server-location))
     :major-modes '(awk-mode)
     :priority 100
     :server-id 'mock-server)))
@@ -47,8 +60,34 @@
           :from (ht-get start "character")
           :to (ht-get end "character"))))
 
+(defun lsp-test-make-diagnostics (for-file contents)
+  (let ((forbidden-word "broming"))
+    (with-temp-buffer
+      (insert contents)
+      (goto-char (point-min))
+      (let (diagnostics)
+        (while (re-search-forward forbidden-word nil t)
+          (let ((line (- (line-number-at-pos (point)) 1))
+                (end-col (current-column))
+                (start-col (- (current-column) (length forbidden-word))))
+            (push (list :source "mockS"
+                        :code "E001"
+                        :range (list :start (list :line line :character start-col)
+                                     :end (list :line line :character end-col))
+                        :message (format "Do not use word '%s'" forbidden-word)
+                        :severity 2)
+                  diagnostics)))
+        `(:path ,for-file :diags ,diagnostics)))))
+
+(defun lsp-test-command-send-diags (file-path file-contents)
+  (let ((diags (lsp-test-make-diagnostics file-path file-contents)))
+    (lsp-test-send-command-to-mock-server
+     (format "(publish-diagnostics '%s)"
+             (prin1-to-string diags)))))
+
 (ert-deftest lsp-mock-server-reports-issues ()
   (let ((lsp-clients (lsp-ht)) ; clear all clients
+        (lsp-diagnostic-package :none)
         (lsp-enable-snippets nil) ; Avoid warning that lsp-yasnippet is not intalled
         (workspace-root (f-join lsp-test-location "fixtures/SamplesForMock"))
         (sample-file (f-join lsp-test-location "fixtures/SamplesForMock/sample.awk"))
@@ -62,14 +101,27 @@
               (lsp)
               ;; Make sure the server started
               (should (eq (lsp-test-total-server-count) (1+ initial-server-count)))
-              (deferred:sync! (lsp-test-wait (gethash sample-file (lsp-diagnostics t))))
+
+              (lsp-test-wait (eq 'initialized
+                                 (lsp--workspace-status (cl-first (lsp-workspaces)))))
+              (lsp-test-command-send-diags sample-file (buffer-string))
+              ;; FIXME: in the case of a failed test, this will hang forever,
+              ;; need to find a way to terminate it cleanly
+              (deferred:sync! (lsp-test-wait (progn
+                                               ;; TODO: check workspace still exists
+                                               ;; If I crash the server, I get a type error
+                                               ;; ~~ wrong type of argument lsp--workspace
+                                               (gethash sample-file (lsp-diagnostics t)))))
               (should (eq (length (gethash sample-file (lsp-diagnostics t))) 1))
               (should (equal (lsp-test-diag-get (car (gethash sample-file (lsp-diagnostics t))))
                              (lsp-test-diag-make (buffer-string)
                                                  "line 1 is here broming and here"
                                                  "               ^^^^^^^         ")))))
         (kill-buffer buf)
-        (lsp-workspace-folders-remove workspace-root)))
+        (lsp-workspace-folders-remove workspace-root)
+        ;; Remove possibly unhandled commands
+        (when (file-exists-p lsp-test-mock-server-command-file)
+            (delete-file lsp-test-mock-server-command-file))))
     (with-timeout (5 (error "LSP server refuses to stop"))
       ;; Make sure the server stopped
       (deferred:sync! (lsp-test-wait (= initial-server-count (lsp-test-total-server-count)))))))
