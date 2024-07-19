@@ -12,7 +12,7 @@
   (expand-file-name "mock-server-commands.el" lsp-test-location))
 
 (defconst lsp-test-sample-file
-  (f-join lsp-test-location "fixtures/SamplesForMock/sample.awk"))
+  (f-join lsp-test-location "fixtures/SamplesForMock/sample.txt"))
 
 (defun lsp-test-send-command-to-mock-server (command)
   ;; Can run only one command at a time
@@ -26,7 +26,7 @@
    (make-lsp-client
     :new-connection (lsp-stdio-connection
                      `("emacs" "--script" ,lsp-test-mock-server-location))
-    :major-modes '(awk-mode)
+    :major-modes '(prog-mode)
     :priority 100
     :server-id 'mock-server)))
 
@@ -104,6 +104,7 @@
         (lsp-diagnostics-provider :none) ; focus on LSP itself, not its UI integration
         (lsp-restart 'ignore) ; Avoid restarting the server or prompting user on a crash
         (lsp-enable-snippet nil) ; Avoid warning that lsp-yasnippet is not intalled
+        (lsp-warn-no-matched-clients nil) ; Mute warning LSP can't figure out src lang
         (workspace-root (file-name-directory lsp-test-sample-file))
         (initial-server-count (lsp-test-total-server-count)))
     (register-mock-client) ; register mock client as the one an only lsp client
@@ -112,6 +113,7 @@
       (unwind-protect
           (with-timeout (5 (error "Timeout running a test with mock server"))
             (with-current-buffer buf
+              (prog-mode)
               (lsp)
               ;; Make sure the server started
               (should (eq (lsp-test-total-server-count) (1+ initial-server-count)))
@@ -141,8 +143,8 @@
    (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
                   (lsp-test-diag-make (buffer-string)
-                                      "line 1 is here broming and here"
-                                      "               ^^^^^^^         ")))))
+                                      "line 1 unique word broming + common"
+                                      "                   ^^^^^^^         ")))))
 
 (ert-deftest lsp-mock-server-crashes ()
   (let ((initial-serv-count (lsp-test-total-server-count)))
@@ -181,11 +183,11 @@
    ;; The diagnostic is properly received
    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
                   (lsp-test-diag-make (buffer-string)
-                                      "line 1 is here broming and here"
-                                      "               ^^^^^^^         ")))
+                                      "line 1 unique word broming + common"
+                                      "                   ^^^^^^^         ")))
 
    ;; Server found a different diagnostic
-   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "member")
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "fegam")
    (let ((old-line (lsp-mock-get-first-diagnostic-line)))
      (lsp-test-sync-wait (progn (should (lsp-workspaces))
                                 (not (equal old-line (lsp-mock-get-first-diagnostic-line))))))
@@ -194,8 +196,8 @@
    (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
                   (lsp-test-diag-make (buffer-string)
-                                      "heyho! Hi I'm a new member here."
-                                      "                    ^^^^^^      ")))))
+                                      "Line 0 unique word fegam and common"
+                                      "                   ^^^^^           ")))))
 
 (ert-deftest lsp-mock-server-updates-diags-with-delay ()
   (lsp-mock-run-with-mock-server
@@ -211,24 +213,24 @@
    ;; The diagnostic is properly received
    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
                   (lsp-test-diag-make (buffer-string)
-                                      "line 1 is here broming and here"
-                                      "               ^^^^^^^         ")))
+                                      "line 1 unique word broming + common"
+                                      "                   ^^^^^^^         ")))
 
    ;; Change the text: remove the first line
    (goto-char (point-min))
    (kill-line 1)
    (should (string-equal (buffer-string)
-                         "line 1 is here broming and here
-line 2 is here normalw and here
-line 3 is here and here
+                         "line 1 unique word broming + common
+line 2 unique word normalw common here
+line 3 words here and here
 "))
    ;; Give it some time to update
    (sleep-for 0.5)
    ;; The diagnostic is not updated and now points to a wrong line
    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
                   (lsp-test-diag-make (buffer-string)
-                                      "line 2 is here normalw and here"
-                                      "               ^^^^^^^         ")))
+                                      "line 2 unique word normalw common here"
+                                      "                   ^^^^^^^            ")))
 
    ;; Server sent an update
    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
@@ -240,5 +242,5 @@ line 3 is here and here
    ;; Now the diagnostic is correct again
    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
                   (lsp-test-diag-make (buffer-string)
-                                      "line 1 is here broming and here"
-                                      "               ^^^^^^^         ")))))
+                                      "line 1 unique word broming + common"
+                                      "                   ^^^^^^^         ")))))
