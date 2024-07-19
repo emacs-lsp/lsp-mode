@@ -1,4 +1,35 @@
-;;; test-mock-lsp-server.el --- unit test utilities -*- lexical-binding: t -*-
+;;; lsp-mock-server-test.el --- Unit test utilities -*- lexical-binding: t -*-
+
+;; Copyright (C) 2024-2024 emacs-lsp maintainers
+
+;; Author: Arseniy Zaostrovnykh
+;; Package-Requires: ((emacs "27.1"))
+;; Version: 0.0.1
+;; License: GPL-3.0-or-later
+
+;; URL: https://github.com/emacs-lsp/lsp-mode
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; A collection of tests that check lsp-mode interaction with
+;; an lsp server mocked by mock-lsp-server.el
+;; The tests define a custom lsp client execute scenarios
+;; such as opening a file, chagning it, or receiving updated diagnostics
+;; and assert how lsp-mode updates the diagnostics.
+
+;;; Code:
 
 (require 'lsp-mode)
 
@@ -244,3 +275,6 @@ line 3 words here and here
                   (lsp-test-diag-make (buffer-string)
                                       "line 1 unique word broming + common"
                                       "                   ^^^^^^^         ")))))
+
+(provide 'lsp-mock-server-test)
+;;; lsp-mock-server-test.el ends here
