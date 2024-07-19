@@ -1,7 +1,6 @@
 ;;; test-mock-lsp-server.el --- unit test utilities -*- lexical-binding: t -*-
 
 (require 'lsp-mode)
-(require 'lsp-test-utils)
 
 ;; Taken from lsp-integration-tests.el
 (defconst lsp-test-location (file-name-directory (or load-file-name buffer-file-name)))
@@ -102,9 +101,9 @@
 
 (defun lsp-mock--run-with-mock-server (test-body)
   (let ((lsp-clients (lsp-ht)) ; clear all clients
-        (lsp-diagnostic-package :none) ; focus on LSP itself, not its UI integration
+        (lsp-diagnostics-provider :none) ; focus on LSP itself, not its UI integration
         (lsp-restart 'ignore) ; Avoid restarting the server or prompting user on a crash
-        (lsp-enable-snippets nil) ; Avoid warning that lsp-yasnippet is not intalled
+        (lsp-enable-snippet nil) ; Avoid warning that lsp-yasnippet is not intalled
         (workspace-root (file-name-directory lsp-test-sample-file))
         (initial-server-count (lsp-test-total-server-count)))
     (register-mock-client) ; register mock client as the one an only lsp client
@@ -119,7 +118,9 @@
               (lsp-test-sync-wait (eq 'initialized
                                       (lsp--workspace-status (cl-first (lsp-workspaces)))))
               (funcall test-body)))
-        (kill-buffer buf)
+        (with-current-buffer buf
+          (set-buffer-modified-p nil); Inhibut the "kill unsaved buffer"p prompt
+          (kill-buffer buf))
         (lsp-workspace-folders-remove workspace-root)
         ;; Remove possibly unhandled commands
         (when (file-exists-p lsp-test-mock-server-command-file)
@@ -166,7 +167,7 @@
              (start (ht-get range "start")))
         (ht-get start "line")))))
 
-(ert-deftest lsp-mock-server-updates-issues ()
+(ert-deftest lsp-mock-server-updates-diagnostics ()
   (lsp-mock-run-with-mock-server
    ;; There are no diagnostics at first
    (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
@@ -195,3 +196,49 @@
                   (lsp-test-diag-make (buffer-string)
                                       "heyho! Hi I'm a new member here."
                                       "                    ^^^^^^      ")))))
+
+(ert-deftest lsp-mock-server-updates-diags-with-delay ()
+  (lsp-mock-run-with-mock-server
+   ;; There are no diagnostics at first
+   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
+
+   ;; Server found diagnostic
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+   (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                              (gethash lsp-test-sample-file (lsp-diagnostics t))))
+   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+
+   ;; The diagnostic is properly received
+   (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                  (lsp-test-diag-make (buffer-string)
+                                      "line 1 is here broming and here"
+                                      "               ^^^^^^^         ")))
+
+   ;; Change the text: remove the first line
+   (goto-char (point-min))
+   (kill-line 1)
+   (should (string-equal (buffer-string)
+                         "line 1 is here broming and here
+line 2 is here normalw and here
+line 3 is here and here
+"))
+   ;; Give it some time to update
+   (sleep-for 0.5)
+   ;; The diagnostic is not updated and now points to a wrong line
+   (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                  (lsp-test-diag-make (buffer-string)
+                                      "line 2 is here normalw and here"
+                                      "               ^^^^^^^         ")))
+
+   ;; Server sent an update
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+
+   (let ((old-line (lsp-mock-get-first-diagnostic-line)))
+     (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                                (not (equal old-line (lsp-mock-get-first-diagnostic-line))))))
+
+   ;; Now the diagnostic is correct again
+   (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                  (lsp-test-diag-make (buffer-string)
+                                      "line 1 is here broming and here"
+                                      "               ^^^^^^^         ")))))
