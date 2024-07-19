@@ -3,6 +3,16 @@
 
 (setq debug-on-error t)
 
+(defconst command-file
+  (expand-file-name "mock-server-commands.el"
+                    (file-name-directory load-file-name)))
+
+(defun run-command-from-file-if-any ()
+  (if (file-exists-p command-file)
+      (progn
+        (load command-file)
+        (delete-file command-file))))
+
 (defun json-rpc-string (body)
   ;; 1+ - extra new-line at the end
   (format "Content-Length: %d\r\nContent-Type: application/vscode-jsonrpc; charset=utf8\r\n\r\n%s\n" (1+ (string-bytes body)) body))
@@ -79,7 +89,7 @@
       (match-string 1 input)
     nil))
 
-(while t
+(defun handle-lsp-client ()
   (let ((line (read-string "")))
     (cond
      ((string-match "method\":\"initialize\"" line)
@@ -112,3 +122,7 @@
       ;; Ignore other empty lines
       )
      (t (error "unexpected input '%s'" line)))))
+
+(while t
+  (run-command-from-file-if-any)
+  (handle-lsp-client))
