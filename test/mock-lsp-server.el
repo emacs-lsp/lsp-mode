@@ -1,6 +1,7 @@
-#!/usr/bin/emacs --script
 ;; -*- lexical-binding: t; -*-
 ;; -*- coding: utf-8; -*-
+
+(setq debug-on-error t)
 
 (defun json-rpc-string (body)
   ;; 1+ - extra new-line at the end
@@ -78,8 +79,8 @@
       (match-string 1 input)
     nil))
 
-(let (line stopped)
-  (while (and (not stopped) (setq line (read-string "")))
+(while t
+  (let ((line (read-string "")))
     (cond
      ((string-match "method\":\"initialize\"" line)
       (princ (greeting (get-id line))))
@@ -87,7 +88,7 @@
       ;; No need to acknowledge
       )
      ((string-match "method\":\"exit" line)
-      (setq stopped t))
+      (kill-emacs 0))
      ((string-match "method\":\"shutdown" line)
       (princ (shutdown-ack (get-id line))))
      ((string-match "didOpen" line)
@@ -100,10 +101,8 @@
       )
      ((get-id line)
       (princ (ack (get-id line))))
-     ((string-match "Content-Length" line)
-      ;; Ignore header
-      )
-     ((string-match "Content-Type" line)
+     ((or (string-match "Content-Length" line)
+          (string-match "Content-Type" line))
       ;; Ignore header
       )
      ((string-match "^$" line)
