@@ -63,27 +63,26 @@
           :from (ht-get start "character")
           :to (ht-get end "character"))))
 
-(defun lsp-test-make-diagnostics (for-file contents)
-  (let ((forbidden-word "broming"))
-    (with-temp-buffer
-      (insert contents)
-      (goto-char (point-min))
-      (let (diagnostics)
-        (while (re-search-forward forbidden-word nil t)
-          (let ((line (- (line-number-at-pos (point)) 1))
-                (end-col (current-column))
-                (start-col (- (current-column) (length forbidden-word))))
-            (push (list :source "mockS"
-                        :code "E001"
-                        :range (list :start (list :line line :character start-col)
-                                     :end (list :line line :character end-col))
-                        :message (format "Do not use word '%s'" forbidden-word)
-                        :severity 2)
-                  diagnostics)))
-        `(:path ,for-file :diags ,diagnostics)))))
+(defun lsp-test-make-diagnostics (for-file contents forbidden-word)
+  (with-temp-buffer
+    (insert contents)
+    (goto-char (point-min))
+    (let (diagnostics)
+      (while (re-search-forward forbidden-word nil t)
+        (let ((line (- (line-number-at-pos (point)) 1))
+              (end-col (current-column))
+              (start-col (- (current-column) (length forbidden-word))))
+          (push (list :source "mockS"
+                      :code "E001"
+                      :range (list :start (list :line line :character start-col)
+                                   :end (list :line line :character end-col))
+                      :message (format "Do not use word '%s'" forbidden-word)
+                      :severity 2)
+                diagnostics)))
+      `(:path ,for-file :diags ,diagnostics))))
 
-(defun lsp-test-command-send-diags (file-path file-contents)
-  (let ((diags (lsp-test-make-diagnostics file-path file-contents)))
+(defun lsp-test-command-send-diags (file-path file-contents forbidden-word)
+  (let ((diags (lsp-test-make-diagnostics file-path file-contents forbidden-word)))
     (lsp-test-send-command-to-mock-server
      (format "(publish-diagnostics '%s)"
              (prin1-to-string diags)))))
@@ -134,7 +133,8 @@
 
 (ert-deftest lsp-mock-server-reports-issues ()
   (lsp-mock-run-with-mock-server
-   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string))
+   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
    (lsp-test-sync-wait (progn (should (lsp-workspaces))
                               (gethash lsp-test-sample-file (lsp-diagnostics t))))
    (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
@@ -147,7 +147,6 @@
   (let ((initial-serv-count (lsp-test-total-server-count)))
     (when-let ((buffer (get-buffer "*mock-server::stderr*")))
       (kill-buffer buffer))
-
     (lsp-mock-run-with-mock-server
      (should (eq (lsp-test-total-server-count) (1+ initial-serv-count)))
      (lsp-test-crash-server-with-message "crashed by command")
@@ -158,3 +157,41 @@
          (goto-char (point-min))
          (should (search-forward "crashed by command"))
          (goto-char (point-max)))))))
+
+(defun lsp-mock-get-first-diagnostic-line ()
+  (let ((diags (gethash lsp-test-sample-file (lsp-diagnostics t))))
+    (when diags
+      (let* ((diag (car diags))
+             (range (ht-get diag "range"))
+             (start (ht-get range "start")))
+        (ht-get start "line")))))
+
+(ert-deftest lsp-mock-server-updates-issues ()
+  (lsp-mock-run-with-mock-server
+   ;; There are no diagnostics at first
+   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
+
+   ;; Server found diagnostic
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+   (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                              (gethash lsp-test-sample-file (lsp-diagnostics t))))
+   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+
+   ;; The diagnostic is properly received
+   (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                  (lsp-test-diag-make (buffer-string)
+                                      "line 1 is here broming and here"
+                                      "               ^^^^^^^         ")))
+
+   ;; Server found a different diagnostic
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "member")
+   (let ((old-line (lsp-mock-get-first-diagnostic-line)))
+     (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                                (not (equal old-line (lsp-mock-get-first-diagnostic-line))))))
+
+   ;; The new diagnostics is properly displayed instead of the old one
+   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+   (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                  (lsp-test-diag-make (buffer-string)
+                                      "heyho! Hi I'm a new member here."
+                                      "                    ^^^^^^      ")))))
