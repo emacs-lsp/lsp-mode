@@ -144,7 +144,7 @@ See https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17
       )
      ((or (string-match "^\r$" line)
           (string-match "^$" line))
-      ;; Ignore other empty lines
+      ;; Ignore empty lines and header/content separators
       )
      (t (error "unexpected input '%s'" line)))))
 
