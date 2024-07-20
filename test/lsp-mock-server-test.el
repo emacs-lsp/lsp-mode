@@ -31,6 +31,7 @@
 
 ;;; Code:
 
+(require 'seq)
 (require 'lsp-mode)
 
 ;; Taken from lsp-integration-tests.el
@@ -478,5 +479,79 @@ Scan CONTENTS for all occurences of WORD and compose a list of references."
             [(:kind "region" :startLine 0 :startCharacter 10 :endLine 1)]))
    ;; Folding ranges are cached from the first request
    (should (eq (lsp--get-folding-ranges) nil))))
+
+(defun lsp-test-all-overlays-as-ranges (tag)
+  "Return all overlays tagged TAG in the current buffer as ranges.
+
+Tagged overlays have the property TAG set to t."
+  (let ((overlays (overlays-in (point-min) (point-max)))
+        (to-range
+         (lambda (overlay)
+           (let* ((beg (overlay-start overlay))
+                  (end (overlay-end overlay))
+                  (beg-line (line-number-at-pos beg))
+                  (end-line (line-number-at-pos end))
+                  (beg-col (progn (goto-char beg) (current-column)))
+                  (end-col (progn (goto-char end) (current-column))))
+             (should (equal beg-line end-line))
+             (list :line (- beg-line 1) :from beg-col :to end-col)))))
+    (save-excursion
+      (mapcar to-range (seq-filter (lambda (overlay)
+                                     (overlay-get overlay tag))
+                                   overlays)))))
+
+(defun lsp-test-make-highlights (contents word)
+  "Come up with a list of highlights of WORD in CONTENTS.
+
+Scan CONTENTS for all occurences of WORD and compose a list of highlights."
+  (let ((add-uri (lambda (range) `(:kind 1 :range ,range))))
+    (vconcat (mapcar add-uri (lsp-test-find-all-words contents word)))))
+
+(defun lsp-mock-with-temp-window (buffer-name test-fn)
+  "Create a temporary window displaying BUFFER-NAME and call TEST-FN.
+BUFFER-NAME is the name of the buffer to display.
+TEST-FN is a function to call with the temporary window."
+  (let ((original-window (selected-window))
+        (temp-window (split-window)))
+    (unwind-protect
+        (progn
+          ;; Display the buffer in the temporary window
+          (set-window-buffer temp-window buffer-name)
+          ;; Switch to the temporary window
+          (select-window temp-window)
+          ;; Call the test function
+          (funcall test-fn))
+      ;; Clean up: Delete the temporary window and select the original window
+      (delete-window temp-window)
+      (select-window original-window))))
+
+(ert-deftest lsp-mock-server-provides-symbol-highlights ()
+  "Test ensuring that lsp-mode accepts correct locations for highlights."
+  (lsp-mock-run-with-mock-server
+   (lsp-test-send-command-to-mock-server
+    (format "(schedule-response \"textDocument/documentHighlight\" '%s)"
+            (lsp-test-make-highlights (buffer-string) "here")))
+   ;; The highlight overlays are created only if visible in a window
+   (lsp-mock-with-temp-window
+    (current-buffer)
+    (lambda ()
+      (lsp-document-highlight)
+      (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                                 (lsp-test-all-overlays-as-ranges
+                                  'lsp-highlight)))
+      (let ((highlights (lsp-test-all-overlays-as-ranges 'lsp-highlight)))
+        (should (eq (length highlights) 3))
+        (should (equal (nth 0 highlights)
+                       (lsp-test-range-make (buffer-string)
+                                            "line 2 unique word normalw common here"
+                                            "                                  ^^^^")))
+        (should (equal (nth 1 highlights)
+                       (lsp-test-range-make (buffer-string)
+                                            "line 3 words here and here"
+                                            "             ^^^^         ")))
+        (should (equal (nth 2 highlights)
+                       (lsp-test-range-make (buffer-string)
+                                            "line 3 words here and here"
+                                            "                      ^^^^"))))))))
 
 ;;; lsp-mock-server-test.el ends here
