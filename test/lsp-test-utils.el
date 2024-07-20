@@ -26,19 +26,17 @@
 
 ;;; Code:
 
-(require 'deferred)
-
 (defun lsp-test--wait-for (form &optional d)
   (--doto (or d (deferred:new #'identity))
     (run-with-timer
      0.001 nil
      (lambda ()
-       (if-let ((result (funcall form)))
+       (if-let ((result (eval form)))
            (deferred:callback-post it result)
          (lsp-test--wait-for form it))))))
 
 (defmacro lsp-test-wait (form)
-  `(lsp-test--wait-for (lambda () ,form)))
+  `(lsp-test--wait-for '(progn ,form)))
 
 (provide 'lsp-test-utils)
 ;;; lsp-test-utils.el ends here
