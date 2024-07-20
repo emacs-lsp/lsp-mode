@@ -43,6 +43,8 @@
 
 ;;; Code:
 
+(require 'json)
+
 ;; To ease debugging, print the stack trace on failure
 (setq debug-on-error t)
 
@@ -59,53 +61,32 @@
         (delete-file command-file))))
 
 (defun json-rpc-string (body)
-  "Format BODY as a JSON RPC message suitable for LSP."
+  "Format BODY p-list as a JSON RPC message suitable for LSP."
   ;; 1+ - extra new-line at the end
-  (let ((content-length-header
-         (format "Content-Length: %d" (1+ (string-bytes body))))
+  (let* ((encoded-body (json-encode `(:jsonrpc "2.0" ,@body)))
+         (content-length-header
+         (format "Content-Length: %d" (1+ (string-bytes encoded-body))))
         (content-type-header
          "Content-Type: application/vscode-jsonrpc; charset=utf8"))
     (concat content-length-header "\r\n"
             content-type-header "\r\n\r\n"
-            body "\n")))
+            encoded-body "\n")))
 
 (defconst server-info
-  "\"serverInfo\":{\"name\":\"mockS\",\"version\":\"0.0.1\"}"
+  '(:name "mockS" :version "0.0.1")
   "Basic server information: name and version.")
 
 (defun greeting (id)
   "Compose the greeting message in response to `initialize' request with id ID."
-  (json-rpc-string
-   (format "{\"jsonrpc\":\"2.0\",\"id\":%d,\"result\":{%s}}" id server-info)))
+  (json-rpc-string `(:id ,id :result (:serverInfo ,server-info))))
 
 (defun ack (id)
   "Acknowledge a request with id ID."
-  (json-rpc-string (format "{\"jsonrpc\":\"2.0\",\"id\":%d,\"result\":[]}" id)))
+  (json-rpc-string `(:id ,id :result [])))
 
 (defun shutdown-ack (id)
   "Acknowledge a `shutdown' request with id ID."
-  (json-rpc-string (format "{\"jsonrpc\":\"2.0\",\"id\":%d,\"result\":null}" id)))
-
-(defun loc-to-json (loc)
-  "Convert (:line .. :character ..) LOC to a serialized JSON object."
-  (format "{\"line\":%d,\"character\":%d}"
-          (plist-get loc :line)
-          (plist-get loc :character)))
-
-(defun range-to-json (range)
-  "Convert (:start .. :end ..) RANGE to a serialized JSON object."
-  (format "{\"start\":%s,\"end\":%s}"
-          (loc-to-json (plist-get range :start))
-          (loc-to-json (plist-get range :end))))
-
-(defun diagnostic-to-json (diagnostic)
-  "Convert DIAGNOSTIC to a serialized JSON object."
-  (format "{\"source\":\"%s\",\"code\":\"%s\",\"range\":%s,\"message\":\"%s\",\"severity\":%d}"
-          (plist-get diagnostic :source)
-          (plist-get diagnostic :code)
-          (range-to-json (plist-get diagnostic :range))
-          (plist-get diagnostic :message)
-          (plist-get diagnostic :severity)))
+  (json-rpc-string `(:id ,id :result nil)))
 
 (defun publish-diagnostics (diagnostics)
   "Send JSON RPC message textDocument/PublishDiagnostics with DAGNOSTICS.
@@ -113,22 +94,14 @@
 DIAGNOSICS must be a p-list (:path PATH :diags DIAGS),
 where DIAGS is a list of p-lists in the form
 (:source .. :code .. :range .. :message .. :severity ..)."
-  (let ((params
-         (format
-          "\"params\":{\"uri\":\"file:\\/\\/%s\",\"diagnostics\":[%s]}"
-          (plist-get diagnostics :path)
-          (mapconcat #'diagnostic-to-json
-                     (plist-get diagnostics :diags) ",")))
-        (method "\"method\":\"textDocument\\/publishDiagnostics\""))
-    (princ
-     (json-rpc-string
-      (format "{\"jsonrpc\":\"2.0\",%s,%s}" method params)))))
+  (princ
+   (json-rpc-string `(:method "textDocument/publishDiagnostics"
+                      :params ,diagnostics))))
 
 (defun get-id (input)
   "Extract request id from INPUT JSON message."
-  (if (string-match "\"id\":\\([0-9]+\\)" input)
-      (string-to-number (match-string 1 input))
-    nil))
+  (when (string-match "\"id\":\\([0-9]+\\)" input)
+    (string-to-number (match-string 1 input))))
 
 (defconst notification-methods
   '("\"method\":\"initialized\""

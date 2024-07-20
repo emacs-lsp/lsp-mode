@@ -147,7 +147,8 @@ might be generated for a modified and not saved buffer content."
                       :message (format "Do not use word '%s'" forbidden-word)
                       :severity 2)
                 diagnostics)))
-      `(:path ,for-file :diags ,diagnostics))))
+      ;; Use vconcat diagnostics to ensure proper JSON serialization of the list
+      `(:uri ,(concat "file://" for-file) :diagnostics ,(vconcat diagnostics)))))
 
 (defun lsp-test-command-send-diags (file-path file-contents forbidden-word)
   "Generate and command the mock server to publish diagnostics.
