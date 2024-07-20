@@ -63,13 +63,6 @@
   ;; 1+ - extra new-line at the end
   (format "Content-Length: %d\r\nContent-Type: application/vscode-jsonrpc; charset=utf8\r\n\r\n%s\n" (1+ (string-bytes body)) body))
 
-;; TODO mock:
-;; - codeActionProvider
-;; - codeLensProvider
-;; - document(Range)FormattingProvider?
-;; - documentHighlightProvider
-;; - referencesProvider?
-;; - foldingRangeProvider
 (defun greeting (id)
   "Compose the greeting message in response to `initialize' request with id ID."
   (json-rpc-string
