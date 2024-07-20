@@ -4,7 +4,7 @@
 
 ;; Author: Arseniy Zaostrovnykh
 ;; Package-Requires: ((emacs "27.1"))
-;; Version: 0.0.1
+;; Version: 0.1.0
 ;; License: GPL-3.0-or-later
 
 ;; URL: https://github.com/emacs-lsp/lsp-mode
@@ -73,20 +73,21 @@
             encoded-body "\n")))
 
 (defconst server-info
-  '(:name "mockS" :version "0.0.1")
+  '(:name "mockS" :version "0.1.0")
   "Basic server information: name and version.")
+
+
+(defconst server-capabilities '(:referencesProvider t)
+  "Capabilities of the server.")
 
 (defun greeting (id)
   "Compose the greeting message in response to `initialize' request with id ID."
-  (json-rpc-string `(:id ,id :result (:serverInfo ,server-info))))
+  (json-rpc-string `(:id ,id :result (:capabilities ,server-capabilities
+                                      :serverInfo ,server-info))))
 
-(defun ack (id)
+(defun respond (id result)
   "Acknowledge a request with id ID."
-  (json-rpc-string `(:id ,id :result [])))
-
-(defun shutdown-ack (id)
-  "Acknowledge a `shutdown' request with id ID."
-  (json-rpc-string `(:id ,id :result nil)))
+  (json-rpc-string `(:id ,id :result ,result)))
 
 (defun publish-diagnostics (diagnostics)
   "Send JSON RPC message textDocument/PublishDiagnostics with DAGNOSTICS.
@@ -121,6 +122,41 @@ See https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17
         (throw 'found t)))
     nil))
 
+(defvar scheduled-responses (make-hash-table :test 'equal)
+  "Keep the planned response for the requiest of the given method.
+
+Can contain only one planned response per method.
+Key is the method, and value is the `result' field in the response.")
+
+(defun schedule-response (method result)
+  "Next time request of METHOD comes respond with `result' RESULT.
+
+This function is useful for external commands,
+allowing control over the server responses.
+
+You can schedule only one response for a method at a time."
+  (when (gethash method scheduled-responses)
+    (error "Response for method %s is already scheduled" method))
+  (puthash method result scheduled-responses))
+
+(defun get-method (input)
+  "Retrieve the method of the request in INPUT.
+
+Returns nil if no method is found."
+  (when (string-match "\"method\":\"\\([^\"]+\\)\"" input)
+    (match-string 1 input)))
+
+(defun pop-response-for-request (method)
+  "Find and erase a scheduled response for METHOD request.
+
+Returns empty array if not found:
+ empty array is the usual representation of empty result."
+  (if-let ((response (gethash method scheduled-responses)))
+      (progn
+        (remhash method scheduled-responses)
+        response)
+    []))
+
 (defun handle-lsp-client-input ()
   "Read and handle one line of te input from the LSP client."
   (let ((line (read-string "")))
@@ -130,14 +166,16 @@ See https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17
      ((string-match "method\":\"exit" line)
       (kill-emacs 0))
      ((string-match "method\":\"shutdown" line)
-      (princ (shutdown-ack (get-id line))))
+      (princ (respond (get-id line) nil)))
      ((is-notification line)
       ;; No need to acknowledge a notification
       )
      ((get-id line)
       ;; It has an id, probably some request
       ;; Acknowledge that it is received
-      (princ (ack (get-id line))))
+      (princ (respond
+              (get-id line)
+              (pop-response-for-request (get-method line)))))
      ((or (string-match "Content-Length" line)
           (string-match "Content-Type" line))
       ;; Ignore header

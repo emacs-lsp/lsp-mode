@@ -89,7 +89,7 @@ executes the command."
       (error "Line %s not found" line))
     found))
 
-(defun lsp-test-diag-make (file-content line marker)
+(defun lsp-test-range-make (file-content line marker)
   "Create a single-line diagnostics range summary.
 
 Find LINE in FILE-CONTENT and take that as the line number.
@@ -98,9 +98,9 @@ Set the :from and :to characters to reflect the position of
 
 Example (suppose line #3 of current buffer is \"full line\"):
 
-(lsp-test-diag-make (buffer-string)
-                    \"full line\"
-                    \"     ^^^^\")
+(lsp-test-range-make (buffer-string)
+                     \"full line\"
+                     \"     ^^^^\")
 
 -> (:line 3 :from 5 :to 8)
 "
@@ -123,6 +123,21 @@ Returns its range converted to `(:line .. :from .. :to ..)' format."
           :from (ht-get start "character")
           :to (ht-get end "character"))))
 
+(defun lsp-test-find-all-words (contents word)
+  "Find all occurences of WORD in CONTENTS and return a list of ranges."
+  (with-temp-buffer
+    (insert contents)
+    (goto-char (point-min))
+    (let (locs)
+      (while (re-search-forward word nil t)
+        (let ((line (- (line-number-at-pos (point)) 1))
+              (end-col (current-column))
+              (start-col (- (current-column) (length word))))
+          (push (list :start (list :line line :character start-col)
+                      :end (list :line line :character end-col))
+                locs)))
+      locs)))
+
 (defun lsp-test-make-diagnostics (for-file contents forbidden-word)
   "Come up with a diagnostic highlighting FORBIDDEN-WORD.
 
@@ -132,23 +147,15 @@ Returns a p-list compatible with the mock server.
 FOR-FILE is the path to the file to include in the diagnostics.
 It might not contain exactly CONTENTS because it the diagnostic
 might be generated for a modified and not saved buffer content."
-  (with-temp-buffer
-    (insert contents)
-    (goto-char (point-min))
-    (let (diagnostics)
-      (while (re-search-forward forbidden-word nil t)
-        (let ((line (- (line-number-at-pos (point)) 1))
-              (end-col (current-column))
-              (start-col (- (current-column) (length forbidden-word))))
-          (push (list :source "mockS"
-                      :code "E001"
-                      :range (list :start (list :line line :character start-col)
-                                   :end (list :line line :character end-col))
-                      :message (format "Do not use word '%s'" forbidden-word)
-                      :severity 2)
-                diagnostics)))
-      ;; Use vconcat diagnostics to ensure proper JSON serialization of the list
-      `(:uri ,(concat "file://" for-file) :diagnostics ,(vconcat diagnostics)))))
+  (let ((diagnostics (mapcar (lambda (loc)
+                               (list :source "mockS"
+                                     :code "E001"
+                                     :range loc
+                                     :message (format "Do not use word '%s'" forbidden-word)
+                                     :severity 2))
+                             (lsp-test-find-all-words contents forbidden-word))))
+    ;; Use vconcat diagnostics to ensure proper JSON serialization of the list
+    `(:uri ,(concat "file://" for-file) :diagnostics ,(vconcat diagnostics))))
 
 (defun lsp-test-command-send-diags (file-path file-contents forbidden-word)
   "Generate and command the mock server to publish diagnostics.
@@ -232,9 +239,9 @@ TEST-BODY can interact with the mock server."
                               (gethash lsp-test-sample-file (lsp-diagnostics t))))
    (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
-                  (lsp-test-diag-make (buffer-string)
-                                      "line 1 unique word broming + common"
-                                      "                   ^^^^^^^         ")))))
+                  (lsp-test-range-make (buffer-string)
+                                       "line 1 unique word broming + common"
+                                       "                   ^^^^^^^         ")))))
 
 (ert-deftest lsp-mock-server-crashes ()
   "Test that the mock server crashes when instructed so."
@@ -275,9 +282,9 @@ TEST-BODY can interact with the mock server."
 
    ;; The diagnostic is properly received
    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
-                  (lsp-test-diag-make (buffer-string)
-                                      "line 1 unique word broming + common"
-                                      "                   ^^^^^^^         ")))
+                  (lsp-test-range-make (buffer-string)
+                                       "line 1 unique word broming + common"
+                                       "                   ^^^^^^^         ")))
 
    ;; Server found a different diagnostic
    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "fegam")
@@ -288,9 +295,9 @@ TEST-BODY can interact with the mock server."
    ;; The new diagnostics is properly displayed instead of the old one
    (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
-                  (lsp-test-diag-make (buffer-string)
-                                      "Line 0 unique word fegam and common"
-                                      "                   ^^^^^           ")))))
+                  (lsp-test-range-make (buffer-string)
+                                       "Line 0 unique word fegam and common"
+                                       "                   ^^^^^           ")))))
 
 (ert-deftest lsp-mock-server-updates-diags-with-delay ()
   "Test demonstrating delay in the diagnostics update.
@@ -311,9 +318,9 @@ publishes the update. This test demonstrates this behavior."
 
    ;; The diagnostic is properly received
    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
-                  (lsp-test-diag-make (buffer-string)
-                                      "line 1 unique word broming + common"
-                                      "                   ^^^^^^^         ")))
+                  (lsp-test-range-make (buffer-string)
+                                       "line 1 unique word broming + common"
+                                       "                   ^^^^^^^         ")))
 
    ;; Change the text: remove the first line
    (goto-char (point-min))
@@ -327,9 +334,9 @@ line 3 words here and here
    (sleep-for 0.5)
    ;; The diagnostic is not updated and now points to a wrong line
    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
-                  (lsp-test-diag-make (buffer-string)
-                                      "line 2 unique word normalw common here"
-                                      "                   ^^^^^^^            ")))
+                  (lsp-test-range-make (buffer-string)
+                                       "line 2 unique word normalw common here"
+                                       "                   ^^^^^^^            ")))
 
    ;; Server sent an update
    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
@@ -340,9 +347,9 @@ line 3 words here and here
 
    ;; Now the diagnostic is correct again
    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
-                  (lsp-test-diag-make (buffer-string)
-                                      "line 1 unique word broming + common"
-                                      "                   ^^^^^^^         ")))))
+                  (lsp-test-range-make (buffer-string)
+                                       "line 1 unique word broming + common"
+                                       "                   ^^^^^^^         ")))))
 
 (ert-deftest lsp-mock-server-updates-diags-clears-up ()
   "Test ensuring diagnostics are cleared after a change."
@@ -359,9 +366,9 @@ line 3 words here and here
 
    ;; The diagnostic is properly received
    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
-                  (lsp-test-diag-make (buffer-string)
-                                      "line 1 unique word broming + common"
-                                      "                   ^^^^^^^         ")))
+                  (lsp-test-range-make (buffer-string)
+                                       "line 1 unique word broming + common"
+                                       "                   ^^^^^^^         ")))
 
    ;; Change the text: remove the first line
    (goto-char (point-min))
@@ -380,8 +387,49 @@ line 3 words here and here
 
    ;; Now the diagnostic is correct again
    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
-                  (lsp-test-diag-make (buffer-string)
-                                      "line 1 unique word broming + common"
-                                      "                   ^^^^^^^         "))))))
+                  (lsp-test-range-make (buffer-string)
+                                       "line 1 unique word broming + common"
+                                       "                   ^^^^^^^         "))))))
+
+(defun lsp-test-xref-loc-to-range (xref-loc)
+  (let ((line (- (xref-location-line (xref-item-location xref-loc)) 1))
+        (len (xref-match-length xref-loc))
+        (col (xref-file-location-column (xref-item-location xref-loc))))
+    (list :line line :from col :to (+ col len))))
+
+(defun lsp-test-make-references (for-file contents word)
+  "Come up with a list of references to WORD in CONTENTS.
+
+Scan CONTENTS for all occurences of WORD and compose a list of references."
+  (let ((add-uri (lambda (range) `(:uri ,(concat "file://" for-file)
+                              :range ,range))))
+    (vconcat (mapcar add-uri (lsp-test-find-all-words contents word)))))
+
+(ert-deftest lsp-mock-server-provides-referencs ()
+  "Test ensuring that lsp-mode accepts correct locations for references."
+  (let* (found-xrefs
+         (xref-show-xrefs-function (lambda (fetcher &rest _params)
+                                     (setq found-xrefs (funcall fetcher)))))
+    (lsp-mock-run-with-mock-server
+     (lsp-test-send-command-to-mock-server
+      (format "(schedule-response \"textDocument/references\" '%s)"
+              (lsp-test-make-references
+               lsp-test-sample-file (buffer-string) "unique")))
+     (lsp-find-references)
+     (message "%s" found-xrefs)
+     (should found-xrefs)
+     (should (eq (length found-xrefs) 3))
+     (should (equal (lsp-test-xref-loc-to-range (nth 0 found-xrefs))
+                    (lsp-test-range-make (buffer-string)
+                                         "Line 0 unique word fegam and common"
+                                         "       ^^^^^^                      ")))
+     (should (equal (lsp-test-xref-loc-to-range (nth 1 found-xrefs))
+                    (lsp-test-range-make (buffer-string)
+                                         "line 1 unique word broming + common"
+                                         "       ^^^^^^                      ")))
+     (should (equal (lsp-test-xref-loc-to-range (nth 2 found-xrefs))
+                    (lsp-test-range-make (buffer-string)
+                                         "line 2 unique word normalw common here"
+                                         "       ^^^^^^                         "))))))
 
 ;;; lsp-mock-server-test.el ends here
