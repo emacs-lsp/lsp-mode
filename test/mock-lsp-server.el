@@ -61,13 +61,22 @@
 (defun json-rpc-string (body)
   "Format BODY as a JSON RPC message suitable for LSP."
   ;; 1+ - extra new-line at the end
-  (format "Content-Length: %d\r\nContent-Type: application/vscode-jsonrpc; charset=utf8\r\n\r\n%s\n" (1+ (string-bytes body)) body))
+  (let ((content-length-header
+         (format "Content-Length: %d" (1+ (string-bytes body))))
+        (content-type-header
+         "Content-Type: application/vscode-jsonrpc; charset=utf8"))
+    (concat content-length-header "\r\n"
+            content-type-header "\r\n\r\n"
+            body "\n")))
+
+(defconst server-info
+  "\"serverInfo\":{\"name\":\"mockS\",\"version\":\"0.0.1\"}"
+  "Basic server information: name and version.")
 
 (defun greeting (id)
   "Compose the greeting message in response to `initialize' request with id ID."
   (json-rpc-string
-   (format "{\"jsonrpc\":\"2.0\",\"id\":%d,\"result\":{\"serverInfo\":{\"name\":\"mockS\",\"version\":\"0.0.1\"}}}"
-           id)))
+   (format "{\"jsonrpc\":\"2.0\",\"id\":%d,\"result\":{%s}}" id server-info)))
 
 (defun ack (id)
   "Acknowledge a request with id ID."
@@ -79,7 +88,9 @@
 
 (defun loc-to-json (loc)
   "Convert (:line .. :character ..) LOC to a serialized JSON object."
-  (format "{\"line\":%d,\"character\":%d}" (plist-get loc :line) (plist-get loc :character)))
+  (format "{\"line\":%d,\"character\":%d}"
+          (plist-get loc :line)
+          (plist-get loc :character)))
 
 (defun range-to-json (range)
   "Convert (:start .. :end ..) RANGE to a serialized JSON object."
@@ -102,11 +113,16 @@
 DIAGNOSICS must be a p-list (:path PATH :diags DIAGS),
 where DIAGS is a list of p-lists in the form
 (:source .. :code .. :range .. :message .. :severity ..)."
-  (princ
-   (json-rpc-string
-    (format "{\"jsonrpc\":\"2.0\",\"method\":\"textDocument\\/publishDiagnostics\",\"params\":{\"uri\":\"file:\\/\\/%s\",\"diagnostics\":[%s]}}"
-            (plist-get diagnostics :path)
-            (mapconcat #'diagnostic-to-json (plist-get diagnostics :diags) ",")))))
+  (let ((params
+         (format
+          "\"params\":{\"uri\":\"file:\\/\\/%s\",\"diagnostics\":[%s]}"
+          (plist-get diagnostics :path)
+          (mapconcat #'diagnostic-to-json
+                     (plist-get diagnostics :diags) ",")))
+        (method "\"method\":\"textDocument\\/publishDiagnostics\""))
+    (princ
+     (json-rpc-string
+      (format "{\"jsonrpc\":\"2.0\",%s,%s}" method params)))))
 
 (defun get-id (input)
   "Extract request id from INPUT JSON message."
@@ -114,12 +130,13 @@ where DIAGS is a list of p-lists in the form
       (string-to-number (match-string 1 input))
     nil))
 
-(defconst notification-methods '("\"method\":\"initialized\""
-                                 "\"method\":\"textDocument/didOpen\""
-                                 "\"method\":\"textDocument/didClose\""
-                                 "\"method\":\"$/setTrace\""
-                                 "\"method\":\"workspace/didChangeConfiguration\"")
-  "These are expected notifications that do not require any acknowledgement.")
+(defconst notification-methods
+  '("\"method\":\"initialized\""
+    "\"method\":\"textDocument/didOpen\""
+    "\"method\":\"textDocument/didClose\""
+    "\"method\":\"$/setTrace\""
+    "\"method\":\"workspace/didChangeConfiguration\"")
+  "Expected notification methods that require no acknowledgement.")
 
 (defun is-notification (input)
   "Check if INPUT is a notification message.
