@@ -79,7 +79,8 @@
 
 (defconst server-capabilities '(:referencesProvider t
                                 :foldingRangeProvider t
-                                :documentHighlightProvider t)
+                                :documentHighlightProvider t
+                                :documentFormattingProvider t)
   "Capabilities of the server.")
 
 (defun greeting (id)

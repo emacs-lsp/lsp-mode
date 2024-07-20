@@ -554,4 +554,108 @@ TEST-FN is a function to call with the temporary window."
                                             "line 3 words here and here"
                                             "                      ^^^^"))))))))
 
+(defun lsp-test-index-to-pos (idx)
+  "Convert 0-based integer IDX to a position in the corrent buffer.
+
+Retruns the position p-list."
+  (lsp-point-to-position (1+ idx)))
+
+(defun lsp-test-make-edits (marked-up)
+  "Create a list of edits to transform current buffer according to MARKED-UP.
+
+MARKED-UP string uses a simple markup syntax to indicate
+insertions and deletions. The function returns a list of edits
+each in the form `(:range .. :newText ..)'
+
+The markup syntax is as follows:
+- <word> - indicates an insertion of the text `word'
+- ####### - indicates a deletion of the text that was in place of each `#'
+
+All edits must be single line: deletion must not cross a line break
+and insertion must not contain a line break."
+  (let ((edits nil)
+        (original (buffer-string))
+        (orig-idx 0)
+        (marked-idx 0))
+    (while (and (< orig-idx (length original))
+                (< marked-idx (length marked-up)))
+      (let ((orig-char (aref original orig-idx))
+            (marked-char (aref marked-up marked-idx)))
+        (cond
+         ((eq marked-char ?<) ; Insertion
+          (let ((marked-idx-start marked-idx))
+            (while (and (< marked-idx (length marked-up))
+                        (not (eq (aref marked-up marked-idx) ?>)))
+              (setq marked-idx (1+ marked-idx)))
+            (should (< marked-idx (length marked-up)))
+            (push `(:range (:start ,(lsp-test-index-to-pos orig-idx)
+                            :end ,(lsp-test-index-to-pos orig-idx))
+                    :newText ,(substring marked-up (1+ marked-idx-start) marked-idx))
+                  edits)
+            (setq marked-idx (1+ marked-idx)) ; Skip the closing >
+            ))
+         ((eq marked-char ?#) ; Deletion
+          (let ((orig-idx-start orig-idx))
+            (while (and (< marked-idx (length marked-up))
+                        (< orig-idx (length original))
+                        (eq (aref marked-up marked-idx) ?#))
+              (setq orig-idx (1+ orig-idx))
+              (setq marked-idx (1+ marked-idx)))
+            (should (and (< marked-idx (length marked-up))
+                         (< orig-idx (length original))))
+            (push `(:range (:start ,(lsp-test-index-to-pos orig-idx-start)
+                            :end ,(lsp-test-index-to-pos orig-idx))
+                    :newText "")
+                  edits)))
+         (t (should (eq orig-char marked-char))
+            (setq orig-idx (1+ orig-idx))
+            (setq marked-idx (1+ marked-idx))))))
+    (should (and (= orig-idx (length original))
+                 (= marked-idx (length marked-up))))
+    (vconcat (reverse edits))))
+
+(ert-deftest lsp-mock-make-edits-sane ()
+  "Check the test-utility function `lsp-mock-make-edits'."
+  (with-temp-buffer
+    (insert "line 0 common deleted common")
+    (should (equal (lsp-test-make-edits
+                    "<inserted>line 0 common deleted common")
+                   [(:range (:start (:line 0 :character 0)
+                             :end (:line 0 :character 0))
+                            :newText "inserted")
+                    ]))
+    (should (equal (lsp-test-make-edits
+                    "l<inserted>ine 0 common deleted common")
+                   [(:range (:start (:line 0 :character 1)
+                             :end (:line 0 :character 1))
+                            :newText "inserted")
+                    ]))
+    (should (equal (lsp-test-make-edits
+                    "line 0 <inserted>common ####### common")
+                   [(:range (:start (:line 0 :character 7)
+                             :end (:line 0 :character 7))
+                            :newText "inserted")
+                    (:range (:start (:line 0 :character 14)
+                             :end (:line 0 :character 21))
+                            :newText "")]))))
+
+(ert-deftest lsp-mock-server-formats-with-edits ()
+  "Test ensuring that lsp-mode requests and applies formatting correctly."
+  (lsp-mock-run-with-mock-server
+   (lsp-test-send-command-to-mock-server
+    (format "(schedule-response \"textDocument/formatting\" %S)"
+            (lsp-test-make-edits
+             "Line 0 ###### word fegam and common
+line 1 unique <double>word ######### common
+line 2 unique word #ormalw common here
+line 3 words here and here
+")))
+   (lsp-format-buffer)
+   (should (equal (buffer-string)
+                  "Line 0  word fegam and common
+line 1 unique doubleword  common
+line 2 unique word ormalw common here
+line 3 words here and here
+"))))
+
 ;;; lsp-mock-server-test.el ends here
