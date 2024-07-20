@@ -392,6 +392,10 @@ line 3 words here and here
                                        "                   ^^^^^^^         "))))))
 
 (defun lsp-test-xref-loc-to-range (xref-loc)
+  "Convert XREF-LOC to a range p-list.
+
+XREF-LOC is an xref-location object. The function returns a p-list
+in the form of `(:line .. :from .. :to ..)'."
   (let ((line (- (xref-location-line (xref-item-location xref-loc)) 1))
         (len (xref-match-length xref-loc))
         (col (xref-file-location-column (xref-item-location xref-loc))))
