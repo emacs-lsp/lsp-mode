@@ -77,7 +77,8 @@
   "Basic server information: name and version.")
 
 
-(defconst server-capabilities '(:referencesProvider t)
+(defconst server-capabilities '(:referencesProvider t
+                                :foldingRangeProvider t)
   "Capabilities of the server.")
 
 (defun greeting (id)

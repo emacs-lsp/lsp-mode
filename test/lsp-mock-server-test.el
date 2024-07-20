@@ -441,4 +441,42 @@ Scan CONTENTS for all occurences of WORD and compose a list of references."
                                          "line 2 unique word normalw common here"
                                          "       ^^^^^^                         "))))))
 
+(ert-deftest lsp-mock-server-provides-folding-ranges ()
+  "Test ensuring that lsp-mode accepts correct locations for folding ranges."
+  (lsp-mock-run-with-mock-server
+   (lsp-test-send-command-to-mock-server
+    (format "(schedule-response \"textDocument/foldingRange\" '%s)"
+            [(:kind "region" :startLine 0 :startCharacter 10 :endLine 1)
+             (:kind "region" :startLine 1 :startCharacter 5 :endLine 2)]))
+   (let ((folding-ranges (lsp--get-folding-ranges)))
+     (should (eq (length folding-ranges) 2))
+     ;; LSP line numbers are 0-based, Emacs line numbers are 1-based
+     ;; henace the +1
+     (should (equal (line-number-at-pos
+                     (lsp--folding-range-beg (nth 0 folding-ranges)))
+                    1))
+     (should (equal (line-number-at-pos
+                     (lsp--folding-range-end (nth 0 folding-ranges)))
+                    2))
+     (should (equal (line-number-at-pos
+                     (lsp--folding-range-beg (nth 1 folding-ranges)))
+                    2))
+     (should (equal (line-number-at-pos
+                     (lsp--folding-range-end (nth 1 folding-ranges)))
+                    3)))))
+
+(ert-deftest lsp-mock-server-lsp-caches-folding-ranges ()
+  "Test ensuring that lsp-mode accepts correct locations for folding ranges."
+  (lsp-mock-run-with-mock-server
+   (lsp-test-send-command-to-mock-server
+    (format "(schedule-response \"textDocument/references\" '%s)"
+            (lsp-test-make-references
+             lsp-test-sample-file (buffer-string) "unique")))
+   (should (eq (lsp--get-folding-ranges) nil))
+   (lsp-test-send-command-to-mock-server
+    (format "(schedule-response \"textDocument/foldingRange\" '%s)"
+            [(:kind "region" :startLine 0 :startCharacter 10 :endLine 1)]))
+   ;; Folding ranges are cached from the first request
+   (should (eq (lsp--get-folding-ranges) nil))))
+
 ;;; lsp-mock-server-test.el ends here
