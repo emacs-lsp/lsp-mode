@@ -159,7 +159,7 @@ See https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17
           (string-match "Content-Type" line))
       ;; Ignore header
       )
-     ((or (string-match "^$" line)
+     ((or (string-match "^\r$" line)
           (string-match "^$" line))
       ;; Ignore other empty lines
       )
