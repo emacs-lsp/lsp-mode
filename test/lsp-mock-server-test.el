@@ -794,4 +794,20 @@ line 3 words here and here
      (should (equal (1+ (plist-get decl-range :line)) (line-number-at-pos)))
      (should (equal (plist-get decl-range :from) (current-column))))))
 
+(ert-deftest lsp-mock-server-goto-definition ()
+  "Test checking that lsp-mode can follow the symbol definition."
+  (lsp-mock-run-with-mock-server
+   (let ((decl-range (lsp-test-range-make
+                      (buffer-string)
+                      "line 3 words here and here"
+                      "     ^^^^^^^              ")))
+     (lsp-test-schedule-response
+      "textDocument/definition"
+      (vconcat (list `(:uri ,(concat "file://" lsp-test-sample-file)
+                       :range ,(lsp-test-full-range decl-range)))))
+     (lsp-find-definition)
+     ;; 1+ to convert 0-based LSP line number to 1-based Emacs line number
+     (should (equal (1+ (plist-get decl-range :line)) (line-number-at-pos)))
+     (should (equal (plist-get decl-range :from) (current-column))))))
+
 ;;; lsp-mock-server-test.el ends here

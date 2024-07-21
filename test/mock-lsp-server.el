@@ -82,7 +82,8 @@
                                 :documentHighlightProvider t
                                 :documentFormattingProvider t
                                 :codeActionProvider t
-                                :declarationProvider t)
+                                :declarationProvider t
+                                :definitionProvider t)
   "Capabilities of the server.")
 
 (defun greeting (id)
