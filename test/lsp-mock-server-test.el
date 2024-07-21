@@ -410,17 +410,20 @@ Scan CONTENTS for all occurences of WORD and compose a list of references."
                               :range ,range))))
     (vconcat (mapcar add-uri (lsp-test-find-all-words contents word)))))
 
+(defun lsp-test-schedule-response (method response)
+  "Schedule a RESPONSE to be sent in response to METHOD."
+  (lsp-test-send-command-to-mock-server
+   (format "(schedule-response %S %S)" method response)))
+
 (ert-deftest lsp-mock-server-provides-references ()
   "Test ensuring that lsp-mode accepts correct locations for references."
   (let* (found-xrefs
          (xref-show-xrefs-function (lambda (fetcher &rest _params)
                                      (setq found-xrefs (funcall fetcher)))))
     (lsp-mock-run-with-mock-server
-     (lsp-test-send-command-to-mock-server
-      (format "(schedule-response \"textDocument/references\" '%s)"
-              (lsp-test-make-references
-               lsp-test-sample-file (buffer-string) "unique")))
-
+     (lsp-test-schedule-response "textDocument/references"
+                                 (lsp-test-make-references
+                                  lsp-test-sample-file (buffer-string) "unique"))
      ;; xref in emacs 27.2 does not have this var,
      ;; but lsp-mode uses it in lsp-show-xrefs.
      ;; For the purpose of this test, it does not matter.
@@ -445,10 +448,11 @@ Scan CONTENTS for all occurences of WORD and compose a list of references."
 (ert-deftest lsp-mock-server-provides-folding-ranges ()
   "Test ensuring that lsp-mode accepts correct locations for folding ranges."
   (lsp-mock-run-with-mock-server
-   (lsp-test-send-command-to-mock-server
-    (format "(schedule-response \"textDocument/foldingRange\" '%s)"
-            [(:kind "region" :startLine 0 :startCharacter 10 :endLine 1)
-             (:kind "region" :startLine 1 :startCharacter 5 :endLine 2)]))
+   (lsp-test-schedule-response
+    "textDocument/foldingRange"
+    [(:kind "region" :startLine 0 :startCharacter 10 :endLine 1)
+     (:kind "region" :startLine 1 :startCharacter 5 :endLine 2)])
+
    (let ((folding-ranges (lsp--get-folding-ranges)))
      (should (eq (length folding-ranges) 2))
      ;; LSP line numbers are 0-based, Emacs line numbers are 1-based
@@ -469,14 +473,10 @@ Scan CONTENTS for all occurences of WORD and compose a list of references."
 (ert-deftest lsp-mock-server-lsp-caches-folding-ranges ()
   "Test ensuring that lsp-mode accepts correct locations for folding ranges."
   (lsp-mock-run-with-mock-server
-   (lsp-test-send-command-to-mock-server
-    (format "(schedule-response \"textDocument/references\" '%s)"
-            (lsp-test-make-references
-             lsp-test-sample-file (buffer-string) "unique")))
    (should (eq (lsp--get-folding-ranges) nil))
-   (lsp-test-send-command-to-mock-server
-    (format "(schedule-response \"textDocument/foldingRange\" '%s)"
-            [(:kind "region" :startLine 0 :startCharacter 10 :endLine 1)]))
+   (lsp-test-schedule-response
+    "textDocument/foldingRange"
+    [(:kind "region" :startLine 0 :startCharacter 10 :endLine 1)])
    ;; Folding ranges are cached from the first request
    (should (eq (lsp--get-folding-ranges) nil))))
 
@@ -528,9 +528,9 @@ TEST-FN is a function to call with the temporary window."
 (ert-deftest lsp-mock-server-provides-symbol-highlights ()
   "Test ensuring that lsp-mode accepts correct locations for highlights."
   (lsp-mock-run-with-mock-server
-   (lsp-test-send-command-to-mock-server
-    (format "(schedule-response \"textDocument/documentHighlight\" '%s)"
-            (lsp-test-make-highlights (buffer-string) "here")))
+   (lsp-test-schedule-response
+    "textDocument/documentHighlight"
+    (lsp-test-make-highlights (buffer-string) "here"))
    ;; The highlight overlays are created only if visible in a window
    (lsp-mock-with-temp-window
     (current-buffer)
@@ -642,14 +642,14 @@ and insertion must not contain a line break."
 (ert-deftest lsp-mock-server-formats-with-edits ()
   "Test ensuring that lsp-mode requests and applies formatting correctly."
   (lsp-mock-run-with-mock-server
-   (lsp-test-send-command-to-mock-server
-    (format "(schedule-response \"textDocument/formatting\" %S)"
-            (lsp-test-make-edits
-             "Line 0 ###### word fegam and common
+   (lsp-test-schedule-response
+    "textDocument/formatting"
+    (lsp-test-make-edits
+     "Line 0 ###### word fegam and common
 line 1 unique <double>word ######### common
 line 2 unique word #ormalw common here
 line 3 words here and here
-")))
+"))
    (lsp-format-buffer)
    (should (equal (buffer-string)
                   "Line 0  word fegam and common
