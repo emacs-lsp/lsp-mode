@@ -490,12 +490,18 @@ Scan CONTENTS for all occurences of WORD and compose a list of references."
    ;; Folding ranges are cached from the first request
    (should (eq (lsp--get-folding-ranges) nil))))
 
+(defun lsp-test-all-overlays (tag)
+  "Return all overlays tagged TAG in the current buffer."
+  (let ((overlays (overlays-in (point-min) (point-max))))
+    (seq-filter (lambda (overlay)
+                  (overlay-get overlay tag))
+                overlays)))
+
 (defun lsp-test-all-overlays-as-ranges (tag)
   "Return all overlays tagged TAG in the current buffer as ranges.
 
 Tagged overlays have the property TAG set to t."
-  (let ((overlays (overlays-in (point-min) (point-max)))
-        (to-range
+  (let ((to-range
          (lambda (overlay)
            (let* ((beg (overlay-start overlay))
                   (end (overlay-end overlay))
@@ -506,9 +512,7 @@ Tagged overlays have the property TAG set to t."
              (should (equal beg-line end-line))
              (list :line (- beg-line 1) :from beg-col :to end-col)))))
     (save-excursion
-      (mapcar to-range (seq-filter (lambda (overlay)
-                                     (overlay-get overlay tag))
-                                   overlays)))))
+      (mapcar to-range (lsp-test-all-overlays tag)))))
 
 (defun lsp-test-make-highlights (contents word)
   "Come up with a list of highlights of WORD in CONTENTS.
@@ -809,5 +813,31 @@ line 3 words here and here
      ;; 1+ to convert 0-based LSP line number to 1-based Emacs line number
      (should (equal (1+ (plist-get decl-range :line)) (line-number-at-pos)))
      (should (equal (plist-get decl-range :from) (current-column))))))
+
+(ert-deftest lsp-test-server-provides-inlay-hints ()
+  "lsp-mode accepts inlay hints from the server and displays them."
+  (let ((lsp-inlay-hint-enable t)
+        (hint-line 2)
+        (hint-col 10))
+    (lsp-mock-run-with-mock-server
+     (lsp-mock-with-temp-window
+      (current-buffer)
+      (lambda ()
+        (lsp-test-schedule-response
+         "textDocument/inlayHint"
+         (vconcat (list `(:kind 2
+                          :position (:line ,hint-line :character ,hint-col)
+                          :paddingLeft ()
+                          :label "my hint"))))
+        ;; Lsp will update inlay hints on idling
+        (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                                   (lsp-test-all-overlays 'lsp-inlay-hint)))
+        (let ((hints (lsp-test-all-overlays 'lsp-inlay-hint)))
+          (should (eq (length hints) 1))
+          (should (equal (overlay-get (car hints) 'before-string) "my hint"))
+          (goto-char (overlay-start (car hints)))
+          ; 1+ to convert 0-based LSP line number to 1-based Emacs line number
+          (should (equal (line-number-at-pos) (1+ hint-line)))
+          (should (equal (current-column) hint-col))))))))
 
 ;;; lsp-mock-server-test.el ends here
