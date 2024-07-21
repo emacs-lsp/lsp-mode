@@ -111,6 +111,16 @@ Example (suppose line #3 of current buffer is \"full line\"):
     (should (string-match "^ *\\(\\^+\\) *$" marker))
     (list :line line-number :from (match-beginning 1) :to (match-end 1))))
 
+(defun lsp-test-full-range (short-range)
+  "Convert SHORT-RANGE to a full range.
+
+SHORT-RANGE is a p-list with :line, :from, and :to keys.
+Returns a full range p-list with :start and :end keys."
+  (list :start (list :line (plist-get short-range :line)
+                     :character (plist-get short-range :from))
+        :end (list :line (plist-get short-range :line)
+                   :character (plist-get short-range :to))))
+
 (defun lsp-test-diag-get (diagnostic)
   "Get the single-line diagnostics range summary of DIAGNOSTIC.
 
@@ -762,5 +772,26 @@ line 1 unique word broming + common
 line 2 unique word normalw common here
 line 3 words here and here
 ")))))
+
+(ert-deftest lsp-mock-server-no-declaration-found ()
+  "Test checking that lsp-mode reports when server returns no declaration."
+  (lsp-mock-run-with-mock-server
+   (should (string-match-p "not found" (lsp-find-declaration)))))
+
+(ert-deftest lsp-mock-server-goto-declaration ()
+  "Test checking that lsp-mode can follow the symbol declaration."
+  (lsp-mock-run-with-mock-server
+   (let ((decl-range (lsp-test-range-make
+                      (buffer-string)
+                      "line 1 unique word broming + common"
+                      "                   ^^^^^^^         ")))
+     (lsp-test-schedule-response
+      "textDocument/declaration"
+      (vconcat (list `(:uri ,(concat "file://" lsp-test-sample-file)
+                       :range ,(lsp-test-full-range decl-range)))))
+     (lsp-find-declaration)
+     ;; 1+ to convert 0-based LSP line number to 1-based Emacs line number
+     (should (equal (1+ (plist-get decl-range :line)) (line-number-at-pos)))
+     (should (equal (plist-get decl-range :from) (current-column))))))
 
 ;;; lsp-mock-server-test.el ends here

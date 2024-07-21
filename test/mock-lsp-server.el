@@ -81,7 +81,8 @@
                                 :foldingRangeProvider t
                                 :documentHighlightProvider t
                                 :documentFormattingProvider t
-                                :codeActionProvider t)
+                                :codeActionProvider t
+                                :declarationProvider t)
   "Capabilities of the server.")
 
 (defun greeting (id)
