@@ -840,4 +840,23 @@ line 3 words here and here
           (should (equal (line-number-at-pos) (1+ hint-line)))
           (should (equal (current-column) hint-col))))))))
 
+(ert-deftest lsp-test-server-provides-code-lens ()
+  "lsp-mode accepts code lenses from the server and displays them."
+  (let ((line 2))
+    (lsp-test-schedule-response
+     "textDocument/codeLens"
+     (vconcat (list `(:range (:start (:line ,line :character 0)
+                              :end (:line ,line :character 1))
+                      :command (:title "My command"
+                                :command "myCommand")))))
+    (lsp-mock-run-with-mock-server
+     (lsp-test-sync-wait (lsp-test-all-overlays 'lsp-lens))
+     (let ((lenses (lsp-test-all-overlays 'lsp-lens)))
+       (should (eq (length lenses) 1))
+       (message "%s" (overlay-properties (car lenses)))
+       (should (string-match-p "My command"
+                               (overlay-get (car lenses) 'after-string)))
+       (goto-char (overlay-start (car lenses)))
+       (should (equal (line-number-at-pos) (- line 1)))))))
+
 ;;; lsp-mock-server-test.el ends here

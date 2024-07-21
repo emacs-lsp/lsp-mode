@@ -84,7 +84,8 @@
                                 :codeActionProvider t
                                 :declarationProvider t
                                 :definitionProvider t
-                                :inlayHintProvider t)
+                                :inlayHintProvider t
+                                :codeLensProvider (:resolveProvider ()))
   "Capabilities of the server.")
 
 (defun greeting (id)
