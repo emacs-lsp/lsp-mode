@@ -80,7 +80,8 @@
 (defconst server-capabilities '(:referencesProvider t
                                 :foldingRangeProvider t
                                 :documentHighlightProvider t
-                                :documentFormattingProvider t)
+                                :documentFormattingProvider t
+                                :codeActionProvider t)
   "Capabilities of the server.")
 
 (defun greeting (id)

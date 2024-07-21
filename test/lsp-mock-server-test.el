@@ -658,4 +658,30 @@ line 2 unique word ormalw common here
 line 3 words here and here
 "))))
 
+(ert-deftest lsp-mock-server-suggests-action-with-simple-changes ()
+  "Test ensuring that lsp-mode applies code action simple edits correctly."
+  (lsp-mock-run-with-mock-server
+   (lsp-test-schedule-response
+    "textDocument/codeAction"
+    (vconcat (list `(:title "Some edits"
+                     :kind "quickfix"
+                     :isPreferred t
+                     :edit
+                     (:changes
+                      ((,(concat "file://" lsp-test-sample-file)
+                        .
+                        ,(lsp-test-make-edits
+                          "Line 0 unique word ######### common
+line # unique word broming + common
+line # unique word normalw common here
+line #<81> words here and here
+"))))))))
+   (lsp-execute-code-action-by-kind "quickfix")
+   (should (equal (buffer-string)
+                  "Line 0 unique word  common
+line  unique word broming + common
+line  unique word normalw common here
+line 81 words here and here
+"))))
+
 ;;; lsp-mock-server-test.el ends here
