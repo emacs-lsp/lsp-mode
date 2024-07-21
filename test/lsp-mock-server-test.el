@@ -732,4 +732,35 @@ line 81 words here and here
                         :documentChanges ,docChanges)))))
      (should-error (lsp-execute-code-action-by-kind "quickfix")))))
 
+;; Some actions are executed partially by the server:
+;; after the user selects the action, lsp-mode sends a request
+;; to exute the associated command.
+;; Only after that, server sends a request to perform edits
+;; in the editor.
+;; This test simulates only the last bit.
+(ert-deftest lsp-mock-server-request-edits ()
+  "Test ensuring that lsp-mode honors server's request for edits."
+  (lsp-mock-run-with-mock-server
+   (let ((initial-content (buffer-string)))
+     (lsp-test-send-command-to-mock-server
+      (format "(princ (json-rpc-string '(:id 1 :method \"workspace/applyEdit\"
+                                      :params (:edit
+                                               (:changes
+                                                ((%S . %S)))))))"
+              (concat "file://" lsp-test-sample-file)
+              (lsp-test-make-edits
+               "#### <8>0 unique word fegam and common
+line 1 unique word broming + common
+line 2 unique word normalw common here
+line 3 words here and here
+")))
+     (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                                (not (equal initial-content (buffer-string)))))
+     (should (equal (buffer-string)
+                    " 80 unique word fegam and common
+line 1 unique word broming + common
+line 2 unique word normalw common here
+line 3 words here and here
+")))))
+
 ;;; lsp-mock-server-test.el ends here
