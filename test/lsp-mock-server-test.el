@@ -714,4 +714,28 @@ line   word normalw common here
 line 81 words here and here
 ")))))
 
+(ert-deftest lsp-mock-doc-changes-wrong-version ()
+  "Test ensuring that lsp-mode applies code action document edits correctly."
+  (lsp-mock-run-with-mock-server
+   (let ((docChanges
+          (vconcat (list `(:textDocument
+                           (:version 1 ; This version does not exist
+                            :uri ,(concat "file://" lsp-test-sample-file))
+                           :edits
+                           ,(lsp-test-make-edits
+                             "Line 0 ########### ######### common
+line 1<00> unique word broming + common
+line # ###### word normalw common here
+line #<81> words here and here
+"))))))
+     (lsp-test-schedule-response
+      "textDocument/codeAction"
+      (vconcat (list `(:title "Some edits"
+                       :kind "quickfix"
+                       :isPreferred t
+                       :edit
+                       (:changes #s(hash-table data ()) ; empty obj
+                        :documentChanges ,docChanges)))))
+     (should-error (lsp-execute-code-action-by-kind "quickfix")))))
+
 ;;; lsp-mock-server-test.el ends here
