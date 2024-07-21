@@ -721,13 +721,7 @@ line 81 words here and here
           (vconcat (list `(:textDocument
                            (:version 1 ; This version does not exist
                             :uri ,(concat "file://" lsp-test-sample-file))
-                           :edits
-                           ,(lsp-test-make-edits
-                             "Line 0 ########### ######### common
-line 1<00> unique word broming + common
-line # ###### word normalw common here
-line #<81> words here and here
-"))))))
+                           :edits [])))))
      (lsp-test-schedule-response
       "textDocument/codeAction"
       (vconcat (list `(:title "Some edits"
