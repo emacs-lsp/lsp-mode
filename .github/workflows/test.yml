@@ -17,7 +17,7 @@ jobs:
         emacs-version:
           - 27.2
           - 28.2
-          - 29.3
+          - 29.4
         experimental: [false]
         include:
           - os: ubuntu-latest
