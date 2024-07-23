@@ -212,6 +212,15 @@ opens the `lsp-test-sample-file' and starts the mock server."
         (workspace-root (file-name-directory lsp-test-sample-file))
         (initial-server-count (lsp-test-total-folder-count)))
     (register-mock-client) ; register mock client as the one an only lsp client
+
+     ;; xref in emacs 27.2 does not have these vars,
+     ;; but lsp-mode uses them in lsp-show-xrefs.
+     ;; For the purpose of this test, it does not matter.
+     (unless (boundp 'xref-auto-jump-to-first-xref)
+       (defvar xref-auto-jump-to-first-xref nil))
+     (unless (boundp 'xref-auto-jump-to-first-definition)
+       (defvar xref-auto-jump-to-first-definition nil))
+
     (lsp-workspace-folders-add workspace-root)
     (let* ((buf (find-file-noselect lsp-test-sample-file)))
       (unwind-protect
@@ -434,11 +443,6 @@ Scan CONTENTS for all occurences of WORD and compose a list of references."
      (lsp-test-schedule-response "textDocument/references"
                                  (lsp-test-make-references
                                   lsp-test-sample-file (buffer-string) "unique"))
-     ;; xref in emacs 27.2 does not have this var,
-     ;; but lsp-mode uses it in lsp-show-xrefs.
-     ;; For the purpose of this test, it does not matter.
-     (unless (boundp 'xref-auto-jump-to-first-xref)
-       (defvar xref-auto-jump-to-first-xref nil))
      (lsp-find-references)
      (should found-xrefs)
      (should (eq (length found-xrefs) 3))
