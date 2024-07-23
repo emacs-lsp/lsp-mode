@@ -409,7 +409,7 @@ Scan CONTENTS for all occurences of WORD and compose a list of references."
                               :range ,range))))
     (vconcat (mapcar add-uri (lsp-test-find-all-words contents word)))))
 
-(ert-deftest lsp-mock-server-provides-referencs ()
+(ert-deftest lsp-mock-server-provides-references ()
   "Test ensuring that lsp-mode accepts correct locations for references."
   (let* (found-xrefs
          (xref-show-xrefs-function (lambda (fetcher &rest _params)
@@ -419,8 +419,13 @@ Scan CONTENTS for all occurences of WORD and compose a list of references."
       (format "(schedule-response \"textDocument/references\" '%s)"
               (lsp-test-make-references
                lsp-test-sample-file (buffer-string) "unique")))
+
+     ;; xref in emacs 27.2 does not have this var,
+     ;; but lsp-mode uses it in lsp-show-xrefs.
+     ;; For the purpose of this test, it does not matter.
+     (unless (boundp 'xref-auto-jump-to-first-xref)
+       (defvar xref-auto-jump-to-first-xref nil))
      (lsp-find-references)
-     (message "%s" found-xrefs)
      (should found-xrefs)
      (should (eq (length found-xrefs) 3))
      (should (equal (lsp-test-xref-loc-to-range (nth 0 found-xrefs))
