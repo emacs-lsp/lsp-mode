@@ -142,7 +142,7 @@ Key is the method, and value is the `result' field in the response.")
 This function is useful for external commands,
 allowing control over the server responses.
 
-You can schedule only one response for a method at a time."
+You can schedule only one response for a method for the entire session."
   (when (gethash method scheduled-responses)
     (error "Response for method %s is already scheduled" method))
   (puthash method result scheduled-responses))
@@ -154,15 +154,15 @@ Returns nil if no method is found."
   (when (string-match "\"method\":\"\\([^\"]+\\)\"" input)
     (match-string 1 input)))
 
-(defun pop-response-for-request (method)
-  "Find and erase a scheduled response for METHOD request.
+(defun get-response-for-request (method)
+  "Find the scheduled response for METHOD request.
 
 Returns empty array if not found:
- empty array is the usual representation of empty result."
+ empty array is the usual representation of empty result.
+
+The response is not removed to cover for potential plural requests."
   (if-let ((response (gethash method scheduled-responses)))
-      (progn
-        (remhash method scheduled-responses)
-        response)
+      response
     []))
 
 (defun handle-lsp-client-input ()
@@ -183,7 +183,7 @@ Returns empty array if not found:
       ;; Acknowledge that it is received
       (princ (respond
               (get-id line)
-              (pop-response-for-request (get-method line)))))
+              (get-response-for-request (get-method line)))))
      ((or (string-match "Content-Length" line)
           (string-match "Content-Type" line))
       ;; Ignore header

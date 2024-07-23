@@ -818,7 +818,7 @@ line 3 words here and here
      (should (equal (1+ (plist-get decl-range :line)) (line-number-at-pos)))
      (should (equal (plist-get decl-range :from) (current-column))))))
 
-(ert-deftest lsp-test-server-provides-inlay-hints ()
+(ert-deftest lsp-mock-server-provides-inlay-hints ()
   "lsp-mode accepts inlay hints from the server and displays them."
   (let ((lsp-inlay-hint-enable t)
         (hint-line 2)
@@ -834,6 +834,7 @@ line 3 words here and here
                           :paddingLeft ()
                           :label "my hint"))))
         ;; Lsp will update inlay hints on idling
+        (run-hooks 'lsp-on-idle-hook)
         (lsp-test-sync-wait (progn (should (lsp-workspaces))
                                    (lsp-test-all-overlays 'lsp-inlay-hint)))
         (let ((hints (lsp-test-all-overlays 'lsp-inlay-hint)))
@@ -844,7 +845,7 @@ line 3 words here and here
           (should (equal (line-number-at-pos) (1+ hint-line)))
           (should (equal (current-column) hint-col))))))))
 
-(ert-deftest lsp-test-server-provides-code-lens ()
+(ert-deftest lsp-mock-server-provides-code-lens ()
   "lsp-mode accepts code lenses from the server and displays them."
   (let ((line 2))
     (lsp-test-schedule-response
