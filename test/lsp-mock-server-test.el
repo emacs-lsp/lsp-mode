@@ -199,6 +199,11 @@ Returns the non-nil return value of CONDITION-FUNC."
   "Wait for the CONDITION to become non-nil and return it."
   `(lsp-test--sync-wait-for (lambda () ,condition)))
 
+(defun lsp-test-relevant-overlays ()
+  "Collect all overlays that might have been produced by LSP."
+  (seq-filter (lambda (ovl) (null (overlay-get ovl 'pulse-delete)))
+              (overlays-in (point-min) (point-max))))
+
 (defun lsp-mock--run-with-mock-server (test-body)
   "Run TEST-BODY function with mock LSP client connected to the mock server.
 
@@ -210,36 +215,43 @@ opens the `lsp-test-sample-file' and starts the mock server."
         (lsp-enable-snippet nil) ; Avoid warning that lsp-yasnippet is not intalled
         (lsp-warn-no-matched-clients nil) ; Mute warning LSP can't figure out src lang
         (workspace-root (file-name-directory lsp-test-sample-file))
-        (initial-server-count (lsp-test-total-folder-count)))
+        (initial-server-count (lsp-test-total-folder-count))
+        (initial-overlay-count nil))
     (register-mock-client) ; register mock client as the one an only lsp client
 
-     ;; xref in emacs 27.2 does not have these vars,
-     ;; but lsp-mode uses them in lsp-show-xrefs.
-     ;; For the purpose of this test, it does not matter.
-     (unless (boundp 'xref-auto-jump-to-first-xref)
-       (defvar xref-auto-jump-to-first-xref nil))
-     (unless (boundp 'xref-auto-jump-to-first-definition)
-       (defvar xref-auto-jump-to-first-definition nil))
+    ;; xref in emacs 27.2 does not have these vars,
+    ;; but lsp-mode uses them in lsp-show-xrefs.
+    ;; For the purpose of this test, it does not matter.
+    (unless (boundp 'xref-auto-jump-to-first-xref)
+      (defvar xref-auto-jump-to-first-xref nil))
+    (unless (boundp 'xref-auto-jump-to-first-definition)
+      (defvar xref-auto-jump-to-first-definition nil))
 
     (lsp-workspace-folders-add workspace-root)
     (let* ((buf (find-file-noselect lsp-test-sample-file)))
       (unwind-protect
-          (with-timeout (5 (error "Timeout running a test with mock server"))
-            (with-current-buffer buf
-              (prog-mode)
-              (lsp)
-              ;; Make sure the server started
-              (should (eq (lsp-test-total-folder-count) (1+ initial-server-count)))
-              (lsp-test-sync-wait (eq 'initialized
-                                      (lsp--workspace-status (cl-first (lsp-workspaces)))))
-              (funcall test-body)))
+          (progn
+            (with-timeout (5 (error "Timeout running a test with mock server"))
+              (with-current-buffer buf
+                (prog-mode)
+                (setq initial-overlay-count (length (lsp-test-relevant-overlays)))
+                (lsp)
+                ;; Make sure the server started
+                (should (eq (lsp-test-total-folder-count) (1+ initial-server-count)))
+                (lsp-test-sync-wait (eq 'initialized
+                                        (lsp--workspace-status (cl-first (lsp-workspaces)))))
+                (funcall test-body)))
+            (with-timeout (1 (error "Timeout waiting for overlays to dissolve"))
+              (with-current-buffer buf
+                (lsp-test-sync-wait (equal initial-overlay-count (length (lsp-test-relevant-overlays)))))))
         (with-current-buffer buf
+          (should (equal initial-overlay-count (length (lsp-test-relevant-overlays))))
           (set-buffer-modified-p nil); Inhibut the "kill unsaved buffer"p prompt
           (kill-buffer buf))
         (lsp-workspace-folders-remove workspace-root)
         ;; Remove possibly unhandled commands
         (when (file-exists-p lsp-test-mock-server-command-file)
-            (delete-file lsp-test-mock-server-command-file))))
+          (delete-file lsp-test-mock-server-command-file))))
     (with-timeout (5 (error "LSP mock server refuses to stop"))
       ;; Make sure the server stopped
       (lsp-test-sync-wait (= initial-server-count (lsp-test-total-folder-count))))))
@@ -557,6 +569,7 @@ TEST-FN is a function to call with the temporary window."
       (lsp-test-sync-wait (progn (should (lsp-workspaces))
                                  (lsp-test-all-overlays-as-ranges
                                   'lsp-highlight)))
+
       (let ((highlights (lsp-test-all-overlays-as-ranges 'lsp-highlight)))
         (should (eq (length highlights) 3))
         (should (equal (nth 0 highlights)
@@ -570,7 +583,10 @@ TEST-FN is a function to call with the temporary window."
         (should (equal (nth 2 highlights)
                        (lsp-test-range-make (buffer-string)
                                             "line 3 words here and here"
-                                            "                      ^^^^"))))))))
+                                            "                      ^^^^"))))
+      ;; Remove highlights
+      (lsp-test-schedule-response "textDocument/documentHighlight" [])
+      (lsp-document-highlight)))))
 
 (defun lsp-test-index-to-pos (idx)
   "Convert 0-based integer IDX to a position in the corrent buffer.
@@ -843,7 +859,10 @@ line 3 words here and here
           (goto-char (overlay-start (car hints)))
           ; 1+ to convert 0-based LSP line number to 1-based Emacs line number
           (should (equal (line-number-at-pos) (1+ hint-line)))
-          (should (equal (current-column) hint-col))))))))
+          (should (equal (current-column) hint-col)))
+        ;; Disable inlay hints to remove overlays
+        (lsp-test-schedule-response "textDocument/inlayHint" [])
+        (run-hooks 'lsp-on-idle-hook))))))
 
 (ert-deftest lsp-mock-server-provides-code-lens ()
   "lsp-mode accepts code lenses from the server and displays them."
@@ -858,10 +877,11 @@ line 3 words here and here
      (lsp-test-sync-wait (lsp-test-all-overlays 'lsp-lens))
      (let ((lenses (lsp-test-all-overlays 'lsp-lens)))
        (should (eq (length lenses) 1))
-       (message "%s" (overlay-properties (car lenses)))
        (should (string-match-p "My command"
                                (overlay-get (car lenses) 'after-string)))
        (goto-char (overlay-start (car lenses)))
-       (should (equal (line-number-at-pos) (- line 1)))))))
+       (should (equal (line-number-at-pos) (- line 1))))
+     ;; Remove lens overlays
+     (lsp-lens-hide))))
 
 ;;; lsp-mock-server-test.el ends here
