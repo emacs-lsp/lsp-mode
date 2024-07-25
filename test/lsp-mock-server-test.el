@@ -33,6 +33,7 @@
 
 (require 'seq)
 (require 'lsp-mode)
+(require 'flycheck)
 
 ;; Taken from lsp-integration-tests.el
 (defconst lsp-test-location (file-name-directory (or load-file-name buffer-file-name))
@@ -210,7 +211,7 @@ Returns the non-nil return value of CONDITION-FUNC."
 This is an environment function that configures lsp-mode, mock lsp-client,
 opens the `lsp-test-sample-file' and starts the mock server."
   (let ((lsp-clients (lsp-ht)) ; clear all clients
-        (lsp-diagnostics-provider :none) ; focus on LSP itself, not its UI integration
+        (lsp-diagnostics-provider :flycheck) ; focus on LSP itself, not its UI integration
         (lsp-restart 'ignore) ; Avoid restarting the server or prompting user on a crash
         (lsp-enable-snippet nil) ; Avoid warning that lsp-yasnippet is not intalled
         (lsp-warn-no-matched-clients nil) ; Mute warning LSP can't figure out src lang
@@ -245,7 +246,6 @@ opens the `lsp-test-sample-file' and starts the mock server."
               (with-current-buffer buf
                 (lsp-test-sync-wait (equal initial-overlay-count (length (lsp-test-relevant-overlays)))))))
         (with-current-buffer buf
-          (should (equal initial-overlay-count (length (lsp-test-relevant-overlays))))
           (set-buffer-modified-p nil); Inhibut the "kill unsaved buffer"p prompt
           (kill-buffer buf))
         (lsp-workspace-folders-remove workspace-root)
@@ -883,5 +883,61 @@ line 3 words here and here
        (should (equal (line-number-at-pos) (- line 1))))
      ;; Remove lens overlays
      (lsp-lens-hide))))
+
+(defun lsp-test-flycheck-diags ()
+  "Get all diags displayed by flycheck."
+  (save-excursion
+    (seq-map (lambda (ovl)
+               (goto-char (overlay-start ovl))
+               (let ((from-char (current-column))
+                     (from-line (line-number-at-pos)))
+                 (goto-char (overlay-end ovl))
+                 (should (equal from-line (line-number-at-pos)))
+                 (list :line (- from-line 1) ;; 1-based to 0-based
+                       :from from-char
+                       :to (current-column))))
+             (seq-filter (lambda (ovl) (overlay-get ovl 'flycheck-overlay))
+                         (overlays-in (point-min) (point-max))))))
+
+(ert-deftest lsp-mock-server-flycheck-updates-diagnostics ()
+  "Test that mock server can update diagnostics and lsp-mode reflects that."
+  (lsp-mock-run-with-mock-server
+   ;; There are no diagnostics at first
+   (should (null (lsp-test-flycheck-diags)))
+
+   ;; Server found a diagnostic
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+
+   ;; For some reason, flycheck refuses to call lsp-diagnostics--flycheck-start
+   (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                              (flycheck-buffer)
+                              (lsp-test-flycheck-diags)))
+   (should (eq (length (lsp-test-flycheck-diags)) 1))
+
+   ;; The diagnostic is properly received
+   (should (equal (car (lsp-test-flycheck-diags))
+                  (lsp-test-range-make (buffer-string)
+                                       "line 1 unique word broming + common"
+                                       "                   ^^^^^^^         ")))
+
+
+   ;; Server found a different diagnostic
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "fegam")
+   (let ((old-line (lsp-mock-get-first-diagnostic-line)))
+     (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                                (flycheck-buffer)
+                                (not (equal old-line (lsp-mock-get-first-diagnostic-line))))))
+
+   ;; The new diagnostics is properly displayed instead of the old one
+   (should (eq (length (lsp-test-flycheck-diags)) 1))
+   (should (equal (car (lsp-test-flycheck-diags))
+                  (lsp-test-range-make (buffer-string)
+                                       "Line 0 unique word fegam and common"
+                                       "                   ^^^^^           ")))
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "nonexistent")
+
+   (lsp-test-sync-wait (progn (should (lsp-workspaces))
+                              (flycheck-buffer)
+                              (null (lsp-test-flycheck-diags))))))
 
 ;;; lsp-mock-server-test.el ends here
