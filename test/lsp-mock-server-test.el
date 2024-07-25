@@ -982,4 +982,68 @@ line 3 words here and here
                        (flycheck-buffer)
                        (null (lsp-test-flycheck-diags)))))
 
+(ert-deftest lsp-mock-server-flycheck-updates-diags-with-delay ()
+  "Test demonstrating delay in the diagnostics update.
+
+If server takes noticeable time to update diagnostics after a
+document change, and `lsp-diagnostic-clean-after-change' is
+nil (default), diagnostic ranges will be off until server
+publishes the update. This test demonstrates this behavior."
+  (lsp-mock-run-with-mock-server
+   ;; There are no diagnostics at first
+   (should (null (lsp-test-flycheck-diags)))
+
+   ;; Server found diagnostic
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+   (lsp-test-sync-wait
+    4 "LSP mode to receive initial diagnostic"
+    (should (lsp-workspaces))
+    (flycheck-buffer)
+    (eq (length (lsp-test-flycheck-diags)) 1))
+
+   ;; The diagnostic is properly received
+   (should (equal (car (lsp-test-flycheck-diags))
+                  (lsp-test-range-make (buffer-string)
+                                       "line 1 unique word broming + common"
+                                       "                   ^^^^^^^         ")))
+
+   ;; Change the text: remove the first line
+   (goto-char (point-min))
+   (kill-line 1)
+   (should (string-equal (buffer-string)
+                         "line 1 unique word broming + common
+line 2 unique word normalw common here
+line 3 words here and here
+"))
+   ;; Give it some time to update
+   (sleep-for 0.5)
+   (flycheck-buffer)
+   ;; The diagnostic is not updated and now points to a wrong line
+   (should (equal (car (lsp-test-flycheck-diags))
+                  (lsp-test-range-make (buffer-string)
+                                       "line 2 unique word normalw common here"
+                                       "                   ^^^^^^^            ")))
+
+   ;; Server sent an update
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+
+   (let ((old-line (lsp-mock-get-first-diagnostic-line)))
+     (lsp-test-sync-wait 4 "LSP mode to receive updated diagnostics"
+                         (should (lsp-workspaces))
+                         (not (equal old-line (lsp-mock-get-first-diagnostic-line)))))
+   (flycheck-buffer)
+
+   ;; Now the diagnostic is correct again
+   (should (equal (car (lsp-test-flycheck-diags))
+                  (lsp-test-range-make (buffer-string)
+                                       "line 1 unique word broming + common"
+                                       "                   ^^^^^^^         ")))
+
+   ;; Remove diagnostics
+   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "nonexistent")
+   (lsp-test-sync-wait 3 "Flycheck diags dissipate"
+                       (should (lsp-workspaces))
+                       (flycheck-buffer)
+                       (null (lsp-test-flycheck-diags)))))
+
 ;;; lsp-mock-server-test.el ends here
