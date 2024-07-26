@@ -216,13 +216,13 @@ Once last form of BODY evaluates to non-nil, return its result."
   (seq-filter (lambda (ovl) (null (overlay-get ovl 'pulse-delete)))
               (overlays-in (point-min) (point-max))))
 
-(defun lsp-mock--run-with-mock-server (test-body)
+(defun lsp-mock--run-with-mock-server (diags-provider test-body)
   "Run TEST-BODY function with mock LSP client connected to the mock server.
 
 This is an environment function that configures lsp-mode, mock lsp-client,
 opens the `lsp-test-sample-file' and starts the mock server."
   (let ((lsp-clients (lsp-ht)) ; clear all clients
-        (lsp-diagnostics-provider :flycheck) ; focus on LSP itself, not its UI integration
+        (lsp-diagnostics-provider diags-provider) ; focus on LSP itself, not its UI integration
         (lsp-restart 'ignore) ; Avoid restarting the server or prompting user on a crash
         (lsp-enable-snippet nil) ; Avoid warning that lsp-yasnippet is not intalled
         (lsp-warn-no-matched-clients nil) ; Mute warning LSP can't figure out src lang
@@ -274,7 +274,7 @@ opens the `lsp-test-sample-file' and starts the mock server."
 
 Opens the `lsp-test-sample-file' and initiates the LSP session.
 TEST-BODY can interact with the mock server."
-  `(lsp-mock--run-with-mock-server (lambda () ,@test-body)))
+  `(lsp-mock--run-with-mock-server :flycheck (lambda () ,@test-body)))
 
 (ert-deftest lsp-mock-server-reports-diagnostics ()
   (lsp-mock-run-with-mock-server
@@ -924,8 +924,8 @@ line 3 words here and here
      ;; Remove lens overlays
      (lsp-lens-hide))))
 
-(defun lsp-test-flycheck-diags ()
-  "Get all diags displayed by flycheck."
+(defun lsp-test-overlay-ranges (tag)
+  "Return all overlays tagged TAG in the current buffer as ranges."
   (save-excursion
     (seq-map (lambda (ovl)
                (goto-char (overlay-start ovl))
@@ -936,8 +936,12 @@ line 3 words here and here
                  (list :line (- from-line 1) ;; 1-based to 0-based
                        :from from-char
                        :to (current-column))))
-             (seq-filter (lambda (ovl) (overlay-get ovl 'flycheck-overlay))
+             (seq-filter (lambda (ovl) (overlay-get ovl tag))
                          (overlays-in (point-min) (point-max))))))
+
+(defun lsp-test-flycheck-diags ()
+  "Get all diags displayed by flycheck."
+  (lsp-test-overlay-ranges 'flycheck-overlay))
 
 (ert-deftest lsp-mock-server-flycheck-updates-diagnostics ()
   "Test that mock server can update diagnostics and lsp-mode reflects that."
@@ -1045,5 +1049,82 @@ line 3 words here and here
                        (should (lsp-workspaces))
                        (flycheck-buffer)
                        (null (lsp-test-flycheck-diags)))))
+
+(defun lsp-test-flymake-diags ()
+  "Get all diags displayed by flymake."
+  ;; The first property flymake sets on a diagnostic overlay is 'category
+  (lsp-test-overlay-ranges 'category))
+
+(ert-deftest lsp-mock-server-flymake-maintains-diags-with-doc-changes ()
+  "Test demonstrating delay in the diagnostics update.
+
+If server takes noticeable time to update diagnostics after a
+document change, and `lsp-diagnostic-clean-after-change' is
+nil (default), diagnostic positions in (lsp-diagnostics) will be
+off until server publishes the update. However, flymake keeps the
+overlays it created until an update comes, and overlays are
+automatically adjusted on every edit, so diagnostic ranges remain
+correct."
+  (lsp-mock--run-with-mock-server
+   :flymake
+   (lambda ()
+     ;; There are no diagnostics at first
+     (should (null (lsp-test-flymake-diags)))
+
+     ;; Server found diagnostic
+     (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+     (lsp-test-sync-wait
+      4 "LSP mode to receive initial diagnostic"
+      (should (lsp-workspaces))
+      (flymake-start)
+      (eq (length (lsp-test-flymake-diags)) 1))
+
+     ;; The diagnostic is properly received
+     (should (equal (car (lsp-test-flymake-diags))
+                    (lsp-test-range-make (buffer-string)
+                                         "line 1 unique word broming + common"
+                                         "                   ^^^^^^^         ")))
+     ;; Change the text: remove the first line
+     (goto-char (point-min))
+     (kill-line 1)
+     (should (string-equal (buffer-string)
+                           "line 1 unique word broming + common
+line 2 unique word normalw common here
+line 3 words here and here
+"))
+     ;; Give it some time to update
+     (sleep-for 0.5)
+     (flymake-start)
+     ;; Unlike flycheck, flymake keeps the old diagnostics as overlays until it
+     ;; gets an update. So the range of the diagnostic is preserved properly.
+     (should (equal (car (lsp-test-flymake-diags))
+                    (lsp-test-range-make (buffer-string)
+                                         "line 1 unique word broming + common"
+                                         "                   ^^^^^^^         ")))
+
+     ;; Server sent an update
+     (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+
+     (let ((old-line (lsp-mock-get-first-diagnostic-line)))
+       (lsp-test-sync-wait 4 "LSP mode to receive updated diagnostics"
+                           (should (lsp-workspaces))
+                           (not (equal old-line (lsp-mock-get-first-diagnostic-line)))))
+     (flymake-start)
+
+     ;; Upon reception, flymake replaces the old overlays with the
+     ;; new ones placed on the reported position, which happend to
+     ;; be the same.
+     (should (equal (car (lsp-test-flymake-diags))
+                    (lsp-test-range-make (buffer-string)
+                                         "line 1 unique word broming + common"
+                                         "                   ^^^^^^^         ")))
+
+     ;; Remove diagnostics
+     (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "nonexistent")
+     (lsp-test-sync-wait 3 "Flymake diags dissipate"
+                         (should (lsp-workspaces))
+                         (flymake-start)
+                         (null (lsp-test-flymake-diags))))))
+
 
 ;;; lsp-mock-server-test.el ends here
