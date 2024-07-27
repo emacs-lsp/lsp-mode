@@ -58,15 +58,21 @@
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-magik-java-home nil
-  "Path to Java Runtime, Java 11 minimum."
+(defcustom lsp-magik-smallworld-gis nil
+  "Path to Smallworld Core."
   :type `string
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-magik-smallworld-gis nil
-  "Path to Smallworld Core."
-  :type `string
+(defcustom lsp-magik-libs-dirs []
+  "Paths to libs dirs of Smallworld products."
+  :type `lsp-string-vector
+  :group `lsp-magik
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-magik-lint-override-config-file nil
+  "Override path to magiklintrc.properties."
+  :type 'string
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
 
@@ -76,15 +82,27 @@
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
 
+(defcustom lsp-magik-typing-show-atom-inlay-hints nil
+  "Show atom type inlay hints."
+  :type `boolean
+  :group `lsp-magik
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-magik-typing-show-argument-inlay-hints nil
+  "Show (certain) argument name inlay hints."
+  :type `boolean
+  :group `lsp-magik
+  :package-version '(lsp-mode . "9.0.0"))
+
 (defcustom lsp-magik-typing-enable-checks nil
   "Enable typing checks."
   :type `boolean
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-magik-trace-server "off"
-  "Traces the communication between VS Code and the Magik language server."
-  :type `(choice (const "off") (const "message") (const "verbose"))
+(defcustom lsp-magik-typing-index-usages t
+  "Enable indexing of usages of globals/methods/slots/conditions by methods."
+  :type `boolean
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
 
@@ -93,13 +111,7 @@
                                         (or (lsp-resolve-value (executable-find (expand-file-name "bin/java" (getenv "JAVA_HOME"))))
                                             (lsp-resolve-value (executable-find "java"))))
                                        (t "java")))
-  "Path of the java executable."
-  :type 'string
-  :group `lsp-magik
-  :package-version '(lsp-mode . "9.0.0"))
-
-(defcustom lsp-magik-lint-override-config-file nil
-  "Override path to magiklintrc.properties."
+  "Path to Java Runtime, Java 11 minimum."
   :type 'string
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
@@ -122,12 +134,14 @@
   :server-id 'magik))
 
 (lsp-register-custom-settings
- `(("magik.javaHome" lsp-magik-java-home)
-   ("magik.smallworldGis" lsp-magik-smallworld-gis)
+ `(("magik.smallworldGis" lsp-magik-smallworld-gis)
+   ("magik.libsDirs" lsp-magik-libs-dirs)
+   ("magik.lint.overrideConfigFile" lsp-magik-lint-override-config-file)
    ("magik.typing.typeDatabasePaths" lsp-magik-typing-type-database-paths)
+   ("magik.typing.showAtomInlayHints" lsp-magik-typing-show-atom-inlay-hints)
+   ("magik.typing.showArgumentInlayHints" lsp-magik-typing-show-argument-inlay-hints)
    ("magik.typing.enableChecks" lsp-magik-typing-enable-checks)
-   ("magik.trace.server" lsp-magik-trace-server)
-   ("magik.lint.overrideConfigFile" lsp-magik-lint-override-config-file)))
+   ("magik.typing.indexUsages" lsp-magik-typing-index-usages)))
 
 (lsp-consistency-check lsp-magik)
 
