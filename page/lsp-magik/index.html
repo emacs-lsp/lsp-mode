@@ -2026,15 +2026,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-magik-java-home" class="md-nav__link">
-    lsp-magik-java-home
+  <a href="#lsp-magik-java-path" class="md-nav__link">
+    lsp-magik-java-path
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-magik-java-path" class="md-nav__link">
-    lsp-magik-java-path
+  <a href="#lsp-magik-libs-dirs" class="md-nav__link">
+    lsp-magik-libs-dirs
   </a>
   
 </li>
@@ -2061,15 +2061,29 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-magik-trace-server" class="md-nav__link">
-    lsp-magik-trace-server
+  <a href="#lsp-magik-typing-enable-checks" class="md-nav__link">
+    lsp-magik-typing-enable-checks
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-magik-typing-enable-checks" class="md-nav__link">
-    lsp-magik-typing-enable-checks
+  <a href="#lsp-magik-typing-index-usages" class="md-nav__link">
+    lsp-magik-typing-index-usages
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-magik-typing-show-argument-inlay-hints" class="md-nav__link">
+    lsp-magik-typing-show-argument-inlay-hints
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-magik-typing-show-atom-inlay-hints" class="md-nav__link">
+    lsp-magik-typing-show-atom-inlay-hints
   </a>
   
 </li>
@@ -3646,15 +3660,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-magik-java-home" class="md-nav__link">
-    lsp-magik-java-home
+  <a href="#lsp-magik-java-path" class="md-nav__link">
+    lsp-magik-java-path
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-magik-java-path" class="md-nav__link">
-    lsp-magik-java-path
+  <a href="#lsp-magik-libs-dirs" class="md-nav__link">
+    lsp-magik-libs-dirs
   </a>
   
 </li>
@@ -3681,15 +3695,29 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-magik-trace-server" class="md-nav__link">
-    lsp-magik-trace-server
+  <a href="#lsp-magik-typing-enable-checks" class="md-nav__link">
+    lsp-magik-typing-enable-checks
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#lsp-magik-typing-enable-checks" class="md-nav__link">
-    lsp-magik-typing-enable-checks
+  <a href="#lsp-magik-typing-index-usages" class="md-nav__link">
+    lsp-magik-typing-index-usages
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-magik-typing-show-argument-inlay-hints" class="md-nav__link">
+    lsp-magik-typing-show-argument-inlay-hints
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-magik-typing-show-atom-inlay-hints" class="md-nav__link">
+    lsp-magik-typing-show-atom-inlay-hints
   </a>
   
 </li>
@@ -3782,15 +3810,15 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
 <p><em>Default:</em> <code>https://github.com/StevenLooman/magik-tools/releases/download/0.9.0/magik-language-server-0.9.0.jar</code></p>
 <p>URL of LSP server to download.</p>
 <hr />
-<h3 id="lsp-magik-java-home"><code>lsp-magik-java-home</code><a class="headerlink" href="#lsp-magik-java-home" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Path to Java Runtime, Java 11 minimum.</p>
-<hr />
 <h3 id="lsp-magik-java-path"><code>lsp-magik-java-path</code><a class="headerlink" href="#lsp-magik-java-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
 <p><em>Default:</em> <code>(closure (t) nil (cond ((eq system-type 'windows-nt) (or (lsp-resolve-value (executable-find (expand-file-name bin/java (getenv JAVA_HOME)))) (lsp-resolve-value (executable-find java)))) (t java)))</code></p>
-<p>Path of the java executable.</p>
+<p>Path to Java Runtime, Java 11 minimum.</p>
+<hr />
+<h3 id="lsp-magik-libs-dirs"><code>lsp-magik-libs-dirs</code><a class="headerlink" href="#lsp-magik-libs-dirs" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>lsp-string-vector</code></p>
+<p><em>Default:</em> <code>[]</code></p>
+<p>Paths to libs dirs of Smallworld products.</p>
 <hr />
 <h3 id="lsp-magik-lint-override-config-file"><code>lsp-magik-lint-override-config-file</code><a class="headerlink" href="#lsp-magik-lint-override-config-file" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
@@ -3807,15 +3835,25 @@ Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><
 <p><em>Default:</em> <code>nil</code></p>
 <p>Path to Smallworld Core.</p>
 <hr />
-<h3 id="lsp-magik-trace-server"><code>lsp-magik-trace-server</code><a class="headerlink" href="#lsp-magik-trace-server" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const off) (const message) (const verbose))</code></p>
-<p><em>Default:</em> <code>off</code></p>
-<p>Traces the communication between VS Code and the Magik language server.</p>
-<hr />
 <h3 id="lsp-magik-typing-enable-checks"><code>lsp-magik-typing-enable-checks</code><a class="headerlink" href="#lsp-magik-typing-enable-checks" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
 <p>Enable typing checks.</p>
+<hr />
+<h3 id="lsp-magik-typing-index-usages"><code>lsp-magik-typing-index-usages</code><a class="headerlink" href="#lsp-magik-typing-index-usages" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>Enable indexing of usages of globals/methods/slots/conditions by methods.</p>
+<hr />
+<h3 id="lsp-magik-typing-show-argument-inlay-hints"><code>lsp-magik-typing-show-argument-inlay-hints</code><a class="headerlink" href="#lsp-magik-typing-show-argument-inlay-hints" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Show (certain) argument name inlay hints.</p>
+<hr />
+<h3 id="lsp-magik-typing-show-atom-inlay-hints"><code>lsp-magik-typing-show-atom-inlay-hints</code><a class="headerlink" href="#lsp-magik-typing-show-atom-inlay-hints" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Show atom type inlay hints.</p>
 <hr />
 <h3 id="lsp-magik-typing-type-database-paths"><code>lsp-magik-typing-type-database-paths</code><a class="headerlink" href="#lsp-magik-typing-type-database-paths" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>lsp-string-vector</code></p>
