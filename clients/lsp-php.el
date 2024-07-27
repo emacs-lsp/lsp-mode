@@ -70,7 +70,7 @@
                (progn
                  (lsp-log "%s is not present." php-file)
                  nil)))
-       t))))
+       nil))))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-php--create-connection)
