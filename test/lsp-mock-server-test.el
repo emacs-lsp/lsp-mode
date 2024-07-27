@@ -1160,6 +1160,76 @@ line 3 words here and here
    #+end_src
 ")))
 
+(defun lsp-test-org-code-block-contents ()
+  "Return the contents of the sample file."
+  (save-excursion
+    (goto-char (point-min))
+    (search-forward "#+begin_src prog")
+    (forward-line 1)
+    (let* ((beg (point))
+           (end (progn (search-forward "#+end_src") (line-beginning-position)))
+           (contents (buffer-substring-no-properties beg end))
+           (lines (split-string contents "\n"))
+           (trimmed-lines (mapcar (lambda (line) (string-trim-left line)) lines)))
+      (string-join trimmed-lines "\n"))))
+
+
+(ert-deftest lsp-mock-server-org-flycheck-updates-diags-with-delay ()
+  "Test ensuring flycheck shows correct diagnostic locations in org-mode."
+  (let ((org-file (f-join lsp-test-location "fixtures/SamplesForMock/embedded-snippet.org"))
+        (snippet-file lsp-test-sample-file))
+    (lsp-mock-run-with-mock-server org-file :flycheck
+      (goto-char (point-min))
+      (search-forward "Line 0 unique")
+      (lsp-org)
+                                        ;(should (eq (lsp-test-total-folder-count) (1+ initial-server-count)))
+      (lsp-test-sync-wait 4 "LSP workspace initialization"
+        (eq 'initialized
+            (lsp--workspace-status (cl-first (lsp-workspaces)))))
+      (should (null (lsp-test-flycheck-diags)))
+      (lsp-test-command-send-diags
+       snippet-file (lsp-test-org-code-block-contents) "broming")
+      (lsp-test-sync-wait 4 "lsp mode to get the diagnostic"
+        (should (lsp-workspaces))
+        (flycheck-buffer)
+        (lsp-test-flycheck-diags))
+      (should (equal (car (lsp-test-flycheck-diags))
+                     (lsp-test-range-make (buffer-string)
+                                          "     line 1 unique word broming + common"
+                                          "                        ^^^^^^^         ")))
+      (lsp-mock-edit-org-buffer)
+      ;; Give it some time to update
+      (sleep-for 0.5)
+      (flycheck-buffer)
+      ;; The diagnostic position is screwed
+      (should (equal (car (lsp-test-flycheck-diags))
+                     (lsp-test-range-make (buffer-string)
+                                          "   line 2 unique word normalw common here"
+                                          "                        ^^^^^^^          ")))
+      ;; Server sent an update
+      (lsp-test-command-send-diags
+       snippet-file (lsp-test-org-code-block-contents) "broming")
+      ;; Wait for it to propagate
+      (let ((old-line (lsp-mock-get-first-diagnostic-line)))
+        (lsp-test-sync-wait 4 "LSP mode to receive updated diagnostics"
+          (should (lsp-workspaces))
+          (not (equal old-line (lsp-mock-get-first-diagnostic-line)))))
+      (flycheck-buffer)
+
+      ;; Now the line number is correct again
+      ;; The columns are still shifted because lsp-org does
+      ;; not adjust for changed indentation.
+      (should (equal (car (lsp-test-flycheck-diags))
+                     (lsp-test-range-make (buffer-string)
+                                          "   line 1 unique word broming + common"
+                                          "                        ^^^^^^^       ")))
+
+      (lsp-test-command-send-diags
+       lsp-test-sample-file (lsp-test-org-code-block-contents) "nonexistent")
+      (lsp-test-sync-wait 3 "Flycheck diags dissipate"
+        (should (lsp-workspaces))
+        (flycheck-buffer)
+        (null (lsp-test-flycheck-diags))))))
 
 
 ;;; lsp-mock-server-test.el ends here
