@@ -296,7 +296,9 @@ TEST-BODY can interact with the mock server."
     (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
                    (lsp-test-range-make (buffer-string)
                                         "line 1 unique word broming + common"
-                                        "                   ^^^^^^^         ")))))
+                                        "                   ^^^^^^^         ")))
+    ;; Clean up diagnostics
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "non-existing")))
 
 (ert-deftest lsp-mock-server-crashes ()
   "Test that the mock server crashes when instructed so."
@@ -357,7 +359,9 @@ TEST-BODY can interact with the mock server."
     (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
                    (lsp-test-range-make (buffer-string)
                                         "Line 0 unique word fegam and common"
-                                        "                   ^^^^^           ")))))
+                                        "                   ^^^^^           ")))
+    ;; Clean up diagnostics
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "non-existing")))
 
 (ert-deftest lsp-mock-server-updates-diags-with-delay ()
   "Test demonstrating delay in the diagnostics update.
@@ -411,7 +415,9 @@ line 3 words here and here
     (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
                    (lsp-test-range-make (buffer-string)
                                         "line 1 unique word broming + common"
-                                        "                   ^^^^^^^         ")))))
+                                        "                   ^^^^^^^         ")))
+    ;; Clean up diagnostics
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "non-existing")))
 
 (ert-deftest lsp-mock-server-updates-diags-clears-up ()
   "Test ensuring diagnostics are cleared after a change."
@@ -454,7 +460,9 @@ line 3 words here and here
       (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
                      (lsp-test-range-make (buffer-string)
                                           "line 1 unique word broming + common"
-                                          "                   ^^^^^^^         "))))))
+                                          "                   ^^^^^^^         ")))
+      ;; Clean up diagnostics
+      (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "non-existing"))))
 
 (defun lsp-test-xref-loc-to-range (xref-loc)
   "Convert XREF-LOC to a range p-list.
@@ -616,7 +624,6 @@ TEST-FN is a function to call with the temporary window."
                            4 "LSP mode to receive highlights"
                            (should (lsp-workspaces))
                            (lsp-test-all-overlays-as-ranges 'lsp-highlight)))))
-         (message "%s" highlights)
          (should (eq (length highlights) 3))
          (should (equal (nth 0 highlights)
                         (lsp-test-range-make (buffer-string)

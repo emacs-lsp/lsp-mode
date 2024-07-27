@@ -2340,6 +2340,25 @@ This is only executed if the server supports pull diagnostics."
                                              (&PublishDiagnosticsParams :uri :diagnostics))
   (lsp-diagnostics--convert-and-update-path-stats workspace (lsp--uri-to-path uri) diagnostics))
 
+(defun lsp--make-overlays-for-diagnostics (diagnostics)
+  "Make a mapping for each of DIAGNOSTICs to an overlay covering its range."
+  ;; The hash table will use hashtables or plists representing diagnostics as
+  ;; keys in any case, object equality `eq' is enough, as keys don't change and
+  ;; you will not create a new diagnostic to look up in this table
+  (let ((result (make-hash-table :test 'eq)))
+    (mapc (lambda (diagnostic)
+            (when-let* ((range (lsp-get diagnostic :range))
+                        (start-pos (lsp--position-to-point
+                                    (lsp-get range :start)))
+                        (end-pos (lsp--position-to-point
+                                  (lsp-get range :end))))
+              (puthash
+               diagnostic
+               (make-overlay start-pos end-pos)
+               result)))
+          diagnostics)
+    result))
+
 (defun lsp-diagnostics--apply-pull-diagnostics (workspace path kind diagnostics?)
   "Update WORKSPACE diagnostics at PATH with DIAGNOSTICS?.
 Depends on KIND being a \\='full\\=' update."
@@ -2350,9 +2369,13 @@ Depends on KIND being a \\='full\\=' update."
     (lsp-diagnostics--convert-and-update-path-stats workspace path diagnostics?)
     (-let* ((lsp--virtual-buffer-mappings (ht))
             (workspace-diagnostics (lsp--workspace-diagnostics workspace)))
+      (lsp--clear-diagnostic-overlays workspace path)
       (if (seq-empty-p diagnostics?)
           (remhash path workspace-diagnostics)
-        (puthash path (append diagnostics? nil) workspace-diagnostics))
+        (progn
+          (puthash path (append diagnostics? nil) workspace-diagnostics)
+          (puthash path (lsp--make-overlays-for-diagnostics diagnostics?)
+                   (lsp--workspace-diagnostic-overlay-map workspace))))
       (run-hooks 'lsp-diagnostics-updated-hook)))
     ((equal kind "unchanged") t)
     (t (lsp--error "Unknown pull diagnostic result kind '%s'" kind))))
@@ -2374,10 +2397,13 @@ WORKSPACE is the workspace that contains the diagnostics."
           (lsp--virtual-buffer-mappings (ht))
           (file (lsp--fix-path-casing (lsp--uri-to-path uri)))
           (workspace-diagnostics (lsp--workspace-diagnostics workspace)))
-
+    (lsp--clear-diagnostic-overlays workspace file)
     (if (seq-empty-p diagnostics)
         (remhash file workspace-diagnostics)
-      (puthash file (append diagnostics nil) workspace-diagnostics))
+      (progn
+        (puthash file (append diagnostics nil) workspace-diagnostics)
+        (puthash file (lsp--make-overlays-for-diagnostics diagnostics)
+                 (lsp--workspace-diagnostic-overlay-map workspace))))
 
     (run-hooks 'lsp-diagnostics-updated-hook)))
 
@@ -2389,7 +2415,8 @@ WORKSPACE is the workspace that contains the diagnostics."
                    workspace
                    (lsp-make-publish-diagnostics-params
                     :uri (lsp--path-to-uri key)
-                    :diagnostics [])))))
+                    :diagnostics []))
+                  (lsp--clear-diagnostic-overlays workspace key))))
   (clrhash (lsp--workspace-diagnostics workspace)))
 
 
@@ -3132,6 +3159,10 @@ and end-of-string meta-characters."
 
   ;; ‘diagnostics’ a hashmap with workspace diagnostics.
   (diagnostics (make-hash-table :test 'equal))
+
+  ;; `diagnostic-overlay-map' is a hashmap of hashmaps providing each file with
+  ;; a map from a diagnostic to an overlay that anchors its range in the buffer.
+  (diagnostic-overlay-map (make-hash-table :test 'equal))
 
   ;; contains all the workDone progress tokens that have been created
   ;; for the current workspace.
@@ -4923,6 +4954,14 @@ Added to `after-change-functions'."
              lsp-managed-mode)
     (run-hooks 'lsp-on-change-hook)))
 
+(defun lsp--clear-diagnostic-overlays (workspace file-name)
+  "Remove all overlays anchoring diagnostics for FILE-NAME in WORKSPACE."
+  (when-let* ((overlay-map (lsp--workspace-diagnostic-overlay-map
+                            workspace))
+              (file-map (gethash file-name overlay-map)))
+    (mapc #'delete-overlay (hash-table-values file-map))
+    (remhash file-name overlay-map)))
+
 (defun lsp--after-change (buffer)
   "Called after most textDocument/didChange events."
   (setq lsp--signature-last-index nil
@@ -4931,8 +4970,10 @@ Added to `after-change-functions'."
   ;; cleanup diagnostics
   (when lsp-diagnostic-clean-after-change
     (dolist (workspace (lsp-workspaces))
-      (-let [diagnostics (lsp--workspace-diagnostics workspace)]
-        (remhash (lsp--fix-path-casing (buffer-file-name)) diagnostics))))
+      (-let ((diagnostics (lsp--workspace-diagnostics workspace))
+             (file-name (lsp--fix-path-casing (buffer-file-name))))
+        (lsp--clear-diagnostic-overlays workspace file-name)
+        (remhash file-name diagnostics))))
 
   (when (fboundp 'lsp--semantic-tokens-refresh-if-enabled)
     (lsp--semantic-tokens-refresh-if-enabled buffer))
