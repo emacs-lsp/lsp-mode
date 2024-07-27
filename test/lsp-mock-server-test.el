@@ -348,11 +348,7 @@ TEST-BODY can interact with the mock server."
 
     ;; Server found a different diagnostic
     (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "fegam")
-    (let ((old-line (lsp-mock-get-first-diagnostic-line)))
-      (lsp-test-sync-wait
-       4 "LSP to receive updated diagnostic"
-       (should (lsp-workspaces))
-       (not (equal old-line (lsp-mock-get-first-diagnostic-line)))))
+    (lsp-test-wait-for-diagnostic-update)
 
     ;; The new diagnostics is properly displayed instead of the old one
     (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
@@ -405,11 +401,8 @@ line 3 words here and here
 
     ;; Server sent an update
     (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+    (lsp-test-wait-for-diagnostic-update)
 
-    (let ((old-line (lsp-mock-get-first-diagnostic-line)))
-      (lsp-test-sync-wait 4 "LSP mode to receive updated diagnostics"
-                          (should (lsp-workspaces))
-                          (not (equal old-line (lsp-mock-get-first-diagnostic-line)))))
 
     ;; Now the diagnostic is correct again
     (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
@@ -450,11 +443,8 @@ line 3 words here and here
 
       ;; Server sent an update
       (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+      (lsp-test-wait-for-diagnostic-update)
 
-      (let ((old-line (lsp-mock-get-first-diagnostic-line)))
-        (lsp-test-sync-wait 4 "LSP mode to get updated diagnostics"
-                            (should (lsp-workspaces))
-                            (not (equal old-line (lsp-mock-get-first-diagnostic-line)))))
 
       ;; Now the diagnostic is correct again
       (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
@@ -980,14 +970,10 @@ line 3 words here and here
                                         "line 1 unique word broming + common"
                                         "                   ^^^^^^^         ")))
 
-
     ;; Server found a different diagnostic
     (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "fegam")
-    (let ((old-line (lsp-mock-get-first-diagnostic-line)))
-      (lsp-test-sync-wait 3 "Flycheck diags change"
-                          (should (lsp-workspaces))
-                          (flycheck-buffer)
-                          (not (equal old-line (lsp-mock-get-first-diagnostic-line)))))
+    (lsp-test-wait-for-diagnostic-update)
+    (flycheck-buffer)
 
     ;; The new diagnostics is properly displayed instead of the old one
     (should (eq (length (lsp-test-flycheck-diags)) 1))
@@ -1001,6 +987,17 @@ line 3 words here and here
                         (should (lsp-workspaces))
                         (flycheck-buffer)
                         (null (lsp-test-flycheck-diags)))))
+
+(defun lsp-test-wait-for-diagnostic-update ()
+  "Wait until LSP receives updated diagnostics from the mock server."
+  (let ((diags-updated nil))
+    (cl-flet ((on-diags-updated (lambda (&rest _args) (setq diags-updated t))))
+      (add-hook 'lsp-diagnostics-updated-hook #'on-diags-updated)
+      (unwind-protect
+          (lsp-test-sync-wait 4 "LSP mode to receive updated diagnostics"
+            (should (lsp-workspaces))
+            diags-updated))
+      (remove-hook 'lsp-diagnostics-updated-hook #'on-diags-updated))))
 
 (ert-deftest lsp-mock-server-flycheck-updates-diags-with-delay ()
   "Test demonstrating delay in the diagnostics update.
@@ -1038,22 +1035,19 @@ line 3 words here and here
     ;; Give it some time to update
     (sleep-for 0.5)
     (flycheck-buffer)
-    ;; The diagnostic is not updated and now points to a wrong line
+    ;; The diagnostic range is adjusted automatically
     (should (equal (car (lsp-test-flycheck-diags))
                    (lsp-test-range-make (buffer-string)
-                                        "line 2 unique word normalw common here"
-                                        "                   ^^^^^^^            ")))
+                                        "line 1 unique word broming + common"
+                                        "                   ^^^^^^^         ")))
 
     ;; Server sent an update
     (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
 
-    (let ((old-line (lsp-mock-get-first-diagnostic-line)))
-      (lsp-test-sync-wait 4 "LSP mode to receive updated diagnostics"
-                          (should (lsp-workspaces))
-                          (not (equal old-line (lsp-mock-get-first-diagnostic-line)))))
+    (lsp-test-wait-for-diagnostic-update)
     (flycheck-buffer)
 
-    ;; Now the diagnostic is correct again
+    ;; The diagnostic is still in a correct position
     (should (equal (car (lsp-test-flycheck-diags))
                    (lsp-test-range-make (buffer-string)
                                         "line 1 unique word broming + common"
@@ -1119,10 +1113,7 @@ line 3 words here and here
     ;; Server sent an update
     (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
 
-    (let ((old-line (lsp-mock-get-first-diagnostic-line)))
-      (lsp-test-sync-wait 4 "LSP mode to receive updated diagnostics"
-                          (should (lsp-workspaces))
-                          (not (equal old-line (lsp-mock-get-first-diagnostic-line)))))
+    (lsp-test-wait-for-diagnostic-update)
     (flymake-start)
 
     ;; Upon reception, flymake replaces the old overlays with the
@@ -1208,23 +1199,19 @@ line 3 words here and here
       ;; Give it some time to update
       (sleep-for 0.5)
       (flycheck-buffer)
-      ;; The diagnostic position is screwed
+      ;; The diagnostic position is properly adjusted after the change
       (should (equal (car (lsp-test-flycheck-diags))
                      (lsp-test-range-make (buffer-string)
-                                          "   line 2 unique word normalw common here"
-                                          "                        ^^^^^^^          ")))
+                                          "   line 1 unique word broming + common"
+                                          "                      ^^^^^^^         ")))
       ;; Server sent an update
       (lsp-test-command-send-diags
        snippet-file (lsp-test-org-code-block-contents) "broming")
-      ;; Wait for it to propagate
-      (let ((old-line (lsp-mock-get-first-diagnostic-line)))
-        (lsp-test-sync-wait 4 "LSP mode to receive updated diagnostics"
-          (should (lsp-workspaces))
-          (not (equal old-line (lsp-mock-get-first-diagnostic-line)))))
+      (lsp-test-wait-for-diagnostic-update)
       (flycheck-buffer)
 
-      ;; Now the line number is correct again
-      ;; The columns are still shifted because lsp-org does
+      ;; Now the line number is still again
+      ;; The columns are shifted because lsp-org does
       ;; not adjust for changed indentation.
       (should (equal (car (lsp-test-flycheck-diags))
                      (lsp-test-range-make (buffer-string)

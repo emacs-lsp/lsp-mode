@@ -2277,24 +2277,48 @@ Common usecase are:
 
 (defvar lsp-diagnostic-stats (ht))
 
-(defun lsp-diagnostics (&optional current-workspace?)
-  "Return the diagnostics from all workspaces."
-  (or (pcase (if current-workspace?
-                 (lsp-workspaces)
-               (lsp--session-workspaces (lsp-session)))
-        (`() ())
-        (`(,workspace) (lsp--workspace-diagnostics workspace))
-        (`,workspaces (let ((result (make-hash-table :test 'equal)))
-                        (mapc (lambda (workspace)
-                                (->> workspace
-                                     (lsp--workspace-diagnostics)
-                                     (maphash (lambda (file-name diagnostics)
-                                                (puthash file-name
-                                                         (append (gethash file-name result) diagnostics)
-                                                         result)))))
-                              workspaces)
-                        result)))
-      (ht)))
+(defun lsp--update-diagnostic-range (overlay-map diagnostic)
+  "Modify DIAGNOSTIC :range property if OVERLAY-MAP contains a matching overlay.
+
+Might modify DIAGNOSTIC in-place. Returns modified DIAGNOSTIC."
+  (when-let* ((overlay (gethash diagnostic overlay-map)))
+    (lsp-put diagnostic :range
+             (lsp-make-range
+              :start (lsp-make-position-1
+                      (lsp-point-to-position (overlay-start overlay)))
+              :end (lsp-make-position-1
+                    (lsp-point-to-position (overlay-end overlay)))))
+    diagnostic))
+
+(defun lsp-diagnostics (&optional current-workspace? adjust-ranges?)
+  "Return the diagnostics from all workspaces.
+
+If CURRENT-WORKSPACE? is not nil, collect diagnostics from `(lsp-workspaces)',
+otherwise collect diagnostics from all session workspaces.
+If adjust-ranges? is not nil, adjust the diagnostic ranges to
+account recent buffer modifications."
+  (let ((workspaces (if current-workspace?
+                        (lsp-workspaces)
+                      (lsp--session-workspaces (lsp-session))))
+        (result (make-hash-table :test 'equal)))
+    (mapc (lambda (workspace)
+            (let ((file-map (and adjust-ranges?
+                                 (lsp--workspace-diagnostic-overlay-map workspace))))
+              (->> workspace
+                   (lsp--workspace-diagnostics)
+                   (maphash (lambda (file-name diagnostics)
+                              (when-let ((overlay-map
+                                          (and file-map (gethash file-name file-map))))
+                                (setq diagnostics
+                                      (mapcar (lambda (diag)
+                                                (lsp--update-diagnostic-range
+                                                 overlay-map diag))
+                                              diagnostics)))
+                              (puthash file-name
+                                       (append (gethash file-name result) diagnostics)
+                                       result))))))
+          workspaces)
+    result))
 
 (defun lsp-diagnostics-stats-for (path)
   "Get diagnostics statistics for PATH.
@@ -5196,12 +5220,12 @@ identifier and the position respectively."
   (list :textDocument (or identifier (lsp--text-document-identifier))
         :position (or position (lsp--cur-position))))
 
-(defun lsp--get-buffer-diagnostics ()
-  "Return buffer diagnostics."
+(defun lsp--get-buffer-diagnostics (&optional update-ranges?)
+  "Return buffer diagnostics. With updated ranges if UPDATE-RANGES? is set"
   (gethash (or
             (plist-get lsp--virtual-buffer :buffer-file-name)
             (lsp--fix-path-casing (buffer-file-name)))
-           (lsp-diagnostics t)))
+           (lsp-diagnostics t update-ranges?)))
 
 (defun lsp-cur-line-diagnostics ()
   "Return any diagnostics that apply to the current line."
