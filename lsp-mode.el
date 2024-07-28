@@ -6743,13 +6743,24 @@ textDocument/didOpen for the new file."
 
 (advice-add 'set-visited-file-name :around #'lsp--on-set-visited-file-name)
 
-(defvar lsp--flushing-delayed-changes nil)
+(defcustom lsp-flush-delayed-changes-before-next-message t
+  "If non-nil send the document changes update before sending other messages.
+
+If nil, and `lsp-debounce-full-sync-notifications' is non-nil,
+ change notifications will be throttled by
+ `lsp-debounce-full-sync-notifications-interval' regardless of
+ other messages."
+  :group 'lsp-mode
+  :type 'boolean)
+
+(defvar lsp--not-flushing-delayed-changes t)
 
 (defun lsp--send-no-wait (message proc)
   "Send MESSAGE to PROC without waiting for further output."
 
-  (unless lsp--flushing-delayed-changes
-    (let ((lsp--flushing-delayed-changes t))
+  (when (and lsp--not-flushing-delayed-changes
+             lsp-flush-delayed-changes-before-next-message)
+    (let ((lsp--not-flushing-delayed-changes nil))
       (lsp--flush-delayed-changes)))
   (lsp-process-send proc message))
 
