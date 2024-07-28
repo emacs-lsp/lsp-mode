@@ -2394,10 +2394,9 @@ Depends on KIND being a \\='full\\=' update."
       (lsp--clear-diagnostic-overlays workspace path)
       (if (seq-empty-p diagnostics?)
           (remhash path workspace-diagnostics)
-        (progn
-          (puthash path (append diagnostics? nil) workspace-diagnostics)
-          (puthash path (lsp--make-overlays-for-diagnostics diagnostics?)
-                   (lsp--workspace-diagnostic-overlay-map workspace))))
+        (puthash path (append diagnostics? nil) workspace-diagnostics)
+        (puthash path (lsp--make-overlays-for-diagnostics diagnostics?)
+                 (lsp--workspace-diagnostic-overlay-map workspace)))
       (run-hooks 'lsp-diagnostics-updated-hook)))
     ((equal kind "unchanged") t)
     (t (lsp--error "Unknown pull diagnostic result kind '%s'" kind))))
@@ -2422,10 +2421,9 @@ WORKSPACE is the workspace that contains the diagnostics."
     (lsp--clear-diagnostic-overlays workspace file)
     (if (seq-empty-p diagnostics)
         (remhash file workspace-diagnostics)
-      (progn
-        (puthash file (append diagnostics nil) workspace-diagnostics)
-        (puthash file (lsp--make-overlays-for-diagnostics diagnostics)
-                 (lsp--workspace-diagnostic-overlay-map workspace))))
+      (puthash file (append diagnostics nil) workspace-diagnostics)
+      (puthash file (lsp--make-overlays-for-diagnostics diagnostics)
+               (lsp--workspace-diagnostic-overlay-map workspace)))
 
     (run-hooks 'lsp-diagnostics-updated-hook)))
 
