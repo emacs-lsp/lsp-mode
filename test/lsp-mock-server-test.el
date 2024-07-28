@@ -1173,6 +1173,7 @@ line 3 words here and here
 
 
 (ert-deftest lsp-mock-server-org-flycheck-updates-diags-with-delay ()
+  :tags '(org)
   "Test ensuring flycheck shows correct diagnostic locations in org-mode."
   (let ((org-file (f-join lsp-test-location "fixtures/SamplesForMock/embedded-snippet.org"))
         (snippet-file lsp-test-sample-file))
