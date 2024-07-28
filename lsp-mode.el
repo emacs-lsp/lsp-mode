@@ -2375,11 +2375,9 @@ This is only executed if the server supports pull diagnostics."
                         (start-pos (lsp--position-to-point
                                     (lsp-get range :start)))
                         (end-pos (lsp--position-to-point
-                                  (lsp-get range :end))))
-              (puthash
-               diagnostic
-               (make-overlay start-pos end-pos)
-               result)))
+                                  (lsp-get range :end)))
+                        (overlay (make-overlay start-pos end-pos)))
+              (puthash diagnostic overlay result)))
           diagnostics)
     result))
 
