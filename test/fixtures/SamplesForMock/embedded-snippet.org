@@ -1,0 +1,10 @@
+This is an example of running lsp-mode in the org code snippets
+
+** Header to a section with some indentation
+     language =prog= will resolve into the =prog-mode= - mode for the mock LSP server
+     #+begin_src prog :tangle "sample.txt"
+     Line 0 unique word fegam and common
+     line 1 unique word broming + common
+     line 2 unique word normalw common here
+     line 3 words here and here
+     #+end_src
