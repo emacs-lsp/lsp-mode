@@ -2301,23 +2301,28 @@ account recent buffer modifications."
                         (lsp-workspaces)
                       (lsp--session-workspaces (lsp-session))))
         (result (make-hash-table :test 'equal)))
-    (mapc (lambda (workspace)
-            (let ((file-map (and adjust-ranges?
-                                 (lsp--workspace-diagnostic-overlay-map workspace))))
-              (->> workspace
-                   (lsp--workspace-diagnostics)
-                   (maphash (lambda (file-name diagnostics)
-                              (when-let ((overlay-map
-                                          (and file-map (gethash file-name file-map))))
-                                (setq diagnostics
-                                      (mapcar (lambda (diag)
-                                                (lsp--update-diagnostic-range
-                                                 overlay-map diag))
-                                              diagnostics)))
-                              (puthash file-name
-                                       (append (gethash file-name result) diagnostics)
-                                       result))))))
-          workspaces)
+    (if (and (eq 1 (length workspaces)) ;; Nothing to merge
+             (not adjust-ranges?)) ;; No need to change hash values
+        ;; Take a shortcut
+        (lsp--workspace-diagnostics (car workspaces))
+      (mapc (lambda (workspace)
+              (let ((file-map (and adjust-ranges?
+                                   (lsp--workspace-diagnostic-overlay-map
+                                    workspace))))
+                (maphash
+                 (lambda (file-name diagnostics)
+                   (when-let ((overlay-map
+                               (and file-map (gethash file-name file-map))))
+                     (setq diagnostics
+                           (mapcar (lambda (diag)
+                                     (lsp--update-diagnostic-range
+                                      overlay-map diag))
+                                   diagnostics)))
+                   (puthash file-name
+                            (append (gethash file-name result) diagnostics)
+                            result))
+                 (lsp--workspace-diagnostics workspace))))
+            workspaces))
     result))
 
 (defun lsp-diagnostics-stats-for (path)
