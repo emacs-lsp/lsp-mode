@@ -3182,6 +3182,10 @@ and end-of-string meta-characters."
 
   ;; `diagnostic-overlay-map' is a hashmap of hashmaps providing each file with
   ;; a map from a diagnostic to an overlay that anchors its range in the buffer.
+  ;; These overlays help to readjust diagnostic ranges on document changes
+  ;; before an update from the server comes.
+  ;; Whenever a diagnostic is discarded, you should also remove the overlay
+  ;; to avoid slowing down Emacs.
   (diagnostic-overlay-map (make-hash-table :test 'equal))
 
   ;; contains all the workDone progress tokens that have been created
