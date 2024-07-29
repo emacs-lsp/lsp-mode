@@ -34,7 +34,7 @@
   :tag "Lsp Magik"
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-magik-version "0.9.0"
+(defcustom lsp-magik-version "0.10.0"
   "Version of LSP server."
   :type `string
   :group `lsp-magik
@@ -58,14 +58,14 @@
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-magik-smallworld-gis nil
-  "Path to Smallworld Core."
+(defcustom lsp-magik-java-home nil
+  "Path to Java Runtime, Java 17 minimum."
   :type `string
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-magik-libs-dirs []
-  "Paths to libs dirs of Smallworld products."
+(defcustom lsp-magik-product-dirs []
+  "Paths to (compiled, containing a libs/ directory) products."
   :type `lsp-string-vector
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
@@ -82,8 +82,8 @@
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-magik-typing-show-atom-inlay-hints nil
-  "Show atom type inlay hints."
+(defcustom lsp-magik-typing-show-typing-inlay-hints nil
+  "Show typing inlay hints."
   :type `boolean
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
@@ -100,8 +100,32 @@
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
 
-(defcustom lsp-magik-typing-index-usages t
-  "Enable indexing of usages of globals/methods/slots/conditions by methods."
+(defcustom lsp-magik-typing-index-global-usages t
+  "Enable indexing of usages of globals by methods."
+  :type `boolean
+  :group `lsp-magik
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-magik-typing-index-method-usages nil
+  "Enable indexing of usages of methods by methods."
+  :type `boolean
+  :group `lsp-magik
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-magik-typing-index-slot-usages t
+  "Enable indexing of usages of slots by methods."
+  :type `boolean
+  :group `lsp-magik
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-magik-typing-index-condition-usages t
+  "Enable indexing of usages of conditions by methods."
+  :type `boolean
+  :group `lsp-magik
+  :package-version '(lsp-mode . "9.0.0"))
+
+(defcustom lsp-magik-typing-cache-indexed-definitions-method-usages t
+  "Store and load the indexed definitions in the workspace folders."
   :type `boolean
   :group `lsp-magik
   :package-version '(lsp-mode . "9.0.0"))
@@ -134,14 +158,18 @@
   :server-id 'magik))
 
 (lsp-register-custom-settings
- `(("magik.smallworldGis" lsp-magik-smallworld-gis)
-   ("magik.libsDirs" lsp-magik-libs-dirs)
+ `(("magik.javaHome" lsp-magik-java-home)
+   ("magik.productDirs" lsp-magik-product-dirs)
    ("magik.lint.overrideConfigFile" lsp-magik-lint-override-config-file)
    ("magik.typing.typeDatabasePaths" lsp-magik-typing-type-database-paths)
-   ("magik.typing.showAtomInlayHints" lsp-magik-typing-show-atom-inlay-hints)
+   ("magik.typing.showTypingInlayHints" lsp-magik-typing-show-typing-inlay-hints)
    ("magik.typing.showArgumentInlayHints" lsp-magik-typing-show-argument-inlay-hints)
    ("magik.typing.enableChecks" lsp-magik-typing-enable-checks)
-   ("magik.typing.indexUsages" lsp-magik-typing-index-usages)))
+   ("magik.typing.indexGlobalUsages" lsp-magik-typing-index-global-usages)
+   ("magik.typing.indexMethodUsages" lsp-magik-typing-index-method-usages)
+   ("magik.typing.indexSlotUsages" lsp-magik-typing-index-slot-usages)
+   ("magik.typing.indexConditionUsages" lsp-magik-typing-index-condition-usages)
+   ("magik.typing.cacheIndexedDefinitions" lsp-magik-typing-cache-indexed-definitions)))
 
 (lsp-consistency-check lsp-magik)
 
