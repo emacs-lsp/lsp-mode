@@ -7041,8 +7041,8 @@ server. WORKSPACE is the active workspace."
         leftovers body-length body chunk)
     (lambda (_proc input)
       (setf chunk (if (s-blank? leftovers)
-                      input
-                    (concat leftovers input)))
+                      (encode-coding-string input 'utf-8-unix)
+                    (concat leftovers (encode-coding-string input 'utf-8-unix))))
 
       (let (messages)
         (while (not (s-blank? chunk))
