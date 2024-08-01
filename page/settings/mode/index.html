@@ -1135,6 +1135,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-flush-delayed-changes-before-next-message" class="md-nav__link">
+    lsp-flush-delayed-changes-before-next-message
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-folding-line-folding-only" class="md-nav__link">
     lsp-folding-line-folding-only
   </a>
@@ -4546,6 +4553,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#lsp-flush-delayed-changes-before-next-message" class="md-nav__link">
+    lsp-flush-delayed-changes-before-next-message
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lsp-folding-line-folding-only" class="md-nav__link">
     lsp-folding-line-folding-only
   </a>
@@ -5277,6 +5291,15 @@ level or at a root of an lsp workspace.</p>
 <p>Show warning if the files to watch are more than.
 Set to nil to disable the warning.</p>
 <hr />
+<h3 id="lsp-flush-delayed-changes-before-next-message"><code>lsp-flush-delayed-changes-before-next-message</code><a class="headerlink" href="#lsp-flush-delayed-changes-before-next-message" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>boolean</code></p>
+<p><em>Default:</em> <code>t</code></p>
+<p>If non-nil send the document changes update before sending other messages.</p>
+<p>If nil, and <code>lsp-debounce-full-sync-notifications</code> is non-nil,
+ change notifications will be throttled by
+ <code>lsp-debounce-full-sync-notifications-interval</code> regardless of
+ other messages.</p>
+<hr />
 <h3 id="lsp-folding-line-folding-only"><code>lsp-folding-line-folding-only</code><a class="headerlink" href="#lsp-folding-line-folding-only" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
 <p><em>Default:</em> <code>nil</code></p>
@@ -5596,7 +5619,7 @@ The hook will receive two parameters list of added and removed folders.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 29, 2024</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 1, 2024</span>
       
     
   </small>
