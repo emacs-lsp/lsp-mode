@@ -169,8 +169,8 @@
   :risky t
   :type 'string)
 
-(lsp-register-custom-settings '(("section2.nested.prop1" lsp-nested-prop1)))
-(lsp-register-custom-settings '(("section2.nested.prop2" lsp-nested-prop2)))
+(lsp-register-new-settings '(("section2.nested.prop1" lsp-nested-prop1)))
+(lsp-register-new-settings '(("section2.nested.prop2" lsp-nested-prop2)))
 
 (ert-deftest lsp--custom-settings-test-2 ()
   (let ((actual (lsp-ht->alist (lsp-configuration-section "section2"))))
@@ -192,7 +192,7 @@
   :risky t
   :type 'string)
 
-(lsp-register-custom-settings '(("section3.prop1" lsp-prop3 t)))
+(lsp-register-new-settings '(("section3.prop1" lsp-prop3 t)))
 
 (ert-deftest lsp--boolean-property ()
   (cl-assert (equal (lsp-ht->alist  (lsp-configuration-section  "section3"))
@@ -203,7 +203,7 @@
     (cl-assert (equal (aref (lsp--build-workspace-configuration-response request) 0)
                       :json-false))))
 
-(lsp-register-custom-settings '(("section4.prop1" "value")))
+(lsp-register-new-settings '(("section4.prop1" "value")))
 
 (ert-deftest lsp--non-boolean-property ()
   (cl-assert (equal (lsp-ht->alist  (lsp-configuration-section "section4"))

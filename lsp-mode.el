@@ -8658,10 +8658,36 @@ optional flag that should be non-nil for boolean settings, when it is nil the
 property will be ignored if the VALUE is nil.
 
 Example: `(lsp-register-custom-settings `((\"foo.bar.buzz.enabled\" t t)))'
-\(note the double parentheses)"
+\(note the double parentheses)
+
+Internal note: this function should not be used in by `lsp' interanlly
+due to potentially overriding user settings. Use
+`lsp-register-new-settings' instead."
   (mapc
    (-lambda ((path . rest))
      (puthash path rest lsp-client-settings))
+   props))
+
+(defun lsp-register-new-settings (props)
+  "Register PROPS that did not exist yet.
+
+This function avoids overwriting a setting that has already existed. For
+overwriting purposes use `lsp-register-custom-settings'.
+
+PROPS is list of triple (path value boolean?) where PATH is the path to the
+property; VALUE can be a literal value, symbol to be evaluated, or either a
+function or lambda function to be called without arguments; BOOLEAN? is an
+optional flag that should be non-nil for boolean settings, when it is nil the
+property will be ignored if the VALUE is nil.
+
+Example: `(lsp-register-new-settings `((\"foo.bar.buzz.enabled\" t t)))'
+\(note the double parentheses)
+
+"
+  (mapc
+   (-lambda ((path . rest))
+     (unless (gethash path lsp-client-settings)
+       (puthash path rest lsp-client-settings)))
    props))
 
 (defun lsp-region-text (region)
@@ -8692,7 +8718,7 @@ TBL - a hash table, PATHS is the path to the nested VALUE."
         (setter (intern (concat (symbol-name symbol) "--set"))))
     (cl-remf args :lsp-path)
     `(progn
-       (lsp-register-custom-settings
+       (lsp-register-new-settings
         (quote ((,path ,symbol ,(equal ''boolean (plist-get args :type))))))
 
        (defcustom ,symbol ,standard ,doc ,@args)

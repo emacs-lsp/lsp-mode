@@ -111,7 +111,7 @@ default to ~/.perlcriticrc. (no aliases, .bat files or ~/)."
   :group 'lsp-perlnavigator
   :package-version '(lsp-mode . "9.0.0"))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("perlnavigator.trace.server" lsp-perlnavigator-trace-server)
    ("perlnavigator.logging" lsp-perlnavigator-logging t)
    ("perlnavigator.includePaths" lsp-perlnavigator-include-paths)

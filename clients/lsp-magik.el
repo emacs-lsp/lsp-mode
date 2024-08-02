@@ -157,7 +157,7 @@
                       (lsp--set-configuration (lsp-configuration-section "magik"))))
   :server-id 'magik))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  `(("magik.javaHome" lsp-magik-java-home)
    ("magik.productDirs" lsp-magik-product-dirs)
    ("magik.lint.overrideConfigFile" lsp-magik-lint-override-config-file)

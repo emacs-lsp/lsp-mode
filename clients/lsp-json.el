@@ -54,7 +54,7 @@ here, https://github.com/emacs-lsp/lsp-mode/issues/3368#issuecomment-1049635155.
   :group 'lsp-json
   :package-version '(lsp-mode . "6.3"))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("json.schemas" lsp-json-schemas)
    ("http.proxy" lsp-http-proxy)
    ("http.proxyStrictSSL" lsp-http-proxyStrictSSL)))

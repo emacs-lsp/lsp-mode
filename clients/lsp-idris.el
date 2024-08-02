@@ -48,7 +48,7 @@
   :type '(choice (:tag "off" "messages" "verbose"))
   :package-version '(lsp-mode . "9.0.0"))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
   '(("idris2-lsp.trace.server" lsp-idris2-lsp-trace-server)
     ("idris2-lsp.path" lsp-idris2-lsp-path)))
 

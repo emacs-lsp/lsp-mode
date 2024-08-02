@@ -188,7 +188,7 @@ Python virtual environment."
                 '(:npm :package "@ansible/ansible-language-server"
                        :path "ansible-language-server"))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("ansible.ansible.path" lsp-ansible-ansible-path)
    ("ansible.ansible.useFullyQualifiedCollectionNames" lsp-ansible-use-fully-qualified-collection-names t)
    ("ansible.validation.enabled" lsp-ansible-validation-enabled t)

@@ -48,7 +48,7 @@
   :risky t
   :type 'lsp-string-vector)
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("groovy.classpath" lsp-groovy-classpath)))
 
 (lsp-register-client

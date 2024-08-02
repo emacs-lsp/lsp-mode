@@ -264,7 +264,7 @@ Set a source to \"\" to disable it.
   :group 'lsp-vetur
   :package-version '(lsp-mode . "6.1"))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("vetur.trace.server" lsp-vetur-trace-server)
    ("vetur.ignoreProjectWarning" lsp-vetur-ignore-project-warning t)
    ("vetur.format.scriptInitialIndent" lsp-vetur-format-script-initial-indent t)

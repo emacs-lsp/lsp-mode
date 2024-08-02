@@ -283,7 +283,7 @@ UPDATE? is t."
         (push '(:AutomaticWorkspaceInit . t) opts)
       opts)))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  `(("FSharp.KeywordsAutocomplete" lsp-fsharp-keywords-autocomplete t)
    ("FSharp.ExternalAutocomplete" lsp-fsharp-external-autocomplete t)
    ("FSharp.Linter" lsp-fsharp-linter t)

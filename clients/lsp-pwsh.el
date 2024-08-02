@@ -195,7 +195,7 @@ extension."
   :group 'lsp-pwsh
   :package-version '(lsp-mode . "6.2"))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("powershell.developer.featureFlags" lsp-pwsh-developer-feature-flags)
    ("powershell.developer.editorServicesWaitForDebugger" lsp-pwsh-developer-editor-services-wait-for-debugger t)
    ("powershell.codeFormatting.useCorrectCasing" lsp-pwsh-code-formatting-use-correct-casing t)

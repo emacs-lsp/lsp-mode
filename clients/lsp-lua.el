@@ -488,7 +488,7 @@ and `../lib` ,exclude `../lib/temp`.
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-lua-language-server)
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("files.associations" lsp-lua-files-associations t)
    ("files.exclude" lsp-lua-files-exclude t)
    ("Lua.workspace.useGitIgnore" lsp-lua-workspace-use-git-ignore t)

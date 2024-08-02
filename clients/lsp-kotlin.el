@@ -149,7 +149,7 @@ Requires lsp-inlay-hints-mode."
   :type 'boolean
   :group 'lsp-kotlin)
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("kotlin.externalSources.autoConvertToKotlin" lsp-kotlin-external-sources-auto-convert-to-kotlin t)
    ("kotlin.externalSources.useKlsScheme" lsp-kotlin-external-sources-use-kls-scheme t)
    ("kotlin.debugAdapter.path" lsp-kotlin-debug-adapter-path)

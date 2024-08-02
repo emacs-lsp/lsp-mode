@@ -286,7 +286,7 @@ is often the type local variable declaration."
   :group 'lsp-rust-rls
   :package-version '(lsp-mode . "6.1"))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("rust.show_hover_context" lsp-rust-show-hover-context t)
    ("rust.full_docs" lsp-rust-full-docs t)
    ("rust.build_command" lsp-rust-build-command)

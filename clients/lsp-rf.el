@@ -108,7 +108,7 @@ Glob patterns as strings are accepted (eg. *bad.robot between double quotes)"
                              x))
                 seq)))
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(
    ("rfLanguageServer.trace.server" lsp-rf-language-server-trace-server)
    ("rfLanguageServer.logLevel" lsp-rf-language-server-log-level)

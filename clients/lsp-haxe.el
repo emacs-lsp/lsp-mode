@@ -170,7 +170,7 @@
   :type 'string
   :group 'lsp-haxe)
 
-(lsp-register-custom-settings
+(lsp-register-new-settings
  '(("haxe.hxml" lsp-haxe-hxml)
    ("haxe.postfixCompletion" lsp-haxe-postfix-completion)
    ("haxe.exclude" lsp-haxe-exclude)
