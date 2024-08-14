@@ -172,9 +172,9 @@ Limited for performance reasons."
                                         (lsp-package-ensure 'yaml-language-server
                                                             callback error-callback))))
 
-(defcustom lsp-yaml-schema-extensions '(((name . "Kubernetes Built-In")
-                                          (description . "Built-in `yaml-language-server' kubernetes manifest schema definition")
-                                          (url . "kubernetes")
+(defcustom lsp-yaml-schema-extensions '(((name . "Kubernetes v1.30.3")
+                                          (description . "Kubernetes v1.30.3 manifest schema definition")
+                                          (url . "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.30.3-standalone-strict/all.json")
                                           (fileMatch . ["*-k8s.yaml" "*-k8s.yml"])))
   "List of user defined schemas to be provided in `lsp-yaml--get-supported-schemas' alongside schemas from `lsp-yaml-schema-store-uri'."
   :type  'list
