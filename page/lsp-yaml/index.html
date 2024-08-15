@@ -3097,6 +3097,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-yaml-schema-extensions" class="md-nav__link">
+    lsp-yaml-schema-extensions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-yaml-schema-store-enable" class="md-nav__link">
     lsp-yaml-schema-store-enable
   </a>
@@ -3730,6 +3737,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#lsp-yaml-schema-extensions" class="md-nav__link">
+    lsp-yaml-schema-extensions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#lsp-yaml-schema-store-enable" class="md-nav__link">
     lsp-yaml-schema-store-enable
   </a>
@@ -3890,6 +3904,13 @@ Limited for performance reasons.</p>
    Always: wrap prose if it exceeds the print width.
    Never: never wrap the prose.
    Preserve: wrap prose as-is.</p>
+<hr />
+<h3 id="lsp-yaml-schema-extensions"><code>lsp-yaml-schema-extensions</code><a class="headerlink" href="#lsp-yaml-schema-extensions" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>list</code></p>
+<p><em>Default:</em> <code>(((name . Kubernetes v1.30.3) (description . Kubernetes v1.30.3 manifest schema definition) (url . https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.30.3-standalone-strict/all.json) (fileMatch . [*-k8s.yaml *-k8s.yml])))</code></p>
+<p>User defined schemas that extend default schema store.
+Used in <code>lsp-yaml--get-supported-schemas</code> to supplement schemas provided by
+<code>lsp-yaml-schema-store-uri</code>.</p>
 <hr />
 <h3 id="lsp-yaml-schema-store-enable"><code>lsp-yaml-schema-store-enable</code><a class="headerlink" href="#lsp-yaml-schema-store-enable" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>boolean</code></p>
