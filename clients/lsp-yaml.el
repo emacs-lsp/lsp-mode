@@ -172,11 +172,16 @@ Limited for performance reasons."
                                         (lsp-package-ensure 'yaml-language-server
                                                             callback error-callback))))
 
-(defconst lsp-yaml--built-in-kubernetes-schema
-  '((name . "Kubernetes")
-    (description . "Built-in kubernetes manifest schema definition")
-    (url . "kubernetes")
-    (fileMatch . ["*-k8s.yaml" "*-k8s.yml"])))
+(defcustom lsp-yaml-schema-extensions '(((name . "Kubernetes v1.30.3")
+                                          (description . "Kubernetes v1.30.3 manifest schema definition")
+                                          (url . "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.30.3-standalone-strict/all.json")
+                                          (fileMatch . ["*-k8s.yaml" "*-k8s.yml"])))
+  "User defined schemas that extend default schema store.
+Used in `lsp-yaml--get-supported-schemas' to supplement schemas provided by
+`lsp-yaml-schema-store-uri'."
+  :type  'list
+  :group 'lsp-yaml
+  :package-version '(lsp-mode . "9.0.1"))
 
 (defun lsp-yaml-download-schema-store-db (&optional force-downloading)
   "Download remote schema store at `lsp-yaml-schema-store-uri' into local cache.
@@ -194,7 +199,7 @@ Set FORCE-DOWNLOADING to non-nil to force re-download the database."
     (lsp-yaml-download-schema-store-db)
     (setq lsp-yaml--schema-store-schemas-alist
           (alist-get 'schemas (json-read-file lsp-yaml-schema-store-local-db))))
-  (seq-concatenate 'list (list lsp-yaml--built-in-kubernetes-schema) lsp-yaml--schema-store-schemas-alist))
+  (seq-concatenate 'list lsp-yaml-schema-extensions lsp-yaml--schema-store-schemas-alist))
 
 (defun lsp-yaml-set-buffer-schema (uri-string)
   "Set yaml schema for the current buffer to URI-STRING."
