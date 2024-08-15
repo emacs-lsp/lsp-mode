@@ -176,7 +176,9 @@ Limited for performance reasons."
                                           (description . "Kubernetes v1.30.3 manifest schema definition")
                                           (url . "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.30.3-standalone-strict/all.json")
                                           (fileMatch . ["*-k8s.yaml" "*-k8s.yml"])))
-  "List of user defined schemas to be provided in `lsp-yaml--get-supported-schemas' alongside schemas from `lsp-yaml-schema-store-uri'."
+  "User defined schemas that extend default schema store.
+Used in `lsp-yaml--get-supported-schemas' to supplement schemas provided by
+`lsp-yaml-schema-store-uri'."
   :type  'list
   :group 'lsp-yaml
   :package-version '(lsp-mode . "9.0.1"))
