@@ -29,7 +29,7 @@
 (defgroup lsp-sqls nil
   "LSP support for SQL, using sqls."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/lighttiger2505/sqls")
+  :link '(url-link "https://github.com/sqls-server/sqls")
   :package-version `(lsp-mode . "7.0"))
 
 (defcustom lsp-sqls-server "sqls"
