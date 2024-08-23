@@ -43,11 +43,35 @@
    (if lsp-ruby-lsp-use-bundler '("bundle" "exec"))
    '("ruby-lsp")))
 
+(defun lsp-ruby-lsp--open-file (arg_hash)
+  "Open a file. This function is for code-lens provided by ruby-lsp-rails."
+  (let* ((arguments (gethash "arguments" arg_hash))
+         (uri (aref (aref arguments 0) 0))
+         (path-with-line-number (split-string (lsp--uri-to-path uri) "#L"))
+         (path (car path-with-line-number))
+         (line-number (cadr path-with-line-number)))
+    (find-file path)
+    (when line-number (forward-line (1- (string-to-number line-number))))))
+
+(defun lsp-ruby-lsp--run-test (arg_hash)
+  "Run a test file. This function is for code-lens provided by ruby-lsp-rails."
+  (let* ((arguments (gethash "arguments" arg_hash))
+         (command (aref arguments 2))
+         (default-directory (lsp-workspace-root))
+         (buffer-name "*run test results*")
+         (buffer (progn
+                   (when (get-buffer buffer-name) (kill-buffer buffer-name))
+                   (generate-new-buffer buffer-name))))
+    (async-shell-command command buffer)))
+
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection #'lsp-ruby-lsp--build-command)
   :activation-fn (lsp-activate-on "ruby")
   :priority -2
+  :action-handlers (ht ("rubyLsp.openFile" #'lsp-ruby-lsp--open-file)
+                       ("rubyLsp.runTest" #'lsp-ruby-lsp--run-test)
+                       ("rubyLsp.runTestInTerminal" #'lsp-ruby-lsp--run-test))
   :server-id 'ruby-lsp-ls))
 
 (lsp-consistency-check lsp-ruby-lsp)
