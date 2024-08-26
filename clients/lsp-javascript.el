@@ -543,7 +543,7 @@ workspace."
           (const "shortest")
           (const "project-relative")
           (const "relative")
-          (const "non-relative'"))
+          (const "non-relative"))
   :package-version '(lsp-mode . "9.0.1"))
 
 (defcustom lsp-typescript-preferences-import-module-specifier-ending "auto"
