@@ -33,6 +33,7 @@
 
 (require 'seq)
 (require 'lsp-mode)
+(require 'flycheck)
 
 ;; Taken from lsp-integration-tests.el
 (defconst lsp-test-location (file-name-directory (or load-file-name buffer-file-name))
@@ -185,99 +186,137 @@ FORBIDDEN-WORD in FILE-CONTENTS that corresponds to FILE-PATH."
 ;; I could not figure out how to use lsp-test-wait safely
 ;; (e.g., aborting it after a failed test), so I use a simpler
 ;; version.
-(defun lsp-test--sync-wait-for (condition-func)
-  "Synchronously waiting for CONDITION-FUNC to return non-nil.
+(defun lsp-test--sync-wait-for (timeout timeout-desc condition-func)
+  "Synchronously waiting CONDITION-FUNC to return non-nil.
 
+TIMEOUT (seconds) is the maximum time to wait in seconds.
+If after TIMEOUT seconds CONDITION-FUNC does not retur non-nul
+raise `error' with TIMEOUT-DESC (string).
 Returns the non-nil return value of CONDITION-FUNC."
-  (let ((result (funcall condition-func)))
-    (while (not result)
-      (sleep-for 0.05)
-      (setq result (funcall condition-func)))
-    result))
+  (with-timeout (timeout (error timeout-desc))
+    (let ((result (funcall condition-func)))
+      (while (not result)
+        (sleep-for 0.05)
+        (setq result (funcall condition-func)))
+      result)))
 
-(defmacro lsp-test-sync-wait (condition)
-  "Wait for the CONDITION to become non-nil and return it."
-  `(lsp-test--sync-wait-for (lambda () ,condition)))
+(defmacro lsp-test-sync-wait (timeout timeout-desc &rest body)
+  "Repeatedly evaluate BODY until its last form evaluates to non-nil.
 
-(defun lsp-mock--run-with-mock-server (test-body)
+TIMEOUT (seconds) is the maximum time to busy-wait.
+If after TIMEOUT seconds CONDITION does not become non-nil
+raise `error' with \"Timeout wiaitng for\" + TIMEOUT-DESC (string).
+BODY is implicitly wrapped in `progn'.
+Once last form of BODY evaluates to non-nil, return its result."
+  (declare (indent 2))
+  `(lsp-test--sync-wait-for
+    ,timeout ,(concat "Timeout waiting for " timeout-desc) (lambda () ,@body)))
+
+(defun lsp-test-relevant-overlays ()
+  "Collect all overlays that might have been produced by LSP."
+  (seq-filter (lambda (ovl) (null (overlay-get ovl 'pulse-delete)))
+              (overlays-in (point-min) (point-max))))
+
+(defun lsp-mock--run-with-mock-server (sample-file diags-provider test-body)
   "Run TEST-BODY function with mock LSP client connected to the mock server.
 
 This is an environment function that configures lsp-mode, mock lsp-client,
-opens the `lsp-test-sample-file' and starts the mock server."
+opens the SAMPLE-FILE and starts the mock server.
+It sets DIAGS-PROVIDER as the diagnostics provider for the test,
+which should be a value valid for `lsp-diagnostics-provider'."
   (let ((lsp-clients (lsp-ht)) ; clear all clients
-        (lsp-diagnostics-provider :none) ; focus on LSP itself, not its UI integration
+        (lsp-diagnostics-provider diags-provider) ; focus on LSP itself, not its UI integration
         (lsp-restart 'ignore) ; Avoid restarting the server or prompting user on a crash
         (lsp-enable-snippet nil) ; Avoid warning that lsp-yasnippet is not intalled
         (lsp-warn-no-matched-clients nil) ; Mute warning LSP can't figure out src lang
-        (workspace-root (file-name-directory lsp-test-sample-file))
-        (initial-server-count (lsp-test-total-folder-count)))
+        (workspace-root (file-name-directory sample-file))
+        (initial-server-count (lsp-test-total-folder-count))
+        (initial-overlay-count nil))
     (register-mock-client) ; register mock client as the one an only lsp client
 
-     ;; xref in emacs 27.2 does not have these vars,
-     ;; but lsp-mode uses them in lsp-show-xrefs.
-     ;; For the purpose of this test, it does not matter.
-     (unless (boundp 'xref-auto-jump-to-first-xref)
-       (defvar xref-auto-jump-to-first-xref nil))
-     (unless (boundp 'xref-auto-jump-to-first-definition)
-       (defvar xref-auto-jump-to-first-definition nil))
+    ;; xref in emacs 27.2 does not have these vars,
+    ;; but lsp-mode uses them in lsp-show-xrefs.
+    ;; For the purpose of this test, it does not matter.
+    (unless (boundp 'xref-auto-jump-to-first-xref)
+      (defvar xref-auto-jump-to-first-xref nil))
+    (unless (boundp 'xref-auto-jump-to-first-definition)
+      (defvar xref-auto-jump-to-first-definition nil))
 
     (lsp-workspace-folders-add workspace-root)
-    (let* ((buf (find-file-noselect lsp-test-sample-file)))
+    (let* ((buf (find-file-noselect sample-file)))
       (unwind-protect
-          (with-timeout (5 (error "Timeout running a test with mock server"))
+          (progn
+            (with-timeout (5 (error "Timeout running a test with mock server"))
+              (with-current-buffer buf
+                (prog-mode)
+                (setq initial-overlay-count (length (lsp-test-relevant-overlays)))
+                (lsp)
+                ;; Make sure the server started
+                (should (eq (lsp-test-total-folder-count) (1+ initial-server-count)))
+                (lsp-test-sync-wait 4 "LSP workspace initialization"
+                                    (eq 'initialized
+                                        (lsp--workspace-status (cl-first (lsp-workspaces)))))
+                (funcall test-body)))
             (with-current-buffer buf
-              (prog-mode)
-              (lsp)
-              ;; Make sure the server started
-              (should (eq (lsp-test-total-folder-count) (1+ initial-server-count)))
-              (lsp-test-sync-wait (eq 'initialized
-                                      (lsp--workspace-status (cl-first (lsp-workspaces)))))
-              (funcall test-body)))
+              (lsp-test-sync-wait
+               4 "extra overlays to dissolve"
+               (equal initial-overlay-count (length (lsp-test-relevant-overlays))))))
         (with-current-buffer buf
           (set-buffer-modified-p nil); Inhibut the "kill unsaved buffer"p prompt
           (kill-buffer buf))
         (lsp-workspace-folders-remove workspace-root)
         ;; Remove possibly unhandled commands
         (when (file-exists-p lsp-test-mock-server-command-file)
-            (delete-file lsp-test-mock-server-command-file))))
-    (with-timeout (5 (error "LSP mock server refuses to stop"))
-      ;; Make sure the server stopped
-      (lsp-test-sync-wait (= initial-server-count (lsp-test-total-folder-count))))))
+          (delete-file lsp-test-mock-server-command-file))))
+    ;; Make sure the server stopped
+    (lsp-test-sync-wait 5 "LSP mock server to stop"
+                        (= initial-server-count (lsp-test-total-folder-count)))))
 
-(defmacro lsp-mock-run-with-mock-server (&rest test-body)
+(defmacro lsp-mock-run-with-mock-server (sample-file diags-provider &rest test-body)
   "Evaluate TEST-BODY in the context of a mock client connected to mock server.
 
-Opens the `lsp-test-sample-file' and initiates the LSP session.
+Opens the SAMPLE-FILE and initiates the LSP session.
+It sets DIAGS-PROVIDER as the diagnostics provider for the test,
+which should be a value valid for `lsp-diagnostics-provider'.
 TEST-BODY can interact with the mock server."
-  `(lsp-mock--run-with-mock-server (lambda () ,@test-body)))
+  (declare (indent 2))
+  `(lsp-mock--run-with-mock-server
+    ,sample-file
+    ,diags-provider
+    (lambda () ,@test-body)))
 
-(ert-deftest lsp-mock-server-reports-issues ()
-  (lsp-mock-run-with-mock-server
-   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
-   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
-   (lsp-test-sync-wait (progn (should (lsp-workspaces))
-                              (gethash lsp-test-sample-file (lsp-diagnostics t))))
-   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
-   (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
-                  (lsp-test-range-make (buffer-string)
-                                       "line 1 unique word broming + common"
-                                       "                   ^^^^^^^         ")))))
+(ert-deftest lsp-mock-server-reports-diagnostics ()
+  (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+    (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+    (lsp-test-sync-wait
+     4 "lsp mode to get the diagnostic"
+     (should (lsp-workspaces))
+     (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                   (lsp-test-range-make (buffer-string)
+                                        "line 1 unique word broming + common"
+                                        "                   ^^^^^^^         ")))
+    ;; Clean up diagnostics
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "non-existing")))
 
 (ert-deftest lsp-mock-server-crashes ()
   "Test that the mock server crashes when instructed so."
   (let ((initial-serv-count (lsp-test-total-folder-count)))
     (when-let ((buffer (get-buffer "*mock-server::stderr*")))
       (kill-buffer buffer))
-    (lsp-mock-run-with-mock-server
-     (should (eq (lsp-test-total-folder-count) (1+ initial-serv-count)))
-     (lsp-test-crash-server-with-message "crashed by command")
-     (lsp-test-sync-wait (eq initial-serv-count (lsp-test-total-folder-count)))
-     (let ((buffer (get-buffer "*mock-server::stderr*")))
-       (should buffer)
-       (with-current-buffer buffer
-         (goto-char (point-min))
-         (should (search-forward "crashed by command"))
-         (goto-char (point-max)))))))
+    (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+      (should (eq (lsp-test-total-folder-count) (1+ initial-serv-count)))
+      (lsp-test-crash-server-with-message "crashed by command")
+      (lsp-test-sync-wait
+       4 "LSP server to crash by command"
+       (eq initial-serv-count (lsp-test-total-folder-count)))
+      (let ((buffer (get-buffer "*mock-server::stderr*")))
+        (should buffer)
+        (with-current-buffer buffer
+          (goto-char (point-min))
+          (should (search-forward "crashed by command"))
+          (goto-char (point-max)))))))
 
 (defun lsp-mock-get-first-diagnostic-line ()
   "Get the line number of the first diagnostic on `lsp-test-sample-file'."
@@ -290,34 +329,35 @@ TEST-BODY can interact with the mock server."
 
 (ert-deftest lsp-mock-server-updates-diagnostics ()
   "Test that mock server can update diagnostics and lsp-mode reflects that."
-  (lsp-mock-run-with-mock-server
-   ;; There are no diagnostics at first
-   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
+  (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+    ;; There are no diagnostics at first
+    (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
 
-   ;; Server found diagnostic
-   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
-   (lsp-test-sync-wait (progn (should (lsp-workspaces))
-                              (gethash lsp-test-sample-file (lsp-diagnostics t))))
-   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+    ;; Server found diagnostic
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+    (lsp-test-sync-wait
+     4 "LSP mode to receive initial diagnostic"
+     (should (lsp-workspaces))
+     (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
 
-   ;; The diagnostic is properly received
-   (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
-                  (lsp-test-range-make (buffer-string)
-                                       "line 1 unique word broming + common"
-                                       "                   ^^^^^^^         ")))
+    ;; The diagnostic is properly received
+    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                   (lsp-test-range-make (buffer-string)
+                                        "line 1 unique word broming + common"
+                                        "                   ^^^^^^^         ")))
 
-   ;; Server found a different diagnostic
-   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "fegam")
-   (let ((old-line (lsp-mock-get-first-diagnostic-line)))
-     (lsp-test-sync-wait (progn (should (lsp-workspaces))
-                                (not (equal old-line (lsp-mock-get-first-diagnostic-line))))))
+    ;; Server found a different diagnostic
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "fegam")
+    (lsp-test-wait-for-diagnostic-update)
 
-   ;; The new diagnostics is properly displayed instead of the old one
-   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
-   (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
-                  (lsp-test-range-make (buffer-string)
-                                       "Line 0 unique word fegam and common"
-                                       "                   ^^^^^           ")))))
+    ;; The new diagnostics is properly displayed instead of the old one
+    (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                   (lsp-test-range-make (buffer-string)
+                                        "Line 0 unique word fegam and common"
+                                        "                   ^^^^^           ")))
+    ;; Clean up diagnostics
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "non-existing")))
 
 (ert-deftest lsp-mock-server-updates-diags-with-delay ()
   "Test demonstrating delay in the diagnostics update.
@@ -326,90 +366,93 @@ If server takes noticeable time to update diagnostics after a
 document change, and `lsp-diagnostic-clean-after-change' is
 nil (default), diagnostic ranges will be off until server
 publishes the update. This test demonstrates this behavior."
-  (lsp-mock-run-with-mock-server
-   ;; There are no diagnostics at first
-   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
+  (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+    ;; There are no diagnostics at first
+    (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
 
-   ;; Server found diagnostic
-   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
-   (lsp-test-sync-wait (progn (should (lsp-workspaces))
-                              (gethash lsp-test-sample-file (lsp-diagnostics t))))
-   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+    ;; Server found diagnostic
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+    (lsp-test-sync-wait
+     4 "LSP mode to receive initial diagnostic"
+     (should (lsp-workspaces))
+     (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
 
-   ;; The diagnostic is properly received
-   (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
-                  (lsp-test-range-make (buffer-string)
-                                       "line 1 unique word broming + common"
-                                       "                   ^^^^^^^         ")))
+    ;; The diagnostic is properly received
+    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                   (lsp-test-range-make (buffer-string)
+                                        "line 1 unique word broming + common"
+                                        "                   ^^^^^^^         ")))
 
-   ;; Change the text: remove the first line
-   (goto-char (point-min))
-   (kill-line 1)
-   (should (string-equal (buffer-string)
-                         "line 1 unique word broming + common
+    ;; Change the text: remove the first line
+    (goto-char (point-min))
+    (kill-line 1)
+    (should (string-equal (buffer-string)
+                          "line 1 unique word broming + common
 line 2 unique word normalw common here
 line 3 words here and here
 "))
-   ;; Give it some time to update
-   (sleep-for 0.5)
-   ;; The diagnostic is not updated and now points to a wrong line
-   (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
-                  (lsp-test-range-make (buffer-string)
-                                       "line 2 unique word normalw common here"
-                                       "                   ^^^^^^^            ")))
+    ;; Give it some time to update
+    (sleep-for 0.5)
+    ;; The diagnostic is not updated and now points to a wrong line
+    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                   (lsp-test-range-make (buffer-string)
+                                        "line 2 unique word normalw common here"
+                                        "                   ^^^^^^^            ")))
 
-   ;; Server sent an update
-   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+    ;; Server sent an update
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+    (lsp-test-wait-for-diagnostic-update)
 
-   (let ((old-line (lsp-mock-get-first-diagnostic-line)))
-     (lsp-test-sync-wait (progn (should (lsp-workspaces))
-                                (not (equal old-line (lsp-mock-get-first-diagnostic-line))))))
 
-   ;; Now the diagnostic is correct again
-   (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
-                  (lsp-test-range-make (buffer-string)
-                                       "line 1 unique word broming + common"
-                                       "                   ^^^^^^^         ")))))
+    ;; Now the diagnostic is correct again
+    (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                   (lsp-test-range-make (buffer-string)
+                                        "line 1 unique word broming + common"
+                                        "                   ^^^^^^^         ")))
+    ;; Clean up diagnostics
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "non-existing")))
 
 (ert-deftest lsp-mock-server-updates-diags-clears-up ()
   "Test ensuring diagnostics are cleared after a change."
   (let ((lsp-diagnostic-clean-after-change t))
-  (lsp-mock-run-with-mock-server
-   ;; There are no diagnostics at first
-   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
+    (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+      ;; There are no diagnostics at first
+      (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 0))
 
-   ;; Server found diagnostic
-   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
-   (lsp-test-sync-wait (progn (should (lsp-workspaces))
-                              (gethash lsp-test-sample-file (lsp-diagnostics t))))
-   (should (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
+      ;; Server found diagnostic
+      (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+      (lsp-test-sync-wait
+       4 "LSP mode to receive initial diagnostics"
+       (should (lsp-workspaces))
+       (eq (length (gethash lsp-test-sample-file (lsp-diagnostics t))) 1))
 
-   ;; The diagnostic is properly received
-   (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
-                  (lsp-test-range-make (buffer-string)
-                                       "line 1 unique word broming + common"
-                                       "                   ^^^^^^^         ")))
+      ;; The diagnostic is properly received
+      (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                     (lsp-test-range-make (buffer-string)
+                                          "line 1 unique word broming + common"
+                                          "                   ^^^^^^^         ")))
 
-   ;; Change the text: remove the first line
-   (goto-char (point-min))
-   (kill-line 1)
+      ;; Change the text: remove the first line
+      (goto-char (point-min))
+      (kill-line 1)
 
-   ;; After a short while, diagnostics are cleared up
-   (lsp-test-sync-wait (progn (should (lsp-workspaces))
-                              (null (gethash lsp-test-sample-file (lsp-diagnostics t)))))
+      ;; After a short while, diagnostics are cleared up
+      (lsp-test-sync-wait 4 "LSP mode to clear up diagnostics"
+                          (should (lsp-workspaces))
+                          (null (gethash lsp-test-sample-file (lsp-diagnostics t))))
 
-   ;; Server sent an update
-   (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+      ;; Server sent an update
+      (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+      (lsp-test-wait-for-diagnostic-update)
 
-   (let ((old-line (lsp-mock-get-first-diagnostic-line)))
-     (lsp-test-sync-wait (progn (should (lsp-workspaces))
-                                (not (equal old-line (lsp-mock-get-first-diagnostic-line))))))
 
-   ;; Now the diagnostic is correct again
-   (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
-                  (lsp-test-range-make (buffer-string)
-                                       "line 1 unique word broming + common"
-                                       "                   ^^^^^^^         "))))))
+      ;; Now the diagnostic is correct again
+      (should (equal (lsp-test-diag-get (car (gethash lsp-test-sample-file (lsp-diagnostics t))))
+                     (lsp-test-range-make (buffer-string)
+                                          "line 1 unique word broming + common"
+                                          "                   ^^^^^^^         ")))
+      ;; Clean up diagnostics
+      (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "non-existing"))))
 
 (defun lsp-test-xref-loc-to-range (xref-loc)
   "Convert XREF-LOC to a range p-list.
@@ -439,60 +482,60 @@ Scan CONTENTS for all occurences of WORD and compose a list of references."
   (let* (found-xrefs
          (xref-show-xrefs-function (lambda (fetcher &rest _params)
                                      (setq found-xrefs (funcall fetcher)))))
-    (lsp-mock-run-with-mock-server
-     (lsp-test-schedule-response "textDocument/references"
-                                 (lsp-test-make-references
-                                  lsp-test-sample-file (buffer-string) "unique"))
-     (lsp-find-references)
-     (should found-xrefs)
-     (should (eq (length found-xrefs) 3))
-     (should (equal (lsp-test-xref-loc-to-range (nth 0 found-xrefs))
-                    (lsp-test-range-make (buffer-string)
-                                         "Line 0 unique word fegam and common"
-                                         "       ^^^^^^                      ")))
-     (should (equal (lsp-test-xref-loc-to-range (nth 1 found-xrefs))
-                    (lsp-test-range-make (buffer-string)
-                                         "line 1 unique word broming + common"
-                                         "       ^^^^^^                      ")))
-     (should (equal (lsp-test-xref-loc-to-range (nth 2 found-xrefs))
-                    (lsp-test-range-make (buffer-string)
-                                         "line 2 unique word normalw common here"
-                                         "       ^^^^^^                         "))))))
+    (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+      (lsp-test-schedule-response "textDocument/references"
+                                  (lsp-test-make-references
+                                   lsp-test-sample-file (buffer-string) "unique"))
+      (lsp-find-references)
+      (should found-xrefs)
+      (should (eq (length found-xrefs) 3))
+      (should (equal (lsp-test-xref-loc-to-range (nth 0 found-xrefs))
+                     (lsp-test-range-make (buffer-string)
+                                          "Line 0 unique word fegam and common"
+                                          "       ^^^^^^                      ")))
+      (should (equal (lsp-test-xref-loc-to-range (nth 1 found-xrefs))
+                     (lsp-test-range-make (buffer-string)
+                                          "line 1 unique word broming + common"
+                                          "       ^^^^^^                      ")))
+      (should (equal (lsp-test-xref-loc-to-range (nth 2 found-xrefs))
+                     (lsp-test-range-make (buffer-string)
+                                          "line 2 unique word normalw common here"
+                                          "       ^^^^^^                         "))))))
 
 (ert-deftest lsp-mock-server-provides-folding-ranges ()
   "Test ensuring that lsp-mode accepts correct locations for folding ranges."
-  (lsp-mock-run-with-mock-server
-   (lsp-test-schedule-response
-    "textDocument/foldingRange"
-    [(:kind "region" :startLine 0 :startCharacter 10 :endLine 1)
-     (:kind "region" :startLine 1 :startCharacter 5 :endLine 2)])
+  (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+    (lsp-test-schedule-response
+     "textDocument/foldingRange"
+     [(:kind "region" :startLine 0 :startCharacter 10 :endLine 1)
+      (:kind "region" :startLine 1 :startCharacter 5 :endLine 2)])
 
-   (let ((folding-ranges (lsp--get-folding-ranges)))
-     (should (eq (length folding-ranges) 2))
-     ;; LSP line numbers are 0-based, Emacs line numbers are 1-based
-     ;; henace the +1
-     (should (equal (line-number-at-pos
-                     (lsp--folding-range-beg (nth 0 folding-ranges)))
-                    1))
-     (should (equal (line-number-at-pos
-                     (lsp--folding-range-end (nth 0 folding-ranges)))
-                    2))
-     (should (equal (line-number-at-pos
-                     (lsp--folding-range-beg (nth 1 folding-ranges)))
-                    2))
-     (should (equal (line-number-at-pos
-                     (lsp--folding-range-end (nth 1 folding-ranges)))
-                    3)))))
+    (let ((folding-ranges (lsp--get-folding-ranges)))
+      (should (eq (length folding-ranges) 2))
+      ;; LSP line numbers are 0-based, Emacs line numbers are 1-based
+      ;; henace the +1
+      (should (equal (line-number-at-pos
+                      (lsp--folding-range-beg (nth 0 folding-ranges)))
+                     1))
+      (should (equal (line-number-at-pos
+                      (lsp--folding-range-end (nth 0 folding-ranges)))
+                     2))
+      (should (equal (line-number-at-pos
+                      (lsp--folding-range-beg (nth 1 folding-ranges)))
+                     2))
+      (should (equal (line-number-at-pos
+                      (lsp--folding-range-end (nth 1 folding-ranges)))
+                     3)))))
 
 (ert-deftest lsp-mock-server-lsp-caches-folding-ranges ()
   "Test ensuring that lsp-mode accepts correct locations for folding ranges."
-  (lsp-mock-run-with-mock-server
-   (should (eq (lsp--get-folding-ranges) nil))
-   (lsp-test-schedule-response
-    "textDocument/foldingRange"
-    [(:kind "region" :startLine 0 :startCharacter 10 :endLine 1)])
-   ;; Folding ranges are cached from the first request
-   (should (eq (lsp--get-folding-ranges) nil))))
+  (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+    (should (eq (lsp--get-folding-ranges) nil))
+    (lsp-test-schedule-response
+     "textDocument/foldingRange"
+     [(:kind "region" :startLine 0 :startCharacter 10 :endLine 1)])
+    ;; Folding ranges are cached from the first request
+    (should (eq (lsp--get-folding-ranges) nil))))
 
 (defun lsp-test-all-overlays (tag)
   "Return all overlays tagged TAG in the current buffer."
@@ -543,34 +586,50 @@ TEST-FN is a function to call with the temporary window."
       (delete-window temp-window)
       (select-window original-window))))
 
+(defun lsp-test-sort-ranges (ranges)
+  "Sort RANGES in natural order."
+  (sort
+   ranges
+   (lambda (a b)
+     (or (< (plist-get a :line) (plist-get b :line))
+         (and (= (plist-get a :line) (plist-get b :line))
+              (or (< (plist-get a :from) (plist-get b :from))
+                  (and (= (plist-get a :from) (plist-get b :from))
+                       (< (plist-get a :to) (plist-get b :to)))))))))
+
 (ert-deftest lsp-mock-server-provides-symbol-highlights ()
   "Test ensuring that lsp-mode accepts correct locations for highlights."
-  (lsp-mock-run-with-mock-server
-   (lsp-test-schedule-response
-    "textDocument/documentHighlight"
-    (lsp-test-make-highlights (buffer-string) "here"))
-   ;; The highlight overlays are created only if visible in a window
-   (lsp-mock-with-temp-window
-    (current-buffer)
-    (lambda ()
-      (lsp-document-highlight)
-      (lsp-test-sync-wait (progn (should (lsp-workspaces))
-                                 (lsp-test-all-overlays-as-ranges
-                                  'lsp-highlight)))
-      (let ((highlights (lsp-test-all-overlays-as-ranges 'lsp-highlight)))
-        (should (eq (length highlights) 3))
-        (should (equal (nth 0 highlights)
-                       (lsp-test-range-make (buffer-string)
-                                            "line 2 unique word normalw common here"
-                                            "                                  ^^^^")))
-        (should (equal (nth 1 highlights)
-                       (lsp-test-range-make (buffer-string)
-                                            "line 3 words here and here"
-                                            "             ^^^^         ")))
-        (should (equal (nth 2 highlights)
-                       (lsp-test-range-make (buffer-string)
-                                            "line 3 words here and here"
-                                            "                      ^^^^"))))))))
+  (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+    (lsp-test-schedule-response
+     "textDocument/documentHighlight"
+     (lsp-test-make-highlights (buffer-string) "here"))
+    ;; The highlight overlays are created only if visible in a window
+    (lsp-mock-with-temp-window
+     (current-buffer)
+     (lambda ()
+       (lsp-document-highlight)
+
+       (let ((highlights (lsp-test-sort-ranges
+                          (lsp-test-sync-wait
+                           4 "LSP mode to receive highlights"
+                           (should (lsp-workspaces))
+                           (lsp-test-all-overlays-as-ranges 'lsp-highlight)))))
+         (should (eq (length highlights) 3))
+         (should (equal (nth 0 highlights)
+                        (lsp-test-range-make (buffer-string)
+                                             "line 2 unique word normalw common here"
+                                             "                                  ^^^^")))
+         (should (equal (nth 1 highlights)
+                        (lsp-test-range-make (buffer-string)
+                                             "line 3 words here and here"
+                                             "             ^^^^         ")))
+         (should (equal (nth 2 highlights)
+                        (lsp-test-range-make (buffer-string)
+                                             "line 3 words here and here"
+                                             "                      ^^^^"))))
+       ;; Remove highlights
+       (lsp-test-schedule-response "textDocument/documentHighlight" [])
+       (lsp-document-highlight)))))
 
 (defun lsp-test-index-to-pos (idx)
   "Convert 0-based integer IDX to a position in the corrent buffer.
@@ -659,18 +718,18 @@ and insertion must not contain a line break."
 
 (ert-deftest lsp-mock-server-formats-with-edits ()
   "Test ensuring that lsp-mode requests and applies formatting correctly."
-  (lsp-mock-run-with-mock-server
-   (lsp-test-schedule-response
-    "textDocument/formatting"
-    (lsp-test-make-edits
-     "Line 0 ###### word fegam and common
+  (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+    (lsp-test-schedule-response
+     "textDocument/formatting"
+     (lsp-test-make-edits
+      "Line 0 ###### word fegam and common
 line 1 unique <double>word ######### common
 line 2 unique word #ormalw common here
 line 3 words here and here
 "))
-   (lsp-format-buffer)
-   (should (equal (buffer-string)
-                  "Line 0  word fegam and common
+    (lsp-format-buffer)
+    (should (equal (buffer-string)
+                   "Line 0  word fegam and common
 line 1 unique doubleword  common
 line 2 unique word ormalw common here
 line 3 words here and here
@@ -678,25 +737,25 @@ line 3 words here and here
 
 (ert-deftest lsp-mock-server-suggests-action-with-simple-changes ()
   "Test ensuring that lsp-mode applies code action simple edits correctly."
-  (lsp-mock-run-with-mock-server
-   (lsp-test-schedule-response
-    "textDocument/codeAction"
-    (vconcat (list `(:title "Some edits"
-                     :kind "quickfix"
-                     :isPreferred t
-                     :edit
-                     (:changes
-                      ((,(concat "file://" lsp-test-sample-file)
-                        .
-                        ,(lsp-test-make-edits
-                          "Line 0 unique word ######### common
+  (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+    (lsp-test-schedule-response
+     "textDocument/codeAction"
+     (vconcat (list `(:title "Some edits"
+                      :kind "quickfix"
+                      :isPreferred t
+                      :edit
+                      (:changes
+                       ((,(concat "file://" lsp-test-sample-file)
+                         .
+                         ,(lsp-test-make-edits
+                           "Line 0 unique word ######### common
 line # unique word broming + common
 line # unique word normalw common here
 line #<81> words here and here
 "))))))))
-   (lsp-execute-code-action-by-kind "quickfix")
-   (should (equal (buffer-string)
-                  "Line 0 unique word  common
+    (lsp-execute-code-action-by-kind "quickfix")
+    (should (equal (buffer-string)
+                   "Line 0 unique word  common
 line  unique word broming + common
 line  unique word normalw common here
 line 81 words here and here
@@ -704,29 +763,29 @@ line 81 words here and here
 
 (ert-deftest lsp-mock-server-suggests-action-with-doc-changes ()
   "Test ensuring that lsp-mode applies code action document edits correctly."
-  (lsp-mock-run-with-mock-server
-   (let ((docChanges
-          (vconcat (list `(:textDocument
-                           (:version 0 ; document was never changed
-                            :uri ,(concat "file://" lsp-test-sample-file))
-                           :edits
-                           ,(lsp-test-make-edits
-                             "Line 0 ########### ######### common
+  (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+    (let ((docChanges
+           (vconcat (list `(:textDocument
+                            (:version 0 ; document was never changed
+                             :uri ,(concat "file://" lsp-test-sample-file))
+                            :edits
+                            ,(lsp-test-make-edits
+                              "Line 0 ########### ######### common
 line 1<00> unique word broming + common
 line # ###### word normalw common here
 line #<81> words here and here
 "))))))
-     (lsp-test-schedule-response
-      "textDocument/codeAction"
-      (vconcat (list `(:title "Some edits"
-                       :kind "quickfix"
-                       :isPreferred t
-                       :edit
-                       (:changes #s(hash-table data ()) ; empty obj
-                        :documentChanges ,docChanges)))))
-     (lsp-execute-code-action-by-kind "quickfix")
-     (should (equal (buffer-string)
-                    "Line 0   common
+      (lsp-test-schedule-response
+       "textDocument/codeAction"
+       (vconcat (list `(:title "Some edits"
+                        :kind "quickfix"
+                        :isPreferred t
+                        :edit
+                        (:changes #s(hash-table data ()) ; empty obj
+                         :documentChanges ,docChanges)))))
+      (lsp-execute-code-action-by-kind "quickfix")
+      (should (equal (buffer-string)
+                     "Line 0   common
 line 100 unique word broming + common
 line   word normalw common here
 line 81 words here and here
@@ -734,21 +793,21 @@ line 81 words here and here
 
 (ert-deftest lsp-mock-doc-changes-wrong-version ()
   "Test ensuring that lsp-mode applies code action document edits correctly."
-  (lsp-mock-run-with-mock-server
-   (let ((docChanges
-          (vconcat (list `(:textDocument
-                           (:version 1 ; This version does not exist
-                            :uri ,(concat "file://" lsp-test-sample-file))
-                           :edits [])))))
-     (lsp-test-schedule-response
-      "textDocument/codeAction"
-      (vconcat (list `(:title "Some edits"
-                       :kind "quickfix"
-                       :isPreferred t
-                       :edit
-                       (:changes #s(hash-table data ()) ; empty obj
-                        :documentChanges ,docChanges)))))
-     (should-error (lsp-execute-code-action-by-kind "quickfix")))))
+  (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+    (let ((docChanges
+           (vconcat (list `(:textDocument
+                            (:version 1 ; This version does not exist
+                             :uri ,(concat "file://" lsp-test-sample-file))
+                            :edits [])))))
+      (lsp-test-schedule-response
+       "textDocument/codeAction"
+       (vconcat (list `(:title "Some edits"
+                        :kind "quickfix"
+                        :isPreferred t
+                        :edit
+                        (:changes #s(hash-table data ()) ; empty obj
+                         :documentChanges ,docChanges)))))
+      (should-error (lsp-execute-code-action-by-kind "quickfix")))))
 
 ;; Some actions are executed partially by the server:
 ;; after the user selects the action, lsp-mode sends a request
@@ -758,24 +817,25 @@ line 81 words here and here
 ;; This test simulates only the last bit.
 (ert-deftest lsp-mock-server-request-edits ()
   "Test ensuring that lsp-mode honors server's request for edits."
-  (lsp-mock-run-with-mock-server
-   (let ((initial-content (buffer-string)))
-     (lsp-test-send-command-to-mock-server
-      (format "(princ (json-rpc-string '(:id 1 :method \"workspace/applyEdit\"
+  (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+    (let ((initial-content (buffer-string)))
+      (lsp-test-send-command-to-mock-server
+       (format "(princ (json-rpc-string '(:id 1 :method \"workspace/applyEdit\"
                                       :params (:edit
                                                (:changes
                                                 ((%S . %S)))))))"
-              (concat "file://" lsp-test-sample-file)
-              (lsp-test-make-edits
-               "#### <8>0 unique word fegam and common
+               (concat "file://" lsp-test-sample-file)
+               (lsp-test-make-edits
+                "#### <8>0 unique word fegam and common
 line 1 unique word broming + common
 line 2 unique word normalw common here
 line 3 words here and here
 ")))
-     (lsp-test-sync-wait (progn (should (lsp-workspaces))
-                                (not (equal initial-content (buffer-string)))))
-     (should (equal (buffer-string)
-                    " 80 unique word fegam and common
+      (lsp-test-sync-wait 4 "LSP mode changes code"
+                          (should (lsp-workspaces))
+                          (not (equal initial-content (buffer-string))))
+      (should (equal (buffer-string)
+                     " 80 unique word fegam and common
 line 1 unique word broming + common
 line 2 unique word normalw common here
 line 3 words here and here
@@ -783,67 +843,71 @@ line 3 words here and here
 
 (ert-deftest lsp-mock-server-no-declaration-found ()
   "Test checking that lsp-mode reports when server returns no declaration."
-  (lsp-mock-run-with-mock-server
-   (should (string-match-p "not found" (lsp-find-declaration)))))
+  (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+    (should (string-match-p "not found" (lsp-find-declaration)))))
 
 (ert-deftest lsp-mock-server-goto-declaration ()
   "Test checking that lsp-mode can follow the symbol declaration."
-  (lsp-mock-run-with-mock-server
-   (let ((decl-range (lsp-test-range-make
-                      (buffer-string)
-                      "line 1 unique word broming + common"
-                      "                   ^^^^^^^         ")))
-     (lsp-test-schedule-response
-      "textDocument/declaration"
-      (vconcat (list `(:uri ,(concat "file://" lsp-test-sample-file)
-                       :range ,(lsp-test-full-range decl-range)))))
-     (lsp-find-declaration)
-     ;; 1+ to convert 0-based LSP line number to 1-based Emacs line number
-     (should (equal (1+ (plist-get decl-range :line)) (line-number-at-pos)))
-     (should (equal (plist-get decl-range :from) (current-column))))))
+  (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+    (let ((decl-range (lsp-test-range-make
+                       (buffer-string)
+                       "line 1 unique word broming + common"
+                       "                   ^^^^^^^         ")))
+      (lsp-test-schedule-response
+       "textDocument/declaration"
+       (vconcat (list `(:uri ,(concat "file://" lsp-test-sample-file)
+                        :range ,(lsp-test-full-range decl-range)))))
+      (lsp-find-declaration)
+      ;; 1+ to convert 0-based LSP line number to 1-based Emacs line number
+      (should (equal (1+ (plist-get decl-range :line)) (line-number-at-pos)))
+      (should (equal (plist-get decl-range :from) (current-column))))))
 
 (ert-deftest lsp-mock-server-goto-definition ()
   "Test checking that lsp-mode can follow the symbol definition."
-  (lsp-mock-run-with-mock-server
-   (let ((decl-range (lsp-test-range-make
-                      (buffer-string)
-                      "line 3 words here and here"
-                      "     ^^^^^^^              ")))
-     (lsp-test-schedule-response
-      "textDocument/definition"
-      (vconcat (list `(:uri ,(concat "file://" lsp-test-sample-file)
-                       :range ,(lsp-test-full-range decl-range)))))
-     (lsp-find-definition)
-     ;; 1+ to convert 0-based LSP line number to 1-based Emacs line number
-     (should (equal (1+ (plist-get decl-range :line)) (line-number-at-pos)))
-     (should (equal (plist-get decl-range :from) (current-column))))))
+  (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+    (let ((decl-range (lsp-test-range-make
+                       (buffer-string)
+                       "line 3 words here and here"
+                       "     ^^^^^^^              ")))
+      (lsp-test-schedule-response
+       "textDocument/definition"
+       (vconcat (list `(:uri ,(concat "file://" lsp-test-sample-file)
+                        :range ,(lsp-test-full-range decl-range)))))
+      (lsp-find-definition)
+      ;; 1+ to convert 0-based LSP line number to 1-based Emacs line number
+      (should (equal (1+ (plist-get decl-range :line)) (line-number-at-pos)))
+      (should (equal (plist-get decl-range :from) (current-column))))))
 
 (ert-deftest lsp-mock-server-provides-inlay-hints ()
   "lsp-mode accepts inlay hints from the server and displays them."
   (let ((lsp-inlay-hint-enable t)
         (hint-line 2)
         (hint-col 10))
-    (lsp-mock-run-with-mock-server
-     (lsp-mock-with-temp-window
-      (current-buffer)
-      (lambda ()
-        (lsp-test-schedule-response
-         "textDocument/inlayHint"
-         (vconcat (list `(:kind 2
-                          :position (:line ,hint-line :character ,hint-col)
-                          :paddingLeft ()
-                          :label "my hint"))))
-        ;; Lsp will update inlay hints on idling
-        (run-hooks 'lsp-on-idle-hook)
-        (lsp-test-sync-wait (progn (should (lsp-workspaces))
-                                   (lsp-test-all-overlays 'lsp-inlay-hint)))
-        (let ((hints (lsp-test-all-overlays 'lsp-inlay-hint)))
-          (should (eq (length hints) 1))
-          (should (equal (overlay-get (car hints) 'before-string) "my hint"))
-          (goto-char (overlay-start (car hints)))
-          ; 1+ to convert 0-based LSP line number to 1-based Emacs line number
-          (should (equal (line-number-at-pos) (1+ hint-line)))
-          (should (equal (current-column) hint-col))))))))
+    (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+      (lsp-mock-with-temp-window
+       (current-buffer)
+       (lambda ()
+         (lsp-test-schedule-response
+          "textDocument/inlayHint"
+          (vconcat (list `(:kind 2
+                           :position (:line ,hint-line :character ,hint-col)
+                           :paddingLeft ()
+                           :label "my hint"))))
+         ;; Lsp will update inlay hints on idling
+         (run-hooks 'lsp-on-idle-hook)
+         (lsp-test-sync-wait 4 "LSP mode inserts inlay hints"
+                             (should (lsp-workspaces))
+                             (lsp-test-all-overlays 'lsp-inlay-hint))
+         (let ((hints (lsp-test-all-overlays 'lsp-inlay-hint)))
+           (should (eq (length hints) 1))
+           (should (equal (overlay-get (car hints) 'before-string) "my hint"))
+           (goto-char (overlay-start (car hints)))
+                                        ; 1+ to convert 0-based LSP line number to 1-based Emacs line number
+           (should (equal (line-number-at-pos) (1+ hint-line)))
+           (should (equal (current-column) hint-col)))
+         ;; Disable inlay hints to remove overlays
+         (lsp-test-schedule-response "textDocument/inlayHint" [])
+         (run-hooks 'lsp-on-idle-hook))))))
 
 (ert-deftest lsp-mock-server-provides-code-lens ()
   "lsp-mode accepts code lenses from the server and displays them."
@@ -854,14 +918,313 @@ line 3 words here and here
                               :end (:line ,line :character 1))
                       :command (:title "My command"
                                 :command "myCommand")))))
-    (lsp-mock-run-with-mock-server
-     (lsp-test-sync-wait (lsp-test-all-overlays 'lsp-lens))
-     (let ((lenses (lsp-test-all-overlays 'lsp-lens)))
-       (should (eq (length lenses) 1))
-       (message "%s" (overlay-properties (car lenses)))
-       (should (string-match-p "My command"
-                               (overlay-get (car lenses) 'after-string)))
-       (goto-char (overlay-start (car lenses)))
-       (should (equal (line-number-at-pos) (- line 1)))))))
+    (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+      (lsp-test-sync-wait 4 "LSP server inserts lenses"
+                          (lsp-test-all-overlays 'lsp-lens))
+      (let ((lenses (lsp-test-all-overlays 'lsp-lens)))
+        (should (eq (length lenses) 1))
+        (should (string-match-p "My command"
+                                (overlay-get (car lenses) 'after-string)))
+        (goto-char (overlay-start (car lenses)))
+        (should (equal (line-number-at-pos) (- line 1))))
+      ;; Remove lens overlays
+      (lsp-lens-hide))))
+
+(defun lsp-test-overlay-ranges (tag)
+  "Return all overlays tagged TAG in the current buffer as ranges."
+  (save-excursion
+    (seq-map (lambda (ovl)
+               (goto-char (overlay-start ovl))
+               (let ((from-char (current-column))
+                     (from-line (line-number-at-pos)))
+                 (goto-char (overlay-end ovl))
+                 (should (equal from-line (line-number-at-pos)))
+                 (list :line (- from-line 1) ;; 1-based to 0-based
+                       :from from-char
+                       :to (current-column))))
+             (seq-filter (lambda (ovl) (overlay-get ovl tag))
+                         (overlays-in (point-min) (point-max))))))
+
+(defun lsp-test-flycheck-diags ()
+  "Get all diags displayed by flycheck."
+  (lsp-test-overlay-ranges 'flycheck-overlay))
+
+(ert-deftest lsp-mock-server-flycheck-updates-diagnostics ()
+  "Test that mock server can update diagnostics and lsp-mode reflects that."
+  (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+    ;; There are no diagnostics at first
+    (should (null (lsp-test-flycheck-diags)))
+
+    ;; Server found a diagnostic
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+
+    ;; For some reason, flycheck refuses to call lsp-diagnostics--flycheck-start
+    (lsp-test-sync-wait 4 "Flycheck inserts diagnostics"
+                        (should (lsp-workspaces))
+                        (flycheck-buffer)
+                        (eq (length (lsp-test-flycheck-diags)) 1))
+
+    ;; The diagnostic is properly received
+    (should (equal (car (lsp-test-flycheck-diags))
+                   (lsp-test-range-make (buffer-string)
+                                        "line 1 unique word broming + common"
+                                        "                   ^^^^^^^         ")))
+
+    ;; Server found a different diagnostic
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "fegam")
+    (lsp-test-wait-for-diagnostic-update)
+    (flycheck-buffer)
+
+    ;; The new diagnostics is properly displayed instead of the old one
+    (should (eq (length (lsp-test-flycheck-diags)) 1))
+    (should (equal (car (lsp-test-flycheck-diags))
+                   (lsp-test-range-make (buffer-string)
+                                        "Line 0 unique word fegam and common"
+                                        "                   ^^^^^           ")))
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "nonexistent")
+
+    (lsp-test-sync-wait 3 "Flycheck diags dissipate"
+                        (should (lsp-workspaces))
+                        (flycheck-buffer)
+                        (null (lsp-test-flycheck-diags)))))
+
+(defun lsp-test-wait-for-diagnostic-update ()
+  "Wait until LSP receives updated diagnostics from the mock server."
+  (let ((diags-updated nil))
+    (cl-flet ((on-diags-updated (lambda (&rest _args) (setq diags-updated t))))
+      (add-hook 'lsp-diagnostics-updated-hook #'on-diags-updated)
+      (unwind-protect
+          (lsp-test-sync-wait 4 "LSP mode to receive updated diagnostics"
+            (should (lsp-workspaces))
+            diags-updated))
+      (remove-hook 'lsp-diagnostics-updated-hook #'on-diags-updated))))
+
+(ert-deftest lsp-mock-server-flycheck-updates-diags-with-delay ()
+  "Test demonstrating delay in the diagnostics update.
+
+If server takes noticeable time to update diagnostics after a
+document change, and `lsp-diagnostic-clean-after-change' is
+nil (default), diagnostic ranges will be off until server
+publishes the update. This test demonstrates this behavior."
+  (lsp-mock-run-with-mock-server lsp-test-sample-file :flycheck
+    ;; There are no diagnostics at first
+    (should (null (lsp-test-flycheck-diags)))
+
+    ;; Server found diagnostic
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+    (lsp-test-sync-wait
+     4 "LSP mode to receive initial diagnostic"
+     (should (lsp-workspaces))
+     (flycheck-buffer)
+     (eq (length (lsp-test-flycheck-diags)) 1))
+
+    ;; The diagnostic is properly received
+    (should (equal (car (lsp-test-flycheck-diags))
+                   (lsp-test-range-make (buffer-string)
+                                        "line 1 unique word broming + common"
+                                        "                   ^^^^^^^         ")))
+
+    ;; Change the text: remove the first line
+    (goto-char (point-min))
+    (kill-line 1)
+    (should (string-equal (buffer-string)
+                          "line 1 unique word broming + common
+line 2 unique word normalw common here
+line 3 words here and here
+"))
+    ;; Give it some time to update
+    (sleep-for 0.5)
+    (flycheck-buffer)
+    ;; The diagnostic range is adjusted automatically
+    (should (equal (car (lsp-test-flycheck-diags))
+                   (lsp-test-range-make (buffer-string)
+                                        "line 1 unique word broming + common"
+                                        "                   ^^^^^^^         ")))
+
+    ;; Server sent an update
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+
+    (lsp-test-wait-for-diagnostic-update)
+    (flycheck-buffer)
+
+    ;; The diagnostic is still in a correct position
+    (should (equal (car (lsp-test-flycheck-diags))
+                   (lsp-test-range-make (buffer-string)
+                                        "line 1 unique word broming + common"
+                                        "                   ^^^^^^^         ")))
+
+    ;; Remove diagnostics
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "nonexistent")
+    (lsp-test-sync-wait 3 "Flycheck diags dissipate"
+                        (should (lsp-workspaces))
+                        (flycheck-buffer)
+                        (null (lsp-test-flycheck-diags)))))
+
+(defun lsp-test-flymake-diags ()
+  "Get all diags displayed by flymake."
+  ;; The first property flymake sets on a diagnostic overlay is 'category
+  (lsp-test-overlay-ranges 'category))
+
+(ert-deftest lsp-mock-server-flymake-maintains-diags-with-doc-changes ()
+  "Test demonstrating delay in the diagnostics update.
+
+If server takes noticeable time to update diagnostics after a
+document change, and `lsp-diagnostic-clean-after-change' is
+nil (default), diagnostic positions in (lsp-diagnostics) will be
+off until server publishes the update. However, flymake keeps the
+overlays it created until an update comes, and overlays are
+automatically adjusted on every edit, so diagnostic ranges remain
+correct."
+  (lsp-mock-run-with-mock-server lsp-test-sample-file :flymake
+    ;; There are no diagnostics at first
+    (should (null (lsp-test-flymake-diags)))
+
+    ;; Server found diagnostic
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+    (lsp-test-sync-wait
+     4 "LSP mode to receive initial diagnostic"
+     (should (lsp-workspaces))
+     (flymake-start)
+     (eq (length (lsp-test-flymake-diags)) 1))
+
+    ;; The diagnostic is properly received
+    (should (equal (car (lsp-test-flymake-diags))
+                   (lsp-test-range-make (buffer-string)
+                                        "line 1 unique word broming + common"
+                                        "                   ^^^^^^^         ")))
+    ;; Change the text: remove the first line
+    (goto-char (point-min))
+    (kill-line 1)
+    (should (string-equal (buffer-string)
+                          "line 1 unique word broming + common
+line 2 unique word normalw common here
+line 3 words here and here
+"))
+    ;; Give it some time to update
+    (sleep-for 0.5)
+    (flymake-start)
+    ;; Unlike flycheck, flymake keeps the old diagnostics as overlays until it
+    ;; gets an update. So the range of the diagnostic is preserved properly.
+    (should (equal (car (lsp-test-flymake-diags))
+                   (lsp-test-range-make (buffer-string)
+                                        "line 1 unique word broming + common"
+                                        "                   ^^^^^^^         ")))
+
+    ;; Server sent an update
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "broming")
+
+    (lsp-test-wait-for-diagnostic-update)
+    (flymake-start)
+
+    ;; Upon reception, flymake replaces the old overlays with the
+    ;; new ones placed on the reported position, which happend to
+    ;; be the same.
+    (should (equal (car (lsp-test-flymake-diags))
+                   (lsp-test-range-make (buffer-string)
+                                        "line 1 unique word broming + common"
+                                        "                   ^^^^^^^         ")))
+
+    ;; Remove diagnostics
+    (lsp-test-command-send-diags lsp-test-sample-file (buffer-string) "nonexistent")
+    (lsp-test-sync-wait 3 "Flymake diags dissipate"
+                        (should (lsp-workspaces))
+                        (flymake-start)
+                        (null (lsp-test-flymake-diags)))))
+
+(defun lsp-mock-edit-org-buffer ()
+  "Edit the org buffer: remove 2 lines and undent code block."
+  ;; Change the text: remove the first line in the org doc itself
+  (goto-char (point-min))
+  (kill-line 1)
+  ;; And in the code block
+  (search-forward "Line 0 unique")
+  (goto-char (line-beginning-position))
+  (kill-line 1)
+  ;; And unindent the block by 2 characters
+  (forward-line -1)
+  (dotimes (_ 5) ;; 3 lines in the code block + begin_src + end_src lines
+    (goto-char (line-beginning-position))
+    (kill-forward-chars 2)
+    (forward-line 1))
+  (forward-line -1)
+  (should (string-equal (buffer-string)
+                        "
+** Header to a section with some indentation
+     language =prog= will resolve into the =prog-mode= - mode for the mock LSP server
+   #+begin_src prog :tangle \"sample.txt\"
+   line 1 unique word broming + common
+   line 2 unique word normalw common here
+   line 3 words here and here
+   #+end_src
+")))
+
+(defun lsp-test-org-code-block-contents ()
+  "Return the contents of the sample file."
+  (save-excursion
+    (goto-char (point-min))
+    (search-forward "#+begin_src prog")
+    (forward-line 1)
+    (let* ((beg (point))
+           (end (progn (search-forward "#+end_src") (line-beginning-position)))
+           (contents (buffer-substring-no-properties beg end))
+           (lines (split-string contents "\n"))
+           (trimmed-lines (mapcar (lambda (line) (string-trim-left line)) lines)))
+      (string-join trimmed-lines "\n"))))
+
+
+(ert-deftest lsp-mock-server-org-flycheck-updates-diags-with-delay ()
+  :tags '(org)
+  "Test ensuring flycheck shows correct diagnostic locations in org-mode."
+  (let ((org-file (f-join lsp-test-location "fixtures/SamplesForMock/embedded-snippet.org"))
+        (snippet-file lsp-test-sample-file))
+    (lsp-mock-run-with-mock-server org-file :flycheck
+      (goto-char (point-min))
+      (search-forward "Line 0 unique")
+      (lsp-org)
+                                        ;(should (eq (lsp-test-total-folder-count) (1+ initial-server-count)))
+      (lsp-test-sync-wait 4 "LSP workspace initialization"
+        (eq 'initialized
+            (lsp--workspace-status (cl-first (lsp-workspaces)))))
+      (should (null (lsp-test-flycheck-diags)))
+      (lsp-test-command-send-diags
+       snippet-file (lsp-test-org-code-block-contents) "broming")
+      (lsp-test-sync-wait 4 "lsp mode to get the diagnostic"
+        (should (lsp-workspaces))
+        (flycheck-buffer)
+        (lsp-test-flycheck-diags))
+      (should (equal (car (lsp-test-flycheck-diags))
+                     (lsp-test-range-make (buffer-string)
+                                          "     line 1 unique word broming + common"
+                                          "                        ^^^^^^^         ")))
+      (lsp-mock-edit-org-buffer)
+      ;; Give it some time to update
+      (sleep-for 0.5)
+      (flycheck-buffer)
+      ;; The diagnostic position is properly adjusted after the change
+      (should (equal (car (lsp-test-flycheck-diags))
+                     (lsp-test-range-make (buffer-string)
+                                          "   line 1 unique word broming + common"
+                                          "                      ^^^^^^^         ")))
+      ;; Server sent an update
+      (lsp-test-command-send-diags
+       snippet-file (lsp-test-org-code-block-contents) "broming")
+      (lsp-test-wait-for-diagnostic-update)
+      (flycheck-buffer)
+
+      ;; Now the line number is still again
+      ;; The columns are shifted because lsp-org does
+      ;; not adjust for changed indentation.
+      (should (equal (car (lsp-test-flycheck-diags))
+                     (lsp-test-range-make (buffer-string)
+                                          "   line 1 unique word broming + common"
+                                          "                        ^^^^^^^       ")))
+
+      (lsp-test-command-send-diags
+       lsp-test-sample-file (lsp-test-org-code-block-contents) "nonexistent")
+      (lsp-test-sync-wait 3 "Flycheck diags dissipate"
+        (should (lsp-workspaces))
+        (flycheck-buffer)
+        (null (lsp-test-flycheck-diags))))))
+
 
 ;;; lsp-mock-server-test.el ends here

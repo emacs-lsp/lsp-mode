@@ -9,6 +9,7 @@
   * Add support for C# via the [[https://github.com/dotnet/roslyn/tree/main/src/LanguageServer][Roslyn language server]].
   * Add basic support for [[https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_pullDiagnostics][pull diagnostics]] requests.
   * Add ~lsp-flush-delayed-changes-before-next-message~ customization point to enforce throttling document change notifications.
+  * Improve positions of stale diagnostics on a changed buffer via overlays.
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.

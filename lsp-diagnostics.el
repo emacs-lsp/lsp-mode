@@ -154,7 +154,7 @@ CALLBACK is the status callback passed by Flycheck."
 
   (remove-hook 'lsp-on-idle-hook #'lsp-diagnostics--flycheck-buffer t)
 
-  (->> (lsp--get-buffer-diagnostics)
+  (->> (lsp--get-buffer-diagnostics t)
        (-map (-lambda ((&Diagnostic :message :severity? :tags? :code? :source?
                                     :range (&Range :start (start &as &Position
                                                                  :line      start-line

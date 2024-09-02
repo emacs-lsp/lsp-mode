@@ -142,9 +142,7 @@ Key is the method, and value is the `result' field in the response.")
 This function is useful for external commands,
 allowing control over the server responses.
 
-You can schedule only one response for a method for the entire session."
-  (when (gethash method scheduled-responses)
-    (error "Response for method %s is already scheduled" method))
+You can schedule only one response for a method at a time."
   (puthash method result scheduled-responses))
 
 (defun get-method (input)
