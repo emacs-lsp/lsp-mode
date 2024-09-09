@@ -187,6 +187,7 @@ the latest build duration."
 
 (defcustom lsp-rust-features []
   "List of features to activate.
+Corresponds to the `rust-analyzer` setting `rust-analyzer.cargo.features`.
 Set this to `\"all\"` to pass `--all-features` to cargo."
   :type 'lsp-string-vector
   :group 'lsp-rust-rls
@@ -596,9 +597,15 @@ The command should include `--message=format=json` or similar option."
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "8.0.2"))
 
-(defcustom lsp-rust-analyzer-checkonsave-features []
+(defcustom lsp-rust-analyzer-checkonsave-features nil
   "List of features to activate.
-Set this to `\"all\"` to pass `--all-features` to cargo."
+Corresponds to the `rust-analyzer` setting `rust-analyzer.check.features`.
+When set to `nil` (default), the value of `lsp-rust-features' is inherited.
+Set this to `\"all\"` to pass `--all-features` to cargo.
+Note: setting this to `nil` means \"unset\", whereas setting this
+to `[]` (empty vector) means \"set to empty list of features\",
+which overrides any value that would otherwise be inherited from
+`lsp-rust-features'."
   :type 'lsp-string-vector
   :group 'lsp-rust-rust-analyzer
   :package-version '(lsp-mode . "8.0.2"))
@@ -1666,11 +1673,22 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
                :merge (:glob ,(lsp-json-bool lsp-rust-analyzer-imports-merge-glob))
                :prefix ,lsp-rust-analyzer-import-prefix)
     :lruCapacity ,lsp-rust-analyzer-lru-capacity
+    ;; This `checkOnSave` is called `check` in the `rust-analyzer` docs, not
+    ;; `checkOnSave`, but the `rust-analyzer` source code shows that both names
+    ;; work. The `checkOnSave` name has been supported by `rust-analyzer` for a
+    ;; long time, whereas the `check` name was introduced here in 2023:
+    ;; https://github.com/rust-lang/rust-analyzer/commit/d2bb62b6a81d26f1e41712e04d4ac760f860d3b3
     :checkOnSave ( :enable ,(lsp-json-bool lsp-rust-analyzer-cargo-watch-enable)
                    :command ,lsp-rust-analyzer-cargo-watch-command
                    :extraArgs ,lsp-rust-analyzer-cargo-watch-args
                    :allTargets ,(lsp-json-bool lsp-rust-analyzer-check-all-targets)
-                   :features ,lsp-rust-analyzer-checkonsave-features
+                   ;; We need to distinguish between setting this to the empty
+                   ;; vector, and not setting it at all, which `rust-analyzer`
+                   ;; interprets as "inherit from
+                   ;; `rust-analyzer.cargo.features`". We use `nil` to mean
+                   ;; "unset".
+                   ,@(when (vectorp lsp-rust-analyzer-checkonsave-features)
+                       `(:features ,lsp-rust-analyzer-checkonsave-features))
                    :overrideCommand ,lsp-rust-analyzer-cargo-override-command)
     :highlightRelated ( :breakPoints (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-breakpoints))
                         :closureCaptures (:enable ,(lsp-json-bool lsp-rust-analyzer-highlight-closure-captures))
