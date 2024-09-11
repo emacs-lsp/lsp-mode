@@ -31,8 +31,9 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/charliermarsh/ruff-lsp"))
 
-(defcustom lsp-ruff-lsp-server-command '("ruff-lsp")
-  "Command to start ruff-lsp."
+(defcustom lsp-ruff-lsp-server-command '("ruff" "server")
+  "Command to start ruff lsp.
+Previous ruff-lsp should change this to (\"ruff-lsp\")"
   :risky t
   :type '(repeat string)
   :group 'lsp-ruff-lsp)

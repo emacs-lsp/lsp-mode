@@ -941,11 +941,11 @@
     "debugger": "Not available"
   },
   {
-    "name": "ruff-lsp",
+    "name": "ruff",
     "full-name": "Python",
-    "server-name": "ruff-lsp",
-    "server-url": "https://github.com/charliermarsh/ruff-lsp",
-    "installation": "pip install ruff-lsp",
+    "server-name": "ruff",
+    "server-url": "https://github.com/astral-sh/ruff",
+    "installation": "pip install ruff (previous pip install ruff-lsp)",
     "debugger": "Not available"
   },
   {
