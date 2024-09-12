@@ -755,6 +755,20 @@ The CLEANUP-FN will be called to cleanup."
   "Disable LSP completion support."
   (lsp-completion-mode -1))
 
+(defun lsp-completion-passthrough-try-completion (string table pred point)
+  (let* ((completion-ignore-case t)
+         (try (completion-basic-try-completion string table pred point))
+         (newstr (car try))
+         (newpoint (cdr try))
+         (beforepoint (and try (substring newstr 0 newpoint))))
+    (if (and beforepoint
+             (string-prefix-p
+              beforepoint
+              (try-completion "" table pred)
+              t))
+        try
+      (cons string point))))
+
 (defun lsp-completion-passthrough-all-completions (_string table pred _point)
   "Passthrough all completions from TABLE with PRED."
   (defvar completion-lazy-hilit-fn)
@@ -790,7 +804,7 @@ The CLEANUP-FN will be called to cleanup."
       (setf (alist-get 'lsp-capf completion-category-defaults) '((styles . (lsp-passthrough))))
       (make-local-variable 'completion-styles-alist)
       (setf (alist-get 'lsp-passthrough completion-styles-alist)
-            '(completion-basic-try-completion
+            '(lsp-completion-passthrough-try-completion
               lsp-completion-passthrough-all-completions
               "Passthrough completion."))
 
