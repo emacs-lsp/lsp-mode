@@ -10,6 +10,7 @@
   * Add basic support for [[https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_pullDiagnostics][pull diagnostics]] requests.
   * Add ~lsp-flush-delayed-changes-before-next-message~ customization point to enforce throttling document change notifications.
   * Add ~lsp-sql-show-tables~ command.
+  * Fix bug in ~rust-analyzer.check.features~ configuration via ~lsp-rust-checkonsave-features~ Emacs setting: we were defaulting to ~[]~, but ~rust-analyzer~ defaults to inheriting the value from ~rust-analyzer.cargo.features~. The bug resulted in code hidden behind features not getting type checked when those features were enabled by setting ~rust-analyzer.cargo.features~ via the ~lsp-rust-features~ Emacs setting.
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
