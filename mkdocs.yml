@@ -138,7 +138,7 @@ nav:
     - Python (Palantir deprecated): page/lsp-pyls.md
     - Python (Pyright): https://emacs-lsp.github.io/lsp-pyright
     - Python (Microsoft): https://emacs-lsp.github.io/lsp-python-ms
-    - Python (Ruff): page/lsp-ruff-lsp.md
+    - Python (Ruff): page/lsp-ruff.md
     - QML: page/lsp-qml.md
     - R: page/lsp-r.md
     - Racket (jeapostrophe): page/lsp-racket-langserver.md

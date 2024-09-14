@@ -1,4 +1,4 @@
-;;; lsp-ruff-lsp.el --- ruff-lsp support             -*- lexical-binding: t; -*-
+;;; lsp-ruff.el --- ruff lsp support             -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023 Freja Nordsiek
 ;;
@@ -20,96 +20,97 @@
 
 ;;; Commentary:
 
-;; ruff-lsp Client for the Python programming language
+;; ruff LSP Client for the Python programming language
 
 ;;; Code:
 
 (require 'lsp-mode)
 
-(defgroup lsp-ruff-lsp nil
-  "LSP support for Python, using ruff-lsp's Python Language Server."
+(defgroup lsp-ruff nil
+  "LSP support for Python, using ruff's Python Language Server."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/charliermarsh/ruff-lsp"))
+  :link '(url-link "https://github.com/astral-sh/ruff"))
 
-(defcustom lsp-ruff-lsp-server-command '("ruff-lsp")
-  "Command to start ruff-lsp."
+(defcustom lsp-ruff-server-command '("ruff" "server")
+  "Command to start ruff lsp.
+Previous ruff-lsp should change this to (\"ruff-lsp\")"
   :risky t
   :type '(repeat string)
-  :group 'lsp-ruff-lsp)
+  :group 'lsp-ruff)
 
-(defcustom lsp-ruff-lsp-ruff-path ["ruff"]
+(defcustom lsp-ruff-ruff-path ["ruff"]
   "Paths to ruff to try, in order."
   :risky t
   :type 'lsp-string-vector
-  :group 'lsp-ruff-lsp)
+  :group 'lsp-ruff)
 
-(defcustom lsp-ruff-lsp-ruff-args []
+(defcustom lsp-ruff-ruff-args []
   "Arguments, passed to ruff."
   :risky t
   :type 'lsp-string-vector
-  :group 'lsp-ruff-lsp)
+  :group 'lsp-ruff)
 
-(defcustom lsp-ruff-lsp-log-level "error"
+(defcustom lsp-ruff-log-level "error"
   "Tracing level."
   :type '(choice (const "debug")
                  (const "error")
                  (const "info")
                  (const "off")
                  (const "warn"))
-  :group 'lsp-ruff-lsp)
+  :group 'lsp-ruff)
 
-(defcustom lsp-ruff-lsp-python-path "python3"
+(defcustom lsp-ruff-python-path "python3"
   "Path to the Python interpreter."
   :risky t
   :type 'string
-  :group 'lsp-ruff-lsp)
+  :group 'lsp-ruff)
 
-(defcustom lsp-ruff-lsp-show-notifications "off"
+(defcustom lsp-ruff-show-notifications "off"
   "When notifications are shown."
   :type '(choice (const "off")
                  (const "onError")
                  (const "onWarning")
                  (const "always"))
-  :group 'lsp-ruff-lsp)
+  :group 'lsp-ruff)
 
-(defcustom lsp-ruff-lsp-advertize-organize-imports t
+(defcustom lsp-ruff-advertize-organize-imports t
   "Whether to report ability to handle source.organizeImports actions."
   :type 'boolean
-  :group 'lsp-ruff-lsp)
+  :group 'lsp-ruff)
 
-(defcustom lsp-ruff-lsp-advertize-fix-all t
+(defcustom lsp-ruff-advertize-fix-all t
   "Whether to report ability to handle source.fixAll actions."
   :type 'boolean
-  :group 'lsp-ruff-lsp)
+  :group 'lsp-ruff)
 
-(defcustom lsp-ruff-lsp-import-strategy "fromEnvironment"
-  "Where ruff is imported from if lsp-ruff-lsp-ruff-path is not set."
+(defcustom lsp-ruff-import-strategy "fromEnvironment"
+  "Where ruff is imported from if lsp-ruff-ruff-path is not set."
   :type '(choice (const "fromEnvironment")
                  (const "useBundled"))
-  :group 'lsp-ruff-lsp)
+  :group 'lsp-ruff)
 
 
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection
-                   (lambda () lsp-ruff-lsp-server-command))
+                   (lambda () lsp-ruff-server-command))
   :activation-fn (lsp-activate-on "python")
-  :server-id 'ruff-lsp
+  :server-id 'ruff
   :priority -2
   :add-on? t
   :initialization-options
   (lambda ()
     (list :settings
-          (list :args lsp-ruff-lsp-ruff-args
-                :logLevel lsp-ruff-lsp-log-level
-                :path lsp-ruff-lsp-ruff-path
-                :interpreter (vector lsp-ruff-lsp-python-path)
-                :showNotifications lsp-ruff-lsp-show-notifications
-                :organizeImports (lsp-json-bool lsp-ruff-lsp-advertize-organize-imports)
-                :fixAll (lsp-json-bool lsp-ruff-lsp-advertize-fix-all)
-                :importStrategy lsp-ruff-lsp-import-strategy)))))
+          (list :args lsp-ruff-ruff-args
+                :logLevel lsp-ruff-log-level
+                :path lsp-ruff-ruff-path
+                :interpreter (vector lsp-ruff-python-path)
+                :showNotifications lsp-ruff-show-notifications
+                :organizeImports (lsp-json-bool lsp-ruff-advertize-organize-imports)
+                :fixAll (lsp-json-bool lsp-ruff-advertize-fix-all)
+                :importStrategy lsp-ruff-import-strategy)))))
 
-(lsp-consistency-check lsp-ruff-lsp)
+(lsp-consistency-check lsp-ruff)
 
-(provide 'lsp-ruff-lsp)
-;;; lsp-ruff-lsp.el ends here
+(provide 'lsp-ruff)
+;;; lsp-ruff.el ends here
