@@ -101,10 +101,7 @@ Previous ruff-lsp should change this to (\"ruff-lsp\")"
   :initialization-options
   (lambda ()
     (list :settings
-          (list :args lsp-ruff-ruff-args
-                :logLevel lsp-ruff-log-level
-                :path lsp-ruff-ruff-path
-                :interpreter (vector lsp-ruff-python-path)
+          (list :logLevel lsp-ruff-log-level
                 :showNotifications lsp-ruff-show-notifications
                 :organizeImports (lsp-json-bool lsp-ruff-advertize-organize-imports)
                 :fixAll (lsp-json-bool lsp-ruff-advertize-fix-all)
