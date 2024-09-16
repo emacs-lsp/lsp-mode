@@ -87,7 +87,7 @@ Previous ruff-lsp should change this to (\"ruff-lsp\")"
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection
-                   (lambda () lsp-ruff-server-command))
+                   (lambda () (append lsp-ruff-server-command lsp-ruff-ruff-args)))
   :activation-fn (lsp-activate-on "python")
   :server-id 'ruff
   :priority -2
