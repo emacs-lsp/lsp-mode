@@ -38,16 +38,10 @@ Previous ruff-lsp should change this to (\"ruff-lsp\")"
   :type '(repeat string)
   :group 'lsp-ruff)
 
-(defcustom lsp-ruff-ruff-path ["ruff"]
-  "Paths to ruff to try, in order."
-  :risky t
-  :type 'lsp-string-vector
-  :group 'lsp-ruff)
-
-(defcustom lsp-ruff-ruff-args []
+(defcustom lsp-ruff-ruff-args '()
   "Arguments, passed to ruff."
   :risky t
-  :type 'lsp-string-vector
+  :type '(repeat string)
   :group 'lsp-ruff)
 
 (defcustom lsp-ruff-log-level "error"
@@ -93,7 +87,7 @@ Previous ruff-lsp should change this to (\"ruff-lsp\")"
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection
-                   (lambda () lsp-ruff-server-command))
+                   (lambda () (append lsp-ruff-server-command lsp-ruff-ruff-args)))
   :activation-fn (lsp-activate-on "python")
   :server-id 'ruff
   :priority -2
@@ -101,10 +95,7 @@ Previous ruff-lsp should change this to (\"ruff-lsp\")"
   :initialization-options
   (lambda ()
     (list :settings
-          (list :args lsp-ruff-ruff-args
-                :logLevel lsp-ruff-log-level
-                :path lsp-ruff-ruff-path
-                :interpreter (vector lsp-ruff-python-path)
+          (list :logLevel lsp-ruff-log-level
                 :showNotifications lsp-ruff-show-notifications
                 :organizeImports (lsp-json-bool lsp-ruff-advertize-organize-imports)
                 :fixAll (lsp-json-bool lsp-ruff-advertize-fix-all)
