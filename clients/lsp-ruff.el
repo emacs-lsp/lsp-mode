@@ -38,10 +38,10 @@ Previous ruff-lsp should change this to (\"ruff-lsp\")"
   :type '(repeat string)
   :group 'lsp-ruff)
 
-(defcustom lsp-ruff-ruff-args []
+(defcustom lsp-ruff-ruff-args '()
   "Arguments, passed to ruff."
   :risky t
-  :type 'lsp-string-vector
+  :type '(repeat string)
   :group 'lsp-ruff)
 
 (defcustom lsp-ruff-log-level "error"
