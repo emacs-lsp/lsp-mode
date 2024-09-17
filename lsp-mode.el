@@ -785,6 +785,7 @@ Changes take effect only when a new session is started."
     ("\\.jsonnet$" . "jsonnet")
     ("\\.jsx$" . "javascriptreact")
     ("\\.lua$" . "lua")
+    ("\\.fnl$" . "fennel")
     ("\\.mdx\\'" . "mdx")
     ("\\.nu$" . "nushell")
     ("\\.php$" . "php")
