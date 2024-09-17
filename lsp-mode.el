@@ -4120,7 +4120,8 @@ yet."
     (cond
      ((and (or (equal lsp-signature-auto-activate t)
                (memq :on-trigger-char lsp-signature-auto-activate))
-           signature-help-handler)
+           signature-help-handler
+           (not cleanup?))
       (add-hook 'post-self-insert-hook signature-help-handler nil t))
 
      ((or cleanup?
