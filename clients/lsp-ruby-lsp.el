@@ -38,6 +38,13 @@
   :safe #'booleanp
   :group 'lsp-ruby-lsp)
 
+(defcustom lsp-ruby-lsp-library-directories
+  '("~/.rbenv/" "/usr/lib/ruby/" "~/.rvm/" "~/.gem/" "~/.asdf")
+  "List of directories which will be considered to be libraries."
+  :type '(repeat string)
+  :group 'lsp-ruby-lsp
+  :package-version '(lsp-mode . "9.0.1"))
+
 (defun lsp-ruby-lsp--build-command ()
   (append
    (if lsp-ruby-lsp-use-bundler '("bundle" "exec"))
@@ -47,6 +54,7 @@
  (make-lsp-client
   :new-connection (lsp-stdio-connection #'lsp-ruby-lsp--build-command)
   :activation-fn (lsp-activate-on "ruby")
+  :library-folders-fn (lambda (_workspace) lsp-ruby-lsp-library-directories)
   :priority -2
   :server-id 'ruby-lsp-ls))
 
