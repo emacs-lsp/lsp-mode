@@ -71,8 +71,76 @@
                  (const :tag "All Projects" :global))
   :package-version '(lsp-mode . "6.3"))
 
+(defcustom lsp-modeline-use-global-mode-string t
+  "Whether add LSP features to global-mode-string instead of mode-line-format."
+  :group 'lsp-modeline
+  :type 'boolean
+  :package-version '(lsp-mode . "8.0.1"))
+
+(defcustom lsp-modeline-segments '(code-actions diagnostics workspace-status)
+  "Define what features should display on the modeline and in which order.
+Only applicable if `lsp-modeline-global-mode-string' is nil."
+  :group 'lsp-modeline
+  :type '(repeat (choice
+                  (const :tag "Show available code actions information" code-actions)
+                  (const :tag "Show project/file/workspace diagnostics count" diagnostics)
+                  (const :tag "Show the LSP workspace status" workspace-status)))
+  :package-version '(lsp-mode . "8.0.1"))
+
+
+;; internal
+
+(defvar lsp-modeline--cur-segments nil
+  "Hold the current segments and its variables strings.")
+
+(defvar lsp-modeline--string  nil
+  "The raw modeline string added to mode-line-format.")
+
 (declare-function all-the-icons-octicon "ext:all-the-icons" t t)
 (declare-function lsp-treemacs-errors-list "ext:lsp-treemacs" t)
+
+(defun lsp-modeline--segments->string (segments)
+  "Build modeline string from SEGMENTS in specified order."
+  (when segments
+    (->> lsp-modeline-segments
+         (-map (-lambda (segment)
+                 (-let (((_segment-name . variable) (--first (eq (car it) segment) segments)))
+                   (eval variable))))
+         (-filter #'identity)
+         (-reduce (lambda (string-a string-b)
+                    (concat string-a " " string-b))))))
+
+(defun lsp-modeline--set-segment (segment variable &optional remove?)
+  "Check if SEGMENT feature is enabled and add VARIABLE to the cur segments.
+Removes segment if REMOVE? is non nil."
+  (if (or remove? (member segment lsp-modeline-segments))
+      (add-to-list 'lsp-modeline--cur-segments (cons segment variable))
+    (setq lsp-modeline--cur-segments (remove variable lsp-modeline--cur-segments)))
+  (lsp-modeline--refresh-string))
+
+(defun lsp-modeline--refresh-string ()
+  "Refresh the LSP modeline string and force update modeline.
+Set modeline string on globla-mode-string or mode-line-format according to
+`lsp-modeline-use-global-mode-string'."
+  (setq lsp-modeline--string `(t ,(lsp-modeline--segments->string lsp-modeline--cur-segments)))
+
+  (if lsp-modeline-use-global-mode-string
+      (setq-local global-mode-string '(t (:eval lsp-modeline--string)))
+    (when (listp mode-line-format)
+      (setq-local mode-line-format (delq 'lsp-modeline--string mode-line-format))
+      (let ((mlpos mode-line-format)
+            pred)
+        (while (and mlpos
+                    (let ((sym (or (car-safe (car mlpos)) (car mlpos))))
+                      (not (eq 'mode-line-modes sym))))
+          (setq pred mlpos
+                mlpos (cdr mlpos)))
+
+        (if pred
+            (setcdr pred (cons 'lsp-modeline--string mlpos))
+          (setq-local mode-line-format
+                (cons 'lsp-modeline--string mode-line-format))))))
+  (force-mode-line-update))
 
 
 ;; code actions
@@ -164,7 +232,7 @@
   (setq lsp-modeline--code-actions-string
         (if (seq-empty-p actions) ""
           (lsp-modeline--build-code-actions-string actions)))
-  (force-mode-line-update))
+  (lsp-modeline--set-segment 'code-actions 'lsp-modeline--code-actions-string))
 
 (defun lsp-modeline--check-code-actions (&rest _)
   "Request code actions to update modeline for given BUFFER."
@@ -194,8 +262,7 @@
   :lighter ""
   (cond
    (lsp-modeline-code-actions-mode
-    (add-to-list 'global-mode-string '(t (:eval lsp-modeline--code-actions-string)))
-
+    (lsp-modeline--set-segment 'code-actions 'lsp-modeline--code-actions-string)
     (add-hook 'lsp-on-idle-hook 'lsp-modeline--check-code-actions nil t)
     (add-hook 'lsp-configure-hook #'lsp-modeline--enable-code-actions nil t)
     (add-hook 'lsp-unconfigure-hook #'lsp-modeline--disable-code-actions nil t))
@@ -203,7 +270,7 @@
     (remove-hook 'lsp-on-idle-hook 'lsp-modeline--check-code-actions t)
     (remove-hook 'lsp-configure-hook #'lsp-modeline--enable-code-actions t)
     (remove-hook 'lsp-unconfigure-hook #'lsp-modeline--disable-code-actions t)
-    (setq global-mode-string (remove '(t (:eval lsp-modeline--code-actions-string)) global-mode-string)))))
+    (lsp-modeline--set-segment 'code-actions 'lsp-modeline--code-actions-string t))))
 
 
 ;; diagnostics
@@ -257,7 +324,8 @@ The `:global' workspace is global one.")
   "Reset the modeline diagnostics cache."
   (plist-put lsp-modeline--diagnostics-wks->strings (car (lsp-workspaces)) nil)
   (plist-put lsp-modeline--diagnostics-wks->strings :global nil)
-  (setq lsp-modeline--diagnostics-string nil))
+  (setq lsp-modeline--diagnostics-string nil)
+  (lsp-modeline--diagnostics-update-modeline))
 
 (defun lsp-modeline--diagnostics-update-modeline ()
   "Update diagnostics modeline string."
@@ -307,32 +375,33 @@ The `:global' workspace is global one.")
    (lsp-modeline-diagnostics-mode
     (add-hook 'lsp-configure-hook #'lsp-modeline--enable-diagnostics nil t)
     (add-hook 'lsp-unconfigure-hook #'lsp-modeline--disable-diagnostics nil t)
-    (add-to-list 'global-mode-string '(t (:eval (lsp-modeline--diagnostics-update-modeline))))
+    (lsp-modeline--diagnostics-update-modeline)
+    (lsp-modeline--set-segment 'diagnostics 'lsp-modeline--diagnostics-string)
     (add-hook 'lsp-diagnostics-updated-hook 'lsp-modeline--diagnostics-reset-modeline-cache))
    (t
     (remove-hook 'lsp-configure-hook #'lsp-modeline--enable-diagnostics t)
     (remove-hook 'lsp-unconfigure-hook #'lsp-modeline--disable-diagnostics t)
     (remove-hook 'lsp-diagnostics-updated-hook 'lsp-modeline--diagnostics-reset-modeline-cache)
-    (setq global-mode-string (remove '(t (:eval (lsp-modeline--diagnostics-update-modeline))) global-mode-string)))))
+    (lsp-modeline--set-segment 'diagnostics 'lsp-modeline--diagnostics-string t))))
 
 
 ;; workspace status
 
-(defun lsp-modeline--workspace-status-string ()
+(defvar-local lsp-modeline--workspace-status-string nil
+  "Holds the current value workspace status on modeline.")
+
+(defun lsp-modeline--workspace-status-build-string ()
   "Build the workspace status string."
-  '(t (:eval (-keep #'lsp--workspace-status-string (lsp-workspaces)))))
+  (-keep #'lsp--workspace-status-string (lsp-workspaces)))
 
 (defun lsp-modeline--enable-workspace-status ()
   "Enable workspace status on modeline."
-  (let ((status (lsp-modeline--workspace-status-string)))
-    (setq-local global-mode-string (if (-contains? global-mode-string status)
-                                       global-mode-string
-                                     (cons status global-mode-string)))))
+  (setq lsp-modeline--workspace-status-string (lsp-modeline--workspace-status-build-string))
+  (lsp-modeline--set-segment 'workspace-status 'lsp-modeline--workspace-status-string))
 
 (defun lsp-modeline--disable-workspace-status ()
   "Disable workspace status on modeline."
-  (let ((status (lsp-modeline--workspace-status-string)))
-    (setq-local global-mode-string (remove status global-mode-string))))
+  (lsp-modeline--set-segment 'workspace-status 'lsp-modeline--workspace-status-string t))
 
 ;;;###autoload
 (define-minor-mode lsp-modeline-workspace-status-mode
