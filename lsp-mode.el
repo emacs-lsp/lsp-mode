@@ -871,6 +871,7 @@ Changes take effect only when a new session is started."
     (go-ts-mode . "go")
     (graphql-mode . "graphql")
     (haskell-mode . "haskell")
+    (haskell-ts-mode . "haskell")
     (hack-mode . "hack")
     (php-mode . "php")
     (php-ts-mode . "php")
