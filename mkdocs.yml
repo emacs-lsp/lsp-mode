@@ -80,6 +80,7 @@ nav:
     - ESLint: page/lsp-eslint.md
     - F#: page/lsp-fsharp.md
     - Fortran: page/lsp-fortran.md
+    - Futhark: page/lsp-futhark.md
     - GDScript: page/lsp-gdscript.md
     - Gleam: page/lsp-gleam.md
     - GLSL: page/lsp-glsl.md
