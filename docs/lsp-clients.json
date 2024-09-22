@@ -340,7 +340,7 @@
     "server-name": "futhark-lsp",
     "server-url": "https://github.com/diku-dk/futhark"
     "installation": "A part of the compiler since 0.21.9",
-    "debugger": "N/A"
+    "debugger": "Not available"
   },
   {
     "name": "gdscript",
