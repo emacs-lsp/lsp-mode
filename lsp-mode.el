@@ -893,6 +893,7 @@ Changes take effect only when a new session is started."
     (reason-mode . "reason")
     (caml-mode . "ocaml")
     (tuareg-mode . "ocaml")
+    (futhark-mode . "futhark")
     (swift-mode . "swift")
     (elixir-mode . "elixir")
     (elixir-ts-mode . "elixir")
