@@ -25,8 +25,6 @@
 
 (require 'lsp-mode)
 
-(add-to-list 'lsp-language-id-configuration '(futhark-mode . "futhark"))
-
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection '("futhark" "lsp"))
                   :activation-fn (lsp-activate-on "futhark")
