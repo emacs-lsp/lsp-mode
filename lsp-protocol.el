@@ -129,7 +129,7 @@ Allowed params: %s" interface (reverse (-map #'cl-first params)))
                                               $$result))
                                    (-partition 2 plist))
                              $$result)))
-                    `(pcase-defmacro ,interface (&rest property-bindings)
+                    `(cl-defun ,(intern (format "lsp--pcase-macroexpander-%s" interface)) (&rest property-bindings)
                        ,(if lsp-use-plists
                             ``(and
                                (pred listp)
@@ -225,6 +225,8 @@ Allowed params: %s" interface (reverse (-map #'cl-first params)))
                                              output-bindings)
                                        (setf current-list (cddr current-list))))))
                                  output-bindings))))
+                    `(pcase-defmacro ,interface (&rest property-bindings)
+                       `(lsp-interface ,',interface ,@property-bindings))
                     (-mapcat (-lambda ((label . name))
                                (list
                                 `(defun ,(intern (format "lsp:%s-%s"
@@ -245,6 +247,21 @@ Allowed params: %s" interface (reverse (-map #'cl-first params)))
                              params)))))
          (apply #'append)
          (cl-list* 'progn))))
+
+(pcase-defmacro lsp-interface (interface &rest property-bindings)
+  "If EXPVAL is an instance of the LSP interface INTERFACE, destructure its
+properties.
+
+Each :PROPERTY key may be followed by an optional PATTERN, which is a `pcase'
+pattern to apply to the property value. Otherwise, PROPERTY is bound to the
+property value.
+
+\(fn INTERFACE [:PROPERTY [PATTERN]]...)"
+  (cl-check-type interface symbol)
+  (let ((lsp-pcase-macroexpander
+         (intern (format "lsp--pcase-macroexpander-%s" interface))))
+    (cl-assert (fboundp lsp-pcase-macroexpander) "not a known LSP interface: %s" interface)
+    (apply lsp-pcase-macroexpander property-bindings)))
 
 (if lsp-use-plists
     (progn
