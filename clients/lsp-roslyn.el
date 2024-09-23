@@ -32,9 +32,9 @@
   :group 'lsp-mode
   :package-version '(lsp-mode . "8.0.0"))
 
-(defvar lsp-roslyn--stdpipe-path (expand-file-name
-                                  "lsp-roslyn-stdpipe.ps1"
-                                  (file-name-directory (file-truename load-file-name)))
+(defconst lsp-roslyn--stdpipe-path (expand-file-name
+                                    "lsp-roslyn-stdpipe.ps1"
+                                    (file-name-directory (locate-library "lsp-roslyn")))
   "Path to the `stdpipe' script.
 On Windows, this script is used as a proxy for the language server's named pipe.
 Unused on other platforms.")
@@ -81,8 +81,9 @@ Unused on other platforms.")
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-roslyn)
 
-(defcustom lsp-roslyn-package-version "4.9.0-3.23604.10"
-  "Version of the Roslyn package to install."
+(defcustom lsp-roslyn-package-version "4.12.0-3.24470.11"
+  "Version of the Roslyn package to install.
+Gotten from https://dev.azure.com/azure-public/vside/_artifacts/feed/vs-impl/NuGet/Microsoft.CodeAnalysis.LanguageServer.win-x64"
   :type 'string
   :package-version '(lsp-mode . "8.0.0")
   :group 'lsp-roslyn)
@@ -265,9 +266,9 @@ Assumes it was installed with the server install function."
 
 (defun lsp-roslyn--get-rid ()
   "Retrieves the .NET Runtime Identifier (RID) for the current system."
-  (let* ((is-x64 (string-match-p "x86_64" system-configuration))
+  (let* ((is-x64 (string-match-p (rx (or "x86_64" "aarch64")) system-configuration))
          (is-x86 (and (string-match-p "x86" system-configuration) (not is-x64)))
-         (is-arm (string-match-p "arm" system-configuration)))
+         (is-arm (string-match-p (rx (or "arm" "aarch")) system-configuration)))
     (if-let ((platform-name (cond
                              ((eq system-type 'gnu/linux) "linux")
                              ((eq system-type 'darwin) "osx")
@@ -284,12 +285,8 @@ Assumes it was installed with the server install function."
   "<?xml version=\"1.0\" encoding=\"utf-8\"?>
 <configuration>
   <packageSources>
-    <clear />
-    <add key=\"msft_consumption\" value=\"https://pkgs.dev.azure.com/azure-public/vside/_packaging/msft_consumption/nuget/v3/index.json\" />
+    <add key=\"vs-impl\" value=\"https://pkgs.dev.azure.com/azure-public/vside/_packaging/vs-impl/nuget/v3/index.json\" />
   </packageSources>
-  <disabledPackageSources>
-    <clear />
-  </disabledPackageSources>
 </configuration>"
   "The nuget.config to use when downloading Roslyn.")
 
@@ -333,7 +330,7 @@ FORCED if specified with prefix argument."
     (lsp-async-start-process
      callback
      error-callback
-     lsp-roslyn-dotnet-executable "restore" lsp-roslyn-install-path
+     lsp-roslyn-dotnet-executable "restore" "--interactive" lsp-roslyn-install-path
      (format "/p:PackageName=%s" pkg-name)
      (format "/p:PackageVersion=%s" lsp-roslyn-package-version))))
 
