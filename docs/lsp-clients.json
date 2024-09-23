@@ -335,6 +335,14 @@
     "debugger": "Yes"
   },
   {
+    "name": "futhark",
+    "full-name": "Futhark",
+    "server-name": "futhark-lsp",
+    "server-url": "https://github.com/diku-dk/futhark"
+    "installation": "A part of the compiler since 0.21.9",
+    "debugger": "Not available"
+  },
+  {
     "name": "gdscript",
     "full-name": "GDScript",
     "server-name": "godot",
@@ -941,11 +949,11 @@
     "debugger": "Not available"
   },
   {
-    "name": "ruff-lsp",
+    "name": "ruff",
     "full-name": "Python",
-    "server-name": "ruff-lsp",
-    "server-url": "https://github.com/charliermarsh/ruff-lsp",
-    "installation": "pip install ruff-lsp",
+    "server-name": "ruff",
+    "server-url": "https://github.com/astral-sh/ruff",
+    "installation": "pip install ruff (previous pip install ruff-lsp)",
     "debugger": "Not available"
   },
   {
@@ -1029,8 +1037,8 @@
     "name": "sqls",
     "full-name": "SQL (sqls)",
     "server-name": "sqls",
-    "server-url": "https://github.com/lighttiger2505/sqls",
-    "installation": "go install github.com/lighttiger2505/sqls@latest",
+    "server-url": "https://github.com/sqls-server/sqls",
+    "installation": "go install github.com/sqls-server/sqls@latest",
     "debugger": "Not available"
   },
   {

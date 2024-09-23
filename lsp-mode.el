@@ -177,8 +177,8 @@ As defined by the Language Server Protocol 3.16."
      lsp-autotools lsp-awk lsp-bash lsp-beancount lsp-bufls lsp-clangd
      lsp-clojure lsp-cmake lsp-cobol lsp-credo lsp-crystal lsp-csharp lsp-css
      lsp-cucumber lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile
-     lsp-earthly lsp-elixir lsp-elm lsp-emmet lsp-erlang lsp-eslint lsp-fortran lsp-fsharp
-     lsp-gdscript lsp-gleam lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly
+     lsp-earthly lsp-elixir lsp-elm lsp-emmet lsp-erlang lsp-eslint lsp-fortran lsp-futhark
+     lsp-fsharp lsp-gdscript lsp-gleam lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly
      lsp-graphql lsp-groovy lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java
      lsp-javascript lsp-jq lsp-json lsp-kotlin lsp-latex lsp-lisp lsp-ltex
      lsp-lua lsp-magik lsp-markdown lsp-marksman lsp-mdx lsp-meson lsp-metals lsp-mint
@@ -186,7 +186,7 @@ As defined by the Language Server Protocol 3.16."
      lsp-openscad lsp-pascal lsp-perl lsp-perlnavigator lsp-php lsp-pls
      lsp-purescript lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms
      lsp-qml lsp-r lsp-racket lsp-remark lsp-rf lsp-roslyn lsp-rubocop lsp-ruby-lsp
-     lsp-ruby-syntax-tree lsp-ruff-lsp lsp-rust lsp-semgrep lsp-shader
+     lsp-ruby-syntax-tree lsp-ruff lsp-rust lsp-semgrep lsp-shader
      lsp-solargraph lsp-solidity lsp-sonarlint lsp-sorbet lsp-sourcekit
      lsp-sql lsp-sqls lsp-steep lsp-svelte lsp-tailwindcss lsp-terraform
      lsp-tex lsp-tilt lsp-toml lsp-trunk lsp-ttcn3 lsp-typeprof lsp-v
@@ -871,6 +871,7 @@ Changes take effect only when a new session is started."
     (go-ts-mode . "go")
     (graphql-mode . "graphql")
     (haskell-mode . "haskell")
+    (haskell-ts-mode . "haskell")
     (hack-mode . "hack")
     (php-mode . "php")
     (php-ts-mode . "php")
@@ -892,6 +893,7 @@ Changes take effect only when a new session is started."
     (reason-mode . "reason")
     (caml-mode . "ocaml")
     (tuareg-mode . "ocaml")
+    (futhark-mode . "futhark")
     (swift-mode . "swift")
     (elixir-mode . "elixir")
     (elixir-ts-mode . "elixir")
@@ -938,7 +940,7 @@ Changes take effect only when a new session is started."
     (robot-mode . "robot")
     (racket-mode . "racket")
     (nix-mode . "nix")
-    (nix-ts-mode . "Nix")
+    (nix-ts-mode . "nix")
     (prolog-mode . "prolog")
     (vala-mode . "vala")
     (actionscript-mode . "actionscript")
@@ -6743,13 +6745,24 @@ textDocument/didOpen for the new file."
 
 (advice-add 'set-visited-file-name :around #'lsp--on-set-visited-file-name)
 
-(defvar lsp--flushing-delayed-changes nil)
+(defcustom lsp-flush-delayed-changes-before-next-message t
+  "If non-nil send the document changes update before sending other messages.
+
+If nil, and `lsp-debounce-full-sync-notifications' is non-nil,
+ change notifications will be throttled by
+ `lsp-debounce-full-sync-notifications-interval' regardless of
+ other messages."
+  :group 'lsp-mode
+  :type 'boolean)
+
+(defvar lsp--not-flushing-delayed-changes t)
 
 (defun lsp--send-no-wait (message proc)
   "Send MESSAGE to PROC without waiting for further output."
 
-  (unless lsp--flushing-delayed-changes
-    (let ((lsp--flushing-delayed-changes t))
+  (when (and lsp--not-flushing-delayed-changes
+             lsp-flush-delayed-changes-before-next-message)
+    (let ((lsp--not-flushing-delayed-changes nil))
       (lsp--flush-delayed-changes)))
   (lsp-process-send proc message))
 

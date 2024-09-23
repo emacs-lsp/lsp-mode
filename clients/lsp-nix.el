@@ -56,7 +56,7 @@
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection (lambda () lsp-nix-nixd-server-path))
-                  :major-modes '(nix-mode)
+                  :major-modes '(nix-mode nix-ts-mode)
                   :server-id 'nixd-lsp
                   :priority -1))
 
