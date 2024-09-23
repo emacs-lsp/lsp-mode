@@ -255,12 +255,16 @@ Allowed params: %s" interface (reverse (-map #'cl-first params)))
          (cl-list* 'progn))))
 
 (pcase-defmacro lsp-interface (interface &rest property-bindings)
-  "If EXPVAL is an instance of the LSP interface INTERFACE, destructure its
-properties.
+  "If EXPVAL is an instance of INTERFACE, destructure it by matching its
+properties. EXPVAL should be a plist or hash table depending on the variable
+`lsp-use-plists'.
 
-Each :PROPERTY key may be followed by an optional PATTERN, which is a `pcase'
-pattern to apply to the property value. Otherwise, PROPERTY is bound to the
-property value.
+INTERFACE should be an LSP interface defined with `lsp-interface'. This form
+will not match if any of INTERFACE's required fields are missing in EXPVAL.
+
+Each :PROPERTY keyword matches a field in EXPVAL. The keyword may be followed by
+an optional PATTERN, which is a `pcase' pattern to apply to the field's value.
+Otherwise, PROPERTY is let-bound to the field's value.
 
 \(fn INTERFACE [:PROPERTY [PATTERN]]...)"
   (cl-check-type interface symbol)
