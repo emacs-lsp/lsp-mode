@@ -6262,15 +6262,15 @@ A reference is highlighted only if it is visible in a window."
        (-map
         (-lambda ((start-window . end-window))
           ;; Make the overlay only if the reference is visible
-          (let ((start-point (lsp--position-to-point start))
-                (end-point (lsp--position-to-point end)))
-            (when (and (> (1+ start-line) start-window)
-                       (< (1+ end-line) end-window)
-                       (not (and lsp-symbol-highlighting-skip-current
-                                 (<= start-point (point) end-point))))
-              (-doto (make-overlay start-point end-point)
-                (overlay-put 'face (cdr (assq (or kind? 1) lsp--highlight-kind-face)))
-                (overlay-put 'lsp-highlight t)))))
+          (when (and (> (1+ start-line) start-window)
+                     (< (1+ end-line) end-window))
+            (let ((start-point (lsp--position-to-point start))
+                  (end-point (lsp--position-to-point end)))
+              (when (not (and lsp-symbol-highlighting-skip-current
+                              (<= start-point (point) end-point)))
+                (-doto (make-overlay start-point end-point)
+                  (overlay-put 'face (cdr (assq (or kind? 1) lsp--highlight-kind-face)))
+                  (overlay-put 'lsp-highlight t))))))
         wins-visible-pos))
      highlights)))
 
