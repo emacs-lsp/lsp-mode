@@ -177,8 +177,8 @@ As defined by the Language Server Protocol 3.16."
      lsp-autotools lsp-awk lsp-bash lsp-beancount lsp-bufls lsp-clangd
      lsp-clojure lsp-cmake lsp-cobol lsp-credo lsp-crystal lsp-csharp lsp-css
      lsp-cucumber lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile
-     lsp-earthly lsp-elixir lsp-elm lsp-emmet lsp-erlang lsp-eslint lsp-fortran lsp-fsharp
-     lsp-gdscript lsp-gleam lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly
+     lsp-earthly lsp-elixir lsp-elm lsp-emmet lsp-erlang lsp-eslint lsp-fortran lsp-futhark
+     lsp-fsharp lsp-gdscript lsp-gleam lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly
      lsp-graphql lsp-groovy lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java
      lsp-javascript lsp-jq lsp-json lsp-kotlin lsp-latex lsp-lisp lsp-ltex
      lsp-lua lsp-magik lsp-markdown lsp-marksman lsp-mdx lsp-meson lsp-metals lsp-mint
@@ -893,6 +893,7 @@ Changes take effect only when a new session is started."
     (reason-mode . "reason")
     (caml-mode . "ocaml")
     (tuareg-mode . "ocaml")
+    (futhark-mode . "futhark")
     (swift-mode . "swift")
     (elixir-mode . "elixir")
     (elixir-ts-mode . "elixir")
