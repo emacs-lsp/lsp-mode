@@ -225,6 +225,12 @@ Allowed params: %s" interface (reverse (-map #'cl-first params)))
                                              output-bindings)
                                        (setf current-list (cddr current-list))))))
                                  output-bindings))))
+                    ;; These per-interface `pcase' forms are deprecated. Prefer
+                    ;; the new (lsp-interface INTERFACE ...) form defined below.
+                    ;; (See emacs-lsp/lsp-mode#4430.)
+                    ;;
+                    ;; TODO: Remove this `pcase-defmacro' in the next major
+                    ;; version.
                     `(pcase-defmacro ,interface (&rest property-bindings)
                        `(lsp-interface ,',interface ,@property-bindings))
                     (-mapcat (-lambda ((label . name))
