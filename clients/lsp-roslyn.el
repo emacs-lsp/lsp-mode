@@ -120,7 +120,10 @@ Gotten from https://dev.azure.com/azure-public/vside/_artifacts/feed/vs-impl/NuG
        :sentinel sentinel
        :stderr stderr-buf
        :noquery t
-       :command (list "PowerShell" "-NoProfile" "-ExecutionPolicy" "Bypass" "-Command" lsp-roslyn--stdpipe-path "." lsp-roslyn--pipe-name)))
+       :command (lsp-resolve-final-command
+                 `("PowerShell" "-NoProfile" "-ExecutionPolicy" "Bypass" "-Command"
+                   ,lsp-roslyn--stdpipe-path "."
+                   ,lsp-roslyn--pipe-name))))
      (t (make-network-process
          :name process-name
          :remote lsp-roslyn--pipe-name
@@ -143,12 +146,11 @@ creates another process connecting to the named pipe it specifies."
                            :filter 'lsp-roslyn--parent-process-filter
                            :sentinel sentinel
                            :stderr parent-stderr-buf
-                           :command (append
-                                     (list lsp-roslyn-dotnet-executable
-                                           (lsp-roslyn--get-server-dll-path)
-                                           (format "--logLevel=%s" lsp-roslyn-server-log-level)
-                                           (format "--extensionLogDirectory=%s" lsp-roslyn-server-log-directory))
-                                     lsp-roslyn-server-extra-args)
+                           :command `(,lsp-roslyn-dotnet-executable
+                                      ,(lsp-roslyn--get-server-dll-path)
+                                      ,(format "--logLevel=%s" lsp-roslyn-server-log-level)
+                                      ,(format "--extensionLogDirectory=%s" lsp-roslyn-server-log-directory)
+                                      ,@lsp-roslyn-server-extra-args)
                            :noquery t)))
     (accept-process-output command-process lsp-roslyn-server-timeout-seconds) ; wait for JSON with pipe name to print on stdout, like {"pipeName":"\\\\.\\pipe\\d1b72351"}
     (when (not lsp-roslyn--pipe-name)
