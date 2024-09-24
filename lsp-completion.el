@@ -575,8 +575,8 @@ Others: CANDIDATES"
           (apply #'delete-region markers)
           (insert prefix)
           (pcase text-edit?
-            ((TextEdit) (lsp--apply-text-edit text-edit?))
-            ((InsertReplaceEdit :insert :replace :new-text)
+            ((lsp-interface TextEdit) (lsp--apply-text-edit text-edit?))
+            ((lsp-interface InsertReplaceEdit :insert :replace :new-text)
              (lsp--apply-text-edit
               (lsp-make-text-edit
                :new-text new-text

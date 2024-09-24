@@ -81,28 +81,34 @@
                                      (lsp-make-my-position :line 30 :character 40 :camelCase nil)
                                      :specialProperty 42)))
     (should (pcase particular-range
-              ((MyRange :start (MyPosition :line start-line :character start-char :camel-case start-camelcase)
-                        :end  (MyPosition :line end-line :character end-char :camel-case end-camelCase))
+              ((lsp-interface MyRange
+                              :start (lsp-interface MyPosition
+                                                    :line start-line :character start-char :camel-case start-camelcase)
+                              :end (lsp-interface MyPosition
+                                                  :line end-line :character end-char :camel-case end-camelCase))
                t)
               (_ nil)))
 
     (should (pcase particular-extended-range
-              ((MyExtendedRange)
+              ((lsp-interface MyExtendedRange)
                t)
               (_ nil)))
 
     ;; a subclass can be matched by a pattern for a parent class
     (should (pcase particular-extended-range
-              ((MyRange :start (MyPosition :line start-line :character start-char :camel-case start-camelcase)
-                        :end  (MyPosition :line end-line :character end-char :camel-case end-camelCase))
+              ((lsp-interface MyRange
+                              :start (lsp-interface MyPosition
+                                                    :line start-line :character start-char :camel-case start-camelcase)
+                              :end  (lsp-interface MyPosition
+                                                   :line end-line :character end-char :camel-case end-camelCase))
                t)
               (_ nil)))
 
     ;; the new patterns should be able to be used with existing ones
     (should (pcase (list particular-range
                          particular-extended-range)
-              ((seq (MyRange)
-                    (MyExtendedRange))
+              ((seq (lsp-interface MyRange)
+                    (lsp-interface MyExtendedRange))
                t)
               (_ nil)))
 
@@ -110,8 +116,8 @@
     ;; not in the order specified by the inner patterns
     (should-not (pcase (list particular-range
                              particular-extended-range)
-                  ((seq (MyExtendedRange)
-                        (MyRange))
+                  ((seq (lsp-interface MyExtendedRange)
+                        (lsp-interface MyRange))
                    t)
                   (_ nil)))
 
@@ -122,8 +128,11 @@
     ;; and the second instance is an equality check against the other
     ;; :character value, which is different.
     (should-not (pcase particular-range
-                  ((MyRange :start (MyPosition :line start-line :character :camel-case start-camelcase)
-                            :end  (MyPosition :line end-line :character :camel-case end-camelCase))
+                  ((lsp-interface MyRange
+                                  :start (lsp-interface MyPosition
+                                                        :line start-line :character :camel-case start-camelcase)
+                                  :end  (lsp-interface MyPosition
+                                                       :line end-line :character :camel-case end-camelCase))
                    t)
                   (_ nil)))
 
@@ -131,7 +140,7 @@
     ;; should still match if the required stuff matches. Missing
     ;; optional properties are bound to nil.
     (should (pcase particular-range
-              ((MyRange :start (MyPosition :optional?))
+              ((lsp-interface MyRange :start (lsp-interface MyPosition :optional?))
                (null optional?))
               (_ nil)))
 
@@ -139,23 +148,23 @@
     ;; the interface, even if the expr-val has all the types specified
     ;; by the interface. This is a programmer error.
     (should-error (pcase particular-range
-                    ((MyRange :something-unrelated)
+                    ((lsp-interface MyRange :something-unrelated)
                      t)
                     (_ nil)))
 
     ;; we do not use camelCase at this stage. This is a programmer error.
     (should-error (pcase particular-range
-                    ((MyRange :start (MyPosition :camelCase))
+                    ((lsp-interface MyRange :start (lsp-interface MyPosition :camelCase))
                      t)
                     (_ nil)))
     (should (pcase particular-range
-              ((MyRange :start (MyPosition :camel-case))
+              ((lsp-interface MyRange :start (lsp-interface MyPosition :camel-case))
                t)
               (_ nil)))
 
     ;; :end is missing, so we should fail to match the interface.
     (should-not (pcase (lsp-make-my-range :start (lsp-make-my-position :line 10 :character 20 :camelCase nil))
-                  ((MyRange)
+                  ((lsp-interface MyRange)
                    t)
                   (_ nil)))))
 
