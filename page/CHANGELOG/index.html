@@ -3782,6 +3782,10 @@
     <code>["ruff" "server"]</code> instead of <code>["ruff-lsp"]</code>.</li>
 <li>Add futhark support</li>
 <li>Optimize overlay creation by checking window visibility first</li>
+<li>Replace the per-interface <code>(INTERFACE ...)</code> pcase forms with a
+    single, unified <code>(lsp-interface INTERFACE ...)</code> form. The
+    per-interface forms are no longer generated. <strong>This is a breaking
+    change.</strong> (See #4430.)</li>
 </ul>
 <h2 id="900">9.0.0<a class="headerlink" href="#900" title="Permanent link">#</a></h2>
 <ul>
@@ -4362,7 +4366,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 23, 2024</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 26, 2024</span>
       
     
   </small>
