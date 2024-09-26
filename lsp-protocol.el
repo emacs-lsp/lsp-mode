@@ -129,7 +129,7 @@ Allowed params: %s" interface (reverse (-map #'cl-first params)))
                                               $$result))
                                    (-partition 2 plist))
                              $$result)))
-                    `(pcase-defmacro ,interface (&rest property-bindings)
+                    `(cl-defun ,(intern (format "lsp--pcase-macroexpander-%s" interface)) (&rest property-bindings)
                        ,(if lsp-use-plists
                             ``(and
                                (pred listp)
@@ -245,6 +245,25 @@ Allowed params: %s" interface (reverse (-map #'cl-first params)))
                              params)))))
          (apply #'append)
          (cl-list* 'progn))))
+
+(pcase-defmacro lsp-interface (interface &rest property-bindings)
+  "If EXPVAL is an instance of INTERFACE, destructure it by matching its
+properties. EXPVAL should be a plist or hash table depending on the variable
+`lsp-use-plists'.
+
+INTERFACE should be an LSP interface defined with `lsp-interface'. This form
+will not match if any of INTERFACE's required fields are missing in EXPVAL.
+
+Each :PROPERTY keyword matches a field in EXPVAL. The keyword may be followed by
+an optional PATTERN, which is a `pcase' pattern to apply to the field's value.
+Otherwise, PROPERTY is let-bound to the field's value.
+
+\(fn INTERFACE [:PROPERTY [PATTERN]]...)"
+  (cl-check-type interface symbol)
+  (let ((lsp-pcase-macroexpander
+         (intern (format "lsp--pcase-macroexpander-%s" interface))))
+    (cl-assert (fboundp lsp-pcase-macroexpander) "not a known LSP interface: %s" interface)
+    (apply lsp-pcase-macroexpander property-bindings)))
 
 (if lsp-use-plists
     (progn

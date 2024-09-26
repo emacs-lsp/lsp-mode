@@ -5245,11 +5245,11 @@ identifier and the position respectively."
 type Location, LocationLink, Location[] or LocationLink[]."
   (setq locations
         (pcase locations
-          ((seq (or (Location)
-                    (LocationLink)))
+          ((seq (or (lsp-interface Location)
+                    (lsp-interface LocationLink)))
            (append locations nil))
-          ((or (Location)
-               (LocationLink))
+          ((or (lsp-interface Location)
+               (lsp-interface LocationLink))
            (list locations))))
 
   (cl-labels ((get-xrefs-in-file
@@ -5616,9 +5616,9 @@ When language is nil render as markup if `markdown-mode' is loaded."
   (let ((inhibit-message t))
     (or
      (pcase content
-       ((MarkedString :value :language)
+       ((lsp-interface MarkedString :value :language)
         (lsp--render-string value language))
-       ((MarkupContent :value :kind)
+       ((lsp-interface MarkupContent :value :kind)
         (lsp--render-string value kind))
        ;; plain string
        ((pred stringp) (lsp--render-string content "markdown"))
@@ -6408,11 +6408,11 @@ perform the request synchronously."
   (-mapcat
    (-lambda (sym)
      (pcase-exhaustive sym
-       ((DocumentSymbol :name :children? :selection-range (Range :start))
+       ((lsp-interface DocumentSymbol :name :children? :selection-range (lsp-interface Range :start))
         (cons (cons (concat path name)
                     (lsp--position-to-point start))
               (lsp--xref-elements-index children? (concat path name " / "))))
-       ((SymbolInformation :name :location (Location :range (Range :start)))
+       ((lsp-interface SymbolInformation :name :location (lsp-interface Location :range (lsp-interface Range :start)))
         (list (cons (concat path name)
                     (lsp--position-to-point start))))))
    symbols))
