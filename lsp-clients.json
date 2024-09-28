@@ -570,8 +570,8 @@
     "common-group-name": "lua",
     "full-name": "Lua",
     "server-name": "lua-language-server",
-    "installation-url": "https://github.com/sumneko/lua-language-server/wiki/Build-and-Run-(Standalone)",
-    "server-url": "https://github.com/sumneko/lua-language-server",
+    "installation-url": "https://github.com/LuaLS/lua-language-server/wiki/Getting-Started#build",
+    "server-url": "https://github.com/LuaLS/lua-language-server",
     "debugger": "Not available"
   },
   {
