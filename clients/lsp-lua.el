@@ -85,7 +85,7 @@
   "Lua LSP client, provided by the Lua Language Server."
   :group 'lsp-mode
   :version "8.0.0"
-  :link '(url-link "https://github.com/sumneko/lua-language-server"))
+  :link '(url-link "https://github.com/LuaLS/lua-language-server"))
 
 (defcustom lsp-clients-lua-language-server-install-dir (f-join lsp-server-install-dir "lua-language-server/")
   "Installation directory for Lua Language Server."
@@ -547,7 +547,7 @@ and `../lib` ,exclude `../lib/temp`.
        (funcall callback))
      error-callback
      :url (lsp--find-latest-gh-release-url
-           "https://api.github.com/repos/sumneko/lua-language-server/releases/latest"
+           "https://api.github.com/repos/LuaLS/lua-language-server/releases/latest"
            (format "%s%s.tar.gz"
                    (pcase system-type
                      ('gnu/linux
