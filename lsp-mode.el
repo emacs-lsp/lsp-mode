@@ -8458,7 +8458,10 @@ archive (e.g. when the archive has multiple files)"
   "Unzip script to unzip file.")
 
 (defcustom lsp-unzip-script (lambda ()
-                              (cond ((executable-find "unzip") lsp-ext-unzip-script)
+                              (cond ((and (eq system-type 'windows-nt)
+                                          (executable-find "powershell"))
+                                     lsp-ext-pwsh-script)
+                                    ((executable-find "unzip") lsp-ext-unzip-script)
                                     ((executable-find "powershell") lsp-ext-pwsh-script)
                                     (t nil)))
   "The script to unzip."

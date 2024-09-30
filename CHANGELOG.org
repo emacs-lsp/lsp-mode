@@ -18,6 +18,7 @@
     unified ~(lsp-interface INTERFACE ...)~ form. The per-interface forms are no
     longer generated. *This is a breaking change.* (See #4430.)
   * If asm-lsp is installed, lsp-asm won't try to download it to cache store
+  * Fix lsp-unzip on windows when unzip was found on the PATH
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
