@@ -35,7 +35,7 @@
 (defgroup lsp-golangci-lint nil
   "Configuration options for lsp-golangci-lint."
   :group 'lsp-mode
-  :link '(url-lint "https://github.com/nametake/golangci-lint-langserver")
+  :link '(url-link "https://github.com/nametake/golangci-lint-langserver")
   :package-version '(lsp-mode . "9.0.0"))
 
 (defcustom lsp-golangci-lint-server-path "golangci-lint-langserver"
