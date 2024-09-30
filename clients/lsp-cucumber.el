@@ -44,6 +44,35 @@ This is only for development use."
   :type 'list
   :group 'lsp-cucumber)
 
+(lsp-defcustom lsp-cucumber-features
+  ["src/test/**/*.feature" "features/**/*.feature" "tests/**/*.feature" "*specs*/**/*.feature"]
+  "Configure where the extension should look for .feature files."
+  :type '(repeat string)
+  :group 'lsp-cucumber
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "cucumber.features")
+
+(lsp-defcustom lsp-cucumber-glue
+  ["*specs*/**/*.cs" "features/**/*.js" "features/**/*.jsx" "features/**/*.php" "features/**/*.py" "features/**/*.rs" "features/**/*.rb" "features/**/*.ts" "features/**/*.tsx" "features/**/*_test.go" "**/*_test.go" "src/test/**/*.java" "tests/**/*.py" "tests/**/*.rs"]
+  "Configure where the extension should look for source code where
+step definitions and parameter types are defined."
+  :type '(repeat string)
+  :group 'lsp-cucumber
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "cucumber.glue")
+
+(lsp-defcustom lsp-cucumber-parameter-types []
+  "Configure parameters types to convert output parameters to your own types.
+
+Details at https://github.com/cucumber/cucumber-expressions#custom-parameter-types.
+Sample:
+[(:name \"actor\"
+  :regexp \"[A-Z][a-z]+\")]"
+  :type '(lsp-repeatable-vector plist)
+  :group 'lsp-cucumber
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "cucumber.parameterTypes")
+
 (defun lsp-cucumber--server-command ()
   "Generate startup command for Cucumber language server."
   (or (and lsp-cucumber-server-path

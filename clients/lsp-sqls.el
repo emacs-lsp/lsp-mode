@@ -29,7 +29,7 @@
 (defgroup lsp-sqls nil
   "LSP support for SQL, using sqls."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/lighttiger2505/sqls")
+  :link '(url-link "https://github.com/sqls-server/sqls")
   :package-version `(lsp-mode . "7.0"))
 
 (defcustom lsp-sqls-server "sqls"
@@ -143,6 +143,14 @@ use the current region if set, otherwise the entire buffer."
     "workspace/executeCommand"
     (list :command "showConnections" :timeout lsp-sqls-timeout))))
 
+(defun lsp-sql-show-tables (&optional _command)
+  "Show tables."
+  (interactive)
+  (lsp-sqls--show-results
+   (lsp-request
+    "workspace/executeCommand"
+    (list :command "showTables" :timeout lsp-sqls-timeout))))
+
 (defun lsp-sql-switch-database (&optional _command)
   "Switch database."
   (interactive)
@@ -176,6 +184,7 @@ use the current region if set, otherwise the entire buffer."
                                        ("showDatabases" #'lsp-sql-show-databases)
                                        ("showSchemas" #'lsp-sql-show-schemas)
                                        ("showConnections" #'lsp-sql-show-connections)
+                                       ("showTables" #'lsp-sql-show-tables)
                                        ("switchDatabase" #'lsp-sql-switch-database)
                                        ("switchConnections" #'lsp-sql-switch-connection))
                   :server-id 'sqls

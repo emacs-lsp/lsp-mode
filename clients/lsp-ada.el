@@ -33,18 +33,31 @@
   :tag "Language Server"
   :package-version '(lsp-mode . "6.2"))
 
-(lsp-defcustom lsp-ada-project-file "default.gpr"
-  "Set the project file full path to configure the language server with.
-  The ~ prefix (for the user home directory) is supported.
-  See https://github.com/AdaCore/ada_language_server for a per-project
-  configuration example."
-  :type 'string
+(lsp-defcustom lsp-ada-project-file nil
+  "GNAT Project file used to configure the Language Server.
+
+Both absolute and relative paths are supported within the project file
+name.  When a relative path is used, the path is relative to the root
+folder.
+
+When the project file is not specified, the Language Server will attempt
+to determine the project file itself, either by querying \\='alr\\=', if
+the root folder contains an alire.toml file and \\='alr\\=' was found in
+the path, or otherwise by searching for a unique project file in the
+root folder.  For Alire projects, whose project file was discovered by
+querying \\='alr\\=', the server will also query and populate the Alire
+environment."
+  :type '(choice (string :tag "File")
+                 (const  :tag "Not Specified" nil))
   :group 'lsp-ada
-  :package-version '(lsp-mode . "6.2")
+  :link '(url-link :tag "Configuration Example"
+                   "https://github.com/AdaCore/ada_language_server")
+  :package-version '(lsp-mode . "9.0.1")
   :lsp-path "ada.projectFile")
+;;;###autoload(put 'lsp-ada-project-file 'safe-local-variable 'stringp)
 
 (lsp-defcustom lsp-ada-option-charset "UTF-8"
-  "The charset to use by the Ada Language server. Defaults to 'UTF-8'."
+  "The charset to use by the Ada Language server. Defaults to \\='UTF-8\\='."
   :type 'string
   :group 'lsp-ada
   :package-version '(lsp-mode . "6.2")
@@ -62,12 +75,6 @@
   :group 'lsp-ada
   :risky t
   :type 'file)
-
-(defcustom lsp-ada-alire-executable "alr"
-  "The alire executable to run when a project is detected."
-  :type 'string
-  :group 'lsp-ada
-  :package-version '(lsp-mode "9.0.0"))
 
 (defcustom lsp-ada-semantic-token-face-overrides
   '(("namespace" . default)
@@ -132,26 +139,6 @@
                               (lsp-ada--als-latest-release-url)
                               "ada-ls"))))
 
-(defun lsp-ada--environment ()
-  "Add environmental variables if needed."
-  (let ((project-root (lsp-workspace-root)))
-    ;; When there is an alire project, include its environment
-    (when (file-exists-p
-           (concat (file-name-as-directory project-root)
-                   "alire.toml"))
-      (let ((alr-executable (executable-find lsp-ada-alire-executable)))
-        (if alr-executable
-            ;; Transform output variables to environment
-            (let ((env-output (shell-command-to-string (concat alr-executable " printenv --unix"))))
-              (let ((var-strings (split-string env-output "\n")))
-                (mapcar (lambda (string)
-                          (if (string-match (rx "export" space (group (one-or-more ascii)) "=" "\"" (group (one-or-more ascii)) "\"") string)
-                              (let ((var-name (match-string 1 string))
-                                    (var-value (match-string 2 string)))
-                                (cons var-name var-value))))
-                        var-strings)))
-          (lsp--error "Found alire.toml but the executable %s could not be found" alr-executable))))))
-
 (lsp-dependency
  'ada-ls
  '(:download :url lsp-ada--als-latest-release-url
@@ -175,8 +162,7 @@
                   :semantic-tokens-faces-overrides `( :types ,lsp-ada-semantic-token-face-overrides
                                                       :modifiers ,lsp-ada-semantic-token-modifier-face-overrides)
                   :server-id 'ada-ls
-                  :synchronize-sections '("ada")
-                  :environment-fn 'lsp-ada--environment))
+                  :synchronize-sections '("ada")))
 
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection
@@ -186,8 +172,7 @@
                   :priority -1
                   :download-server-fn (lambda (_client callback error-callback _update?)
                                         (lsp-package-ensure 'ada-ls callback error-callback))
-                  :server-id 'gpr-ls
-                  :environment-fn #'lsp-ada--environment))
+                  :server-id 'gpr-ls))
 
 (lsp-consistency-check lsp-ada)
 

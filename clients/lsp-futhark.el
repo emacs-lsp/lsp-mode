@@ -1,9 +1,8 @@
-;;; lsp-gleam.el --- gleam client -*- lexical-binding: t; -*-
+;;; lsp-futhark.el --- lsp-mode futhark integration    -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022 emacs-lsp maintainers
+;; Copyright (C) 2024 lsp-mode maintainers
 
-;; Author: Jonathan Arnett
-;; Keywords: lsp gleam
+;; Keywords: languages
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -20,29 +19,24 @@
 
 ;;; Commentary:
 
-;; LSP client for the Gleam Programming Language.
+;; Client for the futhark language server.
 
 ;;; Code:
 
 (require 'lsp-mode)
 
-(defgroup lsp-gleam nil
-  "LSP support for Gleam."
+(defgroup lsp-futhark nil
+  "LSP support for Futhark, using futhark lsp"
   :group 'lsp-mode
-  :link '(url-link "https://gleam.run"))
-
-(defcustom lsp-gleam-executable '("gleam" "lsp")
-  "Command to run the Gleam LSP server."
-  :group 'lsp-gleam
-  :risky t
-  :type 'file)
+  :link '(url-link "https://github.com/diku-dk/futhark/tree/master/src/Futhark/LSP")
+  :package-version `(lsp-mode . "9.0.1"))
 
 (lsp-register-client
- (make-lsp-client
-  :new-connection (lsp-stdio-connection lsp-gleam-executable)
-  :major-modes '(gleam-mode gleam-ts-mode)
-  :priority -1
-  :server-id 'gleam-lsp))
+ (make-lsp-client :new-connection (lsp-stdio-connection '("futhark" "lsp"))
+                  :activation-fn (lsp-activate-on "futhark")
+                  :server-id 'futhark))
 
-(provide 'lsp-gleam)
-;;; lsp-gleam.el ends here
+(lsp-consistency-check lsp-futhark)
+
+(provide 'lsp-futhark)
+;;; lsp-futhark.el ends here

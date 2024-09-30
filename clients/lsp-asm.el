@@ -81,7 +81,8 @@ Will update if UPDATE? is t."
  (make-lsp-client
   :new-connection (lsp-stdio-connection
                    #'lsp-asm--server-command
-                   (lambda () (f-exists? lsp-asm-store-path)))
+                   (lambda () (or (executable-find "asm-lsp")
+                                  (f-exists? lsp-asm-store-path))))
   :major-modes lsp-asm-active-modes
   :priority -1
   :server-id 'asm-lsp

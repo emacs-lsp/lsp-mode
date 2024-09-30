@@ -75,13 +75,12 @@ Has no effects when `lsp-clients-angular-language-server-command' is set."
          ;; so we "cache" its results after running once
          (setq lsp-clients-angular-language-server-command
                (list
-                "node"
-                (f-join node-modules-path "@angular/language-server")
-                "--ngProbeLocations"
-                node-modules-path
+                "ngserver"
+                "--stdio"
                 "--tsProbeLocations"
                 node-modules-path
-                "--stdio"))
+                "--ngProbeLocations"
+                (f-join node-modules-path "@angular/language-server/node_modules/")))
          lsp-clients-angular-language-server-command))))
   :activation-fn
   (lambda (&rest _args)
