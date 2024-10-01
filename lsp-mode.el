@@ -8469,7 +8469,7 @@ archive (e.g. when the archive has multiple files)"
                                           (executable-find "powershell"))
                                      lsp-ext-powershell-script)
                                     ((executable-find "unzip") lsp-ext-unzip-script)
-                                    ((executable-find "powershell") lsp-ext-pwsh-script)
+                                    ((executable-find "pwsh") lsp-ext-pwsh-script)
                                     (t nil)))
   "The script to unzip."
   :group 'lsp-mode
