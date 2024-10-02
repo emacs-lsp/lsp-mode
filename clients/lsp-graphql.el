@@ -43,13 +43,18 @@
   :risky t
   :group 'lsp-graphql)
 
+(defcustom lsp-graphql-target-file-extensions '("ts" "js" "jsx" "tsx" "vue" "graphql" "graphqls" "gql")
+  "List of target file extensions for the GraphQL language server."
+  :type '(repeat string)
+  :group 'lsp-graphql)
+
 (defun lsp-graphql-activate-p (filename &optional _)
   "Check if the GraphQL language server should be enabled based on FILENAME."
-  (or (string-match-p (rx (one-or-more anything) "."
-                        (or "ts" "js" "jsx" "tsx" "vue" "graphql" "gql")eos)
-        filename)
-    (and (derived-mode-p 'js-mode 'js2-mode 'typescript-mode 'typescript-ts-mode)
-      (not (derived-mode-p 'json-mode)))))
+  (let ((target-extensions (mapconcat 'identity lsp-graphql-target-file-extensions "\\|")))
+    (or (string-match-p (format "\\.%s\\'" target-extensions) filename)
+        (and (derived-mode-p 'js-mode 'js2-mode 'typescript-mode 'typescript-ts-mode)
+             (not (derived-mode-p 'json-mode))))))
+
 
 (lsp-register-client
   (make-lsp-client :new-connection (lsp-stdio-connection (lambda()
