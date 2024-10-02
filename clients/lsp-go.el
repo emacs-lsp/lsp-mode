@@ -72,7 +72,7 @@ completing function calls."
 (defcustom lsp-go-build-flags []
   "A vector of flags passed on to the build system when invoked,
   applied to queries like `go list'."
-  :type 'lsp-string-vector
+  :type '(lsp-repeatable-vector string)
   :group 'lsp-go
   :risky t
   :package-version '(lsp-mode "6.2"))
@@ -188,11 +188,11 @@ The codelenses can be found at https://github.com/golang/tools/blob/3fa0e8f87c1a
   'lsp-go-library-directories
   "lsp-mode 7.0.1")
 
-(defcustom lsp-go-library-directories '("/usr")
+(defcustom lsp-go-library-directories ["/usr"]
   "List of directories which will be considered to be libraries."
   :group 'lsp-go
   :risky t
-  :type '(repeat string))
+  :type '(lsp-repeatable-vector string))
 
 (define-obsolete-variable-alias
   'lsp-clients-go-library-directories-include-go-modules
@@ -231,6 +231,7 @@ $GOPATH/pkg/mod along with the value of
 (defcustom lsp-go-link-target "pkg.go.dev"
   "Which website to use for displaying Go documentation."
   :type '(choice (const "pkg.go.dev")
+                 (const "godoc.org")
                  (string :tag "A custom website"))
   :group 'lsp-go
   :package-version '(lsp-mode "7.0.1"))
@@ -275,9 +276,10 @@ $GOPATH/pkg/mod along with the value of
   :risky t
   :package-version '(lsp-mode "8.0.0"))
 
-(defcustom lsp-go-symbol-matcher "Fuzzy"
+(defcustom lsp-go-symbol-matcher "FastFuzzy"
   "Sets the algorithm that is used when finding workspace symbols."
   :type '(choice (const "Fuzzy")
+                 (const "FastFuzzy")
                  (const "CaseInsensitive")
                  (const "CaseSensitive"))
   :group 'lsp-go
@@ -301,21 +303,105 @@ $GOPATH/pkg/mod along with the value of
   :risky t
   :package-version '(lsp-mode "8.0.0"))
 
+(defcustom lsp-go-template-extensions []
+  "The extensions of file names that are treated as template files.
+
+The extension is the part of the file name after the final dot."
+  :type '(lsp-repeatable-vector string)
+  :group 'lsp-go
+  :package-version '(lsp-mode "9.1"))
+
+(defcustom lsp-go-standalone-tags ["ignore"]
+  "Specifies a set of build constraints that identify individual Go
+source files that make up the entire main package of an
+executable."
+  :type '(lsp-repeatable-vector string)
+  :group 'lsp-go
+  :package-version '(lsp-mode "9.1"))
+
+(defcustom lsp-go-completion-budget "100ms"
+  "Soft latency goal for completion requests"
+  :type 'string
+  :group 'lsp-go
+  :package-version '(lsp-mode "9.1"))
+
+(defcustom lsp-go-matcher "Fuzzy"
+  "Sets the algorithm that is used when calculating completion candidates."
+  :type '(choice (const "CaseInsensitive")
+                 (const "CaseSensitive")
+                 (const "Fuzzy"))
+  :group 'lsp-go
+  :package-version '(lsp-mode "9.1"))
+
+(defcustom lsp-go-complete-function-calls t
+  "Enables function call completion.
+
+When completing a statement, or when a function return type
+matches the expected of the expression being completed,
+completion may suggest call expressions."
+  :type 'boolean
+  :group 'lsp-go
+  :package-version '(lsp-mode "9.1"))
+
+(defcustom lsp-go-diagnostics-delay "1s"
+  "Controls the amount of time that gopls waits after the most
+recent file modification before computing deep diagnostics."
+  :type 'string
+  :group 'lsp-go
+  :package-version '(lsp-mode "9.1"))
+
+(defcustom lsp-go-analysis-progress-reporting t
+  "Controls whether gopls sends progress notifications when
+construction of its index of analysis facts is taking a long
+time."
+  :type 'boolean
+  :group 'lsp-go
+  :package-version '(lsp-mode "9.1"))
+
+(defcustom lsp-go-symbol-scope "all"
+  "Controls which packages are searched for workspace/symbol
+requests.
+
+When the scope is \"workspace\", gopls searches only workspace
+packages.
+
+When the scope is \"all\", gopls searches all loaded packages,
+including dependencies and the standard library."
+  :type '(choice (const "all")
+                 (const "workspace"))
+  :group 'lsp-go
+  :package-version '(lsp-mode "9.1"))
+
+(defcustom lsp-go-verbose-output t
+  "Enables additional debug logging."
+  :type 'boolean
+  :group 'lsp-go
+  :package-version '(lsp-mode "9.1"))
+
 (lsp-register-custom-settings
- '(("gopls.usePlaceholders" lsp-go-use-placeholders t)
-   ("gopls.hoverKind" lsp-go-hover-kind)
+ '(("gopls.analyses" lsp-go-analyses)
+   ("gopls.analysisProgressReporting" lsp-go-analysis-progress-reporting t)
    ("gopls.buildFlags" lsp-go-build-flags)
-   ("gopls.env" lsp-go-env)
-   ("gopls.linkTarget" lsp-go-link-target)
    ("gopls.codelenses" lsp-go-codelenses)
-   ("gopls.linksInHover" lsp-go-links-in-hover t)
-   ("gopls.gofumpt" lsp-go-use-gofumpt t)
-   ("gopls.local" lsp-go-goimports-local)
+   ("gopls.completeFunctionCalls" lsp-go-complete-function-calls t)
+   ("gopls.completionBudget" lsp-go-completion-budget)
+   ("gopls.diagnosticsDelay" lsp-go-diagnostics-delay)
    ("gopls.directoryFilters" lsp-go-directory-filters)
-   ("gopls.analyses" lsp-go-analyses)
+   ("gopls.env" lsp-go-env)
+   ("gopls.gofumpt" lsp-go-use-gofumpt t)
+   ("gopls.hoverKind" lsp-go-hover-kind)
    ("gopls.importShortcut" lsp-go-import-shortcut)
+   ("gopls.linkTarget" lsp-go-link-target)
+   ("gopls.linksInHover" lsp-go-links-in-hover t)
+   ("gopls.local" lsp-go-goimports-local)
+   ("gopls.matcher" lsp-go-matcher)
+   ("gopls.standaloneTags" lsp-go-standalone-tags)
    ("gopls.symbolMatcher" lsp-go-symbol-matcher)
-   ("gopls.symbolStyle" lsp-go-symbol-style)))
+   ("gopls.symbolScope" lsp-go-symbol-scope)
+   ("gopls.symbolStyle" lsp-go-symbol-style)
+   ("gopls.templateExtensions" lsp-go-template-extensions)
+   ("gopls.usePlaceholders" lsp-go-use-placeholders t)
+   ("gopls.verboseOutput" lsp-go-verbose-output t)))
 
 (defcustom lsp-go-server-wrapper-function
   #'identity
