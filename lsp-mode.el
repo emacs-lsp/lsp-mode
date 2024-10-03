@@ -8450,7 +8450,11 @@ archive (e.g. when the archive has multiple files)"
 
 ;; unzip
 
-(defconst lsp-ext-pwsh-script "powershell -noprofile -noninteractive \
+(defconst lsp-ext-pwsh-script "pwsh -noprofile -noninteractive \
+-nologo -ex bypass -c Expand-Archive -Path '%s' -DestinationPath '%s'"
+  "Pwsh script to unzip file.")
+
+(defconst lsp-ext-powershell-script "powershell -noprofile -noninteractive \
 -nologo -ex bypass -command Expand-Archive -path '%s' -dest '%s'"
   "Powershell script to unzip file.")
 
@@ -8459,10 +8463,13 @@ archive (e.g. when the archive has multiple files)"
 
 (defcustom lsp-unzip-script (lambda ()
                               (cond ((and (eq system-type 'windows-nt)
-                                          (executable-find "powershell"))
+                                          (executable-find "pwsh"))
                                      lsp-ext-pwsh-script)
+                                    ((and (eq system-type 'windows-nt)
+                                          (executable-find "powershell"))
+                                     lsp-ext-powershell-script)
                                     ((executable-find "unzip") lsp-ext-unzip-script)
-                                    ((executable-find "powershell") lsp-ext-pwsh-script)
+                                    ((executable-find "pwsh") lsp-ext-pwsh-script)
                                     (t nil)))
   "The script to unzip."
   :group 'lsp-mode
