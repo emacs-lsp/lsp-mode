@@ -214,8 +214,8 @@ KEEP-LAST-RESULT if specified."
 (defcustom lsp-completion-default-behaviour :replace
   "Default behaviour of `InsertReplaceEdit'."
   :type '(choice
-          (const :insert :tag "Default completion inserts")
-          (const :replace :tag "Default completion replaces"))
+          (const :tag "Default completion inserts" :insert)
+          (const :tag "Default completion replaces" :replace))
   :group 'lsp-mode
   :package-version '(lsp-mode . "8.0.0"))
 
