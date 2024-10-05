@@ -55,6 +55,7 @@ nav:
     - AWK: page/lsp-awk.md
     - Bash: page/lsp-bash.md
     - Beancount: page/lsp-beancount.md
+    - Buf/Protocol Buffers: page/lsp-bufls.md
     - Camel: page/lsp-camel.md
     - C++ (ccls): page/lsp-ccls.md
     - C++ (clangd): page/lsp-clangd.md
