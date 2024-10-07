@@ -69,6 +69,11 @@
   "https://github.com/edmundmiller/vscode-language-nextflow/releases/download/1.0.0/nextflow-1.0.0.vsix"
   "Download URL for the Nextflow language server.")
 
+(defun lsp-nextflow-test ()
+  "Test the Nextflow language server binaries and files."
+  (and (executable-find lsp-nextflow-java-path)
+       (f-exists? lsp-nextflow-jar-path)))
+
 (lsp-register-client
  (make-lsp-client
   :new-connection (lsp-stdio-connection
@@ -77,11 +82,12 @@
                          `(,lsp-nextflow-java-path
                            ,@lsp-nextflow-args
                            ,lsp-nextflow-jar-path))))
-  :major-modes '(nextflow-mode)
-  :activation-fn (lsp-activate-on "nextflow")
-  ;; (add-to-list 'lsp-language-id-configuration '(".*\\.svelte$" . "svelte"))
-  :server-id 'nextflow-ls
-  :priority -1))
+  #'lsp-nextflow-test)
+ :major-modes '(nextflow-mode)
+ :activation-fn (lsp-activate-on "nextflow")
+ ;; (add-to-list 'lsp-language-id-configuration '(".*\\.svelte$" . "svelte"))
+ :server-id 'nextflow-ls
+ :priority -1))
 ;; :notification-handlers (lsp-ht ("emmy/progressReport" #'ignore))))
 ;; :initialized-fn (lambda (workspace)
 ;;                   (with-lsp-workspace workspace
@@ -120,7 +126,7 @@
 (lsp-defcustom lsp-nextflow-java-home nil
   "Specifies the folder path to the JDK. Use this setting if the extension cannot find Java automatically."
   :type '(choice (const :tag "Auto" nil)
-                 (directory :tag "Custom JDK path"))
+          (directory :tag "Custom JDK path"))
   :group 'lsp-nextflow
   :package-version '(lsp-mode . "9.0.0")
   :lsp-path "nextflow.java.home")
