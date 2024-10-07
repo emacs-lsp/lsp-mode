@@ -43,6 +43,45 @@
   "Generate LSP startup command."
   `("java" "-jar" ,(expand-file-name lsp-nextflow-server-file)))
 
+;; (lsp-generate-settings "~/src/nf-core/vscode-language-nextflow/package.json" 'lsp-nextflow)
+
+(lsp-defcustom lsp-nextflow-debug nil
+  "Enable debug logging and debug information in hover hints."
+  :type 'boolean
+  :group 'lsp-nextflow
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "nextflow.debug")
+
+(lsp-defcustom lsp-nextflow-files-exclude [".git" ".nf-test" "work"]
+  "Configure glob patterns for excluding folders from being searched for Nextflow scripts and configuration files."
+  :type 'lsp-string-vector
+  :group 'lsp-nextflow
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "nextflow.files.exclude")
+
+(lsp-defcustom lsp-nextflow-formatting-harshil-alignment nil
+  "Use the [Harshil Alignment™️](https://nf-co.re/docs/contributing/code_editors_and_styling/harshil_alignment) when formatting Nextflow scripts and config files.
+
+  *Note: not all rules are supported yet*"
+  :type 'boolean
+  :group 'lsp-nextflow
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "nextflow.formatting.harshilAlignment")
+
+(lsp-defcustom lsp-nextflow-java-home nil
+  "Specifies the folder path to the JDK. Use this setting if the extension cannot find Java automatically."
+  :type '(repeat string)
+  :group 'lsp-nextflow
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "nextflow.java.home")
+
+(lsp-defcustom lsp-nextflow-suppress-future-warnings t
+  "Hide warnings for future changes, deprecations, and removals."
+  :type 'boolean
+  :group 'lsp-nextflow
+  :package-version '(lsp-mode . "9.0.0")
+  :lsp-path "nextflow.suppressFutureWarnings")
+
 (lsp-register-client
  (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-nextflow--lsp-command)
                   :major-modes '(nextflow-mode)
