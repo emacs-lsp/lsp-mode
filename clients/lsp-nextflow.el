@@ -33,55 +33,64 @@
   :group 'lsp-mode
   :link '(url-link "https://github.com/nextflow-io/vscode-language-nextflow"))
 
-(defcustom lsp-nextflow-server-file (f-join lsp-server-install-dir "nextflow-language-server-all.jar")
-  "JAR file path for nextflow-language-server-all.jar."
-  :group 'lsp-nextflow
-  :risky t
-  :type 'file)
-
-;;
-;;; Installation
-
-(defcustom lsp-nextflow-server-store-path
-  (expand-file-name "nextflow/" lsp-server-install-dir)
-  "The path to the file in which COBOL language service will be stored."
-  :type 'file
-  :group 'lsp-nextflow)
-
 (defcustom lsp-nextflow-server-version "1.0.0"
   "The Nextflow language server version to install."
-  :type 'file
+  :type 'string
   :group 'lsp-nextflow)
 
-;; TODO Use  (lsp-vscode-extension-url "Nightrains" "robloxlsp" "1.5.11")
+(defcustom lsp-nextflow-language-server-install-dir
+  (f-join lsp-server-install-dir "nextflow-language-server/")
+  "Installation directory for Nextflow Server."
+  :group 'lsp-nextflow
+  :type 'directory)
+
+(defcustom lsp-nextflow-java-path "java"
+  "Java Runtime binary location."
+  :group 'lsp-nextflow
+  :type 'file)
+
+(defcustom lsp-nextflow-jar-path
+  (f-join lsp-nextflow-language-server-install-dir "extension/bin/language-server-all.jar")
+  "Nextflow language server jar file."
+  :group 'lsp-nextflow
+  :type 'file)
+
+(defcustom lsp-nextflow-args '("-jar")
+  "Arguments to the Nextflow Language server."
+  :group 'lsp-nextflow
+  :type '(repeat string))
+
+(defcustom lsp-nextflow-command nil
+  "Final command to call the Nextflow Language server."
+  :group 'lsp-nextflow
+  :type '(repeat string))
+
 (defcustom lsp-nextflow-server-download-url
   "https://github.com/edmundmiller/vscode-language-nextflow/releases/download/1.0.0/nextflow-1.0.0.vsix"
-  "Format to the download url link.")
+  "Download URL for the Nextflow language server.")
 
+(lsp-register-client
+ (make-lsp-client
+  :new-connection (lsp-stdio-connection
+                   (lambda ()
+                     (or lsp-nextflow-command
+                         `(,lsp-nextflow-java-path
+                           ,@lsp-nextflow-args
+                           ,lsp-nextflow-jar-path))))
+  :major-modes '(nextflow-mode)
+  :activation-fn (lsp-activate-on "nextflow")
+  ;; (add-to-list 'lsp-language-id-configuration '(".*\\.svelte$" . "svelte"))
+  :server-id 'nextflow-ls
+  :priority -1))
+;; :notification-handlers (lsp-ht ("emmy/progressReport" #'ignore))))
+;; :initialized-fn (lambda (workspace)
+;;                   (with-lsp-workspace workspace
+;;                     (lsp--set-configuration (lsp-configuration-section "nextflow"))))))
 
-;; TODO
-;; (defun lsp-lua-roblox-language-server-test ()
-;;   "Test Lua language server binaries and files."
-;;   (and (f-exists? lsp-lua-roblox-language-server-main-location)
-;;        (f-exists? lsp-lua-roblox-language-server-bin)))
+(lsp-consistency-check lsp-nextflow)
 
-(defun lsp-nextflow-language-server-install (_client callback error-callback _update?)
-  "Download the latest version of nextflow-language-server and extract it"
-  (lsp-download-install
-   (lambda (&rest _)
-     (set-file-modes lsp-nextflow-language-server-bin #o0700)
-     (funcall callback))
-   error-callback
-   :url lsp-nextflow-server-download-url
-   :store-path lsp-nextflow-server-store-path))
-
-(defun lsp-nextflow--stored-executable ()
-  "Return the stored Nextflow language service executable."
-  (f-join lsp-cobol-server-store-path "extension/bin/language-server-all.jar"))
-
-(defun lsp-nextflow--lsp-command ()
-  "Generate LSP startup command."
-  `("java" "-jar" ,(expand-file-name lsp-nextflow-server-file)))
+;;
+;;; Settings
 
 ;; (lsp-generate-settings "~/src/nf-core/vscode-language-nextflow/package.json" 'lsp-nextflow)
 
@@ -110,7 +119,8 @@
 
 (lsp-defcustom lsp-nextflow-java-home nil
   "Specifies the folder path to the JDK. Use this setting if the extension cannot find Java automatically."
-  :type '(repeat string)
+  :type '(choice (const :tag "Auto" nil)
+                 (directory :tag "Custom JDK path"))
   :group 'lsp-nextflow
   :package-version '(lsp-mode . "9.0.0")
   :lsp-path "nextflow.java.home")
@@ -121,17 +131,6 @@
   :group 'lsp-nextflow
   :package-version '(lsp-mode . "9.0.0")
   :lsp-path "nextflow.suppressFutureWarnings")
-
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-nextflow--lsp-command)
-                  :major-modes '(nextflow-mode)
-                  :priority -1
-                  :server-id 'nextflow-ls
-                  :initialized-fn (lambda (workspace)
-                                    (with-lsp-workspace workspace
-                                      (lsp--set-configuration (lsp-configuration-section "nextflow"))))))
-
-(lsp-consistency-check lsp-nextflow)
 
 (provide 'lsp-nextflow)
 ;;; lsp-nextflow.el ends here
