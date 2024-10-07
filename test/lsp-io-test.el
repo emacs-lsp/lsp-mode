@@ -66,6 +66,19 @@
          (messages (funcall fn message-in)))
     (should (equal messages '("’")))))
 
+(ert-deftest lsp--parser-read--multiple-multibyte-messages ()
+  (let* ((fn (lsp--create-process-message))
+         (messages-in '("Content-Length: 3\r\n\r\n←"
+                        "Content-Length: 3\r\n\r\n←"
+                        "Content-Length:3\r\n\r\n←"
+                        "Content-Length: 3\r\n\r\n←"
+                        "Content-Length:3\r\n\r\n←"
+                        "Content-Length: 3\r\n\r\n←"
+                        "Content-Length: 3\r\n\r\n←"
+                        ))
+         (messages (funcall fn (string-join messages-in))))
+    (should (equal messages '("←" "←" "←" "←" "←" "←" "←")))))
+
 (ert-deftest lsp--parser-read--multibyte-nospace ()
   (let* ((fn (lsp--create-process-message))
          (message-in "Content-Length:3\r\n\r\n\xe2\x80\x99")
