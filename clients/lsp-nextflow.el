@@ -28,40 +28,31 @@
 (require 'lsp-mode)
 (require 'f)
 
-(defgroup lsp-groovy nil
-  "LSP support for Groovy, using groovy-language-server."
+(defgroup lsp-nextflow nil
+  "LSP support for nextflow, using nextflow-language-server."
   :group 'lsp-mode
-  :link '(url-link "https://github.com/GroovyLanguageServer/groovy-language-server"))
+  :link '(url-link "https://github.com/nextflowLanguageServer/nextflow-language-server"))
 
-(defcustom lsp-groovy-server-file (f-join lsp-server-install-dir "groovy-language-server-all.jar")
-  "JAR file path for groovy-language-server-all.jar."
-  :group 'lsp-groovy
+(defcustom lsp-nextflow-server-file (f-join lsp-server-install-dir "nextflow-language-server-all.jar")
+  "JAR file path for nextflow-language-server-all.jar."
+  :group 'lsp-nextflow
   :risky t
   :type 'file)
 
-(defun lsp-groovy--lsp-command ()
+(defun lsp-nextflow--lsp-command ()
   "Generate LSP startup command."
-  `("java" "-jar" ,(expand-file-name lsp-groovy-server-file)))
-
-(defcustom lsp-groovy-classpath ["/usr/local/opt/groovy/libexec/lib"]
-  "List of paths to Groovy JARs."
-  :group 'lsp-groovy
-  :risky t
-  :type 'lsp-string-vector)
-
-(lsp-register-custom-settings
- '(("groovy.classpath" lsp-groovy-classpath)))
+  `("java" "-jar" ,(expand-file-name lsp-nextflow-server-file)))
 
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-groovy--lsp-command)
-                  :major-modes '(groovy-mode)
+ (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-nextflow--lsp-command)
+                  :major-modes '(nextflow-mode)
                   :priority -1
-                  :server-id 'groovy-ls
+                  :server-id 'nextflow-ls
                   :initialized-fn (lambda (workspace)
                                     (with-lsp-workspace workspace
-                                      (lsp--set-configuration (lsp-configuration-section "groovy"))))))
+                                      (lsp--set-configuration (lsp-configuration-section "nextflow"))))))
 
-(lsp-consistency-check lsp-groovy)
+(lsp-consistency-check lsp-nextflow)
 
-(provide 'lsp-groovy)
-;;; lsp-groovy.el ends here
+(provide 'lsp-nextflow)
+;;; lsp-nextflow.el ends here
