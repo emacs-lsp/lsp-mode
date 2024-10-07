@@ -925,13 +925,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lsp-completion-default-behaviour" class="md-nav__link">
-    lsp-completion-default-behaviour
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#lsp-configure-hook" class="md-nav__link">
     lsp-configure-hook
   </a>
@@ -4371,13 +4364,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lsp-completion-default-behaviour" class="md-nav__link">
-    lsp-completion-default-behaviour
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#lsp-configure-hook" class="md-nav__link">
     lsp-configure-hook
   </a>
@@ -5138,11 +5124,6 @@ before saving a document.</p>
 <p><em>Default:</em> <code>(ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-asm lsp-astro lsp-autotools lsp-awk lsp-bash lsp-beancount lsp-bufls lsp-clangd lsp-clojure lsp-cmake lsp-cobol lsp-credo lsp-crystal lsp-csharp lsp-css lsp-cucumber lsp-cypher lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile lsp-earthly lsp-elixir lsp-elm lsp-emmet lsp-erlang lsp-eslint lsp-fortran lsp-futhark lsp-fsharp lsp-gdscript lsp-gleam lsp-glsl lsp-go lsp-golangci-lint lsp-grammarly lsp-graphql lsp-groovy lsp-hack lsp-haskell lsp-haxe lsp-idris lsp-java lsp-javascript lsp-jq lsp-json lsp-kotlin lsp-latex lsp-lisp lsp-ltex lsp-lua lsp-magik lsp-markdown lsp-marksman lsp-mdx lsp-meson lsp-metals lsp-mint lsp-mojo lsp-move lsp-mssql lsp-nginx lsp-nim lsp-nix lsp-nushell lsp-ocaml lsp-openscad lsp-pascal lsp-perl lsp-perlnavigator lsp-php lsp-pls lsp-purescript lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms lsp-qml lsp-r lsp-racket lsp-remark lsp-rf lsp-roslyn lsp-rubocop lsp-ruby-lsp lsp-ruby-syntax-tree lsp-ruff lsp-rust lsp-semgrep lsp-shader lsp-solargraph lsp-solidity lsp-sonarlint lsp-sorbet lsp-sourcekit lsp-sql lsp-sqls lsp-steep lsp-svelte lsp-tailwindcss lsp-terraform lsp-tex lsp-tilt lsp-toml lsp-trunk lsp-ttcn3 lsp-typeprof lsp-v lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript lsp-volar lsp-wgsl lsp-xml lsp-yaml lsp-yang lsp-zig)</code></p>
 <p>List of the clients to be automatically required.</p>
 <hr />
-<h3 id="lsp-completion-default-behaviour"><code>lsp-completion-default-behaviour</code><a class="headerlink" href="#lsp-completion-default-behaviour" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(choice (const :tag Default completion inserts :insert) (const :tag Default completion replaces :replace))</code></p>
-<p><em>Default:</em> <code>:replace</code></p>
-<p>Default behaviour of <code>InsertReplaceEdit</code>.</p>
-<hr />
 <h3 id="lsp-configure-hook"><code>lsp-configure-hook</code><a class="headerlink" href="#lsp-configure-hook" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>hook</code></p>
 <p><em>Default:</em> <code>((closure (flymake-mode flymake-diagnostic-functions lsp-diagnostics-mode flycheck-checkers flycheck-checker flycheck-check-syntax-automatically flycheck-mode t) nil (if lsp-auto-configure (progn (lsp-diagnostics--enable)))) (closure (company-abort-on-unique-match company-backends yas-indent-line t) nil (if (and lsp-auto-configure lsp-completion-enable) (progn (lsp-completion--enable)))))</code></p>
@@ -5647,7 +5628,7 @@ The hook will receive two parameters list of added and removed folders.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 5, 2024</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 7, 2024</span>
       
     
   </small>
