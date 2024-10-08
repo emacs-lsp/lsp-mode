@@ -37,6 +37,7 @@
   "The completion backend provider."
   :type '(choice
           (const :tag "Use company-capf" :capf)
+          (const :tag "Use simplified capf" :corfu-capf)
           (const :tag "None" :none))
   :group 'lsp-completion
   :package-version '(lsp-mode . "7.0.1"))
@@ -167,10 +168,18 @@ This will help minimize popup flickering issue in `company-mode'."
 (cl-defun lsp-completion--make-item (item &key markers prefix)
   "Make completion item from lsp ITEM and with MARKERS and PREFIX."
   (-let (((&CompletionItem :label
+                           :filter-text?
                            :sort-text?
                            :_emacsStartPoint start-point)
           item))
-    (propertize label
+    ;; In :corfu-capf mode, the filtering is done by completion styles
+    ;; which work only with the candidate text. As some LSP servers
+    ;; return candidates with simplified labels ("var" for "$var",
+    ;; "Schema" for "\mysql_xdevapi\Schema"), prefer filter text as
+    ;; label. As completion is filtering, this does makes sense.
+    (propertize (or (unless (or (equal lsp-completion-provider :corfu-capf)
+                                (lsp-falsy? filter-text?)) filter-text?)
+                    label)
                 'lsp-completion-item item
                 'lsp-sort-text sort-text?
                 'lsp-completion-start-point start-point
@@ -786,40 +795,43 @@ The CLEANUP-FN will be called to cleanup."
       ;; Ensure that `lsp-completion-at-point' the first CAPF to be tried,
       ;; unless user has put it elsewhere in the list by their own
       (add-to-list 'completion-at-point-functions #'lsp-completion-at-point)
-      (make-local-variable 'completion-category-defaults)
-      (setf (alist-get 'lsp-capf completion-category-defaults) '((styles . (lsp-passthrough))))
-      (make-local-variable 'completion-styles-alist)
-      (setf (alist-get 'lsp-passthrough completion-styles-alist)
-            '(completion-basic-try-completion
-              lsp-completion-passthrough-all-completions
-              "Passthrough completion."))
+
+      (unless (equal lsp-completion-provider :corfu-capf)
+        (make-local-variable 'completion-category-defaults)
+        (setf (alist-get 'lsp-capf completion-category-defaults) '((styles . (lsp-passthrough))))
+        (make-local-variable 'completion-styles-alist)
+        (setf (alist-get 'lsp-passthrough completion-styles-alist)
+              '(completion-basic-try-completion
+                lsp-completion-passthrough-all-completions
+                "Passthrough completion.")))
 
       (cond
-       ((equal lsp-completion-provider :none))
-       ((and (not (equal lsp-completion-provider :none))
+       ((or (equal lsp-completion-provider :none)
+            (equal lsp-completion-provider :corfu-capf)))
+       ((and (equal lsp-completion-provider :capf)
              (fboundp 'company-mode))
         (setq-local company-abort-on-unique-match nil)
         (company-mode 1)
-        (setq-local company-backends (cl-adjoin 'company-capf company-backends :test #'equal)))
+        (setq-local company-backends (cl-adjoin 'company-capf company-backends :test #'equal))
+        (when (bound-and-true-p company-mode)
+          (add-hook 'company-completion-started-hook
+                    completion-started-fn
+                    nil
+                    t)
+          (add-hook 'company-after-completion-hook
+                    after-completion-fn
+                    nil
+                    t)))
        (t
         (lsp--warn "Unable to autoconfigure company-mode.")))
-
-      (when (bound-and-true-p company-mode)
-        (add-hook 'company-completion-started-hook
-                  completion-started-fn
-                  nil
-                  t)
-        (add-hook 'company-after-completion-hook
-                  after-completion-fn
-                  nil
-                  t))
       (add-hook 'lsp-unconfigure-hook #'lsp-completion--disable nil t))
      (t
       (remove-hook 'completion-at-point-functions #'lsp-completion-at-point t)
-      (setq-local completion-category-defaults
-                  (cl-remove 'lsp-capf completion-category-defaults :key #'cl-first))
-      (setq-local completion-styles-alist
-                  (cl-remove 'lsp-passthrough completion-styles-alist :key #'cl-first))
+      (unless (equal lsp-completion-provider :corfu-capf)
+        (setq-local completion-category-defaults
+                    (cl-remove 'lsp-capf completion-category-defaults :key #'cl-first))
+        (setq-local completion-styles-alist
+                    (cl-remove 'lsp-passthrough completion-styles-alist :key #'cl-first)))
       (remove-hook 'lsp-unconfigure-hook #'lsp-completion--disable t)
       (when (featurep 'company)
         (remove-hook 'company-completion-started-hook
