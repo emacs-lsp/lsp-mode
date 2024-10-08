@@ -1038,7 +1038,13 @@ directory")
     ("textDocument/typeDefinition" :capability :typeDefinitionProvider)
     ("textDocument/typeHierarchy" :capability :typeHierarchyProvider)
     ("textDocument/diagnostic" :capability :diagnosticProvider)
-    ("workspace/executeCommand" :capability :executeCommandProvider)
+    ("workspace/executeCommand"
+     :capability :executeCommandProvider
+     :check-message (lambda (workspace msg)
+                      (-let* (((&plist :method :params) msg)
+                              ((&plist :command) params))
+                        (with-lsp-workspace workspace
+                          (lsp-can-execute-command? command)))))
     ("workspace/symbol" :capability :workspaceSymbolProvider))
 
   "Map methods to requirements.
@@ -6643,14 +6649,15 @@ REFERENCES? t when METHOD returns references."
   (evil-set-command-property 'lsp-find-references :jump t)
   (evil-set-command-property 'lsp-find-type-definition :jump t))
 
-(defun lsp--workspace-method-supported? (check-command method capability workspace)
+(defun lsp--workspace-method-supported? (check-command method check-message msg capability workspace)
   (with-lsp-workspace workspace
-    (if check-command
-        (funcall check-command workspace)
-      (or
-       (when capability (lsp--capability capability))
-       (lsp--registered-capability method)
-       (and (not capability) (not check-command))))))
+    (cond
+     (check-command (funcall check-command workspace))
+     (check-message (funcall check-message workspace msg))
+     (t (or
+         (when capability (lsp--capability capability))
+         (lsp--registered-capability method)
+         (and (not capability) (not check-command)))))))
 
 (defun lsp-disable-method-for-server (method server-id)
   "Disable METHOD for SERVER-ID."
@@ -6665,20 +6672,23 @@ REFERENCES? t when METHOD returns references."
                               (eq server-id))
                     (lsp--workspace-method-supported? check-command
                                                       method
+                                                      nil
+                                                      nil
                                                       capability
                                                       workspace))))))
       (alist-get method lsp-method-requirements nil nil 'string=)))
 
 (defun lsp--find-workspaces-for (msg-or-method)
   "Find all workspaces in the current project that can handle MSG."
-  (let ((method (if (stringp msg-or-method)
-                    msg-or-method
-                  (plist-get msg-or-method :method))))
+
+  (-let (((method . msg) (if (stringp msg-or-method)
+                             (cons msg-or-method `(:method ,msg-or-method))
+                           (cons (plist-get msg-or-method :method) msg-or-method))))
     (-if-let (reqs (cdr (assoc method lsp-method-requirements)))
-        (-let (((&plist :capability :check-command) reqs))
+        (-let (((&plist :capability :check-command :check-message) reqs))
           (-filter
            (-partial #'lsp--workspace-method-supported?
-                     check-command method capability)
+                     check-command method check-message msg capability)
            (lsp-workspaces)))
       (lsp-workspaces))))
 
