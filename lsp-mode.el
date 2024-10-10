@@ -946,6 +946,7 @@ Changes take effect only when a new session is started."
     (actionscript-mode . "actionscript")
     (d-mode . "d")
     (zig-mode . "zig")
+    (zig-ts-mode . "zig")
     (text-mode . "plaintext")
     (markdown-mode . "markdown")
     (gfm-mode . "markdown")
