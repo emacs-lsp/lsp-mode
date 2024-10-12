@@ -134,7 +134,8 @@ source.fixAll code action."
 
 (defcustom lsp-eslint-working-directories []
   "A vector of working directory names to use.
-Can be a pattern, an absolute path, a path relative to the workspace, or a supported mode.
+Can be a pattern, an absolute path, a path relative to the workspace,
+or a supported mode such as \"auto\" or \"location\".
 Examples:
  - \"/home/user/abc/\"
  - \"abc/\"
