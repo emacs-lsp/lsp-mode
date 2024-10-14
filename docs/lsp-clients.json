@@ -90,6 +90,15 @@
     "debugger": "Not available"
   },
   {
+    "name": "buf",
+    "full-name": "buf CLI (Beta)",
+    "server-name": "buf",
+    "server-url": "https://github.com/bufbuild/buf",
+    "installation": "npm install -g @bufbuild/buf",
+    "installation-url": "https://buf.build/docs/installation",
+    "debugger": "Not available"
+  },
+  {
     "name": "bufls",
     "full-name": "buf-language-server",
     "server-name": "bufls",

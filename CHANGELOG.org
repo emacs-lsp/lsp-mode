@@ -20,6 +20,7 @@
   * If asm-lsp is installed, lsp-asm won't try to download it to cache store
   * Fix lsp-unzip on windows when unzip was found on the PATH
   * Fix zls wrong bin path
+  * Add support for buf CLI ([[https://github.com/bufbuild/buf/releases/tag/v1.43.0][beta]])
 
 ** 9.0.0
   * Add language server config for QML (Qt Modeling Language) using qmlls.
