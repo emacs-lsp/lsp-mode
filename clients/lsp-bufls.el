@@ -61,7 +61,7 @@
                                    #'lsp-bufls-server--stdio-command)
                   :activation-fn (lsp-activate-on "protobuf")
                   :language-id "protobuf"
-                  :priority 0
+                  :priority -1
                   :server-id 'bufls))
 
 ;; Buf CLI
@@ -96,7 +96,7 @@
                                    #'lsp-buf--stdio-command)
                   :activation-fn (lsp-activate-on "protobuf")
                   :language-id "protobuf"
-                  :priority -1
+                  :priority 0
                   :server-id 'buf))
 
 (lsp-consistency-check lsp-bufls)
