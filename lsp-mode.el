@@ -372,6 +372,8 @@ the server has requested that."
     "[/\\\\]\\.build\\'"
     ;; Python
     "[/\\\\]__pycache__\\'"
+    "[/\\\\]site-packages\\'"
+    "[/\\\\].pyenv\\'"
     ;; Autotools output
     "[/\\\\]\\.deps\\'"
     "[/\\\\]build-aux\\'"
