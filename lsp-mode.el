@@ -792,6 +792,7 @@ Changes take effect only when a new session is started."
     ("\\.sql$" . "sql")
     ("\\.svelte$" . "svelte")
     ("\\.toml\\'" . "toml")
+    ("\\.ua\\'" . "uiua")
     ("\\.ts$" . "typescript")
     ("\\.tsx$" . "typescriptreact")
     ("\\.ttcn3$" . "ttcn3")
