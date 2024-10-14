@@ -37,7 +37,8 @@
 ENUM is the value of enum key in vscode manifest."
   (cond
    ((and enum (not (or (equal "boolean" type)
-                       (equal '("boolean") type)))) `(choice (:tag ,@(append enum nil))))
+                       (equal '("boolean") type))))
+    `(choice ,@(mapcar (lambda (e) `(const ,(format "\"%s\"" e))) enum)))
    (t (pcase type
         ("boolean" 'boolean)
         ('("boolean") 'boolean)
