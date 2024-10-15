@@ -603,6 +603,16 @@
     "debugger": "Not available"
   },
   {
+    "name": "fennel",
+    "common-group-name": "fennel",
+    "full-name": "Fennel",
+    "server-name": "fennel-ls",
+    "installation-url": "https://git.sr.ht/~xerool/fennel-ls",
+    "server-url": "https://git.sr.ht/~xerool/fennel-ls",
+    "installation": "luarocks install fennel-ls",
+    "debugger": "Not available"
+  },
+  {
     "name": "magik",
     "full-name": "GE Smallworld Magik",
     "server-name": "magik-language-server",
