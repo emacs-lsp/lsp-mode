@@ -105,7 +105,7 @@
                                       (lsp--set-configuration
                                        (lsp-configuration-section "nixd"))))
                   :synchronize-sections '("nixd")
-                  :server-id 'nixd-improved
+                  :server-id 'nixd-lsp
                   :priority -1))
 
 (defgroup lsp-nix-nil nil
