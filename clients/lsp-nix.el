@@ -83,7 +83,7 @@
   Example:
   \"(builtins.getFlake \"/home/lyc/flakes\").nixosConfigurations.adrastea.options\""
   :type 'string
-  :group 'lsp-nix-nil
+  :group 'lsp-nix-nixd
   :lsp-path "nixd.options.nixos.expr"
   :package-version '(lsp-mode . "9.0.1"))
 
@@ -93,7 +93,7 @@
   Example:
   \"(builtins.getFlake \"/home/lyc/flakes\").nixosConfigurations.adrastea.options\""
   :type 'string
-  :group 'lsp-nix-nil
+  :group 'lsp-nix-nixd
   :lsp-path "nixd.options.home-manager.expr"
   :package-version '(lsp-mode . "9.0.1"))
 
