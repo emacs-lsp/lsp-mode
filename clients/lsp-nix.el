@@ -57,7 +57,7 @@
 (lsp-defcustom lsp-nix-nixd-formatting-command nil
   "External formatter command with arguments.
 
-  Example: [ \"nixpkgs-fmt\" ]"
+  Example: `[\"nixpkgs-fmt\"]`"
   :type 'lsp-string-vector
   :group 'lsp-nix-nixd
   :lsp-path "nixd.formatting.command"
@@ -70,7 +70,7 @@
   Resource Usage: Entries are lazily evaluated, entire nixpkgs takes 200~300MB
   for just \"names\". Package documentation, versions, are evaluated by-need.
 
-  Example: \"import <nixpkgs> { }\""
+  Example: `\"import <nixpkgs> { }\"`"
   :type 'string
   :group 'lsp-nix-nixd
   :lsp-path "nixd.nixpkgs.expr"
@@ -78,12 +78,12 @@
 
 (lsp-defcustom lsp-nix-nixd-nixos-options-expr nil
   "Option set for NixOS option completion. If this is omitted, the default
-  search path (<nixpkgs>) will be used.
+  search path (`<nixpkgs>`) will be used.
 
   Example:
-  \"(builtins.getFlake \"/home/lyc/flakes\").nixosConfigurations.adrastea.options\""
+  `\"(builtins.getFlake \"/home/lyc/flakes\").nixosConfigurations.adrastea.options\"`"
   :type 'string
-  :group 'lsp-nix-nil
+  :group 'lsp-nix-nixd
   :lsp-path "nixd.options.nixos.expr"
   :package-version '(lsp-mode . "9.0.1"))
 
@@ -91,9 +91,9 @@
   "Option set for home-manager option completion.
 
   Example:
-  \"(builtins.getFlake \"/home/lyc/flakes\").nixosConfigurations.adrastea.options\""
+  `\"(builtins.getFlake \"/home/lyc/flakes\").nixosConfigurations.adrastea.options\"`"
   :type 'string
-  :group 'lsp-nix-nil
+  :group 'lsp-nix-nixd
   :lsp-path "nixd.options.home-manager.expr"
   :package-version '(lsp-mode . "9.0.1"))
 
