@@ -2270,6 +2270,20 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#lsp-nix-nixd-home-manager-options-expr" class="md-nav__link">
+    lsp-nix-nixd-home-manager-options-expr
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-nix-nixd-nixos-options-expr" class="md-nav__link">
+    lsp-nix-nixd-nixos-options-expr
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3708,6 +3722,20 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#lsp-nix-nixd-home-manager-options-expr" class="md-nav__link">
+    lsp-nix-nixd-home-manager-options-expr
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsp-nix-nixd-nixos-options-expr" class="md-nav__link">
+    lsp-nix-nixd-nixos-options-expr
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3806,6 +3834,21 @@
 <p><em>Default:</em> <code>nil</code></p>
 <p>Executable path for the server.</p>
 <hr />
+<h3 id="lsp-nix-nixd-home-manager-options-expr"><code>lsp-nix-nixd-home-manager-options-expr</code><a class="headerlink" href="#lsp-nix-nixd-home-manager-options-expr" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Option set for home-manager option completion.</p>
+<p>Example:
+  "(builtins.getFlake "/home/lyc/flakes").nixosConfigurations.adrastea.options"</p>
+<hr />
+<h3 id="lsp-nix-nixd-nixos-options-expr"><code>lsp-nix-nixd-nixos-options-expr</code><a class="headerlink" href="#lsp-nix-nixd-nixos-options-expr" title="Permanent link">#</a></h3>
+<p><em>Type:</em> <code>string</code></p>
+<p><em>Default:</em> <code>nil</code></p>
+<p>Option set for NixOS option completion. If this is omitted, the default
+  search path (<nixpkgs>) will be used.</p>
+<p>Example:
+  "(builtins.getFlake "/home/lyc/flakes").nixosConfigurations.adrastea.options"</p>
+<hr />
 
 <!-- Source file information -->
 
@@ -3814,7 +3857,7 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 15, 2024</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 25, 2024</span>
       
     
   </small>
