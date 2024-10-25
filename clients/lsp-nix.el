@@ -81,7 +81,7 @@
   search path (`<nixpkgs>`) will be used.
 
   Example:
-  `\"(builtins.getFlake \"/home/lyc/flakes\").nixosConfigurations.adrastea.options\"`"
+  `\"(builtins.getFlake \"/home/nb/nix\").nixosConfigurations.mnd.options\"`"
   :type 'string
   :group 'lsp-nix-nixd
   :lsp-path "nixd.options.nixos.expr"
@@ -91,7 +91,7 @@
   "Option set for home-manager option completion.
 
   Example:
-  `\"(builtins.getFlake \"/home/lyc/flakes\").nixosConfigurations.adrastea.options\"`"
+  `\"(builtins.getFlake \"/home/nb/nix\").homeConfigurations.\"nb@mnd\".options\"`"
   :type 'string
   :group 'lsp-nix-nixd
   :lsp-path "nixd.options.home-manager.expr"
