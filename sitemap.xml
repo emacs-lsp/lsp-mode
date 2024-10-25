@@ -506,7 +506,12 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-nix/</loc>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-nix-nixd/</loc>
+         <lastmod>2024-10-25</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://emacs-lsp.github.io/lsp-mode/page/lsp-nix-rnix/</loc>
          <lastmod>2024-10-25</lastmod>
          <changefreq>daily</changefreq>
     </url>

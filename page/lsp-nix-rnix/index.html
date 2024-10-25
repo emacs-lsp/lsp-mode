@@ -12,14 +12,14 @@
         <meta name="author" content="ercdll1337@gmail.com">
       
       
-        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-svelte/">
+        <link rel="canonical" href="https://emacs-lsp.github.io/lsp-mode/page/lsp-nix-rnix/">
       
       <link rel="icon" href="../../examples/logo-mini.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.0">
     
     
       
-        <title>Svelte - LSP Mode - LSP support for Emacs</title>
+        <title>Nix (rnix-lsp) - LSP Mode - LSP support for Emacs</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#svelte" class="md-skip">
+        <a href="#nix-rnix-language-server" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Svelte
+              Nix (rnix-lsp)
             
           </span>
         </div>
@@ -2144,11 +2144,92 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../lsp-nix-rnix/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Nix (rnix-lsp)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Nix (rnix-lsp)
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#server" class="md-nav__link">
+    Server
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugger-not-available" class="md-nav__link">
+    Debugger: Not available
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#available-configurations" class="md-nav__link">
+    Available configurations
+  </a>
+  
+    <nav class="md-nav" aria-label="Available configurations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsp-nix-rnix-server-path" class="md-nav__link">
+    lsp-nix-rnix-server-path
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2718,337 +2799,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Svelte
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../lsp-svelte/" class="md-nav__link">
         Svelte
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-    <nav class="md-nav" aria-label="Installation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugger-not-available" class="md-nav__link">
-    Debugger: Not available
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#available-configurations" class="md-nav__link">
-    Available configurations
-  </a>
-  
-    <nav class="md-nav" aria-label="Available configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-color-presentations-enable" class="md-nav__link">
-    lsp-svelte-plugin-css-color-presentations-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-completions-emmet" class="md-nav__link">
-    lsp-svelte-plugin-css-completions-emmet
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-completions-enable" class="md-nav__link">
-    lsp-svelte-plugin-css-completions-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-diagnostics-enable" class="md-nav__link">
-    lsp-svelte-plugin-css-diagnostics-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-document-colors-enable" class="md-nav__link">
-    lsp-svelte-plugin-css-document-colors-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-document-symbols-enable" class="md-nav__link">
-    lsp-svelte-plugin-css-document-symbols-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-enable" class="md-nav__link">
-    lsp-svelte-plugin-css-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-globals" class="md-nav__link">
-    lsp-svelte-plugin-css-globals
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-hover-enable" class="md-nav__link">
-    lsp-svelte-plugin-css-hover-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-selection-range-enable" class="md-nav__link">
-    lsp-svelte-plugin-css-selection-range-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-html-completions-emmet" class="md-nav__link">
-    lsp-svelte-plugin-html-completions-emmet
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-html-completions-enable" class="md-nav__link">
-    lsp-svelte-plugin-html-completions-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-html-document-symbols-enable" class="md-nav__link">
-    lsp-svelte-plugin-html-document-symbols-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-html-enable" class="md-nav__link">
-    lsp-svelte-plugin-html-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-html-hover-enable" class="md-nav__link">
-    lsp-svelte-plugin-html-hover-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-html-tag-complete-enable" class="md-nav__link">
-    lsp-svelte-plugin-html-tag-complete-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-code-actions-enable" class="md-nav__link">
-    lsp-svelte-plugin-svelte-code-actions-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-compiler-warnings" class="md-nav__link">
-    lsp-svelte-plugin-svelte-compiler-warnings
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-completions-enable" class="md-nav__link">
-    lsp-svelte-plugin-svelte-completions-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-diagnostics-enable" class="md-nav__link">
-    lsp-svelte-plugin-svelte-diagnostics-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-enable" class="md-nav__link">
-    lsp-svelte-plugin-svelte-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-format-enable" class="md-nav__link">
-    lsp-svelte-plugin-svelte-format-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-hover-enable" class="md-nav__link">
-    lsp-svelte-plugin-svelte-hover-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-rename-enable" class="md-nav__link">
-    lsp-svelte-plugin-svelte-rename-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-selection-range-enable" class="md-nav__link">
-    lsp-svelte-plugin-svelte-selection-range-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-code-actions-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-code-actions-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-completions-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-completions-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-definitions-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-definitions-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-diagnostics-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-diagnostics-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-document-symbols-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-document-symbols-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-find-references-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-find-references-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-hover-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-hover-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-rename-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-rename-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-selection-range-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-selection-range-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-signature-help-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-signature-help-enable
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -3877,253 +3632,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-color-presentations-enable" class="md-nav__link">
-    lsp-svelte-plugin-css-color-presentations-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-completions-emmet" class="md-nav__link">
-    lsp-svelte-plugin-css-completions-emmet
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-completions-enable" class="md-nav__link">
-    lsp-svelte-plugin-css-completions-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-diagnostics-enable" class="md-nav__link">
-    lsp-svelte-plugin-css-diagnostics-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-document-colors-enable" class="md-nav__link">
-    lsp-svelte-plugin-css-document-colors-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-document-symbols-enable" class="md-nav__link">
-    lsp-svelte-plugin-css-document-symbols-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-enable" class="md-nav__link">
-    lsp-svelte-plugin-css-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-globals" class="md-nav__link">
-    lsp-svelte-plugin-css-globals
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-hover-enable" class="md-nav__link">
-    lsp-svelte-plugin-css-hover-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-css-selection-range-enable" class="md-nav__link">
-    lsp-svelte-plugin-css-selection-range-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-html-completions-emmet" class="md-nav__link">
-    lsp-svelte-plugin-html-completions-emmet
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-html-completions-enable" class="md-nav__link">
-    lsp-svelte-plugin-html-completions-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-html-document-symbols-enable" class="md-nav__link">
-    lsp-svelte-plugin-html-document-symbols-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-html-enable" class="md-nav__link">
-    lsp-svelte-plugin-html-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-html-hover-enable" class="md-nav__link">
-    lsp-svelte-plugin-html-hover-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-html-tag-complete-enable" class="md-nav__link">
-    lsp-svelte-plugin-html-tag-complete-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-code-actions-enable" class="md-nav__link">
-    lsp-svelte-plugin-svelte-code-actions-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-compiler-warnings" class="md-nav__link">
-    lsp-svelte-plugin-svelte-compiler-warnings
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-completions-enable" class="md-nav__link">
-    lsp-svelte-plugin-svelte-completions-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-diagnostics-enable" class="md-nav__link">
-    lsp-svelte-plugin-svelte-diagnostics-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-enable" class="md-nav__link">
-    lsp-svelte-plugin-svelte-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-format-enable" class="md-nav__link">
-    lsp-svelte-plugin-svelte-format-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-hover-enable" class="md-nav__link">
-    lsp-svelte-plugin-svelte-hover-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-rename-enable" class="md-nav__link">
-    lsp-svelte-plugin-svelte-rename-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-svelte-selection-range-enable" class="md-nav__link">
-    lsp-svelte-plugin-svelte-selection-range-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-code-actions-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-code-actions-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-completions-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-completions-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-definitions-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-definitions-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-diagnostics-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-diagnostics-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-document-symbols-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-document-symbols-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-find-references-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-find-references-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-hover-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-hover-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-rename-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-rename-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-selection-range-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-selection-range-enable
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lsp-svelte-plugin-typescript-signature-help-enable" class="md-nav__link">
-    lsp-svelte-plugin-typescript-signature-help-enable
+  <a href="#lsp-nix-rnix-server-path" class="md-nav__link">
+    lsp-nix-rnix-server-path
   </a>
   
 </li>
@@ -4169,7 +3679,7 @@
 <!-- Edit button -->
 
 <a
-  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-svelte.el"
+  href="https://github.com/emacs-lsp/lsp-mode/edit/master/clients/lsp-nix-rnix.el"
   title="Edit this page"
   class="md-content__button md-icon"
 >
@@ -4188,198 +3698,17 @@
 
 
 <!-- Markdown content -->
-<h1 id="svelte">Svelte<a class="headerlink" href="#svelte" title="Permanent link">#</a></h1>
+<h1 id="nix-rnix-language-server">Nix (rnix language server)<a class="headerlink" href="#nix-rnix-language-server" title="Permanent link">#</a></h1>
 <h2 id="server">Server<a class="headerlink" href="#server" title="Permanent link">#</a></h2>
-<p>For more information about the LSP server, check <a href="https://github.com/sveltejs/language-tools">svelteserver</a>.</p>
+<p>For more information about the LSP server, check <a href="https://github.com/nix-community/rnix-lsp">rnix-lsp</a>.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h2>
-<p>This Server supports automatic install.
-Install this language server with <kbd>M-x</kbd><code>lsp-install-server</code><kbd>RET</kbd><code>svelte-ls</code><kbd>RET</kbd>.</p>
-<p><code>npm i -g svelte-language-server</code></p>
+<p><code>nix profile install github:nixos/nixpkgs#rnix-lsp</code></p>
 <h3 id="debugger-not-available">Debugger: Not available<a class="headerlink" href="#debugger-not-available" title="Permanent link">#</a></h3>
 <h2 id="available-configurations">Available configurations<a class="headerlink" href="#available-configurations" title="Permanent link">#</a></h2>
-<h3 id="lsp-svelte-plugin-css-color-presentations-enable"><code>lsp-svelte-plugin-css-color-presentations-enable</code><a class="headerlink" href="#lsp-svelte-plugin-css-color-presentations-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable color picker for CSS</p>
-<hr />
-<h3 id="lsp-svelte-plugin-css-completions-emmet"><code>lsp-svelte-plugin-css-completions-emmet</code><a class="headerlink" href="#lsp-svelte-plugin-css-completions-emmet" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable emmet auto completions for CSS</p>
-<hr />
-<h3 id="lsp-svelte-plugin-css-completions-enable"><code>lsp-svelte-plugin-css-completions-enable</code><a class="headerlink" href="#lsp-svelte-plugin-css-completions-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable auto completions for CSS</p>
-<hr />
-<h3 id="lsp-svelte-plugin-css-diagnostics-enable"><code>lsp-svelte-plugin-css-diagnostics-enable</code><a class="headerlink" href="#lsp-svelte-plugin-css-diagnostics-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable diagnostic messages for CSS</p>
-<hr />
-<h3 id="lsp-svelte-plugin-css-document-colors-enable"><code>lsp-svelte-plugin-css-document-colors-enable</code><a class="headerlink" href="#lsp-svelte-plugin-css-document-colors-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable document colors for CSS</p>
-<hr />
-<h3 id="lsp-svelte-plugin-css-document-symbols-enable"><code>lsp-svelte-plugin-css-document-symbols-enable</code><a class="headerlink" href="#lsp-svelte-plugin-css-document-symbols-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable document symbols for CSS</p>
-<hr />
-<h3 id="lsp-svelte-plugin-css-enable"><code>lsp-svelte-plugin-css-enable</code><a class="headerlink" href="#lsp-svelte-plugin-css-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable the CSS plugin</p>
-<hr />
-<h3 id="lsp-svelte-plugin-css-globals"><code>lsp-svelte-plugin-css-globals</code><a class="headerlink" href="#lsp-svelte-plugin-css-globals" title="Permanent link">#</a></h3>
+<h3 id="lsp-nix-rnix-server-path"><code>lsp-nix-rnix-server-path</code><a class="headerlink" href="#lsp-nix-rnix-server-path" title="Permanent link">#</a></h3>
 <p><em>Type:</em> <code>string</code></p>
-<p><em>Default:</em> ``</p>
-<p>Which css files should be checked for global variables
-(<code>--global-var: value;</code>).</p>
-<p>These variables are added to the css completions.  String of comma-separated
-file paths or globs relative to workspace root.</p>
-<hr />
-<h3 id="lsp-svelte-plugin-css-hover-enable"><code>lsp-svelte-plugin-css-hover-enable</code><a class="headerlink" href="#lsp-svelte-plugin-css-hover-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable hover info for CSS</p>
-<hr />
-<h3 id="lsp-svelte-plugin-css-selection-range-enable"><code>lsp-svelte-plugin-css-selection-range-enable</code><a class="headerlink" href="#lsp-svelte-plugin-css-selection-range-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable selection range for CSS</p>
-<hr />
-<h3 id="lsp-svelte-plugin-html-completions-emmet"><code>lsp-svelte-plugin-html-completions-emmet</code><a class="headerlink" href="#lsp-svelte-plugin-html-completions-emmet" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable emmet auto completions for HTML</p>
-<hr />
-<h3 id="lsp-svelte-plugin-html-completions-enable"><code>lsp-svelte-plugin-html-completions-enable</code><a class="headerlink" href="#lsp-svelte-plugin-html-completions-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable auto completions for HTML</p>
-<hr />
-<h3 id="lsp-svelte-plugin-html-document-symbols-enable"><code>lsp-svelte-plugin-html-document-symbols-enable</code><a class="headerlink" href="#lsp-svelte-plugin-html-document-symbols-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable document symbols for HTML</p>
-<hr />
-<h3 id="lsp-svelte-plugin-html-enable"><code>lsp-svelte-plugin-html-enable</code><a class="headerlink" href="#lsp-svelte-plugin-html-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable the HTML plugin</p>
-<hr />
-<h3 id="lsp-svelte-plugin-html-hover-enable"><code>lsp-svelte-plugin-html-hover-enable</code><a class="headerlink" href="#lsp-svelte-plugin-html-hover-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable hover info for HTML</p>
-<hr />
-<h3 id="lsp-svelte-plugin-html-tag-complete-enable"><code>lsp-svelte-plugin-html-tag-complete-enable</code><a class="headerlink" href="#lsp-svelte-plugin-html-tag-complete-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable HTML tag auto closing</p>
-<hr />
-<h3 id="lsp-svelte-plugin-svelte-code-actions-enable"><code>lsp-svelte-plugin-svelte-code-actions-enable</code><a class="headerlink" href="#lsp-svelte-plugin-svelte-code-actions-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable Code Actions for Svelte</p>
-<hr />
-<h3 id="lsp-svelte-plugin-svelte-compiler-warnings"><code>lsp-svelte-plugin-svelte-compiler-warnings</code><a class="headerlink" href="#lsp-svelte-plugin-svelte-compiler-warnings" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>(alist :key-type (symbol :tag Warning code) :value-type (choice (const :tag Ignore ignore) (const :tag Treat as error error)))</code></p>
-<p><em>Default:</em> <code>nil</code></p>
-<p>Svelte compiler warning codes to ignore or to treat as errors.
-Example: `((css-unused-selector . ignore) (unused-export-let . error))</p>
-<hr />
-<h3 id="lsp-svelte-plugin-svelte-completions-enable"><code>lsp-svelte-plugin-svelte-completions-enable</code><a class="headerlink" href="#lsp-svelte-plugin-svelte-completions-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable auto completions for Svelte</p>
-<hr />
-<h3 id="lsp-svelte-plugin-svelte-diagnostics-enable"><code>lsp-svelte-plugin-svelte-diagnostics-enable</code><a class="headerlink" href="#lsp-svelte-plugin-svelte-diagnostics-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable diagnostic messages for Svelte</p>
-<hr />
-<h3 id="lsp-svelte-plugin-svelte-enable"><code>lsp-svelte-plugin-svelte-enable</code><a class="headerlink" href="#lsp-svelte-plugin-svelte-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable the Svelte plugin</p>
-<hr />
-<h3 id="lsp-svelte-plugin-svelte-format-enable"><code>lsp-svelte-plugin-svelte-format-enable</code><a class="headerlink" href="#lsp-svelte-plugin-svelte-format-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable formatting for Svelte (includes css &amp; js)</p>
-<hr />
-<h3 id="lsp-svelte-plugin-svelte-hover-enable"><code>lsp-svelte-plugin-svelte-hover-enable</code><a class="headerlink" href="#lsp-svelte-plugin-svelte-hover-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable hover information for Svelte</p>
-<hr />
-<h3 id="lsp-svelte-plugin-svelte-rename-enable"><code>lsp-svelte-plugin-svelte-rename-enable</code><a class="headerlink" href="#lsp-svelte-plugin-svelte-rename-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable rename/move Svelte files functionality</p>
-<hr />
-<h3 id="lsp-svelte-plugin-svelte-selection-range-enable"><code>lsp-svelte-plugin-svelte-selection-range-enable</code><a class="headerlink" href="#lsp-svelte-plugin-svelte-selection-range-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable selection range for Svelte</p>
-<hr />
-<h3 id="lsp-svelte-plugin-typescript-code-actions-enable"><code>lsp-svelte-plugin-typescript-code-actions-enable</code><a class="headerlink" href="#lsp-svelte-plugin-typescript-code-actions-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable code actions for TypeScript</p>
-<hr />
-<h3 id="lsp-svelte-plugin-typescript-completions-enable"><code>lsp-svelte-plugin-typescript-completions-enable</code><a class="headerlink" href="#lsp-svelte-plugin-typescript-completions-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable completions for TypeScript</p>
-<hr />
-<h3 id="lsp-svelte-plugin-typescript-definitions-enable"><code>lsp-svelte-plugin-typescript-definitions-enable</code><a class="headerlink" href="#lsp-svelte-plugin-typescript-definitions-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable go to definition for TypeScript</p>
-<hr />
-<h3 id="lsp-svelte-plugin-typescript-diagnostics-enable"><code>lsp-svelte-plugin-typescript-diagnostics-enable</code><a class="headerlink" href="#lsp-svelte-plugin-typescript-diagnostics-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable diagnostic messages for TypeScript</p>
-<hr />
-<h3 id="lsp-svelte-plugin-typescript-document-symbols-enable"><code>lsp-svelte-plugin-typescript-document-symbols-enable</code><a class="headerlink" href="#lsp-svelte-plugin-typescript-document-symbols-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable document symbols for TypeScript</p>
-<hr />
-<h3 id="lsp-svelte-plugin-typescript-enable"><code>lsp-svelte-plugin-typescript-enable</code><a class="headerlink" href="#lsp-svelte-plugin-typescript-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable the TypeScript plugin</p>
-<hr />
-<h3 id="lsp-svelte-plugin-typescript-find-references-enable"><code>lsp-svelte-plugin-typescript-find-references-enable</code><a class="headerlink" href="#lsp-svelte-plugin-typescript-find-references-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable find-references for TypeScript</p>
-<hr />
-<h3 id="lsp-svelte-plugin-typescript-hover-enable"><code>lsp-svelte-plugin-typescript-hover-enable</code><a class="headerlink" href="#lsp-svelte-plugin-typescript-hover-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable hover info for TypeScript</p>
-<hr />
-<h3 id="lsp-svelte-plugin-typescript-rename-enable"><code>lsp-svelte-plugin-typescript-rename-enable</code><a class="headerlink" href="#lsp-svelte-plugin-typescript-rename-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable rename functionality for JS/TS variables inside Svelte files</p>
-<hr />
-<h3 id="lsp-svelte-plugin-typescript-selection-range-enable"><code>lsp-svelte-plugin-typescript-selection-range-enable</code><a class="headerlink" href="#lsp-svelte-plugin-typescript-selection-range-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable selection range for TypeScript</p>
-<hr />
-<h3 id="lsp-svelte-plugin-typescript-signature-help-enable"><code>lsp-svelte-plugin-typescript-signature-help-enable</code><a class="headerlink" href="#lsp-svelte-plugin-typescript-signature-help-enable" title="Permanent link">#</a></h3>
-<p><em>Type:</em> <code>boolean</code></p>
-<p><em>Default:</em> <code>t</code></p>
-<p>Enable signature help (parameter hints) for TypeScript</p>
+<p><em>Default:</em> <code>rnix-lsp</code></p>
+<p>Executable path for the server.</p>
 <hr />
 
 <!-- Source file information -->
@@ -4407,7 +3736,7 @@ Example: `((css-unused-selector . ignore) (unused-export-let . error))</p>
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../lsp-sqls/" class="md-footer__link md-footer__link--prev" aria-label="Previous: SQL (sqls)" rel="prev">
+        <a href="../lsp-nix-nixd/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Nix (nixd-lsp)" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -4416,20 +3745,20 @@ Example: `((css-unused-selector . ignore) (unused-export-let . error))</p>
               <span class="md-footer__direction">
                 Previous
               </span>
-              SQL (sqls)
+              Nix (nixd-lsp)
             </div>
           </div>
         </a>
       
       
         
-        <a href="../lsp-terraform/" class="md-footer__link md-footer__link--next" aria-label="Next: Terraform (terraform-lsp)" rel="next">
+        <a href="../lsp-nix-nil/" class="md-footer__link md-footer__link--next" aria-label="Next: Nix (nil)" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Terraform (terraform-lsp)
+              Nix (nil)
             </div>
           </div>
           <div class="md-footer__button md-icon">

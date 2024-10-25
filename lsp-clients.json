@@ -710,7 +710,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "nix",
+    "name": "nix-nixd",
     "full-name": "Nix (nixd language server)",
     "server-name": "nixd",
     "server-url": "https://github.com/nix-community/nixd",
@@ -718,7 +718,7 @@
     "debugger": "Not available"
   },
   {
-    "name": "nix",
+    "name": "nix-rnix",
     "full-name": "Nix (rnix language server)",
     "server-name": "rnix-lsp",
     "server-url": "https://github.com/nix-community/rnix-lsp",
