@@ -616,6 +616,12 @@ which overrides any value that would otherwise be inherited from
   :group 'lsp-rust-analyzer
   :package-version '(lsp-mode . "9.0.0"))
 
+(defcustom lsp-rust-analyzer-cfg-set-test t
+  "force rust-analyzer to set `#[cfg(test)]` for the current crate / workspace."
+  :type 'boolean
+  :group 'lsp-rust-analyzer
+  :package-version '(lsp-mode . "9.0.0"))
+
 (defcustom lsp-rust-analyzer-use-client-watching t
   "Use client watching"
   :type 'boolean
@@ -1698,6 +1704,7 @@ https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.m
     :files ( :exclude ,lsp-rust-analyzer-exclude-globs
              :watcher ,(if lsp-rust-analyzer-use-client-watching "client" "notify")
              :excludeDirs ,lsp-rust-analyzer-exclude-dirs)
+    :cfg ( :setTest ,(lsp-json-bool lsp-rust-analyzer-cfg-set-test) )
     :cargo ( :allFeatures ,(lsp-json-bool lsp-rust-all-features)
              :noDefaultFeatures ,(lsp-json-bool lsp-rust-no-default-features)
              :features ,lsp-rust-features
