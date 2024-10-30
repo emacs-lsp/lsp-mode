@@ -189,7 +189,7 @@ As defined by the Language Server Protocol 3.16."
      lsp-ruby-syntax-tree lsp-ruff lsp-rust lsp-semgrep lsp-shader
      lsp-solargraph lsp-solidity lsp-sonarlint lsp-sorbet lsp-sourcekit
      lsp-sql lsp-sqls lsp-steep lsp-svelte lsp-tailwindcss lsp-terraform
-     lsp-tex lsp-tilt lsp-toml lsp-trunk lsp-ttcn3 lsp-typeprof lsp-v
+     lsp-tex lsp-tilt lsp-toml lsp-trunk lsp-ttcn3 lsp-typeprof lsp-typespec lsp-v
      lsp-vala lsp-verilog lsp-vetur lsp-vhdl lsp-vimscript lsp-volar lsp-wgsl
      lsp-xml lsp-yaml lsp-yang lsp-zig)
   "List of the clients to be automatically required."
@@ -796,6 +796,7 @@ Changes take effect only when a new session is started."
     ("\\.svelte$" . "svelte")
     ("\\.toml\\'" . "toml")
     ("\\.ts$" . "typescript")
+    ("\\.tsp$" . "typespec")
     ("\\.tsx$" . "typescriptreact")
     ("\\.ttcn3$" . "ttcn3")
     ("\\.vue$" . "vue")
@@ -890,6 +891,7 @@ Changes take effect only when a new session is started."
     (js-ts-mode . "javascript")
     (typescript-mode . "typescript")
     (typescript-ts-mode . "typescript")
+    (typespec-mode . "typespec")
     (tsx-ts-mode . "typescriptreact")
     (svelte-mode . "svelte")
     (fsharp-mode . "fsharp")
