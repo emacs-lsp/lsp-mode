@@ -9925,12 +9925,10 @@ In case the major-mode that you are using for "
   (let ((start-plain (make-temp-file "plain" nil ".el")))
     (url-copy-file "https://raw.githubusercontent.com/emacs-lsp/lsp-mode/master/scripts/lsp-start-plain.el"
                    start-plain t)
-    (async-shell-command
-     (format "%s -q -l %s %s"
-             (expand-file-name invocation-name invocation-directory)
-             start-plain
-             (or (buffer-file-name) ""))
-     (generate-new-buffer " *lsp-start-plain*"))))
+    (start-process "lsp-start-plain"
+                   (generate-new-buffer " *lsp-start-plain*")
+                   (expand-file-name invocation-name invocation-directory)
+                    "-q" "-l" start-plain (or (buffer-file-name) ""))))
 
 
 
