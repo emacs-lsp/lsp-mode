@@ -29,7 +29,7 @@
 
 (defgroup lsp-typespec nil
   "LSP support for Typespec."
-  :link '(url-link "https://github.com/jeremymeng/typespec-lsp")
+  :link '(url-link "https://github.com/microsoft/typespec/blob/9c95ccda8c84c7c6afa24b2f4b21cf1ecbe680dd/packages/compiler/cmd/tsp-server.js")
   :group 'lsp-mode
   :tag "Lsp Typespec")
 
