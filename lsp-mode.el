@@ -1986,21 +1986,29 @@ want to watch."
          (not (lsp--string-match-any ignored-directories full-path)))))
 
 
-(defun lsp--all-watchable-directories (dir ignored-directories)
+(defun lsp--all-watchable-directories (dir ignored-directories &optional visited)
   "Traverse DIR recursively returning a list of paths that should have watchers.
-IGNORED-DIRECTORIES will be used for exclusions"
+IGNORED-DIRECTORIES will be used for exclusions.
+VISITED is used to track already-visited directories to avoid infinite loops."
   (let* ((dir (if (f-symlink? dir)
                   (file-truename dir)
-                dir)))
-    (apply #'nconc
-           ;; the directory itself is assumed to be part of the set
-           (list dir)
-           ;; collect all subdirectories that are watchable
-           (-map
-            (lambda (path) (lsp--all-watchable-directories (f-join dir path) ignored-directories))
-            ;; but only look at subdirectories that are watchable
-            (-filter (lambda (path) (lsp--path-is-watchable-directory path dir ignored-directories))
-                     (directory-files dir))))))
+                dir))
+         ;; Initialize visited directories if not provided
+         (visited (or visited (make-hash-table :test 'equal))))
+    (if (gethash dir visited)
+        ;; If the directory has already been visited, skip it
+        nil
+      ;; Mark the current directory as visited
+      (puthash dir t visited)
+      (apply #'nconc
+             ;; the directory itself is assumed to be part of the set
+             (list dir)
+             ;; collect all subdirectories that are watchable
+             (-map
+              (lambda (path) (lsp--all-watchable-directories (f-join dir path) ignored-directories visited))
+              ;; but only look at subdirectories that are watchable
+              (-filter (lambda (path) (lsp--path-is-watchable-directory path dir ignored-directories))
+                       (directory-files dir)))))))
 
 (defun lsp-watch-root-folder (dir callback ignored-files ignored-directories &optional watch warn-big-repo?)
   "Create recursive file notification watch in DIR.
