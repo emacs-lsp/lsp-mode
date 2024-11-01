@@ -9668,7 +9668,7 @@ defaults to `progress-bar."
                          (save-excursion
                            (funcall goto-buffer)
                            (funcall f))))))
-              ((&plist :begin :end :post-blank :language) (cl-second (org-element-context)))
+              ((begin end post-blank language) (--map (org-element-property it (org-element-context) nil t) '(:begin :end :post-blank :language)))
               ((&alist :tangle file-name) (cl-third (org-babel-get-src-block-info 'light)))
 
               (file-name (if file-name
