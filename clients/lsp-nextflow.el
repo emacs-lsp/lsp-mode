@@ -121,7 +121,7 @@
   ;;                       (lsp-package-ensure 'nextflow-lsp callback error-callback))))
   :new-connection (lsp-stdio-connection #'lsp-nextflow-server-command)
   :major-modes '(nextflow-mode)
-  ;; :multi-root t
+  :multi-root t
   :activation-fn (lsp-activate-on "nextflow")
   :priority -1
   :initialized-fn (lambda (workspace)
